@@ -73,12 +73,14 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// The axes the user's hand and fingers move, one declaration an axis.
     private var axes: [Given] = []
 
-    /// One axis as declared: which it is, what moves it, how far it runs, where it rests, and whether it comes round.
+    /// One axis as declared: which it is, what moves it, how far it runs, where its layout is worked out, where it
+    /// rests, and whether it comes round.
     private struct Given {
         let axis: WritableKeyPath<Phase, Double>
         let input: LayoutInput
         let range: ClosedRange<Double>
-        let snaps: LayoutSnaps?
+        let keyframes: LayoutPlaces?
+        let snaps: LayoutPlaces?
         let wraps: Bool
 
         /// What is wrong with the declaration, if anything, as the author is told it.
@@ -105,6 +107,10 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
                 return "A LayoutEngine's swipe moves the run one snap a hand, and its axis was given none: it swipes "
                     + "from end to end of its range."
             }
+            if wraps, keyframes != nil, let knots = hand?.knots, knots.count < 3 {
+                return "A LayoutEngine's axis comes round with keyframes at its ends alone, which are one place a "
+                    + "turn apart: nothing is blended between them."
+            }
             return nil
         }
 
@@ -118,14 +124,26 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
             let period = wraps && high > low && input.gesture != .magnification ? high - low : nil
             let swipes = if case .hand(_, _, swipes: true) = input.gesture { true } else { false }
             let snaps = snaps ?? (swipes ? .limits : nil)
+            let knots = keyframes.map { keyframes in
+                Array(Set(keyframes.values(in: range, wraps: false) + (snaps?.values(in: range, wraps: false) ?? [])))
+                    .sorted()
+            }
             return Hand(
                 index: index, axis: axis, gesture: input.gesture, throwing: input.throwing, low: low, high: high,
-                stops: snaps?.stops(in: range, wraps: period != nil) ?? [], period: period)
+                stops: snaps?.values(in: range, wraps: period != nil) ?? [], period: period, knots: knots)
         }
     }
 
     /// What is wrong with the axes as declared, as the author is told it.
-    private var complaints: [String] { axes.compactMap(\.complaint) }
+    private var complaints: [String] {
+        let blends = curve != nil && !axes.contains { $0.keyframes != nil }
+        return axes.compactMap(\.complaint) + (blends
+            ? ["A LayoutEngine was given an interpolation and no axis with keyframes: nothing is blended."]
+            : [])
+    }
+
+    /// The curve between the poses at the axes' keyframes, where one was given.
+    private var curve: (any LayoutInterpolation)?
 
     /// States whose writes run the arithmetic again on the host's frames.
     private var followed: [(any FollowedState)?] = []
@@ -163,7 +181,9 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         @ViewBuilder content: @escaping (Items.Element) -> Content,
         placements: @escaping @MainActor (Rect, Phase) -> [Placement]
     ) {
-        self.init(items, id: id, content: content, placements: { room, phase, _ in placements(room, phase) })
+        source = Source(
+            items: items, path: id, view: { content($0).node }, arithmetic: { room, phase, _ in placements(room, phase) },
+            readsFrom: false)
     }
 
     /// The same, for items that are their own identity.
@@ -204,7 +224,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         @ViewBuilder content: @escaping (Items.Element) -> Content,
         placements: @escaping @MainActor (Rect, Phase, Phase) -> [Placement]
     ) {
-        source = Source(items: items, path: id, view: { content($0).node }, arithmetic: placements)
+        source = Source(items: items, path: id, view: { content($0).node }, arithmetic: placements, readsFrom: true)
     }
 
     /// The same, for items that are their own identity.
@@ -234,8 +254,8 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         return copy
     }
 
-    /// One axis of the phase under the user's hand or fingers: what moves it, how far it runs, where it comes to
-    /// rest and whether it comes round.
+    /// One axis of the phase under the user's hand or fingers: what moves it, how far it runs, where its layout is
+    /// worked out, where it comes to rest and whether it comes round.
     ///
     ///     .axis(\.self, input: .swipe(.horizontal), range: 0...Double(cards.count - 1), snaps: .every(1))
     ///     .axis(\.zoom, input: .magnification, range: 0.5...2)
@@ -253,10 +273,18 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// their middle. An axis declared again takes the other's place; the axes declared none go on as the program
     /// sends them. The views still answer a tap.
     ///
+    /// Given keyframes, the arithmetic is asked only there - at them, the range's ends and the snaps - and the
+    /// layout is blended between its answers along `interpolation(_:)`: quite different layouts, one at each
+    /// keyframe, become one the hand moves through.
+    ///
+    ///     .axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .every(1), snaps: .limits)
+    ///
     /// - Parameters:
     ///   - axis: the axis, one of the phase's `axes`; `\.self` for a `Double` phase.
     ///   - input: what moves it.
     ///   - range: how far the hand moves it; above nought for a magnification.
+    ///   - keyframes: where the arithmetic is asked beside the ends of the range and the snaps; every frame unless
+    ///     said.
     ///   - snaps: where it may rest beside the ends of its range; anywhere inside it unless said.
     ///   - wraps: whether it comes round, its range one turn.
     /// - Returns: the layout, its axis moved by the hand.
@@ -264,12 +292,32 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         _ axis: WritableKeyPath<Phase, Double>,
         input: LayoutInput,
         range: ClosedRange<Double>,
-        snaps: LayoutSnaps? = nil,
+        keyframes: LayoutPlaces? = nil,
+        snaps: LayoutPlaces? = nil,
         wraps: Bool = false
     ) -> Self {
         var copy = self
         copy.axes.removeAll { $0.axis == axis }
-        copy.axes.append(Given(axis: axis, input: input, range: range, snaps: snaps, wraps: wraps))
+        copy.axes.append(
+            Given(axis: axis, input: input, range: range, keyframes: keyframes, snaps: snaps, wraps: wraps))
+        return copy
+    }
+
+    /// The curve every view follows between the poses the arithmetic answers at the axes' keyframes: straight
+    /// unless said.
+    ///
+    ///     .axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .every(1))
+    ///     .interpolation(.catmullRom)
+    ///
+    /// Each view goes from its pose at one keyframe to its pose at the next by its identity: its place and size,
+    /// its turn - the short way - its scale, opacity and shade, and the drawing order swapping as the views'
+    /// `zIndex` cross.
+    ///
+    /// - Parameter curve: `.linear`, `.catmullRom`, `.monotone`, or a curve of your own.
+    /// - Returns: the layout, blended along the curve.
+    public func interpolation(_ curve: some LayoutInterpolation) -> Self {
+        var copy = self
+        copy.curve = curve
         return copy
     }
 
@@ -462,18 +510,25 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         /// is let go.
         let number: Int
 
+        /// Whether the arithmetic is handed where the motion set out, and the poses it answered at keyframes, kept
+        /// while this description stands.
+        let readsFrom: Bool
+        let kept = LayoutPoses()
+
         /// What the initializer was handed.
         @MainActor
         init(
             items: Items,
             path: KeyPath<Items.Element, ID>,
             view: @escaping (Items.Element) -> Node,
-            arithmetic: @escaping @MainActor (Rect, Phase, Phase) -> [Placement]
+            arithmetic: @escaping @MainActor (Rect, Phase, Phase) -> [Placement],
+            readsFrom: Bool
         ) {
             self.items = items
             self.path = path
             self.view = view
             self.arithmetic = arithmetic
+            self.readsFrom = readsFrom
             descriptionsMade += 1
             number = descriptionsMade
         }
@@ -492,6 +547,10 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
             },
             make: source.view,
             arithmetic: source.arithmetic,
+            curve: curve ?? LayoutCurve.linear,
+            readsFrom: source.readsFrom,
+            kept: source.kept,
+            followed: followed.compactMap { $0 },
             description: source.number,
             mask: mask,
             tapped: tapped,
@@ -529,7 +588,9 @@ extension LayoutEngine where Phase == Double {
         @ViewBuilder content: @escaping (Items.Element) -> Content,
         placements: @escaping @MainActor (Rect, Double) -> [Placement]
     ) {
-        self.init(items, id: id, content: content, placements: { room, phase, _ in placements(room, phase) })
+        source = Source(
+            items: items, path: id, view: { content($0).node }, arithmetic: { room, phase, _ in placements(room, phase) },
+            readsFrom: false)
     }
 
     /// The same, for items that are their own identity, with a phase of one axis.
@@ -548,7 +609,7 @@ extension LayoutEngine where Phase == Double {
         @ViewBuilder content: @escaping (Items.Element) -> Content,
         placements: @escaping @MainActor (Rect, Double, Double) -> [Placement]
     ) {
-        source = Source(items: items, path: id, view: { content($0).node }, arithmetic: placements)
+        source = Source(items: items, path: id, view: { content($0).node }, arithmetic: placements, readsFrom: true)
     }
 
     /// The same, for items that are their own identity, with a phase of one axis and where its motion set out.

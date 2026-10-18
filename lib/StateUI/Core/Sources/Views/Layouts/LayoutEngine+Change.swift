@@ -17,7 +17,7 @@ extension LayoutEngine.Run {
         else { return memory }
 
         let room = Rect(0, 0, memory.room.width, memory.room.height)
-        let before = fitted(arithmetic(room, last, from))
+        let before = pose(in: room, at: last, from: from)
         for (index, slot) in slots.enumerated() where memory.poses[slot.identity] != before[index] {
             let going = memory.travels[slot.identity].map { $0.at(now, under: motion) }
             let shift = memory.shown[slot.identity].map { LayoutShift(from: $0, to: before[index]) }

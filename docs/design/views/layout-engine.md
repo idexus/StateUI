@@ -164,11 +164,13 @@ started at `init()`. A phase naming no axes is said.
 
 ## An axis
 
-`.axis(_:input:range:snaps:wraps:)` is the one declaration of an axis the
-hand moves: what moves it (a `LayoutInput`), how far (`range`), where it may
-rest (`snaps`, a `LayoutSnaps`), and whether it comes round (`wraps`). One
-concept, one place: an input, a rest and a wrap are never declared apart, so
-no axis has an input with no range or a rest with no input.
+`.axis(_:input:range:keyframes:snaps:wraps:)` is the one declaration of an
+axis the hand moves: what moves it (a `LayoutInput`), how far (`range`),
+where its layout is worked out (`keyframes`, [keyframes](#keyframes)), where
+it may rest (`snaps`), and whether it comes round (`wraps`) - the keyframes
+and the snaps both a `LayoutPlaces`, places on the axis. One concept, one
+place: an input, a rest and a wrap are never declared apart, so no axis has
+an input with no range or a rest with no input.
 
 - THE RANGE is the hand's, not the program's: the hand moves the axis freely
   inside it and less and less past an end ([the hand](#the-hand)); the
@@ -194,6 +196,86 @@ no axis has an input with no range or a rest with no input.
   phase's `axes` does not list, a range with no end, a magnification's range
   reaching nought. A magnification told to come round stops at its ends; a
   swipe given no snaps swipes from end to end, its ends its snaps.
+
+## Keyframes
+
+An axis given `keyframes` has its arithmetic asked only there - at them, the
+range's ends and every snap - and the poses between are blended view by
+view, by identity. So quite different layouts - a ring at 0, a grid at 1, a
+stack at 2 - are one `placements` answering a pose at each keyframe, and the
+hand moves through them:
+
+```text
+  phase     0 ─────────── 0.4 ─────────── 1 ─────────── 2
+  asked     ring                          grid          stack
+  shown     ring          ring→grid, 40%  grid          …
+```
+
+- ONE ARITHMETIC. There is no second closure: the keyframes only say where
+  the engine asks the one it has. With none, it is asked every frame, as
+  always.
+- A REST IS NEVER A BLEND. The ends and the snaps are always keyframes, so
+  wherever the run can come to rest it shows the arithmetic's own answer;
+  where a keyframe stands is not where the run rests unless it is a snap -
+  a layout passes through a keyframe at 0.5 and rests at 0 and 1.
+- ASKED ONCE. A keyframe's pose is worked out the first frame the curve
+  needs it (`LayoutPoses`, kept on the description's `Source`) and kept
+  while what it was worked out with stands: the description - a render is a
+  new `Source` - the room, a write to a state named in `following(_:)` (its
+  `stamp`), where the motion set out where the arithmetic is handed it
+  (`readsFrom`), and the axes without keyframes. A new pose lands as the
+  arithmetic's own answer would.
+- A LATTICE. Several axes with keyframes blend one after another, each over
+  the poses the next ones give: a tensor product, so the poses are always
+  at whole keyframes and no triangulation is needed. A frame reads 2^k poses
+  for straight lines and 4^k for a cubic, k the axes with keyframes; an axis
+  without keyframes is asked where it stands.
+- ROUND AND PAST THE ENDS. On an axis that comes round, the phase is taken
+  into one turn; the keyframe at the turn's end is the arithmetic's own
+  there, and a curve's neighbours across the seam are the next or the last
+  turn's. Past an end, where the hand pulls the run, the end's two keyframes
+  give a straight line that goes on, so the views still follow the hand. An
+  axis of no length has one keyframe and no line: it is asked where it
+  stands, as one with none is.
+- WHAT A BLEND CANNOT KNOW. Between two keyframes a view goes the curve's
+  way, not the arithmetic's: an arc becomes a chord (more keyframes, or a
+  cubic), and arithmetic that jumps between neighbouring keyframes - a card
+  taken modulo round a strip, a `zIndex` flipping behind a ring - is drawn
+  sweeping across. A size blended lays the view's content out every frame;
+  a scale keeps it. On one axis the layouts are a sequence: from 0 to 2 the
+  run passes 1. A switch between two layouts with nothing between them is a
+  state the arithmetic reads, travelling as [a change at the current
+  phase](#a-change-at-the-current-phase).
+
+### The curves
+
+`LayoutInterpolation` is a scalar curve through knots: how many keyframes
+either side of the two around a place it reads (`reach`), and the number at
+the place. Every curve passes through each keyframe. The library's
+`LayoutCurve`:
+
+- `.linear` - straight, `reach` 0;
+- `.catmullRom` and `.catmullRom(tension:)` - a cubic whose slope at a
+  keyframe is the line through its neighbours, held by `1 - tension`: 0 the
+  plain curve, 1 a stop at each keyframe; it may swing past one;
+- `.monotone` - a cubic whose slope at a keyframe is limited so it never
+  passes its neighbours (Steffen's: local, `reach` 1), so an opacity or a
+  size never swings beyond its poses.
+
+At an end of the range the slope is the straight line to the one neighbour.
+A curve reading every keyframe - a natural spline - is not offered: its
+poses could not be worked out lazily.
+
+### Blending a pose
+
+`LayoutBlend` blends one view's poses channel by channel along the curve:
+the bounds (sizes at nought at least); the transform as `LayoutShift`'s
+parts - move, turn, slant and scale - the turn unwrapped from keyframe to
+keyframe the short way, and one transform at every keyframe left as it is;
+opacity and shade inside 0...1, as a cubic overshoots, an unshaded layout
+left unshaded. `zIndex` is blended as a number and the drawing order ranked
+from it, equal numbers sharing a rank: two views swap as their numbers
+cross rather than at half way.
 
 ## The hand
 

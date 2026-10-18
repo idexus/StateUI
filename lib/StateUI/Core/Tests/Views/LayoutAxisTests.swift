@@ -61,13 +61,13 @@ final class LayoutAxisTests: XCTestCase {
     /// THE SNAPS ARE THE PLACES GIVEN AND THE RANGE'S ENDS - the upper end the lower one a turn on where the axis
     /// comes round.
     func testTheSnapsAreThePlacesGivenAndTheEnds() {
-        XCTAssertEqual(([1, 2] as LayoutSnaps).stops(in: 0...3, wraps: false), [0, 1, 2, 3])
-        XCTAssertEqual(LayoutSnaps.limits.stops(in: 0...3, wraps: false), [0, 3])
-        XCTAssertEqual(LayoutSnaps.every(1).stops(in: 0...3, wraps: false), [0, 1, 2, 3])
-        XCTAssertEqual(LayoutSnaps.every(1).stops(in: 0...2.5, wraps: false), [0, 1, 2, 2.5])
-        XCTAssertEqual(LayoutSnaps.every(0.25).stops(in: 0...1, wraps: true), [0, 0.25, 0.5, 0.75])
-        XCTAssertEqual(LayoutSnaps.at([-1, 0.5, 4]).stops(in: 0...3, wraps: false), [0, 0.5, 3], "outside, left out")
-        XCTAssertEqual(LayoutSnaps.every(0.1).stops(in: 0...1, wraps: false).count, 11, "none a rounding short of 1")
+        XCTAssertEqual(([1, 2] as LayoutPlaces).values(in: 0...3, wraps: false), [0, 1, 2, 3])
+        XCTAssertEqual(LayoutPlaces.limits.values(in: 0...3, wraps: false), [0, 3])
+        XCTAssertEqual(LayoutPlaces.every(1).values(in: 0...3, wraps: false), [0, 1, 2, 3])
+        XCTAssertEqual(LayoutPlaces.every(1).values(in: 0...2.5, wraps: false), [0, 1, 2, 2.5])
+        XCTAssertEqual(LayoutPlaces.every(0.25).values(in: 0...1, wraps: true), [0, 0.25, 0.5, 0.75])
+        XCTAssertEqual(LayoutPlaces.at([-1, 0.5, 4]).values(in: 0...3, wraps: false), [0, 0.5, 3], "outside, left out")
+        XCTAssertEqual(LayoutPlaces.every(0.1).values(in: 0...1, wraps: false).count, 11, "none a rounding short of 1")
     }
 
     // MARK: - An axis with no snaps

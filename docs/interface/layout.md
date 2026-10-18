@@ -880,8 +880,9 @@ struct Planets: View {
 }
 ```
 
-`.axis(_:input:range:snaps:wraps:)` declares one axis whole - what moves it,
-how far it runs, where it rests, whether it comes round - and the hand moves
+`.axis(_:input:range:keyframes:snaps:wraps:)` declares one axis whole - what
+moves it, how far it runs, where its layout is worked out, where it rests,
+whether it comes round - and the hand moves
 that one alone, resting it on its own snaps whatever the others do. One input
 may move several axes, each by its own unit and range, resting its own way:
 a hand that turns the cards and, slower, the sky behind them. Declared again,
@@ -987,6 +988,64 @@ struct Contacts: View {
     }
 }
 ```
+
+Given keyframes, an axis has its arithmetic asked only there - at them, at
+its range's ends and at its snaps - and every view goes from its pose at one
+keyframe to its pose at the next along `.interpolation(_:)`: straight unless
+said, `.catmullRom` a smooth curve through them, `.monotone` one that never
+swings past them. So quite different layouts, one at each keyframe, are one
+the hand moves through - here a row, a column and a pile:
+
+```swift
+struct Arrangements: View {
+    @State private var arrangement = 0.0
+
+    let names = ["Ada", "Ben", "Cy", "Di", "Eve"]
+
+    var body: some View {
+        LayoutEngine(names) { name in
+            Text(name)
+        } placements: { room, phase in
+            // Asked at 0, 1 and 2 alone: a row, a column, a pile.
+            [row(in: room), column(in: room), pile(in: room)][Int(phase)]
+        }
+        .phase($arrangement)
+        .axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .every(1), snaps: .every(1))
+        .interpolation(.catmullRom)
+        .height(300)
+    }
+
+    private func row(in room: Rect) -> [Placement] {
+        names.indices.map { Placement(Rect(Double($0) * 64, room.height / 2 - 20, 60, 40)) }
+    }
+
+    private func column(in room: Rect) -> [Placement] {
+        names.indices.map { Placement(Rect(room.width / 2 - 30, Double($0) * 48, 60, 40)) }
+    }
+
+    private func pile(in room: Rect) -> [Placement] {
+        names.indices.map { index in
+            Placement(
+                Rect(room.width / 2 - 30 + Double(index) * 4, room.height / 2 - 20 - Double(index) * 4, 60, 40),
+                transform: .rotate(Double(index) * 6 - 12),
+                zIndex: index)
+        }
+    }
+}
+```
+
+Every view keeps its identity from layout to layout, and where the run rests
+- an end or a snap, which are always keyframes - it shows the arithmetic's
+own answer, never a blend. Each keyframe's answer is asked once and kept
+until the room, the description or a state named in `.following(_:)`
+changes, so a layout costly to work out is worked out a few times rather
+than every frame. Several axes with keyframes blend together, each between
+its own. Between two keyframes a view goes the curve's way rather than the
+arithmetic's: an arc becomes a chord unless keyframes stand close, and
+arithmetic that jumps between two keyframes - a card coming round from the
+far end - is drawn sweeping across; blend a scale rather than a size, which
+lays the view's content out every frame. On one axis the layouts are a
+sequence: from the row to the pile, the run passes the column.
 
 A value read in the body is a change of the description: the layout is built
 again and its arithmetic with it. A state the arithmetic reads that moves on

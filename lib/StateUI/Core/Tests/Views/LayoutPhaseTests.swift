@@ -174,7 +174,7 @@ final class LayoutPhaseTests: XCTestCase {
 
     /// A layout of one view whose hand moves the turn, a hundred points a unit, over `range`, resting on `snaps`.
     private func handTree(
-        _ orbit: State<Orbit>, handed: Handed? = nil, range: ClosedRange<Double>, snaps: LayoutSnaps = .every(1)
+        _ orbit: State<Orbit>, handed: Handed? = nil, range: ClosedRange<Double>, snaps: LayoutPlaces = .every(1)
     ) -> () -> Node {
         {
             LayoutEngine([1]) { Text("\($0)") } placements: { _, phase in

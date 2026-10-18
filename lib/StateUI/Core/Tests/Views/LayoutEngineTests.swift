@@ -401,7 +401,7 @@ final class LayoutEngineTests: XCTestCase {
 
     /// A layout of one view a hand moves, a hundred points a unit, over `range`, resting on `snaps`.
     private func handTree(
-        _ phase: State<Double>, handed: Handed? = nil, range: ClosedRange<Double>, snaps: LayoutSnaps? = .every(1)
+        _ phase: State<Double>, handed: Handed? = nil, range: ClosedRange<Double>, snaps: LayoutPlaces? = .every(1)
     ) -> Node {
         LayoutEngine([1]) { Text("\($0)") } placements: { _, at in
             handed?.phases.append(at)

@@ -10,8 +10,8 @@ import StateUIFoundation
 extension LayoutEngine {
     /// One axis the hand or the fingers move: its place in the phase's `axes`, by which the hand's hold, its throw
     /// and its grip are kept, the axis, what moves it and how a throw goes on, the ends of its range, where on it the
-    /// run may come to rest, lowest first - none for anywhere in the range - and how far one turn takes it where it
-    /// comes round.
+    /// run may come to rest, lowest first - none for anywhere in the range - how far one turn takes it where it
+    /// comes round, and where the arithmetic is asked, lowest first, the ends included - nil for every frame.
     struct Hand {
         let index: Int
         let axis: WritableKeyPath<Phase, Double>
@@ -21,6 +21,7 @@ extension LayoutEngine {
         let high: Double
         let stops: [Double]
         let period: Double?
+        let knots: [Double]?
 
         /// Which way the hand moves the axis, where the hand does rather than two fingers.
         var way: LayoutInput.Axis? {
@@ -44,6 +45,13 @@ extension LayoutEngine {
         let slots: [Slot]
         let make: (Items.Element) -> Node
         let arithmetic: @MainActor (Rect, Phase, Phase) -> [Placement]
+
+        /// The curve between the poses at keyframes, whether the arithmetic reads where the motion set out, the
+        /// poses kept for this description, and the states the arithmetic follows, whose writes let them go.
+        let curve: any LayoutInterpolation
+        let readsFrom: Bool
+        let kept: LayoutPoses
+        let followed: [any FollowedState]
 
         /// Which description of the layout the run is: a render that describes it again makes another.
         let description: Int
@@ -237,7 +245,7 @@ extension LayoutEngine {
             let phase = live()
             let from = setOut(at: phase)
             let memory = changed(at: now, from: from, reducesMotion: reducesMotion)
-            let poses = fitted(arithmetic(Rect(0, 0, room.width, room.height), phase, from))
+            let poses = pose(in: Rect(0, 0, room.width, room.height), at: phase, from: from)
             let changing = show(
                 poses, after: memory, at: now, phase: phase, from: from, room: room, reducesMotion: reducesMotion)
             return flying || changing ? .again : .wait
@@ -557,9 +565,9 @@ extension LayoutEngine {
                 across ? placement.bounds.x + placement.bounds.width / 2 : placement.bounds.y + placement.bounds.height / 2
             }
 
-            let here = arithmetic(room, placing(value, in: shown), from)
-            let before = arithmetic(room, placing(value - Self.probe, in: shown), from)
-            let after = arithmetic(room, placing(value + Self.probe, in: shown), from)
+            let here = pose(in: room, at: placing(value, in: shown), from: from)
+            let before = pose(in: room, at: placing(value - Self.probe, in: shown), from: from)
+            let after = pose(in: room, at: placing(value + Self.probe, in: shown), from: from)
             let moving = here.indices.prefix(min(before.count, after.count)).compactMap { index in
                 let moved = abs(middle(after[index]) - middle(before[index])) / (2 * Self.probe)
                 return moved >= 1 ? (index: index, moved: moved) : nil
