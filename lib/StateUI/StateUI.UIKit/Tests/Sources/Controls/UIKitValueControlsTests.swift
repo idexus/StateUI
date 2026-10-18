@@ -23,6 +23,23 @@ final class UIKitValueControlsTests: XCTestCase {
         XCTAssertEqual([stepper.minimumValue, stepper.maximumValue, stepper.stepValue], [0, 10, 1])
     }
 
+    /// A slider pressed is released however the touch ends - lifted inside, outside, or taken by the system's own
+    /// gesture: no press stands with no release after it.
+    @MainActor
+    func testASliderPressedIsReleasedHoweverTheTouchEnds() {
+        for ending: UIControl.Event in [.touchUpInside, .touchUpOutside, .touchCancel] {
+            let slider = UIKitSliderView()
+            var heard: [String] = []
+            slider.onPressed = { heard.append("pressed") }
+            slider.onReleased = { heard.append("released") }
+
+            slider.sendActions(for: .touchDown)
+            slider.sendActions(for: ending)
+
+            XCTAssertEqual(heard, ["pressed", "released"], "ended by \(ending.rawValue)")
+        }
+    }
+
     /// A picker is made as its presentation's control - a pop-up button, a segmented control, a column of buttons
     /// marked as radio buttons - each offering the values and taking the user's choice as its value.
     @MainActor
