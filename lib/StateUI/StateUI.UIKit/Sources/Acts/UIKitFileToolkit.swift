@@ -28,10 +28,10 @@ final class UIKitFileToolkit: FileToolkit {
     }
 
     func show(_ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void) -> Bool {
-        guard let presenter = renderer.userPresenter else { return false }
+        guard let root = renderer.userRoot else { return false }
         let asked = UIKitFileDialog(dialog)
         showing = asked
-        asked.ask(over: presenter) { [weak self] chosen in
+        asked.ask(in: root) { [weak self] chosen in
             self?.showing = nil
             answered(chosen)
         }
@@ -63,10 +63,10 @@ final class UIKitFileToolkit: FileToolkit {
         let holds = holdsLaunchesForTesting
         Task { @MainActor [weak self] in
             if holds { return answered(true) }
-            guard QLPreviewController.canPreview(url as NSURL), let presenter = self?.renderer.userPresenter else {
+            guard QLPreviewController.canPreview(url as NSURL), let root = self?.renderer.userRoot else {
                 return answered(false)
             }
-            presenter.present(UIKitFilePreview(url), animated: true)
+            root.pass(UIKitFilePreview(url, in: root))
             answered(true)
         }
     }
@@ -85,11 +85,19 @@ final class UIKitFileToolkit: FileToolkit {
 /// iOS's preview of one file, its own data source.
 private final class UIKitFilePreview: QLPreviewController, QLPreviewControllerDataSource {
     private let file: URL
+    private weak var root: UIKitRootViewController?
 
-    init(_ file: URL) {
+    /// A preview of `file`, which tells the window's `root` once the user closed it.
+    init(_ file: URL, in root: UIKitRootViewController) {
         self.file = file
+        self.root = root
         super.init(nibName: nil, bundle: nil)
         dataSource = self
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if isBeingDismissed { root?.passed(self) }
     }
 
     required init?(coder: NSCoder) {

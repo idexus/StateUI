@@ -319,12 +319,9 @@ final class UIKitRenderer {
         roster.windows.first { $0.1.window?.isKeyWindow == true }?.1.window ?? roster.windows.first?.1.window
     }
 
-    /// What the user's window shows on top now - its top sheet, else its pages - which a question or a dialog is
-    /// presented over.
-    var userPresenter: UIViewController? {
-        guard var presenter = userWindow?.rootViewController else { return nil }
-        while let top = presenter.presentedViewController, !top.isBeingDismissed { presenter = top }
-        return presenter
+    /// The root of the user's window, which presents a question, a dialog or a preview over what the window shows.
+    var userRoot: UIKitRootViewController? {
+        userWindow?.rootViewController as? UIKitRootViewController
     }
 
     /// A picture the application ships, by its name: its own file, else its drawing (`PictureArithmetic.drawnFiles`),

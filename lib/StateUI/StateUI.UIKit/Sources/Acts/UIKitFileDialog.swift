@@ -22,40 +22,42 @@ final class UIKitFileDialog: NSObject, UIDocumentPickerDelegate {
     /// The file a save exports, written before its picker is presented.
     private(set) var exported: URL?
     private var answer: ((Result<[ChosenFile], ActFailure>) -> Void)?
+    private weak var root: UIKitRootViewController?
 
     init(_ dialog: HostFileDialog) {
         self.dialog = dialog
     }
 
-    /// Presents the picker over `presenter` - a save's once its file stands written; `answer` hears what the user
-    /// chose once, or why the save's file could not be written.
-    func ask(over presenter: UIViewController, answer: @escaping (Result<[ChosenFile], ActFailure>) -> Void) {
+    /// Presents the picker through the window's `root` - a save's once its file stands written; `answer` hears
+    /// what the user chose once, or why the save's file could not be written.
+    func ask(in root: UIKitRootViewController, answer: @escaping (Result<[ChosenFile], ActFailure>) -> Void) {
         self.answer = answer
+        self.root = root
         guard dialog.kind == .save else {
             let types = dialog.extensions.map { UTType(filenameExtension: $0, conformingTo: .data) ?? .data }
             let picker = UIDocumentPickerViewController(
                 forOpeningContentTypes: types.isEmpty ? [.item] : types, asCopy: false)
             picker.allowsMultipleSelection = dialog.kind == .openSeveral
-            return present(picker, over: presenter)
+            return present(picker)
         }
         let (contents, name) = (dialog.contents, dialog.name.isEmpty ? "Untitled" : dialog.name)
-        Task { @MainActor [weak self, weak presenter] in
+        Task { @MainActor [weak self] in
             let written = await Self.write(contents, named: name)
-            guard let self, let presenter else { return }
+            guard let self else { return }
             switch written {
             case .success(let file):
                 exported = file
-                present(UIDocumentPickerViewController(forExporting: [file], asCopy: true), over: presenter)
+                present(UIDocumentPickerViewController(forExporting: [file], asCopy: true))
             case .failure(let failure):
                 finish(.failure(failure))
             }
         }
     }
 
-    private func present(_ picker: UIDocumentPickerViewController, over presenter: UIViewController) {
+    private func present(_ picker: UIDocumentPickerViewController) {
         picker.delegate = self
         self.picker = picker
-        presenter.present(picker, animated: true)
+        root?.pass(picker)
     }
 
     /// Writes `contents` to a file named `name` in a folder of its own, beside the UI thread.
@@ -89,6 +91,7 @@ final class UIKitFileDialog: NSObject, UIDocumentPickerDelegate {
     private func finish(_ result: Result<[ChosenFile], ActFailure>) {
         guard let answer else { return }
         self.answer = nil
+        if let picker { root?.passed(picker) }
         answer(result)
     }
 

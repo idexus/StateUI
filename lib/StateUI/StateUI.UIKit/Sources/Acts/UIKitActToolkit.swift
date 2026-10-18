@@ -44,12 +44,12 @@ final class UIKitActToolkit: ActToolkit {
         return zone.secondsFromGMT(for: date) / 60
     }
 
-    /// Asks in UIKit's alert over what the user's window shows now - its top sheet, else its pages.
+    /// Asks in UIKit's alert over what the user's window shows - its top sheet, else its pages - once nothing moves.
     func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
-        guard let presenter = renderer.userPresenter else { return false }
+        guard let root = renderer.userRoot else { return false }
         let asked = UIKitQuestion(question)
         showing = asked
-        asked.ask(over: presenter) { [weak self] accepted, words in
+        asked.ask(in: root) { [weak self] accepted, words in
             self?.showing = nil
             answered(accepted, words)
         }

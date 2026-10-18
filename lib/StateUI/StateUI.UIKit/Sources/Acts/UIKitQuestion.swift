@@ -17,6 +17,7 @@ final class UIKitQuestion {
 
     let alert: UIAlertController
     private var answer: ((_ accepted: Bool, _ words: String?) -> Void)?
+    private weak var root: UIKitRootViewController?
 
     /// Each button's caption and what pressing it answers, in the order UIKit shows them.
     private(set) var buttons: [(caption: String, accepts: Bool)] = []
@@ -54,15 +55,12 @@ final class UIKitQuestion {
         alert.addAction(UIAlertAction(title: caption, style: style) { [weak self] _ in self?.respond(index) })
     }
 
-    /// Presents the question over `presenter`; `answer` hears the user's answer, once.
-    func ask(over presenter: UIViewController, answer: @escaping (_ accepted: Bool, _ words: String?) -> Void) {
+    /// Presents the question through the window's `root`, which presents everything over it; `answer` hears the
+    /// user's answer, once.
+    func ask(in root: UIKitRootViewController, answer: @escaping (_ accepted: Bool, _ words: String?) -> Void) {
         self.answer = answer
-        if let popover = alert.popoverPresentationController {
-            popover.sourceView = presenter.view
-            popover.sourceRect = CGRect(x: presenter.view.bounds.midX, y: presenter.view.bounds.midY, width: 0, height: 0)
-            popover.permittedArrowDirections = []
-        }
-        presenter.present(alert, animated: true)
+        self.root = root
+        root.pass(alert)
     }
 
     /// The button at `index` was pressed.
@@ -71,6 +69,7 @@ final class UIKitQuestion {
         let words = question.kind == .chooseAction ? caption : alert.textFields?.first?.text
         answer?(accepts, words)
         answer = nil
+        root?.passed(alert)
     }
 
     /// Presses the button captioned `caption`, `typing` put in a prompt's field first, as the user does: the alert

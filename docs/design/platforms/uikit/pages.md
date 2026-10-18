@@ -167,6 +167,19 @@ nobody of its sheets, which leave with it.
 The overlays are laid over the window's pages within the safe area, the first
 lowest, and a touch beside what one holds reaches the page under it.
 
+## What passes over the sheets
+
+A question, a file dialog and a preview pass over what the window shows, and
+UIKit presents one thing over a controller at a time: a question asked in the
+turn a sheet is asked for would be dropped, or would stop every sheet after it.
+So the window's root presents everything (`UIKitRootViewController.pass`):
+what passes waits until no sheet moves, then stands over the top sheet -
+centred, where it stands as a popover with nothing to point at - and the
+sheets asked for while it stands wait until it has gone. It goes with its
+answer (`passed`): UIKit's own dismissal is let finish, else the root
+dismisses it, and then what waited comes - the sheets first, then the next
+thing passing.
+
 ## Menus
 
 A menu is UIKit's, built from the host layer's walk of its entries: an
