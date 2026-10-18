@@ -42,17 +42,18 @@ extension Node {
     mutating func keepingDeclared() {
         guard let declared = Self.declared[type] else { return }
 
-        for prop in props.keys.sorted() where !declared.contains(prop.name) {
+        // What is left out, in name order; nothing is sorted where nothing is.
+        for prop in props.keys.filter({ !declared.props.contains($0) }).sorted() {
             leaveOut(prop.name)
             props[prop] = nil
         }
 
-        for prop in driven.keys.sorted() where !declared.contains(prop.name) {
+        for prop in driven.keys.filter({ !declared.props.contains($0) }).sorted() {
             leaveOut(prop.name)
             driven[prop] = nil
         }
 
-        for event in events.keys.sorted() where !declared.contains(event.name) {
+        for event in events.keys.filter({ !declared.events.contains($0) }).sorted() {
             leaveOut(event.name)
             events[event] = nil
         }
@@ -66,9 +67,13 @@ extension Node {
         }
     }
 
-    /// The names each element of the library's contract declares, its tiers' included.
-    private static let declared: [NodeType: Set<String>] = Dictionary(
-        uniqueKeysWithValues: LibraryContracts.elements.map { contract in
-            (contract.nodeType, Set(contract.worn.flatMap { $0.members.map(\.name) }))
-        })
+    /// The keys each element of the library's contract declares, its tiers' included.
+    private static let declared: [NodeType: (props: Set<Prop>, events: Set<Event>)] = {
+        var declared: [NodeType: (props: Set<Prop>, events: Set<Event>)] = [:]
+        for contract in LibraryContracts.elements {
+            let names: [String] = contract.worn.flatMap { tier in tier.members.map { $0.name } }
+            declared[contract.nodeType] = (Set(names.map { Prop($0) }), Set(names.map { Event($0) }))
+        }
+        return declared
+    }()
 }
