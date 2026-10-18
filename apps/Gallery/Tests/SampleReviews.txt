@@ -45,7 +45,7 @@ GalleryViewSample.swift c854743232c73abd
 GateSample.swift 0eb1cb01a376dac3
 GeometryReaderSample.swift 4e6226814b27d935
 GridSample.swift 6122771c218cff01
-HomeScreenSample.swift d5e3673f668323aa
+HomeScreenSample.swift 1c3b1489ed1b36a3
 HostTimeSample.swift 869b30037733de10
 IconButtonSample.swift 0af5b21d299babec
 IconSample.swift 98f855aecd97b045
@@ -60,6 +60,7 @@ KeyboardSample.swift 06a0fae1aeddb219
 LayoutAxesSample.swift 2399b054d15ee4f6
 LayoutDirectionSample.swift 8f77f9e896d50693
 LayoutEngineSample.swift bce3bd72c2ca5cba
+LayoutKeyframesSample.swift 63fda25c79086d2a
 LayoutPhaseSample.swift 0798087c989a4f47
 LifecycleSample.swift 735c566702226a6b
 LifetimeSample.swift 388647e356facd79

@@ -101,14 +101,20 @@ struct HomeScreenSample: SampleContent, ExampleContent {
         return Grid {
             Grid {
                 // THE BOARDS: a unit of the phase is the room's width, so a
-                // board is the room however wide it grows.
+                // board is the room however wide it grows. Each board is a
+                // keyframe: the icons are placed once a board, and between
+                // two they go straight - as the arithmetic says they do.
                 LayoutEngine(icons, id: \.name) { icon in
-                    tile(icon)
+                    // A VIEW OF ITS OWN: a new order builds no icon again,
+                    // only the one lifted or let go.
+                    HomeTile(icon: icon, lifted: lifted == icon.name)
                 } placements: { room, board in
                     (0..<count).map { place($0, board, room, fit) }
                 }
                 .phase($board)
-                .axis(\.self, input: .pages(.horizontal), range: 0...Double(boards - 1), snaps: .every(1))
+                .axis(
+                    \.self, input: .pages(.horizontal), range: 0...Double(boards - 1), keyframes: .every(1),
+                    snaps: .every(1))
                 // HELD, AN ICON LEAVES ITS BOARD for the hand: each move
                 // gives it the slot under the hand, and the others travel to
                 // make room; held still at an edge, the boards turn under it.
@@ -213,41 +219,47 @@ struct HomeScreenSample: SampleContent, ExampleContent {
 
     /// One icon: its glyph on a light disc on a rounded square of its colour -
     /// the glyph in the platform's own colour, which shows on the disc in a
-    /// light theme and a dark one alike - and its name under it.
-    private func tile(_ icon: HomeIcon) -> some View {
-        VStack {
-            ZStack {
-                Rectangle(Color(icon.colour))
-                    .cornerRadius(14)
+    /// light theme and a dark one alike - and its name under it; larger while
+    /// the hand holds it.
+    struct HomeTile: View {
+        let icon: HomeIcon
+        let lifted: Bool
 
-                Rectangle(.white)
-                    .cornerRadius(21)
-                    .opacity(0.3)
-                    .width(42)
-                    .height(42)
-                    .horizontalAlignment(.center)
-                    .verticalAlignment(.center)
+        var body: some View {
+            VStack {
+                ZStack {
+                    Rectangle(Color(icon.colour))
+                        .cornerRadius(14)
 
-                Image(.icon(icon.glyph))
-                    .width(26)
-                    .height(26)
-                    .horizontalAlignment(.center)
-                    .verticalAlignment(.center)
-            }
-            .width(60)
-            .height(60)
-            .horizontalAlignment(.center)
+                    Rectangle(.white)
+                        .cornerRadius(21)
+                        .opacity(0.3)
+                        .width(42)
+                        .height(42)
+                        .horizontalAlignment(.center)
+                        .verticalAlignment(.center)
 
-            Text(icon.name)
-                .fontSize(12)
+                    Image(.icon(icon.glyph))
+                        .width(26)
+                        .height(26)
+                        .horizontalAlignment(.center)
+                        .verticalAlignment(.center)
+                }
+                .width(60)
+                .height(60)
                 .horizontalAlignment(.center)
+
+                Text(icon.name)
+                    .fontSize(12)
+                    .horizontalAlignment(.center)
+            }
+            .spacing(6)
+            .verticalAlignment(.center)
+            // Lifted while the hand holds it, on a spring of its own that goes
+            // a little past and back.
+            .scale(lifted ? 1.18 : 1)
+            .motion(.spring(response: .milliseconds(260), damping: 0.55), .transform)
         }
-        .spacing(6)
-        .verticalAlignment(.center)
-        // Lifted while the hand holds it, on a spring of its own that goes a
-        // little past and back.
-        .scale(lifted == icon.name ? 1.18 : 1)
-        .motion(.spring(response: .milliseconds(260), damping: 0.55), .transform)
     }
     // listing: end
 

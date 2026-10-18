@@ -4221,14 +4221,20 @@ enum Listings {
             return Grid {
                 Grid {
                     // THE BOARDS: a unit of the phase is the room's width, so a
-                    // board is the room however wide it grows.
+                    // board is the room however wide it grows. Each board is a
+                    // keyframe: the icons are placed once a board, and between
+                    // two they go straight - as the arithmetic says they do.
                     LayoutEngine(icons, id: \.name) { icon in
-                        tile(icon)
+                        // A VIEW OF ITS OWN: a new order builds no icon again,
+                        // only the one lifted or let go.
+                        HomeTile(icon: icon, lifted: lifted == icon.name)
                     } placements: { room, board in
                         (0..<count).map { place($0, board, room, fit) }
                     }
                     .phase($board)
-                    .axis(\.self, input: .pages(.horizontal), range: 0...Double(boards - 1), snaps: .every(1))
+                    .axis(
+                        \.self, input: .pages(.horizontal), range: 0...Double(boards - 1), keyframes: .every(1),
+                        snaps: .every(1))
                     // HELD, AN ICON LEAVES ITS BOARD for the hand: each move
                     // gives it the slot under the hand, and the others travel to
                     // make room; held still at an edge, the boards turn under it.
@@ -4331,37 +4337,43 @@ enum Listings {
 
         /// One icon: its glyph on a light disc on a rounded square of its colour -
         /// the glyph in the platform's own colour, which shows on the disc in a
-        /// light theme and a dark one alike - and its name under it.
-        private func tile(_ icon: HomeIcon) -> some View {
-            VStack {
-                ZStack {
-                    Rectangle(Color(icon.colour))
+        /// light theme and a dark one alike - and its name under it; larger while
+        /// the hand holds it.
+        struct HomeTile: View {
+            let icon: HomeIcon
+            let lifted: Bool
 
-                    Rectangle(.white)
-                        .opacity(0.3)
-                        .width(42)
-                        .height(42)
-                        .horizontalAlignment(.center)
-                        .verticalAlignment(.center)
+            var body: some View {
+                VStack {
+                    ZStack {
+                        Rectangle(Color(icon.colour))
 
-                    Image(.icon(icon.glyph))
-                        .width(26)
-                        .height(26)
-                        .horizontalAlignment(.center)
-                        .verticalAlignment(.center)
-                }
-                .width(60)
-                .height(60)
-                .horizontalAlignment(.center)
+                        Rectangle(.white)
+                            .opacity(0.3)
+                            .width(42)
+                            .height(42)
+                            .horizontalAlignment(.center)
+                            .verticalAlignment(.center)
 
-                Text(icon.name)
+                        Image(.icon(icon.glyph))
+                            .width(26)
+                            .height(26)
+                            .horizontalAlignment(.center)
+                            .verticalAlignment(.center)
+                    }
+                    .width(60)
+                    .height(60)
                     .horizontalAlignment(.center)
+
+                    Text(icon.name)
+                        .horizontalAlignment(.center)
+                }
+                .verticalAlignment(.center)
+                // Lifted while the hand holds it, on a spring of its own that goes
+                // a little past and back.
+                .scale(lifted ? 1.18 : 1)
+                .motion(.spring(response: .milliseconds(260), damping: 0.55), .transform)
             }
-            .verticalAlignment(.center)
-            // Lifted while the hand holds it, on a spring of its own that goes a
-            // little past and back.
-            .scale(lifted == icon.name ? 1.18 : 1)
-            .motion(.spring(response: .milliseconds(260), damping: 0.55), .transform)
         }
         """#,
         "HostTimeSample": #"""
@@ -5542,6 +5554,154 @@ enum Listings {
             max(0, 1 - abs(step))
         }
 
+        """#,
+        "LayoutKeyframesSample": #"""
+        // Sources/Samples/LayoutEngine/LayoutKeyframesSample.swift
+        import StateUIFoundation
+
+        /// One card: its name, which is its identity, its colour and its icon.
+        struct Card {
+            let name: String
+            let colour: String
+            let icon: Icon
+        }
+
+        /// The cards, dealt in this order.
+        static let cards = [
+            Card(name: "Mural", colour: "#7C3AED", icon: .star), Card(name: "Nebula", colour: "#2563EB", icon: .heart),
+            Card(name: "Ridge", colour: "#0D9488", icon: .home), Card(name: "Bloom", colour: "#D97706", icon: .calendar),
+            Card(name: "Tide", colour: "#DB2777", icon: .mail), Card(name: "Prism", colour: "#4F46E5", icon: .settings),
+            Card(name: "Grove", colour: "#16A34A", icon: .person), Card(name: "Ember", colour: "#DC2626", icon: .play),
+            Card(name: "Dune", colour: "#CA8A04", icon: .clock),
+        ]
+
+        /// Which layout stands: 0 the ring, 1 the grid, 2 the pile - handed on
+        /// with `$`, never read in the body.
+        @State private var arrangement = 0.0
+
+        /// Whether the cards go between the layouts by a smooth curve rather than
+        /// straight: read in the body.
+        @State private var smooth = false
+
+        var body: some View {
+            Grid {
+                Grid {
+                    cards
+                }
+                .gridRow(0)
+                .clipsContent(true)
+
+                // A WRITE TRAVELS: from the ring to the pile, the cards pass the grid.
+                HStack {
+                    Button("Ring").onClicked { arrangement = 0 }
+                    Button("Grid").onClicked { arrangement = 1 }
+                    Button("Pile").onClicked { arrangement = 2 }
+                }
+                .horizontalAlignment(.center)
+                .gridRow(1)
+
+                SwitchRow("Smooth curve", $smooth)
+                    .horizontalAlignment(.center)
+                    .gridRow(2)
+            }
+            .rows(.fill, .auto, .auto)
+        }
+
+        /// The cards: one arithmetic, asked at the keyframes alone.
+        private var cards: some View {
+            LayoutEngine(Self.cards, id: \.name) { card in
+                face(card)
+            } placements: { room, phase in
+                // ASKED AT 0, 1 AND 2 ALONE, each answering a whole layout.
+                [ring(room), grid(room), pile(room)][Int(phase)]
+            }
+            .phase($arrangement)
+            // THE HAND MOVES THROUGH THE THREE, resting on each.
+            .axis(
+                \.self, input: .scroll(.horizontal, pointsPerUnit: 260), range: 0...2, keyframes: .every(1),
+                snaps: .every(1))
+            // BETWEEN THEM each card goes straight, or by a curve its neighbours
+            // shape.
+            .interpolation(smooth ? LayoutCurve.catmullRom : .linear)
+            .motion(.eased(.milliseconds(700), .cubicInOut))
+        }
+
+        /// How large a card is in every layout - the size the grid's cells allow -
+        /// so a layout changes its scale, never its size.
+        private func size(in room: Rect) -> (width: Double, height: Double) {
+            let width = min(room.width / 3 * 0.86, room.height / 3 * 0.86 / 1.4, 130)
+            return (width, width * 1.4)
+        }
+
+        /// A RING, smaller, the first card at the top.
+        private func ring(_ room: Rect) -> [Placement] {
+            let (width, height) = size(in: room)
+            let radius = min(room.width, room.height) / 2 - height * 0.62 / 2 - 8
+
+            return Self.cards.indices.map { index in
+                let angle = Double(index) / Double(Self.cards.count) * 2 * .pi
+                return Placement(
+                    Rect(
+                        room.width / 2 + sin(angle) * radius - width / 2,
+                        room.height / 2 - cos(angle) * radius - height / 2,
+                        width, height),
+                    transform: .scale(0.62))
+            }
+        }
+
+        /// A GRID of three by three, filling the room.
+        private func grid(_ room: Rect) -> [Placement] {
+            let (width, height) = size(in: room)
+
+            return Self.cards.indices.map { index in
+                let (row, column) = index.quotientAndRemainder(dividingBy: 3)
+                return Placement(Rect(
+                    room.width / 3 * (Double(column) + 0.5) - width / 2,
+                    room.height / 3 * (Double(row) + 0.5) - height / 2,
+                    width, height))
+            }
+        }
+
+        /// A PILE in the middle, each card turned a little, the last on top.
+        private func pile(_ room: Rect) -> [Placement] {
+            let (width, height) = size(in: room)
+
+            return Self.cards.indices.map { index in
+                let step = Double(index) - Double(Self.cards.count - 1) / 2
+                return Placement(
+                    Rect(room.width / 2 - width / 2 + step * 3, room.height / 2 - height / 2 - step * 2, width, height),
+                    transform: .rotate(step * 4).scale(1.1),
+                    zIndex: index)
+            }
+        }
+
+        /// One card's face: its colour, its icon on a disc, and its name.
+        private func face(_ card: Card) -> some View {
+            ZStack {
+                Rectangle(Color(card.colour))
+
+                VStack {
+                    ZStack {
+                        Rectangle(.white)
+                            .opacity(0.3)
+
+                        Image(.icon(card.icon))
+                            .width(24)
+                            .height(24)
+                            .horizontalAlignment(.center)
+                            .verticalAlignment(.center)
+                    }
+                    .width(44)
+                    .height(44)
+                    .horizontalAlignment(.center)
+
+                    Text(card.name)
+                        .fontWeight(.bold)
+                        .horizontalAlignment(.center)
+                }
+                .verticalAlignment(.center)
+            }
+        }
         """#,
         "LayoutPhaseSample": #"""
         // Sources/Samples/LayoutEngine/LayoutPhaseSample.swift
