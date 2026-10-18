@@ -136,6 +136,11 @@ enum AndroidTestRunner {
         let items = MainActor.assumeIsolated { () -> [String] in
             AndroidStandardStreams.redirect()
             Java.env = env
+            // The application's class loader, as the activity's start keeps it: a turn the doorbell runs from the
+            // looper has no Java frame to find the application's classes by.
+            if Java.classLoader == nil, let loader = Java.callObject(context, JavaAPI.getClassLoader) {
+                Java.classLoader = JavaObject(loader)
+            }
             TestContext.context = JavaObject(Java.jni.NewLocalRef(env, context)!)
             TestContext.window = JavaObject(Java.jni.NewLocalRef(env, window)!)
             XCTestObservationCenter.shared.addTestObserver(observer)
