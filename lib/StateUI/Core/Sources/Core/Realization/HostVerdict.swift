@@ -55,8 +55,13 @@
         member.map { "\(element).\($0)" } ?? element
     }
 
-    /// The verdict as a run writes it: "Button.clicked: ✅".
+    /// The verdict as a run writes it: "Button.clicked: ✅" - one line, whatever its words hold.
     public var description: String {
+        written.split(whereSeparator: \.isNewline).joined(separator: " ")
+    }
+
+    /// The verdict's words, as its mark says them.
+    private var written: String {
         switch mark {
         case .proven: "\(subject): ✅"
         case .partial(let missing): "\(subject): ☑️ \(missing)"

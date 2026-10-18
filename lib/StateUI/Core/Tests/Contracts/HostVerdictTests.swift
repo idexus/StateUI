@@ -83,6 +83,18 @@ final class HostVerdictTests: XCTestCase {
             """)
     }
 
+    /// A verdict whose words run over lines - a failure quoting what came - is still one line, so the family's text
+    /// reads back.
+    func testAVerdictOverSeveralLinesIsWrittenAsOne() throws {
+        let failed = HostVerdict(element: "Text", member: "text", mark: .failed("\"a\nb\" expected,\r\n\"a\" came"))
+
+        let read = try XCTUnwrap(HostVerdict.read(HostVerdict.text([failed])))
+
+        XCTAssertEqual(read.map(\.subject), ["Text.text"])
+        XCTAssertFalse(failed.description.contains("\n"))
+        XCTAssertFalse(failed.description.contains("\r"))
+    }
+
     /// The worst of a subject's verdicts is the same whatever order its cases ran in: a family's cases moved, or its
     /// files read in another order, change no mark.
     func testTheWorstIsTheSameInEveryOrder() {
