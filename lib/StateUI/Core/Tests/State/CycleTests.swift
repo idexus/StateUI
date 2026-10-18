@@ -426,6 +426,19 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(value.wrappedValue, 7)
     }
 
+    /// A carried state no element wears has no number, so no host reads its lanes: once its write is latched,
+    /// nothing is left waiting and the display's clock is let go.
+    func testAWriteToAStateNoElementWearsLeavesNothingWaiting() {
+        let value = State(wrappedValue: 0.0)
+        _ = value.image
+
+        value.wrappedValue = 7
+        _ = HostBoundary.cycle(.display, now: 0, reducesMotion: false)
+
+        XCTAssertFalse(HostBoundary.cyclesPending, "nothing waits for a reader that has no number to read")
+        XCTAssertEqual(value.wrappedValue, 7)
+    }
+
     // MARK: - The cycle
 
     /// The first cycle of all runs what is armed, TOLD NOUGHT. There is no

@@ -137,10 +137,13 @@ final class CycleBoard {
         var answered: [(number: Int32, mask: UInt64, bytes: [UInt8])] = []
 
         for held in storages {
-            guard let storage = held.storage, storage.dirty != 0,
-                  let number = storage.number else { continue }
+            guard let storage = held.storage, storage.dirty != 0 else { continue }
 
-            answered.append((number, storage.dirty, storage.crossing()))
+            // A state with no number has no reader; a registration later reads it whole.
+            if let number = storage.number {
+                answered.append((number, storage.dirty, storage.crossing()))
+            }
+
             storage.dirty = 0
         }
 

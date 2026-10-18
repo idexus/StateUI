@@ -112,7 +112,9 @@ what it reports.
 What crosses to the host is what a cycle finished, never the image a cycle is
 working on. The per-frame read answers every state with dirty lanes, in
 ascending state number - the order is what makes two runs of one cycle write
-the same bytes - and clears the bits it answers. A read of one state whole
+the same bytes - and clears the bits it answers. A state with no number has
+no reader, so its bits are cleared unanswered: left standing, they would keep
+the cycle awake and hold the display's clock for good. A read of one state whole
 clears nothing: a registration needs the value and where it is going both.
 Every read goes through `HostStorage.crossing()`, which resolves an inherited
 law (journeys.md).
