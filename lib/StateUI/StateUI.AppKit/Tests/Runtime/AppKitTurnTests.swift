@@ -67,6 +67,49 @@ final class AppKitTurnTests: XCTestCase {
 
         XCTAssertEqual(shown(), "deleted", "the answer waits for an event")
     }
+
+    /// A RENDER THAT CHANGES NOTHING THE CHROME IS MADE OF LEAVES THE WINDOWS AS THEY STAND: a page's words change,
+    /// and no window, title or bar is composed again.
+    func testARenderOfThePageAloneShowsNoWindowAgain() throws {
+        let renderer = AppKitRenderer.running { BarAndPage() }
+        defer { renderer.closeForTesting() }
+        let shown = { renderer.nativeViews(AppKitTextView.self).first?.textForTesting.string }
+        let shownBefore = renderer.windowSynchronizationCountForTesting
+
+        try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first).clickForTesting()
+
+        XCTAssertEqual(shown(), "counted 1")
+        XCTAssertEqual(renderer.windowSynchronizationCountForTesting, shownBefore, "the page's words alone moved")
+    }
+
+    /// A render that changes what a bar's action says shows the window's chrome again, with the new words.
+    func testARenderOfABarsActionShowsTheChromeAgain() throws {
+        let renderer = AppKitRenderer.running { BarAndPage() }
+        defer { renderer.closeForTesting() }
+        let toolbar = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
+        let shownBefore = renderer.windowSynchronizationCountForTesting
+
+        try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).last).clickForTesting()
+
+        XCTAssertEqual(toolbar.actionTitlesForTesting, ["Said 1"])
+        XCTAssertEqual(renderer.windowSynchronizationCountForTesting, shownBefore + 1)
+    }
+}
+
+/// A page whose words and whose bar's action each follow a state of their own.
+private struct BarAndPage: View {
+    @State private var counted = 0
+    @State private var said = 0
+
+    var body: some View {
+        VStack {
+            Text("counted \(counted)")
+            Button("Count").onClicked { counted += 1 }
+            Button("Say").onClicked { said += 1 }
+        }
+        .title("Page")
+        .toolbar { ToolbarItem("Said \(said)").onClicked {} }
+    }
 }
 
 /// What the page says, written from outside it.

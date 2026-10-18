@@ -351,10 +351,12 @@ final class AndroidRenderer {
 
 extension AndroidRenderer: HostPresenter {
     /// Shows what a render changed: the activity's title, the window's pages, its sheets and its overlays, and
-    /// whether there is a way back.
-    func presentRendered() {
-        showWindow()
-        refreshBack()
+    /// whether there is a way back - where it changed what they are made of; the scenes it keeps, always.
+    func presentRendered(touchedChrome: Bool) {
+        if touchedChrome {
+            showWindow()
+            refreshBack()
+        }
         if let text = scenes.changed(root: runtime.tree.root) {
             AndroidPersistence.writeScenes(text, context: context.reference)
         }

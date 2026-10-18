@@ -155,11 +155,15 @@ final class GTKRenderer {
         for (element, controller) in roster.windows {
             controller.present(element, in: runtime)
         }
-        if !reportedDisplay, let window, gtk_widget_get_realized(window.widget) != 0 {
-            reportedDisplay = true
-            GTKEnvironment.reportDisplay(to: runtime.core, window: window.widget)
-        }
+        reportDisplayOnceRealized()
         refreshChrome()
+    }
+
+    /// The display's facts, told once the first window is realized - which GTK does after the render making it.
+    private func reportDisplayOnceRealized() {
+        guard !reportedDisplay, let window, gtk_widget_get_realized(window.widget) != 0 else { return }
+        reportedDisplay = true
+        GTKEnvironment.reportDisplay(to: runtime.core, window: window.widget)
     }
 
     /// Writes every window's chrome again from what it shows now.
@@ -198,8 +202,8 @@ final class GTKRenderer {
 }
 
 extension GTKRenderer: HostPresenter {
-    func presentRendered() {
-        showWindows()
+    func presentRendered(touchedChrome: Bool) {
+        if touchedChrome { showWindows() } else { reportDisplayOnceRealized() }
         if let text = scenes.changed(root: runtime.tree.root) {
             GTKKeptValues.writeScenes(text, applicationID: applicationID)
         }

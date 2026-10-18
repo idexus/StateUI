@@ -103,6 +103,7 @@
         mount = tree.allocateMount()
         native = nil
         tree.mounted(self)
+        madeOrLeftByRender()
         made = patch
         native = tree.makeNative(self)
         made = nil
@@ -170,8 +171,10 @@
             properties[property] = value
         }
 
+        var eventsReplaced = false
         if case .replace(let events) = patch.events {
             self.events = events
+            eventsReplaced = true
         }
 
         if case .replace(let driven) = patch.driven {
@@ -196,6 +199,7 @@
         }
 
         if case .unchanged = patch.children { childrenChanged = false } else { childrenChanged = true }
+        if described, !changed.isEmpty || eventsReplaced { changedByRender(changed) }
 
         return Applying(sceneBegan: sceneBegan, previouslyShown: previouslyShown, changed: changed, standing: standing)
     }
@@ -233,6 +237,7 @@
             child.leave()
             let anew = MountedElement(childPatch, tree: tree, parent: self)
             if isSlot { slots[index] = anew } else { children[index] = anew }
+            changedByRender([])
         } else {
             tree.intake.drifted(
                 "a patch describes '\(childPatch.id)' as \(childPatch.type) where '\(id)' holds \(child.type)")
@@ -256,7 +261,7 @@
                     : patch.transitions[property]?.motion)
         }
 
-        restack()
+        if restack(), described { reorderedByRender() }
         if changed.contains(.isEnabled), described { enablementTurned() }
         if changed.contains(.layoutDirection) {
             directionTurned(arrangingItself: false)
@@ -299,6 +304,7 @@
         self.children = children
         self.slots = slots
         leave(before)
+        if described { arrangedByRender(from: before) }
     }
 
     /// `elements` by their identity, the first of two that share one.
@@ -327,7 +333,7 @@
     private var holdsSlotsApart: Bool { Self.arrangements.contains(type) }
 
     /// Everything this element holds: its children, then its slots.
-    private var held: [MountedElement] { children + slots }
+    var held: [MountedElement] { children + slots }
 
     /// The arrangements of pages, which keep their slots apart from their pages.
     private static let arrangements: Set<NodeType> = [.navigationStack, .tabView, .splitView, .modalStack]
@@ -392,6 +398,7 @@
     /// Detaches this element and everything under it from the runtime as it leaves the tree.
     /// Design: docs/design/host/tree.md#leaving
     public func leave() {
+        madeOrLeftByRender()
         if let tree {
             for state in wornStates { tree.stateChannels.detach(state) }
             tree.removeMotions(mount: mount)

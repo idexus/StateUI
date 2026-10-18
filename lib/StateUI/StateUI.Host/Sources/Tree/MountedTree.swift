@@ -127,6 +127,10 @@
     /// large the tree.
     var frameVisits = 0
 
+    /// Whether the patches applied since the last take changed what the windows' chrome is made of.
+    /// Design: docs/design/host/pages.md#a-render-that-touches-the-chrome
+    var chromeTouched = false
+
     /// An element held weakly: an index never keeps one the tree let go.
     private struct Held {
         weak var element: MountedElement?
@@ -195,6 +199,13 @@
             intake.drifted("a sparse message describes a root '\(patch.id)' the tree does not hold")
         }
         if let root { KeyboardShortcuts.complainOfRepeats(in: root, after: patch) }
+    }
+
+    /// Whether the patches applied since the last take changed what the windows' chrome is made of; forgotten as
+    /// it is taken.
+    public func takeChromeTouched() -> Bool {
+        defer { chromeTouched = false }
+        return chromeTouched
     }
 
     /// Lays the whole tree out again where the language's direction turned since the tree last followed it.

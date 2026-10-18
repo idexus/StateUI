@@ -7,8 +7,10 @@
 /// the application calls. The rest of a turn and a frame is the runtime's.
 /// Design: docs/design/host/runtime.md#the-runtimes-parts
 @_spi(Host) @MainActor public protocol HostPresenter: AnyObject {
-    /// Shows what a render changed around the mounted tree: the windows, their pages and their chrome.
-    func presentRendered()
+    /// Shows what a render changed around the mounted tree: the windows, their pages and their chrome, where
+    /// `touchedChrome` says it changed what they are made of; a render that did not leaves them as they stand.
+    /// Design: docs/design/host/pages.md#a-render-that-touches-the-chrome
+    func presentRendered(touchedChrome: Bool)
 
     /// Follows a frame's walk outside the tree: the windows' chrome again where `movedChrome` says it moved - a
     /// bar's colour, a window's frame.

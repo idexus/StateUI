@@ -406,7 +406,7 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertFalse(renderer.frameClockRunningForTesting, "a still page keeps no clock")
 
         NotificationCenter.default.post(name: NSScrollView.willStartLiveScrollNotification, object: scroller)
-        let renders = renderer.windowSynchronizationCountForTesting
+        let renders = renderer.runtime.core.tally.renders
         for y: CGFloat in [40, 80, 120] {
             scroller.contentView.scroll(to: NSPoint(x: 0, y: y))
             scroller.reflectScrolledClipView(scroller.contentView)
@@ -417,7 +417,7 @@ final class AppKitScrollViewTests: XCTestCase {
 
         renderer.displayFrameForTesting()
         XCTAssertEqual(reading.stringValue, "120 down")
-        XCTAssertEqual(renderer.windowSynchronizationCountForTesting, renders + 1, "one render for the frame")
+        XCTAssertEqual(renderer.runtime.core.tally.renders, renders + 1, "one render for the frame")
 
         NotificationCenter.default.post(name: NSScrollView.didEndLiveScrollNotification, object: scroller)
         renderer.displayFrameForTesting()

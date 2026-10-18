@@ -12,8 +12,10 @@ navigation model to reconcile with them.
 A window has one chrome: WinUI's `TitleBar`, across the top of a window
 whose content extends under its title bar, over a Mica backdrop, as
 Windows' own applications stand. The renderer composes it again from what
-the window shows after every render, and after every change the user makes
-that the application may not render for - a tab chosen, the sidebar shown:
+the window shows after every render that changed what it is made of ([a
+render that touches the chrome](../../host/pages.md#a-render-that-touches-the-chrome)),
+and after every change the user makes that the application may not render
+for - a tab chosen, the sidebar shown:
 
 - the title of the page that names the window, on the chrome and to the
   system - the visible page, but tabs on a stack name it by their own title,

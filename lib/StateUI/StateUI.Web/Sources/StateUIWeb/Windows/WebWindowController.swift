@@ -79,6 +79,11 @@ final class WebWindowController {
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.web.view) }
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.web.view)) }
         if let pages = changes.sheets { showSheets(pages) }
+        adaptSidebar()
+    }
+
+    /// The split view shown is given its first room, where it has not had one.
+    func adaptSidebar() {
         (presentation.arrangement?.web.view as? WebSplitView)?.adapt()
     }
 

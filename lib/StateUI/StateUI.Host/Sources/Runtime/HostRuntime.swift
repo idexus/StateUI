@@ -193,7 +193,7 @@
         let moves = lifecycle.settle(windows: tree.root?.windows ?? [])
         if let phase = moves.phase { core.setApplicationPhase(phase) }
         tell(moves.told)
-        if moves.standing { presenter?.presentRendered() }
+        if moves.standing { presenter?.presentRendered(touchedChrome: true) }
     }
 
     /// Hands the core a window the platform made - its first, a new one of no kind, or one it kept, of `kind`, for
@@ -281,7 +281,7 @@
 }
 
 extension HostRuntime: TurnPresenter {
-    func presentRendered() { presenter?.presentRendered() }
+    func presentRendered(touchedChrome: Bool) { presenter?.presentRendered(touchedChrome: touchedChrome) }
 
     func perform(_ call: HostActCall) { presenter?.perform(call) }
 }

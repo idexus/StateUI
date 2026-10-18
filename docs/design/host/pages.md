@@ -66,9 +66,8 @@ A split view's one adaptation (`SidebarAdaptation`): the first room it is
 given wider than nothing decides once whether its sidebar shows - it does,
 said as the user's, where the room is at least the platform's own breakpoint
 and it was hidden. After that the user and the application decide - and a
-host measures the room for it no more (`decided`): the Web read the page's
-layout for it after every render. The breakpoint is each platform's, a host's
-parameter.
+host measures the room for it no more (`decided`), so a render reads no
+layout for it. The breakpoint is each platform's, a host's parameter.
 
 ## A sidebar's title
 
@@ -237,6 +236,31 @@ A stack shows its bar over what stands on it once (`showsTheStacksBar`): over
 a page that keeps its bar, and over tabs or a split view only where the page
 they show stands in no stack of their own - that stack's bar is the one, so
 tabs of stacks never stand under two bars.
+
+## A render that touches the chrome
+
+A render shows the windows and their chrome again only where it changed what
+they are made of (`MountedElement+ChromeSources`, `MountedTree.
+takeChromeTouched`); every host takes the answer as `presentRendered(
+touchedChrome:)`, as a frame's walk hands it `presentFrame(movedChrome:)`.
+The chrome is made of the application, its scenes and windows, the
+arrangements of pages and the pages, and the declarations a page's path
+gives it - its actions, its title view, its menus, its overlays - with what
+each holds. A render touches it where it makes or lets go of one of them,
+or changes one's values, handlers or children; where it puts children in a
+new order and one of them holds a declaration, whose order the composed
+actions keep; and where it turns the enablement of a branch holding a
+declaration, whose actions are disabled with it. A page's content changing
+beside them - its words, a layout's cards in a new order - touches nothing:
+composing the chrome walks the whole page's tree, and writes the bar again,
+for every render otherwise. An element a render makes is told by its type
+alone - what it stands in is told as its parent's children change - so
+mounting a list's rows walks no path.
+
+What a host does after every render whatever it touched stays outside the
+answer: the scenes it keeps, the Web's reading of what moved on the page and
+its split view's first room, GTK's facts of the display once its window is
+realized, UIKit's windows told the phase they stand in.
 
 ## Menus
 

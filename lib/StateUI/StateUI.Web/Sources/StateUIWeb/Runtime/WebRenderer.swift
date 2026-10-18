@@ -160,7 +160,6 @@ final class WebRenderer {
             controller.present(element, in: runtime)
             controller.refreshChrome()
         }
-        runtime.frames.laidOut()
     }
 
     /// The page's tab shows or not, and the page holds the keyboard or not: the window it shows is put away while
@@ -183,8 +182,10 @@ final class WebRenderer {
 }
 
 extension WebRenderer: HostPresenter {
-    func presentRendered() {
-        showWindows()
+    func presentRendered(touchedChrome: Bool) {
+        if touchedChrome { showWindows() } else { roster.controllers.first?.adaptSidebar() }
+        // What a render wrote may move a view without resizing it, which no observer of the page tells.
+        runtime.frames.laidOut()
         if let text = scenes.changed(root: runtime.tree.root) { WebKeptValues.writeScenes(text, application: applicationName) }
     }
 

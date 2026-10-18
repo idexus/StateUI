@@ -170,9 +170,11 @@ final class WinUIRenderer {
 }
 
 extension WinUIRenderer: HostPresenter {
-    func presentRendered() {
-        showWindows()
-        refreshWindowChrome()
+    func presentRendered(touchedChrome: Bool) {
+        if touchedChrome {
+            showWindows()
+            refreshWindowChrome()
+        }
         if let text = scenes.changed(root: runtime.tree.root) { WinUIPersistence.writeScenes(text) }
     }
 

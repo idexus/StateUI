@@ -5,8 +5,9 @@
 
 /// What a turn shows and performs through: the runtime, for the toolkit's windows and its acts.
 @MainActor protocol TurnPresenter: AnyObject {
-    /// Shows what a render changed around the mounted tree: the windows, their pages and their chrome.
-    func presentRendered()
+    /// Shows what a render changed around the mounted tree: the windows, their pages and their chrome, where
+    /// `touchedChrome` says it changed what they are made of.
+    func presentRendered(touchedChrome: Bool)
 
     /// Performs an act the application called, on the interface its handler changed.
     func perform(_ call: HostActCall)
@@ -147,6 +148,7 @@
         }
 
         displayCycle.presentStateChannels()
-        HostProbe.timed(.chrome) { presenter?.presentRendered() }
+        let touchedChrome = tree.takeChromeTouched()
+        HostProbe.timed(.chrome) { presenter?.presentRendered(touchedChrome: touchedChrome) }
     }
 }

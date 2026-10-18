@@ -323,7 +323,7 @@ private final class TurnRuntime: TurnPresenter, FramePresenter, FrameClock {
         tree.root?.first(type: .vStack)?.children.filter { $0.type == .button }.compactMap { $0.handler(.clicked) } ?? []
     }
 
-    func presentRendered() {
+    func presentRendered(touchedChrome: Bool) {
         shown.append(words)
     }
 
