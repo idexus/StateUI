@@ -540,6 +540,13 @@ extension Differ {
                 mode: registration.mode,
                 kind: registration.kind,
                 laneKind: registration.laneKind)
+
+            if previous?.driven[key]?.number != driven[key]!.number { state.ties += 1 }
+        }
+
+        // A tie this element no longer has is a channel fewer for its state.
+        for (key, old) in previous?.driven ?? [:] where driven[key]?.number != old.number {
+            Renderer.shared.storage(of: old.number)?.ties -= 1
         }
 
         let tiesChanged = describeAll || previous == nil

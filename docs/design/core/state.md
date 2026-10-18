@@ -200,10 +200,14 @@ the journey's readers are asked (journeys.md).
 
 ## A state nobody wears
 
-Until an element registers a state, the host has no number for it and nothing
-animates it. A write then puts the value at the destination as well, standing
-still, so a view described later shows it from its first frame. `.custom` is
-the exception: its animator is an engine on this side.
+While no live element shows a state - before the first one registers it, and
+again after the last one leaves - nothing animates it. A state's number stays
+once issued, so what counts is its ties: the differ counts every property of a
+live element driven by it (`HostStorage.ties`), one more as a tie is described,
+one fewer as it goes or its element leaves. With none, a write puts the value
+at the destination as well, standing still, so a view described later shows it
+from its first frame, and a move arrives at once. `.custom` is the exception:
+its animator is an engine on this side.
 
 ## Themed colours on a carried state
 

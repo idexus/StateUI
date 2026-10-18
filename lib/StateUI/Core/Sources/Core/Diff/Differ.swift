@@ -198,6 +198,11 @@ final class Differ {
             Renderer.shared.disarm(id)
         }
 
+        // Its ties: the states it showed are worn by one element fewer.
+        for entry in node.driven.values {
+            Renderer.shared.storage(of: entry.number)?.ties -= 1
+        }
+
         for child in node.children {
             forget(child)
         }

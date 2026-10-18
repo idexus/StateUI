@@ -67,7 +67,7 @@ the host is told at the first crossing and cannot be told again.
       -> the HOST animates it and writes value and velocity back every frame
   @State(motion: .custom)
       -> an engine of the application's writes value and velocity
-  worn by nothing yet (no number issued)
+  worn by no live element (no tie, number or not)
       -> nothing animates it: a write lands at the destination at once
 ```
 

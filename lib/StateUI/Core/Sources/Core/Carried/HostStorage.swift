@@ -32,6 +32,11 @@ final class HostStorage: NamedState {
     /// The number the host quotes it back by, once anything has asked.
     var number: Int32?
 
+    /// How many properties of live elements the host shows it on, each a channel; nought is a state nobody
+    /// wears, whatever its number.
+    /// Design: docs/design/core/state.md#a-state-nobody-wears
+    var ties = 0
+
     /// Which board's cycle owns it.
     var board: Int = 0
 

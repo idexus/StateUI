@@ -196,7 +196,7 @@ public struct Journey<Value: Walked> {
         // Nothing animates it, or an engine does: the destination is written through the
         // state and it arrives at once.
         // Design: docs/design/core/journeys.md#moving-and-waiting
-        if image.number == nil || lanes.motion.isCustom {
+        if image.ties == 0 || lanes.motion.isCustom {
             state.wrappedValue = target
             return Arrival(at: true)
         }

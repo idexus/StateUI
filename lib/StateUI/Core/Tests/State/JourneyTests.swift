@@ -104,6 +104,22 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(journey.value, 0.2, "and the value waits for the host to walk it")
     }
 
+    /// A state whose last wearer LEFT is worn by nobody again, though it keeps its number: a move lands at
+    /// once and its arrival is answered, rather than waiting for a host that has no channel for it.
+    func testAStateWhoseWearerLeftLandsAgainWhereItIsSent() {
+        let fade = State(wrappedValue: 1.0)
+        let journey = fade.projectedValue.journey
+        let renders = Renders()
+
+        renders.render(stack([Rectangle().opacity(fade.projectedValue).node], id: "root"))
+        renders.render(stack([], id: "root"))
+
+        let arrival = journey.move(to: 0)
+
+        XCTAssertEqual(arrival.ended, true, "nothing walks it, so it is there")
+        XCTAssertEqual(journey.value, 0)
+    }
+
     /// A WRITE LAYS ONLY ITS PART. A colour read back through its type is eight
     /// bits a channel, and the host reports lanes between them: a stop or a move
     /// that laid the whole journey again would say the value and the speed moved,
