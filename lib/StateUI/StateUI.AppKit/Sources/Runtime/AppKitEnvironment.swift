@@ -28,6 +28,16 @@ final class AppKitEnvironment {
         self.core = core
     }
 
+    /// Lets go of all it watches: the power source holds it by an unretained pointer.
+    isolated deinit {
+        for observer in observers { NotificationCenter.default.removeObserver(observer) }
+        appearanceWatch?.invalidate()
+        if let powerSource { CFRunLoopRemoveSource(CFRunLoopGetMain(), powerSource, .defaultMode) }
+        network?.cancel()
+    }
+
+    var powerSourceForTesting: CFRunLoopSource? { powerSource }
+
     /// Tells the core the locale, the battery, the theme and the accent as they stand, then each change through
     /// `reportingChanges` - the network as its monitor answers.
     func start(reportingChanges: @escaping (() -> Void) -> Void) {
@@ -39,7 +49,8 @@ final class AppKitEnvironment {
         watch()
     }
 
-    private func watch() {
+    /// Watches the locale, the battery, the network and the theme, each change reported through the runtime's step.
+    func watch() {
         let center = NotificationCenter.default
         let localeChanges: [Notification.Name] = [NSLocale.currentLocaleDidChangeNotification, .NSSystemTimeZoneDidChange]
         for name in localeChanges {

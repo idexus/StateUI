@@ -11,8 +11,22 @@ import XCTest
 /// The locale and the battery the host reports are the Mac's own, each told to the core in one report.
 @MainActor
 final class AppKitEnvironmentTests: XCTestCase {
-    /// The locale report is the user's locale, its zone and its language's direction.
+    /// An environment let go of watches nothing more: the power source it hangs on the main run loop, which holds
+    /// it by an unretained pointer, comes off with it, and so does every observer.
     @MainActor
+    func testAnEnvironmentLetGoWatchesNothing() throws {
+        var environment: AppKitEnvironment? = AppKitEnvironment(core: CoreLink())
+        environment?.watch()
+        let source = try XCTUnwrap(environment?.powerSourceForTesting)
+        XCTAssertTrue(CFRunLoopContainsSource(CFRunLoopGetMain(), source, .defaultMode))
+        weak let gone = environment
+
+        environment = nil
+
+        XCTAssertNil(gone)
+        XCTAssertFalse(CFRunLoopContainsSource(CFRunLoopGetMain(), source, .defaultMode), "the power source came off")
+    }
+
     /// The accent reported is the one the user chose for the system, as the application's appearance draws it.
     func testTheAccentReportedIsTheUsers() {
         let info = StandardEnvironment.application.info
@@ -32,6 +46,7 @@ final class AppKitEnvironmentTests: XCTestCase {
             blue: channel(accent.blueComponent), alpha: channel(accent.alphaComponent)))
     }
 
+    /// The locale report is the user's locale, its zone and its language's direction.
     @MainActor
     func testTheLocaleReportedIsTheUsers() {
         let locale = StandardEnvironment.locale
