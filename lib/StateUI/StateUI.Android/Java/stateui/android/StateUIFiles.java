@@ -48,7 +48,7 @@ final class StateUIFiles {
 
     private static final Handler ui = new Handler(Looper.getMainLooper());
 
-    /** Whether a picker and a launch are only held, never handed to the system: a test's. */
+    /** Whether a picker and a launch are only held, never handed to the system, and launches kept: a test's. */
     private static boolean holds;
     private static Asked held;
     private static Intent heldIntent;
@@ -120,27 +120,27 @@ final class StateUIFiles {
         return true;
     }
 
-    /** The user chose `chosen` - none cancels: an open answers them, a save writes its contents to the first. */
+    /**
+     * The user chose `chosen` - none cancels: an open answers them, a save writes its contents to the first. The
+     * documents' providers are asked their names, and a save's written, beside the UI thread.
+     */
     private static void chose(Context context, Asked asked, ArrayList<Uri> chosen) {
         ContentResolver resolver = context.getContentResolver();
-        String[] addresses = new String[chosen.size()];
-        String[] names = new String[chosen.size()];
-        for (int index = 0; index < chosen.size(); index++) {
-            addresses[index] = chosen.get(index).toString();
-            names[index] = name(resolver, chosen.get(index));
-        }
-        if (asked.contents == null || chosen.isEmpty()) {
-            answer(asked.ticket, addresses, names, null);
-            return;
-        }
-        Uri place = chosen.get(0);
         new Thread(() -> {
+            String[] addresses = new String[chosen.size()];
+            String[] names = new String[chosen.size()];
+            for (int index = 0; index < chosen.size(); index++) {
+                addresses[index] = chosen.get(index).toString();
+                names[index] = name(resolver, chosen.get(index));
+            }
             String failure = null;
-            try (OutputStream stream = resolver.openOutputStream(place, "wt")) {
-                if (stream == null) throw new java.io.IOException("the document cannot be written");
-                stream.write(asked.contents);
-            } catch (Exception failed) {
-                failure = String.valueOf(failed.getMessage());
+            if (asked.contents != null && !chosen.isEmpty()) {
+                try (OutputStream stream = resolver.openOutputStream(chosen.get(0), "wt")) {
+                    if (stream == null) throw new java.io.IOException("the document cannot be written");
+                    stream.write(asked.contents);
+                } catch (Exception failed) {
+                    failure = String.valueOf(failed.getMessage());
+                }
             }
             answer(asked.ticket, addresses, names, failure);
         }).start();
@@ -194,7 +194,7 @@ final class StateUIFiles {
     static void launch(Context context, long ticket, String address, boolean document) {
         Uri uri = Uri.parse(address);
         boolean taken = uri.getScheme() != null;
-        if (taken) launched.add(document ? name(context.getContentResolver(), uri) : address);
+        if (taken && holds) launched.add(document ? name(context.getContentResolver(), uri) : address);
         if (taken && !holds) {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             if (document) {

@@ -7,8 +7,8 @@ import CStateUIAndroid
 
 /// Android's part of the acts every host performs (`HostActPerformer`): the clock and the zones, a question in the
 /// platform's own dialog, a word to TalkBack, the focus and the keyboard, a value kept, and a web view's own acts.
-/// A dialog and a script answer later, under a ticket they hand back: a dialog's counts up from one, a script's
-/// down from minus one.
+/// A dialog and a script answer later, under a ticket they hand back - a number of the host's one count
+/// (`HostNumbers`).
 /// Design: docs/design/platforms/android/runtime.md#acts
 @MainActor
 final class AndroidActToolkit: ActToolkit {
