@@ -11,7 +11,7 @@ import UIKit
 /// presses.
 /// Design: docs/design/platforms/uikit/runtime.md#questions-for-the-user
 @MainActor
-final class UIKitQuestion {
+final class UIKitQuestion: NSObject, UIPopoverPresentationControllerDelegate {
     /// The question as the host layer reads it.
     let question: HostQuestion
 
@@ -27,6 +27,8 @@ final class UIKitQuestion {
         alert = UIAlertController(
             title: question.title, message: question.message,
             preferredStyle: question.kind == .chooseAction ? .actionSheet : .alert)
+        super.init()
+        alert.popoverPresentationController?.delegate = self
 
         switch question.kind {
         case .alert:
@@ -68,6 +70,13 @@ final class UIKitQuestion {
         let (caption, accepts) = buttons[index]
         let words = question.kind == .chooseAction ? caption : alert.textFields?.first?.text
         answer?(accepts, words)
+        answer = nil
+        root?.passed(alert)
+    }
+
+    /// A choice standing as a popover, tapped away - as the user may where it offers no cancel: nothing was chosen.
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        answer?(false, nil)
         answer = nil
         root?.passed(alert)
     }
