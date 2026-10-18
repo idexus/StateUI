@@ -10,6 +10,9 @@ struct LibraryWords: LocalizedResources {
     let ok: String
     let cancel: String
 
+    /// What a window's chrome says of its own controls: back, the sidebar, close and more.
+    let chrome: ChromeWords
+
     static func resources(for language: LibraryLanguage) -> LibraryWords {
         switch language {
         case .english: .english
@@ -22,6 +25,22 @@ struct LibraryWords: LocalizedResources {
         let preferences = Localization<LibraryCatalog>.preferences(of: StandardEnvironment.locale)
         return resources(for: Localization<LibraryCatalog>.matching(preferences) ?? LibraryCatalog.defaultLanguage)
     }
+}
+
+/// What a window's chrome says of its own controls, where the application names none - a back button, the sidebar's
+/// toggle, a sheet's close, the overflow - in the system's language.
+@_spi(Host) public struct ChromeWords: Equatable, Sendable {
+    /// A back button's, where the page below names none.
+    public let back: String
+
+    /// The sidebar's toggle.
+    public let sidebar: String
+
+    /// A sheet's or a window's close.
+    public let close: String
+
+    /// The overflow of a bar's actions.
+    public let more: String
 }
 
 /// The languages StateUI says its own words in, each by its tag.

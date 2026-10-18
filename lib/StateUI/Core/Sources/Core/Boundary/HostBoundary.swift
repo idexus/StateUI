@@ -71,6 +71,9 @@
         update(connectivity, \.connectionProfiles, info.connectionProfiles)
     }
 
+    /// What a window's chrome says of its own controls - back, the sidebar, close, more - in the system's language.
+    public static var chromeWords: ChromeWords { LibraryWords.inSystemLanguage.chrome }
+
     /// Replaces the standard locale report.
     public static func setLocaleInfo(_ info: HostLocaleInfo) {
         let locale = StandardEnvironment.locale

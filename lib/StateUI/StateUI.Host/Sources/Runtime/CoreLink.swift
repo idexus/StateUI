@@ -203,6 +203,9 @@
     /// Reports the user's locale.
     public func setLocaleInfo(_ info: HostLocaleInfo) { HostBoundary.setLocaleInfo(info) }
 
+    /// What a window's chrome says of its own controls, in the system's language.
+    public var chromeWords: ChromeWords { HostBoundary.chromeWords }
+
     /// Reports the application's lifecycle phase.
     public func setApplicationPhase(_ phase: ApplicationPhase) {
         HostBoundary.setApplicationPhase(phase)

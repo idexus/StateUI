@@ -46,7 +46,7 @@
         title = arrangement?.titledPage?.value(.title)?.string ?? window.value(.title)?.string
         showsTitle = arrangement?.titledPage?.value(.showsTitle)?.bool != false
         back = arrangement?.visibleBackStack.map { stack in
-            (stack, stack.children[stack.children.count - 2].value(.backButtonTitle)?.string ?? "Back")
+            (stack, stack.children[stack.children.count - 2].value(.backButtonTitle)?.string ?? window.tree?.core.chromeWords.back ?? "")
         }
         if let page { actions = page.chromeActions }
         center = page?.chromeTitleView

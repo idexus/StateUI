@@ -272,6 +272,25 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(page.chromeActions.primary.map(\.showsActionWords), [true, false, true, true])
     }
 
+    /// The back button's words, where the page below says none, are the library's own in the system's language.
+    func testTheBackButtonSpeaksTheSystemsLanguage() throws {
+        let runtime = runtime(node("window", .window, children: [
+            node("stack", .navigationStack, children: [
+                node("home", .page, [.title: .string("Home")]),
+                node("detail", .page, [.title: .string("Detail")]),
+            ]),
+        ])) { _ in }
+        let root = try XCTUnwrap(runtime.tree.root)
+        let english = try XCTUnwrap(HostLocaleInfo(words: ["en", "GB", "en-GB", "Europe/London", "1", "1", "1", "0"]))
+        let polish = try XCTUnwrap(HostLocaleInfo(words: ["pl", "PL", "pl-PL", "Europe/Warsaw", "1", "1", "1", "0"]))
+        defer { runtime.core.setLocaleInfo(english) }
+
+        runtime.core.setLocaleInfo(polish)
+        let chrome = WindowChrome(window: root, arrangement: root.first(id: .manual("stack")))
+
+        XCTAssertEqual(chrome.back?.1, "Wstecz")
+    }
+
     /// A page saying it shows no title still names the window; the chrome shows no title for it.
     func testAPageShowingNoTitleStillNamesTheWindow() throws {
         let runtime = runtime(node("window", .window, children: [
