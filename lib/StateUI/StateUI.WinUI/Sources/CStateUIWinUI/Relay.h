@@ -194,6 +194,14 @@ namespace stateui {
         };
     }
 
+    /// `member` of `object` as a guarded handler, called while the object lives: the handler holds it weakly.
+    template <typename Object, typename Member>
+    auto guarded(char const *where, winrt::weak_ref<Object> object, Member member) {
+        return guarded(where, [object = std::move(object), member](auto &&...arguments) {
+            if (auto strong = object.get()) (strong.get()->*member)(std::forward<decltype(arguments)>(arguments)...);
+        });
+    }
+
     /// Hands a projected object's default interface to the host, AddRef'd.
     template <typename T>
     StateUIObjectRef detach(T object) {

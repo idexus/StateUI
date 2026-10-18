@@ -173,11 +173,16 @@ extern "C" void stateui_winui_watch_environment(void) {
         static auto &settings = **new std::optional(winrt::Windows::UI::ViewManagement::UISettings());
         settings.ColorValuesChanged(guarded("handling ColorValuesChanged",
             [](auto const &, auto const &) { changed(); }));
-        power::PowerManager::BatteryStatusChanged([](auto const &, auto const &) { changed(); });
-        power::PowerManager::PowerSupplyStatusChanged([](auto const &, auto const &) { changed(); });
-        power::PowerManager::RemainingChargePercentChanged([](auto const &, auto const &) { changed(); });
-        power::PowerManager::EnergySaverStatusChanged([](auto const &, auto const &) { changed(); });
-        connectivity::NetworkInformation::NetworkStatusChanged([](auto const &) { changed(); });
+        power::PowerManager::BatteryStatusChanged(guarded("handling BatteryStatusChanged",
+            [](auto const &, auto const &) { changed(); }));
+        power::PowerManager::PowerSupplyStatusChanged(guarded("handling PowerSupplyStatusChanged",
+            [](auto const &, auto const &) { changed(); }));
+        power::PowerManager::RemainingChargePercentChanged(guarded("handling RemainingChargePercentChanged",
+            [](auto const &, auto const &) { changed(); }));
+        power::PowerManager::EnergySaverStatusChanged(guarded("handling EnergySaverStatusChanged",
+            [](auto const &, auto const &) { changed(); }));
+        connectivity::NetworkInformation::NetworkStatusChanged(guarded("handling NetworkStatusChanged",
+            [](auto const &) { changed(); }));
         // A screen turned, or sized again: its area changes.
         static auto &displays = **new std::optional(winrt::Microsoft::UI::Windowing::DisplayArea::CreateWatcher());
         displays.Updated(guarded("handling Updated", [](auto const &, auto const &) { changed(); }));

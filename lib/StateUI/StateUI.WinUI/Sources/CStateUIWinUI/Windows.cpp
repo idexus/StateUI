@@ -39,26 +39,34 @@ namespace {
             : thin(thin), opacity(opacity), tintOpacity(tintOpacity), argb(argb) {}
 
         void OnTargetConnected(ICompositionSupportsSystemBackdrop const &target, xaml::XamlRoot const &root) {
-            SystemBackdropT::OnTargetConnected(target, root);
-            controller = backdrops::DesktopAcrylicController();
-            controller.Kind(thin ? backdrops::DesktopAcrylicKind::Thin : backdrops::DesktopAcrylicKind::Base);
-            // Every colour written: a controller given one value keeps none of the theme's own.
-            auto colour = winrt::Windows::UI::Color{255, static_cast<uint8_t>(argb >> 16),
-                static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)};
-            controller.TintColor(colour);
-            controller.TintOpacity(tintOpacity);
-            controller.LuminosityOpacity(opacity);
-            controller.FallbackColor(colour);
-            controller.SetSystemBackdropConfiguration(GetDefaultSystemBackdropConfiguration(target, root));
-            controller.AddSystemBackdropTarget(target);
+            try {
+                SystemBackdropT::OnTargetConnected(target, root);
+                controller = backdrops::DesktopAcrylicController();
+                controller.Kind(thin ? backdrops::DesktopAcrylicKind::Thin : backdrops::DesktopAcrylicKind::Base);
+                // Every colour written: a controller given one value keeps none of the theme's own.
+                auto colour = winrt::Windows::UI::Color{255, static_cast<uint8_t>(argb >> 16),
+                    static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)};
+                controller.TintColor(colour);
+                controller.TintOpacity(tintOpacity);
+                controller.LuminosityOpacity(opacity);
+                controller.FallbackColor(colour);
+                controller.SetSystemBackdropConfiguration(GetDefaultSystemBackdropConfiguration(target, root));
+                controller.AddSystemBackdropTarget(target);
+            } catch (...) {
+                report("connecting a window's acrylic");
+            }
         }
 
         void OnTargetDisconnected(ICompositionSupportsSystemBackdrop const &target) {
-            SystemBackdropT::OnTargetDisconnected(target);
-            if (!controller) return;
-            controller.RemoveSystemBackdropTarget(target);
-            controller.Close();
-            controller = nullptr;
+            try {
+                SystemBackdropT::OnTargetDisconnected(target);
+                if (!controller) return;
+                controller.RemoveSystemBackdropTarget(target);
+                controller.Close();
+                controller = nullptr;
+            } catch (...) {
+                report("disconnecting a window's acrylic");
+            }
         }
 
         bool const thin;

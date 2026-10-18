@@ -333,14 +333,15 @@ namespace {
             canvases += 1;
             // A clear background: the whole canvas is hit, drawn on or not.
             Background(media::SolidColorBrush(winrt::Windows::UI::Color{0, 0, 0, 0}));
-            PointerPressed({this, &StateUICanvas::pressed});
-            PointerMoved({this, &StateUICanvas::moved});
-            PointerReleased({this, &StateUICanvas::released});
-            PointerCaptureLost({this, &StateUICanvas::lostPress});
-            PointerCanceled({this, &StateUICanvas::lostPress});
+            // The canvas's own events: the handlers go with it, so they hold it as it is.
+            PointerPressed(guarded("handling PointerPressed", [this](auto const &s, auto const &a) { pressed(s, a); }));
+            PointerMoved(guarded("handling PointerMoved", [this](auto const &s, auto const &a) { moved(s, a); }));
+            PointerReleased(guarded("handling PointerReleased", [this](auto const &s, auto const &a) { released(s, a); }));
+            PointerCaptureLost(guarded("handling PointerCaptureLost", [this](auto const &s, auto const &a) { lostPress(s, a); }));
+            PointerCanceled(guarded("handling PointerCanceled", [this](auto const &s, auto const &a) { lostPress(s, a); }));
             // A canvas put in a tree draws; WinUI's unloading is not heard: it can come after the canvas is loaded
             // again elsewhere, and would stop the drawing that waits.
-            Loaded([this](auto &&, auto &&) { invalidate(); });
+            Loaded(guarded("handling Loaded", [this](auto &&, auto &&) { invalidate(); }));
         }
 
         ~StateUICanvas() {
@@ -387,7 +388,10 @@ namespace {
     private:
         /// Draws on the next frame, however often it is asked before then.
         void invalidate() {
-            if (!rendering) rendering = media::CompositionTarget::Rendering(winrt::auto_revoke, {get_weak(), &StateUICanvas::render});
+            if (!rendering) {
+                rendering = media::CompositionTarget::Rendering(
+                    winrt::auto_revoke, guarded("handling Rendering", get_weak(), &StateUICanvas::render));
+            }
         }
 
         void render(IInspectable const &, IInspectable const &) {
@@ -503,10 +507,11 @@ namespace {
         void watch(xaml::XamlRoot const &root) {
             if (watched.get() != root) {
                 watched = winrt::make_weak(root);
-                rootChanged = root.Changed(winrt::auto_revoke, {get_weak(), &StateUICanvas::rootChange});
+                rootChanged = root.Changed(winrt::auto_revoke, guarded("handling Changed", get_weak(), &StateUICanvas::rootChange));
             }
             if (!contentsLost)
-                contentsLost = media::CompositionTarget::SurfaceContentsLost(winrt::auto_revoke, {get_weak(), &StateUICanvas::surfaceLost});
+                contentsLost = media::CompositionTarget::SurfaceContentsLost(
+                    winrt::auto_revoke, guarded("handling SurfaceContentsLost", get_weak(), &StateUICanvas::surfaceLost));
         }
 
         void rootChange(xaml::XamlRoot const &root, xaml::XamlRootChangedEventArgs const &) {

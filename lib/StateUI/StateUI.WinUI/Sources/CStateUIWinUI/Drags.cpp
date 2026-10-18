@@ -152,5 +152,10 @@ extern "C" void stateui_winui_drag_read(StateUIObjectRef handle, bool *canDrag, 
 }
 
 extern "C" int32_t stateui_winui_drag_offers() {
-    return static_cast<int32_t>(offered.size());
+    try {
+        return static_cast<int32_t>(offered.size());
+    } catch (...) {
+        report("counting the drag offers");
+        return 0;
+    }
 }

@@ -255,21 +255,44 @@ final class NativeProjectTests: XCTestCase {
 
     /// No exception leaves a handler the relays give WinUI either: WinUI calls it from its own loop, and one leaving
     /// it is stowed and ends the process (a window's activation read as UI Automation closed it, 0xc000027b). Every
-    /// handler goes through `guarded`.
+    /// handler goes through `guarded` - a lambda, an object's member, a static event's - and every override WinUI
+    /// calls (`OnLaunched`) catches what its body throws.
     func testNoCppExceptionLeavesARelaysHandler() throws {
-        let bare = try NSRegularExpression(pattern: #"(\.[A-Z]\w*|::\w*Handler)\(\s*(winrt::auto_revoke,\s*)?\["#)
+        // A Win32 enumeration's callback runs inside the call that enumerates, not from WinUI's loop.
+        let bare = try NSRegularExpression(
+            pattern: #"(?<!\w)(?!Enum\w*Windows\()[A-Z]\w*\(\s*(winrt::auto_revoke,\s*)?(\[|\{\s*(this|get_weak\(\))\s*,)"#)
+        let override = try NSRegularExpression(pattern: #"void On[A-Z]\w*\([^)]*\)\s*\{"#)
         var open: [String] = []
+        var overrides = 0
         for folder in ["lib/StateUI/StateUI.WinUI/Sources/CStateUIWinUI", "lib/Backends/WebView.WinUI/Relay"] {
             let root = SourceTree.repository.appendingPathComponent(folder)
             for name in try FileManager.default.contentsOfDirectory(atPath: root.path) where name.hasSuffix(".cpp") {
                 let text = try String(contentsOf: root.appendingPathComponent(name), encoding: .utf8)
+                let line = { (range: NSRange) in text[..<Range(range, in: text)!.lowerBound].filter { $0 == "\n" }.count + 1 }
                 for match in bare.matches(in: text, range: NSRange(text.startIndex..., in: text)) {
-                    let before = text[..<Range(match.range, in: text)!.lowerBound]
-                    open.append("\(name):\(before.filter { $0 == "\n" }.count + 1)")
+                    open.append("\(name):\(line(match.range))")
+                }
+                for match in override.matches(in: text, range: NSRange(text.startIndex..., in: text)) {
+                    overrides += 1
+                    if !Self.block(in: text, openingAt: Range(match.range, in: text)!.upperBound).contains("catch (...)") {
+                        open.append("\(name):\(line(match.range))")
+                    }
                 }
             }
         }
+        XCTAssertGreaterThan(overrides, 0, "the walk read no override")
         XCTAssertEqual(open, [], "a handler WinUI calls is not guarded")
+    }
+
+    /// The block whose opening brace stands just before `start`: its text up to its closing brace.
+    private static func block(in text: String, openingAt start: String.Index) -> Substring {
+        var depth = 1
+        var index = start
+        while index < text.endIndex, depth > 0 {
+            if text[index] == "{" { depth += 1 } else if text[index] == "}" { depth -= 1 }
+            index = text.index(after: index)
+        }
+        return text[start..<index]
     }
 
     /// Each `extern "C"` function `text` defines: its name, and its body - braces counted outside words, letters and
