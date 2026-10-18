@@ -351,8 +351,10 @@ one finger is no drag, as the host layer's hearing says. A swipe is the
 drag's end, far enough, in a direction asked for - the host layer's too. A
 view that listens for a drag or a pinch keeps its touch from a scroller around
 it, so a drag that starts on it is its own. A pinch is Android's own: it
-starts once Android tells it apart, takes the press away, scales from there,
-and ends where it was last centred. A view with no handling of its own is
+starts once Android tells it apart, takes the press away and calls off the
+view's own click - a touch that pinched is no tap, however still the finger it
+ends with - scales from there, and ends where it was last centred, cancelled
+where the touch was. A view with no handling of its own is
 given the whole touch; a control keeps its own.
 
 A view made of parts - a stepper's two buttons, a web view's page - would hand

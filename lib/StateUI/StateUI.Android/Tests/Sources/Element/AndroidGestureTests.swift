@@ -14,6 +14,7 @@ final class AndroidGestureTests: XCTestCase {
             ("testAPanSaysHowFarItHasComeAndMovesItsState", testAPanSaysHowFarItHasComeAndMovesItsState),
             ("testASwipePastItsThresholdSaysItsDirection", testASwipePastItsThresholdSaysItsDirection),
             ("testAPinchSaysItsScaleAndWhereItIsCentred", testAPinchSaysItsScaleAndWhereItIsCentred),
+            ("testAPinchIsNoTapAndACancelledOneIsCancelled", testAPinchIsNoTapAndACancelledOneIsCancelled),
             ("testThePointerPressesMovesReleasesAndHovers", testThePointerPressesMovesReleasesAndHovers),
             ("testAPressOnAViewInFrontIsNotHeardBehindIt", testAPressOnAViewInFrontIsNotHeardBehindIt),
             ("testAHandOnACardThatAnswersATapMovesTheRun", testAHandOnACardThatAnswersATapMovesTheRun),
@@ -104,6 +105,34 @@ final class AndroidGestureTests: XCTestCase {
             XCTAssertEqual(phases.values.first, "began 0.5 0.5")
             XCTAssertEqual(phases.values.last, "ended 0.5 0.5")
             XCTAssertEqual(scales.values.reduce(1, *), 900.0 / 675.0, accuracy: 0.01)
+        }
+    }
+
+    /// A pinch on a view that answers a tap is no tap, however still the finger it ends with; a pinch the touch's
+    /// cancellation ends - a parent taking the touch - is cancelled, not ended.
+    func testAPinchIsNoTapAndACancelledOneIsCancelled() throws {
+        try onMainActor {
+            let heard = Received<String>()
+            let (host, box) = try Self.box {
+                $0.onTapped { heard.values.append("tapped") }
+                    .onPinchUpdated { if $0.phase != .changed { heard.values.append("\($0.phase)") } }
+            }
+
+            // A view's own click comes in a message of the UI thread's own, posted to a view in a window.
+            Java.call(TestContext.window.reference, AndroidDriver.setContentView, .object(host.root.reference))
+            @MainActor func settled() {
+                TestWindow.run(for: 50)
+                host.runtime.pump.turn()
+            }
+            box.touch(0, x: 10, y: 10, at: 0)
+            box.touch(1, x: 10, y: 10, at: 50)
+            settled()
+            TestTouches.pinchHolding(box, x: 20, y: 100, from: 600, to: 900)
+            settled()
+            TestTouches.pinchCancelled(box, x: 100, y: 100, from: 600, to: 900)
+            settled()
+
+            XCTAssertEqual(heard.values, ["tapped", "began", "ended", "began", "cancelled"])
         }
     }
 
@@ -213,6 +242,18 @@ enum TestTouches {
     private static let hoveringOnce = Java.staticMethod(owner, "hover", "(Landroid/view/View;IFF)V")
     private static let pinchingBy = Java.staticMethod(owner, "pinchBy", "(Landroid/view/View;FFF)V")
     private static let rotating = Java.staticMethod(owner, "rotate", "(Landroid/view/View;FFF)V")
+    private static let pinchingHolding = Java.staticMethod(owner, "pinchHolding", "(Landroid/view/View;FFFF)V")
+    private static let pinchingCancelled = Java.staticMethod(owner, "pinchCancelled", "(Landroid/view/View;FFFF)V")
+
+    /// A pinch whose first finger stands still at (`x`, `y`) pixels and lifts last, the second moving away.
+    static func pinchHolding(_ view: AndroidView, x: Float, y: Float, from: Float, to: Float) {
+        Java.callStatic(owner, pinchingHolding, .object(view.reference), .float(x), .float(y), .float(from), .float(to))
+    }
+
+    /// Two fingers either side of (`x`, `y`) pixels, `from` apart moving to `to`, and the touch cancelled.
+    static func pinchCancelled(_ view: AndroidView, x: Float, y: Float, from: Float, to: Float) {
+        Java.callStatic(owner, pinchingCancelled, .object(view.reference), .float(x), .float(y), .float(from), .float(to))
+    }
 
     /// Two fingers either side of (`x`, `y`) pixels, `from` pixels apart moving to `to`, then lifted.
     static func pinch(_ view: AndroidView, x: Float, y: Float, from: Float, to: Float) {

@@ -66,6 +66,13 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     private boolean dragging;
     private boolean pinching;
 
+    /**
+     * Whether a pinch began in the touch under way - no tap, however still its last finger - and whether the touch
+     * is being cancelled, which ends a pinch cancelled.
+     */
+    private boolean pinched;
+    private boolean cancelling;
+
     /** Where the pinch under way was last centred, in points of the view: where it ends. */
     private float pinchX;
     private float pinchY;
@@ -103,7 +110,12 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
      */
     boolean onTouch(MotionEvent event) {
         if (!wanted()) return false;
+        cancelling = event.getActionMasked() == MotionEvent.ACTION_CANCEL;
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) pinched = false;
+        boolean wasPinched = pinched;
         if (pinch) scale.onTouchEvent(event);
+        // A pinch begun is no press of the view's own: its click is called off.
+        if (pinched && !wasPinched) cancelOwn(event);
         if (rotation) fingers(event);
 
         float x = event.getRawX() / density;
@@ -135,7 +147,7 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
                 if (pointer) report(RELEASED, 0, event.getX() / density, event.getY() / density, 0);
                 if (pressing) press(LET_GO, x, y);
                 if (hand) handUp(event, true);
-                if (!moved && !pinching && countsTaps) tap(event);
+                if (!moved && !pinched && countsTaps) tap(event);
                 pressing = false;
                 dragging = false;
                 break;
@@ -317,6 +329,7 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     public boolean onScaleBegin(ScaleGestureDetector detector) {
         if (!pinch) return false;
         pinching = true;
+        pinched = true;
         if (pressing) {
             press(TAKEN, 0, 0);
             pressing = false;
@@ -335,7 +348,7 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     @Override
     public void onScaleEnd(ScaleGestureDetector detector) {
         pinching = false;
-        report(PINCHED, COMPLETED, 1, pinchX, pinchY);
+        report(PINCHED, cancelling ? CANCELLED : COMPLETED, 1, pinchX, pinchY);
     }
 
     /**

@@ -28,6 +28,33 @@ public final class TestTouches {
     }
 
     /**
+     * A pinch whose first finger stands still at (`x`, `y`) pixels of the view and lifts last, the second `from`
+     * pixels from it moving to `to`: a pinch, however still the finger it ends with.
+     */
+    public static void pinchHolding(View view, float x, float y, float from, float to) {
+        long time = 0;
+        send(view, time, MotionEvent.ACTION_DOWN, 1, x + from / 2, y, from);
+        send(view, time += 10, MotionEvent.ACTION_POINTER_DOWN | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT), 2, x + from / 2, y, from);
+        for (int step = 0; step <= 4; step++) {
+            float apart = from + (to - from) * step / 4;
+            send(view, time += 20, MotionEvent.ACTION_MOVE, 2, x + apart / 2, y, apart);
+        }
+        send(view, time += 10, MotionEvent.ACTION_POINTER_UP | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT), 2, x + to / 2, y, to);
+        send(view, time + 10, MotionEvent.ACTION_UP, 1, x + to / 2, y, to);
+    }
+
+    /** Two fingers either side of (`x`, `y`) pixels, `from` pixels apart moving to `to`, and the touch cancelled. */
+    public static void pinchCancelled(View view, float x, float y, float from, float to) {
+        long time = 0;
+        send(view, time, MotionEvent.ACTION_DOWN, 1, x, y, from);
+        send(view, time += 10, MotionEvent.ACTION_POINTER_DOWN | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT), 2, x, y, from);
+        for (int step = 0; step <= 4; step++) {
+            send(view, time += 20, MotionEvent.ACTION_MOVE, 2, x, y, from + (to - from) * step / 4);
+        }
+        send(view, time + 10, MotionEvent.ACTION_CANCEL, 2, x, y, to);
+    }
+
+    /**
      * Two fingers on either side of (`x`, `y`) pixels of the view, spreading by a tenth so Android tells the pinch
      * apart, then by `scale` in one step - one step of the pinch scaled by `scale` - then lifted. They begin 600
      * pixels apart, wider where they close, so they never come nearer than 660: Android ends a pinch whose fingers
