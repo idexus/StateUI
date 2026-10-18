@@ -34,20 +34,27 @@ public struct MessageContext: Sendable {
         (value < 0 ? "-" : "") + grouped(String(value.magnitude))
     }
 
-    /// A number with a fraction: up to three digits after the point, or exactly `fractionDigits`, rounded half
-    /// away from zero.
+    /// A number with a fraction: up to three digits after the point, or exactly `fractionDigits` - nine at most -
+    /// rounded half away from zero.
     public func number(_ value: Double, fractionDigits: Int? = nil) -> String {
         guard value.isFinite, abs(value) < 1e15 else { return String(value) }
 
+        // The whole part and the fraction rounded apart, so no product of the two outgrows a whole number.
         let places = max(0, min(fractionDigits ?? 3, 9))
         let scale = (0..<places).reduce(1) { whole, _ in whole * 10 }
-        let scaled = Int((value.magnitude * Double(scale)).rounded(.toNearestOrAwayFromZero))
-        var fraction = places == 0 ? "" : String(scaled % scale)
+        var whole = Int(value.magnitude.rounded(.towardZero))
+        var rest = Int(((value.magnitude - Double(whole)) * Double(scale)).rounded(.toNearestOrAwayFromZero))
+        if rest >= scale {
+            rest -= scale
+            whole += 1
+        }
+
+        var fraction = places == 0 ? "" : String(rest)
         fraction = String(repeating: "0", count: max(0, places - fraction.count)) + fraction
         if fractionDigits == nil { while fraction.last == "0" { fraction.removeLast() } }
 
-        let text = grouped(String(scaled / scale)) + (fraction.isEmpty ? "" : region.decimal + fraction)
-        return (value < 0 && scaled != 0 ? "-" : "") + text
+        let text = grouped(String(whole)) + (fraction.isEmpty ? "" : region.decimal + fraction)
+        return (value < 0 && (whole != 0 || rest != 0) ? "-" : "") + text
     }
 
     /// A share as a percentage: `0.25` is `25%`.
