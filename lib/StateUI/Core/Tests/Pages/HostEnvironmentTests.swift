@@ -341,4 +341,27 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertTrue(device.honours(PickerContract.isOpen), "in part")
         XCTAssertFalse(device.honours(PickerContract.placeholder), "said nowhere")
     }
+
+    /// A tier's member the register records element by element - realized on one wearer, never on another - is
+    /// honoured in part: the device answers as it did before the register came.
+    func testTheDeviceHonoursATierMemberSomeElementsRealize() {
+        HostBoundary.setRealization(HostRealization(
+            elements: ["Slider", "Switch"],
+            members: [HostRealizedMember(element: "Slider", owner: "TintElement", member: "tint")]))
+        let device = Device()
+        XCTAssertTrue(device.honours(TintElementContract.tint), "before the register")
+
+        HostBoundary.setRegister(HostRegister(
+            records: [
+                HostRecord(owner: "Slider", member: "tint", judgement: .complete),
+                HostRecord(owner: "Switch", member: "tint", judgement: .notPlanned(reason: "no tint")),
+            ],
+            unrealized: [], viewless: []))
+        defer {
+            HostBoundary.setRegister(nil)
+            HostBoundary.setRealization(HostRealization())
+        }
+
+        XCTAssertTrue(device.honours(TintElementContract.tint), "after it, the same answer")
+    }
 }

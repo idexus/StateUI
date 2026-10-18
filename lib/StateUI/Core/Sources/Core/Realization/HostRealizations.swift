@@ -60,12 +60,23 @@ enum HostRealizations {
             guard judged.insert(owned).inserted, case .complete? = register.judgement(ofElement: record.owner)
             else { continue }
             switch record.judgement {
-            case .complete, .partial: honoured.insert(owned)
+            case .complete, .partial:
+                honoured.insert(owned)
+                // A tier's member recorded on one of its wearers is honoured by the tier too, in part at least.
+                if let tier = declaring(record.member, on: record.owner), tier != record.owner {
+                    honoured.insert(Owned(owner: KeyName(tier), member: owned.member))
+                }
             case .notPlanned, .unrealized, .byApplication: break
             }
         }
         honouredMembers = honoured
         return honoured
+    }
+
+    /// The contract that declares `member` among what the library's element `element` wears - itself first.
+    private static func declaring(_ member: String, on element: String) -> String? {
+        LibraryContracts.elements.first { $0.nodeType.name == element }?
+            .worn.first { $0.members.contains { $0.name == member } }?.name
     }
 
     /// Whether the host realizes `member` of the contract `owner` - in full or in part - by its register, else by
