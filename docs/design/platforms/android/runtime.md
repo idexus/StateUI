@@ -39,7 +39,10 @@ another independent scene, so a later activity takes over the scene the one
 before showed, with its state: the previous tree leaves, letting go of the
 old activity's views, and a renderer of the new activity's own, whose intake
 holds no message yet, asks for the whole tree, and the scenes kept pass to
-it. Back finishes the activity: the user closed its window, which hears it is
+it. An activity that handles a new density itself - the display's size,
+another screen - takes the same road in its own root: pixels a point are read
+once, at a renderer's start, so a new density makes the window again at it.
+Back finishes the activity: the user closed its window, which hears it is
 going, and its scene that the window closed, and the scene ends with it. The
 launcher's next activity finds none standing: the scenes kept come back, as
 for the first activity.

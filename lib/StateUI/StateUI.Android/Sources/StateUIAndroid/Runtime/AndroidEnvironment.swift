@@ -43,6 +43,11 @@ enum AndroidEnvironment {
         }
     }
 
+    /// Pixels a point, as `context`'s resources stand now.
+    static func density(of context: jobject) -> Double {
+        Double(Java.callStaticFloat(JavaAPI.environment, JavaAPI.density, .object(context)))
+    }
+
     /// Tells `core` the user's locale, the battery and the network, as `context` reads them.
     static func reportChanging(to core: CoreLink, context: jobject) {
         Java.frame {

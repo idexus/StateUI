@@ -72,6 +72,7 @@ final class AndroidRendererTests: XCTestCase {
             ("testAClickRendersWhatItsHandlerChanged", testAClickRendersWhatItsHandlerChanged),
             ("testAControlNoRegistrationAnswersShowsItsName", testAControlNoRegistrationAnswersShowsItsName),
             ("testAnActivityMadeAgainShowsTheSceneWithItsState", testAnActivityMadeAgainShowsTheSceneWithItsState),
+            ("testANewDensityMakesTheWindowAgainInIt", testANewDensityMakesTheWindowAgainInIt),
             ("testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext", testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext),
             ("testTheDeviceIsCalledWhatItsUserNamedIt", testTheDeviceIsCalledWhatItsUserNamedIt),
             ("testAnActivityAfterBackShowsANewScene", testAnActivityAfterBackShowsANewScene),
@@ -173,6 +174,24 @@ final class AndroidRendererTests: XCTestCase {
     }
 
     @MainActor private static let leaveAll = Java.staticMethod(AndroidDriver.dialogs, "leaveAll", "()V")
+
+    /// Pixels a point changing - the display's size, another screen - make the window again at the new density, as
+    /// an activity Android makes again: no view is laid out in one scale and measured in another.
+    func testANewDensityMakesTheWindowAgainInIt() throws {
+        try onMainActor {
+            let first = AndroidRenderer.running { CounterPage() }
+            try XCTUnwrap(first.views(AndroidButtonView.self).first).click()
+            let density = AndroidEnvironment.density(of: TestContext.context.reference)
+            guard density != first.density else { throw XCTSkip("the device stands at the test's density") }
+
+            first.configured()
+
+            let now = try XCTUnwrap(AndroidRenderer.shared)
+            XCTAssertEqual(now.density, density)
+            XCTAssertEqual(now.views(AndroidTextView.self).map(\.text), ["count 1"], "the scene with its state")
+            XCTAssertEqual(Java.callInt(now.root.reference, TestJava.getChildCount), 1, "the window once")
+        }
+    }
 
     /// The process outlives its activity: Back finishes it, and its window and scene hear they are going. The
     /// launcher's next activity shows a new scene, as the first one did, not an empty window.

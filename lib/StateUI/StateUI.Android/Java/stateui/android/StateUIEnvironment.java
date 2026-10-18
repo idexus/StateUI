@@ -72,6 +72,11 @@ final class StateUIEnvironment {
         };
     }
 
+    /** Pixels a density-independent pixel, as `context`'s resources stand now. */
+    static float density(Context context) {
+        return context.getResources().getDisplayMetrics().density;
+    }
+
     /** The application's name, its package, and its version's name and number. */
     static String[] application(Context context) {
         String version = "";

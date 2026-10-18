@@ -38,7 +38,7 @@ final class AndroidRenderer {
 
     /// The view the page is shown in: the activity's root.
     let root: JavaObject
-    private let density: Double
+    private(set) var density: Double
 
     /// What the first window shows, by the host layer's rule: its arrangement of pages, its sheets, its overlays.
     private let presentation = WindowPresentation()
@@ -85,7 +85,10 @@ final class AndroidRenderer {
 
         let renderer = AndroidRenderer(context: context, root: root, density: density)
         shared = renderer
-        renderer.watchLayout()
+        // The same root - a new density - is watched already.
+        if previous.map({ Java.jni.IsSameObject(Java.env, $0.root.reference, root.reference) == 0 }) ?? true {
+            renderer.watchLayout()
+        }
         if let previous { renderer.scenes = previous.scenes }
         renderer.start(restoringKept: previous == nil, restoringScenes: !sceneStands, turns: AndroidDoorbell.install)
         if previous != nil {
@@ -197,8 +200,15 @@ final class AndroidRenderer {
     }
 
     /// The activity's configuration changed - the display turned or resized: the core is told what stands now,
-    /// and the window laid out again.
+    /// and the window laid out again. Pixels a point changing - the display's size, another screen - make the window
+    /// again at the new density, as an activity Android makes again does.
+    /// Design: docs/design/platforms/android/runtime.md#a-later-activity
     func configured() {
+        let density = AndroidEnvironment.density(of: context.reference)
+        guard density == self.density else {
+            AndroidRenderer.start(context: context, root: root, density: density)
+            return
+        }
         runtime.environmentChanged {
             AndroidEnvironment.report(to: runtime.core, activity: context.reference)
             Java.call(root.reference, JavaAPI.requestLayout)

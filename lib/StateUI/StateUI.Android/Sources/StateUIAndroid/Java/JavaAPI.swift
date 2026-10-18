@@ -439,6 +439,7 @@ enum JavaAPI {
         environment, "title", "(Landroid/content/Context;Ljava/lang/String;)V")
     static let deviceFacts = Java.staticMethod(environment, "device", "(Landroid/content/Context;)[Ljava/lang/String;")
     static let displayFacts = Java.staticMethod(environment, "display", "(Landroid/app/Activity;)[F")
+    static let density = Java.staticMethod(environment, "density", "(Landroid/content/Context;)F")
     static let applicationFacts = Java.staticMethod(
         environment, "application", "(Landroid/content/Context;)[Ljava/lang/String;")
     static let localeFacts = Java.staticMethod(environment, "locale", "(Landroid/content/Context;)[Ljava/lang/String;")
