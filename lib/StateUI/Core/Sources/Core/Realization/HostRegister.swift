@@ -71,6 +71,13 @@
         return nil
     }
 
+    /// The contract that declares `member` among what the library's element `element` wears, itself first - what a
+    /// record of the register, written in words, is about.
+    func declaring(_ member: String, on element: String) -> String? {
+        LibraryContracts.elements.first { $0.nodeType.name == element }?
+            .worn.first { $0.members.contains { $0.name == member } }?.name
+    }
+
     /// What the host says of `element` itself: never, with why, where its family never has it; the application's
     /// where the application registers its own; made where it realizes it; nil where it realizes none of it.
     public func judgement(ofElement element: String) -> HostRecord.Judgement? {
