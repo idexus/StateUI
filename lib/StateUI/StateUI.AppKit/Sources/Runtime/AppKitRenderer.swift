@@ -164,7 +164,7 @@ final class AppKitRenderer {
         guard !focusReportQueued else { return }
         focusReportQueued = true
 
-        DispatchQueue.main.async { [weak self] in
+        Task { @MainActor [weak self] in
             guard let self else { return }
             focusReportQueued = false
             runtime.tree.root?.appKit.reportFocus()

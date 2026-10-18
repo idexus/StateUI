@@ -502,31 +502,40 @@ final class UIThreadTests: XCTestCase {
             """)
     }
 
-    /// The hosts that run where nothing turns libdispatch's main queue or a run loop - Android, Windows and Linux -
-    /// lean on neither: their work for the UI thread goes to MainActor, which each host drains.
-    func testNoHostOnAndroidWindowsOrLinuxLeansOnAQueueNothingDrains() throws {
-        let banned = [
-            "DispatchQueue.main": "nothing drains libdispatch's main queue there - work for the UI thread goes to MainActor",
+    /// No host or backend posts to libdispatch's main queue: work for the UI thread goes to MainActor, which the main
+    /// queue serves on Apple's platforms and the UI thread's own executor elsewhere - one way on every one. Those that
+    /// run where nothing turns a run loop - Android, Windows and Linux - lean on no Timer or RunLoop either.
+    func testNoHostLeansOnAQueueNothingDrains() throws {
+        let everywhere = [
+            "DispatchQueue.main": "work for the UI thread goes to MainActor, which every host drains",
+        ]
+        let withNoRunLoop = everywhere.merging([
             "Timer": "a Foundation Timer hangs off a run loop nothing turns there",
             "RunLoop": "a RunLoop is drained by nothing there",
+        ]) { $1 }
+        let packages = [
+            ("StateUI/StateUI.AppKit", everywhere), ("StateUI/StateUI.UIKit", everywhere),
+            ("StateUI/StateUI.Android", withNoRunLoop), ("StateUI/StateUI.WinUI", withNoRunLoop),
+            ("StateUI/StateUI.GTK", withNoRunLoop), ("StateUI/StateUI.Web", everywhere),
+            ("Backends/WebView.GTK", withNoRunLoop), ("Backends/WebView.WinUI", withNoRunLoop),
         ]
         var broken: [String] = []
         var read = 0
 
-        for host in ["StateUI.Android", "StateUI.WinUI", "StateUI.GTK"] {
-            let root = SourceTree.repository.appendingPathComponent("lib/StateUI/\(host)/Sources")
+        for (package, banned) in packages {
+            let root = SourceTree.repository.appendingPathComponent("lib/\(package)/Sources")
             for path in try SourceTree.files(under: root, entering: SourceTree.entersSources)
             where path.hasSuffix(".swift") {
                 read += 1
                 let code = UIThreadTests.withoutComments(try String(
                     contentsOf: root.appendingPathComponent(path), encoding: .utf8))
                 for (needle, why) in banned.sorted(by: { $0.key < $1.key }) where code.contains(needle) {
-                    broken.append("\(host)/\(path) uses \(needle) - \(why)")
+                    broken.append("\(package)/\(path) uses \(needle) - \(why)")
                 }
             }
         }
 
-        XCTAssertGreaterThan(read, 100, "the walk read the three hosts' sources")
+        XCTAssertGreaterThan(read, 300, "the walk read the hosts' sources")
         XCTAssertEqual(broken, [], broken.joined(separator: "\n"))
     }
 

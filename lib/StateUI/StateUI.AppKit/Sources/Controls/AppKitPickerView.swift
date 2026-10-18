@@ -172,7 +172,7 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
         openingScheduled = true
         let opensForTesting = Self.opensMenuForTesting
 
-        DispatchQueue.main.async { [weak self] in
+        Task { @MainActor [weak self] in
             guard let self else { return }
             self.openingScheduled = false
             guard self.requestedOpen, self.window != nil, self.opening.programAsks(open: true, shown: self.menuOpen)
