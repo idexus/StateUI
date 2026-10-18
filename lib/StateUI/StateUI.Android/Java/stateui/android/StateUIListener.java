@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
@@ -84,7 +85,7 @@ final class StateUIListener implements View.OnClickListener, View.OnLongClickLis
 
     @Override
     public void afterTextChanged(Editable text) {
-        StateUIHost.textChanged(view, text.toString());
+        StateUIHost.textChanged(view, text.toString(), BaseInputConnection.getComposingSpanStart(text) != -1);
     }
 
     /**

@@ -167,7 +167,8 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
 
     func textDidChange(_ notification: Notification) {
         guard !ProgramWrite.isWriting else { return }
-        let typed = InputWords.held(textView.string, in: textCase, toBound: maximumLength) ?? textView.string
+        let typed = InputWords.held(
+            textView.string, in: textCase, toBound: maximumLength, composing: textView.hasMarkedText()) ?? textView.string
 
         if typed != textView.string {
             ProgramWrite.perform {

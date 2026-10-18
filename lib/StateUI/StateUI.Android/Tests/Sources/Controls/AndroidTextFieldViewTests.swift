@@ -25,6 +25,7 @@ final class AndroidTextFieldViewTests: XCTestCase {
             ("testEachKeystrokeReachesTheStateAndStaysTyped", testEachKeystrokeReachesTheStateAndStaysTyped),
             ("testAnEditInTheMiddleKeepsTheUsersCaret", testAnEditInTheMiddleKeepsTheUsersCaret),
             ("testTypingStopsAtTheMaximumLength", testTypingStopsAtTheMaximumLength),
+            ("testWordsStillComposedAreCutOnceCommitted", testWordsStillComposedAreCutOnceCommitted),
             ("testAStateWriteShowsTheWordsAndIsNotHeardAsTyping", testAStateWriteShowsTheWordsAndIsNotHeardAsTyping),
             ("testAPasswordHidesTheWordsAndKeepsThem", testAPasswordHidesTheWordsAndKeepsThem),
             ("testReturnSubmitsOnce", testReturnSubmitsOnce),
@@ -84,6 +85,32 @@ final class AndroidTextFieldViewTests: XCTestCase {
             XCTAssertEqual(field.text, "Ada")
         }
     }
+
+    /// Words an input method still composes stand as typed past the field's bound - cut, the composition would be
+    /// lost - and are cut once it commits them.
+    func testWordsStillComposedAreCutOnceCommitted() throws {
+        try onMainActor {
+            let name = State(wrappedValue: "")
+            let host = AndroidRenderer.running { greeting(name: name, maximumLength: 4) }
+            let field = try XCTUnwrap(host.views(AndroidTextFieldView.self).first)
+
+            Java.frame {
+                let info = Java.new(AndroidDriver.editorInfo, AndroidDriver.newEditorInfo)
+                guard let connection = Java.callObject(
+                    field.reference, AndroidDriver.onCreateInputConnection, .object(info.reference))
+                else { return XCTFail("the field gives no input connection") }
+                _ = Java.callBool(connection, Self.setComposingText, .object(Java.string("zhongguo")), .int(1))
+                XCTAssertEqual(field.text, "zhongguo", "standing as composed")
+
+                _ = Java.callBool(connection, AndroidDriver.commitText, .object(Java.string("zhongguo")), .int(1))
+                XCTAssertEqual(field.text, "zhon", "cut once committed")
+            }
+            XCTAssertEqual(name.wrappedValue, "zhon")
+        }
+    }
+
+    @MainActor static let setComposingText = Java.method(
+        AndroidDriver.inputConnection, "setComposingText", "(Ljava/lang/CharSequence;I)Z")
 
     func testAStateWriteShowsTheWordsAndIsNotHeardAsTyping() throws {
         try onMainActor {

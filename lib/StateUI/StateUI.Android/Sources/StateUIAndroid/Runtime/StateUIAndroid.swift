@@ -177,10 +177,11 @@ enum JavaNatives {
                 (AndroidView.find(number) as? AndroidSliderView)?.onReleased?()
             }
         }
-        let textChanged: @convention(c) (Environment, jclass?, jlong, jstring?) -> Void = { _, _, number, text in
+        let textChanged: @convention(c) (Environment, jclass?, jlong, jstring?, jboolean) -> Void = {
+            _, _, number, text, composing in
             nonisolated(unsafe) let text = text
             MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidTextFieldView)?.typed(Java.text(text))
+                (AndroidView.find(number) as? AndroidTextFieldView)?.typed(Java.text(text), composing: composing != 0)
             }
         }
         let submitted: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
@@ -377,7 +378,7 @@ enum JavaNatives {
             ("moved", "(JI)V", unsafeBitCast(moved, to: UnsafeMutableRawPointer.self)),
             ("dragStarted", "(J)V", unsafeBitCast(dragStarted, to: UnsafeMutableRawPointer.self)),
             ("dragCompleted", "(J)V", unsafeBitCast(dragCompleted, to: UnsafeMutableRawPointer.self)),
-            ("textChanged", "(JLjava/lang/String;)V", unsafeBitCast(textChanged, to: UnsafeMutableRawPointer.self)),
+            ("textChanged", "(JLjava/lang/String;Z)V", unsafeBitCast(textChanged, to: UnsafeMutableRawPointer.self)),
             ("submitted", "(J)V", unsafeBitCast(submitted, to: UnsafeMutableRawPointer.self)),
             ("scrolled", "(J)V", unsafeBitCast(scrolled, to: UnsafeMutableRawPointer.self)),
             ("held", "(JZ)V", unsafeBitCast(held, to: UnsafeMutableRawPointer.self)),

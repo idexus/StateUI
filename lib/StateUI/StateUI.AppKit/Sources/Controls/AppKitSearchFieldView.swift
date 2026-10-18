@@ -139,7 +139,9 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
 
     func controlTextDidChange(_ notification: Notification) {
         guard !ProgramWrite.isWriting else { return }
-        let typed = InputWords.held(stringValue, in: textCase, toBound: maximumLength) ?? stringValue
+        let typed = InputWords.held(
+            stringValue, in: textCase, toBound: maximumLength,
+            composing: (currentEditor() as? NSTextView)?.hasMarkedText() == true) ?? stringValue
 
         if typed != stringValue {
             ProgramWrite.perform {

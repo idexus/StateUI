@@ -65,8 +65,8 @@ final class StateUIHost {
     /** The user let go of a slider's thumb. */
     static native void dragCompleted(long view);
 
-    /** A field's words changed; {@code text} is all of them. */
-    static native void textChanged(long view, String text);
+    /** A field's words changed; {@code text} is all of them, {@code composing} while an input method composes some. */
+    static native void textChanged(long view, String text, boolean composing);
 
     /** The user submitted a field. */
     static native void submitted(long view);

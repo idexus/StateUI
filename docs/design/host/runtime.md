@@ -759,7 +759,10 @@ element it opened, which takes it by its kind and value
 A field holds its words in its case: the program's are written so, and what
 a user types is turned into it, then cut past the field's bound to its first
 characters that fit, as the contract counts characters (`InputWords.held`,
-`InputWords.cut`), and written back as the program's; a toolkit that asks
+`InputWords.cut`), and written back as the program's - but not while an
+input method still composes them: changed under it, the composition is lost,
+so they stand as typed until it commits them (`composing`), which each host
+reads from its toolkit's marked text or composing span; a toolkit that asks
 before it inserts takes what goes in, in the case and within the bound, in
 the same terms (`InputWords.fitting`). A caret and a selection the tree
 puts, in characters, reach a toolkit counting UTF-16 units as the units those characters take

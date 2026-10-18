@@ -106,7 +106,7 @@ extension UIKitTextInputView where Self: UITextField {
     func hearTyping() {
         delegate = typing
         addAction(UIAction { [weak self] _ in
-            guard let self, let cut = typing.heard(words) else { return }
+            guard let self, let cut = typing.heard(words, composing: markedTextRange != nil) else { return }
             text = cut
         }, for: .editingChanged)
     }

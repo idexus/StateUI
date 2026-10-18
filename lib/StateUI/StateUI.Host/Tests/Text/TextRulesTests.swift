@@ -147,13 +147,17 @@ final class TextRulesTests: XCTestCase {
         XCTAssertNil(InputWords.cut("Ada", toBound: nil))
     }
 
-    /// A field holds what the user typed in its case, then cut to its bound; words already so are held as typed.
+    /// A field holds what the user typed in its case, then cut to its bound; words already so, or still being composed,
+    /// are held as typed.
     func testAFieldHoldsTypedWordsInItsCaseWithinItsBound() {
-        XCTAssertEqual(InputWords.held("Mixed", in: .uppercase, toBound: nil), "MIXED")
-        XCTAssertEqual(InputWords.held("Mixed", in: .lowercase, toBound: 3), "mix")
-        XCTAssertEqual(InputWords.held("Mixed", in: nil, toBound: 3), "Mix")
-        XCTAssertNil(InputWords.held("MIXED", in: .uppercase, toBound: 5))
-        XCTAssertNil(InputWords.held("Mixed", in: TextCase.none, toBound: nil))
+        XCTAssertEqual(InputWords.held("Mixed", in: .uppercase, toBound: nil, composing: false), "MIXED")
+        XCTAssertEqual(InputWords.held("Mixed", in: .lowercase, toBound: 3, composing: false), "mix")
+        XCTAssertEqual(InputWords.held("Mixed", in: nil, toBound: 3, composing: false), "Mix")
+        XCTAssertNil(InputWords.held("MIXED", in: .uppercase, toBound: 5, composing: false))
+        XCTAssertNil(InputWords.held("Mixed", in: TextCase.none, toBound: nil, composing: false))
+        XCTAssertNil(
+            InputWords.held("zhongguo", in: .uppercase, toBound: 4, composing: true),
+            "words an input method still composes are held as typed, until they are committed")
     }
 
     /// Words going into a field before they stand there - where a toolkit asks before it inserts - go in the field's

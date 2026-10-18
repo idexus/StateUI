@@ -156,7 +156,9 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
     func controlTextDidChange(_ notification: Notification) {
         guard !ProgramWrite.isWriting else { return }
 
-        let typed = InputWords.held(textField.stringValue, in: textCase, toBound: maximumLength) ?? textField.stringValue
+        let typed = InputWords.held(
+            textField.stringValue, in: textCase, toBound: maximumLength,
+            composing: (textField.currentEditor() as? NSTextView)?.hasMarkedText() == true) ?? textField.stringValue
 
         if typed != textField.stringValue {
             ProgramWrite.perform {

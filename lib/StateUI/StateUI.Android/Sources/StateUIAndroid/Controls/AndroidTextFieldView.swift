@@ -147,13 +147,13 @@ final class AndroidTextFieldView: AndroidTextualView {
         Java.call(reference, JavaAPI.setSelection, .int(end), .int(end))
     }
 
-    /// The user changed the words: held in the field's case within `maximumLength` (`InputWords.held`), then handed
-    /// on.
-    func typed(_ text: String) {
+    /// The user changed the words: held in the field's case within `maximumLength` (`InputWords.held`) - as typed
+    /// while an input method is `composing` them - then handed on.
+    func typed(_ text: String, composing: Bool) {
         guard !ProgramWrite.isWriting else { return }
 
         var kept = text
-        if let held = InputWords.held(text, in: textCase, toBound: maximumLength) {
+        if let held = InputWords.held(text, in: textCase, toBound: maximumLength, composing: composing) {
             kept = held
             ProgramWrite.perform { setText(kept) }
         }

@@ -14,8 +14,10 @@
     }
 
     /// What a field holds of the words the user left in it: in the field's case, then cut to its bound; nil where it
-    /// holds them as they were typed.
-    public static func held(_ typed: String, in textCase: TextCase?, toBound bound: Int?) -> String? {
+    /// holds them as they were typed - while an input method is `composing` them too: changed under it, the
+    /// composition is lost, so they are held once it commits them.
+    public static func held(_ typed: String, in textCase: TextCase?, toBound bound: Int?, composing: Bool) -> String? {
+        guard !composing else { return nil }
         let cased = (textCase ?? .none).applied(to: typed)
         let held = cut(cased, toBound: bound) ?? cased
         return held == typed ? nil : held

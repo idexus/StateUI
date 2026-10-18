@@ -156,6 +156,30 @@ final class AppKitTextFieldViewTests: XCTestCase {
         XCTAssertEqual(view.textField.stringValue, "secret")
     }
 
+    /// Words an input method still composes stand as typed past the field's bound - cut, the composition would be
+    /// lost - and are cut once it commits them.
+    @MainActor
+    func testWordsStillComposedAreCutOnceCommitted() throws {
+        let view = AppKitTextFieldView()
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 300, height: 60), styleMask: [.titled], backing: .buffered,
+            defer: false)
+        view.frame = NSRect(x: 0, y: 0, width: 300, height: 30)
+        window.contentView?.addSubview(view)
+        apply(view, text: "", maximumLength: 4)
+        XCTAssertTrue(window.makeFirstResponder(view.textField))
+        let editor = try XCTUnwrap(view.textField.currentEditor() as? NSTextView)
+
+        editor.setMarkedText("zhongguo", selectedRange: NSRange(location: 8, length: 0), replacementRange: editor.selectedRange())
+        view.controlTextDidChange(Notification(name: .init("test"), object: view.textField))
+        XCTAssertEqual(editor.string, "zhongguo", "standing as composed")
+        XCTAssertTrue(editor.hasMarkedText(), "still composed")
+
+        editor.unmarkText()
+        view.controlTextDidChange(Notification(name: .init("test"), object: view.textField))
+        XCTAssertEqual(view.textField.stringValue, "zhon", "cut once committed")
+    }
+
     @MainActor
     func testTypingIsCappedAndReportedAsTheWholeText() {
         let view = AppKitTextFieldView()
