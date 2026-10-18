@@ -130,17 +130,17 @@ extension AppKitDriver {
                 controller.toolbarForTesting.performForTesting(AppKitWindowToolbar.back)
             }
         case (.switchAway, _) where element.type == .window:
-            // Another application in front takes the keyboard from every window, which is all AppKit tells.
-            for window in windows { tell(NSWindow.didResignKeyNotification, window) }
+            // Another application in front takes the keyboard and the main window from every window, all AppKit tells.
+            for window in windows { leaveTheFront(window) }
         case (.switchBack, _) where element.type == .window:
             comeToTheFront(try window(of: element))
         case (.bringToFront, _) where element.type == .window:
             let front = try window(of: element)
-            for window in windows where window !== front { tell(NSWindow.didResignKeyNotification, window) }
+            for window in windows where window !== front { leaveTheFront(window) }
             comeToTheFront(front)
         case (.minimize, _) where element.type == .window:
             let window = try window(of: element)
-            tell(NSWindow.didResignKeyNotification, window)
+            leaveTheFront(window)
             tell(NSWindow.didMiniaturizeNotification, window)
         case (.restore, _) where element.type == .window:
             let window = try window(of: element)
@@ -234,12 +234,19 @@ extension AppKitDriver {
         NotificationCenter.default.post(name: name, object: window)
     }
 
-    /// `window` comes to the front and takes the keyboard, as AppKit tells a window it brings forward. The driver
-    /// shows no window on the machine's screen, so no run takes the user's.
+    /// `window` comes to the front, the main window holding the keyboard, as AppKit tells a window it brings
+    /// forward. The driver shows no window on the machine's screen, so no run takes the user's.
     /// Design: docs/design/platforms/appkit/conformance.md#windows
     func comeToTheFront(_ window: NSWindow?) {
         guard let window else { return }
+        tell(NSWindow.didBecomeMainNotification, window)
         tell(NSWindow.didBecomeKeyNotification, window)
+    }
+
+    /// `window` leaves the front: it is neither the main window nor holds the keyboard.
+    func leaveTheFront(_ window: NSWindow) {
+        tell(NSWindow.didResignKeyNotification, window)
+        tell(NSWindow.didResignMainNotification, window)
     }
 
     /// Types `words` as the whole of a field's words, through the editor AppKit gives the field that holds the
