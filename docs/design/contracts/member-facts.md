@@ -72,6 +72,9 @@ so a toolkit that shows the value in another control makes that control,
 and one that sets it in place sees it set from the start. Words the user can
 select (`TextContract.isSelectable`) remake their text: a label of one
 toolkit selects nothing, and its selectable words stand in a text view.
+A remaking member takes no binding twin: a state the host carries past the
+tree never reaches the patch the element is made from, so it is written by
+value and read in the body (`testNoRemakingMemberHasABindingTwin`).
 
 ## Moves
 

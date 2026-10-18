@@ -210,12 +210,6 @@ extension Button {
         twin(ButtonContract.iconPosition, by: state)
     }
 
-    /// `showsMenuArrow` from a state, `$x`: the host sets each new value as it
-    /// stands, and no view is rebuilt for it.
-    public func showsMenuArrow(_ state: Binding<Bool>) -> Modified {
-        twin(ButtonContract.showsMenuArrow, by: state)
-    }
-
     /// `iconSpacing` from a state, `$x`: the host animates the property to each
     /// new value, and no view is rebuilt for it.
     public func iconSpacing(_ state: Binding<Double>) -> Modified {

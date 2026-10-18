@@ -813,6 +813,21 @@ final class ControlTests: XCTestCase {
             """)
     }
 
+    /// A member that makes its element anew takes no binding twin: a state the host carries past the tree never
+    /// reaches the patch the element is made from, so later writes would change nothing on screen.
+    func testNoRemakingMemberHasABindingTwin() throws {
+        let remaking = Set(LibraryContracts.remaking.map(\.name))
+        var twinned: [String] = []
+
+        for (path, text) in try SourceTree.allSources() where path.contains("Views") {
+            for match in text.matches(of: /twin\(\w+Contract\.(\w+), by:/) where remaking.contains(String(match.1)) {
+                twinned.append("\(path): \(match.1)")
+            }
+        }
+
+        XCTAssertEqual(twinned, [], "a remaking member is written by value, read in the body")
+    }
+
     /// THE SIBLING OF THE MODIFIER GUARD, for the modifiers it cannot see.
     ///
     /// `testEveryModifierIsExercised` scans for a property being WRITTEN, so a
