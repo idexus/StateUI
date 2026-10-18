@@ -62,7 +62,7 @@ final class AndroidItemsView: AndroidView {
         guard choice != self.choice else { return }
         self.choice = choice
         Java.frame {
-            let chosen = Java.array(of: JavaAPI.string, choice.chosen.map { Java.string($0) })
+            let chosen = Java.strings(choice.chosen)
             Java.call(reference, JavaAPI.setItemsChoice, .object(chosen), .int(choice.mode.rawValue), .bool(choice.tappable))
         }
     }
@@ -93,7 +93,7 @@ final class AndroidItemsView: AndroidView {
             writePlacement(placement)
         }
         Java.frame {
-            let identities = Java.array(of: JavaAPI.string, cells.identities.map { Java.string($0) })
+            let identities = Java.strings(cells.identities)
             let runs = { (runs: [Range<Int>]) in Java.ints(runs.flatMap { [Int32($0.lowerBound), Int32($0.count)] }) }
             Java.call(
                 reference, JavaAPI.setItemsEntries, .object(identities), .object(Java.ints(placement.kinds)),

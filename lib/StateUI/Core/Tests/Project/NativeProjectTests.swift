@@ -143,6 +143,23 @@ final class NativeProjectTests: XCTestCase {
         XCTAssertGreaterThan(read, 100, "the walk read almost nothing")
     }
 
+    /// A Java array of strings is made by `Java.strings`, which lets each string go once it stands in the array: an
+    /// array of strings each still held as a local reference fills the native frame - an ItemsView's fifty thousand
+    /// identities in a frame of sixty-four. Design: docs/design/platforms/android/jni.md#local-references
+    func testAnAndroidStringArrayHoldsNoStringOfItsOwn() throws {
+        let host = SourceTree.repository.appendingPathComponent("lib/StateUI/StateUI.Android")
+        var made: [String] = []
+        for folder in ["Sources", "Tests/Sources"] {
+            let sources = host.appendingPathComponent(folder)
+            for path in try SourceTree.files(under: sources, entering: SourceTree.entersSources)
+            where path.hasSuffix(".swift") {
+                let text = try String(contentsOf: sources.appendingPathComponent(path), encoding: .utf8)
+                if text.contains("Java.array(of: JavaAPI.string") { made.append("\(folder)/\(path)") }
+            }
+        }
+        XCTAssertEqual(made, [], "each makes its array by Java.strings")
+    }
+
     /// The Android Views host is a Swift package beside AppKit's, with its Java
     /// layer, its tests in a package of their own and the scripts under
     /// `.scripts/Android`; and every native method the Java layer declares is

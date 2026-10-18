@@ -56,7 +56,7 @@ final class AndroidCanvasViewTests: XCTestCase {
                 Java.call(
                     canvas.reference, JavaAPI.setDrawing, .object(Java.ints(drawn.ints + cut)),
                     .object(Java.floats(drawn.numbers.map(Float.init))),
-                    .object(Java.array(of: JavaAPI.string, [])))
+                    .object(Java.strings([])))
             }
             let raised = Java.exceptionsCleared
             XCTAssertEqual(canvas.pixels(at: [(5, 5)]), [Self.red], "what stands before the cut record is drawn")

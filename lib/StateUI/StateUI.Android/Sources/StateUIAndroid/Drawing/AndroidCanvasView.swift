@@ -31,7 +31,7 @@ final class AndroidCanvasView: AndroidView {
             Java.call(
                 reference, JavaAPI.setDrawing, .object(Java.ints(drawing.ints)),
                 .object(Java.floats(drawing.numbers.map(Float.init))),
-                .object(Java.array(of: JavaAPI.string, drawing.strings.map(Java.string))))
+                .object(Java.strings(drawing.strings)))
         }
     }
 

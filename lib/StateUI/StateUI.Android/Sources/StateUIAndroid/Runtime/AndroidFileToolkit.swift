@@ -27,7 +27,7 @@ final class AndroidFileToolkit: FileToolkit {
             case .open, .openSeveral:
                 Java.callStatic(
                     JavaAPI.files, JavaAPI.openFiles, .object(context), .long(ticket),
-                    .object(Java.array(of: JavaAPI.string, dialog.extensions.map(Java.string))),
+                    .object(Java.strings(dialog.extensions)),
                     .bool(dialog.kind == .openSeveral))
             case .save:
                 Java.callStatic(

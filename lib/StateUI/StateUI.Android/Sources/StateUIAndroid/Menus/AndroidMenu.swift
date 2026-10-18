@@ -52,7 +52,7 @@ enum AndroidMenu {
 
         Java.frame {
             let bitmaps = pictures.map { $0.flatMap(AndroidPictures.bitmap) }
-            let words = Java.array(of: JavaAPI.string, texts.map { Java.string($0) })
+            let words = Java.strings(texts)
             let images = bitmaps.contains { $0 != nil } ? Java.array(of: JavaAPI.bitmap, bitmaps.map { $0?.reference }) : nil
             withExtendedLifetime(bitmaps) { write(Java.ints(kinds), words, images) }
         }

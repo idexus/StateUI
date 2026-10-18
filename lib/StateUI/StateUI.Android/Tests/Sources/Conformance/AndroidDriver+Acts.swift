@@ -57,7 +57,7 @@ extension AndroidDriver {
             let answered = Java.frame {
                 Java.callStaticBool(
                     Self.files, Self.answerForTesting, .object(TestContext.window.reference),
-                    .object(Java.array(of: JavaAPI.string, names.map { Java.string(filesFolder + $0) })))
+                    .object(Java.strings(names.map { filesFolder + $0 })))
             }
             guard answered else { throw DriverCannot("answer a file dialog: none is held") }
         case (.choose(let place), let picker as AndroidPickerView) where picker.presentation != .menu:

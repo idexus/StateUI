@@ -79,7 +79,7 @@ final class AndroidActToolkit: ActToolkit {
                     JavaAPI.dialogs, JavaAPI.chooseAction, .object(context), .long(ticket),
                     .object(Java.string(question.title ?? "")), .object(question.cancel.flatMap(Java.string)),
                     .object(question.destruction.flatMap(Java.string)),
-                    .object(Java.array(of: JavaAPI.string, question.choices.map(Java.string))))
+                    .object(Java.strings(question.choices)))
             case .prompt:
                 Java.callStatic(
                     JavaAPI.dialogs, JavaAPI.prompt, .object(context), .long(ticket),
