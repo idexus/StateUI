@@ -20,12 +20,9 @@ extension Differ {
     /// Says once a place `child` was given for a layout it does not stand in - a grid's row or column outside a
     /// Grid, an area outside a ZStack: the layout it stands in places it by its own rule.
     func saysAPlaceForAnotherLayout(_ child: RenderedNode, under parent: NodeType) {
-        let placements: [(layout: NodeType, members: [Prop])] = [
-            (.grid, [.gridRow, .gridColumn, .gridRowSpan, .gridColumnSpan]),
-            (.zStack, [.area]),
-        ]
+        guard !child.props.isEmpty else { return }
 
-        for (layout, members) in placements where parent != layout {
+        for (layout, members) in Self.placements where parent != layout {
             for member in members where child.props[member] != nil {
                 complain(
                     "\(child.type.name)'s \(member.name) places it in a \(layout.name), and it stands in a "
@@ -33,6 +30,12 @@ extension Differ {
             }
         }
     }
+
+    /// The places a layout gives its children, by the layout giving them - made once, asked of every child.
+    private static let placements: [(layout: NodeType, members: [Prop])] = [
+        (.grid, [.gridRow, .gridColumn, .gridRowSpan, .gridColumnSpan]),
+        (.zStack, [.area]),
+    ]
 }
 
 extension Node {
