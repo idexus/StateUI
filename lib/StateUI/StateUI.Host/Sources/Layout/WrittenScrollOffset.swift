@@ -16,6 +16,11 @@
     /// The tree wrote `offset` for a scroller standing at `standing` along `orientation`: where to move it now; nil
     /// where it asks nothing, or waits for the first layout.
     public mutating func written(_ offset: Point?, standing: Point, orientation: ScrollOrientation) -> Point? {
+        // Before the first layout the last offset written waits, one back where the scroller stands as nothing.
+        if !laidOut, orientation != .neither, let offset, offset.x.isFinite, offset.y.isFinite {
+            waiting = ScrollArithmetic.differs(offset, standing) ? offset : nil
+            return nil
+        }
         guard let target = ScrollArithmetic.offsetWritten(offset, standing: standing, orientation: orientation) else {
             return nil
         }

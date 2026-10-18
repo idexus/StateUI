@@ -39,4 +39,15 @@ final class ScrollOffsetTests: XCTestCase {
     func testAnOffsetIsKeptWithinReach() {
         XCTAssertEqual(ScrollArithmetic.kept(Point(x: -5, y: 900), reach: Point(x: 100, y: 300)), Point(x: 0, y: 300))
     }
+
+    /// Before its first layout the last offset written waits - one written back to where the scroller stands
+    /// included, which then leaves nothing waiting.
+    func testAnOffsetWrittenBackBeforeLayoutLeavesNothingWaiting() {
+        var written = WrittenScrollOffset()
+
+        XCTAssertNil(written.written(Point(x: 0, y: 500), standing: Point(x: 0, y: 0), orientation: .vertical))
+        XCTAssertNil(written.written(Point(x: 0, y: 0), standing: Point(x: 0, y: 0), orientation: .vertical))
+
+        XCTAssertNil(written.laidOutNow(), "the state says 0, so the scroller stays")
+    }
 }
