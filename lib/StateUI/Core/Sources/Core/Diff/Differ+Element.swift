@@ -341,7 +341,6 @@ extension Differ {
         let converting = node.driven.keys.sorted()
             .compactMap { node.driven[$0]!.conversion }
             .flatMap { $0.declarations() }
-        pass.engines = arm(converting + node.engines, previous: rendered?.engines)
 
         // Properties described last render and not now are named for the host to clear.
         // Design: docs/design/core/identity-and-diffing.md#properties-no-longer-described
@@ -375,6 +374,9 @@ extension Differ {
         if replace, let rendered = rendered {
             forget(rendered)
         }
+
+        // Armed once the old element is let go: a replaced one starts its engines over under fresh numbers.
+        pass.engines = arm(converting + node.engines, previous: previous?.engines)
 
         var patch = HostPatch(id: id, type: node.type)
         patch.replace = replace

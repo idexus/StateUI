@@ -38,6 +38,15 @@ private struct Doubler: View {
     }
 }
 
+/// A view whose body ends on one kind of control or another, so a change of `round` replaces its element.
+private struct Shaped: View {
+    let round: Bool
+
+    var body: some View {
+        ModifiedContent(node: round ? label("round") : Button("square").node)
+    }
+}
+
 /// Two engines on one view, written in the order the LOWER priority is second
 /// - so a test can see that the order run is the priority's and not the
 /// source's.
@@ -440,6 +449,31 @@ final class CycleTests: XCTestCase {
     }
 
     // MARK: - The cycle
+
+    /// An element replaced - its body now ends on another kind of control - keeps the engines written on it:
+    /// they are armed for the new element, not left disarmed with the old one.
+    func testAReplacedElementKeepsItsEngines() {
+        let ran = Ran()
+        let input = State(wrappedValue: 0.0)
+        let renders = Renders()
+
+        func tree(_ round: Bool) -> Node {
+            stack([
+                Shaped(round: round).engine(following: input.projectedValue) { cycle in ran.note("shaped", cycle) }.node,
+            ], id: "root")
+        }
+
+        renders.render(tree(true))
+        board.cycle(now: 0, reducesMotion: false)
+
+        renders.render(tree(false))
+        let before = ran.order.count
+
+        input.wrappedValue = 1
+        board.cycle(now: 16, reducesMotion: false)
+
+        XCTAssertGreaterThan(ran.order.count, before, "the engine runs on the element that replaced the old one")
+    }
 
     /// The first cycle of all runs what is armed, TOLD NOUGHT. There is no
     /// elapsed time anybody could act on before it, and an engine handed one
