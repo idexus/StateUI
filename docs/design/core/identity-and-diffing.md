@@ -153,7 +153,10 @@ built, so everything it reads sees the surviving values.
 
 Same key, same view type, same state - the rule the differ applies to
 controls, one level up. A different view type at the same place starts over,
-as a different control type replaces the control.
+as a different control type replaces the control. A view a body ends on is
+the same view only when every view outside it is too, type and branch: the
+other branch of an `if` at a body's root holds a view of the same type, and
+starts over as it does inside a stack.
 
 ## Paths pair state
 

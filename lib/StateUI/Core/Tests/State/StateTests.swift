@@ -220,6 +220,28 @@ final class StateTests: XCTestCase {
                        "an element the author renamed is a new element, state included")
     }
 
+    /// The other branch of an `if` at a body's root is another view, though of the same type: it starts over, as
+    /// it does inside a stack.
+    func testAnotherBranchAtABodysRootStartsOver() {
+        struct Choosing: View {
+            let editing: Bool
+
+            var body: some View {
+                if editing { Counter() } else { Counter() }
+            }
+        }
+
+        let renders = Renders()
+
+        let first = renders.render(Choosing(editing: true).node)
+        renders.fire(first.events?["clicked"] ?? -1)
+        _ = renders.render(Choosing(editing: true).node, changed: Renderer.shared.pendingChanges)
+
+        let swapped = renders.render(Choosing(editing: false).node, changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(swapped.props["text"], .string("Count: 0"), "the other branch's counter keeps nothing of the first")
+    }
+
     func testAViewInsideAViewKeepsItsOwnState() {
         struct Wrapper: View {
             var body: some View {

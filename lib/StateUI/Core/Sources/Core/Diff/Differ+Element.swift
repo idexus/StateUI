@@ -124,9 +124,11 @@ extension Differ {
                 // A view lying byte for byte as its predecessor holds what that held: its walk is the
                 // predecessor's, its boxes already the ones kept.
                 // Design: docs/design/core/identity-and-diffing.md#a-view-built-as-it-was
+                // Every view outside it the same, from the same branch: another branch is another view.
                 if let rendered = rendered,
                     step < rendered.views.count,
                     rendered.views[step].type == stateful.viewType,
+                    Self.sameKinds(Array(rendered.views.prefix(step)), Array(pass.views.prefix(step))),
                     !stateful.walk.takes(rendered.views[step].walk) {
                     // By path, not by position.
                     // Design: docs/design/core/identity-and-diffing.md#paths-pair-state
