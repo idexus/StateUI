@@ -83,6 +83,20 @@ final class HostVerdictTests: XCTestCase {
             """)
     }
 
+    /// The worst of a subject's verdicts is the same whatever order its cases ran in: a family's cases moved, or its
+    /// files read in another order, change no mark.
+    func testTheWorstIsTheSameInEveryOrder() {
+        let verdicts = [
+            HostVerdict(element: "Slider", member: "value", mark: .proven),
+            HostVerdict(element: "Slider", member: "value", mark: .waiting(on: "Slider.step")),
+            HostVerdict(element: "Slider", member: "value", mark: .cannot("read value of Slider - Hidden.")),
+        ]
+        let orders = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]]
+        let texts = Set(orders.map { order in HostVerdict.text(order.map { verdicts[$0] }) })
+
+        XCTAssertEqual(texts.count, 1, texts.sorted().joined(separator: " | "))
+    }
+
     /// A case that does not apply on the host - its platform holds nothing the case reads - judges a subject only
     /// where no other case does: beside a proof, written in another part of its family, the proof stands whole.
     func testACaseThatDoesNotApplyGivesWayToAnyOther() {

@@ -203,7 +203,9 @@ its cases combine into the worst: a case that does not apply gives way to any
 other word, and "not realized" to any word of a case; a failure stands over
 everything, and a proof beside a case that could not run or read makes ◐; of
 proofs, ☑️ stands over ✅ and ✅ over ✓, so a proof is whole only where every
-case proved it. A case that proves its members absent on a host - a
+case proved it. The verdicts combine in the order of their text, not of the
+cases: two at a time is not associative, and a mark must not move because a
+case did. A case that proves its members absent on a host - a
 view that refuses the keyboard and hears nothing never takes the focus there
 - ends with `absent`, and they are – there with why. A case needing what the
 platform holds nothing of - a value no control of it keeps, which the driver
