@@ -473,8 +473,9 @@ extension State.Storage where Value: StateValue {
 
             hostRead = { Self.lifted(from: made) }
             hostWrite = { value in
-                known.bytes = StateImage.bytes(of: value.carried(in: .current))
-                Self.lay(value, on: made)
+                let bytes = StateImage.bytes(of: value.carried(in: .current))
+                known.bytes = bytes
+                Renderer.shared.board(of: made).write(bytes, to: made)
             }
 
             // A host write ends where this side's do, the storage deciding by its readers.
@@ -530,11 +531,6 @@ extension State.Storage where Value: StateValue {
     static func lifted(from image: HostStorage) -> Value {
         Value(carried: Renderer.shared.board(of: image).read(image, lanes: Value.lanes))
             ?? nothing
-    }
-
-    /// The value written into the lanes, whole.
-    static func lay(_ value: Value, on image: HostStorage) {
-        Renderer.shared.board(of: image).write(StateImage.bytes(of: value.carried(in: .current)), to: image)
     }
 
     /// What a value answers where its bytes stand for none of its type - every lane

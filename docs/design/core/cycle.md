@@ -241,7 +241,10 @@ would take that state's values onto the test's tree.
 
 A value lies on the image as little-endian bit patterns, eight bytes a lane, or
 as a text's own length and UTF-8 (`StateImage`), written by hand because the
-library imports no Foundation.
+library imports no Foundation. Lanes are copied whole, as they lie in memory -
+little-endian on every platform StateUI runs on, which the compiler checks - so
+a layout's run of placements, written every frame, costs a copy rather than a
+loop over each byte; a write lays the bytes it worked out once.
 
 ## The ticker
 

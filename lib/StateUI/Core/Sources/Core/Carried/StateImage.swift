@@ -2,25 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// How a value lies on the image: eight little-endian bytes a lane, or text as
-/// its length and UTF-8.
+/// its length and UTF-8. A lane's bytes are copied as they lie in memory, which
+/// is that order on every platform StateUI runs on.
 /// Design: docs/design/core/cycle.md#the-image
 enum StateImage {
     /// The bytes a value lies as.
     static func bytes(of carried: StateCarried) -> [UInt8] {
         switch carried {
         case .lanes(let lanes):
-            var bytes: [UInt8] = []
-            bytes.reserveCapacity(lanes.count * 8)
-
-            for lane in lanes {
-                let pattern = lane.bitPattern
-
-                for shift in stride(from: 0, to: 64, by: 8) {
-                    bytes.append(UInt8(truncatingIfNeeded: pattern >> UInt64(shift)))
-                }
-            }
-
-            return bytes
+            return lanes.withUnsafeBytes { Array($0) }
 
         case .text(let text):
             let utf8 = Array(text.utf8)
@@ -37,21 +27,22 @@ enum StateImage {
 
     /// One lane of an image, by its index. Nought where the bytes stop short.
     static func lane(_ index: Int, of bytes: [UInt8]) -> Double {
-        var pattern: UInt64 = 0
-
-        for byte in 0..<8 where index * 8 + byte < bytes.count {
-            pattern |= UInt64(bytes[index * 8 + byte]) << UInt64(byte * 8)
-        }
-
-        return Double(bitPattern: pattern)
+        var lane = 0.0
+        copy(bytes, from: index * 8, into: &lane)
+        return lane
     }
 
     /// Lays numbers over the lanes starting at `index`.
     static func lay(_ lanes: [Double], at index: Int, into bytes: inout [UInt8]) {
-        let written = StateImage.bytes(of: .lanes(lanes))
+        let start = index * 8
+        guard start < bytes.count else { return }
 
-        for byte in 0..<written.count where index * 8 + byte < bytes.count {
-            bytes[index * 8 + byte] = written[byte]
+        lanes.withUnsafeBytes { written in
+            bytes.withUnsafeMutableBytes { image in
+                let count = min(written.count, image.count - start)
+                UnsafeMutableRawBufferPointer(rebasing: image[start..<start + count])
+                    .copyMemory(from: UnsafeRawBufferPointer(rebasing: written[0..<count]))
+            }
         }
     }
 
@@ -74,19 +65,32 @@ enum StateImage {
             return .text(String(decoding: bytes[4..<end], as: UTF8.self))
         }
 
-        var lanes: [Double] = []
-        lanes.reserveCapacity(count)
-
-        for lane in 0..<count {
-            var pattern: UInt64 = 0
-
-            for byte in 0..<8 where lane * 8 + byte < bytes.count {
-                pattern |= UInt64(bytes[lane * 8 + byte]) << UInt64(byte * 8)
-            }
-
-            lanes.append(Double(bitPattern: pattern))
+        var lanes = [Double](repeating: 0, count: count)
+        lanes.withUnsafeMutableBufferPointer { lanes in
+            copy(bytes, from: 0, into: UnsafeMutableRawBufferPointer(lanes))
         }
-
         return .lanes(lanes)
     }
+
+    /// Copies as many of `bytes` from `start` as `target` holds and there are, leaving the rest of it as it was.
+    private static func copy(_ bytes: [UInt8], from start: Int, into target: UnsafeMutableRawBufferPointer) {
+        guard start < bytes.count else { return }
+
+        bytes.withUnsafeBytes { image in
+            let count = min(target.count, image.count - start)
+            UnsafeMutableRawBufferPointer(rebasing: target[0..<count])
+                .copyMemory(from: UnsafeRawBufferPointer(rebasing: image[start..<start + count]))
+        }
+    }
+
+    /// The same, into one lane.
+    private static func copy(_ bytes: [UInt8], from start: Int, into lane: inout Double) {
+        withUnsafeMutableBytes(of: &lane) { copy(bytes, from: start, into: $0) }
+    }
 }
+
+// The image's lanes are copied as they lie in memory: a platform laying a number's
+// bytes highest first would need them turned round.
+#if !_endian(little)
+#error("StateImage copies a lane's bytes as they lie in memory, which it reads as little-endian.")
+#endif
