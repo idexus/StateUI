@@ -552,6 +552,25 @@ final class InvalidationTests: XCTestCase {
         XCTAssertNil(patch.child("row")?.props["text"], "and nothing was sent")
     }
 
+    /// `setNeedsRender()` names nothing because what moved is outside StateUI, so no view's inputs or reads can
+    /// say it stands: every view is built, not carried.
+    func testAPlainSetNeedsRenderBuildsAViewWithTheSameInputs() {
+        let model = Untracked.shared
+        model.title = "before"
+        model.builds = 0
+
+        Renderer.shared.setApplication(UntrackedApp())
+        Renderer.shared.clearInvalidation()
+        let first = Renderer.shared.renderHost(baseline: 0).generation
+        XCTAssertEqual(model.builds, 1)
+
+        model.title = "after"
+        Renderer.shared.setNeedsRender()
+        _ = Renderer.shared.renderHost(baseline: first)
+
+        XCTAssertEqual(model.builds, 2, "the page is built again, though its input is the same reference")
+    }
+
     // MARK: - The message
 
     func testTheCleanWalkSendsExactlyWhatTheFullBuildWould() {
@@ -1018,6 +1037,29 @@ private final class Chosen: @unchecked Sendable {
     let first = State("first")
     let other = State("other")
     var byFirst = true
+}
+
+/// A model StateUI does not track - what a bridge from another notification asks a render for.
+@MainActor
+private final class Untracked: @unchecked Sendable {
+    static let shared = Untracked()
+
+    var title = "before"
+    var builds = 0
+}
+
+/// A page reading the untracked model it is handed - the same reference every build.
+private struct UntrackedPage: View {
+    let model: Untracked
+
+    var body: some View {
+        model.builds += 1
+        return ModifiedContent(node: label(model.title))
+    }
+}
+
+private struct UntrackedApp: Application {
+    var body: some Scene { WindowGroup { UntrackedPage(model: Untracked.shared) } }
 }
 
 /// The page it shows, handed what was chosen.

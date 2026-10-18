@@ -268,7 +268,9 @@ inputs.
 A view's inputs say nothing about the style sheet or about a provider above
 replacing its object. The walk therefore suppresses every carry for the one
 walk in which the sheet moved, and a composed element keeps a snapshot of the
-nearest provided object per type (`RenderedNode.seen`) that a carry compares.
+nearest provided object per type (`RenderedNode.seen`) that a carry compares. Nor can they say what a body
+read outside StateUI: the walk a `setNeedsRender()` asked for carries no view
+(`buildsEveryView`).
 
 ## The clean walk
 

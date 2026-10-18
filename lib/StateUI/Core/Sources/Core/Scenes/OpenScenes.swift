@@ -167,7 +167,7 @@ final class OpenScenes {
         if let (record, _) = waiting, type == nil, text == nil {
             waiting = nil
             record.restore(values)
-            Renderer.shared.setNeedsRender()
+            Renderer.shared.setNeedsBuild()
             return record.id
         }
 
@@ -193,7 +193,7 @@ final class OpenScenes {
         record.open(declaration.type, value: value, text: text)
 
         // The host shows the window it is holding as soon as this returns.
-        Renderer.shared.setNeedsRender()
+        Renderer.shared.setNeedsBuild()
         return record.id
     }
 

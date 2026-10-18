@@ -28,8 +28,12 @@ public final class Renderer {
     private var written: [ObjectIdentifier: AnyObject] = [:]
 
     /// Whether a render was asked for without naming a state, which makes the next
-    /// render build the whole tree.
+    /// render build the tree from its root.
     private var untracked = true
+
+    /// Whether `setNeedsRender()` asked: what moved is outside StateUI, so the next
+    /// render carries no composed view.
+    private var everyView = false
 
     /// What the last root build read outside every element; a change to any of it
     /// builds the application again.
@@ -138,7 +142,7 @@ public final class Renderer {
         // The scene launch opens, its window waiting for the platform's first (OpenScenes.swift).
         OpenScenes.shared.reset()
 
-        setNeedsRender()
+        setNeedsBuild()
     }
 
     /// The registered application, made the first time it is needed.
@@ -168,6 +172,14 @@ public final class Renderer {
     /// Asks for a render without naming what changed, so the next render builds
     /// the whole tree. It asks the host for a turn.
     public func setNeedsRender() {
+        everyView = true
+        setNeedsBuild()
+    }
+
+    /// Asks for a render that builds the tree from its root without naming a state: a
+    /// composed view whose inputs and reads stand is carried. It asks the host for a turn.
+    /// Design: docs/design/core/render.md#three-roads
+    func setNeedsBuild() {
         dirty = true
         untracked = true
         UIThreadExecutor.shared.askForTurn()
@@ -237,6 +249,7 @@ public final class Renderer {
         dirty = false
         written.removeAll()
         untracked = false
+        everyView = false
     }
 
     /// Whether anything has changed since the last render. The host polls this
@@ -246,15 +259,16 @@ public final class Renderer {
     /// Takes what was written since the last take and starts a render, in one step,
     /// so a write landing during this render asks for the next one.
     /// Design: docs/design/core/render.md#taking-the-changes
-    private func takeWritten() -> (written: [ObjectIdentifier: AnyObject], untracked: Bool) {
+    private func takeWritten() -> (written: [ObjectIdentifier: AnyObject], untracked: Bool, everyView: Bool) {
         defer {
             written.removeAll()
             untracked = false
+            everyView = false
             dirty = false
             rendering = true
         }
 
-        return (written, untracked)
+        return (written, untracked, everyView)
     }
 
     /// Renders the patch against `baseline`, the generation the host holds;
@@ -264,7 +278,7 @@ public final class Renderer {
         // The first render is complete although both sides agree at zero.
         let describeAll = baseline != generation || rendered == nil
 
-        let (writtenNow, untrackedNow) = takeWritten()
+        let (writtenNow, untrackedNow, everyViewNow) = takeWritten()
 
         let changedNow = Set(writtenNow.keys)
 
@@ -309,7 +323,8 @@ public final class Renderer {
                 with: built.tree,
                 styles: built.styles,
                 describeAll: describeAll,
-                changed: changedNow)
+                changed: changedNow,
+                buildsEveryView: everyViewNow)
         }
 
         rendered = result.node
@@ -359,7 +374,7 @@ public final class Renderer {
                 run(handler)
             }
 
-            let (wroteNow, wroteUntracked) = takeWritten()
+            let (wroteNow, wroteUntracked, wroteEveryView) = takeWritten()
 
             let wrote = Set(wroteNow.keys)
 
@@ -384,7 +399,8 @@ public final class Renderer {
                 differ.motion = built.motion
 
                 settled = differ.reconcile(
-                    rendered, with: built.tree, styles: built.styles, changed: wrote)
+                    rendered, with: built.tree, styles: built.styles, changed: wrote,
+                    buildsEveryView: wroteEveryView)
             }
 
             rendering = false

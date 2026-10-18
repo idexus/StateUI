@@ -34,6 +34,10 @@ final class Differ {
     /// Design: docs/design/core/identity-and-diffing.md#what-a-carry-cannot-see
     private(set) var stylesMoved = false
 
+    /// Whether this walk builds every composed view: `setNeedsRender()` named nothing StateUI tracks.
+    /// Design: docs/design/core/identity-and-diffing.md#what-a-carry-cannot-see
+    private(set) var buildsEveryView = false
+
     /// The states written since the tree the host holds was built.
     private(set) var changed: Set<ObjectIdentifier> = []
 
@@ -75,9 +79,11 @@ final class Differ {
         with tree: Node,
         styles: StyleSheet? = nil,
         describeAll: Bool = false,
-        changed: Set<ObjectIdentifier> = []
+        changed: Set<ObjectIdentifier> = [],
+        buildsEveryView: Bool = false
     ) -> (node: RenderedNode, patch: HostPatch) {
         self.describeAll = describeAll
+        self.buildsEveryView = buildsEveryView
         self.changed = changed
         stylesMoved = !StyleSheet.same(styles, self.styles)
         self.styles = styles
@@ -103,6 +109,7 @@ final class Differ {
         changed: Set<ObjectIdentifier>
     ) -> (node: RenderedNode, patch: HostPatch) {
         describeAll = false
+        buildsEveryView = false
         self.changed = changed
         stylesMoved = false
         walkStamp += 1

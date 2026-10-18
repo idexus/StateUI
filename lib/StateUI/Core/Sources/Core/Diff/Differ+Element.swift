@@ -164,7 +164,7 @@ extension Differ {
                 if step == 0 {
                     pass.seen = snapshot()
 
-                    if let rendered = rendered, !forced, !describeAll, !stylesMoved,
+                    if let rendered = rendered, !forced, !describeAll, !stylesMoved, !buildsEveryView,
                         let kept = rendered.views.first,
                         kept.type == stateful.viewType,
                         rendered.reads.isDisjoint(with: changed),
@@ -639,6 +639,10 @@ extension Differ {
 
         if stylesMoved {
             return "the styles moved"
+        }
+
+        if buildsEveryView {
+            return "a render asked for every view"
         }
 
         if rendered.seen != seen {
