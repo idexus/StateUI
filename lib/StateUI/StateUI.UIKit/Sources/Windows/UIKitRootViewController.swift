@@ -70,6 +70,11 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
     private var passing: [UIViewController] = []
     private var standing: (controller: UIViewController, answered: Bool)?
 
+    /// Counts the windows the root stood in: a movement's end counts only in the one it began in. And whether it
+    /// comes back into one with what UIKit kept presented over it.
+    private var generation = 0
+    private var returning = false
+
     override func loadView() {
         view = UIView()
         view.backgroundColor = .systemBackground
@@ -113,9 +118,9 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
         self.sheets = Array(self.sheets.prefix(common))
         guard presenter.presentedViewController != nil else { return presentEach(coming, animated: animated) }
         moving = true
-        presenter.dismiss(animated: animated && coming.isEmpty) { [weak self] in
-            self?.moved { self?.presentEach(coming, animated: animated) }
-        }
+        presenter.dismiss(animated: animated && coming.isEmpty, completion: ending { root in
+            root.moved { root.presentEach(coming, animated: animated) }
+        })
     }
 
     private func presentEach(_ coming: [UIViewController], animated: Bool) {
@@ -125,8 +130,17 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
         sheet.presentationController?.delegate = self
         sheets.append(sheet)
         moving = true
-        presenter.present(sheet, animated: animated && coming.count == 1) { [weak self] in
-            self?.moved { self?.presentEach(Array(coming.dropFirst()), animated: animated) }
+        presenter.present(sheet, animated: animated && coming.count == 1, completion: ending { root in
+            root.moved { root.presentEach(Array(coming.dropFirst()), animated: animated) }
+        })
+    }
+
+    /// What a movement does once it ended - nothing where the window it began in has gone.
+    private func ending(_ next: @escaping (UIKitRootViewController) -> Void) -> () -> Void {
+        let generation = generation
+        return { [weak self] in
+            guard let self, self.generation == generation else { return }
+            next(self)
         }
     }
 
@@ -165,20 +179,18 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
         }
         standing = (next, false)
         moving = true
-        presenter.present(next, animated: true) { [weak self] in
-            guard let self else { return }
-            moving = false
-            if standing?.answered == true { letPassingGo() }
-        }
+        presenter.present(next, animated: true, completion: ending { root in
+            root.moving = false
+            if root.standing?.answered == true { root.letPassingGo() }
+        })
     }
 
     /// The answered thing passing goes - UIKit's own dismissal let finish, else one asked here - and then what waits.
     private func letPassingGo() {
         guard let controller = standing?.controller else { return }
-        let gone = { [weak self] in
-            guard let self else { return }
-            standing = nil
-            moved { presentPassing() }
+        let gone = ending { root in
+            root.standing = nil
+            root.moved { root.presentPassing() }
         }
         moving = true
         if controller.presentingViewController == nil {
@@ -188,6 +200,28 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
         } else {
             controller.presentingViewController?.dismiss(animated: true) { gone() }
         }
+    }
+
+    /// The window left its scene: no movement under way ends there. What is asked for - the sheets, then what
+    /// passes - comes again once the window stands in the next scene, over nothing (`clearWhatStands`).
+    func windowLeft() {
+        generation += 1
+        let asked = waiting?.sheets ?? sheets
+        if let standing, !standing.answered { passing.insert(standing.controller, at: 0) }
+        standing = nil
+        sheets = []
+        moving = false
+        appeared = false
+        returning = true
+        waiting = (asked, false)
+    }
+
+    /// Takes away what UIKit kept presented over the root as it came back with the window - UIKit takes it away
+    /// itself, in its own time, and drops what is presented over it meanwhile.
+    private func clearWhatStands() {
+        guard presentedViewController != nil else { return }
+        moving = true
+        dismiss(animated: false, completion: ending { root in root.moved {} })
     }
 
     /// Tells nobody of its sheets any more: they leave with the window.
@@ -207,6 +241,11 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         appeared = true
+        if returning {
+            returning = false
+            clearWhatStands()
+            if moving { return }
+        }
         if let (sheets, animated) = waiting {
             waiting = nil
             present(sheets, animated: animated)

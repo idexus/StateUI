@@ -61,6 +61,28 @@ final class UIKitSheetsTests: XCTestCase {
         XCTAssertFalse(second is UIAlertController)
     }
 
+    /// A window whose scene iOS let go of and brought back shows its sheets again, and the next sheet asked for
+    /// comes over them: nothing is left presented outside the window.
+    @MainActor
+    func testASceneBroughtBackShowsItsSheetsAgain() throws {
+        let scene = try XCTUnwrap(TestScene.scene)
+        let sheets = State(wrappedValue: [1])
+        let host = UIKitRenderer.running(reducesMotion: true) { sheetsOver(sheets) }
+        defer { host.finish() }
+        func root() -> UIViewController? { host.roster.windows.first?.1.window?.rootViewController }
+        host.settle { root()?.presentedViewController?.viewIfLoaded?.window != nil }
+
+        host.disconnect(scene)
+        host.connect(scene)
+        host.settle { root()?.presentedViewController?.viewIfLoaded?.window != nil }
+        XCTAssertNotNil(root()?.presentedViewController?.viewIfLoaded?.window, "the sheet stands again")
+
+        sheets.wrappedValue = [1, 2]
+        host.settle { root()?.presentedViewController?.presentedViewController?.viewIfLoaded?.window != nil }
+        XCTAssertNotNil(
+            root()?.presentedViewController?.presentedViewController?.viewIfLoaded?.window, "the next comes over it")
+    }
+
     /// Sheets the window starts with stand each over the one before, as UIKit presents over a controller only once
     /// it stands.
     @MainActor

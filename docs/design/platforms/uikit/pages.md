@@ -162,7 +162,11 @@ window would hold a sheet never shown. So while a sheet the
 window presented or took away still moves, what is asked waits - the latest
 asking - and comes as that movement ends. The user swiping the top sheet down
 is the window's way back, told the stack as how many stay; a window that leaves tells
-nobody of its sheets, which leave with it.
+nobody of its sheets, which leave with it. A window whose scene iOS lets go of
+and brings back takes nothing UIKit kept presented over its root - UIKit takes
+that away in its own time, dropping what is presented over it meanwhile - so
+the root takes it away first and presents what is asked for anew; a movement
+that began in the window gone ends there and does nothing.
 
 The overlays are laid over the window's pages within the safe area, the first
 lowest, and a touch beside what one holds reaches the page under it.

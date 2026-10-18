@@ -58,6 +58,7 @@ final class UIKitWindowController {
     /// iOS let the scene go, and its window with it; the session stays, for the scene to come back.
     func sceneLeft() {
         stopWatchingFront()
+        root.windowLeft()
         window?.isHidden = true
         window?.rootViewController = nil
         window = nil
