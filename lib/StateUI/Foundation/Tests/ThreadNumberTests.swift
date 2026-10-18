@@ -21,4 +21,14 @@ final class ThreadNumberTests: XCTestCase {
         XCTAssertEqual(currentThreadNumber(), here)
         XCTAssertNotEqual(there, here)
     }
+
+    #if canImport(Darwin)
+    /// The number is the thread's own, as the debugger shows it - not a hash of it, which changes every run.
+    func testTheNumberIsTheThreadsOwn() {
+        var id: UInt64 = 0
+        pthread_threadid_np(nil, &id)
+
+        XCTAssertEqual(currentThreadNumber(), id)
+    }
+    #endif
 }
