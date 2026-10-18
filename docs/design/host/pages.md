@@ -65,8 +65,10 @@ it is there, else the last there is (`shown(among:)`).
 A split view's one adaptation (`SidebarAdaptation`): the first room it is
 given wider than nothing decides once whether its sidebar shows - it does,
 said as the user's, where the room is at least the platform's own breakpoint
-and it was hidden. After that the user and the application decide. The
-breakpoint is each platform's, a host's parameter.
+and it was hidden. After that the user and the application decide - and a
+host measures the room for it no more (`decided`): the Web read the page's
+layout for it after every render. The breakpoint is each platform's, a host's
+parameter.
 
 ## A sidebar's title
 

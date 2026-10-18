@@ -206,7 +206,9 @@ final class PagesTests: XCTestCase {
     func testASidebarShowsOnTheFirstWideRoomOnly() {
         var adaptation = SidebarAdaptation()
         XCTAssertFalse(adaptation.room(0, breakpoint: 700, shown: false), "no room yet")
+        XCTAssertFalse(adaptation.decided, "a host still measures the room")
         XCTAssertTrue(adaptation.room(900, breakpoint: 700, shown: false))
+        XCTAssertTrue(adaptation.decided, "a host measures it no more")
         XCTAssertFalse(adaptation.room(900, breakpoint: 700, shown: false), "decided once")
 
         var narrow = SidebarAdaptation()

@@ -57,6 +57,8 @@ final class WebSplitView: WebDOMView {
 
     /// The first room the split view is given: where it is wide, the sidebar shows, as the user's - at once.
     func adapt() {
+        // Only the first room decides: after it, a render reads the page's layout for nothing.
+        guard !adaptation.decided else { return }
         let width = WebRelay.box(of: node).width
         if adaptation.room(width, breakpoint: Self.breakpoint, shown: isPresented) { userPresents(true, moves: false) }
     }
