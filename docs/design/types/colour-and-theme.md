@@ -69,6 +69,13 @@ because it is resolved where it is worn. `.themed` never reaches a host. A
 brush holding a pair among its stops, and a drawing holding one among its
 records, are resolved the same way.
 
+A half may be the accent in force: `Color(light: .accent, dark: .white)` keeps
+which halves are the accent (`accentHalves`) and crosses that half as
+`.systemColor`, resolved like the whole accent where it is worn. A pair handed
+as a half gives the half of its own theme - the dark half of the pair handed as
+the dark one - so `Color(light: .gray, dark: surface)` is `surface`'s dark half
+in the dark.
+
 ## A pair on a carried state
 
 A pair written into a state the host carries crosses as the half in force,
