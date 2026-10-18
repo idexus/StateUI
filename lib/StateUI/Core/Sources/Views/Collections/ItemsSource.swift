@@ -53,8 +53,9 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         self.footer = footer
 
         var sections: [ItemsEntries.Section] = []
+        var names: Set<String> = []
         for (number, group) in groups.enumerated() {
-            let name = group.name ?? String(number)
+            let name = uniqueName(group.name ?? String(number), among: &names)
             var items: [String] = []
             for place in 0..<group.count {
                 let id = group.identify(place)
@@ -65,6 +66,7 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
                 items.append(identity)
             }
             sections.append(ItemsEntries.Section(
+                name,
                 header: group.header.map { _ in named(name + "\u{1E}header", .groupHeader(number)) },
                 footer: group.footer.map { _ in named(name + "\u{1E}footer", .groupFooter(number)) },
                 items: items))
@@ -77,6 +79,19 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         for (position, identity) in entries.identities.enumerated() {
             order[identity] = position
         }
+    }
+
+    /// A group's `name`, told apart from one `names` holds already, and held.
+    private func uniqueName(_ name: String, among names: inout Set<String>) -> String {
+        var told = name
+        if names.contains(name) {
+            complain("two groups of an ItemsView are named \"\(name)\"; give each its own name")
+            var variant = 1
+            while names.contains("\(name)\u{0}\(variant)") { variant += 1 }
+            told = "\(name)\u{0}\(variant)"
+        }
+        names.insert(told)
+        return told
     }
 
     /// `identity`, told apart from an equal one before it the way a repeated

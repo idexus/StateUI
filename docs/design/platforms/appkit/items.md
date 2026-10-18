@@ -1,8 +1,8 @@
 # Items
 
 An ItemsView is AppKit's collection view in a scroll view: a diffable data
-source over the list's identities, one section a group, and a compositional
-layout. The host makes the view itself, since each cell asks the tree for
+source over the list's identities, one section a group known by its name,
+and a compositional layout. The host makes the view itself, since each cell asks the tree for
 what it holds through the host layer's `ItemsCells`
 ([items](../../host/items.md)). AppKit scrolls, reuses its items, holds the
 selection and tells VoiceOver about the items. The list is a room: nothing

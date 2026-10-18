@@ -186,6 +186,7 @@ final class ItemsViewTests: XCTestCase {
         ]).node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        XCTAssertEqual(entries.sections.map(\.identity), ["Fruit", "Cider"], "each group by its name")
         XCTAssertEqual(entries.sections.map(\.header), ["Fruit\u{1E}header", nil])
         XCTAssertEqual(entries.sections.map(\.footer), [nil, "Cider\u{1E}footer"])
         XCTAssertEqual(entries.sections.map(\.items), [
@@ -206,6 +207,18 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertEqual(entries.sections[0].items, ["a", "b", "a\u{0}1"])
     }
 
+    /// Two groups of one name are told apart - a group named as another's place too - so a host knowing each group
+    /// by its name finds two.
+    func testTwoGroupsOfOneNameAreToldApart() throws {
+        let renders = Renders()
+        let list = try list(in: renders.render(ItemsView(groups: [
+            Section(["a"]) { Text($0) }, Section(["b"]) { Text($0) }.id("0"), Section(["c"]) { Text($0) }.id("0"),
+        ]).node))
+
+        let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        XCTAssertEqual(entries.sections.map(\.identity), ["0", "0\u{0}1", "0\u{0}2"])
+    }
+
     /// With no items the list is its empty view; a header alone is no item.
     func testAnEmptyListIsItsEmptyView() throws {
         let renders = Renders()
@@ -220,7 +233,7 @@ final class ItemsViewTests: XCTestCase {
     /// The entries round-trip through what crosses.
     func testTheEntriesCrossAndComeBackWhole() {
         let entries = ItemsEntries(header: "h", footer: nil, sections: [
-            ItemsEntries.Section(header: nil, footer: "f", items: ["1", "2"]),
+            ItemsEntries.Section("0", header: nil, footer: "f", items: ["1", "2"]),
         ])
         XCTAssertEqual(ItemsEntries(propValue: entries.propValue), entries)
         XCTAssertEqual(entries.identities, ["h", "1", "2", "f"])

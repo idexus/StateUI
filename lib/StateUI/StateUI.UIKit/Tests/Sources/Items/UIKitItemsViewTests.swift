@@ -44,4 +44,33 @@ final class UIKitItemsViewTests: XCTestCase {
         XCTAssertEqual(alpha(cells[1]), 0, "an item at rest draws a background")
         XCTAssertEqual(alpha(cells[2]), 0, "an item at rest draws a background")
     }
+
+    /// A group added before the others brings its own header, and every other group keeps its own: a group is known
+    /// by its name, not its place.
+    @MainActor
+    func testAGroupAddedOnTopBringsItsOwnHeader() throws {
+        let days = State(wrappedValue: ["Yesterday"])
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            ItemsView(groups: days.wrappedValue.map { day in
+                Section([day + " note"]) { Text($0) }.id(day).header(Text(day))
+            })
+            .width(300).height(400)
+        }
+        defer { host.finish() }
+        let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
+        func texts(in view: UIView) -> [String] {
+            ((view as? UIKitTextView)?.attributedText?.string).map { [$0] } ?? view.subviews.flatMap(texts)
+        }
+        func headers() -> [String] {
+            items.collection.layoutIfNeeded()
+            return items.collection.visibleSupplementaryViews(ofKind: UIKitItemsLayout.header)
+                .sorted { $0.frame.minY < $1.frame.minY }.map { texts(in: $0).joined() }
+        }
+        host.settle { headers() == ["Yesterday"] }
+
+        days.wrappedValue = ["Today", "Yesterday"]
+        host.settle { headers() == ["Today", "Yesterday"] }
+
+        XCTAssertEqual(headers(), ["Today", "Yesterday"])
+    }
 }

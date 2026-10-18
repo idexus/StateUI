@@ -14,7 +14,7 @@ import UIKit
 final class UIKitItemsView: UIView, UICollectionViewDelegate {
     let cells: ItemsCells
     private(set) var collection: UICollectionView
-    private var source: UICollectionViewDiffableDataSource<Int, String>!
+    private var source: UICollectionViewDiffableDataSource<String, String>!
     private var layout = ItemsLayout.list()
     private var mode = SelectionMode.none
 
@@ -76,12 +76,13 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
         select(cells.selected)
     }
 
-    /// The identities as UIKit's snapshot, one section a group; a header or a footer is the section's own.
+    /// The identities as UIKit's snapshot, one section a group known by its name; a header or a footer is the
+    /// section's own.
     private func applyEntries(_ changes: ItemsChanges) {
-        var snapshot = NSDiffableDataSourceSnapshot<Int, String>()
-        for (index, section) in cells.entries.sections.enumerated() {
-            snapshot.appendSections([index])
-            snapshot.appendItems(section.items, toSection: index)
+        var snapshot = NSDiffableDataSourceSnapshot<String, String>()
+        for section in cells.entries.sections {
+            snapshot.appendSections([section.identity])
+            snapshot.appendItems(section.items, toSection: section.identity)
         }
         // A header or a footer the tree added or took away is a change of the layout's shape.
         collection.collectionViewLayout.invalidateLayout()
@@ -114,11 +115,11 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
 
     // MARK: - The cells
 
-    private func makeSource() -> UICollectionViewDiffableDataSource<Int, String> {
+    private func makeSource() -> UICollectionViewDiffableDataSource<String, String> {
         let cell = UICollectionView.CellRegistration<UIKitItemCell, String> { [weak self] cell, _, identity in
             self?.hold(identity, in: cell.holding)
         }
-        let source = UICollectionViewDiffableDataSource<Int, String>(collectionView: collection) {
+        let source = UICollectionViewDiffableDataSource<String, String>(collectionView: collection) {
             collection, indexPath, identity in
             collection.dequeueConfiguredReusableCell(using: cell, for: indexPath, item: identity)
         }

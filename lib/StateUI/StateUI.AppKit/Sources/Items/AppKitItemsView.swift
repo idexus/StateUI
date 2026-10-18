@@ -36,7 +36,7 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
     let cells: ItemsCells
     let collection = AppKitCollection()
     private let scroller = NSScrollView()
-    private var source: NSCollectionViewDiffableDataSource<Int, String>!
+    private var source: NSCollectionViewDiffableDataSource<String, String>!
     private var layoutShape = ItemsLayout.list()
     private var mode = SelectionMode.none
     private var framed = (header: false, footer: false)
@@ -105,10 +105,10 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
             lay(layout)
         }
         if changes != nil {
-            var snapshot = NSDiffableDataSourceSnapshot<Int, String>()
-            for (index, section) in cells.entries.sections.enumerated() {
-                snapshot.appendSections([index])
-                snapshot.appendItems(section.items, toSection: index)
+            var snapshot = NSDiffableDataSourceSnapshot<String, String>()
+            for section in cells.entries.sections {
+                snapshot.appendSections([section.identity])
+                snapshot.appendItems(section.items, toSection: section.identity)
             }
             source.apply(snapshot, animatingDifferences: changes?.isEmpty == false && !reducesMotion())
         }
@@ -169,8 +169,8 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
 
     // MARK: - The cells
 
-    private func makeSource() -> NSCollectionViewDiffableDataSource<Int, String> {
-        let source = NSCollectionViewDiffableDataSource<Int, String>(collectionView: collection) {
+    private func makeSource() -> NSCollectionViewDiffableDataSource<String, String> {
+        let source = NSCollectionViewDiffableDataSource<String, String>(collectionView: collection) {
             [weak self] collection, indexPath, identity in
             guard let cell = collection.makeItem(withIdentifier: Self.item, for: indexPath) as? AppKitItemCell
             else { return nil }

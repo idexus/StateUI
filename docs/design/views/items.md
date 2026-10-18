@@ -10,7 +10,9 @@ virtualization stands inside the platform's.
 
 Every entry the list shows has an identity, and the element carries all of
 them in order as one property, `ItemsViewContract.items` (`ItemsEntries`):
-the list's header and footer, and each group's header, items and footer. A
+the list's header and footer, and each group by its name with its header,
+items and footer - the name `.id` gave it, else its place, two groups of one
+name told apart as two items are, since a host knows a group by its name. A
 list with no groups is one section with neither. An item's identity is
 `String(describing:)` of its id, and in a list of groups the group's name, a
 unit separator, and that - so two groups may hold equal items. A header or a

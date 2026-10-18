@@ -11,6 +11,9 @@
 public struct ItemsEntries: Equatable, Sendable, HostRepresentable {
     /// One group of items, with the header and the footer it has.
     public struct Section: Equatable, Sendable {
+        /// The group's name: what `.id` named it, else its place - which a host knows the group by.
+        public let identity: String
+
         /// The header's identity, where the group has one.
         public let header: String?
 
@@ -20,8 +23,9 @@ public struct ItemsEntries: Equatable, Sendable, HostRepresentable {
         /// Its items' identities, in order.
         public let items: [String]
 
-        /// A group of `items`, with a header and a footer where they are named.
-        public init(header: String? = nil, footer: String? = nil, items: [String]) {
+        /// The group named `identity`, of `items`, with a header and a footer where they are named.
+        public init(_ identity: String, header: String? = nil, footer: String? = nil, items: [String]) {
+            self.identity = identity
             self.header = header
             self.footer = footer
             self.items = items
@@ -63,12 +67,14 @@ public struct ItemsEntries: Equatable, Sendable, HostRepresentable {
         return all
     }
 
-    /// The header and footer, each named or nothing, then each section the
-    /// same way with its items.
+    /// The header and footer, each named or nothing, then each section by its
+    /// name, the same way with its items.
     public var propValue: PropValue {
         .values([
             Self.named(header), Self.named(footer),
-            .values(sections.map { .values([Self.named($0.header), Self.named($0.footer), .strings($0.items)]) }),
+            .values(sections.map {
+                .values([.string($0.identity), Self.named($0.header), Self.named($0.footer), .strings($0.items)])
+            }),
         ])
     }
 
@@ -82,11 +88,11 @@ public struct ItemsEntries: Equatable, Sendable, HostRepresentable {
 
         var sections: [Section] = []
         for section in written {
-            guard case .values(let parts) = section, parts.count == 3,
-                  let header = Self.identity(parts[0]), let footer = Self.identity(parts[1]),
-                  case .strings(let items) = parts[2]
+            guard case .values(let parts) = section, parts.count == 4, case .string(let identity) = parts[0],
+                  let header = Self.identity(parts[1]), let footer = Self.identity(parts[2]),
+                  case .strings(let items) = parts[3]
             else { return nil }
-            sections.append(Section(header: header, footer: footer, items: items))
+            sections.append(Section(identity, header: header, footer: footer, items: items))
         }
         self.init(header: header, footer: footer, sections: sections)
     }
