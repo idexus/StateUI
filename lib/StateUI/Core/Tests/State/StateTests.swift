@@ -177,6 +177,18 @@ final class StateTests: XCTestCase {
         XCTAssertEqual(owner.profile.age, 30, "and leaves the rest of it alone")
     }
 
+    /// A write through a part of a state puts the whole back, and reads the whole it starts from without being its
+    /// reader: a body writing through `$profile.name` does not become `profile`'s reader by that write.
+    func testAWriteThroughAPartRecordsNoRead() {
+        let settings = Settings()
+        let name = settings.name
+
+        let (_, reads) = ReadScope.collect { name.wrappedValue = "typed" }
+
+        XCTAssertTrue(reads.isEmpty, "the write read nothing a view would be built again for")
+        XCTAssertEqual(settings.profile.name, "typed")
+    }
+
     func testStateOnAViewSurvivesTheRebuild() {
         let renders = Renders()
 
