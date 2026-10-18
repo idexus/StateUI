@@ -746,6 +746,56 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(log.presentedWriting, [true])
     }
 
+    /// The channels one message opens start at one time, the message's: a slow apply reading the clock between
+    /// them starts no channel later than another.
+    @MainActor
+    func testTheChannelsOneMessageOpensStartAtItsTime() throws {
+        var clock = 0.0
+        let animator = Animator()
+        let tree = MountedTree(
+            core: CoreLink(), intake: PatchIntake(), stateChannels: StateChannels(animator: animator),
+            describedMotion: DescribedMotion(animator: animator),
+            layoutMotion: LayoutMotion(animator: animator, now: { 0 }, reducesMotion: { false }),
+            now: { clock += 40; return clock }, reducesMotion: { false },
+            diagnostics: DiagnosticText(tallies: false, inspects: false) { _ in },
+            makeNative: { ReadingNative($0) })
+        defer { Renderer.shared.clearStates() }
+
+        let law = Motion.eased(.milliseconds(400), .linear)
+        let states = [State(wrappedValue: 0.0, motion: law), State(wrappedValue: 0.0, motion: law)]
+        let images = try states.map { try XCTUnwrap($0.projectedValue.journeyImage) }
+        for image in images {
+            // What the differ sets as an element registers the state.
+            image.ties = 1
+            image.door = .property
+            image.laneKind = .number
+        }
+        for state in states { state.wrappedValue = 1 }
+        _ = HostBoundary.cycle(.display, now: 0, reducesMotion: false)
+        let bindings = images.map {
+            HostStateBinding(state: Renderer.shared.number(for: $0), mode: .out, kind: .property, laneKind: .number)
+        }
+
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged(bindings.enumerated().map { index, binding in
+            var slider = HostPatch(id: .manual("slider \(index)"), type: .slider)
+            slider.driven = .replace([.value: binding])
+            return slider
+        })
+        tree.apply(stack, complete: true)
+        XCTAssertEqual(tree.stateChannels.count, 2, "the message opened both channels")
+
+        let midway = clock + 100
+        tree.stateChannels.follow(animator.advance(to: midway))
+        let shown = try bindings.map { binding in
+            HostBoundary.journey(from: tree.stateChannels.presentedValue(
+                for: binding, from: try XCTUnwrap(tree.core.value(for: binding)), now: midway, reducesMotion: false))?
+                .value
+        }
+        XCTAssertEqual(shown[0], shown[1], "both set out at the message's time")
+        XCTAssertNotEqual(shown[0], [0], "and travel")
+    }
+
     // MARK: - A tree over a recording native half
 
     @MainActor
@@ -838,6 +888,23 @@ private final class RecordingNative: NativeElement {
     func arrangeChildren() { log.arranged.append(name) }
     func directionChanged() { log.turned.append(name) }
     func leave() { log.left.append(name) }
+}
+
+/// A native half that reads each value it is handed as it is applied, as a host's does.
+private final class ReadingNative: NativeElement {
+    unowned let element: MountedElement
+
+    let presentsView = true
+
+    init(_ element: MountedElement) { self.element = element }
+
+    func standingValue(_ property: Prop) -> HostValue? { nil }
+    func animates(_ property: Prop) -> Bool { false }
+    func applied(changed: Set<Prop>, wasDescribed: Bool) { _ = element.resolvedValue(.value) }
+    func presentFrame(_ changed: Set<Prop>) {}
+    func arrangeChildren() {}
+    func directionChanged() {}
+    func leave() {}
 }
 
 /// An application of two scenes, each a window alone.

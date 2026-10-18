@@ -278,7 +278,8 @@
     }
 
     func presentedValue(for binding: HostStateBinding, from carried: HostStateValue) -> HostStateValue {
-        stateChannels.presentedValue(for: binding, from: carried, now: now(), reducesMotion: reducesMotion())
+        stateChannels.presentedValue(
+            for: binding, from: carried, now: patchTime ?? now(), reducesMotion: patchReducesMotion ?? reducesMotion())
     }
 
     func allocateMount() -> UInt64 {
