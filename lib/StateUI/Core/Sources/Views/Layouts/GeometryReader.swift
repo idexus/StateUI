@@ -133,8 +133,10 @@ public struct GeometryReader: View {
     /// The content, in a Grid that fills the offered space and writes its own
     /// frame into the state this body reads.
     public var body: some View {
+        // An equal frame writes nothing: a rebuilt reader hears its frame once more, and a write would rebuild it
+        // again for every scrolled report.
         Grid { BuiltViews(nodes: frame.map(build) ?? []) }
-            .onFrameChanged(in: space) { frame = $0 }
+            .onFrameChanged(in: space) { if frame != $0 { frame = $0 } }
     }
 }
 
