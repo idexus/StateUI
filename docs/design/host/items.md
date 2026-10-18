@@ -49,8 +49,10 @@ Every render walks the whole tree, so a render a cell would make a scroll
 cost as much as the application is large. The tree builds the entries
 within reach of the cells instead: as many before and after each cell as
 the cells hold, eight at least. A cell coming on screen finds its entry
-built and costs no render; one reaching past the built entries tells the
-tree once, and the render builds a reach at a time. A cell that ends
+built and costs no render; one coming within half a reach of the end of the
+built entries tells the tree, before any cell finds its entry unbuilt, so a
+scroll's renders each build about half a reach - twice as often, each half
+as long, as a render reaching a whole reach past the end. A cell that ends
 showing its entry tells nothing: the entry stays built while it is within
 reach, and leaves with the next render once the cells have moved away.
 Cells far apart, after a jump, build around each and nothing between.

@@ -100,7 +100,7 @@
         if let other = holders[identity], other !== holding { other.letGo() }
         holders[identity] = holding
         held.insert(identity)
-        if !built.contains(identity) { tell() }
+        if !built.contains(identity) || nearsTheBuiltEnd(identity) { tell() }
         let item = item(identity)
         if holding.identity != identity || holding.shown !== item { holding.hold(identity, item) }
     }
@@ -199,7 +199,6 @@
     /// Design: docs/design/host/items.md#within-reach
     private func tell() {
         guard let element, let runtime else { return }
-        let reach = max(8, held.count)
         var within: [String] = []
         var end = -1
         for place in held.compactMap({ positions[$0] }).sorted() {
@@ -211,5 +210,18 @@
         }
         built = Set(within)
         element.send(.realizedChanged, [.strings(within)], in: runtime)
+    }
+
+    /// How many entries before and after each cell the tree builds: as many as the cells hold, eight at least.
+    private var reach: Int { max(8, held.count) }
+
+    /// Whether `identity` stands within half a reach of the end of the entries built: a cell coming that near asks
+    /// for the next ones before it finds one unbuilt, so each render builds about half a reach.
+    /// Design: docs/design/host/items.md#within-reach
+    private func nearsTheBuiltEnd(_ identity: String) -> Bool {
+        guard let place = positions[identity] else { return false }
+        let half = reach / 2
+        return !built.contains(identities[min(place + half, identities.count - 1)])
+            || !built.contains(identities[max(place - half, 0)])
     }
 }

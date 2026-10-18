@@ -88,13 +88,27 @@ final class ItemsCellsTests: XCTestCase {
         XCTAssertNil(cells.item("51"))
     }
 
-    /// A cell asked for an entry already built takes it without a render: a scroll costs a render a reach, not one
-    /// a cell.
+    /// A cell asked for an entry already built, half a reach from the built end, takes it without a render: a scroll
+    /// costs a render a half reach, not one a cell.
     func testAnEntryWithinReachIsHeldWithoutARender() {
         cells.hold("0", in: Cell())
         let renders = runtime.core.tally.renders
-        for identity in 1...8 { cells.hold("\(identity)", in: Cell()) }
+        for identity in 1...4 { cells.hold("\(identity)", in: Cell()) }
         XCTAssertEqual(runtime.core.tally.renders, renders)
+    }
+
+    /// A cell coming within half a reach of the entries built asks for the next ones before it finds one unbuilt:
+    /// each render builds half a reach, twice as often, rather than a whole reach at once.
+    func testACellHalfAReachFromTheBuiltEndBuildsTheNext() {
+        cells.hold("0", in: Cell())
+        for identity in 1...4 { cells.hold("\(identity)", in: Cell()) }
+        XCTAssertNil(cells.item("9"), "a reach of eight around the first cell")
+        let renders = runtime.core.tally.renders
+
+        cells.hold("5", in: Cell())
+
+        XCTAssertEqual(runtime.core.tally.renders, renders + 1, "built already, and half a reach from the end")
+        XCTAssertNotNil(cells.item("13"), "a reach around every cell held")
     }
 
     /// A cell that ended showing its entry tells the tree nothing at once; the entry leaves once the cells moved out
