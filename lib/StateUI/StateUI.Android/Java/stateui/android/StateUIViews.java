@@ -255,6 +255,7 @@ final class StateUIViews {
     }
 
     /** The layers of a button's foreground, by their ids: its picture alone, its menu's arrow, a split button's line. */
+    // Swift: none
     static final int PICTURE_LAYER = 1, MARK_LAYER = 2, ARROW_LAYER = 3, LINE_LAYER = 4;
 
     /**

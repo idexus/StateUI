@@ -11,9 +11,8 @@ import android.widget.FrameLayout;
 /** The Swift host: every method is registered by the head's JNI_OnLoad. */
 final class StateUIHost {
     /** The application's phases, as StateUI numbers them. */
-    static final int ACTIVE = 0;
-    static final int INACTIVE = 1;
-    static final int BACKGROUND = 2;
+    // Swift: ApplicationPhase
+    static final int ACTIVE = 0, INACTIVE = 1, BACKGROUND = 2;
 
     private StateUIHost() {}
 

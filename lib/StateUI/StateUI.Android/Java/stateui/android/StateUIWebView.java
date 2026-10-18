@@ -24,7 +24,8 @@ import java.util.Objects;
  */
 final class StateUIWebView extends FrameLayout {
     /** How a navigation ended, as StateUI numbers it. */
-    private static final int SUCCESS = 1, TIMEOUT = 3, FAILURE = 4;
+    // Swift: WebNavigationResult
+    private static final int UNKNOWN = 0, SUCCESS = 1, CANCELLED = 2, TIMEOUT = 3, FAILURE = 4;
 
     private final long view;
     private WebView web;

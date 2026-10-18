@@ -19,11 +19,14 @@ import android.view.ViewParent;
  */
 final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListener {
     /** What is told through `gestured`, as the Swift host numbers it. */
+    // Swift: AndroidGestureKind
     static final int TAPPED = 0, PINCHED = 3, ENTERED = 4, EXITED = 5, MOVED = 6, PRESSED = 7, RELEASED = 8;
 
     /** A press's phase through `pressed`, and a pinch's, as StateUI numbers them. */
+    // Swift: AndroidPressPhase
     private static final int DOWN = 0, MOVE = 1, LET_GO = 2, TAKEN = 3;
-    private static final int STARTED = 0, RUNNING = 1, COMPLETED = 2, CANCELLED = 3;
+    // Swift: GesturePhase
+    private static final int BEGAN = 0, CHANGED = 1, ENDED = 2, CANCELLED = 3;
 
     private final View host;
     private final long view;
@@ -187,10 +190,10 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
         }
         if (event.getPointerCount() < 2) return;
         boolean lifting = action == MotionEvent.ACTION_POINTER_UP && event.getPointerCount() == 2;
-        int phase = !turning ? STARTED : lifting ? COMPLETED : RUNNING;
+        int phase = !turning ? BEGAN : lifting ? ENDED : CHANGED;
         if (!turning && action != MotionEvent.ACTION_POINTER_DOWN && action != MotionEvent.ACTION_MOVE) return;
         turning = !lifting;
-        if (phase == STARTED) {
+        if (phase == BEGAN) {
             ViewParent parent = host.getParent();
             if (parent != null) parent.requestDisallowInterceptTouchEvent(true);
         }
@@ -224,7 +227,7 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
         if (handSpeed != null) handSpeed.recycle();
         handSpeed = VelocityTracker.obtain();
         handSpeed.addMovement(event);
-        StateUIHost.handed(view, STARTED, event.getX() / density, event.getY() / density, 0, 0);
+        StateUIHost.handed(view, BEGAN, event.getX() / density, event.getY() / density, 0, 0);
     }
 
     /**
@@ -253,13 +256,13 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
         if (handPending) {
             if (Math.hypot(middleX - handX, middleY - handY) <= slop) return;
             handPending = false;
-            handTaking = StateUIHost.handed(view, RUNNING, dx, dy, 0, 0);
+            handTaking = StateUIHost.handed(view, CHANGED, dx, dy, 0, 0);
             if (!handTaking) return;
             ViewParent parent = host.getParent();
             if (parent != null) parent.requestDisallowInterceptTouchEvent(true);
             cancelOwn(event);
         } else if (handTaking) {
-            StateUIHost.handed(view, RUNNING, dx, dy, 0, 0);
+            StateUIHost.handed(view, CHANGED, dx, dy, 0, 0);
         } else {
             return;
         }
@@ -279,7 +282,7 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
             vx = handSpeed.getXVelocity() / density;
             vy = handSpeed.getYVelocity() / density;
         }
-        StateUIHost.handed(view, letGo ? COMPLETED : CANCELLED, 0, 0, vx, vy);
+        StateUIHost.handed(view, letGo ? ENDED : CANCELLED, 0, 0, vx, vy);
         handPending = false;
         handTaking = false;
         if (handSpeed != null) {
@@ -335,20 +338,20 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
             pressing = false;
             dragging = false;
         }
-        pinched(STARTED, 1, detector);
+        pinched(BEGAN, 1, detector);
         return true;
     }
 
     @Override
     public boolean onScale(ScaleGestureDetector detector) {
-        pinched(RUNNING, detector.getScaleFactor(), detector);
+        pinched(CHANGED, detector.getScaleFactor(), detector);
         return true;
     }
 
     @Override
     public void onScaleEnd(ScaleGestureDetector detector) {
         pinching = false;
-        report(PINCHED, cancelling ? CANCELLED : COMPLETED, 1, pinchX, pinchY);
+        report(PINCHED, cancelling ? CANCELLED : ENDED, 1, pinchX, pinchY);
     }
 
     /**

@@ -299,7 +299,7 @@ enum JavaNatives {
             nonisolated(unsafe) var made: jobject?
             MainActor.assumeIsolated {
                 guard let list = AndroidView.find(number) as? AndroidItemsView else { return }
-                made = Java.jni.NewLocalRef(Java.env, list.makeCell(item: kind == 0).reference)
+                made = Java.jni.NewLocalRef(Java.env, list.makeCell(item: AndroidItemKind(rawValue: kind) == .item).reference)
             }
             return made
         }

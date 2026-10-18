@@ -27,6 +27,20 @@ makes, so it runs inside its own frame of local references
 right after it, or with the frame of local references around that call, so a
 render that writes many never fills a frame.
 
+## Numbers across
+
+A closed vocabulary crosses as a number - a gesture's kind, a press's step, a
+menu entry's marks, a canvas instruction - which the Java relay names in its
+constants and Swift in an enum, never as a bare number on either side. Each
+Java constant statement says the Swift enum it mirrors on the line before it
+(`// Swift: AndroidGestureKind`, `// Swift: GesturePhase`, `// Swift: none`
+for one that never crosses), name for name - `LET_GO` is `letGo` - and number
+for number, both ways complete (`RelayVocabularyTests`), so a member one side
+adds or renumbers fails a test rather than compile and mean something else.
+Where the vocabulary is the library's or the host layer's own - a gesture's
+phase, an anchor, a path's command, a canvas instruction - the mirror is that
+enum; one the Android host alone speaks stands in `JavaVocabularies.swift`.
+
 ## Finding a class
 
 `FindClass` looks in the class loader of the Java method below it on the

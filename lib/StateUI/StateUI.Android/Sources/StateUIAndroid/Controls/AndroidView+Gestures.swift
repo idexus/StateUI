@@ -39,19 +39,19 @@ extension AndroidView {
     /// a pinch's step and where it is centred in points, the pointer.
     func heard(kind: Int32, phase: Int32, x: Double, y: Double, z: Double) {
         let point = Point(x: x, y: y)
-        let input: HeardInput? = switch kind {
-        case 0: .tap(run: Int(phase))
-        case 3: GesturePhase(rawValue: phase).map { phase in
+        let input: HeardInput? = switch AndroidGestureKind(rawValue: kind) {
+        case .tapped: .tap(run: Int(phase))
+        case .pinched: GesturePhase(rawValue: phase).map { phase in
             let size = standingFrame
             let at = PinchStep.share(of: Point(x: y, y: z), width: size.width, height: size.height)
             return .pinch(phase, scale: x, at: at)
         }
-        case 4: .pointer(.pointerEntered, point)
-        case 5: .pointer(.pointerExited, point)
-        case 6: .pointer(.pointerMoved, point)
-        case 7: .pointer(.pointerPressed, point)
-        case 8: .pointer(.pointerReleased, point)
-        default: nil
+        case .entered: .pointer(.pointerEntered, point)
+        case .exited: .pointer(.pointerExited, point)
+        case .moved: .pointer(.pointerMoved, point)
+        case .pressed: .pointer(.pointerPressed, point)
+        case .released: .pointer(.pointerReleased, point)
+        case nil: nil
         }
         if let input { _ = onHeard?(input) }
     }
@@ -112,19 +112,19 @@ extension AndroidView {
         let started = Java.frame {
             Java.callStaticBool(JavaAPI.drags, JavaAPI.startDrag, .object(reference), .long(number), .object(Java.string(words)))
         }
-        if started { heardDrag(kind: 0, words: nil) }
+        if started { heardDrag(kind: AndroidDragEvent.started.rawValue, words: nil) }
         return started
     }
 
     /// What the drag listener says the view heard, by the kind `StateUIDrags` numbers.
     func heardDrag(kind: Int32, words: String?) {
-        let input: HeardInput? = switch kind {
-        case 0: .dragStarted
-        case 1: .dragEnded
-        case 2: .dragOver
-        case 3: .dragLeft
-        case 4: .dropped(words ?? "")
-        default: nil
+        let input: HeardInput? = switch AndroidDragEvent(rawValue: kind) {
+        case .started: .dragStarted
+        case .ended: .dragEnded
+        case .over: .dragOver
+        case .left: .dragLeft
+        case .dropped: .dropped(words ?? "")
+        case nil: nil
         }
         if let input { onDragHeard?(input) }
     }
@@ -138,10 +138,11 @@ extension AndroidView {
     /// layer's rule. Whether it is one now, which takes the rest of the touch.
     /// Design: docs/design/platforms/android/controls.md#gestures
     func heardPress(phase: Int32, at point: Point) -> Bool {
-        switch phase {
-        case 0: press.pressed(at: point)
-        case 1: press.moved(to: point).forEach { _ = onHeard?($0) }
-        default: if let end = press.ended(letGo: phase == 2) { _ = onHeard?(end) }
+        switch AndroidPressPhase(rawValue: phase) {
+        case .down: press.pressed(at: point)
+        case .move: press.moved(to: point).forEach { _ = onHeard?($0) }
+        case .letGo, .taken, nil:
+            if let end = press.ended(letGo: phase == AndroidPressPhase.letGo.rawValue) { _ = onHeard?(end) }
         }
         return press.isDragging
     }

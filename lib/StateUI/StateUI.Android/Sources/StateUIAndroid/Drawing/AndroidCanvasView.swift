@@ -37,10 +37,10 @@ final class AndroidCanvasView: AndroidView {
 
     /// A finger's phase - down, moved, lifted - at `point`.
     func touched(phase: Int32, at point: Point) {
-        switch phase {
-        case 0: onPressed?(point)
-        case 1: onDragged?(point)
-        default: onReleased?(point)
+        switch AndroidCanvasTouch(rawValue: phase) {
+        case .pressed: onPressed?(point)
+        case .dragged: onDragged?(point)
+        case .released, nil: onReleased?(point)
         }
     }
 

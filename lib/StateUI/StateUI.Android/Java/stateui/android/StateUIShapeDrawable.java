@@ -19,9 +19,8 @@ import android.graphics.drawable.Drawable;
  */
 final class StateUIShapeDrawable extends Drawable {
     /** The shape's kinds, as the Swift host numbers them. */
-    static final int RECTANGLE = 0;
-    static final int ROUNDED = 1;
-    static final int ELLIPSE = 2;
+    // Swift: AndroidDrawableShape
+    static final int RECTANGLE = 0, ROUNDED = 1, ELLIPSE = 2;
 
     private final Paint fill = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint stroke = new Paint(Paint.ANTI_ALIAS_FLAG);

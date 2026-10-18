@@ -36,14 +36,14 @@ final class AndroidShapeDrawable {
         /// than half the side it rounds of a room `size` pixels, where the size is known.
         func drawn(density: Double, in size: (width: Double, height: Double)?) -> (kind: Int32, radii: [Float]) {
             switch self {
-            case .rectangle: (0, Array(repeating: 0, count: 8))
-            case .ellipse: (2, Array(repeating: 0, count: 8))
+            case .rectangle: (AndroidDrawableShape.rectangle.rawValue, Array(repeating: 0, count: 8))
+            case .ellipse: (AndroidDrawableShape.ellipse.rawValue, Array(repeating: 0, count: 8))
             case .capsule:
-                (1, Array(repeating: Float(size.map {
+                (AndroidDrawableShape.rounded.rawValue, Array(repeating: Float(size.map {
                     BoxArithmetic.cornerRadius(of: .capsule, width: $0.width, height: $0.height)
                 } ?? 0), count: 8))
             case .rounded(let radii):
-                (1, radii.flatMap { radius -> [Float] in
+                (AndroidDrawableShape.rounded.rawValue, radii.flatMap { radius -> [Float] in
                     let pixels = radius * density
                     let fitted = size.map { BoxArithmetic.fitted(pixels, width: $0.width, height: $0.height) } ?? pixels
                     return [Float(fitted), Float(fitted)]
@@ -128,18 +128,19 @@ final class AndroidShapeDrawable {
             return (drawn.map(\.0), drawn.map(\.1))
         }
 
+        let none = (AndroidBrushKind.none.rawValue, [Int32](), [Float](), [Float]())
         switch HostBrush(value) {
         case .none:
-            return (0, [], [], [])
+            return none
         case .solid(let color):
-            return AndroidView.argb(color).map { (1, [$0], [0], []) } ?? (0, [], [], [])
+            return AndroidView.argb(color).map { (AndroidBrushKind.solid.rawValue, [$0], [0], []) } ?? none
         case .linear(let from, let to, let run):
             let (colors, offsets) = stops(run)
-            return (2, colors, offsets, [from.x, from.y, to.x, to.y].map(Float.init))
+            return (AndroidBrushKind.linear.rawValue, colors, offsets, [from.x, from.y, to.x, to.y].map(Float.init))
         case .radial(let center, let radius, let run):
             let (colors, offsets) = stops(run)
             let reach = size.map { HostBrush.reach(of: radius, width: $0.width, height: $0.height) } ?? 0
-            return (3, colors, offsets, [center.x, center.y, reach].map(Float.init))
+            return (AndroidBrushKind.radial.rawValue, colors, offsets, [center.x, center.y, reach].map(Float.init))
         }
     }
 

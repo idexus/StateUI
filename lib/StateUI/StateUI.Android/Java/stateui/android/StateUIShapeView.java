@@ -21,16 +21,12 @@ import java.util.Arrays;
  */
 final class StateUIShapeView extends View {
     /** The shape's kinds, as the Swift host numbers them. */
-    static final int RECTANGLE = 0;
-    static final int ELLIPSE = 1;
-    static final int DRAWN = 2;
+    // Swift: AndroidShapeKind
+    static final int RECTANGLE = 0, ELLIPSE = 1, DRAWN = 2;
 
     /** A drawn command's kinds, as the Swift host numbers them, each followed by its points. */
-    static final int MOVE = 0;
-    static final int LINE = 1;
-    static final int CUBIC = 2;
-    static final int QUADRATIC = 3;
-    static final int CLOSE = 4;
+    // Swift: HostCurveCommand.Kind
+    static final int MOVE = 0, LINE = 1, CUBIC = 2, QUADRATIC = 3, CLOSE = 4;
 
     private final StateUIBrush brush = new StateUIBrush();
     private final Paint fill = new Paint(Paint.ANTI_ALIAS_FLAG);

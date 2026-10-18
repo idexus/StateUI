@@ -23,11 +23,8 @@ import java.util.ArrayList;
 final class StateUIDrags {
     private StateUIDrags() {}
 
-    static final int STARTED = 0;
-    static final int ENDED = 1;
-    static final int OVER = 2;
-    static final int LEFT = 3;
-    static final int DROPPED = 4;
+    // Swift: AndroidDragEvent
+    static final int STARTED = 0, ENDED = 1, OVER = 2, LEFT = 3, DROPPED = 4;
 
     /** The leave to read the documents dropped, kept while the application runs. */
     private static final ArrayList<DragAndDropPermissions> granted = new ArrayList<>();

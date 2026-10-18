@@ -23,9 +23,8 @@ import android.widget.Toolbar;
  */
 final class StateUIBar extends Toolbar implements View.OnClickListener {
     /** What the navigation button does, as the Swift host numbers it. */
-    static final int NONE = 0;
-    static final int BACK = 1;
-    static final int SIDEBAR = 2;
+    // Swift: AndroidBarNavigation
+    static final int NONE = 0, BACK = 1, SIDEBAR = 2;
 
     private final long view;
 
@@ -40,11 +39,12 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
     private View titleView;
 
     /** The theme the bar's actions take their words from: the activity's, light words, or dark words. */
-    static final int PLATFORM = 0, LIGHT_WORDS = 1, DARK_WORDS = 2;
+    // Swift: AndroidBarView.Words
+    static final int PLATFORM = 0, LIGHT = 1, DARK = 2;
 
     /** A bar whose actions take their words from `words`: Android's overlay for a dark bar or a light one. */
     StateUIBar(Context context, long view, int words) {
-        super(words == PLATFORM ? context : new ContextThemeWrapper(context, words == LIGHT_WORDS
+        super(words == PLATFORM ? context : new ContextThemeWrapper(context, words == LIGHT
                 ? android.R.style.ThemeOverlay_Material_Dark_ActionBar
                 : android.R.style.ThemeOverlay_Material_ActionBar));
         this.view = view;

@@ -92,17 +92,18 @@ final class AndroidBarView: AndroidView {
     }
 
     private func showNavigation(_ navigation: Navigation, tint: Int32) {
-        let (kind, picture, description): (Int32, HostPicture?, String) = switch navigation {
-        case .none: (0, nil, "")
-        case .back: (1, nil, "Back")
-        case .sidebar(let picture): (2, picture, "Menu")
+        let said = CoreLink().chromeWords
+        let (kind, picture, description): (AndroidBarNavigation, HostPicture?, String) = switch navigation {
+        case .none: (.none, nil, "")
+        case .back: (.back, nil, said.back)
+        case .sidebar(let picture): (.sidebar, picture, said.sidebar)
         }
         let bitmap = picture.flatMap(AndroidPictures.bitmap)
         let words = Java.string(description)
         withExtendedLifetime(bitmap) {
             Java.call(
                 reference, JavaAPI.setBarNavigation,
-                .int(kind), .object(bitmap?.reference), .int(tint), .object(words))
+                .int(kind.rawValue), .object(bitmap?.reference), .int(tint), .object(words))
         }
         Java.release(local: words)
     }
