@@ -216,6 +216,23 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
+    /// A list of groups scrolls to an item by the identity its own source wrote for it - its group's name before it
+    /// - without being told the group.
+    func testScrollingAGroupedListFindsTheItemsGroup() async throws {
+        let list = Aim(ItemsView<String>.self)
+        let fruit = Section(["Apple", "Pear"]) { Text($0) }.id("Fruit")
+        Renders().render(stack([ItemsView(groups: [fruit]).aim(list).node], id: "root"))
+        drain()
+
+        let task = Self.begin { try await list.scrollTo("Pear") }
+        let batch = drain()
+
+        XCTAssertEqual(batch.first?.arguments.dropFirst().first, .string("Fruit\u{1F}Pear"))
+
+        await finish(batch)
+        _ = try? await task.value
+    }
+
     /// A map slides on three numbers after the view: latitude, longitude, and
     /// the radius in METERS.
     func testMovingAMapCrossesWithItsArgumentsInPlace() async throws {

@@ -70,6 +70,7 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
         element.node.write(ItemsViewContract.itemsLayout, layout)
         element.node.producer = { source.children(realized: realized) }
         element.node.aim = aimed?.box
+        aimed?.box.resolves = { item in (item as? ID).map { source.identities(of: [$0]) } ?? [] }
 
         element.node.addHandler(ItemsViewContract.realizedChanged.token) {
             guard let identities = MemberValues.carried(
