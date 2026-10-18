@@ -209,6 +209,12 @@ final class PagesTests: XCTestCase {
         XCTAssertNil(choice.choose(1, of: 3), "the tab shown already")
         XCTAssertNil(choice.choose(5, of: 3), "no such tab")
         XCTAssertEqual(choice.shown, 1)
+
+        // The tabs shrank under a choice: the tab shown before is the one there is, not the one that went.
+        var shrunk = TabChoice()
+        _ = shrunk.request(4)
+        XCTAssertEqual(shrunk.choose(0, of: 3), 2, "the last of the three shown, not the fifth that went")
+        XCTAssertEqual(shrunk.choose(2, of: 3), 0)
     }
 
     /// The tab shown among the tabs there are: the chosen one while it is there, else the last - one answer for the
