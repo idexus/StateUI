@@ -241,7 +241,8 @@ extension AppKitRenderer: HostPresenter {
     }
 
     func presentFrame(movedChrome: Bool) {
-        if movedChrome { synchronizeWindows() }
+        guard movedChrome else { return }
+        for controller in windowControllers { controller.followFrame(in: runtime) }
     }
 
     func perform(_ call: HostActCall) {

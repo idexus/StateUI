@@ -8,14 +8,15 @@ import Foundation
 @_spi(Host) import StateUIHost
 
 extension AppKitWindowController {
-    /// Composes the window's chrome again from what it shows now.
+    /// Composes the window's chrome again from what it shows now, the page's menus with it.
     func refreshChrome() {
         refreshVisiblePageChrome()
+        host?.pageMenusChanged(in: self)
     }
 
     /// Lays the chrome the host layer composes from what the window shows in AppKit's: the title, the toolbar's way
     /// back, the page's actions and title view, the application's title area, the sidebar's toggle, the bars'
-    /// colours, the tabs beneath the toolbar and the page's menus.
+    /// colours and the tabs beneath the toolbar.
     /// Design: docs/design/host/pages.md#the-windows-chrome
     func refreshVisiblePageChrome() {
         guard let element, let window else { return }
@@ -63,7 +64,6 @@ extension AppKitWindowController {
                 barColor.map { _ in Self.foreground(on: band, written: foreground) }
             })
         synchronizeTabRow(window, windowTabs(arrangement))
-        host?.pageMenusChanged(in: self)
     }
 
     /// A page's action as a toolbar item.

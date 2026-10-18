@@ -805,6 +805,37 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(window.contentRect(forFrameRect: window.frame).size.height, 500, accuracy: 0.001)
     }
 
+    /// A frame moving a window's size moves the window and its chrome alone: no window is made or closed, no sheet,
+    /// menu or restorable state taken again, frame after frame.
+    @MainActor
+    func testAWindowFrameMotionMovesTheWindowAlone() throws {
+        var now = 0.0
+        let renderer = testRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            clock: { now },
+            reducesMotion: { false })
+        defer { renderer.closeForTesting() }
+
+        var initial = testWindow()
+        initial.properties[.width] = .number(600)
+        initial.properties[.height] = .number(400)
+        renderer.applyForTesting(windowTree(initial))
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+
+        var changed = HostPatch(id: .manual("window"), type: .window)
+        changed.properties[.width] = .number(800)
+        changed.transitions[.width] = HostTransition(motion: .eased(.milliseconds(200), .linear))
+        renderer.applyForTesting(windowChange(changed))
+        let synchronizations = renderer.windowSynchronizationCountForTesting
+
+        now = 100
+        renderer.advanceAnimationsForTesting()
+
+        XCTAssertEqual(window.contentRect(forFrameRect: window.frame).size.width, 700, accuracy: 0.001)
+        XCTAssertEqual(renderer.windowSynchronizationCountForTesting, synchronizations, "the windows stood")
+    }
+
     @MainActor
     func testAWindowPositionAxisMovesIndependentlyFromTheLiveFrame() throws {
         var now = 0.0
