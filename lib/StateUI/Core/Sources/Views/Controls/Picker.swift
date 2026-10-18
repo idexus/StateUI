@@ -117,3 +117,17 @@ public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentE
         onEvent(PickerContract.closed, gate: gate, handler)
     }
 }
+
+extension Picker {
+    /// `isOpen` from a state, `$x`, both ways: the host opens and closes the list as the state stands, and the
+    /// user's opening and closing come back into it; no view is rebuilt for it.
+    public func isOpen(_ state: Binding<Bool>) -> Modified {
+        opening(PickerContract.isOpen, by: state, opened: PickerContract.opened, closed: PickerContract.closed)
+    }
+
+    /// `placeholder` from a state, `$x`: the host writes each new text, and no
+    /// view is rebuilt for it.
+    public func placeholder(_ state: Binding<String>) -> Modified {
+        words(PickerContract.placeholder, by: state)
+    }
+}

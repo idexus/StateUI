@@ -21,7 +21,7 @@ public struct PositionIndicator: View {
     private let marks: Marks?
 
     private var count: Given<Int> = .value(0)
-    private var position = 0
+    private var position: Given<Int> = .value(0)
     private var indicatorColor: Given<Color> = .value(Self.dotColor)
     private var currentIndicatorColor: Given<Color> = .value(Self.currentColor)
     private var indicatorSize: Given<Double> = .value(7)
@@ -54,9 +54,9 @@ public struct PositionIndicator: View {
     /// The marks in a row, centred in the room the row is given.
     public var body: some View {
         let shown = Self.shown(
-            count: marks?.nodes.count ?? count.current, position: position,
+            count: marks?.nodes.count ?? count.current, position: position.current,
             maximumVisible: maximumVisible.current, hidesSingle: hidesForSinglePage.current)
-        let current = position
+        let current = position.current
         return HStack {
             ForEach(shown) { place in
                 mark(at: place, current: place == current)
@@ -111,7 +111,7 @@ extension PositionIndicator {
     /// Which dot is the current one, counting from 0 - usually the state a
     /// gallery's `position($shown)` writes.
     public func position(_ value: Int) -> Self {
-        with { $0.position = value }
+        with { $0.position = .value(value) }
     }
 
     /// The colour of a dot that is not the current one.
@@ -147,6 +147,11 @@ extension PositionIndicator {
     /// `count` from a state, `$x`: the row is built again as it changes.
     public func count(_ state: Binding<Int>) -> Self {
         with { $0.count = .state(state) }
+    }
+
+    /// `position` from a state, `$x`: the row is built again as it changes.
+    public func position(_ state: Binding<Int>) -> Self {
+        with { $0.position = .state(state) }
     }
 
     /// `hidesForSinglePage` from a state, `$x`: the row is built again as it changes.

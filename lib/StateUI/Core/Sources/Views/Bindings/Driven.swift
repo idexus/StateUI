@@ -35,6 +35,16 @@ extension Button {
     }
 }
 
+extension RadioButton {
+    /// What the radio button says, carried from a state; see `Text.text(_:)`.
+    ///
+    /// - Parameter state: the state the caption is read from.
+    /// - Returns: the radio button, with its caption carried from that state.
+    public func text(_ state: Binding<String>) -> RadioButton {
+        setValue(TextualElementContract.text, on: state, mode: .out)
+    }
+}
+
 // MARK: - The feeds
 
 extension VisualElement {

@@ -106,3 +106,17 @@ extension Stepper {
         twin(StepperContract.step, by: state)
     }
 }
+
+extension Stepper {
+    /// `minimum` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
+    public func minimum(_ state: Binding<Double>) -> Modified {
+        twin(StepperContract.minimum, carrying: state)
+    }
+
+    /// `maximum` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
+    public func maximum(_ state: Binding<Double>) -> Modified {
+        twin(StepperContract.maximum, carrying: state)
+    }
+}

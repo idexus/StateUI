@@ -123,3 +123,11 @@ public struct TimePicker: ElementView, TextStyleElement, FontElement, TimePicker
         onEvent(TimePickerContract.closed, gate: gate, handler)
     }
 }
+
+extension TimePicker {
+    /// `isOpen` from a state, `$x`, both ways: the host opens and closes the clock face as the state stands, and
+    /// the user's opening and closing come back into it; no view is rebuilt for it.
+    public func isOpen(_ state: Binding<Bool>) -> Modified {
+        opening(TimePickerContract.isOpen, by: state, opened: TimePickerContract.opened, closed: TimePickerContract.closed)
+    }
+}

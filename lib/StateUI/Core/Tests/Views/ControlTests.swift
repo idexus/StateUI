@@ -765,7 +765,7 @@ final class ControlTests: XCTestCase {
         let remaking = Set(LibraryContracts.remaking.map(\.name))
         let allowed: Set<String> = remaking.union([
             // Named rather than valued.
-            "style", "fontFamily", "groupName", "source", "userAgent", "data", "content", "format",
+            "style", "fontFamily", "groupName", "accessibilityIdentifier", "source", "userAgent", "data", "content", "format",
             // A value the host cannot be handed whole.
             "background", "pageBackground", "fill", "stroke", "icon", "icon",
             "icon", "maximumDate",
@@ -802,18 +802,29 @@ final class ControlTests: XCTestCase {
 
                 guard !name.contains("<") else { continue }
 
+                // Keyed by the file: a twin stands beside its value form, in the file of its tier or control, so
+                // one type's twin never hides another's missing one.
                 if type.hasPrefix("Binding<"), type.hasSuffix(">") {
                     let bare = String(type.dropFirst("Binding<".count).dropLast())
 
-                    twins.insert(name + ":" + bare)
+                    twins.insert(path + "|" + name + ":" + bare)
                 } else if !type.contains("<"), line[returns.upperBound...].hasPrefix("Modified") {
-                    values.insert(name + ":" + type)
+                    values.insert(path + "|" + name + ":" + type)
                 }
             }
         }
 
+        // A menu item is a tier no view wears: its words and its enabling are rebuilt with its menu. The driven
+        // text goes per control, its direction differing (bindings.md, driven text): the tier holds the value form.
+        let tiersNoViewWears = ["Views/Mixins/MenuItemElement.swift"]
+        let perControl = ["Views/Mixins/TextualElement.swift|text:String"]
         let missing = values
-            .filter { !twins.contains($0) && !allowed.contains(String($0.split(separator: ":")[0])) }
+            .filter { value in
+                let parts = value.split(separator: "|")
+                let name = parts[1].split(separator: ":")[0]
+                return !twins.contains(value) && !allowed.contains(String(name))
+                    && !tiersNoViewWears.contains(String(parts[0])) && !perControl.contains(value)
+            }
             .sorted()
 
         XCTAssertGreaterThan(values.count, 130, "the scan read almost nothing")

@@ -54,3 +54,11 @@ public struct Polyline: FilledShape, CorneredShape, PolylineProperties {
     }
 
 }
+
+extension Polyline {
+    /// `fillRule` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
+    public func fillRule(_ state: Binding<FillRule>) -> Modified {
+        twin(PolylineContract.fillRule, carrying: state)
+    }
+}

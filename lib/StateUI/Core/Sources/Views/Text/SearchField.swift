@@ -84,3 +84,11 @@ public struct SearchField: TextInput, TextualElement, FontElement, TextAlignment
         onEvent(SearchFieldContract.submitted, gate: gate, handler)
     }
 }
+
+extension SearchField {
+    /// `submitLabel` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
+    public func submitLabel(_ state: Binding<SubmitLabel>) -> Modified {
+        twin(SearchFieldContract.submitLabel, carrying: state)
+    }
+}

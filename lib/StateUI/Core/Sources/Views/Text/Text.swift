@@ -137,3 +137,11 @@ extension Text {
         twin(TextContract.verticalTextAlignment, by: state)
     }
 }
+
+extension Text {
+    /// `lineBreak` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
+    public func lineBreak(_ state: Binding<LineBreak>) -> Modified {
+        twin(TextContract.lineBreak, carrying: state)
+    }
+}
