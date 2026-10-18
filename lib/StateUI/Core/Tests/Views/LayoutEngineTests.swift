@@ -24,6 +24,17 @@ final class LayoutEngineTests: XCTestCase {
     /// The bench the layouts are rendered, told their room and turned on.
     private let bench = LayoutBench()
 
+    // MARK: - The walk
+
+    /// THE ENGINE NAMES EVERY PART A MIRROR WOULD, in the same order under the same labels: a field added and not
+    /// named would be an input never compared, or a state never kept.
+    func testTheEngineNamesEveryPartAMirrorWould() {
+        let engine = LayoutEngine([1, 2]) { Text("\($0)") } placements: { _, _ in [] }
+            .axis(\.self, input: .scroll(.horizontal), range: 0...1)
+
+        XCTAssertEqual(engine.walkedParts.map(\.label), Mirror(reflecting: engine).children.map { $0.label ?? "" })
+    }
+
     // MARK: - The arithmetic
 
     /// THE ROOM FROM THE LAYOUT'S OWN TOP LEFT: the arithmetic is handed the size the layout was given at the

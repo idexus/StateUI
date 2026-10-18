@@ -585,6 +585,22 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     }
 }
 
+extension LayoutEngine: WalkedView {
+    /// The parts the walk reads, as a mirror would list them, with no mirror made: a mirror of a generic type works
+    /// its fields' types out at every reading, and every render of a layout walks its engine
+    /// (`LayoutEngineTests.testTheEngineNamesEveryPartAMirrorWould` holds the list to the fields).
+    var walkedParts: [(label: String, value: Any)] {
+        [
+            ("_ownPhase", _ownPhase), ("_held", _held), ("_flung", _flung), ("_grip", _grip), ("_item", _item),
+            ("_placements", _placements), ("_shown", _shown), ("_from", _from), ("_room", _room),
+            ("source", source), ("pinned", pinned as Any), ("axes", axes), ("curve", curve as Any),
+            ("followed", followed), ("mask", mask as Any), ("tapped", tapped as Any),
+            ("itemStart", itemStart as Any), ("dragged", dragged as Any), ("dismissal", dismissal as Any),
+            ("law", law), ("named", named as Any),
+        ]
+    }
+}
+
 extension LayoutEngine where Phase == Double {
     /// The same, with a phase of one axis: a `Double`.
     public init<Content: View>(
