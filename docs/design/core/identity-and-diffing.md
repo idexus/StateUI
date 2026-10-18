@@ -167,6 +167,22 @@ The walk stops at a `Binding` (the storage is its lender's), at an aim the view
 was handed (its parent's), at a `Node` (built interface), at any `Equatable`
 value (compared whole) and at any class (a reference keeps itself alive).
 
+### A type learnt once
+
+What a value is to the walk - a box, a slot, a binding, a node, a value
+compared whole, an object, a struct of fields or something only a mirror
+opens - is a matter of its type, so the walk asks it of the first value of
+each type it meets and keeps the answer (`StateParts.kinds`), with the
+bracketed name a stored view adds to its path. A struct's fields are then
+reached by key paths (`_forEachFieldWithKeyPath`), in a mirror's order and
+by its labels, which the walk checks once - so a view of plain fields is
+walked with no mirror made, no type name spelled and no failing casts, on
+every render; a mirror is made per render only for what no key path reaches:
+an enum, a tuple, a collection, a struct holding a closure or a reference
+held weakly. The paths are the mirror's to the letter, so a box pairs as it
+did. A walk of 48 icons a render cost a fifth of a render with no compiler for
+WebAssembly.
+
 ## Carrying a view
 
 A composed view whose parent ran again is carried - not built, not compared,

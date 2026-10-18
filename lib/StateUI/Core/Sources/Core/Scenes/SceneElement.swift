@@ -18,7 +18,7 @@ struct SceneElement: Element {
         let authored = SceneElement.unwrapped(scene)
 
         var node = Node.composed(
-            self, type: String(reflecting: type(of: authored)), scene: record
+            self, type: qualifiedName(of: type(of: authored)), scene: record
         ) { [record, scene] in
             SceneElement.build(record, scene)
         }
