@@ -11,7 +11,7 @@ enum ValueText {
     /// throws, and for a number JSON cannot say - an infinity, not a number.
     static func write<Value: Encodable>(_ value: Value) throws -> String {
         let root = Written()
-        try value.encode(to: Writing(into: root, codingPath: []))
+        try put(value, into: root, codingPath: [])
 
         var text = ""
         root.append(to: &text)

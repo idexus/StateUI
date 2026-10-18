@@ -146,7 +146,7 @@ extension ValueText {
         /// Every value goes through here, primitives included - which is how a
         /// primitive reaches the single-value container that knows its spelling.
         private func put<T: Encodable>(_ value: T, _ key: Key) throws {
-            try value.encode(to: Writing(into: into.member(key.stringValue), codingPath: codingPath + [key]))
+            try ValueText.put(value, into: into.member(key.stringValue), codingPath: codingPath + [key])
         }
 
         mutating func encodeNil(forKey key: Key) throws { into.member(key.stringValue).kind = .null }
@@ -194,7 +194,7 @@ extension ValueText {
 
         private func put<T: Encodable>(_ value: T) throws {
             let key = PlaceKey(intValue: count)
-            try value.encode(to: Writing(into: into.next(), codingPath: codingPath + [key]))
+            try ValueText.put(value, into: into.next(), codingPath: codingPath + [key])
         }
 
         mutating func encodeNil() throws { into.next().kind = .null }
@@ -253,7 +253,7 @@ extension ValueText {
         mutating func encode(_ value: UInt64) throws { into.kind = .number(String(value)) }
 
         mutating func encode<T: Encodable>(_ value: T) throws {
-            try value.encode(to: Writing(into: into, codingPath: codingPath))
+            try ValueText.put(value, into: into, codingPath: codingPath)
         }
 
         /// A number as JSON can say it - Swift's own description, which reads
@@ -266,5 +266,57 @@ extension ValueText {
 
             return "\(value)"
         }
+    }
+}
+
+extension ValueText {
+    /// Writes one value: one whose own `encode(to:)` hands its elements over in its hash's order is written in the
+    /// order of their text, so equal values are one text.
+    /// Design: docs/design/core/scenes.md#what-the-platform-keeps
+    static func put<T: Encodable>(_ value: T, into written: Written, codingPath: [CodingKey]) throws {
+        if let unordered = value as? any WrittenInOrder {
+            try unordered.write(into: written, codingPath: codingPath)
+        } else {
+            try value.encode(to: Writing(into: written, codingPath: codingPath))
+        }
+    }
+
+    /// One value written apart, with its text to sort it by.
+    static func apart<T: Encodable>(_ value: T, codingPath: [CodingKey]) throws -> (text: String, value: Written) {
+        let written = Written()
+        try put(value, into: written, codingPath: codingPath)
+        var text = ""
+        written.append(to: &text)
+        return (text, written)
+    }
+}
+
+/// A value whose own `encode(to:)` writes its elements in its hash's order.
+protocol WrittenInOrder {
+    func write(into written: ValueText.Written, codingPath: [CodingKey]) throws
+}
+
+extension Set: WrittenInOrder where Element: Encodable {
+    func write(into written: ValueText.Written, codingPath: [CodingKey]) throws {
+        let items = try enumerated().map { index, element in
+            try ValueText.apart(element, codingPath: codingPath + [ValueText.PlaceKey(intValue: index)])
+        }
+        written.kind = .array(items.sorted { $0.text < $1.text }.map(\.value))
+    }
+}
+
+extension Dictionary: WrittenInOrder where Key: Encodable, Value: Encodable {
+    /// Words and whole numbers key an object, written sorted by its keys; any other key, the pairs a dictionary
+    /// reads back, sorted by the key's text.
+    func write(into written: ValueText.Written, codingPath: [CodingKey]) throws {
+        if Key.self == String.self || Key.self == Int.self {
+            try encode(to: ValueText.Writing(into: written, codingPath: codingPath))
+            return
+        }
+
+        let pairs = try map { key, value in
+            (key: try ValueText.apart(key, codingPath: codingPath), value: try ValueText.apart(value, codingPath: codingPath))
+        }
+        written.kind = .array(pairs.sorted { $0.key.text < $1.key.text }.flatMap { [$0.key.value, $0.value.value] })
     }
 }
