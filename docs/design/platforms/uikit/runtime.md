@@ -91,7 +91,10 @@ through the runtime's one step for it: the theme when the scene's traits
 turn it, the locale when the user or the time zone changes it, the battery
 when its level or state moves or Low Power Mode turns, the network when its
 path moves. The theme is the whole application's: every scene stands in the
-one the user chose, so the first scene's traits say it. A battery UIKit knows
+one the user chose, so one scene's traits say it - a scene iOS holds: one it
+lets go of is followed no more, and another it holds, else the next to
+connect, is followed in its place, since iOS makes a scene anew for a session
+it brings back. A battery UIKit knows
 nothing of - the simulator's - is none, full, on mains; Low Power Mode is the
 battery saver. The network is reachable when its path is satisfied, local
 when interfaces stand but no route leads out; each interface available to

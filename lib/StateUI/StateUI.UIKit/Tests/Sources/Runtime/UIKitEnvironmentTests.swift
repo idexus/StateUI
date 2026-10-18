@@ -10,6 +10,22 @@ import XCTest
 /// What the application stands on, as UIKit tells it: the theme, the user's locale, the battery.
 @MainActor
 final class UIKitEnvironmentTests: XCTestCase {
+    /// The theme is followed on a scene iOS holds: one it let go of is followed no more, and the scene connecting
+    /// next is - iOS makes a scene anew for a session it brings back.
+    @MainActor
+    func testTheThemeIsFollowedOnAConnectedScene() throws {
+        let scene = try XCTUnwrap(TestScene.scene)
+        let host = UIKitRenderer.running { Text("Themed") }
+        defer { host.finish() }
+        XCTAssertTrue(host.environment.followedSceneForTesting === scene)
+
+        host.disconnect(scene)
+        XCTAssertNil(host.environment.followedSceneForTesting, "a scene let go of is followed no more")
+
+        host.connect(scene)
+        XCTAssertTrue(host.environment.followedSceneForTesting === scene, "the scene connecting is")
+    }
+
     /// The theme is the one the user's scene stands in: turning dark tells it, and turning light again.
     @MainActor
     func testTheThemeIsTheScenes() throws {

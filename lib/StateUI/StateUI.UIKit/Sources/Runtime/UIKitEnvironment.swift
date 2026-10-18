@@ -21,7 +21,8 @@ final class UIKitEnvironment {
 
     private var observers: [NSObjectProtocol] = []
     private var network: NWPathMonitor?
-    private var watchedScene: (any UITraitChangeRegistration)?
+    private weak var themeScene: UIWindowScene?
+    private var themeWatch: (any UITraitChangeRegistration)?
 
     init(core: CoreLink) {
         self.core = core
@@ -35,15 +36,16 @@ final class UIKitEnvironment {
         watch()
     }
 
-    /// Follows the theme of `scene`, the first iOS connected: what it stands in now, then each change - the
-    /// theme is the whole application's, which every scene follows alike.
+    /// Follows the theme of `scene` where no scene iOS holds is followed: what it stands in now, then each change -
+    /// the theme is the whole application's, which every scene follows alike.
     func followTheme(of scene: UIWindowScene) {
-        guard watchedScene == nil else { return }
+        guard themeScene == nil else { return }
+        themeScene = scene
         reportChange {
             self.reportTheme(scene.traitCollection.userInterfaceStyle)
             self.reportAccent(scene.traitCollection)
         }
-        watchedScene = scene.registerForTraitChanges([UITraitUserInterfaceStyle.self]) {
+        themeWatch = scene.registerForTraitChanges([UITraitUserInterfaceStyle.self]) {
             [weak self] (scene: UIWindowScene, _: UITraitCollection) in
             self?.changed {
                 $0.reportTheme(scene.traitCollection.userInterfaceStyle)
@@ -52,12 +54,15 @@ final class UIKitEnvironment {
         }
     }
 
-    /// Stops following the theme of the scene it followed, which stays.
+    /// Stops following the theme of `scene`, where it is the one followed: iOS let go of it, or a test's host ends.
     func stopFollowingTheme(of scene: UIWindowScene) {
-        guard let watchedScene else { return }
-        scene.unregisterForTraitChanges(watchedScene)
-        self.watchedScene = nil
+        guard scene === themeScene, let themeWatch else { return }
+        scene.unregisterForTraitChanges(themeWatch)
+        self.themeWatch = nil
+        themeScene = nil
     }
+
+    var followedSceneForTesting: UIWindowScene? { themeScene }
 
     private func watch() {
         let center = NotificationCenter.default

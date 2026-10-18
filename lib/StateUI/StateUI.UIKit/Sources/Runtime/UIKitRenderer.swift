@@ -202,9 +202,13 @@ final class UIKitRenderer {
     }
 
     /// A scene iOS let go of - in the background, to come back - takes its window with it; the StateUI window
-    /// stands until its session comes back or the user closes it.
+    /// stands until its session comes back or the user closes it, and the theme is followed on a scene iOS holds.
     func disconnect(_ scene: UIWindowScene) {
         roster.windows.first { $0.1.window?.windowScene === scene }?.1.sceneLeft()
+        environment.stopFollowingTheme(of: scene)
+        if let held = roster.windows.lazy.compactMap({ $0.1.window?.windowScene }).first(where: { $0 !== scene }) {
+            environment.followTheme(of: held)
+        }
     }
 
     /// A scene keeps a value: every window of it writes it in its session's record, for whichever comes back first.
