@@ -96,4 +96,43 @@ final class UIKitButtonMenuTests: XCTestCase {
         let picture = try XCTUnwrap(buttons[0].imageView)
         XCTAssertLessThanOrEqual(picture.frame.maxX, arrow.frame.minX, "\(picture.frame) beside \(arrow.frame)")
     }
+
+    /// Taking a view's context menu away leaves the button's own menu standing: UIKit opens it through an
+    /// interaction of the button's own.
+    func testTakingAContextMenuAwayLeavesTheButtonsOwnMenu() throws {
+        let offered = State(wrappedValue: true)
+        let host = UIKitRenderer.running {
+            Button("Share").menu { MenuItem("Mail") }
+                .contextMenu { if offered.wrappedValue { MenuItem("Copy") } }
+        }
+        defer { host.finish() }
+        let button = try XCTUnwrap(host.views(UIKitButtonView.self).first)
+        let own = try XCTUnwrap(button.contextMenuInteraction, "the button's own")
+        XCTAssertEqual(button.interactions.filter { $0 is UIContextMenuInteraction }.count, 2, "and the view's")
+
+        offered.wrappedValue = false
+        host.settle { button.interactions.filter { $0 is UIContextMenuInteraction }.count < 2 }
+
+        XCTAssertTrue(button.interactions.contains { $0 === own }, "the button's own menu stays")
+    }
+
+    /// Taking a picker's context menu away leaves the picker opening its choices: UIKit opens them through an
+    /// interaction of the picker's own, made once.
+    func testTakingAContextMenuAwayLeavesThePickerOpening() throws {
+        let offered = State(wrappedValue: true)
+        let size = State<String?>(wrappedValue: nil)
+        let host = UIKitRenderer.running {
+            Picker(["Small", "Large"], selection: size.projectedValue)
+                .contextMenu { if offered.wrappedValue { MenuItem("Copy") } }
+        }
+        defer { host.finish() }
+        let picker = try XCTUnwrap(host.views(UIKitPickerView.self).first)
+        let own = try XCTUnwrap(picker.contextMenuInteraction, "the picker's own")
+
+        offered.wrappedValue = false
+        host.settle { picker.interactions.filter { $0 is UIContextMenuInteraction && $0 !== own }.isEmpty }
+
+        XCTAssertTrue(picker.interactions.contains { $0 === own }, "the picker still opens its choices")
+        XCTAssertTrue(picker.interactions.filter { $0 is UIContextMenuInteraction && $0 !== own }.isEmpty)
+    }
 }

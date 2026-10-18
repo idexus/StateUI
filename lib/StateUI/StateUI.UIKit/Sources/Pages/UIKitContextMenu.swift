@@ -11,6 +11,9 @@ import UIKit
 final class UIKitContextMenu: NSObject, UIContextMenuInteractionDelegate {
     private weak var owner: UIKitElement?
 
+    /// The interaction UIKit asks for the menu through, the view's alone.
+    private(set) lazy var interaction = UIContextMenuInteraction(delegate: self)
+
     init(owner: UIKitElement) {
         self.owner = owner
     }
