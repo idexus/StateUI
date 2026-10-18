@@ -32,6 +32,9 @@ final class UIKitElement: NativeElement {
     /// What UIKit asks for the view's context menu, while it has one.
     var contextMenu: UIKitContextMenu?
 
+    /// Whether VoiceOver meets the view of itself, read before the tree says anything of it.
+    var accessibilityStanding: Bool?
+
     /// Whether a layout of StateUI's has placed the view.
     var isPlaced = false
 
@@ -95,6 +98,7 @@ final class UIKitElement: NativeElement {
         applyProperties(changed: changed)
         if let view, let host { element.applyDrawnChildren(to: view, through: UIKitRegistrations.registry, in: host.runtime) }
         configureGestures()
+        applyAccessibility()
         configureContextMenu()
         configureButtonMenu()
         configureLayoutMotion()

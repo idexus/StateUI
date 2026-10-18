@@ -70,9 +70,6 @@ extension UIKitElement {
                 }
             }
             if !own.isDisjoint(with: MountedElement.transformProperties) { drawing?.own = element.drawingTransform }
-            if !own.isDisjoint(with: MountedElement.accessibilityProperties) {
-                view.accessibility(element.accessibilityWords, holdingNoChildren: element.children.isEmpty)
-            }
             if let layers = view as? UIKitZStackView { layers.placement = element.placement }
         }
 
@@ -98,23 +95,30 @@ extension UIKitElement {
     }
 }
 
+extension UIKitElement {
+    /// What VoiceOver meets of the view, by the host layer's rule - its words and taps as they stand now.
+    func applyAccessibility() {
+        guard let view else { return }
+        if accessibilityStanding == nil { accessibilityStanding = view.isAccessibilityElement }
+        view.accessibility(
+            element.accessibilityWords, holdingNoChildren: element.children.isEmpty,
+            standing: accessibilityStanding ?? false)
+    }
+}
+
 extension UIView {
     /// The element's words for assistive technology, as VoiceOver reads a view's: what the tree no longer says
-    /// falls back to the view's own. A view `holdingNoChildren` of the tree's - a picker, a spinner - is one thing to
-    /// the user, so hidden it hides the parts UIKit offers VoiceOver inside it too.
+    /// falls back to the view's own - whether it is met, as it `standing`. A view `holdingNoChildren` of the tree's -
+    /// a picker, a spinner - is one thing to the user, so hidden it hides the parts UIKit offers VoiceOver inside it.
     /// Design: docs/design/platforms/uikit/controls.md#accessibility
-    func accessibility(_ words: AccessibilityWords, holdingNoChildren: Bool) {
+    func accessibility(_ words: AccessibilityWords, holdingNoChildren: Bool, standing: Bool) {
         accessibilityIdentifier = words.identifier
         accessibilityLabel = words.label
         accessibilityHint = words.hint
         if words.headingLevel > 0 { accessibilityTraits.insert(.header) } else { accessibilityTraits.remove(.header) }
         accessibilityElementsHidden = words.presence == .hiddenWithChildren
             || (words.presence == .hidden && holdingNoChildren)
-        switch words.presence {
-        case .met?: isAccessibilityElement = true
-        case .hidden?, .hiddenWithChildren?: isAccessibilityElement = false
-        case nil: break
-        }
+        isAccessibilityElement = words.presence.map { $0 == .met } ?? standing
     }
 }
 

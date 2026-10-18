@@ -618,6 +618,38 @@ final class MountedTreeTests: XCTestCase {
             identifier: nil, label: nil, hint: nil, headingLevel: 0, presence: nil))
     }
 
+    /// An element saying nothing of its presence is met where it says words of its own - a label standing for all it
+    /// holds, a hint, a heading - or answers a tap, on every host alike; else it stands as its view does of itself.
+    @MainActor
+    func testAnElementWithWordsOfItsOwnIsMet() {
+        let (tree, _) = Self.tree()
+        func stack(_ id: String, _ properties: [Prop: HostValue], tapped: Bool = false) -> HostPatch {
+            var stack = HostPatch(id: .manual(id), type: .vStack)
+            stack.properties = properties
+            if tapped { stack.events = .replace([.tapped: 7]) }
+            stack.children = .arranged([HostPatch(id: .manual(id + ".text"), type: .text)])
+            return stack
+        }
+        var root = HostPatch(id: .manual("root"), type: .vStack)
+        root.children = .arranged([
+            stack("labelled", [.accessibilityLabel: .string("Card")]),
+            stack("hinted", [.accessibilityHint: .string("Opens it")]),
+            stack("heading", [.accessibilityHeading: .enumeration(1)]),
+            stack("tapped", [:], tapped: true),
+            stack("labelled but hidden", [.accessibilityLabel: .string("Card"), .isAccessibilityHidden: .bool(true)]),
+            stack("plain", [:]),
+        ])
+        tree.apply(root, complete: true)
+        func presence(_ id: String) -> AccessibilityWords.Presence? {
+            tree.root?.first(id: .manual(id))?.accessibilityWords.presence
+        }
+
+        XCTAssertEqual(
+            ["labelled", "hinted", "heading", "tapped"].map(presence), [.met, .met, .met, .met], "each met")
+        XCTAssertEqual(presence("labelled but hidden"), .hidden, "as the author says")
+        XCTAssertNil(presence("plain"), "as its view stands of itself")
+    }
+
     /// An element is drawn moved, turned and scaled as it says: `scale` on top of each axis's own, about its middle
     /// where it names no pivot.
     @MainActor
