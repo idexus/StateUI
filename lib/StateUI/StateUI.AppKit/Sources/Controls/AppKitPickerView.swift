@@ -86,11 +86,12 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
         font: NSFont,
         textColor: NSColor,
         tint: NSColor?,
-        alignment: NSTextAlignment,
+        alignment: TextAlignment,
         enabled: Bool,
         open: Bool,
         writeOpen: Bool
     ) {
+        let alignment = NSTextAlignment(alignment, in: userInterfaceLayoutDirection)
         ProgramWrite.perform {
             let write = written.write(items, chosen: selectedIndex, choiceChanged: writeSelection)
             if let choices = write.choices {

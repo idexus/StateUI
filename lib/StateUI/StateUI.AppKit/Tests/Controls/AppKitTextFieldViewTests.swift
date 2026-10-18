@@ -57,7 +57,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
             foregroundColor: .systemBlue,
             backgroundColor: .systemYellow,
             font: font,
-            horizontalAlignment: 1,
+            horizontalAlignment: .center,
             enabled: false,
             readOnly: true,
             maximumLength: 12)
@@ -82,7 +82,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
         view.frame = NSRect(x: 0, y: 0, width: 300, height: 44)
         apply(
             view, text: "", placeholder: "WWW", placeholderColor: .red, backgroundColor: .white,
-            font: .systemFont(ofSize: 22), horizontalAlignment: 1)
+            font: .systemFont(ofSize: 22), horizontalAlignment: .center)
         view.layoutSubtreeIfNeeded()
 
         let ink = try XCTUnwrap(try inkBounds(of: view, where: isRed), "the placeholder is drawn")
@@ -263,7 +263,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
         foregroundColor: NSColor = .controlTextColor,
         backgroundColor: NSColor? = nil,
         font: NSFont = .systemFont(ofSize: NSFont.systemFontSize),
-        horizontalAlignment: Int32? = nil,
+        horizontalAlignment: TextAlignment? = nil,
         enabled: Bool = true,
         readOnly: Bool = false,
         secure: Bool = false,

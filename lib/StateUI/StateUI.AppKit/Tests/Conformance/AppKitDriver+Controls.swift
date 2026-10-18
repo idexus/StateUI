@@ -29,7 +29,7 @@ extension AppKitDriver {
         case (.isAnimating, let image as AppKitImageView): return image.animationPlaying.propValue
         case (.contentMode, let image as AppKitImageView): return aspect(of: image).propValue
         case (.horizontalTextAlignment, let picker as AppKitPickerView):
-            return alignment(picker.presentedControl as? NSControl).propValue
+            return alignment(picker.presentedControl as? NSControl, in: picker).propValue
         default: return nil
         }
     }
@@ -45,7 +45,7 @@ extension AppKitDriver {
             let wraps = field.cell?.wraps ?? true
             let all: [LineBreak] = [.noWrap, .wordWrap, .characterWrap, .headTruncation, .tailTruncation, .middleTruncation]
             return all.first { NSLineBreakMode($0) == field.lineBreakMode && $0.wraps == wraps }?.propValue
-        case .horizontalTextAlignment: return alignment(field).propValue
+        case .horizontalTextAlignment: return alignment(field, in: label).propValue
         case .tracking: return Double((attributes[.kern] as? NSNumber)?.doubleValue ?? 0).propValue
         case .lineHeight:
             guard let font = attributes[.font] as? NSFont,
@@ -94,7 +94,7 @@ extension AppKitDriver {
             switch property {
             case .placeholder: return placeholder?.stringValue.propValue
             case .placeholderColor: return placeholder?.textColor.map { color($0).propValue }
-            case .horizontalTextAlignment: return alignment(text.alignment).propValue
+            case .horizontalTextAlignment: return alignment(text.alignment, in: editor.userInterfaceLayoutDirection).propValue
             case .isSpellCheckEnabled: return text.isContinuousSpellCheckingEnabled.propValue
             case .isTextPredictionEnabled: return text.isAutomaticTextCompletionEnabled.propValue
             case .cursorPosition: return text.selectedRange().location.propValue
@@ -118,7 +118,7 @@ extension AppKitDriver {
             return (placeholder.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? NSColor).map { color($0).propValue }
         case .isPassword: return (field is NSSecureTextField).propValue
         case .isTextPredictionEnabled: return field.isAutomaticTextCompletionEnabled.propValue
-        case .horizontalTextAlignment: return alignment(field).propValue
+        case .horizontalTextAlignment: return alignment(field, in: view).propValue
         default: return nil
         }
     }
@@ -173,15 +173,17 @@ extension AppKitDriver {
     }
 
     /// Where a control's words stand across it, as AppKit aligns them, read in the user's direction.
-    private static func alignment(_ control: NSControl?) -> TextAlignment {
-        alignment(control?.alignment ?? .natural)
+    /// Where `control`'s words stand, in the direction of the element's `view` holding it.
+    private static func alignment(_ control: NSControl?, in view: NSView) -> TextAlignment {
+        alignment(control?.alignment ?? .natural, in: view.userInterfaceLayoutDirection)
     }
 
-    private static func alignment(_ native: NSTextAlignment) -> TextAlignment {
+    /// The line's end `native` stands at, as `direction` says it.
+    private static func alignment(_ native: NSTextAlignment, in direction: NSUserInterfaceLayoutDirection) -> TextAlignment {
         switch native {
         case .center: .center
-        case .right: NSApp.userInterfaceLayoutDirection == .rightToLeft ? .start : .end
-        case .left: NSApp.userInterfaceLayoutDirection == .rightToLeft ? .end : .start
+        case .right: direction == .rightToLeft ? .start : .end
+        case .left: direction == .rightToLeft ? .end : .start
         default: .start
         }
     }

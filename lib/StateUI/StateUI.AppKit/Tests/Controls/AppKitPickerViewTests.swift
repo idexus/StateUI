@@ -48,7 +48,7 @@ final class AppKitPickerViewTests: XCTestCase {
             font: .systemFont(ofSize: 13),
             textColor: .labelColor,
             tint: .systemOrange,
-            alignment: .natural,
+            alignment: .start,
             enabled: true,
             open: false,
             writeOpen: false)
@@ -72,7 +72,7 @@ final class AppKitPickerViewTests: XCTestCase {
             font: .systemFont(ofSize: 13),
             textColor: .labelColor,
             tint: nil,
-            alignment: .natural,
+            alignment: .start,
             enabled: true,
             open: false,
             writeOpen: false)
@@ -93,7 +93,7 @@ final class AppKitPickerViewTests: XCTestCase {
             font: .systemFont(ofSize: 13),
             textColor: .labelColor,
             tint: nil,
-            alignment: .natural,
+            alignment: .start,
             enabled: true,
             open: false,
             writeOpen: false)
@@ -106,7 +106,7 @@ final class AppKitPickerViewTests: XCTestCase {
             font: .systemFont(ofSize: 13),
             textColor: .labelColor,
             tint: nil,
-            alignment: .natural,
+            alignment: .start,
             enabled: true,
             open: false,
             writeOpen: false)

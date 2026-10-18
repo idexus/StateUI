@@ -23,7 +23,9 @@ extension AppKitElement {
             label.apply(
                 attributedText: attributedLabelText(),
                 padding: insets(.padding),
-                horizontalAlignment: textAlignment(enumeration(.horizontalTextAlignment)),
+                horizontalAlignment: NSTextAlignment(
+                    enumeration(.horizontalTextAlignment).flatMap(TextAlignment.init(rawValue:)),
+                    in: label.userInterfaceLayoutDirection),
                 verticalAlignment: AppKitVerticalTextAlignment(
                     rawValue: enumeration(.verticalTextAlignment) ?? 0) ?? .start,
                 breaking: lineBreak,

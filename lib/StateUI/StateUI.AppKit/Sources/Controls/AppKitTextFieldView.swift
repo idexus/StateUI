@@ -72,7 +72,7 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         foregroundColor: NSColor,
         backgroundColor: NSColor?,
         font: NSFont,
-        horizontalAlignment: Int32?,
+        horizontalAlignment: TextAlignment?,
         enabled: Bool,
         readOnly: Bool,
         secure: Bool,
@@ -97,7 +97,8 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
 
         if let placeholderColor, let placeholder {
             textField.placeholderAttributedString = .placeholder(
-                placeholder, color: placeholderColor, alignment: alignment(horizontalAlignment))
+                placeholder, color: placeholderColor,
+                alignment: NSTextAlignment(horizontalAlignment, in: userInterfaceLayoutDirection))
         } else {
             textField.placeholderString = placeholder
         }
@@ -108,7 +109,7 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         textField.isEditable = !readOnly
         textField.isSelectable = true
         textField.isAutomaticTextCompletionEnabled = traits.predicts
-        textField.alignment = alignment(horizontalAlignment)
+        textField.alignment = NSTextAlignment(horizontalAlignment, in: userInterfaceLayoutDirection)
 
         // AppKit's rounded bezel draws its own ground over any colour: a field given one stands in the bezel's
         // shape, filled with it. A border and a bezel exclude each other: the border is said first, so the bezel
@@ -225,22 +226,9 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         editor.selectedRange = NSRange(location: selection.start, length: selection.length)
     }
 
-
-
     func typeForTesting(_ text: String) {
         textField.stringValue = text
         controlTextDidChange(Notification(name: NSControl.textDidChangeNotification))
-    }
-
-    private func alignment(_ value: Int32?) -> NSTextAlignment {
-        switch value {
-        case 1:
-            return .center
-        case 2:
-            return userInterfaceLayoutDirection == .rightToLeft ? .left : .right
-        default:
-            return userInterfaceLayoutDirection == .rightToLeft ? .right : .left
-        }
     }
 }
 

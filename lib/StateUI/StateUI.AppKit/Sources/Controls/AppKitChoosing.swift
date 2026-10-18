@@ -24,7 +24,7 @@ protocol AppKitChoosing: NSView {
     /// Writes the choices, the choice where the tree changed it, the look and whether the list shows.
     func apply(
         items: [String], selectedIndex: Int, writeSelection: Bool, title: String?, font: NSFont, textColor: NSColor,
-        tint: NSColor?, alignment: NSTextAlignment, enabled: Bool, open: Bool, writeOpen: Bool)
+        tint: NSColor?, alignment: TextAlignment, enabled: Bool, open: Bool, writeOpen: Bool)
 
     /// Chooses the item at `index` as the user does.
     func chooseForTesting(index: Int)

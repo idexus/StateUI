@@ -298,10 +298,6 @@ extension AppKitElement {
         return HostBoundary.placements(from: carried)
     }
 
-    func textAlignment(_ value: Int32?) -> NSTextAlignment {
-        appKitTextAlignment(value)
-    }
-
     /// How the element's words break, as the tree says; word wrapping where it says nothing.
     var lineBreak: LineBreak {
         enumeration(.lineBreak).flatMap(LineBreak.init(rawValue:)) ?? .wordWrap

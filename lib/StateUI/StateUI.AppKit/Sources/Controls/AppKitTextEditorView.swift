@@ -116,7 +116,7 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
         foregroundColor: NSColor,
         backgroundColor: NSColor?,
         font: NSFont,
-        horizontalAlignment: Int32?,
+        horizontalAlignment: TextAlignment?,
         enabled: Bool,
         readOnly: Bool,
         maximumLength: Int?,
@@ -137,7 +137,7 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
         textView.drawsBackground = true
         scrollView.drawsBackground = backgroundColor == nil
         textView.font = font
-        textView.alignment = nativeAlignment(horizontalAlignment)
+        textView.alignment = NSTextAlignment(horizontalAlignment, in: userInterfaceLayoutDirection)
         textView.isEditable = enabled && !readOnly
         textView.isSelectable = enabled
         self.traits = traits
@@ -147,7 +147,7 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
         placeholder.stringValue = placeholderText ?? ""
         placeholder.textColor = placeholderColor ?? .placeholderTextColor
         placeholder.font = font
-        placeholder.alignment = nativeAlignment(horizontalAlignment)
+        placeholder.alignment = textView.alignment
 
         if writeText, let text { setText(text) }
 
@@ -202,16 +202,6 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
         let selection = InputWords.utf16Selection(
             start: cursorPosition ?? 0, length: selectionLength ?? 0, in: words)
         textView.selectedRange = NSRange(location: selection.start, length: selection.length)
-    }
-
-
-
-    private func nativeAlignment(_ value: Int32?) -> NSTextAlignment {
-        switch value {
-        case 1: return .center
-        case 2: return userInterfaceLayoutDirection == .rightToLeft ? .left : .right
-        default: return userInterfaceLayoutDirection == .rightToLeft ? .right : .left
-        }
     }
 
     var placeholderForTesting: String { placeholder.stringValue }

@@ -18,7 +18,7 @@ final class AppKitTextEditorViewTests: XCTestCase {
         editor.frame = NSRect(x: 0, y: 0, width: 300, height: 80)
         editor.apply(
             text: "", writeText: true, placeholder: "WWW", placeholderColor: .red, foregroundColor: .textColor,
-            backgroundColor: .white, font: .systemFont(ofSize: 22), horizontalAlignment: 1, enabled: true,
+            backgroundColor: .white, font: .systemFont(ofSize: 22), horizontalAlignment: .center, enabled: true,
             readOnly: false, maximumLength: nil, traits: InputTraits(spellChecked: false, predicted: false, purpose: nil), cursorPosition: nil,
             selectionLength: nil, writeSelection: false, growsWithText: false)
         editor.layoutSubtreeIfNeeded()
@@ -39,7 +39,7 @@ final class AppKitTextEditorViewTests: XCTestCase {
             foregroundColor: .systemPurple,
             backgroundColor: .textBackgroundColor,
             font: .systemFont(ofSize: 16),
-            horizontalAlignment: 1,
+            horizontalAlignment: .center,
             enabled: true,
             readOnly: false,
             maximumLength: 20,

@@ -81,6 +81,32 @@ final class AppKitTextViewTests: XCTestCase {
                 + "(\(ink[2]) against \(ink[1]))")
     }
 
+    /// A line's start and end follow the direction: right to left, a text, a field, a search field, an editor and a
+    /// picker standing at the end all stand at the left.
+    @MainActor
+    func testATextsEndFollowsTheDirectionAsAFieldsDoes() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Text("short").horizontalTextAlignment(.end)
+                TextField("Ada").horizontalTextAlignment(.end)
+                SearchField("Ada").horizontalTextAlignment(.end)
+                TextEditor("Ada").horizontalTextAlignment(.end)
+            }
+            .layoutDirection(.rightToLeft)
+        }
+        defer { renderer.closeForTesting() }
+        let content = try XCTUnwrap(renderer.windowsForTesting.first?.window?.contentView)
+        content.frame = NSRect(x: 0, y: 0, width: 400, height: 300)
+        content.layoutSubtreeIfNeeded()
+
+        let label = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first)
+        XCTAssertEqual(label.horizontalTextAlignment, .left, "a text")
+        XCTAssertLessThan(try firstInkColumn(of: label), 40, "its words drawn at the left")
+        XCTAssertEqual(renderer.nativeViews(AppKitTextFieldView.self).first?.textField.alignment, .left, "a field")
+        XCTAssertEqual(renderer.nativeViews(AppKitSearchFieldView.self).first?.alignment, .left, "a search field")
+        XCTAssertEqual(renderer.nativeViews(AppKitTextEditorView.self).first?.textView.alignment, .left, "an editor")
+    }
+
     /// A long text a scroller shows part of draws strip by strip from one layout of its words: uncovering more of
     /// it lays nothing out again, where a label of its own lays the whole text out for every strip.
     @MainActor
