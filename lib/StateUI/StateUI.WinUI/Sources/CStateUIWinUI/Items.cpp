@@ -60,6 +60,11 @@ namespace {
         /// Whether the program is choosing, which the user's choice is not told of.
         bool choosing = false;
 
+        /// The scroller the list's handlers hang on - once, however often WinUI loads the list - and how many sets
+        /// hang on it.
+        winrt::weak_ref<controls::ScrollView> heard;
+        int32_t scrollerHandlers = 0;
+
         /// How deep the list is in asking for cells, and what waits for it to be done.
         int32_t laying = 0;
         std::deque<std::function<void()>> waiting;
@@ -226,8 +231,11 @@ extern "C" StateUIObjectRef stateui_winui_items_make(int64_t view) {
         }));
         list.Loaded(guarded("handling Loaded", [view](IInspectable const &sender, xaml::RoutedEventArgs const &) {
             auto list = sender.as<controls::ItemsView>();
-            standScroller(list, cellsOf(list)->shape);
-            if (auto scroller = list.ScrollView()) {
+            auto cells = cellsOf(list);
+            standScroller(list, cells->shape);
+            if (auto scroller = list.ScrollView(); scroller && cells->heard.get() != scroller) {
+                cells->heard = winrt::make_weak(scroller);
+                cells->scrollerHandlers = 0;
                 winrt::weak_ref<controls::ItemsView> weak = list;
                 scroller.ViewChanged(guarded("handling ViewChanged",
                     [weak, view](controls::ScrollView const &, IInspectable const &) {
@@ -238,6 +246,7 @@ extern "C" StateUIObjectRef stateui_winui_items_make(int64_t view) {
                     [weak, view](controls::ScrollView const &, IInspectable const &) {
                     if (auto list = weak.get()) tellShowing(list, view);
                 }));
+                ++cells->scrollerHandlers;
             }
             tellShowing(list, view);
         }));
@@ -245,6 +254,15 @@ extern "C" StateUIObjectRef stateui_winui_items_make(int64_t view) {
     } catch (...) {
         report("making an ItemsView");
         return nullptr;
+    }
+}
+
+extern "C" int32_t stateui_winui_items_scroller_handlers(StateUIObjectRef handle) {
+    try {
+        return cellsOf(borrow<controls::ItemsView>(handle))->scrollerHandlers;
+    } catch (...) {
+        report("counting a list's scroller handlers");
+        return -1;
     }
 }
 

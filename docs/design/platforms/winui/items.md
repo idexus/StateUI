@@ -30,7 +30,11 @@ or by Enter or Space on it, where something hears one opened. What stands in
 view is told as the scroller's view changes and as its extent does: entries
 changed stand in view only once laid out, and the view may not move at all -
 a list cut short under a view standing past its new end is brought back by
-WinUI a moment later, and no view change says it.
+WinUI a moment later, and no view change says it. The list hands out its
+`ScrollView` once loaded, and WinUI loads the list again each time it comes
+back into the window - its tab chosen again - so the handlers hang on each
+scroller once, or every return would add a pair and tell the same view again
+for each.
 
 ## Its room
 

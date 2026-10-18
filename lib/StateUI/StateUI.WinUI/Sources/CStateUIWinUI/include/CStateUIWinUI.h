@@ -809,6 +809,9 @@ void stateui_winui_scroller_offset(StateUIObjectRef scroller, double *offset);
 /// (`itemCell`, `itemHeld`, `itemLetGo`), and what stands in view, the user's choice and an item invoked are told.
 StateUIObjectRef stateui_winui_items_make(int64_t view);
 
+/// How many sets of handlers hang on the list's scroller, which tell what stands in view - what a test counts.
+int32_t stateui_winui_items_scroller_handlers(StateUIObjectRef list);
+
 /// The identities, each an item (0) or a header or a footer (1), and the changes from the ones before: runs of places
 /// removed, last first, then runs inserted, first first, each a start and a count. Asked while the list lays its
 /// cells out, the relay applies them once it is done, in order.
@@ -976,6 +979,9 @@ int32_t stateui_winui_drag_offers(void);
 
 /// How many views listen for the user's input - what a test counts to see every one stop.
 int32_t stateui_winui_listeners(void);
+
+/// Whether WinUI has loaded `element` into a window - what a test reads.
+bool stateui_winui_is_loaded(StateUIObjectRef element);
 
 /// How many sets of input handlers hang on elements - a view that stopped listening keeps its set until the event
 /// running is over - what a test counts.

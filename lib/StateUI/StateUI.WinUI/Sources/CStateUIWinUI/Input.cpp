@@ -687,3 +687,12 @@ extern "C" int32_t stateui_winui_listeners(void) {
         return 0;
     }
 }
+
+extern "C" bool stateui_winui_is_loaded(StateUIObjectRef handle) {
+    try {
+        return as<xaml::FrameworkElement>(handle).IsLoaded();
+    } catch (...) {
+        report("reading whether an element is loaded");
+        return false;
+    }
+}
