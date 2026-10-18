@@ -17,7 +17,7 @@ final class AppKitRenderer {
     let resourceDirectory: URL?
     let presentsWindows: Bool
     let preferences: UserDefaults
-    let images = NSCache<NSString, NSImage>()
+    private let images = NSCache<AppKitPictureKey, NSImage>()
     let frameClock: AppKitFrameClock
     let reducesMotion: () -> Bool
 
@@ -171,25 +171,25 @@ final class AppKitRenderer {
         }
     }
 
-    /// The native image for one resource name, loaded once for this
-    /// renderer. Reapplying an unchanged source hands a native view the image
-    /// it already shows, so nothing reads the file again and no measurement is
-    /// forgotten.
+    /// The native image for one resource name, loaded once for this renderer.
     func image(named name: String) -> NSImage? {
-        if let kept = images.object(forKey: name as NSString) { return kept }
-        guard let loaded = loadImage(named: name) else { return nil }
-        images.setObject(loaded, forKey: name as NSString)
-        return loaded
+        image(.file(name))
     }
 
-    /// The native image for a picture: a file of the application's, the SF Symbol for an icon, or the bytes decoded
-    /// at a point a pixel. A symbol is a template, drawn in the colour of what holds it.
+    /// The native image for a picture, made once for this renderer: a file of the application's, the SF Symbol for
+    /// an icon, or the bytes decoded at a point a pixel. A symbol is a template, drawn in the colour of what holds it.
+    /// Reapplying an unchanged picture hands a native view the image it already shows, so nothing reads the file
+    /// again, no measurement is forgotten and a bar or a tab row finds nothing changed.
     func image(_ picture: HostPicture) -> NSImage? {
-        switch picture {
-        case .file(let name): image(named: name)
+        let key = AppKitPictureKey(picture)
+        if let kept = images.object(forKey: key) { return kept }
+        let made: NSImage? = switch picture {
+        case .file(let name): loadImage(named: name)
         case .icon(let icon): NSImage(systemSymbolName: icon.sfSymbol, accessibilityDescription: nil)
         case .bytes(let bytes): NSImage(data: Data(bytes))
         }
+        if let made { images.setObject(made, forKey: key) }
+        return made
     }
 
     /// The picture `name` stands for: the file of the name, else its drawing, by the host layer's rule.
@@ -217,6 +217,21 @@ extension AppKitElement: PlacedView {
 
     func travels(to destination: Rect?) {
         if type == .text { wordsRoom = destination }
+    }
+}
+
+/// A picture as the key of a renderer's images.
+private final class AppKitPictureKey: NSObject {
+    let picture: HostPicture
+
+    init(_ picture: HostPicture) {
+        self.picture = picture
+    }
+
+    override var hash: Int { picture.hashValue }
+
+    override func isEqual(_ object: Any?) -> Bool {
+        (object as? AppKitPictureKey)?.picture == picture
     }
 }
 
