@@ -452,7 +452,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         }
 
         return PlacedStack {
-            ForEach(run.slots, id: \.identity) { slot in run.wrapped(slot) }
+            ForEach(run.slots, identify: { $0.identity }) { slot in run.wrapped(slot) }
         }
         .modified { element in
             // The hand is heard on the element itself, over every view, which still answers a tap.

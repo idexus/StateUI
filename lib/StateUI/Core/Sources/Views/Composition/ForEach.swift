@@ -33,7 +33,7 @@ public struct ForEach: Views {
         _ items: Items,
         @ViewBuilder content: (Items.Element) -> Content
     ) where Items.Element: Hashable {
-        self.init(items, id: \.self, content: content)
+        self.init(items, identify: { $0 }, content: content)
     }
 
     /// One view per item, identified by the part of it `id` names.
@@ -56,11 +56,21 @@ public struct ForEach: Views {
         id: KeyPath<Items.Element, ID>,
         @ViewBuilder content: (Items.Element) -> Content
     ) {
+        self.init(items, identify: { $0[keyPath: id] }, content: content)
+    }
+
+    /// One view per item, identified by what `identify` reads of it: a closure, where a key path in a generic type
+    /// is made anew at every call.
+    init<Items: RandomAccessCollection, ID: Hashable, Content: View>(
+        _ items: Items,
+        identify: (Items.Element) -> ID,
+        @ViewBuilder content: (Items.Element) -> Content
+    ) {
         // The item's identity, unless the author wrote an `.id()` of their own.
         // Design: docs/design/views/builders.md#foreach-keys-are-text
         nodes = items.map { item in
             var node = content(item).node
-            if node.id == nil { node.identify(item[keyPath: id]) }
+            if node.id == nil { node.identify(identify(item)) }
             return node
         }
     }
