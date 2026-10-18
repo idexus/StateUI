@@ -212,6 +212,9 @@ class WebDOMView {
     /// How the view is drawn over its place, its own say.
     private(set) var ownDrawing = HostDrawingTransform.identity
 
+    /// The matrix last written, with the transform and size it was written for.
+    private var writtenMatrix: (transform: HostDrawingTransform, width: Double, height: Double, text: String)?
+
     /// How the layout placing the view by a run draws it, the size the run gives it and where its place stands
     /// in the layout; nil while it stands in its own place.
     private(set) var placedDrawing: HostDrawingTransform?
@@ -251,12 +254,25 @@ class WebDOMView {
             return style("transform-origin", nil)
         }
         let size = drawn ?? placedSize ?? WebRelay.size(of: node)
-        let m = transform.matrix(width: size.width, height: size.height)
+        style("transform-origin", "0 0")
+        let matrix = matrix(of: transform, width: size.width, height: size.height)
+        style("transform", moved.map { $0 + " " + matrix } ?? matrix)
+    }
+
+    /// The matrix as CSS, written again only for another transform or size: a run moving a view on writes its move
+    /// alone again.
+    /// Design: docs/design/platforms/web/controls.md#drawn-over-its-place
+    private func matrix(of transform: HostDrawingTransform, width: Double, height: Double) -> String {
+        if let written = writtenMatrix, written.transform == transform, written.width == width,
+           written.height == height {
+            return written.text
+        }
+        let m = transform.matrix(width: width, height: height)
         let values = [m.m11, m.m12, m.m13, m.m14, m.m21, m.m22, m.m23, m.m24,
                       m.m31, m.m32, m.m33, m.m34, m.m41, m.m42, m.m43, m.m44]
-        style("transform-origin", "0 0")
-        let matrix = "matrix3d(" + values.map(WebCSS.number).joined(separator: ", ") + ")"
-        style("transform", moved.map { $0 + " " + matrix } ?? matrix)
+        let text = "matrix3d(" + values.map(WebCSS.number).joined(separator: ", ") + ")"
+        writtenMatrix = (transform, width, height, text)
+        return text
     }
 
     /// What assistive technology meets of the view: its name and what it does, its level as a heading, whether it

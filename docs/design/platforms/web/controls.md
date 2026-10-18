@@ -16,7 +16,11 @@ is sent only when its value changes.
 A view moved, turned or scaled about its pivot is drawn with the host layer's
 matrix (`HostDrawingTransform.matrix`), as `matrix3d` from the view's top
 left corner, for the view's size in its layout: the order of the moves and the
-platform's sense of a turn are the host layer's, once.
+platform's sense of a turn are the host layer's, once. The matrix's words are
+kept with the transform and size they were written for: a run moving a view
+on, frame after frame, writes its `translate` again and not sixteen numbers
+it has not changed - words made of numbers cost a browser with no compiler for
+WebAssembly most of a frame.
 
 ## What assistive technology meets
 
