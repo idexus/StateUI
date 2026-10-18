@@ -39,6 +39,24 @@ final class WebPlacingRunTests: XCTestCase {
         XCTAssertEqual(numbers.count == 16 ? numbers[13] : 0, 50, accuracy: 1e-9, "turned about the middle of 100 x 200")
     }
 
+    /// A CHILD THE RUN PLACES NEVER READS ITS OWN VALUES: what it states of its place is read for a child past the
+    /// run's end alone, and once.
+    func testAChildTheRunPlacesNeverReadsItsOwnValues() {
+        let layout = WebLayoutView(arrangement: .layers)
+        let (placed, beyond) = (WebLayoutView(arrangement: .single), WebLayoutView(arrangement: .single))
+        defer { for view in [layout, placed, beyond] { view.detach() } }
+        var reads = [0, 0]
+        layout.setPlacement(run(width: 40, height: 40))
+
+        layout.setItems([
+            (placed, { reads[0] += 1; return LayoutValues() }),
+            (beyond, { reads[1] += 1; return LayoutValues() }),
+        ])
+        layout.setPlacement(run(width: 60, height: 60))
+
+        XCTAssertEqual(reads, [0, 1], "the placed child read nothing; the one past the run, once")
+    }
+
     /// A RUN'S PLACE IS A MOVE, drawn over the layout's corner on a layer of the card's own: what moves every frame
     /// is composed by the browser, with no layout of the page.
     func testARunsPlaceIsAMoveOnALayerOfItsOwn() {
