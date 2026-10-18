@@ -50,6 +50,10 @@
     /// What a prompt's words are for.
     public let purpose: InputPurpose
 
+    /// How a prompt's field takes what is typed: as a field of its purpose, its spelling checked and its words
+    /// predicted.
+    public var traits: InputTraits { InputTraits(spellChecked: true, predicted: true, purpose: purpose) }
+
     /// The words a prompt starts with.
     public let words: String
 

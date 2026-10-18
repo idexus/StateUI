@@ -47,7 +47,8 @@ extension AppKitBoxedField {
     }
 }
 
-/// A text field whose editor's text checking follows the field's traits - the field is its editor's delegate.
+/// A text field whose editor's text checking follows the field's traits - the field is its editor's delegate, and
+/// hands its editor the traits as it takes the keyboard.
 @MainActor
 final class AppKitWordsField: NSTextField, AppKitBoxedField {
     var traits = InputTraits(spellChecked: true, predicted: true, purpose: nil)
@@ -61,6 +62,12 @@ final class AppKitWordsField: NSTextField, AppKitBoxedField {
     override func drawFocusRingMask() {
         guard let ringBox else { return super.drawFocusRingMask() }
         drawRing(round: ringBox)
+    }
+
+    override func becomeFirstResponder() -> Bool {
+        guard super.becomeFirstResponder() else { return false }
+        (currentEditor() as? NSTextView)?.take(traits)
+        return true
     }
 
     @objc(textView:willCheckTextInRange:options:types:)
