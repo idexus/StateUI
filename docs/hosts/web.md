@@ -244,6 +244,11 @@ network opens the page too. The port stays the same from run to run, so the
 page's address, and what the browser keeps for it, does too; `--port <port>`
 names another, and where the port is taken the server listens on a free one.
 A server the script started for the application before is stopped first.
+Safari on iOS and iPadOS 27 runs a page served over plain http with no JIT
+while its feature flag *Enable EnhancedSecurity Heuristics* is on (Settings ▸
+Apps ▸ Safari ▸ Advanced ▸ Feature Flags): the module is interpreted, several
+times slower. To judge how fast a page runs on such a device, turn the flag
+off while testing, or serve the page over https, as a deployed page is.
 `release` builds the optimized module, `--browser <id>` opens another
 browser - `.scripts/Web/browsers.sh list` lists them - and `--browser none`
 none, and `--build-only` builds and lays the page out, serving nothing. Every
