@@ -169,6 +169,33 @@ final class DocumentationTests: XCTestCase {
             + "write `public` on each member instead")
     }
 
+    /// A handbook example imports Apple's Foundation only for a type of it: the C library's maths is
+    /// `import StateUIFoundation`, and Foundation on Windows ships its ICU beside the application for one `sin`.
+    func testAnExampleImportsFoundationOnlyForItsTypes() throws {
+        let types = /\b(Date|URL|Data|JSON\w+|Calendar|Locale|TimeZone|ProcessInfo|FileManager|UUID|Bundle|\w+Formatter|CharacterSet|Measurement|Notification\w*)\b/
+        var needless: [String] = []
+        var read = 0
+        let docs = SourceTree.repository.appendingPathComponent("docs")
+        var files = try SourceTree.files(under: docs, entering: { _ in true })
+            .filter { $0.hasSuffix(".md") }.map { docs.appendingPathComponent($0) }
+        files.append(SourceTree.repository.appendingPathComponent("README.md"))
+
+        for file in files {
+            let text = try String(contentsOf: file, encoding: .utf8)
+            for block in text.components(separatedBy: "```swift").dropFirst() {
+                let code = block.components(separatedBy: "```").first ?? ""
+                guard code.contains("\nimport Foundation\n") else { continue }
+                read += 1
+                if code.firstMatch(of: types) == nil {
+                    needless.append("\(file.lastPathComponent): \(code.prefix(60).replacingOccurrences(of: "\n", with: " "))")
+                }
+            }
+        }
+
+        XCTAssertGreaterThan(read, 0, "the scan read no example importing Foundation")
+        XCTAssertEqual(needless, [], "import StateUIFoundation for the C library; Foundation only for its types")
+    }
+
     /// AN AWAITED MOVEMENT AWAITS ITS ARRIVAL. `move(to:)` starts the movement and answers at once, so an example
     /// awaiting the call alone waits for nothing; its `.arrived()` is what waits. Code hears that as a warning, so
     /// what is read here is what no compiler reads: comments in every source and the handbook's text.

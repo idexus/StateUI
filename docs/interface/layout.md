@@ -678,7 +678,8 @@ run on, right as it takes it back - and under the others, while the next
 comes up from beneath:
 
 ```swift
-import Foundation
+import StateUIFoundation
+import StateUI
 
 struct Pile: View {
     @State private var turn = 0.0
