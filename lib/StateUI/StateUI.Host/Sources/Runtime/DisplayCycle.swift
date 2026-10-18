@@ -111,6 +111,7 @@
         sidebarSlide.pace(now: now)
         follow(animator.advance(to: now, reducesMotion: reducesMotion))
         present()
+        hold()
     }
 
     /// Presents the state channels on their own, after a render attached new ones, and holds the clock for what the

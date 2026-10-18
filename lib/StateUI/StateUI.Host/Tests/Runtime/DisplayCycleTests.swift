@@ -47,6 +47,21 @@ final class DisplayCycleTests: XCTestCase {
         XCTAssertEqual(presenter.walks, 1)
     }
 
+    /// Advancing the animations alone - what a host's test winds - lets the clock go as a frame does, once the last
+    /// animation lands.
+    @MainActor
+    func testAdvancingTheAnimationsLetsTheClockGoAsAFrameDoes() {
+        let runtime = HostRuntime.still()
+        runtime.displayCycle.presenter = CountingPresenter()
+        runtime.tree.receiveProperty(
+            mount: 1, property: .opacity, standing: .number(0), target: .number(1), motion: .eased(.milliseconds(200), .linear))
+        XCTAssertTrue(runtime.clock.held)
+
+        runtime.displayCycle.advanceAnimations(now: 300, reducesMotion: false)
+
+        XCTAssertFalse(runtime.clock.held, "nothing moves any more")
+    }
+
     /// The frame clock is held from the moment something starts moving - a property, a layout's child, a scroller
     /// - and let go on the frame the last of them comes to rest.
     @MainActor
