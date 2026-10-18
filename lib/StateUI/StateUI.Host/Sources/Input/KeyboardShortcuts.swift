@@ -116,7 +116,8 @@
         var found: [MountedElement] = []
         func walk(_ element: MountedElement) {
             if acts(element), element.keyboardShortcut != nil, element.standsInSight { found.append(element) }
-            element.children.forEach(walk)
+            // An arrangement's slots too - its bars and menus, which its chrome shows.
+            element.held.forEach(walk)
         }
         walk(root)
         return found
@@ -139,6 +140,11 @@
         var child = self
         while let parent = child.parent {
             guard parent.standsShown else { return false }
+            // A slot of an arrangement - a bar, a menu - stands with the arrangement, whichever page it shows.
+            if parent.slots.contains(where: { $0 === child }) {
+                child = parent
+                continue
+            }
             switch parent.type {
             case .navigationStack, .modalStack: if parent.children.last !== child { return false }
             case .tabView: if let chosen = parent.selectedTab, chosen !== child { return false }

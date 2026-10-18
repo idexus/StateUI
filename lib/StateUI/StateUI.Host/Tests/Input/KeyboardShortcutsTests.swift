@@ -110,6 +110,21 @@ final class KeyboardShortcutsTests: XCTestCase {
     }
 
     /// A page beneath a stack's top is out of sight: its shortcuts reach nothing.
+    /// A bar item written on an arrangement stands with it - in the arrangement's slots, not among its pages - and
+    /// its shortcut reaches it, as the chrome shows it.
+    func testAnArrangementsBarItemsShortcutReachesIt() throws {
+        var page = HostPatch(id: .manual("page"), type: .page)
+        page.children = .arranged([element("body", .text, nil)])
+        var group = HostPatch(id: .manual("window"), type: .toolbarItemGroup)
+        group.children = .arranged([element("account", .toolbarItem, save)])
+        var stack = HostPatch(id: .manual("stack"), type: .navigationStack)
+        stack.children = .arranged([page, group])
+        let runtime = mount([stack])
+        let root = try XCTUnwrap(runtime.tree.root)
+
+        XCTAssertEqual(KeyboardShortcuts.target(of: save, under: root)?.id, .manual("account"))
+    }
+
     func testAPageBeneathTheTopIsOutOfSight() throws {
         var below = HostPatch(id: .manual("below"), type: .page)
         below.children = .arranged([element("hidden", .button, save)])
