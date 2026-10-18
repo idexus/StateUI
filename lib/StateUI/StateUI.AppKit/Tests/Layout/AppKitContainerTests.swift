@@ -500,6 +500,33 @@ final class AppKitContainerTests: XCTestCase {
         XCTAssertEqual(children.map(\.moves), standing, "and none taken out to get there")
     }
 
+    /// A blur behind a layout engine's children stays under them through a run turning their order.
+    @MainActor
+    func testARunKeepsTheBlurBehindItsChildren() {
+        func run(_ ranks: [Int]) -> HostPlacementRun {
+            HostPlacementRun(placements: ranks.map { rank in
+                HostPlacement(
+                    bounds: Rect(x: 0, y: 0, width: 10, height: 10), translationX: 0, translationY: 0, rotation: 0,
+                    scaleX: 1, scaleY: 1, opacity: 1, zIndex: rank, shade: 0)
+            })
+        }
+        let layers = AppKitZStackView()
+        layers.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
+        let children = [NSView(), NSView()]
+        layers.setItems(children.map { AppKitLayoutItem(view: $0) })
+        layers.decoration.apply(
+            background: Material.blur(.thick).propValue.resolvingTheme(), stroke: nil, lineWidth: nil,
+            shape: nil, clips: false, to: layers)
+        let blur = layers.decoration.surface
+
+        layers.placement = run([1, 0])
+        layers.layout()
+
+        XCTAssertNotNil(blur)
+        XCTAssertEqual(layers.subviews.first, blur, "the blur stays behind the children")
+        XCTAssertEqual(Array(layers.subviews.dropFirst()), [children[1], children[0]], "drawn in the run's order")
+    }
+
     /// A row whose direction is right to left fills from the right, its padding swapped; the direction is its
     /// parent's, and the parent turning lays the row out again.
     @MainActor

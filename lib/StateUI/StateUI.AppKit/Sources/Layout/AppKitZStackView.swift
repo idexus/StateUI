@@ -85,7 +85,7 @@ final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeas
         // Turned in place: a child taken out and put back leaves the window, and a gesture under way on it is
         // cancelled. Design: docs/design/platforms/appkit/views.md#a-child-turned-in-place
         if identities != drawingOrder {
-            subviews = ordered.map { items[$0].view }
+            subviews = subviews.filter { $0 is any AppKitBoxSurface } + ordered.map { items[$0].view }
             drawingOrder = identities
         }
 
