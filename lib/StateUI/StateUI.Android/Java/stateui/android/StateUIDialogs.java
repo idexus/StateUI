@@ -80,6 +80,12 @@ final class StateUIDialogs {
         return words.toArray(new String[0]);
     }
 
+    /** The input type of the question on top's field: what its keyboard offers; -1 where it asks no words. */
+    static int fieldInputType() {
+        Shown top = top();
+        return top == null || top.field == null ? -1 : top.field.getInputType();
+    }
+
     /**
      * Answers the question on top as the user does: its field first given `words` where it has one, then its button
      * or its list's item of `caption` pressed; whether one was.

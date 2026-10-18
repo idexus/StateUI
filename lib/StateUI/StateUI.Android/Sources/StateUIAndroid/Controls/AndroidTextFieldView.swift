@@ -65,23 +65,9 @@ final class AndroidTextFieldView: AndroidTextualView {
         listen(JavaAPI.addTextChangedListener, JavaAPI.setOnEditorActionListener)
     }
 
-    /// The field's kind of input: the keys its traits pick, one line or several, hiding what is typed, capitals,
-    /// correction and suggestions.
-    /// Design: docs/design/platforms/android/controls.md#what-typing-is-given
+    /// The field's kind of input: the keys its traits pick, one line or several, hiding what is typed.
     private var inputType: Int32 {
-        switch traits.keys {
-        case .number:
-            return ViewConstants.numberInput | ViewConstants.decimalNumber | (isPassword ? ViewConstants.hiddenNumber : 0)
-        case .telephone:
-            return ViewConstants.phoneInput
-        case .words, .email, .url:
-            let variation = isPassword ? ViewConstants.passwordInput
-                : traits.keys == .email ? ViewConstants.emailInput : traits.keys == .url ? ViewConstants.linkInput : 0
-            return ViewConstants.textInput | variation | (kind == .editor ? ViewConstants.multiLineInput : 0)
-                | (traits.capitals == .sentences ? ViewConstants.sentenceCapitals : 0)
-                | (traits.corrects && !isPassword ? ViewConstants.autoCorrect : 0)
-                | (traits.predicts ? 0 : ViewConstants.noSuggestions)
-        }
+        traits.inputType(password: isPassword, multiLine: kind == .editor)
     }
 
     /// What the field's keyboard and its checking of the words do; the words and their weight stay.

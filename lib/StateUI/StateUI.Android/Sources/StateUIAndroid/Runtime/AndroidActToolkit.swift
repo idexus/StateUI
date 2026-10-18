@@ -86,7 +86,8 @@ final class AndroidActToolkit: ActToolkit {
                     .object(Java.string(question.title ?? "")), .object(Java.string(question.message ?? "")),
                     .object(Java.string(question.accept)), .object(Java.string(question.cancel ?? "Cancel")),
                     .object(question.placeholder.flatMap(Java.string)),
-                    .int(Int32(question.maximumLength ?? -1)), .int(Self.inputType(question.purpose)),
+                    .int(Int32(question.maximumLength ?? -1)),
+                    .int(question.traits.inputType(password: false, multiLine: false)),
                     .object(Java.string(question.words)))
             }
         }
@@ -100,20 +101,6 @@ final class AndroidActToolkit: ActToolkit {
             return core.reply(call, [ScriptAnswer.text(json: words).propValue])
         }
         dialogs.take(ticket)?(accepted, words)
-    }
-
-    /// Android's input type for what a typed answer is for.
-    private static func inputType(_ purpose: InputPurpose) -> Int32 {
-        // InputType's text, number and phone classes, and the variations and flags each purpose asks for.
-        switch purpose {
-        case .numeric: 0x2
-        case .telephone: 0x3
-        case .email: 0x21
-        case .url: 0x11
-        case .plain: 0x8_0001
-        case .chat, .text: 0xC001
-        case .default: 0x1
-        }
     }
 
     func announce(_ words: String) {
