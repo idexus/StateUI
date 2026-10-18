@@ -220,6 +220,30 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertTrue(bar.leftItemsSupplementBackButton, "the leading group beside the way back")
     }
 
+    /// On a painted bar an action wears the bar's words' colour, and one that destroys something stays red.
+    @MainActor
+    func testADestructiveActionStaysRedOnAPaintedBar() throws {
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").toolbar {
+                    ToolbarItem("Save").accessibilityIdentifier("save")
+                    ToolbarItem("Delete").isDestructive(true).accessibilityIdentifier("delete")
+                }
+            } destination: { _ in Text("Pushed") }
+            .barBackgroundColor(Color(red: 0, green: 0, blue: 128))
+        }
+        defer { host.finish() }
+        let item = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller?.navigationItem }
+        host.settle { item().map { !$0.trailingItemGroups.isEmpty } ?? false }
+        let items = try XCTUnwrap(item()).trailingItemGroups.flatMap(\.barButtonItems)
+        let tint = { (id: String) in items.first { $0.accessibilityIdentifier == id }?.tintColor }
+
+        XCTAssertEqual(tint("delete"), .systemRed, "the destructive one red")
+        var white: CGFloat = -1
+        XCTAssertTrue(tint("save")?.getWhite(&white, alpha: nil) == true)
+        XCTAssertEqual(white, 1, accuracy: 0.01, "the other in the bar's words, light on navy")
+    }
+
     /// Words on a bar the tree paints stand light on a dark bar and dark on a light one, where the tree writes no
     /// colour for them (`BandWords`).
     @MainActor

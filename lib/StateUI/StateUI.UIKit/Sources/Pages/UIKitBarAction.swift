@@ -30,13 +30,14 @@ struct UIKitBarAction {
         icon.flatMap { UIKitRenderer.glyph($0, height: Self.glyphHeight) }
     }
 
-    /// A button of the bar.
-    var barItem: UIBarButtonItem {
+    /// A button of the bar, in `tint` - a painted bar's words, nil for the bar's own - or red where it destroys
+    /// something.
+    func barItem(tint: UIColor?) -> UIBarButtonItem {
         let item = UIBarButtonItem(primaryAction: menuAction)
         item.landscapeImagePhone = icon.flatMap { UIKitRenderer.glyph($0, height: Self.lowGlyphHeight) }
         item.isEnabled = isEnabled
         item.accessibilityIdentifier = identifier
-        if isDestructive { item.tintColor = .systemRed }
+        item.tintColor = isDestructive ? .systemRed : tint
         return item
     }
 

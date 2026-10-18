@@ -47,12 +47,18 @@ struct UIKitPageChrome {
         // Each group its own background; the leading ones beside the way back.
         // Design: docs/design/platforms/uikit/pages.md#the-bar
         item.leftItemsSupplementBackButton = true
-        item.leadingItemGroups = leadingActions.map(Self.group)
+        // Words on a painted bar: the colour written, else light on a dark bar and dark on a light one.
+        let painted = barBackground != nil || barForeground != nil
+        let words = painted ? BandWords.color(on: barBackground, written: barForeground) : nil
+        let foreground = words.flatMap(UIColor.init(stateUI:))
+        item.leadingItemGroups = leadingActions.map { Self.group($0.map { $0.barItem(tint: foreground) }) }
         let menu = overflow.isEmpty ? [] : [[UIBarButtonItem(
             image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: overflow.map(\.menuAction)))]]
-        item.trailingItemGroups = actions.map { $0.map(\.barItem) }.map(Self.group) + menu.map(Self.group)
+        menu.joined().forEach { $0.tintColor = foreground }
+        item.trailingItemGroups = actions.map { Self.group($0.map { $0.barItem(tint: foreground) }) }
+            + menu.map(Self.group)
 
-        guard barBackground != nil || barForeground != nil else {
+        guard painted else {
             (item.standardAppearance, item.scrollEdgeAppearance) = (nil, nil)
             return
         }
@@ -65,9 +71,7 @@ struct UIKitPageChrome {
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = background
         }
-        // Words on a painted bar: the colour written, else light on a dark bar and dark on a light one.
-        let words = BandWords.color(on: barBackground, written: barForeground)
-        if let foreground = words.flatMap(UIColor.init(stateUI:)) {
+        if let foreground {
             appearance.titleTextAttributes = [.foregroundColor: foreground]
             appearance.largeTitleTextAttributes = [.foregroundColor: foreground]
             appearance.subtitleTextAttributes = [.foregroundColor: foreground]
@@ -75,16 +79,8 @@ struct UIKitPageChrome {
             appearance.backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: foreground]
             let back = UIImage(systemName: "chevron.backward")?.withTintColor(foreground, renderingMode: .alwaysOriginal)
             appearance.setBackIndicatorImage(back, transitionMaskImage: back)
-            (item.leadingItemGroups + item.trailingItemGroups).flatMap(\.barButtonItems).forEach {
-                $0.tintColor = foreground
-            }
         }
         (item.standardAppearance, item.scrollEdgeAppearance) = (appearance, appearance)
-    }
-
-    /// One group of the bar, drawn on one background.
-    private static func group(_ actions: [UIKitBarAction]) -> UIBarButtonItemGroup {
-        group(actions.map(\.barItem))
     }
 
     /// One group of the bar's items, drawn on one background.
