@@ -23,7 +23,7 @@ final class WinUITextView: WinUITextualView {
     /// What the label is drawn over: a colour, a gradient, or nothing.
     override func setBackground(_ value: HostValue?) {
         let brush = WinUIBrush(value)
-        paint("background", followsSize: brush.followsSize) { [handle] size in
+        paint(.background, followsSize: brush.followsSize) { [handle] size in
             brush.withRelayBrush(over: size) { stateui_winui_text_set_background(handle, $0) }
         }
     }

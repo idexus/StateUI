@@ -194,7 +194,7 @@ final class AppKitApplicationRegistrationTests: XCTestCase {
         let realization = AppKitRegistrations.registry.realization
 
         XCTAssertTrue(
-            realization.elements.contains(LampContract.nodeType.name),
+            realization.elements.contains(LampContract.nodeType),
             "the registry holds it, which is what makes the view")
         XCTAssertNil(
             LibraryContracts.elements.first { $0.nodeType.name == LampContract.nodeType.name },

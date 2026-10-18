@@ -165,8 +165,9 @@ final class AppKitInteropTests: XCTestCase {
         XCTAssertTrue(HostBoundary.realizes(ButtonContract.self))
         XCTAssertTrue(HostBoundary.realizes(WebViewContract.self))
         XCTAssertFalse(HostBoundary.realizes(DialContract.self))
-        XCTAssertNil(HostRealizations.unraised(owner: InteropTestContract.name, event: InteropTestContract.spoke.name))
-        XCTAssertNotNil(HostRealizations.unraised(owner: InteropTestContract.name, event: InteropTestContract.unheard.name))
+        let spoke = InteropTestContract.spoke, unheard = InteropTestContract.unheard
+        XCTAssertNil(HostRealizations.unraised(owner: spoke.owner, event: spoke.token.key))
+        XCTAssertNotNil(HostRealizations.unraised(owner: unheard.owner, event: unheard.token.key))
     }
 }
 #endif

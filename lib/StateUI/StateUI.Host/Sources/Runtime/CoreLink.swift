@@ -152,10 +152,12 @@
     /// Tells the core what this runtime realizes before its first render: its registry's elements and members,
     /// and every element of the library's but those it names `unrealized`.
     /// Design: docs/design/core/contracts.md#unrealized-names
-    public func setRealization(_ registry: HostRealization, unrealized: Set<String>, register: HostRegister? = nil) {
-        let library = Set(LibraryContracts.elements.map { $0.nodeType.name }).subtracting(unrealized)
+    public func setRealization(
+        _ registry: HostRealization, unrealized: Set<String>, register: @autoclosure @escaping () -> HostRegister? = nil
+    ) {
+        let library = Set(LibraryContracts.elements.map { $0.nodeType }).subtracting(unrealized.map { NodeType($0) })
         HostBoundary.setRealization(HostRealization(elements: library.union(registry.elements), members: registry.members))
-        HostBoundary.setRegister(register)
+        HostBoundary.setRegister(register())
     }
 
     // MARK: - The application, its scenes and its kept values

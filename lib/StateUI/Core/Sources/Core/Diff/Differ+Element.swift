@@ -812,7 +812,7 @@ final class ElementPass {
     /// What its comparison found: its visual states, its engines, what it continues, its runs, its handlers, its
     /// driven states and the patch.
     var visualInput: VisualInput?
-    var visualState: String?
+    var visualState: KeyName?
     var engines: [Int] = []
     var previous: RenderedNode?
     var kept = RunSlots()

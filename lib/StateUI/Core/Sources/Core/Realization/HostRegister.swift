@@ -139,15 +139,16 @@
         let realization = declaration.realization
         var realizedOn: [Pair: Set<String>] = [:]
         for member in realization.members {
-            realizedOn[Pair(owner: member.owner, member: member.member), default: []].insert(member.element)
+            realizedOn[Pair(owner: member.owner.name, member: member.member.name), default: []]
+                .insert(member.element.name)
         }
 
         var pairs: Set<Pair> = []
         for (pair, elements) in realizedOn {
-            let wearers = realization.elements.filter { element in
+            let wearers = Set(realization.elements.map(\.name).filter { element in
                 LibraryContracts.elements.first { $0.nodeType.name == element }?
                     .worn.contains { $0.name == pair.owner } == true
-            }
+            })
             if elements.isSuperset(of: wearers) {
                 pairs.insert(pair)
             } else {

@@ -4,10 +4,10 @@
 /// What `.onVisualStateChanged` runs on entering a state: the states it hears by name, nil for every one.
 /// Design: docs/design/views/styles.md#hearing-a-state
 struct VisualStateListener {
-    let states: Set<String>?
-    let handler: ValueHandler<String>
+    let states: Set<KeyName>?
+    let handler: ValueHandler<KeyName>
 
-    func hears(_ name: String) -> Bool {
-        states?.contains(name) ?? true
+    func hears(_ state: KeyName) -> Bool {
+        states?.contains(state) ?? true
     }
 }

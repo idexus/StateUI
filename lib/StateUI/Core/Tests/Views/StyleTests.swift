@@ -83,7 +83,7 @@ final class StyleTests: XCTestCase {
 
         XCTAssertEqual(style.props["lineWidth"], .number(2))
         XCTAssertEqual(style.states, [
-            DeclaredState(name: "Disabled", setters: ["textColor": Color("#808080").propValue]),
+            DeclaredState(key: KeyName("Disabled"), setters: ["textColor": Color("#808080").propValue]),
         ])
     }
 
@@ -602,7 +602,7 @@ final class StyleTests: XCTestCase {
         XCTAssertEqual(delete.props["textColor"], Color.red.propValue, "the role's own")
         XCTAssertEqual(delete.props["fontSize"], .number(14), "and the implicit style's rest, written after it")
         XCTAssertEqual(
-            styled(Button("Delete").role(.destructive).node, with: sheet).visualStates.map(\.name),
+            styled(Button("Delete").role(.destructive).node, with: sheet).visualStates.map(\.key.name),
             ["Pressed", "Disabled"], "the states of both")
         XCTAssertEqual(cancel.props["textColor"], Color.black.propValue, "another role wears the implicit style")
         XCTAssertEqual(plain.props["textColor"], Color.black.propValue)

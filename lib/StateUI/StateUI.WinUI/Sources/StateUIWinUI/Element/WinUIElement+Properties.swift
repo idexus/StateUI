@@ -47,7 +47,7 @@ extension WinUIElement {
     /// Whether the host shows an entry as unsupported: no registration makes it, and it is no page's, no overlay, no
     /// part of another view and no structure.
     static func showsUnsupported(_ type: NodeType) -> Bool {
-        !WinUIRegistrations.registry.realization.elements.contains(type.name)
+        !WinUIRegistrations.registry.realizes(type)
             && !NodeType.viewlessTypes.contains(type) && !NodeType.pageTypes.contains(type) && type != .overlay
     }
 

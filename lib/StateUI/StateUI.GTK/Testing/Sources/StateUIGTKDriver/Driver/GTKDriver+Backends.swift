@@ -38,9 +38,9 @@ extension GTKDriver {
     /// What GTK realizes of the backends' elements: each member their registration takes or raises, and each act of
     /// their contracts the backend registered.
     var backendRecords: [HostRecord] {
-        let elements = Set(Self.backends.keys.map(\.name))
+        let elements = Set(Self.backends.keys)
         let realized = GTKRegistrations.registry.realization.members.filter { elements.contains($0.element) }
-            .map { HostRecord.complete($0.element, $0.member) }
+            .map { HostRecord.complete($0.element.name, $0.member.name) }
         let performed = Set(GTKInterop.acts.performers.keys.map(\.name))
         let acts = Self.backends.values.flatMap { backend in
             backend.contract.members.filter { performed.contains($0.name) }

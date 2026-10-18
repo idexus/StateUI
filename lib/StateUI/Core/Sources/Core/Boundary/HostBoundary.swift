@@ -316,7 +316,7 @@
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
     ) {
-        RaisedEvents.shared.raise(event.token.name, MemberValues.encode(repeat each value))
+        RaisedEvents.shared.raise(event.token, MemberValues.encode(repeat each value))
     }
 
     /// Tells the core what this host realizes - its `Registry.realization` -
@@ -331,8 +331,8 @@
     /// Tells the core what the host judges it realizes, member by member - what `Device.honours` answers from.
     ///
     /// - Parameter register: the host's register, its runtime's realization behind its own records.
-    public static func setRegister(_ register: HostRegister?) {
-        HostRealizations.register = register
+    public static func setRegister(_ register: @autoclosure @escaping () -> HostRegister?) {
+        HostRealizations.registerSource = register
     }
 
     /// Whether this host makes a view for an element.
@@ -340,7 +340,7 @@
     /// - Parameter contract: the element's contract.
     /// - Returns: whether the host said it realizes the element.
     public static func realizes(_ contract: any ElementContract.Type) -> Bool {
-        HostRealizations.current.elements.contains(contract.nodeType.name)
+        HostRealizations.current.elements.contains(contract.nodeType)
     }
 
     /// Whether this host realizes a property, on any element.
@@ -348,7 +348,7 @@
     /// - Parameter member: the property, written with its contract.
     /// - Returns: whether the host said it realizes the property.
     public static func realizes<Owner: Contract, Value>(_ member: ElementProperty<Owner, Value>) -> Bool {
-        HostRealizations.current.members.contains { $0.owner == Owner.name && $0.member == member.name }
+        HostRealizations.realizes(member.token.key, of: member.owner)
     }
 
     /// Whether this host raises an event, on any element.
@@ -356,7 +356,7 @@
     /// - Parameter member: the event, written with its contract.
     /// - Returns: whether the host said it raises the event.
     public static func realizes<Owner: Contract, Payload>(_ member: ElementEvent<Owner, Payload>) -> Bool {
-        HostRealizations.current.members.contains { $0.owner == Owner.name && $0.member == member.name }
+        HostRealizations.realizes(member.token.key, of: member.owner)
     }
 
     /// Claims the calling thread as the UI thread, whose jobs are `MainActor`'s, and runs what waits - what a host's

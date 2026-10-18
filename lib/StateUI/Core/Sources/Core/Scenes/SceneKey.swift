@@ -15,7 +15,10 @@
 /// long as its scene. A value every scene shares is a `PersistentKey`.
 public struct SceneKey: Hashable, Sendable, CustomStringConvertible {
     /// The name - what the value is written down under.
-    public let name: String
+    public var name: String { key.name }
+
+    /// The name and the number the key is worked by (`KeyName`).
+    let key: KeyName
 
     /// What kind of value it holds, taken from the type it was declared with.
     public let kind: PersistentKind
@@ -26,7 +29,7 @@ public struct SceneKey: Hashable, Sendable, CustomStringConvertible {
     ///   - name: the application's own name for it.
     ///   - type: the type of the state kept under it.
     public init<Value: PersistentValue>(_ name: String, of type: Value.Type) {
-        self.name = name
+        key = KeyName(name)
         kind = Value.persistentKind
     }
 

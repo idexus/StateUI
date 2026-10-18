@@ -6,34 +6,16 @@
 ///
 /// Comparable by name because the differ walks a node's driven and cleared
 /// properties in name order - that is what makes two renders of one tree alike.
-public struct Prop: Hashable, Comparable, Sendable, ExpressibleByStringLiteral,
-    CustomStringConvertible {
+public struct Prop: Hashable, Comparable, Sendable, CustomStringConvertible {
     /// The property's stable StateUI name.
-    public let name: String
+    public var name: String { key.name }
 
-    /// The name's number in this process (`NameNumber`): what the key is hashed and compared by.
-    private let number: Int32
-
-    /// Whether two keys are one name.
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.number == rhs.number
-    }
-
-    /// The name's number, hashed.
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(number)
-    }
+    /// The name and the number the key is worked by (`KeyName`).
+    @_spi(Host) public let key: KeyName
 
     /// A property key from its name - what a member's token is made from.
     public init(_ name: String) {
-        self.name = name
-        number = NameNumber.of(name)
-    }
-
-    /// The literal form, so a name reads plainly where a key is compared:
-    /// `property == "fontSize"`.
-    public init(stringLiteral value: String) {
-        self.init(value)
+        key = KeyName(name)
     }
 
     /// The name, so an interpolated diagnostic prints it plainly.
@@ -41,6 +23,6 @@ public struct Prop: Hashable, Comparable, Sendable, ExpressibleByStringLiteral,
 
     /// Name order - the order the differ walks properties in.
     public static func < (lhs: Prop, rhs: Prop) -> Bool {
-        lhs.name < rhs.name
+        lhs.key < rhs.key
     }
 }

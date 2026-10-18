@@ -5,7 +5,7 @@
 /// differ resolves, never crossing to a host.
 /// Design: docs/design/views/styles.md#visual-states
 struct DeclaredState: Equatable {
-    let name: String
+    let key: KeyName
     var setters: [Prop: PropValue] = [:]
 }
 
@@ -15,7 +15,7 @@ struct DeclaredState: Equatable {
 func written(_ states: [DeclaredState], adding state: DeclaredState) -> [DeclaredState] {
     var result = states
 
-    if let at = result.firstIndex(where: { $0.name == state.name }) {
+    if let at = result.firstIndex(where: { $0.key == state.key }) {
         result[at] = state
     } else {
         result.append(state)
@@ -31,7 +31,7 @@ func merged(_ base: [DeclaredState], with own: [DeclaredState]) -> [DeclaredStat
     var result = base
 
     for state in own {
-        if let at = result.firstIndex(where: { $0.name == state.name }) {
+        if let at = result.firstIndex(where: { $0.key == state.key }) {
             result[at].setters.merge(state.setters) { _, mine in mine }
         } else {
             result.append(state)

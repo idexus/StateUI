@@ -110,7 +110,7 @@ final class RegistryTests: XCTestCase {
         XCTAssertEqual(view.opacity, 0.5)
         XCTAssertTrue(registry.realization.members.contains(
             HostRealizedMember(element: "Test.Lamp", owner: "VisualElement", member: "opacity")))
-        XCTAssertFalse(registry.realization.members.contains { $0.member == "maximumLines" })
+        XCTAssertFalse(registry.realization.members.contains { $0.member.name == "maximumLines" })
     }
 
     /// The view raises an event of its own by member: the raise hands the
@@ -259,7 +259,7 @@ final class RegistryTests: XCTestCase {
             Self.view(of: LampContract.nodeType, in: registry),
             "the host makes this view, so the registry makes none for it")
         XCTAssertTrue(
-            registry.realization.elements.contains(LampContract.name),
+            registry.realization.elements.contains(LampContract.nodeType),
             "the host realizes the element whoever makes its view")
         XCTAssertTrue(registry.realization.members.contains(
             HostRealizedMember(element: LampContract.name, owner: LampContract.name, member: "signal")))
@@ -273,6 +273,23 @@ final class RegistryTests: XCTestCase {
         XCTAssertEqual(applied, [signal])
     }
 
+    /// What the registrations realize is worked out once, and again after each registration: a host says it at
+    /// each start, and one registered later is in what it says next.
+    func testARegistrationAfterTheRealizationWasAskedIsInTheNext() {
+        let registry = Registry<PlatformView>()
+        registry.add(LampContract.self, madeByHost: LampView.self) { lamp in
+            lamp.property(LampContract.signal) { view, signal in view.signal = signal }
+        }
+        XCTAssertFalse(registry.realization.members.contains {
+            $0.element == LampContract.nodeType && $0.member == VisualElementContract.opacity.token.key
+        })
+
+        registry.everyElementRealizes(VisualElementContract.opacity)
+
+        XCTAssertTrue(registry.realization.members.contains(
+            HostRealizedMember(element: LampContract.name, owner: VisualElementContract.name, member: "opacity")))
+    }
+
     /// Children a view draws itself are realized: their element, and of their members what the registration names
     /// - a member of a contract the child does not wear is left out - and the registry says whose they are.
     func testChildrenAViewDrawsAreRealizedWithTheMembersNamed() {
@@ -281,12 +298,12 @@ final class RegistryTests: XCTestCase {
 
         XCTAssertEqual(registry.childTypes(of: LampContract.nodeType), [BulbContract.nodeType])
         XCTAssertEqual(registry.childTypes(of: PlainContract.nodeType), [])
-        XCTAssertTrue(realization.elements.contains(BulbContract.name))
+        XCTAssertTrue(realization.elements.contains(BulbContract.nodeType))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: BulbContract.name, owner: BulbContract.name, member: "colour")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: BulbContract.name, owner: BulbContract.name, member: "bulbTapped")))
-        XCTAssertFalse(realization.members.contains { $0.element == BulbContract.name && $0.member == "signal" })
+        XCTAssertFalse(realization.members.contains { $0.element == BulbContract.nodeType && $0.member.name == "signal" })
     }
 
     /// The view is handed its children in order, each value typed by member, each event raised on the child it

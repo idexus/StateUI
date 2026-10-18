@@ -22,7 +22,7 @@ extension VisualElement where Self: StyleTarget {
         _ setters: (StyleBag<Self, StyleState>) -> StyleBag<Self, StyleState>
     ) -> Modified {
         let values = setters(StyleBag<Self, StyleState>(key: nil)).node.props
-        return declare(DeclaredState(name: state.name, setters: values))
+        return declare(DeclaredState(key: state.key, setters: values))
     }
 
     /// A state of this control's that changes nothing - declared so the
@@ -34,7 +34,7 @@ extension VisualElement where Self: StyleTarget {
     ///
     /// - Parameter state: the state, changing nothing.
     public func visualState(_ state: VisualState<Self>) -> Modified {
-        declare(DeclaredState(name: state.name))
+        declare(DeclaredState(key: state.key))
     }
 
     /// Runs when this control enters one of the named states - where a state
@@ -79,14 +79,14 @@ extension VisualElement where Self: StyleTarget {
     }
 
     /// Declares `states` and hears the control entering them.
-    private func listening(_ states: [VisualState<Self>], _ handler: ValueHandler<String>) -> Modified {
+    private func listening(_ states: [VisualState<Self>], _ handler: ValueHandler<KeyName>) -> Modified {
         modified { node in
-            for state in states where !node.visualStates.contains(where: { $0.name == state.name }) {
-                node.visualStates.append(DeclaredState(name: state.name))
+            for state in states where !node.visualStates.contains(where: { $0.key == state.key }) {
+                node.visualStates.append(DeclaredState(key: state.key))
             }
 
             node.visualStateListeners.append(VisualStateListener(
-                states: states.isEmpty ? nil : Set(states.map(\.name)), handler: handler))
+                states: states.isEmpty ? nil : Set(states.map { $0.key }), handler: handler))
         }
     }
 

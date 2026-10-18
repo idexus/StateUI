@@ -22,7 +22,7 @@ final class HostRealizationTests: XCTestCase {
     /// it realizes until it says otherwise.
     func testNothingIsSaidUntilTheHostSaysWhatItRealizes() {
         XCTAssertNil(HostRealizations.unrealized(ButtonContract.nodeType))
-        XCTAssertNil(HostRealizations.unraised(owner: "Test", event: "Test.MemoryLow"))
+        XCTAssertNil(HostRealizations.unraised(owner: KeyName("Test"), event: KeyName("Test.MemoryLow")))
     }
 
     /// A node type the host realizes goes by without a word.
@@ -57,9 +57,9 @@ final class HostRealizationTests: XCTestCase {
     func testAnEventTheHostDoesNotRaiseIsSaidWithTheNamesItLikelyMeant() {
         HostBoundary.setRealization(Self.realization)
 
-        XCTAssertNil(HostRealizations.unraised(owner: "Test", event: "Test.BatteryChanged"))
+        XCTAssertNil(HostRealizations.unraised(owner: KeyName("Test"), event: KeyName("Test.BatteryChanged")))
         XCTAssertEqual(
-            HostRealizations.unraised(owner: "Test", event: "Test.BatteryChangd"),
+            HostRealizations.unraised(owner: KeyName("Test"), event: KeyName("Test.BatteryChangd")),
             "the host raises no `Test.BatteryChangd` (nearest: `Test.BatteryChanged`): "
                 + "the handler will not hear it.")
     }
@@ -75,6 +75,28 @@ final class HostRealizationTests: XCTestCase {
         XCTAssertTrue(registry.realization.members.contains(
             HostRealizedMember(element: "Application", owner: "Test", member: "Test.BatteryChanged")))
         XCTAssertTrue(HostBoundary.realizes(TestHostEvents.batteryChanged))
+    }
+
+    /// A host says what it realizes, and judges it member by member, at every start - a test's every case on a
+    /// phone: what the core answers from is worked out when first asked, once, not at each saying.
+    func testAHostSayingItsRegisterAtEveryStartCostsNothingUntilAsked() {
+        let records = (0..<2_000).map { HostRecord.complete("Owner\($0 % 40)", "member\($0)") }
+        let register = HostRegister(records: records, unrealized: [], viewless: [])
+        let realization = HostRealization(
+            elements: ["Text"],
+            members: Set(records.map { HostRealizedMember(element: "Text", owner: $0.owner, member: $0.member) }))
+
+        let started = ContinuousClock.now
+        for _ in 0..<50 {
+            HostBoundary.setRealization(realization)
+            HostBoundary.setRegister(register)
+        }
+        let said = ContinuousClock.now - started
+
+        XCTAssertLessThan(said, .milliseconds(500), "50 starts took \(said)")
+        XCTAssertTrue(HostRealizations.honours(KeyName("member7"), of: KeyName("Owner7")))
+        XCTAssertFalse(HostRealizations.honours(KeyName("member7"), of: KeyName("Owner8")))
+        HostBoundary.setRegister(nil)
     }
 
     // MARK: - Support

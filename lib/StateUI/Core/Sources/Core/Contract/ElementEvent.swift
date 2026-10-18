@@ -27,8 +27,12 @@ public struct ElementEvent<Owner: Contract, Payload>: ContractMember {
         self.name = name
         self.layer = layer
         token = Event(name)
+        owner = KeyName(Owner.name)
     }
 
     /// The key the event crosses the boundary under, made once.
     @_spi(Host) public let token: Event
+
+    /// The key of the contract declaring it, made once.
+    @_spi(Host) public let owner: KeyName
 }

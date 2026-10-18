@@ -84,7 +84,7 @@ final class HostDeclarationTests: XCTestCase {
             "Text": HostDeclaration.Element(members: ["maximumLines", "nosuchmember"]),
         ])
 
-        XCTAssertFalse(wrong.realization.members.contains { $0.member == "nosuchmember" })
+        XCTAssertFalse(wrong.realization.members.contains { $0.member.name == "nosuchmember" })
         XCTAssertEqual(wrong.undeclared.map(\.member), ["nosuchmember"])
     }
 

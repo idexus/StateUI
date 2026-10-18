@@ -22,7 +22,7 @@ enum WinUIRealization {
     /// What the running host realizes none of: what it never makes, what it leaves to the application, and each
     /// backend no one registered.
     @MainActor static var unmade: Set<String> {
-        unrealized.union(byApplication).union(backends.subtracting(WinUIRegistrations.registry.realization.elements))
+        unrealized.union(byApplication).union(backends.subtracting(WinUIRegistrations.registry.realization.elements.map(\.name)))
     }
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
@@ -228,7 +228,7 @@ enum WinUIRealization {
     @MainActor static var register: HostRegister {
         HostRegister(
             records: records,
-            unrealized: unrealized.union(backends.subtracting(WinUIRegistrations.registry.realization.elements)),
+            unrealized: unrealized.union(backends.subtracting(WinUIRegistrations.registry.realization.elements.map(\.name))),
             viewless: viewless, notPlanned: notPlanned, byApplication: byApplication
         ).and(declaration)
     }

@@ -254,7 +254,7 @@ extension State where Value: PersistentValue {
         let own = storage
 
         if let kept = record.claim(
-            key.name,
+            key.key,
             orAdopt: own,
             landing: { held in
                 if let value = Value(persisted: held) {
@@ -264,7 +264,7 @@ extension State where Value: PersistentValue {
             storage = kept
         }
 
-        storage.keep = { [weak record] in record?.record(key.name, $0.persistentValue) }
+        storage.keep = { [weak record] in record?.record(key.key, $0.persistentValue) }
     }
 }
 

@@ -10,21 +10,21 @@ extension Differ {
     func resolveVisualStates(
         _ node: inout Node,
         input: VisualInput,
-        previous: String?,
+        previous: KeyName?,
         reads: inout Set<ObjectIdentifier>
-    ) -> (state: String, heard: [(index: Int, listener: VisualStateListener)]) {
-        let names = Set(node.visualStates.map(\.name))
+    ) -> (state: KeyName, heard: [(index: Int, listener: VisualStateListener)]) {
+        let declared = Set(node.visualStates.map { $0.key })
 
         // Only what a declared state follows is heard.
-        if names.contains("Pressed") {
+        if declared.contains(VisualStateName.pressed) {
             node.addHandler(.pressed) { input.hold(true) }
             node.addHandler(.released) { input.hold(false) }
         }
-        if names.contains("PointerOver") {
+        if declared.contains(VisualStateName.pointerOver) {
             node.addHandler(.pointerEntered) { input.hover(true) }
             node.addHandler(.pointerExited) { input.hover(false) }
         }
-        if names.contains("Focused") {
+        if declared.contains(VisualStateName.focused) {
             node.addHandler(.isFocusedChanged) {
                 if let focused = EventBuffer.current.first?.bool { input.focus(focused) }
             }

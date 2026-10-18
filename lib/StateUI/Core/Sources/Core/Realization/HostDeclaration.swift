@@ -69,11 +69,11 @@
         let library = Set(LibraryContracts.elements.map { $0.nodeType.name })
         var byElement: [String: Set<String>] = [:]
 
-        for element in realization.elements where library.contains(element) {
-            byElement[element] = []
+        for element in realization.elements where library.contains(element.name) {
+            byElement[element.name] = []
         }
-        for member in realization.members where byElement[member.element] != nil {
-            byElement[member.element, default: []].insert(member.member)
+        for member in realization.members where byElement[member.element.name] != nil {
+            byElement[member.element.name, default: []].insert(member.member.name)
         }
 
         var elements: [String: Element] = [:]
@@ -183,11 +183,11 @@
     /// rather than guessed at.
     public var realization: HostRealization {
         var members: Set<HostRealizedMember> = []
-        var elements: Set<String> = []
+        var elements: Set<NodeType> = []
         let sharedNames = shared.members.union(shared.events).union(acts)
 
         for (name, declared) in self.elements {
-            elements.insert(name)
+            elements.insert(NodeType(name))
 
             guard let contract = LibraryContracts.elements.first(where: { $0.nodeType.name == name })
             else { continue }

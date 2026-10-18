@@ -92,7 +92,7 @@ public struct StyleSheet {
     /// or else the one every control of its type gets.
     func style(for node: Node) -> AnyStyle? {
         let key = node.props[VisualElementContract.style.token]?.name
-        if key == platformStyleName { return nil }
+        if key == platformStyle.name { return nil }
         if let key, let at = keyed[Filed(target: node.type, name: key)] {
             return written[at]
         }

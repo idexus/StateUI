@@ -97,10 +97,10 @@ platform does not know.
 
 ## Tokens
 
-`NodeType`, `Prop`, `Event` and `Act` are tokens: structs holding a name, with
-the library's entries as static members. A token is a name and only a name;
-a host reads it by that name. That is what makes the library's tokens and an
-application's the same thing.
+`NodeType`, `Prop`, `Event` and `Act` are tokens: structs holding a key - a
+name and its number - with the library's entries as static members. A token is
+a key and only a key; a host reads it by its name. That is what makes the
+library's tokens and an application's the same thing.
 
 Nobody writes a token by hand. A member's token is made from its name, and each
 name is spelled once, where a contract declares its member; the library's
@@ -108,7 +108,7 @@ tokens (`Tokens.swift`, for the hosts, behind `@_spi(Host)`) are
 made from the members, and a guard names any source that spells a name out
 instead. A node type is the one token a contract spells, as a literal. Node
 types, properties and events are ordered by name, because the differ walks
-properties and numbers handlers in name order, and equal where their names
+properties and numbers handlers in name order, and equal where their keys
 are ([a key is a number](#a-key-is-a-number)).
 
 An application's own node type can be one no host knows; the host draws an
@@ -120,15 +120,27 @@ with its own keeps the two sets apart.
 
 ## A key is a number
 
-A token's name stands for a number in the process (`NameNumber`), given the
-first time a key of that name is made: two keys are equal where their numbers
-are, and a key hashes its number. Every element's values, handlers and type
-are looked up by key on every render and every frame, and a name would be
-hashed and compared byte by byte at each; a number is one word. A contract's
-member makes its key once, as it is declared (`token`), so writing and
-reading a member makes no key again. The order stays the name's: the differ
-walks properties and numbers handlers in name order, whatever numbers the
-names stood for in this run.
+A key is a name and the number its work is done by (`KeyName`): the name's
+64-bit FNV-1a hash, so one name has one number in every process on every
+platform, and no run depends on which key it met first. Two keys are equal
+where their numbers are, a key hashes its number, and keys order by name - the
+differ walks properties and numbers handlers in name order. Every element's
+values, handlers and type are looked up by key on every render and every
+frame; a name would be hashed and compared byte by byte at each, a number is
+one word. The number never leaves the process: what crosses to a host or a
+file is the name.
+
+A name becomes a key once, where the key is declared: a `static let`, a
+contract's member (`token`, `owner`), a host's realization as it is read at
+start-up. Making one takes the process's table under a lock (`KeyNumbers`),
+which stops a second name of one number, so the library makes no key during
+work: `Prop`, `Event` and `Act` have no literal form, and `KeyGuardTests` reads
+every library source for a key made, or a key's name compared or looked up,
+anywhere else. A name in a file - a kept value, a scene's - stays the file's
+word: a key claims its own by its name, and a file never makes a key. A
+collection keyed by strings holds the words of a file, an export or a
+diagnostic, an identity of the application's data - which comes and goes, and
+is no key - or the toolkit's own vocabulary; the guard lists each with which.
 
 ## Realizations
 

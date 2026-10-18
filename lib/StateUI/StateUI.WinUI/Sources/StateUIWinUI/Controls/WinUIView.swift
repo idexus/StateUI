@@ -47,7 +47,12 @@ class WinUIView {
     private var writtenRightToLeft = false
 
     /// What the view paints with brushes that follow its size, by what they paint.
-    private var paintsBySize: [String: (LayoutSize) -> Void] = [:]
+    private var paintsBySize: [Painted: (LayoutSize) -> Void] = [:]
+
+    /// What a view paints with brushes that may follow its size, in the order they are painted again.
+    enum Painted: Comparable {
+        case background, look, shape
+    }
 
     private static let live = LiveViews<WinUIView>()
 
@@ -142,7 +147,7 @@ class WinUIView {
     /// Design: docs/design/platforms/winui/drawing.md#a-views-background
     func setBackground(_ value: HostValue?) {
         let brush = WinUIBrush(value)
-        paint("background", followsSize: brush.followsSize) { [handle] size in
+        paint(.background, followsSize: brush.followsSize) { [handle] size in
             brush.withRelayBrush(over: size) { stateui_winui_set_background(handle, $0) }
         }
     }
@@ -258,7 +263,7 @@ class WinUIView {
     /// Paints `what` with `paint` at the view's size now, and again at each new size where its brushes follow the
     /// size of what they paint (`WinUIBrush.followsSize`).
     /// Design: docs/design/platforms/winui/drawing.md#a-box-and-its-brush
-    func paint(_ what: String, followsSize: Bool, _ paint: @escaping (LayoutSize) -> Void) {
+    func paint(_ what: Painted, followsSize: Bool, _ paint: @escaping (LayoutSize) -> Void) {
         paintsBySize[what] = followsSize ? paint : nil
         let frame = placedFrame
         paint(LayoutSize(width: frame.width, height: frame.height))

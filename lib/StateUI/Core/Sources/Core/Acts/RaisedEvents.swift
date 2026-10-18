@@ -12,16 +12,16 @@ final class RaisedEvents: Sendable {
     static let shared = RaisedEvents()
 
     private struct Waiting {
-        var events: [(name: String, values: [PropValue])] = []
+        var events: [(event: Event, values: [PropValue])] = []
         var booked = false
     }
 
     private let waiting = Mutex(Waiting())
 
     /// Queues one raise, on whatever thread raises it.
-    func raise(_ name: String, _ values: [PropValue]) {
+    func raise(_ event: Event, _ values: [PropValue]) {
         let book = waiting.withLock { waiting in
-            waiting.events.append((name, values))
+            waiting.events.append((event, values))
             defer { waiting.booked = true }
             return !waiting.booked
         }
@@ -39,6 +39,6 @@ final class RaisedEvents: Sendable {
             }
             return waiting.events
         }
-        for event in events { HostEvents.dispatch(event.name, event.values) }
+        for raised in events { HostEvents.dispatch(raised.event, raised.values) }
     }
 }

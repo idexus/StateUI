@@ -65,8 +65,8 @@ public enum HostEvents {
     /// as they crossed; an event the host says it does not raise is said once.
     private static func subscribe(
         _ event: Event,
-        owner: String,
-        member: String,
+        owner: KeyName,
+        member: KeyName,
         _ handler: ValueHandler<[PropValue]>
     ) -> HostEventSubscription {
         if let unraised = HostRealizations.unraised(owner: owner, event: member) {
@@ -96,7 +96,7 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, Void>,
         _ handler: @escaping @MainActor () throws -> Void
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, ValueHandler(step: { payload in
+        subscribe(event.token, owner: event.owner, member: event.token.key, ValueHandler(step: { payload in
             guard MemberValues.carried(payload, by: event.name) != nil else { return }
 
             try handler()
@@ -109,7 +109,7 @@ public enum HostEvents {
         gate: some Gate,
         _ handler: @escaping EventHandler
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, ValueHandler(run: { payload in
+        subscribe(event.token, owner: event.owner, member: event.token.key, ValueHandler(run: { payload in
             guard MemberValues.carried(payload, by: event.name) != nil else { return }
 
             try await handler()
@@ -132,7 +132,7 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, Value>,
         _ handler: @escaping @MainActor (Value) throws -> Void
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, ValueHandler(step: { payload in
+        subscribe(event.token, owner: event.owner, member: event.token.key, ValueHandler(step: { payload in
             guard let value = MemberValues.carried(payload, by: event.name, as: Value.self) else { return }
 
             try handler(value)
@@ -145,7 +145,7 @@ public enum HostEvents {
         gate: some Gate,
         _ handler: @escaping ValueEventHandler<Value>
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, ValueHandler(run: { payload in
+        subscribe(event.token, owner: event.owner, member: event.token.key, ValueHandler(run: { payload in
             guard let value = MemberValues.carried(payload, by: event.name, as: Value.self) else { return }
 
             try await handler(value)
@@ -167,7 +167,7 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, (First, Second)>,
         _ handler: @escaping @MainActor (First, Second) throws -> Void
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, ValueHandler(step: { payload in
+        subscribe(event.token, owner: event.owner, member: event.token.key, ValueHandler(step: { payload in
             guard let (first, second) = MemberValues.carried(
                 payload, by: event.name, as: First.self, Second.self)
             else { return }
@@ -182,7 +182,7 @@ public enum HostEvents {
         gate: some Gate,
         _ handler: @escaping ValueEventHandler<First, Second>
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, ValueHandler(run: { payload in
+        subscribe(event.token, owner: event.owner, member: event.token.key, ValueHandler(run: { payload in
             guard let (first, second) = MemberValues.carried(
                 payload, by: event.name, as: First.self, Second.self)
             else { return }
@@ -205,7 +205,7 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, (First, Second, Third)>,
         _ handler: @escaping @MainActor (First, Second, Third) throws -> Void
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, ValueHandler(step: { payload in
+        subscribe(event.token, owner: event.owner, member: event.token.key, ValueHandler(step: { payload in
             guard let (first, second, third) = MemberValues.carried(
                 payload, by: event.name, as: First.self, Second.self, Third.self)
             else { return }
@@ -222,7 +222,7 @@ public enum HostEvents {
         gate: some Gate,
         _ handler: @escaping ValueEventHandler<First, Second, Third>
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, ValueHandler(run: { payload in
+        subscribe(event.token, owner: event.owner, member: event.token.key, ValueHandler(run: { payload in
             guard let (first, second, third) = MemberValues.carried(
                 payload, by: event.name, as: First.self, Second.self, Third.self)
             else { return }
@@ -237,11 +237,11 @@ public enum HostEvents {
         subscriptions[event]?.removeAll { $0.id == id }
     }
 
-    /// Runs every handler subscribed to a name, each through its gate, and answers how many - the list as
+    /// Runs every handler subscribed to an event, each through its gate, and answers how many - the list as
     /// it stood when the raise came.
     @discardableResult
-    static func dispatch(_ name: String, _ payload: [PropValue]) -> Int {
-        let handlers = subscriptions[Event(name)] ?? []
+    static func dispatch(_ event: Event, _ payload: [PropValue]) -> Int {
+        let handlers = subscriptions[event] ?? []
 
         for entry in handlers {
             let handler = entry.handler

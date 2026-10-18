@@ -34,6 +34,12 @@
     /// The registrations, by node type.
     private var entries: [NodeType: Entry] = [:]
 
+    /// The node types an entry draws as its children, with no view of their own.
+    private var drawn: Set<NodeType> = []
+
+    /// What these registrations realize, worked out once after a registration: a host says it at each start.
+    private var realized: HostRealization?
+
     /// The application's events these registrations raise - an element's own
     /// are its registration's.
     private var applicationEvents: Set<HostRealizedMember> = []
@@ -158,6 +164,8 @@
             members: registration.members,
             worn: Realized.worn.map { ObjectIdentifier($0) },
             children: children)
+        drawn = Set(entries.values.flatMap { $0.children.map(\.type) })
+        realized = nil
     }
 
     /// A property the host's shared element machinery realizes on every
@@ -167,6 +175,7 @@
     /// - Parameter member: the property, written with its contract.
     public func everyElementRealizes<Owner: Contract, Value>(_ member: ElementProperty<Owner, Value>) {
         everyElement.append((owner: Owner.self, member: member.name))
+        realized = nil
     }
 
     /// An event the host's shared element machinery raises on every element
@@ -176,6 +185,7 @@
     /// - Parameter event: the event, written with its contract.
     public func everyElementRaises<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
         everyElement.append((owner: Owner.self, member: event.name))
+        realized = nil
     }
 
     /// The names of the members the shared machinery realizes and raises, as they were registered.
@@ -193,6 +203,7 @@
     public func raises<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
         applicationEvents.insert(
             HostRealizedMember(element: ApplicationContract.name, owner: Owner.name, member: event.name))
+        realized = nil
     }
 
     /// A view for a node type, made by its registration, its reports handed to `send`
@@ -271,6 +282,7 @@
     /// or draw as another's children, every member they take or raise, and what the shared machinery realizes
     /// on each element that wears the member's contract.
     public var realization: HostRealization {
+        if let realized { return realized }
         var members = applicationEvents
 
         for (type, entry) in entries {
@@ -281,7 +293,13 @@
             }
         }
 
-        let drawn = entries.values.flatMap { $0.children.map(\.type.name) }
-        return HostRealization(elements: Set(entries.keys.map(\.name) + drawn), members: members)
+        let realization = HostRealization(elements: Set(entries.keys).union(drawn), members: members)
+        realized = realization
+        return realization
+    }
+
+    /// Whether these registrations realize `type`: make a view for it, or draw it as another's children.
+    public func realizes(_ type: NodeType) -> Bool {
+        entries[type] != nil || drawn.contains(type)
     }
 }

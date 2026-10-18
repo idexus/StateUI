@@ -158,7 +158,7 @@ enum WebRealization {
 
     @MainActor static var unmade: Set<String> {
         Set(LibraryContracts.elements.map { $0.nodeType.name })
-            .subtracting(WebRegistrations.registry.realization.elements)
+            .subtracting(WebRegistrations.registry.realization.elements.map(\.name))
             .subtracting(NodeType.viewlessTypes.map(\.name))
             .subtracting(madeByHost.map(\.name))
     }

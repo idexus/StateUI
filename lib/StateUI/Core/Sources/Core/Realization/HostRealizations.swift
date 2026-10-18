@@ -4,18 +4,80 @@
 /// What the host told the core it realizes - nothing until it says.
 @MainActor
 enum HostRealizations {
-    /// What the host said, replacing what it said before - once, at start-up.
-    static var current = HostRealization()
+    /// What the host said, replacing what it said before - at each start.
+    static var current = HostRealization() {
+        didSet {
+            realizedMembers = nil
+            honouredMembers = nil
+        }
+    }
+
+    /// Where what the host judges it realizes, member by member, comes from - read when first asked: a host says
+    /// it at each start, and building it costs.
+    static var registerSource: () -> HostRegister? = { nil } {
+        didSet {
+            readRegister = nil
+            honouredMembers = nil
+        }
+    }
 
     /// What the host judges it realizes, member by member - what the platform contract shows; nil before it says.
-    static var register: HostRegister?
+    static var register: HostRegister? {
+        if let readRegister { return readRegister }
+        let register = registerSource()
+        readRegister = .some(register)
+        return register
+    }
+    private static var readRegister: HostRegister??
+
+    /// A member under the contract declaring it.
+    private struct Owned: Hashable {
+        let owner: KeyName
+        let member: KeyName
+    }
+
+    /// Every member the host said it realizes, on any element - worked out when first asked, as a host says what
+    /// it realizes at each start.
+    private static var realizedMembers: Set<Owned>?
+    private static var realized: Set<Owned> {
+        if let realizedMembers { return realizedMembers }
+        let realized = Set(current.members.map { Owned(owner: $0.owner, member: $0.member) })
+        realizedMembers = realized
+        return realized
+    }
+
+    /// The members the host realizes in full or in part by its register - each by its first record, on an element
+    /// it does not leave out - else those it said it realizes; worked out when first asked.
+    private static var honouredMembers: Set<Owned>?
+    private static var honoured: Set<Owned> {
+        if let honouredMembers { return honouredMembers }
+        guard let register else { return realized }
+
+        var judged: Set<Owned> = []
+        var honoured: Set<Owned> = []
+        for record in register.records {
+            let owned = Owned(owner: KeyName(record.owner), member: KeyName(record.member))
+            guard judged.insert(owned).inserted, case .complete? = register.judgement(ofElement: record.owner)
+            else { continue }
+            switch record.judgement {
+            case .complete, .partial: honoured.insert(owned)
+            case .notPlanned, .unrealized, .byApplication: break
+            }
+        }
+        honouredMembers = honoured
+        return honoured
+    }
 
     /// Whether the host realizes `member` of the contract `owner` - in full or in part - by its register, else by
     /// what it said it realizes.
     /// Design: docs/design/core/contracts.md#what-a-platform-honours
-    static func honours(_ member: String, of owner: String) -> Bool {
-        if let register { return register.realizes(member, on: owner, from: owner) }
-        return current.members.contains { $0.owner == owner && $0.member == member }
+    static func honours(_ member: KeyName, of owner: KeyName) -> Bool {
+        honoured.contains(Owned(owner: owner, member: member))
+    }
+
+    /// Whether the host said it realizes `member` of the contract `owner`, on any element.
+    static func realizes(_ member: KeyName, of owner: KeyName) -> Bool {
+        realized.contains(Owned(owner: owner, member: member))
     }
 
     /// What to say about a node type described for the first time: nothing where the
@@ -26,25 +88,25 @@ enum HostRealizations {
         let realization = current
 
         guard realization != HostRealization(), type != .composed,
-              !realization.elements.contains(type.name)
+              !realization.elements.contains(type)
         else { return nil }
 
-        return "the host realizes no `\(type.name)`" + nearMisses(type.name, among: realization.elements) + "."
+        return "the host realizes no `\(type.name)`"
+            + nearMisses(type.name, among: Set(realization.elements.map(\.name))) + "."
     }
 
     /// What to say about an event of the application's a handler listens for:
     /// nothing where the host raises it, or has said nothing at all, and
     /// otherwise that it does not - with the events it raises nearest in name.
-    static func unraised(owner: String, event: String) -> String? {
+    static func unraised(owner: KeyName, event: KeyName) -> String? {
         let realization = current
 
-        guard realization != HostRealization(),
-              !realization.members.contains(where: { $0.owner == owner && $0.member == event })
-        else { return nil }
+        guard realization != HostRealization(), !realizes(event, of: owner) else { return nil }
 
-        let raised = Set(realization.members.filter { $0.element == ApplicationContract.name }.map(\.member))
+        let raised = Set(realization.members.filter { $0.element == .application }.map(\.member.name))
 
-        return "the host raises no `\(event)`" + nearMisses(event, among: raised) + ": the handler will not hear it."
+        return "the host raises no `\(event.name)`" + nearMisses(event.name, among: raised)
+            + ": the handler will not hear it."
     }
 
     /// " (nearest: `a`, `b`)" - the names at most a quarter of the name's

@@ -41,7 +41,7 @@ final class VisualStateTests: XCTestCase {
             .node
         node.materialize()
 
-        XCTAssertEqual(node.visualStates.map(\.name), ["On", "Off"])
+        XCTAssertEqual(node.visualStates.map(\.key.name), ["On", "Off"])
         XCTAssertEqual(node.visualStates.first?.setters["background"], blue)
         XCTAssertTrue(node.children.isEmpty)
     }
@@ -60,8 +60,8 @@ final class VisualStateTests: XCTestCase {
             with: sheet)
 
         XCTAssertEqual(node.visualStates, [
-            DeclaredState(name: "Disabled", setters: ["opacity": .number(0.5), "background": blue]),
-            DeclaredState(name: "On", setters: ["background": green]),
+            DeclaredState(key: KeyName("Disabled"), setters: ["opacity": .number(0.5), "background": blue]),
+            DeclaredState(key: KeyName("On"), setters: ["background": green]),
         ])
     }
 
@@ -226,7 +226,7 @@ final class VisualStateTests: XCTestCase {
     /// Naming states declares them without changing the look, and only they are heard - as the typed state.
     func testAListenerDeclaresTheStatesItNamesAndHearsOnlyThem() throws {
         let node = Button("Save").onVisualStateChanged(.pressed) { _ in }.node
-        XCTAssertEqual(node.visualStates, [DeclaredState(name: "Pressed")])
+        XCTAssertEqual(node.visualStates, [DeclaredState(key: KeyName("Pressed"))])
 
         let renders = Renders()
         var heard: [String] = []

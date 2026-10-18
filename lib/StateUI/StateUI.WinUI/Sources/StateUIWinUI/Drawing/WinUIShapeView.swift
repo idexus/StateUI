@@ -27,7 +27,7 @@ final class WinUIShapeView: WinUIView {
 
         painted = (outline, fill, stroke, width)
         let rounds = outline != .rectangle && outline != .ellipse
-        paint("shape", followsSize: fill.followsSize || stroke.followsSize || rounds) { [handle] size in
+        paint(.shape, followsSize: fill.followsSize || stroke.followsSize || rounds) { [handle] size in
             let radius = outline.relay(width: size.width, height: size.height).radius
             fill.withRelayBrush(over: size) { fill in
                 stroke.withRelayBrush(over: size) { stroke in

@@ -26,14 +26,14 @@ final class SceneRecord {
     /// Each window's session, kept while the window is open.
     private var windowSessions: [String: WindowSession] = [:]
 
-    /// What the platform kept for the scene's keys, by name.
+    /// What the platform kept for the scene's keys, by the name it keeps each under: a key claims its own by its name.
     private var restored: [String: PropValue] = [:]
 
     /// The storage standing for each key - one key, one piece of state.
-    private var keyed: [String: AnyObject] = [:]
+    private var keyed: [KeyName: AnyObject] = [:]
 
     /// The keys written since the host last took them, each with its last value.
-    private var waiting: [String: PropValue] = [:]
+    private var waiting: [KeyName: PropValue] = [:]
 
     /// A scene, by its number, of declaration `declaration`, with `windows` open.
     init(id: String, declaration: Int, windows: [OpenedWindow] = []) {
@@ -135,12 +135,12 @@ final class SceneRecord {
 
     /// The storage a key of this scene means: the one standing, or the offered one
     /// adopted, with what the platform kept landed in it.
-    func claim(_ name: String, orAdopt storage: AnyObject, landing land: (PropValue) -> Void) -> AnyObject {
-        if let standing = keyed[name] { return standing }
+    func claim(_ key: KeyName, orAdopt storage: AnyObject, landing land: (PropValue) -> Void) -> AnyObject {
+        if let standing = keyed[key] { return standing }
 
-        keyed[name] = storage
+        keyed[key] = storage
 
-        if let held = restored[name] {
+        if let held = restored[key.name] {
             land(held)
         }
 
@@ -149,8 +149,8 @@ final class SceneRecord {
 
     /// Marks a key as needing to be kept, replacing whatever value was
     /// waiting.
-    func record(_ name: String, _ value: PropValue) {
-        waiting[name] = value
+    func record(_ key: KeyName, _ value: PropValue) {
+        waiting[key] = value
     }
 
     /// How many keys are waiting to be kept.
@@ -160,7 +160,7 @@ final class SceneRecord {
     func takeWaiting() -> [(name: String, value: PropValue)] {
         let taken = waiting.sorted { $0.key < $1.key }
         waiting.removeAll(keepingCapacity: true)
-        return taken.map { (name: $0.key, value: $0.value) }
+        return taken.map { (name: $0.key.name, value: $0.value) }
     }
 }
 

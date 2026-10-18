@@ -48,7 +48,7 @@ final class GTKDeclarationExportTests: XCTestCase {
         // A closure, not a key path: a key path through an existential metatype crashes Swift 6.4's SILGen.
         let types = LibraryContracts.elements.map { $0.nodeType }
         let unsupported = Set(types.filter { GTKElement.showsUnsupported($0) }.map(\.name))
-        let made = Set(GTKRegistrations.registry.realization.elements)
+        let made = Set(GTKRegistrations.registry.realization.elements.map(\.name))
 
         XCTAssertEqual(unsupported.subtracting(GTKRealization.unmade).sorted(), [])
         XCTAssertEqual(made.intersection(GTKRealization.unmade).sorted(), [])

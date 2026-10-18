@@ -40,8 +40,9 @@ enum AppKitRegistrations {
     /// under it would hide its shape.
     /// Design: docs/design/platforms/appkit/registrations.md#a-background
     static let drawOwnBackground: Set<NodeType> = Set(registry.realization.members
-        .filter { $0.owner == VisualElementContract.name && $0.member == VisualElementContract.background.name }
-        .map { NodeType($0.element) })
+        .filter { $0.owner == VisualElementContract.background.owner
+            && $0.member == VisualElementContract.background.token.key }
+        .map(\.element))
 
     /// The acts this host performs, whichever element each is aimed at: every host's (`HostActs.performed`), the files
     /// (`HostActs.files`) and its own elements' acts. The host layer's performer

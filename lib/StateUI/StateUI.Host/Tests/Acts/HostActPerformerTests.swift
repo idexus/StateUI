@@ -137,13 +137,13 @@ final class HostActPerformerTests: XCTestCase {
     /// nobody performs fails by name and the host's.
     func testWhatNoToolkitPerformsFailsByName() {
         let (toolkit, answers) = (Toolkit(), Answers())
-        toolkit.own = ["WebView.GoBack"]
-        toolkit.registered = ["Mine.Act"]
+        toolkit.own = [Act("WebView.GoBack")]
+        toolkit.registered = [Act("Mine.Act")]
         let acts = performer(toolkit, answers)
 
         acts.perform(HostActCall(act: .persistValue, arguments: [], completion: 1))
-        acts.perform(HostActCall(act: "WebView.GoBack", arguments: [], completion: 2))
-        acts.perform(HostActCall(act: "Mine.Act", arguments: [], completion: 3))
+        acts.perform(HostActCall(act: Act("WebView.GoBack"), arguments: [], completion: 2))
+        acts.perform(HostActCall(act: Act("Mine.Act"), arguments: [], completion: 3))
         acts.perform(HostActCall(act: .persistSceneValue, arguments: [], completion: 4))
         acts.perform(HostActCall(act: .announce, arguments: [.string("Saved")], completion: 5))
 

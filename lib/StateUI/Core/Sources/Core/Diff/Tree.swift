@@ -132,7 +132,7 @@ final class RenderedNode {
     /// What the user is doing to it that its visual states follow, and the state it is in; nil for an element that
     /// declares none.
     var visualInput: VisualInput?
-    var visualState: String?
+    var visualState: KeyName?
 
     /// One element as the host has it. Made by the differ.
     init(

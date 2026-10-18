@@ -44,12 +44,12 @@ extension Device {
     ///         Button("Open the list").onClicked { showing = true }
     ///     }
     public func honours<Owner: Contract, Value>(_ member: ElementProperty<Owner, Value>) -> Bool {
-        HostRealizations.honours(member.name, of: Owner.name)
+        HostRealizations.honours(member.token.key, of: member.owner)
     }
 
     /// Whether the platform the application runs on raises `event` - its host realizes it.
     public func honours<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) -> Bool {
-        HostRealizations.honours(event.name, of: Owner.name)
+        HostRealizations.honours(event.token.key, of: event.owner)
     }
 }
 

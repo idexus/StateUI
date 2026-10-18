@@ -117,7 +117,7 @@ extension StyleBag where Context == StyleBase {
     ) -> Self {
         var copy = self
         let values = setters(StyleBag<Target, StyleState>(key: nil)).node.props
-        copy.states = written(copy.states, adding: DeclaredState(name: state.name, setters: values))
+        copy.states = written(copy.states, adding: DeclaredState(key: state.key, setters: values))
         return copy
     }
 
@@ -130,7 +130,7 @@ extension StyleBag where Context == StyleBase {
     /// - Parameter state: the state, changing nothing.
     public func visualState(_ state: VisualState<Target>) -> Self {
         var copy = self
-        copy.states = written(copy.states, adding: DeclaredState(name: state.name))
+        copy.states = written(copy.states, adding: DeclaredState(key: state.key))
         return copy
     }
 }
