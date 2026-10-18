@@ -61,6 +61,44 @@ final class WinUITextFieldViewTests: XCTestCase {
         }
     }
 
+    /// A field's drag stands on the box in its place - dragged, taking drops - and the relay lets its offer go
+    /// once the field leaves.
+    func testAFieldsDragStandsOnTheBoxInItsPlace() throws {
+        try onUIThread {
+            let hidden = State(wrappedValue: false)
+            let shown = State(wrappedValue: true)
+            let words = State(wrappedValue: "")
+            let offers = stateui_winui_drag_offers()
+            let host = WinUIRenderer.running {
+                VStack {
+                    if shown.wrappedValue {
+                        TextField(words.projectedValue).isPassword(hidden.wrappedValue)
+                            .draggable(text: "Alpha").onDrop { _ in }
+                    }
+                }
+            }
+            let field = try XCTUnwrap(host.views(WinUITextFieldView.self).first)
+            XCTAssertEqual(Self.drags(field), [true, true])
+
+            hidden.wrappedValue = true
+            host.settle { Self.read(field, "password") == "1" }
+            XCTAssertEqual(Self.drags(field), [true, true], "on the PasswordBox in the field's place")
+
+            shown.wrappedValue = false
+            host.settle { host.views(WinUITextFieldView.self).isEmpty && stateui_winui_drag_offers() == offers }
+            XCTAssertEqual(stateui_winui_drag_offers(), offers, "the offer let go with its field")
+        }
+    }
+
+    /// Whether `view`'s element can be dragged, and whether it takes drops.
+    @MainActor
+    private static func drags(_ view: WinUIView) -> [Bool] {
+        var canDrag = false
+        var allowsDrop = false
+        stateui_winui_drag_read(view.handle, &canDrag, &allowsDrop)
+        return [canDrag, allowsDrop]
+    }
+
     /// A field takes the traits its purpose gives on every host (`InputTraits`): plain words are neither spell
     /// checked nor predicted, though the tree leaves both on; prose starts its sentences in capitals and a chat
     /// offers emoji, each by its input scope.

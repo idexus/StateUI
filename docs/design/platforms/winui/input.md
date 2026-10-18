@@ -120,7 +120,10 @@ act of moving the focus asking the same, and tells only a change.
 
 A view's drags are WinUI's own drag and drop, through the relay
 (`Drags.cpp`): what the view offers stands in a table by its number, and its
-handlers, hung once, ask it as they run. A view that can be dragged has
+handlers, hung once on each element it stands as, ask it as they run - a
+password field's new box gets them again as it takes the field's place, and
+a view offering nothing, one that left among them, is gone from the table.
+A view that can be dragged has
 `CanDrag`; its `DragStarting` puts the view's words on the drag's data as
 text, to be copied, and its `DropCompleted` says the drag ended wherever it
 ended. A view taking drops has `AllowDrop`; a drag whose data holds text

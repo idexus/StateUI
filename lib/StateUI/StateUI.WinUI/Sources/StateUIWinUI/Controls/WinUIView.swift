@@ -90,6 +90,7 @@ class WinUIView {
         stateui_winui_set_opacity(handle, writtenOpacity)
         stateui_winui_set_z_index(handle, writtenZIndex)
         stateui_winui_set_flow_direction(handle, writtenRightToLeft)
+        if offered != .none { stateui_winui_offer_drag(handle, number, offered.words, offered.takesWords, offered.takesFiles) }
         writtenTip = nil
         writeTransform()
         let frame = placedFrame
@@ -479,6 +480,7 @@ class WinUIView {
     func detach() {
         hear([]) { _ in false }
         setFocusChanged(nil)
+        offer(.none) { _ in }
         menuActions = []
         paintsBySize = [:]
     }

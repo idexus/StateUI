@@ -963,9 +963,15 @@ void stateui_winui_hear_focus(StateUIObjectRef element, int64_t view, bool heari
 
 /// The element of the view `view` carries `words` in a drag of it - null where it cannot be dragged - and takes words
 /// dropped on it where `takesWords`, files where `takesFiles`; what it hears goes through `dragHeard` and
-/// `filesDragged`.
+/// `filesDragged`. A view offering nothing is forgotten.
 void stateui_winui_offer_drag(
     StateUIObjectRef element, int64_t view, char const *words, bool takesWords, bool takesFiles);
+
+/// Whether `element` can be dragged and takes drops, as its view's offer set them - what a test reads.
+void stateui_winui_drag_read(StateUIObjectRef element, bool *canDrag, bool *allowsDrop);
+
+/// How many views the relay holds a drag offer of - what a test counts to see every one let go.
+int32_t stateui_winui_drag_offers(void);
 
 
 /// How many views listen for the user's input - what a test counts to see every one stop.

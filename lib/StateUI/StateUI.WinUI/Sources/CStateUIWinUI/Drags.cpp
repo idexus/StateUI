@@ -20,13 +20,14 @@ namespace transfer = winrt::Windows::ApplicationModel::DataTransfer;
 namespace storage = winrt::Windows::Storage;
 
 namespace {
-    /// What a view offers and takes of a drag, and whether its handlers hang on its element.
+    /// What a view offers and takes of a drag, and the element its handlers hang on - another stands in a password
+    /// field's place.
     struct Offered {
         winrt::hstring words;
         bool draggable = false;
         bool takesWords = false;
         bool takesFiles = false;
-        bool hung = false;
+        winrt::weak_ref<xaml::UIElement> hungOn;
     };
 
     std::unordered_map<int64_t, Offered> offered;
@@ -119,18 +120,37 @@ extern "C" void stateui_winui_offer_drag(
     StateUIObjectRef handle, int64_t view, char const *words, bool takesWords, bool takesFiles) {
     try {
         auto element = as<xaml::UIElement>(handle);
+        element.CanDrag(words != nullptr);
+        element.AllowDrop(takesWords || takesFiles);
+        // A view offering nothing - one that left among them - is forgotten; its handlers find nothing of it.
+        if (!words && !takesWords && !takesFiles) {
+            offered.erase(view);
+            return;
+        }
         auto &entry = offered[view];
         entry.draggable = words != nullptr;
         entry.words = words ? winrt::to_hstring(words) : winrt::hstring{};
         entry.takesWords = takesWords;
         entry.takesFiles = takesFiles;
-        if (!entry.hung && (entry.draggable || takesWords || takesFiles)) {
+        if (entry.hungOn.get() != element) {
             hang(element, view);
-            entry.hung = true;
+            entry.hungOn = winrt::make_weak(element);
         }
-        element.CanDrag(entry.draggable);
-        element.AllowDrop(takesWords || takesFiles);
     } catch (...) {
         report("offering a drag");
     }
+}
+
+extern "C" void stateui_winui_drag_read(StateUIObjectRef handle, bool *canDrag, bool *allowsDrop) {
+    try {
+        auto element = as<xaml::UIElement>(handle);
+        *canDrag = element.CanDrag();
+        *allowsDrop = element.AllowDrop();
+    } catch (...) {
+        report("reading a drag");
+    }
+}
+
+extern "C" int32_t stateui_winui_drag_offers() {
+    return static_cast<int32_t>(offered.size());
 }
