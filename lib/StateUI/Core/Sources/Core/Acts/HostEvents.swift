@@ -247,7 +247,7 @@ public enum HostEvents {
     }
 
     /// Runs every handler subscribed to an event, each through its gate, and answers how many - the list as
-    /// it stood when the raise came.
+    /// it stands when the raise is delivered on the UI thread, which may be after it was raised.
     @discardableResult
     static func dispatch(_ event: EventMember, _ payload: [PropValue]) -> Int {
         let handlers = subscriptions[event] ?? []

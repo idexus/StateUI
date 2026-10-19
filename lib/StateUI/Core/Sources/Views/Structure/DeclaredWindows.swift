@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// What a window declaration makes, as a scene's tree reads it: the page each of its windows shows - a view of
-/// `kind` - what opens one, what restores one, and how they stand.
+/// the window's value, where it stands for one - what opens one, what restores one, and how they stand.
 struct DeclaredWindows {
     /// The kind a window is opened by; nil for the group launch and *File ▸ New Window* make a window of.
     let type: WindowType?

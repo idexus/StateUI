@@ -331,7 +331,8 @@
         HostRealizations.current = realization
     }
 
-    /// Tells the core what the host judges it realizes, member by member - what `Device.honours` answers from.
+    /// Tells the core what the host judges it realizes, member by member - what `Device.honours` answers from. The
+    /// register is read when first asked, not as it is told: building it costs, and a host tells it at each start.
     ///
     /// - Parameter register: the host's register, its runtime's realization behind its own records.
     public static func setRegister(_ register: @autoclosure @escaping () -> HostRegister?) {

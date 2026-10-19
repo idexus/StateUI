@@ -18,8 +18,8 @@
     /// The element that holds this one.
     public private(set) weak var parent: MountedElement?
 
-    /// The elements this one holds, in order - a grid's and a ZStack's in the order they are drawn, by
-    /// `zIndex`, ties in the order written.
+    /// The elements this one holds, in order - a grid's, a ZStack's and a layout engine's in the order they are
+    /// drawn, by `zIndex`, ties in the order written.
     public private(set) var children: [MountedElement] = []
 
     /// What an arrangement of pages declares beside its pages - its actions, its menus, its title view - kept

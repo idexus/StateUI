@@ -24,7 +24,7 @@ enum VisualStateRules {
     /// The state a control is in when no other of its states holds, written or not.
     static let normal = VisualStateName.normal
 
-    /// Whether the state named `name` holds for these facts; Normal is not asked.
+    /// Whether `state` holds for these facts; Normal is not asked.
     static func holds(_ state: KeyName, _ facts: Facts) -> Bool {
         switch state {
         case VisualStateName.disabled: facts.disabled
