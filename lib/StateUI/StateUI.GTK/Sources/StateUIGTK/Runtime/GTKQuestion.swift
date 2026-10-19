@@ -118,8 +118,7 @@ final class GTKQuestion {
         let entry = gtk_entry_new()!
         if let placeholder = question.placeholder { gtk_entry_set_placeholder_text(entry.of(GtkEntry.self), placeholder) }
         if let most = question.maximumLength { gtk_entry_set_max_length(entry.of(GtkEntry.self), Int32(clamping: most)) }
-        let (hints, purpose) = GTKTextFieldView.input(
-            InputTraits(spellChecked: true, predicted: true, purpose: question.purpose))
+        let (hints, purpose) = GTKTextFieldView.input(question.traits)
         gtk_entry_set_input_hints(entry.of(GtkEntry.self), hints)
         gtk_entry_set_input_purpose(entry.of(GtkEntry.self), purpose)
         gtk_editable_set_text(entry.opaque, question.words)
