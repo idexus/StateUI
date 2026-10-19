@@ -128,7 +128,7 @@ extension WebDriver {
             return try WebBrowser.truth("e.dataset.title !== 'none'", on: bar).propValue
         case (.page, .showsBackButton):
             guard let bar = try? bar(over: element) else { return nil }
-            return try WebBrowser.truth("!e.hidden && !e.querySelector('button[aria-label=Back]').hidden", on: bar).propValue
+            return try WebBrowser.truth("!e.hidden && !e.querySelector('button:has(> [data-glyph=back])').hidden", on: bar).propValue
         case (_, .title) where tab(of: element) != nil:
             guard let (tabs, place) = tab(of: element), let view = (tabs.native as? WebElement)?.view else { return nil }
             let strip = ":scope > .stateui-tab-strip > [role=tab]"

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) @testable import StateUI
+@_spi(Host) import StateUIHost
 @testable import StateUIWeb
 import XCTest
 
@@ -35,6 +36,24 @@ final class WebEnvironmentTests: XCTestCase {
         XCTAssertFalse(american.uses24HourClock)
         XCTAssertEqual(american.firstDayOfWeek, .sunday)
         XCTAssertFalse(american.isMetric)
+    }
+
+    /// THE CHROME'S OWN BUTTONS SAY THE LIBRARY'S WORDS in the user's language (`ChromeWords`): the sidebar's toggle,
+    /// the way back, a sheet's close and the overflow.
+    func testTheChromesButtonsSayTheLibrarysWords() throws {
+        defer { WebBrowser.ask([("languages", .words(""))]) }
+        WebRenderer.shared?.leave()
+        WebBrowser.ask([("languages", .words("pl-PL")), ("zone", .words("Europe/Warsaw"))])
+        let host = WebRenderer.running { Text("Shown") }
+        host.step()
+        defer { host.leave() }
+
+        let words = CoreLink().chromeWords
+        XCTAssertEqual(words.sidebar, "Pasek boczny", "the user reads Polish")
+        let said = try WebBrowser.evaluate(
+            "[...document.querySelectorAll('.stateui-bar button[aria-label]')].map((b) => b.getAttribute('aria-label'))",
+            on: 0)?.split(separator: "\u{0}").map(String.init) ?? []
+        XCTAssertEqual(Set(said), [words.sidebar, words.back, words.close, words.more])
     }
 
     /// The locale the core holds once a host starts on a page whose user reads `languages` in `zone`.

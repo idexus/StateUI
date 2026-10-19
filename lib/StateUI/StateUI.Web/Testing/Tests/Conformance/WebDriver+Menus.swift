@@ -80,7 +80,7 @@ extension WebDriver {
     /// a button's - where `button` - with a click where its click opens it, a split button's with a click on its arrow.
     private func open(menuOf element: MountedElement, button: Bool = false) throws {
         if element.type == .window {
-            return try click(try bar(over: element), part: "button[aria-label=More]")
+            return try click(try bar(over: element), part: "button:has(> [data-glyph=more])")
         }
         if button, ButtonMenu.opening(of: element) == .arrow {
             return try click(try self.view(of: element, reading: .frame).node, part: ".stateui-split-arrow")

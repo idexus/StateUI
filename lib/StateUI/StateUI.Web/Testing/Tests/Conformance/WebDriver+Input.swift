@@ -46,7 +46,7 @@ extension WebDriver {
         let view = try self.view(of: element, act)
         let e = view.node
         switch (act, view) {
-        case (.toggle, is WebSplitView): try click(try bar(over: element), part: "button[aria-label=Sidebar]")
+        case (.toggle, is WebSplitView): try click(try bar(over: element), part: "button:has(> [data-glyph=sidebar])")
         case (.activate, _) where try isBehindAQuestion(e):
             // The user reaches nothing under a question; the program's own may wait their turn behind it.
             try WebBrowser.run("e.click()", on: e)

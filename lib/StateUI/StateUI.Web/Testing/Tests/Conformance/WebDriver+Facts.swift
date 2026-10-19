@@ -171,7 +171,7 @@ extension WebDriver {
     /// The button of the toolbar item `element` in the menu behind the bar, opened; nil where it stands there not.
     func behindTheBar(_ element: MountedElement) throws -> Int32? {
         let caption = element.value(.text)?.string ?? ""
-        try click(try bar(over: element), part: "button[aria-label=More]")
+        try click(try bar(over: element), part: "button:has(> [data-glyph=more])")
         let script = "((m) => ((b) => b ? stateui.numberOf(b) : null)(m && [...m.children].find((c) => "
             + "[...c.querySelectorAll('span')].pop()?.textContent === \(WebBrowser.quoted(caption)))))"
             + "([...document.querySelectorAll('.stateui-menu')].find((m) => m.matches(':popover-open')))"
@@ -229,8 +229,8 @@ extension WebDriver {
     /// The actions behind the bar's More, as its menu shows them before the page's menus.
     private func overflow(of page: MountedElement) throws -> [String] {
         let bar = try self.bar(over: page)
-        guard try WebBrowser.truth("!e.querySelector('button[aria-label=More]').hidden", on: bar) else { return [] }
-        try click(bar, part: "button[aria-label=More]")
+        guard try WebBrowser.truth("!e.querySelector('button:has(> [data-glyph=more])').hidden", on: bar) else { return [] }
+        try click(bar, part: "button:has(> [data-glyph=more])")
         defer { press("Escape") }
         let open = "[...document.querySelectorAll('.stateui-menu')].find((m) => m.matches(':popover-open'))"
         let script = "((m) => { const out = []; for (const c of m ? m.children : []) {"
