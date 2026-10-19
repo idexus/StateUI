@@ -54,10 +54,12 @@ final class GTKWebView: GTKControl {
 
     // MARK: - What the tree gives it
 
-    /// Shows `source` - once the element's other values, its agent among them, are applied.
+    /// Shows `source` - once the element's other values, its agent among them, are applied; none leaves the page as
+    /// it is, and the page given after it is shown again.
     func show(_ source: WebViewSource?) {
-        guard let source, source != self.source else { return }
+        guard source != self.source else { return }
         self.source = source
+        guard let source else { return }
         if pending == nil { GTKWebKitSignals.whenIdle(self) }
         pending = source
     }

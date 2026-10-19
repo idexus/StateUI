@@ -1,4 +1,4 @@
-# revision 2.3
+# revision 3.3
 WebView: ✅
 WebView.canGoBackChanged: ✅
 WebView.canGoForwardChanged: ✅

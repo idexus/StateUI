@@ -319,7 +319,9 @@ at its own address, and one with none is gone to as a `data:` address, which
 WebKit keeps in the page's history ([a document with no
 address](../../host/web.md#a-document-with-no-address)). A page asked for is
 loaded once the element's values are applied, so the agent the tree gives
-is the one it is asked with. What the page does comes back as WebKit tells
+is the one it is asked with; no page given leaves the page as it is, and
+the page given after it is loaded again, whatever the user went to
+meanwhile. What the page does comes back as WebKit tells
 it: a navigation as its load starts, why it began by the host layer's rule -
 the program's step, else what WebKit's decision on it says (a link or a form
 a new page, a reload the page again, a step through the history unknown,
