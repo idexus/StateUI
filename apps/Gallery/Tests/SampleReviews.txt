@@ -45,7 +45,7 @@ GalleryViewSample.swift c854743232c73abd
 GateSample.swift 0eb1cb01a376dac3
 GeometryReaderSample.swift 4e6226814b27d935
 GridSample.swift 6122771c218cff01
-HomeScreenSample.swift 1c3b1489ed1b36a3
+HomeScreenSample.swift 1ebd84f9bc5ba113
 HostTimeSample.swift 869b30037733de10
 IconButtonSample.swift 0af5b21d299babec
 IconSample.swift 98f855aecd97b045

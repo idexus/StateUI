@@ -4229,7 +4229,7 @@ enum Listings {
                         // only the one lifted or let go.
                         HomeTile(icon: icon, lifted: lifted == icon.name)
                     } placements: { room, board in
-                        (0..<count).map { place($0, board, room, fit) }
+                        (0..<count).map { Self.place($0, board, room, fit) }
                     }
                     .phase($board)
                     .axis(
@@ -4314,14 +4314,18 @@ enum Listings {
         /// Where the icon at `slot` stands: on its board, in its row and column
         /// of `fit`, the boards side by side a room's width apart - larger where
         /// the room gives a cell more than an icon's own size.
-        private func place(_ slot: Int, _ board: Double, _ room: Rect, _ fit: Fit) -> Placement {
+        static func place(_ slot: Int, _ board: Double, _ room: Rect, _ fit: Fit) -> Placement {
             let (page, cell) = slot.quotientAndRemainder(dividingBy: fit.perBoard)
             let width = (room.width - 16) / Double(fit.columns)
             let height = (room.height - 16) / Double(fit.rows)
+            let x = (Double(page) - board) * room.width + 8 + Double(cell % fit.columns) * width
+            let y = 8 + Double(cell / fit.columns) * height
 
+            // The icon at its own size in the middle of its cell, made larger
+            // about its middle as far as the cell lets it: drawn, it covers its
+            // own cell and no other, so a press takes the icon under it.
             return Placement(
-                Rect((Double(page) - board) * room.width + 8 + Double(cell % fit.columns) * width,
-                     8 + Double(cell / fit.columns) * height, width, height),
+                Rect(x + (width - 84) / 2, y + (height - 96) / 2, 84, 96),
                 transform: .scale(min(width / 84, height / 96)))
         }
 
