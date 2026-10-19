@@ -118,6 +118,18 @@ the focus went on to something inside it (`relatedTarget`) - told once a
 change. The program's `focus` and `unfocus` are the element's own `focus()`
 and `blur()`.
 
+## A shortcut's key
+
+A shortcut's letter or digit is the one the user's layout writes on the key
+pressed - a German keyboard's key in Z's place writes Y, a French one's in
+Q's place writes A - as a desktop's own applications read it (`key.key`,
+lowered: Shift writes a capital). Where the layout writes no Latin letter or
+digit there - a Russian layout, a French digit row writing marks, a key Alt
+turns on Apple's keyboards - the letter or digit of the key's own place
+(`key.code`) stands in, as the platforms' shortcuts do; a key that is no
+letter's place, `/`, is what it writes. The relay hands both, and Swift
+weighs them (`WebKeys.character`).
+
 ## What takes no input
 
 An element that ignores input takes no pointer events, nor does anything in
