@@ -21,6 +21,8 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
     /// Whether the layout stands the list's own header and footer - which UIKit fixes as the layout is made.
     private var framed = (header: false, footer: false)
 
+    /// Whether each group stands a header and a footer, as last applied.
+    private var groupsFramed: [Bool] = []
 
     /// Whether the motion of a scroll the tree asks for is left out.
     private let reducesMotion: () -> Bool
@@ -84,8 +86,13 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
             snapshot.appendSections([section.identity])
             snapshot.appendItems(section.items, toSection: section.identity)
         }
-        // A header or a footer the tree added or took away is a change of the layout's shape.
-        collection.collectionViewLayout.invalidateLayout()
+        // A group's header or footer added or taken away changes the layout's shape; nothing else drops what the
+        // layout measured. Design: docs/design/platforms/uikit/items.md#the-layout
+        let groupsFramed = cells.entries.sections.flatMap { [$0.header != nil, $0.footer != nil] }
+        if groupsFramed != self.groupsFramed {
+            self.groupsFramed = groupsFramed
+            collection.collectionViewLayout.invalidateLayout()
+        }
         source.apply(snapshot, animatingDifferences: !changes.isEmpty && !reducesMotion())
     }
 

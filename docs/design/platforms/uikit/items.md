@@ -30,7 +30,11 @@ ways. Every item's size along the list is estimated and then asked of the
 entry. A group's header and footer are the section's supplementary views,
 and the list's own header and footer are the layout's; UIKit fixes the
 layout's own when it makes the layout, so the layout is made again when the
-list gains or loses one.
+list gains or loses one. A group gaining or losing a header or a footer
+changes the layout's shape, which the snapshot does not say when its items
+stay, so the layout is invalidated then - and only then: an invalidation
+drops every size the layout measured, and the items a change moves would
+travel towards places estimated, then jump to the places measured.
 
 ## A cell
 

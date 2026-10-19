@@ -73,4 +73,49 @@ final class UIKitItemsViewTests: XCTestCase {
 
         XCTAssertEqual(headers(), ["Today", "Yesterday"])
     }
+
+    /// Every row moved one place down travels from where it stood to its new place, never above where it stood, and
+    /// the list's header stands throughout: the layout keeps what it measured as the entries change.
+    @MainActor
+    func testRowsMovedOnePlaceDownTravelStraightUnderTheirHeader() throws {
+        let numbers = State(wrappedValue: Array(0..<1_000))
+        let host = UIKitRenderer.running {
+            ItemsView(numbers.wrappedValue) { Text("Row \($0)").fontSize(14).padding(10) }
+                .header(Text("Rows").fontSize(11).padding(8))
+                .width(300).height(500)
+        }
+        defer { host.finish() }
+        let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
+        let collection = items.collection
+        func drawn() -> [String: CGFloat] {
+            Dictionary(uniqueKeysWithValues: collection.visibleCells.compactMap { cell in
+                (cell as? UIKitItemCell)?.holding.identity.map { ($0, (cell.layer.presentation() ?? cell.layer).frame.minY) }
+            })
+        }
+        func header() -> UIKitItemSupplement? {
+            collection.visibleSupplementaryViews(ofKind: UIKitItemsLayout.listHeader).first as? UIKitItemSupplement
+        }
+        host.settle {
+            collection.visibleCells.count > 5
+                && collection.visibleCells.allSatisfy { ($0 as? UIKitItemCell)?.holding.shown != nil }
+        }
+        collection.layoutIfNeeded()
+        let stood = drawn().filter { Int($0.key)! < 6 }
+
+        numbers.wrappedValue = [999] + Array(0..<999)
+        var astray: [String] = []
+        for step in 0..<40 {
+            RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
+            host.runtime.pump.turn()
+            let now = drawn()
+            for (row, before) in stood.sorted(by: { $0.key < $1.key }) where (now[row] ?? before) < before - 0.5 {
+                astray.append("step \(step): row \(row) drawn at \(now[row]!), above \(before)")
+            }
+            if header()?.holding.shown == nil { astray.append("step \(step): no header") }
+        }
+
+        XCTAssertEqual(astray, [])
+        host.settle { drawn()["0"] == stood["1"] }
+        XCTAssertEqual(drawn()["0"], stood["1"], "row 0 ends where row 1 stood")
+    }
 }
