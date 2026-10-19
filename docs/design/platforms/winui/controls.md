@@ -394,7 +394,9 @@ of the room. A stretched picture keeps no proportions and is drawn at its
 room's size: WinUI fits an SVG into its pixels in the SVG's own proportions,
 leaving bands, so the relay reads a copy of it that has given them up - and
 its own size with them (`preserveAspectRatio="none"`, width and height
-`100%`) - written once among the system's temporary files.
+`100%`) - among the system's temporary files, named by what it holds: every
+run showing the picture shares the one copy, written where it is missing and
+whole before it takes its name, so no run leaves another behind.
 
 Every SVG is read by its file's address, once for each file, the pixels it
 is drawn at and whether its proportions are let go, and that one source is

@@ -52,6 +52,25 @@ final class WinUIImageViewTests: XCTestCase {
         }
     }
 
+    /// A stretched SVG's copy among the system's temporary files is named by what it holds, not by the process: every
+    /// run showing the picture shares one copy, and none is left behind a run.
+    func testAStretchedSVGsCopyIsNamedByWhatItHolds() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { Image("test_halves.svg").contentMode(.stretch).width(60).height(60) }
+            let content = try XCTUnwrap(host.window?.content)
+            var counts = [Int32](repeating: 0, count: 2)
+            host.settle {
+                stateui_winui_svgs_read(content.handle, &counts)
+                return counts[0] >= 1
+            }
+            let folder = NSTemporaryDirectory() + "StateUI"
+            let names = try FileManager.default.contentsOfDirectory(atPath: folder).filter { $0.hasSuffix(".svg") }
+
+            XCTAssertFalse(names.isEmpty, "the stretched copy stands in \(folder)")
+            XCTAssertEqual(names.filter { $0.hasPrefix("\(GetCurrentProcessId())-") }, [], "named by the process")
+        }
+    }
+
     /// The bytes this process holds of its own.
     private static func privateBytes() -> Int {
         let size = DWORD(MemoryLayout<PROCESS_MEMORY_COUNTERS_EX>.size)
