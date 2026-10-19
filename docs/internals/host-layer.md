@@ -187,8 +187,9 @@ named for an engine or a channel
   `ProgramWrite.perform`.
   ([Program write](../design/host/patches.md#program-write))
 - **`DisplayCycle`** is one display frame, in one order: the user's reports,
-  the animations, the core's cycle, one walk of the tree, the clock's hold,
-  which lets go only when nothing moves, and a render. The host's
+  the animations, the core's cycle, the elements the frame touched presented
+  deepest first, the clock's hold, which lets go only when nothing moves,
+  and a render. The host's
   `FrameClock` ticks it; the runtime keeps each step, and the host's
   `HostPresenter` follows a frame that moved the chrome. ([One frame](../design/host/runtime.md#one-frame))
 - **`FrameFollowers`** keeps the frames coming while a scroller moves or a
@@ -213,8 +214,10 @@ per described node, each with a native half its toolkit writes.
 - **`MountedTree`** applies each message's root patch, with one start time for
   every animation the message begins, and owns what every element shares: the
   line to the core, the intake, the state channels and the two motions. It
-  presents a frame's batch in one walk (`present`) and lays the tree out again
-  where the language's direction turned (`followTheLanguagesDirection`).
+  presents a frame's batch to the elements it touched, found by their mount
+  and by the states they present, deepest first (`present`), and lays the
+  tree out again where the language's direction turned
+  (`followTheLanguagesDirection`).
   ([The mounted tree](../design/host/tree.md#the-mounted-tree))
 - **`MountedElement`** is one live element: its key, type, described
   properties, bound states, handlers and children in order. It applies a patch
@@ -351,8 +354,9 @@ measures only its native views.
   a contradiction.
   ([One axis of a slot](../design/host/layout.md#one-axis-of-a-slot))
 - **`MeasurementCache`** keeps the sizes one view measured, by the width
-  offered, four at most. The host forgets them upward from a change to the
-  nearest room, as `arrangedProperties` and `unmeasuredProperties` say.
+  offered, four at most. The host forgets them upward from a change, every
+  layout to the root - on AppKit to the nearest room - as
+  `arrangedProperties` and `unmeasuredProperties` say.
   ([Measured once](../design/host/layout.md#measured-once))
 - **`StackArithmetic`**, **`GridArithmetic`**, **`ZStackArithmetic`** and
   **`SingleChildArithmetic`** give each layout's `size` for an offered width

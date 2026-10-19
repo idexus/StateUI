@@ -217,7 +217,8 @@
         root?.directionTurned(arrangingItself: true)
     }
 
-    /// Presents one frame's batch in one walk of the tree, every write in it the program's.
+    /// Presents one frame's batch to the elements it touched - found by their mount and by the states they present -
+    /// deepest first, every write in it the program's.
     /// Design: docs/design/host/patches.md#program-write
     @discardableResult
     public func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) -> FrameImpact {
