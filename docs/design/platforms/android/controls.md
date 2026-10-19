@@ -22,12 +22,14 @@ A layout an engine moves hears the hand through its view's one listener
 wheel's notches (`ACTION_SCROLL`, by the platform's scroll factor). The
 listener sees each touch before the layout's children do (`StateUIWatch`,
 as a view made of parts): a card answering a tap takes the finger down, yet
-once the hand claims it the card's press is called off. A finger
-down decides nothing and leaves the parent free to intercept; past the slop,
-its first move goes to the Swift host, whose host layer claims it along the
-layout's axis (`handed`) - claimed, the layout takes the rest of the touch and
-forbids its parent to intercept; left, a page's scroller takes it. At the
-lift the tracker's speed goes with it. A wheel's notches - Android's scroll
+once the hand claims it the card's press is called off. The listener tells
+each finger as it goes down, moves and lifts (`finger`), and the host layer
+reads them as one hand (`HandRecognition`, past Android's touch slop from
+where the fingers' middle went down): a finger down decides nothing and
+leaves the parent free to intercept; the first move past the slop claims the
+hand along the layout's axis or leaves it - claimed, the layout takes the
+rest of the touch and forbids its parent to intercept; left, a page's
+scroller takes it. At the lift the tracker's speed goes with it. A wheel's notches - Android's scroll
 axes count them, a part of one for a fine wheel - are told as notches
 (`notched`), each a step of the run to the next target.
 

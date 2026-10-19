@@ -451,7 +451,14 @@ the last frame as one (`HandPace`): a toolkit telling the hand faster than
 the display draws, 120 times a second or in a burst a busy thread held back,
 moves the run once a frame. A layout claims a hand
 whose first move is more along its axis than across it; the rest is left to
-whatever holds the layout, a page's scroller. What the hand does to the run -
+whatever holds the layout, a page's scroller. Where the toolkit tells fingers
+and no pan of its own - Android's touches, WinUI's pointers, the browser's -
+the host layer reads them as that hand (`HandRecognition`): the first finger
+down begins it where it went down in the view, the fingers' middle moving it
+(`PointerMiddle`); its first move past the platform's distance - Android's
+slop all round, WinUI's drag rectangle and the browser's four points along
+either axis (`DragRecognition.Distance`) - asks the layout; a hand taken says
+every move after; the last finger up ends it, taken or not. What the hand does to the run -
 the phase moving with it, a throw to the target nearest its end - is the
 core's (views/layout-engine.md, the hand).
 

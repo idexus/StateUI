@@ -50,16 +50,11 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     private boolean turning;
 
     /**
-     * Whether the element is a layout a hand moves: fingers dragged over it, read as one at their middle, whose first
-     * move past the slop the Swift host claims or leaves, and a wheel. Its last report's place on the screen, how
-     * many fingers it had, and its speed.
+     * Whether the element is a layout a hand moves - each finger on it told to the Swift host, which reads them as
+     * one hand and says whether the layout has it - and a wheel; whether it has it, and the hand's speed.
      */
     private boolean hand;
-    private boolean handPending;
     private boolean handTaking;
-    private float handX;
-    private float handY;
-    private int handFingers;
     private VelocityTracker handSpeed;
 
     /** Where the touch went down, on the screen: a moving view moves where its own touches are. */
@@ -129,7 +124,7 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
                     pressing = true;
                     press(DOWN, x, y);
                 }
-                if (hand) handDown(event);
+                if (hand) handReport(event);
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (Math.hypot(event.getRawX() - downX, event.getRawY() - downY) > slop) moved = true;
@@ -138,23 +133,25 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
                     dragging = true;
                     cancelOwn(event);
                 }
-                if (hand) handMoved(event);
+                if (hand) handReport(event);
                 break;
             case MotionEvent.ACTION_UP:
                 if (pointer) report(RELEASED, 0, event.getX() / density, event.getY() / density, 0);
                 if (pressing) press(LET_GO, x, y);
-                if (hand) handUp(event, true);
+                if (hand) handReport(event);
                 if (!moved && !pinched && countsTaps) tap(event);
                 pressing = false;
                 dragging = false;
                 break;
             case MotionEvent.ACTION_CANCEL:
                 if (pressing) press(TAKEN, x, y);
-                if (hand) handUp(event, false);
+                if (hand) handReport(event);
                 pressing = false;
                 dragging = false;
                 break;
             default:
+                // A finger more, or one of several lifting.
+                if (hand) handReport(event);
                 break;
         }
         return dragging || pinching || handTaking || !(host.isClickable() || host.isLongClickable());
@@ -208,80 +205,64 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     }
 
     /**
-     * A finger down on a layout a hand moves, told where in the view - a press standing still may hold a view - and
-     * nothing else decided until it moves past the slop.
+     * Each finger on a layout a hand moves, told as it goes down, moves and lifts - where it stands on the screen and
+     * in the view, in points - the last as it lets go with the hand's speed: the Swift host reads them as one hand and
+     * says whether the layout has it, which then takes the rest of the touch - the parent may intercept it no more,
+     * and the view's own press is called off.
      */
-    private void handDown(MotionEvent event) {
-        handPending = true;
-        handTaking = false;
-        handX = event.getRawX();
-        handY = event.getRawY();
-        handFingers = 1;
-        if (handSpeed != null) handSpeed.recycle();
-        handSpeed = VelocityTracker.obtain();
-        handSpeed.addMovement(event);
-        StateUIHost.handed(view, BEGAN, event.getX() / density, event.getY() / density, 0, 0);
-    }
-
-    /**
-     * The finger moved: past the slop the Swift host claims the hand or leaves it - to a scroller holding the
-     * layout, which may then take the touch - and a hand claimed is told each move and takes the rest of the touch.
-     */
-    private void handMoved(MotionEvent event) {
+    private void handReport(MotionEvent event) {
+        int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_DOWN) {
+            if (handSpeed != null) handSpeed.recycle();
+            handSpeed = VelocityTracker.obtain();
+        }
         if (handSpeed != null) handSpeed.addMovement(event);
-        // The fingers' middle on the screen: a finger landing or lifting moves it nowhere - the host layer's rule,
-        // `PointerMiddle` - so the hand follows the fingers as they spread and turn.
-        float offsetX = event.getRawX() - event.getX(), offsetY = event.getRawY() - event.getY();
-        float middleX = 0, middleY = 0;
-        int fingers = event.getPointerCount();
-        for (int finger = 0; finger < fingers; finger++) {
-            middleX += (event.getX(finger) + offsetX) / fingers;
-            middleY += (event.getY(finger) + offsetY) / fingers;
+        boolean had = handTaking;
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_POINTER_DOWN:
+                handTaking = finger(event, event.getActionIndex(), DOWN, 0, 0);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                for (int index = 0; index < event.getPointerCount(); index++) {
+                    handTaking = finger(event, index, MOVE, 0, 0);
+                }
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+                handTaking = finger(event, event.getActionIndex(), LET_GO, 0, 0);
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                float speedX = 0, speedY = 0;
+                if (handSpeed != null) {
+                    handSpeed.computeCurrentVelocity(1000);
+                    speedX = handSpeed.getXVelocity() / density;
+                    speedY = handSpeed.getYVelocity() / density;
+                    handSpeed.recycle();
+                    handSpeed = null;
+                }
+                int phase = action == MotionEvent.ACTION_UP ? LET_GO : TAKEN;
+                for (int index = 0; index < event.getPointerCount(); index++) {
+                    handTaking = finger(event, index, phase, speedX, speedY);
+                }
+                break;
+            default:
+                return;
         }
-        if (fingers != handFingers) {
-            handFingers = fingers;
-            handX = middleX;
-            handY = middleY;
-            return;
-        }
-        float dx = (middleX - handX) / density;
-        float dy = (middleY - handY) / density;
-        if (handPending) {
-            if (Math.hypot(middleX - handX, middleY - handY) <= slop) return;
-            handPending = false;
-            handTaking = StateUIHost.handed(view, CHANGED, dx, dy, 0, 0);
-            if (!handTaking) return;
+        if (handTaking && !had) {
             ViewParent parent = host.getParent();
             if (parent != null) parent.requestDisallowInterceptTouchEvent(true);
             cancelOwn(event);
-        } else if (handTaking) {
-            StateUIHost.handed(view, CHANGED, dx, dy, 0, 0);
-        } else {
-            return;
         }
-        handX = middleX;
-        handY = middleY;
     }
 
-    /**
-     * The finger let go, or the touch was taken away: told so whatever it moved - a press that held a view and never
-     * moved lets it go - with its speed as it let go.
-     */
-    private void handUp(MotionEvent event, boolean letGo) {
-        float vx = 0, vy = 0;
-        if (handSpeed != null) {
-            handSpeed.addMovement(event);
-            handSpeed.computeCurrentVelocity(1000);
-            vx = handSpeed.getXVelocity() / density;
-            vy = handSpeed.getYVelocity() / density;
-        }
-        StateUIHost.handed(view, letGo ? ENDED : CANCELLED, 0, 0, vx, vy);
-        handPending = false;
-        handTaking = false;
-        if (handSpeed != null) {
-            handSpeed.recycle();
-            handSpeed = null;
-        }
+    /** The finger of `event` at `index`, at `phase`, lifting at a speed: whether the layout has the hand now. */
+    private boolean finger(MotionEvent event, int index, int phase, float speedX, float speedY) {
+        float offsetX = event.getRawX() - event.getX(), offsetY = event.getRawY() - event.getY();
+        return StateUIHost.finger(
+            view, phase, event.getPointerId(index), (event.getX(index) + offsetX) / density,
+            (event.getY(index) + offsetY) / density, event.getX(index) / density, event.getY(index) / density, speedX,
+            speedY);
     }
 
     /** Follows the pointer hovering over the view - a mouse's, a stylus's; it takes nothing. */

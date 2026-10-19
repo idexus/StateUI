@@ -199,6 +199,13 @@ enum WinUICallbacks {
                         == true
                 }
             },
+            finger: { view, phase, pointer, x, y, inX, inY, time in
+                MainActor.assumeIsolated {
+                    WinUIView.find(view)?.heardFinger(
+                        phase: phase, pointer: Int(pointer), at: Point(x: x, y: y), inView: Point(x: inX, y: inY),
+                        time: time) ?? .left
+                }
+            },
             wheel: { view, x, y in
                 MainActor.assumeIsolated { WinUIView.find(view)?.heardWheel(moved: Point(x: x, y: y)) == true }
             },

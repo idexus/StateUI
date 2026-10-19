@@ -35,12 +35,9 @@ final class WebElement: NativeElement {
     /// The pointer pressed with ⌥/Alt over the element, read as two fingers, while it is down.
     var mirroring: Int?
 
-    /// The hand over a layout: its fingers, read as one at their middle, how far that middle has gone while the hand
-    /// is still nobody's, and whether its first move is yet to pass the drag distance, or the layout took it.
-    var handFingers = PointerMiddle()
-    var handTravel = Point(x: 0, y: 0)
-    var handPending = false
-    var handTaking = false
+    /// The hand over a layout, its fingers as the host layer reads them: past four CSS pixels along either axis it
+    /// asks the layout.
+    var handRecognition = HandRecognition(distance: .eachAxis(x: 4, y: 4))
 
     init(_ element: MountedElement, host: WebRenderer) {
         self.element = element

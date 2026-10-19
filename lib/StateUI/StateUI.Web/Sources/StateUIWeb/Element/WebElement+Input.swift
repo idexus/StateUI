@@ -134,59 +134,46 @@ extension WebElement {
             guard let self, let view, pointer.kind != .mouse || pointer.button == 0 else { return }
             // A press with ⌥/Alt over a layout two fingers move is theirs.
             guard !(WebRelay.eventAlt && element.hearsMirroredFingers) else { return }
-            // Another finger on a hand under way joins it, moving its middle nowhere.
-            guard handFingers.count == 0 else {
-                handFingers.down(pointer.id, at: pointer.at)
-                if handTaking { WebRelay.capturePointer(view.node) }
+            // The hand's fingers, as the host layer reads them; another finger joins a hand under way.
+            guard case .began(let at) = handRecognition.down(pointer.id, at: pointer.at, inView: WebRelay.eventPoint)
+            else {
+                if handRecognition.isTaken { WebRelay.capturePointer(view.node) }
                 return
             }
-            handFingers.down(pointer.id, at: pointer.at)
-            handTravel = Point(x: 0, y: 0)
-            handPending = true
-            handTaking = false
-            hand(.began, moved: Point(x: 0, y: 0), point: WebRelay.eventPoint)
+            hand(.began, moved: Point(x: 0, y: 0), point: at)
         }
         view.listen("pointermove") { [weak self, weak view] in
             let pointer = WebRelay.eventPointer
-            guard let self, let view, handPending || handTaking else { return }
-            let step = handFingers.moved(pointer.id, to: pointer.at)
-            if handPending {
-                handTravel = Point(x: handTravel.x + step.x, y: handTravel.y + step.y)
-                guard abs(handTravel.x) > Self.dragDistance || abs(handTravel.y) > Self.dragDistance else { return }
-                handPending = false
-                handTaking = hand(.changed, moved: handTravel)
-                guard handTaking else {
-                    handFingers = PointerMiddle()
-                    return
-                }
-                WebRelay.capturePointer(view.node)
-            } else if step != Point(x: 0, y: 0) {
+            guard let self, let view, handRecognition.isOpen else { return }
+            switch handRecognition.moved(pointer.id, to: pointer.at) {
+            case .asks(let travel):
+                handRecognition.answered(taken: hand(.changed, moved: travel))
+                if handRecognition.isTaken { WebRelay.capturePointer(view.node) }
+            case .moved(let step):
                 hand(.changed, moved: step)
+            default:
+                break
             }
-            WebRelay.takeEvent()
+            if handRecognition.isTaken { WebRelay.takeEvent() }
         }
         // A touch the layout took is kept from the page's pan to its lift: the browser pans by the touch's moves, which
         // come after the pointer's, and would take a slant along the page's own axis.
         view.listen("touchmove") { [weak self] in
-            if self?.handTaking == true { WebRelay.takeEvent() }
+            if self?.handRecognition.isTaken == true { WebRelay.takeEvent() }
         }
         // And from the browser's own drag - of a picture under it, past a few points - which takes the pointer away
         // and never tells its lift: kept from a hand the layout took, and from one it may still take - Chromium's own
         // threshold comes before the hand's drag distance, by no rule.
         view.listen("dragstart") { [weak self] in
             guard let self else { return }
-            if handPending || handTaking || element.holdsItem { WebRelay.takeEvent() }
+            if handRecognition.isOpen || element.holdsItem { WebRelay.takeEvent() }
         }
         for (event, letGo) in [("pointerup", true), ("pointercancel", false)] {
             view.listen(event) { [weak self] in
-                guard let self, handFingers.count > 0 else { return }
-                // A finger lifting leaves the hand to the others; the last lifting ends it, told whatever the hand
-                // moved: a press that held a view and never moved lets it go.
-                handFingers.up(WebRelay.eventPointer.id)
-                guard handFingers.count == 0 else { return }
+                // The last finger lifting ends the hand, told whatever it moved: a press that held a view and never
+                // moved lets it go.
+                guard let self, case .ended = handRecognition.up(WebRelay.eventPointer.id, letGo: letGo) else { return }
                 hand(letGo ? .ended : .cancelled, moved: Point(x: 0, y: 0))
-                handPending = false
-                handTaking = false
             }
         }
         // A wheel measured in lines or pages turns notch by notch; one in pixels - a trackpad's - is a stream.
@@ -217,9 +204,6 @@ extension WebElement {
         let told = time.flatMap { $0 > 0 ? $0 : nil }
         return element.hear(.hand(phase, moved: moved, speed: speed, at: told, point: point), in: host.runtime)
     }
-
-    /// How far a pointer moves before it is a drag, in CSS pixels.
-    private static let dragDistance = 4.0
 
     /// Where the view's top left corner stands on the page, by the event being heard.
     private var origin: Point {

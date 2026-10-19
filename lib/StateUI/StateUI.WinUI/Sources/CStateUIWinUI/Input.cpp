@@ -12,6 +12,7 @@
 #include <cmath>
 #include <optional>
 #include <unordered_map>
+#include <unordered_set>
 
 #include <winrt/Windows.System.h>
 #include <winrt/Windows.UI.h>
@@ -45,12 +46,10 @@ namespace {
         winrt::event_token tapped, doubleTapped, entered, exited, movedToken, pressed, released, lost, canceled,
             started, delta, completed, wheel;
 
-        /// The hand over a layout: its fingers, where each last stood on the content, read as one at their middle
-        /// (the host layer's `PointerMiddle`); how far that middle has gone while the hand is nobody's yet; and whether
-        /// its first move past the drag distance is yet to come, or the layout took it.
-        std::unordered_map<uint32_t, Point> handFingers;
-        Point handTravel{};
-        bool handPending = false, handTaking = false;
+        /// The hand over a layout: the pointers pressed on it, each told to the host, which reads them as one hand
+        /// (`HandRecognition`), and where it says the hand stands.
+        std::unordered_set<uint32_t> handPointers;
+        StateUIHandState handState = StateUIHandLeft;
 
         /// The pointer pressed with Alt over a view two fingers move, read as two fingers while it is down; -1 none.
         int64_t mirroring = -1;
@@ -212,15 +211,13 @@ namespace {
         tracking.erase(found);
     }
 
-    /// The hand let go or taken away, `phase` saying which: told whatever it moved - a press that held a view and
-    /// never moved lets it go.
-    void handUp(int64_t view, uint32_t pointer, StateUIPhase phase, double time) {
+    /// A finger of the hand let go or taken away, `phase` saying which: the host ends the hand with the last,
+    /// whatever it moved - a press that held a view and never moved lets it go.
+    void handUp(int64_t view, uint32_t pointer, StateUIPressPhase phase, double time) {
         auto *entry = listener(view, StateUIHearingHand);
-        // A finger lifting leaves the hand to the others; the last lifting ends it.
-        if (!entry || !entry->handFingers.erase(pointer) || !entry->handFingers.empty()) return;
-        entry->handPending = false;
-        entry->handTaking = false;
-        callbacks.hand(view, phase, 0, 0, time, NAN, NAN);
+        if (!entry || !entry->handPointers.erase(pointer)) return;
+        auto state = callbacks.finger(view, phase, pointer, 0, 0, 0, 0, time);
+        if (auto *told = listener(view, StateUIHearingHand)) told->handState = state;
     }
 
     /// Hangs every handler once; each asks what the view listens for as it runs.
@@ -280,18 +277,16 @@ namespace {
                 auto point = args.GetCurrentPoint(sender.as<xaml::UIElement>());
                 bool contact = point.PointerDeviceType() != winrt::Microsoft::UI::Input::PointerDeviceType::Mouse
                     || point.Properties().IsLeftButtonPressed();
-                if (contact && !hand->handFingers.empty()) {
-                    // Another finger on a hand under way joins it, moving its middle nowhere.
-                    hand->handFingers[args.Pointer().PointerId()] = onContent(args);
-                    if (hand->handTaking) sender.as<xaml::UIElement>().CapturePointer(args.Pointer());
-                } else if (contact) {
-                    hand->handFingers[args.Pointer().PointerId()] = onContent(args);
-                    hand->handTravel = Point(0, 0);
-                    hand->handPending = true;
-                    hand->handTaking = false;
-                    // Where it went down in the layout, at once: a press standing still may hold the view there.
+                if (contact) {
+                    // Told where it went down on the content and in the layout: a press standing still may hold the
+                    // view there; a finger joining a hand the layout holds is held with it.
+                    hand->handPointers.insert(args.Pointer().PointerId());
+                    auto on = onContent(args);
                     auto in = point.Position();
-                    callbacks.hand(view, StateUIPhaseBegan, in.X, in.Y, when(args), NAN, NAN);
+                    auto state = callbacks.finger(
+                        view, StateUIPressPhaseDown, args.Pointer().PointerId(), on.X, on.Y, in.X, in.Y, when(args));
+                    if (auto *told = listener(view, StateUIHearingHand)) told->handState = state;
+                    if (state == StateUIHandTaken) sender.as<xaml::UIElement>().CapturePointer(args.Pointer());
                 }
             }
             auto *entry = listener(view, StateUIHearingDrags);
@@ -305,33 +300,17 @@ namespace {
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerMoved, sender, args);
             if (mirrored(view, sender, args, StateUIPhaseChanged)) return;
+            // A finger of a hand that may yet be the layout's, or is: the layout holds the pointer once it takes it.
             auto *hand = listener(view, StateUIHearingHand);
-            auto finger = hand ? hand->handFingers.find(args.Pointer().PointerId()) : std::unordered_map<uint32_t, Point>::iterator{};
-            if (hand && finger != hand->handFingers.end()) {
-                // The middle's step: this finger's over how many are down.
-                auto point = onContent(args);
-                float count = static_cast<float>(hand->handFingers.size());
-                auto step = Point((point.X - finger->second.X) / count, (point.Y - finger->second.Y) / count);
-                finger->second = point;
-                if (hand->handPending) {
-                    hand->handTravel = Point(hand->handTravel.X + step.X, hand->handTravel.Y + step.Y);
-                    double distance[2] = {4, 4};
-                    stateui_winui_drag_distance(distance);
-                    if (std::abs(hand->handTravel.X) > distance[0] || std::abs(hand->handTravel.Y) > distance[1]) {
-                        hand->handPending = false;
-                        auto travel = hand->handTravel;
-                        bool taken = callbacks.hand(view, StateUIPhaseChanged, travel.X, travel.Y, when(args), NAN, NAN);
-                        hand = listener(view, StateUIHearingHand);
-                        if (hand && taken) {
-                            hand->handTaking = true;
-                            sender.as<xaml::UIElement>().CapturePointer(args.Pointer());
-                            args.Handled(true);
-                        } else if (hand) {
-                            hand->handFingers.clear();
-                        }
-                    }
-                } else if (hand->handTaking) {
-                    callbacks.hand(view, StateUIPhaseChanged, step.X, step.Y, when(args), NAN, NAN);
+            if (hand && hand->handState != StateUIHandLeft && hand->handPointers.count(args.Pointer().PointerId())) {
+                auto was = hand->handState;
+                auto on = onContent(args);
+                auto in = args.GetCurrentPoint(sender.as<xaml::UIElement>()).Position();
+                auto state = callbacks.finger(
+                    view, StateUIPressPhaseMoved, args.Pointer().PointerId(), on.X, on.Y, in.X, in.Y, when(args));
+                if (auto *told = listener(view, StateUIHearingHand)) told->handState = state;
+                if (state == StateUIHandTaken) {
+                    if (was != StateUIHandTaken) sender.as<xaml::UIElement>().CapturePointer(args.Pointer());
                     args.Handled(true);
                 }
             }
@@ -351,19 +330,19 @@ namespace {
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerReleased, sender, args);
             if (mirrored(view, sender, args, StateUIPhaseEnded)) return;
-            handUp(view, args.Pointer().PointerId(), StateUIPhaseEnded, when(args));
+            handUp(view, args.Pointer().PointerId(), StateUIPressPhaseLetGo, when(args));
             letGo(view, StateUIPressPhaseLetGo);
         }));
         entry.lost = element.PointerCaptureLost(guarded("handling PointerCaptureLost",
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             if (mirrored(view, sender, args, StateUIPhaseCancelled)) return;
-            handUp(view, args.Pointer().PointerId(), StateUIPhaseCancelled, when(args));
+            handUp(view, args.Pointer().PointerId(), StateUIPressPhaseTakenAway, when(args));
             letGo(view, StateUIPressPhaseTakenAway);
         }));
         entry.canceled = element.PointerCanceled(guarded("handling PointerCanceled",
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             if (mirrored(view, sender, args, StateUIPhaseCancelled)) return;
-            handUp(view, args.Pointer().PointerId(), StateUIPhaseCancelled, when(args));
+            handUp(view, args.Pointer().PointerId(), StateUIPressPhaseTakenAway, when(args));
             letGo(view, StateUIPressPhaseTakenAway);
         }));
         entry.started = element.ManipulationStarted(

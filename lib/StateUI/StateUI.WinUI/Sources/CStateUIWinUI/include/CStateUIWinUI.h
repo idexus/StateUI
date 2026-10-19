@@ -97,6 +97,14 @@ typedef enum STATEUI_CLOSED_ENUM {
     StateUIPressPhaseTakenAway,
 } StateUIPressPhase;
 
+/// Where the hand over a layout stands after a finger's report: left to whatever holds the layout, still asking
+/// whether the layout takes it, or the layout's.
+typedef enum STATEUI_CLOSED_ENUM {
+    StateUIHandLeft,
+    StateUIHandAsking,
+    StateUIHandTaken,
+} StateUIHandState;
+
 /// Where words stand across or down their room: at its start, its centre, its end.
 // Swift: TextAlignment
 typedef enum { StateUITextAlignmentStart, StateUITextAlignmentCenter, StateUITextAlignmentEnd } StateUITextAlignment;
@@ -420,6 +428,12 @@ typedef struct {
     /// (x, y) DIPs since the last, let go at (speedX, speedY) DIPs a second - NaN where untold - `time` its
     /// milliseconds on the pointer's clock: whether the layout took it.
     bool (*hand)(int64_t view, int32_t phase, double x, double y, double time, double speedX, double speedY);
+
+    /// A finger over a layout a hand moves - a press of the primary button, a finger, a pen - at its
+    /// `StateUIPressPhase`, by its number, at (x, y) DIPs of the window's content and (inX, inY) of the view, `time`
+    /// its milliseconds on the pointer's clock: where the hand stands, by the host layer's reading of the fingers.
+    StateUIHandState (*finger)(
+        int64_t view, int32_t phase, uint32_t pointer, double x, double y, double inX, double inY, double time);
 
     /// A wheel's step over a layout, as far as the platform scrolls for it, moving what is under it by (x, y)
     /// DIPs: whether the layout took it.

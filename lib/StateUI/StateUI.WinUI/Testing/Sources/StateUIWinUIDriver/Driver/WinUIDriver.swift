@@ -78,9 +78,6 @@ final class WinUIDriver: HostDriver {
     /// The host the driver started last.
     var renderer: WinUIRenderer?
 
-    /// Where a press over a layout last stood, as the relay tells its moves since.
-    private var handAt = Point(x: 0, y: 0)
-
     /// What the host wrote to its log since the driver started it.
     let written = WinUILogLines()
 
@@ -165,16 +162,17 @@ final class WinUIDriver: HostDriver {
             stateui_winui_date_pick_as_user(picker.handle, Int32(day.year), Int32(day.month), Int32(day.day))
         case (.pickTime(let time), let picker as WinUITimePickerView):
             stateui_winui_time_pick_as_user(picker.handle, Int32(time.hour), Int32(time.minute))
-        // A press over a layout reaches the host's entry as the relay would hand it: down where it went, each move
-        // since the last, its lift - ✓.
+        // A press over a layout reaches the host's entry as the relay would hand it: the finger down where it went,
+        // each move, its lift - ✓.
         case (.pressDown(let point), let view?) where view.hearing.contains(.hand):
-            handAt = point
-            _ = view.heardHand(phase: GesturePhase.began.rawValue, moved: point)
+            _ = view.heardFinger(
+                phase: Int32(StateUIPressPhase.down.rawValue), pointer: 1, at: point, inView: point, time: nil)
         case (.drag(let point), let view?) where view.hearing.contains(.hand):
-            _ = view.heardHand(phase: GesturePhase.changed.rawValue, moved: Point(x: point.x - handAt.x, y: point.y - handAt.y))
-            handAt = point
-        case (.lift, let view?) where view.hearing.contains(.hand):
-            _ = view.heardHand(phase: GesturePhase.ended.rawValue, moved: Point(x: 0, y: 0))
+            _ = view.heardFinger(
+                phase: Int32(StateUIPressPhase.moved.rawValue), pointer: 1, at: point, inView: point, time: nil)
+        case (.lift(let point), let view?) where view.hearing.contains(.hand):
+            _ = view.heardFinger(
+                phase: Int32(StateUIPressPhase.letGo.rawValue), pointer: 1, at: point, inView: point, time: nil)
         case (.pressDown(let point), let view?): try press(view, down: true, at: point, element)
         case (.lift(let point), let view?): try press(view, down: false, at: point, element)
         case (.drag(let point), let canvas as WinUICanvasView): canvas.pressed(.moved, at: point)

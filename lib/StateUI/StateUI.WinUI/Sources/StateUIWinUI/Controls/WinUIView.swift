@@ -442,6 +442,32 @@ class WinUIView {
         return onHeard?(.hand(phase, moved: moved, speed: speed, at: time)) ?? false
     }
 
+    /// A finger over a layout a hand moves, as the relay tells it at `phase` - down, moved, let go or taken away - by
+    /// its number, where it stands on the window's content and in the view, at `time` on the pointer's clock: read as
+    /// one hand by the host layer's rule (`HandRecognition`). Where the hand stands now.
+    /// Design: docs/design/platforms/winui/input.md#the-hand-over-a-layout
+    func heardFinger(phase: Int32, pointer: Int, at point: Point, inView: Point, time: Double?) -> StateUIHandState {
+        let pressed = StateUIPressPhase(rawValue: .init(phase))
+        let step = switch pressed {
+        case .down: handRecognition.down(pointer, at: point, inView: inView)
+        case .moved: handRecognition.moved(pointer, to: point)
+        default: handRecognition.up(pointer, letGo: pressed == .letGo)
+        }
+        switch step {
+        case .began(let at): _ = onHeard?(.hand(.began, moved: .zero, speed: nil, at: time, point: at))
+        case .asks(let travel):
+            handRecognition.answered(taken: onHeard?(.hand(.changed, moved: travel, speed: nil, at: time)) ?? false)
+        case .moved(let moved): _ = onHeard?(.hand(.changed, moved: moved, speed: nil, at: time))
+        case .ended(let letGo): _ = onHeard?(.hand(letGo ? .ended : .cancelled, moved: .zero, speed: nil, at: time))
+        case .nothing: break
+        }
+        return handRecognition.isTaken ? .taken : handRecognition.isOpen ? .asking : .left
+    }
+
+    /// The fingers on the layout the view shows, read as one hand by the host layer's rule, past the system's drag
+    /// distance.
+    private var handRecognition = HandRecognition(distance: WinUIView.dragDistance)
+
     /// A wheel's notch over a layout, as what it moved under the hand. Whether the layout took it.
     func heardWheel(moved: Point) -> Bool {
         onHeard?(.wheel(moved)) ?? false

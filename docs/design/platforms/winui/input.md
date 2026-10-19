@@ -70,12 +70,13 @@ that asks for more than one pointer is not recognized.
 
 ## The hand over a layout
 
-A layout an engine moves hears the hand two ways (`Input.cpp`). A press of
-the primary button, a finger or a pen goes down; once it has moved past the
-system's drag distance it is told as begun and its first move, and the host
-layer's answer says whose it is - taken by the layout, which then holds the
-pointer and handles each move told since the last, or left, the pointer
-going on to whatever holds the layout. Each report carries the pointer's own
+A layout an engine moves hears the hand two ways (`Input.cpp`). Each press
+of the primary button, finger or pen on it is told to the host as it goes
+down, moves and lifts, and the host layer reads them as one hand past the
+system's drag distance (`HandRecognition`), answering where it stands: still
+asking, taken by the layout - which then holds the pointer and handles each
+move - or left, the pointer going on to whatever holds the layout and its
+moves told no more. Each report carries the pointer's own
 time (`PointerPoint.Timestamp`), from which the host layer reads the speed at
 the lift; a lost capture or a cancel takes the hand away.
 

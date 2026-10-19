@@ -64,8 +64,9 @@ milliseconds ends it (`HandReading.pause`).
 A layout an engine moves hears the hand by the pointer's events and the
 wheel's (`WebElement+Input.swift`). The page keeps a touch across the
 layout's axis for its own scroll (`touch-action: pan-y` for a horizontal
-layout); a pointer pressed on the layout is the layout's once it moves past
-four points along its axis - it is captured then, its moves told since the
+layout); the pointers pressed on it are read as one hand by the host layer
+(`HandRecognition`), the layout's once it moves past four points along its
+axis - captured then, its moves told since the
 last with the event's time, from which the host layer reads the speed at its
 lift. A first move across the axis leaves the pointer to the page. Until
 the layout takes the press or lets it by, and while it holds it, the

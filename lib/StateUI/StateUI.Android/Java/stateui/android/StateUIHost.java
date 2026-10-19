@@ -129,10 +129,12 @@ final class StateUIHost {
     static native boolean pressed(long view, int phase, float x, float y);
 
     /**
-     * The hand over a layout - begun, moved by what it moved under it, let go at its speed, or taken away - in
-     * points; whether the layout took it, by the host layer's rule, which then takes the rest of the touch.
+     * A finger on a layout a hand moves - down, moved, let go or taken away - where it stands on the screen and in
+     * the view, in points, the last lifting at the hand's speed; whether the layout has the hand, by the host layer's
+     * rule, which then takes the rest of the touch.
      */
-    static native boolean handed(long view, int phase, float x, float y, float speedX, float speedY);
+    static native boolean finger(
+        long view, int phase, int finger, float x, float y, float inViewX, float inViewY, float speedX, float speedY);
 
     /**
      * Two fingers over a layout that turns with them - begun, moved, lifted or taken away - where each stands in the
