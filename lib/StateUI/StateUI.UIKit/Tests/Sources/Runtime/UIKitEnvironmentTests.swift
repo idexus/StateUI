@@ -137,7 +137,8 @@ final class UIKitEnvironmentTests: XCTestCase {
     private static func turn(_ scene: UIWindowScene, to orientation: UIInterfaceOrientation) {
         let mask: UIInterfaceOrientationMask = orientation == .portrait ? .portrait : .landscapeRight
         scene.requestGeometryUpdate(.iOS(interfaceOrientations: mask))
-        for _ in 0..<200 where scene.effectiveGeometry.interfaceOrientation != orientation {
+        for _ in 0..<200 {
+            guard scene.effectiveGeometry.interfaceOrientation != orientation else { break }
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
         }
     }

@@ -140,7 +140,10 @@ final class WinUIDriver: HostDriver {
             // A search box tells the words a moment after it takes them, as a key is told before the next is typed.
             guard takesTyping(search) else { break }
             search.type(words)
-            for _ in 0..<150 where element.value(.text)?.string != words { step() }
+            for _ in 0..<150 {
+                guard element.value(.text)?.string != words else { break }
+                step()
+            }
         case (.type(let words), let field as WinUITextInputView): type(words, into: field)
         case (.submit, let search as WinUISearchFieldView): stateui_winui_search_submit_as_user(search.handle)
         case (.submit, let field as WinUITextInputView) where element.type == .textField:
@@ -362,7 +365,8 @@ final class WinUIDriver: HostDriver {
 
     /// Cancels a file dialog a case before left showing, so it stands over no other case.
     private func closeFileDialogs() {
-        for _ in 0..<50 where stateui_winui_file_dialog() >= 0 {
+        for _ in 0..<50 {
+            guard stateui_winui_file_dialog() >= 0 else { break }
             _ = stateui_winui_answer_file_dialog(0, nil, 0)
             WinUITestHost.pump(0.05)
         }

@@ -64,7 +64,10 @@ extension AppKitDriver {
 
     /// The marker MapKit drew for `pin`.
     private func marker(of pin: AppKitMapMarker, on map: AppKitMapView) throws -> MKMarkerAnnotationView {
-        for _ in 0..<50 where map.view(for: pin) == nil { step() }
+        for _ in 0..<50 {
+            guard map.view(for: pin) == nil else { break }
+            step()
+        }
         guard let marker = map.view(for: pin) as? MKMarkerAnnotationView else {
             throw DriverCannot("read the marker of a pin MapKit has not drawn")
         }

@@ -53,7 +53,10 @@ extension WebDriver {
         }
         // An item out of reach leaves its menus open, and the user takes them down.
         let open = "[...document.querySelectorAll('.stateui-menu')].some((m) => m.matches(':popover-open'))"
-        for _ in path where try WebBrowser.truth(open, on: 0) { press("Escape") }
+        for _ in path {
+            guard try WebBrowser.truth(open, on: 0) else { break }
+            press("Escape")
+        }
     }
 
     /// What an item of a menu holds, read from its button as the open menu shows it.

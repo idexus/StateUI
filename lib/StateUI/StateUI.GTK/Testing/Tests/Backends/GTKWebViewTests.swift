@@ -53,6 +53,9 @@ final class GTKWebViewTests: XCTestCase {
 
     /// Steps the host until `done`, or twenty seconds: WebKit's own processes take their time.
     @MainActor private static func wait(_ host: GTKRenderer, until done: () -> Bool) {
-        for _ in 0..<2000 where !done() { host.step() }
+        for _ in 0..<2000 {
+            guard !done() else { break }
+            host.step()
+        }
     }
 }

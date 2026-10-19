@@ -186,6 +186,9 @@ final class WinUIWebViewTests: XCTestCase {
 
     /// Steps the host until `done`, or twenty seconds: the web view's own processes take their time.
     @MainActor private static func wait(_ host: WinUIRenderer, until done: () -> Bool) {
-        for _ in 0..<2000 where !done() { host.step() }
+        for _ in 0..<2000 {
+            guard !done() else { break }
+            host.step()
+        }
     }
 }

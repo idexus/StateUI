@@ -53,7 +53,10 @@ final class WinUIActsTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running(application: { AskingApplication() })
             stateui_winui_button_invoke(try XCTUnwrap(host.views(WinUIButtonView.self).first).handle)
-            for _ in 0..<30 where host.windows.count < 2 { host.step() }
+            for _ in 0..<30 {
+                guard host.windows.count < 2 else { break }
+                host.step()
+            }
             XCTAssertEqual(host.windows.count, 2)
             let (main, tool) = (host.windows[0].window, host.windows[1].window)
             WinUICallbacks.table.windowStateChanged(main.number, false, false)
@@ -92,7 +95,10 @@ final class WinUIActsTests: XCTestCase {
             let host = WinUIRenderer.running(application: { ClosingApplication() })
             let main = try XCTUnwrap(host.window)
             stateui_winui_button_invoke(try XCTUnwrap(host.views(WinUIButtonView.self).first).handle)
-            for _ in 0..<30 where host.windows.count < 2 { host.step() }
+            for _ in 0..<30 {
+                guard host.windows.count < 2 else { break }
+                host.step()
+            }
             let tool = try XCTUnwrap(host.windows.last?.window)
             WinUICallbacks.table.windowStateChanged(main.number, false, false)
             WinUICallbacks.table.windowStateChanged(tool.number, false, true)

@@ -99,7 +99,10 @@ final class HostEventsTests: XCTestCase {
             HostBoundary.raise(TestEvents.connectivityChanged, true)
             HostBoundary.raise(TestEvents.connectivityChanged, false)
         }.value
-        for _ in 0..<200 where heard.lines.count < 2 { try await Task.sleep(for: .milliseconds(5)) }
+        for _ in 0..<200 {
+            guard heard.lines.count < 2 else { break }
+            try await Task.sleep(for: .milliseconds(5))
+        }
 
         XCTAssertEqual(heard.lines, ["true", "false"])
     }

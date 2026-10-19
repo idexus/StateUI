@@ -166,6 +166,12 @@ comes, else the case proved nothing - a shape never drawn would pass "it
 moved away from where it stood". Motion is driven by a test clock and display frames, never by
 the time a machine takes.
 
+A wait, a session's or a test's own, asks once a step and stops as it holds:
+`for _ in 0..<n { guard waiting else { break }; step() }`. Under a `where`
+clause the loop skips its step but goes on asking to its bound, and a
+question that acts - a run of the main loop, a browser asked - then takes
+the whole bound; `WaitTests` refuses the spelling.
+
 What another process does is waited for by the clock: a web view's page
 loads in its engine's own process, as fast as the machine lets it, and on a
 loaded machine or a CI simulator one page takes seconds. The web view's

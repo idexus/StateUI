@@ -183,7 +183,8 @@ extension UIKitDriver {
             // A user swipes a sheet down once UIKit shows it.
             let asked = controller.presentation.sheets.count
             if let root = controller.window?.rootViewController {
-                for _ in 0..<150 where Self.presented(over: root) < asked || root.transitionCoordinator != nil {
+                for _ in 0..<150 {
+                    guard Self.presented(over: root) < asked || root.transitionCoordinator != nil else { break }
                     RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
                 }
             }

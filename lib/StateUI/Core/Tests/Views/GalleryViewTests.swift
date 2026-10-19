@@ -673,7 +673,8 @@ final class GalleryViewTests: XCTestCase {
 
         XCTAssertTrue(renders.fire(cards[1]))
         XCTAssertTrue(renders.fire(cards[0]))
-        for _ in 0..<100 where heard.isEmpty {
+        for _ in 0..<100 {
+            guard heard.isEmpty else { break }
             stateUIRunJobs()
             try? await Task.sleep(nanoseconds: 5_000_000)
         }

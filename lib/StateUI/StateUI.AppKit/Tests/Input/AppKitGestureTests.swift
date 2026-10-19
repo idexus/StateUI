@@ -82,7 +82,8 @@ final class AppKitGestureTests: XCTestCase {
         let middle = Point(150, 100)
         mirrored.mirrored(.began, at: Point(200, 100), middle: middle)
         mirrored.mirrored(.changed, at: Point(250, 100), middle: middle)
-        for _ in 0..<150 where zoom.wrappedValue != 2 {
+        for _ in 0..<150 {
+            guard zoom.wrappedValue != 2 else { break }
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
             renderer.runtime.displayCycle.frame(now: renderer.runtime.clock.now())
             renderer.runtime.pump.turn()

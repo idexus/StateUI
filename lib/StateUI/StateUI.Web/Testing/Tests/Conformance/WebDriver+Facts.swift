@@ -142,7 +142,10 @@ extension WebDriver {
 
     /// What assistive technology was told, a few frames given for the page's live region to say it.
     func announced() throws -> [String] {
-        for _ in 0..<10 where try words("stateui.announced", on: 0).isEmpty { WebBrowser.pause() }
+        for _ in 0..<10 {
+            guard try words("stateui.announced", on: 0).isEmpty else { break }
+            WebBrowser.pause()
+        }
         return try words("stateui.announced", on: 0)
     }
 

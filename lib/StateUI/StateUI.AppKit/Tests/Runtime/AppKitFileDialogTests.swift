@@ -15,7 +15,8 @@ import XCTest
 final class AppKitFileDialogTests: XCTestCase {
     @MainActor
     private func settle(_ renderer: AppKitRenderer, until done: () -> Bool) {
-        for _ in 0..<150 where !done() {
+        for _ in 0..<150 {
+            guard !done() else { break }
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
             renderer.runtime.pump.turn()
         }

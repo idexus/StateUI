@@ -73,7 +73,10 @@ final class GTKDoorbellTests: XCTestCase {
             defer { CoreLink().postTurns(with: nil) }
 
             try XCTUnwrap(host.views(GTKButtonView.self).first { $0.text == "Confirm" }).click()
-            for _ in 0..<200 where host.dialog == nil { GTKTestHost.pump(0.01) }
+            for _ in 0..<200 {
+                guard host.dialog == nil else { break }
+                GTKTestHost.pump(0.01)
+            }
             try host.answer("Delete")
 
             XCTAssertTrue(Self.loopShows("deleted", host), "the answer waits for an event that never comes")

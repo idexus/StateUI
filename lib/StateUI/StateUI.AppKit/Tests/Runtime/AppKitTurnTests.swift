@@ -23,7 +23,8 @@ final class AppKitTurnTests: XCTestCase {
         DispatchQueue.main.async { said.text = "after" }
 
         // A run of the loop returns once its pass is over; the pass that ran the write is the last one run.
-        for _ in 0..<100 where said.text != "after" {
+        for _ in 0..<100 {
+            guard said.text != "after" else { break }
             RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
         }
 
@@ -41,7 +42,8 @@ final class AppKitTurnTests: XCTestCase {
 
         Task.detached { binding.post("posted") }
 
-        for _ in 0..<100 where shown() != "posted" {
+        for _ in 0..<100 {
+            guard shown() != "posted" else { break }
             RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
         }
 
@@ -57,11 +59,13 @@ final class AppKitTurnTests: XCTestCase {
         let shown = { renderer.nativeViews(AppKitTextView.self).first?.textForTesting.string }
 
         try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first).clickForTesting()
-        for _ in 0..<100 where renderer.actToolkit.showing == nil {
+        for _ in 0..<100 {
+            guard renderer.actToolkit.showing == nil else { break }
             RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
         }
         XCTAssertTrue(try XCTUnwrap(renderer.actToolkit.showing).pressForTesting("Delete", typing: nil))
-        for _ in 0..<100 where shown() != "deleted" {
+        for _ in 0..<100 {
+            guard shown() != "deleted" else { break }
             RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
         }
 

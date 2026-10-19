@@ -165,7 +165,8 @@ final class PumpTests: XCTestCase {
         XCTAssertEqual(layout.placement?.placements.count, 3, "a run of the views it places")
 
         // The layout comes to rest and the clock lets go, then a silence.
-        for _ in 0..<100 where runtime.held {
+        for _ in 0..<100 {
+            guard runtime.held else { break }
             runtime.time += 16
             runtime.frame()
         }

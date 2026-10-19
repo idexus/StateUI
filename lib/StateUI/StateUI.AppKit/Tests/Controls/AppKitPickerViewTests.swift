@@ -182,7 +182,8 @@ final class AppKitPickerViewTests: XCTestCase {
         let picker = try XCTUnwrap(renderer.nativeViews(AppKitPickerView.self).first)
 
         // The menu opens on a later turn of the main queue: turns of the run loop, not the time a busy machine takes.
-        for _ in 0..<300 where opened.isEmpty {
+        for _ in 0..<300 {
+            guard opened.isEmpty else { break }
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
         }
 
@@ -203,7 +204,8 @@ final class AppKitPickerViewTests: XCTestCase {
         }
         defer { renderer.closeForTesting() }
         let picker = try XCTUnwrap(renderer.nativeViews(AppKitPickerView.self).first)
-        for _ in 0..<300 where opened.isEmpty {
+        for _ in 0..<300 {
+            guard opened.isEmpty else { break }
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
         }
         var events: [String] = []

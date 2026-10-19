@@ -28,7 +28,8 @@ final class AppKitItemsViewTests: XCTestCase {
         let renderer = autoreleasepool { AppKitRenderer.running { ChoosingPage() } }
         defer { renderer.closeForTesting() }
         let items = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first)
-        for _ in 0..<100 where items.collection.visibleItems().isEmpty {
+        for _ in 0..<100 {
+            guard items.collection.visibleItems().isEmpty else { break }
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
             renderer.runtime.pump.turn()
             renderer.windowsForTesting.first?.window?.layoutIfNeeded()
@@ -64,7 +65,8 @@ final class AppKitItemsViewTests: XCTestCase {
             return headers.sorted { $0.frame.minY < $1.frame.minY }.map { texts(in: $0).joined() }
         }
         func settle(until done: () -> Bool) {
-            for _ in 0..<100 where !done() {
+            for _ in 0..<100 {
+                guard !done() else { break }
                 RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
                 renderer.runtime.pump.turn()
                 renderer.windowsForTesting.first?.window?.layoutIfNeeded()

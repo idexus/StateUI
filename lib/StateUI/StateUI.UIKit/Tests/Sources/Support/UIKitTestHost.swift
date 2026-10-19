@@ -68,7 +68,8 @@ extension UIKitRenderer {
 
     /// Turns the main run loop until `done` holds: a handler resumed on the main queue runs there.
     func settle(until done: () -> Bool) {
-        for _ in 0..<150 where !done() {
+        for _ in 0..<150 {
+            guard !done() else { break }
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
             runtime.pump.turn()
             layOut()
@@ -82,7 +83,8 @@ extension UIKitRenderer {
         ownsScenes = false
         guard let scene = TestScene.scene else { return }
         UIApplication.shared.activateSceneSession(for: UISceneSessionActivationRequest(session: scene.session))
-        for _ in 0..<500 where scene.activationState != .foregroundActive {
+        for _ in 0..<500 {
+            guard scene.activationState != .foregroundActive else { break }
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
         }
         for (_, controller) in roster.windows where controller.window?.windowScene !== scene {
@@ -97,7 +99,8 @@ extension UIKitRenderer {
         for (_, controller) in roster.windows {
             guard let root = controller.window?.rootViewController, root.presentedViewController != nil else { continue }
             root.dismiss(animated: false)
-            for _ in 0..<100 where root.presentedViewController != nil || root.transitionCoordinator != nil {
+            for _ in 0..<100 {
+                guard root.presentedViewController != nil || root.transitionCoordinator != nil else { break }
                 RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
             }
         }

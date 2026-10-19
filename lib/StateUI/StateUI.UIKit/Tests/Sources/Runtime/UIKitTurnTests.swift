@@ -30,7 +30,8 @@ final class UIKitTurnTests: XCTestCase {
         DispatchQueue.main.async { said.wrappedValue = "after" }
 
         // A run of the loop returns once its pass is over; the pass that ran the write is the last one run.
-        for _ in 0..<100 where said.wrappedValue != "after" {
+        for _ in 0..<100 {
+            guard said.wrappedValue != "after" else { break }
             RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
         }
 
@@ -48,7 +49,8 @@ final class UIKitTurnTests: XCTestCase {
 
         Task.detached { binding.post("posted") }
 
-        for _ in 0..<100 where host.views(UIKitTextView.self).first?.text != "posted" {
+        for _ in 0..<100 {
+            guard host.views(UIKitTextView.self).first?.text != "posted" else { break }
             RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
         }
 

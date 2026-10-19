@@ -187,7 +187,8 @@ extension WebDriver {
         // A picture is come once loaded and sized by it - the host sizes it as it hears it loaded.
         let come = "[...document.images].every((i) => i.complete && (!i.classList.contains('stateui-picture') "
             + "|| !i.getAttribute('src') || i.style.containIntrinsicSize !== ''))"
-        for _ in 0..<150 where try !WebBrowser.truth(come, on: 0) {
+        for _ in 0..<150 {
+            guard try !WebBrowser.truth(come, on: 0) else { break }
             WebBrowser.pause()
         }
         let numbers = try numbers(
@@ -208,7 +209,8 @@ extension WebDriver {
         var box = try box(of: e, part: part)
         let aimed = "((t, b) => t && t.contains(document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2)))"
             + "(\(target(part)), \(target(part))?.getBoundingClientRect())"
-        for _ in 0..<30 where try !WebBrowser.truth(aimed, on: e) {
+        for _ in 0..<30 {
+            guard try !WebBrowser.truth(aimed, on: e) else { break }
             WebBrowser.pause()
             box = try self.box(of: e, part: part)
         }

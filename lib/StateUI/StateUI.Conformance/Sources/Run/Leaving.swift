@@ -75,7 +75,10 @@
         guard let toggle = tree.root?.first(id: .manual("toggle")) else { throw Session.Missing(id: "toggle") }
         let was = shown()
         try driver.perform(.activate, on: toggle)
-        for _ in 0..<150 where shown() == was { driver.step() }
+        for _ in 0..<150 {
+            guard shown() == was else { break }
+            driver.step()
+        }
         driver.step()
         return driver.liveViews
     }
