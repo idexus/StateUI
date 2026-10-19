@@ -68,6 +68,8 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
         scroller.contentView.postsBoundsChangedNotifications = true
         NotificationCenter.default.addObserver(
             self, selector: #selector(scrolled), name: NSView.boundsDidChangeNotification, object: scroller.contentView)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(userScrolls), name: NSScrollView.willStartLiveScrollNotification, object: scroller)
         addSubview(scroller)
         source = makeSource()
     }
@@ -140,9 +142,13 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
         ProgramWrite.perform { collection.selectionIndexPaths = wanted }
     }
 
-    /// The tree's entries changed: every cell shows the subtree its entry has now (`ItemsCells.childrenChanged`).
+    /// The tree's entries changed: every cell shows the subtree its entry has now (`ItemsCells.childrenChanged`), and
+    /// the item the program scrolled to stands again from the cells measured.
     func childrenChanged() {
         for case let holding as AppKitItemHolding in cells.childrenChanged() { resized(holding) }
+        guard cells.scrollTarget != nil, !gliding else { return }
+        layoutSubtreeIfNeeded()
+        settle()
     }
 
     /// The cell of `holding` may ask for another size: measured again where it does - its item alone. AppKit tells
@@ -278,29 +284,54 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
     /// Design: docs/design/platforms/appkit/items.md#scrolling-to-an-item
     func scroll(to identity: String, anchor: ScrollAnchor) {
         guard let indexPath = source.indexPath(for: identity) else { return }
+        cells.scroll(to: identity, anchor: anchor)
+        glides += 1
+        gliding = false
         let clip = scroller.contentView
         guard reducesMotion() else {
             guard let target = target(of: indexPath, anchor: anchor) else { return }
+            let glide = glides
+            gliding = true
             NSAnimationContext.runAnimationGroup({ _ in
                 clip.animator().setBoundsOrigin(target)
             }, completionHandler: { [weak self] in
                 // AppKit ends an animation group on the main thread.
-                MainActor.assumeIsolated { self?.settle(indexPath, anchor: anchor) }
+                MainActor.assumeIsolated {
+                    guard let self, glide == self.glides else { return }
+                    self.gliding = false
+                    self.settle()
+                }
             })
             return
         }
         collection.scrollToItems(at: [indexPath], scrollPosition: layoutShape.isAcross ? .left : .top)
         layoutSubtreeIfNeeded()
-        settle(indexPath, anchor: anchor)
+        settle()
     }
 
-    /// Stands the item where `anchor` says, from the frames the layout holds now.
-    private func settle(_ indexPath: IndexPath, anchor: ScrollAnchor) {
-        guard let target = target(of: indexPath, anchor: anchor) else { return }
+    /// Whether a scroll the program asked for glides now, which stands its item again as it stops; and how many
+    /// scrolls began, so a glide another took over stands nothing.
+    private var gliding = false
+    private var glides = 0
+
+    /// Stands the item the program scrolled to where its anchor says, from the frames the layout holds now - and
+    /// so after every pass that brings cells their entries, while the host layer holds it.
+    /// Design: docs/design/platforms/appkit/items.md#scrolling-to-an-item
+    private func settle() {
+        guard !gliding, let scrolledTo = cells.laidOut(), let indexPath = source.indexPath(for: scrolledTo.identity),
+              let target = target(of: indexPath, anchor: scrolledTo.anchor)
+        else { return }
         scroller.contentView.scroll(to: target)
         scroller.reflectScrolledClipView(scroller.contentView)
         layoutSubtreeIfNeeded()
         scrolled()
+    }
+
+    /// The user takes the list: where it stands is theirs.
+    @objc private func userScrolls() {
+        glides += 1
+        gliding = false
+        cells.userScrolled()
     }
 
     /// Where the clip view stands for the item at `indexPath` to stand where `anchor` says, within reach; nil where

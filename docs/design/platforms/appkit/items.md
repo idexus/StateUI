@@ -53,4 +53,7 @@ it shows, and then stands the clip view where the anchor says from the item's
 frame as the layout holds it ([scrolling to an
 item](../../host/items.md#scrolling-to-an-item)); otherwise the clip view
 glides to where the anchor says from the frames the layout holds now, and
-settles once more as it stops.
+settles once more as it stops. The cells take their entries a turn later and
+measure then, so while the host layer holds the item, every pass that brings
+entries stands it again; a live scroll of the user's lets it go, and a glide a
+later scroll took over stands nothing.
