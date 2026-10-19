@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-@_spi(Host) import StateUI
+@_spi(Host) @testable import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIAndroid
 import StateUIConformance
@@ -192,16 +192,30 @@ final class AndroidRendererTests: XCTestCase {
                     }
                 }
             }
-            try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
+            let said = Said.shared.everySaid.count
+            let button = try XCTUnwrap(host.views(AndroidButtonView.self).first)
+            button.click()
             host.settle { Self.asked() != nil }
             XCTAssertEqual(Self.asked(), "Sure?", "the question shows")
+            let stood = host.views(AndroidButtonView.self).first === button
 
             host.destroying()
             host.settle { !answers.values.isEmpty || !thrown.values.isEmpty }
 
-            XCTAssertEqual(answers.values, [false], "answered as dismissed; the handler threw \(thrown.values)")
+            XCTAssertEqual(
+                answers.values, [false],
+                "answered as dismissed; the handler threw \(thrown.values); the button stood until Back: \(stood); "
+                    + Self.waiting(saidSince: said))
             Java.callStatic(AndroidDriver.dialogs, AndroidDriver.dismissAll)
         }
+    }
+
+    /// What still waits in the core - replies, handlers resumed and not run, jobs - and what it said since `first`:
+    /// where an answer stopped on its way to its handler.
+    @MainActor
+    private static func waiting(saidSince first: Int) -> String {
+        "\(Renderer.shared.completions.count) replies, \(Renderer.shared.resumesPending) resumes and "
+            + "\(UIThreadExecutor.shared.pendingCount) jobs waiting; said \(Said.shared.everySaid.dropFirst(first))"
     }
 
     /// Pixels a point changing - the display's size, another screen - make the window again at the new density, as
