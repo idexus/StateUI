@@ -76,7 +76,7 @@ final class AndroidActToolkit: ActToolkit {
                 Java.callStatic(
                     JavaAPI.dialogs, JavaAPI.confirm, .object(context), .long(ticket),
                     .object(Java.string(question.title ?? "")), .object(Java.string(question.message ?? "")),
-                    .object(Java.string(question.accept)), .object(Java.string(question.cancel ?? "Cancel")))
+                    .object(Java.string(question.accept)), .object(Java.string(question.cancelling)))
             case .chooseAction:
                 Java.callStatic(
                     JavaAPI.dialogs, JavaAPI.chooseAction, .object(context), .long(ticket),
@@ -87,7 +87,7 @@ final class AndroidActToolkit: ActToolkit {
                 Java.callStatic(
                     JavaAPI.dialogs, JavaAPI.prompt, .object(context), .long(ticket),
                     .object(Java.string(question.title ?? "")), .object(Java.string(question.message ?? "")),
-                    .object(Java.string(question.accept)), .object(Java.string(question.cancel ?? "Cancel")),
+                    .object(Java.string(question.accept)), .object(Java.string(question.cancelling)),
                     .object(question.placeholder.flatMap(Java.string)),
                     .int(Int32(question.maximumLength ?? -1)),
                     .int(question.traits.inputType(password: false, multiLine: false)),

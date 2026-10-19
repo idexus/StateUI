@@ -35,6 +35,14 @@
     /// only where it says one.
     public let cancel: String?
 
+    /// The caption of the button cancelling a confirmation or a prompt, which always offer one: `cancel`, or
+    /// "Cancel" where the act names none.
+    public var cancelling: String { cancel ?? Self.cancelWord }
+
+    /// The cancelling caption of a question whose act names none - the core sends the library's own words in the
+    /// system's language, so this stands only for an act that came without them.
+    private static let cancelWord = "Cancel"
+
     /// A choice's dangerous action.
     public let destruction: String?
 
@@ -78,7 +86,7 @@
         } else {
             message = text(1)
             accept = text(2) ?? "OK"
-            cancel = kind == .alert ? nil : text(3) ?? "Cancel"
+            cancel = kind == .alert ? nil : text(3) ?? Self.cancelWord
             destruction = nil
             choices = []
         }

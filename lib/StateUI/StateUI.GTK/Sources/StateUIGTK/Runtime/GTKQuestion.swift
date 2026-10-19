@@ -41,7 +41,7 @@ final class GTKQuestion {
             respond(dialog, "accept", question.accept, .suggested, closes: true)
         case .confirm:
             dialog = adw_alert_dialog_new(question.title, question.message)
-            respond(dialog, "cancel", question.cancel ?? "Cancel", nil, closes: true)
+            respond(dialog, "cancel", question.cancelling, nil, closes: true)
             respond(dialog, "accept", question.accept, .suggested)
         case .chooseAction:
             // Dismissed any other way than by a button - Escape among them - nothing was chosen.
@@ -52,7 +52,7 @@ final class GTKQuestion {
             if let cancel = question.cancel { respond(dialog, "cancel", cancel, nil) }
         case .prompt:
             dialog = adw_alert_dialog_new(question.title, question.message)
-            respond(dialog, "cancel", question.cancel ?? "Cancel", nil, closes: true)
+            respond(dialog, "cancel", question.cancelling, nil, closes: true)
             respond(dialog, "accept", question.accept, .suggested)
             let field = makeField()
             adw_alert_dialog_set_extra_child(dialog.of(AdwAlertDialog.self), field)
