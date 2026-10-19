@@ -172,6 +172,25 @@ final class AppsTests: XCTestCase {
     /// and a file the rename does not reach is named here rather than in an
     /// application that builds under one name and runs under another.
     ///
+    /// An AppKit head no script of `.scripts/AppKit` bundles is deployed as its executable with the application's
+    /// `Resources` beside it, and reads its artwork from there where it stands - not only from its own source file,
+    /// which a copy on another Mac does not have.
+    func testAnUnbundledAppKitHeadReadsItsArtworkBesideItself() throws {
+        let scripts = SourceTree.repository.appendingPathComponent(".scripts/AppKit")
+        let deploy = try String(contentsOf: scripts.appendingPathComponent("deploy.sh"), encoding: .utf8)
+        XCTAssertTrue(deploy.contains(#"cp -R "$app_dir/Resources/$artwork" "$destination/Resources/""#),
+                      "deploy.sh lays the artwork beside the head")
+        let apps = SourceTree.repository.appendingPathComponent("apps")
+        for app in try FileManager.default.contentsOfDirectory(atPath: apps.path).sorted() {
+            let head = apps.appendingPathComponent("\(app)/Platforms/AppKit/main.swift")
+            let bundled = scripts.appendingPathComponent("build-\(app.lowercased())-appkit.sh")
+            guard FileManager.default.fileExists(atPath: head.path),
+                  !FileManager.default.fileExists(atPath: bundled.path) else { continue }
+            let text = try String(contentsOf: head, encoding: .utf8)
+            XCTAssertTrue(text.contains("Bundle.main.executableURL"), "\(app)'s AppKit head reads no artwork beside itself")
+        }
+    }
+
     func testANewAppIsHelloWorldUnderAnotherName() throws {
         let root = try temporaryDirectory()
         defer { try? FileManager.default.removeItem(at: root) }

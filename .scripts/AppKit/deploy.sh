@@ -5,7 +5,8 @@
 # Builds an application's AppKit head for release and lays it in a folder of
 # its own, made anew: its application bundle, where a script of this folder
 # bundles it (build-<application>-appkit.sh), else the head and the StateUI
-# libraries it links.
+# libraries it links, with the application's artwork - its Resources' Images
+# and AppIcon - beside them, where the head reads it.
 #
 # USAGE:
 #   deploy.sh <app-dir> <destination>
@@ -29,7 +30,9 @@ else
   STATEUI_HOST=appkit swift build --package-path "$app_dir" --scratch-path "$app_dir/.build/appkit" \
     --configuration release --product "$product"
   cp "$build/$product" "$destination/"
-  find "$build" -maxdepth 1 -name '*.dylib' -exec cp {} "$destination/" \;
-  [[ ! -d "$app_dir/Resources/Images" ]] || cp -R "$app_dir/Resources/Images" "$destination/"
+  find -H "$build" -maxdepth 1 -name '*.dylib' -exec cp {} "$destination/" \;
+  for artwork in Images AppIcon; do
+    [[ ! -d "$app_dir/Resources/$artwork" ]] || { mkdir -p "$destination/Resources"; cp -R "$app_dir/Resources/$artwork" "$destination/Resources/"; }
+  done
   echo "deployed:   $destination/$product"
 fi
