@@ -244,7 +244,9 @@ nothing keeps the view its control has. An element left out with its
 children is `Raw`, and a layout so left out answers assistive technology with
 no children at all, its panel's automation peer holding them back. WinUI has
 no property that leaves out a subtree, and the host reaches into no
-template's parts: a control left out is left out alone. What most templates
+template's parts - the title bar's padding columns, a true defect's, are the
+one it does ([the window's chrome](pages.md#the-windows-chrome)): a control
+left out is left out alone. What most templates
 draw - a button's words - WinUI already keeps out of what is read; the parts
 an activity ring, a stepper, a search box and a day's or a time's picker
 draw stay met, `☑️` in the matrix.

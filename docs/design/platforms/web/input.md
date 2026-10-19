@@ -56,8 +56,8 @@ against the step before (`PinchStep`), where their middle is in the view; a
 second finger ends the drag the first began, cancelled. A trackpad's pinch
 reaches the page as a wheel turned with a key held - each turn of a hundred
 points a step of e - or, in Safari, as its gesture, whose scale it carries;
-the page's own zoom is taken from it, and a wheel standing still a fifth of
-a second ends it.
+the page's own zoom is taken from it, and a wheel standing still 150
+milliseconds ends it (`HandReading.pause`).
 
 ## The hand over a layout
 
