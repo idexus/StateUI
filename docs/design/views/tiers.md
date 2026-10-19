@@ -98,7 +98,7 @@ tree at all - can both wear them; a line's height is a paragraph's, so
 
 There are two text tiers because some controls colour text they do not own. A
 Picker shows the chosen item, and a DatePicker and a TimePicker format a value:
-each carries `textColor` and `tracking` through `TextStyleElement`, and
+each carries `textColor` through `TextStyleElement`, and
 only a control that says something of its own wears `TextualElement`, which adds
 the text and its case. Changing the case of a formatted picker value would be
 a different, platform-specific promise, so `textCase` is on `TextualElement`.
@@ -146,7 +146,7 @@ and `stroke` and `lineWidth`, its outline on it, one wide where no width is
 said. A stack, a grid and a ZStack wear it through the layout tier, their
 `clipsContent` cutting what they hold to the shape; a scroller wears it and
 always cuts what it shows to it (on AppKit an oval scroller draws no outline);
-a Button and a RadioButton wear it for the outline around themselves. A
+a Button wears it for the outline around itself. A
 dashed outline is a shape's, laid over the element in a ZStack.
 
 ## Menu items
