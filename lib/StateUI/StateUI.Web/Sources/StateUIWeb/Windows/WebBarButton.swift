@@ -28,19 +28,19 @@ final class WebBarButton: WebDOMView {
 
     func show(_ item: MountedElement) {
         self.item = item
-        let text = item.value(.text)?.string ?? ""
-        let icon = HostPicture(item.value(.icon))
-        picture.apply(picture: icon, aspect: .fit)
-        picture.setShown(icon != nil)
-        WebRelay.setText(words.node, text)
+        // Read as a menu's entry is (`MenuEntry`).
+        let entry = MenuEntry.entry(of: item)
+        picture.apply(picture: entry.icon, aspect: .fit)
+        picture.setShown(entry.icon != nil)
+        WebRelay.setText(words.node, entry.title)
         words.setShown(item.showsActionWords)
-        attribute("aria-label", text)
-        attribute("title", text)
-        attribute("disabled", item.isEffectivelyEnabled ? nil : "")
-        attribute("data-destructive", item.value(.isDestructive)?.bool == true ? "" : nil)
-        attribute("data-identifier", item.value(.accessibilityIdentifier)?.string)
+        attribute("aria-label", entry.title)
+        attribute("title", entry.title)
+        attribute("disabled", entry.isEnabled ? nil : "")
+        attribute("data-destructive", entry.isDestructive ? "" : nil)
+        attribute("data-identifier", entry.identifier)
         attribute("aria-haspopup", item.type == .menu ? "menu" : nil)
-        attribute("aria-keyshortcuts", item.keyboardShortcut.map { WebKeys.spelled($0, onApple: WebRelay.onApple) })
+        attribute("aria-keyshortcuts", entry.keyboardShortcut.map { WebKeys.spelled($0, onApple: WebRelay.onApple) })
     }
 
     override func detach() {

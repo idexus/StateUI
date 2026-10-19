@@ -7,14 +7,12 @@
 /// Menus: an item's entry, and the context menu a view offers - written from its menu slot as the user asks.
 /// Design: docs/design/platforms/android/menus.md
 extension AndroidElement {
-    /// A menu item or a toolbar item as a menu's item.
+    /// A menu item or a toolbar item as a menu's item, read as a menu's entry is (`MenuEntry`).
     var menuItem: AndroidMenu.Item {
-        AndroidMenu.Item(
-            text: value(.text)?.string ?? "",
-            picture: HostPicture(value(.icon)),
-            isEnabled: element.isEffectivelyEnabled,
-            isDestructive: value(.isDestructive)?.bool == true,
-            shortcut: element.keyboardShortcut)
+        let entry = MenuEntry.entry(of: element)
+        return AndroidMenu.Item(
+            text: entry.title, picture: entry.icon, isEnabled: entry.isEnabled, isDestructive: entry.isDestructive,
+            shortcut: entry.keyboardShortcut)
     }
 
     /// Offers the view's context menu while it carries a menu slot: the slot's entries, written as the user

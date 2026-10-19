@@ -21,14 +21,15 @@ struct GTKToolbarAction {
     /// Whether the action destroys something: libadwaita's `destructive-action` colours its button.
     let isDestructive: Bool
 
-    /// The action of `item` as its bar's button shows it.
+    /// The action of `item` as its bar's button shows it, read as a menu's entry is (`MenuEntry`).
     init(_ item: MountedElement) {
+        let entry = MenuEntry.entry(of: item)
         self.item = item
-        title = item.value(.text)?.string ?? ""
-        icon = HostPicture(item.value(.icon))
+        title = entry.title
+        icon = entry.icon
         showsTitle = item.showsActionWords
-        isEnabled = item.isEffectivelyEnabled
-        isDestructive = item.value(.isDestructive)?.bool == true
+        isEnabled = entry.isEnabled
+        isDestructive = entry.isDestructive
     }
 
     /// Tells the item it was chosen.

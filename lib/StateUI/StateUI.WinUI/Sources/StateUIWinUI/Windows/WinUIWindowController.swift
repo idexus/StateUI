@@ -148,14 +148,14 @@ final class WinUIWindowController {
         window.apply(chrome, tabs: windowTabs)
     }
 
-    /// A page's action as a button of the chrome.
+    /// A page's action as a button of the chrome, read as a menu's entry is (`MenuEntry`).
     private static func action(_ item: MountedElement) -> WinUIToolbarAction {
-        WinUIToolbarAction(
-            title: item.value(.text)?.string ?? "", isEnabled: item.isEffectivelyEnabled,
-            identifier: item.value(.accessibilityIdentifier)?.string,
-            icon: WinUIPictures.lines(HostPicture(item.value(.icon))),
-            isDestructive: item.value(.isDestructive)?.bool == true, showsWords: item.showsActionWords,
-            shortcut: item.keyboardShortcut, mount: item.mount, perform: { [weak item] in item?.winUI.choose() })
+        let entry = MenuEntry.entry(of: item)
+        return WinUIToolbarAction(
+            title: entry.title, isEnabled: entry.isEnabled, identifier: entry.identifier,
+            icon: WinUIPictures.lines(entry.icon), isDestructive: entry.isDestructive,
+            showsWords: item.showsActionWords, shortcut: entry.keyboardShortcut, mount: item.mount,
+            perform: { [weak item] in item?.winUI.choose() })
     }
 
     /// The tabs the window shows - the visible tabbed view's, where its tabs stand in the window and no heading

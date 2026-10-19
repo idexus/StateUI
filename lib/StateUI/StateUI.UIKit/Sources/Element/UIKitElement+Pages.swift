@@ -60,13 +60,12 @@ extension UIKitElement {
         return chrome
     }
 
-    /// A page's action as the bar takes it.
+    /// A page's action as the bar takes it, read as a menu's entry is (`MenuEntry`).
     private static func action(_ item: MountedElement) -> UIKitBarAction {
-        UIKitBarAction(
-            title: item.value(.text)?.string ?? "", icon: HostPicture(item.value(.icon)),
-            isEnabled: item.isEffectivelyEnabled, isDestructive: item.value(.isDestructive)?.bool == true,
-            identifier: item.value(.accessibilityIdentifier)?.string,
-            perform: { [weak item] in item?.uiKit.choose() }, element: item.uiKit)
+        let entry = MenuEntry.entry(of: item)
+        return UIKitBarAction(
+            title: entry.title, icon: entry.icon, isEnabled: entry.isEnabled, isDestructive: entry.isDestructive,
+            identifier: entry.identifier, perform: { [weak item] in item?.uiKit.choose() }, element: item.uiKit)
     }
 
     /// Writes the bar of every page in this arrangement and every one it holds.
