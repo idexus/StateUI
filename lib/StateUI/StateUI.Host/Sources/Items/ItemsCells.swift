@@ -89,11 +89,12 @@
     }
 
     /// The collection laid out what its cells hold: the item to stand again, where one is held - let go after this
-    /// once no cell waits for its entry.
+    /// once a cell shows its entry and no cell waits for one.
     /// Design: docs/design/host/items.md#scrolling-to-an-item
     public func laidOut() -> ItemsScrollTarget? {
         guard let scrollTarget else { return nil }
-        if !holders.contains(where: { $0.key == $0.value.identity && $0.value.shown == nil }) { self.scrollTarget = nil }
+        let waiting = holders.contains { $0.key == $0.value.identity && $0.value.shown == nil }
+        if holding(of: scrollTarget.identity)?.shown != nil, !waiting { self.scrollTarget = nil }
         return scrollTarget
     }
 

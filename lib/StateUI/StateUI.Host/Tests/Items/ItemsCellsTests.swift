@@ -156,6 +156,18 @@ final class ItemsCellsTests: XCTestCase {
         XCTAssertNil(cells.laidOut(), "none waits any more")
     }
 
+    /// The item scrolled to is held until a cell shows its own entry, though no cell waits for one: the cells near
+    /// the place it was scrolled to may come after the pass.
+    func testAnItemScrolledToIsHeldUntilItsOwnCellShowsIt() {
+        cells.hold("0", in: Cell())
+        cells.scroll(to: "90", anchor: .start)
+        XCTAssertEqual(cells.laidOut(), ItemsScrollTarget(identity: "90", anchor: .start), "no cell holds it yet")
+
+        cells.hold("90", in: Cell())
+        XCTAssertEqual(cells.laidOut(), ItemsScrollTarget(identity: "90", anchor: .start), "its cell shows it")
+        XCTAssertNil(cells.laidOut())
+    }
+
     /// The user moving the list lets the item the program scrolled to go, and so does the next scroll: the last
     /// word on where the list stands is theirs.
     func testTheUsersMoveAndTheNextScrollLetTheItemScrolledToGo() {

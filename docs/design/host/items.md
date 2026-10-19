@@ -124,8 +124,9 @@ A host that works the place out itself does so from the frames its layout
 holds, and those are estimates for the cells not measured yet. The cells a
 scroll brings into view take their entries a turn later - the tree builds
 them - and a cell measured as its entry comes moves the items after it. So
-the host layer holds the item scrolled to (`ItemsCells.scrollTarget`) while a
-cell waits for its entry: the host stands it again after every pass that
-brought entries (`laidOut`), once more as the last one comes, and then lets
-it go. The user moving the list lets it go at once, and so does the next
+the host layer holds the item scrolled to (`ItemsCells.scrollTarget`) until a
+cell shows its own entry and no cell waits for one - the cells near the place
+it was scrolled to may come after a pass, as a browser tells them: the host
+stands it again after every pass that brought entries (`laidOut`), once more
+as the last one comes, and then lets it go. The user moving the list lets it go at once, and so does the next
 scroll; a scroll that glides stands its item again as it stops.
