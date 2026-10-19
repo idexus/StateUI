@@ -313,5 +313,6 @@ class GTKView {
         hear([]) { _ in false }
         setFocusChanged(nil)
         contextMenu = nil
+        offer(.none) { _ in }
     }
 }

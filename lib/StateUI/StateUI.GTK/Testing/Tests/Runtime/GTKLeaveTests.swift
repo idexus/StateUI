@@ -51,6 +51,26 @@ final class GTKLeaveTests: XCTestCase {
         }
     }
 
+    /// A view that leaves takes its drags off at once: a drop landing before its view is let go reaches nothing.
+    func testAViewThatLeavesTakesItsDragsOff() throws {
+        try onUIThread {
+            let shown = State(wrappedValue: true)
+            let host = GTKRenderer.running {
+                VStack {
+                    if shown.wrappedValue {
+                        Text("Target").onDrop { _ in }
+                    }
+                }
+            }
+            let target = try XCTUnwrap(host.views(GTKTextView.self).first)
+            XCTAssertNotNil(target.dragAndDrop)
+
+            shown.wrappedValue = false
+            host.settle { host.views(GTKTextView.self).isEmpty }
+            XCTAssertNil(target.dragAndDrop, "its drop target outlived its element")
+        }
+    }
+
     /// A page the stack takes away - popped by the program, replaced, or taken away by the user's back - is let go
     /// of: its navigation page, and every widget in it with it.
     func testAPageTheStackTakesAwayIsLetGoOf() throws {
