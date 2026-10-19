@@ -1,5 +1,6 @@
 // A control of the application's OWN, declared once for every host that
-// realizes it - shared by the samples that call, bind, style and animate it.
+// realizes it - shared by the sample that calls it and the style the gallery
+// gives it.
 //
 // This file is the whole Swift half, and it is the same wherever the gallery
 // runs. What the bar IS on screen each host says for itself, beside its own
