@@ -45,10 +45,11 @@ font and colour, and the room between its letters the button holds - a
 `TextBlock` spaces its own letters, whatever its control says: wrapped or cut
 short at their end as the tree's break says,
 and on one line where it says nothing, as WinUI's own buttons stand. With a
-picture the content is composed as WinUI Gallery composes it: a `StackPanel`
+picture the content is composed as WinUI 3 Gallery, the look this host takes,
+composes it: a `StackPanel`
 holding the picture and the words, across them or down them as the icon's
 position says - before, above, after or below - the icon spacing apart, else
-WinUI Gallery's 8 DIPs. The picture stands at its own size
+WinUI 3 Gallery's 8 DIPs. The picture stands at its own size
 ([pictures](#pictures)) in a `Viewbox` that makes it smaller, never larger,
 where the button is lower than the picture: a chip in the chrome shows it at
 the chip's height. WinUI arranges a button at no less than it measured, and
