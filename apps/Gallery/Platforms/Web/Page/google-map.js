@@ -29,7 +29,7 @@ function maps() {
 }
 
 /** A marker's colour by its kind. */
-const colours = { generic: "#ea4335", place: "#1a73e8", saved: "#f9ab00", searchResult: "#188038" };
+const colours = { generic: "#ea4335", place: "#1a73e8", saved: "#f9ab00", searchResult: "#9334e6" };
 
 /** Meters in a degree of latitude. */
 const meters = 111320;
