@@ -78,7 +78,12 @@ The instructions run in the order they are written, and a setting holds
 until the next of its kind: a `fillColor` paints every fill after it until
 another `fillColor`. `saveState` remembers the colours, sizes and transforms
 in force and `restoreState` puts them back, which is what keeps one rotated
-shape from turning the rest of the drawing.
+shape from turning the rest of the drawing. A state still saved as the
+drawing ends is put back then (`CanvasPen.replay`), so the platform's own
+state stands as it stood before the drawing on every host. A rounded
+rectangle's corners are rounded no less than nothing and no more than half
+its shorter side - a capsule past that - as the host layer reads the
+instruction, so every toolkit draws the same corners.
 
 `DrawingBuilder` collects the statements of a closure in order and, unlike
 `ViewBuilder`, has `buildArray`, so a plain `for` loop inside a drawing
@@ -90,7 +95,8 @@ compiles: a chart draws a bar per value that way.
 two alignments place the text in and what clips it, and its top is the top
 of the box, not a baseline. `.start` and `.end` mean the box's left and
 right, or top and bottom: a canvas draws in its own coordinates, not in a
-reading direction.
+reading direction. Text written before the drawing sets a size stands at the
+size a Text has with nothing said - the platform's own body text.
 
 ## Themes in a drawing
 

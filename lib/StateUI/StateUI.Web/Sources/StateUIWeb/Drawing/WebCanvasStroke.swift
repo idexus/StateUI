@@ -116,10 +116,9 @@ struct WebCanvasStroke {
         return Double(placed.rawValue)
     }
 
-    /// A rectangle, its corners rounded by `radius` as far as the rectangle holds.
+    /// A rectangle, its corners rounded by `radius` - kept within its sides as the instruction is read.
     static func rounded(_ room: Rect, radius: Double) -> [HostCurveCommand] {
-        let kept = BoxArithmetic.fitted(max(0, radius), width: room.width, height: room.height)
-        return outline(room, corner: (kept, kept))
+        outline(room, corner: (radius, radius))
     }
 
     /// The ellipse a rectangle holds.

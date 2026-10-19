@@ -76,4 +76,31 @@ final class CanvasRulesTests: XCTestCase {
             draw: { instruction, pen in told.append("draw \(pen.lineWidth)") })
         XCTAssertEqual(told, ["save", "draw 5.0", "restore", "draw 3.0"])
     }
+
+    /// A state saved and never put back is put back as the drawing ends: the platform's own state stands as it
+    /// stood before the drawing, whatever it saved.
+    func testAReplayPutsBackEveryStateLeftSaved() {
+        var told: [String] = []
+        CanvasPen.replay(
+            [.saveState, .rotate(degrees: 45), .saveState, .strokeEllipse(Rect(x: 0, y: 0, width: 4, height: 4))],
+            save: { told.append("save") }, restore: { told.append("restore") },
+            draw: { _, _ in told.append("draw") })
+        XCTAssertEqual(told, ["save", "draw", "save", "draw", "restore", "restore"])
+    }
+
+    /// A rounded rectangle's corners are rounded no less than nothing and no more than half its shorter side, as
+    /// they are read: every host draws the same corners, a capsule where the radius reaches past half.
+    func testARoundedRectanglesRadiusIsKeptWithinItsSides() {
+        let drawing = [
+            Draw.fillRoundedRectangle(x: 0, y: 0, width: 100, height: 20, cornerRadius: 40),
+            Draw.strokeRoundedRectangle(x: 0, y: 0, width: 30, height: 60, cornerRadius: -4),
+            Draw.fillRoundedRectangle(x: 50, y: 50, width: -40, height: 10, cornerRadius: 8),
+        ]
+
+        XCTAssertEqual(CanvasInstruction.instructions(drawing), [
+            .fillRoundedRectangle(Rect(x: 0, y: 0, width: 100, height: 20), radius: 10),
+            .strokeRoundedRectangle(Rect(x: 0, y: 0, width: 30, height: 60), radius: 0),
+            .fillRoundedRectangle(Rect(x: 50, y: 50, width: -40, height: 10), radius: 5),
+        ])
+    }
 }

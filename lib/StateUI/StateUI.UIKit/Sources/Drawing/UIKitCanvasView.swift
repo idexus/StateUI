@@ -44,25 +44,9 @@ final class UIKitCanvasView: UIView {
     override func draw(_ rect: CGRect) {
         guard let context = UIGraphicsGetCurrentContext() else { return }
         context.clip(to: bounds)
-        var pen = CanvasPen()
-        var saved = 0
-        for instruction in instructions {
-            if pen.take(instruction) {
-                if instruction == .saveState {
-                    context.saveGState()
-                    saved += 1
-                } else if instruction == .restoreState, saved > 0 {
-                    context.restoreGState()
-                    saved -= 1
-                }
-                continue
-            }
-            draw(instruction, pen: pen, in: context)
-        }
-        while saved > 0 {
-            context.restoreGState()
-            saved -= 1
-        }
+        CanvasPen.replay(
+            instructions, save: { context.saveGState() }, restore: { context.restoreGState() },
+            draw: { instruction, pen in draw(instruction, pen: pen, in: context) })
     }
 
     private func draw(_ instruction: CanvasInstruction, pen: CanvasPen, in context: CGContext) {
@@ -122,7 +106,7 @@ final class UIKitCanvasView: UIView {
         case .end: .right
         }
         let attributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: pen.fontSize ?? UIFont.systemFontSize),
+            .font: UIFont.systemFont(ofSize: pen.fontSize ?? UIFont.body.pointSize),
             .foregroundColor: Self.color(pen.text, pen) ?? .black,
             .paragraphStyle: paragraph,
         ]
@@ -152,9 +136,7 @@ final class UIKitCanvasView: UIView {
     }
 
     private static func rounded(_ room: Rect, _ radius: Double) -> CGPath {
-        let box = rect(room)
-        let kept = min(max(0, radius), min(abs(box.width), abs(box.height)) / 2)
-        return CGPath(roundedRect: box, cornerWidth: kept, cornerHeight: kept, transform: nil)
+        CGPath(roundedRect: rect(room), cornerWidth: radius, cornerHeight: radius, transform: nil)
     }
 
     // MARK: - A finger on it

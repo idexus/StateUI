@@ -37,25 +37,10 @@ final class AppKitCanvasView: AppKitHitTestView {
         // the views beside it.
         bounds.clip()
 
-        var pen = CanvasPen()
-        var saved = 0
-        for instruction in instructions {
-            if pen.take(instruction) {
-                if instruction == .saveState {
-                    NSGraphicsContext.saveGraphicsState()
-                    saved += 1
-                } else if instruction == .restoreState, saved > 0 {
-                    NSGraphicsContext.restoreGraphicsState()
-                    saved -= 1
-                }
-                continue
-            }
-            draw(instruction, pen: pen, in: context.cgContext)
-        }
-        while saved > 0 {
-            NSGraphicsContext.restoreGraphicsState()
-            saved -= 1
-        }
+        CanvasPen.replay(
+            instructions, save: { NSGraphicsContext.saveGraphicsState() },
+            restore: { NSGraphicsContext.restoreGraphicsState() },
+            draw: { instruction, pen in draw(instruction, pen: pen, in: context.cgContext) })
     }
 
     private func draw(_ instruction: CanvasInstruction, pen: CanvasPen, in context: CGContext) {
@@ -113,8 +98,7 @@ final class AppKitCanvasView: AppKitHitTestView {
     }
 
     private static func rounded(_ room: Rect, _ radius: Double) -> NSBezierPath {
-        let radius = max(0, radius)
-        return NSBezierPath(roundedRect: rect(room), xRadius: radius, yRadius: radius)
+        NSBezierPath(roundedRect: rect(room), xRadius: radius, yRadius: radius)
     }
 
     /// The path the host layer's curves draw.

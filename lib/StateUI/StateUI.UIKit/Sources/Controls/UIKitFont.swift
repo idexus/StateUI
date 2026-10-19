@@ -10,8 +10,8 @@ extension UIFont {
     /// The platform's own text size, before the user's.
     private static let platformSize = UITraitCollection(preferredContentSizeCategory: .large)
 
-    /// The body's font at the platform's own text size.
-    private static let body = UIFont.preferredFont(forTextStyle: .body, compatibleWith: platformSize)
+    /// The body's font at the platform's own text size: a Text's where it says nothing.
+    static let body = UIFont.preferredFont(forTextStyle: .body, compatibleWith: platformSize)
 
     /// The font a StateUI look asks for: its style's from UIKit's type ramp - the body's where it names none - the
     /// size and weight it gives over the style's, its family - the system's where it names none, or none such is
