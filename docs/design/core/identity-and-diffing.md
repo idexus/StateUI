@@ -74,7 +74,7 @@ one type too (`StateUI.Window`), told by its key, which carries its kind.
 Another value of a member that says it remakes its element
 ([remakes](../contracts/member-facts.md#remakes)) replaces the element too
 (`LibraryContracts.remaking`), as a button another kind of control makes does
-(`Node.buttonMenuKind`): the host makes its control by the value, from the
+(`Node.buttonMenuOpening`): the host makes its control by the value, from the
 first patch it is made with.
 
 ## What a walk keeps
@@ -172,8 +172,10 @@ hold a different view each render, and naming only the property would hand the
 newcomer its predecessor's state.
 
 The walk stops at a `Binding` (the storage is its lender's), at an aim the view
-was handed (its parent's), at a `Node` (built interface), at any `Equatable`
-value (compared whole) and at any class (a reference keeps itself alive).
+was handed (its parent's), at a `Node` (built interface), at an `Equatable`
+value that owns no state (compared whole - one that does is read part by
+part, [below](#a-type-learnt-once)) and at any class (a reference keeps
+itself alive).
 
 ### A type learnt once
 
