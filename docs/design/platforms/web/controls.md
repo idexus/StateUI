@@ -89,7 +89,9 @@ the menu too, as on any view offering one.
 
 A TextField is an `<input>`, a SearchField a search `<input>` and a TextEditor
 a `<textarea>`, each reporting every change of its words, and a field the
-Return key. The tree writes its words only where they differ from what the
+Return key - but not the Return that commits an input method's words, which
+is the method's (`isComposing`, and Safari's key of number 229): heard, a
+Japanese candidate chosen would submit half a word. The tree writes its words only where they differ from what the
 field holds: writing the same words again would move the user's caret to
 their end. The keyboard and the help the user's typing gets are the host
 layer's traits (`InputTraits`): `inputmode`, `autocapitalize`, `spellcheck`,

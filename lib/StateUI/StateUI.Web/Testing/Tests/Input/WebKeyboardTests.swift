@@ -20,6 +20,27 @@ final class WebKeyboardTests: XCTestCase {
         for _ in 0..<3 { host.step() }
     }
 
+    /// An Enter that commits an input method's words submits nothing - Safari tells it as the key of number 229 -
+    /// and an Enter after it submits the field.
+    func testAnEnterEndingACompositionSubmitsNothing() throws {
+        WebRenderer.shared?.leave()
+        var submitted = 0
+        let words = State(wrappedValue: "")
+        let host = WebRenderer.running { TextField(words.projectedValue).onSubmitted { submitted += 1 } }
+        host.step()
+        let field = try XCTUnwrap(host.views(WebTextInputView.self).first)
+
+        try WebBrowser.run("e.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', isComposing: true }))", on: field.node)
+        try WebBrowser.run("e.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 229 }))", on: field.node)
+        for _ in 0..<3 { host.step() }
+        XCTAssertEqual(submitted, 0, "an input method's Enter submitted the field")
+
+        try WebBrowser.run("e.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))", on: field.node)
+        for _ in 0..<3 { host.step() }
+        XCTAssertEqual(submitted, 1)
+        host.leave()
+    }
+
     private func focused() throws -> String {
         try WebBrowser.evaluate("document.activeElement?.textContent ?? ''", on: 0) ?? ""
     }
