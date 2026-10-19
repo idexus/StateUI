@@ -227,8 +227,9 @@
             tabs[selected].setPagePresented(true, reason: .appearance)
         }
         tabbed.reportUserChange(.selectedTab, .selectedTabChanged, .number(Double(selected)), in: self) { _ in }
+        tree.chromeTouched = true
         pump.turnIfWanted()
-        presenter?.presentRendered(touchedChrome: true)
+        if tree.takeChromeTouched() { presenter?.presentRendered(touchedChrome: true) }
     }
 
     /// The sidebar of `split` showed or hid on screen: its page hears it, then the state its binding carries.
