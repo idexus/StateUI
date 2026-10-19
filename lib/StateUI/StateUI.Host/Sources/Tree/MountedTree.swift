@@ -91,6 +91,9 @@
     /// Where a page's or a window's phase goes: the runtime's handlers, each rendered in its turn.
     var tellPhase: (Int32) -> Void = { _ in }
 
+    /// Who hears that the element of a mount left: the runtime's frame readers, which follow it no more.
+    var left: (UInt64) -> Void = { _ in }
+
     /// The runtime's line to the core.
     public let core: CoreLink
 
@@ -249,6 +252,7 @@
     func unmounted(_ element: MountedElement, presenting states: [Int32]) {
         byMount[element.mount] = nil
         presents(element, [], before: states)
+        left(element.mount)
     }
 
     /// Starts, retargets or cuts short the animation of `property` on the element `mount`.

@@ -163,7 +163,6 @@ final class AppKitElement: NSObject, NativeElement {
     }
 
     func releaseNativeAttachments() {
-        host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: mount), reads: false)
         if observesFrame {
             NotificationCenter.default.removeObserver(
                 self, name: NSView.frameDidChangeNotification, object: nil)

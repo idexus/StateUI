@@ -320,7 +320,9 @@ one it last said (`MountedElement.reportFrame`). The runtime's
 `FrameFollowers` keeps the frames coming while a scroller moves or has
 something to say, or a frame read may have moved, and on each frame lets the
 scrollers say what they did, then the elements where they stand, each in the
-order its view was made, as one user's transaction. A list's view moving
+order it was made, as one user's transaction. A host follows an element by
+the element (`FrameFollowers.follow(_:of:reads:)`); one that leaves the tree
+is followed no more, the tree telling it as it unmounts the element. A list's view moving
 says it too (items.md, `The view moving`). A host says only what its
 toolkit knows: the numbers of the place. It says nothing while the view
 stands in no window or before a layout placed it - a view that joins a shown

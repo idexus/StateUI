@@ -127,8 +127,9 @@ final class DisplayCycleTests: XCTestCase {
         runtime.pump.turn()
         let slider = try XCTUnwrap(runtime.tree.root?.first(id: .manual("slider")))
         let up = try XCTUnwrap(runtime.tree.root?.first(id: .manual("up"))?.handler(.clicked))
-        let view = LaidOut(try XCTUnwrap(runtime.tree.root?.first(id: .manual("read"))), in: runtime)
-        runtime.frames.follow(view, order: 1, reads: true)
+        let read = try XCTUnwrap(runtime.tree.root?.first(id: .manual("read")))
+        let view = LaidOut(read, in: runtime)
+        runtime.frames.follow(view, of: read, reads: true)
 
         runtime.pump.dispatch(up)
         clock.time = 100

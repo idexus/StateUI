@@ -43,8 +43,9 @@ final class FrameFollowersTests: XCTestCase {
         let runtime = HostRuntime.still()
         let log = Received()
         let (late, early, scroller) = (Said("late", log), Said("early", log), Said("scroller", log))
-        runtime.frames.follow(late, order: 9, reads: true)
-        runtime.frames.follow(early, order: 2, reads: true)
+        let made = Self.elements(of: runtime, ["early", "late"])
+        runtime.frames.follow(late, of: made[1], reads: true)
+        runtime.frames.follow(early, of: made[0], reads: true)
         runtime.frames.serve(scroller, order: 5)
         XCTAssertTrue(runtime.frames.wantsFrames)
 
@@ -52,7 +53,7 @@ final class FrameFollowersTests: XCTestCase {
         XCTAssertEqual(log.values, ["scroller moved", "early stands", "late stands"])
         XCTAssertFalse(runtime.frames.wantsFrames, "the scroller said all, and nothing moved since")
 
-        runtime.frames.follow(late, order: 9, reads: false)
+        runtime.frames.follow(late, of: made[1], reads: false)
         runtime.frames.laidOut()
         log.values = []
         runtime.frames.commit(now: 32)
@@ -65,7 +66,7 @@ final class FrameFollowersTests: XCTestCase {
         let runtime = HostRuntime.still()
         let log = Received()
         let (reader, scroller) = (Said("reader", log), Said("scroller", log))
-        runtime.frames.follow(reader, order: 1, reads: true)
+        runtime.frames.follow(reader, of: Self.elements(of: runtime, ["reader"])[0], reads: true)
         runtime.frames.serve(scroller, order: 2)
 
         XCTAssertTrue(runtime.frames.reportLaidOut(), "something was laid out, and said so")
@@ -74,5 +75,30 @@ final class FrameFollowersTests: XCTestCase {
 
         runtime.frames.commit(now: 16)
         XCTAssertEqual(log.values, ["reader stands", "scroller moved"])
+    }
+
+    /// An element that leaves the tree is followed no more - its view may live on a while, held by the toolkit, and
+    /// says nothing.
+    func testAnElementThatLeavesIsFollowedNoMore() {
+        let runtime = HostRuntime.still()
+        let log = Received()
+        let (kept, gone) = (Said("kept", log), Said("gone", log))
+        let made = Self.elements(of: runtime, ["kept", "gone"])
+        runtime.frames.follow(kept, of: made[0], reads: true)
+        runtime.frames.follow(gone, of: made[1], reads: true)
+
+        _ = Self.elements(of: runtime, ["kept"])
+        runtime.frames.laidOut()
+        runtime.frames.commit(now: 16)
+
+        XCTAssertEqual(log.values, ["kept stands"])
+    }
+
+    /// The elements `names` stand in `runtime`'s tree, in that order - the tree before replaced.
+    private static func elements(of runtime: HostRuntime, _ names: [String]) -> [MountedElement] {
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged(names.map { HostPatch(id: .manual($0), type: .text) })
+        runtime.tree.apply(stack, complete: true)
+        return names.compactMap { runtime.tree.root?.first(id: .manual($0)) }
     }
 }

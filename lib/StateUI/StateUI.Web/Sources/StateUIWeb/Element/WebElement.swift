@@ -89,7 +89,6 @@ final class WebElement: NativeElement {
 
     func leave() {
         host?.placements.beforeChange(along: layoutsUp)
-        if let view { host?.runtime.frames.follow(self, order: view.serial, reads: false) }
         view?.detach()
     }
 

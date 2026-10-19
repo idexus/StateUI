@@ -67,7 +67,7 @@ final class WinUIElement: NativeElement {
         // Its menu's entries are in reach with the view.
         if changed.contains(.isEnabled), hadContextMenu { contextMenuChanged = true }
         refreshContextMenu()
-        if let view { host?.runtime.frames.follow(self, order: view.number, reads: readsFrame) }
+        host?.runtime.frames.follow(self, of: element, reads: view != nil && readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) {
@@ -78,7 +78,6 @@ final class WinUIElement: NativeElement {
     }
 
     func leave() {
-        if let view { host?.runtime.frames.follow(self, order: view.number, reads: false) }
         view?.detach()
     }
 }

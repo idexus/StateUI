@@ -343,7 +343,7 @@ final class ItemsCellsTests: XCTestCase {
         let cells = ItemsCells(try XCTUnwrap(runtime.tree.root?.first(type: .itemsView)), in: runtime)
         cells.takeEntries()
         let reader = Reader()
-        runtime.frames.follow(reader, order: 1, reads: true)
+        runtime.frames.follow(reader, of: try XCTUnwrap(runtime.tree.root?.first(type: .itemsView)), reads: true)
         runtime.frames.commit(now: 16)
         reader.said = 0
 

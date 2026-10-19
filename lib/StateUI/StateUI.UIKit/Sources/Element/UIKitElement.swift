@@ -107,7 +107,7 @@ final class UIKitElement: NativeElement {
         configureLayoutMotion()
         arrangeChildren()
         arrangePages(changed: changed)
-        host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: readsFrame)
+        host?.runtime.frames.follow(self, of: element, reads: readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) {
@@ -119,7 +119,6 @@ final class UIKitElement: NativeElement {
     }
 
     func leave() {
-        host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: false)
         listening?.detach()
         listening = nil
         dragAndDrop?.detach()

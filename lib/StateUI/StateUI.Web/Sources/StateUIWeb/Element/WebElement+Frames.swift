@@ -11,7 +11,7 @@ extension WebElement: FrameReporter {
     func followFrame() {
         guard let view, let host else { return }
         let reads = element.readsOwnFrame
-        host.runtime.frames.follow(self, order: view.serial, reads: reads)
+        host.runtime.frames.follow(self, of: element, reads: reads)
         if reads, !observesSize {
             observesSize = true
             view.followSize { [weak host] in host?.runtime.frames.laidOut() }

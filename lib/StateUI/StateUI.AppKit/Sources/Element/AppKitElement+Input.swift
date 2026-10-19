@@ -58,7 +58,7 @@ extension AppKitElement {
     func configureFrameObservation() {
         guard view != nil, let host else { return }
         let reads = element.readsOwnFrame
-        host.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: mount), reads: reads)
+        host.runtime.frames.follow(self, of: element, reads: reads)
 
         if !reads {
             if observesFrame {
