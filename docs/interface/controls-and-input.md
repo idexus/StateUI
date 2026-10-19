@@ -608,8 +608,8 @@ Platforms/<Host>/main.swift
 ## Maps
 
 `Map` shows the platform's own map of the world: MapKit's on macOS, iOS and
-iPadOS. Where the platform has no map of its own - Android, Windows, Linux -
-the application registers the one it chooses with the host, with the
+iPadOS. Where the platform has no map of its own - Android, Windows, Linux,
+the Web - the application registers the one it chooses with the host, with the
 provider and the key that map needs ([Children a control
 draws](../hosts/gtk.md#children-a-control-draws), on each host's page); the
 platform matrix marks it 🧩 there.
