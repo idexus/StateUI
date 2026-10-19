@@ -3,13 +3,27 @@ import StateUI
 /// A thousand rows, of which only the ones on screen are built.
 private struct LongList: ExampleContent {
     // listing: LongList
+    @State private var numbers = Array(0..<1_000)
     @State private var chosen: Int?
 
     var body: some View {
         Grid {
+            // Every row one place down, or one place up: the list moves each
+            // row it shows, and the choice goes with its row.
+            HStack {
+                Button("Rotate +1")
+                    .onClicked { numbers.insert(numbers.removeLast(), at: 0) }
+
+                Button("Rotate −1")
+                    .onClicked { numbers.append(numbers.removeFirst()) }
+            }
+            .spacing(10)
+            .horizontalAlignment(.center)
+            .gridRow(0)
+
             // One view per item, the item its identity - built as the
             // platform's own list shows it, never before.
-            ItemsView(0..<1_000) { number in
+            ItemsView(numbers) { number in
                 HStack {
                     Text("\(number)")
                         .fontSize(14)
@@ -35,25 +49,25 @@ private struct LongList: ExampleContent {
                 .textColor(Palette.subtle)
                 .padding(horizontal: 14, vertical: 8))
             .selection($chosen)
-            .gridRow(0)
+            .gridRow(1)
 
             // Built again only for the choice: scrolling builds rows, never
             // the page.
             DebugInfoLabel()
-                .gridRow(1)
+                .gridRow(2)
 
             Text(chosen.map { "Row \($0) is chosen." } ?? "Tap a row.")
                 .fontSize(13)
                 .textColor(Palette.accent)
-                .gridRow(1)
+                .gridRow(2)
         }
-        .rows(.fill, .auto)
+        .rows(.auto, .fill, .auto)
         .rowSpacing(10)
     }
     // listing: end
 
     var notes: (any View)? {
-        Text("Scroll to the end, and tap a row to choose it.")
+        Text("Scroll to the end, tap a row to choose it, and rotate the rows one place either way.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

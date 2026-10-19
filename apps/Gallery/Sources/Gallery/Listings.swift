@@ -6342,13 +6342,26 @@ enum Listings {
         """#,
         "LongList": #"""
         // Sources/Samples/Collections/ItemsViewSample.swift
+        @State private var numbers = Array(0..<1_000)
         @State private var chosen: Int?
 
         var body: some View {
             Grid {
+                // Every row one place down, or one place up: the list moves each
+                // row it shows, and the choice goes with its row.
+                HStack {
+                    Button("Rotate +1")
+                        .onClicked { numbers.insert(numbers.removeLast(), at: 0) }
+
+                    Button("Rotate −1")
+                        .onClicked { numbers.append(numbers.removeFirst()) }
+                }
+                .horizontalAlignment(.center)
+                .gridRow(0)
+
                 // One view per item, the item its identity - built as the
                 // platform's own list shows it, never before.
-                ItemsView(0..<1_000) { number in
+                ItemsView(numbers) { number in
                     HStack {
                         Text("\(number)")
                             .width(90)
@@ -6362,17 +6375,17 @@ enum Listings {
                     .fontWeight(.bold))
                 .footer(Text("That is all of them."))
                 .selection($chosen)
-                .gridRow(0)
+                .gridRow(1)
 
                 // Built again only for the choice: scrolling builds rows, never
                 // the page.
                 DebugInfoLabel()
-                    .gridRow(1)
+                    .gridRow(2)
 
                 Text(chosen.map { "Row \($0) is chosen." } ?? "Tap a row.")
-                    .gridRow(1)
+                    .gridRow(2)
             }
-            .rows(.fill, .auto)
+            .rows(.auto, .fill, .auto)
         }
         """#,
         "MainPage.bar": #"""
