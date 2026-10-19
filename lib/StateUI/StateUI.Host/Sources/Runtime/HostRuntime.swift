@@ -239,14 +239,22 @@
         pump.turnIfWanted()
     }
 
+    /// The user took `stack`'s top pages away through the toolkit - its back button, a swipe, the keys - leaving
+    /// `staying` pages: its path is told how long it is now, the root aside.
+    /// Design: docs/design/host/pages.md#the-way-back
+    public func stackPopped(_ stack: MountedElement, staying: Int) {
+        guard staying >= 1, let handler = stack.handler(.popped) else { return }
+        dispatch(handler, payload: [.number(Double(staying - 1))])
+    }
+
     /// Goes `way` back in `window`: a stack's top page goes, the path told it is one shorter, or the top sheet goes,
     /// the modal stack told how many remain.
     /// Design: docs/design/host/pages.md#the-way-back
     public func goBack(_ way: WayBack, in window: MountedElement) {
         switch way {
         case .pop(let stack):
-            guard stack.children.count > 1, let handler = stack.handler(.popped) else { return }
-            dispatch(handler, payload: [.number(Double(stack.children.count - 2))])
+            guard stack.children.count > 1 else { return }
+            stackPopped(stack, staying: stack.children.count - 1)
         case .dismissSheet(let remaining):
             let stack = window.children.first { $0.type == .modalStack }
             guard let handler = stack?.handler(.popped) else { return }

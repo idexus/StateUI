@@ -139,10 +139,9 @@ extension UIKitElement {
         (controller as? UIKitSplitViewController)?.stopSliding()
     }
 
-    /// The user took the stack's top pages away: the stack is told how many stay, as the index of its top.
+    /// The user took the stack's top pages away: the host layer tells the path how long it is now.
     private func userPopped(staying: Int) {
-        guard let handler = element.handler(.popped) else { return }
-        host?.runtime.dispatch(handler, payload: [.number(Double(staying - 1))])
+        host?.runtime.stackPopped(element, staying: staying)
     }
 
     /// The user chose another tab: the host layer tells the pages and the state, and shows the chrome again.

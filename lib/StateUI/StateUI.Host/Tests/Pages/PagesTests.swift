@@ -215,6 +215,22 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(presented.chrome, [true])
     }
 
+    /// The user took a stack's top pages away through the toolkit - its back button, a swipe - leaving `staying`
+    /// pages: its path is told how long it is now, by the rule every host shares.
+    func testAStackThePlatformPoppedShortensItsPath() throws {
+        stateUIUseApp(PoppedPathApplication())
+        let runtime = HostRuntime.still()
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let stack = { runtime.tree.root?.first(type: .navigationStack) }
+        XCTAssertEqual(stack()?.children.count, 3, "the root and two pages")
+
+        runtime.stackPopped(try XCTUnwrap(stack()), staying: 2)
+        runtime.pump.turn()
+
+        XCTAssertEqual(stack()?.children.count, 2, "the root and the first page")
+    }
+
     /// What the host was asked to show of the chrome, in turn.
     private final class Presented: HostPresenter {
         var chrome: [Bool] = []
@@ -921,5 +937,20 @@ private struct CheckedPage: View {
         Text("clicks \(clicks), bold \(bold)").contextMenu {
             MenuItem("Bold").isOn($bold).onClicked { clicks += 1 }
         }
+    }
+}
+
+/// An application whose stack shows two pages over its root.
+private struct PoppedPathApplication: Application {
+    var body: some Scene {
+        WindowGroup { PoppedPathPage() }
+    }
+}
+
+private struct PoppedPathPage: View {
+    @State private var path = [1, 2]
+
+    var body: some View {
+        NavigationStack($path) { Text("Root") } destination: { number in Text("Page \(number)") }
     }
 }
