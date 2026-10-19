@@ -59,7 +59,7 @@ extension Node {
 
         let others = node.props.keys.filter { !Self.pageProps.contains($0) }.map(\.name)
             + node.driven.keys.filter { !Self.pageProps.contains($0) }.map(\.name)
-            + node.events.keys.filter { !Self.pageEvents.contains($0) }.map(\.name)
+            + node.events.keys.map(\.name)
         if !others.isEmpty {
             complain("""
                 \(Set(others).sorted().joined(separator: ", ")) says something of a page, written on \(type.name), \
@@ -68,9 +68,8 @@ extension Node {
         }
     }
 
-    /// The keys a page's own members are written under, made once.
+    /// The keys the page tier's properties - a title, an icon - are written under, made once; the tier has no event.
     private static let pageProps = Set(PageElementContract.members.map { Prop($0.name) })
-    private static let pageEvents = Set(PageElementContract.members.map { Event($0.name) })
 }
 
 /// A page's values as modifiers write them - every way a view's own property is written, kept to the page.
