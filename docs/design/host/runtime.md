@@ -555,6 +555,16 @@ double tap of the last - Android's double-tap timeout and slop, Windows'
 double-click time and rectangle - and starts one otherwise, so two quick taps
 far apart are two single taps on both.
 
+## The focus
+
+Where the toolkit tells each view as it takes the focus or loses it - Android,
+GTK, WinUI, the browser - the view tells its element at once. Where it tells
+only that the focus moved - AppKit's first responder, UIKit's - the host lets
+every element following its focus hear where the focus is now in one pass
+(`MountedElement.reportFocus(in:holds:)`), once the move has settled: the
+host says only whether the focus stands in an element's view, and an element
+told already hears nothing again.
+
 ## A swipe
 
 A host whose toolkit tells it a press and how far it has moved, and no swipe,

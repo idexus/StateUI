@@ -89,9 +89,12 @@ final class UIKitRenderer {
         }
     }
 
-    /// The focus moved: every element following it hears where it is.
+    /// The focus moved: every element following it hears where it is - on iOS a field or an editor holds it, or a
+    /// view in it does.
     @objc func focusMoved() {
-        runtime.tree.root?.uiKit.reportFocus()
+        runtime.tree.root?.reportFocus(in: runtime) { element in
+            (element.native as? UIKitElement)?.view.map(UIKitElement.holdsFocus)
+        }
     }
 
     /// Starts the runtime as the application launches: what the host realizes and what the device is, then a turn

@@ -37,9 +37,6 @@ final class AppKitElement: NSObject, NativeElement {
     /// Design: docs/design/host/motion.md#words-at-their-destination
     var wordsRoom: Rect?
 
-    /// The focus this element last reported, where it follows its focus.
-    var reportedFocus = false
-
     var tapRecognizer: AppKitTapRecognizer?
     var panRecognizer: AppKitPanRecognizer?
     var handReader: AppKitHandReader?
@@ -185,18 +182,6 @@ final class AppKitElement: NSObject, NativeElement {
 
     }
 
-    /// Tells every element in this subtree that follows its focus where the
-    /// focus now is, where that has changed.
-    func reportFocus() {
-        if events[.isFocusedChanged] != nil, let view {
-            let focused = AppKitFocus.holds(view, view.window?.firstResponder)
-            if focused != reportedFocus {
-                reportedFocus = focused
-                send(.isFocusedChanged, [.bool(focused)])
-            }
-        }
-        for child in children { child.reportFocus() }
-    }
 
     /// Hands a layout what its children travel under, and tells it a patch
     /// reached it: its next arrangement places what the patch changed.

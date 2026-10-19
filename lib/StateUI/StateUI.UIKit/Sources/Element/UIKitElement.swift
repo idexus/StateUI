@@ -26,9 +26,6 @@ final class UIKitElement: NativeElement {
     var listening: UIKitListening?
     var dragAndDrop: UIKitDragAndDrop?
 
-    /// Whether the view held the focus when the element last said so.
-    var reportedFocus = false
-
     /// What UIKit asks for the view's context menu, while it has one.
     var contextMenu: UIKitContextMenu?
 

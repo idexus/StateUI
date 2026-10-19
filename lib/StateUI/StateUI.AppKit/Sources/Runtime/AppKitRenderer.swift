@@ -181,7 +181,9 @@ final class AppKitRenderer {
         Task { @MainActor [weak self] in
             guard let self else { return }
             focusReportQueued = false
-            runtime.tree.root?.appKit.reportFocus()
+            runtime.tree.root?.reportFocus(in: runtime) { element in
+                (element.native as? AppKitElement)?.view.map { AppKitFocus.holds($0, $0.window?.firstResponder) }
+            }
         }
     }
 

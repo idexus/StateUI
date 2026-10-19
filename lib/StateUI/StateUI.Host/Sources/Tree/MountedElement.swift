@@ -51,6 +51,9 @@
     /// Whether the element fades out on its way to being hidden, which it still stands shown for.
     public internal(set) var isLeaving = false
 
+    /// Whether this element was last told the focus stands in it.
+    var reportedFocus = false
+
     /// The frame report this element last said, which a report the same says again to nobody.
     var reportedFrame: [Double] = []
 
