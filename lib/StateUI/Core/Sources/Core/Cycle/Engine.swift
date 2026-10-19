@@ -174,8 +174,8 @@ extension ModifiableElement {
     /// Arithmetic the host runs on its own frames, whenever a state it follows has
     /// been written.
     ///
-    ///     .engine(following: $scrolled, $room) { cycle in
-    ///         run = PlacedRun(placements(at: scrolled / step, room))
+    ///     .engine(following: $scrolled) { _ in
+    ///         backdrop = scrolled * 0.4      // the backdrop follows the scroll, slower
     ///     }
     ///
     /// `following:` names why it runs, not what it may touch: the arithmetic reads
