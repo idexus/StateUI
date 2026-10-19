@@ -19,8 +19,9 @@ when the core needs one, the handlers the render created, and then the acts -
 on the interface their handler has just changed. A turn asked for inside a
 turn runs when it ends, and an event raised while a patch applies waits for
 the patch. What the renderer adds is WinUI's, as the runtime's
-`HostPresenter`: the window, its sheets and its chrome shown after each render
-and after a frame that moved the chrome, and the acts performed.
+`HostPresenter`: the window, its sheets and its chrome shown after a render
+that touched the chrome and after a frame that moved it, and the acts
+performed.
 
 A view is let go of in the turn after its element left: its `deinit` is
 `MainActor`'s, and a release outside a task's context puts it in the UI
@@ -215,7 +216,9 @@ one before is answered. A choice of actions is a
 button a choice, the dangerous one first, and the pressed caption is the
 answer - the cancelling one too; a dialog dismissed any other way, Escape
 among them, answers that nothing was chosen. A prompt's field takes the
-placeholder, the most characters and the keyboard its purpose asks for.
+placeholder, the keyboard its purpose asks for and the most it may hold - as
+WinUI's `MaxLength`, in UTF-16 units, where a field of the tree counts
+characters ([controls](controls.md)).
 
 A dialog needs its window's `XamlRoot`, which a window opened a moment ago -
 a page asking as it is made - does not have until WinUI has loaded it. The

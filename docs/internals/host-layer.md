@@ -25,6 +25,7 @@ layer: it is written there with its tests, and every host calls it.
 lib/StateUI/StateUI.Host/Sources/
   Runtime/       the runtime's parts, the turn, the frame, the line to the core
   Tree/          the mounted tree, each element's native half, the windows
+  Numbers/       the process's one count, and what a host hands across by number
   Pages/         what an arrangement shows, a page's phases, the window's chrome
   Layout/        the layout arithmetic: stacks, grids, layers, scrolling, shapes
   Drawing/       boxes, brushes, pictures, a control's pressed fill
@@ -256,8 +257,8 @@ toolkit's calls:
 - **`NodeType.pageTypes`**, **`viewlessTypes`** and **`slotTypes`** say which
   elements are the arrangements of pages a window shows, which have no view of
   their own, and which furnish a page's chrome rather than stand in its room.
-- **`LiveViews`** holds a host's views weakly by the number each was made
-  under, and **`Numbered`** anything else a host hands across by number - a
+- **`LiveViews`** (`Numbers/`, with the two below) holds a host's views weakly
+  by the number each was made under, and **`Numbered`** anything else a host hands across by number - a
   signal's callback, a dialog's or a script's answer awaited - until it is
   taken out or let go: a callback crossing C, Java or JavaScript names it by
   its number and finds nothing once it has gone. Both draw from the process's

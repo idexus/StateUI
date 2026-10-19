@@ -7,8 +7,8 @@ the pointer, and hands it to the host layer, which says what it means.
 
 A view listens only for what its element's handlers and channels ask to
 hear: a gesture recognizer of UIKit's own for each kind - taps, the pointer,
-a press dragged, a pinch - added as the tree asks for it and taken away as it
-stops asking. Its recognizers recognize together with every other, so a pan
+a press dragged, a pinch, two fingers turning - added as the tree asks for it
+and taken away as it stops asking. Its recognizers recognize together with every other, so a pan
 inside a scroller and a tap on a button both still happen. Every view
 StateUI shows takes touches, which a label and a picture of UIKit's do not
 of themselves.

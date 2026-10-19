@@ -349,8 +349,8 @@ heading but not its level.
 A view has one listener, and what its element listens for
 (`MountedElement.hearing`) is told there from the touches and the hovering pointer the view
 gets, in points, and heard by the host layer's rule (`MountedElement.hear`):
-taps, a press dragged, a pinch, and the pointer. One tap is the view's click,
-which keeps what a click brings; where more make one, the listener counts
+taps, a press dragged, a pinch, two fingers turning, and the pointer. One
+tap is the view's click, which keeps what a click brings; where more make one, the listener counts
 quick taps near each other as Android measures a double tap - Android itself
 counts no run past two - and tells each with its place in its run. A press is
 told as it goes down, moves, lets go or is taken away, measured on the screen,

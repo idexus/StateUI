@@ -1,7 +1,8 @@
 # Input on GTK
 
 How the GTK host hears what the user does to an element with a finger, a pen
-or the mouse - a tap, the pointer, a press dragged, a pinch - and reports it
+or the mouse - a tap, the pointer, a press dragged, a pinch, two fingers
+turning, a press dragged with Alt as two fingers mirrored - and reports it
 as the element's events ([a user's change](../../host/runtime.md#a-users-change)).
 A control's own input - a button's click, a switch turned - is the control's,
 and stays there ([controls](controls.md)).
@@ -10,8 +11,8 @@ and stays there ([controls](controls.md)).
 
 A view listens only for what its element's handlers and channels ask: taps
 for a tap handler, the pointer for a pointer handler, a press dragged for a
-pan, a swipe or a state a pan carries, a pinch for a pinch handler. Each kind
-is a GTK event controller on the view's widget - the pointer's two, a motion
+pan, a swipe or a state a pan carries, a pinch or a turn for its handler.
+Each kind is a GTK event controller on the view's widget - the pointer's two, a motion
 controller and a drag gesture - added when the view starts listening for it
 and removed when it stops, and every controller's signals name the view by
 its number. A view that leaves the tree stops listening first, so its widget

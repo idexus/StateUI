@@ -93,15 +93,17 @@ A host applies one generation as one transaction:
 2. find the mounted element by `ElementID`, or create the native object for
    a new complete patch;
 3. replace an element only when `replace` says so;
-4. clear `clearedProperties`, then apply changed `properties` and their
-   `transitions`;
+4. clear `clearedProperties`, then take the changed `properties`;
 5. replace driven bindings and event subscriptions only when their optional
    update is present;
 6. apply the changed layout-motion rule;
 7. reconcile children according to `changed` or `arranged`;
-8. detach every external subscription, recognizer, menu, timer, and native
+8. tell the native half the element's changes with its children in place:
+   each property - its animation beginning there, along its `transitions` -
+   the stacking, the enablement and the direction;
+9. detach every external subscription, recognizer, menu, timer, and native
    object belonging to an element that left;
-9. retain the generation only after the transaction is complete.
+10. retain the generation only after the transaction is complete.
 
 `HostChildrenUpdate.changed` is a sparse path to descendants. It never changes
 the sibling arrangement. `arranged` is the complete ordered list and is the

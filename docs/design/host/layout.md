@@ -203,8 +203,8 @@ the same on both axes, which is what a run draws.
 
 ## Drawing order
 
-A grid's and a ZStack's children can overlap, so their order is
-the order they are drawn in: by `zIndex`, lower first, and children of the same
+A grid's, a ZStack's and a layout engine's children can overlap, so their
+order is the order they are drawn in: by `zIndex`, lower first, and children of the same
 `zIndex` in the order the view wrote them. The mounted element keeps
 `children` in that order and remembers the order written, so a sparse change
 or a bound `zIndex` moving in a frame restacks them and arranges the layout

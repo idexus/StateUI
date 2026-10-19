@@ -92,8 +92,9 @@ mid-gesture.
 What the user does with the pointer and the trackpad AppKit's own recognizers
 hear, and each tells the host layer what it heard - never an event: a click
 with its place in a quick run of clicks, a press dragged with its phase and
-how far it has come, a pinch's step, the pointer's coming, moving, pressing,
-letting go and leaving - each measured from the view's top left, as every
+how far it has come, a pinch's step, a rotation's, a press dragged with ⌥ as
+two fingers mirrored about the middle (`MirroredFingers`), the pointer's
+coming, moving, pressing, letting go and leaving - each measured from the view's top left, as every
 host measures it. Which of them an element listens for, how many clicks make
 its tap, the states a drag carries and whether a drag that ended was a swipe
 are the host layer's (`MountedElement.hearing`, `hear`), and so is the one

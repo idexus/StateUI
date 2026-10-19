@@ -202,9 +202,10 @@ title wherever a bar has one.
 
 A tabbed view's row wears the colours of the bar on its path too, and those
 move on an element above it - a stack, a theme resolved again - that the
-tabbed view never hears from. So the row is painted with the chrome: every
-time a window's chrome is shown again - a render touching it, a frame moving
-it - the host paints each tabbed view its arrangements show
+tabbed view never hears from. So where a host paints the row in the bar's
+colours - UIKit and the Web - the row is painted with the
+chrome: every time a window's chrome is shown again - a render touching it, a
+frame moving it - the host paints each tabbed view its arrangements show
 (`tabViewsShown`, through pages and arrangements of pages) in its
 `barColors` as they stand.
 

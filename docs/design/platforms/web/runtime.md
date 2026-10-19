@@ -14,8 +14,9 @@ frames, the DOM elements, the browser's layout, and the window.
 elements every runtime holds alike: the core link, the intake, the mounted
 tree whose native halves are `WebElement`s, the pump, the animator and what
 follows it, and the display cycle on the page's frame clock. It is the
-runtime's `HostPresenter` - after a render it shows the window,
-and after a frame's walk it says the page may have moved. An act the host does not perform yet
+runtime's `HostPresenter` - after a render that touched the chrome it shows
+the window, and after every render and a frame's walk it says the page may
+have moved. An act the host does not perform yet
 fails at once, so a handler awaiting it goes on.
 
 ## Starting
