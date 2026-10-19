@@ -61,7 +61,7 @@ extension GTKElement {
         chrome.trailing = actions.trailing.map { $0.map(GTKToolbarAction.init) }
         chrome.overflow = actions.overflow.map(GTKToolbarAction.init)
         let menus = element.chromeMenus.menus
-        chrome.mainMenu = menus.isEmpty ? nil : GTKMenu(menus)
+        chrome.mainMenu = menus.isEmpty ? nil : GTKMenu(menus, at: .main)
         return chrome
     }
 

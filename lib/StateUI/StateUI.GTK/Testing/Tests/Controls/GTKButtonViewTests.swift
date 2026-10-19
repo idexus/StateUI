@@ -10,6 +10,28 @@ import XCTest
 
 @MainActor
 final class GTKButtonViewTests: XCTestCase {
+    /// A button's menu and its context menu each run their own items: GTK finds an item's action by its group's name
+    /// on the widget, and two menus under one name would run each other's.
+    func testAButtonsMenuAndItsContextMenuRunTheirOwnItems() throws {
+        try onUIThread {
+            var heard: [String] = []
+            let driver = GTKDriver()
+            let tree = driver.start(clock: nil, reducesMotion: false) {
+                Button("Share")
+                    .menu { MenuItem("Mail").onClicked { heard.append("mail") }.id("mail") }
+                    .contextMenu { MenuItem("Delete").onClicked { heard.append("delete") }.id("delete") }
+            }
+            let root = try XCTUnwrap(tree.root)
+
+            try driver.chooseMenuItem(try XCTUnwrap(root.first(id: .manual("delete"))))
+            driver.renderer?.settle { !heard.isEmpty }
+            try driver.chooseMenuItem(try XCTUnwrap(root.first(id: .manual("mail"))))
+            driver.renderer?.settle { heard.count == 2 }
+
+            XCTAssertEqual(heard, ["delete", "mail"])
+        }
+    }
+
     /// A button's caption takes the font and colour the tree gives it, and its box the fill, the outline and the
     /// corners, drawn in the fill.
     func testAButtonTakesItsWordsAndItsBox() throws {

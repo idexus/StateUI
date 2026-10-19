@@ -142,7 +142,10 @@ entries between two separators a section, a submenu a link - each item an
 action of a group the menu hands the widget it stands on, which GTK runs only
 while it is enabled; a submenu out of reach is one whose tracking action is
 not. GNOME's menus show words alone: no picture beside them, no entry marked
-as destroying something.
+as destroying something. GTK finds an item's action by its group's name on
+the widget, so each place a menu stands names its own - a button's menu, a
+context menu, the main menu: two under one name on one widget, a button's
+and its context menu, would run each other's items.
 
 A view's context menu is a `GtkPopoverMenu` on the view's widget, opened where
 the user clicks with the secondary button or holds a finger, at that point; a

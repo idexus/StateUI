@@ -172,7 +172,7 @@ final class GTKButtonView: GTKView {
             if let held { held.show(menu) } else { held = GTKContextMenu(menu, on: widget, heldByMouse: true) }
         case .none: break
         }
-        gtk_widget_insert_action_group(widget, GTKMenu.actionGroup, OpaquePointer(menu.actions))
+        gtk_widget_insert_action_group(widget, menu.group, OpaquePointer(menu.actions))
     }
 
     /// The menu a held button opens, where it is held or clicked with the secondary button.

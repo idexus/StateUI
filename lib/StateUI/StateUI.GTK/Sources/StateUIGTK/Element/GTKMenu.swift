@@ -12,8 +12,16 @@ import CStateUIGTK
 /// Design: docs/design/platforms/gtk/pages.md#menus
 @MainActor
 final class GTKMenu {
-    /// The prefix the menu's actions stand under on the widget they are handed to.
-    static let actionGroup = "stateui-menu"
+    /// Where a menu stands, which names the group its actions stand under on the widget they are handed to: GTK finds
+    /// an item's action by that name, so two menus on one widget - a button's own and its context menu - stand apart.
+    enum Place: String {
+        case button = "stateui-button"
+        case context = "stateui-context"
+        case main = "stateui-main"
+    }
+
+    /// The name of the group its actions stand under on the widget they are handed to.
+    let group: String
 
     /// The model, held until the menu goes.
     let model: OpaquePointer
@@ -42,8 +50,9 @@ final class GTKMenu {
     /// Whether the menu holds no entries.
     var isEmpty: Bool { drawn.isEmpty }
 
-    /// The menu of `entries`.
-    init(_ entries: [MenuEntry]) {
+    /// The menu of `entries`, standing at `place`.
+    init(_ entries: [MenuEntry], at place: Place) {
+        group = place.rawValue
         model = g_menu_new()
         actions = g_simple_action_group_new()!
         add(entries, to: model)
@@ -90,7 +99,7 @@ final class GTKMenu {
             g_action_map_add_action(OpaquePointer(actions), opens)
             g_object_unref(UnsafeMutableRawPointer(opens))
             let item = g_menu_item_new_submenu(entry.title, g_menu_model(submenu))!
-            g_menu_item_set_attribute_value(item, "submenu-action", g_variant_new_string(Self.actionGroup + "." + name))
+            g_menu_item_set_attribute_value(item, "submenu-action", g_variant_new_string(group + "." + name))
             g_menu_append_item(menu, item)
             g_object_unref(UnsafeMutableRawPointer(item))
             g_object_unref(UnsafeMutableRawPointer(submenu))
@@ -112,7 +121,7 @@ final class GTKMenu {
         }
         g_action_map_add_action(OpaquePointer(actions), action)
         g_object_unref(UnsafeMutableRawPointer(action))
-        let item = g_menu_item_new(entry.title, Self.actionGroup + "." + name)!
+        let item = g_menu_item_new(entry.title, group + "." + name)!
         if let shortcut = entry.keyboardShortcut {
             // Shown beside the words; the keys themselves are the window's (`GTKWindowShortcuts`).
             let spelled = GTKKeys.spelled(shortcut)

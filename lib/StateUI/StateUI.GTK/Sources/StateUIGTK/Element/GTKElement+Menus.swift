@@ -15,7 +15,7 @@ extension GTKElement {
         guard let owner, let view = owner.gtk.view else { return }
 
         let declared = owner.children.first { $0.type == .contextMenu }
-        let menu = declared.map { GTKMenu(MenuEntry.entries(of: $0)) }
+        let menu = declared.map { GTKMenu(MenuEntry.entries(of: $0), at: .context) }
         guard let menu, !menu.isEmpty else {
             view.contextMenu = nil
             return
@@ -32,7 +32,7 @@ extension GTKElement {
     func offerButtonMenu() {
         let owner = NodeType.menuTypes.contains(type) ? element.enclosing(type: .buttonMenu)?.parent : element
         guard let owner, let button = owner.gtk.view as? GTKButtonView, button.opening != .none else { return }
-        button.setMenu(GTKMenu(ButtonMenu.entries(of: owner)))
+        button.setMenu(GTKMenu(ButtonMenu.entries(of: owner), at: .button))
         button.showsArrow = ButtonMenu.showsArrow(owner)
     }
 }

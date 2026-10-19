@@ -30,7 +30,7 @@ final class GTKContextMenu {
         gtk_widget_set_parent(popover, widget)
         gtk_popover_set_has_arrow(popover.of(GtkPopover.self), 0)
         gtk_widget_set_halign(popover, GTK_ALIGN_START)
-        gtk_widget_insert_action_group(widget, GTKMenu.actionGroup, OpaquePointer(menu.actions))
+        gtk_widget_insert_action_group(widget, menu.group, OpaquePointer(menu.actions))
         Self.shown.hold(self, as: number)
         listen(heldByMouse: heldByMouse)
     }
@@ -39,7 +39,7 @@ final class GTKContextMenu {
     func show(_ menu: GTKMenu) {
         self.menu = menu
         gtk_popover_menu_set_menu_model(popover.opaque, g_menu_model(menu.model))
-        gtk_widget_insert_action_group(widget, GTKMenu.actionGroup, OpaquePointer(menu.actions))
+        gtk_widget_insert_action_group(widget, menu.group, OpaquePointer(menu.actions))
     }
 
     /// Opens the menu at `x`, `y` in the widget.
@@ -54,7 +54,7 @@ final class GTKContextMenu {
     func remove() {
         for controller in controllers { gtk_widget_remove_controller(widget, controller) }
         controllers = []
-        gtk_widget_insert_action_group(widget, GTKMenu.actionGroup, nil)
+        gtk_widget_insert_action_group(widget, menu.group, nil)
         gtk_widget_unparent(popover)
         Self.shown.release(number)
     }

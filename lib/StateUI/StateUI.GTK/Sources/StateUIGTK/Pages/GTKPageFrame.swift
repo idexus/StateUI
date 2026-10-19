@@ -245,7 +245,7 @@ extension GTKPageFrame {
         gtk_menu_button_set_icon_name(button.opaque, "open-menu-symbolic")
         gtk_widget_set_tooltip_text(button, "Main Menu")
         gtk_menu_button_set_menu_model(button.opaque, g_menu_model(menu.model))
-        gtk_widget_insert_action_group(button, GTKMenu.actionGroup, OpaquePointer(menu.actions))
+        gtk_widget_insert_action_group(button, menu.group, OpaquePointer(menu.actions))
         gtk_box_append(endBox.of(GtkBox.self), button)
         mainMenu = (button, menu)
     }
