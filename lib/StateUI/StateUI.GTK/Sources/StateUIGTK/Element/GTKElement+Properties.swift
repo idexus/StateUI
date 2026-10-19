@@ -75,19 +75,13 @@ extension GTKElement {
         }
     }
 
-    /// Forgets the sizes kept by this element's layout and every one above it, and asks GTK to measure again.
+    /// Forgets the sizes kept by this element's layout and every one above it - up to an ItemsView's entry, whose
+    /// cell measures it again (`MountedElement.measuredUpward`) - and asks GTK to measure again.
+    /// Design: docs/design/host/layout.md#measured-once
     func invalidateMeasurements() {
-        var element: GTKElement? = self
-        while let each = element {
-            // An entry of an ItemsView is measured by its cell; the list's own size never follows its items.
-            if let items = each.parent?.view as? GTKItemsView {
-                items.remeasure(each.element)
-                break
-            }
-            (each.view as? GTKLayoutView)?.forgetMeasurements()
-            element = each.parent
-        }
-
+        let walk = element.measuredUpward()
+        for each in walk.layouts { (each.gtk.view as? GTKLayoutView)?.forgetMeasurements() }
+        if let entry = walk.entry { (entry.parent?.gtk.view as? GTKItemsView)?.remeasure(entry) }
         (view ?? parent?.nearestView)?.invalidateMeasure()
     }
 

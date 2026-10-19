@@ -78,18 +78,18 @@ extension UIKitElement {
         }
     }
 
-    /// Forgets what this element's layout and every one around it measured, and lays them out again.
+    /// Forgets what this element's layout and every one around it measured, and lays them out again - up to an
+    /// ItemsView's entry, whose cell measures it again (`MountedElement.measuredUpward`).
+    /// Design: docs/design/host/layout.md#measured-once
     func invalidateMeasurements() {
-        var each: UIKitElement? = self
-        while let element = each {
-            // An entry of an ItemsView is measured by its cell; the list's own size never follows its items.
-            if let items = element.parent?.view as? UIKitItemsView {
-                element.view.map { _ in items.remeasure(element.element) }
-                return
-            }
-            (element.view as? UIKitLayoutView)?.forgetMeasurements()
-            element.view?.setNeedsLayout()
-            each = element.parent
+        let walk = element.measuredUpward()
+        for each in walk.layouts {
+            (each.uiKit.view as? UIKitLayoutView)?.forgetMeasurements()
+            each.uiKit.view?.setNeedsLayout()
+        }
+        if let entry = walk.entry {
+            (entry.parent?.uiKit.view as? UIKitItemsView)?.remeasure(entry)
+            return
         }
         view?.window?.rootViewController?.view.setNeedsLayout()
     }

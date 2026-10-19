@@ -100,6 +100,24 @@ final class ItemsCellsTests: XCTestCase {
         XCTAssertEqual(ItemsCells.estimatedExtent(across: true), 100)
     }
 
+    /// A size changing inside an entry is measured again from there up to the entry, whose cell measures it - the
+    /// list's own size never follows its items; outside a list every layout up to the root measures again.
+    func testMeasuringAgainStopsAtTheEntryACellMeasures() throws {
+        let cell = Cell()
+        cells.hold("42", in: cell)
+        let entry = try XCTUnwrap(cell.shown)
+
+        let inside = entry.measuredUpward()
+        XCTAssertTrue(inside.layouts.isEmpty, "the entry is its cell's to measure")
+        XCTAssertTrue(inside.entry === entry)
+
+        let list = try XCTUnwrap(cells.element)
+        let outside = list.measuredUpward()
+        XCTAssertNil(outside.entry)
+        XCTAssertTrue(outside.layouts.first === list)
+        XCTAssertTrue(outside.layouts.last === runtime.tree.root, "up to the root")
+    }
+
     /// Every identity is taken in order, and nothing is built before a cell holds it.
     func testTheEntriesAreTakenAndNothingIsBuiltUnasked() {
         XCTAssertEqual(cells.identities.count, 100)

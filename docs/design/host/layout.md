@@ -60,7 +60,8 @@ change beneath it. A parent offers a child one or two widths in a pass - its
 natural width and the width it then lays it out in - so four kept answers
 cover a pass and the next. The host forgets them upward from the change,
 every layout to the root - on AppKit to the nearest room - and an
-ItemsView's entry stops at its cell, which measures it again; nothing beside
+ItemsView's entry stops at its cell, which measures it again
+(`MountedElement.measuredUpward`); nothing beside
 the change is measured again. Which change is which is one list on every
 native host (`MountedElement.arrangedProperties`,
 `unmeasuredProperties`): a property a parent reads into its child's place
