@@ -197,6 +197,16 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(fade.projectedValue.journey.motion, law, "the law it was given is the value's now")
     }
 
+    /// `.none` given to a move is the law that does not move, never "no law given": the value travels under it, not
+    /// under its own.
+    func testAMoveGivenNoMotionTravelsUnderNone() {
+        let fade = State(wrappedValue: 1.0, motion: .spring())
+
+        fade.projectedValue.journey.move(to: 0, .none)
+
+        XCTAssertEqual(fade.projectedValue.journey.motion, Motion.none, "the law it was given, `.none`")
+    }
+
     /// THE VALUE'S OWN LAW OVERRIDES THE ELEMENT'S, per property. `.inherited`
     /// is a REQUEST - the crossing answers it with whatever the element
     /// resolved - and anything else is an answer already given, which the

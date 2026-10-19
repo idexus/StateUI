@@ -181,10 +181,26 @@ public struct Journey<Value: Walked> {
     ///
     /// - Parameters:
     ///   - target: where to send it.
-    ///   - motion: the law to animate under, or nothing for the value's own.
+    ///   - motion: the law to animate under - `.none` to travel under no motion.
     /// - Returns: the movement, to await its arrival or leave going.
     @discardableResult
-    public func move(to target: Value, _ motion: Motion? = nil) -> Arrival {
+    public func move(to target: Value, _ motion: Motion) -> Arrival {
+        send(to: target, under: motion)
+    }
+
+    /// Sends the value there under its own law, as `move(to:_:)` does under one given.
+    ///
+    /// - Parameter target: where to send it.
+    /// - Returns: the movement, to await its arrival or leave going.
+    @discardableResult
+    public func move(to target: Value) -> Arrival {
+        send(to: target, under: nil)
+    }
+
+    /// Sends the value there under `motion`, or its own law where none is given: the two `move`s, each spelling
+    /// one, so `.none` is always the law that does not move.
+    /// Design: docs/design/core/journeys.md#moving-and-waiting
+    private func send(to target: Value, under motion: Motion?) -> Arrival {
         guard HandlerRun.admits("a movement") else { return Arrival(at: false) }
         guard let (storage, image, lanes) = walking() else {
             complain("`move` was called on a part of a state, a binding made from closures, "

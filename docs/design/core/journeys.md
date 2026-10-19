@@ -74,7 +74,10 @@ the host is told at the first crossing and cannot be told again.
 ## Moving and waiting
 
 `$x.journey.move(to:_:)` sends the value and returns its `Arrival` at once;
-`arrived()` suspends until the value arrives. A move is a write of the
+`arrived()` suspends until the value arrives. It has two spellings, one with a
+law and one without (`move(to:)`, under the value's own), and no optional
+law: `.none` written there is always the law that does not move, which a law
+that defaults to nil would read as "none given". A move is a write of the
 destination: the state reads the target at once, its readers are built again
 and a kept state keeps it, as after an assignment (`Storage.moved(to:)`) - and
 the journey the host walks is the move's, on its law, never a second one on the
