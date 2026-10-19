@@ -45,11 +45,9 @@
                     } destination: { _ in Text("Pushed") }
                 }
                 try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("home's")) == true }
-
-                let shown = { (try? s.element("home's")).flatMap { try? s.held(VisualElementContract.isVisible, on: $0) } }
                 path.wrappedValue = [1]
-                s.settle { shown() != true }
-                s.expect(shown() == true, false, "a page pushed over it took it away")
+                try s.settle { try !s.isShown("home's") }
+                s.expect(try s.isShown("home's"), false, "a page pushed over it took it away")
 
                 path.wrappedValue = []
                 try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("home's")) == true }

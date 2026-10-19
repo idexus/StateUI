@@ -1,4 +1,4 @@
-# revision 4.2
+# revision 5.2
 SearchField.cursorPosition: ✅
 SearchField.inputPurpose: ✅
 SearchField.isReadOnly: ✅

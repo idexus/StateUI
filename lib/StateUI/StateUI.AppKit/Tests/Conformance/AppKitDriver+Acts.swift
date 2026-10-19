@@ -250,11 +250,15 @@ extension AppKitDriver {
     }
 
     /// Types `words` as the whole of a field's words, through the editor AppKit gives the field that holds the
-    /// keyboard: what a user's typing reports, the field reports.
+    /// keyboard: what a user's typing reports, the field reports. A field that refuses the keyboard - read-only, it
+    /// takes no editor - leaves the keys to the responder the window holds, as a user's keys go.
     private func type(_ words: String, into field: NSTextField) throws {
-        guard let window = field.window, window.makeFirstResponder(field),
-              let editor = field.currentEditor() as? NSTextView
-        else { throw DriverCannot("type into a field with no editor") }
+        guard let window = field.window else { throw DriverCannot("type into a field with no window") }
+        guard window.makeFirstResponder(field), let editor = field.currentEditor() as? NSTextView else {
+            (window.firstResponder as? NSTextInputClient)?
+                .insertText(words, replacementRange: NSRange(location: NSNotFound, length: 0))
+            return
+        }
         editor.selectAll(nil)
         editor.insertText(words, replacementRange: editor.selectedRange())
     }

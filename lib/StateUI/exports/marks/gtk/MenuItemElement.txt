@@ -1,4 +1,4 @@
-# revision 3.1
+# revision 4.1
 MenuItem.clicked: ✅
 MenuItem.icon: – GNOME's menus show words alone, no picture beside them.
 MenuItem.isDestructive: – GNOME's menus mark no entry as destroying something.

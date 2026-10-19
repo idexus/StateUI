@@ -72,7 +72,11 @@ final class ConformanceRunnerTests: XCTestCase {
         XCTAssertTrue(Outcome(proving: [Covered(SwitchContract.isOn), Covered(SwitchContract.toggled)], on: register).runs)
         let never = Outcome(proving: [Covered(StepperContract.step), Covered(SwitchContract.isOn)], on: register)
         XCTAssertFalse(never.runs)
-        XCTAssertEqual(never.facts, [HostVerdict(element: "Stepper", member: "step", mark: .notPlanned(reason: "No steps here."))])
+        XCTAssertEqual(never.facts, [
+            HostVerdict(element: "Stepper", member: "step", mark: .notPlanned(reason: "No steps here.")),
+            HostVerdict(element: "Switch", member: "isOn", mark: .inapplicable(
+                "its case covers Stepper.step too, which this host never has")),
+        ])
         XCTAssertEqual(Outcome(proving: [Covered(StepperContract.value)], on: register).facts, [
             HostVerdict(element: "Stepper", member: "value", mark: .notRealized),
         ])
@@ -251,6 +255,38 @@ final class ConformanceRunnerTests: XCTestCase {
         XCTAssertEqual(failures, [])
         XCTAssertEqual(
             HostVerdict.text(verdicts), "Switch.isOn: cannot read what the screen reader said - No path yet.\n")
+    }
+
+    /// A read the driver cannot do, which the case lets pass, ends the case as what the driver cannot do: a user's
+    /// try the control may refuse proves nothing where the driver never tried.
+    func testWhatTheDriverCannotDoThoughTheCaseLetItPassSaysSo() {
+        let driver = RegisterOnly(realizing: [.complete("Switch", "isOn")])
+        driver.cannot["read what the screen reader said"] = "No path yet."
+        let verdicts = run([ConformanceCase("tries", proves: [Covered(SwitchContract.isOn)]) { s in
+            _ = try? s.announced()
+            s.expect(true, true)
+        }], on: driver)
+
+        XCTAssertEqual(failures, [])
+        XCTAssertEqual(
+            HostVerdict.text(verdicts), "Switch.isOn: cannot read what the screen reader said - No path yet.\n")
+    }
+
+    /// A member the host realizes, in a case another member stops for good - never had, or the application's own -
+    /// says why it went unproved there, giving way to any case that judges it: never a cell left empty, which reads
+    /// as not realized.
+    func testARealizedMemberOfACaseStoppedForGoodSaysWhy() {
+        let verdicts = run([
+            ConformanceCase("both", proves: [Covered(SwitchContract.isOn), Covered(SwitchContract.toggled)]) { _ in },
+        ], on: RegisterOnly(realizing: [
+            .complete("Switch", "isOn"), .notPlanned("Switch", "toggled", reason: "No turns here."),
+        ]))
+
+        XCTAssertEqual(HostVerdict.text(verdicts), """
+            Switch.isOn: does not apply - its case covers Switch.toggled too, which this host never has
+            Switch.toggled: – No turns here.
+
+            """)
     }
 
     /// A colour StateUI draws shows as the screen shows it: each channel a few steps off, as smoothing an edge leaves

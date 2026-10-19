@@ -63,6 +63,20 @@ final class ContractCompletenessTests: XCTestCase {
         XCTAssertEqual(foreign, [], "\(foreign.count) cases prove another family's contract")
     }
 
+    /// EVERY VIEW STANDS ALONE ON A PAGE: the family of each element wearing the View tier proves the host stands it
+    /// in a window by itself, laid out at a size - what says the host makes it at all.
+    func testEveryViewsFamilyStandsItAloneOnAPage() {
+        let views = LibraryContracts.elements.filter { element in
+            element.tiers.contains { ObjectIdentifier($0) == ObjectIdentifier(ViewContract.self) }
+                || element.worn.contains { ObjectIdentifier($0) == ObjectIdentifier(ViewContract.self) }
+        }
+        XCTAssertGreaterThanOrEqual(views.count, 20, "almost no element wears the View tier")
+        let alone = views.map { $0.name }.filter { name in
+            !(Families.all.first { $0.name == name }?.cases.contains { $0.name.hasPrefix("standsAlone") } ?? false)
+        }
+        XCTAssertEqual(alone, [], "these views' families never stand them alone on a page")
+    }
+
     /// Every case a family holds covers something, and has a name no other case of the family has.
     func testEveryCaseCoversSomethingUnderANameOfItsOwn() {
         for family in Families.all {

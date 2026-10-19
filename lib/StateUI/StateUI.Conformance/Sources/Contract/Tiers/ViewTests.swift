@@ -48,18 +48,12 @@
                 .verticalAlignment(.start)
             }
             s.settle { !frames.values.isEmpty }
-            for time in stride(from: 16.0, through: 400, by: 16) {
-                clock.now = time
-                s.frame()
-            }
+            s.frames(of: clock, until: 400)
             let before = frames.values.last ?? []
 
             try s.perform(.scroll(to: Point(0, 200)), on: s.element("scroller"))
             s.turn()
-            for time in stride(from: 416.0, through: 800, by: 16) {
-                clock.now = time
-                s.frame()
-            }
+            s.frames(of: clock, until: 800)
             let moved = FrameReport.inWindow(before, movedUp: 200)
             s.settle { frames.values.last.map(FrameReport.inWindow) == moved }
 
@@ -88,18 +82,12 @@
                 .verticalAlignment(.start)
             }
             s.settle { !frames.values.isEmpty }
-            for time in stride(from: 16.0, through: 400, by: 16) {
-                clock.now = time
-                s.frame()
-            }
+            s.frames(of: clock, until: 400)
             let before = frames.values.last ?? []
 
             try s.perform(.scroll(to: Point(0, 100)), on: s.element("list"))
             s.turn()
-            for time in stride(from: 416.0, through: 800, by: 16) {
-                clock.now = time
-                s.frame()
-            }
+            s.frames(of: clock, until: 800)
             let moved = FrameReport.inWindow(before, movedUp: 100)
             s.settle { frames.values.last.map(FrameReport.inWindow) == moved }
 

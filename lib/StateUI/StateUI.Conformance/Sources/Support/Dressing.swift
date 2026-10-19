@@ -53,10 +53,10 @@ public struct Hear<Owner: Contract, Value: HostRepresentable & Sendable>: Worn {
     public let event: ElementEvent<Owner, Value>
 
     /// What hears it.
-    public let handler: @MainActor (Value) async throws -> Void
+    public let handler: @MainActor (Value) throws -> Void
 
     /// `event` heard by `handler`.
-    public init(_ event: ElementEvent<Owner, Value>, _ handler: @escaping @MainActor (Value) async throws -> Void) {
+    public init(_ event: ElementEvent<Owner, Value>, _ handler: @escaping @MainActor (Value) throws -> Void) {
         self.event = event
         self.handler = handler
     }
@@ -64,7 +64,7 @@ public struct Hear<Owner: Contract, Value: HostRepresentable & Sendable>: Worn {
     @MainActor
     public func worn<Element: ModifiableElement>(by element: Element) -> Element where Element.Modified == Element {
         let handler = handler
-        return element.onEvent(event, gate: .none) { value in try await handler(value) }
+        return element.onEvent(event) { value in try handler(value) }
     }
 }
 
@@ -76,12 +76,12 @@ where First: HostRepresentable & Sendable, Second: HostRepresentable & Sendable,
     public let event: ElementEvent<Owner, (First, Second, Third)>
 
     /// What hears it.
-    public let handler: @MainActor (First, Second, Third) async throws -> Void
+    public let handler: @MainActor (First, Second, Third) throws -> Void
 
     /// `event` heard by `handler`.
     public init(
         _ event: ElementEvent<Owner, (First, Second, Third)>,
-        _ handler: @escaping @MainActor (First, Second, Third) async throws -> Void
+        _ handler: @escaping @MainActor (First, Second, Third) throws -> Void
     ) {
         self.event = event
         self.handler = handler
@@ -90,7 +90,7 @@ where First: HostRepresentable & Sendable, Second: HostRepresentable & Sendable,
     @MainActor
     public func worn<Element: ModifiableElement>(by element: Element) -> Element where Element.Modified == Element {
         let handler = handler
-        return element.onEvent(event, gate: .none) { first, second, third in try await handler(first, second, third) }
+        return element.onEvent(event) { first, second, third in try handler(first, second, third) }
     }
 }
 
@@ -101,17 +101,17 @@ public struct HearDone<Owner: Contract>: Worn {
     public let event: ElementEvent<Owner, Void>
 
     /// What hears it.
-    public let handler: @MainActor () async throws -> Void
+    public let handler: @MainActor () throws -> Void
 
     /// `event` heard by `handler`.
-    public init(_ event: ElementEvent<Owner, Void>, _ handler: @escaping @MainActor () async throws -> Void) {
+    public init(_ event: ElementEvent<Owner, Void>, _ handler: @escaping @MainActor () throws -> Void) {
         self.event = event
         self.handler = handler
     }
 
     public func worn<Element: ModifiableElement>(by element: Element) -> Element where Element.Modified == Element {
         let handler = handler
-        return element.onEvent(event, gate: .none) { try await handler() }
+        return element.onEvent(event) { try handler() }
     }
 }
 

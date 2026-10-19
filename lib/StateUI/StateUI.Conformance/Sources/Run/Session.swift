@@ -79,6 +79,12 @@
         return element
     }
 
+    /// Whether the element the page gave the id `id` stands shown; not where the page holds none.
+    public func isShown(_ id: some Hashable) throws -> Bool {
+        guard let shown = try? element(id) else { return false }
+        return try held(VisualElementContract.isVisible, on: shown) == true
+    }
+
     /// The entry of `identity` in the ItemsView `list`, built for a cell the platform holds.
     /// - Throws: where the platform holds no cell of it.
     public func item(_ identity: String, of list: MountedElement) throws -> MountedElement {
@@ -154,12 +160,14 @@
 
     /// Whether `element` holds the keyboard.
     public func focused(_ element: MountedElement) throws -> Bool {
-        try driven { try driver.focused(element) }
+        note("read the focus of \(element.type.name)", element: element.type.name)
+        return try driven { try driver.focused(element) }
     }
 
     /// Whether a press at `point` of `element` reaches it, or what stands in it.
     public func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
-        try driven { try driver.reaches(element, at: point) }
+        note("read what reaches \(element.type.name)", element: element.type.name)
+        return try driven { try driver.reaches(element, at: point) }
     }
 
     /// Whether assistive technology meets `element` as a heading, whatever its level.
@@ -210,7 +218,8 @@
 
     /// The colour `element` shows at `point` of its own, where StateUI draws it; nil where it shows nothing.
     public func color(of element: MountedElement, at point: Point) throws -> ShownColor? {
-        try driven { try driver.color(of: element, at: point).map(ShownColor.init) }
+        note("read the colour of \(element.type.name)", element: element.type.name)
+        return try driven { try driver.color(of: element, at: point).map(ShownColor.init) }
     }
 
     /// Whether `element` shows `color` at `point` of its own, as a screen shows a colour StateUI draws.
@@ -222,7 +231,8 @@
     /// The colours `element` shows at each of `points` of its own, read at once; nil where it shows nothing.
     /// Design: docs/design/host/conformance.md#a-colour-drawn
     public func colors(of element: MountedElement, at points: [Point]) throws -> [ShownColor?] {
-        try driven { try driver.colors(of: element, at: points).map { $0.map(ShownColor.init) } }
+        note("read the colour of \(element.type.name)", element: element.type.name)
+        return try driven { try driver.colors(of: element, at: points).map { $0.map(ShownColor.init) } }
     }
 
     /// Whether `element` shows `color` at each of `points` of its own, read at once.
@@ -233,7 +243,8 @@
 
     /// Where `element` stands in its window, as the toolkit placed it.
     public func place(of element: MountedElement) throws -> Rect {
-        try driven { try driver.place(of: element) }
+        note("read where \(element.type.name) stands", element: element.type.name)
+        return try driven { try driver.place(of: element) }
     }
 
     /// What the host wrote to its log.
@@ -290,19 +301,17 @@
         if try !done() { ranOut(file: file, line: line) }
     }
 
-    /// What the driver could not do last, though the case let it pass.
+    /// What the driver could not do while the case waited last.
     private var cannot: DriverCannot?
 
-    /// What a wait ran out on that the driver could not read: the case ends as that.
+    /// What the driver could not do first, though the case let it pass: a case that passes else ends as that.
     private(set) var unmet: DriverCannot?
 
-    /// A wait ran out: on what the driver could not do while it waited, else on what never came.
+    /// A wait ran out: on what the driver could not do while it waited, which the case ends as, else on what never
+    /// came.
     private func ranOut(file: StaticString, line: UInt) {
-        if let cannot {
-            unmet = unmet ?? cannot
-        } else {
-            fail("what the case waited for never came", file: file, line: line)
-        }
+        guard cannot == nil else { return }
+        fail("what the case waited for never came", file: file, line: line)
     }
 
     /// What `read` answers of the driver; what the driver cannot do is kept, then thrown.
@@ -311,6 +320,7 @@
             return try read()
         } catch let cannot as DriverCannot {
             self.cannot = cannot
+            unmet = unmet ?? cannot
             throw cannot
         }
     }
@@ -318,6 +328,14 @@
     /// One turn of the pump: the only way a case waits to see that nothing happens.
     public func turn() {
         driver.turn()
+    }
+
+    /// Display frames every 16 ms of `clock` - the display's own pace - while it stands before `end` milliseconds.
+    public func frames(of clock: TestClock, until end: Double) {
+        while clock.now < end {
+            clock.now += 16
+            driver.frame()
+        }
     }
 
     /// One display frame at the clock's time.

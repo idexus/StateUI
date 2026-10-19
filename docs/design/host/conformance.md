@@ -18,9 +18,12 @@ look: it is what executing the contract DOES.
 A case asserts effects of executing the contract: a state written, a handler
 heard once or not at all, which choice, tab or page is selected or shown, a
 value kept inside its range, words cut to their bound, what holds the focus,
-what a press reaches, what is let go. Never a pixel, a colour, a font, a
-native widget's kind or an exact place: those belong to the host's own tests,
-beside the native API they prove.
+what a press reaches, what is let go. Never a look the platform decides - a
+native widget's pixels, its font, its kind, where the toolkit puts its own
+parts: those belong to the host's own tests, beside the native API they
+prove. What StateUI decides itself a case reads as an effect: the place its
+layout gives a view, and the colours of what it draws, which hold no native
+value to read ([a drawing read by its colours](#a-drawing-read-by-its-colours)).
 
 ## A case
 

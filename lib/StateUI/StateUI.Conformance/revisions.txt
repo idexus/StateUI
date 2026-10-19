@@ -15,17 +15,17 @@
 TextEditor 3
 SplitView 6
 android TextAlignmentElement 2
-appkit TextInput 2
+appkit TextInput 3
 android TextInput 2
 ToolbarItem 4
 ToolbarItemGroup 3
-TitleView 2
+TitleView 3
 MenuBar 3
 MenuItem 3
 Window 6
 Scene 2
-ModalStack 5
-Overlay 4
+ModalStack 6
+Overlay 5
 BarElement 4
 NavigationStack 3
 uikit WebView 2
@@ -35,7 +35,7 @@ Button 8
 appkit Button 2
 uikit Button 2
 winui Button 3
-MenuItemElement 3
+MenuItemElement 4
 FontElement 3
 winui MenuItemElement 2
 winui PageElement 2
@@ -49,7 +49,7 @@ View 7
 VisualElement 14
 Shape 5
 BorderElement 10
-TextInput 4
+TextInput 5
 Application 5
 TextSpan 4
 Divider 4
@@ -84,7 +84,7 @@ CheckBox 2
 Ellipse 2
 Grid 2
 HStack 2
-ItemsView 2
+ItemsView 3
 Line 2
 Map 2
 Path 2

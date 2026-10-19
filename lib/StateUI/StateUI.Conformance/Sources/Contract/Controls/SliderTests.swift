@@ -115,10 +115,7 @@
                 let slider = try s.element("slider")
 
                 try s.perform(.activate, on: s.element("full"))
-                for time in stride(from: 16.0, through: 2_000, by: 16) {
-                    clock.now = time
-                    s.frame()
-                }
+                s.frames(of: clock, until: 2_000)
 
                 s.expect(try s.held(SliderContract.value, on: slider), 1, within: 1e-9, "the thumb travelled to it")
                 s.turn()

@@ -115,22 +115,14 @@
                 }
                 s.settle { handed.values.last == 0 }
 
-                var time = 0.0
-                @MainActor func frames(until end: Double) {
-                    while time < end {
-                        time += 16
-                        clock.now = time
-                        s.frame()
-                    }
-                }
                 // The handler runs as the host runs a run's first steps; the clock waits for it.
                 try s.perform(.activate, on: s.element("go"))
                 s.settle { phase.wrappedValue == 4 }
-                frames(until: 200)
+                s.frames(of: clock, until: 200)
                 let between = handed.values.last ?? 0
                 s.expect(between > 0 && between < 4, true, "on its way half its time in, never at the destination at once")
 
-                frames(until: 1_000)
+                s.frames(of: clock, until: 1_000)
                 s.settle { arrived.values == [true] }
                 s.expect(handed.values.last, 4, "where the program sent it")
                 s.expect(arrived.values, [true], "and a move of it awaited until it arrived")
@@ -162,28 +154,20 @@
                 }
                 s.settle { handed.values.last == Orbit() }
 
-                var time = 0.0
-                @MainActor func frames(until end: Double) {
-                    while time < end {
-                        time += 16
-                        clock.now = time
-                        s.frame()
-                    }
-                }
                 try s.perform(.activate, on: s.element("turn"))
                 s.settle { phase.wrappedValue.turn == 4 }
-                frames(until: 200)
+                s.frames(of: clock, until: 200)
                 try s.perform(.activate, on: s.element("zoom"))
                 s.settle { phase.wrappedValue.zoom == 2 }
 
                 // The turn's 400 ms end, the zoom sent halfway through it still on its way.
-                frames(until: 432)
+                s.frames(of: clock, until: 432)
                 s.settle { arrived.values == [true] }
                 s.expect(handed.values.last?.turn, 4, "the turn arrived when it was due, the zoom sent meanwhile")
                 s.expect(handed.values.last.map { $0.zoom > 1 && $0.zoom < 2 }, true, "the zoom on its own way")
                 s.expect(arrived.values, [true], "and the turn's move awaited to its end")
 
-                frames(until: 1_000)
+                s.frames(of: clock, until: 1_000)
                 s.expect(handed.values.last, Orbit(turn: 4, zoom: 2), "both where they were sent")
             },
             ConformanceCase("theHandMovesTheRunAndRestsItOnTheNearestTarget", proves: [
