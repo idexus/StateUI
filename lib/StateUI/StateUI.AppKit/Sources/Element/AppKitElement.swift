@@ -138,11 +138,7 @@ final class AppKitElement: NSObject, NativeElement {
     /// element closes over it the way a patch moves its children.
     func crossVisibility() {
         guard view != nil else { return }
-        element.crossVisibility(self) { [weak self] in
-            guard let view = self?.view else { return }
-            (view.superview as? AppKitTravellingLayout)?.places.patchArrived()
-            view.invalidateMeasurements()
-        }
+        element.crossVisibility(self, closingIn: (view?.superview as? AppKitTravellingLayout)?.places)
     }
 
     /// Shows, hides and fades the view as the tree says - kept visible and

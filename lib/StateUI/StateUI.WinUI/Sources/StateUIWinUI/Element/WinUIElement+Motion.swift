@@ -32,10 +32,7 @@ extension WinUIElement {
     /// Crosses a change of visibility by the host layer's rule; as a fade out ends, the layout closes over it.
     func crossVisibility() {
         guard let view else { return }
-        element.crossVisibility(view) { [weak self] in
-            (self?.layoutParent?.view as? WinUITravellingLayout)?.places.patchArrived()
-            self?.layoutParent?.arrangeChildren()
-        }
+        element.crossVisibility(view, closingIn: (layoutParent?.view as? WinUITravellingLayout)?.places)
     }
 }
 

@@ -37,9 +37,8 @@ extension WebElement: FrameReporter {
         if let split = view as? WebSplitView { element.reportSidebarOverlays(split.overlays, in: host.runtime) }
     }
 
-    /// The element whose layout places this one: the nearest above it with a view.
+    /// The element whose layout places this one: the nearest above it with a view (`MountedElement.layoutParent`).
     var layoutParent: WebElement? {
-        guard let parent else { return nil }
-        return parent.view != nil ? parent : parent.layoutParent
+        element.layoutParent?.native as? WebElement
     }
 }
