@@ -108,7 +108,12 @@ on, and the host takes the check off each other button of its set, each
 reporting that it is off, in one transaction. GTK draws a check button as a
 radio only in a group, and a group takes its other members' checks away
 itself - the one that lost would be heard twice - so each radio button stands
-in a group with a partner of its own that is never shown.
+in a group with a partner of its own that is never shown. Joined in GTK's own
+group by their set instead, the buttons fight the tree: a check the tree
+writes back - a constant `isOn(true)` - GTK takes from another button the
+tree says is on, whose check the next render writes back, without end. The
+partner is how GTK draws a radio while the check stays StateUI's; a picker's
+radio buttons stand in one group of their own, as a picker holds one choice.
 
 ## Nothing the program writes is heard
 
