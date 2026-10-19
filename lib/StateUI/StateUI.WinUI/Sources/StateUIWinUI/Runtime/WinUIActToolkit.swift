@@ -66,7 +66,7 @@ final class WinUIActToolkit: ActToolkit {
             question.title, question.message, question.accept, question.cancel, question.destruction,
             question.placeholder, question.words,
         ]
-        let traits = InputTraits(spellChecked: true, predicted: true, purpose: question.purpose)
+        let traits = question.traits
         WinUIStrings.withCStrings(words.map { $0 ?? "" } + question.choices) { pointers in
             func at(_ index: Int) -> UnsafePointer<CChar>? { words[index] == nil ? nil : pointers[index] }
             Array(pointers.dropFirst(words.count)).withUnsafeBufferPointer { offered in
