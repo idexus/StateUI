@@ -90,7 +90,7 @@ final class WebQuestion {
 
     private func addField(_ question: HostQuestion) {
         let field = WebTextInputView(.field)
-        field.setTraits(InputTraits(spellChecked: true, predicted: true, purpose: question.purpose))
+        field.setTraits(question.traits)
         field.setPlaceholder(question.placeholder)
         field.attribute("maxlength", question.maximumLength.map(String.init))
         WebRelay.setValue(field.node, question.words)
