@@ -38,7 +38,7 @@ not, CSS `px` and `pango_attr_size_new_absolute`. A StateUI point is a pixel
 at 96 dots an inch, so 20 is 15 typographic points. Words that do not scale
 and are given no size stand at the desktop font's size before its scale
 (`GTKEnvironment.fontSize`). A CSS class setting `-gtk-dpi` on one widget
-changed nothing GTK 4.14 measures; the driver doubles `gtk-xft-dpi` itself.
+changes nothing GTK 4.14 measures, so the driver doubles `gtk-xft-dpi` itself.
 
 ## A button's box
 

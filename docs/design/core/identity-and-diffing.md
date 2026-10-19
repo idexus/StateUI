@@ -115,10 +115,10 @@ matching likewise (`identified`, `arranged`, `ChildMatching`); what stays on
 the stack across the recursion is little more than pointers. Every step is
 `@inline(never)`, so an optimizer folding it back cannot grow the frame
 again. The reason is a debug build, where every local of a function keeps a
-slot of its own: one function doing all of an element's work held some
-forty kilobytes a level, and a WebAssembly Gallery overflowed a tablet
-browser's stack - far less than a desktop's - some fifteen levels down,
-before its first frame (`RangeError: Maximum call stack size exceeded`).
+slot of its own: one function doing all of an element's work holds some
+forty kilobytes a level, and a tablet browser's stack - far less than a
+desktop's - overflows some fifteen levels down a WebAssembly Gallery, before
+its first frame (`RangeError: Maximum call stack size exceeded`).
 `DifferStackTests` holds a level under eight kilobytes.
 
 ## Ids are never reused

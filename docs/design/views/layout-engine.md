@@ -517,9 +517,9 @@ the fingers let go at once are each NAMED where they rest before any goes
 on, and the phase is sent on no journey: a journey of the whole phase would
 have the host walk an axis the hand held - which nothing named while it held
 it, an axis with no snaps - from where the host last had it, the value
-snapped meanwhile left to the host's walk, so the axis let go still leapt
-back to where the hand took it and came again (a pan let go across, its
-down axis, every host).
+snapped meanwhile left to the host's walk, so the axis let go would leap
+back to where the hand took it and come again (a pan let go across, its
+down axis, on every host).
 
 Under the hand only the hand's axes are named - each on the nearest of its
 snaps - so an axis the hand does not move never jumps as the hand passes.

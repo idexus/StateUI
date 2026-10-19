@@ -88,8 +88,8 @@ layout engine's run passes halfway between them - sets its `subviews` in the
 new order (`ZStackArithmetic.drawingOrder`), which moves each child it keeps
 without taking it out. A child taken out and added again leaves the window
 for a moment, and AppKit cancels a gesture under way on it: a pointer drag of
-the scroller lying over the cards ended at the first swap, and the run went
-back to the target it had left.
+the scroller lying over the cards would end at the first swap, and the run go
+back to the target it left.
 
 ## Scroll bars
 

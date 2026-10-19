@@ -51,8 +51,8 @@ opaque colour (`WebWindowController.pageColour`): `--stateui-page` on the
 document, which `body` and the loading screen wear before the page's own
 surface. Safari on an iPhone - and a page added to the home screen - takes
 the colour above the page and around its bars ONCE, at the first paint, from
-what stands there then; the window's colour comes with the program after it
-(styles-states-theme notes, `THE COLOUR UNDER SAFARI'S BARS`). So the relay
+what stands there then; the window's colour comes with the program after it.
+So the relay
 keeps the colour in the viewer's browser (`localStorage`, one an appearance:
 `stateui.page-colour.light` and `.dark`, as the system's stood when it was
 written), and `index.html` wears it before anything is drawn: from the second

@@ -45,7 +45,7 @@ turned by the hand while the program moves its zoom keeps both journeys
 whole. A run cut short answers its waiter false once and travels on with the
 lanes it keeps, its animation narrowed to them; the laws work lane by lane,
 so narrowing changes no frame. A stop and a user's take end every run. A
-write of every lane is one run, as a whole value always was, and the channel
+write of every lane is one run, as a whole value's write is, and the channel
 says itself once a frame however many runs moved.
 
 ## Described motion

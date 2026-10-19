@@ -202,7 +202,7 @@ an unknown node as unsupported, and an unknown property has no effect. A token
 alone is not an implementation.
 
 The human-readable inventory and implementation matrix for AppKit, UIKit,
-GTK 4, Android Views, WinUI 3, and Web are maintained in
+Android Views, WinUI 3, GTK 4 and Web are maintained in
 [Platform contract](../platform-contract.md), and member by member in the
 [control dictionary](../controls/README.md). A check mark is evidence about a
 host implementation, not merely the existence of a Swift declaration.

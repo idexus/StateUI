@@ -105,8 +105,8 @@ not by a walk - and the parents their moves ask to arrange, up through
 elements with no view of their own; a parent whose child's `zIndex` moved
 draws its children in order again. A frame costs what it touches, however
 large the tree: a walk of every element on every frame, a layered one's
-children compared each time, was most of a frame's work, and a tablet's
-browser could not keep up.
+children compared each time, would be most of a frame's work, more than a
+tablet's browser keeps up with.
 
 The cycle's time never runs back. The display stamps each frame with the time
 of its last refresh, and a turn between frames - a report, a handler, the
@@ -151,10 +151,10 @@ The acts come last, so an act lands on the interface its handler just changed.
 
 The cycle a render asks for runs in the same turn, once, before anything is
 drawn: a layout engine's run of the views the render put in stands with them.
-Left to the next frame, the toolkit drew the new views by a run worked out for
-the old - each placed by position, so a view put in at the front stood where
-the one now after it was, and the last stood in no place at all, drawn by its
-own values. A cycle it wakes in turn waits for the frame, so a turn ends.
+Left to the next frame, the toolkit would draw the new views by a run worked
+out for the old - each placed by position, so a view put in at the front
+would stand where the one now after it is, and the last in no place at all,
+drawn by its own values. A cycle it wakes in turn waits for the frame, so a turn ends.
 
 `Pump` is that turn, once for every runtime. A toolkit gives the runtime one
 `HostPresenter`: what a render changed around the tree - the windows, their
@@ -181,8 +181,8 @@ probes). Unprobed, a stage costs one test of a static.
 
 Where the platform's loop is neither Apple's nor the browser's, a host says at
 its start how a turn is posted onto its UI thread from any thread
-(`CoreLink.postTurns`): WinUI through its relay, GTK through GLib, Android onto
-its looper. The core posts one through it whenever work comes - a state written
+(`CoreLink.postTurns`): Android onto its looper, WinUI through its relay, GTK
+through GLib. The core posts one through it whenever work comes - a state written
 or an act sent on the UI thread, a job queued from any thread, a handler's
 resume or a post - on the thread the work came from; no thread of the host's
 waits. One turn is posted until its drain begins. The turn itself is the
@@ -287,10 +287,11 @@ down through small frames: `apply` takes the patch's own values in one step
 (`received`), walks the children (`childrenApplied`, `arrange`, `mounted` -
 loops, no closures held across them), and tells the native half in another
 (`settled`), what crosses the children kept behind one reference
-(`Applying`). A WebAssembly Gallery in a debug build overflowed a tablet
-browser's stack - far less than a desktop's - before its first frame, the
-differ first and the mount next; `MountStackTests` holds a level under eight
-kilobytes. A WebAssembly start that fails takes the loading screen away, so
+(`Applying`): a debug build keeps a slot for every local of a function, and a
+tablet browser's stack - far less than a desktop's - overflows a WebAssembly
+Gallery before its first frame where one function does all of a level's
+work, in the differ as in the mount; `MountStackTests` holds a level under
+eight kilobytes. A WebAssembly start that fails takes the loading screen away, so
 its reason stands on the page rather than a load with no end.
 
 ## After a layout pass
@@ -334,7 +335,7 @@ scroller still says what it did on the display's frame. AppKit does the
 same in each room's layout pass - the window's content, a split view's
 pane - laying the page out, letting it say, and laying it out again where
 anything did (`layOutReporting`): a split view sliding its sidebar lays out
-only its panes, and a report left to the display's next frame stood the
+only its panes, and a report left to the display's next frame would stand the
 page's content in the last frame's width every other frame. GTK lets it say
 in its frame clock's layout phase, after the window's own layout, and the
 clock lays out again what that changed before it paints.
@@ -512,9 +513,9 @@ press without Alt goes on as before. Where no trackpad tells a rotation -
 any mouse, and Chrome and Firefox on a Mac, which tell a trackpad's pinch as
 a wheel and its turn as nothing - this is the rotation's road. Each host
 reads Alt as its toolkit holds it: AppKit's event's ⌥ (a recognizer a pan
-waits on), GTK's controller state (`GDK_ALT_MASK`, a drag of its own claimed
-or denied at its start), WinUI's pointer's key modifiers (the relay's
-`mirrored`), the Web's pointer event's `altKey`.
+waits on), WinUI's pointer's key modifiers (the relay's `mirrored`), GTK's
+controller state (`GDK_ALT_MASK`, a drag of its own claimed or denied at its
+start), the Web's pointer event's `altKey`.
 
 ## A swipe
 
