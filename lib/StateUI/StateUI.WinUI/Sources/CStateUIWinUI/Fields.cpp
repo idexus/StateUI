@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <unordered_set>
 #include <vector>
 
 #include <winrt/Windows.System.h>
@@ -22,14 +23,26 @@ using namespace stateui;
 namespace media = winrt::Microsoft::UI::Xaml::Media;
 
 namespace {
-    /// Tells the view `view` of each change of the box's words. TextChanging, not TextChanged: it is raised in the
-    /// write that makes it, so a program's write is known as one, where TextChanged comes later.
+    /// The views whose box an input method is composing in now.
+    std::unordered_set<int64_t> composing;
+
+    /// Tells the view `view` of each change of the box's words, and whether an input method is composing them - told
+    /// again as it commits them. TextChanging, not TextChanged: it is raised in the write that makes it, so a
+    /// program's write is known as one, where TextChanged comes later.
     void hearWords(controls::TextBox const &box, int64_t view) {
         box.TextChanging(guarded("handling TextChanging",
             [view](controls::TextBox const &sender, controls::TextBoxTextChangingEventArgs const &args) {
             if (!args.IsContentChanging()) return;
             auto bytes = winrt::to_string(sender.Text());
-            callbacks.textChanged(view, bytes.c_str());
+            callbacks.textChanged(view, bytes.c_str(), composing.count(view) > 0);
+        }));
+        box.TextCompositionStarted(guarded("handling TextCompositionStarted",
+            [view](controls::TextBox const &, controls::TextCompositionStartedEventArgs const &) { composing.insert(view); }));
+        box.TextCompositionEnded(guarded("handling TextCompositionEnded",
+            [view](controls::TextBox const &sender, controls::TextCompositionEndedEventArgs const &) {
+            composing.erase(view);
+            auto bytes = winrt::to_string(sender.Text());
+            callbacks.textChanged(view, bytes.c_str(), false);
         }));
     }
 
@@ -113,7 +126,7 @@ extern "C" StateUIObjectRef stateui_winui_password_make(int64_t view) {
                                       controls::PasswordBoxPasswordChangingEventArgs const &args) {
             if (!args.IsContentChanging()) return;
             auto bytes = winrt::to_string(sender.Password());
-            callbacks.textChanged(view, bytes.c_str());
+            callbacks.textChanged(view, bytes.c_str(), false);
         }));
         hearEnter(field, view);
         return detach(field);
@@ -145,7 +158,7 @@ extern "C" StateUIObjectRef stateui_winui_search_make(int64_t view) {
             [view](controls::AutoSuggestBox const &sender, controls::AutoSuggestBoxTextChangedEventArgs const &args) {
             if (args.Reason() != controls::AutoSuggestionBoxTextChangeReason::UserInput) return;
             auto bytes = winrt::to_string(sender.Text());
-            callbacks.textChanged(view, bytes.c_str());
+            callbacks.textChanged(view, bytes.c_str(), false);
         }));
         search.QuerySubmitted(guarded("handling QuerySubmitted",
             [view](controls::AutoSuggestBox const &, controls::AutoSuggestBoxQuerySubmittedEventArgs const &) {

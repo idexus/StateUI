@@ -63,9 +63,9 @@ enum WinUICallbacks {
             valueChanged: { view, value in
                 MainActor.assumeIsolated { (WinUIView.find(view) as? WinUIValueView)?.onValueChanged?(value) }
             },
-            textChanged: { view, utf8 in
+            textChanged: { view, utf8, composing in
                 let text = utf8.map { String(cString: $0) } ?? ""
-                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUITextInputView)?.typed(text) }
+                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUITextInputView)?.typed(text, composing: composing) }
             },
             submitted: { view in
                 MainActor.assumeIsolated { (WinUIView.find(view) as? WinUITextInputView)?.onSubmitted?() }

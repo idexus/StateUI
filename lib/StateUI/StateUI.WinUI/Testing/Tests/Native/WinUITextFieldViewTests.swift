@@ -61,6 +61,25 @@ final class WinUITextFieldViewTests: XCTestCase {
         }
     }
 
+    /// Words an input method is composing stand whole past the field's bound - cut under it, the composition would be
+    /// lost - and are cut once it commits them.
+    func testWordsAnInputMethodComposesAreCutOnceCommitted() throws {
+        try onUIThread {
+            let words = State(wrappedValue: "")
+            let host = WinUIRenderer.running { TextField(words.projectedValue).maximumLength(3) }
+            let field = try XCTUnwrap(host.views(WinUITextFieldView.self).first)
+
+            WinUICallbacks.table.textChanged(field.number, "かんじか", true)
+            host.settle { words.wrappedValue == "かんじか" }
+            XCTAssertEqual(words.wrappedValue, "かんじか", "whole while composed")
+
+            WinUICallbacks.table.textChanged(field.number, "漢字か", false)
+            WinUICallbacks.table.textChanged(field.number, "漢字かな", false)
+            host.settle { words.wrappedValue == "漢字か" }
+            XCTAssertEqual(words.wrappedValue, "漢字か", "cut once committed")
+        }
+    }
+
     /// A field's drag stands on the box in its place - dragged, taking drops - and the relay lets its offer go
     /// once the field leaves.
     func testAFieldsDragStandsOnTheBoxInItsPlace() throws {

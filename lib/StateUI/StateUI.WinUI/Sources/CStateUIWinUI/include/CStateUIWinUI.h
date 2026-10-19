@@ -327,8 +327,9 @@ typedef struct {
     /// A slider's or a stepper's value moved.
     void (*valueChanged)(int64_t view, double value);
 
-    /// A field's words changed, all of them handed over in UTF-8.
-    void (*textChanged)(int64_t view, char const *utf8);
+    /// A field's words changed, all of them handed over in UTF-8 - `composing` while an input method is composing
+    /// them, told again as it commits them.
+    void (*textChanged)(int64_t view, char const *utf8, bool composing);
 
     /// A single-line field's Enter, or a search box's query.
     void (*submitted)(int64_t view);

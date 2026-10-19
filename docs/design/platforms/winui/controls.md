@@ -283,7 +283,11 @@ them.
 `maximumLength` counts characters, as the contract does - WinUI's own bound
 counts UTF-16 units, so the host keeps none there. The field keeps the first
 characters that fit and writes them back, as the program, when typing goes
-past the bound. A `textCase` puts every letter typed in its case through the
+past the bound - but not while an input method is composing the words:
+written under it, the composition is lost. The relay hears
+`TextCompositionStarted` and `TextCompositionEnded`, tells the words as
+composing meanwhile, and tells them again as it commits them, when the bound
+cuts them (`InputWords.held`). A `textCase` puts every letter typed in its case through the
 text box's `CharacterCasing`, and the host writes the program's words in it
 too. An editor's `TextBox` ends each line with a carriage
 return, where StateUI's words end it with a line feed: the host reads and

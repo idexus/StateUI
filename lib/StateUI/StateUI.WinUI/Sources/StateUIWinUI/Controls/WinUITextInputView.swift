@@ -66,12 +66,13 @@ class WinUITextInputView: WinUIView {
         stateui_winui_field_select(handle, Int32(clamping: units.start), Int32(clamping: units.length))
     }
 
-    /// The words changed: kept within `maximumLength`, then handed on - a program's own write says nothing.
-    func typed(_ text: String) {
+    /// The words changed: kept within `maximumLength` - whole while an input method is `composing` them - then
+    /// handed on; a program's own write says nothing. The box puts them in its case itself.
+    func typed(_ text: String, composing: Bool) {
         guard !ProgramWrite.isWriting else { return }
 
         var kept = Self.lines(text)
-        if let cut = InputWords.cut(kept, toBound: maximumLength) {
+        if let cut = InputWords.held(kept, in: nil, toBound: maximumLength, composing: composing) {
             kept = cut
             ProgramWrite.perform { setText(cut) }
         }
