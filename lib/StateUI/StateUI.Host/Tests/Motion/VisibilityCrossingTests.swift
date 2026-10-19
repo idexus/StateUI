@@ -106,15 +106,6 @@ final class VisibilityCrossingTests: XCTestCase {
     }
 }
 
-/// A clock whose time the test sets.
-@MainActor
-private final class WoundClock: FrameClock {
-    var time = 0.0
-    lazy var now: () -> Double = { [unowned self] in self.time }
-    var held = false
-    var onFrame: ((Double) -> Void)?
-}
-
 /// A view that says what it was told.
 @MainActor
 private final class Faded: FadingView {

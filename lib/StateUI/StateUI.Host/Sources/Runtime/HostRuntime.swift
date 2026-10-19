@@ -93,7 +93,10 @@
         pump.presenter = self
         displayCycle.presenter = self
         tree.tellPhase = { [weak pump] handler in pump?.handlers.enqueuePhase(handler) }
-        tree.left = { [weak self] mount in self?.frames.forget(mount) }
+        tree.left = { [weak self] mount in
+            self?.frames.forget(mount)
+            self?.sidebarSlide.forget(mount)
+        }
         clock.onFrame = { [weak self] now in self?.displayCycle.frame(now: now) }
         layoutMotion.onStart = { [weak self] in self?.displayCycle.hold() }
         sidebarSlide.onStart = { [weak self] in self?.displayCycle.hold() }

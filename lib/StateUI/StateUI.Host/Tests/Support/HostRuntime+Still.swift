@@ -4,6 +4,15 @@
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 
+/// A clock a test winds by hand.
+@MainActor
+final class WoundClock: FrameClock {
+    var time = 0.0
+    var held = false
+    var onFrame: ((Double) -> Void)?
+    var now: () -> Double { { [unowned self] in time } }
+}
+
 /// A clock no display drives.
 @MainActor
 final class StillClock: FrameClock {

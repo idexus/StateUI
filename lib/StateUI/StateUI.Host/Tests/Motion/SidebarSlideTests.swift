@@ -107,4 +107,24 @@ final class SidebarSlideTests: XCTestCase {
             SidebarSlide.page(inPane: 80, width: 320, height: 600), Rect(x: -240, y: 0, width: 320, height: 600),
             "the page at its whole width, its trailing edge at the pane's")
     }
+
+    /// A split that leaves the tree takes its sidebar's slide with it: it stops where it stands and tells nothing
+    /// more, whatever host showed it.
+    func testASplitThatLeavesTakesItsSlide() throws {
+        let clock = WoundClock()
+        let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
+        var split = HostPatch(id: .manual("split"), type: .splitView)
+        split.children = .arranged([HostPatch(id: .manual("menu"), type: .page)])
+        runtime.tree.apply(split, complete: true)
+        let mount = try XCTUnwrap(runtime.tree.root?.mount)
+        var told: [Double] = []
+        runtime.sidebarSlide.slide(mount, from: 0, shown: true) { shown, _ in told.append(shown) }
+
+        runtime.tree.apply(HostPatch(id: .manual("label"), type: .text), complete: true)
+        told = []
+        clock.time = SidebarSlide.milliseconds / 2
+        runtime.displayCycle.frame(now: clock.time)
+
+        XCTAssertEqual(told, [], "the slide went with its split")
+    }
 }

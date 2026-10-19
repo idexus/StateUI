@@ -70,10 +70,4 @@
             rest(shown)
         }
     }
-
-    /// Ends a slide where it stands, as the split leaves the tree.
-    public func forget() {
-        slide.forget(mount)
-        target = nil
-    }
 }

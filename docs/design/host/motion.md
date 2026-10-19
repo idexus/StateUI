@@ -128,7 +128,9 @@ is a `SplitSlide`: the width its column last stood at, where it is going,
 and three steps a host fills in with its toolkit's calls - as it begins, at
 each frame the pane's width and the page's, and where it rests. A toggle
 asked while it slides turns it back from where it is going, not from where
-the toolkit last stood.
+the toolkit last stood. A split leaving the tree takes its slide with it:
+the tree tells the runtime the element left, and the slide stops where it
+stands, telling nothing more, whatever host showed it.
 
 ## Words at their destination
 

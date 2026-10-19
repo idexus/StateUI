@@ -268,15 +268,6 @@ private final class LaidOut: FrameReporter {
     }
 }
 
-/// A clock a test winds by hand.
-@MainActor
-private final class WoundClock: FrameClock {
-    var time = 0.0
-    var held = false
-    var onFrame: ((Double) -> Void)?
-    var now: () -> Double { { [unowned self] in time } }
-}
-
 /// A view that stands where it is placed.
 @MainActor
 private final class Placed: PlacedView {

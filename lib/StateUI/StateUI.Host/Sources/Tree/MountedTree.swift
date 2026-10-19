@@ -91,7 +91,8 @@
     /// Where a page's or a window's phase goes: the runtime's handlers, each rendered in its turn.
     var tellPhase: (Int32) -> Void = { _ in }
 
-    /// Who hears that the element of a mount left: the runtime's frame readers, which follow it no more.
+    /// Who hears that the element of a mount left: the runtime's frame readers, which follow it no more, and a split's
+    /// sidebar slide, which stops where it stands.
     var left: (UInt64) -> Void = { _ in }
 
     /// The runtime's line to the core.

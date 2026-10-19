@@ -189,7 +189,6 @@ final class WinUISplitView: WinUILayoutView {
     override func detach() {
         super.detach()
         onPresentationChanged = nil
-        slide?.forget()
         sidebar.detach()
     }
 }
