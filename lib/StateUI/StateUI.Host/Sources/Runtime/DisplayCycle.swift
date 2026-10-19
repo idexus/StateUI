@@ -45,6 +45,9 @@
     /// Design: docs/design/host/runtime.md#one-frame
     private var time = -Double.infinity
 
+    /// Whether the toolkit lays out the frame the cycle last ran at, whose time stands while it does.
+    private var layingOut = false
+
     /// The frame's batch: bound states' values, and moved properties per mounted element.
     private var states: [Int32: HostStateValue] = [:]
     private var properties: [UInt64: Set<Prop>] = [:]
@@ -122,9 +125,19 @@
         hold()
     }
 
-    /// `now`, or the cycle's latest time where `now` stands before it.
+    /// Runs `body` within the toolkit's layout pass of the frame the cycle last ran at: every turn it takes runs at
+    /// that frame's time, so what the pass says moves no animation on.
+    /// Design: docs/design/host/runtime.md#where-a-view-stands
+    public func inLayoutPass(_ body: () -> Void) {
+        let outer = layingOut
+        layingOut = true
+        defer { layingOut = outer }
+        body()
+    }
+
+    /// `now`, or the cycle's latest time where `now` stands before it or a layout pass holds the frame's.
     private func onward(_ now: Double) -> Double {
-        time = max(time, now)
+        if !layingOut || time == -.infinity { time = max(time, now) }
         return time
     }
 

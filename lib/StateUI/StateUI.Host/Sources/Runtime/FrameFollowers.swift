@@ -92,7 +92,7 @@
     @discardableResult
     public func reportLaidOut() -> Bool {
         guard moved else { return false }
-        runtime.performUserTransaction { reportEveryFrame() }
+        runtime.displayCycle.inLayoutPass { runtime.performUserTransaction { reportEveryFrame() } }
         return true
     }
 

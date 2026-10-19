@@ -115,6 +115,37 @@ final class DisplayCycleTests: XCTestCase {
         XCTAssertEqual(seen, seen.sorted(), "nothing slides back")
     }
 
+    /// What a toolkit's layout pass says takes no time: the pass lays out the frame the cycle last ran at, so what
+    /// it reports moves no travel on, though the runtime's clock went on. A slide stepped on there would narrow the
+    /// page again in the same pass, and its report step it on again, until the slide rests within one frame.
+    @MainActor
+    func testWhatALayoutPassSaysTakesNoTime() throws {
+        stateUIUseApp(ReadTravelApplication())
+        let clock = WoundClock()
+        let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let slider = try XCTUnwrap(runtime.tree.root?.first(id: .manual("slider")))
+        let up = try XCTUnwrap(runtime.tree.root?.first(id: .manual("up"))?.handler(.clicked))
+        let view = LaidOut(try XCTUnwrap(runtime.tree.root?.first(id: .manual("read"))), in: runtime)
+        runtime.frames.follow(view, order: 1, reads: true)
+
+        runtime.pump.dispatch(up)
+        clock.time = 100
+        runtime.displayCycle.frame(now: 100)
+        XCTAssertEqual(slider.number(.value) ?? .nan, 0.5, accuracy: 1e-9, "half way up")
+
+        clock.time = 150
+        view.width = 300
+        runtime.frames.laidOut()
+        XCTAssertTrue(runtime.frames.reportLaidOut(), "the layout pass said where the view stands")
+        XCTAssertEqual(slider.number(.value) ?? .nan, 0.5, accuracy: 1e-9, "the travel stands where the frame left it")
+
+        clock.time = 175
+        runtime.displayCycle.frame(now: 175)
+        XCTAssertEqual(slider.number(.value) ?? .nan, 0.875, accuracy: 1e-9, "and goes on on the display's next frame")
+    }
+
     /// A STATE AN ELEMENT WEARS HAS ITS CHANNEL from the moment it is worn, whatever its view reads: the host layer
     /// walks it and tells the core every frame - a layout engine's phase, which no view draws, included.
     @MainActor
@@ -190,6 +221,49 @@ private struct TravelPage: View {
             Button("Up").onClicked { level = 1 }.id("up")
             Button("Down").onClicked { level = 0.25 }.id("down")
         }
+    }
+}
+
+/// A slider travelling where a button sends its state, in a stack whose frame the page reads.
+private struct ReadTravelApplication: Application {
+    var body: some Scene {
+        WindowGroup { ReadTravelPage() }
+    }
+}
+
+private struct ReadTravelPage: View {
+    @State(motion: .eased(.milliseconds(200), .linear)) private var level = 0.0
+    @State private var room = Rect(0, 0, 0, 0)
+
+    var body: some View {
+        VStack {
+            VStack {
+                Slider($level).id("slider")
+                Button("Up").onClicked { level = 1 }.id("up")
+            }
+            .frame($room)
+            .id("read")
+        }
+    }
+}
+
+/// An element's view a test lays out by hand, saying where it stands.
+@MainActor
+private final class LaidOut: FrameReporter {
+    let element: MountedElement
+    unowned let runtime: HostRuntime
+    var width = 100.0
+
+    init(_ element: MountedElement, in runtime: HostRuntime) {
+        self.element = element
+        self.runtime = runtime
+    }
+
+    func reportFrame() {
+        let place = Rect(x: 0, y: 0, width: width, height: 50)
+        element.reportFrame(
+            MountedElement.frameNumbers(place: place, corner: Point(x: 0, y: 0), content: Point(x: 0, y: 0)),
+            in: runtime)
     }
 }
 

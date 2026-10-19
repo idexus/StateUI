@@ -345,6 +345,13 @@ room, a frame behind its width. GTK lets it say in its frame clock's layout
 phase, after the window's own layout, and the clock lays out again what that
 changed before it paints.
 
+A layout pass lays out the frame the cycle last ran at, and what it says runs
+at that frame's time (`DisplayCycle.inLayoutPass`), though the runtime's
+clock went on: a report moves no animation on. A slide stepped on there would
+narrow the page again within the pass, whose report would step it on again -
+the whole slide run out in one frame, the screen standing still until it
+rests.
+
 ## A scroller's movement
 
 The scrolling is the platform's: a drag, a throw, a wheel and a key move a
