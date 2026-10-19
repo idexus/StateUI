@@ -549,6 +549,17 @@ enum WebRelay {
         stateui_web_listen_appearance(listener)
     }
 
+    /// The user's locale as the browser has it, word by word (`WebEnvironment.locale`).
+    static var localeWords: [String] {
+        copyRead(length: stateui_web_locale_words()).split(separator: "\u{0}", omittingEmptySubsequences: false)
+            .map(String.init)
+    }
+
+    /// Calls `listener` whenever the user's languages change.
+    static func listenToLocale(_ listener: Int32) {
+        stateui_web_listen_locale(listener)
+    }
+
     /// Calls `listener` whenever the screen's density turns - a window moved to another screen, the page zoomed.
     static func listenToDensity(_ listener: Int32) {
         stateui_web_listen_density(listener)

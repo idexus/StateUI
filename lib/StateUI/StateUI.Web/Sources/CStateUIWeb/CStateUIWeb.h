@@ -214,6 +214,11 @@ STATEUI_WEB(use_color_scheme) void stateui_web_use_color_scheme(int32_t scheme);
 STATEUI_WEB(accent_color) int32_t stateui_web_accent_color(void);
 STATEUI_WEB(listen_appearance) void stateui_web_listen_appearance(int32_t listener);
 
+/// The user's locale as the browser has it, its words a zero byte apart (`WebEnvironment.locale`), read in two steps:
+/// their length, then `copy_read`; `listen_locale` calls `listener` whenever the user's languages change.
+STATEUI_WEB(locale_words) int32_t stateui_web_locale_words(void);
+STATEUI_WEB(listen_locale) void stateui_web_listen_locale(int32_t listener);
+
 /// Calls `listener` whenever the screen's density turns: as many device pixels to a CSS pixel as before no more.
 STATEUI_WEB(listen_density) void stateui_web_listen_density(int32_t listener);
 

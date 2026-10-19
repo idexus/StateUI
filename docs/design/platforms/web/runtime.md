@@ -112,6 +112,17 @@ in - the system's `AccentColor` where the browser knows one, else its own
 blue; a change of the appearance renders the application again in the other,
 the accent read again with it.
 
+It tells the user's locale as the browser has it: the language the user put
+first and every language after it (`navigator.languages`), its region - the
+likeliest the browser fills in where the user named none - the local zone,
+a 24-hour clock where that language's hours run from 0, the week's first day
+where the browser says it (Sunday where not), and the writing's direction.
+The browser says nothing of measures: they are metric but in the three
+countries of none - the United States, Liberia and Myanmar. The relay hands
+over the browser's words; Swift decides (`WebEnvironment.locale`), and tells
+the locale again as the user's languages change. So the library's words - a
+chrome's own buttons, a dialog's answers - stand in the user's language.
+
 ## One frame
 
 `WebFrameClock` asks for the browser's display frames with
