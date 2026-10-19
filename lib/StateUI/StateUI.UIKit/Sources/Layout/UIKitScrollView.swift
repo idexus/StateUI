@@ -23,7 +23,7 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
     private(set) var orientation = ScrollOrientation.vertical
 
     /// Where the scroller stands, as it last said.
-    private(set) var offset = Point(x: 0, y: 0)
+    var offset: Point { scrollerOffset.standing }
 
     /// The user's movement, and its rest.
     private let movement = ScrollMovement()
@@ -35,8 +35,8 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
     private let wrapper = UIKitStackView(axis: .vertical)
     private var wraps = false
 
-    /// The offset the tree writes, kept for the first layout where it comes before it.
-    private var writtenOffset = WrittenScrollOffset()
+    /// Where the scroller stands as the host knows it, and the offset the tree writes (`ScrollerOffset`).
+    private var scrollerOffset = ScrollerOffset()
 
     /// The direction its content is laid out in, the element's: the document and the stack holding several children
     /// take it.
@@ -89,7 +89,7 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
         document.padding = padding
         document.orientation = orientation
 
-        if let target = writtenOffset.written(offset, standing: self.offset, orientation: orientation) {
+        if let target = scrollerOffset.written(offset, orientation: orientation) {
             move(to: target)
         }
     }
@@ -108,7 +108,7 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
         let documentSize = CGSize(width: size.width, height: size.height)
         if document.frame.size != documentSize { document.frame = CGRect(origin: .zero, size: documentSize) }
         if scroller.contentSize != documentSize { scroller.contentSize = documentSize }
-        if let target = writtenOffset.laidOutNow() { move(to: target) }
+        if let target = scrollerOffset.laidOutNow() { move(to: target) }
     }
 
     /// Keeps `right` and `bottom` points clear at the content's end - the strip of the bars a page's scroller reaches
@@ -128,13 +128,12 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
         // A scroll moves whatever stands in the scroller, whoever moved it: a frame read under it is said again.
         laidOut?()
         let standing = Point(x: scroller.contentOffset.x, y: scroller.contentOffset.y)
-        guard !ProgramWrite.isWriting, standing != offset else { return }
-        let previous = offset
-        offset = standing
-        movement.userMoved(from: previous, to: standing)
+        guard let moved = scrollerOffset.toolkitMoved(to: standing) else { return }
+        movement.userMoved(from: moved.from, to: moved.to)
     }
 
     func scrollViewWillBeginDragging(_ scroller: UIScrollView) {
+        scrollerOffset.userTookHold()
         movement.holdBegan()
     }
 
@@ -174,9 +173,7 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
             x: max(0, scroller.contentSize.width + inset.right - scroller.bounds.width),
             y: max(0, scroller.contentSize.height + inset.bottom - scroller.bounds.height))
         let kept = ScrollArithmetic.kept(target, reach: reach)
-        offset = kept
-        let standing = Point(x: scroller.contentOffset.x, y: scroller.contentOffset.y)
-        guard ScrollArithmetic.differs(kept, standing) else { return }
+        guard scrollerOffset.programMoves(to: kept) else { return }
         ProgramWrite.perform { scroller.contentOffset = CGPoint(x: kept.x, y: kept.y) }
     }
 }

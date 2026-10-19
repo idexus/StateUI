@@ -20,7 +20,7 @@ final class GTKScrollView: GTKLayoutView {
     private(set) var orientation = ScrollOrientation.vertical
 
     /// Where the scroller stands, as it last said.
-    private(set) var offset = Point(x: 0, y: 0)
+    var offset: Point { scrollerOffset.standing }
 
     /// The user's movement, and its rest.
     private let movement = ScrollMovement()
@@ -32,8 +32,8 @@ final class GTKScrollView: GTKLayoutView {
     private let wrapper = GTKStackView(axis: .vertical)
     private var wraps = false
 
-    /// The offset the tree writes, kept for the first layout where it comes before it.
-    private var writtenOffset = WrittenScrollOffset()
+    /// Where the scroller stands as the host knows it, and the offset the tree writes (`ScrollerOffset`).
+    private var scrollerOffset = ScrollerOffset()
 
     private var bars = (vertical: ScrollIndicatorVisibility.automatic, horizontal: ScrollIndicatorVisibility.automatic)
 
@@ -91,7 +91,7 @@ final class GTKScrollView: GTKLayoutView {
         document.padding = padding
         document.orientation = orientation
 
-        if let target = writtenOffset.written(offset, standing: self.offset, orientation: orientation) {
+        if let target = scrollerOffset.written(offset, orientation: orientation) {
             move(to: target)
         }
     }
@@ -103,7 +103,7 @@ final class GTKScrollView: GTKLayoutView {
     /// Stands GTK's scroller over the whole of the room, then an offset the tree wrote before there was one.
     override func arrange(in bounds: Rect) {
         scroller.layout(bounds)
-        if let target = writtenOffset.laidOutNow() { move(to: target) }
+        if let target = scrollerOffset.laidOutNow() { move(to: target) }
     }
 
     // MARK: - The user's movement
@@ -111,16 +111,14 @@ final class GTKScrollView: GTKLayoutView {
     /// The scroller's view changed: the user's move, joined to the moves before it until the display's next frame;
     /// the program's own move is its write's echo.
     private func scrolled(to standing: Point) {
-        guard !ProgramWrite.isWriting, standing != offset else { return }
-
-        let previous = offset
-        offset = standing
-        movement.userMoved(from: previous, to: standing)
+        guard let moved = scrollerOffset.toolkitMoved(to: standing) else { return }
+        movement.userMoved(from: moved.from, to: moved.to)
     }
 
     /// The user took hold of the scroller, or let go of it and left it to throw on.
     private func scrollerHeld(_ holding: Bool) {
         if holding {
+            scrollerOffset.userTookHold()
             movement.holdBegan()
         } else {
             movement.holdEnded(rests: false)
@@ -155,11 +153,8 @@ final class GTKScrollView: GTKLayoutView {
 
     /// Moves the scroller to `target`, kept within what it reaches, as the program's move.
     private func move(to target: Point) {
-        let standing = scroller.standing
-        let kept = ScrollArithmetic.kept(target, reach: standing.reach)
-        offset = kept
-        guard ScrollArithmetic.differs(kept, standing.offset) else { return }
-
+        let kept = ScrollArithmetic.kept(target, reach: scroller.standing.reach)
+        guard scrollerOffset.programMoves(to: kept) else { return }
         ProgramWrite.perform { scroller.move(to: kept) }
     }
 }

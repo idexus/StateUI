@@ -387,5 +387,21 @@ scrolling comes back as the state it wrote - moves nothing; any other moves
 it, kept between its origin and what it reaches. An offset written before
 the scroller's first layout waits for it, the last one written winning, and
 one that scrolls neither way stands at its origin at once
-(`WrittenScrollOffset`). A host moves its toolkit's scroller there as the
+(`ScrollerOffset`). A host moves its toolkit's scroller there as the
 program's write.
+
+## Where a scroller stands
+
+`ScrollerOffset` holds where a scroller stands as its host last knew it, and
+tells what the toolkit says apart, the same on every host. A word said inside
+the program's write is the program's move, wherever the toolkit stopped the
+scroller - the synchronous toolkits say it there. A toolkit that says the
+move later - WinUI's view in a later frame, a browser's `scroll` event - is
+heard arriving within half a point of where the program moved the scroller:
+a scroller lands a fraction off, and half a point is less than a pixel. A
+toolkit that keeps a move within what it reaches itself - Android's
+scrollers, a browser - is read once asked, and its word to come is to say
+where it stopped (`programLanded`). Any other word is the user's, from where
+the scroller stood; the user taking hold makes a move of the program's still
+on its way theirs. A move to where the scroller stands within half a point
+moves nothing.

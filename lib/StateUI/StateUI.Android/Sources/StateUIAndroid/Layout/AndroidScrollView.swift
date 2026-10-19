@@ -22,7 +22,7 @@ final class AndroidScrollView: AndroidLayoutView {
     private(set) var orientation = ScrollOrientation.vertical
 
     /// Where the scroller stands, in points, as it was last seen.
-    private(set) var offset = Point(x: 0, y: 0)
+    var offset: Point { scrollerOffset.standing }
 
     /// The user's movement, and its rest.
     private let movement = ScrollMovement()
@@ -36,9 +36,8 @@ final class AndroidScrollView: AndroidLayoutView {
     /// Android's scrollers, the outermost first; the last holds the document.
     private(set) var scrollers: [JavaObject] = []
 
-    /// The offset the tree writes, kept for the scrollers' first layout where it comes before it
-    /// (`WrittenScrollOffset`).
-    private var writtenOffset = WrittenScrollOffset()
+    /// Where the scrollers stand as the host knows it, and the offset the tree writes (`ScrollerOffset`).
+    private var scrollerOffset = ScrollerOffset()
 
     /// The native scrollers scroll in the element's direction, not the activity's: one right to left starts at its
     /// end, one left to right at its first column. The document and the stack holding several children lay out in it.
@@ -108,7 +107,7 @@ final class AndroidScrollView: AndroidLayoutView {
         }
 
         // Design: docs/design/host/layout.md#an-offset-the-tree-writes
-        if let target = writtenOffset.written(offset, standing: self.offset, orientation: orientation) {
+        if let target = scrollerOffset.written(offset, orientation: orientation) {
             move(to: target)
         }
     }
@@ -126,7 +125,7 @@ final class AndroidScrollView: AndroidLayoutView {
             .int(ViewConstants.spec(ViewConstants.exactly, width)),
             .int(ViewConstants.spec(ViewConstants.exactly, height)))
         Java.call(outer.reference, JavaAPI.layout, .int(0), .int(0), .int(width), .int(height))
-        if let target = writtenOffset.laidOutNow() {
+        if let target = scrollerOffset.laidOutNow() {
             move(to: target)
         }
     }
@@ -135,18 +134,18 @@ final class AndroidScrollView: AndroidLayoutView {
 
     /// Android moved the scroller: where to, joined to the moves before it until the display's next frame.
     func scrolled() {
-        guard !ProgramWrite.isWriting else { return }
-
-        let standing = standingOffset
-        guard standing != offset else { return }
-        let previous = offset
-        offset = standing
-        movement.userMoved(from: previous, to: standing)
+        guard let moved = scrollerOffset.toolkitMoved(to: standingOffset) else { return }
+        movement.userMoved(from: moved.from, to: moved.to)
     }
 
     /// A finger took hold of the scroller, or let go of it and left it to throw on.
     override func held(_ holding: Bool) {
-        if holding { movement.holdBegan() } else { movement.holdEnded(rests: false) }
+        if holding {
+            scrollerOffset.userTookHold()
+            movement.holdBegan()
+        } else {
+            movement.holdEnded(rests: false)
+        }
     }
 
     /// Whether the scroller needs the display's frames.
@@ -184,13 +183,15 @@ final class AndroidScrollView: AndroidLayoutView {
             y: vertical.map { Double(Java.callInt($0.reference, JavaAPI.getScrollY)) / density } ?? 0)
     }
 
-    /// Moves Android's scrollers to `target` as the program's write; each keeps it within what it can reach.
+    /// Moves Android's scrollers to `target` as the program's write; each keeps it within what it can reach, and
+    /// says where it stopped.
     private func move(to target: Point) {
+        guard scrollerOffset.programMoves(to: target) else { return }
         ProgramWrite.perform {
             if let vertical { Java.call(vertical.reference, JavaAPI.scrollTo, .int(0), .int(pixels(target.y))) }
             if let horizontal { Java.call(horizontal.reference, JavaAPI.scrollTo, .int(pixels(target.x)), .int(0)) }
         }
-        offset = standingOffset
+        scrollerOffset.programLanded(at: standingOffset)
     }
 
     /// Makes the scrollers the orientation asks for, each listened to, the document in the innermost.
@@ -222,8 +223,7 @@ final class AndroidScrollView: AndroidLayoutView {
         Java.call(scrollers.last!.reference, JavaAPI.addView, .object(document.reference), .int(-1), .int(-1))
         Java.call(reference, JavaAPI.addView, .object(scrollers[0].reference), .int(-1), .int(-1))
         directScrollers()
-        offset = Point(x: 0, y: 0)
-        writtenOffset = WrittenScrollOffset()
+        scrollerOffset = ScrollerOffset()
     }
 }
 

@@ -307,7 +307,7 @@ to be told a pass is over and then takes a turn: GTK at the idle after its
 layout and paint, WinUI in the next turn it posts, as WinUI lays out before its
 queue's next message. Android's list holds its changes in its relay until the
 recycler stops laying out. A scroller's offset written before its first layout
-is not this queue's: it waits in the scroller (`WrittenScrollOffset`), which
+is not this queue's: it waits in the scroller (`ScrollerOffset`), which
 applies it in its own arrange, before it draws and only once it has a size.
 
 ## Where a view stands

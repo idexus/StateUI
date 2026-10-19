@@ -136,7 +136,9 @@ state and its handlers, and rests once it has stood still, as on every host
 
 `ChangeView` moves the view in a later frame, and its `ViewChanged` comes long
 after the program's write has ended, so `ProgramWrite` cannot know it. The
-host keeps the target it moved to - kept within the scroller's reach, as the
-scroller keeps it - and takes the view arriving there as the program's; a
+host moves to a target kept within the scroller's reach, as the scroller
+keeps it, and the host layer takes the view arriving within half a point of
+it as the program's
+([where a scroller stands](../../host/layout.md#where-a-scroller-stands)); a
 target the view already stands at is not moved to at all, as the scroller
 would say nothing of it, and a user's hold forgets the target.
