@@ -45,8 +45,9 @@ final class NativeProjectTests: XCTestCase {
 
     /// Every head gets its host from `lib/StateUI.Head`, which reads the build's
     /// `STATEUI_HOST` variable once for every application: it depends on that host's
-    /// package alone and re-exports it, and a WinUI head links as a windowed
-    /// application. No application names a host's package itself, and each
+    /// package alone and brings it into the head's graph - re-exporting nothing, as
+    /// a head imports its host by its own name - and a WinUI head links as a
+    /// windowed application. No application names a host's package itself, and each
     /// reads the same hosts the head package does.
     func testEveryHeadGetsItsHostFromTheHeadPackage() throws {
         let repository = SourceTree.repository
@@ -67,9 +68,10 @@ final class NativeProjectTests: XCTestCase {
                     atPath: repository.appendingPathComponent("lib/StateUI/StateUI.\(host)/Package.swift").path),
                 "no host package lib/StateUI/StateUI.\(host)")
             XCTAssertTrue(
-                source.contains("if \(host.uppercased())\n@_exported import StateUI\(host)\n"),
-                "StateUIHead does not re-export StateUI\(host) under #if \(host.uppercased())")
+                source.contains("if \(host.uppercased())\nimport StateUI\(host)\n"),
+                "StateUIHead does not bring StateUI\(host) under #if \(host.uppercased())")
         }
+        XCTAssertFalse(source.contains("@_exported"), "StateUIHead re-exports a host: a head imports its host by name")
 
         for application in try SourceTree.applications() {
             let name = application.lastPathComponent
@@ -81,6 +83,10 @@ final class NativeProjectTests: XCTestCase {
             for host in hosts {
                 XCTAssertFalse(
                     manifest.contains("lib/StateUI.\(host)\""), "\(name) names StateUI\(host)'s package itself")
+                let head = application.appendingPathComponent("Platforms/\(host)/main.swift")
+                if let main = try? String(contentsOf: head, encoding: .utf8) {
+                    XCTAssertTrue(main.contains("import StateUI\(host)\n"), "\(name)'s \(host) head does not import its host")
+                }
             }
         }
     }
