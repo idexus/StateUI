@@ -40,7 +40,7 @@ final class KeyGuardTests: XCTestCase {
     // MARK: - What is read
 
     private static let makesAKey =
-        #"\b(KeyName|Prop|Event|Act|NodeType|VisualState|SceneKey|WindowType|PersistentKey|StyleKey)\((?!\))"#
+        #"\b(KeyName|Prop|Event|Act|NodeType|VisualState|SceneKey|WindowType|PersistentKey|StyleKey)(\((?!\))|\.init\b)"#
     /// A `static` declaration, or one at a file's top - unindented.
     private static let declaresOnce = #"\bstatic (let|var)\b|^(public |@_spi\(Host\) public )?let "#
     private static let looksUpAName = #"\.name\s*(==|!=)|\w\??\[[^\[\]]*\.name\]"#
@@ -114,7 +114,8 @@ final class KeyGuardTests: XCTestCase {
     private static let readingWords: [String: String] = [
         "HostDeclaration.swift": export, "HostRegister.swift": export,
         "KeptValuesText.swift": store, "KeptWord.swift": store, "Persistence.swift": store,
-        "SceneRecord.swift": store,
+        "SceneRecord.swift": store, "OpenScenes.swift": "a window's kind the platform kept, found among those the "
+            + "scenes declare",
     ]
 
     private static let identity = "identities of the application's data and of its elements, which come and go"

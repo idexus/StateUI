@@ -107,7 +107,7 @@
     public static func connectWindow(
         kind: String? = nil, value: String? = nil, restoring values: [String: HostValue] = [:]
     ) -> String? {
-        OpenScenes.shared.connected(kind.map(WindowType.init), text: value, restoring: values)
+        OpenScenes.shared.connected(kind: kind, text: value, restoring: values)
     }
 
     /// Updates the process-wide application session from native lifecycle.

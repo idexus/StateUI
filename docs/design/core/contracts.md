@@ -135,11 +135,14 @@ file is the name.
 
 A name becomes a key once, where the key is declared: a `static let`, a
 contract's member (`token`, `owner`), a host's realization as it is read at
-start-up. Making one takes the process's table under a lock (`KeyNumbers`),
-which stops a second name of one number, so the library makes no key during
-work: `Prop`, `Event` and `Act` have no literal form, and `KeyGuardTests` reads
-every library source for a key made, or a key's name compared or looked up,
-anywhere else. A name in a file - a kept value, a scene's - stays the file's
+start-up and what the core works out of it when first asked, and a view
+type's key, made once a type as the walk first meets it (`typeKey(of:)`).
+Making one takes the process's table under a lock (`KeyNumbers`), which stops
+a second name of one number, so the library makes no key of a word it meets
+during work: a window's kind the platform kept is found among the kinds the
+scenes declare, and `Prop`, `Event` and `Act` have no literal form.
+`KeyGuardTests` reads every library source for a key made - called or its
+initializer named - or a key's name compared or looked up, anywhere else. A name in a file - a kept value, a scene's - stays the file's
 word: a key claims its own by its name, and a file never makes a key. A
 collection keyed by strings holds the words of a file, an export or a
 diagnostic, an identity of the application's data - which comes and goes, and

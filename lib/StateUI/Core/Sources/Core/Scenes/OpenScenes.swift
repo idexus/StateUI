@@ -156,13 +156,21 @@ final class OpenScenes {
 
     // MARK: - What the platform hands over
 
+    /// The kind a scene declares under `name` - a kind the platform kept with a window, read as a file's word; nil
+    /// where none is.
+    private static func declaredType(named name: String, in scenes: Scenes) -> WindowType? {
+        scenes.windows.lazy.flatMap(\.declared).compactMap(\.type).first { $0.name == name }
+    }
+
     /// The platform handed over a window: its first, which the window launch opens takes; one it kept, of `type` and
     /// for the value written `text`, with its scene's kept `values`; or a new one of no kind. A kept window of a kind
     /// coming first takes the launch window's place; one refused leaves it waiting. Answers the number of the scene it opened in, nil where no scene
     /// declares it - the host closes that one.
     /// Design: docs/design/core/scenes.md#what-the-platform-hands-over
-    func connected(_ type: WindowType?, text: String?, restoring values: [String: PropValue]) -> String? {
+    func connected(kind: String?, text: String?, restoring values: [String: PropValue]) -> String? {
         guard let scenes else { return nil }
+        let type = kind.flatMap { Self.declaredType(named: $0, in: scenes) }
+        if kind != nil, type == nil { return nil }
 
         if let (record, _) = waiting, type == nil, text == nil {
             waiting = nil
