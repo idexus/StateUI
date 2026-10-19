@@ -217,10 +217,10 @@ folder any web server serves as it is.
 
 ## Continuous integration
 
-Every workflow that builds or tests runs on pushes and pull requests to
-`main`, which every pull request targets; the contributor agreement's check
-runs on pull requests and their comments alone. Each badge above is one
-workflow.
+Every workflow that builds or tests runs on every push to `main` and to
+`code`, the branch work lands on, and on every pull request; the contributor
+agreement's check runs on pull requests and their comments alone. Each badge
+above is one workflow.
 
 **Core macOS**, **Core Linux** and **Core Windows** run the core's suites on
 each machine - StateUI, the host layer and the conformance runner, and the
