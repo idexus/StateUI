@@ -52,8 +52,8 @@ final class GTKMotionTests: XCTestCase {
 
     /// What a class of the host's style sheet paints on a control's widget - its background, its room, its accent -
     /// arrives at once: on its way it would write the sheet a rule a frame, and parse it whole each time.
-    func testAControlsBackgroundArrivesAtOnceAddingNoRuleAFrame() throws {
-        try onUIThread {
+    func testAControlsBackgroundArrivesAtOnceAddingNoRuleAFrame() {
+        onUIThread {
             let clock = TestClock()
             let host = GTKRenderer.bare(clock: clock)
             var initial = HostPatch(id: .manual("picture"), type: .image)

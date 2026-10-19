@@ -12,8 +12,8 @@ import XCTest
 final class GTKButtonViewTests: XCTestCase {
     /// A button holding a menu opened as it is held lets the menu go as it leaves: its popover, its actions and its
     /// place in the menus shown.
-    func testAHeldMenuLeavesWithItsButton() throws {
-        try onUIThread {
+    func testAHeldMenuLeavesWithItsButton() {
+        onUIThread {
             let shown = State(wrappedValue: true)
             let host = GTKRenderer.running {
                 VStack {

@@ -116,8 +116,8 @@ final class WinUIWebViewTests: XCTestCase {
 
     /// A web view whose WebView2 cannot start - no runtime where its loader looks - tells its page failed, not a blank
     /// view and nothing.
-    func testAWebViewWhoseRuntimeCannotStartTellsItsPageFailed() throws {
-        try onUIThread {
+    func testAWebViewWhoseRuntimeCannotStartTellsItsPageFailed() {
+        onUIThread {
             _ = _putenv("WEBVIEW2_BROWSER_EXECUTABLE_FOLDER=C:\\StateUI\\no-such-runtime")
             defer { _ = _putenv("WEBVIEW2_BROWSER_EXECUTABLE_FOLDER=") }
             let arrived = Received<WebNavigationResult>()
