@@ -23,10 +23,7 @@ enum WebEnvironment {
     static func reportChanging(to core: CoreLink) {
         if let locale = locale(WebRelay.localeWords) { core.setLocaleInfo(locale) }
         core.setColorScheme(WebRelay.prefersDark ? .dark : .light)
-        let accent = WebRelay.accentColor
-        core.setAccentColor(Color(
-            red: Int(accent >> 16 & 255), green: Int(accent >> 8 & 255), blue: Int(accent & 255),
-            alpha: Int(accent >> 24 & 255)))
+        core.setAccentColor(Color(argb: WebRelay.accentColor))
     }
 
     /// Calls `changed` whenever the user's appearance turns dark or light, or the user's languages change, under the

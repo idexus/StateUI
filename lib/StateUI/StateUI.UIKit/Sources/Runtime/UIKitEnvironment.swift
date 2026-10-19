@@ -98,8 +98,7 @@ final class UIKitEnvironment {
     func reportAccent(_ traits: UITraitCollection) {
         var (red, green, blue, alpha): (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
         UIColor.tintColor.resolvedColor(with: traits).getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-        func channel(_ value: CGFloat) -> Int { Int((value * 255).rounded()) }
-        core.setAccentColor(Color(red: channel(red), green: channel(green), blue: channel(blue), alpha: channel(alpha)))
+        core.setAccentColor(Color(fractions: (Double(red), Double(green), Double(blue), Double(alpha))))
     }
 
     /// The theme a scene stands in: dark, else light.

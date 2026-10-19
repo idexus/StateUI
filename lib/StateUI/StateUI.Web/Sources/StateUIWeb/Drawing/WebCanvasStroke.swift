@@ -104,7 +104,8 @@ struct WebCanvasStroke {
     /// A colour's red, green and blue from 0 to 255 and its opacity from 0 to 1, at the pen's opacity; nil for none.
     private static func color(_ value: HostValue, _ pen: CanvasPen) -> [Double]? {
         guard let color = value.color else { return nil }
-        return [Double(color.red), Double(color.green), Double(color.blue), Double(color.alpha) / 255 * pen.alpha]
+        return [Double(color.red), Double(color.green), Double(color.blue),
+                ColorChannel.fraction(color.alpha) * pen.alpha]
     }
 
     private static func code(_ operation: Operation) -> Double {

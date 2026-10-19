@@ -253,8 +253,8 @@ private struct MotionValuePlan {
             return true
 
         case let (.color(sr, sg, sb, sa), .color(tr, tg, tb, ta)):
-            from.append(contentsOf: [sr, sg, sb, sa].map { Double($0) / 255 })
-            destination.append(contentsOf: [tr, tg, tb, ta].map { Double($0) / 255 })
+            from.append(contentsOf: [sr, sg, sb, sa].map(ColorChannel.fraction))
+            destination.append(contentsOf: [tr, tg, tb, ta].map(ColorChannel.fraction))
             return true
 
         case (.values(let source), .values(let target)) where source.count == target.count:
@@ -294,9 +294,7 @@ private struct MotionValuePlan {
 
         case .color:
             guard index + 4 <= lanes.count else { return nil }
-            let transitions = lanes[index..<(index + 4)].map { lane -> UInt8 in
-                UInt8(min(max((lane * 255).rounded(), 0), 255))
-            }
+            let transitions = lanes[index..<(index + 4)].map(ColorChannel.nearest)
             index += 4
             return .color(
                 red: transitions[0],

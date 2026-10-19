@@ -80,9 +80,7 @@ enum GTKEnvironment {
         }()
         var rgba = GdkRGBA()
         gtk_widget_get_color(probe, &rgba)
-        func channel(_ value: Float) -> Int { Int((value * 255).rounded()) }
-        return Color(red: channel(rgba.red), green: channel(rgba.green), blue: channel(rgba.blue),
-                     alpha: channel(rgba.alpha))
+        return Color(fractions: (Double(rgba.red), Double(rgba.green), Double(rgba.blue), Double(rgba.alpha)))
     }
     private static var onChange: (@MainActor () -> Void)?
 

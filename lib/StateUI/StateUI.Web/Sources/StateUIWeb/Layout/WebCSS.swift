@@ -164,7 +164,7 @@ enum WebCSS {
     /// A colour as CSS's `rgb()`; nil for a value that is none.
     static func color(_ value: HostValue?) -> String? {
         guard let channels = value?.color else { return nil }
-        let alpha = number((Double(channels.alpha) / 255 * 1000).rounded() / 1000)
+        let alpha = number((ColorChannel.fraction(channels.alpha) * 1000).rounded() / 1000)
         return "rgb(\(channels.red) \(channels.green) \(channels.blue) / \(alpha))"
     }
 

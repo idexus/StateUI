@@ -70,13 +70,13 @@
     static func over(_ top: HostValue, _ bottom: HostValue) -> HostValue {
         guard case .color(let r, let g, let b, let a) = top, case .color(let br, let bg, let bb, let ba) = bottom
         else { return top }
-        let alpha = Double(a) / 255, under = Double(ba) / 255 * (1 - alpha)
+        let alpha = ColorChannel.fraction(a), under = ColorChannel.fraction(ba) * (1 - alpha)
         let out = alpha + under
         guard out > 0 else { return .color(red: 0, green: 0, blue: 0, alpha: 0) }
         func channel(_ top: UInt8, _ bottom: UInt8) -> UInt8 {
             UInt8(((Double(top) * alpha + Double(bottom) * under) / out).rounded())
         }
-        return .color(red: channel(r, br), green: channel(g, bg), blue: channel(b, bb), alpha: UInt8((out * 255).rounded()))
+        return .color(red: channel(r, br), green: channel(g, bg), blue: channel(b, bb), alpha: ColorChannel.nearest(out))
     }
 
     /// `value` with every pair in it taken as the half the theme in force wears.

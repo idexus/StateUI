@@ -117,10 +117,9 @@ final class AppKitEnvironment {
         NSApplication.shared.effectiveAppearance.performAsCurrentDrawingAppearance {
             accent = NSColor.controlAccentColor.usingColorSpace(.sRGB) ?? .systemBlue
         }
-        func channel(_ value: CGFloat) -> Int { Int((value * 255).rounded()) }
-        core.setAccentColor(Color(
-            red: channel(accent.redComponent), green: channel(accent.greenComponent),
-            blue: channel(accent.blueComponent), alpha: channel(accent.alphaComponent)))
+        core.setAccentColor(Color(fractions: (
+            Double(accent.redComponent), Double(accent.greenComponent), Double(accent.blueComponent),
+            Double(accent.alphaComponent))))
     }
 
     /// The system's appearance: dark or light.
