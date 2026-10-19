@@ -466,13 +466,13 @@ final class DrivenPatchTests: XCTestCase {
             }
         }
 
-        XCTAssertEqual(declared.count, 1, "one declaration, and it is the journey's: \(declared)")
+        XCTAssertEqual(declared.count, 2, "the journey's two - with a law and without - and no other: \(declared)")
         XCTAssertEqual(
-            declared.first.map { SourceTree.name(of: $0.file) }, "Journey.swift",
-            "the one that survives lives beside the journey")
+            Set(declared.map { SourceTree.name(of: $0.file) }), ["Journey.swift"],
+            "both live beside the journey")
         XCTAssertTrue(
-            declared.first?.line.contains("target: Value") == true,
-            "and it takes the value's own type: it is the journey's, not any binding's")
+            declared.allSatisfy { $0.line.contains("target: Value") },
+            "and take the value's own type: they are the journey's, not any binding's")
     }
 
     /// A CONTROL'S PURPOSE-VALUE IS WRITABLE BOTH WAYS, AND THE TWO AGREE.
