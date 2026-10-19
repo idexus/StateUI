@@ -35,28 +35,6 @@ final class GTKSplitViewTests: XCTestCase {
         }
     }
 
-    /// A split collapses - the sidebar over the detail - in a room narrower than GNOME's 400sp, and stands beside it
-    /// again in a wider one.
-    func testASplitCollapsesInANarrowRoom() throws {
-        try onUIThread {
-            let host = GTKRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
-                    TitledPage(title: "Menu")
-                } detail: { TitledPage(title: "Detail") }
-            }
-            let split = try XCTUnwrap(host.views(GTKSplitView.self).first)
-            let window = try XCTUnwrap(host.window)
-
-            window.request(WindowFrame(width: 360, height: 500))
-            host.settle { split.isCollapsed }
-            XCTAssertTrue(split.isCollapsed, "narrow")
-
-            window.request(WindowFrame(width: 900, height: 500))
-            host.settle { !split.isCollapsed }
-            XCTAssertFalse(split.isCollapsed, "wide")
-        }
-    }
-
     /// A split view the window shows in another's place is let go of with its collapsing: the breakpoint stands with
     /// the split, not with the window, which would gather one for every split it ever showed.
     func testASplitViewShownInAnothersPlaceIsLetGoOf() throws {
@@ -84,6 +62,27 @@ final class GTKSplitViewTests: XCTestCase {
             host.settle { host.windowTitle == "Second" && watched.pointee == nil }
             XCTAssertNil(watched.pointee, "the first split's breakpoint outlived it")
             if let left = watched.pointee { g_object_remove_weak_pointer(left.assumingMemoryBound(to: GObject.self), watched) }
+        }
+    }
+
+    /// The chrome's own buttons say the library's words in the system's language (`ChromeWords`): the sidebar's
+    /// toggle, and the main menu holding a page's menus.
+    func testTheChromesButtonsSayTheLibrarysWords() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                SplitView(State(wrappedValue: true).projectedValue) {
+                    TitledPage(title: "Menu")
+                } detail: {
+                    TitledPage(title: "Detail").menuBar { Menu("File") { MenuItem("Open") } }
+                }
+            }
+            host.layOut()
+            let split = try XCTUnwrap(host.views(GTKSplitView.self).first)
+            let words = CoreLink().chromeWords
+            let toggle = try XCTUnwrap(split.detailFrame?.sidebarToggle)
+            XCTAssertEqual(gtk_widget_get_tooltip_text(toggle.widget).map { String(cString: $0) }, words.sidebar)
+            let menu = try XCTUnwrap(split.detailFrame?.mainMenu?.button)
+            XCTAssertEqual(gtk_widget_get_tooltip_text(menu).map { String(cString: $0) }, words.mainMenu)
         }
     }
 

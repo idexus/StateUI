@@ -28,7 +28,7 @@ struct LibraryWords: LocalizedResources {
 }
 
 /// What a window's chrome says of its own controls, where the application names none - a back button, the sidebar's
-/// toggle, a sheet's close, the overflow - in the system's language.
+/// toggle, a sheet's close, the overflow, the main menu - in the system's language.
 @_spi(Host) public struct ChromeWords: Equatable, Sendable {
     /// A back button's, where the page below names none.
     public let back: String
@@ -41,6 +41,9 @@ struct LibraryWords: LocalizedResources {
 
     /// The overflow of a bar's actions.
     public let more: String
+
+    /// The menu at a bar's end holding the page's menus, where a desktop shows no menu bar.
+    public let mainMenu: String
 }
 
 /// The languages StateUI says its own words in, each by its tag.

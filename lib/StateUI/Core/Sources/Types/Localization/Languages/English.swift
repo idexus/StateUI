@@ -23,7 +23,7 @@ extension LanguageConventions {
 extension LibraryWords {
     static let english = LibraryWords(
         ok: "OK", cancel: "Cancel",
-        chrome: ChromeWords(back: "Back", sidebar: "Sidebar", close: "Close", more: "More"))
+        chrome: ChromeWords(back: "Back", sidebar: "Sidebar", close: "Close", more: "More", mainMenu: "Main Menu"))
 }
 
 extension RegionConventions {
