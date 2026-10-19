@@ -30,6 +30,21 @@
         return LayoutSize(width: size.width * height / size.height, height: height)
     }
 
+    /// The pixels a vector picture `size` across is drawn at to stand in `room` as `aspect` says, at `scale` pixels
+    /// a point, rounded up: the size it shows at - the room's where it is stretched, so it is sharp both ways.
+    public static func vectorPixels(_ size: LayoutSize, in room: LayoutSize, aspect: ContentMode, scale: Double)
+        -> LayoutSize {
+        let shown = place(size, in: room, aspect: aspect)
+        return LayoutSize(width: (shown.width * scale).rounded(.up), height: (shown.height * scale).rounded(.up))
+    }
+
+    /// Whether a vector picture drawn at `drawn` pixels is drawn again for `wanted`: only for more pixels either
+    /// way, so a size in motion does not draw it every frame.
+    public static func drawsAgain(drawn: LayoutSize?, for wanted: LayoutSize) -> Bool {
+        guard let drawn else { return true }
+        return wanted.width > drawn.width || wanted.height > drawn.height
+    }
+
     /// Where a picture `size` across stands in a room at the origin, as `aspect` says: fitted in or covering it,
     /// its proportions kept, or at its own size, in its middle; stretched over the whole of it. A picture of no
     /// size stands nowhere.

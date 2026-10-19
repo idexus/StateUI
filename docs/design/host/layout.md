@@ -316,7 +316,11 @@ proportions kept, or at its own size - each in the room's middle - or
 stretched over the whole of it. A picture on a bar or a tab stands at the
 platform's icon height, as wide as its shape makes it, whatever size it is
 drawn at elsewhere (`PictureArithmetic.glyph`): the platform draws its own
-pictures there at that size, and one at its file's size stands far taller.
+pictures there at that size, and one at its file's size stands far taller. A
+host drawing an SVG draws it at the size it shows at, in the display's pixels
+- a stretched one at its room's own size, sharp both ways - and again only for
+more pixels, so a size in motion does not draw it every frame
+(`PictureArithmetic.vectorPixels`, `drawsAgain`).
 
 ## An icon
 

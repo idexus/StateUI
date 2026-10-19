@@ -77,9 +77,8 @@ final class GTKImageView: GTKPanelView {
     }
 
     /// Reads the picture's pixels for a room: a bitmap once, an SVG at the size it shows at in the room, at the
-    /// display's scale - again only for more pixels, so a size in motion does not read it every frame. An SVG
-    /// keeps its own proportions as it is read, so a stretched one is read covering the room and drawn squeezed
-    /// into it.
+    /// display's scale - a stretched one at the room's own, sharp both ways - and again only for more pixels, so a
+    /// size in motion does not read it every frame (`PictureArithmetic.vectorPixels`, `drawsAgain`).
     /// Design: docs/design/platforms/gtk/controls.md#pictures
     private func read(for room: LayoutSize) {
         guard let path, size.width > 0, size.height > 0, room.width > 0, room.height > 0 else { return }
@@ -88,16 +87,13 @@ final class GTKImageView: GTKPanelView {
             return
         }
 
-        let covering = max(room.width / size.width, room.height / size.height)
-        let placed = place(in: room)
-        let shown = aspect == .stretch
-            ? LayoutSize(width: size.width * covering, height: size.height * covering)
-            : LayoutSize(width: placed.width, height: placed.height)
         let scale = Double(max(gtk_widget_get_scale_factor(widget), 1))
-        let wanted = LayoutSize(width: (shown.width * scale).rounded(.up), height: (shown.height * scale).rounded(.up))
-        if let drawn, drawn.width >= wanted.width, drawn.height >= wanted.height { return }
+        let wanted = PictureArithmetic.vectorPixels(size, in: room, aspect: aspect, scale: scale)
+        guard wanted.width > 0, wanted.height > 0, PictureArithmetic.drawsAgain(drawn: drawn, for: wanted) else { return }
 
-        guard let pixbuf = gdk_pixbuf_new_from_file_at_scale(path, Int32(wanted.width), Int32(wanted.height), 1, nil)
+        let keepsProportions: gboolean = aspect == .stretch ? 0 : 1
+        guard let pixbuf = gdk_pixbuf_new_from_file_at_scale(
+            path, Int32(wanted.width), Int32(wanted.height), keepsProportions, nil)
         else { return }
         // The pixbuf's own pixels, eight bits a channel, its alpha straight where it has one.
         let pixels = gdk_pixbuf_read_pixel_bytes(pixbuf)

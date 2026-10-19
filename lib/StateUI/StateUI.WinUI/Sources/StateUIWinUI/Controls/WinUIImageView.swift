@@ -61,15 +61,14 @@ final class WinUIImageView: WinUIView {
     }
 
     /// Draws an SVG at the size it shows at in `room` - in its own proportions, or, stretched, at the room's - so
-    /// WinUI fills the room from it; again only for more pixels, so a size in motion does not draw it every frame.
+    /// WinUI fills the room from it; again only for more pixels, so a size in motion does not draw it every frame
+    /// (`PictureArithmetic.vectorPixels`, `drawsAgain`).
     private func draw(in room: Rect) {
         guard let declared, room.width > 0, room.height > 0 else { return }
 
-        let shown = PictureArithmetic.place(declared, in: LayoutSize(width: room.width, height: room.height), aspect: aspect)
-        let size = aspect == .stretch
-            ? LayoutSize(width: room.width, height: room.height) : LayoutSize(width: shown.width, height: shown.height)
-        guard size.width > 0, size.height > 0 else { return }
-        if let drawn, drawn.width >= size.width, drawn.height >= size.height { return }
+        let size = PictureArithmetic.vectorPixels(
+            declared, in: LayoutSize(width: room.width, height: room.height), aspect: aspect, scale: 1)
+        guard size.width > 0, size.height > 0, PictureArithmetic.drawsAgain(drawn: drawn, for: size) else { return }
 
         drawn = size
         stateui_winui_image_draw(handle, size.width, size.height)
