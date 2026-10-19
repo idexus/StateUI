@@ -63,6 +63,7 @@
 
 /// What a view listens for of the user's input.
 @_spi(Host) public struct Hearing: OptionSet, Hashable, Sendable {
+    /// The set's bits, one a kind of input.
     public let rawValue: UInt32
 
     /// Makes a set from its bits.

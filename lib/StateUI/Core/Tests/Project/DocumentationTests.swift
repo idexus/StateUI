@@ -297,7 +297,9 @@ final class DocumentationTests: XCTestCase {
             }
 
             if text.hasPrefix("///") { return true }
-            if text.hasPrefix("@") { cursor -= 1; continue }
+            // An attribute alone on its line is walked past; a line that begins with one and declares - a type's
+            // `@_spi(Host) public struct … {` - is the declaration above, whose `///` is its own.
+            if text.hasPrefix("@"), !text.hasSuffix("{"), !isPublicDeclaration(text) { cursor -= 1; continue }
 
             if text.hasSuffix(")") {
                 open = 1

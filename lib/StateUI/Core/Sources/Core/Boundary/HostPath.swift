@@ -27,6 +27,7 @@
 
 /// A validated, platform-neutral SVG path.
 @_spi(Host) public struct HostPath: Equatable, Sendable {
+    /// The path's commands in order, every one absolute.
     public let commands: [HostPathCommand]
 
     /// Parses SVG path data without locale or platform converters. Invalid and
