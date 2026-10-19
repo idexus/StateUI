@@ -131,11 +131,9 @@ extension GTKElement {
         }
     }
 
-    /// The user chose another tab: the host layer tells the pages and the state, and the chrome follows what the user
-    /// sees now whether or not the application renders again.
+    /// The user chose another tab: the host layer tells the pages and the state, and shows the chrome again.
     private func tabChosen(from previous: Int, to selected: Int) {
         host?.runtime.tabChosen(element, from: previous, to: selected)
-        host?.refreshChrome()
     }
 
     // MARK: - The way back, and the sidebar

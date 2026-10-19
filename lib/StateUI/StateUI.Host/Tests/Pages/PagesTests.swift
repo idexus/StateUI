@@ -199,6 +199,31 @@ final class PagesTests: XCTestCase {
         XCTAssertFalse(runtime.pump.handlers.hasQueued, "the pages' phases wait for a turn nothing takes")
     }
 
+    /// A tab the user chooses shows another page in the window: the host shows its chrome again, as a render
+    /// changing the chrome has it - the page's title, its bar - whatever the choice carries.
+    func testATabChosenShowsTheChromeAgain() throws {
+        let runtime = HostRuntime.still()
+        runtime.tree.apply(node("window", .window, children: [node("tabs", .tabView, children: [
+            node("a", .page), node("b", .page),
+        ])]), complete: true)
+        _ = runtime.tree.takeChromeTouched()
+        let presented = Presented()
+        runtime.presenter = presented
+
+        runtime.tabChosen(try XCTUnwrap(runtime.tree.root?.first(id: .manual("tabs"))), from: 0, to: 1)
+
+        XCTAssertEqual(presented.chrome, [true])
+    }
+
+    /// What the host was asked to show of the chrome, in turn.
+    private final class Presented: HostPresenter {
+        var chrome: [Bool] = []
+        func presentRendered(touchedChrome: Bool) { chrome.append(touchedChrome) }
+        func presentFrame(movedChrome: Bool) {}
+        func perform(_ call: HostActCall) {}
+        func focus(_ element: MountedElement) {}
+    }
+
     func testATabChoiceFollowsTheTreeAndTheUser() {
         var choice = TabChoice()
         XCTAssertEqual(choice.shown, 0)

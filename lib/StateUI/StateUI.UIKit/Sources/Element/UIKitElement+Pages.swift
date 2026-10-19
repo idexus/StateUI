@@ -145,10 +145,9 @@ extension UIKitElement {
         host?.runtime.dispatch(handler, payload: [.number(Double(staying - 1))])
     }
 
-    /// The user chose another tab: the host layer tells the pages and the state; the bars follow what the user sees.
+    /// The user chose another tab: the host layer tells the pages and the state, and shows the chrome again.
     private func tabChosen(from previous: Int, to selected: Int) {
         host?.runtime.tabChosen(element, from: previous, to: selected)
-        composeChrome()
     }
 
     /// The sidebar showed or hid: the host layer tells its page and the state.

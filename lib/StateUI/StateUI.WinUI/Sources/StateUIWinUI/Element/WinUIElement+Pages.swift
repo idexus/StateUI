@@ -40,11 +40,9 @@ extension WinUIElement {
         }
     }
 
-    /// The user chose another tab: the host layer tells the pages and the state, and the window's chrome follows what
-    /// the user sees whether or not the application renders again.
+    /// The user chose another tab: the host layer tells the pages and the state, and shows the chrome again.
     private func tabChosen(from previous: Int, to selected: Int) {
         host?.runtime.tabChosen(element, from: previous, to: selected)
-        host?.refreshWindowChrome()
     }
 
     /// The user showed or hid a split view's sidebar through the window's chrome.

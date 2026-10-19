@@ -77,22 +77,9 @@ extension AndroidElement {
         tabs.onSelection = { [weak self] previous, selected in self?.selectTab(from: previous, to: selected) }
     }
 
-    /// The user chose another tab: the host layer tells the pages and the state; the stack around the tabs names
-    /// the page the user sees now.
+    /// The user chose another tab: the host layer tells the pages and the state, and shows the chrome again.
     private func selectTab(from previous: Int, to selected: Int) {
         host?.runtime.tabChosen(element, from: previous, to: selected)
-        refreshStacksBar()
-    }
-
-    /// The bar of the stack this page or arrangement stands in shows again, and the system's back follows it.
-    private func refreshStacksBar() {
-        host?.refreshBack()
-
-        var stack = parent
-        while let each = stack, NodeType.pageTypes.contains(each.type), each.type != .navigationStack {
-            stack = each.parent
-        }
-        stack?.refreshBar()
     }
 
     // MARK: - The way back

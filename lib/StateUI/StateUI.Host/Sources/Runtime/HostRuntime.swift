@@ -215,7 +215,8 @@
     }
 
     /// The user chose tab `selected` of `tabbed`, which showed `previous`: the pages hear it, then the state the
-    /// choice carries - in a turn taken here where nothing the choice carries takes one.
+    /// choice carries - in a turn taken here where nothing the choice carries takes one - and the window's chrome
+    /// shows again for the page the user sees, whether or not anything renders.
     /// Design: docs/design/host/pages.md#a-pages-phases
     public func tabChosen(_ tabbed: MountedElement, from previous: Int, to selected: Int) {
         let tabs = tabbed.children
@@ -227,6 +228,7 @@
         }
         tabbed.reportUserChange(.selectedTab, .selectedTabChanged, .number(Double(selected)), in: self) { _ in }
         pump.turnIfWanted()
+        presenter?.presentRendered(touchedChrome: true)
     }
 
     /// The sidebar of `split` showed or hid on screen: its page hears it, then the state its binding carries.

@@ -63,10 +63,9 @@ extension WebElement {
         }
     }
 
-    /// The user chose another tab: the host layer tells the pages and the state, and the chrome follows.
+    /// The user chose another tab: the host layer tells the pages and the state, and shows the chrome again.
     private func tabChosen(from previous: Int, to selected: Int) {
         host?.runtime.tabChosen(element, from: previous, to: selected)
-        host?.refreshChrome()
     }
 
     /// The sidebar showed or hid: the host layer tells its page and the state, and the chrome follows.
