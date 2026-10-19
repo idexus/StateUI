@@ -23,11 +23,11 @@ final class RatingBarElement: WebControl {
 
     init() {
         element.setAttribute("rating", String(rating))
-        element.listen("ratingchange") { [weak self] (chosen: Double) in
+        element.listen("ratingchange", number: { [weak self] chosen in
             guard let self else { return }
             rating = chosen
             onRatingChanged?(chosen)
-        }
+        })
     }
 
     // listing: InteropActsSample.Web.swift

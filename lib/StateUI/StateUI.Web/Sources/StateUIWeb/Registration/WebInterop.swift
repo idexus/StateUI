@@ -54,7 +54,7 @@ public final class WebPageElement {
 
     /// Runs `action` whenever the element raises `event`, handed the number its `detail` carries - a custom
     /// element's `CustomEvent`, `new CustomEvent("lamptap", { detail: 2 })`.
-    public func listen(_ event: String, _ action: @escaping @MainActor (Double) -> Void) {
+    public func listen(_ event: String, number action: @escaping @MainActor (Double) -> Void) {
         listen(event) { action(WebRelay.eventDetail) }
     }
 

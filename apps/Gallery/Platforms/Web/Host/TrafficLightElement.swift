@@ -26,7 +26,7 @@ final class TrafficLightElement: WebControl {
 
     init() {
         element.setAttribute("signal", String(signal.rawValue))
-        element.listen("lamptap") { [weak self] (index: Double) in self?.onLampTapped?(Int(index)) }
+        element.listen("lamptap", number: { [weak self] index in self?.onLampTapped?(Int(index)) })
     }
 }
 // listing: end

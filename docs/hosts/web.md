@@ -154,8 +154,8 @@ StateUIControls.add(Cube3DContract.self, create: { _ in WebGLCube3DView() }) { c
 The host places, sizes and shows the element as it does its own, and lets
 go of it with its element. The Gallery's cube - `<gallery-cube3d>`, WebGL 2
 on a canvas of its own - is `apps/Gallery/Platforms/Web/`. An element tells
-a number in its event's `detail` to `listen(_:_:)` handed a `Double`, and
-words to `listen(_:words:)`.
+a number in its event's `detail` to `listen(_:number:)` and words to
+`listen(_:words:)`.
 
 ### Children a control draws
 
