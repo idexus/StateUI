@@ -210,6 +210,10 @@
           "device": {
             "type": "string",
             "description": "The serial of the Android device the head runs on."
+          },
+          "launch": {
+            "type": "boolean",
+            "description": "A head run until stopped, which a launch of the same application on the same device replaces."
           }
         }
       }

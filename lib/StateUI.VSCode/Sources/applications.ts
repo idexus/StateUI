@@ -142,7 +142,12 @@ export function webSite(application: Application, configuration: "debug" | "rele
     return path.join(application.directory, ".build", "web", "site", configuration);
 }
 
-/** Where an application's WinUI head is, once `.scripts/WinUI/run-app.ps1` built it in `configuration`. */
+/**
+ * Where an application's WinUI head is, once `.scripts/WinUI/run-app.ps1` built it in `configuration`: where that build
+ * says it laid it - `.build/winui/<configuration>` is a link the last build of any architecture moved - else there.
+ */
 export function winUIProgram(application: Application, configuration: "debug" | "release"): string {
-    return path.join(application.directory, ".build", "winui", configuration, `${application.name}WinUI.exe`);
+    const build = path.join(application.directory, ".build", "winui");
+    const said = path.join(build, `${configuration}.program`);
+    return fs.existsSync(said) ? fs.readFileSync(said, "utf8").trim() : path.join(build, configuration, `${application.name}WinUI.exe`);
 }

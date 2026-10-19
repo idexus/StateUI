@@ -13,7 +13,7 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
-import { findApplications, hasHead } from "../Sources/applications";
+import { findApplications, hasHead, winUIProgram } from "../Sources/applications";
 import { checkoutNamedBy } from "../Sources/checkouts";
 import { configurations, StateUIDebugConfigurationProvider, uiKitAttach, webLaunch } from "../Sources/debug";
 import { parseDevices } from "../Sources/devices";
@@ -21,6 +21,7 @@ import { isChromium, parseBrowsers } from "../Sources/browsers";
 import { parseDevices as parseUIKitDevices, parseSimulators, simulatorForSuites } from "../Sources/uiKitDevices";
 import { otherHostsExcluded, serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
 import { findSuites, forDevice } from "../Sources/tests";
+import { givesWay } from "../Sources/tasks";
 import { availableHosts, describe, environment, Host, hosts } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 import { nameProblem, scaffolderCommand } from "../Sources/newApplication";
@@ -318,6 +319,24 @@ export async function run(): Promise<void> {
                 && back.swiftPM?.scratchPath === ".build/appkit/index-build" && !("triple" in back.swiftPM!) && !("sdk" in back.swiftPM!));
             check("with no simulator SDK found UIKit indexes for this Mac",
                 JSON.stringify(serverSettings("uikit", undefined, undefined)) === JSON.stringify({ scratchPath: ".build/uikit/index-build" }));
+        }
+        {
+            const directory = fs.mkdtempSync(path.join(os.tmpdir(), "stateui-winui-"));
+            const notes = { name: "Notes", directory } as Parameters<typeof winUIProgram>[0];
+            const before = winUIProgram(notes, "release");
+            fs.mkdirSync(path.join(directory, ".build", "winui"), { recursive: true });
+            fs.writeFileSync(path.join(directory, ".build", "winui", "release.program"), "C:\\built\\NotesWinUI.exe");
+            check("a WinUI launch runs the head where its build says it laid it, not where the link last pointed",
+                before === path.join(directory, ".build", "winui", "release", "NotesWinUI.exe")
+                && winUIProgram(notes, "release") === "C:\\built\\NotesWinUI.exe");
+            fs.rmSync(directory, { recursive: true, force: true });
+        }
+        {
+            const launch = { type: "stateui", launch: true, application: "Notes", configuration: "debug", device: "SIM-1" };
+            const deploy = { type: "stateui", application: "Notes", configuration: "release", device: "SIM-1" };
+            check("a launch replaces a launch of the same application on the same device, never a deploy or a build",
+                givesWay(launch, launch) && !givesWay(deploy, launch) && !givesWay(launch, { ...launch, device: "SIM-2" })
+                && !givesWay(launch, { ...launch, application: "Other" }));
         }
         {
             const phone = { id: "P", name: "Paweł's iPhone", kind: "device" as const, os: "27.0", state: "USB" };

@@ -62,6 +62,9 @@ Write-Host "laying the Windows App SDK beside ${name}WinUI.exe"
 $bin = (swift build --package-path $application -c $Configuration --scratch-path $scratch --show-bin-path @arch).Trim()
 $executable = Join-Path $bin "${name}WinUI.exe"
 Set-StateUISelfContained -Directory $bin -Executables $executable -Architecture $Architecture
+# Where this build laid the head, which a launch reads: .build\winui\<configuration> is a link the last build of any
+# architecture moved.
+[IO.File]::WriteAllText((Join-Path $scratch "$Configuration.program"), $executable)
 
 # The application's pictures stand beside it, where its WinUI host reads them.
 $images = Join-Path $application 'Resources\Images'
