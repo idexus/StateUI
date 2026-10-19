@@ -1,4 +1,4 @@
-#if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
+#if APPKIT || UIKIT || ANDROID || WINUI || GTK || WEB
 import StateUI
 
 /// Events the host raises on its own, heard with no control behind them.

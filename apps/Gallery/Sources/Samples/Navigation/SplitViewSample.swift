@@ -17,7 +17,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
     // listing: SplitViewSample
     var body: some View {
         VStack {
-            Text("Open the menu: every row in it is a view. A narrower window lays it over the page.")
+            Text("Open the menu - every row in it a view - and narrow the window to lay it over the page.")
                 .fontSize(14)
 
             SwitchRow("Menu open", nav.$menuOpen)

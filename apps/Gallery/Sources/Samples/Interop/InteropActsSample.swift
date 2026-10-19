@@ -1,4 +1,4 @@
-#if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
+#if APPKIT || UIKIT || ANDROID || WINUI || GTK || WEB
 import StateUI
 
 /// Functions the application registers with its host, called like the acts the

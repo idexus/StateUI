@@ -67,12 +67,12 @@ struct WindowSample: SampleContent, ExampleContent {
             }
             .spacing(10)
 
-            option("Maximize", id: "window.maximize", value: $maximizable)
+            option("Can maximize", id: "window.maximize", value: $maximizable)
                 .onChanged(maximizable) {
                     window.isMaximizable = maximizable
                 }
 
-            option("Minimize", id: "window.minimize", value: $minimizable)
+            option("Can minimize", id: "window.minimize", value: $minimizable)
                 .onChanged(minimizable) {
                     window.isMinimizable = minimizable
                 }

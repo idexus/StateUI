@@ -53,7 +53,7 @@ final class Catalog {
             Self.dateTimeGroup(nav: nav, style: style, bar: bar, log: log),
         ]
 
-        #if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
+        #if APPKIT || UIKIT || ANDROID || WINUI || GTK || WEB
         // Calling the host, hearing from it, and a control the application registers with it - each described like
         // the library's own: one contract, one `View`, and the host's half beside the head, in Platforms/<host>.
         groups.append(
@@ -106,8 +106,7 @@ final class Catalog {
             route: "driven",
             title: "Driven values",
             summary: "The second layer: a value handed on with $ and carried by the "
-                + "host on its own frames - engines follow it and nothing is "
-                + "described. A layout moved by one is under Layout Engine.",
+                + "host on its own frames, engines following it with nothing described.",
             icon: ImageSource(light: "nav_driven.png", dark: "nav_driven_dark.png"),
             card: ImageSource("cat_driven.png"),
             samples: [
@@ -491,7 +490,7 @@ final class Catalog {
     /// The animation the host draws on the GPU. Every host draws it in its own way; a build for no host - the
     /// gallery's own tests - has nothing to draw it with, so it declares no cube.
     private static var drawnByTheHost: [Sample] {
-        #if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
+        #if APPKIT || UIKIT || ANDROID || WINUI || GTK || WEB
         [Sample(Cube3DSample())]
         #else
         []

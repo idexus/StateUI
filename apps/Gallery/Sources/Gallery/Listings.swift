@@ -1472,7 +1472,7 @@ enum Listings {
             let look: StyleKey<Button>? = platformLook ? .platform : nil
 
             return VStack {
-                Text("Share opens its menu. Save saves, its arrow offers more. Hold Open for a recent file.")
+                Text("Try each menu: Share's on a click, Save's on its arrow, Open's when held.")
 
                 HStack {
                     Button("Share").style(look).menu {
@@ -9287,7 +9287,7 @@ enum Listings {
         """#,
         "ShapesSample": #"""
         // Sources/Samples/Shapes/ShapesSample.swift
-        @State private var rule = FillRule.evenOdd
+        @State private var evenOdd = true
 
         /// A pentagram: five points, each joined to the one two along, so the
         /// outline crosses itself - which is the whole point of a fill rule.
@@ -9449,14 +9449,13 @@ enum Listings {
 
                 Polygon(Self.star)
                     .fill(Palette.accent)
-                    .fillRule(rule)
+                    .fillRule(evenOdd ? .evenOdd : .nonzero)
                     .width(56)
                     .height(56)
                     .horizontalAlignment(.center)
 
-                Button("fillRule: .\(rule)")
+                SwitchRow("Even-odd fill", $evenOdd)
                     .horizontalAlignment(.center)
-                    .onClicked { rule = rule == .evenOdd ? .nonzero : .evenOdd }
             }
             .spacing(12)
         }
@@ -9621,7 +9620,7 @@ enum Listings {
 
         var body: some View {
             VStack {
-                Text("Open the menu: every row in it is a view. A narrower window lays it over the page.")
+                Text("Open the menu - every row in it a view - and narrow the window to lay it over the page.")
 
                 SwitchRow("Menu open", nav.$menuOpen)
                     .horizontalAlignment(.center)
@@ -11442,12 +11441,12 @@ enum Listings {
                     }
                 }
 
-                option("Maximize", id: "window.maximize", value: $maximizable)
+                option("Can maximize", id: "window.maximize", value: $maximizable)
                     .onChanged(maximizable) {
                         window.isMaximizable = maximizable
                     }
 
-                option("Minimize", id: "window.minimize", value: $minimizable)
+                option("Can minimize", id: "window.minimize", value: $minimizable)
                     .onChanged(minimizable) {
                         window.isMinimizable = minimizable
                     }
@@ -11532,7 +11531,7 @@ enum Listings {
     ]
 }
 
-#if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
+#if APPKIT || UIKIT || ANDROID || WINUI || GTK || WEB
 extension Listings {
     /// The hosts' own code, which only a host's build shows.
     fileprivate static let ofHosts: [String: String] = [

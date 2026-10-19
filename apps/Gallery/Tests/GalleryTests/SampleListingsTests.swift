@@ -102,7 +102,7 @@ final class SampleListingsTests: XCTestCase {
                 ]
             }
 
-            #if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
+            #if APPKIT || UIKIT || ANDROID || WINUI || GTK || WEB
             extension Listings {
                 /// The hosts' own code, which only a host's build shows.
                 fileprivate static let ofHosts: [String: String] = [

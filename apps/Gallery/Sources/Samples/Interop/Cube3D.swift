@@ -1,4 +1,4 @@
-#if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
+#if APPKIT || UIKIT || ANDROID || WINUI || GTK || WEB
 // A control of the application's OWN that draws with the GPU: an `MTKView`
 // drawing with Metal on AppKit and UIKit, a `GtkGLArea` drawing with OpenGL 3.3
 // on GTK, a `SwapChainPanel` drawing with Direct3D 11.1 on WinUI, a

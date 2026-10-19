@@ -698,7 +698,7 @@ final class CatalogTests: XCTestCase {
     }
 
 
-    #if APPKIT || UIKIT || GTK || WINUI || ANDROID
+    #if APPKIT || UIKIT || ANDROID || WINUI || GTK
     /// Every example of this host's interop group shows both halves, named by
     /// what they ARE: the application's half "In StateUI", and the host's in
     /// each language it is written in - its Swift first, then the relay
