@@ -6,6 +6,7 @@
 Package.swift                      StateUI's core package, its sources in lib/StateUI/Core
 lib/StateUI/Core/Sources/          platform-neutral StateUI
 lib/StateUI/Core/Tests/            core tests and shared test support
+lib/StateUI/Foundation/            StateUIFoundation: the platform's C library and its basics, and their tests
 lib/StateUI/StateUI.Host/          the host layer every host stands on, and its tests
 lib/StateUI/StateUI.Conformance/   the conformance suite every host's tests run
 lib/StateUI/exports/               what each host's runs declare and prove, the marks
