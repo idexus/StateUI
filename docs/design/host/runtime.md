@@ -864,7 +864,8 @@ tenth; a stepped number is written with as many decimals as its step,
 its ends and its value take, so each reads exactly, and no more than six;
 and a stepper's step moves only away from the range's end it stands at
 (`ValueArithmetic.stepsWay`), its button of that way standing disabled where
-the host draws the buttons itself.
+the host draws the buttons itself. Where it does, one step moves a whole step
+from the value and stops at the range's end (`ValueArithmetic.step(from:)`).
 
 Such a control is written, as its value and its ends apply, by one rule
 (`ElementValues.written`): the tree's value where the tree changed the value

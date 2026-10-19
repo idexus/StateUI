@@ -32,8 +32,8 @@ final class AndroidStepperView: AndroidView {
             button.setLeastSize(width: pixels(48), height: pixels(48))
             Java.call(reference, JavaAPI.addView, .object(button.reference), .int(-2), .int(-2))
         }
-        down.onClicked = { [weak self] in self?.stepped(by: -1) }
-        up.onClicked = { [weak self] in self?.stepped(by: 1) }
+        down.onClicked = { [weak self] in self?.stepped(up: false) }
+        up.onClicked = { [weak self] in self?.stepped(up: true) }
     }
 
     override func watchTouches(_ hearing: Hearing) {
@@ -44,7 +44,7 @@ final class AndroidStepperView: AndroidView {
     /// the value, held in the range.
     func apply(value: Double, minimum: Double, maximum: Double, step: Double, enabled: Bool) {
         (lowest, highest) = ValueArithmetic.range(minimum, maximum)
-        self.step = ValueArithmetic.step(step)
+        self.step = step
         self.enabled = enabled
         self.value = min(max(value, lowest), highest)
         setEnabled(enabled)
@@ -52,8 +52,8 @@ final class AndroidStepperView: AndroidView {
     }
 
     /// The user stepped once, down or up.
-    private func stepped(by direction: Double) {
-        let stepped = min(max(value + direction * step, lowest), highest)
+    private func stepped(up: Bool) {
+        let stepped = ValueArithmetic.step(from: value, up: up, step: step, lower: lowest, upper: highest)
         guard stepped != value else { return }
 
         value = stepped

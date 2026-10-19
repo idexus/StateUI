@@ -51,6 +51,12 @@
         (value > lower, value < upper)
     }
 
+    /// Where a stepper's one step takes `value`: a whole `step` down or up, stopping at the range's end.
+    /// Design: docs/design/host/runtime.md#a-value-in-a-range
+    public static func step(from value: Double, up: Bool, step: Double, lower: Double, upper: Double) -> Double {
+        Swift.min(Swift.max(value + (up ? 1 : -1) * Self.step(step), lower), upper)
+    }
+
     /// How far a slider's thumb moves for a key and for a page: a hundredth and a tenth of its range.
     public static func sliderSteps(lower: Double, upper: Double) -> (key: Double, page: Double) {
         let span = upper - lower
