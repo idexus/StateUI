@@ -59,7 +59,7 @@ lib/StateUI/Core/Sources/
     Shapes/ Collections/
     Styles/ Inspector/              styles and visual states, the inspector
   Types/         the values an application passes, and how each crosses
-    Geometry/ Layout/ Colour/ Drawing/ Text/ Time/
+    Geometry/ Layout/ Colour/ Drawing/ Text/ Time/ Keyboard/ Localization/
     Motion/ Gestures/ Environment/ Sessions/ Controls/ Collections/ Files/
   Contracts/     the library's contracts, and LibraryContracts
     Elements/    one contract per node type, in its view's topic folder
@@ -630,6 +630,10 @@ never against a stored copy
   condition, and a library that exports no C function;
   `RuntimeArchitectureTests` reads the layer's and every host's sources
   ([what a host never does](host-layer.md#what-a-host-never-does));
+  `HeldByNumberTests` holds every number a host hands out to the one count;
+  `RelayVocabularyTests` holds every vocabulary a relay numbers by hand to
+  the Swift it mirrors; `ConformanceCaseTests` holds the conformance cases to
+  the session's rules;
   `ToolchainTests`, `ReleaseTests`, `AppsTests` and `VsCodeTests` keep one
   Swift release, one version, the applications and the editor.
 - **The host layer's suite**, `swift test --package-path lib/StateUI/StateUI.Host`,

@@ -47,11 +47,12 @@ Swift protocols behind them refine each other.
                      DatePicker, Divider, Image, Text, Map, Picker,
                      ProgressBar, RadioButton, ScrollView, Slider, Spacer,
                      Stepper, Switch, TimePicker, WebView, ItemsView
-  Layout             Grid, ZStack
+  Layout             Grid, LayoutEngine, ZStack
   Stack              HStack, VStack
   TextInput          SearchField, TextEditor, TextField
-  Shape              Ellipse, Line, Path, Polygon, Polyline, Rectangle
-  FilledShape        Ellipse, Path, Polygon, Polyline, Rectangle
+  Shape              Capsule, Ellipse, Line, Path, Polygon, Polyline,
+                     Rectangle
+  FilledShape        Capsule, Ellipse, Path, Polygon, Polyline, Rectangle
   CorneredShape      Path, Polygon, Polyline, Rectangle
   AutomationElement  every View, MenuItem, ToolbarItem, NavigationStack,
                      TabView, SplitView
@@ -65,8 +66,9 @@ Swift protocols behind them refine each other.
   PageElement        Page, NavigationStack, TabView, SplitView
   BarElement         NavigationStack, TabView, SplitView, ModalStack
   text tiers only    TextSpan
-  no tier            Application, Scene, Window, Menu, MenuSeparator, ContextMenu,
-                     Overlay, Marker, and the slots and collections
+  no tier            Application, Scene, Window, MenuBar, Menu, ButtonMenu,
+                     MenuSeparator, ContextMenu, Overlay, Marker, and the
+                     slots and collections
 ```
 
 An element adds the smaller tiers it needs beside its main one: a `Button`

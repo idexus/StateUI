@@ -447,6 +447,8 @@ The core's suite also guards the project itself, in
 
 - `AppsTests` - every path an application's manifest names resolves, and the
   scaffolder makes a new application from `apps/HelloWorld`;
+- `ConformanceCaseTests` - a conformance case sees that nothing happened only
+  after a turn of the pump, and waits on the clock only for another process;
 - `DocumentLinksTests` - every relative link in every Markdown document of
   the repository names a file or a folder that exists;
 - `ReleaseTests` - every place that names the release names the one
@@ -455,11 +457,16 @@ The core's suite also guards the project itself, in
 - `LicenceTests` - every source under `lib/` starts with the two SPDX lines;
 - `DocumentationTests` - every public declaration of the library has its
   `///`;
+- `HeldByNumberTests` - every number a host hands out is the process's one
+  count's, and what a host holds by number stands in the shared tables;
 - `DesignNotesTests` - every `Design:` reference in a source names a note and
   a heading that exist, and in each directory it holds, comments stay under a
   quarter of each file's lines;
 - `NativeProjectTests` - each host package and head keeps its shape, and
   shared Swift names a host only under its condition;
+- `RelayVocabularyTests` - every closed vocabulary a relay numbers by hand in
+  Java, C or JavaScript stands name for name and number for number with the
+  Swift enum it mirrors;
 - `RuntimeArchitectureTests` - each host holds only what its toolkit makes it
   write, and does not do again what the host layer does;
 - `ToolchainTests` - every place that names the Swift release, the Xcode, the
@@ -471,7 +478,7 @@ The core's suite also guards the project itself, in
 
 ## Diagnostics
 
-The inspector and two switches say what each render costs and builds. None
+The inspector and three switches say what each render costs and builds. None
 records anything while it is off.
 
 The inspector shows the renders inside the running application: each one's
@@ -492,9 +499,13 @@ an Android application sends to logcat:
 - `STATEUI_TALLY=1` - the running totals: messages applied, controls made and
   kept, renders, the elements alive, the runs under way or waiting and the host's
   own views alive, the numbers that tell a page left in memory from one let go;
-- `STATEUI_INSPECT=1` - every render the inspector records, from the first.
+- `STATEUI_INSPECT=1` - every render the inspector records, from the first;
+- `STATEUI_PROBE=1` - where the runtime's time goes, stage by stage: each
+  stage's milliseconds in the last second, how often it ran and its longest
+  run, one line a second (`HostProbe`); on the Web also what the page spends,
+  second by second, as `?STATEUI_PROBE=1` in its address.
 
-The host layer's runtime reads both from the process's environment as it
+The host layer's runtime reads them from the process's environment as it
 starts (`DiagnosticText`), so they hold on every host. The Android, WinUI,
 GTK and Web run scripts hand every `STATEUI_` variable of the shell that runs
 them to the application - the Web's as a parameter of the page's address:
@@ -504,7 +515,7 @@ STATEUI_TALLY=1 .scripts/GTK/run-app.sh apps/Gallery
 ```
 
 [Build diagnostics](interface/composition-and-identity.md#build-diagnostics)
-covers both, and `debugInfo()`, which says why the composed view it is called
+covers the first two, and `debugInfo()`, which says why the composed view it is called
 in is being built.
 
 ## Distribution boundary

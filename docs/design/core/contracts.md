@@ -190,7 +190,9 @@ what it leaves to the application and each backend no one registered: every
 other element of the library's is realized, and so is every element and member
 the registry names, the application's own controls and the events its head
 declared among them. Until a host says, the core knows of nothing realized and
-says nothing.
+says nothing. With it the host hands its register, which the core reads when
+first asked rather than as it is handed: building one costs, and a host hands
+it at each start.
 
 ## What a platform honours
 

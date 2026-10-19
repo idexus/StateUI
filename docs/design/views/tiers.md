@@ -126,7 +126,7 @@ style without also giving it the modifiers of `View`.
 
 ## Shapes
 
-Rectangle, Ellipse, Line, Path, Polygon and Polyline share one drawing
+Rectangle, Capsule, Ellipse, Line, Path, Polygon and Polyline share one drawing
 vocabulary, the shape tier, checked once by the shared case rather than once
 per shape. `geometryTransform` transforms the path each shape makes, so one
 modifier means one thing on all of them and the stroke follows the transformed

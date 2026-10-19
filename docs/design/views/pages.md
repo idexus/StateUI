@@ -148,7 +148,7 @@ built with its parent and the view is compared on its own.
 What a screen is - its title and icon, its background, whether the navigation
 bar and the way back show, the back button's words, the phases it hears - is
 said by modifiers on the view a page shows: `.title`, `.icon`,
-`.pageBackground`, `.showsNavigationBar`, `.showsBackButton`,
+`.pageBackground`, `.showsNavigationBar`, `.showsTitle`, `.showsBackButton`,
 `.backButtonTitle`, `.onAppearing`, `.onDisappearing`, `.onNavigatedTo`,
 `.onNavigatingFrom`, `.onNavigatedFrom`. A phase modifier takes a handler and
 the others a value; a value taken from a state, `$x`, is a channel the host

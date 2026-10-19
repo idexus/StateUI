@@ -19,8 +19,9 @@ carries. It crosses as `.enumeration`, which one line of
 
 ## Written out and appended
 
-The numbers follow declaration order from 0, and every case writes its
-number out. A case inserted in the middle would renumber every case after it,
+Every case writes its number out, rising in declaration order - most
+vocabularies from 0; one may start elsewhere or leave a gap, as `NamedKey`
+counts from 1 and leaves one before the function keys. A case inserted in the middle would renumber every case after it,
 silently: every patch and every dump would say another number for the same
 member, with nothing failing anywhere. Seeing the numbers is what makes that
 hard to do by accident.
@@ -33,8 +34,9 @@ value written out as text.
 ## Flag sets carry bits
 
 `FontAttributes`, `TextDecorations` and `SwipeDirection` are option sets, so `.underline` and
-`[.underline, .strikethrough]` both work. Their bits are StateUI's own by the same rule, `1 << 0` upwards in
-declaration order, and a composite such as `.all` is the OR of its parts. A
+`[.underline, .strikethrough]` both work. Their bits are StateUI's own by the same rule, each written out
+and rising in declaration order - not always from `1 << 0`: `FontAttributes.italic` is `1 << 1` - and a
+composite such as `.all` is the OR of its parts. A
 set crosses as one `.enumeration` holding its bits.
 
 ## A kind first
