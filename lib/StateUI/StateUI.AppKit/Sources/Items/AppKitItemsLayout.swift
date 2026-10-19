@@ -15,6 +15,10 @@ enum AppKitItemsLayout {
     static let footer = "StateUI.footer"
     static let listHeader = "StateUI.listHeader"
     static let listFooter = "StateUI.listFooter"
+
+    /// The room an entry keeps along the list before it is measured, down and across (`ItemsCells.estimatedExtent`).
+    private static let estimateDown = ItemsCells.estimatedExtent(across: false)
+    private static let estimateAcross = ItemsCells.estimatedExtent(across: true)
     static let kinds = [header, footer, listHeader, listFooter]
 
     /// What one of the collection's sections holds: the list's own header or footer of an identity, each alone in a
@@ -61,13 +65,13 @@ enum AppKitItemsLayout {
     private static func section(_ layout: ItemsLayout, width: CGFloat) -> NSCollectionLayoutSection {
         switch layout {
         case .list(let spacing):
-            let size = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(44))
+            let size = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(estimateDown))
             let group = NSCollectionLayoutGroup.vertical(layoutSize: size, subitems: [NSCollectionLayoutItem(layoutSize: size)])
             let section = NSCollectionLayoutSection(group: group)
             section.interGroupSpacing = spacing
             return section
         case .row(let spacing):
-            let size = NSCollectionLayoutSize(widthDimension: .estimated(100), heightDimension: .fractionalHeight(1))
+            let size = NSCollectionLayoutSize(widthDimension: .estimated(estimateAcross), heightDimension: .fractionalHeight(1))
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitems: [NSCollectionLayoutItem(layoutSize: size)])
             let section = NSCollectionLayoutSection(group: group)
             section.interGroupSpacing = spacing
@@ -75,9 +79,9 @@ enum AppKitItemsLayout {
         case .grid(let minimum, let spacing):
             let columns = ItemsGrid.columns(width: width, minimumItemWidth: minimum, spacing: spacing)
             let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1 / CGFloat(columns)), heightDimension: .estimated(44)))
+                widthDimension: .fractionalWidth(1 / CGFloat(columns)), heightDimension: .estimated(estimateDown)))
             let group = NSCollectionLayoutGroup.horizontal(
-                layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(44)),
+                layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(estimateDown)),
                 subitem: item, count: columns)
             group.interItemSpacing = .fixed(spacing)
             let section = NSCollectionLayoutSection(group: group)
@@ -91,8 +95,8 @@ enum AppKitItemsLayout {
         _ kind: String, across: Bool, before: Bool
     ) -> NSCollectionLayoutBoundarySupplementaryItem {
         let size = across
-            ? NSCollectionLayoutSize(widthDimension: .estimated(100), heightDimension: .fractionalHeight(1))
-            : NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(44))
+            ? NSCollectionLayoutSize(widthDimension: .estimated(estimateAcross), heightDimension: .fractionalHeight(1))
+            : NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(estimateDown))
         let alignment: NSRectAlignment = across ? (before ? .leading : .trailing) : (before ? .top : .bottom)
         return NSCollectionLayoutBoundarySupplementaryItem(layoutSize: size, elementKind: kind, alignment: alignment)
     }

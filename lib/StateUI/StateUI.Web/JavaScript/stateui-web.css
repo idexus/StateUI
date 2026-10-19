@@ -413,8 +413,8 @@ body {
 .stateui-items[data-layout="grid"] > .stateui-items-content { display: grid; align-content: start; }
 .stateui-items[data-layout="grid"] .stateui-item[data-part] { grid-column: 1 / -1; }
 .stateui-item { flex: none; }
-.stateui-item:empty { min-height: 44px; }
-.stateui-items[data-layout="row"] .stateui-item:empty { min-height: 0; min-width: 44px; }
+.stateui-item:empty { min-height: var(--stateui-item-down); }
+.stateui-items[data-layout="row"] .stateui-item:empty { min-height: 0; min-width: var(--stateui-item-across); }
 .stateui-item[aria-selected] { cursor: pointer; border-radius: 8px; }
 .stateui-item[aria-selected="true"] { background: color-mix(in srgb, var(--stateui-accent) 16%, transparent); }
 

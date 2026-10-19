@@ -18,11 +18,26 @@
     func letGo()
 }
 
+@_spi(Host) extension ItemsHolding {
+    /// Whether the cell is to show `item` anew, its view `showing` a subtree or not: another entry than it shows, an
+    /// entry where its view shows nothing, or nothing where its view shows one.
+    public func showsAnew(_ item: MountedElement?, viewShowing showing: Bool) -> Bool {
+        item !== shown || showing != (item != nil)
+    }
+}
+
 /// What a platform's collection holds of one ItemsView, and what it tells the tree - alike on every host: the
 /// entries in order, the ones held in cells and built for them, the user's choice and opening in the list's order,
 /// and the end reached.
 /// Design: docs/design/host/items.md
 @_spi(Host) @MainActor public final class ItemsCells {
+    /// The room a cell keeps along the list before its entry is measured: a row's height down, an item's width
+    /// across - so the collection asks for about as many entries as it shows.
+    /// Design: docs/design/host/items.md#a-cell-before-its-entry
+    public static func estimatedExtent(across: Bool) -> Double {
+        across ? 100 : 44
+    }
+
     /// The ItemsView, while it stands in the tree: the toolkit may call its collection back after it left.
     public private(set) weak var element: MountedElement?
 

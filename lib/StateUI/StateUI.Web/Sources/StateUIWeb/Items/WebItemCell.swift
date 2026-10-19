@@ -29,7 +29,7 @@ final class WebItemCell: WebLayoutView, ItemsHolding {
 
     func hold(_ identity: String, _ item: MountedElement?) {
         self.identity = identity
-        guard item !== shown || children.isEmpty != (item == nil) else { return }
+        guard showsAnew(item, viewShowing: !children.isEmpty) else { return }
         shown = item
         let placed = item?.web.placedElement
         if placed != nil { keep(nil) }

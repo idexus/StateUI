@@ -43,6 +43,17 @@ After every patch to the list, `childrenChanged` holds each cell to the
 subtree its entry has now: one built with the turn under way, or built
 again after the one before was let go.
 
+## A cell before its entry
+
+A cell keeps, before its entry is measured, the room the host layer says
+(`ItemsCells.estimatedExtent`): a row's 44 points down a list and a grid, an
+item's 100 points across a row. Measured of nothing, every cell would fit in
+view at once and the collection would ask for every entry; an estimate too
+narrow across would make a row ask for more entries than it shows. A cell
+shows its entry anew (`ItemsHolding.showsAnew`) only where it is another
+entry, or where its view and the entry disagree on whether there is a
+subtree to show.
+
 ## Within reach
 
 Every render walks the whole tree, so a render a cell would make a scroll

@@ -33,7 +33,7 @@ final class AppKitItemHolding: ItemsHolding {
 
     func hold(_ identity: String, _ item: MountedElement?) {
         self.identity = identity
-        guard item !== shown || (holder.item == nil) != (item == nil) else { return }
+        guard showsAnew(item, viewShowing: holder.item != nil) else { return }
         taking = true
         defer { taking = false }
         shown = item

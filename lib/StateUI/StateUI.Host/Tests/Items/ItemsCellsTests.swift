@@ -79,6 +79,27 @@ final class ItemsCellsTests: XCTestCase {
         cells.takeEntries()
     }
 
+    /// A cell shows an entry anew where it is another than the one it shows, or where its view and the entry
+    /// disagree on whether there is a subtree to show; the same entry already in its view is left alone.
+    func testACellShowsAnEntryAnewOnlyWhereItChanges() throws {
+        let item = try XCTUnwrap(cells.element)
+        let cell = Cell()
+        XCTAssertTrue(cell.showsAnew(item, viewShowing: false), "an entry where none is shown")
+        cell.hold("0", item)
+        XCTAssertFalse(cell.showsAnew(item, viewShowing: true), "the same entry, shown")
+        XCTAssertTrue(cell.showsAnew(item, viewShowing: false), "the same entry, its view emptied")
+        XCTAssertTrue(cell.showsAnew(nil, viewShowing: true), "nothing where a subtree is shown")
+        cell.letGo()
+        XCTAssertFalse(cell.showsAnew(nil, viewShowing: false), "nothing, and nothing shown")
+    }
+
+    /// A cell keeps, before its entry is measured, the room of a row down a list and of an item across a row - one
+    /// estimate for every host, wide enough across that a row asks for about as many entries as it shows.
+    func testACellKeepsOneEstimateBeforeItsEntryIsMeasured() {
+        XCTAssertEqual(ItemsCells.estimatedExtent(across: false), 44)
+        XCTAssertEqual(ItemsCells.estimatedExtent(across: true), 100)
+    }
+
     /// Every identity is taken in order, and nothing is built before a cell holds it.
     func testTheEntriesAreTakenAndNothingIsBuiltUnasked() {
         XCTAssertEqual(cells.identities.count, 100)
