@@ -123,8 +123,10 @@ A bar's action that is a menu opens its entries under it. The actions
 standing behind the bar - its overflow - and the menus the page's path
 declares stand in one menu at the bar's end, the overflow first. A view
 whose element declares a context menu opens it as the user asks: a right
-click, or a finger held still half a second; its entries are read as they
-stand then.
+click, or a finger held still the host layer's hold (`HandReading.hold`) -
+still meaning no farther from where it pressed than a finger goes before
+its press is a drag (`WebPress.finger`), so steps each too short to count
+still add up; its entries are read as they stand then.
 
 ## Sheets
 

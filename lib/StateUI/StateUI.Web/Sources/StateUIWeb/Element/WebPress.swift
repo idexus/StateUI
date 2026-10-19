@@ -33,9 +33,12 @@ struct WebPress {
     /// Whether the press the user lets go of last was dragged, so its click is no tap.
     private(set) var wasDragged = false
 
+    /// How far a finger moves, in points, before its press is a drag.
+    static let finger = 10.0
+
     /// How far a pointer of `kind` - 0 a mouse, 1 a pen, 2 a touch - moves before its press is a drag.
     static func distance(for kind: Int) -> DragRecognition.Distance {
-        .radius(kind == 2 ? 10 : 4)
+        .radius(kind == 2 ? finger : 4)
     }
 
     /// A pointer of `kind` went down at `point` on the page: the first a press that may become a drag; a second

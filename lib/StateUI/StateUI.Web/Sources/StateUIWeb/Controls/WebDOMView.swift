@@ -143,6 +143,13 @@ class WebDOMView {
         WebRelay.listen(node, event, listener)
     }
 
+    /// Runs `action` whenever the user asks for the element's menu: a right click, or a finger held still.
+    func listenForMenu(_ action: @escaping @MainActor () -> Void) {
+        let listener = WebRelay.listener(action)
+        listeners.append(listener)
+        WebRelay.listenForMenu(node, listener)
+    }
+
     /// Says when a pointer takes hold of the element, and once when it lets go - lifted, called off, or gone off it.
     func listenForHolding(pressed: @escaping @MainActor () -> Void, released: @escaping @MainActor () -> Void) {
         var holding = false

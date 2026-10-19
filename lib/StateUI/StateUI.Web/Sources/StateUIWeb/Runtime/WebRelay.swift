@@ -150,6 +150,11 @@ enum WebRelay {
         utf8(event) { stateui_web_listen(element, $0, $1, listener) }
     }
 
+    /// Calls `listener` as the user asks for the element's menu: a right click, or a finger held still.
+    static func listenForMenu(_ element: Int32, _ listener: Int32) {
+        stateui_web_listen_menu(element, HandReading.hold, WebPress.finger, listener)
+    }
+
     /// The number at `index` of the event being heard - what a listener of its kind is told.
     static func eventNumber(_ index: Int) -> Double { stateui_web_event_number(Int32(index)) }
 

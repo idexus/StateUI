@@ -67,9 +67,12 @@ STATEUI_WEB(copy_read) void stateui_web_copy_read(char *into);
 
 /// Calls listener `listener` whenever the element hears `event`: a DOM event's name; `enter` for the Return key;
 /// `activate` for Return or Space pressed on the element itself; `itemtap` for a click on it but on no control inside
-/// it; `dismiss` for the user's asking a modal dialog to close; `closed` for a popover taken down; `menu` for the
-/// user's asking for the element's menu - a right click, a finger held still.
+/// it; `dismiss` for the user's asking a modal dialog to close; `closed` for a popover taken down.
 STATEUI_WEB(listen) void stateui_web_listen(int32_t element, const char *event, int32_t length, int32_t listener);
+
+/// Calls listener `listener` whenever the user asks for the element's menu: a right click, or a finger held `hold`
+/// milliseconds no farther than `reach` points from where it pressed.
+STATEUI_WEB(listen_menu) void stateui_web_listen_menu(int32_t element, double hold, double reach, int32_t listener);
 
 /// What the event a listener is hearing carries: 0 how many clicks it counts, 1 and 2 where the pointer is from the
 /// listening element's top left corner; 3 the pointer's number, 4 and 5 where it is on the page, 6 its kind - 0 a

@@ -103,6 +103,44 @@ final class WebHandTests: XCTestCase {
         XCTAssertEqual(zoom.wrappedValue, 2, "twice as far from the middle: twice as large")
     }
 
+    /// A FINGER HELD STILL ASKS FOR A VIEW'S MENU, ONE DRAGGED SLOWLY ASKS FOR NONE: how far it went is measured from
+    /// where it pressed, so steps each too short to count add up to a drag - on a view that takes the touch from the
+    /// page, which pans it, and calls the press off, no more.
+    func testAFingerDraggedSlowlyAsksForNoMenu() throws {
+        let host = WebRenderer.running {
+            Rectangle().fill(.blue).width(200).height(200)
+                .onPanUpdated { _ in }
+                .contextMenu { MenuItem("Copy") }
+                .id("shape")
+        }
+        host.step()
+        let shape = try XCTUnwrap((host.runtime.tree.root?.first(id: .manual("shape"))?.native as? WebElement)?.view)
+        let left = try XCTUnwrap(WebBrowser.number("e.getBoundingClientRect().left", on: shape.node))
+        let top = try XCTUnwrap(WebBrowser.number("e.getBoundingClientRect().top", on: shape.node))
+        let open = "[...document.querySelectorAll('.stateui-menu')].some((m) => m.matches(':popover-open'))"
+
+        func asksForTheMenu(steps: Int, of step: Double) throws -> Bool {
+            let pressed = Point(x: left + 40, y: top + 100)
+            WebBrowser.ask([("touch", .words("touchStart")), ("points", .points([pressed]))])
+            for each in 0..<steps {
+                let at = Point(x: pressed.x + step * Double(each + 1), y: pressed.y)
+                WebBrowser.ask([("touch", .words("touchMove")), ("points", .points([at]))])
+            }
+            let began = try XCTUnwrap(WebBrowser.number("performance.now()", on: 0))
+            while try XCTUnwrap(WebBrowser.number("performance.now()", on: 0)) - began < HandReading.hold + 200 {
+                WebBrowser.pause()
+            }
+            let asked = try WebBrowser.truth(open, on: 0)
+            WebBrowser.ask([("touch", .words("touchEnd")), ("points", .points([]))])
+            try WebBrowser.run("document.querySelectorAll('.stateui-menu').forEach((m) => m.hidePopover?.())")
+            return asked
+        }
+
+        XCTAssertTrue(try asksForTheMenu(steps: 0, of: 0), "a finger held still")
+        XCTAssertFalse(try asksForTheMenu(steps: 10, of: 3), "a finger dragged 30 points, 3 a step")
+        host.leave()
+    }
+
     /// Whether the page's pan was kept from a touch pressed on `layout`, moved by `firstMove` and then `then`: the
     /// touch's moves after its first, as the browser would pan them.
     private func kept(_ layout: String, firstMove: (Double, Double), then: (Double, Double)) throws -> Bool {
