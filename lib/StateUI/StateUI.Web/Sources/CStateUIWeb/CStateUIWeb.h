@@ -91,11 +91,9 @@ STATEUI_WEB(show_popover) void stateui_web_show_popover(
     int32_t element, int32_t anchor, double x, double y, int32_t side);
 STATEUI_WEB(hide_popover) void stateui_web_hide_popover(int32_t element);
 
-/// The `<iframe>` shows the address `words` for `kind` 0, or for 1 the document `words`, its links resolved against
-/// `base` where one is given - at an address of the page's own made for it, read as `read_value` is: its length,
-/// then `copy_read`; 0 for an address shown.
-STATEUI_WEB(frame_show) int32_t stateui_web_frame_show(
-    int32_t element, int32_t kind, const char *words, int32_t length, const char *base, int32_t baseLength);
+/// The `<iframe>` shows the address `words` for `kind` 0, or for 1 the document `words` - at an address of the
+/// page's own made for it, read as `read_value` is: its length, then `copy_read`; 0 for an address shown.
+STATEUI_WEB(frame_show) int32_t stateui_web_frame_show(int32_t element, int32_t kind, const char *words, int32_t length);
 
 /// What the page can know of the frame's document: 1 it is of the page's own site, 2 it can go back, 4 forward.
 STATEUI_WEB(frame_state) int32_t stateui_web_frame_state(int32_t element);

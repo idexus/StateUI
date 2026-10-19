@@ -188,8 +188,9 @@ frame, so a frame wider than it is leaves it a circle where it belongs.
 A WebView is the browser's own `<iframe>` over a box with no size of its
 own, as every host's web view: an address it loads, a document
 written in place shown at a `blob:` address of the page's own made for it -
-of the page's own site, a `<base>` before it where the document says where
-its links resolve - and reported by the `data:` address that holds it
+of the page's own site, a `<base>` in it where the document says where its
+links resolve, placed by Swift right after the doctype (before it, the
+browser would read the document in quirks mode) - and reported by the `data:` address that holds it
 (`WebDocument`). The trap: the browser takes a `srcdoc` written again in place
 of the one before, so a frame of documents written in place would have no way
 back; a frame's own navigation is a step in its history. The page hears
