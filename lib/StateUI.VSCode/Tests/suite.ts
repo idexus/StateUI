@@ -18,7 +18,7 @@ import { checkoutNamedBy } from "../Sources/checkouts";
 import { configurations, StateUIDebugConfigurationProvider, uiKitAttach, webLaunch } from "../Sources/debug";
 import { parseDevices } from "../Sources/devices";
 import { isChromium, parseBrowsers } from "../Sources/browsers";
-import { parseDevices as parseUIKitDevices, parseSimulators } from "../Sources/uiKitDevices";
+import { parseDevices as parseUIKitDevices, parseSimulators, simulatorForSuites } from "../Sources/uiKitDevices";
 import { otherHostsExcluded, serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
 import { findSuites, forDevice } from "../Sources/tests";
 import { availableHosts, describe, environment, Host, hosts } from "../Sources/hosts";
@@ -318,6 +318,16 @@ export async function run(): Promise<void> {
                 && back.swiftPM?.scratchPath === ".build/appkit/index-build" && !("triple" in back.swiftPM!) && !("sdk" in back.swiftPM!));
             check("with no simulator SDK found UIKit indexes for this Mac",
                 JSON.stringify(serverSettings("uikit", undefined, undefined)) === JSON.stringify({ scratchPath: ".build/uikit/index-build" }));
+        }
+        {
+            const phone = { id: "P", name: "Paweł's iPhone", kind: "device" as const, os: "27.0", state: "USB" };
+            const simulator = { id: "S", name: "iPhone 18 Pro", kind: "simulator" as const, os: "27.0", state: "" };
+            const pad = { id: "A", name: "iPad Air 13-inch (M4)", kind: "simulator" as const, os: "27.0", state: "" };
+            check("a suite runs on the simulator chosen, never on a device - an iPhone chosen asks for a simulator, or takes the one chosen for suites",
+                simulatorForSuites([phone, simulator, pad], simulator) === "S"
+                && simulatorForSuites([phone, simulator, pad], phone) === undefined
+                && simulatorForSuites([phone, simulator, pad], phone, pad) === "A"
+                && simulatorForSuites([phone, simulator], phone, pad) === undefined);
         }
         check("simctl's list reads as the iOS simulators a head installs on, the newest runtime first",
             JSON.stringify(parseSimulators(JSON.stringify({ devices: {

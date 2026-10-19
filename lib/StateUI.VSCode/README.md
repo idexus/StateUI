@@ -131,11 +131,12 @@ While the host is UIKit, the third status bar item shows the iPhone or iPad a
 launch runs on - click it, or run **StateUI: Select UIKit Device**. It offers
 the devices paired with this Mac, over USB or Wi-Fi, and the simulators, each
 of iOS 26 or later, the newest runtime first. It is remembered for the
-workspace, so a launch or a run of the tests asks only when none is chosen or
-the one chosen is gone. A device runs with Developer Mode on, and its build is
-signed with a development profile of this Mac's that provisions it - Xcode
-makes one for a team once the device is added. The host's own tests run on a
-simulator.
+workspace, so a launch asks only when none is chosen or the one chosen is
+gone. A device runs with Developer Mode on, and its build is signed with a
+development profile of this Mac's that provisions it - Xcode makes one for a
+team once the device is added. The host's own suites run on a simulator: the
+one chosen where it is one, else one asked for among the simulators alone and
+remembered for suites, while a launch keeps the iPhone or iPad chosen.
 
 ## The browser
 

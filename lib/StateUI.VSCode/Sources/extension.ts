@@ -16,7 +16,7 @@ import { androidScript, askForDevice, chosenDevice, deviceToRunOn } from "./devi
 import { askForBrowser, Browser, browserToRunOn, chosenBrowser, webScript } from "./browsers";
 import { applyEditorMode, cleanIndex, setHostEnvironment, variablesInSettings } from "./editorMode";
 import { availableHosts, describe, Host } from "./hosts";
-import { askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDeviceToRunOn } from "./uiKitDevices";
+import { askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDeviceToRunOn, uiKitSimulatorToTestOn } from "./uiKitDevices";
 import { readyWhen, runTask, startTask } from "./tasks";
 import { findSuites, forDevice, runSuites } from "./tests";
 import { checkoutOf, makeApplication, nameProblem } from "./newApplication";
@@ -241,6 +241,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return id;
     };
 
+    /** The simulator a UIKit suite runs on - the host's suite runs on no device - leaving a launch's device as it is. */
+    const uiKitSimulator = async (): Promise<string | undefined> => {
+        const id = await uiKitSimulatorToTestOn(state);
+        refresh();
+        return id;
+    };
+
     /** The browser a Web launch opens the page in - asked for where none chosen is installed. */
     const browser = async (checkout: string): Promise<Browser | undefined> => {
         const found = await browserToRunOn(checkout, state);
@@ -264,7 +271,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             void vscode.window.showInformationMessage("StateUI: Android's device reads no repository, so its marks are made again whole - Conformance - Rebuild all.");
             return;
         }
-        const device = chosen === "uikit" ? await uiKitDevice() : chosen === "android" ? await androidDevice(folder.uri.fsPath) : undefined;
+        const device = chosen === "uikit" ? await uiKitSimulator() : chosen === "android" ? await androidDevice(folder.uri.fsPath) : undefined;
         const steps = rebuildSteps(folder.uri.fsPath, chosen, rebuild, device);
         if (!steps) {
             return;
@@ -352,7 +359,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
 
             let chosenSuites = picked.map((each) => each.suite);
             if (chosenSuites.some((each) => each.onDevice)) {
-                const serial = host() === "uikit" ? await uiKitDevice() : await androidDevice(folder.uri.fsPath);
+                const serial = host() === "uikit" ? await uiKitSimulator() : await androidDevice(folder.uri.fsPath);
                 if (!serial) {
                     return;
                 }
