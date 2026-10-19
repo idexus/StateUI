@@ -30,10 +30,11 @@ final class GTKTextInputViewTests: XCTestCase {
     /// over the field's first focus - and once the user has acted in the field, GNOME's own way stands.
     func testTheProgramsCaretOutlastsTheFieldsFirstFocus() throws {
         try onUIThread {
+            let words = State(wrappedValue: "abcdefg")
             let host = GTKRenderer.running {
                 VStack {
                     Button("First")
-                    TextField(State(wrappedValue: "abcdefg").projectedValue).cursorPosition(2).selectionLength(3)
+                    TextField(words.projectedValue).cursorPosition(2).selectionLength(3)
                 }
             }
             let field = try XCTUnwrap(host.views(GTKTextFieldView.self).first)
