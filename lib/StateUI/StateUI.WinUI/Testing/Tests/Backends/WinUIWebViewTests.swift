@@ -80,6 +80,27 @@ final class WinUIWebViewTests: XCTestCase {
         }
     }
 
+    /// An agent given while WebView2 still comes - its page already asked for - is the one the page arrives asking
+    /// as, not the one given with the page.
+    func testAnAgentGivenBeforeWebView2StandsIsTheOneItAsksAs() throws {
+        try onUIThread {
+            let named = State(wrappedValue: "First agent")
+            let arrived = Received<Bool>()
+            let host = WinUIRenderer.running {
+                WebView().source(html: "<p>First</p>").userAgent(named.wrappedValue)
+                    .onNavigated { _ in arrived.values.append(true) }.height(200)
+            }
+            let web = try XCTUnwrap(host.views(WinUIHostedView<WinUIWebView>.self).first?.control)
+            host.step()
+            XCTAssertTrue(arrived.values.isEmpty, "WebView2 stood at once: nothing to prove")
+
+            named.wrappedValue = "Second agent"
+            host.step()
+            Self.wait(host) { !arrived.values.isEmpty }
+            XCTAssertEqual(web.read("agent"), "Second agent")
+        }
+    }
+
     /// A web view an application listens to as a view stands, and its page arrives: WebView2, listened to by
     /// WinUI, ends the process - its page takes the user's hand.
     func testAWebViewListenedToStands() {

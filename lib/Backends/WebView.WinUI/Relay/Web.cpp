@@ -75,6 +75,10 @@ namespace {
     /// The agent each web view's runtime names itself by, as its CoreWebView2 stood: what an agent taken away gives back.
     std::unordered_map<int64_t, winrt::hstring> ownAgents;
 
+    /// The agent each web view was asked for last: what its CoreWebView2 names it by as it stands, whatever came
+    /// while it was coming.
+    std::unordered_map<int64_t, winrt::hstring> askedAgents;
+
     /// Names the view `view` by `agent`, or by the runtime's own for an empty one.
     void name(core::CoreWebView2 const &page, int64_t view, winrt::hstring const &agent) {
         auto own = ownAgents.find(view);
@@ -159,13 +163,15 @@ extern "C" void stateui_webview_winui_show(WebViewObjectRef handle, int64_t view
         auto held = document ? std::make_shared<std::string>(document) : nullptr;
         auto asking = text(agent);
         if (auto page = web.CoreWebView2()) return go(page, view, at, held, asking);
-        // Its CoreWebView2 stands a moment after it is asked for: the page is gone to then, in the order asked.
+        // Its CoreWebView2 stands a moment after it is asked for: the page is gone to then, in the order asked,
+        // asking as the agent asked for last.
+        askedAgents[view] = asking;
         auto token = std::make_shared<winrt::event_token>();
         *token = web.CoreWebView2Initialized(
             guarded("handling CoreWebView2Initialized",
-                [token, view, at, held, asking](controls::WebView2 const &sender, auto const &) {
+                [token, view, at, held](controls::WebView2 const &sender, auto const &) {
                 sender.CoreWebView2Initialized(*token);
-                if (auto page = sender.CoreWebView2()) go(page, view, at, held, asking);
+                if (auto page = sender.CoreWebView2()) go(page, view, at, held, askedAgents[view]);
             }));
         web.EnsureCoreWebView2Async();
     } catch (...) {
@@ -181,6 +187,7 @@ extern "C" void stateui_webview_winui_release(WebViewObjectRef handle, int64_t v
     try {
         served.erase(view);
         ownAgents.erase(view);
+        askedAgents.erase(view);
         winrt::Windows::Foundation::IInspectable object{nullptr};
         winrt::attach_abi(object, handle);
     } catch (...) {
@@ -190,7 +197,8 @@ extern "C" void stateui_webview_winui_release(WebViewObjectRef handle, int64_t v
 
 extern "C" void stateui_webview_winui_set_agent(WebViewObjectRef handle, int64_t view, char const *agent) {
     try {
-        if (auto page = as<controls::WebView2>(handle).CoreWebView2()) name(page, view, text(agent));
+        askedAgents[view] = text(agent);
+        if (auto page = as<controls::WebView2>(handle).CoreWebView2()) name(page, view, askedAgents[view]);
     } catch (...) {
         report("naming a web view's agent");
     }

@@ -449,7 +449,9 @@ asked for again instead. A script's answer is the JSON WebView2 writes its
 value in, read by the host layer's rule, and the end of the page's web
 process is heard as WebView2 tells it. The agent it names itself by is the
 tree's, and the runtime's own where the tree gives none, taken back from
-when its `CoreWebView2` stood. Its page takes the user's hand: a web view hears none
+when its `CoreWebView2` stood; an agent the tree gives while the
+`CoreWebView2` still comes is the one its first page asks as - the relay
+keeps the one asked for last. Its page takes the user's hand: a web view hears none
 of it as a view does - WebView2, listened to by WinUI, ends the process - so
 its taps, pans, swipes, pinch and pointer are none on WinUI.
 
