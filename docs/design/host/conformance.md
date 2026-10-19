@@ -151,7 +151,9 @@ A case reaches its host only through its session: the page it starts, the
 elements it finds, the acts it performs, the values it reads, and its
 expectations. A session waits for an effect by stepping the host until it
 holds, at most 150 steps, and sees that nothing happens by one turn of the
-pump alone. Motion is driven by a test clock and display frames, never by
+pump alone. A wait that runs out fails the case: what a case waits for
+comes, else the case proved nothing - a shape never drawn would pass "it
+moved away from where it stood". Motion is driven by a test clock and display frames, never by
 the time a machine takes.
 
 What another process does is waited for by the clock: a web view's page
@@ -171,8 +173,7 @@ and `expect(_:shows:)` take each channel within four steps of the colour;
 nothing drawn at the point shows no colour. A colour read is a `ShownColor`,
 which answers `shows` and is never compared with a colour whole: whole, an
 edge's smoothing may keep it from ever matching, and a `settle` waiting on it
-runs out without a word - the case passes having proved nothing, its time the
-whole of the settle's steps.
+would run out and fail the case, its time the whole of the settle's steps.
 
 A run of points is read at once (`Session.colors`, `shows(_:on:at:)` with
 points): a host that reads its window a frame at a time reads every point

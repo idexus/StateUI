@@ -114,6 +114,7 @@
         let session = Session(driver: driver, case: "\(each.name)", report: report)
         do {
             try each.body(session)
+            if let unmet = session.unmet, session.failures == 0 { throw unmet }
         } catch let cannot as DriverCannot where session.failures == 0 {
             if let because = cannot.because ?? driver.platformHasNone[cannot.ability] {
                 return .inapplicable("\(cannot) - \(because)")

@@ -217,6 +217,42 @@ final class ConformanceRunnerTests: XCTestCase {
         XCTAssertEqual(lines, ["Conformance Nowhere · Handed/sums: failed"])
     }
 
+    /// A WAIT THAT RUNS OUT FAILS ITS CASE: what a case waits for comes, else the case has proved nothing - a shape
+    /// never drawn would pass "it moved away from where it stood". A case sees that nothing happens by a turn alone.
+    func testAWaitThatRunsOutFailsItsCase() {
+        var steps = 0
+        run([
+            ConformanceCase("comes", proves: [Covered(SwitchContract.isOn)]) { s in
+                s.settle { steps += 1; return steps > 3 }
+            },
+            ConformanceCase("never", proves: [Covered(SwitchContract.isOn)]) { s in s.settle { false } },
+            ConformanceCase("forTime", proves: [Covered(SwitchContract.isOn)]) { s in s.settle(for: 0) { false } },
+        ], on: RegisterOnly(realizing: [.complete("Switch", "isOn")]))
+
+        XCTAssertEqual(lines, [
+            "Conformance Nowhere · Handed/comes: passed", "Conformance Nowhere · Handed/never: failed",
+            "Conformance Nowhere · Handed/forTime: failed",
+        ])
+        XCTAssertEqual(failures, [
+            "Nowhere · never: what the case waited for never came",
+            "Nowhere · forTime: what the case waited for never came",
+        ])
+    }
+
+    /// A wait on what the driver cannot read runs out saying so, as the read itself would: the case ends as what the
+    /// driver cannot do, though the wait let the read's failure pass.
+    func testAWaitOnWhatTheDriverCannotReadSaysSo() {
+        let driver = RegisterOnly(realizing: [.complete("Switch", "isOn")])
+        driver.cannot["read what the screen reader said"] = "No path yet."
+        let verdicts = run([ConformanceCase("waits", proves: [Covered(SwitchContract.isOn)]) { s in
+            s.settle { (try? s.announced()) == ["Saved"] }
+        }], on: driver)
+
+        XCTAssertEqual(failures, [])
+        XCTAssertEqual(
+            HostVerdict.text(verdicts), "Switch.isOn: cannot read what the screen reader said - No path yet.\n")
+    }
+
     /// A colour StateUI draws shows as the screen shows it: each channel a few steps off, as smoothing an edge leaves
     /// it, is the colour; more is another, and nothing is none.
     func testAColourShowsWithinTheStepsSmoothingTakes() {
