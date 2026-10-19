@@ -175,8 +175,8 @@ band's lightness.
 On the system's material both keep the system's colours.
 
 `ItemsView` is the native virtualized collection. It presents identified
-items as a list, a row or a grid, and StateUI builds an item only when the
-platform's collection shows it. Its host adapters map to `NSCollectionView`,
+items as a list, a row or a grid, and StateUI builds an item as the
+platform's collection comes near it. Its host adapters map to `NSCollectionView`,
 `UICollectionView`, `RecyclerView`, WinUI `ItemsView`, `GtkListView` or
 `GtkGridView`, and a semantic DOM list/grid; each member's mark is its case's
 verdict on that host, as for every element.

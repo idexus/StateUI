@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// Items shown by the platform's own collection - as many as you like, since
-/// only the ones the platform holds on screen are built.
+/// only the ones near what the platform holds are built.
 ///
 ///     @State private var chosen: String?
 ///
@@ -12,9 +12,9 @@
 ///     .selection($chosen)
 ///     .onItemActivated { path in open(path) }
 ///
-/// Each item is built when the platform first shows it, as a view of its own:
-/// a state it reads builds that item alone, and a state it declares lives
-/// while the platform holds it. The platform scrolls, reuses its cells, lets
+/// Each item is built as the platform's collection comes near it, as a view of
+/// its own: a state it reads builds that item alone, and a state it declares
+/// lives while the item stays near what the platform holds. The platform scrolls, reuses its cells, lets
 /// the user choose and open items, and tells assistive technology about them.
 ///
 /// An item names itself by `String(describing:)` of its identity, so two items

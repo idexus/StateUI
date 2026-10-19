@@ -246,11 +246,13 @@ WinUI `ItemsView`, and GTK 4 `GtkListView` or `GtkGridView`.
 
 Nothing new crosses the boundary for it. Every identity the list shows, in
 order and in groups, is one property, `ItemsViewContract.items`. The
-identities the host holds in its cells come back as an event,
-`realizedChanged`, and the element's children are those entries alone, each
-keyed by its identity; the host layer's `ItemsCells` sends the event and runs
-the turn at once, so the toolkit's synchronous call for a cell finds its
-subtree mounted ([items](../design/host/items.md)).
+identities within reach of those the host holds in its cells - as many
+before and after each cell as the cells hold, eight at least - come back as
+an event, `realizedChanged`, and the element's children are those entries
+alone, each keyed by its identity; the host layer's `ItemsCells` sends the
+event, asks for the next ones half a reach before a cell finds one unbuilt,
+and runs the turn at once, so the toolkit's synchronous call for a cell
+finds its subtree mounted ([items](../design/host/items.md)).
 
 ## Values a host is handed
 
