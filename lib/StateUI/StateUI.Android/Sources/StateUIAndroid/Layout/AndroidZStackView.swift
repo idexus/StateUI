@@ -58,13 +58,7 @@ final class AndroidZStackView: AndroidTravellingLayout {
     /// Draws the children back to front as the run ranks them, or in their order without one: the order a touch
     /// reaches them in too, with nothing moved and nothing laid out again.
     private func holdInDrawingOrder() {
-        let placements = placement?.placements ?? []
-        let count = min(items.count, placements.count)
-        let ordered = (0..<count).sorted {
-            placements[$0].zIndex == placements[$1].zIndex
-                ? $0 < $1
-                : placements[$0].zIndex < placements[$1].zIndex
-        } + Array(count..<items.count)
+        let ordered = ZStackArithmetic.drawingOrder(of: items.count, placedBy: placement?.placements ?? [])
         setDrawingOrder(ordered == Array(items.indices) ? nil : ordered)
     }
 
@@ -74,9 +68,7 @@ final class AndroidZStackView: AndroidTravellingLayout {
         for index in 0..<count {
             let placement = placements[index]
             let view = items[index].view
-            view.layout(Rect(
-                x: placement.bounds.x, y: placement.bounds.y,
-                width: max(0, placement.bounds.width), height: max(0, placement.bounds.height)))
+            view.layout(placement.place)
             view.setPlacedDrawing(placement.drawing, opacity: placement.drawnOpacity)
             (view as? AndroidGridView)?.setShadeOpacity(placement.drawnShade)
         }
