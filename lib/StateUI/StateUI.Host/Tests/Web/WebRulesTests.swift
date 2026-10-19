@@ -21,6 +21,15 @@ final class WebRulesTests: XCTestCase {
         XCTAssertNil(ScriptAnswer.text(json: ""))
     }
 
+    /// A step through the history the page takes goes back where it lands on a page of the way back, else forward.
+    func testAStepThroughTheHistoryIsBackWhereItLandsBehind() {
+        let behind = ["https://a.example/", "https://b.example/"]
+        XCTAssertEqual(WebHistory.step(landingOn: "https://b.example/", behind: behind), .back)
+        XCTAssertEqual(WebHistory.step(landingOn: "https://a.example/", behind: behind), .back)
+        XCTAssertEqual(WebHistory.step(landingOn: "https://c.example/", behind: behind), .forward)
+        XCTAssertEqual(WebHistory.step(landingOn: "https://c.example/", behind: []), .forward)
+    }
+
     /// A way back or forward is said only as it changes.
     func testAWayIsSaidOnlyAsItChanges() {
         var history = WebHistory()

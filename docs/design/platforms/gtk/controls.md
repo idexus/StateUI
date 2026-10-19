@@ -324,8 +324,10 @@ the page given after it is loaded again, whatever the user went to
 meanwhile. What the page does comes back as WebKit tells
 it: a navigation as its load starts, why it began by the host layer's rule -
 the program's step, else what WebKit's decision on it says (a link or a form
-a new page, a reload the page again, a step through the history unknown,
-since WebKit tells no step back from one forward) - and as its load
+a new page, a reload the page again, a step through the history back or
+forward by where it lands among the pages behind as the page shown arrived,
+since by its decision WebKit's list already stands at the step's end) - and
+as its load
 finishes, or fails, a load called off a cancel; whether there is a page
 behind and ahead, said as the history changes; and the end of its web
 process. A script's answer is the JSON WebKit writes its value in, read by

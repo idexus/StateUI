@@ -105,13 +105,30 @@ final class GTKWebView: GTKControl {
 
     // MARK: - What WebKit tells
 
-    /// WebKit decides on a navigation: what its action says it is.
-    func decided(_ navigationType: Int32) {
+    /// WebKit decides on a navigation to `address`: what its action says it is - a step through the history back or
+    /// forward by where it lands (`WebHistory.step`).
+    func decided(_ navigationType: Int32, landingOn address: String) {
         told = switch navigationType {
         case NavigationType.reload: .reload
-        case NavigationType.backForward: .unknown
+        case NavigationType.backForward: WebHistory.step(landingOn: address, behind: behind)
         default: .newPage
         }
+    }
+
+    /// The addresses of the pages behind as the page shown arrived: by WebKit's decision on a step, its list already
+    /// stands at the step's end.
+    private var behind: [String] = []
+
+    /// The addresses of the pages behind the one shown, as WebKit's list of pages holds them.
+    private var pagesBehind: [String] {
+        guard let pages = webkit_web_view_get_back_forward_list(webView) else { return [] }
+        var addresses: [String] = []
+        var index: Int32 = -1
+        while let item = webkit_back_forward_list_get_nth_item(pages, index) {
+            addresses.append(webkit_back_forward_list_item_get_uri(item).map { String(cString: $0) } ?? "")
+            index -= 1
+        }
+        return addresses
     }
 
     /// A load moved on: it began, its page came, or it ended.
@@ -124,6 +141,7 @@ final class GTKWebView: GTKControl {
             told = .newPage
             onNavigating?(event, address)
         case LoadEvent.finished where !failed:
+            behind = pagesBehind
             onNavigated?(.success, cause.current, address)
         default:
             break

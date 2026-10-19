@@ -25,7 +25,10 @@ A navigation begins for the step the program asked for - back, forward, the
 page again - where one was asked, else for what the platform tells: a new
 page, a step through the history, the page fetched again. The cause is kept
 to the navigation's end, whatever is asked meanwhile, and the next navigation
-begins for what is told again (`WebNavigationCause`).
+begins for what is told again (`WebNavigationCause`). A step through the
+history the page takes itself goes back where it lands on a page of the way
+back as it stood before the step, else forward (`WebHistory.step`); a
+platform that keeps no list to read tells no way.
 
 ## A document with no address
 
