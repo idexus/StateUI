@@ -17,12 +17,17 @@ enum WinUIStrings {
         entries.map { $0 + "\n" }.joined()
     }
 
-    /// Words the relay writes into a buffer the caller hands it, answering how long they are: asked once for the
-    /// length, then written.
+    /// Words the relay writes into a buffer the caller hands it, answering how long they are: written into room
+    /// enough, and again into more where they grew past it meanwhile, never cut.
     static func read(_ fill: (UnsafeMutablePointer<CChar>?, Int32) -> Int32) -> String {
-        let length = Int(fill(nil, 0))
-        var bytes = [CChar](repeating: 0, count: length + 1)
-        _ = bytes.withUnsafeMutableBufferPointer { fill($0.baseAddress, Int32($0.count)) }
-        return String(decoding: bytes.prefix(length).map { UInt8(bitPattern: $0) }, as: UTF8.self)
+        var room = 256
+        while true {
+            var bytes = [CChar](repeating: 0, count: room)
+            let length = Int(bytes.withUnsafeMutableBufferPointer { fill($0.baseAddress, Int32($0.count)) })
+            guard length >= room else {
+                return String(decoding: bytes.prefix(max(length, 0)).map { UInt8(bitPattern: $0) }, as: UTF8.self)
+            }
+            room = length + 1
+        }
     }
 }

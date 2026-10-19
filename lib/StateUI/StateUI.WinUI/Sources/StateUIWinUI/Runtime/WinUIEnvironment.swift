@@ -63,10 +63,7 @@ enum WinUIEnvironment {
 
     /// One group of facts, as the relay reads them.
     private static func facts(_ kind: StateUIFacts, window: StateUIObjectRef? = nil) -> [String] {
-        let length = Int(stateui_winui_facts(kind, window, nil, 0))
-        var bytes = [CChar](repeating: 0, count: length + 1)
-        _ = stateui_winui_facts(kind, window, &bytes, Int32(bytes.count))
-        let text = String(decoding: bytes.prefix(length).map { UInt8(bitPattern: $0) }, as: UTF8.self)
+        let text = WinUIStrings.read { stateui_winui_facts(kind, window, $0, $1) }
         return text.split(separator: "\u{1F}", omittingEmptySubsequences: false).dropLast().map(String.init)
     }
 }
