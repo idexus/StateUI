@@ -33,11 +33,11 @@ extension Node {
         return window
     }
 
-    /// The scene's inspector docked at `place`, laid over every overlay a page declares; nil where none is.
-    /// Design: docs/design/views/pages.md#the-children-of-a-window
     /// One type for every window's placeholder, each told by its key.
     private static let windowType = KeyName("StateUI.Window")
 
+    /// The scene's inspector docked at `place`, laid over every overlay a page declares; nil where none is.
+    /// Design: docs/design/views/pages.md#the-children-of-a-window
     static func overlay(inspector place: Inspector.Place?, of scene: String?) -> Node? {
         guard let place, let scene else { return nil }
 
