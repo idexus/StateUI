@@ -25,18 +25,11 @@ extension UIKitElement {
             if let scroll = registered as? UIKitScrollView { follow(scroll) }
             return registered
         }
-        guard !Self.showsUnsupported(type) else { return UIKitUnsupportedView(type) }
+        guard !UIKitRegistrations.registry.showsUnsupported(type) else { return UIKitUnsupportedView(type) }
         let single = UIKitSingleChildView()
         // An overlay lets a touch beside what it holds through to the page under it.
         single.passesBeside = type == .overlay
         return single
-    }
-
-    /// Whether the host shows an entry as unsupported: no registration makes it, and it is no page or arrangement of
-    /// pages, no overlay and nothing presented without a view.
-    static func showsUnsupported(_ type: NodeType) -> Bool {
-        !UIKitRegistrations.registry.realizes(type) && !NodeType.viewlessTypes.contains(type)
-            && !NodeType.pageTypes.contains(type) && type != .overlay
     }
 
     func applyProperties(changed: Set<Prop>) {

@@ -41,7 +41,7 @@ final class UIKitDeclarationExportTests: XCTestCase {
     func testWhatThisHostShowsAsUnsupportedItSaysItRealizesNoneOf() {
         // A closure, not a key path: a key path through an existential metatype crashes Swift 6.4's SILGen.
         let types = LibraryContracts.elements.map { $0.nodeType }
-        let unsupported = Set(types.filter { UIKitElement.showsUnsupported($0) }.map(\.name))
+        let unsupported = Set(types.filter { UIKitRegistrations.registry.showsUnsupported($0) }.map(\.name))
         let made = Set(UIKitRegistrations.registry.realization.elements.map(\.name))
         let unrealized = Set(UIKitRealization.unrealized.map { $0.name })
 
