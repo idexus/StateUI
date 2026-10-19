@@ -17,4 +17,10 @@
         self.identity = identity
         self.anchor = anchor
     }
+
+    /// Whether a scroll to an item glides there, the same on every host: unless the user asked for less motion.
+    /// Design: docs/design/host/items.md#scrolling-to-an-item
+    public static func glides(reducingMotion: Bool) -> Bool {
+        !reducingMotion
+    }
 }

@@ -243,7 +243,7 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
     func scroll(to identity: String, anchor: ScrollAnchor) {
         cells.scroll(to: identity, anchor: anchor)
         gliding = false
-        guard reducesMotion() else {
+        guard !ItemsScrollTarget.glides(reducingMotion: reducesMotion()) else {
             gliding = stand(ItemsScrollTarget(identity: identity, anchor: anchor), animated: true)
             return
         }

@@ -7,7 +7,11 @@
 /// The widget: made, and given the element's properties.
 extension GTKElement {
     func makeView() -> GTKView? {
-        if type == .itemsView, let host { return GTKItemsView(cells: ItemsCells(element, in: host.runtime)) }
+        if type == .itemsView, let host {
+            return GTKItemsView(cells: ItemsCells(element, in: host.runtime), reducesMotion: { [weak host] in
+                host?.runtime.reducesMotion() ?? false
+            })
+        }
         if element.isDrawnByParent(in: GTKRegistrations.registry) || element.isViewless { return nil }
         if type == .divider { return GTKDividerView(inRow: element.parent?.type == .hStack) }
         if let registered = GTKRegistrations.registry.makeView(

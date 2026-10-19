@@ -118,6 +118,12 @@ final class ItemsCellsTests: XCTestCase {
         XCTAssertTrue(outside.layouts.last === runtime.tree.root, "up to the root")
     }
 
+    /// A scroll to an item glides there, unless the user asked for less motion.
+    func testAScrollToAnItemGlidesUnlessTheUserAsksForLessMotion() {
+        XCTAssertTrue(ItemsScrollTarget.glides(reducingMotion: false))
+        XCTAssertFalse(ItemsScrollTarget.glides(reducingMotion: true))
+    }
+
     /// Every identity is taken in order, and nothing is built before a cell holds it.
     func testTheEntriesAreTakenAndNothingIsBuiltUnasked() {
         XCTAssertEqual(cells.identities.count, 100)

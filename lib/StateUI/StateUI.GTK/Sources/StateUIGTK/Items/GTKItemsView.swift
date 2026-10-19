@@ -44,8 +44,15 @@ final class GTKItemsView: GTKLayoutView {
     /// Whether the entries in view are to be told after the layout under way.
     private var tellsShowing = false
 
-    init(cells: ItemsCells) {
+    /// Whether the user asked for less motion.
+    private let reducesMotion: () -> Bool
+
+    /// The glide under way to the item scrolled to, where one is.
+    private var glide: UnsafeMutablePointer<AdwAnimation>?
+
+    init(cells: ItemsCells, reducesMotion: @escaping () -> Bool) {
         self.cells = cells
+        self.reducesMotion = reducesMotion
         model = gtk_string_list_new(nil)
         factory = gtk_signal_list_item_factory_new()
         super.init()
@@ -74,10 +81,10 @@ final class GTKItemsView: GTKLayoutView {
         let hand = gtk_event_controller_scroll_new(GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES)!
         gtk_event_controller_set_propagation_phase(hand, GTK_PHASE_CAPTURE)
         connectSignal(UnsafeMutableRawPointer(hand), "scroll-begin", number: number) { (_: UnsafeMutableRawPointer?, data: gpointer?) in
-            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKItemsView)?.cells.userScrolled() }
+            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKItemsView)?.userScrolled() }
         }
         connectAnswering(UnsafeMutableRawPointer(hand), "scroll", number: number) { _, _, _, data in
-            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKItemsView)?.cells.userScrolled() }
+            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKItemsView)?.userScrolled() }
             return 0
         }
         gtk_widget_add_controller(scroller.widget, hand)
@@ -364,23 +371,82 @@ final class GTKItemsView: GTKLayoutView {
 
     // MARK: - Acts
 
-    /// Scrolls until the item of `identity` stands where `anchor` says: GTK brings it into view, and once it is laid
+    /// Scrolls until the item of `identity` stands where `anchor` says: one laid out already glides there, unless the
+    /// user asks for less motion (`ItemsScrollTarget.glides`); else GTK brings it into view, and once it is laid
     /// out the scrolled window stands where the anchor says (`ScrollAnchor.place`) - again on every frame its cells
     /// are laid out, while the host layer holds it.
     /// Design: docs/design/platforms/gtk/items.md#scrolling-to-an-item
     func scroll(to identity: String, anchor: ScrollAnchor) {
         guard let list, let place = cells.identities.firstIndex(of: identity) else { return }
+        stopGliding()
+        cells.scroll(to: identity, anchor: anchor)
+        if ItemsScrollTarget.glides(reducingMotion: reducesMotion()),
+           let standing = standing(of: identity, anchor: anchor), let to = standing.to {
+            glide(standing.adjustment, to: to)
+            return
+        }
         if case .grid = shape {
             gtk_grid_view_scroll_to(list.opaque, guint(place), GTK_LIST_SCROLL_NONE, nil)
         } else {
             gtk_list_view_scroll_to(list.opaque, guint(place), GTK_LIST_SCROLL_NONE, nil)
         }
-        cells.scroll(to: identity, anchor: anchor)
         settle()
+    }
+
+    /// Glides the scrolled window from where it stands to `target`, libadwaita's timed animation of its adjustment;
+    /// the item stands again as the glide ends.
+    private func glide(_ adjustment: UnsafeMutablePointer<GtkAdjustment>, to target: Double) {
+        guard let list else { return }
+        let animated = adw_property_animation_target_new(adjustment.of(GObject.self), "value")
+        guard let animation = adw_timed_animation_new(
+            list, gtk_adjustment_get_value(adjustment), target, Self.glideLength, animated)
+        else { return }
+        adw_timed_animation_set_easing(animation.opaque, ADW_EASE_OUT_CUBIC)
+        // Whether it glides is the rule's, which reads the desktop's setting already.
+        adw_animation_set_follow_enable_animations_setting(animation, 0)
+        connectSignal(UnsafeMutableRawPointer(animation), "done", number: number) { (_: UnsafeMutableRawPointer?, data: gpointer?) in
+            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKItemsView)?.glided() }
+        }
+        glide = animation
+        adw_animation_play(animation)
+    }
+
+    /// How long a glide to an item takes, in milliseconds.
+    private static let glideLength: guint = 250
+
+    /// The glide ended: the item stands again as its cells are measured.
+    private func glided() {
+        guard let glide else { return }
+        self.glide = nil
+        g_object_unref(UnsafeMutableRawPointer(glide))
+        settle()
+    }
+
+    /// Stops a glide under way where it stands.
+    private func stopGliding() {
+        guard let glide else { return }
+        self.glide = nil
+        adw_animation_pause(glide)
+        g_object_unref(UnsafeMutableRawPointer(glide))
+    }
+
+    /// Whether a glide to an item is under way.
+    var glidesForTesting: Bool { glide != nil }
+
+    /// Where the scrolled window stands down the list.
+    var offsetForTesting: Double {
+        gtk_scrolled_window_get_vadjustment(scroller.widget.opaque).map(gtk_adjustment_get_value) ?? 0
+    }
+
+    /// The user took the list: a glide stops, and where it stands is theirs.
+    private func userScrolled() {
+        stopGliding()
+        cells.userScrolled()
     }
 
     /// Waits the frames GTK takes to lay the item out, standing it on each it is laid out on.
     private func settle() {
+        guard glide == nil else { return }
         let waiting = settlingFrames > 0
         settlingFrames = Self.settlingFrames
         guard !waiting else { return }
@@ -413,27 +479,34 @@ final class GTKItemsView: GTKLayoutView {
 
     /// Stands the scrolled window for the laid-out item of `identity` where `anchor` says; whether it was laid out.
     private func stand(_ identity: String, anchor: ScrollAnchor) -> Bool {
-        guard let list, let cell = cells.holding(of: identity) as? GTKItemCell else { return false }
+        guard let standing = standing(of: identity, anchor: anchor) else { return false }
+        if let to = standing.to { gtk_adjustment_set_value(standing.adjustment, to) }
+        return true
+    }
+
+    /// The scrolled window's adjustment along the list, and where it stands for the laid-out item of `identity` as
+    /// `anchor` says - nil where it stands there already; nil whole where the item is not laid out.
+    private func standing(of identity: String, anchor: ScrollAnchor)
+        -> (adjustment: UnsafeMutablePointer<GtkAdjustment>, to: Double?)? {
+        guard let list, let cell = cells.holding(of: identity) as? GTKItemCell else { return nil }
         var bounds = graphene_rect_t()
         guard gtk_widget_compute_bounds(cell.widget, list, &bounds) != 0, bounds.size.width > 0, bounds.size.height > 0
-        else { return false }
+        else { return nil }
         let across = shape.isAcross
         let scrolled = scroller.widget.opaque
         guard let adjustment = across
             ? gtk_scrolled_window_get_hadjustment(scrolled) : gtk_scrolled_window_get_vadjustment(scrolled)
-        else { return true }
+        else { return nil }
         let now = gtk_adjustment_get_value(adjustment)
         let start = now + Double(across ? bounds.origin.x : bounds.origin.y)
         let length = Double(across ? bounds.size.width : bounds.size.height)
-        if let target = anchor.place(of: start, length: length, in: gtk_adjustment_get_page_size(adjustment), at: now) {
-            gtk_adjustment_set_value(adjustment, target)
-        }
-        return true
+        return (adjustment, anchor.place(of: start, length: length, in: gtk_adjustment_get_page_size(adjustment), at: now))
     }
 
     /// The list left: its rows let their cells go, and they leave with it.
     override func detach() {
         super.detach()
+        stopGliding()
         released = true
         waiting = []
         gtk_scrolled_window_set_child(scroller.widget.opaque, nil)

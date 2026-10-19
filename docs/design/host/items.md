@@ -141,3 +141,7 @@ it was scrolled to may come after a pass, as a browser tells them: the host
 stands it again after every pass that brought entries (`laidOut`), once more
 as the last one comes, and then lets it go. The user moving the list lets it go at once, and so does the next
 scroll; a scroll that glides stands its item again as it stops.
+
+Whether a scroll to an item glides is one rule,
+`ItemsScrollTarget.glides(reducingMotion:)`: it glides unless the user asks
+for less motion, and stands there at once when they do.
