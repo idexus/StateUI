@@ -121,6 +121,9 @@ final class UIKitEnvironmentTests: XCTestCase {
         host.settle { !heard.values.isEmpty }
 
         Self.turn(scene, to: .landscapeRight)
+        guard scene.effectiveGeometry.interfaceOrientation == .landscapeRight else {
+            throw XCTSkip("iOS turns this scene with the device alone, as it does an iPad's")
+        }
         host.settle { heard.values.last?.first == true }
         XCTAssertEqual(heard.values.last, [true, true], "the wide room is heard with the display turned")
 
