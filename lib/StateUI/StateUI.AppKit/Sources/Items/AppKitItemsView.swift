@@ -39,7 +39,6 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
     private var source: NSCollectionViewDiffableDataSource<String, String>!
     private var layoutShape = ItemsLayout.list()
     private var mode = SelectionMode.none
-    private var framed = (header: false, footer: false)
     /// The entries whose cells ask for another size, measured again on the next layout.
     private var resizing: Set<String> = []
     private let reducesMotion: () -> Bool
@@ -98,19 +97,24 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
     /// The entries, the layout, how many may be chosen and which are.
     func apply(layout: ItemsLayout, mode: SelectionMode) {
         let changes = cells.takeEntries()
-        let framed = (header: cells.entries.header != nil, footer: cells.entries.footer != nil)
-        if layout != layoutShape || framed != self.framed {
+        if layout != layoutShape {
             layoutShape = layout
-            self.framed = framed
             scroller.hasVerticalScroller = !layout.isAcross
             scroller.hasHorizontalScroller = layout.isAcross
             lay(layout)
         }
         if changes != nil {
+            // The list's own header and footer each stand alone in a section of its own, known by their identities.
+            // Design: docs/design/platforms/appkit/items.md#the-layout
+            let entries = cells.entries
             var snapshot = NSDiffableDataSourceSnapshot<String, String>()
-            for section in cells.entries.sections {
-                snapshot.appendSections([section.identity])
-                snapshot.appendItems(section.items, toSection: section.identity)
+            for content in AppKitItemsLayout.sections(of: entries) {
+                switch content {
+                case .listHeader(let identity), .listFooter(let identity): snapshot.appendSections([identity])
+                case .group(let group):
+                    snapshot.appendSections([entries.sections[group].identity])
+                    snapshot.appendItems(entries.sections[group].items, toSection: entries.sections[group].identity)
+                }
             }
             source.apply(snapshot, animatingDifferences: changes?.isEmpty == false && !reducesMotion())
         }
@@ -208,13 +212,14 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
     /// The identity of the header or footer of `kind` at `indexPath`.
     private func supplement(_ kind: String, at indexPath: IndexPath) -> String? {
         let entries = cells.entries
-        switch kind {
-        case AppKitItemsLayout.listHeader: return entries.header
-        case AppKitItemsLayout.listFooter: return entries.footer
-        default:
-            guard entries.sections.indices.contains(indexPath.section) else { return nil }
-            let section = entries.sections[indexPath.section]
-            return kind == AppKitItemsLayout.header ? section.header : section.footer
+        let contents = AppKitItemsLayout.sections(of: entries)
+        guard contents.indices.contains(indexPath.section) else { return nil }
+        switch (kind, contents[indexPath.section]) {
+        case (AppKitItemsLayout.listHeader, .listHeader(let identity)): return identity
+        case (AppKitItemsLayout.listFooter, .listFooter(let identity)): return identity
+        case (AppKitItemsLayout.header, .group(let group)): return entries.sections[group].header
+        case (AppKitItemsLayout.footer, .group(let group)): return entries.sections[group].footer
+        default: return nil
         }
     }
 

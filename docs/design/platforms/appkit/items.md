@@ -27,7 +27,11 @@ A list is one full-width item under another, a row one item beside another
 as tall as the list, scrolling across, and a grid a group of as many
 columns as the width holds (`ItemsGrid`) sharing it, `spacing` apart both
 ways. A group's header and footer are the section's supplementary views,
-and the list's own the layout's. A new layout forgets the item classes
+and the list's own header and footer each the one supplementary view of a
+section of its own, which holds no items and is known by their identity:
+AppKit takes the layout's own boundary views down while it animates a change
+of the items and stands them again only once it ends, so a header the
+layout held would vanish with every change. A new layout forgets the item classes
 registered before it - the collection then refuses to make an item, "must
 register a nib or a class for the identifier" - so the classes are
 registered again each time the layout is set.

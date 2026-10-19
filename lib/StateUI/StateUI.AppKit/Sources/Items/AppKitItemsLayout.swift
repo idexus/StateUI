@@ -17,23 +17,42 @@ enum AppKitItemsLayout {
     static let listFooter = "StateUI.listFooter"
     static let kinds = [header, footer, listHeader, listFooter]
 
+    /// What one of the collection's sections holds: the list's own header or footer of an identity, each alone in a
+    /// section of its own known by it, or a group.
+    /// Design: docs/design/platforms/appkit/items.md#the-layout
+    enum SectionContent: Equatable {
+        case listHeader(String)
+        case group(Int)
+        case listFooter(String)
+    }
+
+    /// The collection's sections for `entries`, in order.
+    static func sections(of entries: ItemsEntries) -> [SectionContent] {
+        (entries.header.map { [.listHeader($0)] } ?? []) + entries.sections.indices.map { .group($0) }
+            + (entries.footer.map { [.listFooter($0)] } ?? [])
+    }
+
     /// The layout `layout` says, over the entries `entries` answers as AppKit asks.
     static func make(_ layout: ItemsLayout, entries: @escaping () -> ItemsEntries) -> NSCollectionViewCompositionalLayout {
         let across = layout.isAcross
         let configuration = NSCollectionViewCompositionalLayoutConfiguration()
         configuration.scrollDirection = across ? .horizontal : .vertical
-        let shown = entries()
-        configuration.boundarySupplementaryItems =
-            (shown.header == nil ? [] : [supplement(listHeader, across: across, before: true)])
-            + (shown.footer == nil ? [] : [supplement(listFooter, across: across, before: false)])
 
         return NSCollectionViewCompositionalLayout(sectionProvider: { index, environment in
-            let sections = entries().sections
-            guard sections.indices.contains(index) else { return nil }
+            let entries = entries()
+            let contents = sections(of: entries)
+            guard contents.indices.contains(index) else { return nil }
             let section = Self.section(layout, width: environment.container.effectiveContentSize.width)
-            section.boundarySupplementaryItems =
-                (sections[index].header == nil ? [] : [supplement(header, across: across, before: true)])
-                + (sections[index].footer == nil ? [] : [supplement(footer, across: across, before: false)])
+            switch contents[index] {
+            case .listHeader:
+                section.boundarySupplementaryItems = [supplement(listHeader, across: across, before: true)]
+            case .listFooter:
+                section.boundarySupplementaryItems = [supplement(listFooter, across: across, before: false)]
+            case .group(let group):
+                section.boundarySupplementaryItems =
+                    (entries.sections[group].header == nil ? [] : [supplement(header, across: across, before: true)])
+                    + (entries.sections[group].footer == nil ? [] : [supplement(footer, across: across, before: false)])
+            }
             return section
         }, configuration: configuration)
     }
