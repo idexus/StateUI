@@ -1,25 +1,22 @@
-# revision 8.1
-Button.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+# revision 10.1
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
-Grid.background: ✅
 Grid.lineWidth: ✅
 Grid.shape: ✅
 Grid.stroke: ✅
-HStack.background: ✅
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
-ScrollView.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+LayoutEngine.lineWidth: ◐ cannot read lineWidth of LayoutEngine - AppKit's driver has no path for it yet
+LayoutEngine.shape: ◐ cannot read shape of LayoutEngine - AppKit's driver has no path for it yet
+LayoutEngine.stroke: ◐ cannot read stroke of LayoutEngine - AppKit's driver has no path for it yet
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ☑️ AppKit outlines a scroller in one colour: a gradient draws none.
-VStack.background: ✅
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅
-ZStack.background: ✅
 ZStack.lineWidth: ✅
 ZStack.shape: ✅
 ZStack.stroke: ✅

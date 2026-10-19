@@ -131,10 +131,11 @@ final class Navigation {
     /// Whether the menu is showing. Native presentation changes write back.
     @State var menuOpen = false
 
-    /// Whether the menu lies over the page, as it does on a phone, and so
-    /// closes once the user has chosen. Beside the page on a desktop it
-    /// stays open, the way a sidebar does.
-    var menuOverlays = true
+    /// Whether the menu lies over the page - on a phone, in a narrow window -
+    /// and so closes once the user has chosen; beside the page it stays
+    /// open, the way a sidebar does. The split view writes it as the
+    /// platform places the menu for the room.
+    @State var menuOverlays = false
 
     /// Whether the menu lists the row that is hidden by default - see
     /// `SplitViewSample`, which is where the switch that writes it lives.

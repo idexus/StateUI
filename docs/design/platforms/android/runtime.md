@@ -39,7 +39,10 @@ another independent scene, so a later activity takes over the scene the one
 before showed, with its state: the previous tree leaves, letting go of the
 old activity's views, and a renderer of the new activity's own, whose intake
 holds no message yet, asks for the whole tree, and the scenes kept pass to
-it. Back finishes the activity: the user closed its window, which hears it is
+it. An activity that handles a new density itself - the display's size,
+another screen - takes the same road in its own root: pixels a point are read
+once, at a renderer's start, so a new density makes the window again at it.
+Back finishes the activity: the user closed its window, which hears it is
 going, and its scene that the window closed, and the scene ends with it. The
 launcher's next activity finds none standing: the scenes kept come back, as
 for the first activity.
@@ -66,6 +69,12 @@ frame, and every other frame of the display is lost.
 The frame's time is `CLOCK_MONOTONIC` in milliseconds, the clock the
 choreographer stamps its frames with, so a frame's time and a patch's time
 are on one clock.
+
+The choreographer's one callback reaches the one current clock, whichever
+clock asked for the frame. A test's hand-wound clock takes none of them: a
+frame an earlier clock asked for, stamped on the monotonic clock, would carry
+the runtime's time - which never runs back - far past the test's, and every
+animation after it would stand still at its start.
 
 ## Print reaches logcat
 
@@ -120,12 +129,22 @@ nobody performs. The time of day, the zone and a zone's distance from UTC are
 the platform's, each one call; the screen reader is told through the window's
 root; the focus is put on or taken off the view the act names, a text field
 bringing up the keyboard. A question for the user - an alert, a confirmation,
-a choice of actions, a prompt - is the platform's own dialog: its call waits
+a choice of actions, a prompt - is the platform's own dialog, a prompt's field
+holding its bound in characters by the host layer's rule - asked of it as the
+words change, as every field's - not in UTF-16 units: its call waits
 under a ticket the dialog hands back as the user answers, and a dialog
 dismissed any other way answers that it was not accepted. A script run in a
-web view waits the same way, until the page answers. A ticket is one number
-across the process, so an answer that arrives after its renderer has gone
-answers nothing of another's.
+web view waits the same way, until the page answers. The acts are the
+process's, not an activity's: a question asked, a document chosen or a
+script run outlives the activity it began in, which Android makes again for
+a new configuration, and acts in the one standing now. An activity made again
+takes its dialogs away unanswered, and the next asks the question showing
+again; the document picker stands in an activity of its own, which answers
+the next. An activity finishing answers every question and picker still
+waiting as dismissed (`HostActPerformer.dismissAll`), so the process's next
+activity finds none before what it asks. A ticket
+is one number across the process, and an answer from a dialog that went
+answers nothing.
 
 ## Files
 

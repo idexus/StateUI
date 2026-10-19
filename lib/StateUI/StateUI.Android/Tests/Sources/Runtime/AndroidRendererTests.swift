@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-@_spi(Host) import StateUI
+@_spi(Host) @testable import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIAndroid
 import StateUIConformance
@@ -72,6 +72,9 @@ final class AndroidRendererTests: XCTestCase {
             ("testAClickRendersWhatItsHandlerChanged", testAClickRendersWhatItsHandlerChanged),
             ("testAControlNoRegistrationAnswersShowsItsName", testAControlNoRegistrationAnswersShowsItsName),
             ("testAnActivityMadeAgainShowsTheSceneWithItsState", testAnActivityMadeAgainShowsTheSceneWithItsState),
+            ("testANewDensityMakesTheWindowAgainInIt", testANewDensityMakesTheWindowAgainInIt),
+            ("testAQuestionWaitingAsTheActivityFinishesIsDismissed", testAQuestionWaitingAsTheActivityFinishesIsDismissed),
+            ("testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext", testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext),
             ("testTheDeviceIsCalledWhatItsUserNamedIt", testTheDeviceIsCalledWhatItsUserNamedIt),
             ("testAnActivityAfterBackShowsANewScene", testAnActivityAfterBackShowsANewScene),
             ("testASceneComesBackAtTheNextStartWithWhatItKept", testASceneComesBackAtTheNextStartWithWhatItKept),
@@ -126,6 +129,110 @@ final class AndroidRendererTests: XCTestCase {
             XCTAssertEqual(second.runtime.tree.root?.children.filter { $0.type == .scene }.count, 1)
             XCTAssertEqual(second.views(AndroidTextView.self).map(\.text), ["count 1"])
             XCTAssertEqual(Java.callInt(second.root.reference, TestJava.getChildCount), 1)
+        }
+    }
+
+    /// A question waiting as Android makes its activity again is asked again in the next - its dialog went with the
+    /// first - and the answer given there reaches the handler that asked: acts are the process's.
+    func testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext() throws {
+        try onMainActor {
+            let answers = Received<Bool>()
+            let first = AndroidRenderer.running {
+                Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                    answers.values.append(try await Dialogs.confirm("Sure?", message: "Both", accept: "Yes", cancel: "No"))
+                }
+            }
+            try XCTUnwrap(first.views(AndroidButtonView.self).first).click()
+            first.settle { Self.asked() != nil }
+            XCTAssertEqual(Self.asked(), "Sure?")
+
+            Java.callStatic(AndroidDriver.dialogs, Self.leaveAll)
+            let second = AndroidRenderer.start(context: TestContext.context, root: TestJava.root(), density: 2)
+            second.settle { Self.asked() != nil }
+            XCTAssertEqual(Self.asked(), "Sure?", "asked again in the next")
+
+            let pressed = Java.frame {
+                Java.callStaticBool(
+                    AndroidDriver.dialogs, AndroidDriver.answer, .object(Java.string("Yes")), .object(nil))
+            }
+            XCTAssertTrue(pressed)
+            // The dialog hands its button's press on in a message of the UI thread's own.
+            second.settle {
+                TestWindow.run(for: 10)
+                return !answers.values.isEmpty
+            }
+            XCTAssertEqual(answers.values, [true])
+        }
+    }
+
+    /// The title of the question the user meets now, where one shows.
+    @MainActor
+    private static func asked() -> String? {
+        Java.frame {
+            guard let asked = Java.callStaticObject(AndroidDriver.dialogs, AndroidDriver.question) else { return nil }
+            return Java.jni.GetObjectArrayElement(Java.env, asked, 0).map { Java.text($0) }
+        }
+    }
+
+    @MainActor private static let leaveAll = Java.staticMethod(AndroidDriver.dialogs, "leaveAll", "()V")
+
+    /// A question waiting as Back finishes the activity is answered as dismissed: the next activity of the process
+    /// finds nothing waiting before what it asks.
+    func testAQuestionWaitingAsTheActivityFinishesIsDismissed() throws {
+        try onMainActor {
+            let answers = Received<Bool>()
+            let thrown = Received<String>()
+            let host = AndroidRenderer.running {
+                Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                    do {
+                        answers.values.append(
+                            try await Dialogs.confirm("Sure?", message: "", accept: "Yes", cancel: "No"))
+                    } catch {
+                        thrown.values.append("\(error)")
+                    }
+                }
+            }
+            let said = Said.shared.everySaid.count
+            let button = try XCTUnwrap(host.views(AndroidButtonView.self).first)
+            button.click()
+            host.settle { Self.asked() != nil }
+            XCTAssertEqual(Self.asked(), "Sure?", "the question shows")
+            let stood = host.views(AndroidButtonView.self).first === button
+
+            host.destroying()
+            host.settle { !answers.values.isEmpty || !thrown.values.isEmpty }
+
+            XCTAssertEqual(
+                answers.values, [false],
+                "answered as dismissed; the handler threw \(thrown.values); the button stood until Back: \(stood); "
+                    + Self.waiting(saidSince: said))
+            Java.callStatic(AndroidDriver.dialogs, AndroidDriver.dismissAll)
+        }
+    }
+
+    /// What still waits in the core - replies, handlers resumed and not run, jobs - and what it said since `first`:
+    /// where an answer stopped on its way to its handler.
+    @MainActor
+    private static func waiting(saidSince first: Int) -> String {
+        "\(Renderer.shared.completions.count) replies, \(Renderer.shared.resumesPending) resumes and "
+            + "\(UIThreadExecutor.shared.pendingCount) jobs waiting; said \(Said.shared.everySaid.dropFirst(first))"
+    }
+
+    /// Pixels a point changing - the display's size, another screen - make the window again at the new density, as
+    /// an activity Android makes again: no view is laid out in one scale and measured in another.
+    func testANewDensityMakesTheWindowAgainInIt() throws {
+        try onMainActor {
+            let first = AndroidRenderer.running { CounterPage() }
+            try XCTUnwrap(first.views(AndroidButtonView.self).first).click()
+            let density = AndroidEnvironment.density(of: TestContext.context.reference)
+            guard density != first.density else { throw XCTSkip("the device stands at the test's density") }
+
+            first.configured()
+
+            let now = try XCTUnwrap(AndroidRenderer.shared)
+            XCTAssertEqual(now.density, density)
+            XCTAssertEqual(now.views(AndroidTextView.self).map(\.text), ["count 1"], "the scene with its state")
+            XCTAssertEqual(Java.callInt(now.root.reference, TestJava.getChildCount), 1, "the window once")
         }
     }
 

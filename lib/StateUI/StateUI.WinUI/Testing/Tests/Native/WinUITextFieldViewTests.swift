@@ -61,6 +61,63 @@ final class WinUITextFieldViewTests: XCTestCase {
         }
     }
 
+    /// Words an input method is composing stand whole past the field's bound - cut under it, the composition would be
+    /// lost - and are cut once it commits them.
+    func testWordsAnInputMethodComposesAreCutOnceCommitted() throws {
+        try onUIThread {
+            let words = State(wrappedValue: "")
+            let host = WinUIRenderer.running { TextField(words.projectedValue).maximumLength(3) }
+            let field = try XCTUnwrap(host.views(WinUITextFieldView.self).first)
+
+            WinUICallbacks.table.textChanged(field.number, "かんじか", true)
+            host.settle { words.wrappedValue == "かんじか" }
+            XCTAssertEqual(words.wrappedValue, "かんじか", "whole while composed")
+
+            WinUICallbacks.table.textChanged(field.number, "漢字か", false)
+            WinUICallbacks.table.textChanged(field.number, "漢字かな", false)
+            host.settle { words.wrappedValue == "漢字か" }
+            XCTAssertEqual(words.wrappedValue, "漢字か", "cut once committed")
+        }
+    }
+
+    /// A field's drag stands on the box in its place - dragged, taking drops - and the relay lets its offer go
+    /// once the field leaves.
+    func testAFieldsDragStandsOnTheBoxInItsPlace() throws {
+        try onUIThread {
+            let hidden = State(wrappedValue: false)
+            let shown = State(wrappedValue: true)
+            let words = State(wrappedValue: "")
+            let offers = stateui_winui_drag_offers()
+            let host = WinUIRenderer.running {
+                VStack {
+                    if shown.wrappedValue {
+                        TextField(words.projectedValue).isPassword(hidden.wrappedValue)
+                            .draggable(text: "Alpha").onDrop { _ in }
+                    }
+                }
+            }
+            let field = try XCTUnwrap(host.views(WinUITextFieldView.self).first)
+            XCTAssertEqual(Self.drags(field), [true, true])
+
+            hidden.wrappedValue = true
+            host.settle { Self.read(field, "password") == "1" }
+            XCTAssertEqual(Self.drags(field), [true, true], "on the PasswordBox in the field's place")
+
+            shown.wrappedValue = false
+            host.settle { host.views(WinUITextFieldView.self).isEmpty && stateui_winui_drag_offers() == offers }
+            XCTAssertEqual(stateui_winui_drag_offers(), offers, "the offer let go with its field")
+        }
+    }
+
+    /// Whether `view`'s element can be dragged, and whether it takes drops.
+    @MainActor
+    private static func drags(_ view: WinUIView) -> [Bool] {
+        var canDrag = false
+        var allowsDrop = false
+        stateui_winui_drag_read(view.handle, &canDrag, &allowsDrop)
+        return [canDrag, allowsDrop]
+    }
+
     /// A field takes the traits its purpose gives on every host (`InputTraits`): plain words are neither spell
     /// checked nor predicted, though the tree leaves both on; prose starts its sentences in capitals and a chat
     /// offers emoji, each by its input scope.

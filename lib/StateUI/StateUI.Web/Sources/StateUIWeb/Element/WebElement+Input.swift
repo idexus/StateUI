@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+import WASILibc
 
 /// What the user does to the element's view with a finger, a pen or the mouse, heard by the host layer's rule.
 /// Design: docs/design/platforms/web/input.md
@@ -18,11 +19,15 @@ extension WebElement {
                 guard let self, !press.wasDragged, !WebRelay.eventPassesToControl else { return }
                 heard(.taps, .tap(run: WebRelay.eventClicks))
             }
-            view.listen("activate") { [weak self] in self?.heard(.taps, .tap(run: 0)) }
+            view.hear(.activate) { [weak self] in self?.heard(.taps, .tap(run: 0)) }
         }
-        if !hearing.isDisjoint(with: [.drags, .pinches]), listening.isDisjoint(with: [.drags, .pinches]) {
-            listening.formUnion([.drags, .pinches])
+        if !hearing.isDisjoint(with: Self.presses), listening.isDisjoint(with: Self.presses) {
+            listening.formUnion(Self.presses)
             listenForPresses(view)
+        }
+        if hearing.contains(.hand), !listening.contains(.hand) {
+            listening.insert(.hand)
+            listenForTheHand(view)
         }
         if hearing.contains(.pointer), !listening.contains(.pointer) {
             listening.insert(.pointer)
@@ -32,7 +37,7 @@ extension WebElement {
         }
         if element.handler(.isFocusedChanged) != nil, !listensForFocus {
             listensForFocus = true
-            view.listen("focus") { [weak self] in self?.send(.isFocusedChanged, [.bool(WebRelay.eventDetail != 0)]) }
+            view.hear(.within) { [weak self] in self?.send(.isFocusedChanged, [.bool(WebRelay.eventDetail != 0)]) }
         }
         view.isTapped = hearing.contains(.taps) && !view.isControl
         view.offerDrag(element.dragAndDrop) { [weak self] heard in
@@ -56,19 +61,33 @@ extension WebElement {
         view.style("-webkit-user-select", "none")
         view.listen("pointerdown") { [weak self, weak view] in
             let pointer = WebRelay.eventPointer
-            guard let self, let view, pointer.kind != 0 || pointer.button == 0 else { return }
+            guard let self, let view, pointer.kind != .mouse || pointer.button == 0 else { return }
             WebRelay.capturePointer(view.node)
+            // A press with ⌥/Alt over a view two fingers move is two fingers, mirrored about its middle.
+            if WebRelay.eventAlt, element.hearsMirroredFingers, mirroring == nil {
+                mirroring = pointer.id
+                WebRelay.takeEvent()
+                return hearMirrored(.began)
+            }
             hearPress(press.down(
                 pointer.id, at: pointer.at, kind: pointer.kind, origin: origin, size: WebRelay.eventSize))
         }
         view.listen("pointermove") { [weak self] in
             guard let self else { return }
             let pointer = WebRelay.eventPointer
+            if mirroring == pointer.id {
+                WebRelay.takeEvent()
+                return hearMirrored(.changed)
+            }
             hearPress(press.moved(pointer.id, to: pointer.at, origin: origin, size: WebRelay.eventSize))
         }
         for (event, letGo) in [("pointerup", true), ("pointercancel", false)] {
             view.listen(event) { [weak self] in
                 guard let self else { return }
+                if mirroring == WebRelay.eventPointer.id {
+                    mirroring = nil
+                    return hearMirrored(letGo ? .ended : .cancelled)
+                }
                 hearPress(press.up(WebRelay.eventPointer.id, letGo: letGo, origin: origin, size: WebRelay.eventSize))
             }
         }
@@ -76,15 +95,19 @@ extension WebElement {
             let wheel = WebRelay.eventWheel
             guard let self, wheel.pinches, element.hearing.contains(.pinches) else { return }
             WebRelay.takeEvent()
-            hearPress(press.trackpad(
-                scale: press.wheeled(down: wheel.down), at: WebRelay.eventPoint, size: WebRelay.eventSize))
-            wheelStill()
+            // The browser tells a trackpad's pinch as a wheel turned with Control, its turn a hundredth of the
+            // scale's logarithm, in pixels; the host layer lets it go once the wheel stands still.
+            let size = WebRelay.eventSize
+            let at = PinchStep.share(of: WebRelay.eventPoint, width: size.width, height: size.height)
+            heard(.pinches, .wheelPinch(scale: exp(-wheel.down / 100), at: at))
         }
         for event in ["gesturestart", "gesturechange"] {
             view.listen(event) { [weak self] in
-                guard let self, element.hearing.contains(.pinches) else { return }
+                guard let self, !element.hearing.isDisjoint(with: [.pinches, .rotations]) else { return }
                 WebRelay.takeEvent()
-                hearPress(press.trackpad(scale: WebRelay.eventScale, at: WebRelay.eventPoint, size: WebRelay.eventSize))
+                hearPress(press.trackpad(
+                    scale: WebRelay.eventScale, degrees: WebRelay.eventRotation, at: WebRelay.eventPoint,
+                    size: WebRelay.eventSize))
             }
         }
         view.listen("gestureend") { [weak self] in
@@ -94,27 +117,137 @@ extension WebElement {
         }
     }
 
+    /// The hand over a layout: the pointers down, read as one at their middle - its first move past the drag
+    /// distance the layout's way claims it, then held - and a wheel or a trackpad's scroll, a step the layout leaves
+    /// going on to the page.
+    /// Design: docs/design/platforms/web/input.md#the-hand-over-a-layout
+    private func listenForTheHand(_ view: WebDOMView) {
+        // The page keeps a touch across the layout's axis, its own scroll; along it the touch is the layout's - and a
+        // pan's every way.
+        let way = element.handWay
+        view.style("touch-action", way == .everyWay ? "none" : way == .vertical ? "pan-x" : "pan-y")
+        view.style("user-select", "none")
+        view.style("-webkit-user-select", "none")
+        view.style("-webkit-touch-callout", "none")
+        view.listen("pointerdown") { [weak self, weak view] in
+            let pointer = WebRelay.eventPointer
+            guard let self, let view, pointer.kind != .mouse || pointer.button == 0 else { return }
+            // A press with ⌥/Alt over a layout two fingers move is theirs.
+            guard !(WebRelay.eventAlt && element.hearsMirroredFingers) else { return }
+            // Another finger on a hand under way joins it, moving its middle nowhere.
+            guard handFingers.count == 0 else {
+                handFingers.down(pointer.id, at: pointer.at)
+                if handTaking { WebRelay.capturePointer(view.node) }
+                return
+            }
+            handFingers.down(pointer.id, at: pointer.at)
+            handTravel = Point(x: 0, y: 0)
+            handPending = true
+            handTaking = false
+            hand(.began, moved: Point(x: 0, y: 0), point: WebRelay.eventPoint)
+        }
+        view.listen("pointermove") { [weak self, weak view] in
+            let pointer = WebRelay.eventPointer
+            guard let self, let view, handPending || handTaking else { return }
+            let step = handFingers.moved(pointer.id, to: pointer.at)
+            if handPending {
+                handTravel = Point(x: handTravel.x + step.x, y: handTravel.y + step.y)
+                guard abs(handTravel.x) > Self.dragDistance || abs(handTravel.y) > Self.dragDistance else { return }
+                handPending = false
+                handTaking = hand(.changed, moved: handTravel)
+                guard handTaking else {
+                    handFingers = PointerMiddle()
+                    return
+                }
+                WebRelay.capturePointer(view.node)
+            } else if step != Point(x: 0, y: 0) {
+                hand(.changed, moved: step)
+            }
+            WebRelay.takeEvent()
+        }
+        // A touch the layout took is kept from the page's pan to its lift: the browser pans by the touch's moves, which
+        // come after the pointer's, and would take a slant along the page's own axis.
+        view.listen("touchmove") { [weak self] in
+            if self?.handTaking == true { WebRelay.takeEvent() }
+        }
+        // And from the browser's own drag - of a picture under it, past a few points - which takes the pointer away
+        // and never tells its lift: kept from a hand the layout took, and from one it may still take - Chromium's own
+        // threshold comes before the hand's drag distance, by no rule.
+        view.listen("dragstart") { [weak self] in
+            guard let self else { return }
+            if handPending || handTaking || element.holdsItem { WebRelay.takeEvent() }
+        }
+        for (event, letGo) in [("pointerup", true), ("pointercancel", false)] {
+            view.listen(event) { [weak self] in
+                guard let self, handFingers.count > 0 else { return }
+                // A finger lifting leaves the hand to the others; the last lifting ends it, told whatever the hand
+                // moved: a press that held a view and never moved lets it go.
+                handFingers.up(WebRelay.eventPointer.id)
+                guard handFingers.count == 0 else { return }
+                hand(letGo ? .ended : .cancelled, moved: Point(x: 0, y: 0))
+                handPending = false
+                handTaking = false
+            }
+        }
+        // A wheel measured in lines or pages turns notch by notch; one in pixels - a trackpad's - is a stream.
+        view.listen("wheel") { [weak self] in
+            guard let self, !WebRelay.eventWheel.pinches, let host else { return }
+            let step = WebRelay.eventScroll
+            let heard = WebRelay.eventNotches.map { HeardInput.notch($0) } ?? .wheel(Point(x: -step.x, y: -step.y))
+            if element.hear(heard, in: host.runtime) { WebRelay.takeEvent() }
+        }
+    }
+
+    /// A wheel's notches over a layout, as many as it turned, across and down: the host's entry. Whether the layout
+    /// took them.
+    @discardableResult
+    func notched(_ notches: Point) -> Bool {
+        guard let host, element.hearing.contains(.hand) else { return false }
+        return element.hear(.notch(notches), in: host.runtime)
+    }
+
+    /// The hand at `phase`, having moved what is under it by `moved` since the last, at `time` - the event's own,
+    /// where one is heard: the host's entry. Whether the layout took it.
+    @discardableResult
+    func hand(
+        _ phase: GesturePhase, moved: Point, speed: Point? = nil, at time: Double? = WebRelay.eventTime,
+        point: Point? = nil
+    ) -> Bool {
+        guard let host, element.hearing.contains(.hand) else { return false }
+        let told = time.flatMap { $0 > 0 ? $0 : nil }
+        return element.hear(.hand(phase, moved: moved, speed: speed, at: told, point: point), in: host.runtime)
+    }
+
+    /// How far a pointer moves before it is a drag, in CSS pixels.
+    private static let dragDistance = 4.0
+
     /// Where the view's top left corner stands on the page, by the event being heard.
     private var origin: Point {
         let (on, inView) = (WebRelay.eventPointer.at, WebRelay.eventPoint)
         return Point(x: on.x - inView.x, y: on.y - inView.y)
     }
 
-    /// A wheel's pinch ends once the wheel stands still for a fifth of a second.
-    private func wheelStill() {
-        wheelTurns += 1
-        let turn = wheelTurns
-        Task { [weak self] in
-            try? await Task.sleep(for: .milliseconds(200))
-            guard let self, turn == wheelTurns else { return }
-            hearPress(press.trackpadEnded(at: Point(x: 0, y: 0), size: LayoutSize(width: 0, height: 0)))
+    private func hearPress(_ inputs: [HeardInput]) {
+        for input in inputs {
+            switch input {
+            case .pinch: heard(.pinches, input)
+            case .rotation: heard(.rotations, input)
+            default: heard(.drags, input)
+            }
         }
     }
 
-    private func hearPress(_ inputs: [HeardInput]) {
-        for input in inputs {
-            if case .pinch = input { heard(.pinches, input) } else { heard(.drags, input) }
-        }
+    /// What the presses on a view are heard for: a drag, two fingers pinching, two fingers turning.
+    private static let presses: Hearing = [.drags, .pinches, .rotations]
+
+    /// The press with ⌥/Alt at `phase`, where the event being heard stands, mirrored about the view's middle.
+    /// Design: docs/design/host/runtime.md#two-fingers-from-one-pointer
+    private func hearMirrored(_ phase: GesturePhase) {
+        guard let host else { return }
+        let size = WebRelay.eventSize
+        element.hear(
+            .mirrored(phase, at: WebRelay.eventPoint, middle: Point(x: size.width / 2, y: size.height / 2)),
+            in: host.runtime)
     }
 
     private func heard(_ kind: Hearing, _ input: HeardInput) {

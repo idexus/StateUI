@@ -112,7 +112,9 @@ what it reports.
 What crosses to the host is what a cycle finished, never the image a cycle is
 working on. The per-frame read answers every state with dirty lanes, in
 ascending state number - the order is what makes two runs of one cycle write
-the same bytes - and clears the bits it answers. A read of one state whole
+the same bytes - and clears the bits it answers. A state with no number has
+no reader, so its bits are cleared unanswered: left standing, they would keep
+the cycle awake and hold the display's clock for good. A read of one state whole
 clears nothing: a registration needs the value and where it is going both.
 Every read goes through `HostStorage.crossing()`, which resolves an inherited
 law (journeys.md).
@@ -120,12 +122,20 @@ law (journeys.md).
 ## A start is a gap
 
 The first cycle, and any cycle after a silence longer than
-`EngineCycle.mostElapsed` (100 ms), only latches. An application that was
+`EngineCycle.mostElapsed` (100 ms), is a start. An application that was
 asleep has a pile of reports and no elapsed time anybody can act on, and an
 engine handed a gap of minutes would move whatever it moves through the wall.
-The start moves every engine's clock to now, so the next run is told about one
-frame; it does not note where the values stand, because a write made while
-nothing was cycling is a reason to run.
+The start moves every engine's clock to now, and an engine with a reason to
+run - a write made while nothing was cycling, a render that armed it - runs
+over what the start latched, told nought. Its answer is not left to the
+frame after: a layout's run of the views a render put in is drawn with them.
+
+A cycle's time never goes back - a drain told a moment before the last frame
+keeps the frame's - so it is the time of one clock: the runtime's. A runtime
+brings its clock (`HostBoundary.clockStarted`), and the boards' time starts
+over on it, the next cycle a start; a second runtime in one process, as a
+test makes one a case, would otherwise find the boards ahead of its clock and
+every engine standing still until it caught up.
 
 ## Engines
 
@@ -170,7 +180,16 @@ view again arms the engine once with the new closure (`rearm`).
   stirred    any followed stamp differs from what was seen -> run
   armed      a render described the view since the last run -> run
   awake      the last answer was .again -> run
+  asked      armed or stirred, or a write waiting -> a turn runs the cycle at once;
+             awake alone waits for the display's frame
 ```
+
+A turn - a handler run, a page's call answered - runs the cycle only where it
+was asked for: a write or an engine armed or stirred is the user's change, and
+the followers move on the user's frame. An engine going on of its own is
+served by the display's frames alone; a turn running it too would work a frame
+out for every input event - 120 a second on a tablet - beside the screen's
+own.
 
 A state's stamp is its storage's own write count plus its image's, because a
 value has two homes in its life: the storage, and the image once the host
@@ -206,19 +225,30 @@ anything asks - the differ asks as it registers a driven property - and kept on
 the image, so it survives every rebuild. Properties are walked in name order,
 so numbers follow the walk and two runs of one tree number alike, which is what
 lets a test name a state by its number. Numbers start at one. The renderer's
-table of numbers holds each image weakly; a number
-whose state has gone answers nothing.
+table of numbers holds each image weakly, and an image takes its number out
+of the table as it goes. What the board calls on an image after a host write
+(`told`) holds the image unowned: holding it strongly, the image would hold
+itself, and no carried state would ever go.
 
 The tests share one renderer across a whole run, so they put the numbering back
 to a fresh process's before each test that names one; nothing a running interface could
 survive, since a value whose number is forgotten while the host still quotes it
 would be told about somebody else's movement.
 
+A host's test that writes a patch by hand names its states from the top of the
+range down (`handMadeState`), never from one. The core in that process still
+holds the application an earlier test set, and the first render the test's host
+asks for numbers that application's states anew: a hand-made number among them
+would take that state's values onto the test's tree.
+
 ## The image
 
 A value lies on the image as little-endian bit patterns, eight bytes a lane, or
 as a text's own length and UTF-8 (`StateImage`), written by hand because the
-library imports no Foundation.
+library imports no Foundation. Lanes are copied whole, as they lie in memory -
+little-endian on every platform StateUI runs on, which the compiler checks - so
+a layout's run of placements, written every frame, costs a copy rather than a
+loop over each byte; a write lays the bytes it worked out once.
 
 ## The ticker
 

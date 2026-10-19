@@ -43,30 +43,33 @@ extension Node {
     /// Takes, as an arrangement standing where a page stands, the title and the icon `values` give; anything else
     /// a page alone says, and anywhere but at a page's position nothing, is complained about.
     mutating func takeAsArrangement(_ values: PageValues) {
-        let own = Set(PageElementContract.members.map(\.name))
-        let said = Set(values.node.props.keys.map(\.name)).union(values.node.driven.keys.map(\.name))
-            .union(values.node.events.keys.map(\.name))
-
+        let node = values.node
         guard NodeType.arrangements.contains(type) else {
+            let said = node.props.keys.map(\.name) + node.driven.keys.map(\.name) + node.events.keys.map(\.name)
             complain("""
-                \(said.sorted().joined(separator: ", ")) says something of a page, written on a view no page shows: \
-                it says nothing there. Write it on the view a page shows - a window's, a stack's root or \
+                \(Set(said).sorted().joined(separator: ", ")) says something of a page, written on a view no page \
+                shows: it says nothing there. Write it on the view a page shows - a window's, a stack's root or \
                 destination, a tab, a sheet.
                 """)
             return
         }
 
-        for (key, value) in values.node.props where own.contains(key.name) { props[key] = value }
-        for (key, value) in values.node.driven where own.contains(key.name) { driven[key] = value }
+        for (key, value) in node.props where Self.pageProps.contains(key) { props[key] = value }
+        for (key, value) in node.driven where Self.pageProps.contains(key) { driven[key] = value }
 
-        let others = said.subtracting(own)
+        let others = node.props.keys.filter { !Self.pageProps.contains($0) }.map(\.name)
+            + node.driven.keys.filter { !Self.pageProps.contains($0) }.map(\.name)
+            + node.events.keys.map(\.name)
         if !others.isEmpty {
             complain("""
-                \(others.sorted().joined(separator: ", ")) says something of a page, written on \(type.name), which \
-                stands where a page stands as a page already and takes only a title and an icon.
+                \(Set(others).sorted().joined(separator: ", ")) says something of a page, written on \(type.name), \
+                which stands where a page stands as a page already and takes only a title and an icon.
                 """)
         }
     }
+
+    /// The keys the page tier's properties - a title, an icon - are written under, made once; the tier has no event.
+    private static let pageProps = Set(PageElementContract.members.map { Prop($0.name) })
 }
 
 /// A page's values as modifiers write them - every way a view's own property is written, kept to the page.

@@ -12,7 +12,7 @@ final class DesignNotesTests: XCTestCase {
     private static var held: [String] {
         [
             "lib/StateUI/StateUI.Host/Sources", "lib/StateUI/Core/Sources/Types", "lib/StateUI/Core/Sources/Contracts",
-            "lib/StateUI/Core/Sources/Core", "lib/StateUI/Core/Sources/Views",
+            "lib/StateUI/Core/Sources/Core", "lib/StateUI/Core/Sources/Views", "lib/StateUI/Foundation/Sources",
             "lib/StateUI/StateUI.AppKit/Sources", "lib/StateUI/StateUI.UIKit/Sources",
             "lib/StateUI/StateUI.Android/Sources", "lib/StateUI/StateUI.WinUI/Sources", "lib/StateUI/StateUI.GTK/Sources",
             "lib/StateUI/StateUI.Web/Sources", "lib/StateUI/StateUI.Conformance/Sources",
@@ -29,6 +29,14 @@ final class DesignNotesTests: XCTestCase {
     }
 
     /// Every backend is held, so a new one keeps the rule from its first source.
+    /// The library's guards read every module of it: the core, the host layer and the foundation under them - a
+    /// rule about the library holds nowhere it does not look.
+    func testTheGuardsReadEveryModuleOfTheLibrary() throws {
+        XCTAssertTrue(try SourceTree.allSources().contains { $0.path == "StateUIFoundation/ThreadNumber.swift" })
+        XCTAssertTrue(try SourceTree.testSources().contains { $0.path.hasPrefix("StateUIFoundationTests/") })
+        XCTAssertTrue(Self.held.contains("lib/StateUI/Foundation/Sources"))
+    }
+
     func testEveryBackendsSourcesAreHeld() {
         XCTAssertTrue(Self.held.contains("lib/Backends/WebView.GTK/Sources"))
         XCTAssertTrue(Self.held.contains("lib/Backends/WebView.WinUI/Sources"))

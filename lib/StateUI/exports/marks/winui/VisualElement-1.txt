@@ -1,41 +1,48 @@
-# revision 12.2
+# revision 14.2
 ActivityIndicator.isVisible: ✅
 ActivityIndicator.pivotX: ✅
 Button.scaleY: ✅
 Button.style: ✅
-Canvas.automationExcludedWithChildren: ✅
-Capsule.ignoresInput: ✅
-Capsule.scale: ✅
-CheckBox.tooltip: ✅
-DatePicker.isEnabled: ✅
-DatePicker.rotation: ✅
-Divider.translationX: ✅
-Divider.zIndex: ✅
-Ellipse.accessibilityLabel: ✅
-Ellipse.isEnabled: ✅
-Grid.layoutDirection: ✓ read layoutDirection of Grid: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-HStack.frameChanged: ✅
-HStack.height: ✅
-HStack.rotationX: ✓ read rotationX of HStack: the host's own tip, checked against the projection it laid on the element
-HStack.width: ✅
-Image.scaleY: ✅
-Image.style: ✅
-ItemsView.isAccessibilityHidden: ✅
-Line.accessibilityHint: ✅
-Map.isVisible: 🧩
-Map.pivotX: 🧩
-Path.background: – A WinUI shape is its figure alone: it paints no ground around it.
-Picker.ignoresInput: ✅
-Picker.scale: ✅
-Polygon.accessibilityHeading: ✅
-Polyline.isEnabled: does not apply - read isEnabled of Polyline - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Polyline.rotation: ✅
-ProgressBar.accessibilityHeading: ✅
-ProgressBar.translationY: ✅
-RadioButton.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Rectangle.frame: ✅
-Rectangle.scaleX: ✅
-ScrollView.accessibilityHeading: ✅
+Canvas.isAccessibilityHidden: ✅
+Capsule.maximumHeight: ✅
+Capsule.maximumWidth: ✅
+Capsule.minimumHeight: ✅
+Capsule.minimumWidth: ✅
+Capsule.rotationY: ✓ read rotationY of Capsule: the host's own tip, checked against the projection it laid on the element
+CheckBox.accessibilityHint: ✅
+DatePicker.opacity: ✅
+DatePicker.pivotY: ✅
+Divider.accessibilityHeading: ✅
+Divider.translationY: ✅
+Ellipse.accessibilityHeading: ✅
+Ellipse.translationY: ✅
+Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+HStack.opacity: ✅
+HStack.pivotY: ✅
+Image.maximumHeight: ✅
+Image.maximumWidth: ✅
+Image.minimumHeight: ✅
+Image.minimumWidth: ✅
+Image.rotationY: ✓ read rotationY of Image: the host's own tip, checked against the projection it laid on the element
+ItemsView.accessibilityHint: ✅
+LayoutEngine.translationX: ✅
+LayoutEngine.zIndex: ✅
+Line.tooltip: ✅
+Map.opacity: 🧩
+Map.pivotY: 🧩
+Path.layoutDirection: ✓ read layoutDirection of Path: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Picker.frame: ✅
+Picker.scaleX: ✅
+Polygon.isAccessibilityHidden: ✅
+Polyline.height: ✅
+Polyline.rotationX: ✓ read rotationX of Polyline: the host's own tip, checked against the projection it laid on the element
+Polyline.width: ✅
+ProgressBar.accessibilityLabel: ✅
+ProgressBar.isEnabled: ✅
+RadioButton.layoutDirection: ✅
+Rectangle.scaleY: ✅
+Rectangle.style: ✅
+ScrollView.isAccessibilityHidden: ✅
 SearchField.opacity: ✅
 SearchField.pivotY: ✅
 Slider.accessibilityHeading: ✅
@@ -44,25 +51,17 @@ Spacer.layoutDirection: ✓ read layoutDirection of Spacer: the direction the ho
 Stepper.scaleY: ✅
 Stepper.style: ✅
 Switch.automationExcludedWithChildren: ✅
-Text.frameChanged: ✅
-Text.maximumHeight: ✅
-Text.maximumWidth: ✅
-Text.minimumHeight: ✅
-Text.minimumWidth: ✅
-Text.rotationY: ✓ read rotationY of Text: the host's own tip, checked against the projection it laid on the element
+Text.opacity: ✅
+Text.pivotY: ✅
 TextEditor.ignoresInput: ✅
 TextEditor.scale: ✅
 TextField.accessibilityHeading: ✅
-TimePicker.frameChanged: ✅
 TimePicker.height: ✅
 TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own tip, checked against the projection it laid on the element
 TimePicker.width: ✅
 VStack.accessibilityHint: ✅
 VStack.isEnabled: ✅
-WebView.isAccessibilityHidden: ✅
-ZStack.frameChanged: ✅
-ZStack.maximumHeight: ✅
-ZStack.maximumWidth: ✅
-ZStack.minimumHeight: ✅
-ZStack.minimumWidth: ✅
-ZStack.rotationY: ✓ read rotationY of ZStack: the host's own tip, checked against the projection it laid on the element
+WebView.accessibilityHeading: ✅
+ZStack.height: ✅
+ZStack.rotationX: ✓ read rotationX of ZStack: the host's own tip, checked against the projection it laid on the element
+ZStack.width: ✅

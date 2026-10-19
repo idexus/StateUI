@@ -1,47 +1,45 @@
-# revision 12.2
+# revision 14.2
 ActivityIndicator.background: – WinUI's progress ring paints its Background as its track, no ground under its frame.
 Button.ignoresInput: ✅
 Button.scale: ✅
-Canvas.accessibilityHeading: ✅
-Capsule.frameChanged: ✅
-Capsule.height: ✅
-Capsule.rotationX: ✓ read rotationX of Capsule: the host's own tip, checked against the projection it laid on the element
-Capsule.width: ✅
-CheckBox.accessibilityLabel: ✅
-DatePicker.isVisible: ✅
-DatePicker.pivotX: ✅
-Divider.frame: ✅
-Divider.scaleX: ✅
-Ellipse.translationX: ✅
-Ellipse.zIndex: ✅
-Grid.automationExcludedWithChildren: ✅
-HStack.opacity: ✅
-HStack.pivotY: ✅
-Image.ignoresInput: ✅
-Image.scale: ✅
-ItemsView.tooltip: ✅
-Line.accessibilityHeading: ✅
-Line.translationY: ✅
-Map.background: 🧩
-Path.isAccessibilityHidden: ✅
-Picker.frameChanged: ✅
-Picker.height: ✅
-Picker.rotationX: ✓ read rotationX of Picker: the host's own tip, checked against the projection it laid on the element
-Picker.width: ✅
-Polygon.accessibilityHint: ✅
-Polyline.isVisible: ✅
-Polyline.pivotX: ✅
-ProgressBar.scaleY: ✅
-ProgressBar.style: ✅
-RadioButton.isAccessibilityHidden: ✅
-Rectangle.frameChanged: ✅
-Rectangle.maximumHeight: ✅
-Rectangle.maximumWidth: ✅
-Rectangle.minimumHeight: ✅
-Rectangle.minimumWidth: ✅
-Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own tip, checked against the projection it laid on the element
-ScrollView.accessibilityHint: ✅
-ScrollView.layoutDirection: ✅
+Canvas.tooltip: ✅
+Capsule.isEnabled: does not apply - read isEnabled of Capsule - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Capsule.rotation: ✅
+CheckBox.accessibilityHeading: ✅
+CheckBox.translationY: ✅
+DatePicker.layoutDirection: ✅
+Divider.scaleY: ✅
+Divider.style: ✅
+Ellipse.scaleY: ✅
+Ellipse.style: ✅
+Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Grid.isAccessibilityHidden: ✅
+HStack.layoutDirection: ✓ read layoutDirection of HStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Image.isEnabled: does not apply - read isEnabled of Image - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Image.rotation: ✅
+ItemsView.accessibilityHeading: ✅
+ItemsView.translationY: ✅
+LayoutEngine.frame: ✅
+LayoutEngine.scaleX: ✅
+Line.accessibilityLabel: ✅
+Line.isEnabled: ✅
+Map.layoutDirection: 🧩
+Path.automationExcludedWithChildren: ✅
+Picker.maximumHeight: ✅
+Picker.maximumWidth: ✅
+Picker.minimumHeight: ✅
+Picker.minimumWidth: ✅
+Picker.rotationY: ✓ read rotationY of Picker: the host's own tip, checked against the projection it laid on the element
+Polygon.tooltip: ✅
+Polyline.opacity: ✅
+Polyline.pivotY: ✅
+ProgressBar.translationX: ✅
+ProgressBar.zIndex: ✅
+RadioButton.automationExcludedWithChildren: ✅
+Rectangle.ignoresInput: ✅
+Rectangle.scale: ✅
+ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+ScrollView.tooltip: ✅
 SearchField.layoutDirection: ✅
 Slider.scaleY: ✅
 Slider.style: ✅
@@ -49,9 +47,7 @@ Spacer.automationExcludedWithChildren: ✅
 Stepper.ignoresInput: ✅
 Stepper.scale: ✅
 Switch.accessibilityHeading: ✅
-Text.isEnabled: does not apply - read isEnabled of Text - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Text.rotation: ✅
-TextEditor.frameChanged: ✅
+Text.layoutDirection: ✅
 TextEditor.height: ✅
 TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
 TextEditor.width: ✅
@@ -60,6 +56,6 @@ TimePicker.opacity: ✅
 TimePicker.pivotY: ✅
 VStack.accessibilityHeading: ✅
 VStack.translationY: ✅
-WebView.tooltip: ✅
-ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-ZStack.rotation: ✅
+WebView.accessibilityHint: ✅
+ZStack.opacity: ✅
+ZStack.pivotY: ✅

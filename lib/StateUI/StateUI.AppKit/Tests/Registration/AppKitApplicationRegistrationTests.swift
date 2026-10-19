@@ -124,7 +124,8 @@ final class AppKitApplicationRegistrationTests: XCTestCase {
     /// Pumps until `done` holds.
     @MainActor
     private func settle(_ renderer: AppKitRenderer, until done: () -> Bool) {
-        for _ in 0..<150 where !done() {
+        for _ in 0..<150 {
+            guard !done() else { break }
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
             renderer.runtime.pump.turn()
         }
@@ -194,7 +195,7 @@ final class AppKitApplicationRegistrationTests: XCTestCase {
         let realization = AppKitRegistrations.registry.realization
 
         XCTAssertTrue(
-            realization.elements.contains(LampContract.nodeType.name),
+            realization.elements.contains(LampContract.nodeType),
             "the registry holds it, which is what makes the view")
         XCTAssertNil(
             LibraryContracts.elements.first { $0.nodeType.name == LampContract.nodeType.name },

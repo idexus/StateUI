@@ -17,9 +17,72 @@ private func sheetsOver(_ sheets: State<[Int]>) -> ModalStack {
     }
 }
 
+/// A page whose button asks for a sheet and a question in one turn, and for a second sheet once answered.
+private struct SheetAndQuestion: View {
+    @State private var sheets: [Int] = []
+
+    var body: some View {
+        ModalStack($sheets) {
+            Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                sheets.append(1)
+                _ = try await Dialogs.confirm("Sure?", message: "Both come", accept: "Yes", cancel: "No")
+                sheets.append(2)
+            }
+        } destination: { number in
+            Text("On sheet \(number)")
+        }
+    }
+}
+
 /// Pages a window presents over its page, as UIKit presents them.
 @MainActor
 final class UIKitSheetsTests: XCTestCase {
+    /// A question asked in the turn a sheet is asked for stands, is answered, and the sheets asked for before and
+    /// after come: the window's root presents everything, one at a time, and UIKit drops nothing.
+    @MainActor
+    func testAQuestionAskedWithASheetIsAnsweredAndEverySheetComes() throws {
+        let host = UIKitRenderer.running(reducesMotion: false) { SheetAndQuestion() }
+        defer { host.finish() }
+        let root = try XCTUnwrap(host.roster.windows.first?.1.window?.rootViewController)
+
+        host.views(UIKitButtonView.self).first?.sendActions(for: .primaryActionTriggered)
+        host.settle { host.actToolkit.showing?.alert.viewIfLoaded?.window != nil }
+        XCTAssertNotNil(host.actToolkit.showing?.alert.viewIfLoaded?.window, "the question stands")
+
+        XCTAssertEqual(host.actToolkit.showing?.press("Yes", typing: nil), true)
+        host.settle {
+            root.presentedViewController?.presentedViewController?.viewIfLoaded?.window != nil
+                && root.presentedViewController?.presentedViewController?.transitionCoordinator == nil
+        }
+
+        let first = root.presentedViewController, second = first?.presentedViewController
+        XCTAssertFalse(first is UIAlertController, "the first sheet over the page")
+        XCTAssertNotNil(second?.viewIfLoaded?.window, "the second over the first")
+        XCTAssertFalse(second is UIAlertController)
+    }
+
+    /// A window whose scene iOS let go of and brought back shows its sheets again, and the next sheet asked for
+    /// comes over them: nothing is left presented outside the window.
+    @MainActor
+    func testASceneBroughtBackShowsItsSheetsAgain() throws {
+        let scene = try XCTUnwrap(TestScene.scene)
+        let sheets = State(wrappedValue: [1])
+        let host = UIKitRenderer.running(reducesMotion: true) { sheetsOver(sheets) }
+        defer { host.finish() }
+        func root() -> UIViewController? { host.roster.windows.first?.1.window?.rootViewController }
+        host.settle { root()?.presentedViewController?.viewIfLoaded?.window != nil }
+
+        host.disconnect(scene)
+        host.connect(scene)
+        host.settle { root()?.presentedViewController?.viewIfLoaded?.window != nil }
+        XCTAssertNotNil(root()?.presentedViewController?.viewIfLoaded?.window, "the sheet stands again")
+
+        sheets.wrappedValue = [1, 2]
+        host.settle { root()?.presentedViewController?.presentedViewController?.viewIfLoaded?.window != nil }
+        XCTAssertNotNil(
+            root()?.presentedViewController?.presentedViewController?.viewIfLoaded?.window, "the next comes over it")
+    }
+
     /// Sheets the window starts with stand each over the one before, as UIKit presents over a controller only once
     /// it stands.
     @MainActor

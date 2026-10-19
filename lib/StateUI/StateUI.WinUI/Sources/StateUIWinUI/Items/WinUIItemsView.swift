@@ -52,10 +52,10 @@ final class WinUIItemsView: WinUILayoutView {
         if let changes = cells.takeEntries() { writeEntries(changes) }
         if layout != shape {
             shape = layout
-            let (kind, spacing, minimum): (Int32, Double, Double) = switch layout {
-            case .list(let spacing): (0, spacing, 0)
-            case .row(let spacing): (1, spacing, 0)
-            case .grid(let minimum, let spacing): (2, spacing, minimum)
+            let (kind, spacing, minimum): (StateUIItemsShape, Double, Double) = switch layout {
+            case .list(let spacing): (.list, spacing, 0)
+            case .row(let spacing): (.row, spacing, 0)
+            case .grid(let minimum, let spacing): (.grid, spacing, minimum)
             }
             stateui_winui_items_set_layout(list.handle, kind, spacing, minimum)
             invalidateMeasurements()
@@ -79,7 +79,7 @@ final class WinUIItemsView: WinUILayoutView {
         var edges = Set([entries.header, entries.footer].compactMap(\.self))
         for section in entries.sections { edges.formUnion([section.header, section.footer].compactMap(\.self)) }
         let identities = cells.identities
-        let kinds = identities.map { edges.contains($0) ? Int32(1) : 0 }
+        let kinds = identities.map { (edges.contains($0) ? StateUIItemKind.edge : .item).rawValue }
         let runs = { (runs: [Range<Int>]) in runs.flatMap { [Int32($0.lowerBound), Int32($0.count)] } }
         let (removed, inserted) = (runs(changes.removedRuns), runs(changes.insertedRuns))
         WinUIStrings.withCStrings(identities) { names in

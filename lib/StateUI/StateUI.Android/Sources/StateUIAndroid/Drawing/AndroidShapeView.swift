@@ -142,14 +142,16 @@ final class AndroidShapeView: AndroidView {
     /// The Java side's kind, drawn geometry as commands in pixels, and fill rule; a rectangle and an ellipse fill
     /// the view.
     private static func flattened(_ geometry: Geometry, density: Double) -> (Int32, [Float], Bool) {
-        switch geometry {
-        case .rectangle: (0, [], false)
-        case .ellipse: (1, [], false)
-        case .line(let from, let to): (2, pixels([0, from.x, from.y, 1, to.x, to.y], density), false)
+        let drawn = AndroidShapeKind.drawn.rawValue
+        return switch geometry {
+        case .rectangle: (AndroidShapeKind.rectangle.rawValue, [], false)
+        case .ellipse: (AndroidShapeKind.ellipse.rawValue, [], false)
+        case .line(let from, let to):
+            (drawn, pixels(([HostCurveCommand.move(from), .line(to)]).flatMap(\.numbers), density), false)
         case .points(let points, let closed, let evenOdd):
-            (2, pixels(ShapeArithmetic.curves(through: points, closed: closed).flatMap(\.numbers), density), evenOdd)
+            (drawn, pixels(ShapeArithmetic.curves(through: points, closed: closed).flatMap(\.numbers), density), evenOdd)
         case .path(let data):
-            (2, pixels((HostPath(svg: data)?.arcsAsCubics ?? []).flatMap(\.numbers), density), false)
+            (drawn, pixels((HostPath(svg: data)?.arcsAsCubics ?? []).flatMap(\.numbers), density), false)
         }
     }
 
@@ -159,12 +161,7 @@ final class AndroidShapeView: AndroidView {
         var index = 0
         while index < commands.count {
             let command = commands[index]
-            let coordinates = switch command {
-            case 0, 1: 2
-            case 2: 6
-            case 3: 4
-            default: 0
-            }
+            let coordinates = HostCurveCommand.Kind(rawValue: Int32(command))?.coordinates ?? 0
             drawn.append(Float(command))
             drawn += commands.dropFirst(index + 1).prefix(coordinates).map { Float($0 * density) }
             index += 1 + coordinates

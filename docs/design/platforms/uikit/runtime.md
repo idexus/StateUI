@@ -18,6 +18,17 @@ application's delegate starts the runtime as the application launches, which
 tells what the device and the application are; each scene iOS connects tells
 what the display is.
 
+## The frame clock
+
+The display link asks the display's full rate, up to 120 frames a second
+(`UIKitFrameClock.fullRate`), and only while something holds the clock - a
+motion, a hand, an animation. A ProMotion iPad gives it; an iPhone gives it
+only to an application whose `Info.plist` says
+`CADisableMinimumFrameDurationOnPhone`, and otherwise draws a display link's
+motion at sixty while its own scrolling runs at 120 - a layout moved by the
+hand then moves half as often as the finger. The bundle every UIKit head is built into
+says it (`.scripts/UIKit/tools.sh`), so no application has to.
+
 ## Scenes
 
 Each StateUI window stands in a window scene of UIKit's own: a window of the
@@ -80,11 +91,23 @@ through the runtime's one step for it: the theme when the scene's traits
 turn it, the locale when the user or the time zone changes it, the battery
 when its level or state moves or Low Power Mode turns, the network when its
 path moves. The theme is the whole application's: every scene stands in the
-one the user chose, so the first scene's traits say it. A battery UIKit knows
+one the user chose, so one scene's traits say it - a scene iOS holds: one it
+lets go of is followed no more, and another it holds, else the next to
+connect, is followed in its place, since iOS makes a scene anew for a session
+it brings back. A battery UIKit knows
 nothing of - the simulator's - is none, full, on mains; Low Power Mode is the
 battery saver. The network is reachable when its path is satisfied, local
 when interfaces stand but no route leads out; each interface available to
 the path - Wi-Fi, wired, cellular - is a connection profile.
+
+The display is told again as UIKit sets out to give a window a new size
+(`viewWillTransition(to:with:)` on its root): the scene stands turned
+already, and the window is laid out at the turned size after it. A page
+measured there - its frame reported in the same layout pass - is heard with
+the display it is measured on, so an answer worked out from the two holds.
+The scene's own report of its new geometry comes after that layout and finds
+nothing new; told only there, a page turned back would answer from the last
+turn and never be measured again.
 
 ## Acts
 

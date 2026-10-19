@@ -72,7 +72,7 @@ final class ItemsRulesTests: XCTestCase {
     /// its items across.
     func testAListSpacesTheItemsOfAGroup() {
         let entries = ItemsEntries(sections: [
-            .init(header: "h", items: ["a", "b"]), .init(items: ["c", "d"]),
+            .init("0", header: "h", items: ["a", "b"]), .init("1", items: ["c", "d"]),
         ])
         let list = ItemsPlacement(entries, layout: .list(spacing: 6), width: 300, spanning: true)
         XCTAssertEqual(list.edges, [true, false, false, false, false])
@@ -85,7 +85,7 @@ final class ItemsRulesTests: XCTestCase {
     /// Spanning, a grid's header spans every column and a group's last item what its row has left; each item is a
     /// column's width, `spacing` from the next.
     func testAGridGroupStartsARowWhereEntriesSpan() {
-        let entries = ItemsEntries(sections: [.init(items: ["a", "b", "c", "d"]), .init(header: "h", items: ["e"])])
+        let entries = ItemsEntries(sections: [.init("0", items: ["a", "b", "c", "d"]), .init("1", header: "h", items: ["e"])])
         let grid = ItemsPlacement(entries, layout: .grid(minimumItemWidth: 90, spacing: 10), width: 300, spanning: true)
         XCTAssertEqual(grid.columns, 3)
         XCTAssertEqual(grid.spans, [1, 1, 1, 3, 3, 3], "the fourth fills its row; the header all; the last its row")
@@ -100,7 +100,7 @@ final class ItemsRulesTests: XCTestCase {
 
     /// Without spanning, every entry takes the next cell, a header too.
     func testAGridWithoutSpanningTakesTheNextCell() {
-        let entries = ItemsEntries(sections: [.init(header: "h", items: ["a", "b", "c"])])
+        let entries = ItemsEntries(sections: [.init("0", header: "h", items: ["a", "b", "c"])])
         let grid = ItemsPlacement(entries, layout: .grid(minimumItemWidth: 90, spacing: 10), width: 300, spanning: false)
         XCTAssertEqual(grid.spans, [1, 1, 1, 1])
         XCTAssertEqual(grid.rooms.map(\.top), [0, 0, 0, 10])

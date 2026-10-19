@@ -29,7 +29,7 @@ public struct Window: Scene {
     ///   - content: the view the window shows.
     public init<Content: View>(_ type: WindowType, @ViewBuilder content: @escaping () -> Content) {
         declared = DeclaredWindows(
-            type: type, valueType: nil, kind: String(reflecting: Content.self),
+            type: type, valueType: nil,
             page: { _, _ in Node.page(content()) }, single: true)
     }
 

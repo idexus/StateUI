@@ -62,10 +62,12 @@
         self.report = report
     }
 
-    /// Shows `page` in a window of its own on the host, its display frames at `clock`'s time where one is given.
+    /// Shows `page` in a window of its own on the host, its display frames at `clock`'s time where one is given. The
+    /// case's first start finds nothing kept, whatever earlier runs wrote.
     public func start(
         clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) {
+        if tree == nil { driver.forgetWhatIsKept() }
         tree = driver.start(clock: clock, reducesMotion: reducesMotion, page)
     }
 
@@ -75,6 +77,12 @@
         let key = ElementID.manual(String(describing: id))
         guard let element = tree?.root?.first(id: key) else { throw Missing(id: String(describing: id)) }
         return element
+    }
+
+    /// Whether the element the page gave the id `id` stands shown; not where the page holds none.
+    public func isShown(_ id: some Hashable) throws -> Bool {
+        guard let shown = try? element(id) else { return false }
+        return try held(VisualElementContract.isVisible, on: shown) == true
     }
 
     /// The entry of `identity` in the ItemsView `list`, built for a cell the platform holds.
@@ -123,41 +131,43 @@
         } else {
             note("\(act) on \(element.type.name)", element: element.type.name)
         }
-        try driver.perform(act, on: element)
+        try driven { try driver.perform(act, on: element) }
     }
 
     /// What the native control of `element` holds of `property`.
     public func held<Owner, Value>(_ property: ElementProperty<Owner, Value>, on element: MountedElement) throws -> Value? {
         note("read \(property.name) of \(element.type.name)", element: element.type.name, member: property.name)
-        return try driver.held(property.token, on: element).flatMap { Value(propValue: $0) }
+        return try driven { try driver.held(property.token, on: element).flatMap { Value(propValue: $0) } }
     }
 
     /// The menu `element` offers as the user meets it (`HostDriver.menu(of:)`).
     public func menu(of element: MountedElement) throws -> String {
         note("read the menu of \(element.type.name)")
-        return try driver.menu(of: element)
+        return try driven { try driver.menu(of: element) }
     }
 
     /// The menu `button` opens (`HostDriver.buttonMenu(of:)`).
     public func buttonMenu(of button: MountedElement) throws -> String {
         note("read the menu \(button.type.name) opens")
-        return try driver.buttonMenu(of: button)
+        return try driven { try driver.buttonMenu(of: button) }
     }
 
     /// The bar `page` shows as the user meets it (`HostDriver.bar(of:)`).
     public func bar(of page: MountedElement) throws -> String {
         note("read the bar of \(page.type.name)")
-        return try driver.bar(of: page)
+        return try driven { try driver.bar(of: page) }
     }
 
     /// Whether `element` holds the keyboard.
     public func focused(_ element: MountedElement) throws -> Bool {
-        try driver.focused(element)
+        note("read the focus of \(element.type.name)", element: element.type.name)
+        return try driven { try driver.focused(element) }
     }
 
     /// Whether a press at `point` of `element` reaches it, or what stands in it.
     public func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
-        try driver.reaches(element, at: point)
+        note("read what reaches \(element.type.name)", element: element.type.name)
+        return try driven { try driver.reaches(element, at: point) }
     }
 
     /// Whether assistive technology meets `element` as a heading, whatever its level.
@@ -165,50 +175,51 @@
         note(
             "read whether \(element.type.name) is a heading", element: element.type.name,
             member: VisualElementContract.accessibilityHeading.name)
-        return try driver.isHeading(element)
+        return try driven { try driver.isHeading(element) }
     }
 
     /// The ids of the children of `layout`, in the order its toolkit draws them, back to front.
     public func drawingOrder(of layout: MountedElement) throws -> [ElementID] {
         note("read the drawing order of \(layout.type.name)")
-        return try driver.drawingOrder(of: layout).map(\.id)
+        return try driven { try driver.drawingOrder(of: layout).map(\.id) }
     }
 
     /// The question the window shows now; nil where it shows none.
     public func question() throws -> Question? {
         guard let root = tree?.root else { return nil }
         note("read a question")
-        return try driver.question(over: root)
+        return try driven { try driver.question(over: root) }
     }
 
     /// What the platform's screen reader was told to say, in order.
     public func announced() throws -> [String] {
         note("read what the screen reader said")
-        return try driver.announced()
+        return try driven { try driver.announced() }
     }
 
     /// The theme the platform shows the application in now.
     public func theme() throws -> ColorScheme {
         note("read the theme the application shows in")
-        return try driver.theme()
+        return try driven { try driver.theme() }
     }
 
     /// The file dialog the window shows now; nil where it shows none.
     public func fileDialog() throws -> FileDialog? {
         guard let root = tree?.root else { return nil }
         note("read a file dialog")
-        return try driver.fileDialog(over: root)
+        return try driven { try driver.fileDialog(over: root) }
     }
 
     /// What the host handed the system to launch, in order: an address as written, a file by its name.
     public func launched() throws -> [String] {
         note("read what was launched")
-        return try driver.launched()
+        return try driven { try driver.launched() }
     }
 
     /// The colour `element` shows at `point` of its own, where StateUI draws it; nil where it shows nothing.
     public func color(of element: MountedElement, at point: Point) throws -> ShownColor? {
-        try driver.color(of: element, at: point).map(ShownColor.init)
+        note("read the colour of \(element.type.name)", element: element.type.name)
+        return try driven { try driver.color(of: element, at: point).map(ShownColor.init) }
     }
 
     /// Whether `element` shows `color` at `point` of its own, as a screen shows a colour StateUI draws.
@@ -220,7 +231,8 @@
     /// The colours `element` shows at each of `points` of its own, read at once; nil where it shows nothing.
     /// Design: docs/design/host/conformance.md#a-colour-drawn
     public func colors(of element: MountedElement, at points: [Point]) throws -> [ShownColor?] {
-        try driver.colors(of: element, at: points).map { $0.map(ShownColor.init) }
+        note("read the colour of \(element.type.name)", element: element.type.name)
+        return try driven { try driver.colors(of: element, at: points).map { $0.map(ShownColor.init) } }
     }
 
     /// Whether `element` shows `color` at each of `points` of its own, read at once.
@@ -231,20 +243,21 @@
 
     /// Where `element` stands in its window, as the toolkit placed it.
     public func place(of element: MountedElement) throws -> Rect {
-        try driver.place(of: element)
+        note("read where \(element.type.name) stands", element: element.type.name)
+        return try driven { try driver.place(of: element) }
     }
 
     /// What the host wrote to its log.
     public func logged() throws -> [String] {
         note("read the log")
-        return try driver.logged()
+        return try driven { try driver.logged() }
     }
 
     /// What the host's store keeps under `key` - of the scene the page is in where `inScene` - as the next launch
     /// reads it.
     public func kept(_ key: String, inScene: Bool = false) throws -> HostValue? {
         note("read what is kept")
-        return try driver.kept(key, inScene: inScene)
+        return try driven { try driver.kept(key, inScene: inScene) }
     }
 
     /// Every element of `type` in `element`'s subtree, `element` first.
@@ -261,27 +274,68 @@
         return nil
     }
 
-    /// Steps the host until `done` holds, at most 150 steps; the expectation after it says whether it did.
-    public func settle(until done: () throws -> Bool) rethrows {
+    /// Steps the host until `done` holds, at most 150 steps; a wait that runs out fails the case - or ends it as
+    /// what the driver could not do while it waited.
+    /// Design: docs/design/host/conformance.md#a-session
+    public func settle(file: StaticString = #filePath, line: UInt = #line, until done: () throws -> Bool) rethrows {
+        cannot = nil
         for _ in 0..<150 {
             if try done() { return }
             driver.step()
         }
+        if try !done() { ranOut(file: file, line: line) }
     }
 
-    /// Steps the host until `done` holds, at most `seconds`: for what another process does, as a web view's page.
+    /// Steps the host until `done` holds, at most `seconds`: for what another process does, as a web view's page; a
+    /// wait that runs out fails the case.
     /// Design: docs/design/host/conformance.md#a-session
-    public func settle(for seconds: Int, until done: () throws -> Bool) rethrows {
+    public func settle(
+        for seconds: Int, file: StaticString = #filePath, line: UInt = #line, until done: () throws -> Bool
+    ) rethrows {
+        cannot = nil
         let end = ContinuousClock.now + .seconds(seconds)
         while ContinuousClock.now < end {
             if try done() { return }
             driver.step()
+        }
+        if try !done() { ranOut(file: file, line: line) }
+    }
+
+    /// What the driver could not do while the case waited last.
+    private var cannot: DriverCannot?
+
+    /// What the driver could not do first, though the case let it pass: a case that passes else ends as that.
+    private(set) var unmet: DriverCannot?
+
+    /// A wait ran out: on what the driver could not do while it waited, which the case ends as, else on what never
+    /// came.
+    private func ranOut(file: StaticString, line: UInt) {
+        guard cannot == nil else { return }
+        fail("what the case waited for never came", file: file, line: line)
+    }
+
+    /// What `read` answers of the driver; what the driver cannot do is kept, then thrown.
+    private func driven<Value>(_ read: () throws -> Value) throws -> Value {
+        do {
+            return try read()
+        } catch let cannot as DriverCannot {
+            self.cannot = cannot
+            unmet = unmet ?? cannot
+            throw cannot
         }
     }
 
     /// One turn of the pump: the only way a case waits to see that nothing happens.
     public func turn() {
         driver.turn()
+    }
+
+    /// Display frames every 16 ms of `clock` - the display's own pace - while it stands before `end` milliseconds.
+    public func frames(of clock: TestClock, until end: Double) {
+        while clock.now < end {
+            clock.now += 16
+            driver.frame()
+        }
     }
 
     /// One display frame at the clock's time.

@@ -43,9 +43,18 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     case tap(count: Int)
     /// A press dragged across the element by an offset, and let go.
     case pan(by: Point)
+    /// The hand swept over a layout - a press dragged, a trackpad's fingers - moving what is under it by an offset,
+    /// and let go at a speed, per second.
+    case sweep(by: Point, speed: Point)
+    /// A wheel turned notch by notch over a layout, as many notches across and down as given, the way they move what
+    /// is under the hand.
+    case notch(by: Point)
     /// Two fingers spreading or closing over the element, by a scale since the last, about a point of it given as a
     /// share of its size.
     case pinch(scale: Double, at: Point)
+    /// Two fingers turning over the element, by so many degrees clockwise, about a point of it given as a share of its
+    /// size.
+    case rotate(degrees: Double, at: Point)
     /// The element dragged onto the one of the id given, and dropped there - across the one of the other id first,
     /// in over it and out again, where one is given.
     case dragAndDrop(onto: String, across: String? = nil)
@@ -100,7 +109,10 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .leave: "leave"
         case .tap: "tap"
         case .pan: "pan"
+        case .sweep: "sweep"
+        case .notch: "notch"
         case .pinch: "pinch"
+        case .rotate: "rotate"
         case .dragAndDrop: "dragAndDrop"
         case .dropFiles: "dropFiles"
         case .scroll: "scroll"

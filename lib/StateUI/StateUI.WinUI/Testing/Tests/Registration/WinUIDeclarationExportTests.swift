@@ -54,10 +54,11 @@ final class WinUIDeclarationExportTests: XCTestCase {
         // A closure, not a key path: a key path through an existential metatype crashes Swift 6.4's SILGen.
         let types = LibraryContracts.elements.map { $0.nodeType }
         let unsupported = Set(types.filter { WinUIElement.showsUnsupported($0) }.map(\.name))
-        let made = Set(WinUIRegistrations.registry.realization.elements)
+        let made = Set(WinUIRegistrations.registry.realization.elements.map(\.name))
+        let unmade = Set(WinUIRealization.unmade.map { $0.name })
 
-        XCTAssertEqual(unsupported.subtracting(WinUIRealization.unmade).sorted(), [])
-        XCTAssertEqual(made.intersection(WinUIRealization.unmade).sorted(), [])
+        XCTAssertEqual(unsupported.subtracting(unmade).sorted(), [])
+        XCTAssertEqual(made.intersection(unmade).sorted(), [])
     }
 
     /// What this host wrote of its register by hand is true of the contracts: no record names what its owner does

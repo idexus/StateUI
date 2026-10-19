@@ -121,6 +121,9 @@ final class AimBox: Hashable {
     /// The identity of the element this was last put on.
     private var identity: ElementID?
 
+    /// The identities a list wearing this wrote for an item, in the order they show - set as the list is built.
+    var resolves: ((Any) -> [String])?
+
     /// Which walk last attached it, so a second view in one walk is a conflict.
     private var walk = 0
 

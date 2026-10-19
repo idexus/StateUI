@@ -14,8 +14,10 @@ final class AndroidGestureTests: XCTestCase {
             ("testAPanSaysHowFarItHasComeAndMovesItsState", testAPanSaysHowFarItHasComeAndMovesItsState),
             ("testASwipePastItsThresholdSaysItsDirection", testASwipePastItsThresholdSaysItsDirection),
             ("testAPinchSaysItsScaleAndWhereItIsCentred", testAPinchSaysItsScaleAndWhereItIsCentred),
+            ("testAPinchIsNoTapAndACancelledOneIsCancelled", testAPinchIsNoTapAndACancelledOneIsCancelled),
             ("testThePointerPressesMovesReleasesAndHovers", testThePointerPressesMovesReleasesAndHovers),
             ("testAPressOnAViewInFrontIsNotHeardBehindIt", testAPressOnAViewInFrontIsNotHeardBehindIt),
+            ("testAHandOnACardThatAnswersATapMovesTheRun", testAHandOnACardThatAnswersATapMovesTheRun),
         ]
     }
 
@@ -106,6 +108,34 @@ final class AndroidGestureTests: XCTestCase {
         }
     }
 
+    /// A pinch on a view that answers a tap is no tap, however still the finger it ends with; a pinch the touch's
+    /// cancellation ends - a parent taking the touch - is cancelled, not ended.
+    func testAPinchIsNoTapAndACancelledOneIsCancelled() throws {
+        try onMainActor {
+            let heard = Received<String>()
+            let (host, box) = try Self.box {
+                $0.onTapped { heard.values.append("tapped") }
+                    .onPinchUpdated { if $0.phase != .changed { heard.values.append("\($0.phase)") } }
+            }
+
+            // A view's own click comes in a message of the UI thread's own, posted to a view in a window.
+            Java.call(TestContext.window.reference, AndroidDriver.setContentView, .object(host.root.reference))
+            @MainActor func settled() {
+                TestWindow.run(for: 50)
+                host.runtime.pump.turn()
+            }
+            box.touch(0, x: 10, y: 10, at: 0)
+            box.touch(1, x: 10, y: 10, at: 50)
+            settled()
+            TestTouches.pinchHolding(box, x: 20, y: 100, from: 600, to: 900)
+            settled()
+            TestTouches.pinchCancelled(box, x: 100, y: 100, from: 600, to: 900)
+            settled()
+
+            XCTAssertEqual(heard.values, ["tapped", "began", "ended", "began", "cancelled"])
+        }
+    }
+
     /// The pointer pressing, moving and releasing, where it is in points; and a mouse entering, moving, leaving.
     func testThePointerPressesMovesReleasesAndHovers() throws {
         try onMainActor {
@@ -158,6 +188,40 @@ final class AndroidGestureTests: XCTestCase {
         }
     }
 
+    /// A HAND ON A CARD THAT ANSWERS A TAP MOVES THE RUN: the layout sees the finger before the card does, so a
+    /// finger put down on the card and dragged along the run is the layout's - and no tap of the card.
+    func testAHandOnACardThatAnswersATapMovesTheRun() throws {
+        try onMainActor {
+            let turn = State(wrappedValue: 0.0)
+            let tapped = Received<Int>()
+            let host = AndroidRenderer.running {
+                LayoutEngine([0, 1, 2, 3]) { card in
+                    Rectangle().fill(.red).onTapped { tapped.values.append(card) }
+                } placements: { _, phase in
+                    (0..<4).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, 100)) }
+                }
+                .phase(turn.projectedValue)
+                .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
+                .motion(.none)
+                .height(100)
+            }
+            host.layOut()
+            let layout = try XCTUnwrap(host.views(AndroidZStackView.self).first)
+
+            // 150 points to the left, on the first card, in six steps of 50 pixels.
+            layout.touch(0, x: 100, y: 100, at: 0)
+            for step in 1...6 { layout.touch(2, x: 100 - Float(step) * 50, y: 100, at: Int64(step) * 20) }
+            // The hand's moves reach the run at the next display frame, as one.
+            host.frame()
+            host.settle { turn.wrappedValue >= 1 }
+
+            XCTAssertGreaterThanOrEqual(turn.wrappedValue, 1, "the run moved with the finger")
+            layout.touch(1, x: -200, y: 100, at: 140)
+            host.runtime.pump.turn()
+            XCTAssertEqual(tapped.values, [], "a hand is no tap")
+        }
+    }
+
     /// A box of 100 points - 200 pixels - at the top left, listening as `listens` has it.
     @MainActor
     private static func box(_ listens: @escaping @MainActor (Rectangle) -> any View) throws -> (AndroidRenderer, AndroidView) {
@@ -177,6 +241,19 @@ enum TestTouches {
     private static let hovering = Java.staticMethod(owner, "hover", "(Landroid/view/View;FF)V")
     private static let hoveringOnce = Java.staticMethod(owner, "hover", "(Landroid/view/View;IFF)V")
     private static let pinchingBy = Java.staticMethod(owner, "pinchBy", "(Landroid/view/View;FFF)V")
+    private static let rotating = Java.staticMethod(owner, "rotate", "(Landroid/view/View;FFF)V")
+    private static let pinchingHolding = Java.staticMethod(owner, "pinchHolding", "(Landroid/view/View;FFFF)V")
+    private static let pinchingCancelled = Java.staticMethod(owner, "pinchCancelled", "(Landroid/view/View;FFFF)V")
+
+    /// A pinch whose first finger stands still at (`x`, `y`) pixels and lifts last, the second moving away.
+    static func pinchHolding(_ view: AndroidView, x: Float, y: Float, from: Float, to: Float) {
+        Java.callStatic(owner, pinchingHolding, .object(view.reference), .float(x), .float(y), .float(from), .float(to))
+    }
+
+    /// Two fingers either side of (`x`, `y`) pixels, `from` apart moving to `to`, and the touch cancelled.
+    static func pinchCancelled(_ view: AndroidView, x: Float, y: Float, from: Float, to: Float) {
+        Java.callStatic(owner, pinchingCancelled, .object(view.reference), .float(x), .float(y), .float(from), .float(to))
+    }
 
     /// Two fingers either side of (`x`, `y`) pixels, `from` pixels apart moving to `to`, then lifted.
     static func pinch(_ view: AndroidView, x: Float, y: Float, from: Float, to: Float) {
@@ -186,6 +263,11 @@ enum TestTouches {
     /// Two fingers about (`x`, `y`) pixels, one step of the pinch scaled by `scale`, then lifted.
     static func pinch(_ view: AndroidView, x: Float, y: Float, by scale: Float) {
         Java.callStatic(owner, pinchingBy, .object(view.reference), .float(x), .float(y), .float(scale))
+    }
+
+    /// Two fingers about (`x`, `y`) pixels, 600 apart, turned clockwise by `degrees`, then lifted.
+    static func rotate(_ view: AndroidView, x: Float, y: Float, by degrees: Float) {
+        Java.callStatic(owner, rotating, .object(view.reference), .float(x), .float(y), .float(degrees))
     }
 
     /// A mouse doing `action` - entering, moving or leaving - at (`x`, `y`) pixels.

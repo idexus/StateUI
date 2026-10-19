@@ -65,8 +65,9 @@ it is there, else the last there is (`shown(among:)`).
 A split view's one adaptation (`SidebarAdaptation`): the first room it is
 given wider than nothing decides once whether its sidebar shows - it does,
 said as the user's, where the room is at least the platform's own breakpoint
-and it was hidden. After that the user and the application decide. The
-breakpoint is each platform's, a host's parameter.
+and it was hidden. After that the user and the application decide - and a
+host measures the room for it no more (`decided`), so a render reads no
+layout for it. The breakpoint is each platform's, a host's parameter.
 
 ## A sidebar's title
 
@@ -91,6 +92,19 @@ would leave a flyout with nothing under its words. The sidebar page's own
 background still paints the page on top. A split view saying either material
 gives its sidebar to the application to paint (`paintsSidebar`): a host whose
 platform draws a sidebar's material of its own leaves it out then.
+
+## Where a sidebar stands
+
+The place a host stands a sidebar in for the room - over the detail or
+beside it, by the platform's own breakpoint - is the application's to hear
+(`sidebarOverlays`): a sidebar row closes a sidebar over the page once the
+user has chosen and leaves one beside it open. The place is a layout's
+answer, as a frame is, so a split view driving it is followed as an element
+whose frame is read (`readsOwnFrame`), and the host says its place with the
+frame once laid out (`reportSidebarOverlays(_:in:)`) - on the display's
+frame after a layout, never while a patch applies. The host layer writes
+the state only where the place, or the state it drives, changed. A Mac
+sidebar stands beside the detail alone, so it says beside.
 
 ## The way back
 
@@ -186,6 +200,15 @@ empty line or picture none. A host shows the title area where its platform
 names the application - a desktop's window chrome - and the line under the
 title wherever a bar has one.
 
+A tabbed view's row wears the colours of the bar on its path too, and those
+move on an element above it - a stack, a theme resolved again - that the
+tabbed view never hears from. So where a host paints the row in the bar's
+colours - UIKit and the Web - the row is painted with the
+chrome: every time a window's chrome is shown again - a render touching it, a
+frame moving it - the host paints each tabbed view its arrangements show
+(`tabViewsShown`, through pages and arrangements of pages) in its
+`barColors` as they stand.
+
 ## The overlays of a window
 
 A window lays over what it shows the overlays declared along each page it
@@ -222,6 +245,31 @@ A stack shows its bar over what stands on it once (`showsTheStacksBar`): over
 a page that keeps its bar, and over tabs or a split view only where the page
 they show stands in no stack of their own - that stack's bar is the one, so
 tabs of stacks never stand under two bars.
+
+## A render that touches the chrome
+
+A render shows the windows and their chrome again only where it changed what
+they are made of (`MountedElement+ChromeSources`, `MountedTree.
+takeChromeTouched`); every host takes the answer as `presentRendered(
+touchedChrome:)`, as a frame's walk hands it `presentFrame(movedChrome:)`.
+The chrome is made of the application, its scenes and windows, the
+arrangements of pages and the pages, and the declarations a page's path
+gives it - its actions, its title view, its menus, its overlays - with what
+each holds. A render touches it where it makes or lets go of one of them,
+or changes one's values, handlers or children; where it puts children in a
+new order and one of them holds a declaration, whose order the composed
+actions keep; and where it turns the enablement of a branch holding a
+declaration, whose actions are disabled with it. A page's content changing
+beside them - its words, a layout's cards in a new order - touches nothing:
+composing the chrome walks the whole page's tree, and writes the bar again,
+for every render otherwise. An element a render makes is told by its type
+alone - what it stands in is told as its parent's children change - so
+mounting a list's rows walks no path.
+
+What a host does after every render whatever it touched stays outside the
+answer: the scenes it keeps, the Web's reading of what moved on the page and
+its split view's first room, GTK's facts of the display once its window is
+realized, UIKit's windows told the phase they stand in.
 
 ## Menus
 

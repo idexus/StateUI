@@ -90,7 +90,7 @@ public struct NavigationStack: ElementView, Arrangement, BarElement, AutomationE
         // The platform's way back, once committed, reports how deep the stack
         // now is above the root; the path only ever shortens to match.
         // Design: docs/design/views/pages.md#a-pop-report-only-shortens
-        node.addHandler(NavigationStackContract.popped.token, gate: .none) {
+        node.addHandler(NavigationStackContract.popped.token) {
             guard let depth = EventBuffer.current.value()?.int else { return }
 
             let routes = path.wrappedValue

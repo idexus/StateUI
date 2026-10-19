@@ -24,7 +24,8 @@ final class UIKitButtonLookTests: XCTestCase {
         platform.wrappedValue = true
         host.settle { styled.configuration?.contentInsets.leading != 30 }
         // The button's size travels to its own.
-        for _ in 0..<60 where styled.bounds.size != plain.bounds.size {
+        for _ in 0..<60 {
+            guard styled.bounds.size != plain.bounds.size else { break }
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
             host.frame()
             host.layOut()

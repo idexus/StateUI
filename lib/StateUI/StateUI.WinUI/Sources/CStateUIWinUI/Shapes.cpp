@@ -40,16 +40,18 @@ namespace stateui {
     media::Brush brush(StateUIBrush const &brush) {
         auto const *g = brush.geometry;
         switch (brush.kind) {
-        case 1:
+        case StateUIBrushKindNone:
+            return nullptr;
+        case StateUIBrushKindSolid:
             return media::SolidColorBrush(color(brush.count > 0 ? brush.colors[0] : 0));
-        case 2: {
+        case StateUIBrushKindLinear: {
             media::LinearGradientBrush linear;
             linear.StartPoint(point(g[0], g[1]));
             linear.EndPoint(point(g[2], g[3]));
             addStops(linear.GradientStops(), brush);
             return linear;
         }
-        case 3: {
+        case StateUIBrushKindRadial: {
             media::RadialGradientBrush radial;
             radial.Center(point(g[0], g[1]));
             radial.GradientOrigin(point(g[0], g[1]));
@@ -58,9 +60,8 @@ namespace stateui {
             addStops(radial.GradientStops(), brush);
             return radial;
         }
-        default:
-            return nullptr;
         }
+        return nullptr;
     }
 }
 

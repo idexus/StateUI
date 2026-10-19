@@ -51,6 +51,57 @@ final class GTKLeaveTests: XCTestCase {
         }
     }
 
+    /// A view that leaves takes its drags off at once: a drop landing before its view is let go reaches nothing.
+    func testAViewThatLeavesTakesItsDragsOff() throws {
+        try onUIThread {
+            let shown = State(wrappedValue: true)
+            let host = GTKRenderer.running {
+                VStack {
+                    if shown.wrappedValue {
+                        Text("Target").onDrop { _ in }
+                    }
+                }
+            }
+            let target = try XCTUnwrap(host.views(GTKTextView.self).first)
+            XCTAssertNotNil(target.dragAndDrop)
+
+            shown.wrappedValue = false
+            host.settle { host.views(GTKTextView.self).isEmpty }
+            XCTAssertNil(target.dragAndDrop, "its drop target outlived its element")
+        }
+    }
+
+    /// A page the stack takes away - popped by the program, replaced, or taken away by the user's back - is let go
+    /// of: its navigation page, and every widget in it with it.
+    func testAPageTheStackTakesAwayIsLetGoOf() throws {
+        try onUIThread {
+            let path = State(wrappedValue: [Int]())
+            let host = GTKRenderer.running {
+                NavigationStack(path.projectedValue) {
+                    Text("Root")
+                } destination: { number in Text("Page \(number)") }
+            }
+            let navigation = try XCTUnwrap(host.views(GTKNavigationView.self).first)
+
+            for (pushed, after) in [([1], [Int]()), ([1], [2]), ([3], nil)] {
+                path.wrappedValue = pushed
+                host.settle { navigation.stack.count == 2 && navigation.titles.count == 2 }
+                let watched = UnsafeMutablePointer<gpointer?>.allocate(capacity: 1)
+                defer { watched.deallocate() }
+                let page = try XCTUnwrap(navigation.stack.last?.page)
+                watched.pointee = UnsafeMutableRawPointer(page)
+                g_object_add_weak_pointer(page.of(GObject.self), watched)
+
+                if let after { path.wrappedValue = after } else { XCTAssertTrue(navigation.popByUser()) }
+                host.settle { watched.pointee == nil }
+                XCTAssertNil(watched.pointee, "the page outlived its going: \(after.map { "\($0)" } ?? "the user's back")")
+                if let page = watched.pointee { g_object_remove_weak_pointer(page.assumingMemoryBound(to: GObject.self), watched) }
+                path.wrappedValue = []
+                host.settle { navigation.stack.count == 1 }
+            }
+        }
+    }
+
     private static func children(of widget: GTKWidget) -> Int {
         var count = 0
         var child = gtk_widget_get_first_child(widget)

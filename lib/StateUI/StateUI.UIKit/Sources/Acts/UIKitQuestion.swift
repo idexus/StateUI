@@ -11,12 +11,13 @@ import UIKit
 /// presses.
 /// Design: docs/design/platforms/uikit/runtime.md#questions-for-the-user
 @MainActor
-final class UIKitQuestion {
+final class UIKitQuestion: NSObject, UIPopoverPresentationControllerDelegate {
     /// The question as the host layer reads it.
     let question: HostQuestion
 
     let alert: UIAlertController
     private var answer: ((_ accepted: Bool, _ words: String?) -> Void)?
+    private weak var root: UIKitRootViewController?
 
     /// Each button's caption and what pressing it answers, in the order UIKit shows them.
     private(set) var buttons: [(caption: String, accepts: Bool)] = []
@@ -26,12 +27,14 @@ final class UIKitQuestion {
         alert = UIAlertController(
             title: question.title, message: question.message,
             preferredStyle: question.kind == .chooseAction ? .actionSheet : .alert)
+        super.init()
+        alert.popoverPresentationController?.delegate = self
 
         switch question.kind {
         case .alert:
             add(question.accept, accepts: true, style: .default)
         case .confirm, .prompt:
-            add(question.cancel ?? "Cancel", accepts: false, style: .cancel)
+            if let cancel = question.cancel { add(cancel, accepts: false, style: .cancel) }
             add(question.accept, accepts: true, style: .default)
         case .chooseAction:
             // A choice answers the caption pressed, its cancel included.
@@ -43,7 +46,7 @@ final class UIKitQuestion {
             alert.addTextField { field in
                 field.text = question.words
                 field.placeholder = question.placeholder
-                UIKitKeyboard(InputTraits(spellChecked: true, predicted: true, purpose: question.purpose)).apply(to: field)
+                UIKitKeyboard(question.traits).apply(to: field)
             }
         }
     }
@@ -54,15 +57,12 @@ final class UIKitQuestion {
         alert.addAction(UIAlertAction(title: caption, style: style) { [weak self] _ in self?.respond(index) })
     }
 
-    /// Presents the question over `presenter`; `answer` hears the user's answer, once.
-    func ask(over presenter: UIViewController, answer: @escaping (_ accepted: Bool, _ words: String?) -> Void) {
+    /// Presents the question through the window's `root`, which presents everything over it; `answer` hears the
+    /// user's answer, once.
+    func ask(in root: UIKitRootViewController, answer: @escaping (_ accepted: Bool, _ words: String?) -> Void) {
         self.answer = answer
-        if let popover = alert.popoverPresentationController {
-            popover.sourceView = presenter.view
-            popover.sourceRect = CGRect(x: presenter.view.bounds.midX, y: presenter.view.bounds.midY, width: 0, height: 0)
-            popover.permittedArrowDirections = []
-        }
-        presenter.present(alert, animated: true)
+        self.root = root
+        root.pass(alert)
     }
 
     /// The button at `index` was pressed.
@@ -71,6 +71,14 @@ final class UIKitQuestion {
         let words = question.kind == .chooseAction ? caption : alert.textFields?.first?.text
         answer?(accepts, words)
         answer = nil
+        root?.passed(alert)
+    }
+
+    /// A choice standing as a popover, tapped away - as the user may where it offers no cancel: nothing was chosen.
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        answer?(false, nil)
+        answer = nil
+        root?.passed(alert)
     }
 
     /// Presses the button captioned `caption`, `typing` put in a prompt's field first, as the user does: the alert

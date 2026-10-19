@@ -32,6 +32,12 @@ final class UIKitElement: NativeElement {
     /// What UIKit asks for the view's context menu, while it has one.
     var contextMenu: UIKitContextMenu?
 
+    /// Whether VoiceOver meets the view of itself, read before the tree says anything of it.
+    var accessibilityStanding: Bool?
+
+    /// What the buttons on a page's bar say, which the bar keeps them for.
+    var barButtonsSaid: [[UIKitBarAction.Said]]?
+
     /// Whether a layout of StateUI's has placed the view.
     var isPlaced = false
 
@@ -95,6 +101,7 @@ final class UIKitElement: NativeElement {
         applyProperties(changed: changed)
         if let view, let host { element.applyDrawnChildren(to: view, through: UIKitRegistrations.registry, in: host.runtime) }
         configureGestures()
+        applyAccessibility()
         configureContextMenu()
         configureButtonMenu()
         configureLayoutMotion()
@@ -109,14 +116,7 @@ final class UIKitElement: NativeElement {
             split.paintsSidebar = element.paintsSidebar
             split.showPageBackgrounds()
         }
-        // A tab bar takes the bars' colours itself; the window's controller shows the rest of the chrome again.
-        if !changed.isDisjoint(with: Self.barColors) {
-            let colors = element.barColors
-            (controller as? UIKitTabBarController)?.showColors(background: colors.background, foreground: colors.foreground)
-        }
     }
-
-    private static let barColors: Set<Prop> = [.barBackgroundColor, .barForegroundColor]
 
     func leave() {
         host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: false)

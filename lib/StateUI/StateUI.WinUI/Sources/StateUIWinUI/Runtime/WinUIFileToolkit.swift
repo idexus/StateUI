@@ -14,31 +14,21 @@ final class WinUIFileToolkit: FileToolkit {
     private unowned let renderer: WinUIRenderer
 
     /// What hears each dialog's files, each file's bytes and each launch's answer, by the ticket the relay hands back.
-    private var dialogs: [Int64: (Result<[ChosenFile], ActFailure>) -> Void] = [:]
-    private var reads: [Int64: (Result<[UInt8], ActFailure>) -> Void] = [:]
-    private var launches: [Int64: (Bool) -> Void] = [:]
-
-    /// The next ticket: one number across the process, so an answer arriving after its renderer has gone answers
-    /// nothing of another's.
-    private static var nextTicket: Int64 = 1
+    private let dialogs = Numbered<(Result<[ChosenFile], ActFailure>) -> Void>()
+    private let reads = Numbered<(Result<[UInt8], ActFailure>) -> Void>()
+    private let launches = Numbered<(Bool) -> Void>()
 
     init(renderer: WinUIRenderer) {
         self.renderer = renderer
     }
 
-    private static func ticket() -> Int64 {
-        defer { nextTicket += 1 }
-        return nextTicket
-    }
-
     func show(_ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void) -> Bool {
         guard let window = renderer.userWindow else { return false }
-        let ticket = Self.ticket()
-        dialogs[ticket] = answered
-        let kind: Int32 = switch dialog.kind {
-        case .open: 0
-        case .openSeveral: 1
-        case .save: 2
+        let ticket = dialogs.hold(answered)
+        let kind: StateUIFileDialogKind = switch dialog.kind {
+        case .open: .open
+        case .openSeveral: .openSeveral
+        case .save: .save
         }
         let captions = dialog.types.map(\.caption)
         let counts = dialog.types.map { Int32($0.extensions.count) }
@@ -66,34 +56,31 @@ final class WinUIFileToolkit: FileToolkit {
 
     /// The dialog under `ticket` closed: the files chosen, by their paths and names, or why it failed.
     func chose(ticket: Int64, files: [ChosenFile], failure: String?) {
-        dialogs.removeValue(forKey: ticket)?(failure.map { .failure(ActFailure($0)) } ?? .success(files))
+        dialogs.take(ticket)?(failure.map { .failure(ActFailure($0)) } ?? .success(files))
     }
 
     func read(_ file: ChosenFile, atMost maximum: Int?, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {
-        let ticket = Self.ticket()
-        reads[ticket] = answered
+        let ticket = reads.hold(answered)
         stateui_winui_read_file(ticket, file.address, Int64(maximum ?? -1))
     }
 
     /// The file read under `ticket`: its bytes, or why they could not be read.
     func read(ticket: Int64, bytes: [UInt8], failure: String?) {
-        reads.removeValue(forKey: ticket)?(failure.map { .failure(ActFailure($0)) } ?? .success(bytes))
+        reads.take(ticket)?(failure.map { .failure(ActFailure($0)) } ?? .success(bytes))
     }
 
     func launch(_ file: ChosenFile, answered: @escaping (Bool) -> Void) {
-        let ticket = Self.ticket()
-        launches[ticket] = answered
+        let ticket = launches.hold(answered)
         stateui_winui_launch(ticket, file.address, true)
     }
 
     func launch(address: String, answered: @escaping (Bool) -> Void) {
-        let ticket = Self.ticket()
-        launches[ticket] = answered
+        let ticket = launches.hold(answered)
         stateui_winui_launch(ticket, address, false)
     }
 
     /// What was launched under `ticket` was taken by an application, or not.
     func launched(ticket: Int64, taken: Bool) {
-        launches.removeValue(forKey: ticket)?(taken)
+        launches.take(ticket)?(taken)
     }
 }

@@ -17,9 +17,33 @@ extension State {
         /// Design: docs/design/core/cycle.md#what-wakes-an-engine
         @usableFromInline var written = 0
 
-        /// How many times the state was written, by this side or the host - what an
-        /// engine following it compares.
-        @usableFromInline var stamp: Int { written &+ (image?.stamp ?? 0) }
+        /// How many times the state was written, by this side or the host, or a run moved
+        /// where it shows it - what an engine following it compares.
+        @usableFromInline var stamp: Int { written &+ shownMoves &+ (image?.stamp ?? 0) }
+
+        /// How many times the host reported the state.
+        var reports: Int { image?.reports ?? 0 }
+
+        /// Where a run the hand or the core moves shows the value while it does, and
+        /// which run: what the journey's value answers then, the state's own still the
+        /// target named. Nothing carries it to the host, which walks the target.
+        /// Design: docs/design/core/journeys.md#where-a-run-shows-it
+        private(set) var shown: (value: Value, by: ObjectIdentifier)?
+        private(set) var shownMoves = 0
+
+        /// The run `owner` shows the value at `value`, or - nil - shows it no longer:
+        /// the journey's readers and the engines following the state hear of it, the
+        /// state's own readers do not.
+        func show(_ value: Value?, by owner: ObjectIdentifier) {
+            if let value {
+                shown = (value, owner)
+            } else {
+                guard shown?.by == owner else { return }
+                shown = nil
+            }
+            shownMoves &+= 1
+            askJourneyReaders()
+        }
 
         /// The value, once anybody has wanted it; one optional deeper than `Value`, so a
         /// nil value is told from no value yet.
@@ -269,7 +293,7 @@ extension State.Storage where Value: Walked {
 
                 // Nobody animates it yet: the value lands where it is sent.
                 // Design: docs/design/core/state.md#a-state-nobody-wears
-                if made.number == nil, !journey.motion.isCustom {
+                if made.ties == 0, !journey.motion.isCustom {
                     journey.value = target
                     journey.velocity = JourneyLanes<Value>.still
                     known.destination = target
@@ -291,7 +315,7 @@ extension State.Storage where Value: Walked {
                 Self.lay([.value, .destination, .velocity], of: journey, on: made)
             }
             noted = { destination in known.destination = destination }
-            made.told = { [weak self] mask in
+            made.told = { [weak self, unowned made] mask in
                 let now = Self.journey(on: made)
 
                 if mask & JourneyLanes<Value>.mask(of: .destination) != 0, !known.stands(at: now.destination) {
@@ -452,12 +476,13 @@ extension State.Storage where Value: StateValue {
 
             hostRead = { Self.lifted(from: made) }
             hostWrite = { value in
-                known.bytes = StateImage.bytes(of: value.carried(in: .current))
-                Self.lay(value, on: made)
+                let bytes = StateImage.bytes(of: value.carried(in: .current))
+                known.bytes = bytes
+                Renderer.shared.board(of: made).write(bytes, to: made)
             }
 
             // A host write ends where this side's do, the storage deciding by its readers.
-            made.told = { [weak self] _ in
+            made.told = { [weak self, unowned made] _ in
                 let value = Self.lifted(from: made)
                 let now = StateImage.bytes(of: value.carried(in: .current))
 
@@ -509,11 +534,6 @@ extension State.Storage where Value: StateValue {
     static func lifted(from image: HostStorage) -> Value {
         Value(carried: Renderer.shared.board(of: image).read(image, lanes: Value.lanes))
             ?? nothing
-    }
-
-    /// The value written into the lanes, whole.
-    static func lay(_ value: Value, on image: HostStorage) {
-        Renderer.shared.board(of: image).write(StateImage.bytes(of: value.carried(in: .current)), to: image)
     }
 
     /// What a value answers where its bytes stand for none of its type - every lane

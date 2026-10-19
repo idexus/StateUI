@@ -83,7 +83,7 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
     /// Fires as a navigation starts, with where it is going. Observing only: it
     /// cannot cancel the navigation.
     public func onNavigating(_ handler: @escaping @MainActor (WebNavigation) throws -> Void) -> Self {
-        onNavigating(gate: .none) { try handler($0) }
+        onEvent(WebViewContract.navigating) { type, url in try handler(WebNavigation(type: type, url: url)) }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -94,16 +94,12 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
         }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigating(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onNavigating(_ handler: @escaping ValueEventHandler<WebNavigation>) -> Self {
-        fatalError("unavailable")
-    }
-
     /// Fires when a navigation finished, with how it ended - the place to
     /// clear a spinner, or to say a page could not be fetched.
     public func onNavigated(_ handler: @escaping @MainActor (WebNavigated) throws -> Void) -> Self {
-        onNavigated(gate: .none) { try handler($0) }
+        onEvent(WebViewContract.navigated) { result, type, url in
+            try handler(WebNavigated(result: result, type: type, url: url))
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -112,12 +108,6 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
         onEvent(WebViewContract.navigated, gate: gate) { result, type, url in
             try await handler(WebNavigated(result: result, type: type, url: url))
         }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onNavigated(_ handler: @escaping ValueEventHandler<WebNavigated>) -> Self {
-        fatalError("unavailable")
     }
 
     /// Fires when the platform's web process died under the view - out of
@@ -130,12 +120,6 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
     /// again while a run is under way.
     public func onProcessTerminated(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         onEvent(WebViewContract.processTerminated, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onProcessTerminated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onProcessTerminated(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
     }
 }
 

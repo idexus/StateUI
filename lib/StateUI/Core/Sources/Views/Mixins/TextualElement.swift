@@ -17,3 +17,11 @@ extension TextualElement {
         setValue(TextualElementContract.textCase, value)
     }
 }
+
+extension TextualElement where Self: VisualElement {
+    /// `textCase` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
+    public func textCase(_ state: Binding<TextCase>) -> Modified {
+        twin(TextualElementContract.textCase, by: state)
+    }
+}

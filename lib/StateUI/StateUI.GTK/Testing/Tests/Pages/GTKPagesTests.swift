@@ -258,6 +258,40 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// The switcher shows the tabs in the tree's order: a tab added between two stands between them, not last.
+    func testTheSwitcherShowsTheTabsInTheTreesOrder() throws {
+        try onUIThread {
+            let tabs = State(wrappedValue: ["A", "C"])
+            let host = GTKRenderer.running {
+                TabView(tabs.wrappedValue) { name in TitledPage(title: name).title(name) }
+            }
+            let view = try XCTUnwrap(host.views(GTKTabView.self).first)
+            let titles = { Self.switcherTitles(view) }
+            host.settle { titles() == ["A", "C"] }
+
+            tabs.wrappedValue = ["A", "B", "C"]
+            host.settle { titles().count == 3 }
+            XCTAssertEqual(titles(), ["A", "B", "C"])
+
+            tabs.wrappedValue = ["C", "A"]
+            host.settle { titles().count == 2 }
+            XCTAssertEqual(titles(), ["C", "A"])
+        }
+    }
+
+    /// The titles of the pages the tab view's stack holds, in the order its switcher shows them.
+    @MainActor
+    private static func switcherTitles(_ view: GTKTabView) -> [String] {
+        guard let stack = gtk_stack_switcher_get_stack(view.switcher.widget.opaque) else { return [] }
+        let pages = gtk_stack_get_pages(stack)!
+        defer { g_object_unref(UnsafeMutableRawPointer(pages)) }
+        return (0..<g_list_model_get_n_items(pages)).compactMap { index in
+            guard let page = g_list_model_get_item(pages, index) else { return nil }
+            defer { g_object_unref(page) }
+            return gtk_stack_page_get_title(OpaquePointer(page)).map { String(cString: $0) }
+        }
+    }
+
     /// A tab that is a stack shows one bar, the stack's page's, the tabs beneath it: the tabs' frame shows none over
     /// it.
     func testATabThatIsAStackShowsOneBar() throws {

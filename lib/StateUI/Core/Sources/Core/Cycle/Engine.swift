@@ -56,6 +56,9 @@ public struct EngineCycle: Sendable {
 protocol FollowedState: AnyObject {
     /// How many times the state has been written.
     var stamp: Int { get }
+
+    /// How many of those writes were the host's reports.
+    var reports: Int { get }
 }
 
 /// An engine as the tree carries it, before the differ numbers it. Its closure
@@ -138,7 +141,18 @@ struct EngineEntry {
     /// Whether it has a reason to run: a render armed it, its last answer was
     /// `.again`, or anything it follows has been written since it last ran.
     var due: Bool {
-        armed || awake || follows.contains { seen[ObjectIdentifier($0)] != $0.stamp }
+        armed || awake || stirred
+    }
+
+    /// Whether it was armed or a state it follows was written since it last ran: a reason a turn answers at once,
+    /// where one going on of its own waits for the display's frame.
+    var asked: Bool {
+        armed || stirred
+    }
+
+    /// Whether a state it follows was written since it last ran.
+    private var stirred: Bool {
+        follows.contains { seen[ObjectIdentifier($0)] != $0.stamp }
     }
 
     /// Notes that it ran at `now` and what it answered, and where everything it
@@ -160,8 +174,8 @@ extension ModifiableElement {
     /// Arithmetic the host runs on its own frames, whenever a state it follows has
     /// been written.
     ///
-    ///     .engine(following: $scrolled, $room) { cycle in
-    ///         run = PlacedRun(placements(at: scrolled / step, room))
+    ///     .engine(following: $scrolled) { _ in
+    ///         backdrop = scrolled * 0.4      // the backdrop follows the scroll, slower
     ///     }
     ///
     /// `following:` names why it runs, not what it may touch: the arithmetic reads
@@ -241,7 +255,7 @@ extension ModifiableElement {
 
     /// Registers an engine woken by `named`'s writes; a part of a state or a binding made from closures is
     /// refused, said once.
-    private func engine(
+    func engine(
         _ named: [(any FollowedState)?], sync: Sync, priority: Double,
         _ run: @escaping @MainActor (EngineCycle) -> EngineAnswer
     ) -> Modified {

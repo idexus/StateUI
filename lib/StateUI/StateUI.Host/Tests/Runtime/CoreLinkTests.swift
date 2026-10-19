@@ -19,12 +19,12 @@ final class CoreLinkTests: XCTestCase {
             HostRealization(
                 elements: ["Text", "Test.Lamp"],
                 members: [HostRealizedMember(element: "Application", owner: "Test", member: "Test.BatteryChanged")]),
-            unrealized: ["Map"])
+            unrealized: [MapContract.self])
 
         XCTAssertNil(HostRealizations.unrealized(ButtonContract.nodeType))
         XCTAssertNil(HostRealizations.unrealized(PageContract.nodeType))
         XCTAssertNil(HostRealizations.unrealized("Test.Lamp"))
         XCTAssertEqual(HostRealizations.unrealized(MapContract.nodeType), "the host realizes no `Map`.")
-        XCTAssertNil(HostRealizations.unraised(owner: "Test", event: "Test.BatteryChanged"))
+        XCTAssertNil(HostRealizations.unraised(owner: KeyName("Test"), event: KeyName("Test.BatteryChanged")))
     }
 }

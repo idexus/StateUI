@@ -28,18 +28,86 @@ public final class TestTouches {
     }
 
     /**
-     * Two fingers on either side of (`x`, `y`) pixels of the view, 600 pixels apart, spreading by a tenth so Android
-     * tells the pinch apart, then by `scale` in one step - one step of the pinch scaled by `scale` - then lifted.
+     * A pinch whose first finger stands still at (`x`, `y`) pixels of the view and lifts last, the second `from`
+     * pixels from it moving to `to`: a pinch, however still the finger it ends with.
+     */
+    public static void pinchHolding(View view, float x, float y, float from, float to) {
+        long time = 0;
+        send(view, time, MotionEvent.ACTION_DOWN, 1, x + from / 2, y, from);
+        send(view, time += 10, MotionEvent.ACTION_POINTER_DOWN | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT), 2, x + from / 2, y, from);
+        for (int step = 0; step <= 4; step++) {
+            float apart = from + (to - from) * step / 4;
+            send(view, time += 20, MotionEvent.ACTION_MOVE, 2, x + apart / 2, y, apart);
+        }
+        send(view, time += 10, MotionEvent.ACTION_POINTER_UP | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT), 2, x + to / 2, y, to);
+        send(view, time + 10, MotionEvent.ACTION_UP, 1, x + to / 2, y, to);
+    }
+
+    /** Two fingers either side of (`x`, `y`) pixels, `from` pixels apart moving to `to`, and the touch cancelled. */
+    public static void pinchCancelled(View view, float x, float y, float from, float to) {
+        long time = 0;
+        send(view, time, MotionEvent.ACTION_DOWN, 1, x, y, from);
+        send(view, time += 10, MotionEvent.ACTION_POINTER_DOWN | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT), 2, x, y, from);
+        for (int step = 0; step <= 4; step++) {
+            send(view, time += 20, MotionEvent.ACTION_MOVE, 2, x, y, from + (to - from) * step / 4);
+        }
+        send(view, time + 10, MotionEvent.ACTION_CANCEL, 2, x, y, to);
+    }
+
+    /**
+     * Two fingers on either side of (`x`, `y`) pixels of the view, spreading by a tenth so Android tells the pinch
+     * apart, then by `scale` in one step - one step of the pinch scaled by `scale` - then lifted. They begin 600
+     * pixels apart, wider where they close, so they never come nearer than 660: Android ends a pinch whose fingers
+     * stand nearer than its least span, some 27 mm, telling nothing of its last step.
      */
     public static void pinchBy(View view, float x, float y, float scale) {
-        float begun = 660;
+        float begun = 660 * Math.max(1, 1 / scale);
+        float start = begun / 1.1f;
         long time = 0;
-        send(view, time, MotionEvent.ACTION_DOWN, 1, x, y, 600);
-        send(view, time += 10, MotionEvent.ACTION_POINTER_DOWN | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT), 2, x, y, 600);
+        send(view, time, MotionEvent.ACTION_DOWN, 1, x, y, start);
+        send(view, time += 10, MotionEvent.ACTION_POINTER_DOWN | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT), 2, x, y, start);
         send(view, time += 20, MotionEvent.ACTION_MOVE, 2, x, y, begun);
         send(view, time += 20, MotionEvent.ACTION_MOVE, 2, x, y, begun * scale);
         send(view, time += 10, MotionEvent.ACTION_POINTER_UP | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT), 2, x, y, begun * scale);
         send(view, time + 10, MotionEvent.ACTION_UP, 1, x, y, begun * scale);
+    }
+
+    /**
+     * Two fingers either side of (`x`, `y`) pixels of the view, 600 pixels apart across, turned clockwise in four
+     * steps by `degrees`, then lifted.
+     */
+    public static void rotate(View view, float x, float y, float degrees) {
+        long time = 0;
+        turned(view, time, MotionEvent.ACTION_DOWN, 1, x, y, 0);
+        turned(view, time += 10, MotionEvent.ACTION_POINTER_DOWN | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT), 2, x, y, 0);
+        for (int step = 1; step <= 4; step++) {
+            turned(view, time += 20, MotionEvent.ACTION_MOVE, 2, x, y, degrees * step / 4);
+        }
+        turned(view, time += 10, MotionEvent.ACTION_POINTER_UP | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT), 2, x, y, degrees);
+        turned(view, time + 10, MotionEvent.ACTION_UP, 1, x, y, degrees);
+    }
+
+    /** Two fingers 600 pixels apart about (`x`, `y`), the line between them turned clockwise `degrees` from across. */
+    private static void turned(View view, long time, int action, int fingers, float x, float y, float degrees) {
+        double angle = Math.toRadians(degrees);
+        float dx = (float) (300 * Math.cos(angle));
+        float dy = (float) (300 * Math.sin(angle));
+        MotionEvent.PointerProperties[] properties = new MotionEvent.PointerProperties[fingers];
+        MotionEvent.PointerCoords[] coords = new MotionEvent.PointerCoords[fingers];
+        for (int finger = 0; finger < fingers; finger++) {
+            properties[finger] = new MotionEvent.PointerProperties();
+            properties[finger].id = finger;
+            properties[finger].toolType = MotionEvent.TOOL_TYPE_FINGER;
+            coords[finger] = new MotionEvent.PointerCoords();
+            coords[finger].x = finger == 0 ? x - dx : x + dx;
+            coords[finger].y = finger == 0 ? y - dy : y + dy;
+            coords[finger].pressure = 1;
+            coords[finger].size = 1;
+        }
+        MotionEvent event = MotionEvent.obtain(0, time, action, fingers, properties, coords, 0, 0, 1, 1, 0, 0,
+                InputDevice.SOURCE_TOUCHSCREEN, 0);
+        view.dispatchTouchEvent(event);
+        event.recycle();
     }
 
     private static void send(View view, long time, int action, int fingers, float x, float y, float apart) {

@@ -30,12 +30,13 @@
                 try s.settle { try s.held(SwitchContract.isOn, on: toggle) == true }
 
                 s.expect(try s.held(SwitchContract.isOn, on: toggle), true, "the state the button wrote reached the switch")
+                s.turn()
                 s.expect(heard.values, [], "and nobody heard it as the user's")
             },
             ConformanceCase("aUsersTurnReachesTheStateAndTheHandlerOnce", proves: [
-                Covered(SwitchContract.isOn), Covered(SwitchContract.toggled),
-                Covered(TextualElementContract.text, on: TextContract.self),
-            ]) { s in
+                Covered(SwitchContract.isOn),
+                Covered(SwitchContract.toggled),
+            ], needs: [Covered(TextualElementContract.text, on: TextContract.self)]) { s in
                 let on = State(wrappedValue: false)
                 let heard = Received<Bool>()
                 s.start {

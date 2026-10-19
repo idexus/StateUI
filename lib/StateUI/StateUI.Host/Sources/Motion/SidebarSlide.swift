@@ -50,7 +50,7 @@
         // Either way it slows as it arrives.
         let animation = Animation(
             from: [start], destination: [destination], velocity: [position?.velocity.first ?? 0],
-            motion: toolkit ?? .eased(UInt(Self.milliseconds), .cubicOut), began: now())
+            motion: toolkit ?? .eased(.milliseconds(Int(Self.milliseconds)), .cubicOut), began: now())
 
         guard !reducesMotion(), !animation.arrives else {
             forget(mount)

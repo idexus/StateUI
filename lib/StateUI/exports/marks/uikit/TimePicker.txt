@@ -1,8 +1,7 @@
-# revision 2.1
+# revision 4.1
 TimePicker: ✅
 TimePicker.closed: not realized
 TimePicker.format: not realized
-TimePicker.frameChanged: ✅
 TimePicker.isOpen: not realized
 TimePicker.opened: not realized
 TimePicker.time: ✅

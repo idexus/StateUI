@@ -42,7 +42,7 @@
         ContextMenuContract.self, DatePickerContract.self,
         EllipseContract.self, GridContract.self, HStackContract.self, ImageContract.self, ItemsViewContract.self,
         TextContract.self,
-        LineContract.self, MapContract.self, MenuBarContract.self,
+        LayoutEngineContract.self, LineContract.self, MapContract.self, MenuBarContract.self,
         MenuContract.self, MenuItemContract.self, MenuSeparatorContract.self, DividerContract.self,
         ModalStackContract.self,
         NavigationStackContract.self, OverlayContract.self, PageContract.self, PathContract.self,

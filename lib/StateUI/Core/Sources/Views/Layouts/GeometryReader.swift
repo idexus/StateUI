@@ -43,7 +43,13 @@ extension View {
         in space: CoordinateSpace = .parent,
         _ handler: @escaping @MainActor (Rect) throws -> Void
     ) -> Modified {
-        onFrameChanged(in: space, gate: .none) { try handler($0) }
+        // One report serves every space; each handler stays quiet while its
+        // own answer is unchanged.
+        let last = LastFrame()
+
+        return onEvent(ViewContract.frameChanged) { numbers in
+            if let frame = last.changed(numbers, in: space) { try handler(frame) }
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -53,28 +59,11 @@ extension View {
         gate: some Gate,
         _ handler: @escaping ValueEventHandler<Rect>
     ) -> Modified {
-        // One report serves every space; each handler stays quiet while its
-        // own answer is unchanged.
         let last = LastFrame()
 
         return onEvent(ViewContract.frameChanged, gate: gate) { numbers in
-            guard let report = FrameReport(numbers) else { return }
-
-            let frame = report.frame(in: space)
-            guard frame != last.rect else { return }
-
-            last.rect = frame
-            try await handler(frame)
+            if let frame = last.changed(numbers, in: space) { try await handler(frame) }
         }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onFrameChanged(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onFrameChanged(
-        in space: CoordinateSpace = .parent,
-        _ handler: @escaping ValueEventHandler<Rect>
-    ) -> Modified {
-        fatalError("unavailable")
     }
 }
 
@@ -84,6 +73,17 @@ extension View {
 private final class LastFrame {
     /// The rectangle the handler last ran with.
     var rect: Rect?
+
+    /// The frame `numbers` report in `space`, where it is not the last one told.
+    func changed(_ numbers: [Double], in space: CoordinateSpace) -> Rect? {
+        guard let report = FrameReport(numbers) else { return nil }
+
+        let frame = report.frame(in: space)
+        guard frame != rect else { return nil }
+
+        rect = frame
+        return frame
+    }
 }
 
 /// A container whose content is built from the space it was given.
@@ -133,8 +133,10 @@ public struct GeometryReader: View {
     /// The content, in a Grid that fills the offered space and writes its own
     /// frame into the state this body reads.
     public var body: some View {
+        // An equal frame writes nothing: a rebuilt reader hears its frame once more, and a write would rebuild it
+        // again for every scrolled report.
         Grid { BuiltViews(nodes: frame.map(build) ?? []) }
-            .onFrameChanged(in: space) { frame = $0 }
+            .onFrameChanged(in: space) { if frame != $0 { frame = $0 } }
     }
 }
 

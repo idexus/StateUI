@@ -170,9 +170,9 @@ size moved while it is paused arrives only when the user starts it again.
 
 An element only some hosts can honestly realize is declared only for them.
 `Cube3D`'s contract and its `View` stand under
-`#if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB` - one declaration,
-drawn with Metal here and on UIKit, with OpenGL on GTK, Direct3D on WinUI,
-OpenGL ES on Android and WebGL 2 on the Web - so a test reading an
+`#if APPKIT || UIKIT || ANDROID || WINUI || GTK || WEB` - one declaration,
+drawn with Metal here and on UIKit, with OpenGL ES on Android, Direct3D on
+WinUI, OpenGL on GTK and WebGL 2 on the Web - so a test reading an
 application's elements against another host's registrations never demands of
 that host a control it cannot draw.
 
@@ -318,8 +318,8 @@ Everything an AppKit build writes stays in the application's `.build/appkit/`.
 
 In VS Code, choose **AppKit** as the host and press **F5**. **StateUI: Debug**
 builds the head - with the application's bundling script,
-`.scripts/AppKit/build-<application>-appkit.sh`, where it has one, else with
-SwiftPM - and starts it under `lldb-dap`, so a breakpoint in the application,
+`.scripts/AppKit/build-<application>-appkit.sh`, where the checkout's own
+`apps/<application>` has one, else with SwiftPM - and starts it under `lldb-dap`, so a breakpoint in the application,
 in StateUI or in the host holds from the first line. **StateUI: Release**
 builds and starts the optimized head the same way.
 

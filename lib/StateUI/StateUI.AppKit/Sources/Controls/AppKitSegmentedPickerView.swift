@@ -27,7 +27,7 @@ final class AppKitSegmentedPickerView: NSSegmentedControl, AppKitChoosing {
 
     func apply(
         items: [String], selectedIndex: Int, writeSelection: Bool, title: String?, font: NSFont, textColor: NSColor,
-        tint: NSColor?, alignment: NSTextAlignment, enabled: Bool, open: Bool, writeOpen: Bool
+        tint: NSColor?, alignment: TextAlignment, enabled: Bool, open: Bool, writeOpen: Bool
     ) {
         ProgramWrite.perform {
             let write = written.write(items, chosen: selectedIndex, choiceChanged: writeSelection)

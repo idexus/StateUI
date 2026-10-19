@@ -55,7 +55,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             .spacing(4)
             .padding(14)
             .background(Palette.well)
-            .samples($fade, into: $shown, .every(100))
+            .samples($fade, into: $shown, .every(.milliseconds(100)))
 
             Rectangle(Palette.accent)
                 .height(60)
@@ -66,12 +66,12 @@ struct PacedStateSample: SampleContent, ExampleContent {
                 Button("Fade")
                     .accessibilityIdentifier("paced.fade")
                     .accessibilityLabel("Fade the box out")
-                    .onClicked { $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
+                    .onClicked { $fade.journey.move(to: 0.1, .eased(.milliseconds(2000), .cubicOut)) }
 
                 Button("Back")
                     .accessibilityIdentifier("paced.back")
                     .accessibilityLabel("Bring the box back")
-                    .onClicked { $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
+                    .onClicked { $fade.journey.move(to: 1, .eased(.milliseconds(2000), .cubicOut)) }
             }
             .spacing(12)
             .horizontalAlignment(.center)

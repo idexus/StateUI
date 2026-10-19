@@ -97,6 +97,7 @@
                 try s.settle { try s.held(SliderContract.value, on: slider) == -25 }
                 s.expect(try s.held(SliderContract.value, on: slider), -25, within: 1e-9, "wholly below the value")
                 s.expect(level.wrappedValue, -25)
+                s.turn()
                 s.expect(heard.values, [], "the program's writes are heard by nobody")
             },
             ConformanceCase("aStateWriteTravelsToTheThumbUnheard", proves: [
@@ -114,18 +115,16 @@
                 let slider = try s.element("slider")
 
                 try s.perform(.activate, on: s.element("full"))
-                for time in stride(from: 16.0, through: 2_000, by: 16) {
-                    clock.now = time
-                    s.frame()
-                }
+                s.frames(of: clock, until: 2_000)
 
                 s.expect(try s.held(SliderContract.value, on: slider), 1, within: 1e-9, "the thumb travelled to it")
+                s.turn()
                 s.expect(heard.values, [], "and no frame of its journey was heard as the user's")
             },
             ConformanceCase("aUsersMoveTakesTheJourneyAndIsHeard", proves: [
-                Covered(SliderContract.value), Covered(SliderContract.valueChanged),
-                Covered(TextualElementContract.text, on: TextContract.self),
-            ]) { s in
+                Covered(SliderContract.value),
+                Covered(SliderContract.valueChanged),
+            ], needs: [Covered(TextualElementContract.text, on: TextContract.self)]) { s in
                 let level = State(wrappedValue: 0.0)
                 let moves = Received<Double>()
                 s.start {

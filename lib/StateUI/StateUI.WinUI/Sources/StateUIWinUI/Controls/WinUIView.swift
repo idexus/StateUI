@@ -47,7 +47,12 @@ class WinUIView {
     private var writtenRightToLeft = false
 
     /// What the view paints with brushes that follow its size, by what they paint.
-    private var paintsBySize: [String: (LayoutSize) -> Void] = [:]
+    private var paintsBySize: [Painted: (LayoutSize) -> Void] = [:]
+
+    /// What a view paints with brushes that may follow its size, in the order they are painted again.
+    enum Painted: Comparable {
+        case background, look, shape
+    }
 
     private static let live = LiveViews<WinUIView>()
 
@@ -85,6 +90,7 @@ class WinUIView {
         stateui_winui_set_opacity(handle, writtenOpacity)
         stateui_winui_set_z_index(handle, writtenZIndex)
         stateui_winui_set_flow_direction(handle, writtenRightToLeft)
+        if offered != .none { stateui_winui_offer_drag(handle, number, offered.words, offered.takesWords, offered.takesFiles) }
         writtenTip = nil
         writeTransform()
         let frame = placedFrame
@@ -142,7 +148,7 @@ class WinUIView {
     /// Design: docs/design/platforms/winui/drawing.md#a-views-background
     func setBackground(_ value: HostValue?) {
         let brush = WinUIBrush(value)
-        paint("background", followsSize: brush.followsSize) { [handle] size in
+        paint(.background, followsSize: brush.followsSize) { [handle] size in
             brush.withRelayBrush(over: size) { stateui_winui_set_background(handle, $0) }
         }
     }
@@ -258,7 +264,7 @@ class WinUIView {
     /// Paints `what` with `paint` at the view's size now, and again at each new size where its brushes follow the
     /// size of what they paint (`WinUIBrush.followsSize`).
     /// Design: docs/design/platforms/winui/drawing.md#a-box-and-its-brush
-    func paint(_ what: String, followsSize: Bool, _ paint: @escaping (LayoutSize) -> Void) {
+    func paint(_ what: Painted, followsSize: Bool, _ paint: @escaping (LayoutSize) -> Void) {
         paintsBySize[what] = followsSize ? paint : nil
         let frame = placedFrame
         paint(LayoutSize(width: frame.width, height: frame.height))
@@ -301,12 +307,12 @@ class WinUIView {
     /// of 0 for none.
     /// Design: docs/design/platforms/winui/controls.md#what-assistive-technology-meets
     func setAccessibility(_ words: AccessibilityWords) {
-        let met: Int32 = switch words.presence {
-        case nil: 0
-        case .met: 1
-        case .hidden: 2
+        let met: StateUIPresence = switch words.presence {
+        case nil: .own
+        case .met: .met
+        case .hidden: .skipped
         // A control's parts are its template's, left out with it; a layout holds its children back itself.
-        case .hiddenWithChildren: self is WinUILayoutView ? 2 : 3
+        case .hiddenWithChildren: self is WinUILayoutView ? .skipped : .skippedWithParts
         }
         stateui_winui_set_accessibility(handle, words.identifier, words.label, words.hint, words.headingLevel, met)
     }
@@ -357,9 +363,10 @@ class WinUIView {
         if menuActions.indices.contains(index) { menuActions[index]() }
     }
 
-    /// What of the user's input the view listens for; what hears it.
+    /// What of the user's input the view listens for, the way a hand moves it where it hears one; what hears it.
     private(set) var hearing: Hearing = []
-    private var onHeard: ((HeardInput) -> Void)?
+    private var hand: (way: HandWay?, pinches: Bool) = (nil, false)
+    private var onHeard: ((HeardInput) -> Bool)?
 
     /// What the view offers and takes of a drag, as last told to the relay; what hears it.
     private(set) var offered = DragAndDrop.none
@@ -375,20 +382,53 @@ class WinUIView {
         return .eachAxis(x: distance[0], y: distance[1])
     }()
 
-    /// Listens for what `hearing` names, `heard` hearing it; the relay is told only a change, in its bits, which
-    /// are `Hearing`'s.
+    /// Listens for what `hearing` names - a hand `way` - `heard` hearing it; the relay is told only a change, in its
+    /// bits, which are `Hearing`'s, and the hand's way as 0 across, 1 down, 2 every way, with whether the wheel
+    /// turned with Control scales.
     /// Design: docs/design/platforms/winui/input.md
-    func hear(_ hearing: Hearing, _ heard: @escaping (HeardInput) -> Void) {
+    func hear(_ hearing: Hearing, way: HandWay? = nil, _ heard: @escaping (HeardInput) -> Bool) {
         onHeard = hearing.isEmpty ? nil : heard
-        guard hearing != self.hearing else { return }
+        if hearing != self.hearing {
+            self.hearing = hearing
+            stateui_winui_hear(handle, number, hearing.rawValue)
+        }
+        let way = hearing.contains(.hand) ? way : nil
+        let pinches = hearing.contains(.pinches)
+        guard way != hand.way || pinches != hand.pinches else { return }
 
-        self.hearing = hearing
-        stateui_winui_hear(handle, number, hearing.rawValue)
+        hand = (way, pinches)
+        let axis: StateUIHandAxis = switch way {
+        case .horizontal: .horizontal
+        case .vertical: .vertical
+        case .everyWay: .everyWay
+        case nil: .none
+        }
+        stateui_winui_hear_hand(handle, number, axis, pinches ? 1 : 0)
     }
 
     /// What the relay says the view heard.
     func heard(_ heard: HeardInput) {
-        onHeard?(heard)
+        _ = onHeard?(heard)
+    }
+
+    /// The hand over a layout the relay tells - begun where a pointer went down, none for a trackpad's fingers;
+    /// moved by what it moved under it; let go; taken away - at `time` on the pointer's clock, its speed at the lift
+    /// as the platform tells it, or read by the host layer from its moves: the host's entry. Whether the layout took
+    /// it.
+    /// Design: docs/design/platforms/winui/input.md#the-hand-over-a-layout
+    func heardHand(phase: Int32, moved: Point, at time: Double? = nil, speed: Point? = nil) -> Bool {
+        guard let phase = GesturePhase(rawValue: phase) else { return false }
+
+        if phase == .began {
+            let point = moved.x.isNaN || moved.y.isNaN ? nil : moved
+            return onHeard?(.hand(.began, moved: .zero, speed: nil, at: time, point: point)) ?? false
+        }
+        return onHeard?(.hand(phase, moved: moved, speed: speed, at: time)) ?? false
+    }
+
+    /// A wheel's notch over a layout, as what it moved under the hand. Whether the layout took it.
+    func heardWheel(moved: Point) -> Bool {
+        onHeard?(.wheel(moved)) ?? false
     }
 
     /// Offers and takes what `offered` says of a drag, `heard` hearing it; the relay is told only a change.
@@ -400,17 +440,16 @@ class WinUIView {
         stateui_winui_offer_drag(handle, number, offered.words, offered.takesWords, offered.takesFiles)
     }
 
-    /// What the relay says the view heard of a drag, by the kind `Drags.cpp` numbers.
-    func heardDrag(kind: Int32, words: String) {
-        let input: HeardInput? = switch kind {
-        case 0: .dragStarted
-        case 1: .dragEnded
-        case 2: .dragOver
-        case 3: .dragLeft
-        case 4: .dropped(words)
-        default: nil
+    /// What the relay says the view heard of a drag, a drop with its words.
+    func heardDrag(_ heard: StateUIDragHeard, words: String) {
+        let input: HeardInput = switch heard {
+        case .started: .dragStarted
+        case .ended: .dragEnded
+        case .over: .dragOver
+        case .left: .dragLeft
+        case .dropped: .dropped(words)
         }
-        if let input { heardDrag(input) }
+        heardDrag(input)
     }
 
     /// What the view heard of a drag, handed to what hears it.
@@ -421,25 +460,26 @@ class WinUIView {
     /// A press the relay tells - down, moved, let go or taken away, at `point` of the window's content: a drag by the
     /// host layer's rule, and as it becomes one the view holds the pointer.
     /// Design: docs/design/platforms/winui/input.md#a-press-dragged
-    func heardPress(phase: Int32, at point: Point) {
+    func heardPress(_ phase: StateUIPressPhase, at point: Point) {
         switch phase {
-        case 0:
+        case .down:
             press.pressed(at: point)
-        case 1:
+        case .moved:
             let wasDragging = press.isDragging
             let told = press.moved(to: point)
             if press.isDragging, !wasDragging { stateui_winui_press_dragged(number) }
             for each in told { heard(each) }
-        default:
-            if let end = press.ended(letGo: phase == 2) { heard(end) }
+        case .letGo, .takenAway:
+            if let end = press.ended(letGo: phase == .letGo) { heard(end) }
         }
     }
 
     /// The element left the tree: the view lets go of everything that would call back into it. A view that
     /// overrides this lets go of what every view holds first, then of its own.
     func detach() {
-        hear([]) { _ in }
+        hear([]) { _ in false }
         setFocusChanged(nil)
+        offer(.none) { _ in }
         menuActions = []
         paintsBySize = [:]
     }

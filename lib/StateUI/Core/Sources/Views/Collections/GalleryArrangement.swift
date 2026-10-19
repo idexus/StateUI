@@ -15,4 +15,12 @@ public enum GalleryArrangement: Sendable, Equatable {
     /// Side by side, the middle card largest - a strip to run along rather
     /// than a deck to look into.
     case row
+
+    /// A pile: the card in front whole and straight, the others behind it
+    /// peeking out either side - those passed on the left, those to come on
+    /// the right. Swiped a card at a time: the card in front goes out the way
+    /// the hand goes, under it, and tucks under the next. Its cards behind are
+    /// shaded where a shade is given, never faded, which would show the card
+    /// under them.
+    case deck
 }

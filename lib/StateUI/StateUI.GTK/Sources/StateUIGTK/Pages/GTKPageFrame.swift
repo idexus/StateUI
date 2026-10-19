@@ -156,7 +156,7 @@ final class GTKPageFrame {
         if sidebarButton == nil {
             let button = GTKButtonView(toggles: true)
             gtk_button_set_icon_name(button.widget.of(GtkButton.self), "sidebar-show-symbolic")
-            gtk_widget_set_tooltip_text(button.widget, "Toggle Sidebar")
+            gtk_widget_set_tooltip_text(button.widget, CoreLink().chromeWords.sidebar)
             gtk_box_prepend(startBox.of(GtkBox.self), button.widget)
             sidebarButton = button
         }
@@ -235,7 +235,8 @@ final class GTKPageFrame {
 extension GTKPageFrame {
     /// The menus at the bar's very end, as GNOME's applications hold theirs: a main menu holding each as a submenu.
     /// Design: docs/design/platforms/gtk/pages.md#menus
-    private func showMainMenu(_ menu: GTKMenu?) {
+    private func showMainMenu(_ entries: [MenuEntry]) {
+        let menu = entries.isEmpty ? nil : GTKMenu(entries, at: .main)
         if let mainMenu, let menu, menu.stands(like: mainMenu.menu) { return }
         if let mainMenu { gtk_box_remove(endBox.of(GtkBox.self), mainMenu.button) }
         mainMenu = nil
@@ -243,9 +244,9 @@ extension GTKPageFrame {
 
         let button = gtk_menu_button_new()!
         gtk_menu_button_set_icon_name(button.opaque, "open-menu-symbolic")
-        gtk_widget_set_tooltip_text(button, "Main Menu")
+        gtk_widget_set_tooltip_text(button, CoreLink().chromeWords.mainMenu)
         gtk_menu_button_set_menu_model(button.opaque, g_menu_model(menu.model))
-        gtk_widget_insert_action_group(button, GTKMenu.actionGroup, OpaquePointer(menu.actions))
+        gtk_widget_insert_action_group(button, menu.group, OpaquePointer(menu.actions))
         gtk_box_append(endBox.of(GtkBox.self), button)
         mainMenu = (button, menu)
     }

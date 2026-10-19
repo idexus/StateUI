@@ -20,12 +20,9 @@ extension Differ {
     /// Says once a place `child` was given for a layout it does not stand in - a grid's row or column outside a
     /// Grid, an area outside a ZStack: the layout it stands in places it by its own rule.
     func saysAPlaceForAnotherLayout(_ child: RenderedNode, under parent: NodeType) {
-        let placements: [(layout: NodeType, members: [Prop])] = [
-            (.grid, [.gridRow, .gridColumn, .gridRowSpan, .gridColumnSpan]),
-            (.zStack, [.area]),
-        ]
+        guard !child.props.isEmpty else { return }
 
-        for (layout, members) in placements where parent != layout {
+        for (layout, members) in Self.placements where parent != layout {
             for member in members where child.props[member] != nil {
                 complain(
                     "\(child.type.name)'s \(member.name) places it in a \(layout.name), and it stands in a "
@@ -33,6 +30,12 @@ extension Differ {
             }
         }
     }
+
+    /// The places a layout gives its children, by the layout giving them - made once, asked of every child.
+    private static let placements: [(layout: NodeType, members: [Prop])] = [
+        (.grid, [.gridRow, .gridColumn, .gridRowSpan, .gridColumnSpan]),
+        (.zStack, [.area]),
+    ]
 }
 
 extension Node {
@@ -42,17 +45,18 @@ extension Node {
     mutating func keepingDeclared() {
         guard let declared = Self.declared[type] else { return }
 
-        for prop in props.keys.sorted() where !declared.contains(prop.name) {
+        // What is left out, in name order; nothing is sorted where nothing is.
+        for prop in props.keys.filter({ !declared.props.contains($0) }).sorted() {
             leaveOut(prop.name)
             props[prop] = nil
         }
 
-        for prop in driven.keys.sorted() where !declared.contains(prop.name) {
+        for prop in driven.keys.filter({ !declared.props.contains($0) }).sorted() {
             leaveOut(prop.name)
             driven[prop] = nil
         }
 
-        for event in events.keys.sorted() where !declared.contains(event.name) {
+        for event in events.keys.filter({ !declared.events.contains($0) }).sorted() {
             leaveOut(event.name)
             events[event] = nil
         }
@@ -66,9 +70,22 @@ extension Node {
         }
     }
 
-    /// The names each element of the library's contract declares, its tiers' included.
-    private static let declared: [NodeType: Set<String>] = Dictionary(
-        uniqueKeysWithValues: LibraryContracts.elements.map { contract in
-            (contract.nodeType, Set(contract.worn.flatMap { $0.members.map(\.name) }))
-        })
+    /// The keys each element of the library's contract declares, its tiers' included - a property as a property
+    /// and an event as an event, so neither keeps the other's name.
+    private static let declared: [NodeType: (props: Set<Prop>, events: Set<Event>)] = {
+        var declared: [NodeType: (props: Set<Prop>, events: Set<Event>)] = [:]
+        for contract in LibraryContracts.elements {
+            var props: Set<Prop> = []
+            var events: Set<Event> = []
+            for case let member as any DeclaredMember in contract.worn.flatMap({ $0.members }) {
+                switch member.facts.kind {
+                case .property: props.insert(Prop(member.name))
+                case .event: events.insert(Event(member.name))
+                case .act: break
+                }
+            }
+            declared[contract.nodeType] = (props, events)
+        }
+        return declared
+    }()
 }

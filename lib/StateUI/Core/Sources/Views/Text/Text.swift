@@ -81,8 +81,10 @@ public struct Text: ElementView, TextualElement, FontElement, TextAlignmentEleme
     ///
     /// A Text given both runs and a `text` shows the runs.
     public func spans(@TextSpanBuilder _ spans: () -> [TextSpan]) -> Self {
+        // The runs it had give way, and nothing else: a menu or a toolbar written on it stays.
         modified {
-            $0.children = [Node(contract: TextSpansContract.self, children: spans().map { $0.node })]
+            $0.children.removeAll { $0.type == TextSpansContract.nodeType }
+            $0.children.insert(Node(contract: TextSpansContract.self, children: spans().map { $0.node }), at: 0)
         }
     }
 }
@@ -133,5 +135,13 @@ extension Text {
     /// as it stands, and no view is rebuilt for it.
     public func verticalTextAlignment(_ state: Binding<TextAlignment>) -> Modified {
         twin(TextContract.verticalTextAlignment, by: state)
+    }
+}
+
+extension Text {
+    /// `lineBreak` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
+    public func lineBreak(_ state: Binding<LineBreak>) -> Modified {
+        twin(TextContract.lineBreak, carrying: state)
     }
 }

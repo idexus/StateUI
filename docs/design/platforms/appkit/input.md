@@ -92,13 +92,29 @@ mid-gesture.
 What the user does with the pointer and the trackpad AppKit's own recognizers
 hear, and each tells the host layer what it heard - never an event: a click
 with its place in a quick run of clicks, a press dragged with its phase and
-how far it has come, a pinch's step, the pointer's coming, moving, pressing,
-letting go and leaving - each measured from the view's top left, as every
+how far it has come, a pinch's step, a rotation's, a press dragged with ⌥ as
+two fingers mirrored about the middle (`MirroredFingers`), the pointer's
+coming, moving, pressing, letting go and leaving - each measured from the view's top left, as every
 host measures it. Which of them an element listens for, how many clicks make
 its tap, the states a drag carries and whether a drag that ended was a swipe
 are the host layer's (`MountedElement.hearing`, `hear`), and so is the one
 pointer a drag is heard from: an element asking a pan of more gets no drag
 recognizer.
+
+## The hand over a layout
+
+A layout an engine moves hears the hand on its own view (`AppKitHandReader`):
+a pointer dragged, by a pan recognizer whose moves and lift speed it hands
+on; a trackpad's or a Magic Mouse's fingers, by the view's `scrollWheel`,
+each event with a `phase` a step of the gesture - the system's momentum
+after the lift (`momentumPhase`) swallowed, as the layout throws the run
+itself; and a wheel's notches, events with no phase and no precise deltas,
+told as notches - each a step of the run to the next target. The
+first move of a gesture decides whose it is, as for a one-axis scroller
+(scrolling, above): more along the layout's axis than across, the layout's,
+and a scroll it does not take goes on to whatever holds it - a page's
+scroller. AppKit tells no speed at a trackpad's lift, so the host layer reads
+it from the last moves.
 
 ## A drag between views
 
@@ -109,8 +125,8 @@ and lets the press go to the session; the session tells the view it started
 and, wherever it ended, that it ended. A view taking drops registers
 nothing itself - a layout replaces its subviews as it arranges them, and a
 control is AppKit's own class. The window's root takes every drag that
-carries words - the window's content view, or a sheet's page - and finds the
-view under it as AppKit finds a destination: its hit test, then that view's
+carries words - the content view a window and a sheet stand on alike - and
+finds the view under it as AppKit finds a destination: its hit test, then that view's
 ancestors, among the views whose elements take drops, read as the drag
 comes. The view under the drag hears it come and go, and the drop with its
 words; the host layer's rule makes over once and no leave after a drop. The

@@ -2,7 +2,7 @@
 
 An application builds its interface out of composed views - `View`s -
 and the library builds several of its own the same way: `GeometryReader`,
-`PlacedLayout`, `ScrollReader`, `GalleryView`, the inspector. A
+`LayoutEngine`, `GalleryView`, the inspector. A
 composed view is a value that says what it is made of; the differ decides when
 that is read.
 
@@ -86,8 +86,8 @@ makes that whole view rebuild for every change it watches.
 
 The library's own composed views put such a watcher in a view of its own: an
 empty view beside the ones it serves, reading the value so the read is its
-own. `GalleryView`'s `Turning` watches the asked position and shape, and every
-card crossed rebuilds that empty view rather than the deck. Handlers that need
+own. `GalleryView`'s `Watcher` watches the asked position, and every card
+crossed rebuilds that empty view rather than the deck. Handlers that need
 the value when they fire ask it through a closure rather than reading it at
 build.
 

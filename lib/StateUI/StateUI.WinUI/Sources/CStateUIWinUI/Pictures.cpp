@@ -216,7 +216,8 @@ namespace {
     std::map<Drawn, winrt::weak_ref<imaging::SvgImageSource>> drawn;
 
     /// Where the SVG `file` stands with its proportions let go: a copy of its text with `preserveAspectRatio="none"`
-    /// on its root, written once for the process among the system's temporary files, named by the picture's path.
+    /// on its root among the system's temporary files, named by what it holds - every run showing the picture shares
+    /// it, and none is left behind a run - written where it is missing, whole before it takes its name.
     std::wstring stretchedCopy(std::wstring const &file) {
         static std::map<std::wstring, std::wstring> copies;
         if (auto found = copies.find(file); found != copies.end()) return found->second;
@@ -226,12 +227,15 @@ namespace {
         GetTempPathW(MAX_PATH, temporary);
         std::wstring folder = std::wstring(temporary) + L"StateUI\\";
         CreateDirectoryW(folder.c_str(), nullptr);
-        auto copy = folder + std::to_wstring(GetCurrentProcessId()) + L"-"
-            + std::to_wstring(std::hash<std::wstring>{}(pictures() + file)) + L".svg";
-        FILE *written = nullptr;
-        if (_wfopen_s(&written, copy.c_str(), L"wb") == 0 && written) {
-            std::fwrite(text.data(), 1, text.size(), written);
-            std::fclose(written);
+        auto copy = folder + L"stretched-" + std::to_wstring(std::hash<std::string>{}(text)) + L".svg";
+        if (GetFileAttributesW(copy.c_str()) == INVALID_FILE_ATTRIBUTES) {
+            auto writing = copy + L"." + std::to_wstring(GetCurrentProcessId());
+            FILE *written = nullptr;
+            if (_wfopen_s(&written, writing.c_str(), L"wb") == 0 && written) {
+                std::fwrite(text.data(), 1, text.size(), written);
+                std::fclose(written);
+                if (!MoveFileExW(writing.c_str(), copy.c_str(), MOVEFILE_REPLACE_EXISTING)) DeleteFileW(writing.c_str());
+            }
         }
         copies[file] = copy;
         return copy;

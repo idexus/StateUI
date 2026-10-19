@@ -259,3 +259,18 @@ extension PropertyContainer {
         words(property.token, by: state, mode: mode)
     }
 }
+
+extension ElementView {
+    /// `isOpen` from a state, both ways: the host opens and closes as the state stands, and the user's opening and
+    /// closing come back into it as the platform raises them.
+    /// Design: docs/design/views/bindings.md#binding-twins
+    func opening<Owner: Contract>(
+        _ property: ElementProperty<Owner, Bool>, by state: Binding<Bool>,
+        opened: ElementEvent<Owner, Void>, closed: ElementEvent<Owner, Void>
+    ) -> Self {
+        twin(property, carrying: state).modified {
+            $0.addHandler(opened.token) { if !state.wrappedValue { state.wrappedValue = true } }
+            $0.addHandler(closed.token) { if state.wrappedValue { state.wrappedValue = false } }
+        }
+    }
+}

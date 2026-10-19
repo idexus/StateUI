@@ -80,14 +80,14 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresen
     }
 
     /// The time back from the three numbers a picker reports - hour, minute,
-    /// second, each the whole part of its number, and no millisecond. Nil for
+    /// second, each the whole number nearest its number, and no millisecond. Nil for
     /// anything else, so a report that does not read leaves the handler alone.
     /// - Parameter propValue: what the host sent.
     public init?(propValue: PropValue) {
         guard let numbers = propValue.numbers, numbers.count == 3,
-              let hour = Int(exactly: numbers[0].rounded(.towardZero)),
-              let minute = Int(exactly: numbers[1].rounded(.towardZero)),
-              let second = Int(exactly: numbers[2].rounded(.towardZero))
+              let hour = Int(nearest: numbers[0]),
+              let minute = Int(nearest: numbers[1]),
+              let second = Int(nearest: numbers[2])
         else { return nil }
 
         self.init(hour: hour, minute: minute, second: second)

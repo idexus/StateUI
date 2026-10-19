@@ -23,6 +23,16 @@ enum WebRelay {
     /// Hands the page the two functions it calls Swift through.
     static func start() {
         handOver()
+        nameKeys()
+    }
+
+    /// Tells the relay the page's name of each key writing no character, by its number: Swift's names alone.
+    private static func nameKeys() {
+        let named = WebKeys.names.sorted { $0.key.rawValue < $1.key.rawValue }
+        let numbers = named.map { Double($0.key.rawValue) }
+        utf8(named.map(\.value).joined(separator: "\u{0}")) { text, length in
+            numbers.withUnsafeBufferPointer { stateui_web_name_keys($0.baseAddress, Int32(numbers.count), text, length) }
+        }
     }
 
     /// Hands them over from a nonisolated function: a closure written in a `@MainActor` one is MainActor's.
@@ -53,9 +63,10 @@ enum WebRelay {
     /// How many listeners the page can call now: what a test counts to see nothing outlived its view.
     static var listenerCount: Int { listeners.count }
 
-    /// Lets go of the listener `number`.
+    /// Lets go of the listener `number`, and the relay of whatever it hung for it.
     static func forget(_ number: Int32) {
         listeners[number] = nil
+        stateui_web_forget(number)
     }
 
     /// A listener for `action`, let go of as the page calls it.
@@ -150,6 +161,16 @@ enum WebRelay {
         utf8(event) { stateui_web_listen(element, $0, $1, listener) }
     }
 
+    /// Calls `listener` whenever the relay hears `kind` on the element.
+    static func hear(_ element: Int32, _ kind: WebHearing, _ listener: Int32) {
+        stateui_web_hear(element, kind.rawValue, listener)
+    }
+
+    /// Calls `listener` as the user asks for the element's menu: a right click, or a finger held still.
+    static func listenForMenu(_ element: Int32, _ listener: Int32) {
+        stateui_web_listen_menu(element, HandReading.hold, WebPress.finger, listener)
+    }
+
     /// The number at `index` of the event being heard - what a listener of its kind is told.
     static func eventNumber(_ index: Int) -> Double { stateui_web_event_number(Int32(index)) }
 
@@ -159,11 +180,10 @@ enum WebRelay {
     /// Where the pointer of the event being heard is, from the listening element's top left corner.
     static var eventPoint: Point { Point(x: stateui_web_event_number(1), y: stateui_web_event_number(2)) }
 
-    /// The pointer of the event being heard: its number, where it is on the page, its kind - 0 a mouse, 1 a pen, 2 a
-    /// touch - and its button.
-    static var eventPointer: (id: Int, at: Point, kind: Int, button: Int) {
+    /// The pointer of the event being heard: its number, where it is on the page, its kind and its button.
+    static var eventPointer: (id: Int, at: Point, kind: WebPress.Pointer, button: Int) {
         (Int(stateui_web_event_number(3)), Point(x: stateui_web_event_number(4), y: stateui_web_event_number(5)),
-         Int(stateui_web_event_number(6)), Int(stateui_web_event_number(7)))
+         WebPress.Pointer(rawValue: Int32(stateui_web_event_number(6))) ?? .mouse, Int(stateui_web_event_number(7)))
     }
 
     /// The wheel's turn down of the event being heard, and whether a key made it a pinch.
@@ -174,6 +194,12 @@ enum WebRelay {
     /// The scale of the gesture being heard, from 1 as it began.
     static var eventScale: Double { stateui_web_event_number(10) }
 
+    /// How far the gesture being heard has turned since it began, in degrees clockwise.
+    static var eventRotation: Double { stateui_web_event_number(19) }
+
+    /// Whether ⌥/Alt was held as the event being heard happened.
+    static var eventAlt: Bool { stateui_web_event_number(20) != 0 }
+
     /// The size of the element hearing the event.
     static var eventSize: LayoutSize {
         LayoutSize(width: stateui_web_event_number(11), height: stateui_web_event_number(12))
@@ -181,6 +207,21 @@ enum WebRelay {
 
     /// Whether the click being heard fell on a label beside its control, which the browser clicks next.
     static var eventPassesToControl: Bool { stateui_web_event_number(13) != 0 }
+
+    /// The wheel's turn across and down of the event being heard, in pixels.
+    static var eventScroll: Point { Point(x: stateui_web_event_number(14), y: stateui_web_event_number(15)) }
+
+    /// When the event being heard happened, in the page's milliseconds - the frame clock's own.
+    static var eventTime: Double { stateui_web_event_number(16) }
+
+    /// The notches of the wheel the event being heard turned, a notch an event across and down, the way they move
+    /// what is under the hand - where the browser measures the wheel in lines or pages; nil where in pixels.
+    static var eventNotches: Point? {
+        guard stateui_web_event_number(17) != 0 else { return nil }
+
+        func notch(_ turn: Double) -> Double { turn > 0 ? -1 : turn < 0 ? 1 : 0 }
+        return Point(x: notch(stateui_web_event_number(18)), y: notch(stateui_web_event_number(8)))
+    }
 
     /// Calls `listener` as `element` comes near the view of the scroller `root`, and as it goes away (`eventNear`).
     static func watchNearness(_ element: Int32, of root: Int32, _ listener: Int32) {
@@ -219,12 +260,6 @@ enum WebRelay {
         stateui_web_listen_history(listener)
     }
 
-    /// The history no longer calls `listener`, and it is let go of.
-    static func stopListeningToHistory(_ listener: Int32) {
-        stateui_web_unlisten_history(listener)
-        forget(listener)
-    }
-
     /// Calls the act `name` of the application's scripts with `words`; `listener` hears its promise settle.
     static func callScript(_ name: String, _ words: String, _ listener: Int32) {
         utf8(name) { name, length in utf8(words) { stateui_web_call_script(name, length, $0, $1, listener) } }
@@ -258,14 +293,28 @@ enum WebRelay {
     static func showInFrame(_ element: Int32, _ source: WebViewSource) -> String? {
         switch source {
         case .url(let address):
-            utf8(address) { _ = stateui_web_frame_show(element, 0, $0, $1, nil, 0) }
+            utf8(address) { _ = stateui_web_frame_show(element, FrameSource.address.rawValue, $0, $1) }
             return nil
-        case .html(let document, let base):
-            let length = utf8(document) { words, length in
-                utf8(base ?? "") { stateui_web_frame_show(element, 1, words, length, $0, $1) }
+        case .html(let words, let base):
+            let length = utf8(document(words, base: base)) {
+                stateui_web_frame_show(element, FrameSource.document.rawValue, $0, $1)
             }
             return copyRead(length: length)
         }
+    }
+
+    /// `words` with its links resolved against `base` where one is given: a `<base>` right after its doctype, else
+    /// first - before the doctype, the browser reads the document in quirks mode.
+    /// Design: docs/design/platforms/web/controls.md#a-web-view
+    nonisolated static func document(_ words: String, base: String?) -> String {
+        guard let base, !base.isEmpty else { return words }
+        let href = base.replacing("&", with: "&amp;").replacing("\"", with: "&quot;")
+        let tag = "<base href=\"\(href)\">"
+        let leading = words.prefix { $0.isWhitespace }
+        let rest = words.dropFirst(leading.count)
+        guard rest.lowercased().hasPrefix("<!doctype"), let end = rest.firstIndex(of: ">") else { return tag + words }
+        let doctype = rest[...end]
+        return String(leading) + doctype + tag + rest[rest.index(after: end)...]
     }
 
     /// What the page can know of the frame's document: whether it is of the page's own site, and its history.
@@ -279,9 +328,22 @@ enum WebRelay {
         copyRead(length: stateui_web_frame_address(element))
     }
 
-    /// A step of the frame's own - back, forward, the page again; whether it could take it.
-    static func frameStep(_ element: Int32, _ step: Int32) -> Bool {
-        stateui_web_frame_step(element, step) != 0
+    /// A step of the frame's own; whether it could take it.
+    static func frameStep(_ element: Int32, _ step: FrameStep) -> Bool {
+        stateui_web_frame_step(element, step.rawValue) != 0
+    }
+
+    /// What a frame is given to show: an address, or a document written in place.
+    enum FrameSource: Int32 {
+        case address = 0
+        case document
+    }
+
+    /// A step of a frame's own: back, forward, or the page again.
+    enum FrameStep: Int32 {
+        case back = 0
+        case forward
+        case reload
     }
 
     /// The JSON a script run in the frame's document answers; nil where it could not run.
@@ -337,6 +399,11 @@ enum WebRelay {
         stateui_web_is_laid_out(element) != 0
     }
 
+    /// Whether the style sheet stands `element` over its siblings, out of its parent's flow.
+    static func standsOver(_ element: Int32) -> Bool {
+        stateui_web_stands_over(element) != 0
+    }
+
     /// The element's box on the page, from the page's top left.
     static func box(of element: Int32) -> Rect {
         let read = numbers(4) { stateui_web_read_box(element, $0) }
@@ -380,6 +447,12 @@ enum WebRelay {
             read(buffer.baseAddress!)
             written = count
         }
+    }
+
+    /// The page wears `colour` under its window, and keeps it for its next start, under the system's light or dark;
+    /// nil wears and keeps none.
+    static func keepPageColour(_ colour: String?) {
+        utf8(colour ?? "") { stateui_web_keep_page_colour($0, $1) }
     }
 
     static func setTitle(_ title: String) {
@@ -474,6 +547,22 @@ enum WebRelay {
 
     static func listenToAppearance(_ listener: Int32) {
         stateui_web_listen_appearance(listener)
+    }
+
+    /// The user's locale as the browser has it, word by word (`WebEnvironment.locale`).
+    static var localeWords: [String] {
+        copyRead(length: stateui_web_locale_words()).split(separator: "\u{0}", omittingEmptySubsequences: false)
+            .map(String.init)
+    }
+
+    /// Calls `listener` whenever the user's languages change.
+    static func listenToLocale(_ listener: Int32) {
+        stateui_web_listen_locale(listener)
+    }
+
+    /// Calls `listener` whenever the screen's density turns - a window moved to another screen, the page zoomed.
+    static func listenToDensity(_ listener: Int32) {
+        stateui_web_listen_density(listener)
     }
 
     /// The words the relay read last, `length` bytes of UTF-8.

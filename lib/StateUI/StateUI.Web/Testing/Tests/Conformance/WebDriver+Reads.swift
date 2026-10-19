@@ -77,6 +77,10 @@ extension WebDriver {
              (.contentMode, is WebButtonView), (.lineBreak, is WebButtonView):
             return try buttonHolds(property, e)
         case (.showsSidebar, is WebSplitView): return try WebBrowser.truth("e.dataset.sidebar === 'shown'", on: e).propValue
+        case (.sidebarOverlays, is WebSplitView):
+            // The sidebar out of the split's columns, over the detail, as the style sheet stands it.
+            let over = "getComputedStyle(e.querySelector(':scope > .stateui-sidebar')).position === 'absolute'"
+            return try WebBrowser.truth(over, on: e).propValue
         case (.sidebarBackground, is WebSplitView), (.flyoutBackground, is WebSplitView):
             // The variable the style sheet reads in that place.
             let place = property == .sidebarBackground ? "sidebar" : "flyout"
@@ -124,7 +128,7 @@ extension WebDriver {
             return try WebBrowser.truth("e.dataset.title !== 'none'", on: bar).propValue
         case (.page, .showsBackButton):
             guard let bar = try? bar(over: element) else { return nil }
-            return try WebBrowser.truth("!e.hidden && !e.querySelector('button[aria-label=Back]').hidden", on: bar).propValue
+            return try WebBrowser.truth("!e.hidden && !e.querySelector('button:has(> [data-glyph=back])').hidden", on: bar).propValue
         case (_, .title) where tab(of: element) != nil:
             guard let (tabs, place) = tab(of: element), let view = (tabs.native as? WebElement)?.view else { return nil }
             let strip = ":scope > .stateui-tab-strip > [role=tab]"

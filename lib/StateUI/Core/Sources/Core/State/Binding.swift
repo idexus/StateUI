@@ -162,7 +162,7 @@ public struct Binding<Value> {
         Binding<Subject>(
             read: { wrappedValue[keyPath: keyPath] },
             write: { newValue in
-                var whole = wrappedValue
+                var whole = standing
                 whole[keyPath: keyPath] = newValue
                 wrappedValue = whole
             },
@@ -208,7 +208,7 @@ extension Binding where Value: MutableCollection, Value.Index: Hashable & Sendab
         Binding<Value.Element>(
             read: { wrappedValue[index] },
             write: { newValue in
-                var whole = wrappedValue
+                var whole = standing
                 whole[index] = newValue
                 wrappedValue = whole
             },

@@ -1,7 +1,8 @@
 # Input on GTK
 
 How the GTK host hears what the user does to an element with a finger, a pen
-or the mouse - a tap, the pointer, a press dragged, a pinch - and reports it
+or the mouse - a tap, the pointer, a press dragged, a pinch, two fingers
+turning, a press dragged with Alt as two fingers mirrored - and reports it
 as the element's events ([a user's change](../../host/runtime.md#a-users-change)).
 A control's own input - a button's click, a switch turned - is the control's,
 and stays there ([controls](controls.md)).
@@ -10,8 +11,8 @@ and stays there ([controls](controls.md)).
 
 A view listens only for what its element's handlers and channels ask: taps
 for a tap handler, the pointer for a pointer handler, a press dragged for a
-pan, a swipe or a state a pan carries, a pinch for a pinch handler. Each kind
-is a GTK event controller on the view's widget - the pointer's two, a motion
+pan, a swipe or a state a pan carries, a pinch or a turn for its handler.
+Each kind is a GTK event controller on the view's widget - the pointer's two, a motion
 controller and a drag gesture - added when the view starts listening for it
 and removed when it stops, and every controller's signals name the view by
 its number. A view that leaves the tree stops listening first, so its widget
@@ -105,6 +106,18 @@ GTK gives no keyboard focus - a label, a box, a picture - never takes it,
 whoever asks, so its element hears nothing; the act that puts the keyboard
 on it answers that it did not.
 
+
+## The hand over a layout
+
+A layout an engine moves hears the hand by two controllers (`GTKListening`):
+a drag of any pointer, whose first move past the drag threshold says whose
+it is - claimed for the layout, or denied, so a scrolled window holding it
+takes it - its moves told since the last and its lift with the event's time,
+from which the host layer reads its speed; and a scroll controller, a
+touchpad's two fingers (`scroll-begin`, each step, `scroll-end`) told as the
+hand and a wheel's notches (`GDK_SCROLL_UNIT_WHEEL`, parts of one for a fine
+wheel) as notches, each a step of the run to the next target - every step
+answering whether the layout took it.
 ## A drag between views
 
 A view's drags are GTK's own controllers. A view that can be dragged holds a

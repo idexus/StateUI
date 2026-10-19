@@ -105,7 +105,10 @@ what the system restores; nothing of the library's decides it.
 A window's value is any `Codable` the author chose, and the platform keeps text,
 so `ValueText` writes a value as JSON and reads it back - by hand, with no
 Foundation, and with an object's members by their keys, so one value is one text
-on every run: a dictionary hands its members over in its hash's order.
+on every run: a dictionary hands its members over in its hash's order. A set,
+and a dictionary keyed by other than words or whole numbers - which writes its
+pairs as a list - hand theirs over in that order too; each element is written
+apart and the list is sorted by the elements' text (the key's, for a pair).
 
 ## Sessions
 

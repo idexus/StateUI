@@ -1,11 +1,10 @@
-# revision 12.1
+# revision 14.1
 ActivityIndicator.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.automationExcludedWithChildren: ✅
 ActivityIndicator.background: ✓ read background of ActivityIndicator: the class of the host's style sheet the widget wears: GTK reads back no background
 ActivityIndicator.frame: ✅
-ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
 ActivityIndicator.ignoresInput: ✅
 ActivityIndicator.isAccessibilityHidden: ✅
@@ -35,9 +34,8 @@ Button.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: 
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
 Button.automationExcludedWithChildren: ✅
-Button.background: ✓ read background of Button: the class of the host's style sheet the widget wears: GTK reads back no background
+Button.background: ☑️ A brush fills the view with its first colour alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's colour standing in, its tint over it.
 Button.frame: ✅
-Button.frameChanged: ✅
 Button.height: ✅
 Button.ignoresInput: ✅
 Button.isAccessibilityHidden: ✅
@@ -69,7 +67,6 @@ Canvas.accessibilityLabel: ✅
 Canvas.automationExcludedWithChildren: ✅
 Canvas.background: ✓ read background of Canvas: the class of the host's style sheet the widget wears: GTK reads back no background
 Canvas.frame: ✅
-Canvas.frameChanged: ✅
 Canvas.height: ✅
 Canvas.ignoresInput: ✅
 Canvas.isAccessibilityHidden: ✅
@@ -101,7 +98,6 @@ Capsule.accessibilityLabel: ✅
 Capsule.automationExcludedWithChildren: ✅
 Capsule.background: ✓ read background of Capsule: the class of the host's style sheet the widget wears: GTK reads back no background
 Capsule.frame: ✅
-Capsule.frameChanged: ✅
 Capsule.height: ✅
 Capsule.ignoresInput: ✅
 Capsule.isAccessibilityHidden: ✅
@@ -133,7 +129,6 @@ CheckBox.accessibilityLabel: ✅
 CheckBox.automationExcludedWithChildren: ✅
 CheckBox.background: ✓ read background of CheckBox: the class of the host's style sheet the widget wears: GTK reads back no background
 CheckBox.frame: ✅
-CheckBox.frameChanged: ✅
 CheckBox.height: ✅
 CheckBox.ignoresInput: ✅
 CheckBox.isAccessibilityHidden: ✅
@@ -165,7 +160,6 @@ DatePicker.accessibilityLabel: ✅
 DatePicker.automationExcludedWithChildren: ✅
 DatePicker.background: ✓ read background of DatePicker: the class of the host's style sheet the widget wears: GTK reads back no background
 DatePicker.frame: ✅
-DatePicker.frameChanged: ✅
 DatePicker.height: ✅
 DatePicker.ignoresInput: ✅
 DatePicker.isAccessibilityHidden: ✅
@@ -197,7 +191,6 @@ Divider.accessibilityLabel: ✅
 Divider.automationExcludedWithChildren: ✅
 Divider.background: ✓ read background of Divider: the class of the host's style sheet the widget wears: GTK reads back no background
 Divider.frame: ✅
-Divider.frameChanged: ✅
 Divider.height: ✅
 Divider.ignoresInput: ✅
 Divider.isAccessibilityHidden: ✅
@@ -229,7 +222,6 @@ Ellipse.accessibilityLabel: ✅
 Ellipse.automationExcludedWithChildren: ✅
 Ellipse.background: ✓ read background of Ellipse: the class of the host's style sheet the widget wears: GTK reads back no background
 Ellipse.frame: ✅
-Ellipse.frameChanged: ✅
 Ellipse.height: ✅
 Ellipse.ignoresInput: ✅
 Ellipse.isAccessibilityHidden: ✅
@@ -259,9 +251,8 @@ Grid.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a 
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
 Grid.automationExcludedWithChildren: ✅
-Grid.background: ✓ read background of Grid: the class of the host's style sheet the widget wears: GTK reads back no background
+Grid.background: ✅
 Grid.frame: ✅
-Grid.frameChanged: ✅
 Grid.height: ✅
 Grid.ignoresInput: ✅
 Grid.isAccessibilityHidden: ✅
@@ -291,9 +282,8 @@ HStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: 
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
 HStack.automationExcludedWithChildren: ✅
-HStack.background: ✓ read background of HStack: the class of the host's style sheet the widget wears: GTK reads back no background
+HStack.background: ✅
 HStack.frame: ✅
-HStack.frameChanged: ✅
 HStack.height: ✅
 HStack.ignoresInput: ✅
 HStack.isAccessibilityHidden: ✅
@@ -325,7 +315,6 @@ Image.accessibilityLabel: ✅
 Image.automationExcludedWithChildren: ✅
 Image.background: ✓ read background of Image: the class of the host's style sheet the widget wears: GTK reads back no background
 Image.frame: ✅
-Image.frameChanged: ✅
 Image.height: ✅
 Image.ignoresInput: ✅
 Image.isAccessibilityHidden: ✅
@@ -357,7 +346,6 @@ ItemsView.accessibilityLabel: ✅
 ItemsView.automationExcludedWithChildren: ✅
 ItemsView.background: does not apply - read background of ItemsView - StateUI draws a list's box on GTK's snapshot, which holds none of its background; its drawing proves it
 ItemsView.frame: ✅
-ItemsView.frameChanged: ✅
 ItemsView.height: ✅
 ItemsView.ignoresInput: ✅
 ItemsView.isAccessibilityHidden: ✅
@@ -383,13 +371,43 @@ ItemsView.translationX: ✓ read translationX of ItemsView: the host's own trans
 ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.width: ✅
 ItemsView.zIndex: ✅
+LayoutEngine.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
+LayoutEngine.accessibilityHint: ✅
+LayoutEngine.accessibilityLabel: ✅
+LayoutEngine.automationExcludedWithChildren: ✅
+LayoutEngine.background: ◐ cannot read background of LayoutEngine - GTK's driver has no path for it yet
+LayoutEngine.frame: ✅
+LayoutEngine.height: ✅
+LayoutEngine.ignoresInput: ✅
+LayoutEngine.isAccessibilityHidden: ✅
+LayoutEngine.isEnabled: ✅
+LayoutEngine.isVisible: ✅
+LayoutEngine.layoutDirection: ✅
+LayoutEngine.maximumHeight: ✅
+LayoutEngine.maximumWidth: ✅
+LayoutEngine.minimumHeight: ✅
+LayoutEngine.minimumWidth: ✅
+LayoutEngine.opacity: ✅
+LayoutEngine.pivotX: ✓ read pivotX of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.pivotY: ✓ read pivotY of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.rotation: ✓ read rotation of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.rotationX: ✓ read rotationX of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.rotationY: ✓ read rotationY of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.scale: ✓ read scale of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.scaleX: ✓ read scaleX of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.scaleY: ✓ read scaleY of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.style: not realized
+LayoutEngine.tooltip: ✅
+LayoutEngine.translationX: ✓ read translationX of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.translationY: ✓ read translationY of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.width: ✅
+LayoutEngine.zIndex: ✅
 Line.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
 Line.automationExcludedWithChildren: ✅
 Line.background: ✓ read background of Line: the class of the host's style sheet the widget wears: GTK reads back no background
 Line.frame: ✅
-Line.frameChanged: ✅
 Line.height: ✅
 Line.ignoresInput: ✅
 Line.isAccessibilityHidden: ✅
@@ -421,7 +439,6 @@ Map.accessibilityLabel: 🧩
 Map.automationExcludedWithChildren: 🧩
 Map.background: 🧩
 Map.frame: 🧩
-Map.frameChanged: 🧩
 Map.height: 🧩
 Map.ignoresInput: 🧩
 Map.isAccessibilityHidden: 🧩
@@ -453,7 +470,6 @@ Path.accessibilityLabel: ✅
 Path.automationExcludedWithChildren: ✅
 Path.background: ✓ read background of Path: the class of the host's style sheet the widget wears: GTK reads back no background
 Path.frame: ✅
-Path.frameChanged: ✅
 Path.height: ✅
 Path.ignoresInput: ✅
 Path.isAccessibilityHidden: ✅
@@ -485,7 +501,6 @@ Picker.accessibilityLabel: ✅
 Picker.automationExcludedWithChildren: ✅
 Picker.background: ✓ read background of Picker: the class of the host's style sheet the widget wears: GTK reads back no background
 Picker.frame: ✅
-Picker.frameChanged: ✅
 Picker.height: ✅
 Picker.ignoresInput: ✅
 Picker.isAccessibilityHidden: ✅
@@ -517,7 +532,6 @@ Polygon.accessibilityLabel: ✅
 Polygon.automationExcludedWithChildren: ✅
 Polygon.background: ✓ read background of Polygon: the class of the host's style sheet the widget wears: GTK reads back no background
 Polygon.frame: ✅
-Polygon.frameChanged: ✅
 Polygon.height: ✅
 Polygon.ignoresInput: ✅
 Polygon.isAccessibilityHidden: ✅
@@ -549,7 +563,6 @@ Polyline.accessibilityLabel: ✅
 Polyline.automationExcludedWithChildren: ✅
 Polyline.background: ✓ read background of Polyline: the class of the host's style sheet the widget wears: GTK reads back no background
 Polyline.frame: ✅
-Polyline.frameChanged: ✅
 Polyline.height: ✅
 Polyline.ignoresInput: ✅
 Polyline.isAccessibilityHidden: ✅
@@ -581,7 +594,6 @@ ProgressBar.accessibilityLabel: ✅
 ProgressBar.automationExcludedWithChildren: ✅
 ProgressBar.background: ✓ read background of ProgressBar: the class of the host's style sheet the widget wears: GTK reads back no background
 ProgressBar.frame: ✅
-ProgressBar.frameChanged: ✅
 ProgressBar.height: ✅
 ProgressBar.ignoresInput: ✅
 ProgressBar.isAccessibilityHidden: ✅
@@ -613,7 +625,6 @@ RadioButton.accessibilityLabel: ✅
 RadioButton.automationExcludedWithChildren: ✅
 RadioButton.background: ✓ read background of RadioButton: the class of the host's style sheet the widget wears: GTK reads back no background
 RadioButton.frame: ✅
-RadioButton.frameChanged: ✅
 RadioButton.height: ✅
 RadioButton.ignoresInput: ✅
 RadioButton.isAccessibilityHidden: ✅
@@ -645,7 +656,6 @@ Rectangle.accessibilityLabel: ✅
 Rectangle.automationExcludedWithChildren: ✅
 Rectangle.background: ✓ read background of Rectangle: the class of the host's style sheet the widget wears: GTK reads back no background
 Rectangle.frame: ✅
-Rectangle.frameChanged: ✅
 Rectangle.height: ✅
 Rectangle.ignoresInput: ✅
 Rectangle.isAccessibilityHidden: ✅
@@ -675,9 +685,8 @@ ScrollView.accessibilityHeading: ☑️ GTK fixes a widget's role once it is sho
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
 ScrollView.automationExcludedWithChildren: ✅
-ScrollView.background: does not apply - read background of ScrollView - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
+ScrollView.background: ✅
 ScrollView.frame: ✅
-ScrollView.frameChanged: ✅
 ScrollView.height: ✅
 ScrollView.ignoresInput: ✅
 ScrollView.isAccessibilityHidden: ✅
@@ -709,7 +718,6 @@ SearchField.accessibilityLabel: ✅
 SearchField.automationExcludedWithChildren: ✅
 SearchField.background: ✓ read background of SearchField: the class of the host's style sheet the widget wears: GTK reads back no background
 SearchField.frame: ✅
-SearchField.frameChanged: ✅
 SearchField.height: ✅
 SearchField.ignoresInput: ✅
 SearchField.isAccessibilityHidden: ✅
@@ -741,7 +749,6 @@ Slider.accessibilityLabel: ✅
 Slider.automationExcludedWithChildren: ✅
 Slider.background: ✓ read background of Slider: the class of the host's style sheet the widget wears: GTK reads back no background
 Slider.frame: ✅
-Slider.frameChanged: ✅
 Slider.height: ✅
 Slider.ignoresInput: ✅
 Slider.isAccessibilityHidden: ✅
@@ -773,7 +780,6 @@ Spacer.accessibilityLabel: ✅
 Spacer.automationExcludedWithChildren: ✅
 Spacer.background: ✓ read background of Spacer: the class of the host's style sheet the widget wears: GTK reads back no background
 Spacer.frame: ✅
-Spacer.frameChanged: ✅
 Spacer.height: ✅
 Spacer.ignoresInput: ✅
 Spacer.isAccessibilityHidden: ✅
@@ -805,7 +811,6 @@ Stepper.accessibilityLabel: ✅
 Stepper.automationExcludedWithChildren: ✅
 Stepper.background: ✓ read background of Stepper: the class of the host's style sheet the widget wears: GTK reads back no background
 Stepper.frame: ✅
-Stepper.frameChanged: ✅
 Stepper.height: ✅
 Stepper.ignoresInput: ✅
 Stepper.isAccessibilityHidden: ✅
@@ -837,7 +842,6 @@ Switch.accessibilityLabel: ✅
 Switch.automationExcludedWithChildren: ✅
 Switch.background: – GTK's switch paints its own box as its track: a colour there would recolour the track, not lie under it.
 Switch.frame: ✅
-Switch.frameChanged: ✅
 Switch.height: ✅
 Switch.ignoresInput: ✅
 Switch.isAccessibilityHidden: ✅
@@ -869,7 +873,6 @@ Text.accessibilityLabel: ✅
 Text.automationExcludedWithChildren: ✅
 Text.background: ✓ read background of Text: the class of the host's style sheet the widget wears: GTK reads back no background
 Text.frame: ✅
-Text.frameChanged: ✅
 Text.height: ✅
 Text.ignoresInput: ✅
 Text.isAccessibilityHidden: ✅
@@ -901,7 +904,6 @@ TextEditor.accessibilityLabel: ✅
 TextEditor.automationExcludedWithChildren: ✅
 TextEditor.background: ✓ read background of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no background
 TextEditor.frame: ✅
-TextEditor.frameChanged: ✅
 TextEditor.height: ✅
 TextEditor.ignoresInput: ✅
 TextEditor.isAccessibilityHidden: ✅
@@ -933,7 +935,6 @@ TextField.accessibilityLabel: ✅
 TextField.automationExcludedWithChildren: ✅
 TextField.background: ✓ read background of TextField: the class of the host's style sheet the widget wears: GTK reads back no background
 TextField.frame: ✅
-TextField.frameChanged: ✅
 TextField.height: ✅
 TextField.ignoresInput: ✅
 TextField.isAccessibilityHidden: ✅
@@ -965,7 +966,6 @@ TimePicker.accessibilityLabel: ✅
 TimePicker.automationExcludedWithChildren: ✅
 TimePicker.background: ✓ read background of TimePicker: the class of the host's style sheet the widget wears: GTK reads back no background
 TimePicker.frame: ✅
-TimePicker.frameChanged: ✅
 TimePicker.height: ✅
 TimePicker.ignoresInput: ✅
 TimePicker.isAccessibilityHidden: ✅
@@ -995,9 +995,8 @@ VStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: 
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
 VStack.automationExcludedWithChildren: ✅
-VStack.background: ✓ read background of VStack: the class of the host's style sheet the widget wears: GTK reads back no background
+VStack.background: ✅
 VStack.frame: ✅
-VStack.frameChanged: ✅
 VStack.height: ✅
 VStack.ignoresInput: ✅
 VStack.isAccessibilityHidden: ✅
@@ -1029,7 +1028,6 @@ WebView.accessibilityLabel: ✅
 WebView.automationExcludedWithChildren: ✅
 WebView.background: ✓ read background of WebView: the class of the host's style sheet the widget wears: GTK reads back no background
 WebView.frame: ✅
-WebView.frameChanged: ✅
 WebView.height: ✅
 WebView.ignoresInput: ✅
 WebView.isAccessibilityHidden: ✅
@@ -1059,9 +1057,8 @@ ZStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: 
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
 ZStack.automationExcludedWithChildren: ✅
-ZStack.background: ✓ read background of ZStack: the class of the host's style sheet the widget wears: GTK reads back no background
+ZStack.background: ✅
 ZStack.frame: ✅
-ZStack.frameChanged: ✅
 ZStack.height: ✅
 ZStack.ignoresInput: ✅
 ZStack.isAccessibilityHidden: ✅

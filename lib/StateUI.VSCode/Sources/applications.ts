@@ -65,6 +65,17 @@ export function findApplications(root: string): Application[] {
     });
 }
 
+/**
+ * The script of `root`'s `.scripts/AppKit` that bundles the application in `directory` - `build-gallery-appkit.sh` -
+ * where `directory` is `root`'s own `apps/<Name>` it was written for; none for an application of the same name
+ * elsewhere.
+ */
+export function bundlerFor(root: string, directory: string): string | undefined {
+    const name = path.basename(directory);
+    const script = path.join(root, ".scripts", "AppKit", `build-${name.toLowerCase()}-appkit.sh`);
+    return path.resolve(directory) === path.resolve(root, "apps", name) && fs.existsSync(script) ? script : undefined;
+}
+
 function describeApplication(root: string, directory: string): Application | undefined {
     if (!fs.existsSync(path.join(directory, "Package.swift"))) {
         return undefined;
@@ -82,7 +93,6 @@ function describeApplication(root: string, directory: string): Application | und
     }
 
     const name = path.basename(directory);
-    const script = path.join(root, ".scripts", "AppKit", `build-${name.toLowerCase()}-appkit.sh`);
 
     return {
         name,
@@ -93,7 +103,7 @@ function describeApplication(root: string, directory: string): Application | und
         hasWinUIHead,
         hasGTKHead,
         hasWebHead,
-        bundleScript: fs.existsSync(script) ? script : undefined,
+        bundleScript: bundlerFor(root, directory),
         checkout: checkoutNamedBy(directory),
     };
 }
@@ -142,7 +152,12 @@ export function webSite(application: Application, configuration: "debug" | "rele
     return path.join(application.directory, ".build", "web", "site", configuration);
 }
 
-/** Where an application's WinUI head is, once `.scripts/WinUI/run-app.ps1` built it in `configuration`. */
+/**
+ * Where an application's WinUI head is, once `.scripts/WinUI/run-app.ps1` built it in `configuration`: where that build
+ * says it laid it - `.build/winui/<configuration>` is a link the last build of any architecture moved - else there.
+ */
 export function winUIProgram(application: Application, configuration: "debug" | "release"): string {
-    return path.join(application.directory, ".build", "winui", configuration, `${application.name}WinUI.exe`);
+    const build = path.join(application.directory, ".build", "winui");
+    const said = path.join(build, `${configuration}.program`);
+    return fs.existsSync(said) ? fs.readFileSync(said, "utf8").trim() : path.join(build, configuration, `${application.name}WinUI.exe`);
 }

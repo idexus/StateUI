@@ -84,6 +84,7 @@
                 try s.perform(.activate, on: s.element("open"))
                 try s.settle { try s.held(DatePickerContract.isOpen, on: picker) == true }
                 s.expect(try s.held(DatePickerContract.isOpen, on: picker), true)
+                s.turn()
                 s.expect(heard.values, [], "the program's opening heard by nobody")
 
                 try s.perform(.close, on: picker)

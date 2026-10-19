@@ -13,10 +13,11 @@ extension GTKElement: FrameReporter {
     }
 
     /// Says where the element stands, where that changed (`MountedElement.reportFrame`); nothing while it stands
-    /// nowhere yet.
+    /// nowhere yet - a split view, where its sidebar stands too.
     func reportFrame() {
         guard let host, let numbers = view?.frameReport() else { return }
         element.reportFrame(numbers, in: host.runtime)
+        if let split = view as? GTKSplitView { element.reportSidebarOverlays(split.isCollapsed, in: host.runtime) }
     }
 }
 

@@ -83,8 +83,8 @@ final class WebRenderer {
         let shortcuts = WebRelay.listener { [weak self] in self?.pressedShortcut() }
         let keys = WebRelay.listener { [weak self] in self?.pressedKey() }
         pageListeners += [shortcuts, keys]
-        WebRelay.listen(WebRelay.body, "shortcut", shortcuts)
-        WebRelay.listen(WebRelay.body, "key", keys)
+        WebRelay.hear(WebRelay.body, .shortcut, shortcuts)
+        WebRelay.hear(WebRelay.body, .key, keys)
         runtime.start(
             realizing: WebRegistrations.registry.realization, unrealized: WebRealization.unmade,
             register: WebRealization.register,
@@ -104,8 +104,8 @@ final class WebRenderer {
     /// out from the element holding the focus, else from the page in front; where one takes it, nothing else hears
     /// the key.
     private func pressedKey() {
-        let told = (0...2).map { Int32(WebRelay.eventNumber($0)) }
-        guard let pressed = WebKeys.shortcut(named: told[0], character: told[1], held: told[2]),
+        let told = (0...3).map { Int32(WebRelay.eventNumber($0)) }
+        guard let pressed = WebKeys.shortcut(named: told[0], written: told[1], physical: told[3], held: told[2]),
               let window = runtime.tree.root?.first(type: .window),
               let controller = roster.windows.first(where: { $0.0 === window })?.1
         else { return }
@@ -122,8 +122,8 @@ final class WebRenderer {
     /// A key pressed in the page reaching the element of the window stating it as a shortcut; where one takes it,
     /// the browser does nothing more with the key.
     private func pressedShortcut() {
-        let told = (0...3).map { Int32(WebRelay.eventNumber($0)) }
-        guard let shortcut = WebKeys.shortcut(named: told[0], character: told[1], held: told[2]),
+        let told = (0...4).map { Int32(WebRelay.eventNumber($0)) }
+        guard let shortcut = WebKeys.shortcut(named: told[0], written: told[1], physical: told[4], held: told[2]),
               let window = runtime.tree.root?.first(type: .window),
               KeyboardShortcuts.press(shortcut, under: window, in: runtime, typing: told[3] != 0)
         else { return }
@@ -160,7 +160,6 @@ final class WebRenderer {
             controller.present(element, in: runtime)
             controller.refreshChrome()
         }
-        runtime.frames.laidOut()
     }
 
     /// The page's tab shows or not, and the page holds the keyboard or not: the window it shows is put away while
@@ -183,8 +182,10 @@ final class WebRenderer {
 }
 
 extension WebRenderer: HostPresenter {
-    func presentRendered() {
-        showWindows()
+    func presentRendered(touchedChrome: Bool) {
+        if touchedChrome { showWindows() } else { roster.controllers.first?.adaptSidebar() }
+        // What a render wrote may move a view without resizing it, which no observer of the page tells.
+        runtime.frames.laidOut()
         if let text = scenes.changed(root: runtime.tree.root) { WebKeptValues.writeScenes(text, application: applicationName) }
     }
 

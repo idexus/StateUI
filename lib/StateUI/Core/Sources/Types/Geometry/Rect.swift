@@ -36,6 +36,11 @@ public struct Rect: Equatable, Sendable, HostRepresentable {
         self.init(x, y, width, height)
     }
 
+    /// No size at the origin - what a room stands at before it is measured.
+    ///
+    ///     @State private var room = Rect.zero
+    public static let zero = Rect(0, 0, 0, 0)
+
     /// As a host is handed it: an array, in the initializer's order.
     public var propValue: PropValue {
         .numbers([x, y, width, height])

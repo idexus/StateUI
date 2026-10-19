@@ -57,8 +57,8 @@ changes.
 ## Icons
 
 An icon is the theme's symbolic icon, by its freedesktop or Adwaita name
-(`Icon.themeName`). Where the theme holds none - Adwaita draws no heart since
-`emblem-favorite` left it, though Ubuntu's Yaru still does - the host brings
+(`Icon.themeName`). Where the theme holds none - Adwaita draws no heart, no
+`emblem-favorite` - the host brings
 its own, as GNOME's applications bring theirs: a symbolic SVG of StateUI's
 own drawing, written once to a folder of the user's runtime directory that
 the theme then searches (`GTKOwnIcons`), so an image and a bar find it by
@@ -74,7 +74,7 @@ logical pixel.
 
 ## The shapes
 
-Each of the six shapes is a panel drawing its geometry with GSK's own paths
+Each of the seven shapes is a panel drawing its geometry with GSK's own paths
 in its snapshot, for the room its layout gives it, again whenever that room
 changes. A rectangle and an ellipse fill the room, drawn half their outline in
 from its edges so the outline stays inside; a rectangle's corners are each

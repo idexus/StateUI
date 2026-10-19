@@ -67,11 +67,19 @@ public class StateUIActivity extends Activity {
         StateUIHost.phase(StateUIHost.BACKGROUND);
     }
 
-    /** The activity finishing - not one made again for a new configuration - takes its window away. */
+    /**
+     * The activity finishing - not one made again for a new configuration - takes its window away, its questions
+     * answered as dismissed; one made again leaves its questions for the next to ask.
+     */
     @Override
     protected void onDestroy() {
         StateUIEnvironment.unwatch(this, environmentWatch);
-        if (isFinishing()) StateUIHost.destroying();
+        if (isFinishing()) {
+            StateUIDialogs.dismissAll();
+            StateUIHost.destroying();
+        } else {
+            StateUIDialogs.leaveAll();
+        }
         super.onDestroy();
     }
 

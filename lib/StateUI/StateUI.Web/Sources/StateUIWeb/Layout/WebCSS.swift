@@ -8,11 +8,44 @@
 /// its leading side is the inline start, so a layout right to left turns them by itself.
 /// Design: docs/design/platforms/web/layout.md#values-in-css
 enum WebCSS {
-    /// A number as CSS reads it, with no fraction where it has none.
+    /// A number as CSS reads it: whole as it is, any other to a millionth with no nought trailing - spelt by whole
+    /// numbers, as a double's shortest spelling costs a browser running WebAssembly with no compiler much.
+    /// Design: docs/design/platforms/web/layout.md#values-in-css
     static func number(_ value: Double) -> String {
         guard value.isFinite else { return "0" }
         let whole = value.rounded()
-        return whole == value && abs(whole) < 1e15 ? String(Int64(whole)) : String(value)
+        if whole == value, abs(whole) < 1e15 { return String(Int64(whole)) }
+        guard abs(value) < 1e12 else { return String(value) }
+
+        var left = UInt64((abs(value) * 1_000_000).rounded())
+        guard left != 0 else { return "0" }
+
+        // The digits from the last, into one buffer: the fraction's but its trailing noughts, the point, the units.
+        return withUnsafeTemporaryAllocation(of: UInt8.self, capacity: 24) { buffer in
+            var at = 24
+            func put(_ byte: UInt8) {
+                at -= 1
+                buffer[at] = byte
+            }
+            var places = 0
+            var written = false
+            while places < 6 {
+                let digit = UInt8(left % 10)
+                left /= 10
+                places += 1
+                if digit != 0 || written {
+                    put(48 + digit)
+                    written = true
+                }
+            }
+            if written { put(46) }
+            repeat {
+                put(48 + UInt8(left % 10))
+                left /= 10
+            } while left != 0
+            if value < 0 { put(45) }
+            return String(decoding: UnsafeBufferPointer(rebasing: buffer[at..<24]), as: UTF8.self)
+        }
     }
 
     /// A number written with `decimals` places after the point, as a stepper shows it.

@@ -1,7 +1,6 @@
-# revision 2.1
+# revision 3.1
 Canvas: ✅
 Canvas.dragged: ✓ pressDown on Canvas: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.drawing: ✅
-Canvas.frameChanged: ✅
 Canvas.pressed: ✓ pressDown on Canvas: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.released: ✓ pressDown on Canvas: handed to the host's recognizer or handler, no NSEvent sent

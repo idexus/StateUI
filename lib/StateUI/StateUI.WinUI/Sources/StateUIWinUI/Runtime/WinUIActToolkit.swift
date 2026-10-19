@@ -14,11 +14,15 @@ final class WinUIActToolkit: ActToolkit {
     private unowned let renderer: WinUIRenderer
 
     /// What hears each dialog's answer, by the ticket the dialog hands back.
-    private var dialogs: [Int64: (Bool, String?) -> Void] = [:]
+    private let dialogs = Numbered<(Result<HostQuestion.Given, ActFailure>) -> Void>()
 
-    /// The next dialog's ticket: one number across the process, so an answer arriving after its renderer has gone
-    /// answers nothing of another's.
-    private static var nextTicket: Int64 = 1
+    /// The dialog showing: its ticket, and the window it stands over.
+    private var showing: Showing?
+
+    private struct Showing {
+        let ticket: Int64
+        weak var window: WinUIWindow?
+    }
 
     init(renderer: WinUIRenderer) {
         self.renderer = renderer
@@ -46,24 +50,23 @@ final class WinUIActToolkit: ActToolkit {
 
     /// Asks in WinUI's own dialog over the window the user is in; its answer comes back by its ticket.
     /// Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
-    func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
-        guard let content = renderer.userWindow?.content else { return false }
-        let ticket = Self.nextTicket
-        Self.nextTicket += 1
-        dialogs[ticket] = answered
+    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
+        guard let window = renderer.userWindow, let content = window.content else { return false }
+        let ticket = dialogs.hold(answered)
+        showing = Showing(ticket: ticket, window: window)
 
         // The title, the message, the captions that accept, cancel and destroy, the placeholder, the first words.
-        let kind: Int32 = switch question.kind {
-        case .alert: 0
-        case .confirm: 1
-        case .chooseAction: 2
-        case .prompt: 3
+        let kind: StateUIQuestionKind = switch question.kind {
+        case .alert: .alert
+        case .confirm: .confirm
+        case .chooseAction: .chooseAction
+        case .prompt: .prompt
         }
         let words: [String?] = [
             question.title, question.message, question.accept, question.cancel, question.destruction,
             question.placeholder, question.words,
         ]
-        let traits = InputTraits(spellChecked: true, predicted: true, purpose: question.purpose)
+        let traits = question.traits
         WinUIStrings.withCStrings(words.map { $0 ?? "" } + question.choices) { pointers in
             func at(_ index: Int) -> UnsafePointer<CChar>? { words[index] == nil ? nil : pointers[index] }
             Array(pointers.dropFirst(words.count)).withUnsafeBufferPointer { offered in
@@ -78,9 +81,20 @@ final class WinUIActToolkit: ActToolkit {
         return true
     }
 
-    /// The dialog under `ticket` was answered: accepted or not, and the words chosen or typed.
-    func answered(ticket: Int64, accepted: Bool, words: String?) {
-        dialogs.removeValue(forKey: ticket)?(accepted, words)
+    /// The dialog under `ticket` was answered - accepted or not, and the words chosen or typed - or failed.
+    func answered(ticket: Int64, _ answer: Result<HostQuestion.Given, ActFailure>) {
+        if showing?.ticket == ticket { showing = nil }
+        dialogs.take(ticket)?(answer)
+    }
+
+    /// `window` closed: the question standing over it - shown, or waiting for WinUI to load the window - stands
+    /// again over the window the user is in, and its own dialog's answer counts for nothing.
+    /// Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
+    func windowWent(_ window: WinUIWindow) {
+        guard let went = showing, went.window === window else { return }
+        showing = nil
+        _ = dialogs.take(went.ticket)
+        renderer.acts.askAgain()
     }
 
     /// Shows every window in `theme`: each window's content in WinUI's own theme, the system's for `.system`.

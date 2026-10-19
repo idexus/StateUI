@@ -24,6 +24,22 @@ private struct NotePage: View {
     }
 }
 
+/// A page whose drop target a click takes away.
+private struct DropPage: View {
+    @State private var shown = true
+
+    var body: some View {
+        VStack {
+            if shown {
+                Text("target")
+                    .onDrop { _ in }
+            }
+            Button("Hide")
+                .onClicked { shown = false }
+        }
+    }
+}
+
 @MainActor
 final class AppKitLeaveTests: XCTestCase {
     /// An element that leaves the tree lets go of its view: the host holds one view fewer alive, the count its
@@ -43,6 +59,31 @@ final class AppKitLeaveTests: XCTestCase {
         }
 
         XCTAssertEqual(AppKitElement.liveViewCount, before - 1, "the label's view outlived its element")
+    }
+
+    /// A drag that went over the window holds none of the views taking drops once it ends: one leaving after it is
+    /// let go of.
+    @MainActor
+    func testADragEndedHoldsNoViewTakingDrops() throws {
+        let renderer = autoreleasepool { AppKitRenderer.running { DropPage() } }
+        defer { renderer.closeForTesting() }
+        let before = AppKitElement.liveViewCount
+
+        try autoreleasepool {
+            let target = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first)
+            let root = try XCTUnwrap(target.window?.contentView as? AppKitWindowContentView)
+            let drops = try XCTUnwrap(root.drops)
+            let carried = AppKitDrops.Carried(words: "words")
+            let middle = target.convert(NSPoint(x: target.bounds.midX, y: target.bounds.midY), to: nil)
+            _ = drops.entered(at: middle, carrying: carried, in: root)
+            drops.exited()
+            _ = drops.entered(at: middle, carrying: carried, in: root)
+            _ = drops.dropped(carried)
+            renderer.nativeViews(AppKitButtonView.self).first?.clickForTesting()
+            renderer.runtime.pump.turn()
+        }
+
+        XCTAssertEqual(AppKitElement.liveViewCount, before - 1, "the target's view outlived its element")
     }
 
     /// Every element shown and taken away twice leaves the host holding as many views as the first time.

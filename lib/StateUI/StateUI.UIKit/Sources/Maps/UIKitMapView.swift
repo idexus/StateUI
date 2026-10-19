@@ -188,5 +188,12 @@ private final class UIKitMapTaps: NSObject, UIGestureRecognizerDelegate {
     ) -> Bool {
         true
     }
+
+    /// A tap waits for a double tap - MapKit's zoom - to fail: a double tap is no two taps on the map.
+    func gestureRecognizer(
+        _ recognizer: UIGestureRecognizer, shouldRequireFailureOf other: UIGestureRecognizer
+    ) -> Bool {
+        (other as? UITapGestureRecognizer).map { $0.numberOfTapsRequired > 1 } ?? false
+    }
 }
 #endif

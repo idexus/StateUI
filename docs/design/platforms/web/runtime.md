@@ -14,8 +14,9 @@ frames, the DOM elements, the browser's layout, and the window.
 elements every runtime holds alike: the core link, the intake, the mounted
 tree whose native halves are `WebElement`s, the pump, the animator and what
 follows it, and the display cycle on the page's frame clock. It is the
-runtime's `HostPresenter` - after a render it shows the window,
-and after a frame's walk it says the page may have moved. An act the host does not perform yet
+runtime's `HostPresenter` - after a render that touched the chrome it shows
+the window, and after every render and a frame's walk it says the page may
+have moved. An act the host does not perform yet
 fails at once, so a handler awaiting it goes on.
 
 ## Starting
@@ -44,7 +45,9 @@ page fades it away.
 JavaScript/stateui-web.js loads the module and hands it two sets of functions:
 the relay's, which the C header `CStateUIWeb.h` declares as the module's
 imports, and the system interface, WASI, which a Swift program asks of its
-machine. The relay keeps every DOM element Swift makes under a number, and
+machine. The relay keeps every DOM element Swift makes under a number - one
+let go of is no element's again, so what still names it, an act that waited,
+reaches nothing rather than an element made after it - and
 words cross as UTF-8 and their length in bytes. It decides nothing of
 StateUI's: it makes, places and changes elements as Swift says, calls Swift
 back when one hears an event, and keeps the keyboard's way through a strip of
@@ -69,6 +72,19 @@ its loop ([WebAssembly](../../core/concurrency.md#webassembly)).
 Words read back - a field's value - are read in two steps: the relay encodes
 them and answers their length, and Swift hands it a buffer of that length to
 copy them into.
+
+A DOM event crosses by its name, and a name is only ever the DOM's - an
+application's custom element hears its own `closed` or `focus`. What the
+relay reads for the host out of one event or more - Return that commits no
+input method's words, the keyboard coming into an element or leaving it, a
+popover taken down, a key for a shortcut - crosses as a number of a Swift
+enum (`WebHearing`), as every closed vocabulary the two share does: a
+canvas's operations, a pointer's kind, a frame's step, a colour scheme. The
+relay holds each as an object whose names and numbers mirror its enum's
+cases, marked `// Swift: <Enum>`, and switches over those names, never over a
+bare number; `RelayVocabularyTests` holds both. What only Swift knows, it
+tells: the names of the keys writing no character, which the relay numbers
+by, it hands over as it starts (`name_keys`).
 
 The relay answers WASI for a page that has no files: standard output and
 error go to the console a line at a time, the clocks are the page's, random
@@ -97,12 +113,35 @@ in - the system's `AccentColor` where the browser knows one, else its own
 blue; a change of the appearance renders the application again in the other,
 the accent read again with it.
 
+It tells the user's locale as the browser has it: the language the user put
+first and every language after it (`navigator.languages`), its region - the
+likeliest the browser fills in where the user named none - the local zone,
+a 24-hour clock where that language's hours run from 0, the week's first day
+where the browser says it (Sunday where not), and the writing's direction.
+The browser says nothing of measures: they are metric but in the three
+countries of none - the United States, Liberia and Myanmar. The relay hands
+over the browser's words; Swift decides (`WebEnvironment.locale`), and tells
+the locale again as the user's languages change. So the library's words - a
+chrome's own buttons, a dialog's answers - stand in the user's language.
+
 ## One frame
 
 `WebFrameClock` asks for the browser's display frames with
 `requestAnimationFrame`, one at a time, while something holds it: each frame
 runs the display cycle at the frame's time, and asks for the next while still
 held. Its time is the page's monotonic clock in milliseconds.
+
+## Probes
+
+`?STATEUI_PROBE=1` in the page's address makes the relay time what the page
+spends, second by second, and write it over the page - bottom left, the
+words passing touches through - and to the console: the frames the browser
+drew and how many came over 25 ms apart; the time in Swift a frame and an
+event, the frame's share spent in the page's own calls and how many; the
+reads of the layout - every box, size, place and computed style read on the
+page, whoever reads it, an event's place included. Time in Swift low while frames come late is the
+browser's own work - styles, layout, painting - not StateUI's. Without the
+parameter nothing is wrapped and nothing is timed.
 
 ## Acts
 
@@ -146,8 +185,17 @@ runs, and reads it as the browser hands it.
 
 A file or an address is launched in a window of the browser's own, opened at
 once while the user's press lets the page open one - a file's sent there as
-it is read; each answers whether the browser opened it, and an address with
-no scheme opens nothing. On a page a test drives (`stateui.holdsFiles`) the
+it is read; each answers whether the browser opened it. An address opens
+only where its scheme is a page's, mail's, a call's or the relay's own file's
+(`http`, `https`, `mailto`, `tel`, `blob`) - read as the browser reads an
+address, its spaces and controls at the ends and its tabs and line breaks
+anywhere dropped - decided in Swift: a `javascript:` or `data:` address would
+run its script in the application's origin, one with no scheme opens nothing.
+A file downloaded or launched goes to the browser at a `blob:` address of
+the page's own, which keeps the file alive while it stands: the relay holds
+the last one alone - the browser may still be reading it - and lets the one
+before go as it hands over the next.
+On a page a test drives (`stateui.holdsFiles`) the
 relay shows no dialog and opens no window: it holds the dialog for the test
 to answer from its own files, by name, and records what it would open.
 
@@ -170,8 +218,12 @@ The window's phases are the page's, told to the host layer's lifecycle
 (`ApplicationLifecycle`) as the browser tells them: the window is put away
 while the page's tab hides - it stops, and resumes as the tab shows - and it
 is in front while the page holds the keyboard; the browser leaving the page
-ends it. The page tells what it stands as once as it starts, in a task of its
-own, so the window hears it was made before it hears it is in front.
+ends it - but a page the browser keeps to come back to, its back-forward
+cache (`pagehide` with `persisted`), is only hidden, and stands again as the
+browser shows it (`pageshow`): ended there, it would come back after
+cleaning up as it went. The page tells what it stands as once as it starts,
+in a task of its own, so the window hears it was made before it hears it is
+in front.
 
 ## The conformance run
 

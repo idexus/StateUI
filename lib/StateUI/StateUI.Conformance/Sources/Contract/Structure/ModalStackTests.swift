@@ -13,8 +13,8 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("aPresentedPageStandsOverTheWindow", proves: [
-                Covered(ModalStackContract.self), Covered(PageContract.disappearing),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                Covered(ModalStackContract.self),
+            ], needs: [Covered(PageContract.disappearing), Covered(ButtonContract.clicked)]) { s in
                 let log = Received<String>()
                 let sheets = State(wrappedValue: [Int]())
                 s.start { sheetsOver(SheetsPage(sheets: sheets, log: log), sheets) }
@@ -26,7 +26,8 @@
 
                 try s.perform(.activate, on: s.element("another1"))
                 try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("sheet2")) == true }
-                s.expect(sheets.wrappedValue, [1, 2], "one over the other")
+                s.expect(try s.held(VisualElementContract.isVisible, on: s.element("sheet2")), true, "the second shown")
+                s.expect(try s.held(VisualElementContract.isVisible, on: s.element("sheet1")), true, "over the first")
             },
             ConformanceCase("aSheetStandsOverAPageArrangedBeneathIt", proves: [
                 Covered(ModalStackContract.self),
@@ -34,16 +35,13 @@
                 let sheets = State(wrappedValue: [Int]())
                 let (signedIn, path) = (State(wrappedValue: false), State(wrappedValue: [Int]()))
                 s.start { ArrangedBeneath(sheets: sheets, signedIn: signedIn, path: path) }
-                let shown = { (id: String) in
-                    (try? s.element(id)).flatMap { try? s.held(VisualElementContract.isVisible, on: $0) } == true
-                }
                 @MainActor func sheetReached() throws -> Bool {
                     sheets.wrappedValue = [1]
-                    s.settle { shown("sheet") }
+                    try s.settle { try s.isShown("sheet") }
                     let sheet = try s.element("sheet")
-                    // A sheet still entering its window - the platform's presentation, slower on some devices - is
-                    // waited for, not read as unreachable.
-                    s.settle(for: 5) { (try? s.reaches(sheet, at: Point(20, 20))) == true }
+                    // A sheet still entering its window - the platform's presentation - is waited for, not read as
+                    // unreachable.
+                    try s.settle { try s.reaches(sheet, at: Point(20, 20)) }
                     return try s.reaches(sheet, at: Point(20, 20))
                 }
 
@@ -53,17 +51,18 @@
                 sheets.wrappedValue = []
                 s.settle { (try? s.element("sheet")) == nil }
                 signedIn.wrappedValue = true
-                s.settle { shown("root") }
+                try s.settle { try s.isShown("root") }
                 s.expect(try sheetReached(), true, "a sheet over the window arranged since")
                 sheets.wrappedValue = []
                 s.settle { (try? s.element("sheet")) == nil }
                 path.wrappedValue = [1]
-                s.settle { shown("pushed") }
+                try s.settle { try s.isShown("pushed") }
                 s.expect(try sheetReached(), true, "a sheet over a page pushed since")
             },
             ConformanceCase("theUsersWayBackTakesTheTopPageAway", proves: [
-                Covered(ModalStackContract.self), Covered(ModalStackContract.popped), Covered(PageContract.appearing),
-            ]) { s in
+                Covered(ModalStackContract.self),
+                Covered(ModalStackContract.popped),
+            ], needs: [Covered(PageContract.appearing)]) { s in
                 let log = Received<String>()
                 let sheets = State(wrappedValue: [1, 2])
                 s.start { sheetsOver(SheetsPage(sheets: sheets, log: log), sheets) }

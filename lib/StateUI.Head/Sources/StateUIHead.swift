@@ -1,18 +1,19 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The host this build is for, to the head that depends on StateUIHead.
+// The host this build is for, brought into the graph of the head that depends on StateUIHead; the head imports it
+// by its own name - `import StateUIGTK` - the one spelling.
 
 #if APPKIT
-@_exported import StateUIAppKit
+import StateUIAppKit
 #elseif UIKIT
-@_exported import StateUIUIKit
+import StateUIUIKit
 #elseif ANDROID
-@_exported import StateUIAndroid
+import StateUIAndroid
 #elseif WINUI
-@_exported import StateUIWinUI
+import StateUIWinUI
 #elseif GTK
-@_exported import StateUIGTK
+import StateUIGTK
 #elseif WEB
-@_exported import StateUIWeb
+import StateUIWeb
 #endif

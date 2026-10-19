@@ -88,15 +88,16 @@ struct ListRow: View {
                     .verticalAlignment(.center)
 
                 VStack {
-                    // The name a breath larger than the line under it and in
-                    // the words' own colour, whatever size and colour a
-                    // platform's text starts in.
+                    // The name in the platform's body and the words' own
+                    // colour, the line under it a caption: each platform's
+                    // own steps, so the name stands as large as the page's
+                    // words and clear of the line under it.
                     Text(title)
-                        .fontSize(15)
+                        .textStyle(.body)
                         .textColor(Palette.text)
 
                     Text(summary)
-                        .fontSize(13)
+                        .textStyle(.caption)
                         .textColor(Palette.subtle)
                         .maximumLines(2)
                 }
@@ -129,8 +130,8 @@ struct ListRow: View {
         // page's build holds the UI thread, which eats the frames beside it -
         // and goes out while the navigation runs.
         .onTapped(gate: .ignoreWhileRunning) {
-            try await lit.journey.move(to: 1, .eased(60, .cubicOut)).arrived()
-            let dark = lit.journey.move(to: 0, .eased(250, .cubicOut))
+            try await lit.journey.move(to: 1, .eased(.milliseconds(60), .cubicOut)).arrived()
+            let dark = lit.journey.move(to: 0, .eased(.milliseconds(250), .cubicOut))
             try await action()
             try await dark.arrived()
         }

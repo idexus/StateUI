@@ -1,52 +1,53 @@
-# revision 12.1
+# revision 14.1
 ActivityIndicator.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 Button.zIndex: ✅
-Canvas.frameChanged: ✅
-Canvas.maximumHeight: ✅
-Canvas.maximumWidth: ✅
-Canvas.minimumHeight: ✅
-Canvas.minimumWidth: ✅
-Capsule.isVisible: ✅
-Capsule.scaleX: ✓ read scaleX of Capsule: the host's own transform, checked against the layer it composed itself
-CheckBox.pivotY: ✓ read pivotY of CheckBox: the host's own transform, checked against the layer it composed itself
-DatePicker.automationExcludedWithChildren: ✅
-Divider.automationExcludedWithChildren: ✅
-Ellipse.accessibilityHint: ✅
-Grid.frame: ✅
-Grid.layoutDirection: ✅
-HStack.rotationY: ✓ read rotationY of HStack: the host's own transform, checked against the layer it composed itself
-Image.isAccessibilityHidden: ✅
-ItemsView.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-Line.isVisible: ✅
-Line.scaleX: ✓ read scaleX of Line: the host's own transform, checked against the layer it composed itself
-Map.pivotY: ✓ read pivotY of Map: the host's own transform, checked against the layer it composed itself
-Path.accessibilityHint: ✅
-Picker.frame: ✅
-Polygon.isEnabled: ✅
-Polygon.translationX: ✓ read translationX of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.rotationX: ✓ read rotationX of Polyline: the host's own transform, checked against the layer it composed itself
-ProgressBar.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
-RadioButton.accessibilityHint: ✅
-Rectangle.style: ✅
-ScrollView.isEnabled: ✅
-ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.rotation: ✓ read rotation of SearchField: the host's own transform, checked against the layer it composed itself
-Slider.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
-Spacer.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-Stepper.zIndex: ✅
-Switch.frameChanged: ✅
-Switch.maximumHeight: ✅
-Switch.maximumWidth: ✅
-Switch.minimumHeight: ✅
-Switch.minimumWidth: ✅
-Text.ignoresInput: ✅
-TextEditor.isVisible: ✅
-TextEditor.scaleX: ✓ read scaleX of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.rotation: ✓ read rotation of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.background: – UIKit's time picker keeps no background colour: one written reads back as none.
-VStack.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-WebView.frameChanged: ✅
-WebView.height: ✅
-WebView.translationY: ✓ read translationY of WebView: the host's own transform, checked against the layer it composed itself
-WebView.width: ✅
-ZStack.scale: ✓ read scale of ZStack: the host's own transform, checked against the layer it composed itself
+Canvas.height: ✅
+Canvas.translationY: ✓ read translationY of Canvas: the host's own transform, checked against the layer it composed itself
+Canvas.width: ✅
+Capsule.scale: ✓ read scale of Capsule: the host's own transform, checked against the layer it composed itself
+CheckBox.pivotX: ✓ read pivotX of CheckBox: the host's own transform, checked against the layer it composed itself
+DatePicker.isAccessibilityHidden: ✅
+Divider.maximumHeight: ✅
+Divider.maximumWidth: ✅
+Divider.minimumHeight: ✅
+Divider.minimumWidth: ✅
+Ellipse.accessibilityLabel: ✅
+Grid.ignoresInput: ✅
+Grid.isEnabled: ✅
+HStack.rotation: ✓ read rotation of HStack: the host's own transform, checked against the layer it composed itself
+Image.accessibilityHint: ✅
+ItemsView.frame: ✅
+LayoutEngine.rotationX: ✓ read rotationX of LayoutEngine: the host's own transform, checked against the layer it composed itself
+Line.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+Map.zIndex: ✅
+Path.isVisible: ✅
+Path.scaleX: ✓ read scaleX of Path: the host's own transform, checked against the layer it composed itself
+Picker.pivotY: ✓ read pivotY of Picker: the host's own transform, checked against the layer it composed itself
+Polygon.automationExcludedWithChildren: ✅
+Polyline.accessibilityLabel: ✅
+ProgressBar.ignoresInput: ✅
+RadioButton.isVisible: ✅
+RadioButton.scaleX: ✓ read scaleX of RadioButton: the host's own transform, checked against the layer it composed itself
+Rectangle.rotation: ✓ read rotation of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.automationExcludedWithChildren: ✅
+SearchField.zIndex: ✅
+Slider.maximumHeight: ✅
+Slider.maximumWidth: ✅
+Slider.minimumHeight: ✅
+Slider.minimumWidth: ✅
+Spacer.isVisible: ✅
+Spacer.scaleX: ✓ read scaleX of Spacer: the host's own transform, checked against the layer it composed itself
+Stepper.rotation: ✓ read rotation of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+Text.isEnabled: ✅
+Text.translationX: ✓ read translationX of Text: the host's own transform, checked against the layer it composed itself
+TextEditor.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+TextField.zIndex: ✅
+TimePicker.maximumHeight: ✅
+TimePicker.maximumWidth: ✅
+TimePicker.minimumHeight: ✅
+TimePicker.minimumWidth: ✅
+VStack.isVisible: ✅
+VStack.scaleX: ✓ read scaleX of VStack: the host's own transform, checked against the layer it composed itself
+WebView.isAccessibilityHidden: ✅
+ZStack.accessibilityLabel: ✅

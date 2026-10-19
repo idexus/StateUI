@@ -69,7 +69,7 @@ extension WinUIDriver {
     /// The theme the user's window shows in now.
     func theme() throws -> ColorScheme {
         guard let window = renderer?.userWindow else { throw DriverCannot("read the theme: no window shows") }
-        return stateui_winui_window_actual_theme(window.handle) == 2 ? .dark : .light
+        return ColorScheme(rawValue: stateui_winui_window_actual_theme(window.handle)) ?? .light
     }
 
     func announced() throws -> [String] {

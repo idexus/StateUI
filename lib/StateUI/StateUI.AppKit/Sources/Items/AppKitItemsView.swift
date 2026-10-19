@@ -36,10 +36,9 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
     let cells: ItemsCells
     let collection = AppKitCollection()
     private let scroller = NSScrollView()
-    private var source: NSCollectionViewDiffableDataSource<Int, String>!
+    private var source: NSCollectionViewDiffableDataSource<String, String>!
     private var layoutShape = ItemsLayout.list()
     private var mode = SelectionMode.none
-    private var framed = (header: false, footer: false)
     /// The entries whose cells ask for another size, measured again on the next layout.
     private var resizing: Set<String> = []
     private let reducesMotion: () -> Bool
@@ -68,6 +67,8 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
         scroller.contentView.postsBoundsChangedNotifications = true
         NotificationCenter.default.addObserver(
             self, selector: #selector(scrolled), name: NSView.boundsDidChangeNotification, object: scroller.contentView)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(userScrolls), name: NSScrollView.willStartLiveScrollNotification, object: scroller)
         addSubview(scroller)
         source = makeSource()
     }
@@ -96,19 +97,24 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
     /// The entries, the layout, how many may be chosen and which are.
     func apply(layout: ItemsLayout, mode: SelectionMode) {
         let changes = cells.takeEntries()
-        let framed = (header: cells.entries.header != nil, footer: cells.entries.footer != nil)
-        if layout != layoutShape || framed != self.framed {
+        if layout != layoutShape {
             layoutShape = layout
-            self.framed = framed
             scroller.hasVerticalScroller = !layout.isAcross
             scroller.hasHorizontalScroller = layout.isAcross
             lay(layout)
         }
         if changes != nil {
-            var snapshot = NSDiffableDataSourceSnapshot<Int, String>()
-            for (index, section) in cells.entries.sections.enumerated() {
-                snapshot.appendSections([index])
-                snapshot.appendItems(section.items, toSection: index)
+            // The list's own header and footer each stand alone in a section of its own, known by their identities.
+            // Design: docs/design/platforms/appkit/items.md#the-layout
+            let entries = cells.entries
+            var snapshot = NSDiffableDataSourceSnapshot<String, String>()
+            for content in AppKitItemsLayout.sections(of: entries) {
+                switch content {
+                case .listHeader(let identity), .listFooter(let identity): snapshot.appendSections([identity])
+                case .group(let group):
+                    snapshot.appendSections([entries.sections[group].identity])
+                    snapshot.appendItems(entries.sections[group].items, toSection: entries.sections[group].identity)
+                }
             }
             source.apply(snapshot, animatingDifferences: changes?.isEmpty == false && !reducesMotion())
         }
@@ -140,9 +146,13 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
         ProgramWrite.perform { collection.selectionIndexPaths = wanted }
     }
 
-    /// The tree's entries changed: every cell shows the subtree its entry has now (`ItemsCells.childrenChanged`).
+    /// The tree's entries changed: every cell shows the subtree its entry has now (`ItemsCells.childrenChanged`), and
+    /// the item the program scrolled to stands again from the cells measured.
     func childrenChanged() {
         for case let holding as AppKitItemHolding in cells.childrenChanged() { resized(holding) }
+        guard cells.scrollTarget != nil, !gliding else { return }
+        layoutSubtreeIfNeeded()
+        settle()
     }
 
     /// The cell of `holding` may ask for another size: measured again where it does - its item alone. AppKit tells
@@ -169,8 +179,8 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
 
     // MARK: - The cells
 
-    private func makeSource() -> NSCollectionViewDiffableDataSource<Int, String> {
-        let source = NSCollectionViewDiffableDataSource<Int, String>(collectionView: collection) {
+    private func makeSource() -> NSCollectionViewDiffableDataSource<String, String> {
+        let source = NSCollectionViewDiffableDataSource<String, String>(collectionView: collection) {
             [weak self] collection, indexPath, identity in
             guard let cell = collection.makeItem(withIdentifier: Self.item, for: indexPath) as? AppKitItemCell
             else { return nil }
@@ -202,13 +212,14 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
     /// The identity of the header or footer of `kind` at `indexPath`.
     private func supplement(_ kind: String, at indexPath: IndexPath) -> String? {
         let entries = cells.entries
-        switch kind {
-        case AppKitItemsLayout.listHeader: return entries.header
-        case AppKitItemsLayout.listFooter: return entries.footer
-        default:
-            guard entries.sections.indices.contains(indexPath.section) else { return nil }
-            let section = entries.sections[indexPath.section]
-            return kind == AppKitItemsLayout.header ? section.header : section.footer
+        let contents = AppKitItemsLayout.sections(of: entries)
+        guard contents.indices.contains(indexPath.section) else { return nil }
+        switch (kind, contents[indexPath.section]) {
+        case (AppKitItemsLayout.listHeader, .listHeader(let identity)): return identity
+        case (AppKitItemsLayout.listFooter, .listFooter(let identity)): return identity
+        case (AppKitItemsLayout.header, .group(let group)): return entries.sections[group].header
+        case (AppKitItemsLayout.footer, .group(let group)): return entries.sections[group].footer
+        default: return nil
         }
     }
 
@@ -278,29 +289,54 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
     /// Design: docs/design/platforms/appkit/items.md#scrolling-to-an-item
     func scroll(to identity: String, anchor: ScrollAnchor) {
         guard let indexPath = source.indexPath(for: identity) else { return }
+        cells.scroll(to: identity, anchor: anchor)
+        glides += 1
+        gliding = false
         let clip = scroller.contentView
         guard reducesMotion() else {
             guard let target = target(of: indexPath, anchor: anchor) else { return }
+            let glide = glides
+            gliding = true
             NSAnimationContext.runAnimationGroup({ _ in
                 clip.animator().setBoundsOrigin(target)
             }, completionHandler: { [weak self] in
                 // AppKit ends an animation group on the main thread.
-                MainActor.assumeIsolated { self?.settle(indexPath, anchor: anchor) }
+                MainActor.assumeIsolated {
+                    guard let self, glide == self.glides else { return }
+                    self.gliding = false
+                    self.settle()
+                }
             })
             return
         }
         collection.scrollToItems(at: [indexPath], scrollPosition: layoutShape.isAcross ? .left : .top)
         layoutSubtreeIfNeeded()
-        settle(indexPath, anchor: anchor)
+        settle()
     }
 
-    /// Stands the item where `anchor` says, from the frames the layout holds now.
-    private func settle(_ indexPath: IndexPath, anchor: ScrollAnchor) {
-        guard let target = target(of: indexPath, anchor: anchor) else { return }
+    /// Whether a scroll the program asked for glides now, which stands its item again as it stops; and how many
+    /// scrolls began, so a glide another took over stands nothing.
+    private var gliding = false
+    private var glides = 0
+
+    /// Stands the item the program scrolled to where its anchor says, from the frames the layout holds now - and
+    /// so after every pass that brings cells their entries, while the host layer holds it.
+    /// Design: docs/design/platforms/appkit/items.md#scrolling-to-an-item
+    private func settle() {
+        guard !gliding, let scrolledTo = cells.laidOut(), let indexPath = source.indexPath(for: scrolledTo.identity),
+              let target = target(of: indexPath, anchor: scrolledTo.anchor)
+        else { return }
         scroller.contentView.scroll(to: target)
         scroller.reflectScrolledClipView(scroller.contentView)
         layoutSubtreeIfNeeded()
         scrolled()
+    }
+
+    /// The user takes the list: where it stands is theirs.
+    @objc private func userScrolls() {
+        glides += 1
+        gliding = false
+        cells.userScrolled()
     }
 
     /// Where the clip view stands for the item at `indexPath` to stand where `anchor` says, within reach; nil where

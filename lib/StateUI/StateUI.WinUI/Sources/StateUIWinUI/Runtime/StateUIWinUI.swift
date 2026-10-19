@@ -22,8 +22,8 @@ import CStateUIWinUI
 public enum StateUIWinUI {
     /// Starts WinUI on this thread and runs the application until its last window closes.
     ///
-    /// - Returns: the process's exit code - 0, or the failure WinUI started with.
-    @discardableResult
+    /// - Returns: the process's exit code - 0, or the failure WinUI started with - which the head ends the process
+    ///   with: `exit(StateUIWinUI.run())`.
     public static func run() -> Int32 {
         var callbacks = WinUICallbacks.table
         return stateui_winui_run(&callbacks)
@@ -63,9 +63,9 @@ enum WinUICallbacks {
             valueChanged: { view, value in
                 MainActor.assumeIsolated { (WinUIView.find(view) as? WinUIValueView)?.onValueChanged?(value) }
             },
-            textChanged: { view, utf8 in
+            textChanged: { view, utf8, composing in
                 let text = utf8.map { String(cString: $0) } ?? ""
-                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUITextInputView)?.typed(text) }
+                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUITextInputView)?.typed(text, composing: composing) }
             },
             submitted: { view in
                 MainActor.assumeIsolated { (WinUIView.find(view) as? WinUITextInputView)?.onSubmitted?() }
@@ -89,15 +89,18 @@ enum WinUICallbacks {
                 MainActor.assumeIsolated { WinUIRenderer.shared?.environmentChanged() }
             },
             heard: { view, what, phase, x, y, scale in
-                if what == StateUIHeardPress {
-                    return MainActor.assumeIsolated { WinUIView.find(view)?.heardPress(phase: phase, at: Point(x: x, y: y)) }
+                if what == .press {
+                    guard let phase = StateUIPressPhase(rawValue: phase) else { return }
+                    return MainActor.assumeIsolated { WinUIView.find(view)?.heardPress(phase, at: Point(x: x, y: y)) }
                 }
                 guard let heard = HeardInput(what, phase: phase, x: x, y: y, scale: scale) else { return }
                 MainActor.assumeIsolated { WinUIView.find(view)?.heard(heard) }
             },
-            answered: { ticket, accepted, utf8 in
+            answered: { ticket, accepted, utf8, failure in
                 let words = utf8.map { String(cString: $0) }
-                MainActor.assumeIsolated { WinUIRenderer.shared?.answered(ticket: ticket, accepted: accepted, words: words) }
+                let answer: Result<HostQuestion.Given, ActFailure> = failure.map { .failure(ActFailure(String(cString: $0))) }
+                    ?? .success(HostQuestion.Given(accepted: accepted, words: words))
+                MainActor.assumeIsolated { WinUIRenderer.shared?.answered(ticket: ticket, answer) }
             },
             filesChosen: { ticket, count, paths, names, failure in
                 let files = (0..<Int(count)).compactMap { index -> ChosenFile? in
@@ -115,9 +118,9 @@ enum WinUICallbacks {
             launchAnswered: { ticket, taken in
                 MainActor.assumeIsolated { WinUIRenderer.shared?.fileToolkit.launched(ticket: ticket, taken: taken) }
             },
-            dragHeard: { view, kind, words in
+            dragHeard: { view, heard, words in
                 let said = words.map { String(cString: $0) } ?? ""
-                MainActor.assumeIsolated { WinUIView.find(view)?.heardDrag(kind: kind, words: said) }
+                MainActor.assumeIsolated { WinUIView.find(view)?.heardDrag(heard, words: said) }
             },
             filesDragged: { view, count, paths, names in
                 let files = (0..<Int(count)).compactMap { index -> ChosenFile? in
@@ -128,7 +131,7 @@ enum WinUICallbacks {
             },
             canvasPressed: { view, phase, x, y in
                 MainActor.assumeIsolated {
-                    (WinUIView.find(view) as? WinUICanvasView)?.pressed(phase: phase, at: Point(x: x, y: y))
+                    (WinUIView.find(view) as? WinUICanvasView)?.pressed(phase, at: Point(x: x, y: y))
                 }
             },
             picked: { view, first, second, third in
@@ -153,7 +156,7 @@ enum WinUICallbacks {
                 nonisolated(unsafe) let cell = cell
                 nonisolated(unsafe) var panel: StateUIObjectRef?
                 MainActor.assumeIsolated {
-                    guard let made = WinUIItemsList.owner(of: view)?.makeCell(item: kind == 0) else { return }
+                    guard let made = WinUIItemsList.owner(of: view)?.makeCell(item: kind == .item) else { return }
                     cell?.pointee = made.number
                     panel = made.handle
                 }
@@ -182,6 +185,22 @@ enum WinUICallbacks {
             keyTaken: { view, key, modifiers in
                 MainActor.assumeIsolated {
                     (WinUIView.find(view) as? WinUITitleBarView)?.takesKey(key: key, modifiers: modifiers) == true
+                }
+            },
+            hand: { view, phase, x, y, time, speedX, speedY in
+                MainActor.assumeIsolated {
+                    let speed = speedX.isNaN || speedY.isNaN ? nil : Point(x: speedX, y: speedY)
+                    return WinUIView.find(view)?.heardHand(phase: phase, moved: Point(x: x, y: y), at: time, speed: speed)
+                        == true
+                }
+            },
+            wheel: { view, x, y in
+                MainActor.assumeIsolated { WinUIView.find(view)?.heardWheel(moved: Point(x: x, y: y)) == true }
+            },
+            mirrored: { view, phase, x, y, middleX, middleY in
+                MainActor.assumeIsolated {
+                    guard let phase = GesturePhase(rawValue: phase) else { return }
+                    WinUIView.find(view)?.heard(.mirrored(phase, at: Point(x: x, y: y), middle: Point(x: middleX, y: middleY)))
                 }
             })
     }

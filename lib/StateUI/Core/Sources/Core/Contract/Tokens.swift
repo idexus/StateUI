@@ -3,7 +3,7 @@
 
 // The library's own vocabulary: one token per member the sources and the hosts
 // name, made from the member, for the hosts behind `@_spi(Host)`. A token is a
-// name only - a host reads it by that name - and carries no
+// key only - a host reads it by its name - and carries no
 // `///`: its documentation is its member's.
 // Design: docs/design/core/contracts.md#tokens
 
@@ -31,6 +31,7 @@ extension NodeType {
     static let textEditor = TextEditorContract.nodeType
     static let ellipse = EllipseContract.nodeType
     static let capsule = CapsuleContract.nodeType
+    static let layoutEngine = LayoutEngineContract.nodeType
     static let textField = TextFieldContract.nodeType
     static let splitView = SplitViewContract.nodeType
     static let textSpans = TextSpansContract.nodeType
@@ -146,6 +147,10 @@ extension NodeType {
     static let gridRow = ViewContract.gridRow.token
     static let gridRowSpan = ViewContract.gridRowSpan.token
     static let groupName = RadioButtonContract.groupName.token
+    static let handAxis = LayoutEngineContract.handAxis.token
+    static let magnifies = LayoutEngineContract.magnifies.token
+    static let pans = LayoutEngineContract.pans.token
+    static let rotates = LayoutEngineContract.rotates.token
     static let height = VisualElementContract.height.token
     static let horizontalAlignment = ViewContract.horizontalAlignment.token
     static let horizontalScrollIndicator = ScrollViewContract.horizontalScrollIndicator.token
@@ -165,11 +170,13 @@ extension NodeType {
     static let showsSidebar = SplitViewContract.showsSidebar.token
     static let sidebarBackground = SplitViewContract.sidebarBackground.token
     static let flyoutBackground = SplitViewContract.flyoutBackground.token
+    static let sidebarOverlays = SplitViewContract.sidebarOverlays.token
     static let isReadOnly = TextInputContract.isReadOnly.token
     static let isScrollEnabled = MapContract.isScrollEnabled.token
     static let showsUserLocation = MapContract.showsUserLocation.token
     static let isSpellCheckEnabled = TextInputContract.isSpellCheckEnabled.token
     static let isTextPredictionEnabled = TextInputContract.isTextPredictionEnabled.token
+    static let itemDrag = LayoutEngineContract.itemDrag.token
     static let showsTraffic = MapContract.showsTraffic.token
     static let isVisible = VisualElementContract.isVisible.token
     static let isZoomEnabled = MapContract.isZoomEnabled.token
@@ -205,6 +212,7 @@ extension NodeType {
     static let panTouchCount = ViewContract.panTouchCount.token
     static let panXChannel = ViewContract.panXChannel.token
     static let panYChannel = ViewContract.panYChannel.token
+    static let phase = LayoutEngineContract.phase.token
     static let placeholder = TextInputContract.placeholder.token
     static let placeholderColor = TextInputContract.placeholderColor.token
     static let points = PolygonContract.points.token
@@ -293,7 +301,11 @@ extension NodeType {
     static let filesDropped = ViewContract.filesDropped.token
     static let dragEnded = ViewContract.dragEnded.token
     static let frameChanged = ViewContract.frameChanged.token
+    static let handMoved = LayoutEngineContract.handMoved.token
+    static let handStepped = LayoutEngineContract.handStepped.token
     static let isFocusedChanged = FocusElementContract.isFocusedChanged.token
+    static let itemMoved = LayoutEngineContract.itemMoved.token
+    static let pinchMoved = LayoutEngineContract.pinchMoved.token
     static let keyPressed = KeyboardElementContract.keyPressed.token
     static let showsSidebarChanged = SplitViewContract.showsSidebarChanged.token
     static let mapClicked = MapContract.mapClicked.token

@@ -94,6 +94,34 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertEqual(scroll.offset, .zero)
     }
 
+    /// A layout moves no scroller standing within what it reaches, nor one the user moves: a label changing under a
+    /// throw leaves the throw running. (AppKit keeps a clip's origin set by a program within reach, so the stretch
+    /// past an edge only the user's scroll makes is walked by hand.)
+    @MainActor
+    func testALayoutLeavesTheUsersScrollingAlone() {
+        let scroll = AppKitScrollView()
+        scroll.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
+        scroll.setItems([AppKitLayoutItem(view: FixedScrollTestView(width: 80, height: 500))])
+        scroll.apply(
+            orientation: ScrollOrientation.vertical.rawValue, padding: NSEdgeInsets(), verticalBarVisibility: 0,
+            horizontalBarVisibility: 0, offset: nil)
+        scroll.layoutSubtreeIfNeeded()
+        let moves = scroll.programmaticMovesForTesting
+
+        scroll.contentView.scroll(to: NSPoint(x: 0, y: 200))
+        scroll.needsLayout = true
+        scroll.layoutSubtreeIfNeeded()
+        XCTAssertEqual(scroll.programmaticMovesForTesting, moves, "a scroller within reach is not scrolled again")
+
+        NotificationCenter.default.post(name: NSScrollView.willStartLiveScrollNotification, object: scroll)
+        scroll.contentView.scroll(to: NSPoint(x: 0, y: 260))
+        scroll.needsLayout = true
+        scroll.layoutSubtreeIfNeeded()
+        XCTAssertEqual(scroll.contentView.bounds.origin.y, 260, "the throw goes on where it stands")
+        XCTAssertEqual(scroll.programmaticMovesForTesting, moves, "nor is one the user moves")
+        NotificationCenter.default.post(name: NSScrollView.didEndLiveScrollNotification, object: scroll)
+    }
+
     @MainActor
     func testOrientationAndBarVisibilityMapToNativeScrolling() {
         let scroll = AppKitScrollView()
@@ -286,71 +314,90 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertEqual(scrollers.map { $0.autohidesScrollers }, [true, true, false])
     }
 
-    /// A run that answers a tap on one part of the room is still as long as the
-    /// room plus its reach, so a trackpad or a wheel has somewhere to scroll it:
-    /// its content is the run's layout, sized by the length it was given rather
-    /// than by whatever a host counts into a placed layout's natural size.
+    /// A TRACKPAD PUSH TURNS A RUN OF CARDS BY WHAT IT PUSHED: the gesture
+    /// along the run is the layout's, the run moves with the fingers, and let
+    /// go still it travels on to the card it passed - the system's momentum
+    /// after the lift swallowed, as the layout throws the run itself.
     @MainActor
-    func testARunThatAnswersATapIsAsLongAsItsReach() throws {
-        let renderer = AppKitRenderer.running { TappedRun() }
-        defer { renderer.closeForTesting() }
-        let scroller = try XCTUnwrap(Self.readersScroller(in: renderer))
-
-        // The room arrives with the first frame report, and the run is built
-        // again with its length.
-        let deadline = Date(timeIntervalSinceNow: 2)
-        while (scroller.documentView?.frame.width ?? 0) <= scroller.contentView.bounds.width + 1,
-              Date() < deadline {
-            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
-            renderer.runtime.pump.turn()
-            scroller.window?.contentView?.layoutSubtreeIfNeeded()
-            if renderer.frameClock.held { renderer.displayFrameForTesting() }
-        }
-
-        let room = scroller.contentView.bounds.width
-        XCTAssertGreaterThan(room, 1)
-        XCTAssertEqual(scroller.documentView?.frame.width ?? 0, room + 300, accuracy: 1)
-    }
-
-    /// A push of the trackpad turns a run of cards by what it pushed: past half
-    /// a card, the next card is named as the run passes halfway, and when the
-    /// scroller comes to rest the run travels on to it rather than back.
-    @MainActor
-    func testATrackpadPushPastHalfACardTurnsTheRun() throws {
+    func testATrackpadPushTurnsARunOfCards() throws {
         let positions = Received<Int>()
         let renderer = AppKitRenderer.running {
             GalleryView(0..<7) { number in Text("\(number)") }
                 .onPositionChanged { positions.values.append($0) }
-                .onItemTapped { _ in }
         }
         defer { renderer.closeForTesting() }
-        let scroller = try XCTUnwrap(Self.readersScroller(in: renderer))
+        let layout = try XCTUnwrap(Self.layout(in: renderer))
+        // The cards drawn, as a window has them before a hand reaches them: the run knows its room.
+        layout.window?.contentView?.layoutSubtreeIfNeeded()
+        renderer.displayFrameForTesting()
+        renderer.runtime.pump.turn()
 
-        // The run is the room plus six turns long once the room has arrived.
-        let deadline = Date(timeIntervalSinceNow: 2)
-        while (scroller.documentView?.frame.width ?? 0) < scroller.contentView.bounds.width + 600,
-              Date() < deadline {
-            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
-            renderer.runtime.pump.turn()
-            scroller.window?.contentView?.layoutSubtreeIfNeeded()
-            if renderer.frameClock.held { renderer.displayFrameForTesting() }
-        }
+        // The hand carries the card in front: on the wheel 0.52 of a card a turn,
+        // 92 to 128 points as the window draws it. The push goes 80 - past half
+        // a turn, short of a whole one.
+        layout.scrollWheel(with: try Self.scroll(phase: .began))
+        layout.scrollWheel(with: try Self.scroll(x: -80, phase: .changed))
+        // Held still before it lifts: no throw.
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.15))
+        layout.scrollWheel(with: try Self.scroll(phase: .ended))
+        let swallowed = Self.taken(by: layout, try Self.scroll(x: -30, momentum: .continuous))
 
-        // A card is 176 wide and a turn is three fifths of one, 105.6; the push
-        // goes 80 - past half a turn, short of a whole one.
-        scroller.beginMovementForTesting()
-        scroller.moveAsUserForTesting(to: NSPoint(x: 80, y: 0))
-        scroller.restForTesting()
         let settled = Date(timeIntervalSinceNow: 2)
-        while positions.values.last != 1 || abs(scroller.contentView.bounds.origin.x - 105.6) > 0.5,
-              Date() < settled {
+        while positions.values.last != 1, Date() < settled {
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
             renderer.displayFrameForTesting()
             renderer.runtime.pump.turn()
         }
 
-        XCTAssertEqual(scroller.contentView.bounds.origin.x, 105.6, accuracy: 0.5)
         XCTAssertEqual(positions.values.last, 1)
+        XCTAssertTrue(swallowed, "the momentum after the lift is the layout's to swallow")
+    }
+
+    /// A GESTURE ACROSS THE RUN IS LEFT to whatever holds the layout: its first
+    /// move says whose it is.
+    @MainActor
+    func testAGestureAcrossTheRunIsLeftToWhatHoldsIt() throws {
+        let renderer = AppKitRenderer.running { GalleryView(0..<7) { number in Text("\(number)") } }
+        defer { renderer.closeForTesting() }
+        let layout = try XCTUnwrap(Self.layout(in: renderer))
+        let reader = try XCTUnwrap(layout.hand)
+
+        XCTAssertTrue(reader(try Self.scroll(phase: .began)), "a gesture begun is the layout's until it moves")
+        XCTAssertFalse(reader(try Self.scroll(y: -80, phase: .changed)), "moving down, it is not the run's")
+        XCTAssertFalse(reader(try Self.scroll(phase: .ended)))
+        XCTAssertTrue(reader(try Self.scroll(x: -40)), "a wheel along the run is")
+    }
+
+    /// The view of the layout a hand moves, once the host stood it.
+    @MainActor
+    private static func layout(in renderer: AppKitRenderer) -> AppKitZStackView? {
+        let deadline = Date(timeIntervalSinceNow: 2)
+        while !renderer.nativeViews(AppKitZStackView.self).contains(where: { $0.hand != nil }), Date() < deadline {
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
+            renderer.runtime.pump.turn()
+            if renderer.frameClock.held { renderer.displayFrameForTesting() }
+        }
+        return renderer.nativeViews(AppKitZStackView.self).first { $0.hand != nil }
+    }
+
+    /// Whether `layout` took `event` rather than sending it on.
+    @MainActor
+    private static func taken(by layout: AppKitZStackView, _ event: NSEvent) -> Bool {
+        layout.hand?(event) ?? false
+    }
+
+    /// A trackpad's scroll event moving what is under the fingers by `x` and `y` points, at a step of its gesture
+    /// or of the momentum after it - a wheel's notch where it is at neither.
+    private static func scroll(
+        x: Int32 = 0, y: Int32 = 0, phase: CGScrollPhase? = nil, momentum: CGMomentumScrollPhase? = nil
+    ) throws -> NSEvent {
+        let made = try XCTUnwrap(CGEvent(
+            scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 2, wheel1: y, wheel2: x, wheel3: 0))
+        made.setIntegerValueField(.scrollWheelEventScrollPhase, value: Int64(phase?.rawValue ?? 0))
+        made.setIntegerValueField(.scrollWheelEventMomentumPhase, value: Int64(momentum?.rawValue ?? 0))
+        // Stamped now, as the system stamps what it sends: a made event's time is nought.
+        made.timestamp = CGEventTimestamp(clock_gettime_nsec_np(CLOCK_UPTIME_RAW))
+        return try XCTUnwrap(NSEvent(cgEvent: made))
     }
 
     /// What the user scrolled comes back as the state it wrote, and the
@@ -387,7 +434,7 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertFalse(renderer.frameClockRunningForTesting, "a still page keeps no clock")
 
         NotificationCenter.default.post(name: NSScrollView.willStartLiveScrollNotification, object: scroller)
-        let renders = renderer.windowSynchronizationCountForTesting
+        let renders = renderer.runtime.core.tally.renders
         for y: CGFloat in [40, 80, 120] {
             scroller.contentView.scroll(to: NSPoint(x: 0, y: y))
             scroller.reflectScrolledClipView(scroller.contentView)
@@ -398,7 +445,7 @@ final class AppKitScrollViewTests: XCTestCase {
 
         renderer.displayFrameForTesting()
         XCTAssertEqual(reading.stringValue, "120 down")
-        XCTAssertEqual(renderer.windowSynchronizationCountForTesting, renders + 1, "one render for the frame")
+        XCTAssertEqual(renderer.runtime.core.tally.renders, renders + 1, "one render for the frame")
 
         NotificationCenter.default.post(name: NSScrollView.didEndLiveScrollNotification, object: scroller)
         renderer.displayFrameForTesting()
@@ -433,20 +480,6 @@ private final class ScrollWheelSpyView: NSScrollView {
     }
 }
 
-
-/// A run the user can scroll 300 points beyond its room, answering a tap on
-/// its first hundred.
-private struct TappedRun: View {
-    @State private var across = Point.zero
-
-    var body: some View {
-        ScrollReader(across: 300) {
-            Rectangle().fill(Color("#3366FF"))
-        }
-        .scrollOffset($across)
-        .onTapped(within: { room in Rect(0, 0, 100, room.height) }) {}
-    }
-}
 /// A tall strip whose offset a state carries, read back by a label.
 private struct BoundStrip: View {
     @State private var offset = Point.zero
@@ -465,18 +498,3 @@ private struct BoundStrip: View {
 }
 
 #endif
-
-extension AppKitScrollViewTests {
-    /// The scroller a run's reader stands once it knows its room - which the first frame report tells it, so it
-    /// stands nothing before.
-    @MainActor
-    private static func readersScroller(in renderer: AppKitRenderer) -> AppKitScrollView? {
-        let deadline = Date(timeIntervalSinceNow: 2)
-        while renderer.nativeViews(AppKitScrollView.self).isEmpty, Date() < deadline {
-            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
-            renderer.runtime.pump.turn()
-            if renderer.frameClock.held { renderer.displayFrameForTesting() }
-        }
-        return renderer.nativeViews(AppKitScrollView.self).first
-    }
-}

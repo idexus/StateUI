@@ -207,6 +207,13 @@ final class AppKitSplitView: AppKitHitTestView {
 
     var isEffectivelyPresented: Bool { !sidebarItem.isCollapsed }
     var isEffectivelyPresentedForTesting: Bool { isEffectivelyPresented }
+
+    /// Whether the sidebar's pane lies over the detail's: their frames in the split view meet.
+    var sidebarOverlaysForTesting: Bool {
+        let split = splitController.splitView
+        return sidebarSurface.convert(sidebarSurface.bounds, to: split)
+            .intersects(detailSurface.convert(detailSurface.bounds, to: split))
+    }
     var sidebarWidthForTesting: CGFloat {
         splitController.splitView.subviews.first?.frame.width ?? 0
     }

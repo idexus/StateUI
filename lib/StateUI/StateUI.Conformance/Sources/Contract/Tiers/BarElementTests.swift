@@ -30,23 +30,7 @@
         _ member: ElementProperty<BarElementContract, Value>, on element: String, _ first: Value, then second: Value,
         over others: [any Worn] = []
     ) -> ConformanceCase {
-        ConformanceCase("\(element).\(member.name).holdsWhatTheTreeGivesAndChanges", proves: [
-            Covered(member, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
-            let value = State(wrappedValue: first)
-            s.start {
-                declaring(element, others + [Write(member, value.wrappedValue)], beside: [
-                    Button("Change").onClicked { value.wrappedValue = second }.id("change"),
-                ])
-            }
-            let specimen = try s.specimen(element)
-            try s.settle { try s.held(member, on: specimen) == first }
-            s.expect(try s.held(member, on: specimen), first, "the value the tree gave")
-
-            try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.held(member, on: specimen) == second }
-            s.expect(try s.held(member, on: specimen), second, "the value the tree changed it to")
-        }
+        Aspects.holds(member, on: element, first, then: second, with: others, page: declaring(_:_:beside:), late: true)
     }
 
     /// A page where `element` wears `worn` around a bar every host draws - a split view's detail, a tabbed view's

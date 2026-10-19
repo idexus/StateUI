@@ -52,6 +52,7 @@ final class GTKNavigationView: GTKLayoutView {
                 adw_navigation_view_push(navigation.widget.opaque, stack[kept].page.of(AdwNavigationPage.self))
             } else if kept == pages.count, kept > 0 {
                 adw_navigation_view_pop_to_page(navigation.widget.opaque, stack[kept - 1].page.of(AdwNavigationPage.self))
+                letGo(stack[kept...].map(\.page))
                 stack.removeLast(stack.count - kept)
             } else {
                 let previous = stack
@@ -60,6 +61,7 @@ final class GTKNavigationView: GTKLayoutView {
                 }
                 var natives = stack.map { Optional($0.page.of(AdwNavigationPage.self)) }
                 adw_navigation_view_replace(navigation.widget.opaque, &natives, Int32(natives.count))
+                letGo(previous.map(\.page).filter { page in !stack.contains { $0.page == page } })
             }
         }
         invalidateMeasurements()
@@ -88,8 +90,15 @@ final class GTKNavigationView: GTKLayoutView {
     /// keys - says how many remain.
     private func popped(_ page: GTKWidget?) {
         guard !ProgramWrite.isWriting, let index = stack.firstIndex(where: { $0.page == page }) else { return }
+        letGo(stack[index...].map(\.page))
         stack.removeLast(stack.count - index)
         onPopped?(stack.count)
+    }
+
+    /// Lets go of navigation pages the view no longer holds - libadwaita keeps its own while it shows one going - and
+    /// every widget in them with them.
+    private func letGo(_ pages: [GTKWidget]) {
+        for page in pages { g_object_unref(page) }
     }
 
     /// Takes the top page away as the user's back does; whether there was one below it.

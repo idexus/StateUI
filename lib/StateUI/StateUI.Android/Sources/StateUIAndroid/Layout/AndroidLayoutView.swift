@@ -49,6 +49,13 @@ class AndroidLayoutView: AndroidView {
         super.init(make)
     }
 
+    /// A layout a hand moves sees the touches its children get before they get them: a finger on a child that
+    /// answers a tap is the hand's once it moves along the layout. Any other sees those no child takes.
+    /// Design: docs/design/platforms/android/controls.md#the-hand-over-a-layout
+    override func watchTouches(_ hearing: Hearing) {
+        Java.call(reference, JavaAPI.watchLayout, .object(listener.reference), .bool(hearing.contains(.hand)))
+    }
+
     /// Puts `items` in the group, in order, where they differ from the children it holds; whether they did.
     @discardableResult
     func setItems(_ items: [AndroidLayoutItem]) -> Bool {

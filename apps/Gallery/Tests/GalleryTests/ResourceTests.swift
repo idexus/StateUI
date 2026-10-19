@@ -51,7 +51,7 @@ final class ResourceTests: XCTestCase {
             XCTAssertFalse(style.props.isEmpty && !takesOff, "\(key) sets nothing")
 
             for state in style.states {
-                XCTAssertFalse(state.setters.isEmpty, "\(key) in \(state.name) sets nothing")
+                XCTAssertFalse(state.setters.isEmpty, "\(key) in \(state.key.name) sets nothing")
             }
         }
     }

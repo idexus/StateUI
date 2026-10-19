@@ -38,7 +38,7 @@ not, CSS `px` and `pango_attr_size_new_absolute`. A StateUI point is a pixel
 at 96 dots an inch, so 20 is 15 typographic points. Words that do not scale
 and are given no size stand at the desktop font's size before its scale
 (`GTKEnvironment.fontSize`). A CSS class setting `-gtk-dpi` on one widget
-changed nothing GTK 4.14 measures; the driver doubles `gtk-xft-dpi` itself.
+changes nothing GTK 4.14 measures, so the driver doubles `gtk-xft-dpi` itself.
 
 ## A button's box
 
@@ -108,7 +108,12 @@ on, and the host takes the check off each other button of its set, each
 reporting that it is off, in one transaction. GTK draws a check button as a
 radio only in a group, and a group takes its other members' checks away
 itself - the one that lost would be heard twice - so each radio button stands
-in a group with a partner of its own that is never shown.
+in a group with a partner of its own that is never shown. Joined in GTK's own
+group by their set instead, the buttons fight the tree: a check the tree
+writes back - a constant `isOn(true)` - GTK takes from another button the
+tree says is on, whose check the next render writes back, without end. The
+partner is how GTK draws a radio while the check stays StateUI's; a picker's
+radio buttons stand in one group of their own, as a picker holds one choice.
 
 ## Nothing the program writes is heard
 
@@ -314,11 +319,15 @@ at its own address, and one with none is gone to as a `data:` address, which
 WebKit keeps in the page's history ([a document with no
 address](../../host/web.md#a-document-with-no-address)). A page asked for is
 loaded once the element's values are applied, so the agent the tree gives
-is the one it is asked with. What the page does comes back as WebKit tells
+is the one it is asked with; no page given leaves the page as it is, and
+the page given after it is loaded again, whatever the user went to
+meanwhile. What the page does comes back as WebKit tells
 it: a navigation as its load starts, why it began by the host layer's rule -
 the program's step, else what WebKit's decision on it says (a link or a form
-a new page, a reload the page again, a step through the history unknown,
-since WebKit tells no step back from one forward) - and as its load
+a new page, a reload the page again, a step through the history back or
+forward by where it lands among the pages behind as the page shown arrived,
+since by its decision WebKit's list already stands at the step's end) - and
+as its load
 finishes, or fails, a load called off a cancel; whether there is a page
 behind and ahead, said as the history changes; and the end of its web
 process. A script's answer is the JSON WebKit writes its value in, read by

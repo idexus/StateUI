@@ -1,7 +1,6 @@
-# revision 2.1
+# revision 4.1
 Picker: ✅
 Picker.closed: ✅
-Picker.frameChanged: ✅
 Picker.isOpen: ✅
 Picker.opened: ✅
 Picker.options: ✅
@@ -9,4 +8,3 @@ Picker.placeholder: ✅
 Picker.presentation: ✅
 Picker.selectedIndex: ✅
 Picker.selectedIndexChanged: ✅
-Text.text: ✅

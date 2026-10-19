@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIWeb
 import XCTest
@@ -26,5 +27,15 @@ final class WebWindowTests: XCTestCase {
         }
         XCTAssertEqual(WebPage.style(of: notice.node, "z-index"), "0", "the first lowest")
         XCTAssertEqual(WebPage.style(of: inspector.node, "z-index"), "1")
+    }
+
+    /// THE PAGE UNDER THE WINDOW WEARS ITS COLOUR where the window is one opaque colour - what Safari takes above
+    /// the page and around its bars - and none where it is translucent, a blur, or the platform's own.
+    func testThePageWearsTheWindowsColourWhereItIsOneOpaqueColour() {
+        let opaque = HostValue.color(red: 42, green: 33, blue: 84, alpha: 255)
+        XCTAssertEqual(WebWindowController.pageColour(HostMaterial(opaque)), "rgb(42 33 84 / 1)")
+        let translucent = HostValue.color(red: 42, green: 33, blue: 84, alpha: 128)
+        XCTAssertNil(WebWindowController.pageColour(HostMaterial(translucent)), "the page under it would show through")
+        XCTAssertNil(WebWindowController.pageColour(HostMaterial(nil)), "the platform's own window")
     }
 }

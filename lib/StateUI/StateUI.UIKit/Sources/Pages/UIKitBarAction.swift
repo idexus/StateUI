@@ -30,14 +30,36 @@ struct UIKitBarAction {
         icon.flatMap { UIKitRenderer.glyph($0, height: Self.glyphHeight) }
     }
 
-    /// A button of the bar.
-    var barItem: UIBarButtonItem {
+    /// Everything its button shows and the element it answers: a bar keeps its buttons while its actions say the same.
+    struct Said: Equatable {
+        let title: String
+        let icon: HostPicture?
+        let isEnabled: Bool
+        let isDestructive: Bool
+        let identifier: String?
+        let mount: UInt64?
+    }
+
+    var said: Said {
+        Said(
+            title: title, icon: icon, isEnabled: isEnabled, isDestructive: isDestructive, identifier: identifier,
+            mount: element?.element.mount)
+    }
+
+    /// A button of the bar, in `tint` - a painted bar's words, nil for the bar's own - or red where it destroys
+    /// something.
+    func barItem(tint: UIColor?) -> UIBarButtonItem {
         let item = UIBarButtonItem(primaryAction: menuAction)
         item.landscapeImagePhone = icon.flatMap { UIKitRenderer.glyph($0, height: Self.lowGlyphHeight) }
         item.isEnabled = isEnabled
         item.accessibilityIdentifier = identifier
-        if isDestructive { item.tintColor = .systemRed }
+        item.tintColor = self.tint(tint)
         return item
+    }
+
+    /// The colour its button stands in: red where it destroys something, else `tint`.
+    func tint(_ tint: UIColor?) -> UIColor? {
+        isDestructive ? .systemRed : tint
     }
 
     /// An entry of a menu.

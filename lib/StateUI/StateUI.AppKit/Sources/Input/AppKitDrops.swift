@@ -18,7 +18,7 @@ final class AppKitDrops {
         var files: [URL] = []
     }
 
-    /// The elements whose views take drops, by their view: read as a drag comes.
+    /// The elements whose views take drops, by their view: read as a drag comes, let go as it ends.
     private let takers: () -> [ObjectIdentifier: AppKitElement]
     private var targets: [ObjectIdentifier: AppKitElement] = [:]
     private weak var over: AppKitElement?
@@ -48,10 +48,12 @@ final class AppKitDrops {
     func exited() {
         over?.hear(.dragLeft)
         over = nil
+        targets = [:]
     }
 
     /// The drag was let go, carrying `carried`: whether a view took it - files where it takes them, else words.
     func dropped(_ carried: Carried) -> Bool {
+        defer { targets = [:] }
         guard let target = over else { return false }
         over = nil
         if !carried.files.isEmpty, target.element.dragAndDrop.takesFiles {

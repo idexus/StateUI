@@ -68,6 +68,31 @@ states move by that from where they stood as it began. Ended, it is a swipe
 by the host layer's rule ([a swipe](../../host/runtime.md#a-swipe)). A pan
 that asks for more than one pointer is not recognized.
 
+## The hand over a layout
+
+A layout an engine moves hears the hand two ways (`Input.cpp`). A press of
+the primary button, a finger or a pen goes down; once it has moved past the
+system's drag distance it is told as begun and its first move, and the host
+layer's answer says whose it is - taken by the layout, which then holds the
+pointer and handles each move told since the last, or left, the pointer
+going on to whatever holds the layout. Each report carries the pointer's own
+time (`PointerPoint.Timestamp`), from which the host layer reads the speed at
+the lift; a lost capture or a cancel takes the hand away.
+
+A trackpad and a wheel are heard as WinUI's own scroller hears them: the
+layout's visual is a `VisualInteractionSource` redirecting both
+(`CapableTouchpadAndPointerWheel`) to an `InteractionTracker`, along the
+layout's axis alone - the other goes on to whatever holds the layout. The
+tracker's states are the hand: fingers down (`InteractingStateEntered`) begin
+it and stop a throw under way, its moves are the fingers' (`ValuesChanged`),
+and the lift (`InertiaStateEntered`) carries the platform's own speed; the
+tracker's inertia after it moves nothing, as the layout throws the run. A
+wheel's step enters inertia with no fingers down, and how far the platform
+would scroll for it - its resting place from where the last step aimed - is
+told as a wheel; so a mouse's notch goes as far as the platform scrolls for
+it rather than to the next target, the tracker telling no notch
+(`handStepped` stands `–`). Nothing is bound to the tracker's position.
+
 ## A pinch
 
 A view that listens for a pinch takes WinUI's scale manipulation - two
@@ -95,7 +120,10 @@ act of moving the focus asking the same, and tells only a change.
 
 A view's drags are WinUI's own drag and drop, through the relay
 (`Drags.cpp`): what the view offers stands in a table by its number, and its
-handlers, hung once, ask it as they run. A view that can be dragged has
+handlers, hung once on each element it stands as, ask it as they run - a
+password field's new box gets them again as it takes the field's place, and
+a view offering nothing, one that left among them, is gone from the table.
+A view that can be dragged has
 `CanDrag`; its `DragStarting` puts the view's words on the drag's data as
 text, to be copied, and its `DropCompleted` says the drag ended wherever it
 ended. A view taking drops has `AllowDrop`; a drag whose data holds text

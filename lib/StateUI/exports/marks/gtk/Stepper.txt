@@ -1,6 +1,5 @@
-# revision 2.1
+# revision 4.1
 Stepper: ✅
-Stepper.frameChanged: ✅
 Stepper.maximum: ✅
 Stepper.minimum: ✅
 Stepper.step: ✅

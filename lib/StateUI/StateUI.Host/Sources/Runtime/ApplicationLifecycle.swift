@@ -84,6 +84,14 @@
         return window.enclosing(type: .scene) !== front
     }
 
+    /// The window of `windows` whose display gives the frames: the one the user is in, else the first the screen shows -
+    /// one minimized or hidden by its scene draws none, and a toolkit stops its frames - else the first.
+    /// Design: docs/design/host/runtime.md#one-frame
+    public func framesWindow(among windows: [MountedElement]) -> MountedElement? {
+        let shown = windows.filter { !isStopped($0) }
+        return activatedLast(among: shown) ?? shown.first ?? windows.first
+    }
+
     /// Whether `window` floats over the application's other windows now: it says so, and the application is in front.
     public func floats(_ window: MountedElement) -> Bool {
         window.value(.floatsOnTop)?.bool == true && isInFront

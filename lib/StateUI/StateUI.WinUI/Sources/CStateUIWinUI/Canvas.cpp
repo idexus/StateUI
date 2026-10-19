@@ -31,12 +31,6 @@ namespace media = winrt::Microsoft::UI::Xaml::Media;
 
 namespace {
     /// The instructions' kinds, as StateUI numbers them.
-    enum Kind : int32_t {
-        FillColor, StrokeColor, TextColor, StrokeWidth, FontSize, Alpha, DrawLine, DrawRectangle, DrawRoundedRectangle,
-        DrawEllipse, DrawArc, DrawPath, FillRectangle, FillRoundedRectangle, FillEllipse, FillArc, FillPath, DrawText,
-        Translate, Rotate, Scale, SaveState, RestoreState,
-    };
-
     /// What every canvas draws with: Direct2D's device, made at the first drawing and again after Windows takes it
     /// away, and how many there have been; what writes text, in the system's family and the user's language.
     struct Devices {
@@ -160,32 +154,33 @@ namespace {
             auto const *kind = reader.numbers(1);
             if (!kind) break;
             double const *p = nullptr;
-            switch (static_cast<int>(*kind)) {
-            case 0:
+            switch (static_cast<StateUICurve>(static_cast<int32_t>(*kind))) {
+            case StateUICurveMove:
                 if (!(p = reader.numbers(2))) break;
                 if (open) sink->EndFigure(D2D1_FIGURE_END_OPEN);
                 open = false;
                 start = point(p[0], p[1]);
                 begin();
                 break;
-            case 1:
+            case StateUICurveLine:
                 if (!(p = reader.numbers(2))) break;
                 begin();
                 sink->AddLine(point(p[0], p[1]));
                 break;
-            case 2:
+            case StateUICurveCubic:
                 if (!(p = reader.numbers(6))) break;
                 begin();
                 sink->AddBezier(D2D1::BezierSegment(point(p[0], p[1]), point(p[2], p[3]), point(p[4], p[5])));
                 break;
-            case 3:
+            case StateUICurveQuadratic:
                 if (!(p = reader.numbers(4))) break;
                 begin();
                 sink->AddQuadraticBezier(D2D1::QuadraticBezierSegment(point(p[0], p[1]), point(p[2], p[3])));
                 break;
-            default:
+            case StateUICurveClose:
                 if (open) sink->EndFigure(D2D1_FIGURE_END_CLOSED);
                 open = false;
+                break;
             }
         }
         if (open) sink->EndFigure(D2D1_FIGURE_END_OPEN);
@@ -241,78 +236,81 @@ namespace {
 
         Reader reader{drawing};
         while (reader.more()) {
-            auto kind = reader.integer();
+            auto kind = static_cast<StateUIDrawing>(reader.integer());
             double const *at = nullptr;
+            // Every instruction is named: one the host layer adds fails to compile here, not to draw.
+#pragma clang diagnostic push
+#pragma clang diagnostic error "-Wswitch-enum"
             switch (kind) {
-            case FillColor: pen.fill = colour(reader.integer()); break;
-            case StrokeColor: pen.stroke = colour(reader.integer()); break;
-            case TextColor: pen.text = colour(reader.integer()); break;
-            case StrokeWidth:
+            case StateUIDrawingFillColor: pen.fill = colour(reader.integer()); break;
+            case StateUIDrawingStrokeColor: pen.stroke = colour(reader.integer()); break;
+            case StateUIDrawingTextColor: pen.text = colour(reader.integer()); break;
+            case StateUIDrawingLineWidth:
                 if ((at = reader.numbers(1))) pen.width = static_cast<float>(std::max(0.0, *at));
                 break;
-            case FontSize:
+            case StateUIDrawingFontSize:
                 if ((at = reader.numbers(1))) pen.size = static_cast<float>(std::max(0.0, *at));
                 break;
-            case Alpha:
+            case StateUIDrawingOpacity:
                 if ((at = reader.numbers(1))) pen.alpha = static_cast<float>(std::clamp(*at, 0.0, 1.0));
                 break;
-            case DrawLine:
+            case StateUIDrawingStrokeLine:
                 if ((at = reader.numbers(4)) && pen.width > 0)
                     context->DrawLine(point(at[0], at[1]), point(at[2], at[3]), paint(pen.stroke), pen.width);
                 break;
-            case DrawRectangle:
+            case StateUIDrawingStrokeRectangle:
                 if ((at = reader.numbers(4)) && pen.width > 0) context->DrawRectangle(box(at), paint(pen.stroke), pen.width);
                 break;
-            case FillRectangle:
+            case StateUIDrawingFillRectangle:
                 if ((at = reader.numbers(4))) context->FillRectangle(box(at), paint(pen.fill));
                 break;
-            case DrawRoundedRectangle:
-            case FillRoundedRectangle: {
+            case StateUIDrawingStrokeRoundedRectangle:
+            case StateUIDrawingFillRoundedRectangle: {
                 if (!(at = reader.numbers(5))) break;
                 auto radius = static_cast<float>(std::max(0.0, at[4]));
                 auto rounded = D2D1::RoundedRect(box(at), radius, radius);
-                if (kind == FillRoundedRectangle) context->FillRoundedRectangle(rounded, paint(pen.fill));
+                if (kind == StateUIDrawingFillRoundedRectangle) context->FillRoundedRectangle(rounded, paint(pen.fill));
                 else if (pen.width > 0) context->DrawRoundedRectangle(rounded, paint(pen.stroke), pen.width);
                 break;
             }
-            case DrawEllipse:
-            case FillEllipse: {
+            case StateUIDrawingStrokeEllipse:
+            case StateUIDrawingFillEllipse: {
                 if (!(at = reader.numbers(4))) break;
                 auto oval = D2D1::Ellipse(point(at[0] + at[2] / 2, at[1] + at[3] / 2), static_cast<float>(at[2] / 2),
                                           static_cast<float>(at[3] / 2));
-                if (kind == FillEllipse) context->FillEllipse(oval, paint(pen.fill));
+                if (kind == StateUIDrawingFillEllipse) context->FillEllipse(oval, paint(pen.fill));
                 else if (pen.width > 0) context->DrawEllipse(oval, paint(pen.stroke), pen.width);
                 break;
             }
-            case DrawPath:
-            case FillPath:
-                shape(curves(reader, reader.integer()).get(), kind == FillPath);
+            case StateUIDrawingStrokePath:
+            case StateUIDrawingFillPath:
+                shape(curves(reader, reader.integer()).get(), kind == StateUIDrawingFillPath);
                 break;
-            case DrawText: {
+            case StateUIDrawingText: {
                 auto across = reader.integer(), down = reader.integer(), word = reader.integer();
                 if (!(at = reader.numbers(4)) || word < 0 || static_cast<size_t>(word) >= drawing.words.size()) return;
                 write(context, paint(pen.text), pen.size, at, across, down, drawing.words[word]);
                 break;
             }
-            case Translate:
+            case StateUIDrawingTranslate:
                 if (!(at = reader.numbers(2))) break;
                 pen.transform = D2D1::Matrix3x2F::Translation(static_cast<float>(at[0]), static_cast<float>(at[1])) * pen.transform;
                 place();
                 break;
-            case Rotate:
+            case StateUIDrawingRotate:
                 if (!(at = reader.numbers(1))) break;
                 pen.transform = D2D1::Matrix3x2F::Rotation(static_cast<float>(*at)) * pen.transform;
                 place();
                 break;
-            case Scale:
+            case StateUIDrawingScale:
                 if (!(at = reader.numbers(2))) break;
                 pen.transform = D2D1::Matrix3x2F::Scale(static_cast<float>(at[0]), static_cast<float>(at[1])) * pen.transform;
                 place();
                 break;
-            case SaveState:
+            case StateUIDrawingSaveState:
                 kept.push_back(pen);
                 break;
-            case RestoreState:
+            case StateUIDrawingRestoreState:
                 if (kept.empty()) break;
                 pen = kept.back();
                 kept.pop_back();
@@ -321,6 +319,7 @@ namespace {
             default:
                 return;
             }
+#pragma clang diagnostic pop
         }
     }
 
@@ -333,14 +332,15 @@ namespace {
             canvases += 1;
             // A clear background: the whole canvas is hit, drawn on or not.
             Background(media::SolidColorBrush(winrt::Windows::UI::Color{0, 0, 0, 0}));
-            PointerPressed({this, &StateUICanvas::pressed});
-            PointerMoved({this, &StateUICanvas::moved});
-            PointerReleased({this, &StateUICanvas::released});
-            PointerCaptureLost({this, &StateUICanvas::lostPress});
-            PointerCanceled({this, &StateUICanvas::lostPress});
+            // The canvas's own events: the handlers go with it, so they hold it as it is.
+            PointerPressed(guarded("handling PointerPressed", [this](auto const &s, auto const &a) { pressed(s, a); }));
+            PointerMoved(guarded("handling PointerMoved", [this](auto const &s, auto const &a) { moved(s, a); }));
+            PointerReleased(guarded("handling PointerReleased", [this](auto const &s, auto const &a) { released(s, a); }));
+            PointerCaptureLost(guarded("handling PointerCaptureLost", [this](auto const &s, auto const &a) { lostPress(s, a); }));
+            PointerCanceled(guarded("handling PointerCanceled", [this](auto const &s, auto const &a) { lostPress(s, a); }));
             // A canvas put in a tree draws; WinUI's unloading is not heard: it can come after the canvas is loaded
             // again elsewhere, and would stop the drawing that waits.
-            Loaded([this](auto &&, auto &&) { invalidate(); });
+            Loaded(guarded("handling Loaded", [this](auto &&, auto &&) { invalidate(); }));
         }
 
         ~StateUICanvas() {
@@ -387,7 +387,10 @@ namespace {
     private:
         /// Draws on the next frame, however often it is asked before then.
         void invalidate() {
-            if (!rendering) rendering = media::CompositionTarget::Rendering(winrt::auto_revoke, {get_weak(), &StateUICanvas::render});
+            if (!rendering) {
+                rendering = media::CompositionTarget::Rendering(
+                    winrt::auto_revoke, guarded("handling Rendering", get_weak(), &StateUICanvas::render));
+            }
         }
 
         void render(IInspectable const &, IInspectable const &) {
@@ -467,13 +470,13 @@ namespace {
             holding = true;
             pointer = args.Pointer().PointerId();
             args.Handled(true);
-            tell(0, at.Position());
+            tell(StateUIPressPhaseDown, at.Position());
         }
 
         void moved(IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             if (!holding || args.Pointer().PointerId() != pointer) return;
             args.Handled(true);
-            tell(1, args.GetCurrentPoint(sender.as<xaml::UIElement>()).Position());
+            tell(StateUIPressPhaseMoved, args.GetCurrentPoint(sender.as<xaml::UIElement>()).Position());
         }
 
         void released(IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
@@ -483,17 +486,17 @@ namespace {
             auto at = args.GetCurrentPoint(element).Position();
             holding = false;
             element.ReleasePointerCapture(args.Pointer());
-            tell(2, at);
+            tell(StateUIPressPhaseLetGo, at);
         }
 
         /// The press ends where it last was: its pointer taken away, or the input cancelled.
         void lostPress(IInspectable const &, input::PointerRoutedEventArgs const &args) {
             if (!holding || args.Pointer().PointerId() != pointer) return;
             holding = false;
-            tell(2, last);
+            tell(StateUIPressPhaseTakenAway, last);
         }
 
-        void tell(int32_t phase, Point at) {
+        void tell(StateUIPressPhase phase, Point at) {
             last = at;
             callbacks.canvasPressed(view, phase, at.X, at.Y);
         }
@@ -503,10 +506,11 @@ namespace {
         void watch(xaml::XamlRoot const &root) {
             if (watched.get() != root) {
                 watched = winrt::make_weak(root);
-                rootChanged = root.Changed(winrt::auto_revoke, {get_weak(), &StateUICanvas::rootChange});
+                rootChanged = root.Changed(winrt::auto_revoke, guarded("handling Changed", get_weak(), &StateUICanvas::rootChange));
             }
             if (!contentsLost)
-                contentsLost = media::CompositionTarget::SurfaceContentsLost(winrt::auto_revoke, {get_weak(), &StateUICanvas::surfaceLost});
+                contentsLost = media::CompositionTarget::SurfaceContentsLost(
+                    winrt::auto_revoke, guarded("handling SurfaceContentsLost", get_weak(), &StateUICanvas::surfaceLost));
         }
 
         void rootChange(xaml::XamlRoot const &root, xaml::XamlRootChangedEventArgs const &) {

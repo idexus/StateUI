@@ -10,7 +10,7 @@
 ///     Rectangle().opacity($fade)
 ///
 ///     fade = 0.2                                         // the destination: the box animates there
-///     $fade.journey.move(to: 0.2, .eased(400))           // the same, under a law of its own
+///     $fade.journey.move(to: 0.2, .eased(.milliseconds(400)))           // the same, under a law of its own
 ///     try await $fade.journey.move(to: 1).arrived()      // back, waiting for the arrival
 ///     $fade.journey.value                                // where it has got to this frame
 ///     $fade.journey.velocity                             // and how fast
@@ -32,6 +32,16 @@ public struct Journey<Value: Walked> {
 
     /// The journey of a state, reached as `$fade.journey`.
     init(of state: Binding<Value>) { self.state = state }
+
+    /// Where the host walks the value, whatever a run shows: what the run moving it
+    /// works out its own place from.
+    var walked: Value { lanes()?.value ?? state.wrappedValue }
+
+    /// The run `owner` shows the value at `value` while it moves it; nil once it rests.
+    /// Design: docs/design/core/journeys.md#where-a-run-shows-it
+    func show(_ value: Value?, by owner: ObjectIdentifier) {
+        storage?.show(value, by: owner)
+    }
 
     /// The lanes as they stand, with the read recorded against the image.
     /// Design: docs/design/core/journeys.md#two-reader-sets
@@ -60,7 +70,10 @@ public struct Journey<Value: Walked> {
     /// frames with no render. Written, it moves only what is shown and leaves the
     /// destination, so the host goes straight back; `snap(to:)` sets all three.
     public var value: Value {
-        get { lanes()?.value ?? state.wrappedValue }
+        get {
+            let walked = lanes()?.value
+            return storage?.shown?.value ?? walked ?? state.wrappedValue
+        }
 
         nonmutating set {
             guard HandlerRun.admits("a journey's value") else { return }
@@ -154,7 +167,7 @@ public struct Journey<Value: Walked> {
     /// Sends the value there under `motion` - now, before the next line runs - and
     /// answers the movement, whose `arrived()` waits for its end.
     ///
-    ///     try await $fade.journey.move(to: 0.1, .eased(400, .cubicOut)).arrived()
+    ///     try await $fade.journey.move(to: 0.1, .eased(.milliseconds(400), .cubicOut)).arrived()
     ///
     ///     let fading = $fade.journey.move(to: 0)       // both start now, in this order
     ///     let sliding = $offset.journey.move(to: .zero)
@@ -168,10 +181,26 @@ public struct Journey<Value: Walked> {
     ///
     /// - Parameters:
     ///   - target: where to send it.
-    ///   - motion: the law to animate under, or nothing for the value's own.
+    ///   - motion: the law to animate under - `.none` to travel under no motion.
     /// - Returns: the movement, to await its arrival or leave going.
     @discardableResult
-    public func move(to target: Value, _ motion: Motion? = nil) -> Arrival {
+    public func move(to target: Value, _ motion: Motion) -> Arrival {
+        send(to: target, under: motion)
+    }
+
+    /// Sends the value there under its own law, as `move(to:_:)` does under one given.
+    ///
+    /// - Parameter target: where to send it.
+    /// - Returns: the movement, to await its arrival or leave going.
+    @discardableResult
+    public func move(to target: Value) -> Arrival {
+        send(to: target, under: nil)
+    }
+
+    /// Sends the value there under `motion`, or its own law where none is given: the two `move`s, each spelling
+    /// one, so `.none` is always the law that does not move.
+    /// Design: docs/design/core/journeys.md#moving-and-waiting
+    private func send(to target: Value, under motion: Motion?) -> Arrival {
         guard HandlerRun.admits("a movement") else { return Arrival(at: false) }
         guard let (storage, image, lanes) = walking() else {
             complain("`move` was called on a part of a state, a binding made from closures, "
@@ -183,7 +212,14 @@ public struct Journey<Value: Walked> {
         // Nothing animates it, or an engine does: the destination is written through the
         // state and it arrives at once.
         // Design: docs/design/core/journeys.md#moving-and-waiting
-        if image.number == nil || lanes.motion.isCustom {
+        if image.ties == 0 || lanes.motion.isCustom {
+            // The law given stays on the value here too.
+            if let motion {
+                var lawful = lanes
+                lawful.motion = motion
+                storage.lay([.motion], of: lawful)
+            }
+
             state.wrappedValue = target
             return Arrival(at: true)
         }
@@ -196,13 +232,36 @@ public struct Journey<Value: Walked> {
 
         if let motion { travelling.motion = motion }
 
-        // The waiter forces the destination: a fresh journey even to where it is going.
+        // The waiter forces the destination only where no lane of it changes - a fresh journey even to where it is
+        // going; otherwise the lanes it changes are the journey, and the others travel on.
+        // Design: docs/design/core/journeys.md#moving-and-waiting
+        let fresh = lanes.destination == target ? JourneyLanes<Value>.mask(of: .destination) : 0
         storage.lay(
             [.destination, .completion, .motion], of: travelling,
-            forcing: JourneyLanes<Value>.mask(of: .destination) | JourneyLanes<Value>.mask(of: .completion))
+            forcing: fresh | JourneyLanes<Value>.mask(of: .completion))
 
         storage.moved(to: target)
         return arrival
+    }
+
+    /// Puts one part of the value there at once, as `snap(to:)` does the whole: the other lanes go on as they were.
+    /// Design: docs/design/core/journeys.md#one-part-at-once
+    func snap(_ part: WritableKeyPath<Value, Double>, to target: Double) {
+        guard HandlerRun.admits("a snap") else { return }
+        guard let (storage, _, standing) = walking() else {
+            var landed = state.wrappedValue
+            landed[keyPath: part] = target
+            return state.land(landed)
+        }
+
+        var lanes = standing
+
+        lanes.value[keyPath: part] = target
+        lanes.destination[keyPath: part] = target
+        lanes.velocity[keyPath: part] = 0
+        storage.lay([.value, .destination, .velocity], of: lanes)
+        storage.noteDestination(lanes.destination)
+        storage.askForRender()
     }
 
     /// Stops an animation where it stands; whoever waits on it hears it did not run

@@ -15,10 +15,14 @@ extension UIKitElement: FrameReporter {
         view != nil && element.readsOwnFrame
     }
 
-    /// Says where the element stands, where that changed (`MountedElement.reportFrame`).
+    /// Says where the element stands, where that changed (`MountedElement.reportFrame`) - a split view, where its
+    /// sidebar stands too.
     func reportFrame() {
         guard let host, let numbers = frameNumbers() else { return }
         element.reportFrame(numbers, in: host.runtime)
+        if let split = controller as? UIKitSplitViewController {
+            element.reportSidebarOverlays(split.overlays, in: host.runtime)
+        }
     }
 
     /// Where the view stands now: in its parent, in its window, and from the safe area of the page it stands on -

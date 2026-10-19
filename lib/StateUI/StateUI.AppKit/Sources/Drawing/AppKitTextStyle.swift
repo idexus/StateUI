@@ -92,12 +92,14 @@ func appKitAttributes(_ look: TextLook, font: NSFont, fallbackColor: NSColor) ->
     return attributes
 }
 
-/// Where text sits across its element, as AppKit draws it.
-func appKitTextAlignment(_ value: Int32?) -> NSTextAlignment {
-    switch value {
-    case 1: return .center
-    case 2: return .right
-    default: return .left
+extension NSTextAlignment {
+    /// Where text sits across its element, as AppKit draws it: a line's start and end as `direction` says them.
+    init(_ alignment: TextAlignment?, in direction: NSUserInterfaceLayoutDirection) {
+        self = switch alignment ?? .start {
+        case .start: direction == .rightToLeft ? .right : .left
+        case .center: .center
+        case .end: direction == .rightToLeft ? .left : .right
+        }
     }
 }
 

@@ -114,6 +114,7 @@ final class CycleBoard {
         }
 
         storage.stamp &+= 1
+        if laid != 0 { storage.reports &+= 1 }
 
         if cycling {
             lay(into: &storage.image)
@@ -137,10 +138,13 @@ final class CycleBoard {
         var answered: [(number: Int32, mask: UInt64, bytes: [UInt8])] = []
 
         for held in storages {
-            guard let storage = held.storage, storage.dirty != 0,
-                  let number = storage.number else { continue }
+            guard let storage = held.storage, storage.dirty != 0 else { continue }
 
-            answered.append((number, storage.dirty, storage.crossing()))
+            // A state with no number has no reader; a registration later reads it whole.
+            if let number = storage.number {
+                answered.append((number, storage.dirty, storage.crossing()))
+            }
+
             storage.dirty = 0
         }
 
@@ -187,13 +191,23 @@ final class CycleBoard {
 
     /// Whether anything at all is waiting for a cycle.
     var awake: Bool {
-        stirring || storages.contains {
-            $0.storage?.pending != nil || ($0.storage?.dirty ?? 0) != 0
-        }
+        stirring || written
+    }
+
+    /// Whether anything waits that a turn answers at once: a write latched or to be, an engine armed or a state it
+    /// follows written. An engine going on of its own waits for the display's frame.
+    /// Design: docs/design/core/cycle.md#what-wakes-an-engine
+    var asked: Bool {
+        written || engines.contains { $0.asked }
+    }
+
+    /// Whether a write waits: one to latch, or one latched the host has not read.
+    private var written: Bool {
+        storages.contains { $0.storage?.pending != nil || ($0.storage?.dirty ?? 0) != 0 }
     }
 
     /// One cycle: what was written latched, the engines with a reason run, and what
-    /// they wrote published. A first cycle, or one after a long silence, only latches.
+    /// they wrote published. A first cycle, or one after a long silence, tells them nought.
     /// Design: docs/design/core/cycle.md#a-start-is-a-gap
     @discardableResult
     func cycle(now instant: Double, reducesMotion: Bool) -> CycleReport {
@@ -214,14 +228,14 @@ final class CycleBoard {
             report.latched += 1
         }
 
-        // A start moves every engine's clock to now, without noting where values stand.
+        // A start moves every engine's clock to now: one with a reason runs, told nought.
         if started {
             for place in engines.indices { engines[place].lastRan = now }
         }
 
         // Each engine is asked for its reason just before its turn, so a write an earlier one
         // made wakes it in the same cycle.
-        for id in started ? [] : engines.map(\.id) {
+        for id in engines.map(\.id) {
             guard let place = place(of: id), engines[place].due else {
                 report.skipped += 1
                 continue
@@ -262,6 +276,12 @@ final class CycleBoard {
         return report
     }
 
+    /// A clock of its own: the board's time starts over on it, and its next cycle is a start.
+    func restartClock() {
+        last = 0
+        count = 0
+    }
+
     /// Forgets everything - a fresh process's board, for a test.
     func clear() {
         storages = []
@@ -271,8 +291,8 @@ final class CycleBoard {
         count = 0
     }
 
-    /// Whether any engine has a reason to run. A latching cycle counts it too, so the
-    /// clock is not let go with work piled up.
+    /// Whether any engine has a reason to run, so the clock is not let go with work
+    /// piled up.
     private var stirring: Bool { engines.contains { $0.due } }
 
     /// Where the engine registered under `id` stands in the running order.

@@ -17,8 +17,8 @@ final class WebPlacements {
     /// The layouts whose children travel, held weakly.
     private var followed: [ObjectIdentifier: Followed] = [:]
 
-    /// Whether the places as they stood before this call's changes are read.
-    private var readBefore = false
+    /// The layouts whose children's places, as they stood before this call's changes, are read.
+    private var read: Set<ObjectIdentifier> = []
 
     /// The layouts arranged in this call, in their order, and the views whose places moved.
     private var arranged: [WebLayoutView] = []
@@ -29,16 +29,23 @@ final class WebPlacements {
         followed[ObjectIdentifier(layout)] = Followed(layout: layout)
     }
 
-    /// Reads where every standing child stands, before the first change of this call moves any.
-    func beforeChange() {
-        guard !readBefore else { return }
-        readBefore = true
-        followed = followed.filter { $0.value.layout?.isReleased == false }
-        let standing = followed.values.compactMap(\.layout).flatMap { layout in
+    /// Reads where the standing children of the followed layouts in `layouts` - a changing view's own and those
+    /// above it, nearest first - stand, before this call's first change among them moves any: a change moves its
+    /// own layouts' children alone, and a layout read once a call has every one above it read.
+    /// Design: docs/design/platforms/web/layout.md#places-that-travel
+    func beforeChange(along layouts: [WebLayoutView]) {
+        var reading: [WebLayoutView] = []
+        for layout in layouts where followed[ObjectIdentifier(layout)] != nil && !layout.isReleased {
+            guard read.insert(ObjectIdentifier(layout)).inserted else { break }
+            reading.append(layout)
+        }
+        guard !reading.isEmpty else { return }
+
+        let standing = reading.flatMap { layout in
             layout.children.filter { $0.travelling == nil && !$0.isReleased }.map { (layout, $0) }
         }
-        let read = WebRelay.places(standing.map { ($0.0.node, $0.1.node) })
-        for ((_, child), place) in zip(standing, read) { child.slot = child.frame(laidOut: place) }
+        let places = WebRelay.places(standing.map { ($0.0.node, $0.1.node) })
+        for ((_, child), place) in zip(standing, places) { child.slot = child.frame(laidOut: place) }
     }
 
     /// `layout` arranged its children in this call.
@@ -54,7 +61,9 @@ final class WebPlacements {
     /// The call is over: each layout arranged places its children where the browser laid them out, travelling there
     /// from where they stood, and every view whose place moved is drawn where it stands.
     func settle() {
-        defer { readBefore = false }
+        defer { read = [] }
+        // Let go of released layouts where this call read any: not every frame.
+        if !read.isEmpty { followed = followed.filter { $0.value.layout?.isReleased == false } }
         let layouts = arranged.filter { !$0.isReleased }
         arranged = []
         if !layouts.isEmpty { place(layouts) }

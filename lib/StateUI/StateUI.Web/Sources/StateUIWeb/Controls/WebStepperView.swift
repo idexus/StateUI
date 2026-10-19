@@ -38,7 +38,7 @@ final class WebStepperView: WebDOMView {
         for (index, part) in [down, field, up].enumerated() { WebRelay.insert(part.node, into: node, at: index) }
         down.listen("click") { [weak self] in self?.stepped(by: -1) }
         up.listen("click") { [weak self] in self?.stepped(by: 1) }
-        field.listen("steps") { [weak self] in self?.stepped(by: WebRelay.eventDetail < 0 ? -1 : 1) }
+        field.hear(.steps) { [weak self] in self?.stepped(by: WebRelay.eventDetail < 0 ? -1 : 1) }
         field.listen("change") { [weak self] in self?.typed() }
     }
 

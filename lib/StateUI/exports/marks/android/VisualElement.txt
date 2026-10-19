@@ -1,11 +1,10 @@
-# revision 12.1
+# revision 14.1
 ActivityIndicator.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.automationExcludedWithChildren: ✅
 ActivityIndicator.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ActivityIndicator.frame: ✅
-ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
 ActivityIndicator.ignoresInput: not realized
 ActivityIndicator.isAccessibilityHidden: ✅
@@ -35,9 +34,8 @@ Button.accessibilityHeading: ☑️ Android marks a heading, not its level: ever
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
 Button.automationExcludedWithChildren: ✅
-Button.background: does not apply - read a background of no one colour - StateUI draws the box in a drawable of its own, which holds no one colour; its drawing proves it
+Button.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Button.frame: ✅
-Button.frameChanged: ✅
 Button.height: ✅
 Button.ignoresInput: not realized
 Button.isAccessibilityHidden: ✅
@@ -69,7 +67,6 @@ Canvas.accessibilityLabel: ✅
 Canvas.automationExcludedWithChildren: ✅
 Canvas.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Canvas.frame: ✅
-Canvas.frameChanged: ✅
 Canvas.height: ✅
 Canvas.ignoresInput: not realized
 Canvas.isAccessibilityHidden: ✅
@@ -101,7 +98,6 @@ Capsule.accessibilityLabel: ✅
 Capsule.automationExcludedWithChildren: ✅
 Capsule.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Capsule.frame: ✅
-Capsule.frameChanged: ✅
 Capsule.height: ✅
 Capsule.ignoresInput: not realized
 Capsule.isAccessibilityHidden: ✅
@@ -133,7 +129,6 @@ CheckBox.accessibilityLabel: ✅
 CheckBox.automationExcludedWithChildren: ✅
 CheckBox.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 CheckBox.frame: ✅
-CheckBox.frameChanged: ✅
 CheckBox.height: ✅
 CheckBox.ignoresInput: not realized
 CheckBox.isAccessibilityHidden: ✅
@@ -165,7 +160,6 @@ DatePicker.accessibilityLabel: ✅
 DatePicker.automationExcludedWithChildren: ✅
 DatePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 DatePicker.frame: ✅
-DatePicker.frameChanged: ✅
 DatePicker.height: ✅
 DatePicker.ignoresInput: not realized
 DatePicker.isAccessibilityHidden: ✅
@@ -197,7 +191,6 @@ Divider.accessibilityLabel: ✅
 Divider.automationExcludedWithChildren: ✅
 Divider.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Divider.frame: ✅
-Divider.frameChanged: ✅
 Divider.height: ✅
 Divider.ignoresInput: not realized
 Divider.isAccessibilityHidden: ✅
@@ -229,7 +222,6 @@ Ellipse.accessibilityLabel: ✅
 Ellipse.automationExcludedWithChildren: ✅
 Ellipse.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Ellipse.frame: ✅
-Ellipse.frameChanged: ✅
 Ellipse.height: ✅
 Ellipse.ignoresInput: not realized
 Ellipse.isAccessibilityHidden: ✅
@@ -261,7 +253,6 @@ Grid.accessibilityLabel: ✅
 Grid.automationExcludedWithChildren: ✅
 Grid.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Grid.frame: ✅
-Grid.frameChanged: ✅
 Grid.height: ✅
 Grid.ignoresInput: cannot read what reaches Grid - Android's driver has no path for it yet
 Grid.isAccessibilityHidden: ✅
@@ -293,7 +284,6 @@ HStack.accessibilityLabel: ✅
 HStack.automationExcludedWithChildren: ✅
 HStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 HStack.frame: ✅
-HStack.frameChanged: ✅
 HStack.height: ✅
 HStack.ignoresInput: cannot read what reaches HStack - Android's driver has no path for it yet
 HStack.isAccessibilityHidden: ✅
@@ -325,7 +315,6 @@ Image.accessibilityLabel: ✅
 Image.automationExcludedWithChildren: ✅
 Image.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Image.frame: ✅
-Image.frameChanged: ✅
 Image.height: ✅
 Image.ignoresInput: not realized
 Image.isAccessibilityHidden: ✅
@@ -357,7 +346,6 @@ ItemsView.accessibilityLabel: ✅
 ItemsView.automationExcludedWithChildren: ✅
 ItemsView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ItemsView.frame: ✅
-ItemsView.frameChanged: ✅
 ItemsView.height: ✅
 ItemsView.ignoresInput: not realized
 ItemsView.isAccessibilityHidden: ✅
@@ -383,13 +371,43 @@ ItemsView.translationX: ✅
 ItemsView.translationY: ✅
 ItemsView.width: ✅
 ItemsView.zIndex: ✅
+LayoutEngine.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+LayoutEngine.accessibilityHint: ✅
+LayoutEngine.accessibilityLabel: ✅
+LayoutEngine.automationExcludedWithChildren: ✅
+LayoutEngine.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+LayoutEngine.frame: ✅
+LayoutEngine.height: ✅
+LayoutEngine.ignoresInput: cannot read what reaches LayoutEngine - Android's driver has no path for it yet
+LayoutEngine.isAccessibilityHidden: ✅
+LayoutEngine.isEnabled: ✅
+LayoutEngine.isVisible: ✅
+LayoutEngine.layoutDirection: ✅
+LayoutEngine.maximumHeight: ✅
+LayoutEngine.maximumWidth: ✅
+LayoutEngine.minimumHeight: ✅
+LayoutEngine.minimumWidth: ✅
+LayoutEngine.opacity: ✅
+LayoutEngine.pivotX: ✅
+LayoutEngine.pivotY: ✅
+LayoutEngine.rotation: ✅
+LayoutEngine.rotationX: ✅
+LayoutEngine.rotationY: ✅
+LayoutEngine.scale: ✅
+LayoutEngine.scaleX: ✅
+LayoutEngine.scaleY: ✅
+LayoutEngine.style: not realized
+LayoutEngine.tooltip: ✅
+LayoutEngine.translationX: ✅
+LayoutEngine.translationY: ✅
+LayoutEngine.width: ✅
+LayoutEngine.zIndex: ✅
 Line.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
 Line.automationExcludedWithChildren: ✅
 Line.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Line.frame: ✅
-Line.frameChanged: ✅
 Line.height: ✅
 Line.ignoresInput: not realized
 Line.isAccessibilityHidden: ✅
@@ -421,7 +439,6 @@ Map.accessibilityLabel: 🧩
 Map.automationExcludedWithChildren: 🧩
 Map.background: 🧩
 Map.frame: 🧩
-Map.frameChanged: 🧩
 Map.height: 🧩
 Map.ignoresInput: 🧩
 Map.isAccessibilityHidden: 🧩
@@ -453,7 +470,6 @@ Path.accessibilityLabel: ✅
 Path.automationExcludedWithChildren: ✅
 Path.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Path.frame: ✅
-Path.frameChanged: ✅
 Path.height: ✅
 Path.ignoresInput: not realized
 Path.isAccessibilityHidden: ✅
@@ -485,7 +501,6 @@ Picker.accessibilityLabel: ✅
 Picker.automationExcludedWithChildren: ✅
 Picker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Picker.frame: ✅
-Picker.frameChanged: ✅
 Picker.height: ✅
 Picker.ignoresInput: not realized
 Picker.isAccessibilityHidden: ✅
@@ -517,7 +532,6 @@ Polygon.accessibilityLabel: ✅
 Polygon.automationExcludedWithChildren: ✅
 Polygon.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Polygon.frame: ✅
-Polygon.frameChanged: ✅
 Polygon.height: ✅
 Polygon.ignoresInput: not realized
 Polygon.isAccessibilityHidden: ✅
@@ -549,7 +563,6 @@ Polyline.accessibilityLabel: ✅
 Polyline.automationExcludedWithChildren: ✅
 Polyline.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Polyline.frame: ✅
-Polyline.frameChanged: ✅
 Polyline.height: ✅
 Polyline.ignoresInput: not realized
 Polyline.isAccessibilityHidden: ✅
@@ -581,7 +594,6 @@ ProgressBar.accessibilityLabel: ✅
 ProgressBar.automationExcludedWithChildren: ✅
 ProgressBar.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ProgressBar.frame: ✅
-ProgressBar.frameChanged: ✅
 ProgressBar.height: ✅
 ProgressBar.ignoresInput: not realized
 ProgressBar.isAccessibilityHidden: ✅
@@ -613,7 +625,6 @@ RadioButton.accessibilityLabel: ✅
 RadioButton.automationExcludedWithChildren: ✅
 RadioButton.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 RadioButton.frame: ✅
-RadioButton.frameChanged: ✅
 RadioButton.height: ✅
 RadioButton.ignoresInput: not realized
 RadioButton.isAccessibilityHidden: ✅
@@ -645,7 +656,6 @@ Rectangle.accessibilityLabel: ✅
 Rectangle.automationExcludedWithChildren: ✅
 Rectangle.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Rectangle.frame: ✅
-Rectangle.frameChanged: ✅
 Rectangle.height: ✅
 Rectangle.ignoresInput: not realized
 Rectangle.isAccessibilityHidden: ✅
@@ -677,7 +687,6 @@ ScrollView.accessibilityLabel: ✅
 ScrollView.automationExcludedWithChildren: ✅
 ScrollView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ScrollView.frame: ✅
-ScrollView.frameChanged: ✅
 ScrollView.height: ✅
 ScrollView.ignoresInput: not realized
 ScrollView.isAccessibilityHidden: ✅
@@ -709,7 +718,6 @@ SearchField.accessibilityLabel: ✅
 SearchField.automationExcludedWithChildren: ✅
 SearchField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 SearchField.frame: ✅
-SearchField.frameChanged: ✅
 SearchField.height: ✅
 SearchField.ignoresInput: not realized
 SearchField.isAccessibilityHidden: ✅
@@ -741,7 +749,6 @@ Slider.accessibilityLabel: ✅
 Slider.automationExcludedWithChildren: ✅
 Slider.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Slider.frame: ✅
-Slider.frameChanged: ✅
 Slider.height: ✅
 Slider.ignoresInput: not realized
 Slider.isAccessibilityHidden: ✅
@@ -773,7 +780,6 @@ Spacer.accessibilityLabel: ✅
 Spacer.automationExcludedWithChildren: ✅
 Spacer.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Spacer.frame: ✅
-Spacer.frameChanged: ✅
 Spacer.height: ✅
 Spacer.ignoresInput: not realized
 Spacer.isAccessibilityHidden: ✅
@@ -805,7 +811,6 @@ Stepper.accessibilityLabel: ✅
 Stepper.automationExcludedWithChildren: ✅
 Stepper.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Stepper.frame: ✅
-Stepper.frameChanged: ✅
 Stepper.height: ✅
 Stepper.ignoresInput: not realized
 Stepper.isAccessibilityHidden: ✅
@@ -837,7 +842,6 @@ Switch.accessibilityLabel: ✅
 Switch.automationExcludedWithChildren: ✅
 Switch.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Switch.frame: ✅
-Switch.frameChanged: ✅
 Switch.height: ✅
 Switch.ignoresInput: not realized
 Switch.isAccessibilityHidden: ✅
@@ -869,7 +873,6 @@ Text.accessibilityLabel: ✅
 Text.automationExcludedWithChildren: ✅
 Text.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Text.frame: ✅
-Text.frameChanged: ✅
 Text.height: ✅
 Text.ignoresInput: not realized
 Text.isAccessibilityHidden: ✅
@@ -901,7 +904,6 @@ TextEditor.accessibilityLabel: ✅
 TextEditor.automationExcludedWithChildren: ✅
 TextEditor.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 TextEditor.frame: ✅
-TextEditor.frameChanged: ✅
 TextEditor.height: ✅
 TextEditor.ignoresInput: not realized
 TextEditor.isAccessibilityHidden: ✅
@@ -933,7 +935,6 @@ TextField.accessibilityLabel: ✅
 TextField.automationExcludedWithChildren: ✅
 TextField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 TextField.frame: ✅
-TextField.frameChanged: ✅
 TextField.height: ✅
 TextField.ignoresInput: not realized
 TextField.isAccessibilityHidden: ✅
@@ -965,7 +966,6 @@ TimePicker.accessibilityLabel: ✅
 TimePicker.automationExcludedWithChildren: ✅
 TimePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 TimePicker.frame: ✅
-TimePicker.frameChanged: ✅
 TimePicker.height: ✅
 TimePicker.ignoresInput: not realized
 TimePicker.isAccessibilityHidden: ✅
@@ -997,7 +997,6 @@ VStack.accessibilityLabel: ✅
 VStack.automationExcludedWithChildren: ✅
 VStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 VStack.frame: ✅
-VStack.frameChanged: ✅
 VStack.height: ✅
 VStack.ignoresInput: cannot read what reaches VStack - Android's driver has no path for it yet
 VStack.isAccessibilityHidden: ✅
@@ -1029,7 +1028,6 @@ WebView.accessibilityLabel: ✅
 WebView.automationExcludedWithChildren: ✅
 WebView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 WebView.frame: ✅
-WebView.frameChanged: ✅
 WebView.height: ✅
 WebView.ignoresInput: not realized
 WebView.isAccessibilityHidden: ✅
@@ -1061,7 +1059,6 @@ ZStack.accessibilityLabel: ✅
 ZStack.automationExcludedWithChildren: ✅
 ZStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ZStack.frame: ✅
-ZStack.frameChanged: ✅
 ZStack.height: ✅
 ZStack.ignoresInput: cannot read what reaches ZStack - Android's driver has no path for it yet
 ZStack.isAccessibilityHidden: ✅

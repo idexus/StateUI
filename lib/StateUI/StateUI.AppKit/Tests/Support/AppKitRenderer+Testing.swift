@@ -43,7 +43,7 @@ extension AppKitRenderer {
         runtime.intake.take(patch, generation: runtime.intake.baseline &+ 1) {
             runtime.tree.apply($0, complete: true)
         }
-        presentRendered()
+        presentRendered(touchedChrome: runtime.tree.takeChromeTouched())
         runtime.pump.turn()
     }
 

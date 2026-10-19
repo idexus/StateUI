@@ -13,8 +13,8 @@
     public static let name = "VisualElement"
 
     public static var cases: [ConformanceCase] {
-        Specimens.wearing(VisualElementContract.self).flatMap { element in
-            [
+        Specimens.wearing(VisualElementContract.self).flatMap { element -> [ConformanceCase] in
+            let held: [ConformanceCase] = [
                 shown(element), opacity(element), enabled(element), sized(element), bounded(element),
                 reachable(element), framed(element), styled(element), layered(element),
                 headed(element),
@@ -38,10 +38,12 @@
                 Aspects.holds(VisualElementContract.translationX, on: element, 0, then: 10),
                 Aspects.holds(VisualElementContract.translationY, on: element, 0, then: -10),
             ]
-                + (answeringByGestures.contains(element) ? [answering(element)] : [])
-                + (layouts.contains(element) ? [disablingItsBranch(element), directingItsChild(element)] : [])
-                + (boxes.contains(element) ? [blurredOrGlass(element)] : [])
-                + (element == "VStack" ? [followsAMaterial] : [])
+            let answered: [ConformanceCase] = answeringByGestures.contains(element) ? [answering(element)] : []
+            let laidOut: [ConformanceCase] = layouts.contains(element)
+                ? [disablingItsBranch(element), directingItsChild(element)] : []
+            let boxed: [ConformanceCase] = boxes.contains(element) ? [blurredOrGlass(element)] : []
+            let material: [ConformanceCase] = element == "VStack" ? [followsAMaterial] : []
+            return held + answered + laidOut + boxed + boxFilled(element) + material
         }
     }
 
@@ -53,7 +55,7 @@
     ]
 
     /// The layouts drawing their own box, whose background may be a blur or glass.
-    static let boxes: Set<String> = ["Grid", "HStack", "VStack", "ZStack"]
+    static let boxes: Set<String> = ["Grid", "HStack", "LayoutEngine", "VStack", "ZStack"]
 
     /// A box's background is the blur the tree gives it and then the glass it changes it to - or what stands in for
     /// the glass, the blur as clear as it is, whose colour a host that blurs nothing paints.
@@ -106,7 +108,7 @@
     }
 
     /// The views holding others: their `isEnabled` is their branch's, and they lay their child out in their direction.
-    static let layouts: Set<String> = ["Grid", "HStack", "ScrollView", "VStack", "ZStack"]
+    static let layouts: Set<String> = ["Grid", "HStack", "LayoutEngine", "ScrollView", "VStack", "ZStack"]
 
     /// A view is shown or not as the tree says, and hides when the tree says so.
     @MainActor
@@ -240,6 +242,7 @@
                 VStack {
                     Specimens.holding(layout, Button("Inside").id("inside"), [
                         Write(VisualElementContract.isEnabled, enabled.wrappedValue),
+                        Write(VisualElementContract.height, 60),
                     ])
                     Button("Enable").onClicked { enabled.wrappedValue = true }.id("change")
                 }
@@ -308,13 +311,18 @@
         }
     }
 
+    /// A drawn box's fill, where `element` is one (`BorderElementTests.drawnBoxes`).
+    @MainActor
+    static func boxFilled(_ element: String) -> [ConformanceCase] {
+        BorderElementTests.drawnBoxes.contains(element) ? [BorderElementTests.boxFilled(element)] : []
+    }
+
     /// A view stands at the size the tree states.
     @MainActor
     static func sized(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsAtItsStatedSize", proves: [
             Covered(VisualElementContract.width, on: element), Covered(VisualElementContract.height, on: element),
-            Covered(ViewContract.frameChanged, on: element),
-        ]) { s in
+        ], needs: [Covered(ViewContract.frameChanged, on: element)]) { s in
             let frames = Received<[Double]>()
             s.start {
                 VStack {
@@ -338,8 +346,8 @@
             Covered(VisualElementContract.maximumWidth, on: element),
             Covered(VisualElementContract.minimumWidth, on: element),
             Covered(VisualElementContract.maximumHeight, on: element),
-            Covered(VisualElementContract.minimumHeight, on: element), Covered(ViewContract.frameChanged, on: element),
-        ]) { s in
+            Covered(VisualElementContract.minimumHeight, on: element),
+        ], needs: [Covered(ViewContract.frameChanged, on: element)]) { s in
             let narrowed = Received<[Double]>()
             let widened = Received<[Double]>()
             s.start {

@@ -179,7 +179,7 @@ extension UIKitSplitViewController {
     /// The motion UIKit slides a sidebar beside its detail by: a spring answering in 340 ms, at rest without
     /// overshooting.
     /// Design: docs/design/platforms/uikit/pages.md#a-split-view
-    static let sidebarMotion = Motion.spring(response: 340)
+    static let sidebarMotion = Motion.spring(response: .milliseconds(340))
 
     /// Follows UIKit's slide of the sidebar on `sidebarSlide`, the split mounted as `mount`: as UIKit gives the detail
     /// at once the safe area of where the sidebar is going, the detail's shown pages stand as far from their leading

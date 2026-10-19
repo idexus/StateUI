@@ -69,11 +69,11 @@
         let library = Set(LibraryContracts.elements.map { $0.nodeType.name })
         var byElement: [String: Set<String>] = [:]
 
-        for element in realization.elements where library.contains(element) {
-            byElement[element] = []
+        for element in realization.elements where library.contains(element.name) {
+            byElement[element.name] = []
         }
-        for member in realization.members where byElement[member.element] != nil {
-            byElement[member.element, default: []].insert(member.member)
+        for member in realization.members where byElement[member.element.name] != nil {
+            byElement[member.element.name, default: []].insert(member.member.name)
         }
 
         var elements: [String: Element] = [:]
@@ -179,28 +179,33 @@
 
     /// What this declaration means against the contracts: the same members, each
     /// under the contract declaring it - the first contract in `worn` that
-    /// declares a member of that name. A member no contract declares is left out
-    /// rather than guessed at.
+    /// declares a member of that name; what the shared machinery realizes, under
+    /// the first tier the element wears declaring it, as the machinery realizes a
+    /// tier's member and never an element's own of the same name. A member no
+    /// contract declares is left out rather than guessed at.
     public var realization: HostRealization {
         var members: Set<HostRealizedMember> = []
-        var elements: Set<String> = []
-        let sharedNames = shared.members.union(shared.events).union(acts)
+        var elements: Set<NodeType> = []
+        let sharedNames = shared.members.union(shared.events)
 
         for (name, declared) in self.elements {
-            elements.insert(name)
+            elements.insert(NodeType(name))
 
             guard let contract = LibraryContracts.elements.first(where: { $0.nodeType.name == name })
             else { continue }
 
-            // The element's own, then every shared member whose contract this element wears.
-            for member in declared.members.union(declared.events).union(sharedNames) {
-                guard let owner = contract.worn.first(where: { owner in
-                    owner.members.contains { $0.name == member }
-                }) else { continue }
+            func realize(_ names: Set<String>, among owners: some Collection<any Contract.Type>) {
+                for member in names {
+                    guard let owner = owners.first(where: { owner in owner.members.contains { $0.name == member } })
+                    else { continue }
 
-                members.insert(
-                    HostRealizedMember(element: name, owner: owner.name, member: member))
+                    members.insert(HostRealizedMember(element: name, owner: owner.name, member: member))
+                }
             }
+
+            // The element's own and the acts, then every shared member of a tier this element wears.
+            realize(declared.members.union(declared.events).union(acts), among: contract.worn)
+            realize(sharedNames, among: contract.worn.dropFirst())
         }
 
         return HostRealization(elements: elements, members: members)
@@ -212,8 +217,10 @@
     public var tierMembers: [(owner: String, member: String)] {
         var found: [(owner: String, member: String)] = []
 
+        // The shared machinery's under a tier, by the rule `realization` reads it with; an act under any contract.
         for member in shared.members.union(shared.events).union(acts).sorted() {
-            guard let owner = LibraryContracts.all.first(where: { owner in
+            let owners = acts.contains(member) ? LibraryContracts.all : LibraryContracts.tiers
+            guard let owner = owners.first(where: { owner in
                 owner.members.contains { $0.name == member }
             }) else { continue }
 

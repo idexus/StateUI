@@ -23,34 +23,26 @@ import java.util.ArrayList;
 final class StateUIDrags {
     private StateUIDrags() {}
 
-    static final int STARTED = 0;
-    static final int ENDED = 1;
-    static final int OVER = 2;
-    static final int LEFT = 3;
-    static final int DROPPED = 4;
+    // Swift: AndroidDragEvent
+    static final int STARTED = 0, ENDED = 1, OVER = 2, LEFT = 3, DROPPED = 4;
 
     /** The leave to read the documents dropped, kept while the application runs. */
     private static final ArrayList<DragAndDropPermissions> granted = new ArrayList<>();
 
     /**
      * The view's drag carries `words` - null where it cannot be dragged - and it takes words dropped where `takesWords`,
-     * documents where `takesFiles`.
+     * documents where `takesFiles`. A drag starts as the host decides a long press starts one (`start`).
      */
     static void offer(View view, long number, String words, boolean takesWords, boolean takesFiles) {
-        if (words != null) {
-            view.setOnLongClickListener(held -> {
-                ClipData carried = ClipData.newPlainText("StateUI", words);
-                boolean started = held.startDragAndDrop(carried, new View.DragShadowBuilder(held), number, 0);
-                if (started) StateUIHost.dragHeard(number, STARTED, null);
-                return started;
-            });
-        } else {
-            view.setOnLongClickListener(null);
-            view.setLongClickable(false);
-        }
         boolean source = words != null;
         view.setOnDragListener(!source && !takesWords && !takesFiles ? null
             : (target, event) -> heard(target, number, source, takesWords, takesFiles, event));
+    }
+
+    /** Starts the view's drag, carrying `words`, its shadow the view: whether it started. */
+    static boolean start(View view, long number, String words) {
+        ClipData carried = ClipData.newPlainText("StateUI", words);
+        return view.startDragAndDrop(carried, new View.DragShadowBuilder(view), number, 0);
     }
 
     /** Whether a drag holds documents: anything but plain text. */

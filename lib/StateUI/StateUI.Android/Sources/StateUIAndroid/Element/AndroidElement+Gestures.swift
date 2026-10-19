@@ -13,12 +13,12 @@ extension AndroidElement {
         guard let view else { return }
         let hearing = element.hearing
         let count = max(1, Int(value(.tapCount)?.number ?? 1))
-        let heard: (HeardInput) -> Void = { [weak self] heard in
-            guard let self, let host else { return }
-            element.hear(heard, in: host.runtime)
+        let heard: (HeardInput) -> Bool = { [weak self] heard in
+            guard let self, let host else { return false }
+            return element.hear(heard, in: host.runtime)
         }
-        view.setTapped(hearing.contains(.taps) && count == 1 ? { heard(.tap(run: 1)) } : nil)
+        view.setTapped(hearing.contains(.taps) && count == 1 ? { _ = heard(.tap(run: 1)) } : nil)
         view.hear(hearing, countsTaps: count > 1, heard)
-        view.offer(element.dragAndDrop, heard)
+        view.offer(element.dragAndDrop) { _ = heard($0) }
     }
 }

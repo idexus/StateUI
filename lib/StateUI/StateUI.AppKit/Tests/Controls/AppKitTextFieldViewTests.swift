@@ -57,7 +57,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
             foregroundColor: .systemBlue,
             backgroundColor: .systemYellow,
             font: font,
-            horizontalAlignment: 1,
+            horizontalAlignment: .center,
             enabled: false,
             readOnly: true,
             maximumLength: 12)
@@ -82,7 +82,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
         view.frame = NSRect(x: 0, y: 0, width: 300, height: 44)
         apply(
             view, text: "", placeholder: "WWW", placeholderColor: .red, backgroundColor: .white,
-            font: .systemFont(ofSize: 22), horizontalAlignment: 1)
+            font: .systemFont(ofSize: 22), horizontalAlignment: .center)
         view.layoutSubtreeIfNeeded()
 
         let ink = try XCTUnwrap(try inkBounds(of: view, where: isRed), "the placeholder is drawn")
@@ -154,6 +154,30 @@ final class AppKitTextFieldViewTests: XCTestCase {
         XCTAssertFalse(view.textField is NSSecureTextField)
         XCTAssertFalse(view.isSecure)
         XCTAssertEqual(view.textField.stringValue, "secret")
+    }
+
+    /// Words an input method still composes stand as typed past the field's bound - cut, the composition would be
+    /// lost - and are cut once it commits them.
+    @MainActor
+    func testWordsStillComposedAreCutOnceCommitted() throws {
+        let view = AppKitTextFieldView()
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 300, height: 60), styleMask: [.titled], backing: .buffered,
+            defer: false)
+        view.frame = NSRect(x: 0, y: 0, width: 300, height: 30)
+        window.contentView?.addSubview(view)
+        apply(view, text: "", maximumLength: 4)
+        XCTAssertTrue(window.makeFirstResponder(view.textField))
+        let editor = try XCTUnwrap(view.textField.currentEditor() as? NSTextView)
+
+        editor.setMarkedText("zhongguo", selectedRange: NSRange(location: 8, length: 0), replacementRange: editor.selectedRange())
+        view.controlTextDidChange(Notification(name: .init("test"), object: view.textField))
+        XCTAssertEqual(editor.string, "zhongguo", "standing as composed")
+        XCTAssertTrue(editor.hasMarkedText(), "still composed")
+
+        editor.unmarkText()
+        view.controlTextDidChange(Notification(name: .init("test"), object: view.textField))
+        XCTAssertEqual(view.textField.stringValue, "zhon", "cut once committed")
     }
 
     @MainActor
@@ -263,7 +287,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
         foregroundColor: NSColor = .controlTextColor,
         backgroundColor: NSColor? = nil,
         font: NSFont = .systemFont(ofSize: NSFont.systemFontSize),
-        horizontalAlignment: Int32? = nil,
+        horizontalAlignment: TextAlignment? = nil,
         enabled: Bool = true,
         readOnly: Bool = false,
         secure: Bool = false,

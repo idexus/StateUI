@@ -16,15 +16,21 @@ is sent only when its value changes.
 A view moved, turned or scaled about its pivot is drawn with the host layer's
 matrix (`HostDrawingTransform.matrix`), as `matrix3d` from the view's top
 left corner, for the view's size in its layout: the order of the moves and the
-platform's sense of a turn are the host layer's, once.
+platform's sense of a turn are the host layer's, once. The matrix's words are
+kept with the transform and size they were written for: a run moving a view
+on, frame after frame, writes its `translate` again and not sixteen numbers
+it has not changed - words made of numbers cost a browser with no compiler for
+WebAssembly most of a frame.
 
 ## What assistive technology meets
 
 An element's words for assistive technology are ARIA's: its label
 `aria-label`, what it does `aria-description`, its level as a heading the
 `heading` role with `aria-level`, hidden with what it holds `aria-hidden`, and
-hidden alone the `none` role. Its identifier, which a driver finds it by, is
-`data-identifier`.
+hidden alone the `none` role. One writer says the role, from all the element
+is: a heading, else skipped, else its own - a container the user taps a
+button - so a tap coming or going leaves a heading a heading. Its
+identifier, which a driver finds it by, is `data-identifier`.
 
 ## Words
 
@@ -85,7 +91,9 @@ the menu too, as on any view offering one.
 
 A TextField is an `<input>`, a SearchField a search `<input>` and a TextEditor
 a `<textarea>`, each reporting every change of its words, and a field the
-Return key. The tree writes its words only where they differ from what the
+Return key - but not the Return that commits an input method's words, which
+is the method's (`isComposing`, and Safari's key of number 229): heard, a
+Japanese candidate chosen would submit half a word. The tree writes its words only where they differ from what the
 field holds: writing the same words again would move the user's caret to
 their end. The keyboard and the help the user's typing gets are the host
 layer's traits (`InputTraits`): `inputmode`, `autocapitalize`, `spellcheck`,
@@ -180,9 +188,12 @@ frame, so a frame wider than it is leaves it a circle where it belongs.
 A WebView is the browser's own `<iframe>` over a box with no size of its
 own, as every host's web view: an address it loads, a document
 written in place shown at a `blob:` address of the page's own made for it -
-of the page's own site, a `<base>` before it where the document says where
-its links resolve - and reported by the `data:` address that holds it
-(`WebDocument`). The trap: the browser takes a `srcdoc` written again in place
+of the page's own site, a `<base>` in it where the document says where its
+links resolve, placed by Swift right after the doctype (before it, the
+browser would read the document in quirks mode) - and reported by the `data:` address that holds it
+(`WebDocument`). The frame holds the address of each document it was
+written while its history may lead back to it, and lets them all go as it
+leaves - an address keeps its document alive while it stands. The trap: the browser takes a `srcdoc` written again in place
 of the one before, so a frame of documents written in place would have no way
 back; a frame's own navigation is a step in its history. The page hears
 the frame's document load, and tells it navigated, for the reason the
@@ -212,7 +223,11 @@ of another site keeps them to itself.
 ## Pictures
 
 An Image is an `<img>` showing one of the application's pictures, which
-`run-app.sh` lays beside the page in `Images/`. A name stands for its files in
+`run-app.sh` lays beside the page in `Images/`. It is not the browser's to
+drag (`draggable="false"`, kept so where a view offers no drag of its own):
+a native picture moves with nothing until the application offers a drag, and
+Chromium's and Firefox's drag a photo off as a ghost from under two fingers or
+a hand, taking the pointer away. A name stands for its files in
 the host layer's order - a PNG, then the SVG of the same name - and the
 element shows the next when one is not found. Its content mode is
 `object-fit`. An SVG keeps its own proportions inside any room it is given,
@@ -223,7 +238,12 @@ proportions binding neither length: the element holds its size alone
 (`contain: size`), the picture's own given as it loads
 (`contain-intrinsic-size`) - a picture across a stack's width stands as tall
 as it is, where the browser's own would stand as tall as its proportions
-make it. A picture filling its room (`object-fit: cover`) reaches two
+make it. A DRAWING FILLING ITS ROOM holds no size of its own (`contain:
+none`): WebKit, holding an SVG's size, lays the drawing out at the box's and
+fits it whole inside by its own `preserveAspectRatio`, so `cover` covers
+nothing - a portrait card in a square room stood narrow, its room's rounded
+corners clipping nothing (Safari; Chrome covers). The room it fills gives it
+its size. A picture filling its room (`object-fit: cover`) reaches two
 pixels past each edge - margins two pixels less, its bounds four more - under
 its parent's clip: WebKit draws a covering picture rounded inward at a
 fractional edge, by more than a pixel on a card turned and drawn small, so a band laid over its bottom - a card's caption in seventy

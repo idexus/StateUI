@@ -46,7 +46,7 @@ extension WebDriver {
         let view = try self.view(of: element, act)
         let e = view.node
         switch (act, view) {
-        case (.toggle, is WebSplitView): try click(try bar(over: element), part: "button[aria-label=Sidebar]")
+        case (.toggle, is WebSplitView): try click(try bar(over: element), part: "button:has(> [data-glyph=sidebar])")
         case (.activate, _) where try isBehindAQuestion(e):
             // The user reaches nothing under a question; the program's own may wait their turn behind it.
             try WebBrowser.run("e.click()", on: e)
@@ -97,7 +97,19 @@ extension WebDriver {
         case (.hover(let point), _): try mouse("mouseMoved", at: point, on: e)
         case (.leave, _): try leave(e)
         case (.pan(let offset), _): try pan(e, by: offset)
+        // A throw's speed is the events' times, which input the driver sends carries as the browser receives it:
+        // the hand reaches the host's entry as the pointer would hand it, with the speed - ✓.
+        case (.sweep(let offset, let speed), _):
+            guard let web = element.native as? WebElement, web.hand(.began, moved: .zero, at: nil) else {
+                throw DriverCannot(act, on: element)
+            }
+            web.hand(.changed, moved: offset, at: nil)
+            web.hand(.ended, moved: .zero, speed: speed, at: nil)
+        // A wheel's notches reach the host's entry as a wheel measured in lines would hand them - ✓.
+        case (.notch(let notches), _):
+            guard let web = element.native as? WebElement, web.notched(notches) else { throw DriverCannot(act, on: element) }
         case (.pinch(let scale, let share), _): try pinch(e, by: scale, at: share)
+        case (.rotate(let degrees, let share), _): try rotate(e, by: degrees, at: share)
         default: throw DriverCannot(act, on: element)
         }
     }
@@ -175,7 +187,8 @@ extension WebDriver {
         // A picture is come once loaded and sized by it - the host sizes it as it hears it loaded.
         let come = "[...document.images].every((i) => i.complete && (!i.classList.contains('stateui-picture') "
             + "|| !i.getAttribute('src') || i.style.containIntrinsicSize !== ''))"
-        for _ in 0..<150 where try !WebBrowser.truth(come, on: 0) {
+        for _ in 0..<150 {
+            guard try !WebBrowser.truth(come, on: 0) else { break }
             WebBrowser.pause()
         }
         let numbers = try numbers(
@@ -196,7 +209,8 @@ extension WebDriver {
         var box = try box(of: e, part: part)
         let aimed = "((t, b) => t && t.contains(document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2)))"
             + "(\(target(part)), \(target(part))?.getBoundingClientRect())"
-        for _ in 0..<30 where try !WebBrowser.truth(aimed, on: e) {
+        for _ in 0..<30 {
+            guard try !WebBrowser.truth(aimed, on: e) else { break }
             WebBrowser.pause()
             box = try self.box(of: e, part: part)
         }
@@ -252,6 +266,20 @@ extension WebDriver {
         let still = Point(x: middle.x - 10 * scale, y: middle.y)
         touch("touchStart", [still, Point(x: still.x + 20, y: middle.y)])
         touch("touchMove", [still, Point(x: still.x + 20 * scale, y: middle.y)])
+        touch("touchEnd", [])
+    }
+
+    /// Two fingers turned clockwise over the element `e` by `degrees` about a point given as a share of its size, and
+    /// lifted: touches the browser takes as its own, 80 px apart across, turned in four steps.
+    private func rotate(_ e: Int32, by degrees: Double, at share: Point) throws {
+        let box = try box(of: e)
+        let middle = Point(x: box.x + box.width * share.x, y: box.y + box.height * share.y)
+        func fingers(_ turned: Double) -> [Point] {
+            let (across, down) = (40 * cos(turned * .pi / 180), 40 * sin(turned * .pi / 180))
+            return [Point(x: middle.x - across, y: middle.y - down), Point(x: middle.x + across, y: middle.y + down)]
+        }
+        touch("touchStart", fingers(0))
+        for step in 1...4 { touch("touchMove", fingers(degrees * Double(step) / 4)) }
         touch("touchEnd", [])
     }
 

@@ -608,8 +608,8 @@ Platforms/<Host>/main.swift
 ## Maps
 
 `Map` shows the platform's own map of the world: MapKit's on macOS, iOS and
-iPadOS. Where the platform has no map of its own - Android, Windows, Linux -
-the application registers the one it chooses with the host, with the
+iPadOS. Where the platform has no map of its own - Android, Windows, Linux,
+the Web - the application registers the one it chooses with the host, with the
 provider and the key that map needs ([Children a control
 draws](../hosts/gtk.md#children-a-control-draws), on each host's page); the
 platform matrix marks it 🧩 there.
@@ -661,7 +661,8 @@ in the Mac application's. Without them the position is never drawn.
 ## Collections
 
 `ItemsView` shows items with the platform's own collection. StateUI says
-which items there are and builds an item only when the platform shows it;
+which items there are and builds an item as the platform's collection comes
+near it - the items around those the platform holds in its cells;
 the platform scrolls, reuses its cells, shows the user's choice and tells
 assistive technology about the items:
 
@@ -702,8 +703,8 @@ struct ContactsPage: View {
 
 An item names itself by its identity described as text, so two items must
 describe differently. Each item is a view of its own: a state it reads
-builds that item alone, and a state it declares lives while the platform
-holds it on screen. The binding given to `.selection` says how many the
+builds that item alone, and a state it declares lives while the item stays
+near what the platform holds. The binding given to `.selection` says how many the
 user may choose - an optional for one, a `Set` for many - and the user's
 choice lands on it, while a value the application writes is shown and
 reported to nobody. `.onItemActivated` hears an item opened: a tap on a

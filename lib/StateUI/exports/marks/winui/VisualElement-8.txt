@@ -1,68 +1,64 @@
-# revision 12.2
+# revision 14.2
 ActivityIndicator.scaleY: ✅
 ActivityIndicator.style: ✅
 Button.isAccessibilityHidden: ✅
-Canvas.frameChanged: ✅
-Canvas.maximumHeight: ✅
-Canvas.maximumWidth: ✅
-Canvas.minimumHeight: ✅
-Canvas.minimumWidth: ✅
-Canvas.rotationY: ✓ read rotationY of Canvas: the host's own tip, checked against the projection it laid on the element
-Capsule.tooltip: ✅
-CheckBox.opacity: ✅
-CheckBox.pivotY: ✅
-DatePicker.accessibilityHeading: ✅
-DatePicker.translationY: ✅
-Divider.automationExcludedWithChildren: ✅
-Ellipse.layoutDirection: ✓ read layoutDirection of Ellipse: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Grid.frame: ✅
-Grid.scaleX: ✅
-HStack.accessibilityLabel: ✅
-HStack.isEnabled: ✅
-Image.isAccessibilityHidden: ✅
-ItemsView.frameChanged: ✅
-ItemsView.height: ✅
-ItemsView.rotationX: ✓ read rotationX of ItemsView: the host's own tip, checked against the projection it laid on the element
-ItemsView.width: ✅
-Line.isVisible: ✅
-Line.pivotX: ✅
-Map.scaleY: 🧩
-Map.style: 🧩
-Path.ignoresInput: ✅
-Path.scale: ✅
-Picker.tooltip: ✅
-Polygon.isEnabled: does not apply - read isEnabled of Polygon - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Polygon.rotation: ✅
-Polyline.accessibilityHeading: ✅
-Polyline.translationY: ✅
-ProgressBar.background: – WinUI's progress bar paints its Background as its track, no ground under its frame.
-RadioButton.ignoresInput: ✅
-RadioButton.scale: ✅
-Rectangle.accessibilityHeading: ✅
-ScrollView.isEnabled: ✅
-ScrollView.rotation: ✅
+Canvas.height: ✅
+Canvas.rotationX: ✓ read rotationX of Canvas: the host's own tip, checked against the projection it laid on the element
+Canvas.width: ✅
+Capsule.accessibilityHint: ✅
+CheckBox.isVisible: ✅
+CheckBox.pivotX: ✅
+DatePicker.translationX: ✅
+DatePicker.zIndex: ✅
+Divider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Ellipse.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Grid.ignoresInput: ✅
+Grid.scale: ✅
+HStack.translationX: ✅
+HStack.zIndex: ✅
+Image.accessibilityHint: ✅
+ItemsView.isVisible: ✅
+ItemsView.pivotX: ✅
+LayoutEngine.automationExcludedWithChildren: ✅
+Line.opacity: ✅
+Line.pivotY: ✅
+Map.translationX: 🧩
+Map.zIndex: 🧩
+Path.frame: ✅
+Path.scaleX: ✅
+Picker.accessibilityHeading: ✅
+Polygon.height: ✅
+Polygon.rotationX: ✓ read rotationX of Polygon: the host's own tip, checked against the projection it laid on the element
+Polygon.width: ✅
+Polyline.accessibilityLabel: ✅
+Polyline.isEnabled: ✅
+ProgressBar.layoutDirection: ✅
+RadioButton.frame: ✅
+RadioButton.scaleX: ✅
+Rectangle.isAccessibilityHidden: ✅
+ScrollView.height: ✅
+ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own tip, checked against the projection it laid on the element
+ScrollView.width: ✅
 SearchField.translationX: ✅
 SearchField.zIndex: ✅
 Slider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 Spacer.frame: ✅
 Spacer.scaleX: ✅
 Stepper.isAccessibilityHidden: ✅
-Switch.frameChanged: ✅
 Switch.maximumHeight: ✅
 Switch.maximumWidth: ✅
 Switch.minimumHeight: ✅
 Switch.minimumWidth: ✅
 Switch.rotationY: ✓ read rotationY of Switch: the host's own tip, checked against the projection it laid on the element
-Text.accessibilityHint: ✅
+Text.translationX: ✅
+Text.zIndex: ✅
 TextEditor.tooltip: ✅
 TextField.isEnabled: ✅
 TextField.rotation: ✅
 TimePicker.accessibilityLabel: ✅
 VStack.isVisible: ✅
 VStack.pivotX: ✅
-WebView.frameChanged: ✅
-WebView.height: ✅
-WebView.rotationX: ✓ read rotationX of WebView: the host's own tip, checked against the projection it laid on the element
-WebView.width: ✅
-ZStack.accessibilityHint: ✅
+WebView.isEnabled: – WinUI's WebView2 is no control: it keeps no enabled state, and its page takes the user's hand whatever the tree says.
+WebView.rotation: ✅
+ZStack.accessibilityLabel: ✅
 ZStack.isEnabled: ✅

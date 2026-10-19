@@ -96,7 +96,7 @@ private func everyPropertyWindow() -> Node {
     session.isMinimizable = true
     session.background = .blur(.thin.tint(Color("#26512BD4")))
 
-    return Node.window(showing: { Node.page(EveryPropertyPage()) }, kind: "EveryPropertyPage", session: session).built
+    return Node.window(showing: { Node.page(EveryPropertyPage()) }, session: session).built
 }
 
 /// A page whose view says every value of its page from a state of its own, each one of two values, and turns

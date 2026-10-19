@@ -42,10 +42,5 @@ struct ButtonSample: SampleContent, ExampleContent {
     }
     // listing: end
 
-    var notes: (any View)? {
-        Text("Also `.onPressed` and `.onReleased`, for the moment the button goes "
-            + "down and comes up.")
-            .fontSize(12)
-            .textColor(Palette.subtle)
-    }
+    var notes: (any View)? { nil }
 }

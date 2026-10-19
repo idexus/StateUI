@@ -34,6 +34,9 @@ class AppKitTravellingLayout: AppKitHitTestView, AppKitDirectedLayout {
         layer?.backgroundColor = decoration.layerColor
     }
 
+    /// The whole of the view under a transform, which AppKit leaves out of what it takes for visible.
+    override var visibleRect: NSRect { drawnRect(visible: super.visibleRect) }
+
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
         decoration.draw(in: bounds)

@@ -45,6 +45,11 @@
     /// The entries the tree was last told to build: those within reach of the cells.
     private var built: Set<String> = []
 
+    /// The item the program scrolled to, which the host stands again after every pass while a cell waits for its
+    /// entry: a cell measured as its entry comes moves the items after it.
+    /// Design: docs/design/host/items.md#scrolling-to-an-item
+    public private(set) var scrollTarget: ItemsScrollTarget?
+
     /// The cells of `element`, telling `runtime`.
     public init(_ element: MountedElement, in runtime: HostRuntime) {
         self.element = element
@@ -66,7 +71,36 @@
         }
         held = held.filter { positions[$0] != nil }
         built = built.filter { positions[$0] != nil }
+        // A cell holding an entry that went lets it go: the cells keep nothing of what the list no longer has.
+        for (identity, holding) in holders.sorted(by: { $0.key < $1.key }) where positions[identity] == nil {
+            if holding.identity == identity { holding.letGo() }
+            holders[identity] = nil
+        }
+        if let scrollTarget, positions[scrollTarget.identity] == nil { self.scrollTarget = nil }
         return ItemsChanges(from: old, to: identities)
+    }
+
+    // MARK: - The program's scroll
+
+    /// The program scrolls the list to the item of `identity`, to stand where `anchor` says - held while a cell
+    /// waits for its entry.
+    public func scroll(to identity: String, anchor: ScrollAnchor) {
+        scrollTarget = ItemsScrollTarget(identity: identity, anchor: anchor)
+    }
+
+    /// The collection laid out what its cells hold: the item to stand again, where one is held - let go after this
+    /// once a cell shows its entry and no cell waits for one.
+    /// Design: docs/design/host/items.md#scrolling-to-an-item
+    public func laidOut() -> ItemsScrollTarget? {
+        guard let scrollTarget else { return nil }
+        let waiting = holders.contains { $0.key == $0.value.identity && $0.value.shown == nil }
+        if holding(of: scrollTarget.identity)?.shown != nil, !waiting { self.scrollTarget = nil }
+        return scrollTarget
+    }
+
+    /// The user moved the list: where it stands is theirs.
+    public func userScrolled() {
+        scrollTarget = nil
     }
 
     /// Down, across or in columns.
@@ -100,7 +134,7 @@
         if let other = holders[identity], other !== holding { other.letGo() }
         holders[identity] = holding
         held.insert(identity)
-        if !built.contains(identity) { tell() }
+        if !built.contains(identity) || nearsTheBuiltEnd(identity) { tell() }
         let item = item(identity)
         if holding.identity != identity || holding.shown !== item { holding.hold(identity, item) }
     }
@@ -199,7 +233,6 @@
     /// Design: docs/design/host/items.md#within-reach
     private func tell() {
         guard let element, let runtime else { return }
-        let reach = max(8, held.count)
         var within: [String] = []
         var end = -1
         for place in held.compactMap({ positions[$0] }).sorted() {
@@ -211,5 +244,18 @@
         }
         built = Set(within)
         element.send(.realizedChanged, [.strings(within)], in: runtime)
+    }
+
+    /// How many entries before and after each cell the tree builds: as many as the cells hold, eight at least.
+    private var reach: Int { max(8, held.count) }
+
+    /// Whether `identity` stands within half a reach of the end of the entries built: a cell coming that near asks
+    /// for the next ones before it finds one unbuilt, so each render builds about half a reach.
+    /// Design: docs/design/host/items.md#within-reach
+    private func nearsTheBuiltEnd(_ identity: String) -> Bool {
+        guard let place = positions[identity] else { return false }
+        let half = reach / 2
+        return !built.contains(identities[min(place + half, identities.count - 1)])
+            || !built.contains(identities[max(place - half, 0)])
     }
 }

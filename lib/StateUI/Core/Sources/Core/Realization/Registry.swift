@@ -34,6 +34,12 @@
     /// The registrations, by node type.
     private var entries: [NodeType: Entry] = [:]
 
+    /// The node types an entry draws as its children, with no view of their own.
+    private var drawn: Set<NodeType> = []
+
+    /// What these registrations realize, worked out once after a registration: a host says it at each start.
+    private var realized: HostRealization?
+
     /// The application's events these registrations raise - an element's own
     /// are its registration's.
     private var applicationEvents: Set<HostRealizedMember> = []
@@ -100,6 +106,12 @@
         register(contract, members: members) { _, _, _ in nil }
     }
 
+    /// Says that a registration was handed a view of another class than it takes: nothing reaches that view.
+    private static func unmade(_ contract: any ElementContract.Type, _ taken: AnyObject.Type, _ view: View) {
+        complain("\(contract.name)'s registration takes a \(taken), and the host made a \(type(of: view)): "
+            + "nothing was applied.")
+    }
+
     /// One contract's registration, entered under its node type: `members` says
     /// what it realizes, and `make` makes its view - answering nil, silently,
     /// where the host makes that view instead.
@@ -115,10 +127,12 @@
         members(registration)
 
         let appliers = registration.appliers
+        // In name order, once: what changed is asked of them, with no names compared at each element.
+        let ordered = appliers.sorted { $0.key.name < $1.key.name }
         let wholes = registration.wholes
         let children = registration.childAppliers.map { child in
             (type: child.type, apply: { (view: View, kept: [HostChild]) in
-                guard let made = view as? Made else { return }
+                guard let made = view as? Made else { return Self.unmade(Realized.self, Made.self, view) }
 
                 child.apply(made, kept)
             })
@@ -127,15 +141,23 @@
         entries[Realized.nodeType] = Entry(
             make: make,
             apply: { view, changed, read, carried, heading in
-                guard let made = view as? Made else { return [] }
+                guard let made = view as? Made else {
+                    Self.unmade(Realized.self, Made.self, view)
+                    return []
+                }
 
                 var applied: Set<Prop> = []
 
-                for key in changed.sorted(by: { $0.name < $1.name }) {
-                    guard let apply = appliers[key] else { continue }
-
-                    apply(made, read(key))
-                    applied.insert(key)
+                if changed.count == 1, let key = changed.first {
+                    if let apply = appliers[key] {
+                        apply(made, read(key))
+                        applied.insert(key)
+                    }
+                } else {
+                    for (key, apply) in ordered where changed.contains(key) {
+                        apply(made, read(key))
+                        applied.insert(key)
+                    }
                 }
 
                 let values = ElementValues<Realized>(
@@ -151,6 +173,8 @@
             members: registration.members,
             worn: Realized.worn.map { ObjectIdentifier($0) },
             children: children)
+        drawn = Set(entries.values.flatMap { $0.children.map(\.type) })
+        realized = nil
     }
 
     /// A property the host's shared element machinery realizes on every
@@ -160,6 +184,7 @@
     /// - Parameter member: the property, written with its contract.
     public func everyElementRealizes<Owner: Contract, Value>(_ member: ElementProperty<Owner, Value>) {
         everyElement.append((owner: Owner.self, member: member.name))
+        realized = nil
     }
 
     /// An event the host's shared element machinery raises on every element
@@ -169,6 +194,7 @@
     /// - Parameter event: the event, written with its contract.
     public func everyElementRaises<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
         everyElement.append((owner: Owner.self, member: event.name))
+        realized = nil
     }
 
     /// The names of the members the shared machinery realizes and raises, as they were registered.
@@ -186,6 +212,7 @@
     public func raises<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
         applicationEvents.insert(
             HostRealizedMember(element: ApplicationContract.name, owner: Owner.name, member: event.name))
+        realized = nil
     }
 
     /// A view for a node type, made by its registration, its reports handed to `send`
@@ -243,7 +270,8 @@
     /// - Parameter type: the parent's node type.
     /// - Returns: the children's node types.
     public func childTypes(of type: NodeType) -> [NodeType] {
-        entries[type]?.children.map(\.type) ?? []
+        // A closure, not a key path: one written in a generic type is made anew at every call.
+        entries[type]?.children.map { $0.type } ?? []
     }
 
     /// Hands the view of an element of `type` every child of each contract its registration draws itself, as
@@ -263,6 +291,7 @@
     /// or draw as another's children, every member they take or raise, and what the shared machinery realizes
     /// on each element that wears the member's contract.
     public var realization: HostRealization {
+        if let realized { return realized }
         var members = applicationEvents
 
         for (type, entry) in entries {
@@ -273,7 +302,13 @@
             }
         }
 
-        let drawn = entries.values.flatMap { $0.children.map(\.type.name) }
-        return HostRealization(elements: Set(entries.keys.map(\.name) + drawn), members: members)
+        let realization = HostRealization(elements: Set(entries.keys).union(drawn), members: members)
+        realized = realization
+        return realization
+    }
+
+    /// Whether these registrations realize `type`: make a view for it, or draw it as another's children.
+    public func realizes(_ type: NodeType) -> Bool {
+        entries[type] != nil || drawn.contains(type)
     }
 }

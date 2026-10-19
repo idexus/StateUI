@@ -18,7 +18,7 @@ final class AppKitQuestion {
     weak var window: NSWindow?
 
     let alert = NSAlert()
-    private let field = NSTextField(string: "")
+    private let field = AppKitWordsField(string: "")
     private var answer: ((_ accepted: Bool, _ words: String?) -> Void)?
 
     /// Each button's caption and what pressing it answers, in the order AppKit shows them.
@@ -35,7 +35,7 @@ final class AppKitQuestion {
             add(question.accept, accepts: true)
         case .confirm, .prompt:
             add(question.accept, accepts: true)
-            add(question.cancel ?? "Cancel", accepts: false)
+            if let cancel = question.cancel { add(cancel, accepts: false) }
         case .chooseAction:
             // A choice answers the caption pressed, its cancel included.
             for choice in question.choices { add(choice, accepts: true) }
@@ -49,6 +49,8 @@ final class AppKitQuestion {
         if question.kind == .prompt {
             field.stringValue = question.words
             field.placeholderString = question.placeholder
+            field.traits = question.traits
+            field.isAutomaticTextCompletionEnabled = question.traits.predicts
             field.frame = NSRect(x: 0, y: 0, width: 240, height: 24)
             alert.accessoryView = field
         }

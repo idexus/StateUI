@@ -1,4 +1,2 @@
-# revision 1.1
+# revision 2.1
 Ellipse: ✅
-Ellipse.fill: ✅
-Ellipse.frameChanged: ✅

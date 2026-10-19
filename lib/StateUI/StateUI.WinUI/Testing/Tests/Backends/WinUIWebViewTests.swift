@@ -7,6 +7,7 @@
 @testable import StateUIWinUIDriver
 @testable import StateUIWebViewWinUI
 import StateUIConformance
+import StateUIFoundation
 import XCTest
 
 /// The web view's backend on WinUI, registered as an application registers it: what WebView2 does that no family
@@ -24,6 +25,18 @@ final class WinUIWebViewTests: XCTestCase {
                 { WebView().source(html: "<p>Based</p>", baseURL: "https://example.invalid/dir/") },
                 "document.body.innerText + ' ' + new URL('next', document.baseURI).href")
             XCTAssertEqual(said.values, ["Based https://example.invalid/dir/next"])
+            _ = host
+        }
+    }
+
+    /// A document written in place at an address of no path - no slash after its host - stands there too: WebView2
+    /// asks for the address as it writes it, its path a slash, and the view answers that.
+    func testADocumentAtAnAddressOfNoPathStandsThere() throws {
+        try onUIThread {
+            let (host, said) = try Self.asking(
+                { WebView().source(html: "<p>Based</p>", baseURL: "https://Example.invalid") },
+                "document.body.innerText + ' ' + location.href")
+            XCTAssertEqual(said.values, ["Based https://example.invalid/"])
             _ = host
         }
     }
@@ -80,6 +93,62 @@ final class WinUIWebViewTests: XCTestCase {
         }
     }
 
+    /// An agent given while WebView2 still comes - its page already asked for - is the one the page arrives asking
+    /// as, not the one given with the page.
+    func testAnAgentGivenBeforeWebView2StandsIsTheOneItAsksAs() throws {
+        try onUIThread {
+            let named = State(wrappedValue: "First agent")
+            let arrived = Received<Bool>()
+            let host = WinUIRenderer.running {
+                WebView().source(html: "<p>First</p>").userAgent(named.wrappedValue)
+                    .onNavigated { _ in arrived.values.append(true) }.height(200)
+            }
+            let web = try XCTUnwrap(host.views(WinUIHostedView<WinUIWebView>.self).first?.control)
+            host.step()
+            XCTAssertTrue(arrived.values.isEmpty, "WebView2 stood at once: nothing to prove")
+
+            named.wrappedValue = "Second agent"
+            host.step()
+            Self.wait(host) { !arrived.values.isEmpty }
+            XCTAssertEqual(web.read("agent"), "Second agent")
+        }
+    }
+
+    /// A web view whose WebView2 cannot start - no runtime where its loader looks - tells its page failed, not a blank
+    /// view and nothing.
+    func testAWebViewWhoseRuntimeCannotStartTellsItsPageFailed() {
+        onUIThread {
+            _ = _putenv("WEBVIEW2_BROWSER_EXECUTABLE_FOLDER=C:\\StateUI\\no-such-runtime")
+            defer { _ = _putenv("WEBVIEW2_BROWSER_EXECUTABLE_FOLDER=") }
+            let arrived = Received<WebNavigationResult>()
+            let host = WinUIRenderer.running {
+                WebView().source(html: "<p>First</p>").onNavigated { arrived.values.append($0.result) }.height(200)
+            }
+            Self.wait(host) { !arrived.values.isEmpty }
+            XCTAssertEqual(arrived.values, [.failure])
+        }
+    }
+
+    /// Documents written in place one after another - a preview written again as the user types - are served
+    /// through one filter of the view's: WebView2 checks every request against every filter it holds.
+    func testDocumentsWrittenInPlaceAreServedThroughOneFilter() throws {
+        try onUIThread {
+            let words = State(wrappedValue: "First")
+            let arrived = Received<Bool>()
+            let host = WinUIRenderer.running {
+                WebView().source(html: "<p>\(words.wrappedValue)</p>").onNavigated { _ in arrived.values.append(true) }
+                    .height(200)
+            }
+            let web = try XCTUnwrap(host.views(WinUIHostedView<WinUIWebView>.self).first?.control)
+            for (count, next) in ["Second", "Third", "Fourth"].enumerated() {
+                Self.wait(host) { arrived.values.count == count + 1 }
+                words.wrappedValue = next
+            }
+            Self.wait(host) { arrived.values.count == 4 }
+            XCTAssertEqual(web.read("filters"), "1")
+        }
+    }
+
     /// A web view an application listens to as a view stands, and its page arrives: WebView2, listened to by
     /// WinUI, ends the process - its page takes the user's hand.
     func testAWebViewListenedToStands() {
@@ -117,6 +186,9 @@ final class WinUIWebViewTests: XCTestCase {
 
     /// Steps the host until `done`, or twenty seconds: the web view's own processes take their time.
     @MainActor private static func wait(_ host: WinUIRenderer, until done: () -> Bool) {
-        for _ in 0..<2000 where !done() { host.step() }
+        for _ in 0..<2000 {
+            guard !done() else { break }
+            host.step()
+        }
     }
 }

@@ -34,8 +34,8 @@
 
     /// The user chooses tab `index` of `count`: the tab shown before, where the choice changed; nil where it did not.
     public mutating func choose(_ index: Int, of count: Int) -> Int? {
-        let previous = shown
-        guard index != previous, (0..<count).contains(index) else { return nil }
+        // The tab shown among those there are: a chosen one that went is not what was shown.
+        guard let previous = shown(among: count), index != previous, (0..<count).contains(index) else { return nil }
 
         chosen = index
         return previous

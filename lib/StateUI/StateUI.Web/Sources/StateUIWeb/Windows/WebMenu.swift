@@ -20,6 +20,9 @@ final class WebMenu {
     /// The menu this one stands in, which choosing an item takes down whole.
     private weak var parent: WebMenu?
 
+    /// Whether everything the menu made is let go of.
+    private var released = false
+
     /// The menus open now, each held until it goes; a menu inside one is held by it.
     private static var open: [ObjectIdentifier: WebMenu] = [:]
 
@@ -31,7 +34,7 @@ final class WebMenu {
         popover.attribute("role", "menu")
         popover.attribute("tabindex", "-1")
         for entry in entries { add(entry) }
-        popover.listen("closed") { [weak self] in self?.closed() }
+        popover.hear(.closed) { [weak self] in self?.closed() }
     }
 
     var isEmpty: Bool { placed == 0 }
@@ -126,8 +129,15 @@ final class WebMenu {
     }
 
     private func release() {
+        guard !released else { return }
+        released = true
         for submenu in submenus { submenu.release() }
         for part in owned { part.detach() }
         popover.detach()
+    }
+
+    /// A menu never shown - one of no entries - lets go as nobody holds it.
+    isolated deinit {
+        release()
     }
 }

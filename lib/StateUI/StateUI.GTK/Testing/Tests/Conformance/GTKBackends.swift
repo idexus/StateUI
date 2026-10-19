@@ -26,7 +26,7 @@ enum GTKBackends {
             },
             perform: { act, view in
                 guard act == .endContent, let web = (view as? GTKHostedView<GTKWebView>)?.control else { return false }
-                web.endWebProcess()
+                web.endContent()
                 return true
             },
             byHost: [:])

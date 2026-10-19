@@ -197,6 +197,24 @@ final class SplitViewTests: XCTestCase {
                       "nothing to say after it")
     }
 
+    /// Where the sidebar stands is the host's to say: the state rides in, written by the platform's place for the
+    /// sidebar and by nothing this side sends.
+    func testTheSidebarsPlaceIsWrittenByTheHost() throws {
+        let (menu, section, overlays) = (State<Bool>(true), State<String>("today"), State<Bool>(false))
+        let renders = Renders()
+
+        let patch = renders.settled(
+            flyout(menu.projectedValue, section.projectedValue).sidebarOverlays(overlays.projectedValue).node)
+        let place = try XCTUnwrap(patch.driven?[.sidebarOverlays])
+
+        XCTAssertEqual(place.mode, .in)
+        XCTAssertEqual(place.kind, .plain)
+        moved(place.state, to: [1])
+        XCTAssertTrue(overlays.wrappedValue, "over the detail")
+        moved(place.state, to: [0])
+        XCTAssertFalse(overlays.wrappedValue, "and beside it again")
+    }
+
     /// A payload of the wrong shape leaves the binding alone.
     func testAValueOfTheWrongKindLeavesTheBindingAlone() {
         let menu = State<Bool>(false)

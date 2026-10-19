@@ -18,7 +18,7 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
         let look: StyleKey<Button>? = platformLook ? .platform : nil
 
         return VStack {
-            Text("Share opens its menu. Save saves, its arrow offers more. Hold Open for a recent file.")
+            Text("Try each menu: Share's on a click, Save's on its arrow, Open's when held.")
                 .fontSize(14)
 
             HStack {

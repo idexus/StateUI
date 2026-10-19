@@ -7,7 +7,7 @@ import QuartzCore
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// The frame clock: the display link of the window shown first, moved on when that window closes.
+/// The frame clock: the display link of the window the renderer says the screen shows, moved as that changes.
 /// Design: docs/design/host/runtime.md#one-frame
 @MainActor
 final class AppKitFrameClock: NSObject, FrameClock {
@@ -35,23 +35,17 @@ final class AppKitFrameClock: NSObject, FrameClock {
         self.now = now
     }
 
-    /// Takes the frames of `window`'s display, unless a display already gives them.
-    func attach(to window: NSWindow) {
-        guard link == nil else { return }
+    /// Takes the frames of `window`'s display - off the window that gave them, holding as it was; none stops them.
+    func follow(_ window: NSWindow?) {
+        guard window !== self.window else { return }
 
+        stop()
+        guard let window else { return }
         let link = window.displayLink(target: self, selector: #selector(frame(_:)))
         link.add(to: .main, forMode: .common)
         link.isPaused = !held
         self.link = link
         self.window = window
-    }
-
-    /// Moves the frames off a closing window, to `next` when one remains.
-    func release(_ closing: NSWindow, next: NSWindow?) {
-        guard window === closing else { return }
-
-        stop()
-        if let next { attach(to: next) }
     }
 
     /// Stops the frames for good.

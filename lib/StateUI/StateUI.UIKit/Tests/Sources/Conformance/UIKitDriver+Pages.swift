@@ -94,6 +94,9 @@ extension UIKitDriver {
         case .showsSidebar:
             guard let split = controller as? UISplitViewController else { return nil }
             return (split.displayMode != .secondaryOnly).propValue
+        case .sidebarOverlays:
+            guard let split = controller as? UISplitViewController else { return nil }
+            return (split.splitBehavior == .overlay).propValue
         case .sidebarBackground, .flyoutBackground:
             // The sidebar page's view in the place it stands; the other place's material as the split view says it.
             guard let split = controller as? UIKitSplitViewController else { return nil }
@@ -180,7 +183,8 @@ extension UIKitDriver {
             // A user swipes a sheet down once UIKit shows it.
             let asked = controller.presentation.sheets.count
             if let root = controller.window?.rootViewController {
-                for _ in 0..<150 where Self.presented(over: root) < asked || root.transitionCoordinator != nil {
+                for _ in 0..<150 {
+                    guard Self.presented(over: root) < asked || root.transitionCoordinator != nil else { break }
                     RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
                 }
             }

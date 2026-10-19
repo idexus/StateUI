@@ -26,8 +26,14 @@ struct UIKitPageChrome {
     var actions: [[UIKitBarAction]] = []
     var overflow: [UIKitBarAction] = []
 
-    /// Puts it on `item`, the bar a navigation controller shows for the page.
-    func show(on item: UINavigationItem) {
+    /// What the bar's buttons say, the leading groups, the trailing and the overflow.
+    var buttonsSaid: [[UIKitBarAction.Said]] {
+        leadingActions.map { $0.map(\.said) } + [[]] + actions.map { $0.map(\.said) } + [overflow.map(\.said)]
+    }
+
+    /// Puts it on `item`, the bar a navigation controller shows for the page - its buttons made again only where
+    /// they say something else than `standing` says, else recoloured; `standing` then says what they say.
+    func show(on item: UINavigationItem, buttons standing: inout [[UIKitBarAction.Said]]?) {
         item.title = title
         if item.subtitle != subtitle { item.subtitle = subtitle }
         // A layout's size follows what it holds; a control is fitted once and keeps the width the bar gives it:
@@ -47,12 +53,28 @@ struct UIKitPageChrome {
         // Each group its own background; the leading ones beside the way back.
         // Design: docs/design/platforms/uikit/pages.md#the-bar
         item.leftItemsSupplementBackButton = true
-        item.leadingItemGroups = leadingActions.map(Self.group)
-        let menu = overflow.isEmpty ? [] : [[UIBarButtonItem(
-            image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: overflow.map(\.menuAction)))]]
-        item.trailingItemGroups = actions.map { $0.map(\.barItem) }.map(Self.group) + menu.map(Self.group)
+        // Words on a painted bar: the colour written, else light on a dark bar and dark on a light one.
+        let painted = barBackground != nil || barForeground != nil
+        let words = painted ? BandWords.color(on: barBackground, written: barForeground) : nil
+        let foreground = words.flatMap(UIColor.init(stateUI:))
+        if buttonsSaid != standing {
+            standing = buttonsSaid
+            item.leadingItemGroups = leadingActions.map { Self.group($0.map { $0.barItem(tint: foreground) }) }
+            let menu = overflow.isEmpty ? [] : [[UIBarButtonItem(
+                image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: overflow.map(\.menuAction)))]]
+            menu.joined().forEach { $0.tintColor = foreground }
+            item.trailingItemGroups = actions.map { Self.group($0.map { $0.barItem(tint: foreground) }) }
+                + menu.map(Self.group)
+        } else {
+            for (group, actions) in zip(item.leadingItemGroups + item.trailingItemGroups, leadingActions + actions) {
+                for (button, action) in zip(group.barButtonItems, actions) { button.tintColor = action.tint(foreground) }
+            }
+            item.trailingItemGroups.dropFirst(actions.count).flatMap(\.barButtonItems).forEach {
+                $0.tintColor = foreground
+            }
+        }
 
-        guard barBackground != nil || barForeground != nil else {
+        guard painted else {
             (item.standardAppearance, item.scrollEdgeAppearance) = (nil, nil)
             return
         }
@@ -65,9 +87,7 @@ struct UIKitPageChrome {
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = background
         }
-        // Words on a painted bar: the colour written, else light on a dark bar and dark on a light one.
-        let words = BandWords.color(on: barBackground, written: barForeground)
-        if let foreground = words.flatMap(UIColor.init(stateUI:)) {
+        if let foreground {
             appearance.titleTextAttributes = [.foregroundColor: foreground]
             appearance.largeTitleTextAttributes = [.foregroundColor: foreground]
             appearance.subtitleTextAttributes = [.foregroundColor: foreground]
@@ -75,16 +95,8 @@ struct UIKitPageChrome {
             appearance.backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: foreground]
             let back = UIImage(systemName: "chevron.backward")?.withTintColor(foreground, renderingMode: .alwaysOriginal)
             appearance.setBackIndicatorImage(back, transitionMaskImage: back)
-            (item.leadingItemGroups + item.trailingItemGroups).flatMap(\.barButtonItems).forEach {
-                $0.tintColor = foreground
-            }
         }
         (item.standardAppearance, item.scrollEdgeAppearance) = (appearance, appearance)
-    }
-
-    /// One group of the bar, drawn on one background.
-    private static func group(_ actions: [UIKitBarAction]) -> UIBarButtonItemGroup {
-        group(actions.map(\.barItem))
     }
 
     /// One group of the bar's items, drawn on one background.

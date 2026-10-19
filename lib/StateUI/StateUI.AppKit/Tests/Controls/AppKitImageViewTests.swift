@@ -68,6 +68,37 @@ final class AppKitImageViewTests: XCTestCase {
         XCTAssertEqual(view.intrinsicContentSize, .zero)
     }
 
+    /// A picture is made once for the renderer, whatever it is: an icon or bytes handed again is the image already
+    /// shown, so a bar, a tab row or a card handed the same picture finds nothing changed.
+    @MainActor
+    func testEveryPictureIsMadeOnce() throws {
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        let dot = try XCTUnwrap(NSBitmapImageRep(
+            bitmapDataPlanes: nil, pixelsWide: 1, pixelsHigh: 1, bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true,
+            isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0))
+        let bytes = try XCTUnwrap(dot.representation(using: .png, properties: [:]))
+
+        for picture in [HostPicture.icon(.add), .bytes(Array(bytes))] {
+            let first = try XCTUnwrap(renderer.image(picture))
+            XCTAssertTrue(renderer.image(picture) === first, "\(picture) made again")
+        }
+        XCTAssertFalse(renderer.image(.icon(.add)) === renderer.image(.icon(.remove)), "each icon its own")
+    }
+
+    /// A picture something still shows is the same picture asked for again, even after the system let the
+    /// renderer's cache go under memory pressure: a view handed it again finds nothing changed.
+    @MainActor
+    func testAPictureStillShownOutlastsTheCache() throws {
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        let shown = try XCTUnwrap(renderer.image(.icon(.add)))
+
+        renderer.images.removeAllObjects()
+
+        XCTAssertTrue(renderer.image(.icon(.add)) === shown, "made again while shown")
+    }
+
     @MainActor
     /// A name the application has no file for resolves to nothing, as on every host: no picture stands in.
     func testANameWithNoFileResolvesToNothing() {

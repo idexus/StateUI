@@ -41,6 +41,7 @@ final class WinUIDriver: HostDriver {
         "read isEnabled of Text": WinUIDriver.noEnabledState,
         "read isEnabled of VStack": WinUIDriver.noEnabledState,
         "read isEnabled of ZStack": WinUIDriver.noEnabledState,
+        "read isEnabled of LayoutEngine": WinUIDriver.noEnabledState,
         "read growsWithText of TextEditor":
             "an editor's growing is StateUI's measuring, which no property of WinUI's holds; its frames prove it",
         "read contentMode of Rectangle": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
@@ -76,6 +77,9 @@ final class WinUIDriver: HostDriver {
 
     /// The host the driver started last.
     var renderer: WinUIRenderer?
+
+    /// Where a press over a layout last stood, as the relay tells its moves since.
+    private var handAt = Point(x: 0, y: 0)
 
     /// What the host wrote to its log since the driver started it.
     let written = WinUILogLines()
@@ -136,7 +140,10 @@ final class WinUIDriver: HostDriver {
             // A search box tells the words a moment after it takes them, as a key is told before the next is typed.
             guard takesTyping(search) else { break }
             search.type(words)
-            for _ in 0..<150 where element.value(.text)?.string != words { step() }
+            for _ in 0..<150 {
+                guard element.value(.text)?.string != words else { break }
+                step()
+            }
         case (.type(let words), let field as WinUITextInputView): type(words, into: field)
         case (.submit, let search as WinUISearchFieldView): stateui_winui_search_submit_as_user(search.handle)
         case (.submit, let field as WinUITextInputView) where element.type == .textField:
@@ -158,9 +165,19 @@ final class WinUIDriver: HostDriver {
             stateui_winui_date_pick_as_user(picker.handle, Int32(day.year), Int32(day.month), Int32(day.day))
         case (.pickTime(let time), let picker as WinUITimePickerView):
             stateui_winui_time_pick_as_user(picker.handle, Int32(time.hour), Int32(time.minute))
+        // A press over a layout reaches the host's entry as the relay would hand it: down where it went, each move
+        // since the last, its lift - ✓.
+        case (.pressDown(let point), let view?) where view.hearing.contains(.hand):
+            handAt = point
+            _ = view.heardHand(phase: GesturePhase.began.rawValue, moved: point)
+        case (.drag(let point), let view?) where view.hearing.contains(.hand):
+            _ = view.heardHand(phase: GesturePhase.changed.rawValue, moved: Point(x: point.x - handAt.x, y: point.y - handAt.y))
+            handAt = point
+        case (.lift, let view?) where view.hearing.contains(.hand):
+            _ = view.heardHand(phase: GesturePhase.ended.rawValue, moved: Point(x: 0, y: 0))
         case (.pressDown(let point), let view?): try press(view, down: true, at: point, element)
         case (.lift(let point), let view?): try press(view, down: false, at: point, element)
-        case (.drag(let point), let canvas as WinUICanvasView): canvas.pressed(phase: 1, at: point)
+        case (.drag(let point), let canvas as WinUICanvasView): canvas.pressed(.moved, at: point)
         case (.drag(let point), let view?) where view.hearing.contains(.pointer):
             view.heard(.pointer(.pointerMoved, point))
         case (.hover(let point), let view?) where view.hearing.contains(.pointer):
@@ -172,13 +189,23 @@ final class WinUIDriver: HostDriver {
             for run in 1...max(count, 1) { view.heard(.tap(run: run)) }
         case (.pan(let offset), let view?) where view.hearing.contains(.drags):
             // The press the relay tells, which the host layer's rule makes a drag.
-            view.heardPress(phase: 0, at: Point(x: 100, y: 100))
-            view.heardPress(phase: 1, at: Point(x: 100 + offset.x, y: 100 + offset.y))
-            view.heardPress(phase: 2, at: Point(x: 100 + offset.x, y: 100 + offset.y))
+            view.heardPress(.down, at: Point(x: 100, y: 100))
+            view.heardPress(.moved, at: Point(x: 100 + offset.x, y: 100 + offset.y))
+            view.heardPress(.letGo, at: Point(x: 100 + offset.x, y: 100 + offset.y))
+        // A throw's speed is the pointer's times, which no input a driver sends carries: the hand reaches the
+        // host's entry as the relay would hand it, with the speed - ✓.
+        case (.sweep(let offset, let speed), let view?) where view.hearing.contains(.hand):
+            _ = view.heardHand(phase: GesturePhase.began.rawValue, moved: Point(x: 0, y: 0))
+            _ = view.heardHand(phase: GesturePhase.changed.rawValue, moved: offset)
+            _ = view.heardHand(phase: GesturePhase.ended.rawValue, moved: Point(x: 0, y: 0), speed: speed)
         case (.pinch(let scale, let point), let view?) where view.hearing.contains(.pinches):
             view.heard(.pinch(.began, scale: 1, at: point))
             view.heard(.pinch(.changed, scale: scale, at: point))
             view.heard(.pinch(.ended, scale: 1, at: point))
+        case (.rotate(let degrees, _), let view?) where view.hearing.contains(.rotations):
+            view.heard(.rotation(.began, degrees: 0))
+            view.heard(.rotation(.changed, degrees: degrees))
+            view.heard(.rotation(.ended, degrees: 0))
         case (.scroll(let offset), let scroll as WinUIScrollView): scroll.scroller.move(to: offset)
         case (.focus, let view?): _ = stateui_winui_focus(view.handle, true)
         case (.goBack, _) where element.type == .navigationStack: try window().titleBar.chose(-1)
@@ -270,7 +297,7 @@ final class WinUIDriver: HostDriver {
             WinUICallbacks.table.held(button.number, down)
             done = true
         case let canvas as WinUICanvasView:
-            canvas.pressed(phase: down ? 0 : 2, at: point)
+            canvas.pressed(down ? .down : .letGo, at: point)
             done = true
         case let slider as WinUISliderView:
             WinUICallbacks.table.held(slider.number, down)
@@ -338,7 +365,8 @@ final class WinUIDriver: HostDriver {
 
     /// Cancels a file dialog a case before left showing, so it stands over no other case.
     private func closeFileDialogs() {
-        for _ in 0..<50 where stateui_winui_file_dialog() >= 0 {
+        for _ in 0..<50 {
+            guard stateui_winui_file_dialog() >= 0 else { break }
             _ = stateui_winui_answer_file_dialog(0, nil, 0)
             WinUITestHost.pump(0.05)
         }

@@ -50,6 +50,10 @@
     /// What a prompt's words are for.
     public let purpose: InputPurpose
 
+    /// How a prompt's field takes what is typed: as a field of its purpose, its spelling checked and its words
+    /// predicted.
+    public var traits: InputTraits { InputTraits(spellChecked: true, predicted: true, purpose: purpose) }
+
     /// The words a prompt starts with.
     public let words: String
 
@@ -84,6 +88,21 @@
         words = kind == .prompt ? text(7) ?? "" : ""
     }
 
+    /// What the user gave the question: whether they accepted it, and the words they chose or typed.
+    public struct Given: Equatable, Sendable {
+        /// Whether they accepted it.
+        public let accepted: Bool
+
+        /// The caption they chose, or the words they typed; nil for none.
+        public let words: String?
+
+        /// The user accepted where `accepted`, giving `words`.
+        public init(accepted: Bool, words: String?) {
+            self.accepted = accepted
+            self.words = words
+        }
+    }
+
     /// The act's answer: a confirmation's yes or no; a choice's action or a prompt's words - cut to its bound - where
     /// the user accepted, nothing where not; an alert's nothing.
     public func answer(accepted: Bool, words: String?) -> [HostValue] {
@@ -101,15 +120,13 @@
 /// its runtime has gone answers nothing of another's - the first asked showing, the next once it is answered.
 @_spi(Host) @MainActor public final class QuestionQueue<Question> {
     private var waiting: [(ticket: Int64, question: Question)] = []
-    private static var nextTicket: Int64 { get { QuestionTickets.next } set { QuestionTickets.next = newValue } }
 
     /// No question waiting.
     public init() {}
 
     /// Asks `question`: its ticket, and whether it shows now - none before it waits.
     public func ask(_ question: Question) -> (ticket: Int64, showsNow: Bool) {
-        let ticket = Self.nextTicket
-        Self.nextTicket += 1
+        let ticket = HostNumbers.next()
         waiting.append((ticket, question))
         return (ticket, waiting.count == 1)
     }
@@ -126,10 +143,4 @@
         let question = waiting.remove(at: index).question
         return (question, index == 0 ? waiting.first?.question : nil)
     }
-}
-
-/// The next ticket of every question in the process.
-@MainActor
-private enum QuestionTickets {
-    static var next: Int64 = 1
 }

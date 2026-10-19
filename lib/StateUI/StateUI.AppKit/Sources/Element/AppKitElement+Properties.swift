@@ -57,8 +57,10 @@ extension AppKitElement {
                 host?.runtime.reducesMotion() ?? false
             })
 
-        case .zStack:
-            return AppKitZStackView()
+        case .zStack, .layoutEngine:
+            let layers = AppKitZStackView()
+            layers.engine = type == .layoutEngine
+            return layers
 
 
         case .scrollView:
@@ -294,10 +296,6 @@ extension AppKitElement {
         guard driven[property]?.kind == .placement, let carried = element.carriedValue(property) else { return nil }
 
         return HostBoundary.placements(from: carried)
-    }
-
-    func textAlignment(_ value: Int32?) -> NSTextAlignment {
-        appKitTextAlignment(value)
     }
 
     /// How the element's words break, as the tree says; word wrapping where it says nothing.

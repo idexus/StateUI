@@ -19,7 +19,7 @@ final class AppKitSearchFieldViewTests: XCTestCase {
         search.frame = NSRect(x: 0, y: 0, width: 300, height: 44)
         search.apply(
             text: "", writeText: true, placeholder: "WWW", placeholderColor: .red, foregroundColor: .textColor,
-            backgroundColor: .white, font: .systemFont(ofSize: 22), horizontalAlignment: 1, enabled: true,
+            backgroundColor: .white, font: .systemFont(ofSize: 22), horizontalAlignment: .center, enabled: true,
             readOnly: false, maximumLength: nil, traits: InputTraits(spellChecked: false, predicted: false, purpose: nil), cursorPosition: nil,
             selectionLength: nil, writeSelection: false)
         search.layoutSubtreeIfNeeded()
@@ -41,7 +41,7 @@ final class AppKitSearchFieldViewTests: XCTestCase {
             foregroundColor: .systemPurple,
             backgroundColor: .windowBackgroundColor,
             font: .systemFont(ofSize: 15),
-            horizontalAlignment: 1,
+            horizontalAlignment: .center,
             enabled: false,
             readOnly: true,
             maximumLength: 12,

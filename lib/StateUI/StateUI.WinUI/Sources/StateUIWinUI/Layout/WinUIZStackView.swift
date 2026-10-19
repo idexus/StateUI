@@ -28,6 +28,9 @@ final class WinUIZStackView: WinUITravellingLayout {
         didSet { if padding != oldValue { invalidateMeasurements() } }
     }
 
+    /// Whether the ZStack stands a layout engine, which has no size of its own.
+    var engine = false
+
     @discardableResult
     override func setItems(_ items: [WinUILayoutItem]) -> Bool {
         defer { holdInDrawingOrder() }
@@ -35,7 +38,7 @@ final class WinUIZStackView: WinUITravellingLayout {
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        ZStackArithmetic.size(of: items, padding: padding, width: width)
+        ZStackArithmetic.size(of: items, padding: padding, width: width, engine: engine)
     }
 
     override func arrange(in bounds: Rect) {

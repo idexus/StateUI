@@ -64,6 +64,9 @@ extension AppKitDriver {
         case (.close, let picker as AppKitPickerView): picker.menuDidClose(NSMenu())
         case (.pickDate(let day), let picker as AppKitDatePickerView): picker.chooseForTesting(day)
         case (.pickTime(let time), let picker as AppKitTimePickerView): picker.chooseForTesting(time)
+        case (.pressDown(let point), _) where native?.handReader != nil: native?.handReader?.dragging.pressed(at: point)
+        case (.drag(let point), _) where native?.handReader != nil: native?.handReader?.dragging.moved(to: point)
+        case (.lift, _) where native?.handReader != nil: native?.handReader?.dragging.released()
         case (.pressDown(let point), let view?): try press(view, native, down: true, at: point, element)
         case (.lift(let point), let view?): try press(view, native, down: false, at: point, element)
         case (.drag(let point), let canvas as AppKitCanvasView): canvas.dragForTesting(at: NSPoint(point))
@@ -81,10 +84,20 @@ extension AppKitDriver {
             native?.panRecognizer?.dragged(.began, x: 0, y: 0)
             native?.panRecognizer?.dragged(.changed, x: offset.x, y: offset.y)
             native?.panRecognizer?.dragged(.ended, x: offset.x, y: offset.y)
+        case (.sweep(let offset, let speed), _) where native?.handReader != nil:
+            native?.handReader?.hand(.began, moved: .zero)
+            native?.handReader?.hand(.changed, moved: offset)
+            native?.handReader?.hand(.ended, moved: .zero, speed: speed)
+        case (.notch(let notches), _) where native?.handReader != nil:
+            native?.handReader?.notched(notches)
         case (.pinch(let scale, let point), _) where native?.pinchRecognizer != nil:
             native?.pinchRecognizer?.pinched(.began, scale: 1, at: point)
             native?.pinchRecognizer?.pinched(.changed, scale: scale, at: point)
             native?.pinchRecognizer?.pinched(.ended, scale: scale, at: point)
+        case (.rotate(let degrees, _), _) where native?.rotationRecognizer != nil:
+            native?.rotationRecognizer?.rotated(.began, degrees: 0)
+            native?.rotationRecognizer?.rotated(.changed, degrees: degrees)
+            native?.rotationRecognizer?.rotated(.ended, degrees: degrees)
         case (.scroll(let offset), let scroll as AppKitScrollView):
             // A live scroll: its start, the user's move, and its rest.
             scroll.beginMovementForTesting()
@@ -117,17 +130,17 @@ extension AppKitDriver {
                 controller.toolbarForTesting.performForTesting(AppKitWindowToolbar.back)
             }
         case (.switchAway, _) where element.type == .window:
-            // Another application in front takes the keyboard from every window, which is all AppKit tells.
-            for window in windows { tell(NSWindow.didResignKeyNotification, window) }
+            // Another application in front takes the keyboard and the main window from every window, all AppKit tells.
+            for window in windows { leaveTheFront(window) }
         case (.switchBack, _) where element.type == .window:
             comeToTheFront(try window(of: element))
         case (.bringToFront, _) where element.type == .window:
             let front = try window(of: element)
-            for window in windows where window !== front { tell(NSWindow.didResignKeyNotification, window) }
+            for window in windows where window !== front { leaveTheFront(window) }
             comeToTheFront(front)
         case (.minimize, _) where element.type == .window:
             let window = try window(of: element)
-            tell(NSWindow.didResignKeyNotification, window)
+            leaveTheFront(window)
             tell(NSWindow.didMiniaturizeNotification, window)
         case (.restore, _) where element.type == .window:
             let window = try window(of: element)
@@ -221,20 +234,31 @@ extension AppKitDriver {
         NotificationCenter.default.post(name: name, object: window)
     }
 
-    /// `window` comes to the front and takes the keyboard, as AppKit tells a window it brings forward. The driver
-    /// shows no window on the machine's screen, so no run takes the user's.
+    /// `window` comes to the front, the main window holding the keyboard, as AppKit tells a window it brings
+    /// forward. The driver shows no window on the machine's screen, so no run takes the user's.
     /// Design: docs/design/platforms/appkit/conformance.md#windows
     func comeToTheFront(_ window: NSWindow?) {
         guard let window else { return }
+        tell(NSWindow.didBecomeMainNotification, window)
         tell(NSWindow.didBecomeKeyNotification, window)
     }
 
+    /// `window` leaves the front: it is neither the main window nor holds the keyboard.
+    func leaveTheFront(_ window: NSWindow) {
+        tell(NSWindow.didResignKeyNotification, window)
+        tell(NSWindow.didResignMainNotification, window)
+    }
+
     /// Types `words` as the whole of a field's words, through the editor AppKit gives the field that holds the
-    /// keyboard: what a user's typing reports, the field reports.
+    /// keyboard: what a user's typing reports, the field reports. A field that refuses the keyboard - read-only, it
+    /// takes no editor - leaves the keys to the responder the window holds, as a user's keys go.
     private func type(_ words: String, into field: NSTextField) throws {
-        guard let window = field.window, window.makeFirstResponder(field),
-              let editor = field.currentEditor() as? NSTextView
-        else { throw DriverCannot("type into a field with no editor") }
+        guard let window = field.window else { throw DriverCannot("type into a field with no window") }
+        guard window.makeFirstResponder(field), let editor = field.currentEditor() as? NSTextView else {
+            (window.firstResponder as? NSTextInputClient)?
+                .insertText(words, replacementRange: NSRange(location: NSNotFound, length: 0))
+            return
+        }
         editor.selectAll(nil)
         editor.insertText(words, replacementRange: editor.selectedRange())
     }
@@ -262,7 +286,7 @@ extension AppKitDriver {
         let act = UserAct.dragAndDrop(onto: target, across: across)
         let native = element.native as? AppKitElement
         guard let source = native?.dragSource, let root = native?.view?.window?.contentView,
-              let drops = (root as? AppKitWindowContentView)?.drops ?? (root as? AppKitHitTestView)?.drops
+              let drops = (root as? AppKitWindowContentView)?.drops
         else { throw DriverCannot(act, on: element) }
         func middle(_ id: String) throws -> NSPoint {
             guard let view = (renderer?.runtime.tree.root?.first(id: .manual(id))?.native as? AppKitElement)?.view else {
@@ -282,7 +306,7 @@ extension AppKitDriver {
     /// AppKit's dragging destination tells the window's root.
     func dropFiles(_ names: [String], on view: NSView, _ element: MountedElement) throws {
         guard let root = view.window?.contentView,
-              let drops = (root as? AppKitWindowContentView)?.drops ?? (root as? AppKitHitTestView)?.drops
+              let drops = (root as? AppKitWindowContentView)?.drops
         else { throw DriverCannot(.dropFiles(names), on: element) }
         let files = names.map { Self.files.appendingPathComponent($0) }
         for file in files { try Data(file.lastPathComponent.utf8).write(to: file) }
@@ -294,7 +318,8 @@ extension AppKitDriver {
     /// A shortcut pressed while the element's window is in front: the key-down AppKit makes of it, offered to the
     /// window's key equivalents, then the main menu's, then to the view holding the keyboard, as AppKit offers it.
     private func pressKeys(_ shortcut: KeyboardShortcut, on element: MountedElement, _ view: NSView?) throws {
-        let spelled = AppKitKeys.equivalent(of: shortcut)
+        // What a keyboard sends, not what a key equivalent is spelled with: Delete is DEL there.
+        let spelled = (key: AppKitKeys.typed(of: shortcut), modifiers: AppKitKeys.equivalent(of: shortcut).modifiers)
         let controller = try? controller(of: element)
         guard let window = view?.window ?? controller?.window ?? NSApp.windows.first(where: \.isVisible),
               let event = NSEvent.keyEvent(

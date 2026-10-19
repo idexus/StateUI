@@ -51,6 +51,7 @@ extension AndroidDriver {
         case (.selectedTab, let tabs as AndroidTabView): return Self.selectedTab(of: tabs)?.propValue
         case (.progress, let bar as AndroidProgressBarView): return bar.progress.propValue
         case (.showsSidebar, let split as AndroidSplitView): return split.isPresented.propValue
+        case (.sidebarOverlays, let split as AndroidSplitView): return split.overlays.propValue
         case (.sidebarBackground, let split as AndroidSplitView):
             return split.grounds.beside.map { Self.material(argb: Int64(UInt32(bitPattern: $0))) }
         case (.flyoutBackground, let split as AndroidSplitView):
@@ -283,6 +284,14 @@ extension AndroidDriver {
     static let background = Java.staticMethod(testPixels, "background", "(Landroid/view/View;)J")
     static let pixels = Java.staticMethod(testPixels, "colors", "(Landroid/view/View;[I)[I")
     static let paintNothing = Java.staticMethod(testPixels, "paintNothing", "(Landroid/app/Activity;)V")
+
+    /// Forgets every value the host keeps, before a case writes its own.
+    func forgetWhatIsKept() {
+        Java.callStatic(Self.testStore, Self.forget, .object(TestContext.window.reference))
+    }
+
+    static let testStore = Java.findClass("stateui/android/test/TestStore")
+    static let forget = Java.staticMethod(testStore, "forget", "(Landroid/content/Context;)V")
 
     /// What the host keeps under `key` for the next launch, as it reads it back: a value of the application's from
     /// the preferences, one of the first scene's from the scenes kept beside them.

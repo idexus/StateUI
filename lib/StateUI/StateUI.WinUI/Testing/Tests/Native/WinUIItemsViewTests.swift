@@ -65,6 +65,36 @@ final class WinUIItemsViewTests: XCTestCase {
         }
     }
 
+    /// A list that comes back into the window - its tab chosen again - hears its scroller once: its handlers hang on
+    /// a scroller once, however often WinUI loads the list.
+    func testAListHearsItsScrollerOnceHoweverOftenItComesBack() throws {
+        try onUIThread {
+            let tab = State(wrappedValue: 0)
+            let host = WinUIRenderer.running {
+                TabView([0, 1]) { number in
+                    if number == 0 {
+                        ItemsView(0..<50) { Text("\($0)") }.title("List")
+                    } else {
+                        Text("Other").title("Other")
+                    }
+                }
+                .selection(tab.projectedValue)
+            }
+            let list = try XCTUnwrap(host.views(WinUIItemsView.self).first)
+            host.settle { stateui_winui_items_scroller_handlers(list.list.handle) == 1 }
+            XCTAssertEqual(stateui_winui_items_scroller_handlers(list.list.handle), 1)
+
+            for _ in 0..<3 {
+                tab.wrappedValue = 1
+                host.settle { !stateui_winui_is_loaded(list.list.handle) }
+                XCTAssertFalse(stateui_winui_is_loaded(list.list.handle), "out of the window with its tab")
+                tab.wrappedValue = 0
+                host.settle { stateui_winui_is_loaded(list.list.handle) }
+            }
+            XCTAssertEqual(stateui_winui_items_scroller_handlers(list.list.handle), 1, "one set, not one a load")
+        }
+    }
+
     /// What Narrator calls the row holding the item of `identity`; nil where no cell holds it.
     @MainActor
     private static func rowName(_ list: WinUIItemsView, _ identity: Int) -> String? {

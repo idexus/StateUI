@@ -54,7 +54,7 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
         foregroundColor: NSColor,
         backgroundColor: NSColor?,
         font: NSFont,
-        horizontalAlignment: Int32?,
+        horizontalAlignment: TextAlignment?,
         enabled: Bool,
         readOnly: Bool,
         maximumLength: Int?,
@@ -72,7 +72,8 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
         placeholderAttributedString = nil
         if let placeholderColor, let placeholder {
             placeholderAttributedString = .placeholder(
-                placeholder, color: placeholderColor, alignment: nativeAlignment(horizontalAlignment))
+                placeholder, color: placeholderColor,
+                alignment: NSTextAlignment(horizontalAlignment, in: userInterfaceLayoutDirection))
         } else {
             placeholderString = placeholder
         }
@@ -83,7 +84,7 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
         isEditable = !readOnly
         isSelectable = true
         isAutomaticTextCompletionEnabled = traits.predicts
-        alignment = nativeAlignment(horizontalAlignment)
+        alignment = NSTextAlignment(horizontalAlignment, in: userInterfaceLayoutDirection)
 
         // AppKit's bezel draws its own ground over any colour: a field given one stands in the bezel's capsule,
         // filled with it, its words and buttons set in as the bezel sets them.
@@ -138,7 +139,9 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
 
     func controlTextDidChange(_ notification: Notification) {
         guard !ProgramWrite.isWriting else { return }
-        let typed = InputWords.held(stringValue, in: textCase, toBound: maximumLength) ?? stringValue
+        let typed = InputWords.held(
+            stringValue, in: textCase, toBound: maximumLength,
+            composing: (currentEditor() as? NSTextView)?.hasMarkedText() == true) ?? stringValue
 
         if typed != stringValue {
             ProgramWrite.perform {
@@ -183,19 +186,6 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
         let selection = InputWords.utf16Selection(
             start: cursorPosition ?? 0, length: selectionLength ?? 0, in: words)
         editor.selectedRange = NSRange(location: selection.start, length: selection.length)
-    }
-
-
-
-    private func nativeAlignment(_ value: Int32?) -> NSTextAlignment {
-        switch value {
-        case 1:
-            return .center
-        case 2:
-            return userInterfaceLayoutDirection == .rightToLeft ? .left : .right
-        default:
-            return userInterfaceLayoutDirection == .rightToLeft ? .right : .left
-        }
     }
 
     var placeholderStringForTesting: String? {

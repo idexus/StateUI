@@ -80,9 +80,9 @@ display cycle, in this order, in every runtime:
                                                    the channels' reports reach the core
     3  CoreLink.cycle(now:reducesMotion:)          engines and conversions run in the core;
                                                    StateChannels take the changes
-    4  one walk of the mounted tree                each element's native setters once,
-                                                   each changed parent arranged once,
-                                                   after its children;
+    4  the elements the batch touches             each element's native setters once,
+                                                   deepest first, each changed parent
+                                                   arranged once, after its children;
                                                    finished animations answer their waiters
     5  the clock stays held while anything moves; it lets go only here
     6  a render, when the core needs one
@@ -90,6 +90,23 @@ display cycle, in this order, in every runtime:
 
 A user's own change drains steps 2 to 5 at once, so the followers and
 the engines move on the user's frame.
+
+Where a toolkit gives frames one window at a time - AppKit's display link,
+GTK's frame clock - the clock takes them from a window the screen shows
+(`ApplicationLifecycle.framesWindow`): the one the user is in, else the
+first that stands on the screen, else the first. A window minimized, or
+hidden by its scene, draws nothing, and its frames stop; held there, every
+other window's motion would stand still. The host follows the rule after
+every render of its windows and every state its windows tell.
+
+Step 4 visits the elements that present a state the cycle moved or hold a
+property an animation moved - found by their state's number and their mount,
+not by a walk - and the parents their moves ask to arrange, up through
+elements with no view of their own; a parent whose child's `zIndex` moved
+draws its children in order again. A frame costs what it touches, however
+large the tree: a walk of every element on every frame, a layered one's
+children compared each time, would be most of a frame's work, more than a
+tablet's browser keeps up with.
 
 The cycle's time never runs back. The display stamps each frame with the time
 of its last refresh, and a turn between frames - a report, a handler, the
@@ -120,7 +137,7 @@ The turn always runs in the same order.
   loop's pass ends        from the page ends   one turn to the UI thread
     |                       |                    |
     v                       v                    v
-  pump:  run the jobs  ->  a pending cycle  ->  render  ->  acts
+  pump:  run the jobs  ->  an asked cycle  ->  render  ->  its cycle  ->  acts
                                                   |
                                                   v
                           PatchIntake.take(_:generation:apply:)
@@ -132,6 +149,13 @@ The turn always runs in the same order.
 
 The acts come last, so an act lands on the interface its handler just changed.
 
+The cycle a render asks for runs in the same turn, once, before anything is
+drawn: a layout engine's run of the views the render put in stands with them.
+Left to the next frame, the toolkit would draw the new views by a run worked
+out for the old - each placed by position, so a view put in at the front
+would stand where the one now after it is, and the last in no place at all,
+drawn by its own values. A cycle it wakes in turn waits for the frame, so a turn ends.
+
 `Pump` is that turn, once for every runtime. A toolkit gives the runtime one
 `HostPresenter`: what a render changed around the tree - the windows, their
 pages, their chrome - what a frame's walk moved of the chrome, and the
@@ -140,12 +164,25 @@ runs runs when it ends; the handlers a render created run and the turn goes
 round again; the handlers waiting in `HandlerDispatch` run, a phase rendered
 before what comes after it, and the turn goes round again; only then the acts.
 
+## Probes
+
+`STATEUI_PROBE=1` in a process's environment - on the Web, in the page's
+address - times the runtime's stages (`HostProbe`) and writes, once a second
+while it works, one line of each stage that ran: its milliseconds in that
+second, its runs and its longest. The stages lie side by side, none inside
+another: a native event's handlers (`events`), the core's jobs, a `render`,
+its patch applied (`apply`), the windows and pages shown after it
+(`windows`), the `animations`, the core's `cycle` - engines, a layout's run
+- and what moved presented to the natives (`present`). The Web page shows
+the line over itself beside its own counts (platforms/web/runtime.md,
+probes). Unprobed, a stage costs one test of a static.
+
 ## The doorbell
 
 Where the platform's loop is neither Apple's nor the browser's, a host says at
 its start how a turn is posted onto its UI thread from any thread
-(`CoreLink.postTurns`): WinUI through its relay, GTK through GLib, Android onto
-its looper. The core posts one through it whenever work comes - a state written
+(`CoreLink.postTurns`): Android onto its looper, WinUI through its relay, GTK
+through GLib. The core posts one through it whenever work comes - a state written
 or an act sent on the UI thread, a job queued from any thread, a handler's
 resume or a post - on the thread the work came from; no thread of the host's
 waits. One turn is posted until its drain begins. The turn itself is the
@@ -241,6 +278,23 @@ motion; [patches](patches.md) those of the patch intake and the program write;
 [the mounted tree](tree.md) those of the tree and its native halves;
 [layout](layout.md) those of the layout arithmetic.
 
+## The mount's stack
+
+The host layer makes and applies the tree by recursion - an element's patch
+applied, then its children made or applied, each an element - so, as the
+differ's walk does (core/identity-and-diffing.md, the walk's stack), it goes
+down through small frames: `apply` takes the patch's own values in one step
+(`received`), walks the children (`childrenApplied`, `arrange`, `mounted` -
+loops, no closures held across them), and tells the native half in another
+(`settled`), what crosses the children kept behind one reference
+(`Applying`): a debug build keeps a slot for every local of a function, and a
+tablet browser's stack - far less than a desktop's - overflows a WebAssembly
+Gallery before its first frame where one function does all of a level's
+work, in the differ as in the mount; `MountStackTests` holds a level under
+eight kilobytes. A WebAssembly start that fails takes the loading screen away, so
+its reason stands on the page rather than a load with no end, and ends the
+program with 1, so a test's runner waiting for it hears it failed.
+
 ## After a layout pass
 
 What a host must do once the layout pass under way is over - on GTK a field's
@@ -282,10 +336,21 @@ scroller still says what it did on the display's frame. AppKit does the
 same in each room's layout pass - the window's content, a split view's
 pane - laying the page out, letting it say, and laying it out again where
 anything did (`layOutReporting`): a split view sliding its sidebar lays out
-only its panes, and a report left to the display's next frame stood the
-page's content in the last frame's width every other frame. GTK lets it say
-in its frame clock's layout phase, after the window's own layout, and the
-clock lays out again what that changed before it paints.
+only its panes, and a report left to the display's next frame would stand the
+page's content in the last frame's width every other frame. UIKit does the
+same in each page's layout pass (`UIKitPageController.viewDidLayoutSubviews`):
+a page UIKit alone narrows - an iPad's sidebar sliding beside it, its inset
+set each frame - would otherwise place a layout's views for the last frame's
+room, a frame behind its width. GTK lets it say in its frame clock's layout
+phase, after the window's own layout, and the clock lays out again what that
+changed before it paints.
+
+A layout pass lays out the frame the cycle last ran at, and what it says runs
+at that frame's time (`DisplayCycle.inLayoutPass`), though the runtime's
+clock went on: a report moves no animation on. A slide stepped on there would
+narrow the page again within the pass, whose report would step it on again -
+the whole slide run out in one frame, the screen standing still until it
+rests.
 
 ## A scroller's movement
 
@@ -354,6 +419,115 @@ platform takes the press away and it is cancelled. A press that never became
 a drag ends with nothing. A platform's distance is taken in DIPs; the toolkit
 holds the pointer once the press is a drag, which the host asks for as the
 rule says so.
+
+## The hand over a layout
+
+A layout engine a hand moves hears the hand itself (`Hearing.hand`, its
+`handAxis`): a press dragged - a finger or a pointer - a trackpad's two
+fingers and a wheel, each as the platform tells it, said as `HeardInput.hand`
+or `.wheel`. `HandReading` makes them one stream of the element's
+`handMoved` - a beginning, each move of what is under the hand, and a lift
+with its speed - alike on every host. Where the platform tells no speed at
+the lift, the moves of its last tenth of a second say it. A wheel tells no
+beginning and no lift: its first notch opens a gesture, and a frame finding
+it still for 150 ms lets it go with no throw (the runtime's frames pace every
+open wheel, and hold the clock while one is open). A trackpad that reaches a
+host as a wheel - a page's, with the system's momentum in it; Windows'
+through a virtual machine - says its lift by its pace: its steps of the last
+four frames summed over that window, as steps come late, glued together or
+uneven, and one alone says nothing. Three steps in a row each slower than
+the last, each of eight points at least, are the momentum - a slow hand
+makes none, its steps of a few points slowing and quickening by chance, and
+a pause lets it go - so the wheel is let go there with the speed its moves
+say. The momentum after it is swallowed until a step against it, the wheel
+half as fast again as the momentum at its slowest with a step of eight
+points at least - a hand pushing again - or a gap of more than six frames, a
+hand that stopped it and moves again. A wheel the platform says turns notch by
+notch is no stream: it is said as notches (`HeardInput.notch`), a fine
+wheel's parts adding up to whole ones (`HandReading.notches`), each a step
+of the run to the next target (`handStepped`). What the hand says is kept
+for the next frame and said at its start, before the cycle - its moves since
+the last frame as one (`HandPace`): a toolkit telling the hand faster than
+the display draws, 120 times a second or in a burst a busy thread held back,
+moves the run once a frame. A layout claims a hand
+whose first move is more along its axis than across it; the rest is left to
+whatever holds the layout, a page's scroller. What the hand does to the run -
+the phase moving with it, a throw to the target nearest its end - is the
+core's (views/layout-engine.md, the hand).
+
+A layout whose views the hand takes by themselves (`itemDrag`) gives the
+hand one of three owners, by one rule every host shares: a first move along
+its axis is the run's; a first move across it is the view's under the press
+where views are taken `.across`, else the page's; and a press standing still
+`HandReading.hold` - 500 ms, the long press the platforms share closely
+enough - is the view's where they are taken `.held`, then whichever way it
+goes. A host says where a press went down (`HeardInput.hand`'s `point`) and
+every move and lift as it does for the run, and its end always - a press that
+held a view and never moved still lets it go; it decides nothing more. The
+hold is found by the frames, since nothing moves: a press waiting for it holds
+the clock (`HandReading.wantsFrames`), as an open wheel does. The view's hand
+is said as the element's `itemMoved` - where it is in the layout, from the
+press's point and every move since, its speed at the lift as the run's is
+read, and how long it has stood still - told again each hold it stands, so
+an application can turn a board under an icon held at its edge.
+
+## Two fingers over a layout
+
+A layout engine that `magnifies` or `rotates` hears two fingers itself
+(`Hearing.pinches`, `Hearing.rotations`): a pinch and a rotation, each as
+the platform tells it - its own gesture where the toolkit has one, two
+pointers where it tells only pointers (`TwoFingers`: how far apart they
+stand and which way the line between them turns, clockwise in a view whose
+y grows down, the short way round). `PinchReading` makes the two one stream
+of the element's `pinchMoved`: begun with the first, ended with the last -
+a move with no beginning heard begins it, a cancel of the last cancels it -
+each move a scale and degrees since the last, said at the next frame's
+start as one, and as the fingers lift their speed, read from the last
+tenth of a second: the scale's logarithm across, the degrees down.
+
+The rule for gestures at once is one, every host's: the hand and the two
+fingers move together. While two fingers spread and turn, the hand - a pan,
+a scroll - goes on with their middle (`PointerMiddle`): each finger's step
+moves it by that step over how many fingers are down, and a finger landing
+or lifting moves it nowhere, so fingers turning about their middle hold the
+run still and moving together carry it. A toolkit whose pan already follows
+the fingers' middle (UIKit's) is that rule; a host reading pointers one by
+one reads them so. A view held by itself keeps the hand: the fingers say
+nothing while it does.
+
+## A wheel turned as a pinch
+
+A platform that hears no gesture of a trackpad's pinch for an application
+tells it as a wheel turned with Control - Windows does, a browser does, and
+a Mac's trackpad reaches a Parallels guest of Windows so - and a mouse's
+wheel with Control zooms on the Windows and GNOME desktops. Where a view
+hears a pinch, a host tells such a turn as `HeardInput.wheelPinch`, its
+scale in the platform's units - a notch a tenth (`WheelPinch.notch`), a
+browser's pixels as the browser makes them (`exp(-down / 100)`) - and the
+host layer makes it a pinch (`WheelPinch`): begun with its first turn, each
+turn a step, and let go by the frames once the wheel has stood still
+`HandReading.pause`, as a wheel tells no lift. A Mac takes no Control and
+wheel for a pinch: there Control and the wheel zoom the whole screen.
+
+## Two fingers from one pointer
+
+A mouse turns and spreads what two fingers do: a press dragged with ⌥/Alt
+over a view that hears a pinch or a rotation is TWO FINGERS, the press and its
+mirror about the view's middle, as the iOS Simulator makes them - round the
+middle a turn, toward or away from it a spread, both at once. A host tells
+the press with Alt as `HeardInput.mirrored(phase, at:, middle:)` - where the
+press stands and the view's middle, in its points - and the host layer reads
+the two (`MirroredFingers`, by `TwoFingers`) and tells their steps as a
+pinch's and a rotation's, so they go on as the one stream two fingers are
+(`PinchReading`): thrown on as they lift, the hand standing still, as their
+middle does. The press is the fingers' alone - a layout's hand leaves it, a
+press without Alt goes on as before. Where no trackpad tells a rotation -
+any mouse, and Chrome and Firefox on a Mac, which tell a trackpad's pinch as
+a wheel and its turn as nothing - this is the rotation's road. Each host
+reads Alt as its toolkit holds it: AppKit's event's ⌥ (a recognizer a pan
+waits on), WinUI's pointer's key modifiers (the relay's `mirrored`), GTK's
+controller state (`GDK_ALT_MASK`, a drag of its own claimed or denied at its
+start), the Web's pointer event's `altKey`.
 
 ## A swipe
 
@@ -501,7 +675,10 @@ act that came without them - a choice's dangerous action and its others, a promp
 bound, purpose and starting words. It answers as its kind does: a
 confirmation yes or no, a choice or a prompt its words where the user
 accepted - a prompt's cut to its bound, by characters - and nothing where
-not, an alert nothing. Questions show one at a
+not, an alert nothing. A question the toolkit could not show - another
+dialog standing where it would - fails its call with the toolkit's reason:
+the toolkit answers a `Result`, as a file dialog does, and a failure is never
+read as the user saying no. Questions show one at a
 time in the order asked, each under a ticket of its own across the process
 (`QuestionQueue`), so an answer after its runtime has gone answers nothing
 of another's.
@@ -606,7 +783,10 @@ element it opened, which takes it by its kind and value
 A field holds its words in its case: the program's are written so, and what
 a user types is turned into it, then cut past the field's bound to its first
 characters that fit, as the contract counts characters (`InputWords.held`,
-`InputWords.cut`), and written back as the program's; a toolkit that asks
+`InputWords.cut`), and written back as the program's - but not while an
+input method still composes them: changed under it, the composition is lost,
+so they stand as typed until it commits them (`composing`), which each host
+reads from its toolkit's marked text or composing span; a toolkit that asks
 before it inserts takes what goes in, in the case and within the bound, in
 the same terms (`InputWords.fitting`). A caret and a selection the tree
 puts, in characters, reach a toolkit counting UTF-16 units as the units those characters take

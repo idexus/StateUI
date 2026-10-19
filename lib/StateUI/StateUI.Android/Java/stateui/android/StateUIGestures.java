@@ -4,7 +4,9 @@
 package stateui.android;
 
 import android.view.MotionEvent;
+import android.view.InputDevice;
 import android.view.ScaleGestureDetector;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewParent;
@@ -17,11 +19,14 @@ import android.view.ViewParent;
  */
 final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListener {
     /** What is told through `gestured`, as the Swift host numbers it. */
+    // Swift: AndroidGestureKind
     static final int TAPPED = 0, PINCHED = 3, ENTERED = 4, EXITED = 5, MOVED = 6, PRESSED = 7, RELEASED = 8;
 
     /** A press's phase through `pressed`, and a pinch's, as StateUI numbers them. */
+    // Swift: AndroidPressPhase
     private static final int DOWN = 0, MOVE = 1, LET_GO = 2, TAKEN = 3;
-    private static final int STARTED = 0, RUNNING = 1, COMPLETED = 2;
+    // Swift: GesturePhase
+    private static final int BEGAN = 0, CHANGED = 1, ENDED = 2, CANCELLED = 3;
 
     private final View host;
     private final long view;
@@ -39,6 +44,23 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     private boolean pinch;
     private boolean pointer;
 
+    /** Whether the element is a layout two fingers turn, and whether two fingers stand on it now. */
+    private boolean rotation;
+    private boolean turning;
+
+    /**
+     * Whether the element is a layout a hand moves: fingers dragged over it, read as one at their middle, whose first
+     * move past the slop the Swift host claims or leaves, and a wheel. Its last report's place on the screen, how
+     * many fingers it had, and its speed.
+     */
+    private boolean hand;
+    private boolean handPending;
+    private boolean handTaking;
+    private float handX;
+    private float handY;
+    private int handFingers;
+    private VelocityTracker handSpeed;
+
     /** Where the touch went down, on the screen: a moving view moves where its own touches are. */
     private float downX;
     private float downY;
@@ -46,6 +68,13 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     private boolean pressing;
     private boolean dragging;
     private boolean pinching;
+
+    /**
+     * Whether a pinch began in the touch under way - no tap, however still its last finger - and whether the touch
+     * is being cancelled, which ends a pinch cancelled.
+     */
+    private boolean pinched;
+    private boolean cancelling;
 
     /** Where the pinch under way was last centred, in points of the view: where it ends. */
     private float pinchX;
@@ -68,11 +97,14 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     }
 
     /** What the element listens for; none is false everywhere. */
-    void configure(boolean countsTaps, boolean drags, boolean pinch, boolean pointer) {
+    void configure(
+            boolean countsTaps, boolean drags, boolean pinch, boolean pointer, boolean hand, boolean rotation) {
         this.countsTaps = countsTaps;
         this.drags = drags;
         this.pinch = pinch;
         this.pointer = pointer;
+        this.hand = hand;
+        this.rotation = rotation;
     }
 
     /**
@@ -81,7 +113,13 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
      */
     boolean onTouch(MotionEvent event) {
         if (!wanted()) return false;
+        cancelling = event.getActionMasked() == MotionEvent.ACTION_CANCEL;
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) pinched = false;
+        boolean wasPinched = pinched;
         if (pinch) scale.onTouchEvent(event);
+        // A pinch begun is no press of the view's own: its click is called off.
+        if (pinched && !wasPinched) cancelOwn(event);
+        if (rotation) fingers(event);
 
         float x = event.getRawX() / density;
         float y = event.getRawY() / density;
@@ -97,6 +135,7 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
                     pressing = true;
                     press(DOWN, x, y);
                 }
+                if (hand) handDown(event);
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (Math.hypot(event.getRawX() - downX, event.getRawY() - downY) > slop) moved = true;
@@ -105,16 +144,19 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
                     dragging = true;
                     cancelOwn(event);
                 }
+                if (hand) handMoved(event);
                 break;
             case MotionEvent.ACTION_UP:
                 if (pointer) report(RELEASED, 0, event.getX() / density, event.getY() / density, 0);
                 if (pressing) press(LET_GO, x, y);
-                if (!moved && !pinching && countsTaps) tap(event);
+                if (hand) handUp(event, true);
+                if (!moved && !pinched && countsTaps) tap(event);
                 pressing = false;
                 dragging = false;
                 break;
             case MotionEvent.ACTION_CANCEL:
                 if (pressing) press(TAKEN, x, y);
+                if (hand) handUp(event, false);
                 pressing = false;
                 dragging = false;
                 tapped = 0;
@@ -122,17 +164,131 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
             default:
                 break;
         }
-        return dragging || pinching || !(host.isClickable() || host.isLongClickable());
+        return dragging || pinching || handTaking || !(host.isClickable() || host.isLongClickable());
     }
 
     /** Whether the element listens for any of the user's input. */
     boolean wanted() {
-        return countsTaps || drags || pinch || pointer;
+        return countsTaps || drags || pinch || pointer || hand || rotation;
     }
 
-    /** Whether a drag or a pinch under way takes the rest of the touch. */
+    /** Whether a drag, a pinch, two fingers or the hand under way takes the rest of the touch. */
     boolean taking() {
-        return dragging || pinching;
+        return dragging || pinching || turning || handTaking;
+    }
+
+    /**
+     * Two fingers on a layout they turn: told where each stands as the second goes down, as they move and as one
+     * lifts - the Swift host reads the turn between them.
+     */
+    private void fingers(MotionEvent event) {
+        int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_CANCEL) {
+            if (turning) StateUIHost.fingers(view, CANCELLED, 0, 0, 0, 0);
+            turning = false;
+            return;
+        }
+        if (event.getPointerCount() < 2) return;
+        boolean lifting = action == MotionEvent.ACTION_POINTER_UP && event.getPointerCount() == 2;
+        int phase = !turning ? BEGAN : lifting ? ENDED : CHANGED;
+        if (!turning && action != MotionEvent.ACTION_POINTER_DOWN && action != MotionEvent.ACTION_MOVE) return;
+        turning = !lifting;
+        if (phase == BEGAN) {
+            ViewParent parent = host.getParent();
+            if (parent != null) parent.requestDisallowInterceptTouchEvent(true);
+        }
+        StateUIHost.fingers(
+                view, phase, event.getX(0) / density, event.getY(0) / density, event.getX(1) / density,
+                event.getY(1) / density);
+    }
+
+    /**
+     * A wheel's notches over a layout a hand moves - Android's scroll axes count them, a part of one for a fine wheel
+     * - the way they move what is under the hand; whether it took them.
+     */
+    boolean onGenericMotion(MotionEvent event) {
+        if (!hand || event.getActionMasked() != MotionEvent.ACTION_SCROLL) return false;
+        if (!event.isFromSource(InputDevice.SOURCE_CLASS_POINTER)) return false;
+        float across = -event.getAxisValue(MotionEvent.AXIS_HSCROLL);
+        float down = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
+        return StateUIHost.notched(view, across, down);
+    }
+
+    /**
+     * A finger down on a layout a hand moves, told where in the view - a press standing still may hold a view - and
+     * nothing else decided until it moves past the slop.
+     */
+    private void handDown(MotionEvent event) {
+        handPending = true;
+        handTaking = false;
+        handX = event.getRawX();
+        handY = event.getRawY();
+        handFingers = 1;
+        if (handSpeed != null) handSpeed.recycle();
+        handSpeed = VelocityTracker.obtain();
+        handSpeed.addMovement(event);
+        StateUIHost.handed(view, BEGAN, event.getX() / density, event.getY() / density, 0, 0);
+    }
+
+    /**
+     * The finger moved: past the slop the Swift host claims the hand or leaves it - to a scroller holding the
+     * layout, which may then take the touch - and a hand claimed is told each move and takes the rest of the touch.
+     */
+    private void handMoved(MotionEvent event) {
+        if (handSpeed != null) handSpeed.addMovement(event);
+        // The fingers' middle on the screen: a finger landing or lifting moves it nowhere - the host layer's rule,
+        // `PointerMiddle` - so the hand follows the fingers as they spread and turn.
+        float offsetX = event.getRawX() - event.getX(), offsetY = event.getRawY() - event.getY();
+        float middleX = 0, middleY = 0;
+        int fingers = event.getPointerCount();
+        for (int finger = 0; finger < fingers; finger++) {
+            middleX += (event.getX(finger) + offsetX) / fingers;
+            middleY += (event.getY(finger) + offsetY) / fingers;
+        }
+        if (fingers != handFingers) {
+            handFingers = fingers;
+            handX = middleX;
+            handY = middleY;
+            return;
+        }
+        float dx = (middleX - handX) / density;
+        float dy = (middleY - handY) / density;
+        if (handPending) {
+            if (Math.hypot(middleX - handX, middleY - handY) <= slop) return;
+            handPending = false;
+            handTaking = StateUIHost.handed(view, CHANGED, dx, dy, 0, 0);
+            if (!handTaking) return;
+            ViewParent parent = host.getParent();
+            if (parent != null) parent.requestDisallowInterceptTouchEvent(true);
+            cancelOwn(event);
+        } else if (handTaking) {
+            StateUIHost.handed(view, CHANGED, dx, dy, 0, 0);
+        } else {
+            return;
+        }
+        handX = middleX;
+        handY = middleY;
+    }
+
+    /**
+     * The finger let go, or the touch was taken away: told so whatever it moved - a press that held a view and never
+     * moved lets it go - with its speed as it let go.
+     */
+    private void handUp(MotionEvent event, boolean letGo) {
+        float vx = 0, vy = 0;
+        if (handSpeed != null) {
+            handSpeed.addMovement(event);
+            handSpeed.computeCurrentVelocity(1000);
+            vx = handSpeed.getXVelocity() / density;
+            vy = handSpeed.getYVelocity() / density;
+        }
+        StateUIHost.handed(view, letGo ? ENDED : CANCELLED, 0, 0, vx, vy);
+        handPending = false;
+        handTaking = false;
+        if (handSpeed != null) {
+            handSpeed.recycle();
+            handSpeed = null;
+        }
     }
 
     /** Follows the pointer hovering over the view - a mouse's, a stylus's; it takes nothing. */
@@ -176,25 +332,26 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     public boolean onScaleBegin(ScaleGestureDetector detector) {
         if (!pinch) return false;
         pinching = true;
+        pinched = true;
         if (pressing) {
             press(TAKEN, 0, 0);
             pressing = false;
             dragging = false;
         }
-        pinched(STARTED, 1, detector);
+        pinched(BEGAN, 1, detector);
         return true;
     }
 
     @Override
     public boolean onScale(ScaleGestureDetector detector) {
-        pinched(RUNNING, detector.getScaleFactor(), detector);
+        pinched(CHANGED, detector.getScaleFactor(), detector);
         return true;
     }
 
     @Override
     public void onScaleEnd(ScaleGestureDetector detector) {
         pinching = false;
-        report(PINCHED, COMPLETED, 1, pinchX, pinchY);
+        report(PINCHED, cancelling ? CANCELLED : ENDED, 1, pinchX, pinchY);
     }
 
     /**

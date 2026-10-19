@@ -1,5 +1,6 @@
 // A control of the application's OWN, declared once for every host that
-// realizes it - shared by the samples that call, bind, style and animate it.
+// realizes it - shared by the sample that calls it and the style the gallery
+// gives it.
 //
 // This file is the whole Swift half, and it is the same wherever the gallery
 // runs. What the bar IS on screen each host says for itself, beside its own
@@ -73,7 +74,7 @@ public struct RatingBar: ElementView, RatingBarProperties {
 
     /// How many stars are filled, walked by the host from a state.
     ///
-    ///     try await $stars.journey.move(to: 5, .eased(1200)).arrived()
+    ///     try await $stars.journey.move(to: 5, .eased(.milliseconds(1200))).arrived()
     ///
     /// `.inOut`, because the host reports where the walk has got to, which is
     /// what `$stars.journey.value` reads. A tap does not arrive this way;

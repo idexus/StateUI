@@ -8,14 +8,15 @@ import Foundation
 @_spi(Host) import StateUIHost
 
 extension AppKitWindowController {
-    /// Composes the window's chrome again from what it shows now.
+    /// Composes the window's chrome again from what it shows now, the page's menus with it.
     func refreshChrome() {
         refreshVisiblePageChrome()
+        host?.pageMenusChanged(in: self)
     }
 
     /// Lays the chrome the host layer composes from what the window shows in AppKit's: the title, the toolbar's way
     /// back, the page's actions and title view, the application's title area, the sidebar's toggle, the bars'
-    /// colours, the tabs beneath the toolbar and the page's menus.
+    /// colours and the tabs beneath the toolbar.
     /// Design: docs/design/host/pages.md#the-windows-chrome
     func refreshVisiblePageChrome() {
         guard let element, let window else { return }
@@ -24,7 +25,7 @@ extension AppKitWindowController {
         let titleView = arrangement?.visiblePage?.chromeTitleView?.appKit.view
         let barColor = chrome.background.flatMap(nsColor)
         let foreground = chrome.foreground.flatMap(nsColor)
-        window.title = chrome.title ?? "StateUI"
+        window.title = chrome.title ?? element.appKit.core.applicationName
         window.subtitle = ""
         // A page's title view stands in for its title, over a painted band the
         // title stands in the bar's foreground, and a page may show none:
@@ -40,11 +41,13 @@ extension AppKitWindowController {
         }
 
         let split = chrome.sidebarToggle?.appKit.view as? AppKitSplitView
+        let words = element.appKit.core.chromeWords
         toolbar.apply(AppKitWindowChrome(
             sidebar: split?.splitController,
             back: chrome.back.map { back in
                 AppKitToolbarAction(
-                    identifier: AppKitWindowToolbar.back, title: back.title, image: AppKitWindowToolbar.backImage,
+                    identifier: AppKitWindowToolbar.back, title: back.title,
+                    image: AppKitWindowToolbar.backImage(saying: words.back),
                     isEnabled: true,
                     perform: { [weak host, weak element, weak stack = back.stack] in
                         if let host, let element, let stack { host.runtime.goBack(.pop(stack), in: element) }
@@ -54,7 +57,8 @@ extension AppKitWindowController {
             leadingActions: chrome.actions.leading.map { $0.map(Self.action) },
             center: chrome.center?.appKit.view,
             actions: chrome.actions.trailing.map { $0.map(Self.action) },
-            overflow: chrome.actions.overflow.map(Self.action)))
+            overflow: chrome.actions.overflow.map(Self.action),
+            words: words))
         synchronizeBar(window, color: barColor, split: split)
         synchronizeTitleAccessory(
             window,
@@ -63,7 +67,6 @@ extension AppKitWindowController {
                 barColor.map { _ in Self.foreground(on: band, written: foreground) }
             })
         synchronizeTabRow(window, windowTabs(arrangement))
-        host?.pageMenusChanged(in: self)
     }
 
     /// A page's action as a toolbar item.

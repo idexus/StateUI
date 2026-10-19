@@ -18,8 +18,8 @@
     /// The element that holds this one.
     public private(set) weak var parent: MountedElement?
 
-    /// The elements this one holds, in order - a grid's and a ZStack's in the order they are drawn, by
-    /// `zIndex`, ties in the order written.
+    /// The elements this one holds, in order - a grid's, a ZStack's and a layout engine's in the order they are
+    /// drawn, by `zIndex`, ties in the order written.
     public private(set) var children: [MountedElement] = []
 
     /// What an arrangement of pages declares beside its pages - its actions, its menus, its title view - kept
@@ -54,11 +54,30 @@
     /// The frame report this element last said, which a report the same says again to nobody.
     var reportedFrame: [Double] = []
 
+    /// Where a split view last said its sidebar stands, and onto which state; nil before it said.
+    var reportedOverlays: (binding: HostStateBinding, over: Bool)?
+
     /// Where the states a press dragged carries stood as it began.
     var dragStart = Point(x: 0, y: 0)
 
     /// A drag between views over the element's view, as the element tells it.
     var dropTarget = DropTarget()
+
+    /// The hand over the element, where it is a layout a hand moves.
+    var handReading = HandReading()
+
+    /// What the hand said since the last frame, the moves between two frames as one, waiting for the next.
+    var handOutbox: [HandReading.Report] = []
+
+    /// Two fingers over the element, where it is a layout they move, and what they said since the last frame.
+    var pinchReading = PinchReading()
+    var pinchOutbox: [PinchReading.Report] = []
+
+    /// A wheel turned as a pinch over the element, while one is under way.
+    var wheelPinch = WheelPinch()
+
+    /// A press dragged with ⌥/Alt over the element, read as two fingers, while one is under way.
+    var mirroredFingers = MirroredFingers()
 
     /// The toolkit's half of the element.
     public private(set) var native: (any NativeElement)!
@@ -71,6 +90,7 @@
 
     private(set) weak var tree: MountedTree?
     private var wornStates: [Int32] = []
+    private var presentedStates: [Int32] = []
     private var drivenValues: [Prop: HostStateValue] = [:]
     private var created = false
     private var described = false
@@ -82,6 +102,8 @@
         self.parent = parent
         mount = tree.allocateMount()
         native = nil
+        tree.mounted(self)
+        madeOrLeftByRender()
         made = patch
         native = tree.makeNative(self)
         made = nil
@@ -93,15 +115,45 @@
     /// what the element holds reads (`Reports.made`); nil after.
     public private(set) var made: HostPatch?
 
-    /// Applies a patch of this element.
+    /// Applies a patch of this element. The tree is made and applied by recursion - an element, then its children -
+    /// through this frame, kept small: the element's own work is done in steps that return before its children are.
+    /// Design: docs/design/host/runtime.md#the-mounts-stack
     public func apply(_ patch: HostPatch) {
         guard let tree else { return }
 
+        let applying = received(patch, tree: tree)
+        childrenApplied(patch.children, tree: tree)
+        settled(patch, applying, tree: tree)
+    }
+
+    /// What applying a patch carries from before the children to after them: when a scene began, the pages shown,
+    /// the properties that changed and the values they stood at.
+    private final class Applying {
+        let sceneBegan: ContinuousClock.Instant?
+        let previouslyShown: [MountedElement]
+        let changed: Set<Prop>
+        let received: Set<Prop>
+        let standing: [Prop: HostValue]
+        let untouched: Bool
+
+        init(
+            sceneBegan: ContinuousClock.Instant?, previouslyShown: [MountedElement], changed: Set<Prop>,
+            received: Set<Prop>, standing: [Prop: HostValue], untouched: Bool
+        ) {
+            self.sceneBegan = sceneBegan
+            self.previouslyShown = previouslyShown
+            self.changed = changed
+            self.received = received
+            self.standing = standing
+            self.untouched = untouched
+        }
+    }
+
+    /// The patch's own values taken: its properties, events, driven states and motion, before its children.
+    @inline(never)
+    private func received(_ patch: HostPatch, tree: MountedTree) -> Applying {
         let sceneBegan: ContinuousClock.Instant? = tree.tally != nil && patch.type == .scene ? .now : nil
         tree.tally?.nodes += 1
-        defer {
-            if let sceneBegan { tree.tally?.scenes[patch.id, default: .zero] += ContinuousClock.now - sceneBegan }
-        }
 
         let previouslyShown = isPagePresented ? shownChildren : []
         var changed = Set(patch.clearedProperties)
@@ -111,7 +163,12 @@
             changed.formUnion(replacement.keys)
         }
 
-        let standing = Dictionary(uniqueKeysWithValues: changed.compactMap { property in
+        // Nothing of an element being made runs to be cut short: it receives what it animates and what a state drives,
+        // whose channel its first reading opens.
+        var bound: Set<Prop> = []
+        if case .replace(let driven) = patch.driven { bound = Set(driven.keys) }
+        let received = described ? changed : changed.filter { patch.transitions[$0] != nil || bound.contains($0) }
+        let standing = Dictionary(uniqueKeysWithValues: received.compactMap { property in
             standingValue(property, target: patch.properties[property]).map { (property, $0) }
         })
 
@@ -123,13 +180,20 @@
             properties[property] = value
         }
 
+        var eventsReplaced = false
         if case .replace(let events) = patch.events {
             self.events = events
+            eventsReplaced = true
         }
 
         if case .replace(let driven) = patch.driven {
             self.driven = driven
             drivenValues = drivenValues.filter { driven[$0.key] != nil }
+            let presented = driven.values.filter { $0.mode != .in }.map(\.state).sorted()
+            if presented != presentedStates {
+                tree.presents(self, presented, before: presentedStates)
+                presentedStates = presented
+            }
         }
         wear(driven)
 
@@ -144,8 +208,18 @@
         }
 
         if case .unchanged = patch.children { childrenChanged = false } else { childrenChanged = true }
+        if described, !changed.isEmpty || eventsReplaced { changedByRender(changed) }
 
-        switch patch.children {
+        // A child a new arrangement names for its order alone: nothing of it changed.
+        let untouched = described && changed.isEmpty && !eventsReplaced && patch.motion == nil && !childrenChanged
+        return Applying(
+            sceneBegan: sceneBegan, previouslyShown: previouslyShown, changed: changed, received: received,
+            standing: standing, untouched: untouched)
+    }
+
+    /// The children the patch arranges or changes, made or applied.
+    private func childrenApplied(_ children: HostChildrenUpdate, tree: MountedTree) {
+        switch children {
         case .unchanged:
             break
 
@@ -155,40 +229,52 @@
 
         case .changed(let childPatches):
             for childPatch in childPatches {
-                // A new child arrives only in an arranged list; a sparse list naming a stranger drifted.
-                let isSlot = holdsSlotsApart && NodeType.slotTypes.contains(childPatch.type)
-                guard let index = (isSlot ? slots : children).firstIndex(where: { $0.id == childPatch.id }) else {
-                    tree.intake.drifted("a patch names child '\(childPatch.id)' that '\(id)' does not have")
-                    continue
-                }
-                let child = isSlot ? slots[index] : children[index]
-
-                if child.type == childPatch.type, !childPatch.replace {
-                    child.apply(childPatch)
-                } else if childPatch.replace {
-                    child.leave()
-                    let anew = MountedElement(childPatch, tree: tree, parent: self)
-                    if isSlot { slots[index] = anew } else { children[index] = anew }
-                } else {
-                    tree.intake.drifted(
-                        "a patch describes '\(childPatch.id)' as \(childPatch.type) where '\(id)' holds \(child.type)")
-                }
+                applied(childPatch, tree: tree)
             }
         }
+    }
 
-        for property in changed.sorted() {
+    /// A child the patch names among those it has, applied - or made again where it is replaced.
+    private func applied(_ childPatch: HostPatch, tree: MountedTree) {
+        // A new child arrives only in an arranged list; a sparse list naming a stranger drifted.
+        let isSlot = holdsSlotsApart && NodeType.slotTypes.contains(childPatch.type)
+        guard let index = (isSlot ? slots : children).firstIndex(where: { $0.id == childPatch.id }) else {
+            tree.intake.drifted("a patch names child '\(childPatch.id)' that '\(id)' does not have")
+            return
+        }
+        let child = isSlot ? slots[index] : children[index]
+
+        if child.type == childPatch.type, !childPatch.replace {
+            child.apply(childPatch)
+        } else if childPatch.replace {
+            child.leave()
+            let anew = MountedElement(childPatch, tree: tree, parent: self)
+            if isSlot { slots[index] = anew } else { children[index] = anew }
+            changedByRender([])
+        } else {
+            tree.intake.drifted(
+                "a patch describes '\(childPatch.id)' as \(childPatch.type) where '\(id)' holds \(child.type)")
+        }
+    }
+
+    /// The patch's changes told to the native half, its children in place: each property, the stacking, the
+    /// enablement and the direction, the frames read and the pages presented.
+    @inline(never)
+    private func settled(_ patch: HostPatch, _ applying: Applying, tree: MountedTree) {
+        let changed = applying.changed
+        for property in applying.received.sorted() {
             let hasDrivenPresentation = driven[property].map { $0.mode != .in } ?? false
             tree.receiveProperty(
                 mount: mount,
                 property: property,
-                standing: standing[property],
+                standing: applying.standing[property],
                 target: resolvedValue(property),
                 motion: hasDrivenPresentation || !native.animates(property)
                     ? nil
                     : patch.transitions[property]?.motion)
         }
 
-        restack()
+        if restack(), described { reorderedByRender() }
         if changed.contains(.isEnabled), described { enablementTurned() }
         if changed.contains(.layoutDirection) {
             directionTurned(arrangingItself: false)
@@ -197,11 +283,15 @@
         }
         framesRead = driven[.frame] != nil || events[.frameChanged] != nil
             || held.contains { $0.framesRead }
-        // Made in a disabled branch, it presents an `isEnabled` it never wrote.
+        // Made in a disabled branch, it presents an `isEnabled` it never wrote; untouched, it presents nothing.
         let presenting = !described && parent?.isEffectivelyEnabled == false ? changed.union([.isEnabled]) : changed
-        native.applied(changed: presenting, wasDescribed: described)
+        if !applying.untouched { native.applied(changed: presenting, wasDescribed: described) }
         described = true
-        reconcilePresentation(from: previouslyShown)
+        reconcilePresentation(from: applying.previouslyShown)
+
+        if let sceneBegan = applying.sceneBegan {
+            tree.tally?.scenes[patch.id, default: .zero] += ContinuousClock.now - sceneBegan
+        }
     }
 
     /// Tells the element's handler of `event` as a phase, rendered in its turn before what comes after it.
@@ -213,28 +303,50 @@
     /// Reconciles a complete child arrangement by key - an arrangement of pages keeping its slots apart.
     private func arrange(_ patches: [HostPatch], tree: MountedTree) {
         let before = held
-        let previous = Dictionary(before.map { ($0.id, $0) }) { first, _ in first }
-        let mounted = { (patch: HostPatch) -> MountedElement in
-            if let child = previous[patch.id], child.type == patch.type, !patch.replace {
-                child.parent = self
-                child.apply(patch)
-                return child
-            }
+        let previous = Self.byId(before)
+        var children: [MountedElement] = []
+        var slots: [MountedElement] = []
 
-            return MountedElement(patch, tree: tree, parent: self)
+        // The children first, then the pages kept apart, each in its order.
+        for patch in patches where !isSlot(patch) {
+            children.append(mounted(patch, continuing: previous[patch.id], tree: tree))
+        }
+        for patch in patches where isSlot(patch) {
+            slots.append(mounted(patch, continuing: previous[patch.id], tree: tree))
+        }
+        self.children = children
+        self.slots = slots
+        leave(before)
+        if described { arrangedByRender(from: before) }
+    }
+
+    /// `elements` by their identity, the first of two that share one.
+    @inline(never)
+    private static func byId(_ elements: [MountedElement]) -> [ElementID: MountedElement] {
+        Dictionary(elements.map { ($0.id, $0) }) { first, _ in first }
+    }
+
+    /// Whether `patch` describes a page this arrangement keeps apart.
+    private func isSlot(_ patch: HostPatch) -> Bool {
+        holdsSlotsApart && NodeType.slotTypes.contains(patch.type)
+    }
+
+    /// The child `patch` describes: `standing` applied where it is the same kind of element, made anew otherwise.
+    private func mounted(_ patch: HostPatch, continuing standing: MountedElement?, tree: MountedTree) -> MountedElement {
+        if let child = standing, child.type == patch.type, !patch.replace {
+            child.parent = self
+            child.apply(patch)
+            return child
         }
 
-        let isSlot = { (patch: HostPatch) in self.holdsSlotsApart && NodeType.slotTypes.contains(patch.type) }
-        children = patches.filter { !isSlot($0) }.map(mounted)
-        slots = patches.filter(isSlot).map(mounted)
-        leave(before)
+        return MountedElement(patch, tree: tree, parent: self)
     }
 
     /// Whether this element is an arrangement of pages, whose children are its pages alone.
     private var holdsSlotsApart: Bool { Self.arrangements.contains(type) }
 
     /// Everything this element holds: its children, then its slots.
-    private var held: [MountedElement] { children + slots }
+    var held: [MountedElement] { children + slots }
 
     /// The arrangements of pages, which keep their slots apart from their pages.
     private static let arrangements: Set<NodeType> = [.navigationStack, .tabView, .splitView, .modalStack]
@@ -276,7 +388,7 @@
     private var zIndex: Double { number(.zIndex) ?? 0 }
 
     /// The layouts whose children can overlap, drawn in `zIndex` order.
-    private static let layered: Set<NodeType> = [.grid, .zStack]
+    private static let layered: Set<NodeType> = [.grid, .zStack, .layoutEngine]
 
     /// Detaches every one of `previous` that is no longer a child.
     private func leave(_ previous: [MountedElement]) {
@@ -299,11 +411,14 @@
     /// Detaches this element and everything under it from the runtime as it leaves the tree.
     /// Design: docs/design/host/tree.md#leaving
     public func leave() {
+        madeOrLeftByRender()
         if let tree {
             for state in wornStates { tree.stateChannels.detach(state) }
             tree.removeMotions(mount: mount)
+            tree.unmounted(self, presenting: presentedStates)
         }
         wornStates = []
+        presentedStates = []
         isLeaving = false
         native.leave()
         for child in held { child.leave() }
@@ -391,34 +506,81 @@
         for child in held { child.forgetForTesting(where: matches) }
     }
 
-    /// Presents one frame in one walk: bound states' values and moved properties, each parent arranged once.
+    /// Presents one frame on the elements it touches - those presenting a state that moved or holding a property
+    /// that moved - and what that asks of the elements around them, deepest first: each parent arranges once,
+    /// after its children; one showing no view of its own passes its children's moves on to its own parent; one
+    /// whose child's order moved draws its children in order again. No other element is visited.
     /// Design: docs/design/host/runtime.md#one-frame
-    @discardableResult
-    public func applyFrame(
+    static func presentFrame(
+        _ touched: [MountedElement],
         states valuesByState: [Int32: HostStateValue],
         properties propertiesByMount: [UInt64: Set<Prop>]
     ) -> FrameImpact {
-        var changed = propertiesByMount[mount] ?? []
-
-        for (property, binding) in driven where binding.mode != .in {
-            guard let value = valuesByState[binding.state] else { continue }
-            drivenValues[property] = value
-            changed.insert(property)
+        struct Waiting {
+            let element: MountedElement
+            var descendants = FrameImpact.none
+            var restacks = false
+        }
+        func depth(of element: MountedElement) -> Int {
+            var depth = 0
+            var above = element.parent
+            while let each = above {
+                depth += 1
+                above = each.parent
+            }
+            return depth
         }
 
-        let own = changed.isEmpty ? FrameImpact.none : presentFrame(changed)
-        var descendants = FrameImpact.none
-
-        for child in held {
-            descendants = descendants.union(child.applyFrame(states: valuesByState, properties: propertiesByMount))
+        var waiting: [UInt64: Waiting] = [:]
+        var byDepth: [Int: [UInt64]] = [:]
+        for element in touched {
+            waiting[element.mount] = Waiting(element: element)
+            byDepth[depth(of: element), default: []].append(element.mount)
         }
+        guard let deepest = byDepth.keys.max() else { return .none }
 
-        // A child's place is its parent's business; an element with no view passes it up.
-        let restacked = restack()
-        if own.content || descendants.arrangement || restacked { native.arrangeChildren() }
-        guard native.presentsView else { return own.union(descendants) }
-        descendants.arrangement = false
-        return own.union(descendants)
+        var impact = FrameImpact.none
+        for level in stride(from: deepest, through: 0, by: -1) {
+            for mount in (byDepth[level] ?? []).sorted() {
+                guard let entry = waiting[mount] else { continue }
+                let element = entry.element
+                element.tree?.frameVisits += 1
+
+                var changed = propertiesByMount[mount] ?? []
+                for (property, binding) in element.driven where binding.mode != .in {
+                    guard let value = valuesByState[binding.state] else { continue }
+                    element.drivenValues[property] = value
+                    changed.insert(property)
+                }
+
+                let own = changed.isEmpty ? FrameImpact.none : element.presentFrame(changed)
+                // A child's place is its parent's business; an element with no view passes it up.
+                let restacked = entry.restacks && element.restack()
+                if own.arrangesChildren || entry.descendants.arrangement || restacked {
+                    element.native.arrangeChildren()
+                }
+                var passed = entry.descendants
+                if element.native.presentsView { passed.arrangement = false }
+                let said = own.union(passed)
+                impact.arrangesChildren = impact.arrangesChildren || said.arrangesChildren
+                impact.windowChrome = impact.windowChrome || said.windowChrome
+
+                guard let parent = element.parent else {
+                    impact.arrangement = said.arrangement
+                    continue
+                }
+                let ordered = changed.contains(.zIndex)
+                guard said.arrangement || ordered else { continue }
+
+                if waiting[parent.mount] == nil {
+                    waiting[parent.mount] = Waiting(element: parent)
+                    byDepth[level - 1, default: []].append(parent.mount)
+                }
+                if said.arrangement { waiting[parent.mount]?.descendants.arrangement = true }
+                if ordered { waiting[parent.mount]?.restacks = true }
+            }
+        }
+        return impact
     }
 
     /// Presents `changed` on a frame and says what that asks around the element, the same on every host: its own
@@ -427,10 +589,10 @@
     /// Design: docs/design/host/runtime.md#one-frame
     private func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
         native.presentFrame(changed)
+        let moved = changed.subtracting(ownPlacementRun)
         return FrameImpact(
-            content: true,
-            arrangement: !native.presentsView
-                || !changed.subtracting(ownPlacementRun).isDisjoint(with: Self.arrangedProperties),
+            arrangesChildren: !moved.subtracting(Self.drawnOverProperties).isEmpty,
+            arrangement: !native.presentsView || !moved.isDisjoint(with: Self.arrangedProperties),
             windowChrome: WindowChrome.follows(type, changed: changed))
     }
 

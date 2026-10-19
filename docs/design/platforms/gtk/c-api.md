@@ -19,7 +19,8 @@ casts GTK's macros make are a pointer reinterpreted as another class:
 
 `g_signal_connect` is a macro; the host calls `g_signal_connect_data`, the
 handler a C function handed a number as its data - a view's, or one a window,
-a sheet, a question, a context menu or a menu item keeps of its own. A C
+a sheet, a question, a context menu or a menu item holds - every one from the
+host layer's one count (`HostNumbers`), so no two are alike. A C
 function can capture nothing, and a widget's pointer is not `Sendable`: the
 number is, so the handler finds its view by the number, on the main actor,
 and does nothing once the view has gone.
@@ -28,7 +29,8 @@ A handler's type is the C shape GTK calls it with - the instance, what the
 signal hands, the number - one for each shape the host hears: nothing, one
 argument by address, a press (its run and point), a point, a scale, a spin
 button's reading of its words, words going into a buffer or an editable, a
-place or a run of places in a list, and a request the handler answers. A
+place or a run of places in a list, a key pressed (`GTKKeyHandler`), a
+wheel's turn (`GTKScrollHandler`), and a request the handler answers. A
 property's change notice has a road of its own, `connectNotify`, which names
 the property alone. Drag and drop connects its own shapes with
 `g_signal_connect_data` (`GTKDragAndDrop`): a drag prepared at a point and its
@@ -38,9 +40,9 @@ end, a drop coming over at a point, and the drop with its value and point.
 
 Every view takes a number when it is made and holds its widget with a
 reference of its own, sunk from the floating one GTK makes it with. The
-number is what a signal and a panel hand back; the live views stand in a
-table by number, weakly, so a signal arriving after its view left finds
-nothing.
+number, from the host layer's one count, is what a signal and a panel hand
+back; the live views stand in its table by number, weakly (`LiveViews`), so a
+signal arriving after its view left finds nothing.
 
 ## A subclass from Swift
 

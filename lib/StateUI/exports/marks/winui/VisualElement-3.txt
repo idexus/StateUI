@@ -1,48 +1,44 @@
-# revision 12.2
+# revision 14.2
 ActivityIndicator.isEnabled: ✅
 ActivityIndicator.rotation: ✅
 Button.accessibilityHeading: ✅
 Button.translationY: ✅
-Canvas.layoutDirection: ✓ read layoutDirection of Canvas: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Capsule.scaleY: ✅
-Capsule.style: ✅
-CheckBox.isAccessibilityHidden: ✅
-DatePicker.frameChanged: ✅
-DatePicker.maximumHeight: ✅
-DatePicker.maximumWidth: ✅
-DatePicker.minimumHeight: ✅
-DatePicker.minimumWidth: ✅
-DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own tip, checked against the projection it laid on the element
-Divider.accessibilityLabel: ✅
-Ellipse.tooltip: ✅
-Grid.opacity: ✅
-Grid.pivotY: ✅
-HStack.ignoresInput: ✅
-HStack.scale: ✅
-Image.accessibilityHeading: ✅
-Image.translationY: ✅
-ItemsView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Line.accessibilityHeading: ✅
-Map.isEnabled: 🧩
-Map.rotation: 🧩
-Path.isVisible: ✅
-Path.pivotX: ✅
-Picker.scaleY: ✅
-Picker.style: ✅
-Polygon.automationExcludedWithChildren: ✅
-Polyline.frameChanged: ✅
-Polyline.maximumHeight: ✅
-Polyline.maximumWidth: ✅
-Polyline.minimumHeight: ✅
-Polyline.minimumWidth: ✅
-Polyline.rotationY: ✓ read rotationY of Polyline: the host's own tip, checked against the projection it laid on the element
-ProgressBar.accessibilityHint: ✅
-RadioButton.isVisible: ✅
-RadioButton.pivotX: ✅
-Rectangle.translationX: ✅
-Rectangle.zIndex: ✅
-ScrollView.automationExcludedWithChildren: ✅
-SearchField.frameChanged: ✅
+Canvas.background: ✓ read background of Canvas: the colour the host's canvas clears its surface to under its drawing, which WinUI keeps as no brush
+Capsule.frame: ✅
+Capsule.scaleX: ✅
+CheckBox.accessibilityHeading: ✅
+DatePicker.height: ✅
+DatePicker.rotationX: ✓ read rotationX of DatePicker: the host's own tip, checked against the projection it laid on the element
+DatePicker.width: ✅
+Divider.accessibilityHint: ✅
+Ellipse.accessibilityHint: ✅
+Grid.isVisible: ✅
+Grid.pivotX: ✅
+HStack.height: ✅
+HStack.rotationX: ✓ read rotationX of HStack: the host's own tip, checked against the projection it laid on the element
+HStack.width: ✅
+Image.frame: ✅
+Image.scaleX: ✅
+ItemsView.accessibilityHeading: ✅
+LayoutEngine.accessibilityLabel: ✅
+LayoutEngine.isEnabled: ✅
+Line.isAccessibilityHidden: ✅
+Map.height: 🧩
+Map.rotationX: 🧩
+Map.width: 🧩
+Path.opacity: ✅
+Path.pivotY: ✅
+Picker.translationX: ✅
+Picker.zIndex: ✅
+Polygon.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Polyline.ignoresInput: ✅
+Polyline.scale: ✅
+ProgressBar.tooltip: ✅
+RadioButton.opacity: ✅
+RadioButton.pivotY: ✅
+Rectangle.accessibilityHeading: ✅
+Rectangle.translationY: ✅
+ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 SearchField.height: ✅
 SearchField.rotationX: ✓ read rotationX of SearchField: the host's own tip, checked against the projection it laid on the element
 SearchField.width: ✅
@@ -52,8 +48,9 @@ Spacer.pivotY: ✅
 Stepper.accessibilityHeading: ✅
 Stepper.translationY: ✅
 Switch.layoutDirection: ✅
-Text.frame: ✅
-Text.scaleX: ✅
+Text.height: ✅
+Text.rotationX: ✓ read rotationX of Text: the host's own tip, checked against the projection it laid on the element
+Text.width: ✅
 TextEditor.scaleY: ✅
 TextEditor.style: ✅
 TextField.automationExcludedWithChildren: ✅
@@ -61,6 +58,6 @@ TimePicker.ignoresInput: ✅
 TimePicker.scale: ✅
 VStack.accessibilityHeading: ✅
 VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-WebView.background: not realized
-ZStack.frame: ✅
-ZStack.scaleX: ✅
+WebView.automationExcludedWithChildren: ✅
+ZStack.ignoresInput: ✅
+ZStack.scale: ✅

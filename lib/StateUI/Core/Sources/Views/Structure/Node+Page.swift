@@ -10,13 +10,19 @@ extension Node {
         let content = shown.node
         if content.isArrangement == true { return content }
 
-        let kind = (content.stateful?.viewType ?? content.type.name) + (content.id.map { "#\($0)" } ?? "")
+        let kind = (content.stateful?.viewType.name ?? content.type.name) + (content.id.map { "#\($0)" } ?? "")
             + (content.key.map { "@\($0)" } ?? "")
 
-        return composed(ShownView(content: content), type: "StateUI.Page(\(kind))") {
-            Node(contract: PageContract.self, children: [content])
+        return composed(ShownView(content: content), type: pageType) {
+            var page = Node(contract: PageContract.self, children: [content])
+            page.branch = kind
+            return page
         }
     }
+
+    /// What a page's placeholder is to the differ and the inspector: one kind for every page, each telling what it
+    /// shows as its branch.
+    private static let pageType = KeyName("StateUI.Page")
 }
 
 /// The view a page shows, held as a node so the view is compared on its own.

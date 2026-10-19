@@ -5,15 +5,16 @@
 
 /// What a turn shows and performs through: the runtime, for the toolkit's windows and its acts.
 @MainActor protocol TurnPresenter: AnyObject {
-    /// Shows what a render changed around the mounted tree: the windows, their pages and their chrome.
-    func presentRendered()
+    /// Shows what a render changed around the mounted tree: the windows, their pages and their chrome, where
+    /// `touchedChrome` says it changed what they are made of.
+    func presentRendered(touchedChrome: Bool)
 
     /// Performs an act the application called, on the interface its handler changed.
     func perform(_ call: HostActCall)
 }
 
 /// One turn of a runtime, in the order every runtime keeps: the jobs a resumed handler left, a pending cycle, a
-/// render when the core needs one, the handlers it raised, then the acts.
+/// render when the core needs one and the cycle it asks for, the handlers it raised, then the acts.
 /// Design: docs/design/host/runtime.md#one-turn
 @_spi(Host) @MainActor public final class Pump {
     /// What a turn shows and performs through.
@@ -84,7 +85,7 @@
     /// Raises a native event's handler, then a turn; one raised while a patch applies, or inside the user's
     /// transaction, waits for it.
     public func dispatch(_ handler: Int32, payload: [HostValue] = []) {
-        if handlers.raise(handler, payload: payload) { turn() }
+        if HostProbe.timed(.events, { handlers.raise(handler, payload: payload) }) { turn() }
     }
 
     /// Runs `body` as the user's transaction: the handlers it raises run in order once it is over, and one turn
@@ -96,18 +97,24 @@
     }
 
     private func step() {
-        _ = core.runJobs()
+        _ = HostProbe.timed(.jobs) { core.runJobs() }
 
-        if tree.root != nil, core.cyclesPending {
+        if tree.root != nil, core.cyclesAsked {
             displayCycle.drain(now: now())
         }
 
         if tree.root == nil || core.needsRender {
             render()
 
+            // The cycle the render asks for runs before the turn ends: a layout's run stands with the views it places.
+            // Design: docs/design/host/runtime.md#one-turn
+            if tree.root != nil, core.cyclesAsked {
+                displayCycle.drain(now: now())
+            }
+
             let created = tree.root?.takeCreatedHandlers() ?? []
             for handler in created {
-                _ = core.dispatch(handler)
+                _ = HostProbe.timed(.events) { core.dispatch(handler) }
             }
             if !created.isEmpty {
                 again = true
@@ -116,7 +123,7 @@
         }
 
         // The acts land on the interface their handler changed: a turn that raised handlers renders again first.
-        if handlers.raiseQueued() {
+        if HostProbe.timed(.events, { handlers.raiseQueued() }) {
             again = true
             return
         }
@@ -128,10 +135,10 @@
 
     /// Applies the core's render; a drifted one is asked for whole, once.
     private func render() {
-        let rendered = core.render(baseline: intake.baseline)
+        let rendered = HostProbe.timed(.render) { core.render(baseline: intake.baseline) }
 
-        if !intake.take(rendered.root, generation: rendered.generation, apply: {
-            tree.apply($0, complete: rendered.complete)
+        if !intake.take(rendered.root, generation: rendered.generation, apply: { patch in
+            HostProbe.timed(.apply) { tree.apply(patch, complete: rendered.complete) }
         }) {
             log("the interface drifted and is asked for whole: \(intake.lastDrift ?? "")")
             let complete = core.render(baseline: 0)
@@ -141,6 +148,7 @@
         }
 
         displayCycle.presentStateChannels()
-        presenter?.presentRendered()
+        let touchedChrome = tree.takeChromeTouched()
+        HostProbe.timed(.chrome) { presenter?.presentRendered(touchedChrome: touchedChrome) }
     }
 }

@@ -20,7 +20,7 @@ final class UIKitFileToolkit: FileToolkit {
     /// Whether a launch is only recorded, never handed to iOS: a test's.
     var holdsLaunchesForTesting = false
 
-    /// What the host handed iOS to launch, in order: an address as written, a file by its path.
+    /// What the host held of a test's launches, in order: an address as written, a file by its path.
     private(set) var launchedForTesting: [String] = []
 
     init(renderer: UIKitRenderer) {
@@ -28,10 +28,10 @@ final class UIKitFileToolkit: FileToolkit {
     }
 
     func show(_ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void) -> Bool {
-        guard let presenter = renderer.userPresenter else { return false }
+        guard let root = renderer.userRoot else { return false }
         let asked = UIKitFileDialog(dialog)
         showing = asked
-        asked.ask(over: presenter) { [weak self] chosen in
+        asked.ask(in: root) { [weak self] chosen in
             self?.showing = nil
             answered(chosen)
         }
@@ -58,23 +58,23 @@ final class UIKitFileToolkit: FileToolkit {
 
     /// Shows the file in iOS's preview over what the user's window shows; whether it can be previewed.
     func launch(_ file: ChosenFile, answered: @escaping (Bool) -> Void) {
-        launchedForTesting.append(file.address)
         let url = URL(fileURLWithPath: file.address)
         let holds = holdsLaunchesForTesting
+        if holds { launchedForTesting.append(file.address) }
         Task { @MainActor [weak self] in
             if holds { return answered(true) }
-            guard QLPreviewController.canPreview(url as NSURL), let presenter = self?.renderer.userPresenter else {
+            guard QLPreviewController.canPreview(url as NSURL), let root = self?.renderer.userRoot else {
                 return answered(false)
             }
-            presenter.present(UIKitFilePreview(url), animated: true)
+            root.pass(UIKitFilePreview(url, in: root))
             answered(true)
         }
     }
 
     func launch(address: String, answered: @escaping (Bool) -> Void) {
         let url = URL(string: address).flatMap { $0.scheme == nil ? nil : $0 }
-        if url != nil { launchedForTesting.append(address) }
         let holds = holdsLaunchesForTesting
+        if holds, url != nil { launchedForTesting.append(address) }
         Task { @MainActor in
             guard let url else { return answered(false) }
             answered(holds ? true : await UIApplication.shared.open(url))
@@ -85,11 +85,19 @@ final class UIKitFileToolkit: FileToolkit {
 /// iOS's preview of one file, its own data source.
 private final class UIKitFilePreview: QLPreviewController, QLPreviewControllerDataSource {
     private let file: URL
+    private weak var root: UIKitRootViewController?
 
-    init(_ file: URL) {
+    /// A preview of `file`, which tells the window's `root` once the user closed it.
+    init(_ file: URL, in root: UIKitRootViewController) {
         self.file = file
+        self.root = root
         super.init(nibName: nil, bundle: nil)
         dataSource = self
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if isBeingDismissed { root?.passed(self) }
     }
 
     required init?(coder: NSCoder) {

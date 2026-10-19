@@ -127,6 +127,7 @@ and this table maps the two.
 | aim (`@Aim`) | control reference | the reference an act is called through |
 | completion id | continuation handle | the negative id an awaited act or animation is answered by |
 | declaration (`HostDeclaration`) | capability manifest | which elements and members a host realizes: presence, not ownership |
+| honours (`device.honours(member)`) | supports | whether the host the application runs on realizes a member, in full or in part, by its register: what an application asks before relying on it |
 | tally, pass, complaint | render counters, trace record, logged warning | what the core's diagnostics count, trace and say once |
 | sync (`Sync`) | frame source | the clock a cycle runs on |
 | arrangement (layout) | layout pass | a layout placing its children |

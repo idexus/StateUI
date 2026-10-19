@@ -16,6 +16,9 @@
     /// No room given yet.
     public init() {}
 
+    /// Whether the first room has decided: a host measures the split view's room for it no more.
+    public var decided: Bool { adapted }
+
     /// The split view is given `width`, its sidebar `shown` or not: whether it shows the sidebar now. Only the first
     /// room wider than nothing decides.
     public mutating func room(_ width: Double, breakpoint: Double, shown: Bool) -> Bool {

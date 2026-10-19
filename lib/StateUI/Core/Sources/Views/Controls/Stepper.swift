@@ -97,12 +97,6 @@ public struct Stepper: ElementView, StepperProperties, FocusElement {
     public func onValueChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<Double>) -> Self {
         onEvent(StepperContract.valueChanged, gate: gate, handler)
     }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onValueChanged(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
-        fatalError("unavailable")
-    }
 }
 
 extension Stepper {
@@ -110,5 +104,19 @@ extension Stepper {
     /// and no view is rebuilt for it.
     public func step(_ state: Binding<Double>) -> Modified {
         twin(StepperContract.step, by: state)
+    }
+}
+
+extension Stepper {
+    /// `minimum` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
+    public func minimum(_ state: Binding<Double>) -> Modified {
+        twin(StepperContract.minimum, carrying: state)
+    }
+
+    /// `maximum` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
+    public func maximum(_ state: Binding<Double>) -> Modified {
+        twin(StepperContract.maximum, carrying: state)
     }
 }

@@ -1,0 +1,12 @@
+# revision 11.1
+LayoutEngine: ✅
+LayoutEngine.handAxis: ✓ sweep on LayoutEngine: the hand handed to the host's entry with its speed, no event
+LayoutEngine.handMoved: ✓ sweep on LayoutEngine: the hand handed to the host's entry with its speed, no event
+LayoutEngine.handStepped: ✓ notch on LayoutEngine: a wheel's notches handed to the host's entry, no event
+LayoutEngine.itemDrag: ✅
+LayoutEngine.itemMoved: ✅
+LayoutEngine.magnifies: ✓ pinch on LayoutEngine: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+LayoutEngine.pans: ✓ sweep on LayoutEngine: the hand handed to the host's entry with its speed, no event
+LayoutEngine.phase: ✅
+LayoutEngine.pinchMoved: ✓ pinch on LayoutEngine: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+LayoutEngine.rotates: ✓ rotate on LayoutEngine: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down

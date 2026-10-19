@@ -38,7 +38,7 @@ final class AndroidRenderer {
 
     /// The view the page is shown in: the activity's root.
     let root: JavaObject
-    private let density: Double
+    private(set) var density: Double
 
     /// What the first window shows, by the host layer's rule: its arrangement of pages, its sheets, its overlays.
     private let presentation = WindowPresentation()
@@ -85,9 +85,17 @@ final class AndroidRenderer {
 
         let renderer = AndroidRenderer(context: context, root: root, density: density)
         shared = renderer
-        renderer.watchLayout()
+        // The same root - a new density - is watched already.
+        if previous.map({ Java.jni.IsSameObject(Java.env, $0.root.reference, root.reference) == 0 }) ?? true {
+            renderer.watchLayout()
+        }
         if let previous { renderer.scenes = previous.scenes }
         renderer.start(restoringKept: previous == nil, restoringScenes: !sceneStands, turns: AndroidDoorbell.install)
+        if previous != nil {
+            // The activity before left its dialogs unanswered: the question showing is asked again in this one.
+            actToolkit.forgetDialogs()
+            acts.askAgain()
+        }
         return renderer
     }
 
@@ -106,18 +114,26 @@ final class AndroidRenderer {
     /// The pages the window presents over its page.
     private lazy var modals = AndroidModals(root: root, reducesMotion: reducesMotion)
 
-    /// Android's part of the acts every host performs, and the host layer's performer of them.
-    private lazy var actToolkit = AndroidActToolkit(
-        core: runtime.core, context: context, root: root, tree: { [unowned self] in runtime.tree },
-        keepSceneValue: { [unowned self] in keepSceneValue($0) })
-    /// Android's part of the files the user opens and saves, and of what the system launches.
-    private(set) lazy var fileToolkit = AndroidFileToolkit(context: context)
-    private lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree })
+    /// Android's part of the acts every host performs, the files the user opens and saves and what the system
+    /// launches, and the host layer's performer of them - the process's: a question, a document chosen or a script
+    /// outlives the activity it began in, which Android may make again meanwhile, and acts in the one standing now.
+    /// Design: docs/design/platforms/android/runtime.md#acts
+    private static let actToolkit = AndroidActToolkit(core: CoreLink())
+    private static let files = AndroidFileToolkit()
+    private static let acts = HostActPerformer(
+        toolkit: actToolkit, files: files, answers: CoreLink(), tree: { AndroidRenderer.shared?.runtime.tree })
+    private var actToolkit: AndroidActToolkit { Self.actToolkit }
+    var fileToolkit: AndroidFileToolkit { Self.files }
+    private var acts: HostActPerformer { Self.acts }
 
     /// An act waiting under a ticket was answered - a dialog, a script: its caller resumes in a job of its own.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
         actToolkit.answered(ticket: ticket, accepted: accepted, words: words)
+    }
+
+    /// The tickets of the scripts waiting for their answer, oldest first.
+    var waitingScripts: [Int64] {
+        actToolkit.waitingScripts
     }
 
     /// The document picker under `ticket` closed: its caller resumes with the documents chosen.
@@ -174,8 +190,17 @@ final class AndroidRenderer {
     /// The activity is finishing - Back, or the application finished it: the user closed its window, which hears it
     /// is going, and its scene that the window closed.
     func destroying() {
+        Self.endActs()
         guard let window = runtime.tree.root?.first(type: .window) else { return }
         runtime.userClosed(window)
+    }
+
+    /// Answers every question and picker still waiting as dismissed: the activity they were asked over finished,
+    /// and the next activity of the process asks afresh.
+    static func endActs() {
+        acts.dismissAll()
+        actToolkit.forgetDialogs()
+        files.forgetDialogs()
     }
 
     /// The zone, the clock, the battery or the network changed.
@@ -184,8 +209,15 @@ final class AndroidRenderer {
     }
 
     /// The activity's configuration changed - the display turned or resized: the core is told what stands now,
-    /// and the window laid out again.
+    /// and the window laid out again. Pixels a point changing - the display's size, another screen - make the window
+    /// again at the new density, as an activity Android makes again does.
+    /// Design: docs/design/platforms/android/runtime.md#a-later-activity
     func configured() {
+        let density = AndroidEnvironment.density(of: context.reference)
+        guard density == self.density else {
+            AndroidRenderer.start(context: context, root: root, density: density)
+            return
+        }
         runtime.environmentChanged {
             AndroidEnvironment.report(to: runtime.core, activity: context.reference)
             Java.call(root.reference, JavaAPI.requestLayout)
@@ -351,10 +383,12 @@ final class AndroidRenderer {
 
 extension AndroidRenderer: HostPresenter {
     /// Shows what a render changed: the activity's title, the window's pages, its sheets and its overlays, and
-    /// whether there is a way back.
-    func presentRendered() {
-        showWindow()
-        refreshBack()
+    /// whether there is a way back - where it changed what they are made of; the scenes it keeps, always.
+    func presentRendered(touchedChrome: Bool) {
+        if touchedChrome {
+            showWindow()
+            refreshBack()
+        }
         if let text = scenes.changed(root: runtime.tree.root) {
             AndroidPersistence.writeScenes(text, context: context.reference)
         }

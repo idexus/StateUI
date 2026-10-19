@@ -20,6 +20,9 @@ design notes beside them.
 - [Getting started](getting-started.md) sets up VS Code and the StateUI
   extension, builds the smallest application, and explains the application
   module, native host, resources, and registration boundary.
+- [Glossary](design/glossary.md) maps StateUI's own words - kept, worn,
+  honours, journey, aim - to the common term for each; keep it open beside
+  the rest.
 
 ## Concepts
 

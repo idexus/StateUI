@@ -36,7 +36,8 @@ final class GTKTabView: GTKLayoutView {
     /// The tab the view shows among its tabs (`TabChoice.shown(among:)`); nil while it has none.
     var shownIndex: Int? { choice.shown(among: tabs.count) }
 
-    /// The tabs: each a view of the stack, named as its title.
+    /// The tabs: each a view of the stack, named as its title, in the tree's order - the stack adds a page last
+    /// alone, so from the first tab out of its place each is taken off and added again in turn.
     @discardableResult
     override func setItems(_ items: [GTKLayoutItem]) -> Bool {
         let views = items.map(\.view)
@@ -46,7 +47,10 @@ final class GTKTabView: GTKLayoutView {
             for gone in tabs where !views.contains(where: { $0 === gone }) {
                 gtk_stack_remove(stack.widget.opaque, gone.widget)
             }
-            for (index, view) in views.enumerated() where !tabs.contains(where: { $0 === view }) {
+            let standing = tabs.filter { tab in views.contains { $0 === tab } }
+            let first = zip(views, standing).enumerated().first { $0.element.0 !== $0.element.1 }?.offset ?? standing.count
+            for moved in standing[first...] { gtk_stack_remove(stack.widget.opaque, moved.widget) }
+            for (index, view) in views.enumerated() where index >= first {
                 view.placingLayout = nil
                 gtk_stack_add_titled(stack.widget.opaque, view.widget, "tab\(view.number)", title(at: index))
             }

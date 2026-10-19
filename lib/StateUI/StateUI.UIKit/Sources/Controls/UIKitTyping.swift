@@ -28,9 +28,9 @@ final class UIKitTyping: NSObject, UITextFieldDelegate, UITextViewDelegate {
     var isReadOnly = false
 
     /// Reports the words the user left: the view's own, or what it holds of them in its case and bound - which the
-    /// view shows instead, handed back.
-    func heard(_ typed: String) -> String? {
-        let held = InputWords.held(typed, in: textCase, toBound: maximumLength)
+    /// view shows instead, handed back - none while an input method is `composing` them.
+    func heard(_ typed: String, composing: Bool) -> String? {
+        let held = InputWords.held(typed, in: textCase, toBound: maximumLength, composing: composing)
         onTextChanged?(held ?? typed)
         return held
     }
@@ -47,7 +47,7 @@ final class UIKitTyping: NSObject, UITextFieldDelegate, UITextViewDelegate {
     }
 
     func textViewDidChange(_ view: UITextView) {
-        if let cut = heard(view.text) { view.text = cut }
+        if let cut = heard(view.text, composing: view.markedTextRange != nil) { view.text = cut }
     }
 }
 #endif

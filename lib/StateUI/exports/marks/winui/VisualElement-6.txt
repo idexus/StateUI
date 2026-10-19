@@ -1,51 +1,51 @@
-# revision 12.2
+# revision 14.2
 ActivityIndicator.ignoresInput: not realized
 ActivityIndicator.scale: ✅
 Button.tooltip: ✅
-Canvas.isEnabled: does not apply - read isEnabled of Canvas - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Canvas.rotation: ✅
-Capsule.accessibilityLabel: ✅
-Capsule.isEnabled: ✅
-CheckBox.layoutDirection: ✅
-DatePicker.scaleY: ✅
-DatePicker.style: ✅
-Divider.accessibilityHeading: ✅
-Ellipse.automationExcludedWithChildren: ✅
-Grid.frameChanged: ✅
-Grid.maximumHeight: ✅
-Grid.maximumWidth: ✅
-Grid.minimumHeight: ✅
-Grid.minimumWidth: ✅
-Grid.rotationY: ✓ read rotationY of Grid: the host's own tip, checked against the projection it laid on the element
-HStack.translationX: ✅
-HStack.zIndex: ✅
-Image.tooltip: ✅
-ItemsView.opacity: ✅
-ItemsView.pivotY: ✅
-Line.background: – A WinUI shape is its figure alone: it paints no ground around it.
-Map.ignoresInput: 🧩
-Map.scale: 🧩
-Path.frameChanged: ✅
-Path.height: ✅
-Path.rotationX: ✓ read rotationX of Path: the host's own tip, checked against the projection it laid on the element
-Path.width: ✅
-Picker.accessibilityLabel: ✅
-Polygon.isVisible: ✅
-Polygon.pivotX: ✅
-Polyline.scaleY: ✅
-Polyline.style: ✅
-ProgressBar.isAccessibilityHidden: ✅
-RadioButton.frameChanged: ✅
-RadioButton.height: ✅
-RadioButton.rotationX: ✓ read rotationX of RadioButton: the host's own tip, checked against the projection it laid on the element
-RadioButton.width: ✅
-Rectangle.accessibilityHint: ✅
-ScrollView.isVisible: ✅
-ScrollView.pivotX: ✅
+Canvas.opacity: ✅
+Canvas.pivotY: ✅
+Capsule.accessibilityHeading: ✅
+Capsule.translationY: ✅
+CheckBox.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+DatePicker.frame: ✅
+DatePicker.scaleX: ✅
+Divider.isAccessibilityHidden: ✅
+Ellipse.isAccessibilityHidden: ✅
+Grid.height: ✅
+Grid.rotationX: ✓ read rotationX of Grid: the host's own tip, checked against the projection it laid on the element
+Grid.width: ✅
+HStack.frame: ✅
+HStack.scaleX: ✅
+Image.accessibilityHeading: ✅
+Image.translationY: ✅
+ItemsView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+LayoutEngine.accessibilityHeading: ✅
+LayoutEngine.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Line.layoutDirection: ✓ read layoutDirection of Line: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Map.frame: 🧩
+Map.scaleX: 🧩
+Path.maximumHeight: ✅
+Path.maximumWidth: ✅
+Path.minimumHeight: ✅
+Path.minimumWidth: ✅
+Path.rotationY: ✓ read rotationY of Path: the host's own tip, checked against the projection it laid on the element
+Picker.accessibilityHint: ✅
+Polygon.opacity: ✅
+Polygon.pivotY: ✅
+Polyline.translationX: ✅
+Polyline.zIndex: ✅
+ProgressBar.automationExcludedWithChildren: ✅
+RadioButton.maximumHeight: ✅
+RadioButton.maximumWidth: ✅
+RadioButton.minimumHeight: ✅
+RadioButton.minimumWidth: ✅
+RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own tip, checked against the projection it laid on the element
+Rectangle.tooltip: ✅
+ScrollView.opacity: ✅
+ScrollView.pivotY: ✅
 SearchField.frame: ✅
 SearchField.scaleX: ✅
 Slider.isAccessibilityHidden: ✅
-Spacer.frameChanged: ✅
 Spacer.maximumHeight: ✅
 Spacer.maximumWidth: ✅
 Spacer.minimumHeight: ✅
@@ -54,15 +54,15 @@ Spacer.rotationY: ✓ read rotationY of Spacer: the host's own tip, checked agai
 Stepper.tooltip: ✅
 Switch.isEnabled: ✅
 Switch.rotation: ✅
-Text.accessibilityHeading: ✅
-Text.translationY: ✅
+Text.frame: ✅
+Text.scaleX: ✅
 TextEditor.accessibilityLabel: ✅
 TextField.isVisible: ✅
 TextField.pivotX: ✅
 TimePicker.translationX: ✅
 TimePicker.zIndex: ✅
 VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-WebView.opacity: ✅
-WebView.pivotY: ✅
-ZStack.accessibilityHeading: ✅
-ZStack.translationY: ✅
+WebView.isVisible: ✅
+WebView.pivotX: ✅
+ZStack.translationX: ✅
+ZStack.zIndex: ✅

@@ -15,6 +15,10 @@ typedef void (*stateui_web_frame)(double time);
 /// Hands the page the two functions it calls Swift through.
 STATEUI_WEB(start) void stateui_web_start(stateui_web_heard heard, stateui_web_frame frame);
 
+/// Names the keys writing no character that the relay tells by number: each of `words`, ended by a zero byte, the
+/// page's name of the key whose number stands at the same place of the `count` `numbers`.
+STATEUI_WEB(name_keys) void stateui_web_name_keys(const double *numbers, int32_t count, const char *words, int32_t length);
+
 /// The page's body, where the window stands.
 STATEUI_WEB(body) int32_t stateui_web_body(void);
 
@@ -65,16 +69,25 @@ STATEUI_WEB(read_value) int32_t stateui_web_read_value(int32_t element);
 /// Copies what the relay read last into `into`, which holds its length.
 STATEUI_WEB(copy_read) void stateui_web_copy_read(char *into);
 
-/// Calls listener `listener` whenever the element hears `event`: a DOM event's name; `enter` for the Return key;
-/// `activate` for Return or Space pressed on the element itself; `itemtap` for a click on it but on no control inside
-/// it; `dismiss` for the user's asking a modal dialog to close; `closed` for a popover taken down; `menu` for the
-/// user's asking for the element's menu - a right click, a finger held still.
+/// Takes off whatever the relay hung for listener `listener` - on the page or on an element.
+STATEUI_WEB(forget) void stateui_web_forget(int32_t listener);
+
+/// Calls listener `listener` whenever the element hears the DOM event named `event`.
 STATEUI_WEB(listen) void stateui_web_listen(int32_t element, const char *event, int32_t length, int32_t listener);
+
+/// Calls listener `listener` whenever the relay hears `kind` - a `WebHearing` - on the element.
+STATEUI_WEB(hear) void stateui_web_hear(int32_t element, int32_t kind, int32_t listener);
+
+/// Calls listener `listener` whenever the user asks for the element's menu: a right click, or a finger held `hold`
+/// milliseconds no farther than `reach` points from where it pressed.
+STATEUI_WEB(listen_menu) void stateui_web_listen_menu(int32_t element, double hold, double reach, int32_t listener);
 
 /// What the event a listener is hearing carries: 0 how many clicks it counts, 1 and 2 where the pointer is from the
 /// listening element's top left corner; 3 the pointer's number, 4 and 5 where it is on the page, 6 its kind - 0 a
 /// mouse, 1 a pen, 2 a touch - 7 its button; 8 a wheel's turn down, 9 whether a key made it a pinch, 10 a gesture's
-/// scale; 11 and 12 the listening element's size; 13 whether a click on a label passes to its control.
+/// scale; 11 and 12 the listening element's size; 13 whether a click on a label passes to its control; 14 and 15 a
+/// wheel's turn across and down in pixels; 16 when the event happened, in the page's milliseconds; 17 what a wheel's
+/// turn is measured in - 0 pixels, 1 lines, 2 pages - and 18 its turn across as measured.
 STATEUI_WEB(event_number) double stateui_web_event_number(int32_t index);
 /// The words the event being heard carries in its `detail`, read by `copy_read`: their length.
 STATEUI_WEB(event_words) int32_t stateui_web_event_words(void);
@@ -89,11 +102,9 @@ STATEUI_WEB(show_popover) void stateui_web_show_popover(
     int32_t element, int32_t anchor, double x, double y, int32_t side);
 STATEUI_WEB(hide_popover) void stateui_web_hide_popover(int32_t element);
 
-/// The `<iframe>` shows the address `words` for `kind` 0, or for 1 the document `words`, its links resolved against
-/// `base` where one is given - at an address of the page's own made for it, read as `read_value` is: its length,
-/// then `copy_read`; 0 for an address shown.
-STATEUI_WEB(frame_show) int32_t stateui_web_frame_show(
-    int32_t element, int32_t kind, const char *words, int32_t length, const char *base, int32_t baseLength);
+/// The `<iframe>` shows `words` as `kind` - a `WebRelay.FrameSource` - says: an address, or a document at an address
+/// of the page's own made for it, read as `read_value` is: its length, then `copy_read`; 0 for an address shown.
+STATEUI_WEB(frame_show) int32_t stateui_web_frame_show(int32_t element, int32_t kind, const char *words, int32_t length);
 
 /// What the page can know of the frame's document: 1 it is of the page's own site, 2 it can go back, 4 forward.
 STATEUI_WEB(frame_state) int32_t stateui_web_frame_state(int32_t element);
@@ -101,7 +112,7 @@ STATEUI_WEB(frame_state) int32_t stateui_web_frame_state(int32_t element);
 /// The frame's document's address where it is of the page's site, read in two steps: its length, then `copy_read`.
 STATEUI_WEB(frame_address) int32_t stateui_web_frame_address(int32_t element);
 
-/// A step of the frame's own - 0 back, 1 forward, 2 the page again; whether it could take it.
+/// A step of the frame's own - a `WebRelay.FrameStep`; whether it could take it.
 STATEUI_WEB(frame_step) int32_t stateui_web_frame_step(int32_t element, int32_t step);
 
 /// Runs the script in the frame's document: its value as JSON, read as `copy_read` reads; -1 where it could not.
@@ -109,11 +120,10 @@ STATEUI_WEB(frame_evaluate) int32_t stateui_web_frame_evaluate(int32_t element, 
 
 /// Puts one entry of the page's own on the browser's history; `back_history` goes back over it where it stands on
 /// it, 1 where it went; `listen_history` calls `listener` whenever the browser's history moves - its way back, or
-/// forward - until `unlisten_history` lets it go.
+/// forward - until `forget` takes it off.
 STATEUI_WEB(push_history) void stateui_web_push_history(void);
 STATEUI_WEB(back_history) int32_t stateui_web_back_history(void);
 STATEUI_WEB(listen_history) void stateui_web_listen_history(int32_t listener);
-STATEUI_WEB(unlisten_history) void stateui_web_unlisten_history(int32_t listener);
 
 /// What the page stands as: 1 its tab shows, 2 it holds the keyboard; `listen_page` calls `changed` once as the
 /// page starts and again as either changes, and `leaving` as the browser leaves the page.
@@ -155,6 +165,8 @@ STATEUI_WEB(apple) int32_t stateui_web_apple(void);
 STATEUI_WEB(observe_size) void stateui_web_observe_size(int32_t element, int32_t listener);
 /// 1 where the browser lays the element out - it stands in the page, in no element shown as nothing - else 0.
 STATEUI_WEB(is_laid_out) int32_t stateui_web_is_laid_out(int32_t element);
+/// 1 where the style sheet stands the element out of its parent's flow, over its siblings - absolutely - else 0.
+STATEUI_WEB(stands_over) int32_t stateui_web_stands_over(int32_t element);
 
 /// Writes the element's box on the page - x, y, width and height from the page's top left - into `into`.
 STATEUI_WEB(read_box) void stateui_web_read_box(int32_t element, double *into);
@@ -176,6 +188,10 @@ STATEUI_WEB(scroll_to) void stateui_web_scroll_to(int32_t element, double x, dou
 /// The document's title, which the browser shows on the tab.
 STATEUI_WEB(set_title) void stateui_web_set_title(const char *text, int32_t length);
 
+/// The colour the page wears under its window, kept in the browser for the page's next start under the system's
+/// light or dark; empty for none.
+STATEUI_WEB(keep_page_colour) void stateui_web_keep_page_colour(const char *text, int32_t length);
+
 /// The site's name the page's head gives - its `application-name` - read in two steps: its length in bytes, then
 /// `copy_read`; 0 where the head gives none.
 STATEUI_WEB(site_name) int32_t stateui_web_site_name(void);
@@ -191,9 +207,20 @@ STATEUI_WEB(now) double stateui_web_now(void);
 
 /// Whether the user's system is in its dark appearance; `listen_appearance` calls `listener` when it turns.
 STATEUI_WEB(prefers_dark) int32_t stateui_web_prefers_dark(void);
+
+/// Shows the page in `scheme`, a `ColorScheme`.
 STATEUI_WEB(use_color_scheme) void stateui_web_use_color_scheme(int32_t scheme);
+
 STATEUI_WEB(accent_color) int32_t stateui_web_accent_color(void);
 STATEUI_WEB(listen_appearance) void stateui_web_listen_appearance(int32_t listener);
+
+/// The user's locale as the browser has it, its words a zero byte apart (`WebEnvironment.locale`), read in two steps:
+/// their length, then `copy_read`; `listen_locale` calls `listener` whenever the user's languages change.
+STATEUI_WEB(locale_words) int32_t stateui_web_locale_words(void);
+STATEUI_WEB(listen_locale) void stateui_web_listen_locale(int32_t listener);
+
+/// Calls `listener` whenever the screen's density turns: as many device pixels to a CSS pixel as before no more.
+STATEUI_WEB(listen_density) void stateui_web_listen_density(int32_t listener);
 
 /// The smallest width of the screen in CSS pixels where its user points by touch; 0 where by a mouse or a pen.
 STATEUI_WEB(touch_screen) double stateui_web_touch_screen(void);

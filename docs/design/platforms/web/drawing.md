@@ -79,7 +79,10 @@ is the host layer's instructions and pen (`CanvasInstruction`, `CanvasPen`),
 its arcs the host layer's curves (`CanvasArithmetic.arc`), its rounded
 rectangles' corners fitted as a box's are; Swift turns them into one list of
 numbers and words (`WebCanvasStroke`) the relay replays on the 2D context in
-one call, cut to the room, and again whenever the room changes size. Words
+one call, cut to the room, and again whenever the room changes size or the
+screen's density turns - a window moved to another screen, the page zoomed:
+the relay follows one media query of the density standing, asked again after
+each turn. Words
 wrap at their room's width in the system's font, placed across and down it
 as their alignments say. A press, its drag and its release are told where
 they are on the canvas, the pointer captured until it lets go.

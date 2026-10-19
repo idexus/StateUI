@@ -49,7 +49,7 @@ final class AndroidPickerView: AndroidView {
     func setChoices(_ options: [String], chosen: Int, writeChosen: Bool, title: String) {
         let write = written.write(options, chosen: chosen, choiceChanged: writeChosen)
         Java.frame {
-            let array = write.choices.flatMap { Java.array(of: JavaAPI.string, $0.map(Java.string)) }
+            let array = write.choices.flatMap { Java.strings($0) }
             Java.call(
                 reference, JavaAPI.setChoices, .object(array), .object(Java.string(title)),
                 .int(Int32(write.chosen ?? -1)), .bool(write.writesChoice))

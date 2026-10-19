@@ -3,7 +3,7 @@ import StateUI
 /// Seven shapes, filled and stroked - with dashes, joins and a fill rule.
 struct ShapesSample: SampleContent, ExampleContent {
     // listing: ShapesSample
-    @State private var rule = FillRule.evenOdd
+    @State private var evenOdd = true
     // listing: end
 
     static let id = "shapes"
@@ -171,14 +171,13 @@ struct ShapesSample: SampleContent, ExampleContent {
 
             Polygon(Self.star)
                 .fill(Palette.accent)
-                .fillRule(rule)
+                .fillRule(evenOdd ? .evenOdd : .nonzero)
                 .width(56)
                 .height(56)
                 .horizontalAlignment(.center)
 
-            Button("fillRule: .\(rule)")
+            SwitchRow("Even-odd fill", $evenOdd)
                 .horizontalAlignment(.center)
-                .onClicked { rule = rule == .evenOdd ? .nonzero : .evenOdd }
         }
         .spacing(12)
     }

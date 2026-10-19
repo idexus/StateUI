@@ -51,6 +51,29 @@
     /// A submenu's entries, in order.
     public let entries: [MenuEntry]
 
+    /// Everything an entry shows and the element it answers, holding no element: a host builds a menu it cannot
+    /// change in place again where what its entries say differs.
+    public struct Said: Equatable, Sendable {
+        let kind: Kind
+        let mount: UInt64?
+        let title: String
+        let icon: HostPicture?
+        let isEnabled: Bool
+        let isDestructive: Bool
+        let identifier: String?
+        let isOn: Bool?
+        let keyboardShortcut: KeyboardShortcut?
+        let entries: [Said]
+    }
+
+    /// What the entry says, its submenu's entries with it.
+    public var said: Said {
+        Said(
+            kind: kind, mount: element?.mount, title: title, icon: icon, isEnabled: isEnabled,
+            isDestructive: isDestructive, identifier: identifier, isOn: isOn, keyboardShortcut: keyboardShortcut,
+            entries: entries.map(\.said))
+    }
+
     /// The platform's menu this one joins, where its `.id` is a `StandardMenu`.
     public var standard: StandardMenu? {
         guard case .manual(let identity) = element?.id else { return nil }

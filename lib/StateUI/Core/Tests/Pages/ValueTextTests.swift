@@ -42,6 +42,26 @@ final class ValueTextTests: XCTestCase {
         XCTAssertEqual(try ValueText.write(["b": 1, "a": 2]), #"{"a":2,"b":1}"#)
     }
 
+    /// A set and a map keyed by other than words are written in their own order - their hash's - by their own
+    /// `encode(to:)`; equal ones are still one text, and read back equal.
+    func testEqualSetsAndMapsAreWrittenAsOneText() throws {
+        var few = Set<Int>()
+        var many = Set<Int>(minimumCapacity: 512)
+        var fewMap: [Double: String] = [:]
+        var manyMap = [Double: String](minimumCapacity: 512)
+        for index in 0..<20 {
+            few.insert(index)
+            many.insert(19 - index)
+            fewMap[Double(index) / 2] = "\(index)"
+            manyMap[Double(19 - index) / 2] = "\(19 - index)"
+        }
+
+        XCTAssertEqual(try ValueText.write(few), try ValueText.write(many))
+        XCTAssertEqual(try ValueText.write(fewMap), try ValueText.write(manyMap))
+        XCTAssertEqual(ValueText.read(Set<Int>.self, from: try ValueText.write(few)), few)
+        XCTAssertEqual(ValueText.read([Double: String].self, from: try ValueText.write(fewMap)), fewMap)
+    }
+
     /// Words come back whole: a quote, a backslash, a line's end, a tab, a control with no letter, a letter past the
     /// first plane; and a pair of halves written by another hand reads as the one letter it stands for.
     func testEscapedWordsComeBackWhole() throws {

@@ -39,7 +39,9 @@ final class WebTextView: WebDOMView, WebWordsView {
     /// Design: docs/design/platforms/web/controls.md#runs-of-words
     func setRuns(_ shown: [TextRun]?, over look: TextLook) {
         guard let shown else {
-            for span in runs ?? [] { span.detach() }
+            // Shown without runs before, the words stand already.
+            guard let spans = runs else { return }
+            for span in spans { span.detach() }
             runs = nil
             return WebRelay.setText(node, words)
         }

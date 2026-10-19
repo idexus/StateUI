@@ -45,10 +45,11 @@ font and colour, and the room between its letters the button holds - a
 `TextBlock` spaces its own letters, whatever its control says: wrapped or cut
 short at their end as the tree's break says,
 and on one line where it says nothing, as WinUI's own buttons stand. With a
-picture the content is composed as WinUI Gallery composes it: a `StackPanel`
+picture the content is composed as WinUI 3 Gallery, the look this host takes,
+composes it: a `StackPanel`
 holding the picture and the words, across them or down them as the icon's
 position says - before, above, after or below - the icon spacing apart, else
-WinUI Gallery's 8 DIPs. The picture stands at its own size
+WinUI 3 Gallery's 8 DIPs. The picture stands at its own size
 ([pictures](#pictures)) in a `Viewbox` that makes it smaller, never larger,
 where the button is lower than the picture: a chip in the chrome shows it at
 the chip's height. WinUI arranges a button at no less than it measured, and
@@ -244,7 +245,9 @@ nothing keeps the view its control has. An element left out with its
 children is `Raw`, and a layout so left out answers assistive technology with
 no children at all, its panel's automation peer holding them back. WinUI has
 no property that leaves out a subtree, and the host reaches into no
-template's parts: a control left out is left out alone. What most templates
+template's parts - the title bar's padding columns, a true defect's, are the
+one it does ([the window's chrome](pages.md#the-windows-chrome)): a control
+left out is left out alone. What most templates
 draw - a button's words - WinUI already keeps out of what is read; the parts
 an activity ring, a stepper, a search box and a day's or a time's picker
 draw stay met, `☑️` in the matrix.
@@ -283,7 +286,11 @@ them.
 `maximumLength` counts characters, as the contract does - WinUI's own bound
 counts UTF-16 units, so the host keeps none there. The field keeps the first
 characters that fit and writes them back, as the program, when typing goes
-past the bound. A `textCase` puts every letter typed in its case through the
+past the bound - but not while an input method is composing the words:
+written under it, the composition is lost. The relay hears
+`TextCompositionStarted` and `TextCompositionEnded`, tells the words as
+composing meanwhile, and tells them again as it commits them, when the bound
+cuts them (`InputWords.held`). A `textCase` puts every letter typed in its case through the
 text box's `CharacterCasing`, and the host writes the program's words in it
 too. An editor's `TextBox` ends each line with a carriage
 return, where StateUI's words end it with a line feed: the host reads and
@@ -394,7 +401,9 @@ of the room. A stretched picture keeps no proportions and is drawn at its
 room's size: WinUI fits an SVG into its pixels in the SVG's own proportions,
 leaving bands, so the relay reads a copy of it that has given them up - and
 its own size with them (`preserveAspectRatio="none"`, width and height
-`100%`) - written once among the system's temporary files.
+`100%`) - among the system's temporary files, named by what it holds: every
+run showing the picture shares the one copy, written where it is missing and
+whole before it takes its name, so no run leaves another behind.
 
 Every SVG is read by its file's address, once for each file, the pixels it
 is drawn at and whether its proportions are let go, and that one source is
@@ -441,17 +450,30 @@ ahead as it changes ([a web view](../../host/web.md)). A page the program
 loads again while it is still coming, which WebView2 leaves as it is, is
 asked for again instead. A script's answer is the JSON WebView2 writes its
 value in, read by the host layer's rule, and the end of the page's web
-process is heard as WebView2 tells it. The agent it names itself by is the
+process is heard as WebView2 tells it. A WebView2 that does not start - no
+runtime where its loader looks, as on a Windows 10 without the Evergreen
+runtime - tells the page asked for failed, and says why on standard error,
+never a blank view and nothing. The agent it names itself by is the
 tree's, and the runtime's own where the tree gives none, taken back from
-when its `CoreWebView2` stood. Its page takes the user's hand: a web view hears none
+when its `CoreWebView2` stood; an agent the tree gives while the
+`CoreWebView2` still comes is the one its first page asks as - the relay
+keeps the one asked for last. Its page takes the user's hand: a web view hears none
 of it as a view does - WebView2, listened to by WinUI, ends the process - so
 its taps, pans, swipes, pinch and pointer are none on WinUI.
 
-A document written in place is what its address answers, the view serving
+A document written in place is what its address answers - written as
+WebView2 asks for it again, its scheme and host in small letters and its
+path at least a slash, else the request would not match and go to the
+network - the view serving
 it through `WebResourceRequested` whenever the view asks for it - going back
 to it too - and nothing is fetched: at its own address, which its relative
 links resolve against, else at one the backend gives it, under
-`https://page.stateui.invalid/`, which no network answers. WebView2 leaves a
+`https://page.stateui.invalid/<view>/`, which no network answers. The view
+keeps each document while its history may lead back to it, and answers its
+own addresses through one filter - WebView2 checks every request against
+every filter it holds, and a preview written again at each key would add
+one a key; an address of the document's own gets a filter the first time
+it is served. WebView2 leaves a
 `data:` address unfinished, sent to it or taken back to - `NavigateToString`
 goes to one - and every navigation after it.
 

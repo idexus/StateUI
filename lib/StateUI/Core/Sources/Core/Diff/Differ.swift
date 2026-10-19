@@ -34,6 +34,10 @@ final class Differ {
     /// Design: docs/design/core/identity-and-diffing.md#what-a-carry-cannot-see
     private(set) var stylesMoved = false
 
+    /// Whether this walk builds every composed view: `setNeedsRender()` named nothing StateUI tracks.
+    /// Design: docs/design/core/identity-and-diffing.md#what-a-carry-cannot-see
+    private(set) var buildsEveryView = false
+
     /// The states written since the tree the host holds was built.
     private(set) var changed: Set<ObjectIdentifier> = []
 
@@ -48,6 +52,10 @@ final class Differ {
     /// `.onVisualStateChanged` - in the order reached.
     /// Design: docs/design/core/render.md#handlers-in-the-message
     var fired: [Fired] = []
+
+    /// The driven values this walk heard an element answer `.inherited` for, with the property, to check once the
+    /// walk let go of what left.
+    var answered: [(state: HostStorage, key: Prop)] = []
 
     /// The `.onDestroying` handlers of what this walk let go, innermost first.
     private var leaving: [EventHandler] = []
@@ -75,9 +83,11 @@ final class Differ {
         with tree: Node,
         styles: StyleSheet? = nil,
         describeAll: Bool = false,
-        changed: Set<ObjectIdentifier> = []
+        changed: Set<ObjectIdentifier> = [],
+        buildsEveryView: Bool = false
     ) -> (node: RenderedNode, patch: HostPatch) {
         self.describeAll = describeAll
+        self.buildsEveryView = buildsEveryView
         self.changed = changed
         stylesMoved = !StyleSheet.same(styles, self.styles)
         self.styles = styles
@@ -92,7 +102,9 @@ final class Differ {
             forget(rendered)
         }
 
-        return element(id: id, rendered: previous, node: tree)
+        let walked = element(id: id, rendered: previous, node: tree)
+        sayAnsweredTwice()
+        return walked
     }
 
     /// The clean walk: no fresh tree, and exactly the elements whose reads intersect
@@ -103,12 +115,41 @@ final class Differ {
         changed: Set<ObjectIdentifier>
     ) -> (node: RenderedNode, patch: HostPatch) {
         describeAll = false
+        buildsEveryView = false
         self.changed = changed
         stylesMoved = false
         walkStamp += 1
         seedScope()
 
-        return revisit(rendered)
+        let walked = revisit(rendered)
+        sayAnsweredTwice()
+        return walked
+    }
+
+    /// A state this element no longer shows: a tie fewer, and its answer for `.inherited` gone with it.
+    func untie(_ number: Int32, from id: ElementID) {
+        guard let state = Renderer.shared.storage(of: number) else { return }
+
+        state.ties -= 1
+        state.answers[id] = nil
+    }
+
+    /// Says each driven value two live elements answer `.inherited` for differently - after the walk let go of
+    /// what left, so an element replaced in the same render answers nothing.
+    /// Design: docs/design/core/identity-and-diffing.md#driven-properties
+    private func sayAnsweredTwice() {
+        defer { answered = [] }
+
+        for (state, key) in answered {
+            let answers = Array(state.answers.values)
+            guard let first = answers.first, answers.contains(where: { $0 != first }) else { continue }
+
+            complain("""
+                \(key.name) is driven by a value two elements answer \
+                differently for. The one described LAST says how it \
+                travels.
+                """)
+        }
     }
 
     /// One kept element: built again from its placeholder when its reads moved,
@@ -130,7 +171,7 @@ final class Differ {
         // A composed view walked past is written down only as the path to something
         // built below it, and not for a view just carried.
         let walked = walking && Inspection.recording && !rendered.views.isEmpty
-            && Inspection.enter(rendered.views[0].type, .walked, element: rendered.id)
+            && Inspection.enter(rendered.views[0].type.name, .walked, element: rendered.id)
         defer { if walked { Inspection.leave() } }
 
         // And the scene it is in, whose record the kept state below is claimed from.
@@ -172,7 +213,7 @@ final class Differ {
     /// The handlers the last walk found - what left first, then the rest - taken so
     /// each runs once.
     func takeFired() -> [Fired] {
-        let taken = leaving.map { Fired(run: $0, gate: .none, owner: nil) } + fired
+        let taken = leaving.map { Fired(run: $0, owner: nil) } + fired
         leaving.removeAll(keepingCapacity: true)
         fired.removeAll(keepingCapacity: true)
         return taken
@@ -189,6 +230,11 @@ final class Differ {
         // Its engines: nothing is left to ask for their frames.
         for id in node.engines {
             Renderer.shared.disarm(id)
+        }
+
+        // Its ties: the states it showed are worn by one element fewer.
+        for entry in node.driven.values {
+            untie(entry.number, from: node.id)
         }
 
         for child in node.children {

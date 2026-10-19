@@ -231,4 +231,37 @@ final class GeometryReaderTests: XCTestCase {
 
         Renderer.shared.clearInvalidation()
     }
+
+    /// A scroll moves the window origin and not the parent frame: a reader in its parent's space builds its
+    /// content once for the frame, never again for each scrolled report.
+    func testAScrollMovingAReaderBuildsItsContentOnce() {
+        let renders = Renders()
+        let built = Heard()
+
+        func shown(_ frame: Rect) -> Text {
+            built.frames.append(frame)
+            return Text("\(Int(frame.width)) wide")
+        }
+
+        func tree() -> Node {
+            Node(type: "Window", children: [VStack { GeometryReader { frame in shown(frame) } }.node])
+        }
+
+        let grid = renders.render(tree()).children.first?.children.first
+        let id = grid?.events?["frameChanged"] ?? -1
+
+        Renderer.shared.clearInvalidation()
+        renders.fire(id, with: payload)
+        renders.revisit(changed: Renderer.shared.pendingChanges)
+
+        for scrolled in 1...5 {
+            Renderer.shared.clearInvalidation()
+            let y = 220 - Double(scrolled * 40)
+            renders.fire(id, with: [.numbers([10, 20, 300, 400, 110, y, 110, y - 44])])
+            renders.revisit(changed: Renderer.shared.pendingChanges)
+        }
+
+        XCTAssertEqual(built.frames.map(\.width), [300], "built for the frame once, and for no scroll")
+        Renderer.shared.clearInvalidation()
+    }
 }

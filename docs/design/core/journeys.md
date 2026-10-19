@@ -67,14 +67,17 @@ the host is told at the first crossing and cannot be told again.
       -> the HOST animates it and writes value and velocity back every frame
   @State(motion: .custom)
       -> an engine of the application's writes value and velocity
-  worn by nothing yet (no number issued)
+  worn by no live element (no tie, number or not)
       -> nothing animates it: a write lands at the destination at once
 ```
 
 ## Moving and waiting
 
 `$x.journey.move(to:_:)` sends the value and returns its `Arrival` at once;
-`arrived()` suspends until the value arrives. A move is a write of the
+`arrived()` suspends until the value arrives. It has two spellings, one with a
+law and one without (`move(to:)`, under the value's own), and no optional
+law: `.none` written there is always the law that does not move, which a law
+that defaults to nil would read as "none given". A move is a write of the
 destination: the state reads the target at once, its readers are built again
 and a kept state keeps it, as after an assignment (`Storage.moved(to:)`) - and
 the journey the host walks is the move's, on its law, never a second one on the
@@ -88,12 +91,15 @@ and answers true.
 The waiter is booked with the renderer under a negative id from the counter
 every awaited act draws from, and the id is written into the completion lane;
 nothing is queued, and the host answers by that id when the animation finishes
-or is interrupted. The destination and completion lanes are forced dirty, so
-sending a value where it is already going is still a fresh journey with a fresh
-waiter. The write and the booking land before `move` returns, so moves sent one after
+or is interrupted. The completion lane is forced dirty, and the destination
+lanes are forced too where none of them changes, so sending a value where it
+is already going is still a fresh journey with a fresh waiter. Where some
+lanes change, only they are laid: the host sends those lanes on as one run
+under the waiter, and a lane the move leaves alone travels on as it was
+(host/motion.md, a channel lane by lane). The write and the booking land before `move` returns, so moves sent one after
 another and awaited after are in the air together, booked in the order
 written. A given law stays on the value: a plain assignment after
-`move(to: 0, .eased(2000))` animates for two seconds too.
+`move(to: 0, .eased(.milliseconds(2000)))` animates for two seconds too.
 
 A state nothing wears lands at once and answers true: nobody would ever answer a
 waiter booked on it. Under `.custom` the destination is written and the answer
@@ -131,6 +137,15 @@ frames between them - so a stop or a move laying the whole journey again would
 say the value and its speed moved, and the host would start over from them
 (`JourneyTests.testAJourneyWriteLaysOnlyItsPart`).
 
+## One part at once
+
+A layout engine names the target its hand passes on one axis of its phase,
+which another hand or the program may be moving: `Journey.snap(_:to:)`, the
+library's own, puts one part of the value - a key path to one of its numbers -
+where it is at once, as `snap(to:)` does the whole. Its lanes of value,
+destination and speed are laid and no other, so the host takes that lane out
+of the run it travelled in and leaves the rest going.
+
 ## Two reader sets
 
 A body that reads `fade` is a reader of the state's storage and is asked when
@@ -141,12 +156,25 @@ a body reads the destination alone. `HostStorage.readAtBuild` is the image's
 flag, set by the journey's reads, as `State.Storage.readAtBuild` is the
 state's.
 
+## Where a run shows it
+
+A layout's run moves its phase under the hand, a throw or an approach in the
+core, not as a walk of the host's: the hand names each target it passes, and
+the state's own value stays that target, so a body reading it rebuilds only
+as a target passes. Where the run is shown meanwhile is the journey's value:
+the run tells the storage (`show(_:by:)`) each frame it moves, and once it
+rests lets go of it. That moves the state's stamp and asks the journey's
+readers - an engine following the phase, another layout wearing it, a body
+reading `journey.value` - and not the state's own readers. Nothing of it
+reaches the host, which walks the target; what the run shows is the core's,
+told under the run's own name, so only the run that showed it lets go of it.
+
 ## Readings
 
 A state has no cadence: it is at its value the moment it is written, so there
 is no sweep on this side to hold back. What sweeps is where the value has got
 to, which the host sends every cycle it moves. `.samples($fade, into: $shown,
-.every(100))` copies it into an ordinary state at most ten times a second; the
+.every(.milliseconds(100)))` copies it into an ordinary state at most ten times a second; the
 body reads that state under the ordinary rules, and the source goes on costing
 nothing. The window belongs to the reading, not the state: one source may be
 read by two views into two states at two rates, taken in the order asked.
@@ -180,9 +208,13 @@ from the first by an engine the differ writes: whenever the source moves, the
 engine runs on the display's frames and settles the derived value where the
 control reads it, and nothing is built. `.convertBack { $0 / 100 }` is the
 engine the other way, for a control that reports, so the user's change lands
-on the source in the source's terms. `convertBack` is meant as the inverse;
-where it is not exactly - a rounding, a clamp - the source settles once on the
-value the round trip lands on.
+on the source in the source's terms. It is woken by the host's reports alone
+(`HostStorage.reports`), never by the forward engine settling the derived
+value: what the application writes goes forward and stays as written - `v =
+0.123` through a slider converting by hundredths stays 0.123, the control
+showing 12 - as the application's writes never come back as the user's.
+`convertBack` is meant as the inverse; where it is not exactly - a rounding, a
+clamp - a report lands on the source as the round trip makes it.
 
 ```text
   derived state   known to the first source's storage under the element being
@@ -253,7 +285,7 @@ every animation of its table to where it starts and where it lands.
                                     holds a display clock awake for ever
 ```
 
-Time is in milliseconds, the unit of `Motion`'s numbers, so the law's velocity
+Time is in milliseconds, the unit a `Motion` keeps its length in, so the law's velocity
 is per millisecond; a journey reports per second, and an animator converts
 where it reports. The slope of an eased curve is a central difference on the
 curve, a function of progress alone, so it answers the same number in every

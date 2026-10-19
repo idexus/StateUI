@@ -24,6 +24,36 @@ struct CounterPage: View {
 
 @MainActor
 final class GTKRendererTests: XCTestCase {
+    /// The display cycle ticks with a window GTK draws: a window hidden by its scene stops its frames, and another
+    /// scene's window in front gives them (`ApplicationLifecycle.framesWindow`).
+    func testTheFramesComeFromAWindowTheScreenShows() throws {
+        try onUIThread {
+            let host = GTKRenderer.running(application: { TwoScenesApplication() })
+            try XCTUnwrap(host.views(GTKButtonView.self).first).click()
+            host.settle { host.windows.count == 2 }
+            let (first, second) = (host.windows[0], host.windows[1])
+
+            // As GTK tells it, settled at once: no event of the desktop's between the telling and the reading.
+            for (window, active) in [(first, true), (second, false), (first, false), (second, true)] {
+                host.runtime.windowStateChanged(try XCTUnwrap(window.element), minimized: false, activated: active)
+                host.runtime.settlePhases()
+            }
+            XCTAssertTrue(first.window.isHidden, "the first scene's window hidden by its scene")
+            XCTAssertTrue(host.frameClock.widget == second.window.widget, "the frames of the window in front")
+
+            host.runtime.windowStateChanged(try XCTUnwrap(first.element), minimized: false, activated: true)
+            host.runtime.windowStateChanged(try XCTUnwrap(second.element), minimized: true, activated: false)
+            host.runtime.settlePhases()
+            XCTAssertTrue(host.frameClock.widget == first.window.widget, "the second minimized: the first's")
+
+            let clock = try XCTUnwrap(gtk_widget_get_frame_clock(second.window.widget))
+            GTKWindow.reportLaidOut(clock, window: second.window.number)
+            XCTAssertTrue(GTKWindow.keepsFrame(of: second.window.number))
+            second.window.close()
+            XCTAssertFalse(GTKWindow.keepsFrame(of: second.window.number), "a window gone keeps no frame of its readers")
+        }
+    }
+
     /// The accent the user chooses is heard where libadwaita offers one to choose: the style manager telling it
     /// changed tells the environment's watcher, as the theme turning does.
     func testAnAccentChangeIsHeard() throws {
@@ -251,5 +281,34 @@ private struct ScenePhaseLabel: View {
 
     var body: some View {
         Text("\(scene.phase)")
+    }
+}
+
+/// An application of two scenes: the first's window, hidden while the other is in front, opens the second's.
+private struct TwoScenesApplication: Application {
+    var body: some Scene {
+        FirstScene()
+        SecondScene()
+    }
+}
+
+private struct FirstScene: Scene {
+    var body: some Scene {
+        WindowGroup { OpeningSecondPage() }.hidesWhenInactive(true)
+    }
+}
+
+private struct SecondScene: Scene {
+    var body: some Scene {
+        Window(WindowType("frames.second")) { Text("Second") }
+    }
+}
+
+private struct OpeningSecondPage: View {
+    @Environment(\.application) private var application
+
+    var body: some View {
+        let application = self.application
+        return Button("Open").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(WindowType("frames.second")) }
     }
 }

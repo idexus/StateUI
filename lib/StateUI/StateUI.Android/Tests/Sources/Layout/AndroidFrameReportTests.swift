@@ -109,7 +109,8 @@ final class AndroidFrameReportTests: XCTestCase {
     /// Runs the window's messages - its traversals, the display's frames - and the host's turns until `done` holds.
     @MainActor
     private static func settleInTheWindow(_ host: AndroidRenderer, until done: () -> Bool) {
-        for _ in 0..<150 where !done() {
+        for _ in 0..<150 {
+            guard !done() else { break }
             TestWindow.run(for: 10)
             host.runtime.pump.turn()
         }

@@ -146,6 +146,10 @@ namespace stateui {
     /// stays.
     void holdHitArea(xaml::UIElement const &element, int64_t view);
 
+    /// The theme an element is asked to stand in for `scheme`, a `StateUIColorScheme`; and the scheme of a theme.
+    xaml::ElementTheme elementTheme(int32_t scheme);
+    int32_t colorScheme(xaml::ElementTheme theme);
+
     /// WinUI's input scope the relay numbers `scope` (`WinUIInputScope`): the on-screen keyboard a field brings up.
     xaml::Input::InputScope inputScope(int32_t scope);
 
@@ -192,6 +196,14 @@ namespace stateui {
                 report(where);
             }
         };
+    }
+
+    /// `member` of `object` as a guarded handler, called while the object lives: the handler holds it weakly.
+    template <typename Object, typename Member>
+    auto guarded(char const *where, winrt::weak_ref<Object> object, Member member) {
+        return guarded(where, [object = std::move(object), member](auto &&...arguments) {
+            if (auto strong = object.get()) (strong.get()->*member)(std::forward<decltype(arguments)>(arguments)...);
+        });
     }
 
     /// Hands a projected object's default interface to the host, AddRef'd.

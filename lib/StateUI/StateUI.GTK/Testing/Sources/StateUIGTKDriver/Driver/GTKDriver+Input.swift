@@ -32,6 +32,17 @@ extension GTKDriver {
             GTKTestHost.emit(drag, "drag-update", [offset.x / 2, offset.y / 2])
             GTKTestHost.emit(drag, "drag-update", [offset.x, offset.y])
             GTKTestHost.emit(drag, "drag-end", [offset.x, offset.y])
+        // A throw's speed is the events' times, which a signal emitted here carries none of: the hand reaches the
+        // host's entry as the drag would hand it, with the speed - ✓.
+        case .sweep(let offset, let speed):
+            guard view.hearing.contains(.hand) else { return false }
+            listening.hand(.began, moved: .zero)
+            listening.hand(.changed, moved: offset)
+            listening.hand(.ended, moved: .zero, speed: speed)
+        // A wheel's notches reach the host's entry as the scroll controller would hand them - ✓.
+        case .notch(let notches):
+            guard view.hearing.contains(.hand) else { return false }
+            listening.notched(notches)
         // GTK takes no touch a driver could put down, so the fingers' place reaches the host's recognizer as GTK's
         // zoom would hand it - ✓.
         case .pinch(let scale, let at):
@@ -39,6 +50,11 @@ extension GTKDriver {
             view.heard(.pinch(.began, scale: 1, at: at))
             view.heard(.pinch(.changed, scale: scale, at: at))
             view.heard(.pinch(.ended, scale: 1, at: at))
+        case .rotate(let degrees, _):
+            guard view.hearing.contains(.rotations) else { return false }
+            listening.rotated(phase: .began, radians: 0)
+            listening.rotated(phase: .changed, radians: degrees * .pi / 180)
+            listening.rotated(phase: .ended, radians: 0)
         case .hover(let point):
             guard let motion = controllers(.pointer).first else { return false }
             GTKTestHost.emit(motion, "enter", [point.x, point.y])
@@ -46,6 +62,17 @@ extension GTKDriver {
         case .leave:
             guard let motion = controllers(.pointer).first else { return false }
             GTKTestHost.emit(motion, "leave")
+        // A press over a layout goes down, moves and lifts through the hand's own drag, as GTK emits it.
+        case .pressDown(let point) where view.hearing.contains(.hand):
+            guard let drag = controllers(.hand).first else { return false }
+            pressed.at = point
+            GTKTestHost.emit(drag, "drag-begin", [point.x, point.y])
+        case .drag(let point) where view.hearing.contains(.hand):
+            guard let drag = controllers(.hand).first else { return false }
+            GTKTestHost.emit(drag, "drag-update", [point.x - pressed.at.x, point.y - pressed.at.y])
+        case .lift(let point) where view.hearing.contains(.hand):
+            guard let drag = controllers(.hand).first else { return false }
+            GTKTestHost.emit(drag, "drag-end", [point.x - pressed.at.x, point.y - pressed.at.y])
         case .pressDown(let point):
             guard let press = controllers(.pointer).last else { return view is GTKButtonView }
             pressed.at = point

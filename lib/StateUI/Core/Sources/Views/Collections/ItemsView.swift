@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// Items shown by the platform's own collection - as many as you like, since
-/// only the ones the platform holds on screen are built.
+/// only the ones near what the platform holds are built.
 ///
 ///     @State private var chosen: String?
 ///
@@ -12,9 +12,9 @@
 ///     .selection($chosen)
 ///     .onItemActivated { path in open(path) }
 ///
-/// Each item is built when the platform first shows it, as a view of its own:
-/// a state it reads builds that item alone, and a state it declares lives
-/// while the platform holds it. The platform scrolls, reuses its cells, lets
+/// Each item is built as the platform's collection comes near it, as a view of
+/// its own: a state it reads builds that item alone, and a state it declares
+/// lives while the item stays near what the platform holds. The platform scrolls, reuses its cells, lets
 /// the user choose and open items, and tells assistive technology about them.
 ///
 /// An item names itself by `String(describing:)` of its identity, so two items
@@ -23,16 +23,16 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
     /// The items, their identities and their views - one source a build.
     private let source: ItemsSource<ID>
 
-    /// The identities within reach of the host's cells, as it last said.
-    @State private var realized: [String] = []
+    /// The entries within reach of the host's cells, as it last said.
+    @State private var reach = ItemsReach()
 
     private var layout = ItemsLayout.list()
     private var headerView: (any View)?
     private var footerView: (any View)?
     private var empty: (any View)?
     private var choice: Choice?
-    private var activated: (gate: any Gate, handler: ValueEventHandler<ID>)?
-    private var endReached: (within: Int, gate: any Gate, handler: EventHandler)?
+    private var activated: ValueHandler<ID>?
+    private var endReached: (within: Int, handler: Handler)?
     private var aimed: Aim<Self>?
 
     /// A list of `items`, each its own identity, each looking as `content` says.
@@ -63,27 +63,29 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
         if source.entries.isEmpty, let empty { return ModifiedContent(node: empty.node) }
 
         let source = self.source
-        let realized = self.realized
-        let held = $realized
+        let reach = self.reach
+        let held = $reach
         var element = ItemsViewElement()
         element.node.write(ItemsViewContract.items, source.entries)
         element.node.write(ItemsViewContract.itemsLayout, layout)
-        element.node.producer = { source.children(realized: realized) }
+        element.node.producer = { source.children(within: reach) }
         element.node.aim = aimed?.box
+        aimed?.box.resolves = { item in (item as? ID).map { source.identities(of: [$0]) } ?? [] }
 
-        element.node.addHandler(ItemsViewContract.realizedChanged.token, gate: .none) {
+        element.node.addHandler(ItemsViewContract.realizedChanged.token) {
             guard let identities = MemberValues.carried(
-                EventBuffer.current, by: ItemsViewContract.realizedChanged.name, as: [String].self),
-                identities != held.wrappedValue
+                EventBuffer.current, by: ItemsViewContract.realizedChanged.name, as: [String].self)
             else { return }
+            let said = ItemsReach(identities: identities, positions: source.positions(of: identities))
+            guard said != held.wrappedValue else { return }
 
-            held.wrappedValue = identities
+            held.wrappedValue = said
         }
 
         if let choice {
             element.node.write(ItemsViewContract.selectionMode, choice.mode)
             element.node.write(ItemsViewContract.selectedItems, source.identities(of: choice.chosen))
-            element.node.addHandler(ItemsViewContract.selectedItemsChanged.token, gate: .none) {
+            element.node.addHandler(ItemsViewContract.selectedItemsChanged.token) {
                 guard let identities = MemberValues.carried(
                     EventBuffer.current, by: ItemsViewContract.selectedItemsChanged.name, as: [String].self)
                 else { return }
@@ -103,13 +105,13 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
                     let id = source.id(for: identity)
                 else { return }
 
-                try await activated.handler(id)
+                try await activated.run(id)
             }
         }
 
         if let endReached {
             element.node.write(ItemsViewContract.endReachedWithin, endReached.within)
-            element.node.addHandler(ItemsViewContract.endReached.token, gate: endReached.gate, endReached.handler)
+            element.node.addHandlers(ItemsViewContract.endReached.token, [endReached.handler])
         }
 
         return ModifiedContent(node: element.node)
@@ -159,27 +161,25 @@ extension ItemsView {
     /// Hears the user open an item - a tap on a phone, a double-click or Return
     /// on a desktop - handed its identity.
     public func onItemActivated(_ handler: @escaping @MainActor (ID) throws -> Void) -> Self {
-        onItemActivated(gate: .none) { try handler($0) }
+        var copy = self
+        copy.activated = ValueHandler(step: handler)
+        return copy
     }
 
     /// The same, with a handler that awaits - opening a page does: its `gate`
     /// says what opening another item does while a run is under way.
     public func onItemActivated(gate: some Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = (gate, handler)
+        copy.activated = ValueHandler(run: handler, gate: gate)
         return copy
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onItemActivated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onItemActivated(_ handler: @escaping ValueEventHandler<ID>) -> Self {
-        fatalError("unavailable")
     }
 
     /// Hears the user scroll within `within` items of the end - where more
     /// items are loaded.
     public func onEndReached(within: Int = 0, _ handler: @escaping @MainActor () throws -> Void) -> Self {
-        onEndReached(within: within, gate: .none) { try handler() }
+        var copy = self
+        copy.endReached = (within: max(within, 0), handler: Handler(step: handler))
+        return copy
     }
 
     /// The same, with a handler that awaits - a load does. The end may be
@@ -192,14 +192,8 @@ extension ItemsView {
         within: Int = 0, gate: some Gate, _ handler: @escaping EventHandler
     ) -> Self {
         var copy = self
-        copy.endReached = (within: max(within, 0), gate: gate, handler: handler)
+        copy.endReached = (within: max(within, 0), handler: Handler(run: handler, gate: gate))
         return copy
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onEndReached(within: n, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onEndReached(within: Int = 0, _ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
     }
 
     /// A view standing before every item, scrolled with them.

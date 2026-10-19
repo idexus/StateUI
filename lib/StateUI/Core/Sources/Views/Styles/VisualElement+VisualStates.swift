@@ -22,7 +22,7 @@ extension VisualElement where Self: StyleTarget {
         _ setters: (StyleBag<Self, StyleState>) -> StyleBag<Self, StyleState>
     ) -> Modified {
         let values = setters(StyleBag<Self, StyleState>(key: nil)).node.props
-        return declare(DeclaredState(name: state.name, setters: values))
+        return declare(DeclaredState(key: state.key, setters: values))
     }
 
     /// A state of this control's that changes nothing - declared so the
@@ -34,7 +34,7 @@ extension VisualElement where Self: StyleTarget {
     ///
     /// - Parameter state: the state, changing nothing.
     public func visualState(_ state: VisualState<Self>) -> Modified {
-        declare(DeclaredState(name: state.name))
+        declare(DeclaredState(key: state.key))
     }
 
     /// Runs when this control enters one of the named states - where a state
@@ -45,7 +45,7 @@ extension VisualElement where Self: StyleTarget {
     ///     ZStack { Text("Open") }
     ///         .scale($lift)
     ///         .onVisualStateChanged(.pointerOver, .normal) { state in
-    ///             $lift.journey.move(to: state == .pointerOver ? 1.03 : 1, .eased(120, .cubicOut))
+    ///             $lift.journey.move(to: state == .pointerOver ? 1.03 : 1, .eased(.milliseconds(120), .cubicOut))
     ///         }
     ///
     /// It runs after the render in which the control entered the state, never
@@ -60,7 +60,7 @@ extension VisualElement where Self: StyleTarget {
         _ states: VisualState<Self>...,
         perform handler: @escaping @MainActor (VisualState<Self>) throws -> Void
     ) -> Modified {
-        listening(states, gate: .none) { try handler($0) }
+        listening(states, ValueHandler(step: { try handler(VisualState<Self>($0)) }))
     }
 
     /// The same, with a handler that awaits: its `gate` says what entering a
@@ -75,33 +75,18 @@ extension VisualElement where Self: StyleTarget {
         gate: some Gate,
         perform handler: @escaping ValueEventHandler<VisualState<Self>>
     ) -> Modified {
-        listening(states, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onVisualStateChanged(states, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onVisualStateChanged(
-        _ states: VisualState<Self>...,
-        perform handler: @escaping ValueEventHandler<VisualState<Self>>
-    ) -> Modified {
-        fatalError("unavailable")
+        listening(states, ValueHandler(run: { try await handler(VisualState<Self>($0)) }, gate: gate))
     }
 
     /// Declares `states` and hears the control entering them.
-    private func listening(
-        _ states: [VisualState<Self>],
-        gate: some Gate,
-        _ handler: @escaping ValueEventHandler<VisualState<Self>>
-    ) -> Modified {
+    private func listening(_ states: [VisualState<Self>], _ handler: ValueHandler<KeyName>) -> Modified {
         modified { node in
-            for state in states where !node.visualStates.contains(where: { $0.name == state.name }) {
-                node.visualStates.append(DeclaredState(name: state.name))
+            for state in states where !node.visualStates.contains(where: { $0.key == state.key }) {
+                node.visualStates.append(DeclaredState(key: state.key))
             }
 
             node.visualStateListeners.append(VisualStateListener(
-                states: states.isEmpty ? nil : Set(states.map(\.name)),
-                gate: gate,
-                run: { name in try await handler(VisualState<Self>(name)) }))
+                states: states.isEmpty ? nil : Set(states.map { $0.key }), handler: handler))
         }
     }
 

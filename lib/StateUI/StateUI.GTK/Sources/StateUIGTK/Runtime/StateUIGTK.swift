@@ -24,8 +24,7 @@ public enum StateUIGTK {
     /// - Parameter applicationID: the application's reverse-DNS name, which the desktop knows it by - its entry and
     ///   its icon are named by it; a second launch under the same name brings the running application's window
     ///   forward instead.
-    /// - Returns: the process's exit code.
-    @discardableResult
+    /// - Returns: the process's exit code, which the head ends the process with: `exit(StateUIGTK.run(...))`.
     public static func run(applicationID: String) -> Int32 {
         let application = adw_application_new(applicationID, STATEUI_APPLICATION_DEFAULT_FLAGS)!
         gtk_window_set_default_icon_name(applicationID)

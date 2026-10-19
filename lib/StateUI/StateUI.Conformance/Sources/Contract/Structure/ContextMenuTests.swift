@@ -12,16 +12,23 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("aViewOffersItsMenuAsTheTreeSaysIt", proves: [
-                Covered(ContextMenuContract.self), Covered(MenuContract.text), Covered(MenuSeparatorContract.self),
-                Covered(MenuItemElementContract.text, on: "MenuItem"), Covered(MenuItemElementContract.isEnabled, on: "MenuItem"),
+                Covered(ContextMenuContract.self),
+            ], needs: [
+                Covered(MenuContract.text),
+                Covered(MenuSeparatorContract.self),
+                Covered(MenuItemElementContract.text, on: "MenuItem"),
+                Covered(MenuItemElementContract.isEnabled, on: "MenuItem"),
             ]) { s in
                 s.start { MenuPage(heard: Received()) }
 
                 s.expect(try s.menu(of: s.element("row")), "Copy;-;!Paste;Share[Mail]")
             },
             ConformanceCase("theMenuFollowsTheStatesItsEntriesRead", proves: [
-                Covered(ContextMenuContract.self), Covered(MenuItemElementContract.isEnabled, on: "MenuItem"),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                Covered(ContextMenuContract.self),
+            ], needs: [
+                Covered(MenuItemElementContract.isEnabled, on: "MenuItem"),
+                Covered(ButtonContract.clicked),
+            ]) { s in
                 s.start { MenuPage(heard: Received()) }
                 let row = try s.element("row")
 

@@ -111,6 +111,24 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(query.wrappedValue, "bet")
     }
 
+    /// The main menu is built again when an entry turns checked or is marked destructive, though its words stay:
+    /// UIKit changes no built menu in place.
+    @MainActor
+    func testTheMenuBarIsBuiltAgainWhenAnEntryTurns() throws {
+        let on = State(wrappedValue: false)
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            Text("Document").menuBar { Menu("View") { MenuItem("Grid").isOn(on.wrappedValue) }.id("view") }
+        }
+        defer { host.finish() }
+        host.settle { !host.menuBar.isEmpty }
+        let builds = host.menuBarBuildsForTesting
+
+        on.wrappedValue = true
+        host.settle { host.menuBarBuildsForTesting > builds }
+
+        XCTAssertEqual(host.menuBarBuildsForTesting, builds + 1, "built again for the check")
+    }
+
     /// The main menu is built again when an entry answers another element though it says the same: the page's Save
     /// standing in the place of the stack's carries the page's element in its identifier.
     @MainActor
@@ -202,6 +220,60 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertTrue(bar.leftItemsSupplementBackButton, "the leading group beside the way back")
     }
 
+    /// On a painted bar an action wears the bar's words' colour, and one that destroys something stays red.
+    @MainActor
+    func testADestructiveActionStaysRedOnAPaintedBar() throws {
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").toolbar {
+                    ToolbarItem("Save").accessibilityIdentifier("save")
+                    ToolbarItem("Delete").isDestructive(true).accessibilityIdentifier("delete")
+                }
+            } destination: { _ in Text("Pushed") }
+            .barBackgroundColor(Color(red: 0, green: 0, blue: 128))
+        }
+        defer { host.finish() }
+        let item = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller?.navigationItem }
+        host.settle { item().map { !$0.trailingItemGroups.isEmpty } ?? false }
+        let items = try XCTUnwrap(item()).trailingItemGroups.flatMap(\.barButtonItems)
+        let tint = { (id: String) in items.first { $0.accessibilityIdentifier == id }?.tintColor }
+
+        XCTAssertEqual(tint("delete"), .systemRed, "the destructive one red")
+        var white: CGFloat = -1
+        XCTAssertTrue(tint("save")?.getWhite(&white, alpha: nil) == true)
+        XCTAssertEqual(white, 1, accuracy: 0.01, "the other in the bar's words, light on navy")
+    }
+
+    /// A bar whose actions say what they said keeps its buttons as the page's title or the bar's colour moves - a
+    /// letter typed in a field on the bar, a frame of a colour travelling - recoloured, never made again.
+    @MainActor
+    func testABarKeepsItsButtonsWhileItsActionsSayTheSame() throws {
+        let title = State(wrappedValue: "One")
+        let dark = State(wrappedValue: true)
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").title(title.wrappedValue).toolbar {
+                    ToolbarItem("Save").accessibilityIdentifier("save")
+                }
+            } destination: { _ in Text("Pushed") }
+            .barBackgroundColor(dark.wrappedValue ? Color(red: 0, green: 0, blue: 128) : Color(red: 255, green: 230, blue: 0))
+        }
+        defer { host.finish() }
+        let item = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller?.navigationItem }
+        host.settle { item().map { !$0.trailingItemGroups.isEmpty } ?? false }
+        let save = try XCTUnwrap(item()?.trailingItemGroups.first?.barButtonItems.first)
+
+        title.wrappedValue = "Two"
+        host.settle { item()?.title == "Two" }
+        XCTAssertTrue(item()?.trailingItemGroups.first?.barButtonItems.first === save, "kept as the title moved")
+
+        dark.wrappedValue = false
+        var white: CGFloat = 1
+        host.settle { save.tintColor?.getWhite(&white, alpha: nil) == true && white < 0.5 }
+        XCTAssertTrue(item()?.trailingItemGroups.first?.barButtonItems.first === save, "kept as the colour moved")
+        XCTAssertLessThan(white, 0.5, "and recoloured, dark on yellow")
+    }
+
     /// Words on a bar the tree paints stand light on a dark bar and dark on a light one, where the tree writes no
     /// colour for them (`BandWords`).
     @MainActor
@@ -227,6 +299,64 @@ final class UIKitPagesTests: XCTestCase {
         dark.wrappedValue = false
         host.settle { (words() ?? 1) < 0.01 }
         XCTAssertEqual(words() ?? -1, 0, accuracy: 0.01, "dark on yellow")
+    }
+
+    /// A tab the user chooses from UIKit's More list - a phone offers six and more so - is the tab chosen: the
+    /// selection follows it.
+    @MainActor
+    func testATabChosenFromTheMoreListIsChosen() throws {
+        let tab = State(wrappedValue: 0)
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            TabView(0..<7) { number in Text("Tab \(number)").title("Tab \(number)") }.selection(tab.projectedValue)
+        }
+        defer { host.finish() }
+        let element = host.runtime.tree.root.flatMap { Self.first(.tabView, in: $0) }
+        let tabs = try XCTUnwrap((element?.native as? UIKitElement)?.controller as? UIKitTabBarController)
+        guard tabs.traitCollection.horizontalSizeClass == .compact else { throw XCTSkip("an iPad shows every tab") }
+        let seventh = try XCTUnwrap(tabs.viewControllers?.last)
+
+        // As the More list does when the user picks a tab in it.
+        tabs.selectedViewController = tabs.moreNavigationController
+        tabs.moreNavigationController.pushViewController(seventh, animated: false)
+        host.settle { tab.wrappedValue == 6 }
+
+        XCTAssertEqual(tab.wrappedValue, 6)
+    }
+
+    /// A tab bar wears the words' colour of the bar on its path as it changes - written on the stack it stands in, so
+    /// the tabbed view itself changes nothing - in every layout it lays its tabs in.
+    @MainActor
+    func testATabBarFollowsTheBarsWordsOnItsPath() throws {
+        let white = State(wrappedValue: false)
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                TabView([0, 1]) { Text("\($0)").title("Tab \($0)") }
+            } destination: { _ in Text("Pushed") }
+                .barForegroundColor(white.wrappedValue ? .white : .black)
+        }
+        defer { host.finish() }
+        let tabs = { (host.runtime.tree.root.flatMap { Self.first(.tabView, in: $0) }?.native as? UIKitElement)?.controller }
+        let words = { () -> CGFloat? in
+            let bar = (tabs() as? UITabBarController)?.tabBar.standardAppearance
+            let color = bar?.stackedLayoutAppearance.selected.titleTextAttributes[.foregroundColor] as? UIColor
+            var shade: CGFloat = -1
+            return color?.getWhite(&shade, alpha: nil) == true ? shade : nil
+        }
+        host.settle { words() != nil }
+        XCTAssertEqual(words() ?? -1, 0, accuracy: 0.01, "black")
+
+        white.wrappedValue = true
+        host.settle { (words() ?? 0) > 0.99 }
+        XCTAssertEqual(words() ?? -1, 1, accuracy: 0.01, "white, the stack's words changed")
+
+        // The same in every layout of the bar: a phone turned and an iPad lay their tabs inline.
+        let bar = try XCTUnwrap((tabs() as? UITabBarController)?.tabBar.standardAppearance)
+        for layout in [bar.inlineLayoutAppearance, bar.compactInlineLayoutAppearance] {
+            XCTAssertEqual(layout.selected.iconColor, bar.stackedLayoutAppearance.selected.iconColor)
+            XCTAssertEqual(
+                layout.selected.titleTextAttributes[.foregroundColor] as? UIColor,
+                bar.stackedLayoutAppearance.selected.titleTextAttributes[.foregroundColor] as? UIColor)
+        }
     }
 
     /// A clear bar is UIKit's transparent bar: nothing under it, and no line between it and the page.

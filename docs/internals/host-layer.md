@@ -25,6 +25,7 @@ layer: it is written there with its tests, and every host calls it.
 lib/StateUI/StateUI.Host/Sources/
   Runtime/       the runtime's parts, the turn, the frame, the line to the core
   Tree/          the mounted tree, each element's native half, the windows
+  Numbers/       the process's one count, and what a host hands across by number
   Pages/         what an arrangement shows, a page's phases, the window's chrome
   Layout/        the layout arithmetic: stacks, grids, layers, scrolling, shapes
   Drawing/       boxes, brushes, pictures, a control's pressed fill
@@ -187,8 +188,9 @@ named for an engine or a channel
   `ProgramWrite.perform`.
   ([Program write](../design/host/patches.md#program-write))
 - **`DisplayCycle`** is one display frame, in one order: the user's reports,
-  the animations, the core's cycle, one walk of the tree, the clock's hold,
-  which lets go only when nothing moves, and a render. The host's
+  the animations, the core's cycle, the elements the frame touched presented
+  deepest first, the clock's hold, which lets go only when nothing moves,
+  and a render. The host's
   `FrameClock` ticks it; the runtime keeps each step, and the host's
   `HostPresenter` follows a frame that moved the chrome. ([One frame](../design/host/runtime.md#one-frame))
 - **`FrameFollowers`** keeps the frames coming while a scroller moves or a
@@ -213,8 +215,10 @@ per described node, each with a native half its toolkit writes.
 - **`MountedTree`** applies each message's root patch, with one start time for
   every animation the message begins, and owns what every element shares: the
   line to the core, the intake, the state channels and the two motions. It
-  presents a frame's batch in one walk (`present`) and lays the tree out again
-  where the language's direction turned (`followTheLanguagesDirection`).
+  presents a frame's batch to the elements it touched, found by their mount
+  and by the states they present, deepest first (`present`), and lays the
+  tree out again where the language's direction turned
+  (`followTheLanguagesDirection`).
   ([The mounted tree](../design/host/tree.md#the-mounted-tree))
 - **`MountedElement`** is one live element: its key, type, described
   properties, bound states, handlers and children in order. It applies a patch
@@ -253,9 +257,13 @@ toolkit's calls:
 - **`NodeType.pageTypes`**, **`viewlessTypes`** and **`slotTypes`** say which
   elements are the arrangements of pages a window shows, which have no view of
   their own, and which furnish a page's chrome rather than stand in its room.
-- **`LiveViews`** holds a host's views weakly by the number each was made
-  under: a callback crossing C names a view by its number and finds nothing
-  once it has gone. ([Views by number](../design/host/tree.md#views-by-number))
+- **`LiveViews`** (`Numbers/`, with the two below) holds a host's views weakly
+  by the number each was made under, and **`Numbered`** anything else a host hands across by number - a
+  signal's callback, a dialog's or a script's answer awaited - until it is
+  taken out or let go: a callback crossing C, Java or JavaScript names it by
+  its number and finds nothing once it has gone. Both draw from the process's
+  one count, **`HostNumbers`**, so no number is given twice.
+  ([Held by number](../design/host/tree.md#held-by-number))
 - **`ElementID.hostValue`** is a key as an event carries it: an author's name
   as its text, a counted key as its number.
 
@@ -347,8 +355,9 @@ measures only its native views.
   a contradiction.
   ([One axis of a slot](../design/host/layout.md#one-axis-of-a-slot))
 - **`MeasurementCache`** keeps the sizes one view measured, by the width
-  offered, four at most. The host forgets them upward from a change to the
-  nearest room, as `arrangedProperties` and `unmeasuredProperties` say.
+  offered, four at most. The host forgets them upward from a change, every
+  layout to the root - on AppKit to the nearest room - as
+  `arrangedProperties` and `unmeasuredProperties` say.
   ([Measured once](../design/host/layout.md#measured-once))
 - **`StackArithmetic`**, **`GridArithmetic`**, **`ZStackArithmetic`** and
   **`SingleChildArithmetic`** give each layout's `size` for an offered width

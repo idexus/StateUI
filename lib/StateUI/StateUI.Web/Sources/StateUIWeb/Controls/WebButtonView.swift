@@ -51,7 +51,7 @@ final class WebButtonView: WebDOMView, WebWordsView {
             return
         }
         guard opening == .arrow else {
-            listen("menu") { open() }
+            listenForMenu { open() }
             return
         }
 
@@ -65,7 +65,7 @@ final class WebButtonView: WebDOMView, WebWordsView {
             open()
         }
         self.arrow = arrow
-        listen("menu") { open() }
+        listenForMenu { open() }
     }
 
     /// Whether a button whose click opens its menu shows the `▾` saying so.
@@ -117,6 +117,8 @@ final class WebButtonView: WebDOMView, WebWordsView {
     override func detach() {
         opensMenu = nil
         picture?.detach()
+        arrow?.detach()
+        arrow = nil
         words.detach()
         super.detach()
     }

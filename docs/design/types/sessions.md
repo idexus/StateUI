@@ -73,8 +73,9 @@ nothing. Every scene and window offers its own, nearer.
 written in the application's `init`. Reading a `@State` is synchronous, so a
 kept value must be in memory before the first view is built, and a store is
 read key by key, each with the kind of value it holds. The host therefore
-asks for the keys as the application registers, reads exactly those, and
-hands back what it found before the first render.
+asks for the keys once it has started - after the application registers,
+before the first render - reads exactly those, and hands back what it found
+([render](../core/render.md)).
 
 A key left off the list is never read. State declared with it still saves,
 because a write knows its own key, so its value appears one launch late: the

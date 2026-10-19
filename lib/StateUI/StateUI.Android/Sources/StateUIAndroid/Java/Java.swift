@@ -268,6 +268,20 @@ public enum Java {
         return String(decoding: UnsafeBufferPointer(start: units, count: count), as: UTF16.self)
     }
 
+    /// A Java array of `texts`' strings, as a local reference: each string is let go once it stands in the array, so
+    /// however many there are, the array is the one reference left in the frame.
+    /// Design: docs/design/platforms/android/jni.md#local-references
+    static func strings(_ texts: [String]) -> jobjectArray? {
+        let array = jni.NewObjectArray(env, jsize(texts.count), JavaAPI.string, nil)
+        for (index, text) in texts.enumerated() {
+            let string = Java.string(text)
+            jni.SetObjectArrayElement(env, array, jsize(index), string)
+            jni.DeleteLocalRef(env, string)
+        }
+        check("an array of strings")
+        return array
+    }
+
     /// An array of `owner`'s objects, as a local reference.
     static func array(of owner: jclass, _ objects: [jobject?]) -> jobjectArray? {
         let array = jni.NewObjectArray(env, jsize(objects.count), owner, nil)

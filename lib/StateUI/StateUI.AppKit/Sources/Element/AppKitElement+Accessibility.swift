@@ -32,21 +32,14 @@ extension AppKitElement {
             accessibilityChildrenSuppressed = false
         }
 
-        let headingLevel = max(0, enumeration(.accessibilityHeading) ?? 0)
-        let carriesSemantics = string(.accessibilityLabel) != nil
-            || string(.accessibilityHint) != nil
-            || headingLevel > 0
+        // Met as the host layer says - by the author, or by words of its own or a tap - else as the view is.
+        let words = element.accessibilityWords
+        target.setAccessibilityElement(words.presence.map { $0 == .met } ?? defaults.isElement)
         // An element that answers a tap is a button to assistive technology,
         // pressed by the handler a click runs. See `AppKitHitTestView`.
         let pressable = events[.tapped] != nil && view is AppKitHitTestView
-        // The author says whether the view is hidden; an element is the opposite.
-        let authoredElement = value(.isAccessibilityHidden)?.bool.map { !$0 }
-        target.setAccessibilityElement(
-            excludesChildren
-                ? false
-                : (authoredElement ?? (carriesSemantics || pressable ? true : defaults.isElement)))
 
-        if headingLevel > 0 {
+        if words.headingLevel > 0 {
             target.setAccessibilityRole(NSAccessibility.Role(rawValue: "AXHeading"))
         } else if pressable {
             target.setAccessibilityRole(.button)

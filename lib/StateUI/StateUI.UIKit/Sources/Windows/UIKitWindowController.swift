@@ -30,6 +30,11 @@ final class UIKitWindowController {
     /// and dims those the user is not in, which their scene's active appearance tells.
     var onFrontMoved: ((UIWindowScene) -> Void)?
 
+    /// What the window's scene tells as UIKit sets out to give the window a new size, standing turned already: the
+    /// display is told then, before the window is laid out at that size.
+    /// Design: docs/design/platforms/uikit/runtime.md#the-environment
+    var onResizing: ((UIWindowScene) -> Void)?
+
     /// The scene's active appearance followed, while the window stands in it.
     private var frontWatch: (scene: UIWindowScene, registration: UITraitChangeRegistration)?
 
@@ -58,6 +63,7 @@ final class UIKitWindowController {
     /// iOS let the scene go, and its window with it; the session stays, for the scene to come back.
     func sceneLeft() {
         stopWatchingFront()
+        root.windowLeft()
         window?.isHidden = true
         window?.rootViewController = nil
         window = nil
@@ -70,6 +76,10 @@ final class UIKitWindowController {
         window.backgroundColor = background
         window.overrideUserInterfaceStyle = UIKitActToolkit.style(HostThemes.held)
         window.rootViewController = root
+        root.onResizing = { [weak self, weak scene] in
+            guard let scene else { return }
+            self?.onResizing?(scene)
+        }
         window.makeKeyAndVisible()
         self.window = window
         session = scene.session
@@ -168,161 +178,6 @@ final class UIKitWindowController {
         root.letGo()
         window?.isHidden = true
         window?.windowScene = nil
-    }
-}
-
-/// What a scene's window shows: the controller of the window's arrangement of pages, over the whole window - each
-/// page stands within the safe area its bars leave - the overlays laid over it, and the pages presented over it as
-/// sheets, each over the one before.
-/// Design: docs/design/platforms/uikit/pages.md#sheets
-@MainActor
-final class UIKitRootViewController: UIViewController, UIAdaptivePresentationControllerDelegate {
-    private var shown: UIViewController?
-    private var overlays: [UIView] = []
-
-    /// The sheets shown, the first presented by this controller, each next by the one before.
-    private var sheets: [UIViewController] = []
-
-    /// What the window does when the user took the top sheet away, handed how many stay.
-    var onSheetDismissed: ((Int) -> Void)?
-
-    /// The shortcuts the window's tree states - those giving way to typing left out while a field is typed into
-    /// - and what a pressed one does: UIKit holds a key command on a responder, not on a control, so the window's
-    /// root offers every one of them.
-    var shortcuts: (_ typing: Bool) -> [KeyboardShortcut] = { _ in [] }
-    var onShortcut: ((KeyboardShortcut) -> Void)?
-
-    /// The keys the views holding the keyboard take (`KeyPresses`), and what a pressed one does: offered before the
-    /// window's shortcuts, alone and with Shift.
-    var keys: () -> [Key] = { [] }
-    var onKey: ((KeyboardShortcut) -> Void)?
-
-    override var keyCommands: [UIKeyCommand]? {
-        let taken = keys().flatMap { key in [KeyModifiers(), .shift].map { KeyboardShortcut(key, modifiers: $0) } }
-        return taken.map { UIKitKeys.command($0, action: #selector(pressedKey(_:))) }
-            + shortcuts(UIKitFirstResponder.isTyping).filter { !taken.contains($0) }
-                .map { UIKitKeys.command($0, action: #selector(pressedShortcut(_:))) }
-    }
-
-    @objc func pressedKey(_ command: UIKeyCommand) {
-        UIKitKeys.shortcut(of: command).map { onKey?($0) }
-    }
-
-    @objc func pressedShortcut(_ command: UIKeyCommand) {
-        UIKitKeys.shortcut(of: command).map { onShortcut?($0) }
-    }
-
-    /// What a menu's entry stating a shortcut does, chosen from its menu or pressed on the menu bar: the entry the
-    /// command is known by chosen.
-    var onMenuEntry: ((UInt64) -> Void)?
-
-    @objc func chooseMenuEntry(_ command: UIKeyCommand) {
-        (command.propertyList as? NSNumber).map { onMenuEntry?($0.uint64Value) }
-    }
-
-    /// The sheets last asked for before the window stood on screen, or while a sheet moved: UIKit presents over a
-    /// controller only once it stands, and over none whose sheet is still coming or going.
-    /// Design: docs/design/platforms/uikit/pages.md#sheets
-    private var waiting: (sheets: [UIViewController], animated: Bool)?
-    private var appeared = false
-
-    /// Whether a presentation or a dismissal this controller asked for has not ended.
-    private var moving = false
-
-    override func loadView() {
-        view = UIView()
-        view.backgroundColor = .systemBackground
-    }
-
-    /// Shows `arrangement` in place of the one before.
-    func show(_ arrangement: UIViewController?) {
-        guard arrangement !== shown else { return }
-        if let shown {
-            shown.willMove(toParent: nil)
-            shown.view.removeFromSuperview()
-            shown.removeFromParent()
-        }
-        shown = arrangement
-        guard let arrangement else { return }
-        addChild(arrangement)
-        arrangement.view.frame = view.bounds
-        arrangement.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.insertSubview(arrangement.view, at: 0)
-        arrangement.didMove(toParent: self)
-    }
-
-    /// Lays `overlays` over the arrangement, the first lowest, within the safe area, in place of those before.
-    func lay(_ overlays: [UIView]) {
-        guard !overlays.elementsEqual(self.overlays, by: ===) else { return }
-        for leaving in self.overlays where !overlays.contains(where: { $0 === leaving }) { leaving.removeFromSuperview() }
-        self.overlays = overlays
-        for overlay in overlays { view.addSubview(overlay) }
-        view.setNeedsLayout()
-    }
-
-    /// Presents `sheets` over the arrangement by the host layer's rule (`SheetChange`): those shown and still asked
-    /// for stay, the rest go from the top, and each new one comes over the one before once that one stands - UIKit
-    /// presents over a controller only then.
-    func present(_ sheets: [UIViewController], animated: Bool) {
-        guard appeared, !moving else { return waiting = (sheets, animated) }
-        let change = SheetChange(from: self.sheets, to: sheets) { $0 === $1 }
-        let (common, coming) = (change.kept, change.coming)
-        guard common < self.sheets.count else { return presentEach(coming, animated: animated) }
-        let presenter = common == 0 ? self : self.sheets[common - 1]
-        self.sheets = Array(self.sheets.prefix(common))
-        guard presenter.presentedViewController != nil else { return presentEach(coming, animated: animated) }
-        moving = true
-        presenter.dismiss(animated: animated && coming.isEmpty) { [weak self] in
-            self?.moved { self?.presentEach(coming, animated: animated) }
-        }
-    }
-
-    private func presentEach(_ coming: [UIViewController], animated: Bool) {
-        guard let sheet = coming.first else { return }
-        let presenter = sheets.last ?? self
-        sheet.modalPresentationStyle = .pageSheet
-        sheet.presentationController?.delegate = self
-        sheets.append(sheet)
-        moving = true
-        presenter.present(sheet, animated: animated && coming.count == 1) { [weak self] in
-            self?.moved { self?.presentEach(Array(coming.dropFirst()), animated: animated) }
-        }
-    }
-
-    /// A presentation or a dismissal ended: the sheets asked for meanwhile come next, else `next`.
-    private func moved(else next: () -> Void) {
-        moving = false
-        guard let (sheets, animated) = waiting else { return next() }
-        waiting = nil
-        present(sheets, animated: animated)
-    }
-
-    /// Tells nobody of its sheets any more: they leave with the window.
-    func letGo() {
-        onSheetDismissed = nil
-        sheets = []
-        waiting = nil
-    }
-
-    /// The user took the top sheet away - swiped it down: the window hears how many stay.
-    func presentationControllerDidDismiss(_ presentation: UIPresentationController) {
-        guard let index = sheets.firstIndex(where: { $0 === presentation.presentedViewController }) else { return }
-        sheets.removeSubrange(index...)
-        onSheetDismissed?(index)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        appeared = true
-        if let (sheets, animated) = waiting {
-            waiting = nil
-            present(sheets, animated: animated)
-        }
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        for overlay in overlays { overlay.frame = view.bounds.inset(by: view.safeAreaInsets) }
     }
 }
 #endif

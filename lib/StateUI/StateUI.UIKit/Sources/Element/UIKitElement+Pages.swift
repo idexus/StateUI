@@ -73,10 +73,14 @@ extension UIKitElement {
     func composeChrome() {
         switch type {
         case .page:
-            if let controller { chrome.show(on: controller.navigationItem) }
+            if let controller { chrome.show(on: controller.navigationItem, buttons: &barButtonsSaid) }
         case .tabView:
-            if let controller { chrome.show(on: controller.navigationItem) }
-            (controller as? UIKitTabBarController)?.showsTheStacksBar = element.showsTheStacksBar
+            if let controller { chrome.show(on: controller.navigationItem, buttons: &barButtonsSaid) }
+            let tabs = controller as? UIKitTabBarController
+            tabs?.showsTheStacksBar = element.showsTheStacksBar
+            // A tab bar wears the colours of the bar on its path, which a theme or a state moves on an element above.
+            // Design: docs/design/host/pages.md#the-bar-a-path-declares
+            tabs?.showColors(background: element.barColors.background, foreground: element.barColors.foreground)
             children.forEach { $0.composeChrome() }
         case .navigationStack:
             (controller as? UIKitNavigationController)?.showTopsBar()
@@ -112,7 +116,6 @@ extension UIKitElement {
                 },
                 requested: value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
-            tabs.showColors(background: element.barColors.background, foreground: element.barColors.foreground)
         case .splitView:
             guard let split = controller as? UIKitSplitViewController else { return }
             split.show(sidebar: children.first?.controller, detail: children.dropFirst().first?.controller)

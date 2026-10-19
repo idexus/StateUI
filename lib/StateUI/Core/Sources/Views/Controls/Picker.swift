@@ -105,12 +105,6 @@ public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentE
         onEvent(PickerContract.opened, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onOpened(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onOpened(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
-    }
-
     /// The user has closed it - by a choice, a click outside or the platform's
     /// own dismissal.
     public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
@@ -122,10 +116,18 @@ public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentE
     public func onClosed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         onEvent(PickerContract.closed, gate: gate, handler)
     }
+}
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClosed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onClosed(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
+extension Picker {
+    /// `isOpen` from a state, `$x`, both ways: the host opens and closes the list as the state stands, and the
+    /// user's opening and closing come back into it; no view is rebuilt for it.
+    public func isOpen(_ state: Binding<Bool>) -> Modified {
+        opening(PickerContract.isOpen, by: state, opened: PickerContract.opened, closed: PickerContract.closed)
+    }
+
+    /// `placeholder` from a state, `$x`: the host writes each new text, and no
+    /// view is rebuilt for it.
+    public func placeholder(_ state: Binding<String>) -> Modified {
+        words(PickerContract.placeholder, by: state)
     }
 }

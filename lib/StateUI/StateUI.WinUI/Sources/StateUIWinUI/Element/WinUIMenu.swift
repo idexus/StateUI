@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+import CStateUIWinUI
 
 /// A menu as the relay takes it: its entries flat - an item, a separator, a submenu opening and closing - each with
 /// its caption, whether it can be chosen, an item's picture and whether it destroys something, and what each item
@@ -64,31 +65,30 @@ struct WinUIMenu {
         }
     }
 
-    /// The relay's kinds: an item 0, a separator 1, a submenu opening 2 and closing 3, an item standing unchecked 4
-    /// or checked 5.
+    /// Each entry as the relay takes it, flat (`StateUIMenuEntry`).
     private mutating func add(_ entries: [MenuEntry]) {
         for entry in entries {
             switch entry.kind {
             case .item:
-                append(entry.isOn.map { $0 ? 5 : 4 } ?? 0, entry.title, entry.isEnabled, entry.identifier,
+                append(entry.isOn.map { $0 ? .itemOn : .itemOff } ?? .item, entry.title, entry.isEnabled, entry.identifier,
                        icon: WinUIPictures.lines(entry.icon), destructive: entry.isDestructive,
                        shortcut: entry.keyboardShortcut)
                 actions.append { [weak element = entry.element] in element?.winUI.choose() }
             case .separator:
-                append(1, "", true, nil)
+                append(.separator, "", true, nil)
             case .submenu:
-                append(2, entry.title, entry.isEnabled, entry.identifier)
+                append(.menuOpening, entry.title, entry.isEnabled, entry.identifier)
                 add(entry.entries)
-                append(3, "", true, nil)
+                append(.menuClosing, "", true, nil)
             }
         }
     }
 
     private mutating func append(
-        _ kind: Int32, _ title: String, _ isEnabled: Bool, _ identifier: String?, icon: [String] = [],
+        _ kind: StateUIMenuEntry, _ title: String, _ isEnabled: Bool, _ identifier: String?, icon: [String] = [],
         destructive isDestructive: Bool = false, shortcut: KeyboardShortcut? = nil
     ) {
-        kinds.append(kind)
+        kinds.append(kind.rawValue)
         titles.append(title)
         enabled.append(isEnabled)
         identifiers.append(identifier ?? "")

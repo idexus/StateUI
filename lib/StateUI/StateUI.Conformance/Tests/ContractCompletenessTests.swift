@@ -46,6 +46,37 @@ final class ContractCompletenessTests: XCTestCase {
         }
     }
 
+    /// A FAMILY PROVES ITS OWN CONTRACT ALONE: an element's family the element and its own members, a tier's its
+    /// members on their wearers. Another contract's member a case leans on is what it needs - a verdict standing in
+    /// another family's file would outlive that family's revision, an old ❌ staying in its cell after the fix.
+    func testEveryCaseProvesItsOwnFamilysContractAlone() {
+        var foreign: [String] = []
+        for family in Families.all {
+            let isTier = LibraryContracts.tiers.contains { $0.name == family.name }
+            for each in family.cases {
+                for covered in each.proves {
+                    let own = isTier ? covered.tier == family.name : covered.element == family.name && covered.tier == nil
+                    if !own { foreign.append("\(family.name)/\(each.name): \(covered)") }
+                }
+            }
+        }
+        XCTAssertEqual(foreign, [], "\(foreign.count) cases prove another family's contract")
+    }
+
+    /// EVERY VIEW STANDS ALONE ON A PAGE: the family of each element wearing the View tier proves the host stands it
+    /// in a window by itself, laid out at a size - what says the host makes it at all.
+    func testEveryViewsFamilyStandsItAloneOnAPage() {
+        let views = LibraryContracts.elements.filter { element in
+            element.tiers.contains { ObjectIdentifier($0) == ObjectIdentifier(ViewContract.self) }
+                || element.worn.contains { ObjectIdentifier($0) == ObjectIdentifier(ViewContract.self) }
+        }
+        XCTAssertGreaterThanOrEqual(views.count, 20, "almost no element wears the View tier")
+        let alone = views.map { $0.name }.filter { name in
+            !(Families.all.first { $0.name == name }?.cases.contains { $0.name.hasPrefix("standsAlone") } ?? false)
+        }
+        XCTAssertEqual(alone, [], "these views' families never stand them alone on a page")
+    }
+
     /// Every case a family holds covers something, and has a name no other case of the family has.
     func testEveryCaseCoversSomethingUnderANameOfItsOwn() {
         for family in Families.all {

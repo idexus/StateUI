@@ -171,6 +171,9 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         if oval { needsDisplay = true }
     }
 
+    /// The whole of the view under a transform, which AppKit leaves out of what it takes for visible.
+    override var visibleRect: NSRect { drawnRect(visible: super.visibleRect) }
+
     override func draw(_ dirtyRect: NSRect) {
         if outlineShape == .ellipse {
             let inset = (outline?.width ?? 0) / 2
@@ -247,6 +250,7 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
 
     override func mouseEntered(with event: NSEvent) {
         super.mouseEntered(with: event)
+        guard isEnabled else { return }
         reach = PressedFill.underPointer
     }
 
@@ -256,6 +260,8 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
     }
 
     override func mouseDown(with event: NSEvent) {
+        // A disabled button hears nothing: AppKit's own check, which this override would otherwise step past.
+        guard isEnabled else { return super.mouseDown(with: event) }
         onPressed?()
         reach = PressedFill.pressed
         switch opening {

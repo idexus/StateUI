@@ -119,6 +119,108 @@ final class AppKitPinchRecognizer: NSMagnificationGestureRecognizer {
     }
 }
 
+/// AppKit's trackpad rotation, each step told by the degrees clockwise since the last - the host layer's
+/// `RotationStep`: AppKit measures it counterclockwise, in radians.
+@MainActor
+final class AppKitRotationRecognizer: NSRotationGestureRecognizer {
+    private let hearing: AppKitHearing
+    private let actionTarget: AppKitGestureAction
+    private var steps = RotationStep()
+
+    init(hearing: @escaping AppKitHearing) {
+        self.hearing = hearing
+        actionTarget = AppKitGestureAction { _ in }
+        super.init(target: actionTarget, action: #selector(AppKitGestureAction.invoke(_:)))
+        actionTarget.action = { [weak self] recognizer in
+            guard let self, let recognizer = recognizer as? NSRotationGestureRecognizer else { return }
+            recognized(recognizer)
+        }
+        delaysRotationEvents = false
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("AppKitRotationRecognizer is created in code")
+    }
+
+    /// A rotation at `phase`, turned `degrees` clockwise since it began.
+    func rotated(_ phase: GesturePhase, degrees: Double) {
+        hearing(.rotation(phase, degrees: steps.step(phase, degrees: degrees)))
+    }
+
+    private func recognized(_ recognizer: NSRotationGestureRecognizer) {
+        let phase: GesturePhase? = switch recognizer.state {
+        case .began: .began
+        case .changed: .changed
+        case .ended: .ended
+        case .cancelled, .failed: .cancelled
+        default: nil
+        }
+        guard let phase else { return }
+        rotated(phase, degrees: -Double(recognizer.rotationInDegrees))
+    }
+}
+
+/// A press dragged with ⌥ over a view two fingers move: the press and the view's middle, from the top left, said
+/// as the host layer reads them - two fingers, the press and its mirror. A press without ⌥ it leaves at once, and
+/// a pan waits for it to.
+/// Design: docs/design/host/runtime.md#two-fingers-from-one-pointer
+final class AppKitMirroredRecognizer: NSGestureRecognizer {
+    private let hearing: AppKitHearing
+
+    init(hearing: @escaping AppKitHearing) {
+        self.hearing = hearing
+        super.init(target: nil, action: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("AppKitMirroredRecognizer is created in code")
+    }
+
+    /// Whether a press with `flags` held is two fingers.
+    static func takes(_ flags: NSEvent.ModifierFlags) -> Bool {
+        flags.contains(.option)
+    }
+
+    /// The press at `phase`, at `at`, the view's middle at `middle`: the host's entry.
+    func mirrored(_ phase: GesturePhase, at: Point, middle: Point) {
+        hearing(.mirrored(phase, at: at, middle: middle))
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        guard Self.takes(event.modifierFlags) else { return state = .failed }
+        state = .began
+        said(.began, event)
+    }
+
+    override func mouseDragged(with event: NSEvent) {
+        guard state == .began || state == .changed else { return }
+        state = .changed
+        said(.changed, event)
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        guard state == .began || state == .changed else { return }
+        said(.ended, event)
+        state = .ended
+    }
+
+    override func shouldBeRequiredToFail(by other: NSGestureRecognizer) -> Bool {
+        other is NSPanGestureRecognizer
+    }
+
+    /// `event` at `phase`, where it is in the view from its top left.
+    private func said(_ phase: GesturePhase, _ event: NSEvent) {
+        guard let view else { return }
+        let at = view.convert(event.locationInWindow, from: nil)
+        let (width, height) = (Double(view.bounds.width), Double(view.bounds.height))
+        mirrored(
+            phase, at: Point(Double(at.x), view.isFlipped ? Double(at.y) : height - Double(at.y)),
+            middle: Point(width / 2, height / 2))
+    }
+}
+
 /// Pointer tracking that can sit on any native control without replacing it or intercepting its button action: the
 /// pointer coming, moving, pressing, letting go and leaving, where it is from the view's top left.
 @MainActor

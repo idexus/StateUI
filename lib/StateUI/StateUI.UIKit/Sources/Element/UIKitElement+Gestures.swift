@@ -16,9 +16,11 @@ extension UIKitElement {
         guard hearing != (listening?.hearing ?? []) else { return }
         let listening = listening ?? UIKitListening(view: view)
         listening.onHeard = { [weak self] heard in
-            guard let self, let host else { return }
-            element.hear(heard, in: host.runtime)
+            guard let self, let host else { return false }
+            return element.hear(heard, in: host.runtime)
         }
+        listening.handWay = { [weak self] in self?.element.handWay }
+        listening.handItems = { [weak self] in (self?.element.itemDrag, self?.element.holdsItem ?? false) }
         listening.listen(for: hearing)
         self.listening = hearing.isEmpty ? nil : listening
     }

@@ -19,8 +19,9 @@ when the core needs one, the handlers the render created, and then the acts -
 on the interface their handler has just changed. A turn asked for inside a
 turn runs when it ends, and an event raised while a patch applies waits for
 the patch. What the renderer adds is WinUI's, as the runtime's
-`HostPresenter`: the window, its sheets and its chrome shown after each render
-and after a frame that moved the chrome, and the acts performed.
+`HostPresenter`: the window, its sheets and its chrome shown after a render
+that touched the chrome and after a frame that moved it, and the acts
+performed.
 
 A view is let go of in the turn after its element left: its `deinit` is
 `MainActor`'s, and a release outside a task's context puts it in the UI
@@ -31,7 +32,9 @@ executor's queue, which posts a turn. The WinUI element goes with it.
 The head's `main` names the application and hands the thread to
 `StateUIWinUI.run()`, which loads the Windows App SDK the application carries
 and starts WinUI's `Application` there; WinUI's loop runs that thread until
-the last window closes. Its `OnLaunched` calls the host, whose first act is to
+the last window closes, and `run` answers the code WinUI ended with, which
+the head ends the process with - it holds no `@discardableResult`, so a head
+that drops it is warned. Its `OnLaunched` calls the host, whose first act is to
 claim that thread as the UI thread: `claimUIThread()` makes StateUI's UI
 executor `MainActor`'s and drains it there, and every native call after it
 asserts that isolation rather than assuming a thread.
@@ -213,12 +216,27 @@ one before is answered. A choice of actions is a
 button a choice, the dangerous one first, and the pressed caption is the
 answer - the cancelling one too; a dialog dismissed any other way, Escape
 among them, answers that nothing was chosen. A prompt's field takes the
-placeholder, the most characters and the keyboard its purpose asks for.
+placeholder, the keyboard its purpose asks for and the most it may hold - as
+WinUI's `MaxLength`, in UTF-16 units, where a field of the tree counts
+characters ([controls](controls.md)).
 
 A dialog needs its window's `XamlRoot`, which a window opened a moment ago -
 a page asking as it is made - does not have until WinUI has loaded it. The
 question is made at once and shown on the content's `Loaded`; answering it
 "not chosen" there would lose it without the user ever seeing it.
+
+WinUI shows one `ContentDialog` over a window at a time: a dialog of the
+application's own standing there makes `ShowAsync` throw, and the question
+fails with WinUI's words through `answered`'s failure, as a dialog whose
+showing ends in an error does.
+
+A window can go before the user answered what stands over it - closed by
+the tree in the turn its page asked, before WinUI loaded it, or later by the
+tree or the user. The host remembers the window each dialog stands over; as
+the window leaves, the question stands again over the window the user is in
+then (`HostActPerformer.askAgain`) and the old dialog's answer counts for
+nothing. Otherwise its `Loaded` never comes, the queue waits on it, and every
+later question with it.
 
 ## Files
 

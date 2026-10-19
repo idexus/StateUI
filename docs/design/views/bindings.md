@@ -36,13 +36,16 @@ file of the tier or the control it belongs to. `twin` reads the member's
 journey, anything else is plain - the contract decides, once, and
 `testEveryTwinIsDecidedByItsContract` refuses a twin written straight over
 `journey` or `plain`. A control's own value carried both ways (`mode: .inOut`)
-and a scroller's offset stand apart.
+and a scroller's offset stand apart. A picker's `isOpen($x)` goes both ways
+through its events: `opening(_:by:opened:closed:)` is the twin with the
+picker's `opened` and `closed` writing the state, which every host raises.
 A composed view's twins read the state in its content instead: a
 `PositionIndicator`'s row is built again as the state changes.
 `twin` takes a `LaneValue` and `words` a `String`, so text cannot take the
 door for numbers ([what a host reads lanes as](../core/state.md#what-a-host-reads-lanes-as)).
-`testEveryValueModifierHasABindingTwin` holds the two forms together: a value
-modifier added without its twin is named there. The few allowed out are listed
+`testEveryValueModifierHasABindingTwin` holds the two forms together, file by
+file - a twin stands beside its value form, so one control's twin never hides
+another's missing one: a value modifier added without its twin is named there. The few allowed out are listed
 with their reason - a value the host cannot be handed whole (a brush, a
 picture, a date, a shape, a transform, a law, a run of numbers), a name rather
 than a value (a style key, a font family, a radio group), a rectangle, and the
@@ -110,8 +113,8 @@ following it, a label - for no render at all. What it costs is measuring the
 label again on the frame the words change, which any changed caption costs.
 
 There is no driven `text` on the `TextualElement` tier, though the value form sits
-there. A Text's and a Button's text is `.out`, written by the host and
-reported by nobody. The text of a `TextField`, a `TextEditor` and a
+there. A Text's, a Button's and a RadioButton's text is `.out`, written by the
+host and reported by nobody. The text of a `TextField`, a `TextEditor` and a
 `SearchField` goes both ways: the user types into it, and the typed words land
 on the state whole as the host's own write. The two directions differ per
 control, so the driven text is written per control.

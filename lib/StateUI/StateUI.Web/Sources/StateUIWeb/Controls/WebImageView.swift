@@ -26,6 +26,8 @@ final class WebImageView: WebDOMView {
     init() {
         super.init(tag: "img")
         attribute("alt", "")
+        // Not the browser's to drag: a picture moves with nothing until the application offers a drag.
+        attribute("draggable", "false")
         attribute("class", "stateui-picture")
         listen("error") { [weak self] in self?.tryNext() }
         listen("load") { [weak self] in self?.sizeAsLoaded() }
@@ -40,6 +42,7 @@ final class WebImageView: WebDOMView {
         let refilled = (aspect == .fill) != (self.aspect == .fill)
         self.aspect = aspect
         if refilled { for name in Self.reached { style(name, laid[name] ?? nil) } }
+        holdSize()
         guard picture?.identity != given else { return restretched ? showFile() : () }
         given = picture?.identity
         attribute("data-source", picture?.file ?? picture.map { if case .icon(let icon) = $0 { "icon:\(icon)" } else { "" } })
@@ -89,9 +92,18 @@ final class WebImageView: WebDOMView {
     /// inside any room it is given.
     /// Design: docs/design/platforms/web/controls.md#pictures
     private func showFile() {
+        holdSize()
         guard let shown else { return attribute("src", nil) }
         let unproportioned = aspect == .stretch && shown.hasSuffix(".svg")
         attribute("src", "Images/" + shown + (unproportioned ? "#svgView(preserveAspectRatio(none))" : ""))
+    }
+
+    /// A drawing filling its room holds no size of its own: WebKit, holding an SVG's size, lays the drawing out at the
+    /// box's and fits it whole inside, so `cover` would cover nothing. The room it fills gives it its size.
+    /// Design: docs/design/platforms/web/controls.md#pictures
+    private func holdSize() {
+        let drawing = shown?.lowercased().hasSuffix(".svg") ?? false
+        style("contain", aspect == .fill && drawing ? "none" : nil)
     }
 
     /// A filling picture reaches two pixels past each edge of its room, under its parent's clip: WebKit draws a

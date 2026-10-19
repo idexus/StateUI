@@ -16,7 +16,7 @@ final class WinUIShapeView: WinUIView {
 
     init(ellipse: Bool) {
         isEllipse = ellipse
-        super.init { _ in stateui_winui_shape_make(ellipse ? StateUIOutlineEllipse : StateUIOutlineRectangle) }
+        super.init { _ in stateui_winui_shape_make(ellipse ? .ellipse : .rectangle) }
     }
 
     /// Paints the shape, written only where it differs from what was; its corners round as far as its size holds
@@ -27,7 +27,7 @@ final class WinUIShapeView: WinUIView {
 
         painted = (outline, fill, stroke, width)
         let rounds = outline != .rectangle && outline != .ellipse
-        paint("shape", followsSize: fill.followsSize || stroke.followsSize || rounds) { [handle] size in
+        paint(.shape, followsSize: fill.followsSize || stroke.followsSize || rounds) { [handle] size in
             let radius = outline.relay(width: size.width, height: size.height).radius
             fill.withRelayBrush(over: size) { fill in
                 stroke.withRelayBrush(over: size) { stroke in

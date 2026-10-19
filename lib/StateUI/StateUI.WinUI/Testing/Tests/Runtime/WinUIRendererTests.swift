@@ -22,6 +22,21 @@ struct CounterPage: View {
 }
 
 final class WinUIRendererTests: XCTestCase {
+    /// Words the relay writes are read whole though they grow between asking their length and writing them - a fact
+    /// of the environment changing meanwhile: read again into room enough, never cut at the first length.
+    func testWordsThatGrowWhileReadAreReadWhole() {
+        var answers = [String(repeating: "a", count: 300), String(repeating: "b", count: 400)]
+        let read = WinUIStrings.read { buffer, capacity in
+            let words = Array((answers.count > 1 ? answers.removeFirst() : answers[0]).utf8CString.dropLast())
+            if let buffer, capacity > 0 {
+                for index in 0..<min(words.count, Int(capacity) - 1) { buffer[index] = words[index] }
+                buffer[min(words.count, Int(capacity) - 1)] = 0
+            }
+            return Int32(words.count)
+        }
+        XCTAssertEqual(read, String(repeating: "b", count: 400))
+    }
+
     /// A page's controls are WinUI's, shown in a window: the words it describes are the words WinUI holds.
     func testThePageShowsItsControlsInAWindow() {
         onUIThread {
@@ -71,7 +86,7 @@ final class WinUIRendererTests: XCTestCase {
     func testEveryCallbackTheRelayMakesIsSet() {
         let fields = Mirror(reflecting: WinUICallbacks.table).children
 
-        XCTAssertEqual(fields.count, 35, "the relay's callbacks changed; this test names how many there are")
+        XCTAssertEqual(fields.count, 38, "the relay's callbacks changed; this test names how many there are")
         for field in fields {
             let value = Mirror(reflecting: field.value)
             XCTAssertFalse(value.displayStyle == .optional && value.children.isEmpty, "\(field.label ?? "?") is not set")
@@ -129,7 +144,7 @@ final class WinUIRendererTests: XCTestCase {
         onUIThread {
             let host = WinUIRenderer.running { EnvironmentPage() }
             var bytes = [CChar](repeating: 0, count: 8)
-            _ = stateui_winui_facts(StateUIFactsTheme, nil, &bytes, 8)
+            _ = stateui_winui_facts(.theme, nil, &bytes, 8)
             let dark = bytes[0] == 0x31
 
             XCTAssertEqual(host.views(WinUITextView.self).map(\.text), ["Windows desktop", dark ? "dark" : "light"])

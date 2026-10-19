@@ -31,10 +31,14 @@ namespace stateui {
             explicit StateUIApplication(bool embedded) : embedded(embedded) {}
 
             void OnLaunched(xaml::LaunchActivatedEventArgs const &) {
-                if (embedded) return;
-                Resources().MergedDictionaries().Append(controls::XamlControlsResources());
-                queue = winrt::Microsoft::UI::Dispatching::DispatcherQueue::GetForCurrentThread();
-                callbacks.launched();
+                try {
+                    if (embedded) return;
+                    Resources().MergedDictionaries().Append(controls::XamlControlsResources());
+                    queue = winrt::Microsoft::UI::Dispatching::DispatcherQueue::GetForCurrentThread();
+                    callbacks.launched();
+                } catch (...) {
+                    report("launching");
+                }
             }
 
             xaml::Markup::IXamlType GetXamlType(winrt::Windows::UI::Xaml::Interop::TypeName const &type) {
@@ -115,7 +119,7 @@ extern "C" int32_t stateui_winui_run(StateUIWinUICallbacks const *given) {
     try {
         loadRuntime();
         winrt::init_apartment(winrt::apartment_type::single_threaded);
-        xaml::Application::Start([](auto &&) { winrt::make<StateUIApplication>(false); });
+        xaml::Application::Start(guarded("starting the application", [](auto &&) { winrt::make<StateUIApplication>(false); }));
         return 0;
     } catch (...) {
         return report("starting WinUI");
@@ -173,7 +177,7 @@ extern "C" void stateui_winui_hold_frames(bool hold) {
     try {
         if (hold) {
             rendering = xaml::Media::CompositionTarget::Rendering(
-                [](IInspectable const &, IInspectable const &) { callbacks.frame(); });
+                guarded("handling Rendering", [](IInspectable const &, IInspectable const &) { callbacks.frame(); }));
         } else {
             xaml::Media::CompositionTarget::Rendering(rendering);
         }

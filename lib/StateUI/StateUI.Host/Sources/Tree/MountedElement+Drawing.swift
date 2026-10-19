@@ -11,6 +11,11 @@ extension MountedElement {
         .translationX, .translationY, .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY, .pivotX, .pivotY,
     ]
 
+    /// What is drawn over the view and read by nothing it holds - its opacity, its drawing, its transform: a frame
+    /// moving them alone arranges none of its children.
+    /// Design: docs/design/host/tree.md#a-frame-arranges-what-moved
+    public static let drawnOverProperties = transformProperties.union([.opacity, .drawing])
+
     /// How the view is moved, turned and scaled: `scale` multiplies both axes on top of `scaleX` and `scaleY`, and
     /// it turns about its middle where the tree says no pivot.
     public var drawingTransform: HostDrawingTransform {

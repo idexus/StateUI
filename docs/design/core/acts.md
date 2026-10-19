@@ -216,7 +216,9 @@ row - and nothing happens where no screen reader runs.
 An event the host raises by name has no element behind it - connectivity
 changing, the battery reporting - so the application declares it in an
 `ApplicationTier`, registers the raise with the host, and subscribes with
-`HostEvents.on`. A raise reaches the subscriptions by the member's name.
+`HostEvents.on`. A raise reaches the subscriptions of its member, told apart
+by its contract and its name together (`EventMember`), so two tiers may name an
+event alike.
 `HostBoundary.raise` is typed by the member, so a raise of another shape does
 not compile, and the values arrive as the types the member declares. A raise
 is one door in from any thread, as a post is (`RaisedEvents`): its values are
@@ -226,6 +228,4 @@ subscription order, each started on `MainActor` exactly as a control's handler
 is, from the list as it stood when the raise was delivered: a handler that
 cancels a subscription changes the next raise, not this one. Subscription ids
 are never reused, so a cancelled subscription cannot take a newer listener
-with it. A raise nobody subscribed to is an ordinary one, and prefixing event
-names with the application's own keeps them from ever meeting one this library
-adds.
+with it. A raise nobody subscribed to is an ordinary one.

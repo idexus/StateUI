@@ -416,6 +416,8 @@ extension WinUIDriver {
             return words.isEmpty ? nil : .string(words)
         case ("barIcon", _): return Self.picture(try read(window().titleBar, "icon"), named: element, by: .barIcon)
         case ("showsSidebar", let split as WinUISplitView): return (try read(split.sidebar, "paneOpen") == "1").propValue
+        case ("sidebarOverlays", let split as WinUISplitView):
+            return (try read(split.sidebar, "paneBeside") == "0").propValue
         case ("sidebarBackground", let split as WinUISplitView): return Self.ground(try read(split.sidebar, "paneBackground"))
         case ("flyoutBackground", let split as WinUISplitView):
             return Self.ground(try read(split.sidebar, "overlayPaneBackground"))

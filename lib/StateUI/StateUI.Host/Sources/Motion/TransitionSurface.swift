@@ -35,6 +35,9 @@
         case .zStack:
             return property == .padding || layoutBoxProperties.contains(property)
 
+        case .layoutEngine:
+            return layoutBoxProperties.contains(property)
+
         case .scrollView:
             return property == .padding || layoutBoxProperties.contains(property)
 
@@ -95,7 +98,7 @@
         .grid, .hStack, .image, .itemsView, .text, .line,
         .path, .picker, .polygon, .polyline, .progressBar, .radioButton,
         .rectangle, .scrollView, .searchField, .slider,
-        .stepper, .switch, .timePicker, .vStack, .zStack,
+        .stepper, .switch, .timePicker, .vStack, .zStack, .layoutEngine,
     ]
 
     private static let shapeTypes: Set<NodeType> = [

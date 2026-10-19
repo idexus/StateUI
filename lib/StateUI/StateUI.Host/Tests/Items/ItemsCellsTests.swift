@@ -29,6 +29,19 @@ private struct ListPage: View {
     }
 }
 
+/// How many items the shrinking list shows, which a test lowers.
+private enum Shrinking {
+    nonisolated(unsafe) static var count = 10
+}
+
+private struct ShrinkingApplication: Application {
+    var body: some Scene { WindowGroup { ShrinkingPage() } }
+}
+
+private struct ShrinkingPage: View {
+    var body: some View { ItemsView(0..<Shrinking.count) { Text("\($0)") } }
+}
+
 /// A native cell as the host layer holds it.
 @MainActor
 private final class Cell: ItemsHolding {
@@ -88,13 +101,27 @@ final class ItemsCellsTests: XCTestCase {
         XCTAssertNil(cells.item("51"))
     }
 
-    /// A cell asked for an entry already built takes it without a render: a scroll costs a render a reach, not one
-    /// a cell.
+    /// A cell asked for an entry already built, half a reach from the built end, takes it without a render: a scroll
+    /// costs a render a half reach, not one a cell.
     func testAnEntryWithinReachIsHeldWithoutARender() {
         cells.hold("0", in: Cell())
         let renders = runtime.core.tally.renders
-        for identity in 1...8 { cells.hold("\(identity)", in: Cell()) }
+        for identity in 1...4 { cells.hold("\(identity)", in: Cell()) }
         XCTAssertEqual(runtime.core.tally.renders, renders)
+    }
+
+    /// A cell coming within half a reach of the entries built asks for the next ones before it finds one unbuilt:
+    /// each render builds half a reach, twice as often, rather than a whole reach at once.
+    func testACellHalfAReachFromTheBuiltEndBuildsTheNext() {
+        cells.hold("0", in: Cell())
+        for identity in 1...4 { cells.hold("\(identity)", in: Cell()) }
+        XCTAssertNil(cells.item("9"), "a reach of eight around the first cell")
+        let renders = runtime.core.tally.renders
+
+        cells.hold("5", in: Cell())
+
+        XCTAssertEqual(runtime.core.tally.renders, renders + 1, "built already, and half a reach from the end")
+        XCTAssertNotNil(cells.item("13"), "a reach around every cell held")
     }
 
     /// A cell that ended showing its entry tells the tree nothing at once; the entry leaves once the cells moved out
@@ -113,6 +140,49 @@ final class ItemsCellsTests: XCTestCase {
         XCTAssertNotNil(cells.item("60"))
     }
 
+    /// The item the program scrolled to is stood again after every pass while a cell waits for its entry - one
+    /// measured as it comes moves the items after it - once more as the last entry comes, and then let go.
+    func testAnItemScrolledToStandsAgainWhileACellWaitsForItsEntry() {
+        let waiting = Cell()
+        cells.hold("79", in: waiting)
+        cells.hold("80", in: Cell())
+        waiting.shown = nil
+        cells.scroll(to: "80", anchor: .start)
+
+        XCTAssertEqual(cells.laidOut(), ItemsScrollTarget(identity: "80", anchor: .start), "a cell waits")
+        XCTAssertEqual(cells.laidOut(), ItemsScrollTarget(identity: "80", anchor: .start), "and waits still")
+        cells.childrenChanged()
+        XCTAssertEqual(cells.laidOut(), ItemsScrollTarget(identity: "80", anchor: .start), "its entry came")
+        XCTAssertNil(cells.laidOut(), "none waits any more")
+    }
+
+    /// The item scrolled to is held until a cell shows its own entry, though no cell waits for one: the cells near
+    /// the place it was scrolled to may come after the pass.
+    func testAnItemScrolledToIsHeldUntilItsOwnCellShowsIt() {
+        cells.hold("0", in: Cell())
+        cells.scroll(to: "90", anchor: .start)
+        XCTAssertEqual(cells.laidOut(), ItemsScrollTarget(identity: "90", anchor: .start), "no cell holds it yet")
+
+        cells.hold("90", in: Cell())
+        XCTAssertEqual(cells.laidOut(), ItemsScrollTarget(identity: "90", anchor: .start), "its cell shows it")
+        XCTAssertNil(cells.laidOut())
+    }
+
+    /// The user moving the list lets the item the program scrolled to go, and so does the next scroll: the last
+    /// word on where the list stands is theirs.
+    func testTheUsersMoveAndTheNextScrollLetTheItemScrolledToGo() {
+        let waiting = Cell()
+        cells.hold("10", in: waiting)
+        waiting.shown = nil
+        cells.scroll(to: "10", anchor: .center)
+        cells.userScrolled()
+        XCTAssertNil(cells.laidOut(), "the user moved the list")
+
+        cells.scroll(to: "10", anchor: .center)
+        cells.scroll(to: "20", anchor: .end)
+        XCTAssertEqual(cells.laidOut(), ItemsScrollTarget(identity: "20", anchor: .end), "the next scroll's")
+    }
+
     /// Cells far apart - a jump to another place in the list - build what is within reach of each, nothing between.
     func testCellsFarApartBuildOnlyAroundThemselves() {
         cells.hold("0", in: Cell())
@@ -125,6 +195,27 @@ final class ItemsCellsTests: XCTestCase {
 
     /// A second cell asked for an entry takes it from the first, which shows nothing; the first ending showing lets
     /// nothing go - only the cell holding the entry does.
+    /// An entry the list no longer has is let go of by the cell holding it: the cells keep nothing of what went.
+    func testACellOfAnEntryThatWentLetsItGo() throws {
+        Shrinking.count = 10
+        stateUIUseApp(ShrinkingApplication())
+        let runtime = HostRuntime.still()
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let cells = ItemsCells(try XCTUnwrap(runtime.tree.root?.first(type: .itemsView)), in: runtime)
+        cells.takeEntries()
+        let cell = Cell()
+        cells.hold("7", in: cell)
+
+        Shrinking.count = 5
+        Renderer.shared.setNeedsRender()
+        runtime.pump.turn()
+        cells.takeEntries()
+
+        XCTAssertNil(cells.holding(of: "7"))
+        XCTAssertNil(cell.identity, "the cell let the entry go")
+    }
+
     func testOnlyTheCellHoldingAnEntryLetsItGo() {
         let (first, second) = (Cell(), Cell())
         cells.hold("5", in: first)

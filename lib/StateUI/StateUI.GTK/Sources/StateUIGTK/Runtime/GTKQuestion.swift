@@ -17,8 +17,7 @@ final class GTKQuestion {
     private let answered: (Bool, String?) -> Void
 
     /// The questions showing, by the number their dialog's answer comes back under.
-    private static var showing: [Int64: GTKQuestion] = [:]
-    private static var nextNumber: Int64 = 1
+    private static let showing = Numbered<GTKQuestion>()
 
     /// A prompt's field, while its dialog shows.
     private var field: GTKWidget?
@@ -33,9 +32,7 @@ final class GTKQuestion {
 
     /// Shows the dialog over `window`.
     func show(over window: GTKWindow) {
-        let number = Self.nextNumber
-        Self.nextNumber += 1
-        Self.showing[number] = self
+        let number = Self.showing.hold(self)
 
         let dialog: UnsafeMutablePointer<AdwDialog>
         switch question.kind {
@@ -65,7 +62,7 @@ final class GTKQuestion {
         connectSignal(UnsafeMutableRawPointer(dialog), "response", number: number) { _, response, data in
             let number = viewNumber(data)
             let id = response.map { String(cString: $0.assumingMemoryBound(to: CChar.self)) } ?? ""
-            MainActor.assumeIsolated { GTKQuestion.showing.removeValue(forKey: number)?.respond(id) }
+            MainActor.assumeIsolated { GTKQuestion.showing.take(number)?.respond(id) }
         }
         adw_dialog_present(dialog, window.widget)
     }
@@ -121,8 +118,7 @@ final class GTKQuestion {
         let entry = gtk_entry_new()!
         if let placeholder = question.placeholder { gtk_entry_set_placeholder_text(entry.of(GtkEntry.self), placeholder) }
         if let most = question.maximumLength { gtk_entry_set_max_length(entry.of(GtkEntry.self), Int32(clamping: most)) }
-        let (hints, purpose) = GTKTextFieldView.input(
-            InputTraits(spellChecked: true, predicted: true, purpose: question.purpose))
+        let (hints, purpose) = GTKTextFieldView.input(question.traits)
         gtk_entry_set_input_hints(entry.of(GtkEntry.self), hints)
         gtk_entry_set_input_purpose(entry.of(GtkEntry.self), purpose)
         gtk_editable_set_text(entry.opaque, question.words)

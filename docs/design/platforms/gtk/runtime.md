@@ -14,8 +14,8 @@ API is C, and Swift calls it as it stands ([the C API](c-api.md)).
 elements every runtime holds alike: the core link, the intake, the mounted
 tree whose native halves are `GTKElement`s, the pump, the animator and what
 follows it, and the display cycle on GTK's frame clock. It is the runtime's
-`HostPresenter` - after a render, and a frame that moved the chrome, it shows
-the window.
+`HostPresenter` - after a render that touched the chrome, and a frame that
+moved it, it shows the window.
 
 A view is let go of in the turn after its element left: its `deinit` is
 `MainActor`'s, and a release outside a task's context puts it in the UI
@@ -26,8 +26,11 @@ its panel and drops the reference it held.
 
 The head's `main` names the application and hands the thread to
 `StateUIGTK.run(applicationID:)`, which makes an `AdwApplication` under that
-name and runs GLib's main loop on the thread until the last window closes.
-The application's first activation calls the host, whose first act is to claim
+name and runs GLib's main loop on the thread until the last window closes,
+then answers the code GLib's application ended with - a refused start, an
+unknown option, its own - which the head ends the process with; `run` holds
+no `@discardableResult`, so a head that drops it is warned. The
+application's first activation calls the host, whose first act is to claim
 that thread as the UI thread: `claimUIThread()` makes StateUI's UI executor
 `MainActor`'s and drains it there. The name is the one the desktop knows the application by, and
 GTK keeps one instance of it: a second launch activates the first, which

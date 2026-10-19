@@ -190,6 +190,7 @@ final class UIKitDriver: HostDriver {
         try? FileManager.default.removeItem(at: files)
         try? FileManager.default.createDirectory(at: files, withIntermediateDirectories: true)
         renderer.fileToolkit.holdsLaunchesForTesting = true
+        renderer.actToolkit.announcedForTesting = []
     }
 
     /// One pass of the main loop, 20 ms long: a case's 150 steps wait three seconds, which a page WebKit loads in a
@@ -351,8 +352,18 @@ final class UIKitDriver: HostDriver {
             if !action.attributes.contains(.disabled) { UIButton().sendAction(action) }
         case (.tap(let count), _): try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }
         case (.pan(let offset), _): try touch(element) { listening, view in Self.pan(listening, on: view, by: offset) }
+        case (.sweep(let offset, let speed), _):
+            try touch(element) { listening, _ in
+                listening?.hand(.began, moved: .zero)
+                listening?.hand(.changed, moved: offset)
+                listening?.hand(.ended, moved: .zero, speed: speed)
+            }
+        case (.notch(let notches), _):
+            try touch(element) { listening, _ in listening?.notched(notches) }
         case (.pinch(let scale, let share), _):
             try touch(element) { listening, view in Self.pinch(listening, on: view, by: scale, at: share) }
+        case (.rotate(let degrees, _), _):
+            try touch(element) { listening, view in Self.rotate(listening, on: view, by: degrees) }
         case (.pressDown(let point), _): try touch(element) { listening, view in pressDown(listening, on: view, at: point) }
         case (.drag(let point), _): try touch(element) { listening, _ in drag(listening, to: point) }
         case (.lift(let point), _): try touch(element) { listening, _ in lift(listening, at: point) }

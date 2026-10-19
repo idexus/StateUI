@@ -128,7 +128,9 @@ can differ between two instances within one run.
 
 A view shown as a screen gets a page element around it (`Node.page`). The page
 is kept while the same view stands there - the same kind under the same
-explicit id, from the same branch - and made afresh for another. A page position takes its view through `ViewBuilder`,
+explicit id, from the same branch - and made afresh for another: the page says
+that as its branch, which the differ compares with its type
+([another kind of view](../core/identity-and-diffing.md#another-kind-of-view)). A page position takes its view through `ViewBuilder`,
 so an `if`/`else` or a `switch` there keys each branch (`Either`), and two
 branches of the same view are two pages, as two branches in a container are
 two elements.
@@ -146,7 +148,7 @@ built with its parent and the view is compared on its own.
 What a screen is - its title and icon, its background, whether the navigation
 bar and the way back show, the back button's words, the phases it hears - is
 said by modifiers on the view a page shows: `.title`, `.icon`,
-`.pageBackground`, `.showsNavigationBar`, `.showsBackButton`,
+`.pageBackground`, `.showsNavigationBar`, `.showsTitle`, `.showsBackButton`,
 `.backButtonTitle`, `.onAppearing`, `.onDisappearing`, `.onNavigatedTo`,
 `.onNavigatingFrom`, `.onNavigatedFrom`. A phase modifier takes a handler and
 the others a value; a value taken from a state, `$x`, is a channel the host
@@ -301,6 +303,13 @@ selection of its own is the library's business. The platform's ways in and
 out - its sidebar button, an edge swipe, a tap on the dimmed page - report only
 once the gesture has finished, whatever it settled on, and are written only
 when the value moved.
+
+Where the sidebar stands - over the page or beside it - is the platform's
+answer to the room, so it reaches the author as a state the host writes
+(`sidebarOverlays`), never one the author writes to the host: whether a
+choice closes the sidebar is the author's, and the place is what decides it.
+A guess by device - a desktop never closes, a tablet always does - is wrong
+in a narrow window and on a tablet turned across.
 
 ## The modal stack is the state
 

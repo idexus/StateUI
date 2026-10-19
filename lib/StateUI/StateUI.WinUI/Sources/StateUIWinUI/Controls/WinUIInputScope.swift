@@ -3,8 +3,8 @@
 
 @_spi(Host) import StateUIHost
 
-/// The input scope a text box is given, as the relay numbers WinUI's: the keys a keyboard on the screen offers, and
-/// whether it starts sentences in capitals or offers emoji.
+/// The input scope a text box is given, as the relay numbers WinUI's (`StateUIInputScope`): the keys a keyboard on the
+/// screen offers, and whether it starts sentences in capitals or offers emoji.
 /// Design: docs/design/platforms/winui/controls.md#a-field-and-its-words
 enum WinUIInputScope: Int32 {
     case `default`, text, chat, email, number, telephone, url

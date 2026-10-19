@@ -67,6 +67,25 @@ final class DrivenPatchTests: XCTestCase {
     /// registration says the host also reads that property off a driven state, and
     /// neither is a complaint about the other. A state the control is in crosses
     /// as its value, the tie beside it.
+    /// Two live elements answering `.inherited` differently for one driven value are said; an element that left -
+    /// even in the render its successor came - answers nothing any more.
+    func testOnlyLiveElementsAnswerForADrivenValue() {
+        let said = "opacity is driven by a value two elements answer differently for"
+        XCTAssertFalse(hasComplained(said), "nothing said before")
+
+        let fade = State(wrappedValue: 1.0)
+        let renders = Renders()
+        let springing = Rectangle().opacity(fade.projectedValue).motion(.spring())
+        let easing = Rectangle().opacity(fade.projectedValue).motion(.eased(.milliseconds(300), .linear))
+
+        renders.render(stack([springing.id("a").node], id: "root"))
+        renders.render(stack([easing.id("b").node], id: "root"))
+        XCTAssertFalse(hasComplained(said), "the first left as the second came")
+
+        renders.render(stack([easing.id("b").node, springing.id("a").node], id: "root"))
+        XCTAssertTrue(hasComplained(said), "both stand now")
+    }
+
     func testADrivenPropertyBesideAStatedValueCrossesAsBoth() throws {
         let fade = State(wrappedValue: 1.0)
 
@@ -288,27 +307,24 @@ final class DrivenPatchTests: XCTestCase {
     /// The wrapper around each face is the library's own and is always there,
     /// shaded or not - which is what keeps the host's writes off the author's
     /// view. A shaded run wraps two, the shade second.
-    func testADrivenPlacedLayoutRegistersOnTheLayoutAlone() throws {
-        let run = State(wrappedValue: PlacedRun())
-        let room = State(wrappedValue: Rect(0, 0, 0, 0))
-
+    func testALayoutEngineRegistersOnTheLayoutAlone() throws {
         let page = try page(
-            PlacedLayout(["a", "b"], id: \.self) { Text($0) }
-                .shade(Rectangle().fill(.black))
-                .placement(run.projectedValue)
-                .frame(room.projectedValue)
+            LayoutEngine(["a", "b"]) { Text($0) } placements: { _, _ in [] }
+                .shade(Rectangle(.black))
                 .node)
-        let layout = try XCTUnwrap(page.at(.auto(3)))
+        let layout = try XCTUnwrap(page.subtree.first { $0.type == .layoutEngine })
+        let ties = layout.driven?.bindings ?? [:]
 
-        XCTAssertEqual(
-            ties(page, .auto(3)),
-            tied(["area"], to: 1, .out, .placement, .number)
-                .merging(tied(["frame"], to: 2, .in, .feed, .number)) { $1 })
-        XCTAssertEqual(layout.arrangement, [.manual("a"), .manual("b")])
-        XCTAssertEqual(layout.children.map(\.type), [.grid, .grid], "the library's wrapper around each face")
-        XCTAssertEqual(layout.children.map(\.children.count), [2, 2], "the face, then its shade")
+        XCTAssertEqual(ties[.area]?.kind, .placement)
+        XCTAssertEqual(ties[.area]?.mode, .out)
+        XCTAssertEqual(ties[.frame]?.kind, .feed)
+        XCTAssertEqual(ties[.frame]?.mode, .in)
+        XCTAssertEqual(ties[.phase]?.kind, .property, "the phase worn, so the host walks it")
+        XCTAssertEqual(ties[.phase]?.mode, .inOut)
+        XCTAssertEqual(layout.children.map(\.type), [.grid, .grid], "each face wrapped")
+        XCTAssertEqual(layout.children.prefix(2).map(\.children.count), [2, 2], "the face, then its shade")
         XCTAssertTrue(
-            layout.children.flatMap(\.subtree).allSatisfy { $0.driven == nil },
+            layout.children.prefix(2).flatMap(\.subtree).allSatisfy { $0.driven == nil },
             "not one property of a placement on any child")
     }
 
@@ -450,13 +466,13 @@ final class DrivenPatchTests: XCTestCase {
             }
         }
 
-        XCTAssertEqual(declared.count, 1, "one declaration, and it is the journey's: \(declared)")
+        XCTAssertEqual(declared.count, 2, "the journey's two - with a law and without - and no other: \(declared)")
         XCTAssertEqual(
-            declared.first.map { SourceTree.name(of: $0.file) }, "Journey.swift",
-            "the one that survives lives beside the journey")
+            Set(declared.map { SourceTree.name(of: $0.file) }), ["Journey.swift"],
+            "both live beside the journey")
         XCTAssertTrue(
-            declared.first?.line.contains("target: Value") == true,
-            "and it takes the value's own type: it is the journey's, not any binding's")
+            declared.allSatisfy { $0.line.contains("target: Value") },
+            "and take the value's own type: they are the journey's, not any binding's")
     }
 
     /// A CONTROL'S PURPOSE-VALUE IS WRITABLE BOTH WAYS, AND THE TWO AGREE.

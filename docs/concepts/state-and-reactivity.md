@@ -423,7 +423,9 @@ VStack {
 
 `convertBack` is needed when a reporting control edits the derived value. It
 maps that report back into the source's units. Without it, reports into the
-derived binding have no source-side destination.
+derived binding have no source-side destination. Only the user's change comes
+back: a value the application writes goes forward as written, however the
+conversion rounds it on the way.
 
 Use `.multi` for a forward conversion of two through ten states:
 
@@ -501,10 +503,10 @@ struct SampledProgress: View {
             ProgressBar().progress($progress)
             Text("Shown: \(Int(shown * 100))%")
             Button("Run").onClicked {
-                $progress.journey.move(to: 1, .eased(1_000, .cubicOut))
+                $progress.journey.move(to: 1, .eased(.seconds(1), .cubicOut))
             }
         }
-        .samples($progress, into: $shown, .every(100))
+        .samples($progress, into: $shown, .every(.milliseconds(100)))
     }
 }
 ```

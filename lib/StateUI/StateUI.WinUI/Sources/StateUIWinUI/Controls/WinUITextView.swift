@@ -23,7 +23,7 @@ final class WinUITextView: WinUITextualView {
     /// What the label is drawn over: a colour, a gradient, or nothing.
     override func setBackground(_ value: HostValue?) {
         let brush = WinUIBrush(value)
-        paint("background", followsSize: brush.followsSize) { [handle] size in
+        paint(.background, followsSize: brush.followsSize) { [handle] size in
             brush.withRelayBrush(over: size) { stateui_winui_text_set_background(handle, $0) }
         }
     }
@@ -41,6 +41,8 @@ final class WinUITextView: WinUITextualView {
     /// Runs of words shown in place of the label's own (`MountedElement.textRuns`), each in its own look over the
     /// label's; nil shows its own words again.
     func setRuns(_ runs: [TextRun]?) {
+        // Shown without runs before, the label's own words stand already.
+        guard runs != nil || self.runs != nil else { return }
         self.runs = runs
         guard let runs else { return super.setText(ownText) }
 

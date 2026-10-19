@@ -12,21 +12,17 @@
 /// case is consulted first, so a registration can never shadow one of these.
 /// Prefixing an application's names with its own (`"Gallery.BatteryLevel"`) is
 /// what keeps the two sets from meeting at all.
-public struct Act: Hashable, Sendable, ExpressibleByStringLiteral,
-    CustomStringConvertible {
+public struct Act: Hashable, Sendable, CustomStringConvertible {
     /// The act's name - the library's own, or the application's registered
     /// one.
-    public let name: String
+    public var name: String { key.name }
+
+    /// The name and the number the key is worked by (`KeyName`).
+    @_spi(Host) public let key: KeyName
 
     /// An act from its name - what a member's token is made from.
     public init(_ name: String) {
-        self.name = name
-    }
-
-    /// The literal form, so a name reads plainly where an act is compared:
-    /// `call.act == "alert"`.
-    public init(stringLiteral value: String) {
-        self.init(value)
+        key = KeyName(name)
     }
 
     /// The name, so an interpolated diagnostic prints it plainly.

@@ -6,16 +6,22 @@
 /// Where an element stands, said to the tree that reads it, the same on every host.
 /// Design: docs/design/host/runtime.md#where-a-view-stands
 extension MountedElement {
-    /// Whether the tree reads where this element itself stands: a state its frame drives, or a handler of its
-    /// changes.
+    /// Whether the tree reads where this element itself stands: a state its frame drives, a handler of its changes,
+    /// or - a split view - the state its sidebar's place drives (`reportSidebarOverlays(_:in:)`), said with it once
+    /// laid out.
     public var readsOwnFrame: Bool {
+        readsFrameNumbers || driven[.sidebarOverlays] != nil
+    }
+
+    /// Whether the tree reads this element's frame itself: a state it drives, or a handler of its changes.
+    private var readsFrameNumbers: Bool {
         driven[.frame] != nil || events[.frameChanged] != nil
     }
 
     /// Says where the element stands - `numbers`, a frame report's eight - where that changed since it last said:
     /// its place in its parent onto the state its frame drives, and the whole report to its handler.
     public func reportFrame(_ numbers: [Double], in runtime: HostRuntime) {
-        guard readsOwnFrame, numbers != reportedFrame else { return }
+        guard readsFrameNumbers, numbers != reportedFrame else { return }
         reportedFrame = numbers
         if let binding = driven[.frame] {
             runtime.report(.lanes(Array(numbers.prefix(4))), through: binding)

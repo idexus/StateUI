@@ -268,4 +268,22 @@ final class UIKitRendererTests: XCTestCase {
         XCTAssertEqual(field.text, "Pawel")
         XCTAssertEqual(host.views(UIKitTextView.self).first?.text, "Hello, Pawel")
     }
+    /// Words an input method still composes stand as typed past the field's bound - cut, the composition would be
+    /// lost - and are cut once it commits them.
+    @MainActor
+    func testWordsStillComposedAreCutOnceCommitted() throws {
+        let host = UIKitRenderer.running { Greeting() }
+        defer { host.finish() }
+        let field = try XCTUnwrap(host.views(UIKitTextFieldView.self).first)
+        XCTAssertTrue(field.becomeFirstResponder())
+
+        field.setMarkedText("zhongguo", selectedRange: NSRange(location: 8, length: 0))
+        field.sendActions(for: .editingChanged)
+        XCTAssertEqual(field.text, "zhongguo", "standing as composed")
+        XCTAssertNotNil(field.markedTextRange, "still composed")
+
+        field.unmarkText()
+        field.sendActions(for: .editingChanged)
+        XCTAssertEqual(field.text, "zhong", "cut once committed")
+    }
 }

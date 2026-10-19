@@ -5,11 +5,28 @@ import UIKit
 @_spi(Host) @testable import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIUIKit
+@_spi(Host) import StateUIConformance
 import XCTest
 
 /// What the application stands on, as UIKit tells it: the theme, the user's locale, the battery.
 @MainActor
 final class UIKitEnvironmentTests: XCTestCase {
+    /// The theme is followed on a scene iOS holds: one it let go of is followed no more, and the scene connecting
+    /// next is - iOS makes a scene anew for a session it brings back.
+    @MainActor
+    func testTheThemeIsFollowedOnAConnectedScene() throws {
+        let scene = try XCTUnwrap(TestScene.scene)
+        let host = UIKitRenderer.running { Text("Themed") }
+        defer { host.finish() }
+        XCTAssertTrue(host.environment.followedSceneForTesting === scene)
+
+        host.disconnect(scene)
+        XCTAssertNil(host.environment.followedSceneForTesting, "a scene let go of is followed no more")
+
+        host.connect(scene)
+        XCTAssertTrue(host.environment.followedSceneForTesting === scene, "the scene connecting is")
+    }
+
     /// The theme is the one the user's scene stands in: turning dark tells it, and turning light again.
     @MainActor
     func testTheThemeIsTheScenes() throws {
@@ -60,6 +77,9 @@ final class UIKitEnvironmentTests: XCTestCase {
         defer { Self.turn(scene, to: .portrait) }
 
         Self.turn(scene, to: .portrait)
+        guard scene.effectiveGeometry.interfaceOrientation == .portrait else {
+            throw XCTSkip("iOS turns this scene with the device alone, as it does an iPad's")
+        }
         environment.reportDisplay(of: scene)
         XCTAssertEqual(display.orientation, .portrait)
         XCTAssertEqual(display.rotation, .rotation0)
@@ -75,12 +95,50 @@ final class UIKitEnvironmentTests: XCTestCase {
         XCTAssertEqual([display.width, display.height], [height, width])
     }
 
+    /// The display's turn is told before the page is laid out turned: what hears the turned room hears the turned
+    /// display with it, so an answer worked out from the two holds - and is not left standing on the display's last
+    /// turn, which a page turned back never measures again.
+    @MainActor
+    func testTheDisplayTurnsBeforeThePageIsLaidOutTurned() throws {
+        let scene = try XCTUnwrap(TestScene.scene)
+        Self.turn(scene, to: .portrait)
+        guard scene.effectiveGeometry.interfaceOrientation == .portrait else {
+            throw XCTSkip("iOS turns this scene with the device alone, as it does an iPad's")
+        }
+        let heard = Received<[Bool]>()
+        let host = UIKitRenderer.running {
+            VStack { Rectangle().fill(.steelBlue) }
+                .onFrameChanged { room in
+                    heard.values.append([
+                        room.width > room.height, StandardEnvironment.device.display.orientation == .landscape,
+                    ])
+                }
+        }
+        defer {
+            host.finish()
+            Self.turn(scene, to: .portrait)
+        }
+        host.settle { !heard.values.isEmpty }
+
+        Self.turn(scene, to: .landscapeRight)
+        guard scene.effectiveGeometry.interfaceOrientation == .landscapeRight else {
+            throw XCTSkip("iOS turns this scene with the device alone, as it does an iPad's")
+        }
+        host.settle { heard.values.last?.first == true }
+        XCTAssertEqual(heard.values.last, [true, true], "the wide room is heard with the display turned")
+
+        Self.turn(scene, to: .portrait)
+        host.settle { heard.values.last?.first == false }
+        XCTAssertEqual(heard.values.last, [false, false], "and the tall one with the display turned back")
+    }
+
     /// Asks iOS to turn `scene` to `orientation`, and waits until it has.
     @MainActor
     private static func turn(_ scene: UIWindowScene, to orientation: UIInterfaceOrientation) {
         let mask: UIInterfaceOrientationMask = orientation == .portrait ? .portrait : .landscapeRight
         scene.requestGeometryUpdate(.iOS(interfaceOrientations: mask))
-        for _ in 0..<200 where scene.effectiveGeometry.interfaceOrientation != orientation {
+        for _ in 0..<200 {
+            guard scene.effectiveGeometry.interfaceOrientation != orientation else { break }
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
         }
     }

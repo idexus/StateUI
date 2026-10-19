@@ -17,7 +17,7 @@ enum GalleryElements {
             TrafficLightContract.self, RatingBarContract.self,
         ]
 
-        #if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
+        #if APPKIT || UIKIT || ANDROID || WINUI || GTK || WEB
         // Drawn with the GPU in each platform's own way - Metal on AppKit and
         // UIKit, OpenGL 3.3 on GTK, Direct3D 11.1 on WinUI, OpenGL ES 3.0 on
         // Android, WebGL 2 on the Web. A build for no host - the gallery's own

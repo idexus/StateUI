@@ -33,6 +33,20 @@ final class ActAnswersTests: XCTestCase {
         XCTAssertNil(HostQuestion(HostActCall(act: .announce, arguments: [], completion: nil)))
     }
 
+    /// A prompt's field takes the typing of its purpose, as a field of that purpose does: a plain one checks no
+    /// spelling, predicts nothing and writes no capitals.
+    func testAPromptsFieldTypesForItsPurpose() throws {
+        func prompt(_ purpose: InputPurpose) throws -> HostQuestion {
+            try XCTUnwrap(HostQuestion(HostActCall(
+                act: .prompt, arguments: [.string("Name"), .nothing, .nothing, .nothing, .nothing, .nothing,
+                                          purpose.propValue], completion: 1)))
+        }
+        for purpose in [InputPurpose.default, .plain, .email, .numeric] {
+            XCTAssertEqual(try prompt(purpose).traits, InputTraits(spellChecked: true, predicted: true, purpose: purpose))
+        }
+        XCTAssertFalse(try prompt(.plain).traits.checksSpelling)
+    }
+
     /// A confirmation answers yes or no; a choice or a prompt its words where the user accepted, nothing where
     /// not; an alert nothing.
     func testAQuestionAnswersAsItsKindDoes() throws {

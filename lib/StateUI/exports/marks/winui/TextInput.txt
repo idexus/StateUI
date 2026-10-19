@@ -1,7 +1,6 @@
-# revision 2.1
+# revision 5.1
 SearchField.cursorPosition: – WinUI's search box keeps its caret in the text box of its template, and offers no caret or selection of its own.
 SearchField.inputPurpose: ✅
-SearchField.isEnabled: ✅
 SearchField.isReadOnly: ✅
 SearchField.isSpellCheckEnabled: ✅
 SearchField.isTextPredictionEnabled: ✅
@@ -9,11 +8,9 @@ SearchField.maximumLength: ✅
 SearchField.placeholder: ✅
 SearchField.placeholderColor: ✅
 SearchField.selectionLength: – WinUI's search box keeps its caret in the text box of its template, and offers no caret or selection of its own.
-SearchField.text: ✅
 SearchField.textChanged: ✅
 TextEditor.cursorPosition: ✅
 TextEditor.inputPurpose: ✅
-TextEditor.isEnabled: ✅
 TextEditor.isReadOnly: ✅
 TextEditor.isSpellCheckEnabled: ✅
 TextEditor.isTextPredictionEnabled: ✅
@@ -21,11 +18,9 @@ TextEditor.maximumLength: ✅
 TextEditor.placeholder: ✅
 TextEditor.placeholderColor: ✅
 TextEditor.selectionLength: ✅
-TextEditor.text: ✅
 TextEditor.textChanged: ✅
 TextField.cursorPosition: ✅
 TextField.inputPurpose: ✅
-TextField.isEnabled: ✅
 TextField.isReadOnly: ✅
 TextField.isSpellCheckEnabled: ✅
 TextField.isTextPredictionEnabled: ✅
@@ -33,5 +28,4 @@ TextField.maximumLength: ✅
 TextField.placeholder: ✅
 TextField.placeholderColor: ✅
 TextField.selectionLength: ✅
-TextField.text: ✅
 TextField.textChanged: ✅

@@ -24,21 +24,8 @@ final class WinUIScrollerView: WinUIView {
         content: WinUIView, orientation: ScrollOrientation, verticalBar: ScrollIndicatorVisibility,
         horizontalBar: ScrollIndicatorVisibility
     ) {
-        let way: Int32 = switch orientation {
-        case .horizontal: 1
-        case .both: 2
-        case .neither: 3
-        default: 0
-        }
-        stateui_winui_scroller_set(handle, content.handle, way, Self.bar(verticalBar), Self.bar(horizontalBar))
-    }
-
-    private static func bar(_ visibility: ScrollIndicatorVisibility) -> Int32 {
-        switch visibility {
-        case .visible: 1
-        case .never: 2
-        default: 0
-        }
+        stateui_winui_scroller_set(
+            handle, content.handle, orientation.rawValue, verticalBar.rawValue, horizontalBar.rawValue)
     }
 
     /// Moves the view to `target` at once; the scroller says where it stands once it has moved.

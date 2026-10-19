@@ -1,5 +1,4 @@
-# revision 1.1
+# revision 2.1
 TabView: ✅
 TabView.selectedTab: ✅
 TabView.selectedTabChanged: ✅
-Text.frameChanged: ✅

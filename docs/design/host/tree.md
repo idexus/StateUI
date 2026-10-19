@@ -31,9 +31,16 @@ node's key and type, its properties, bound states and handlers, and its
 children in order. It applies a patch in one fixed order: the standing values
 of what changes are read first; then the properties, events and bindings;
 then the children, by key; then each changed property's animation starts, from
-where it stands; and last its native half presents it all. A child a sparse
-patch names but the element does not hold, or holds as another type, is a
-drift: it is refused, and nothing is mounted from it.
+where it stands; and last its native half presents it all. An element a patch
+changes nothing of - a child a new arrangement names for its order alone, a
+list's rows as the next ones come - asks nothing of its native half: no value,
+handler, child or motion of it changed. An element being made has nothing
+running to cut short: it receives as animations only the values it asks to
+animate and those a state drives, whose channel their first reading opens.
+After a render the frame clock is held once for whatever it set moving
+(`DisplayCycle.presentStateChannels`). A child a sparse patch names but the
+element does not hold, or holds as another type, is a drift: it is refused,
+and nothing is mounted from it.
 
 ## The native half
 
@@ -107,6 +114,21 @@ together once (`MountedElement.drawingTransform`): moved, turned and scaled,
 where the tree names no pivot. A layout a state places - a placing run - keeps
 its measure: the run moves its children without the layout measuring again.
 
+## A frame arranges what moved
+
+A frame presents what moved on each element touched, deepest first, and says
+what that asks of the elements around it (`FrameImpact`): the element
+arranges its children again where a value moved that is more than its own
+run of places and what is drawn over it - a layout engine's run is put by the
+element's presentation, each host setting it on its layers view, so a run
+moving every frame builds no child's layout item again; its opacity, its
+drawing and its transform (`drawnOverProperties`) are read by nothing it
+holds, so a row fading in arranges none of its words, while a text's colour
+reaches its runs, which a host writes as it arranges them; a child whose
+place moved arranges its parent,
+passed up through an element with no view; a window's chrome is composed
+again where it shows what moved (`WindowChrome.follows`).
+
 ## What every element realizes
 
 What the host layer's own rules realize on every element - a view's place in
@@ -120,12 +142,18 @@ host's registry names (`everyElementTakesItsPlace`,
 says so in one line each, and the control dictionary reads the members as
 every host alike.
 
-## Views by number
+## Held by number
 
-GTK's and WinUI's views are numbered as they are made and held weakly by
-their number (`LiveViews`): a toolkit's callback crossing C names a view by
-its number, as it cannot hold an object, and finds nothing once the view is
-gone; a test counts the numbers held to see every view let go.
+What crosses C, Java or JavaScript by number - a view a toolkit's callback
+names, the callback a signal carries, the answer a dialog or a script hands
+back - is held by its number in the host layer: a view weakly (`LiveViews`),
+anything else until it is taken out or let go (`Numbered`). Every number comes
+from the process's one count (`HostNumbers`): none is given twice, a number
+left over from one table finds nothing in another, and a number given later is
+greater, so a view's number is also the order the display's frames serve it
+in. A test counts what a table holds to see everything let go. The Web relay's
+listeners are the one exception: they are the JavaScript relay's own 32-bit
+numbers, as a 64-bit one reaches JavaScript as a `BigInt`.
 
 ## A window shown
 
@@ -182,7 +210,8 @@ behind it, its lines, whether it follows the user's text size - in the
 contract's terms (`TextLook`). A run's look stands over its label's: where the
 run says nothing, the label's says it, and a run scales only where neither it
 nor its label says no. A host turns the finished look into its toolkit's
-attributes and nothing more.
+attributes and nothing more. A label shown with no runs and given none
+writes nothing again: its own words stand already.
 
 An element showing words - a label, a button, a radio button - reads the
 text tiers the same way on every host (`TextMembers`): its words in their
@@ -217,9 +246,11 @@ What an element says for assistive technology is put together once, the same
 on every host: its identifier, its label, its hint, its level as a heading,
 and whether it is met at all - left out with everything in it where it says
 so, else left out itself where it is hidden, its children still met, else met
-where it says it is not hidden, and as its view is of itself where it says
-nothing. A host puts those words on its view in its platform's terms, and puts
-them again whenever any of them changes.
+where it says it is not hidden - or, saying nothing of it, where it says words
+of its own, a label standing for all it holds, a hint or a heading, or answers
+a tap - and as its view is of itself otherwise. A host puts those words on its
+view in its platform's terms, and puts them again whenever any of them
+changes; one the tree stops saying anything of stands as its view is again.
 
 Where a toolkit's screen reader reads a row by its name alone - a list's
 container - the row is named by what its entry says (`spokenWords`): an

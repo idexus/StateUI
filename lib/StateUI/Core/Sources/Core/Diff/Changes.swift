@@ -31,6 +31,12 @@ struct Watch {
         self.gate = gate
         self.run = run
     }
+
+    /// A watch whose handler is a step: one that does not await, which passes no gate.
+    /// Design: docs/design/core/runs.md#a-step
+    init<Value: Equatable>(_ value: Value, step: @escaping @MainActor (Any, Any) throws -> Void) {
+        self.init(value, gate: GatePolicy.none) { old, new in try step(old, new) }
+    }
 }
 
 extension ModifiableElement {
@@ -55,7 +61,7 @@ extension ModifiableElement {
         _ value: Value,
         _ handler: @escaping @MainActor () throws -> Void
     ) -> Modified {
-        onChanged(value, gate: .none) { try handler() }
+        modified { $0.watches.append(Watch(value) { _, _ in try handler() }) }
     }
 
     /// The same, with a handler that awaits: its `gate` says what another change
@@ -80,15 +86,6 @@ extension ModifiableElement {
         modified { $0.watches.append(Watch(value, gate: gate) { _, _ in try await handler() }) }
     }
 
-    /// A handler that awaits says what a change does while it runs.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onChanged(value, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onChanged<Value: Equatable>(
-        _ value: Value,
-        _ handler: @escaping EventHandler
-    ) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// The same, handed the value it was and the value it now is.
     ///
     ///     Text(status)
@@ -107,7 +104,14 @@ extension ModifiableElement {
         _ value: Value,
         _ handler: @escaping @MainActor (Value, Value) throws -> Void
     ) -> Modified {
-        onChanged(value, gate: .none) { old, new in try handler(old, new) }
+        modified {
+            $0.watches.append(Watch(value) { old, new in
+                // Both casts hold by construction: a slot is written by one modifier.
+                guard let old = old as? Value, let new = new as? Value else { return }
+
+                try handler(old, new)
+            })
+        }
     }
 
     /// The same, with a handler that awaits, handed the value it was and the
@@ -131,14 +135,5 @@ extension ModifiableElement {
                 try await handler(old, new)
             })
         }
-    }
-
-    /// A handler that awaits says what a change does while it runs.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onChanged(value, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onChanged<Value: Equatable>(
-        _ value: Value,
-        _ handler: @escaping ValueEventHandler<Value, Value>
-    ) -> Modified {
-        fatalError("unavailable")
     }
 }

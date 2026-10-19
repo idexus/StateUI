@@ -53,7 +53,10 @@ final class WinUIActsTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running(application: { AskingApplication() })
             stateui_winui_button_invoke(try XCTUnwrap(host.views(WinUIButtonView.self).first).handle)
-            for _ in 0..<30 where host.windows.count < 2 { host.step() }
+            for _ in 0..<30 {
+                guard host.windows.count < 2 else { break }
+                host.step()
+            }
             XCTAssertEqual(host.windows.count, 2)
             let (main, tool) = (host.windows[0].window, host.windows[1].window)
             WinUICallbacks.table.windowStateChanged(main.number, false, false)
@@ -85,6 +88,70 @@ final class WinUIActsTests: XCTestCase {
         }
     }
 
+    /// A question whose window goes before the user answered stands again over the window the user is in, rather than
+    /// hold every later question behind it.
+    func testAQuestionWhoseWindowWentStandsOverTheWindowTheUserIsIn() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running(application: { ClosingApplication() })
+            let main = try XCTUnwrap(host.window)
+            stateui_winui_button_invoke(try XCTUnwrap(host.views(WinUIButtonView.self).first).handle)
+            for _ in 0..<30 {
+                guard host.windows.count < 2 else { break }
+                host.step()
+            }
+            let tool = try XCTUnwrap(host.windows.last?.window)
+            WinUICallbacks.table.windowStateChanged(main.number, false, false)
+            WinUICallbacks.table.windowStateChanged(tool.number, false, true)
+            host.settle(until: { Self.asks(tool) })
+            XCTAssertTrue(Self.asks(tool), "over the tool window the user is in")
+            stateui_winui_button_invoke(try XCTUnwrap(host.views(WinUIButtonView.self).last).handle)
+            host.settle(until: { host.windows.count == 1 && Self.asks(main) })
+            XCTAssertTrue(Self.asks(main), "the question shown as its window closed")
+            _ = stateui_winui_answer(try XCTUnwrap(main.content).handle, 1, nil)
+            host.settle(until: { !Self.asks(main) })
+        }
+    }
+
+    /// A question WinUI could not show - another dialog stands over the window - fails its call with the reason; it
+    /// is no answer of the user's.
+    func testAQuestionWinUICouldNotShowFailsItsCall() throws {
+        try onUIThread {
+            let outcome = State(wrappedValue: "")
+            let host = WinUIRenderer.running {
+                VStack {
+                    Text(outcome.wrappedValue)
+                    Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                        do {
+                            outcome.wrappedValue = "answered \(try await Dialogs.confirm("Delete?", message: "The draft goes", accept: "Delete", cancel: "Keep"))"
+                        } catch {
+                            outcome.wrappedValue = "failed"
+                        }
+                    }
+                }
+            }
+            let window = try XCTUnwrap(host.window)
+            let content = try XCTUnwrap(window.content)
+            host.settle { stateui_winui_is_loaded(content.handle) }
+            "Standing".withCString { title in
+                "OK".withCString { accept in
+                    var other = StateUIQuestion(
+                        kind: .alert, title: title, message: nil, accept: accept, cancel: nil, destruction: nil, choices: nil,
+                        choiceCount: 0, placeholder: nil, maximumLength: 0, spellChecked: false, predicted: false, scope: 0,
+                        initial: nil)
+                    stateui_winui_ask(content.handle, -1, &other)
+                }
+            }
+            host.settle { Self.asks(window) }
+
+            try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
+            host.settle { !outcome.wrappedValue.isEmpty }
+            XCTAssertEqual(outcome.wrappedValue, "failed", "no answer of the user's")
+
+            _ = stateui_winui_answer(content.handle, 1, nil)
+            host.settle { !Self.asks(window) }
+        }
+    }
+
     /// Whether a question stands over `window`'s content.
     @MainActor
     private static func asks(_ window: WinUIWindow) -> Bool {
@@ -103,6 +170,41 @@ private struct AskingScene: Scene {
         Window(WindowType("acts.tool")) {
             Button("Ask").onClicked(gate: .ignoreWhileRunning) { try await Dialogs.alert("Saved", message: "The draft is safe") }
         }
+    }
+}
+
+/// An application whose first window opens a tool window, whose page asks the user something as it is made and
+/// closes its window by its own button.
+private struct ClosingApplication: Application {
+    var body: some Scene { ClosingScene() }
+}
+
+private struct ClosingScene: Scene {
+    var body: some Scene {
+        WindowGroup { ClosingOpeningPage() }
+        Window(WindowType("acts.closed")) { ClosedToolPage() }
+    }
+}
+
+private struct ClosingOpeningPage: View {
+    @Environment(\.application) private var application
+
+    var body: some View {
+        let application = self.application
+        return Button("Tool").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(WindowType("acts.closed")) }
+    }
+}
+
+private struct ClosedToolPage: View {
+    @Environment(\.application) private var application
+
+    var body: some View {
+        let application = self.application
+        return VStack {
+            Text("Tool")
+            Button("Close").onClicked(gate: .ignoreWhileRunning) { try await application.closeWindow(WindowType("acts.closed")) }
+        }
+        .onCreated { try await Dialogs.alert("Saved", message: "The draft is safe") }
     }
 }
 

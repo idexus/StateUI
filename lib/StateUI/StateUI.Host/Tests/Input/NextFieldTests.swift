@@ -48,7 +48,7 @@ final class NextFieldTests: XCTestCase {
     /// A presenter recording where it put the keyboard.
     private final class Focusing: HostPresenter {
         var focused: [ElementID] = []
-        func presentRendered() {}
+        func presentRendered(touchedChrome: Bool) {}
         func presentFrame(movedChrome: Bool) {}
         func perform(_ call: HostActCall) {}
         func focus(_ element: MountedElement) { focused.append(element.id) }

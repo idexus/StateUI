@@ -1,46 +1,47 @@
-# revision 12.2
+# revision 14.2
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.isEnabled: ✅
 Button.layoutDirection: ✅
-Canvas.scaleY: ✅
-Canvas.style: ✅
-Capsule.automationExcludedWithChildren: ✅
-CheckBox.frameChanged: ✅
-CheckBox.maximumHeight: ✅
-CheckBox.maximumWidth: ✅
-CheckBox.minimumHeight: ✅
-CheckBox.minimumWidth: ✅
-CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own tip, checked against the projection it laid on the element
-DatePicker.tooltip: ✅
-Divider.isVisible: ✅
-Divider.pivotX: ✅
-Ellipse.isEnabled: does not apply - read isEnabled of Ellipse - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Ellipse.rotation: ✅
-Grid.accessibilityHeading: ✅
-Grid.translationY: ✅
-HStack.accessibilityHeading: ✅
-HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Image.layoutDirection: ✓ read layoutDirection of Image: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-ItemsView.frame: ✅
-ItemsView.scaleX: ✅
-Line.frameChanged: ✅
-Line.height: ✅
-Line.rotationX: ✓ read rotationX of Line: the host's own tip, checked against the projection it laid on the element
-Line.width: ✅
-Map.accessibilityLabel: 🧩
-Path.translationX: ✅
-Path.zIndex: ✅
-Picker.automationExcludedWithChildren: ✅
-Polygon.ignoresInput: ✅
-Polygon.scale: ✅
-Polyline.tooltip: ✅
-ProgressBar.opacity: ✅
-ProgressBar.pivotY: ✅
-RadioButton.translationX: ✅
-RadioButton.zIndex: ✅
-Rectangle.background: – A WinUI shape is its figure alone: it paints no ground around it.
-ScrollView.ignoresInput: ✅
-ScrollView.scale: ✅
+Canvas.frame: ✅
+Canvas.scaleX: ✅
+Capsule.isAccessibilityHidden: ✅
+CheckBox.height: ✅
+CheckBox.rotationX: ✓ read rotationX of CheckBox: the host's own tip, checked against the projection it laid on the element
+CheckBox.width: ✅
+DatePicker.accessibilityHint: ✅
+Divider.opacity: ✅
+Divider.pivotY: ✅
+Ellipse.opacity: ✅
+Ellipse.pivotY: ✅
+Grid.translationX: ✅
+Grid.zIndex: ✅
+HStack.accessibilityHint: ✅
+HStack.isEnabled: ✅
+Image.isAccessibilityHidden: ✅
+ItemsView.height: ✅
+ItemsView.rotationX: ✓ read rotationX of ItemsView: the host's own tip, checked against the projection it laid on the element
+ItemsView.width: ✅
+LayoutEngine.isVisible: ✅
+LayoutEngine.pivotX: ✅
+Line.maximumHeight: ✅
+Line.maximumWidth: ✅
+Line.minimumHeight: ✅
+Line.minimumWidth: ✅
+Line.rotationY: ✓ read rotationY of Line: the host's own tip, checked against the projection it laid on the element
+Map.accessibilityHint: 🧩
+Path.accessibilityHeading: ✅
+Path.translationY: ✅
+Picker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Polygon.frame: ✅
+Polygon.scaleX: ✅
+Polyline.accessibilityHeading: ✅
+ProgressBar.isEnabled: ✅
+ProgressBar.rotation: ✅
+RadioButton.accessibilityHeading: ✅
+RadioButton.translationY: ✅
+Rectangle.layoutDirection: ✓ read layoutDirection of Rectangle: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ScrollView.frame: ✅
+ScrollView.scaleX: ✅
 SearchField.accessibilityHint: ✅
 Slider.opacity: ✅
 Slider.pivotY: ✅
@@ -49,15 +50,15 @@ Spacer.translationY: ✅
 Stepper.layoutDirection: ✅
 Switch.scaleY: ✅
 Switch.style: ✅
-Text.isAccessibilityHidden: ✅
+Text.accessibilityHint: ✅
 TextEditor.automationExcludedWithChildren: ✅
 TextField.ignoresInput: ✅
 TextField.scale: ✅
 TimePicker.accessibilityHeading: ✅
-VStack.frameChanged: ✅
 VStack.height: ✅
 VStack.rotationX: ✓ read rotationX of VStack: the host's own tip, checked against the projection it laid on the element
 VStack.width: ✅
-WebView.frame: ✅
-WebView.scaleX: ✅
-ZStack.isAccessibilityHidden: ✅
+WebView.ignoresInput: ✅
+WebView.scale: ✅
+ZStack.accessibilityHeading: ✅
+ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.

@@ -29,9 +29,18 @@ final class WebElement: NativeElement {
     /// Whether the view listens for the keyboard coming into it and leaving it.
     var listensForFocus = false
 
-    /// The pointers pressed on the view, for a drag or a pinch it hears, and how many times a wheel turned a pinch.
+    /// The pointers pressed on the view, for a drag or a pinch it hears.
     var press = WebPress()
-    var wheelTurns = 0
+
+    /// The pointer pressed with ⌥/Alt over the element, read as two fingers, while it is down.
+    var mirroring: Int?
+
+    /// The hand over a layout: its fingers, read as one at their middle, how far that middle has gone while the hand
+    /// is still nobody's, and whether its first move is yet to pass the drag distance, or the layout took it.
+    var handFingers = PointerMiddle()
+    var handTravel = Point(x: 0, y: 0)
+    var handPending = false
+    var handTaking = false
 
     init(_ element: MountedElement, host: WebRenderer) {
         self.element = element
@@ -56,7 +65,7 @@ final class WebElement: NativeElement {
     }
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
-        host?.placements.beforeChange()
+        host?.placements.beforeChange(along: layoutsUp)
         if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         applyProperties(changed: changed)
         if let view, let host { element.applyDrawnChildren(to: view, through: WebRegistrations.registry, in: host.runtime) }
@@ -82,7 +91,7 @@ final class WebElement: NativeElement {
     }
 
     func leave() {
-        host?.placements.beforeChange()
+        host?.placements.beforeChange(along: layoutsUp)
         if let view { host?.runtime.frames.follow(self, order: view.serial, reads: false) }
         view?.detach()
     }

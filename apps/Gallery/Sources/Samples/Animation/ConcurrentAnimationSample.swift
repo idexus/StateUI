@@ -81,7 +81,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                         if !finished { playing = false }
                     }
 
-                    try await $breath.journey.move(to: 1, .eased(200)).arrived()
+                    try await $breath.journey.move(to: 1, .eased(.milliseconds(200))).arrived()
                 }
                 .isEnabled(!playing)
 
@@ -96,7 +96,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
 
                     for bar in bars {
                         bar.journey.stop()
-                        try await bar.journey.move(to: 0, .eased(120)).arrived()
+                        try await bar.journey.move(to: 0, .eased(.milliseconds(120))).arrived()
                     }
                 }
                 .isEnabled(playing)
@@ -162,9 +162,9 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
         // state, and the host carries all three on the same frames.
         let washing = $wash.journey.move(to:
             n.isMultiple(of: 2) ? Palette.brand : Palette.accent,
-            .eased(1200, .cubicInOut))
+            .eased(.milliseconds(1200), .cubicInOut))
 
-        let breathing = $breath.journey.move(to: 0.25, .eased(600, .cubicInOut))
+        let breathing = $breath.journey.move(to: 0.25, .eased(.milliseconds(600), .cubicInOut))
 
         // 4 bars x 300ms = the 1200ms the wash takes, so the wave crosses the
         // stage exactly once per colour. A hop that did not run to the end is
@@ -173,10 +173,10 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
         var hopped = true
 
         for bar in bars where hopped {
-            hopped = try await bar.journey.move(to: -26, .eased(150, .cubicOut)).arrived()
+            hopped = try await bar.journey.move(to: -26, .eased(.milliseconds(150), .cubicOut)).arrived()
 
             if hopped {
-                hopped = try await bar.journey.move(to: 0, .eased(150, .cubicIn)).arrived()
+                hopped = try await bar.journey.move(to: 0, .eased(.milliseconds(150), .cubicIn)).arrived()
             }
         }
 
@@ -185,7 +185,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
         let washed = try await washing.arrived()
         let breathed = try await breathing.arrived()
 
-        try await $breath.journey.move(to: 1, .eased(300, .cubicInOut)).arrived()
+        try await $breath.journey.move(to: 1, .eased(.milliseconds(300), .cubicInOut)).arrived()
 
         return hopped && washed && breathed
     }

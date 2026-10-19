@@ -15,13 +15,13 @@ final class WebLayoutViewTests: XCTestCase {
         let (a, b, c) = (WebTextView(), WebTextView(), WebTextView())
         defer { for view in [layout, a, b, c] { view.detach() } }
 
-        layout.setItems([a, b, c].map { ($0, LayoutValues()) })
+        layout.setItems([a, b, c].map { ($0, { LayoutValues() }) })
         XCTAssertEqual(WebPage.children(of: layout.node), [a.node, b.node, c.node])
 
-        layout.setItems([c, b, a].map { ($0, LayoutValues()) })
+        layout.setItems([c, b, a].map { ($0, { LayoutValues() }) })
         XCTAssertEqual(WebPage.children(of: layout.node), [c.node, b.node, a.node])
 
-        layout.setItems([b, a].map { ($0, LayoutValues()) })
+        layout.setItems([b, a].map { ($0, { LayoutValues() }) })
         XCTAssertEqual(WebPage.children(of: layout.node), [b.node, a.node], "a child no longer held leaves")
     }
 
@@ -33,7 +33,7 @@ final class WebLayoutViewTests: XCTestCase {
         defer { for view in [layout, mark] { view.detach() } }
         var values = LayoutValues()
         values.margin = Insets(left: -188, top: -94, right: 0, bottom: 0)
-        layout.setItems([(mark, values)])
+        layout.setItems([(mark, { values })])
 
         XCTAssertEqual(WebPage.style(of: mark.node, "margin-inline-start"), "-188px", "left of where it would stand")
         XCTAssertEqual(WebPage.style(of: mark.node, "margin-block-start"), "-94px", "and above it")
@@ -45,10 +45,10 @@ final class WebLayoutViewTests: XCTestCase {
         let layout = WebLayoutView(arrangement: .layers)
         let light = WebLayoutView(arrangement: .single)
         defer { for view in [layout, light] { view.detach() } }
-        layout.setItems([(light, LayoutValues())])
+        layout.setItems([(light, { LayoutValues() })])
         light.setOpacity(0)
 
-        layout.setItems([(light, LayoutValues())])
+        layout.setItems([(light, { LayoutValues() })])
         XCTAssertEqual(WebPage.style(of: light.node, "opacity"), "0", "its own opacity, placed again")
     }
 }
@@ -61,9 +61,9 @@ final class WebLayoutViewLeavingTests: XCTestCase {
         let (kept, gone) = (WebTextView(), WebTextView())
         defer { for view in [layout, kept] { view.detach() } }
 
-        layout.setItems([kept, gone].map { ($0, LayoutValues()) })
+        layout.setItems([kept, gone].map { ($0, { LayoutValues() }) })
         gone.detach()
-        layout.setItems([(kept, LayoutValues())])
+        layout.setItems([(kept, { LayoutValues() })])
 
         XCTAssertEqual(WebPage.children(of: layout.node), [kept.node])
     }

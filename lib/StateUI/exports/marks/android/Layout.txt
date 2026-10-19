@@ -1,10 +1,13 @@
-# revision 1.1
+# revision 2.1
 Grid.avoidsSafeArea: not realized
 Grid.clipsContent: ✅
 Grid.letsInputThrough: not realized
 HStack.avoidsSafeArea: not realized
 HStack.clipsContent: ✅
 HStack.letsInputThrough: not realized
+LayoutEngine.avoidsSafeArea: not realized
+LayoutEngine.clipsContent: ✅
+LayoutEngine.letsInputThrough: not realized
 VStack.avoidsSafeArea: not realized
 VStack.clipsContent: ✅
 VStack.letsInputThrough: not realized

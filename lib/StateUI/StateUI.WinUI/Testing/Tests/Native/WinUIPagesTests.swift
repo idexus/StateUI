@@ -253,7 +253,8 @@ final class WinUIPagesTests: XCTestCase {
     }
 
     /// Words on a bar the tree paints stand light on a dark bar and dark on a light one, where the tree writes no
-    /// colour for them (`BandWords`) - the title, the way back and the actions alike.
+    /// colour for them (`BandWords`) - the title, the way back and the actions alike: the bar stands in the dark theme
+    /// or the light one, said as a window's theme is (`ColorScheme`).
     func testWordsOnAPaintedBarFollowHowDarkItIs() throws {
         try onUIThread {
             let dark = State(wrappedValue: true)
@@ -265,11 +266,13 @@ final class WinUIPagesTests: XCTestCase {
                     .barBackgroundColor(dark.wrappedValue ? navy : yellow)
             }
             let bar = try XCTUnwrap(host.window).titleBar
-            XCTAssertEqual(stateui_winui_title_bar_words(bar.handle), 1, "light on navy")
+            XCTAssertEqual(ColorScheme(rawValue: stateui_winui_title_bar_theme(bar.handle)), .dark, "light on navy")
 
             dark.wrappedValue = false
-            host.settle { stateui_winui_title_bar_words(bar.handle) == 2 }
-            XCTAssertEqual(stateui_winui_title_bar_words(bar.handle), 2, "dark on yellow, once the colour travelled")
+            host.settle { ColorScheme(rawValue: stateui_winui_title_bar_theme(bar.handle)) == .light }
+            XCTAssertEqual(
+                ColorScheme(rawValue: stateui_winui_title_bar_theme(bar.handle)), .light,
+                "dark on yellow, once the colour travelled")
         }
     }
 

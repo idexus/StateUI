@@ -14,7 +14,7 @@ extension WebElement {
         // A button holding a menu offers that one (offerButtonMenu).
         guard ButtonMenu.opening(of: element) == .none else { return }
         listensForMenu = true
-        view.listen("menu") { [weak self] in
+        view.listenForMenu { [weak self] in
             guard let self, let declared = element.children.first(where: { $0.type == .contextMenu }) else { return }
             WebMenu(MenuEntry.entries(of: declared)).show(at: WebRelay.eventPointer.at)
         }

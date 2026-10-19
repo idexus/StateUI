@@ -4,6 +4,9 @@
 /// One member of a contract - a property, an event or an act - as a list of
 /// members holds it.
 public protocol ContractMember: Sendable {
+    /// The contract declaring it.
+    associatedtype Owner: Contract
+
     /// The member's name: what crosses the boundary.
     var name: String { get }
 }

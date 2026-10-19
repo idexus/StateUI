@@ -79,7 +79,7 @@ extension HostEventUpdate {
 extension Node {
     /// A window outside every scene, showing `view`, its session `session`.
     static func window(_ view: some View, session: WindowSession) -> Node {
-        window(showing: { Node.page(view) }, kind: String(reflecting: Swift.type(of: view)), session: session)
+        window(showing: { Node.page(view) }, session: session)
     }
 }
 
@@ -155,6 +155,22 @@ final class Renders {
         rendered = result.node
         runFired()
         return result.patch
+    }
+
+    /// How many times each composed view of the type named `name` - its generic arguments left off - has been
+    /// described, one number a view, in the tree's order.
+    func builds(of name: String) -> [Int] {
+        var counted: [Int] = []
+
+        func walk(_ node: RenderedNode) {
+            for view in node.views where view.type.name.prefix(while: { $0 != "<" }).split(separator: ".").last == Substring(name) {
+                counted.append(node.builds)
+            }
+            node.children.forEach(walk)
+        }
+
+        rendered.map(walk)
+        return counted
     }
 
     /// Renders a tree the way the RENDERER sends it: the walk, then the
@@ -366,6 +382,11 @@ enum SourceTree {
     /// `lib/StateUI/StateUI.Host/Sources`, the host layer's.
     static var hostSources: URL {
         repository.appendingPathComponent("lib/StateUI/StateUI.Host/Sources")
+    }
+
+    /// `lib/StateUI/Foundation/Sources`, the platform's C library behind one import and what is built on it.
+    static var foundationSources: URL {
+        repository.appendingPathComponent("lib/StateUI/Foundation/Sources")
     }
 
     /// `lib/StateUI/Core/Sources`.
@@ -641,8 +662,8 @@ enum SourceTree {
     private static func readAllSources() throws -> [(path: String, text: String)] {
         var found: [(path: String, text: String)] = []
 
-        // The core's sources under their own paths; the host layer's under its module's name, `StateUIHost/`.
-        for (prefix, root) in [("", sources), ("StateUIHost/", hostSources)] {
+        // The core's sources under their own paths; the host layer's and the foundation's under their modules' names.
+        for (prefix, root) in [("", sources), ("StateUIHost/", hostSources), ("StateUIFoundation/", foundationSources)] {
             guard let walk = FileManager.default.enumerator(atPath: root.path) else {
                 throw WalkReadAlmostNothing(root: root.path, read: 0)
             }
@@ -699,6 +720,7 @@ enum SourceTree {
 
         let targets = [
             ("StateUITests", repository.appendingPathComponent("lib/StateUI/Core/Tests")),
+            ("StateUIFoundationTests", repository.appendingPathComponent("lib/StateUI/Foundation/Tests")),
             ("GalleryTests", repository.appendingPathComponent("apps/Gallery/Tests/GalleryTests")),
             ("StateUIAppKitTests", repository.appendingPathComponent("lib/StateUI/StateUI.AppKit/Tests")),
             ("StateUIUIKitTests", repository.appendingPathComponent("lib/StateUI/StateUI.UIKit/Tests/Sources")),
@@ -914,9 +936,9 @@ func label(_ text: String, id: String? = nil) -> Node {
 
 /// A button with a click handler, for the tests about handler ids.
 @MainActor
-func button(_ text: String, id: String? = nil, onClicked: @escaping EventHandler) -> Node {
+func button(_ text: String, id: String? = nil, onClicked: @escaping @MainActor () throws -> Void) -> Node {
     var node = Node(type: "Button", id: id, props: ["text": .string(text)])
-    node.addHandler("clicked", gate: .none, onClicked)
+    node.addHandler("clicked", onClicked)
     return node
 }
 

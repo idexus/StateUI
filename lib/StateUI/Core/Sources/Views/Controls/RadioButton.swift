@@ -86,18 +86,4 @@ public struct RadioButton: ElementView, TextualElement, FontElement, PaddingElem
     public func onToggled(gate: some Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Self {
         onEvent(RadioButtonContract.toggled, gate: gate, handler)
     }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onToggled(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
-        fatalError("unavailable")
-    }
-}
-
-extension RadioButton {
-    /// `textCase` from a state, `$x`: the host sets each new value as it
-    /// stands, and no view is rebuilt for it.
-    public func textCase(_ state: Binding<TextCase>) -> Modified {
-        twin(TextualElementContract.textCase, by: state)
-    }
 }

@@ -10,7 +10,9 @@ virtualization stands inside the platform's.
 
 Every entry the list shows has an identity, and the element carries all of
 them in order as one property, `ItemsViewContract.items` (`ItemsEntries`):
-the list's header and footer, and each group's header, items and footer. A
+the list's header and footer, and each group by its name with its header,
+items and footer - the name `.id` gave it, else its place, two groups of one
+name told apart as two items are, since a host knows a group by its name. A
 list with no groups is one section with neither. An item's identity is
 `String(describing:)` of its id, and in a list of groups the group's name, a
 unit separator, and that - so two groups may hold equal items. A header or a
@@ -34,6 +36,15 @@ and renders at once, so the platform's synchronous call for a cell finds the
 entry's subtree mounted. An entry the host lets go leaves the tree, its
 state with it.
 
+The ItemsView keeps, with the identities, the positions they stood at as the
+host said them, and builds the entries standing at those positions too
+(`ItemsReach`). A change that moves the entries - one put first, one taken
+out - brings others to the places the cells stand at, and they are built in
+the render of the change: the patch mounts them before the host takes the
+new entries, so the collection measures them as it lays the change out,
+where an entry built a turn later would be laid out at an estimate and move
+every row after it once measured. The host's next word replaces both.
+
 Each entry is a composed view of its own, `ItemsEntry`, keyed by its
 identity: a state one item reads builds that item alone, and a change to it
 reaches the host as any child's does.
@@ -49,7 +60,9 @@ entries already built are carried whole, and only the one asked for is
 built. When the parent builds the list again, every entry held is built again
 too, as `ForEach` builds its rows - a value the item closure captured may have
 changed. The identities are worked out once for the object, not once a
-build.
+build. An entry is one value to compare - its identity and that object
+(`ItemsEntry` is `Equatable`) - since every render of the list compares each
+entry it keeps: it is compared whole, with no walk of its parts.
 
 ## Empty
 

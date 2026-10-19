@@ -43,7 +43,7 @@ class GTKView {
 
     /// The view's drags, once it offers or takes one.
     private(set) var dragAndDrop: GTKDragAndDrop?
-    private var onHeard: ((HeardInput) -> Void)?
+    private var onHeard: ((HeardInput) -> Bool)?
 
     /// What hears the keyboard come into the view and leave it, and the controller telling it; nil while none does.
     private var onFocusChanged: ((Bool) -> Void)?
@@ -258,7 +258,7 @@ class GTKView {
     /// Listens for what `hearing` names, `heard` hearing it; a panel listening for taps is pressable by
     /// assistive technology.
     /// Design: docs/design/platforms/gtk/input.md#listening
-    func hear(_ hearing: Hearing, _ heard: @escaping (HeardInput) -> Void) {
+    func hear(_ hearing: Hearing, _ heard: @escaping (HeardInput) -> Bool) {
         onHeard = hearing.isEmpty ? nil : heard
         guard hearing != self.hearing else { return }
 
@@ -278,9 +278,10 @@ class GTKView {
         self.dragAndDrop = offered == .none ? nil : dragAndDrop
     }
 
-    /// What the view heard, handed to what hears it.
-    func heard(_ heard: HeardInput) {
-        onHeard?(heard)
+    /// What the view heard, handed to what hears it; whether it took it.
+    @discardableResult
+    func heard(_ heard: HeardInput) -> Bool {
+        onHeard?(heard) ?? false
     }
 
     /// Tells `action` when the keyboard comes into the view or a part of it, and when it leaves; nil tells no one.
@@ -309,8 +310,9 @@ class GTKView {
     /// The element left the tree: the view lets go of everything that would call back into it. An override
     /// calls this first.
     func detach() {
-        hear([]) { _ in }
+        hear([]) { _ in false }
         setFocusChanged(nil)
         contextMenu = nil
+        offer(.none) { _ in }
     }
 }

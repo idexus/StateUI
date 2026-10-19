@@ -70,7 +70,7 @@ public final class ApplicationSession {
 
     /// How every value in the application animates when it changes.
     ///
-    ///     application.motion = .spring(response: 260)
+    ///     application.motion = .spring(response: .milliseconds(260))
     ///
     /// A colour animates to its new colour, a view that grew to its new size.
     /// `.none` turns animation off everywhere, for an application that draws

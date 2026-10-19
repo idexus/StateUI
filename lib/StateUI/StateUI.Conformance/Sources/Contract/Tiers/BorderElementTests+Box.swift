@@ -9,7 +9,7 @@
 /// Design: docs/design/host/conformance.md#a-drawing-read-by-its-colours
 extension BorderElementTests {
     /// The layouts, whose box StateUI draws, and a button.
-    static let drawnBoxes: Set<String> = ["Button", "Grid", "HStack", "ScrollView", "VStack", "ZStack"]
+    static let drawnBoxes: Set<String> = ["Button", "Grid", "HStack", "LayoutEngine", "ScrollView", "VStack", "ZStack"]
 
     /// Whether `color`, inside `element`'s outline, is none of the outline: nothing at all in a layout, anything but
     /// the outline's red where a button's own face stands.
@@ -22,11 +22,11 @@ extension BorderElementTests {
     static func boxCases(_ element: String) -> [ConformanceCase] {
         guard drawnBoxes.contains(element) else { return [] }
         return [
-            boxFilled(element), boxOutlined(element), boxWidened(element), boxShaped(element), boxCapsuled(element),
+            boxOutlined(element), boxWidened(element), boxShaped(element), boxCapsuled(element),
         ]
     }
 
-    /// A layout's box is filled in its background.
+    /// A layout's box is filled in its background - a case of the VisualElement family, whose member it proves.
     @MainActor
     static func boxFilled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).fillsItsBoxInItsBackground", proves: [

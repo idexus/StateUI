@@ -98,6 +98,23 @@ final class AppKitButtonViewTests: XCTestCase {
         XCTAssertEqual(events, ["pressed", "clicked", "released"])
     }
 
+    /// A disabled button hears no press: a real mouse-down reaches AppKit's own check, which lets nothing through.
+    @MainActor
+    func testADisabledButtonHearsNoPress() throws {
+        let button = AppKitButtonView()
+        button.isEnabled = false
+        var events: [String] = []
+        button.onPressed = { events.append("pressed") }
+        button.onReleased = { events.append("released") }
+        let down = try XCTUnwrap(NSEvent.mouseEvent(
+            with: .leftMouseDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil,
+            eventNumber: 0, clickCount: 1, pressure: 1))
+
+        button.mouseDown(with: down)
+
+        XCTAssertEqual(events, [])
+    }
+
     /// A button's own fill keeps nine tenths of its opacity under the pointer, and all of it once the pointer leaves.
     @MainActor
     func testAButtonsOwnFillFadesUnderThePointer() throws {

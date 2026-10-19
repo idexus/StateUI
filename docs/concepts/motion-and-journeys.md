@@ -15,8 +15,8 @@ still apply the final destination, normally by snapping. Only checked rows in
 
 `Motion` has two destination-seeking laws:
 
-- `.eased(length, curve)` takes the stated number of milliseconds and lands on
-  the destination exactly;
+- `.eased(length, curve)` takes the stated `Duration` - `.milliseconds(300)` -
+  and lands on the destination exactly;
 - `.spring(response:damping:)` keeps standing velocity when retargeted and
   settles on the destination rather than at an unrelated resting point.
 
@@ -45,7 +45,7 @@ struct MovingPanel: View {
             Rectangle(.cornflowerBlue)
                 .width(expanded ? 280 : 120)
                 .cornerRadius(expanded ? 28 : 8)
-                .motion(.spring(response: 280))
+                .motion(.spring(response: .milliseconds(280)))
 
             Button("Resize").onClicked { expanded.toggle() }
         }
@@ -93,7 +93,7 @@ This lets size snap while placement travels:
 
 ```swift quote
 VStack { content }
-    .motion(.spring(response: 240))
+    .motion(.spring(response: .milliseconds(240)))
     .motion(.none, .size)
 ```
 
@@ -132,7 +132,7 @@ It returns at once; its `arrived()` awaits the outcome:
 ```swift quote
 let arrived = try await $opacity.journey.move(
     to: 0.2,
-    .eased(400, .cubicOut)).arrived()
+    .eased(.milliseconds(400), .cubicOut)).arrived()
 
 if !arrived {
     // A newer destination, another write, or stop() ended this animation.

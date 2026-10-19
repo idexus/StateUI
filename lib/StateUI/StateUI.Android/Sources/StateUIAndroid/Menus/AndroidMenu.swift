@@ -52,7 +52,7 @@ enum AndroidMenu {
 
         Java.frame {
             let bitmaps = pictures.map { $0.flatMap(AndroidPictures.bitmap) }
-            let words = Java.array(of: JavaAPI.string, texts.map { Java.string($0) })
+            let words = Java.strings(texts)
             let images = bitmaps.contains { $0 != nil } ? Java.array(of: JavaAPI.bitmap, bitmaps.map { $0?.reference }) : nil
             withExtendedLifetime(bitmaps) { write(Java.ints(kinds), words, images) }
         }
@@ -92,8 +92,11 @@ enum AndroidMenu {
             | (shortcut.modifiers.contains(.shift) ? shift : 0) | (shortcut.modifiers.contains(.alt) ? alt : 0)
     }
 
-    private static let menu: Int32 = 1, end: Int32 = 2, separator: Int32 = 3
-    private static let disabled: Int32 = 4, destructive: Int32 = 8, onBar: Int32 = 16, withText: Int32 = 32
-    private static let checkable: Int32 = 64, checked: Int32 = 128
-    private static let control: Int32 = 256, shift: Int32 = 512, alt: Int32 = 1024
+    private static let menu = AndroidMenuEntry.menu.rawValue, end = AndroidMenuEntry.end.rawValue
+    private static let separator = AndroidMenuEntry.separator.rawValue
+    private static let disabled = AndroidMenuMark.disabled.rawValue, destructive = AndroidMenuMark.destructive.rawValue
+    private static let onBar = AndroidMenuMark.onBar.rawValue, withText = AndroidMenuMark.withText.rawValue
+    private static let checkable = AndroidMenuMark.checkable.rawValue, checked = AndroidMenuMark.checked.rawValue
+    private static let control = AndroidMenuModifier.control.rawValue, shift = AndroidMenuModifier.shift.rawValue
+    private static let alt = AndroidMenuModifier.alt.rawValue
 }

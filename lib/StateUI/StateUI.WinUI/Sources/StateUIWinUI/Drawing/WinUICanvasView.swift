@@ -43,12 +43,12 @@ final class WinUICanvasView: WinUIView {
         }
     }
 
-    /// A press on the canvas at `point`, in its phase: 0 pressed, 1 dragged, 2 released.
-    func pressed(phase: Int32, at point: Point) {
+    /// A press on the canvas at `point`, in its phase.
+    func pressed(_ phase: StateUIPressPhase, at point: Point) {
         switch phase {
-        case 0: onPressed?(point)
-        case 1: onDragged?(point)
-        default: onReleased?(point)
+        case .down: onPressed?(point)
+        case .moved: onDragged?(point)
+        case .letGo, .takenAway: onReleased?(point)
         }
     }
 

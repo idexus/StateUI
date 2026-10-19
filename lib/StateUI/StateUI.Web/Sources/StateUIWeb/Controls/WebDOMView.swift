@@ -15,7 +15,6 @@ class WebDOMView {
     /// When the view was made among every view of the page - the order the display's frames serve them in; the
     /// relay makes a number let go of again, so its number is no order.
     let serial: Int64
-    private static var made: Int64 = 0
 
     /// How many views are alive, for the tally.
     private(set) static var liveCount = 0
@@ -51,6 +50,9 @@ class WebDOMView {
     /// Where the view is drawn while its place travels; nil at its slot.
     var travelling: Rect?
 
+    /// The place a layout's run last stood the view at; nil while no run places it.
+    var placedByRun: HostPlacement?
+
     /// How far the view is drawn from where the browser lays it out while its place travels.
     var travelOffset: (x: Double, y: Double)?
 
@@ -70,24 +72,21 @@ class WebDOMView {
 
     init(tag: String) {
         node = WebRelay.create(tag)
-        Self.made += 1
-        serial = Self.made
+        serial = HostNumbers.next()
         Self.liveCount += 1
     }
 
     /// A view of an element made already - an application's control's - which it lets go of as its own.
     init(adopting node: Int32) {
         self.node = node
-        Self.made += 1
-        serial = Self.made
+        serial = HostNumbers.next()
         Self.liveCount += 1
     }
 
     /// A view of one of SVG's elements.
     init(vector tag: String) {
         node = WebRelay.createVector(tag)
-        Self.made += 1
-        serial = Self.made
+        serial = HostNumbers.next()
         Self.liveCount += 1
     }
 
@@ -142,6 +141,20 @@ class WebDOMView {
         let listener = WebRelay.listener(action)
         listeners.append(listener)
         WebRelay.listen(node, event, listener)
+    }
+
+    /// Runs `action` whenever the relay hears `kind` on the element.
+    func hear(_ kind: WebHearing, _ action: @escaping @MainActor () -> Void) {
+        let listener = WebRelay.listener(action)
+        listeners.append(listener)
+        WebRelay.hear(node, kind, listener)
+    }
+
+    /// Runs `action` whenever the user asks for the element's menu: a right click, or a finger held still.
+    func listenForMenu(_ action: @escaping @MainActor () -> Void) {
+        let listener = WebRelay.listener(action)
+        listeners.append(listener)
+        WebRelay.listenForMenu(node, listener)
     }
 
     /// Says when a pointer takes hold of the element, and once when it lets go - lifted, called off, or gone off it.
@@ -199,7 +212,9 @@ class WebDOMView {
 
     /// Whether the view shows; a hidden one takes no room, so its layout's places are read before it goes or comes.
     func setShown(_ shown: Bool) {
-        if shown != isShown { placingLayout?.placing?.beforeChange() }
+        if shown != isShown, let layout = placingLayout {
+            layout.placing?.beforeChange(along: Array(sequence(first: layout, next: { $0.placingLayout })))
+        }
         isShown = shown
         attribute("hidden", shown ? nil : "")
     }
@@ -207,18 +222,24 @@ class WebDOMView {
     /// How the view is drawn over its place, its own say.
     private(set) var ownDrawing = HostDrawingTransform.identity
 
-    /// How the layout placing the view by a run draws it, and the size the run gives it; nil while it stands in its
-    /// own place.
+    /// The matrix last written, with the transform and size it was written for.
+    private var writtenMatrix: (transform: HostDrawingTransform, width: Double, height: Double, text: String)?
+
+    /// How the layout placing the view by a run draws it, the size the run gives it and where its place stands
+    /// in the layout; nil while it stands in its own place.
     private(set) var placedDrawing: HostDrawingTransform?
     private(set) var placedSize: LayoutSize?
+    private(set) var placedAt: Point?
 
-    /// Draws the view as the run placing it says, at the size the run gives it - written again whenever either
-    /// changes, as the matrix turns and scales the view about a pivot of that size; nil for neither.
+    /// Draws the view as the run placing it says, at the size the run gives it and moved to where its place stands
+    /// - written again whenever any of them changes, as the matrix turns and scales the view about a pivot of that
+    /// size; nil for none.
     /// Design: docs/design/platforms/web/layout.md#a-placing-run
-    func drawInRun(_ drawing: HostDrawingTransform?, size: LayoutSize?) {
-        guard drawing != placedDrawing || size != placedSize else { return }
+    func drawInRun(_ drawing: HostDrawingTransform?, size: LayoutSize?, at origin: Point? = nil) {
+        guard drawing != placedDrawing || size != placedSize || origin != placedAt else { return }
         placedDrawing = drawing
         placedSize = size
+        placedAt = origin
         writeTransform()
     }
 
@@ -230,21 +251,38 @@ class WebDOMView {
         writeTransform()
     }
 
-    /// The view's drawing: moved where its place travels, then as its transform says, for its size as drawn.
+    /// The view's drawing: moved to where a run places it and where its place travels, then as its transform says,
+    /// for its size as drawn.
     func writeTransform(size drawn: LayoutSize? = nil) {
         let transform = ownDrawing.under(placedDrawing)
-        let moved = travelOffset.map { "translate(\(WebCSS.signedPixels($0.x)), \(WebCSS.signedPixels($0.y)))" }
+        let shifts = [placedAt.map { ($0.x, $0.y) }, travelOffset.map { ($0.x, $0.y) }].compactMap { $0 }
+        let moved = shifts.isEmpty ? nil : shifts.map {
+            "translate(\(WebCSS.signedPixels($0.0)), \(WebCSS.signedPixels($0.1)))"
+        }.joined(separator: " ")
         guard !transform.isIdentity else {
             style("transform", moved)
             return style("transform-origin", nil)
         }
         let size = drawn ?? placedSize ?? WebRelay.size(of: node)
-        let m = transform.matrix(width: size.width, height: size.height)
+        style("transform-origin", "0 0")
+        let matrix = matrix(of: transform, width: size.width, height: size.height)
+        style("transform", moved.map { $0 + " " + matrix } ?? matrix)
+    }
+
+    /// The matrix as CSS, written again only for another transform or size: a run moving a view on writes its move
+    /// alone again.
+    /// Design: docs/design/platforms/web/controls.md#drawn-over-its-place
+    private func matrix(of transform: HostDrawingTransform, width: Double, height: Double) -> String {
+        if let written = writtenMatrix, written.transform == transform, written.width == width,
+           written.height == height {
+            return written.text
+        }
+        let m = transform.matrix(width: width, height: height)
         let values = [m.m11, m.m12, m.m13, m.m14, m.m21, m.m22, m.m23, m.m24,
                       m.m31, m.m32, m.m33, m.m34, m.m41, m.m42, m.m43, m.m44]
-        style("transform-origin", "0 0")
-        let matrix = "matrix3d(" + values.map(WebCSS.number).joined(separator: ", ") + ")"
-        style("transform", moved.map { $0 + " " + matrix } ?? matrix)
+        let text = "matrix3d(" + values.map(WebCSS.number).joined(separator: ", ") + ")"
+        writtenMatrix = (transform, width, height, text)
+        return text
     }
 
     /// What assistive technology meets of the view: its name and what it does, its level as a heading, whether it
@@ -254,9 +292,9 @@ class WebDOMView {
         attribute("data-identifier", words.identifier)
         named.attribute("aria-label", words.label?.isEmpty == false ? words.label : nil)
         named.attribute("aria-description", words.hint?.isEmpty == false ? words.hint : nil)
-        let heading = words.headingLevel > 0
-        attribute("role", heading ? "heading" : words.presence == .hidden ? "none" : role)
-        attribute("aria-level", heading ? String(words.headingLevel) : nil)
+        spoken = (words.headingLevel > 0, words.presence == .hidden)
+        writeRole()
+        attribute("aria-level", spoken.heading ? String(words.headingLevel) : nil)
         attribute("aria-hidden", words.presence == .hiddenWithChildren ? "true" : nil)
     }
 
@@ -277,8 +315,17 @@ class WebDOMView {
             guard isTapped != oldValue else { return }
             attribute("data-taps", isTapped ? "" : nil)
             attribute("tabindex", isTapped ? "0" : nil)
-            attribute("role", role)
+            writeRole()
         }
+    }
+
+    /// Whether assistive technology meets the view as a heading, and whether it skips it, as its words last said.
+    private var spoken = (heading: false, skipped: false)
+
+    /// The one writer of the view's role, from all it is: a heading, else skipped, else its own (`role`) - a
+    /// container the user taps a button.
+    private func writeRole() {
+        attribute("role", spoken.heading ? "heading" : spoken.skipped ? "none" : role)
     }
 
     /// The direction the view lays out and writes in.

@@ -15,7 +15,7 @@ struct ApplicationSessionSample: SampleContent, ExampleContent {
     static let summary = "The application's session, read and written like any state - here the motion values take by default."
 
     // listing: ApplicationSessionSample
-    static let laws: [Motion] = [.standard, .spring(response: 320, damping: 0.6), .none]
+    static let laws: [Motion] = [.standard, .spring(response: .milliseconds(320), damping: 0.6), .none]
 
     /// What the picker calls a law.
     static func name(_ law: Motion) -> String {

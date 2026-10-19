@@ -9,13 +9,13 @@ import CStateUIWinUI
 /// Design: docs/design/types/brushes.md#as-a-host-is-handed-it
 struct WinUIBrush: Equatable {
     /// 0 none, 1 solid, 2 linear, 3 radial.
-    var kind: Int32 = 0
+    var kind: StateUIBrushKind = .none
 
     /// A line's two points, or a centre and a radius, in fractions of the painted box.
     var geometry: [Double] = [0, 0, 0, 0]
 
     /// Whether how it paints follows the size of what it paints: a radial gradient's circle does.
-    var followsSize: Bool { kind == 3 }
+    var followsSize: Bool { kind == .radial }
     var colors: [UInt32] = []
     var offsets: [Double] = []
 
@@ -28,15 +28,15 @@ struct WinUIBrush: Equatable {
     init(_ value: HostValue?) {
         switch HostBrush(value) {
         case .none: self.init()
-        case .solid(let color): self.init(kind: 1, geometry: [0, 0, 0, 0], [(0, color.argb ?? 0)])
+        case .solid(let color): self.init(kind: .solid, geometry: [0, 0, 0, 0], [(0, color.argb ?? 0)])
         case .linear(let from, let to, let stops):
-            self.init(kind: 2, geometry: [from.x, from.y, to.x, to.y], stops.compactMap(Self.stop))
+            self.init(kind: .linear, geometry: [from.x, from.y, to.x, to.y], stops.compactMap(Self.stop))
         case .radial(let center, let radius, let stops):
-            self.init(kind: 3, geometry: [center.x, center.y, radius, 0], stops.compactMap(Self.stop))
+            self.init(kind: .radial, geometry: [center.x, center.y, radius, 0], stops.compactMap(Self.stop))
         }
     }
 
-    private init(kind: Int32, geometry: [Double], _ stops: [(offset: Double, argb: UInt32)]) {
+    private init(kind: StateUIBrushKind, geometry: [Double], _ stops: [(offset: Double, argb: UInt32)]) {
         self.kind = kind
         self.geometry = geometry
         colors = stops.map(\.argb)

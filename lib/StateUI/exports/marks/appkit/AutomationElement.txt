@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 3.1
 ActivityIndicator.accessibilityIdentifier: ✅
 Button.accessibilityIdentifier: ✅
 Canvas.accessibilityIdentifier: ✅
@@ -11,6 +11,7 @@ Grid.accessibilityIdentifier: ✅
 HStack.accessibilityIdentifier: ✅
 Image.accessibilityIdentifier: ✅
 ItemsView.accessibilityIdentifier: ✅
+LayoutEngine.accessibilityIdentifier: ✅
 Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: ✅
 MenuItem.accessibilityIdentifier: ☑️ Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.

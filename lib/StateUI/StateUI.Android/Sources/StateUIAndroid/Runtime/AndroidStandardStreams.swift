@@ -3,6 +3,7 @@
 
 import Android
 import CStateUIAndroid
+import Synchronization
 
 /// Logcat for an Android application, a line at a time: the host's log, and its stdout and stderr, which otherwise go
 /// nowhere.
@@ -11,14 +12,19 @@ enum AndroidStandardStreams {
     /// The tag every line of the host's log and of the application's `print` carries.
     static let tag = "StateUI"
 
+    /// Whether stdout and stderr reach logcat already.
+    private static let redirected = Atomic<Bool>(false)
+
     /// Writes one line of the host's log (`HostLog`) to logcat.
     @Sendable static func log(_ line: String) {
         let words = line.hasSuffix("\n") ? String(line.dropLast()) : line
         _ = __android_log_write(Int32(ANDROID_LOG_ERROR.rawValue), tag, words)
     }
 
-    /// Points stdout and stderr at a pipe that a thread of its own reads into logcat.
+    /// Points stdout and stderr at a pipe that a thread of its own reads into logcat - once for the process, however
+    /// many activities start.
     static func redirect() {
+        guard !redirected.exchange(true, ordering: .relaxed) else { return }
         var ends: [Int32] = [0, 0]
         guard pipe(&ends) == 0 else { return }
 

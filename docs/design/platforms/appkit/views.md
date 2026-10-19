@@ -8,7 +8,10 @@ themselves.
 What crosses the boundary for a picture is a name, and the files behind it
 belong to the renderer: it knows the application's resource directory and
 keeps the cache over it, so one name is loaded once however many views draw
-it. A registration is made once for the whole process and has no renderer to
+it. The cache lets go of pictures under memory pressure, as the system asks;
+a picture something still holds - a view showing it - stays found by its
+name through a table that holds it weakly, so a view handed it again finds
+the same image and nothing changed. A registration is made once for the whole process and has no renderer to
 ask, so the host hands every view it makes, through `AppKitPictureResolving`,
 the means to resolve a name. A name the application has no file for resolves
 to nothing. An icon resolves to its SF Symbol (`Icon.sfSymbol`), a template
@@ -78,6 +81,16 @@ the pane's layer, a blur or glass a view of its own under the page - over
 the system's. A Mac sidebar never slides over the detail: a window too narrow
 for both hides it, so the flyout's material is never shown.
 
+## A child turned in place
+
+A ZStack whose run turns its drawing order - two cards swapping ranks as a
+layout engine's run passes halfway between them - sets its `subviews` in the
+new order (`ZStackArithmetic.drawingOrder`), which moves each child it keeps
+without taking it out. A child taken out and added again leaves the window
+for a moment, and AppKit cancels a gesture under way on it: a pointer drag of
+the scroller lying over the cards would end at the first swap, and the run go
+back to the target it left.
+
 ## Scroll bars
 
 A ScrollView and an ItemsView lay their scroll bars over what they show,
@@ -101,6 +114,19 @@ from a layout of its words it keeps in TextKit (`NSLayoutManager`), laid out
 again only when its words or its width change, drawing only the lines the
 strip shows; its lines stand where the cell's do, 2 points in from each
 side. A truncated label draws as its cell does.
+
+## A view under a transform
+
+AppKit measures what of a view is visible - its `visibleRect`, which bounds
+what a layer-backed view draws - from the frames of the view and its
+ancestors, without their layers' transforms. A view standing past the edge of
+what clips it, turned or scaled back inside it - a card of a fan at the side
+of a deck - would be drawn only where its unturned frame shows, cut along a
+straight line across the card. Every view that draws takes the whole of its
+bounds for visible where it or an ancestor stands under a transform
+(`drawnRect(visible:)`); one standing straight keeps what AppKit measures, so
+a scroller uncovering a long label still draws it strip by strip (A long
+text).
 
 ## A button's icon beside its words
 

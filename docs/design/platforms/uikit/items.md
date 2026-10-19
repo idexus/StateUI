@@ -1,7 +1,9 @@
 # Items
 
 An ItemsView is UIKit's collection view: a diffable data source over the
-list's identities, one section a group, and a compositional layout. The host
+list's identities, one section a group known by its name - a group added
+before the others is a new section, its header its own - and a compositional
+layout. The host
 makes the view itself, since each cell asks the tree for what it holds
 through the host layer's `ItemsCells` ([items](../../host/items.md)).
 UIKit scrolls, reuses its cells, shows the user's choice and touch - each
@@ -15,12 +17,9 @@ lets its entry go. The user's choice is the collection's selection -
 none, one or many as the tree says - told back in the list's order; what
 the tree selects is selected inside `ProgramWrite` and told nobody. An item
 opened is the collection's primary action, which a tap performs.
-`scrollTo` stands the item where its anchor says, by the host layer's rule
-(`ScrollAnchor.place`), from the item's frame as the layout holds it, within
-the room the collection's insets leave and within its reach - gliding there
-unless the user asks for less motion; nearest scrolls only where the item is
-not wholly in view, the shorter way. The end
-reached is watched as the collection scrolls and lays out.
+`scrollTo` stands the item where its anchor says ([scrolling to an
+item](#scrolling-to-an-item)). The end reached is watched as the collection
+scrolls and lays out.
 
 ## The layout
 
@@ -31,7 +30,11 @@ ways. Every item's size along the list is estimated and then asked of the
 entry. A group's header and footer are the section's supplementary views,
 and the list's own header and footer are the layout's; UIKit fixes the
 layout's own when it makes the layout, so the layout is made again when the
-list gains or loses one.
+list gains or loses one. A group gaining or losing a header or a footer
+changes the layout's shape, which the snapshot does not say when its items
+stay, so the layout is invalidated then - and only then: an invalidation
+drops every size the layout measured, and the items a change moves would
+travel towards places estimated, then jump to the places measured.
 
 ## A cell
 
@@ -63,3 +66,21 @@ header or a footer - are the host layer's three moments, `hold`, `show` and
 Scrolled back, UIKit shows again a cell that ended showing its item a moment
 before without asking the data source for it; its `willDisplay` is what
 gives it its entry back.
+
+## Scrolling to an item
+
+`scrollTo` stands the item where its anchor says, by the host layer's rule
+(`ScrollAnchor.place`), from the item's frame as the layout holds it, within
+the room the collection's insets leave and within its reach - gliding there
+unless the user asks for less motion; nearest scrolls only where the item is
+not wholly in view, the shorter way. Every size the layout holds of a cell not
+measured yet is its estimate, and the cells the scroll brings into view
+measure only once their entries come, a turn later: at two pixels a point a
+text with its padding measures 44.5 against the 44 estimated, and two cells
+measured above the item moved it a point down. So the item stands, the
+collection lays out what that brought into view, and the item stands again
+from the cells measured - and once more after every pass that brings cells
+their entries, while the host layer holds it ([scrolling to an
+item](../../host/items.md#scrolling-to-an-item)). A scroll that glides
+stands its item again as its animation ends; the user's drag lets it go.
+

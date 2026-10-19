@@ -162,10 +162,27 @@ window would hold a sheet never shown. So while a sheet the
 window presented or took away still moves, what is asked waits - the latest
 asking - and comes as that movement ends. The user swiping the top sheet down
 is the window's way back, told the stack as how many stay; a window that leaves tells
-nobody of its sheets, which leave with it.
+nobody of its sheets, which leave with it. A window whose scene iOS lets go of
+and brings back takes nothing UIKit kept presented over its root - UIKit takes
+that away in its own time, dropping what is presented over it meanwhile - so
+the root takes it away first and presents what is asked for anew; a movement
+that began in the window gone ends there and does nothing.
 
 The overlays are laid over the window's pages within the safe area, the first
 lowest, and a touch beside what one holds reaches the page under it.
+
+## What passes over the sheets
+
+A question, a file dialog and a preview pass over what the window shows, and
+UIKit presents one thing over a controller at a time: a question asked in the
+turn a sheet is asked for would be dropped, or would stop every sheet after it.
+So the window's root presents everything (`UIKitRootViewController.pass`):
+what passes waits until no sheet moves, then stands over the top sheet -
+centred, where it stands as a popover with nothing to point at - and the
+sheets asked for while it stands wait until it has gone. It goes with its
+answer (`passed`): UIKit's own dismissal is let finish, else the root
+dismisses it, and then what waited comes - the sheets first, then the next
+thing passing.
 
 ## Menus
 
@@ -182,7 +199,9 @@ application's main menu - on an iPad its menu bar. One whose identity is a
 standard menu stands as a section at the end of UIKit's own menu of that
 identity (`UIMenu.Identifier.file`), one UIKit keeps none of where UIKit's
 would stand - View after Edit, Help after Window - and any other before
-Window. The main menu is built again whenever they say something else or an
-entry answers another element: every action carries its element's identifier
+Window. UIKit changes no built menu in place, so the main menu is built again
+whenever they show something else - a word, a check, a destructive mark, a
+picture, a shortcut - or an entry answers another element, as the host layer
+says them (`MenuEntry.Said`): every action carries its element's identifier
 (`actionIdentifier`), which UIKit keeps in the copies it makes, so a page's
 Save standing in the window's place with the same words still rebuilds it.

@@ -1,68 +1,62 @@
-# revision 12.2
+# revision 14.2
 ActivityIndicator.frame: ✅
 ActivityIndicator.scaleX: ✅
 Button.accessibilityHeading: ✅
-Canvas.frameChanged: ✅
-Canvas.height: ✅
-Canvas.rotationX: ✓ read rotationX of Canvas: the host's own tip, checked against the projection it laid on the element
-Canvas.width: ✅
-Capsule.accessibilityHint: ✅
-CheckBox.isVisible: ✅
-CheckBox.pivotX: ✅
-DatePicker.translationX: ✅
-DatePicker.zIndex: ✅
-Divider.isAccessibilityHidden: ✅
-Ellipse.background: – A WinUI shape is its figure alone: it paints no ground around it.
-Grid.ignoresInput: ✅
-Grid.scale: ✅
-HStack.accessibilityHeading: ✅
-HStack.translationY: ✅
-Image.accessibilityHeading: ✅
-ItemsView.isEnabled: ✅
-ItemsView.rotation: ✅
-Line.layoutDirection: ✓ read layoutDirection of Line: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Map.frame: 🧩
-Map.scaleX: 🧩
-Path.frameChanged: ✅
-Path.maximumHeight: ✅
-Path.maximumWidth: ✅
-Path.minimumHeight: ✅
-Path.minimumWidth: ✅
-Path.rotationY: ✓ read rotationY of Path: the host's own tip, checked against the projection it laid on the element
-Picker.accessibilityHint: ✅
-Polygon.opacity: ✅
-Polygon.pivotY: ✅
-Polyline.translationX: ✅
-Polyline.zIndex: ✅
-ProgressBar.automationExcludedWithChildren: ✅
-RadioButton.frameChanged: ✅
-RadioButton.maximumHeight: ✅
-RadioButton.maximumWidth: ✅
-RadioButton.minimumHeight: ✅
-RadioButton.minimumWidth: ✅
-RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own tip, checked against the projection it laid on the element
-Rectangle.tooltip: ✅
-ScrollView.opacity: ✅
-ScrollView.pivotY: ✅
+Canvas.isEnabled: does not apply - read isEnabled of Canvas - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Canvas.rotation: ✅
+Capsule.accessibilityLabel: ✅
+Capsule.isEnabled: ✅
+CheckBox.layoutDirection: ✅
+DatePicker.scaleY: ✅
+DatePicker.style: ✅
+Divider.automationExcludedWithChildren: ✅
+Ellipse.automationExcludedWithChildren: ✅
+Grid.maximumHeight: ✅
+Grid.maximumWidth: ✅
+Grid.minimumHeight: ✅
+Grid.minimumWidth: ✅
+Grid.rotationY: ✓ read rotationY of Grid: the host's own tip, checked against the projection it laid on the element
+HStack.scaleY: ✅
+HStack.style: ✅
+Image.accessibilityLabel: ✅
+Image.isEnabled: ✅
+ItemsView.layoutDirection: ✅
+LayoutEngine.isAccessibilityHidden: ✅
+Line.isVisible: ✅
+Line.pivotX: ✅
+Map.scaleY: 🧩
+Map.style: 🧩
+Path.ignoresInput: ✅
+Path.scale: ✅
+Picker.tooltip: ✅
+Polygon.isEnabled: does not apply - read isEnabled of Polygon - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Polygon.rotation: ✅
+Polyline.accessibilityHeading: ✅
+Polyline.translationY: ✅
+ProgressBar.background: – WinUI's progress bar paints its Background as its track, no ground under its frame.
+RadioButton.ignoresInput: ✅
+RadioButton.scale: ✅
+Rectangle.accessibilityHeading: ✅
+ScrollView.isEnabled: ✅
+ScrollView.rotation: ✅
 SearchField.scaleY: ✅
 SearchField.style: ✅
 Slider.automationExcludedWithChildren: ✅
 Spacer.ignoresInput: ✅
 Spacer.scale: ✅
 Stepper.accessibilityHeading: ✅
-Switch.frameChanged: ✅
 Switch.height: ✅
 Switch.rotationX: ✓ read rotationX of Switch: the host's own tip, checked against the projection it laid on the element
 Switch.width: ✅
-Text.accessibilityLabel: ✅
-Text.isEnabled: ✅
+Text.scaleY: ✅
+Text.style: ✅
 TextEditor.accessibilityHint: ✅
 TextField.opacity: ✅
 TextField.pivotY: ✅
 TimePicker.accessibilityHeading: ✅
 TimePicker.translationY: ✅
 VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-WebView.isEnabled: – WinUI's WebView2 is no control: it keeps no enabled state, and its page takes the user's hand whatever the tree says.
-WebView.rotation: ✅
-ZStack.accessibilityLabel: ✅
-ZStack.isEnabled: ✅
+WebView.opacity: ✅
+WebView.pivotY: ✅
+ZStack.accessibilityHeading: ✅
+ZStack.translationY: ✅

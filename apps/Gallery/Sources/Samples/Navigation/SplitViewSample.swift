@@ -17,10 +17,16 @@ struct SplitViewSample: SampleContent, ExampleContent {
     // listing: SplitViewSample
     var body: some View {
         VStack {
-            Text("Open the menu: every row in it is a view.")
+            Text("Open the menu - every row in it a view - and narrow the window to lay it over the page.")
                 .fontSize(14)
 
             SwitchRow("Menu open", nav.$menuOpen)
+                .horizontalAlignment(.center)
+
+            // Where the platform places the menu for the room, as the split
+            // view writes it.
+            Text(nav.menuOverlays ? "The menu lies over the page" : "The menu stands beside the page")
+                .fontSize(14)
                 .horizontalAlignment(.center)
 
             HStack {
@@ -47,8 +53,9 @@ struct SplitViewSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("The pane is an ordinary page. Every row is a view whose action writes "
-                + "where the gallery goes - closing the menu where it lies over the page - "
-                + "and a row the app does not want is an `if` around it.")
+                + "where the gallery goes - closing the menu where it lies over the page, "
+                + "which `.sidebarOverlays($menuOverlays)` says - and a row the app does not "
+                + "want is an `if` around it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

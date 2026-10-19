@@ -28,3 +28,11 @@ joined until the next frame, and the movement rests where the finger lets go
 without a throw, where a throw runs out, or once the scroller has stood still.
 An offset the tree writes moves the scroller within its reach as the program's
 move, heard by nobody; one written before the first layout waits for it.
+
+UIKit pulls a scroller's offset back within its reach whenever its frame is
+set - set again to the same frame too - so the host sets the frame only where
+it changed. What the user does to the scroller lays the page out again on the
+next frame wherever a view reads the offset - a label saying how far down -
+and a frame set every time would fold the rubber band at the edge back each
+frame, under the finger still pulling it: the stretch would shake rather than
+stretch.

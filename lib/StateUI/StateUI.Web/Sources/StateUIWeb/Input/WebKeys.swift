@@ -9,16 +9,27 @@
 /// Design: docs/design/types/keyboard.md#on-each-platform
 enum WebKeys {
     /// The shortcut a key pressed spells; nil for one naming no key.
-    static func shortcut(named: Int32, character: Int32, held: Int32) -> KeyboardShortcut? {
+    static func shortcut(named: Int32, written: Int32, physical: Int32, held: Int32) -> KeyboardShortcut? {
         let key: Key
         if let known = NamedKey(rawValue: named) {
             key = Key(known)
-        } else if character > 0, let scalar = UnicodeScalar(UInt32(character)) {
-            key = Key(Character(scalar))
+        } else if let character = character(written: UInt32(written), physical: UInt32(physical)) {
+            key = Key(character)
         } else {
             return nil
         }
         return KeyboardShortcut(key, modifiers: KeyModifiers(rawValue: held))
+    }
+
+    /// The character a shortcut's key writes: what the user's layout writes on it, `written`, lowered, where that is
+    /// a Latin letter or a digit; else the letter or digit of the key's own place, `physical` - a layout of no Latin
+    /// letters, a digit row writing marks, a key Alt turned - else what it writes; nil for nothing.
+    /// Design: docs/design/platforms/web/input.md#a-shortcuts-key
+    static func character(written: UInt32, physical: UInt32) -> Character? {
+        let typed = UnicodeScalar(written).flatMap { $0.value > 0 ? Character($0).lowercased().first : nil }
+        if let typed, typed.isASCII, typed.isLetter || typed.isNumber { return typed }
+        if let place = UnicodeScalar(physical), physical > 0 { return Character(place).lowercased().first }
+        return typed
     }
 
     /// The shortcut as `aria-keyshortcuts` names it - `Control+Shift+S`.

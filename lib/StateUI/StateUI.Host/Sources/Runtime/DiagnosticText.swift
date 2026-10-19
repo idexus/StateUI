@@ -3,20 +3,11 @@
 
 @_spi(Host) import StateUI
 
-#if canImport(Darwin)
-import Darwin
-#elseif canImport(Android)
-import Android
-#elseif canImport(Glibc)
-import Glibc
-#elseif canImport(CRT)
-import CRT
-#elseif canImport(WASILibc)
-import WASILibc
-#endif
+import StateUIFoundation
 
 /// What a runtime writes out for whoever reads its log rather than its screen: the running tally
-/// (`STATEUI_TALLY=1`) and every inspected pass as text (`STATEUI_INSPECT=1`).
+/// (`STATEUI_TALLY=1`), every inspected pass as text (`STATEUI_INSPECT=1`) and where its time goes, stage by stage
+/// (`STATEUI_PROBE=1`, `HostProbe`).
 /// Design: docs/design/host/patches.md#what-a-runtime-writes-out
 @_spi(Host) public struct DiagnosticText {
     /// Whether the running tally is written after a message worth a line.
@@ -24,6 +15,9 @@ import WASILibc
 
     /// Whether every pass the inspector records is written as text.
     public let inspects: Bool
+
+    /// Whether the runtime's stages are timed and written once a second.
+    public let probes: Bool
 
     /// How many of its own views the host holds alive, written beside the elements alive; nil where it counts none.
     public var views: (() -> Int)?
@@ -38,16 +32,18 @@ import WASILibc
     private var appliedAt = -Double.infinity
 
     /// Text for the switches given, handed to `write`.
-    public init(tallies: Bool, inspects: Bool, write: @escaping (String) -> Void) {
+    public init(tallies: Bool, inspects: Bool, probes: Bool = false, write: @escaping (String) -> Void) {
         self.tallies = tallies
         self.inspects = inspects
+        self.probes = probes
         self.output = write
     }
 
     /// The switches this process's environment sets, written to its standard error.
     public static var environment: DiagnosticText {
         DiagnosticText(
-            tallies: switched("STATEUI_TALLY"), inspects: switched("STATEUI_INSPECT"), write: HostLog.writeStandardError)
+            tallies: switched("STATEUI_TALLY"), inspects: switched("STATEUI_INSPECT"),
+            probes: switched("STATEUI_PROBE"), write: HostLog.writeStandardError)
     }
 
     /// One message applied, which began at `began` milliseconds on the runtime's clock.

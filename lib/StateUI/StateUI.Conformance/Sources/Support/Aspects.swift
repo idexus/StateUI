@@ -10,21 +10,24 @@
 @MainActor
 @_spi(Host) public enum Aspects {
     /// `member` of `element` holds the value the tree gives it, and then the one the tree changes it to; the
-    /// specimen wears `with` too.
+    /// specimen wears `with` too, on `page` - waited for where the value comes `late`, as a bar's after its layout.
     public static func holds<Owner: Contract, Value: HostRepresentable & Sendable & Equatable>(
         _ member: ElementProperty<Owner, Value>, on element: String, _ first: Value, then second: Value,
-        with worn: [any Worn] = []
+        with worn: [any Worn] = [],
+        page: @escaping @MainActor (String, [any Worn], [any View]) -> ModifiedContent = Specimens.page(_:_:beside:),
+        late: Bool = false
     ) -> ConformanceCase {
         ConformanceCase("\(element).\(member.name).holdsWhatTheTreeGivesAndChanges", proves: [
             Covered(member, on: element),
         ], needs: [Covered(ButtonContract.clicked)]) { s in
             let value = State(wrappedValue: first)
             s.start {
-                Specimens.page(element, worn + [Write(member, value.wrappedValue)], beside: [
+                page(element, worn + [Write(member, value.wrappedValue)], [
                     Button("Change").onClicked { value.wrappedValue = second }.id("change"),
                 ])
             }
             let specimen = try s.specimen(element)
+            if late { try s.settle { try s.held(member, on: specimen) == first } }
             s.expect(try s.held(member, on: specimen), first, "the value the tree gave")
 
             try s.perform(.activate, on: s.element("change"))
@@ -61,8 +64,8 @@
     /// size. What says the host makes the element, whatever else of it the host realizes or its driver reads.
     public static func standsAlone(_ element: String) -> ConformanceCase {
         ConformanceCase("standsAloneOnAPage", proves: [
-            Covered(member: nil, element: element, tier: nil), Covered(ViewContract.frameChanged, on: element),
-        ]) { s in
+            Covered(member: nil, element: element, tier: nil),
+        ], needs: [Covered(ViewContract.frameChanged, on: element)]) { s in
             let frames = Received<[Double]>()
             s.start { Specimens.view(element, [Hear(ViewContract.frameChanged) { frames.values.append($0) }]) }
             s.settle { laidOut(frames) }

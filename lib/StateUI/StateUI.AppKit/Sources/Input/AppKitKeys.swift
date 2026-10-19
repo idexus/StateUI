@@ -19,16 +19,25 @@ enum AppKitKeys {
         return (key, flags)
     }
 
+    /// The characters a keyboard sends for `shortcut`'s key, which a key-down carries: Delete sends DEL, which no key
+    /// equivalent is spelled with.
+    static func typed(of shortcut: KeyboardShortcut) -> String {
+        shortcut.key.named == .delete ? "\u{7f}" : equivalent(of: shortcut).key
+    }
+
     /// The shortcut a key equivalent and its flags spell; nil for no key.
     static func shortcut(key: String, modifiers: NSEvent.ModifierFlags) -> KeyboardShortcut? {
         guard let first = key.first, key.count == 1 else { return nil }
-        let pressed = named.first { $0.value == first }.map { Key($0.key) } ?? Key(first)
+        let pressed = (sent[first] ?? named.first { $0.value == first }?.key).map { Key($0) } ?? Key(first)
         var held: KeyModifiers = []
         if modifiers.contains(.command) { held.insert(.primary) }
         if modifiers.contains(.shift) { held.insert(.shift) }
         if modifiers.contains(.option) { held.insert(.alt) }
         return KeyboardShortcut(pressed, modifiers: held)
     }
+
+    /// The characters a keyboard sends for keys a key equivalent names otherwise: Delete's DEL, the keypad Enter's ETX.
+    private static let sent: [Character: NamedKey] = ["\u{7f}": .delete, "\u{3}": .return]
 
     /// The character AppKit's key equivalent names each key writing no character by.
     private static let named: [NamedKey: Character] = {

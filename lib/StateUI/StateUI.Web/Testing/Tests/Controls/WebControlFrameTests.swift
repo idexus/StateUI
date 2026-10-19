@@ -17,7 +17,7 @@ final class WebControlFrameTests: XCTestCase {
         var framed = LayoutValues()
         framed.minimumWidth = 44
         framed.minimumHeight = 44
-        layout.setItems(views.map { ($0, framed) })
+        layout.setItems(views.map { ($0, { framed }) })
 
         for view in views {
             XCTAssertEqual(WebPage.style(of: view.node, "min-width"), "44px", "the frame lands on the view")

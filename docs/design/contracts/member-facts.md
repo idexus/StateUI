@@ -32,6 +32,8 @@ StateUI knows are meaningless out of the patch.
   a state's number         panXChannel, panYChannel, scrollOffset
   a list drawn whole       a polygon's or a polyline's points, a stroke's dash pattern
   a gesture's threshold    swipeThreshold
+  what the hand is let do  a layout engine's hand axis, item drag, pan, magnification
+                           and rotation; the keys a control takes (keysTaken)
   where the host puts it   a toolbar item's placement, a toolbar group's side and order,
                            whether a toolbar item shows its text, a menu bar's order
 ```
@@ -72,6 +74,9 @@ so a toolkit that shows the value in another control makes that control,
 and one that sets it in place sees it set from the start. Words the user can
 select (`TextContract.isSelectable`) remake their text: a label of one
 toolkit selects nothing, and its selectable words stand in a text view.
+A remaking member takes no binding twin: a state the host carries past the
+tree never reaches the patch the element is made from, so it is written by
+value and read in the body (`testNoRemakingMemberHasABindingTwin`).
 
 ## Moves
 
@@ -84,8 +89,8 @@ out at sizes nobody chose.
 
 ## One name one set of facts
 
-The differ and the hosts hold a property as a token, which is a name, and
-read what it says by that name: `Prop.facts` looks it up in
+The differ and the hosts hold a property as a token - a key, a name and its
+number - and read what it says by that key: `Prop.facts` looks it up in
 `LibraryContracts.facts`, where the first member met under a name answers
 for every member of it. So every member of one name says the same of its
 layer, travel, clearing and motion; two that disagreed would each be half

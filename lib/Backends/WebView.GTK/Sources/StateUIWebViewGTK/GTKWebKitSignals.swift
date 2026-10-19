@@ -28,7 +28,9 @@ enum GTKWebKitSignals {
                 guard type == 0, let decision, let action = webkit_navigation_policy_decision_get_navigation_action(decision)
                 else { return 0 }
                 let navigationType = webkit_navigation_action_get_navigation_type(action)
-                MainActor.assumeIsolated { GTKWebKitSignals.reached(data)?.decided(navigationType) }
+                let address = webkit_navigation_action_get_request(action).flatMap(webkit_uri_request_get_uri)
+                    .map { String(cString: $0) } ?? ""
+                MainActor.assumeIsolated { GTKWebKitSignals.reached(data)?.decided(navigationType, landingOn: address) }
                 return 0
             }
         let changed: @convention(c) (UnsafeMutableRawPointer?, Int32, UnsafeMutableRawPointer?) -> Void = { _, event, data in

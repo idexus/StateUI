@@ -71,4 +71,6 @@ scrolled window stands where the anchor says, by the host layer's rule
 ([scrolling to an item](../../host/items.md#scrolling-to-an-item)). The item
 is laid out over the next frames, not in the next idle moment - its cell is
 bound before it has a size - so the host looks for it every 16 ms, on a GLib
-timeout, sixty times at most.
+timeout, sixty times at most, and stands it on every frame it is laid out on
+while the host layer holds it; entries coming to the cells start the frames
+again. A scroll of the user's - a wheel's, a touchpad's - lets it go.

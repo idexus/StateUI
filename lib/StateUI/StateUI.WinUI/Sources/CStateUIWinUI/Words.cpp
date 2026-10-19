@@ -170,8 +170,12 @@ extern "C" void stateui_winui_text_set_lines(StateUIObjectRef handle, bool wraps
 
 extern "C" void stateui_winui_text_set_alignment(StateUIObjectRef handle, int32_t horizontal) {
     try {
-        auto aligned = horizontal == 1 ? xaml::TextAlignment::Center
-            : horizontal == 2 ? xaml::TextAlignment::End : xaml::TextAlignment::Start;
+        auto aligned = xaml::TextAlignment::Start;
+        switch (static_cast<StateUITextAlignment>(horizontal)) {
+        case StateUITextAlignmentStart: aligned = xaml::TextAlignment::Start; break;
+        case StateUITextAlignmentCenter: aligned = xaml::TextAlignment::Center; break;
+        case StateUITextAlignmentEnd: aligned = xaml::TextAlignment::End; break;
+        }
         labelWords(handle).TextAlignment(aligned);
     } catch (...) {
         report("aligning a label's words");

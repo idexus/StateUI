@@ -36,8 +36,12 @@ A render takes one of three roads, decided before anything is built:
 The clean walk skips the application's closure entirely: only the elements
 whose recorded reads intersect the changed states are built again, and their
 ancestors contribute only the path of patches down to them. It is sound only
-when every cause of the render named the state it wrote; a plain
-`setNeedsRender()` names nothing and forces a build.
+when every cause of the render named the state it wrote. Two asks name
+nothing and force a build: the core's own `setNeedsBuild()` (a scene opened, a
+new application), whose build carries every composed view whose inputs and
+reads stand, and the public `setNeedsRender()`, whose build carries none,
+because what moved is outside StateUI and no view's inputs or reads can say
+it stands.
 
 The root build reads the open scenes, whatever the application's `body`
 reads, and the application session's styles and motion. Those reads are kept

@@ -141,8 +141,11 @@ extension Color: LaneValue {
     /// The colour in `theme` - a pair's half in force, the accent in force - as four
     /// lanes.
     func standingLanes(in theme: ThemeInForce) -> [Double] {
-        let shown = isAccent ? theme.accent.opacity(Double(light.alpha) / 255) : self
-        let half = shown.dark.flatMap { theme.scheme == .dark ? $0 : nil } ?? shown.light
+        let inDark = theme.scheme == .dark && dark != nil
+        let chosen = inDark ? dark! : light
+        let accent = theme.accent.opacity(Double(chosen.alpha) / 255)
+        let half = accentHalves.contains(inDark ? .dark : .light)
+            ? (theme.scheme == .dark ? accent.dark : nil) ?? accent.light : chosen
 
         return [Double(half.red) / 255, Double(half.green) / 255, Double(half.blue) / 255, Double(half.alpha) / 255]
     }
@@ -190,7 +193,7 @@ extension String: StateValue {
 
 extension Color: ThemeWearing {
     /// A pair, or the accent.
-    var wearsTheTheme: Bool { dark != nil || isAccent }
+    var wearsTheTheme: Bool { dark != nil || !accentHalves.isEmpty }
 
     /// The half in force, the accent in force.
     func carried(wearing theme: ThemeInForce) -> StateCarried {

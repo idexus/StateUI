@@ -44,23 +44,23 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
 
             HStack {
                 button("Colour") {
-                    try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(500)).arrived()
+                    try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(.milliseconds(500))).arrived()
 
                     // The caption sits on the violet field inside the panel
                     // rather than on the panel itself, so what it goes to is
                     // white, the colour that reads on that field.
-                    try await $captionColor.journey.move(to: AppColors.white, .eased(500)).arrived()
+                    try await $captionColor.journey.move(to: AppColors.white, .eased(.milliseconds(500))).arrived()
                 }
 
                 button("Size") {
                     wide.toggle()
                     try await $panelHeight.journey.move(to: wide ? 160 : 90,
-                                                     .eased(400, .cubicInOut)).arrived()
+                                                     .eased(.milliseconds(400), .cubicInOut)).arrived()
                 }
 
                 button("Padding") {
-                    try await $panelPadding.journey.move(to: Insets(48), .eased(400)).arrived()
-                    try await $panelPadding.journey.move(to: Insets(16), .eased(400)).arrived()
+                    try await $panelPadding.journey.move(to: Insets(48), .eased(.milliseconds(400))).arrived()
+                    try await $panelPadding.journey.move(to: Insets(16), .eased(.milliseconds(400))).arrived()
                 }
             }
             .spacing(8)
@@ -68,8 +68,8 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
 
             HStack {
                 button("Text size") {
-                    try await $captionSize.journey.move(to: 28, .eased(400, .cubicOut)).arrived()
-                    try await $captionSize.journey.move(to: 17, .eased(400, .cubicIn)).arrived()
+                    try await $captionSize.journey.move(to: 28, .eased(.milliseconds(400), .cubicOut)).arrived()
+                    try await $captionSize.journey.move(to: 17, .eased(.milliseconds(400), .cubicIn)).arrived()
                 }
 
                 button("Back") {
@@ -80,9 +80,9 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
                     // of Size would ask for the value it already has.
                     wide = false
 
-                    try await $panelHeight.journey.move(to: 90, .eased(400, .cubicInOut)).arrived()
-                    try await $panelColor.journey.move(to: AppColors.lineDark, .eased(400)).arrived()
-                    try await $captionColor.journey.move(to: AppColors.ink, .eased(400)).arrived()
+                    try await $panelHeight.journey.move(to: 90, .eased(.milliseconds(400), .cubicInOut)).arrived()
+                    try await $panelColor.journey.move(to: AppColors.lineDark, .eased(.milliseconds(400))).arrived()
+                    try await $captionColor.journey.move(to: AppColors.ink, .eased(.milliseconds(400))).arrived()
                 }
             }
             .spacing(8)

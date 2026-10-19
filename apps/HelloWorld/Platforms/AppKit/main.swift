@@ -8,15 +8,14 @@ import StateUIAppKit
 // Register the application module before the native host requests its root.
 stateui_app_register()
 
-// The application's artwork, found from this file's own place: SwiftPM builds
-// no bundle to carry it, so it is read where the application keeps it,
-// wherever the head is started from.
-let application = URL(fileURLWithPath: #filePath)
-    .deletingLastPathComponent()
-    .deletingLastPathComponent()
-    .deletingLastPathComponent()
-let resources = application.appendingPathComponent("Resources/Images", isDirectory: true)
+// The application's artwork: beside the head, where a deployed copy carries
+// it (.scripts/AppKit/deploy.sh), else where the application keeps it, found
+// from this file's own place - SwiftPM builds no bundle to carry it.
+let beside = Bundle.main.executableURL!.deletingLastPathComponent()
+let application = FileManager.default.fileExists(atPath: beside.appendingPathComponent("Resources").path)
+    ? beside
+    : URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
 
 StateUIAppKit.run(
-    resourceDirectory: resources,
+    resourceDirectory: application.appendingPathComponent("Resources/Images", isDirectory: true),
     applicationIcon: application.appendingPathComponent("Resources/AppIcon/appicon_macos.svg"))

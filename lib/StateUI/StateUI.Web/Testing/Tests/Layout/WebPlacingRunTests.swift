@@ -14,7 +14,7 @@ final class WebPlacingRunTests: XCTestCase {
             HostPlacement(
                 bounds: Rect(x: 0, y: 0, width: width, height: height), translationX: 0, translationY: 0, rotation: 90,
                 scaleX: 1, scaleY: 1, opacity: 1, zIndex: 0, shade: shade),
-        ], motion: .none)
+        ])
     }
 
     /// The same turn at a new size is drawn about the new size's middle: the matrix's pivot is the place's, so a run
@@ -23,7 +23,7 @@ final class WebPlacingRunTests: XCTestCase {
         let layout = WebLayoutView(arrangement: .layers)
         let card = WebLayoutView(arrangement: .single)
         defer { for view in [layout, card] { view.detach() } }
-        layout.setItems([(card, LayoutValues())])
+        layout.setItems([(card, { LayoutValues() })])
 
         layout.setPlacement(run(width: 10, height: 10))
         let small = WebPage.style(of: card.node, "transform")
@@ -32,12 +32,49 @@ final class WebPlacingRunTests: XCTestCase {
 
         // A quarter turn about (50, 100) moves the corner by (150, 50): x = 50 + 100, y = 100 - 50.
         XCTAssertNotEqual(small, large, "the matrix is written again for the new size")
-        let numbers = large.dropFirst("matrix3d(".count).dropLast().split(separator: ",").compactMap {
-            Double($0.trimmingPrefix(" "))
-        }
+        let matrix = large.range(of: "matrix3d(").map { large[$0.upperBound...] } ?? ""
+        let numbers = matrix.dropLast().split(separator: ",").compactMap { Double($0.trimmingPrefix(" ")) }
         XCTAssertEqual(numbers.count, 16)
         XCTAssertEqual(numbers.count == 16 ? numbers[12] : 0, 150, accuracy: 1e-9, "turned about the middle of 100 x 200")
         XCTAssertEqual(numbers.count == 16 ? numbers[13] : 0, 50, accuracy: 1e-9, "turned about the middle of 100 x 200")
+    }
+
+    /// A CHILD THE RUN PLACES NEVER READS ITS OWN VALUES: what it states of its place is read for a child past the
+    /// run's end alone, and once.
+    func testAChildTheRunPlacesNeverReadsItsOwnValues() {
+        let layout = WebLayoutView(arrangement: .layers)
+        let (placed, beyond) = (WebLayoutView(arrangement: .single), WebLayoutView(arrangement: .single))
+        defer { for view in [layout, placed, beyond] { view.detach() } }
+        var reads = [0, 0]
+        layout.setPlacement(run(width: 40, height: 40))
+
+        layout.setItems([
+            (placed, { reads[0] += 1; return LayoutValues() }),
+            (beyond, { reads[1] += 1; return LayoutValues() }),
+        ])
+        layout.setPlacement(run(width: 60, height: 60))
+
+        XCTAssertEqual(reads, [0, 1], "the placed child read nothing; the one past the run, once")
+    }
+
+    /// A RUN'S PLACE IS A MOVE, drawn over the layout's corner on a layer of the card's own: what moves every frame
+    /// is composed by the browser, with no layout of the page.
+    func testARunsPlaceIsAMoveOnALayerOfItsOwn() {
+        let layout = WebLayoutView(arrangement: .layers)
+        let card = WebLayoutView(arrangement: .single)
+        defer { for view in [layout, card] { view.detach() } }
+        layout.setItems([(card, { LayoutValues() })])
+
+        layout.setPlacement(HostPlacementRun(placements: [
+            HostPlacement(
+                bounds: Rect(x: 30, y: 40, width: 100, height: 140), translationX: 0, translationY: 0, rotation: 0,
+                scaleX: 1, scaleY: 1, opacity: 1, zIndex: 0, shade: 0),
+        ]))
+
+        XCTAssertEqual(WebPage.style(of: card.node, "left"), "0px")
+        XCTAssertEqual(WebPage.style(of: card.node, "top"), "0px")
+        XCTAssertEqual(WebPage.style(of: card.node, "transform"), "translate(30px, 40px)")
+        XCTAssertEqual(WebPage.style(of: card.node, "will-change"), "transform")
     }
 
     /// A card the run places wears the run's shade on its second layer - the dark over a far card - and none on its
@@ -47,8 +84,8 @@ final class WebPlacingRunTests: XCTestCase {
         let card = WebLayoutView(arrangement: .grid)
         let (face, shade) = (WebLayoutView(arrangement: .single), WebLayoutView(arrangement: .single))
         defer { for view in [layout, card, face, shade] { view.detach() } }
-        card.setItems([(face, LayoutValues()), (shade, LayoutValues())])
-        layout.setItems([(card, LayoutValues())])
+        card.setItems([(face, { LayoutValues() }), (shade, { LayoutValues() })])
+        layout.setItems([(card, { LayoutValues() })])
 
         layout.setPlacement(run(width: 100, height: 140, shade: 0.4))
         XCTAssertEqual(WebPage.style(of: shade.node, "opacity"), "0.4", "the far card's shade")
@@ -64,7 +101,7 @@ final class WebPlacingRunTests: XCTestCase {
         let layout = WebLayoutView(arrangement: .layers)
         let card = WebLayoutView(arrangement: .single)
         defer { for view in [layout, card] { view.detach() } }
-        layout.setItems([(card, LayoutValues())])
+        layout.setItems([(card, { LayoutValues() })])
         XCTAssertEqual(WebPage.style(of: card.node, "max-height"), "100%", "an unplaced child stays in its room")
 
         layout.setPlacement(run(width: 176, height: 248))

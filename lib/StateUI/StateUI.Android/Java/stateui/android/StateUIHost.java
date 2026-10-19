@@ -11,9 +11,8 @@ import android.widget.FrameLayout;
 /** The Swift host: every method is registered by the head's JNI_OnLoad. */
 final class StateUIHost {
     /** The application's phases, as StateUI numbers them. */
-    static final int ACTIVE = 0;
-    static final int INACTIVE = 1;
-    static final int BACKGROUND = 2;
+    // Swift: ApplicationPhase
+    static final int ACTIVE = 0, INACTIVE = 1, BACKGROUND = 2;
 
     private StateUIHost() {}
 
@@ -65,8 +64,14 @@ final class StateUIHost {
     /** The user let go of a slider's thumb. */
     static native void dragCompleted(long view);
 
-    /** A field's words changed; {@code text} is all of them. */
-    static native void textChanged(long view, String text);
+    /**
+     * What a field bounded to {@code bound} characters holds of {@code text} - the host layer's count of characters,
+     * not of UTF-16 units; null where it holds them as typed, or {@code composing} while an input method composes some.
+     */
+    static native String heldWords(String text, int bound, boolean composing);
+
+    /** A field's words changed; {@code text} is all of them, {@code composing} while an input method composes some. */
+    static native void textChanged(long view, String text, boolean composing);
 
     /** The user submitted a field. */
     static native void submitted(long view);
@@ -122,6 +127,21 @@ final class StateUIHost {
      * drag now, by the host layer's rule, which then takes the rest of the touch.
      */
     static native boolean pressed(long view, int phase, float x, float y);
+
+    /**
+     * The hand over a layout - begun, moved by what it moved under it, let go at its speed, or taken away - in
+     * points; whether the layout took it, by the host layer's rule, which then takes the rest of the touch.
+     */
+    static native boolean handed(long view, int phase, float x, float y, float speedX, float speedY);
+
+    /**
+     * Two fingers over a layout that turns with them - begun, moved, lifted or taken away - where each stands in the
+     * view, in points.
+     */
+    static native void fingers(long view, int phase, float firstX, float firstY, float secondX, float secondY);
+
+    /** A wheel's notch over a layout, as what it moved under the hand, in points; whether the layout took it. */
+    static native boolean notched(long view, float x, float y);
 
     /** A view took the keyboard's focus, or lost it. */
     static native void focusChanged(long view, boolean focused);

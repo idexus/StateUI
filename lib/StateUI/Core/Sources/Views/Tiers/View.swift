@@ -97,8 +97,9 @@ extension View {
     /// - Parameter items: the entries, in the order they are shown.
     public func contextMenu(@MenuBuilder _ items: () -> [Element]) -> Modified {
         modified {
-            // After the view's own children; the host finds it by type.
+            // After the view's own children, one; the host finds it by type, and written again it stands in.
             // Design: docs/design/views/modifiers.md#slot-children
+            $0.children.removeAll { $0.type == ContextMenuContract.nodeType }
             $0.children.append(Node(contract: ContextMenuContract.self, children: items().map { $0.node }))
         }
     }

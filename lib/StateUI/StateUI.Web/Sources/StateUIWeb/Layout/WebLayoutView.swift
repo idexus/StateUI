@@ -27,9 +27,12 @@ class WebLayoutView: WebDOMView {
 
     let arrangement: Arrangement
 
-    /// The children's views and what each one's place reads, in order.
+    /// The children's views and what each one's place reads, in order: read when first wanted and kept until the
+    /// children are set again, so a child a run places never reads it.
+    /// Design: docs/design/platforms/web/layout.md#a-placing-run
     private(set) var children: [WebDOMView] = []
-    private var values: [LayoutValues] = []
+    private var readValues: [() -> LayoutValues] = []
+    private var valuesRead: [LayoutValues?] = []
 
     /// Each child's mounted element, by number, and how it fades in as it joins: what its place travels by.
     private var travellers: [(mount: UInt64, fadeIn: ((Motion) -> Void)?)] = []
@@ -127,7 +130,7 @@ class WebLayoutView: WebDOMView {
     /// child this layout no longer holds leaves the element.
     /// Design: docs/design/platforms/web/layout.md#children-in-order
     func setItems(
-        _ items: [(view: WebDOMView, values: LayoutValues)],
+        _ items: [(view: WebDOMView, values: () -> LayoutValues)],
         travellers: [(mount: UInt64, fadeIn: ((Motion) -> Void)?)] = []
     ) {
         let views = items.map(\.view)
@@ -141,7 +144,8 @@ class WebLayoutView: WebDOMView {
             gone.placingLayout = nil
         }
         children = views
-        values = items.map(\.values)
+        readValues = items.map(\.values)
+        valuesRead = Array(repeating: nil, count: items.count)
         self.travellers = travellers
         for view in views { view.placingLayout = self }
         if arrangement == .grid { writeTracks() }
@@ -160,7 +164,7 @@ class WebLayoutView: WebDOMView {
     /// Stands the child at `index` at `slot`, where the browser laid it out, or on its way there.
     func place(_ child: WebDOMView, at index: Int, slot: Rect) {
         let traveller = index < travellers.count ? travellers[index] : (mount: 0, fadeIn: nil)
-        places.place(child, mount: traveller.mount, at: slot, values: values[index], fadeIn: traveller.fadeIn)
+        places.place(child, mount: traveller.mount, at: slot, values: values(at: index), fadeIn: traveller.fadeIn)
     }
 
     private func placeAll() {
@@ -171,18 +175,28 @@ class WebLayoutView: WebDOMView {
             if index < run.count {
                 placeByRun(view, run[index])
             } else {
-                place(view, values[index])
+                place(view, values(at: index))
             }
             // A ZStack draws every child in its order, the placed and the unplaced alike, back to front.
             if arrangement == .layers { view.style("z-index", String(order.firstIndex(of: index) ?? index)) }
         }
     }
 
+    /// What the child at `index` states of its own place, read once since the children were set.
+    private func values(at index: Int) -> LayoutValues {
+        if let read = valuesRead[index] { return read }
+        let read = readValues[index]()
+        valuesRead[index] = read
+        return read
+    }
+
     /// Writes where `view` stands in this layout: its margin, its stated sizes and their bounds, and its alignment
     /// across its slot - in a grid's cell, along both axes.
     /// Design: docs/design/platforms/web/layout.md#a-childs-place
     func place(_ view: WebDOMView, _ values: LayoutValues) {
+        view.placedByRun = nil
         view.drawInRun(nil, size: nil)
+        view.style("will-change", nil)
         for (side, length) in WebCSS.sides(values.margin, signed: true) { view.style("margin-\(side)", length) }
         view.style("width", WebCSS.pixels(values.width))
         view.style("height", WebCSS.pixels(values.height))
@@ -258,18 +272,29 @@ class WebLayoutView: WebDOMView {
     /// A child where the run puts it, drawn as it says, over the children placed before it in the run's order.
     /// Design: docs/design/platforms/web/layout.md#a-placing-run
     private func placeByRun(_ view: WebDOMView, _ placement: HostPlacement) {
-        let place = placement.place
-        view.style("position", "absolute")
-        view.style("grid-area", nil)
-        view.style("left", WebCSS.signedPixels(place.x))
-        view.style("top", WebCSS.signedPixels(place.y))
-        view.style("width", WebCSS.pixels(place.width))
-        view.style("height", WebCSS.pixels(place.height))
-        // The run's size, whatever the room's: a slot's bound would squash a card a short room scales down.
-        view.style("max-width", "none")
-        view.style("max-height", "none")
+        // A run moves its views every frame: what has not moved is not written again, not even as words.
+        // Design: docs/design/platforms/web/layout.md#a-placing-run
+        let (place, last) = (placement.place, view.placedByRun)
+        view.placedByRun = placement
+        if last == nil {
+            view.style("position", "absolute")
+            view.style("grid-area", nil)
+            // The place is a move drawn over the layout's corner, which the browser composes each frame without
+            // laying the page out again, and the view its own layer to move.
+            view.style("left", "0px")
+            view.style("top", "0px")
+            view.style("will-change", "transform")
+            // The run's size, whatever the room's: a slot's bound would squash a card a short room scales down.
+            view.style("max-width", "none")
+            view.style("max-height", "none")
+        }
+        if last?.place.width != place.width || last?.place.height != place.height {
+            view.style("width", WebCSS.pixels(place.width))
+            view.style("height", WebCSS.pixels(place.height))
+        }
         view.style("opacity", placement.drawnOpacity >= 1 ? nil : WebCSS.number(placement.drawnOpacity))
-        view.drawInRun(placement.drawing, size: LayoutSize(width: place.width, height: place.height))
+        view.drawInRun(
+            placement.drawing, size: LayoutSize(width: place.width, height: place.height), at: Point(place.x, place.y))
         (view as? WebLayoutView)?.setShadeOpacity(placement.drawnShade)
     }
 
@@ -282,6 +307,7 @@ class WebLayoutView: WebDOMView {
 
     /// The grid's tracks: those it defines, then one share for each further one its children reach.
     private func writeTracks() {
+        let values = readValues.indices.map(values(at:))
         let rowCount = max(rows.count, values.map { $0.row + max(1, $0.rowSpan) }.max() ?? 0)
         let columnCount = max(columns.count, values.map { $0.column + max(1, $0.columnSpan) }.max() ?? 0)
         style("grid-template-rows", WebCSS.tracks(rows, count: rowCount))

@@ -201,6 +201,11 @@ extension Renderer {
         Int32(boards.filter { $0.awake }.count)
     }
 
+    /// Whether a board waits on something a turn answers at once, an engine going on of its own aside.
+    func cycleAsked() -> Bool {
+        boards.contains { $0.asked }
+    }
+
     /// A state by its number, or nil where none rides it any more.
     func storage(of number: Int32) -> HostStorage? {
         let found = states[number]
@@ -211,6 +216,13 @@ extension Renderer {
         }
 
         return storage
+    }
+
+    /// A runtime brought a clock of its own: every board's time starts over on it.
+    func clockStarted() {
+        for board in boards {
+            board.restartClock()
+        }
     }
 
     /// Puts the numbering back to a fresh process's, for the tests, whose

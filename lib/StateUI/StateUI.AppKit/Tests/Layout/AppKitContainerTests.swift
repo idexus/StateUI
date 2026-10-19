@@ -186,7 +186,7 @@ final class AppKitContainerTests: XCTestCase {
     func testAHostDrivenChildHeightRefreshesItsAncestorLayoutItem() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        let binding = HostStateBinding(state: 71, mode: .inOut, kind: .property, laneKind: .number)
+        let binding = HostStateBinding(state: handMadeState(71), mode: .inOut, kind: .property, laneKind: .number)
 
         var frame = HostPatch(id: .manual("frame"), type: .zStack)
         frame.properties[.height] = .number(90)
@@ -209,7 +209,7 @@ final class AppKitContainerTests: XCTestCase {
             motion: .none,
             completion: nil,
             stopped: 0)
-        renderer.applyStateForTesting(71, value: HostBoundary.value(of: arrived))
+        renderer.applyStateForTesting(handMadeState(71), value: HostBoundary.value(of: arrived))
         nativeStack.layoutSubtreeIfNeeded()
 
         XCTAssertEqual(nativeFrame.frame.height, 160, accuracy: 0.001)
@@ -437,7 +437,7 @@ final class AppKitContainerTests: XCTestCase {
     func testAZStacksSubviewsFollowTheDrawingOrder() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        let binding = HostStateBinding(state: 72, mode: .inOut, kind: .property, laneKind: .number)
+        let binding = HostStateBinding(state: handMadeState(72), mode: .inOut, kind: .property, laneKind: .number)
         func layers(front: String) -> HostPatch {
             var layers = HostPatch(id: .manual("layers"), type: .zStack)
             layers.children = .arranged(["red", "blue", "bound"].map { id in
@@ -462,8 +462,69 @@ final class AppKitContainerTests: XCTestCase {
         XCTAssertEqual(try drawn(), ["red", "bound", "blue"])
 
         let raised = HostJourney(value: [5], destination: [5], velocity: [0], motion: .none, completion: nil, stopped: 0)
-        renderer.applyStateForTesting(72, value: HostBoundary.value(of: raised))
+        renderer.applyStateForTesting(handMadeState(72), value: HostBoundary.value(of: raised))
         XCTAssertEqual(try drawn(), ["red", "blue", "bound"])
+    }
+
+    /// A run turning its drawing order moves its children into place and takes none out of the ZStack: a child taken
+    /// out and put back leaves the window, and a gesture under way on it - a drag of the scroller over a layout
+    /// engine's cards - is cancelled.
+    @MainActor
+    func testARunTurningItsOrderTakesNoChildOut() {
+        final class Watched: NSView {
+            var moves = 0
+            override func viewDidMoveToSuperview() {
+                super.viewDidMoveToSuperview()
+                moves += 1
+            }
+        }
+        func run(_ ranks: [Int]) -> HostPlacementRun {
+            HostPlacementRun(placements: ranks.map { rank in
+                HostPlacement(
+                    bounds: Rect(x: 0, y: 0, width: 10, height: 10), translationX: 0, translationY: 0, rotation: 0,
+                    scaleX: 1, scaleY: 1, opacity: 1, zIndex: rank, shade: 0)
+            })
+        }
+        let layers = AppKitZStackView()
+        layers.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
+        let children = [Watched(), Watched(), Watched()]
+        layers.setItems(children.map { AppKitLayoutItem(view: $0) })
+        layers.placement = run([0, 1, 2])
+        layers.layout()
+        let standing = children.map(\.moves)
+
+        layers.placement = run([2, 1, 0])
+        layers.layout()
+
+        XCTAssertEqual(layers.subviews, [children[2], children[1], children[0]], "drawn in the run's new order")
+        XCTAssertEqual(children.map(\.moves), standing, "and none taken out to get there")
+    }
+
+    /// A blur behind a layout engine's children stays under them through a run turning their order.
+    @MainActor
+    func testARunKeepsTheBlurBehindItsChildren() {
+        func run(_ ranks: [Int]) -> HostPlacementRun {
+            HostPlacementRun(placements: ranks.map { rank in
+                HostPlacement(
+                    bounds: Rect(x: 0, y: 0, width: 10, height: 10), translationX: 0, translationY: 0, rotation: 0,
+                    scaleX: 1, scaleY: 1, opacity: 1, zIndex: rank, shade: 0)
+            })
+        }
+        let layers = AppKitZStackView()
+        layers.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
+        let children = [NSView(), NSView()]
+        layers.setItems(children.map { AppKitLayoutItem(view: $0) })
+        layers.decoration.apply(
+            background: Material.blur(.thick).propValue.resolvingTheme(), stroke: nil, lineWidth: nil,
+            shape: nil, clips: false, to: layers)
+        let blur = layers.decoration.surface
+
+        layers.placement = run([1, 0])
+        layers.layout()
+
+        XCTAssertNotNil(blur)
+        XCTAssertEqual(layers.subviews.first, blur, "the blur stays behind the children")
+        XCTAssertEqual(Array(layers.subviews.dropFirst()), [children[1], children[0]], "drawn in the run's order")
     }
 
     /// A row whose direction is right to left fills from the right, its padding swapped; the direction is its

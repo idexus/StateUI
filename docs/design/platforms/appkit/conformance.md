@@ -21,11 +21,11 @@ The driver shows no window on the machine's screen, so a run never takes the
 user's: the host makes its windows and never orders them in, and so no window
 stands shown or hidden for the driver to read. What AppKit tells a window's
 delegate as the window comes to the front, goes behind another application,
-is minimized and comes back - `didBecomeKey`, `didResignKey`,
-`didMiniaturize`, `didDeminiaturize` - the driver posts on the window itself,
-where the delegate hears it as it hears AppKit; another application in front
-is every window's `didResignKey`. A window closed by the user is the window's
-own `close`.
+is minimized and comes back - `didBecomeMain` and `didBecomeKey`,
+`didResignKey` and `didResignMain`, `didMiniaturize`, `didDeminiaturize` - the
+driver posts on the window itself, where the delegate hears it as it hears
+AppKit; another application in front is every window's resigning both. A
+window closed by the user is the window's own `close`.
 
 No display cycle lays out a window off the screen, so the driver lays each
 window out at every step, as the cycle would, and before every act of the

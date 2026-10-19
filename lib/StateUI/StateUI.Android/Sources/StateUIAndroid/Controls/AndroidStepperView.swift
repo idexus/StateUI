@@ -36,7 +36,7 @@ final class AndroidStepperView: AndroidView {
         up.onClicked = { [weak self] in self?.stepped(by: 1) }
     }
 
-    override func watchTouches() {
+    override func watchTouches(_ hearing: Hearing) {
         Java.call(reference, JavaAPI.watchStepper, .object(listener.reference))
     }
 

@@ -280,7 +280,7 @@ final class DiffTests: XCTestCase {
 
         func tree(_ withHandler: Bool) -> Node {
             var node = Node(type: "Button", id: "b", props: ["text": .string("go")])
-            if withHandler { node.addHandler("clicked", gate: .none) {} }
+            if withHandler { node.addHandler("clicked") {} }
             return node
         }
 

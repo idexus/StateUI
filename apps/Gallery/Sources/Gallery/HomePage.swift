@@ -201,6 +201,7 @@ struct HomePage: View {
                     GroupFace(title: group.title, summary: group.summary, picture: group.card)
                 }
                 .position($chosen)
+                .throwing(.spring(response: .milliseconds(500), damping: 0.8))
                 .onItemTapped { group in nav.push(.group(group.route)) }
                 // THE FAR CARDS DARKEN RATHER THAN FADE. A faded card here
                 // would show the card BEHIND it - the wheel stands them one
@@ -521,7 +522,7 @@ struct HomePage: View {
     private static var patience: Double { 1500 }
 
     /// How long the page takes to come in, in milliseconds.
-    private static var entrance: UInt { 700 }
+    private static var entrance: Duration { .milliseconds(700) }
 
     /// The page's own margin, which the rows do not get to share.
     private static var margin: Double { 24 }

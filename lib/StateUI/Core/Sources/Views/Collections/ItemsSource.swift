@@ -35,6 +35,7 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
 
     private var places: [String: Place] = [:]
     private var order: [String: Int] = [:]
+    private var ordered: [String] = []
     private var identities: [ID: [String]] = [:]
 
     /// The source of `groups`; a list with no groups is one group standing for none.
@@ -53,8 +54,9 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         self.footer = footer
 
         var sections: [ItemsEntries.Section] = []
+        var names: Set<String> = []
         for (number, group) in groups.enumerated() {
-            let name = group.name ?? String(number)
+            let name = uniqueName(group.name ?? String(number), among: &names)
             var items: [String] = []
             for place in 0..<group.count {
                 let id = group.identify(place)
@@ -65,6 +67,7 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
                 items.append(identity)
             }
             sections.append(ItemsEntries.Section(
+                name,
                 header: group.header.map { _ in named(name + "\u{1E}header", .groupHeader(number)) },
                 footer: group.footer.map { _ in named(name + "\u{1E}footer", .groupFooter(number)) },
                 items: items))
@@ -74,9 +77,23 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
             footer: footer.map { _ in named("\u{1E}footer", .footer) },
             sections: sections)
 
-        for (position, identity) in entries.identities.enumerated() {
+        ordered = entries.identities
+        for (position, identity) in ordered.enumerated() {
             order[identity] = position
         }
+    }
+
+    /// A group's `name`, told apart from one `names` holds already, and held.
+    private func uniqueName(_ name: String, among names: inout Set<String>) -> String {
+        var told = name
+        if names.contains(name) {
+            complain("two groups of an ItemsView are named \"\(name)\"; give each its own name")
+            var variant = 1
+            while names.contains("\(name)\u{0}\(variant)") { variant += 1 }
+            told = "\(name)\u{0}\(variant)"
+        }
+        names.insert(told)
+        return told
     }
 
     /// `identity`, told apart from an equal one before it the way a repeated
@@ -118,10 +135,18 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         ids.flatMap { identities[$0] ?? [] }.sorted { (order[$0] ?? 0) < (order[$1] ?? 0) }
     }
 
-    /// The entries the host holds in its cells, each its own view, in the order
-    /// they show; an identity the list no longer shows is left out.
-    func children(realized: [String]) -> [Node] {
-        realized.filter { places[$0] != nil }
+    /// The positions `identities` stand at in this build.
+    func positions(of identities: [String]) -> [Int] {
+        identities.compactMap { order[$0] }
+    }
+
+    /// The entries within `reach` of the host's cells, each its own view, in
+    /// the order they show: the ones it said, and the ones standing now where
+    /// those stood. An identity the list no longer shows is left out.
+    /// Design: docs/design/views/items.md#built-when-a-cell-asks
+    func children(within reach: ItemsReach) -> [Node] {
+        let standing = reach.positions.compactMap { ordered.indices.contains($0) ? ordered[$0] : nil }
+        return Set(reach.identities + standing).filter { places[$0] != nil }
             .sorted { (order[$0] ?? 0) < (order[$1] ?? 0) }
             .map { identity in
                 var node = ItemsEntry(identity: identity, source: self).node
@@ -133,10 +158,15 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
 
 /// One entry of an ItemsView, built as a view of its own - with its own reads, so
 /// a state it reads builds it alone - and carried whole while its source is the
-/// same.
-struct ItemsEntry: View {
+/// same: one value to compare, which every render of the list compares for each
+/// entry it keeps.
+struct ItemsEntry: View, @MainActor Equatable {
     let identity: String
     let source: any ItemsViews
+
+    static func == (lhs: ItemsEntry, rhs: ItemsEntry) -> Bool {
+        lhs.identity == rhs.identity && lhs.source === rhs.source
+    }
 
     var body: some View {
         // Chosen by identity, so held as `any View` and handed on as its node.

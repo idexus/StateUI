@@ -12,8 +12,8 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("standsAloneShowingItsFirstTab", proves: [
-                Covered(TabViewContract.self), Covered(ViewContract.frameChanged, on: "Text"),
-            ]) { s in
+                Covered(TabViewContract.self),
+            ], needs: [Covered(ViewContract.frameChanged, on: "Text")]) { s in
                 let frames = Received<[Double]>()
                 s.start {
                     TabView([0, 1]) { tab in

@@ -11,11 +11,14 @@
 public struct NodeType: Hashable, Comparable, Sendable,
     ExpressibleByStringLiteral, CustomStringConvertible {
     /// The type's stable StateUI name, or the application's own.
-    public let name: String
+    public var name: String { key.name }
+
+    /// The name and the number the key is worked by (`KeyName`).
+    @_spi(Host) public let key: KeyName
 
     /// A node type from its name.
     public init(_ name: String) {
-        self.name = name
+        key = KeyName(name)
     }
 
     /// The literal form, which is how a contract names its node type:
@@ -30,6 +33,6 @@ public struct NodeType: Hashable, Comparable, Sendable,
 
     /// Name order, so a list of types reads sorted in a test or a dump.
     public static func < (lhs: NodeType, rhs: NodeType) -> Bool {
-        lhs.name < rhs.name
+        lhs.key < rhs.key
     }
 }

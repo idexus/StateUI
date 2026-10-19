@@ -1,5 +1,4 @@
-# revision 2.1
+# revision 3.1
 Image: ✅
-Image.frameChanged: ✅
 Image.isAnimating: not realized
 Image.source: ✅

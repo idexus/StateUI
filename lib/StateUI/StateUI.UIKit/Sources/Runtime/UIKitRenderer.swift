@@ -67,7 +67,7 @@ final class UIKitRenderer {
     var turns: RunLoopTurns?
 
     /// The menu bar as it was last built.
-    private var menuBarSaid = ""
+    private var menuBarSaid: [MenuEntry.Said] = []
 
     init(
         clock: (() -> Double)? = nil, preferences: UserDefaults = .standard,
@@ -202,9 +202,13 @@ final class UIKitRenderer {
     }
 
     /// A scene iOS let go of - in the background, to come back - takes its window with it; the StateUI window
-    /// stands until its session comes back or the user closes it.
+    /// stands until its session comes back or the user closes it, and the theme is followed on a scene iOS holds.
     func disconnect(_ scene: UIWindowScene) {
         roster.windows.first { $0.1.window?.windowScene === scene }?.1.sceneLeft()
+        environment.stopFollowingTheme(of: scene)
+        if let held = roster.windows.lazy.compactMap({ $0.1.window?.windowScene }).first(where: { $0 !== scene }) {
+            environment.followTheme(of: held)
+        }
     }
 
     /// A scene keeps a value: every window of it writes it in its session's record, for whichever comes back first.
@@ -251,6 +255,7 @@ final class UIKitRenderer {
             if scene == nil, ownsScenes, launched { requestScene() }
             let controller = UIKitWindowController(element, scene: scene)
             controller.onFrontMoved = { [weak self] scene in self?.frontMoved(in: scene) }
+            controller.onResizing = { [weak self] scene in self?.environment.displayMoved(for: scene) }
             return controller
         }, close: { [unowned self] closing in
             guard ownsScenes else { return closing.hide() }
@@ -304,27 +309,28 @@ final class UIKitRenderer {
         }
     }
 
-    /// Asks UIKit to build its main menu again where the page's menus say something else now or stand for other
-    /// elements: an entry standing in another's place with the same words answers another element.
+    /// Asks UIKit to build its main menu again where the page's menus show something else now - a word, a check, a
+    /// mark, a picture - or stand for other elements (`MenuEntry.Said`): UIKit changes no built menu in place.
     /// Design: docs/design/platforms/uikit/pages.md#menus
     private func rebuildMenuBarWhereItChanged() {
-        let said = UIKitMenus.said(menuBar, identified: true)
+        let said = pageMenus.map(\.said)
         guard said != menuBarSaid else { return }
         menuBarSaid = said
+        menuBarBuildsForTesting += 1
         UIMenuSystem.main.setNeedsRebuild()
     }
+
+    /// How many times UIKit was asked to build its main menu again.
+    private(set) var menuBarBuildsForTesting = 0
 
     /// The window the user is looking at: the key one, else the first.
     var userWindow: UIWindow? {
         roster.windows.first { $0.1.window?.isKeyWindow == true }?.1.window ?? roster.windows.first?.1.window
     }
 
-    /// What the user's window shows on top now - its top sheet, else its pages - which a question or a dialog is
-    /// presented over.
-    var userPresenter: UIViewController? {
-        guard var presenter = userWindow?.rootViewController else { return nil }
-        while let top = presenter.presentedViewController, !top.isBeingDismissed { presenter = top }
-        return presenter
+    /// The root of the user's window, which presents a question, a dialog or a preview over what the window shows.
+    var userRoot: UIKitRootViewController? {
+        userWindow?.rootViewController as? UIKitRootViewController
     }
 
     /// A picture the application ships, by its name: its own file, else its drawing (`PictureArithmetic.drawnFiles`),
@@ -345,22 +351,31 @@ final class UIKitRenderer {
         return nil
     }
 
-    /// The native image for a picture: a file the application ships, the SF Symbol for an icon - a template, drawn
-    /// in the colour of what holds it - or the bytes decoded at a point a pixel. Each is named by its identity.
+    /// The native image for a picture, made once: a file the application ships, the SF Symbol for an icon - a
+    /// template, drawn in the colour of what holds it - or the bytes decoded at a point a pixel. Each is named by its
+    /// identity.
     static func image(_ picture: HostPicture) -> UIImage? {
+        let key = UIKitPictureKey(picture, height: nil)
+        if let kept = images.object(forKey: key) { return kept }
         let image: UIImage? = switch picture {
         case .file(let name): image(named: name)
         case .icon(let icon): UIImage(systemName: icon.sfSymbol)
         case .bytes(let bytes): UIImage(data: Data(bytes), scale: 1)
         }
         image?.accessibilityIdentifier = picture.identity
+        if let image { images.setObject(image, forKey: key) }
         return image
     }
+
+    /// The pictures made, and their glyphs at each height.
+    private static let images = NSCache<UIKitPictureKey, UIImage>()
 
     /// The picture as a bar or a tab shows it: `height` points tall and as wide as its shape makes it
     /// (`PictureArithmetic.glyph`) - its own pixels, drawn smaller; a symbol as UIKit sizes it there.
     /// Design: docs/design/platforms/uikit/pages.md#pictures-on-the-bars
     static func glyph(_ picture: HostPicture, height: Double) -> UIImage? {
+        let key = UIKitPictureKey(picture, height: height)
+        if let kept = images.object(forKey: key) { return kept }
         guard let image = image(picture) else { return nil }
         guard let pixels = image.cgImage, image.size.height > 0 else { return image }
         let size = PictureArithmetic.glyph(
@@ -369,12 +384,37 @@ final class UIKitRenderer {
             cgImage: pixels, scale: image.scale * image.size.height / size.height, orientation: image.imageOrientation)
             .withRenderingMode(image.renderingMode)
         glyph.accessibilityIdentifier = picture.identity
+        images.setObject(glyph, forKey: key)
         return glyph
     }
 }
 
+/// A picture, at a glyph's height where it stands as one, as the key of the pictures made.
+private final class UIKitPictureKey: NSObject {
+    let picture: HostPicture
+    let height: Double?
+
+    init(_ picture: HostPicture, height: Double?) {
+        self.picture = picture
+        self.height = height
+    }
+
+    override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(picture)
+        hasher.combine(height)
+        return hasher.finalize()
+    }
+
+    override func isEqual(_ object: Any?) -> Bool {
+        guard let other = object as? UIKitPictureKey else { return false }
+        return other.picture == picture && other.height == height
+    }
+}
+
 extension UIKitRenderer: HostPresenter {
-    func presentRendered() {
+    func presentRendered(touchedChrome: Bool) {
+        guard touchedChrome else { return tellStandingPhases() }
         synchronizeWindows()
     }
 

@@ -4,6 +4,18 @@
 // Events the host raises by name, with no element behind them.
 // Design: docs/design/core/acts.md#host-events
 
+/// An application's event by its contract and its member: two tiers may name an event alike.
+/// Design: docs/design/core/acts.md#host-events
+struct EventMember: Hashable, Sendable {
+    let owner: KeyName
+    let member: KeyName
+
+    init<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
+        owner = event.owner
+        member = event.token.key
+    }
+}
+
 /// One handler's subscription to a host event, made by `HostEvents.on`.
 ///
 /// Keep it - one not kept is a warning - and `cancel()` when the listener
@@ -13,11 +25,11 @@
 @MainActor
 public final class HostEventSubscription {
     /// Which event, and which entry in its list.
-    private let event: Event
+    private let event: EventMember
     private let id: Int
 
     /// Made by `HostEvents.on` and nothing else.
-    init(event: Event, id: Int) {
+    init(event: EventMember, id: Int) {
         self.event = event
         self.id = id
     }
@@ -49,14 +61,13 @@ public final class HostEventSubscription {
 /// name with the values whenever the platform reports a change.
 ///
 /// A raise nobody subscribed to is an ordinary answer, not an error - the
-/// battery reports whether a page is watching or not. Prefix event names with
-/// the application's own (`"Gallery."`) so they can never meet an event this
-/// library adds later.
+/// battery reports whether a page is watching or not. An event is told apart by its
+/// contract and its name together, so two tiers may name an event alike.
 @MainActor
 public enum HostEvents {
     /// The subscriptions in the order made, which is the order handlers run in.
     private static var subscriptions:
-        [Event: [(id: Int, gate: any Gate, owner: RunOwner, handler: ValueEventHandler<[PropValue]>)]] = [:]
+        [EventMember: [(id: Int, owner: RunOwner, handler: ValueHandler<[PropValue]>)]] = [:]
 
     /// The next subscription's number - never reused.
     private static var nextId = 1
@@ -64,19 +75,16 @@ public enum HostEvents {
     /// Subscribes a handler to what the host raises under an event's name, the values
     /// as they crossed; an event the host says it does not raise is said once.
     private static func subscribe(
-        _ event: Event,
-        owner: String,
-        member: String,
-        gate: some Gate,
-        _ handler: @escaping ValueEventHandler<[PropValue]>
+        _ event: EventMember,
+        _ handler: ValueHandler<[PropValue]>
     ) -> HostEventSubscription {
-        if let unraised = HostRealizations.unraised(owner: owner, event: member) {
+        if let unraised = HostRealizations.unraised(owner: event.owner, event: event.member) {
             complain(unraised)
         }
 
         let id = nextId
         nextId += 1
-        subscriptions[event, default: []].append((id: id, gate: gate, owner: RunOwner(), handler: handler))
+        subscriptions[event, default: []].append((id: id, owner: RunOwner(), handler: handler))
 
         return HostEventSubscription(event: event, id: id)
     }
@@ -97,7 +105,11 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, Void>,
         _ handler: @escaping @MainActor () throws -> Void
     ) -> HostEventSubscription {
-        on(event, gate: .none) { try handler() }
+        subscribe(EventMember(event), ValueHandler(step: { payload in
+            guard MemberValues.carried(payload, by: event.name) != nil else { return }
+
+            try handler()
+        }))
     }
 
     /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
@@ -106,20 +118,11 @@ public enum HostEvents {
         gate: some Gate,
         _ handler: @escaping EventHandler
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, gate: gate) { payload in
+        subscribe(EventMember(event), ValueHandler(run: { payload in
             guard MemberValues.carried(payload, by: event.name) != nil else { return }
 
             try await handler()
-        }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: HostEvents.on(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public static func on<Owner: ApplicationTier>(
-        _ event: ElementEvent<Owner, Void>,
-        _ handler: @escaping EventHandler
-    ) -> HostEventSubscription {
-        fatalError("unavailable")
+        }, gate: gate))
     }
 
     /// Subscribes a handler to an event of the application's that carries one
@@ -138,7 +141,11 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, Value>,
         _ handler: @escaping @MainActor (Value) throws -> Void
     ) -> HostEventSubscription {
-        on(event, gate: .none) { try handler($0) }
+        subscribe(EventMember(event), ValueHandler(step: { payload in
+            guard let value = MemberValues.carried(payload, by: event.name, as: Value.self) else { return }
+
+            try handler(value)
+        }))
     }
 
     /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
@@ -147,20 +154,11 @@ public enum HostEvents {
         gate: some Gate,
         _ handler: @escaping ValueEventHandler<Value>
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, gate: gate) { payload in
+        subscribe(EventMember(event), ValueHandler(run: { payload in
             guard let value = MemberValues.carried(payload, by: event.name, as: Value.self) else { return }
 
             try await handler(value)
-        }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: HostEvents.on(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public static func on<Owner: ApplicationTier, Value: HostRepresentable>(
-        _ event: ElementEvent<Owner, Value>,
-        _ handler: @escaping ValueEventHandler<Value>
-    ) -> HostEventSubscription {
-        fatalError("unavailable")
+        }, gate: gate))
     }
 
     /// Subscribes a handler to an event of the application's that carries two
@@ -178,7 +176,13 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, (First, Second)>,
         _ handler: @escaping @MainActor (First, Second) throws -> Void
     ) -> HostEventSubscription {
-        on(event, gate: .none) { a, b in try handler(a, b) }
+        subscribe(EventMember(event), ValueHandler(step: { payload in
+            guard let (first, second) = MemberValues.carried(
+                payload, by: event.name, as: First.self, Second.self)
+            else { return }
+
+            try handler(first, second)
+        }))
     }
 
     /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
@@ -187,22 +191,13 @@ public enum HostEvents {
         gate: some Gate,
         _ handler: @escaping ValueEventHandler<First, Second>
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, gate: gate) { payload in
+        subscribe(EventMember(event), ValueHandler(run: { payload in
             guard let (first, second) = MemberValues.carried(
                 payload, by: event.name, as: First.self, Second.self)
             else { return }
 
             try await handler(first, second)
-        }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: HostEvents.on(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public static func on<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
-        _ event: ElementEvent<Owner, (First, Second)>,
-        _ handler: @escaping ValueEventHandler<First, Second>
-    ) -> HostEventSubscription {
-        fatalError("unavailable")
+        }, gate: gate))
     }
 
     /// Subscribes a handler to an event of the application's that carries
@@ -219,7 +214,13 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, (First, Second, Third)>,
         _ handler: @escaping @MainActor (First, Second, Third) throws -> Void
     ) -> HostEventSubscription {
-        on(event, gate: .none) { a, b, c in try handler(a, b, c) }
+        subscribe(EventMember(event), ValueHandler(step: { payload in
+            guard let (first, second, third) = MemberValues.carried(
+                payload, by: event.name, as: First.self, Second.self, Third.self)
+            else { return }
+
+            try handler(first, second, third)
+        }))
     }
 
     /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
@@ -230,40 +231,31 @@ public enum HostEvents {
         gate: some Gate,
         _ handler: @escaping ValueEventHandler<First, Second, Third>
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, gate: gate) { payload in
+        subscribe(EventMember(event), ValueHandler(run: { payload in
             guard let (first, second, third) = MemberValues.carried(
                 payload, by: event.name, as: First.self, Second.self, Third.self)
             else { return }
 
             try await handler(first, second, third)
-        }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: HostEvents.on(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public static func on<
-        Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
-    >(
-        _ event: ElementEvent<Owner, (First, Second, Third)>,
-        _ handler: @escaping ValueEventHandler<First, Second, Third>
-    ) -> HostEventSubscription {
-        fatalError("unavailable")
+        }, gate: gate))
     }
 
     /// Takes one subscription out - `HostEventSubscription.cancel`'s half.
-    static func remove(_ event: Event, _ id: Int) {
+    static func remove(_ event: EventMember, _ id: Int) {
         subscriptions[event]?.first { $0.id == id }?.owner.orphan()
         subscriptions[event]?.removeAll { $0.id == id }
     }
 
-    /// Runs every handler subscribed to a name, each through its gate, and answers how many - the list as
-    /// it stood when the raise came.
+    /// Runs every handler subscribed to an event, each through its gate, and answers how many - the list as
+    /// it stands when the raise is delivered on the UI thread, which may be after it was raised.
     @discardableResult
-    static func dispatch(_ name: String, _ payload: [PropValue]) -> Int {
-        let handlers = subscriptions[Event(name)] ?? []
+    static func dispatch(_ event: EventMember, _ payload: [PropValue]) -> Int {
+        let handlers = subscriptions[event] ?? []
 
         for entry in handlers {
-            entry.gate.runs(for: entry.owner).start({ try await entry.handler(payload) }, entry.gate.policy, payload: nil, owner: entry.owner)
+            let handler = entry.handler
+            handler.gate.runs(for: entry.owner).start(
+                { try await handler.run(payload) }, handler.gate.policy, payload: nil, owner: entry.owner)
         }
 
         return handlers.count

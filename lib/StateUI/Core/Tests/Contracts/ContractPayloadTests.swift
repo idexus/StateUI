@@ -31,6 +31,10 @@ final class ContractPayloadTests: XCTestCase {
         check(ViewContract.dragEnded)
         check(ViewContract.frameChanged, [.numbers(frame)])
         check(ViewContract.panUpdated, [.enumeration(1), .number(3), .number(4)])
+        check(LayoutEngineContract.handMoved, [.enumeration(2), .numbers([-4, 0]), .numbers([-300, 0])])
+        check(LayoutEngineContract.handStepped, [.numbers([-1, 0])])
+        check(LayoutEngineContract.itemMoved, [.enumeration(1), .numbers([75, 40]), .numbers([0, 0]), .number(500)])
+        check(LayoutEngineContract.pinchMoved, [.enumeration(1), .number(1.5), .number(30), .numbers([0, 0])])
         check(ViewContract.pinchUpdated, [.enumeration(1), .number(1.5), .numbers([10, 20])])
         check(ViewContract.pointerEntered)
         check(ViewContract.pointerExited)
@@ -165,6 +169,21 @@ final class ContractPayloadTests: XCTestCase {
         checked.insert("\(Owner.name).\(event.name)")
         XCTAssertNotNil(
             MemberValues.decode(payload, as: First.self, Second.self, Third.self),
+            "\(Owner.name).\(event.name) refuses \(payload)", file: file, line: line)
+    }
+    /// An event that carries four values.
+    private func check<
+        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable,
+        Fourth: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third, Fourth)>,
+        _ payload: [PropValue],
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        checked.insert("\(Owner.name).\(event.name)")
+        XCTAssertNotNil(
+            MemberValues.decode(payload, as: First.self, Second.self, Third.self, Fourth.self),
             "\(Owner.name).\(event.name) refuses \(payload)", file: file, line: line)
     }
 }

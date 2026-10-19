@@ -15,6 +15,22 @@ view's number, which forwards each call to Swift by the number
 ([JNI](jni.md)). A view hands the same listener to every setter it needs, so a
 field's typing and its Return reach the same Swift view.
 
+## The hand over a layout
+
+A layout an engine moves hears the hand through its view's one listener
+(`StateUIGestures`): a finger, followed by a `VelocityTracker`, and a
+wheel's notches (`ACTION_SCROLL`, by the platform's scroll factor). The
+listener sees each touch before the layout's children do (`StateUIWatch`,
+as a view made of parts): a card answering a tap takes the finger down, yet
+once the hand claims it the card's press is called off. A finger
+down decides nothing and leaves the parent free to intercept; past the slop,
+its first move goes to the Swift host, whose host layer claims it along the
+layout's axis (`handed`) - claimed, the layout takes the rest of the touch and
+forbids its parent to intercept; left, a page's scroller takes it. At the
+lift the tracker's speed goes with it. A wheel's notches - Android's scroll
+axes count them, a part of one for a fine wheel - are told as notches
+(`notched`), each a step of the run to the next target.
+
 ## A disabled view
 
 Every view takes the enablement `presented(_:)` gives it with Android's own
@@ -29,11 +45,22 @@ and a field's listener while the value is being set, so the listener's call
 during that write is the write's echo, and the element reports nothing. A
 control does not keep a flag of its own.
 
+## A long press
+
+A long press is decided in one place, the host's (`AndroidView.longClicked`),
+through the view's one long-press listener: a button's own menu - a split
+button's or a held one's, the road TalkBack offers - else the view's drag,
+else nothing the host takes, and Android goes on to the view's context menu.
+A view hands that listener on while a long press is its to decide and takes
+it back after, still taking a long press where it took one of itself or
+offers a context menu.
+
 ## A drag between views
 
 A view's drag between views is Android's own drag and drop, through one drag
 listener a view (`StateUIDrags`). A view that can be dragged starts a drag
-on a long press - Android's gesture for it - carrying the view's words as
+on a long press - Android's gesture for it, as the host decides one
+([a long press](#a-long-press)) - carrying the view's words as
 plain text, its shadow the view, the view's number its local state; a view
 that takes drops takes a drag of plain text as it starts. The listener tells
 the host the drag over the view at each of Android's entering and moving,
@@ -296,7 +323,9 @@ is a page behind and ahead is said when it changes. A script runs in the page
 and answers later, by ticket, with the JSON Android hands back read as text
 by the host layer's rule ([a script's answer](../../host/web.md#a-scripts-answer)).
 The web view runs the page's scripts and keeps its storage, and lets go of
-its page and its web process when its element leaves.
+its page and its web process when its element leaves - or its process dies -
+answering every script still waiting that the page went, as Android calls
+nothing back from a web view gone.
 
 ## The keyboard's focus
 
@@ -320,8 +349,8 @@ heading but not its level.
 A view has one listener, and what its element listens for
 (`MountedElement.hearing`) is told there from the touches and the hovering pointer the view
 gets, in points, and heard by the host layer's rule (`MountedElement.hear`):
-taps, a press dragged, a pinch, and the pointer. One tap is the view's click,
-which keeps what a click brings; where more make one, the listener counts
+taps, a press dragged, a pinch, two fingers turning, and the pointer. One
+tap is the view's click, which keeps what a click brings; where more make one, the listener counts
 quick taps near each other as Android measures a double tap - Android itself
 counts no run past two - and tells each with its place in its run. A press is
 told as it goes down, moves, lets go or is taken away, measured on the screen,
@@ -333,8 +362,10 @@ one finger is no drag, as the host layer's hearing says. A swipe is the
 drag's end, far enough, in a direction asked for - the host layer's too. A
 view that listens for a drag or a pinch keeps its touch from a scroller around
 it, so a drag that starts on it is its own. A pinch is Android's own: it
-starts once Android tells it apart, takes the press away, scales from there,
-and ends where it was last centred. A view with no handling of its own is
+starts once Android tells it apart, takes the press away and calls off the
+view's own click - a touch that pinched is no tap, however still the finger it
+ends with - scales from there, and ends where it was last centred, cancelled
+where the touch was. A view with no handling of its own is
 given the whole touch; a control keeps its own.
 
 A view made of parts - a stepper's two buttons, a web view's page - would hand

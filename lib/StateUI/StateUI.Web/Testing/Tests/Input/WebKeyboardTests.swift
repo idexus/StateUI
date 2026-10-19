@@ -20,6 +20,43 @@ final class WebKeyboardTests: XCTestCase {
         for _ in 0..<3 { host.step() }
     }
 
+    /// An Enter that commits an input method's words submits nothing - Safari tells it as the key of number 229 -
+    /// and an Enter after it submits the field.
+    func testAnEnterEndingACompositionSubmitsNothing() throws {
+        WebRenderer.shared?.leave()
+        var submitted = 0
+        let words = State(wrappedValue: "")
+        let host = WebRenderer.running { TextField(words.projectedValue).onSubmitted { submitted += 1 } }
+        host.step()
+        let field = try XCTUnwrap(host.views(WebTextInputView.self).first)
+
+        try WebBrowser.run("e.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', isComposing: true }))", on: field.node)
+        try WebBrowser.run("e.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 229 }))", on: field.node)
+        for _ in 0..<3 { host.step() }
+        XCTAssertEqual(submitted, 0, "an input method's Enter submitted the field")
+
+        try WebBrowser.run("e.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))", on: field.node)
+        for _ in 0..<3 { host.step() }
+        XCTAssertEqual(submitted, 1)
+        host.leave()
+    }
+
+    /// A menu that closes gives the keyboard back to what held it as the menu opened, not to the page's body.
+    func testAClosedMenuGivesTheKeyboardBack() throws {
+        WebRenderer.shared?.leave()
+        let host = WebRenderer.running { Button("Share").menu { MenuItem("Mail") } }
+        host.step()
+        let button = try XCTUnwrap(host.views(WebButtonView.self).first)
+        try WebBrowser.run("e.focus(); e.click()", on: button.node)
+        for _ in 0..<3 { host.step() }
+        XCTAssertTrue(try WebBrowser.truth("!!document.querySelector('.stateui-menu:popover-open')", on: 0), "the menu open")
+
+        try WebBrowser.run("document.querySelector('.stateui-menu:popover-open').hidePopover()")
+        for _ in 0..<3 { host.step() }
+        XCTAssertTrue(try WebBrowser.truth("document.activeElement === e", on: button.node), "the keyboard back on the button")
+        host.leave()
+    }
+
     private func focused() throws -> String {
         try WebBrowser.evaluate("document.activeElement?.textContent ?? ''", on: 0) ?? ""
     }
@@ -69,5 +106,32 @@ final class WebKeyboardTests: XCTestCase {
         XCTAssertEqual(try focused(), "Copy", "round to the first")
         press("End", host)
         XCTAssertEqual(try focused(), "Ruler")
+    }
+
+    /// An open menu holds the keyboard though the page takes the arrows, Enter and Escape itself: the page's keys are
+    /// for the page, not for a menu standing over it.
+    func testAMenuKeepsItsKeysFromAPageTakingThem() throws {
+        WebRenderer.shared?.leave()
+        var taken: [Key] = []
+        let host = WebRenderer.running {
+            VStack {
+                Text("Row").contextMenu {
+                    MenuItem("Copy")
+                    MenuItem("Paste")
+                }
+            }
+            .onKeyPressed(.downArrow, .upArrow, .return, .escape) { taken.append($0) }
+        }
+        host.step()
+        let row = try XCTUnwrap(host.views(WebTextView.self).first)
+        try WebBrowser.run("e.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true }))", on: row.node)
+        host.step()
+
+        press("ArrowDown", host)
+        XCTAssertEqual(try focused(), "Copy")
+        press("ArrowDown", host)
+        XCTAssertEqual(try focused(), "Paste")
+        XCTAssertEqual(taken, [], "the page took the menu's keys")
+        host.leave()
     }
 }

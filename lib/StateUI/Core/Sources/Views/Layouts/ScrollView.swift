@@ -74,7 +74,7 @@ public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollView
     /// write animates under the element's motion, `$offset.journey.snap(to:)`
     /// jumps, and `$offset.journey.move(to:)` animates under a law of its own.
     /// Handing `$offset` over reads nothing: a body that reads `offset` renders
-    /// on every report, and `.samples($offset, into: $shown, .every(100))`
+    /// on every report, and `.samples($offset, into: $shown, .every(.milliseconds(100)))`
     /// holds a reading to ten a second.
     ///
     /// - Parameter state: the state the offset is carried on.
@@ -101,12 +101,6 @@ public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollView
     /// again while a run is under way.
     public func onScrollStopped(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         onEvent(ScrollViewContract.scrollStopped, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onScrollStopped(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onScrollStopped(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
     }
 }
 

@@ -39,7 +39,8 @@ enum TestWindow {
     /// Takes the window into touch mode or out of it, as a finger or a hardware key does, and waits until it is.
     static func touchMode(_ inTouch: Bool) {
         Java.callStatic(runner, setTouchMode, .bool(inTouch))
-        for _ in 0..<50 where inTouchMode != inTouch {
+        for _ in 0..<50 {
+            guard inTouchMode != inTouch else { break }
             run(for: 20)
         }
     }
@@ -223,6 +224,8 @@ extension AndroidRenderer {
 
     /// A host with no application yet, whose tree takes what a test applies, at two pixels a point.
     static func bare(clock: TestClock? = nil, reducesMotion: Bool = false) -> AndroidRenderer {
+        // Whatever an earlier test left asked is dismissed, as an activity finishing dismisses it.
+        endActs()
         let renderer = AndroidRenderer(
             context: TestContext.context, root: TestJava.root(), density: 2,
             clock: clock.map { clock in { clock.now } }, reducesMotion: { reducesMotion })
@@ -247,7 +250,8 @@ extension AndroidRenderer {
 
     /// Pumps until `done` holds: a handler resumed on the pool comes back to the UI thread's queue.
     func settle(until done: () -> Bool) {
-        for _ in 0..<150 where !done() {
+        for _ in 0..<150 {
+            guard !done() else { break }
             usleep(10_000)
             runtime.pump.turn()
         }

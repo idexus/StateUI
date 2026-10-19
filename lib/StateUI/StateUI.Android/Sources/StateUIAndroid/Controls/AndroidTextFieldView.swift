@@ -65,23 +65,9 @@ final class AndroidTextFieldView: AndroidTextualView {
         listen(JavaAPI.addTextChangedListener, JavaAPI.setOnEditorActionListener)
     }
 
-    /// The field's kind of input: the keys its traits pick, one line or several, hiding what is typed, capitals,
-    /// correction and suggestions.
-    /// Design: docs/design/platforms/android/controls.md#what-typing-is-given
+    /// The field's kind of input: the keys its traits pick, one line or several, hiding what is typed.
     private var inputType: Int32 {
-        switch traits.keys {
-        case .number:
-            return ViewConstants.numberInput | ViewConstants.decimalNumber | (isPassword ? ViewConstants.hiddenNumber : 0)
-        case .telephone:
-            return ViewConstants.phoneInput
-        case .words, .email, .url:
-            let variation = isPassword ? ViewConstants.passwordInput
-                : traits.keys == .email ? ViewConstants.emailInput : traits.keys == .url ? ViewConstants.linkInput : 0
-            return ViewConstants.textInput | variation | (kind == .editor ? ViewConstants.multiLineInput : 0)
-                | (traits.capitals == .sentences ? ViewConstants.sentenceCapitals : 0)
-                | (traits.corrects && !isPassword ? ViewConstants.autoCorrect : 0)
-                | (traits.predicts ? 0 : ViewConstants.noSuggestions)
-        }
+        traits.inputType(password: isPassword, multiLine: kind == .editor)
     }
 
     /// What the field's keyboard and its checking of the words do; the words and their weight stay.
@@ -147,13 +133,13 @@ final class AndroidTextFieldView: AndroidTextualView {
         Java.call(reference, JavaAPI.setSelection, .int(end), .int(end))
     }
 
-    /// The user changed the words: held in the field's case within `maximumLength` (`InputWords.held`), then handed
-    /// on.
-    func typed(_ text: String) {
+    /// The user changed the words: held in the field's case within `maximumLength` (`InputWords.held`) - as typed
+    /// while an input method is `composing` them - then handed on.
+    func typed(_ text: String, composing: Bool) {
         guard !ProgramWrite.isWriting else { return }
 
         var kept = text
-        if let held = InputWords.held(text, in: textCase, toBound: maximumLength) {
+        if let held = InputWords.held(text, in: textCase, toBound: maximumLength, composing: composing) {
             kept = held
             ProgramWrite.perform { setText(kept) }
         }

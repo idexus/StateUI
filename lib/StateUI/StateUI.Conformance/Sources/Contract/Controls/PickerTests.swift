@@ -24,9 +24,9 @@
                 s.expect(try s.held(PickerContract.selectedIndex, on: picker), 1)
             },
             ConformanceCase("aUsersChoiceLandsOnceAndTheProgramsComesBackFromNobody", proves: [
-                Covered(PickerContract.selectedIndex), Covered(PickerContract.selectedIndexChanged),
-                Covered(TextualElementContract.text, on: TextContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                Covered(PickerContract.selectedIndex),
+                Covered(PickerContract.selectedIndexChanged),
+            ], needs: [Covered(TextualElementContract.text, on: TextContract.self), Covered(ButtonContract.clicked)]) { s in
                 let size = State(wrappedValue: "M")
                 let written = Received<String>()
                 let chosen = Binding(get: { size.wrappedValue }, set: { written.values.append($0); size.wrappedValue = $0 })
@@ -135,6 +135,7 @@
 
                 try s.perform(.activate, on: s.element("open"))
                 try s.settle { try s.held(PickerContract.isOpen, on: picker) == true }
+                s.turn()
                 s.expect(heard.values, [], "the program's opening heard by nobody")
 
                 try s.perform(.close, on: picker)

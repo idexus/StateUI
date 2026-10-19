@@ -2,7 +2,7 @@
   "name": "stateui",
   "displayName": "StateUI",
   "description": "Build, run and debug StateUI applications on AppKit, UIKit, Android, WinUI, GTK and the Web.",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "publisher": "idexus",
   "license": "Apache-2.0",
   "icon": "icon.png",
@@ -210,6 +210,10 @@
           "device": {
             "type": "string",
             "description": "The serial of the Android device the head runs on."
+          },
+          "launch": {
+            "type": "boolean",
+            "description": "A head run until stopped, which a launch of the same application on the same device replaces."
           }
         }
       }

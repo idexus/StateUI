@@ -20,6 +20,10 @@
     /// What the user is asked, one showing at a time; each answers under its ticket.
     private let questions = QuestionQueue<(call: HostActCall, asked: Asked)>()
 
+    /// The question showing - one at a time - and how many times it was shown: an answer counts from its latest
+    /// showing.
+    private var showing: (ticket: Int64, count: Int)?
+
     /// What the user is asked: a question, or a dialog for files.
     private enum Asked {
         case question(HostQuestion)
@@ -104,15 +108,19 @@
     /// takes its turn.
     /// Design: docs/design/host/runtime.md#questions-for-the-user
     private func show(_ ticket: Int64, call: HostActCall, asked: Asked) {
+        let count = (showing?.ticket == ticket ? showing?.count ?? 0 : 0) + 1
+        showing = (ticket, count)
         let shown = switch asked {
         case .question(let question):
-            toolkit.show(question) { [weak self] accepted, words in
-                self?.answer(ticket, .success(question.answer(accepted: accepted, words: words)))
+            toolkit.show(question) { [weak self] given in
+                guard let self, showing?.ticket == ticket, showing?.count == count else { return }
+                answer(ticket, given.map { question.answer(accepted: $0.accepted, words: $0.words) })
             }
         case .files(let dialog):
             files?.show(dialog) { [weak self] chosen in self?.answer(ticket, chosen.map(dialog.answer)) } ?? false
         }
         guard !shown else { return }
+        forget(ticket)
         fail(call, "there is no window to ask the user in")
         if questions.answered(ticket)?.next != nil { showFirst() }
     }
@@ -123,8 +131,36 @@
         show(ticket, call: first.call, asked: first.asked)
     }
 
+    /// Asks again the question showing, whose dialog went with the window it stood over - an activity made again:
+    /// its answer comes from the dialog shown now. A file dialog stands in the platform's own window, which answers
+    /// the next, and is not asked again.
+    public func askAgain() {
+        guard let (ticket, first) = questions.first, case .question = first.asked else { return }
+        show(ticket, call: first.call, asked: first.asked)
+    }
+
+    /// Answers every question waiting - the one showing and those behind it - as the user dismissing it does: the
+    /// window they were asked in went for good. A file dialog answers that nothing was chosen; an answer its dialog
+    /// gives later counts for nothing.
+    public func dismissAll() {
+        while let (ticket, first) = questions.first {
+            forget(ticket)
+            _ = questions.answered(ticket)
+            switch first.asked {
+            case .question(let question): deliver(first.call, .success(question.answer(accepted: false, words: nil)))
+            case .files(let dialog): deliver(first.call, .success(dialog.answer([])))
+            }
+        }
+    }
+
+    /// What was shown under `ticket` is shown no more.
+    private func forget(_ ticket: Int64) {
+        if showing?.ticket == ticket { showing = nil }
+    }
+
     /// What was asked under `ticket` was answered: its caller hears the answer, and the next shows.
     private func answer(_ ticket: Int64, _ answer: Result<[HostValue], ActFailure>) {
+        forget(ticket)
         guard let (asked, next) = questions.answered(ticket) else { return }
         deliver(asked.call, answer)
         if next != nil { showFirst() }

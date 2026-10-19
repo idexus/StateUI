@@ -91,7 +91,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
 
                 button("Send the bottom one") {
                     try await $level.journey.move(to: level < 0.5 ? 1 : 0,
-                                               .eased(900, .cubicInOut)).arrived()
+                                               .eased(.milliseconds(900), .cubicInOut)).arrived()
                 }
             }
             .spacing(10)
@@ -113,7 +113,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
                     .horizontalAlignment(.start)
 
                 button("Send the stepper to 12") {
-                    try await $count.journey.move(to: 12, .eased(800, .cubicOut)).arrived()
+                    try await $count.journey.move(to: 12, .eased(.milliseconds(800), .cubicOut)).arrived()
                 }
             }
             .spacing(10)
@@ -138,7 +138,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
                 + "on as `$x` - to a control, a modifier, a child or an engine - makes "
                 + "no reader, and the host carries it with nothing rebuilt. Where a "
                 + "body must show a value that moves, it reads it and pays a render "
-                + "per report, or `.samples($x, into:, .every(100))` holds a reading "
+                + "per report, or `.samples($x, into:, .every(.milliseconds(100)))` holds a reading "
                 + "to ten a second; where it need not, a converted text shows it for "
                 + "nothing.")
                 .fontSize(12)

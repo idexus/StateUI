@@ -13,6 +13,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -23,7 +24,8 @@ import java.util.Objects;
  */
 final class StateUIWebView extends FrameLayout {
     /** How a navigation ended, as StateUI numbers it. */
-    private static final int SUCCESS = 1, TIMEOUT = 3, FAILURE = 4;
+    // Swift: WebNavigationResult
+    private static final int UNKNOWN = 0, SUCCESS = 1, CANCELLED = 2, TIMEOUT = 3, FAILURE = 4;
 
     private final long view;
     private WebView web;
@@ -39,6 +41,9 @@ final class StateUIWebView extends FrameLayout {
 
     /** What sees the page's touches and hovering first: its element's gestures. */
     private final StateUIWatch watch = new StateUIWatch();
+
+    /** The tickets of the scripts run and not answered yet. */
+    private final ArrayList<Long> scripts = new ArrayList<>();
 
     /** How the navigation under way failed - none yet. */
     private int failure;
@@ -122,11 +127,20 @@ final class StateUIWebView extends FrameLayout {
 
     /** Runs `script` in the page; what it evaluated to answers `ticket`, as JSON. */
     void evaluate(String script, long ticket) {
-        web.evaluateJavascript(script, value -> StateUIHost.answered(ticket, true, value));
+        scripts.add(ticket);
+        web.evaluateJavascript(script, value -> {
+            if (scripts.remove(Long.valueOf(ticket))) StateUIHost.answered(ticket, true, value);
+        });
     }
 
-    /** The web view let go of: nothing it holds calls back any more. */
+    /**
+     * The web view let go of: nothing it holds calls back any more, so a script still waiting is answered that the
+     * page went - not accepted.
+     */
     void release() {
+        ArrayList<Long> waiting = new ArrayList<>(scripts);
+        scripts.clear();
+        for (long ticket : waiting) StateUIHost.answered(ticket, false, null);
         removeView(web);
         web.destroy();
     }

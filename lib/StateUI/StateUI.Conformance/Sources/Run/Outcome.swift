@@ -56,18 +56,25 @@
     /// What the case needs and the host does not realize, or never has.
     public let gaps: [Covered]
 
-    /// What the register alone says, whether or not the case runs: – for each member never had, 🧩 for each left to
-    /// the application, empty for each not realized, and - where only a gap stops the case - each member realized
-    /// waiting on the first gap.
-    public var facts: [HostVerdict] {
-        let never = notPlanned.map { $0.key.verdict(.notPlanned(reason: $0.value)) }
+    /// – for each member never had, 🧩 for each left to the application.
+    private var never: [HostVerdict] {
+        notPlanned.map { $0.key.verdict(.notPlanned(reason: $0.value)) }
             + byApplication.map { $0.verdict(.byApplication) }
+    }
+
+    /// What the register alone says, whether or not the case runs: – for each member never had, 🧩 for each left to
+    /// the application, empty for each not realized; each member realized does not apply where one of those stops
+    /// the case for good, and waits on the first gap where only a gap stops it.
+    public var facts: [HostVerdict] {
         let missing = notRealized.map { $0.verdict(.notRealized) }
-        guard notPlanned.isEmpty, byApplication.isEmpty, let gap = notRealized.first ?? gaps.first else {
-            return never + missing
+        let covered = realized.keys.sorted { $0.description < $1.description }
+        if let never = notPlanned.keys.map(\.description).sorted().first ?? byApplication.first?.description {
+            // Stopped for good: each member realized says why, giving way to any case that judges it.
+            let why = "its case covers \(never) too, which this host never has"
+            return self.never + missing + covered.map { $0.verdict(.inapplicable(why)) }
         }
-        let waiting = realized.keys.sorted { $0.description < $1.description }
-        return missing + waiting.map { $0.verdict(.waiting(on: gap.description)) }
+        guard let gap = notRealized.first ?? gaps.first else { return missing }
+        return missing + covered.map { $0.verdict(.waiting(on: gap.description)) }
     }
 
     /// What a passing case proved: ✅ each member realized in full, ☑️ with what is missing each realized in part -

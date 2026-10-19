@@ -46,7 +46,8 @@
 ///
 /// A sidebar row is an ordinary view whose handler assigns state: choosing and
 /// closing are two writes, and a sidebar that should stay open skips the
-/// second. The platform's own ways to show or hide the sidebar - its button,
+/// second - one beside the page, which `sidebarOverlays(_:)` tells apart from
+/// one over it. The platform's own ways to show or hide the sidebar - its button,
 /// an edge swipe, a tap on the dimmed page - are written into the binding, and
 /// a host with room for both pages may open with the sidebar showing. The
 /// sidebar page's title names the sidebar's bar; a sidebar page with none
@@ -77,7 +78,7 @@ public struct SplitView: ElementView, Arrangement, BarElement, AutomationElement
         node.write(SplitViewContract.showsSidebar, showsSidebar.wrappedValue)
 
         // The user's ways in and out, once finished, written only when moved.
-        node.addHandler(SplitViewContract.showsSidebarChanged.token, gate: .none) {
+        node.addHandler(SplitViewContract.showsSidebarChanged.token) {
             guard let visible = EventBuffer.current.value()?.bool,
                   visible != showsSidebar.wrappedValue else { return }
 
@@ -117,6 +118,28 @@ extension SplitView {
     /// platform's own surface there, which never lets the detail through.
     public func flyoutBackground(_ value: Material) -> Modified {
         setValue(SplitViewContract.flyoutBackground, value)
+    }
+
+    /// Whether the sidebar lies over the detail - a phone's drawer, the
+    /// sidebar of a narrow window - written into a state by the host as the
+    /// platform places it for the room; false while it stands beside the
+    /// detail. A sidebar row reads it to close the sidebar over the page once
+    /// the user has chosen, and to leave one beside the page open.
+    ///
+    ///     @State private var menu = false
+    ///     @State private var menuOverlays = false
+    ///
+    ///     SplitView($menu) { MenuPage(menu: $menu, overlays: $menuOverlays) } detail: { NotesPage() }
+    ///         .sidebarOverlays($menuOverlays)
+    ///
+    ///     // in a sidebar row's handler
+    ///     section = which
+    ///     if overlays { menu = false }
+    ///
+    /// - Parameter state: the state the sidebar's place is written into.
+    /// - Returns: the split view, reporting its sidebar's place there.
+    public func sidebarOverlays(_ state: Binding<Bool>) -> Modified {
+        plain(SplitViewContract.sidebarOverlays.token, by: state, mode: .in)
     }
 
     /// `sidebarBackground` from a state, `$x`: the host shows each new material

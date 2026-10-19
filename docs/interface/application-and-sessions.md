@@ -91,7 +91,7 @@ struct NotesApp: Application {
 
     init() {
         application.styles = AppStyles.sheet
-        application.motion = .spring(response: 300)
+        application.motion = .spring(response: .milliseconds(300))
         application.persistentKeys = [.lastDocument]
     }
 

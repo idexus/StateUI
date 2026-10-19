@@ -109,6 +109,19 @@ final class UIKitImageViewTests: XCTestCase {
         }
         return result == KERN_SUCCESS ? Int(info.phys_footprint) : 0
     }
+
+    /// A picture is made once, and its glyph once at each height: a bar or a tab handed the same picture again
+    /// reads no file and finds its button's picture unchanged.
+    @MainActor
+    func testEveryPictureIsMadeOnce() throws {
+        UIKitRenderer.resourceDirectory = Bundle.main.resourceURL?.appendingPathComponent("Images", isDirectory: true)
+        for picture in [HostPicture.icon(.add), .file("test_dot.png")] {
+            let first = try XCTUnwrap(UIKitRenderer.image(picture))
+            XCTAssertTrue(UIKitRenderer.image(picture) === first, "\(picture) made again")
+            let glyph = try XCTUnwrap(UIKitRenderer.glyph(picture, height: 20))
+            XCTAssertTrue(UIKitRenderer.glyph(picture, height: 20) === glyph, "its glyph made again")
+        }
+    }
 }
 
 /// An application whose first window shows a run of SVGs and opens a second window showing them again.

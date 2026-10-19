@@ -39,6 +39,7 @@
                 try s.perform(.activate, on: s.element("ask"))
                 try s.settle { try s.question() != nil }
                 s.expect(try s.question(), Question(title: "Saved", message: "The draft is kept", buttons: ["Fine"]))
+                s.turn()
                 s.expect(said.values, [], "the handler waits for the answer")
 
                 try s.perform(.answer("Fine"), on: s.element(ofType: WindowContract.nodeType))
@@ -459,6 +460,7 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let name = State(wrappedValue: "", persistentKey: PersistentKey("conformance.name", of: String.self))
                 s.start { VStack { Button("Ada").onClicked { name.wrappedValue = "Ada" }.id("write") } }
+                s.expect(try s.kept("conformance.name"), nil, "nothing kept before the case wrote it")
 
                 try s.perform(.activate, on: s.element("write"))
                 try s.settle { try s.kept("conformance.name") == .string("Ada") }
@@ -468,6 +470,7 @@
                 Covered(ApplicationContract.persistSceneValue),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 s.start { SectionPage() }
+                s.expect(try s.kept("conformance.section", inScene: true), nil, "nothing kept before the case wrote it")
 
                 try s.perform(.activate, on: s.element("write"))
                 try s.settle { try s.kept("conformance.section", inScene: true) == .number(2) }

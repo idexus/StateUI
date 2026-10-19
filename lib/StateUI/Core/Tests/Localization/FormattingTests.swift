@@ -34,6 +34,17 @@ final class FormattingTests: XCTestCase {
         XCTAssertEqual(english.percent(0.125), "13%")
     }
 
+    /// A large number with many digits after the point is written - its whole part and its fraction rounded apart,
+    /// a fraction rounding up carrying into the whole - never a trap.
+    func testALargeNumberWithManyFractionDigitsIsWritten() {
+        let english = localization(.english, "en-US")
+
+        XCTAssertEqual(english.number(1e13, fractionDigits: 6), "10,000,000,000,000.000000")
+        XCTAssertEqual(english.number(12_000_000_000.5, fractionDigits: 9), "12,000,000,000.500000000")
+        XCTAssertEqual(english.number(0.9996, fractionDigits: 3), "1.000")
+        XCTAssertEqual(english.number(-2.5, fractionDigits: 0), "-3")
+    }
+
     func testDays() {
         let english = localization(.english, "en-US"), polish = localization(.polish, "pl-PL")
 

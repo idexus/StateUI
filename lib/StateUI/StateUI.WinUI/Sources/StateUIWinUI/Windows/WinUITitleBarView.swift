@@ -32,7 +32,8 @@ final class WinUITitleBarView: WinUIView {
         // Words on a bar the tree paints - its title and its actions: the colour written, else light on a dark one
         // and dark on a light one (`BandWords`).
         let foreground = BandWords.color(on: chrome.background, written: chrome.foreground)?.argb
-        let light = chrome.background.flatMap(BandWords.light(on:))
+        // The bar's own theme: dark for light words on a dark bar.
+        let theme: ColorScheme = chrome.background.flatMap(BandWords.light(on:)).map { $0 ? .dark : .light } ?? .system
         // A declared title area stands in the title's place, as an application names itself on WinUI's title bar.
         let area = chrome.titleArea
         let icon = WinUIStrings.lines(WinUIPictures.lines(area?.icon))
@@ -40,7 +41,7 @@ final class WinUITitleBarView: WinUIView {
         stateui_winui_title_bar_set(
             handle, title, area?.subtitle ?? "", icon, chrome.back != nil,
             chrome.sidebarToggle != nil, background != nil, background ?? 0, foreground != nil, foreground ?? 0,
-            light.map { $0 ? 1 : 2 } ?? 0)
+            theme.rawValue)
 
         // Every action in reading order, each with its group's place - the leading edge's first - or -1 behind "more".
         let groups = chrome.leading + chrome.trailing

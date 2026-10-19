@@ -47,6 +47,16 @@ extension AndroidRegistrations {
             layout.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
+        // A layout engine stands on the ZStack: its children where its run of placements puts them.
+        registry.add(LayoutEngineContract.self, create: { _ in
+            let layout = AndroidZStackView()
+            layout.engine = true
+            return layout
+        }) { layout in
+            layout.applies(boxMembers) { view, values in applyBox(view, values) }
+            layout.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
+        }
+
         // Where the user moves it is reported by the element, on the display's frames.
         // Design: docs/design/platforms/android/layout.md#scrolling
         registry.add(ScrollViewContract.self, create: { _ in AndroidScrollView() }) { scroll in

@@ -29,8 +29,16 @@ final class HostStorage: NamedState {
     /// How many times the value was written, equal bytes included - what an engine compares.
     var stamp: Int = 0
 
+    /// How many host reports laid anything on it: what a conversion's way back follows (journeys.md#conversions).
+    var reports: Int = 0
+
     /// The number the host quotes it back by, once anything has asked.
     var number: Int32?
+
+    /// How many properties of live elements the host shows it on, each a channel; nought is a state nobody
+    /// wears, whatever its number.
+    /// Design: docs/design/core/state.md#a-state-nobody-wears
+    var ties = 0
 
     /// Which board's cycle owns it.
     var board: Int = 0
@@ -48,8 +56,8 @@ final class HostStorage: NamedState {
     /// Design: docs/design/core/identity-and-diffing.md#driven-properties
     var inherited: Motion = .inherited
 
-    /// Which element resolved that law, so a second answering differently is heard.
-    var inheritedBy: ElementID?
+    /// What each live element showing it answers `.inherited` with, so two answering differently are heard.
+    var answers: [ElementID: Motion] = [:]
 
     /// What runs after the host wrote this value, handed the lanes it wrote.
     var told: ((UInt64) -> Void)?
@@ -61,6 +69,13 @@ final class HostStorage: NamedState {
     init(_ bytes: [UInt8]) {
         image = bytes
         published = bytes
+    }
+
+    /// Its number leaves the renderer's table with it, which nothing else would sweep.
+    isolated deinit {
+        if let number {
+            Renderer.shared.states[number] = nil
+        }
     }
 
     /// The published bytes as the host must read them: an inherited law resolved, and

@@ -94,9 +94,13 @@ extern "C" void stateui_winui_text_set_background(StateUIObjectRef handle, State
 
 extern "C" void stateui_winui_text_set_vertical(StateUIObjectRef handle, int32_t vertical) {
     try {
-        labelWords(handle).VerticalAlignment(vertical == 1 ? xaml::VerticalAlignment::Center
-                                             : vertical == 2 ? xaml::VerticalAlignment::Bottom
-                                                             : xaml::VerticalAlignment::Stretch);
+        auto down = xaml::VerticalAlignment::Stretch;
+        switch (static_cast<StateUITextAlignment>(vertical)) {
+        case StateUITextAlignmentStart: down = xaml::VerticalAlignment::Stretch; break;
+        case StateUITextAlignmentCenter: down = xaml::VerticalAlignment::Center; break;
+        case StateUITextAlignmentEnd: down = xaml::VerticalAlignment::Bottom; break;
+        }
+        labelWords(handle).VerticalAlignment(down);
     } catch (...) {
         report("standing a label's words across its height");
     }
@@ -110,9 +114,9 @@ extern "C" void stateui_winui_text_set_selectable(StateUIObjectRef handle, bool 
     }
 }
 
-extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view, int32_t kind) {
+extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view, StateUIButtonKind kind) {
     try {
-        if (kind == 2) {
+        if (kind == StateUIButtonKindSplit) {
             controls::SplitButton split;
             split.Click(guarded("handling Click",
                 [view](controls::SplitButton const &, controls::SplitButtonClickEventArgs const &) {
@@ -120,7 +124,7 @@ extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view, int32_t kind
                 }));
             return detach(split);
         }
-        controls::Button button = kind == 1 ? controls::DropDownButton() : controls::Button();
+        controls::Button button = kind == StateUIButtonKindDropDown ? controls::DropDownButton() : controls::Button();
         button.Click(guarded("handling Click",
             [view](IInspectable const &, xaml::RoutedEventArgs const &) { callbacks.clicked(view); }));
         // Held down by a pointer or a key, and let go: what WinUI's own pressed look follows.

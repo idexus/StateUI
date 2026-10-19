@@ -126,130 +126,29 @@ enum Input {
     }
 }
 
-/// Every state box and `@Environment` slot a view owns, with its inputs, in one
-/// walk. Each box comes back under the path the walk reached it by, which pairs
-/// it with its predecessor next render.
-/// Design: docs/design/core/identity-and-diffing.md#paths-pair-state
-@MainActor
-func stateParts(
-    in value: Any
-) -> (
-    boxes: [(path: String, box: StateBox)],
-    slots: [EnvironmentSlot],
-    inputs: [(path: String, input: Input)]
-) {
-    var boxes: [(path: String, box: StateBox)] = []
-    var slots: [EnvironmentSlot] = []
-    var inputs: [(path: String, input: Input)] = []
-    collectStateParts(in: value, at: "", boxes: &boxes, slots: &slots, inputs: &inputs)
-    return (boxes, slots, inputs)
-}
-
-@MainActor
-private func collectStateParts(
-    in value: Any,
-    at path: String,
-    boxes: inout [(path: String, box: StateBox)],
-    slots: inout [EnvironmentSlot],
-    inputs: inout [(path: String, input: Input)]
-) {
-    // An aim the view was handed is compared by its box and never adopted; one it
-    // declares is `@Aim`'s underscored backing property, adopted like any state.
-    if let aim = value as? Aiming, !(path.split(separator: ".").last?.hasPrefix("_") ?? false) {
-        inputs.append((path: path, input: .borrowed(ObjectIdentifier(aim.box), nil)))
-        return
-    }
-
-    if let box = value as? StateBox {
-        boxes.append((path: path, box: box))
-        box.named(path)
-        inputs.append((path: path, input: .box(box)))
-        return
-    }
-
-    if let slot = value as? EnvironmentSlot {
-        slots.append(slot)
-        inputs.append((path: path, input: .slot(slot)))
-        return
-    }
-
-    // A borrowed state is compared by what it borrows from.
-    if let borrowed = value as? BorrowedState {
-        let lends = borrowed.lends
-        inputs.append((
-            path: path,
-            input: lends.lender.map { .borrowed(ObjectIdentifier($0), lends.lent) } ?? .opaque))
-        return
-    }
-
-    // A built node is interface, never state, and cannot be compared.
-    if value is Node {
-        inputs.append((path: path, input: .opaque))
-        return
-    }
-
-    // A value that can say whether it equals another is compared whole.
-    if let comparable = value as? any Equatable {
-        inputs.append((path: path, input: .value(comparable)))
-        return
-    }
-
-    let mirror = Mirror(reflecting: value)
-
-    // A reference keeps itself alive; as an input it is the object it is.
-    if mirror.displayStyle == .class {
-        inputs.append((path: path, input: .reference(ObjectIdentifier(value as AnyObject))))
-        return
-    }
-
-    let children = Array(mirror.children)
-
-    // A leaf the mirror cannot open - a closure, a metatype - counts as changed; an
-    // empty struct or enum is the one value it can be.
-    if children.isEmpty {
-        inputs.append((path: path, input: mirror.displayStyle == nil ? .opaque : .parts(0)))
-        return
-    }
-
-    inputs.append((path: path, input: .parts(children.count)))
-
-    // A collection's children have no labels, so their position stands in.
-    for (offset, child) in children.enumerated() {
-        collectStateParts(
-            in: child.value,
-            at: "\(path).\(child.label ?? String(offset))\(storedViewType(of: child.value))",
-            boxes: &boxes,
-            slots: &slots,
-            inputs: &inputs)
-    }
-}
-
-/// The type of a stored view, in brackets after the property holding it, so one
-/// property holding different views gives different paths. Module-qualified.
-private func storedViewType(of value: Any) -> String {
-    value is Element ? "(\(String(reflecting: type(of: value))))" : ""
-}
-
 extension Node {
     /// A subtree nobody has built yet, and what it takes to build it right.
     @MainActor
     struct Stateful {
-        /// The composed view's module-qualified type, which decides whose state it keeps.
-        let viewType: String
+        /// The key of the composed view's module-qualified type, which decides whose state it keeps.
+        let viewType: KeyName
 
         /// The view's type, where it is a `View`: what tells whether its body builds an arrangement.
         let shown: (any View.Type)?
 
+        /// The fresh view and what the walk finds in it.
+        let walk: ViewWalk
+
         /// The state boxes the fresh view owns, under the paths the walk found them at.
-        let boxes: [(path: String, box: StateBox)]
+        var boxes: [(path: String, box: StateBox)] { walk.parts.boxes }
 
         /// The `@Environment` slots, filled before the body builds
         /// (Environment.swift).
-        let slots: [EnvironmentSlot]
+        var slots: [EnvironmentSlot] { walk.parts.slots }
 
         /// What the view was built with, compared against last render's to decide whether
         /// it is built or carried.
-        let inputs: [(path: String, input: Input)]
+        var inputs: [(path: String, input: Input)] { walk.parts.inputs }
 
         /// Builds the subtree - after the boxes have adopted their predecessors' storage.
         let build: () -> Node
@@ -270,7 +169,7 @@ extension Node {
         /// Builds the subtree and lands what the author wrote on the view onto its root.
         func expand(over written: Node) -> Node {
             var node = build()
-            node.branch = node.id == nil ? node.key : nil
+            node.branch = node.branch ?? (node.id == nil ? node.key : nil)
             node.props.merge(written.props) { _, wrote in wrote }
 
             // The states driven to it, for the same reason: a registration left on the
@@ -342,21 +241,13 @@ extension Node {
     /// - Parameter scene: the scene this view is, where it is one.
     static func composed(
         _ view: Any,
-        type: String,
+        type: KeyName,
         shown: (any View.Type)? = nil,
         scene: SceneRecord? = nil,
         build: @escaping () -> Node
     ) -> Node {
         var node = Node(type: .composed)
-        let parts = stateParts(in: view)
-        node.stateful = Stateful(
-            viewType: type,
-            shown: shown,
-            boxes: parts.boxes,
-            slots: parts.slots,
-            inputs: parts.inputs,
-            build: build,
-            scene: scene)
+        node.stateful = Stateful(viewType: type, shown: shown, walk: ViewWalk(view), build: build, scene: scene)
         return node
     }
 }

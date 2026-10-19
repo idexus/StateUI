@@ -64,12 +64,17 @@ The branch a composed view's content root was written in is part of it too:
 two elements, as in a container, though the placeholder's key covers the
 content root's own path (`Node.branch`, compared with the views' types). The
 composed view itself keeps its state across the swap; an `.id()` on the
-content root outweighs the branch.
+content root outweighs the branch. A view's type is a key (`typeKey`, made once
+a type), and the views are compared key by key and branch by branch, with no
+word spelled at a render. A page says what it shows as its branch - its
+view's kind, explicit id and branch - so every page is one type
+(`StateUI.Page`) and another view there still makes it anew; every window is
+one type too (`StateUI.Window`), told by its key, which carries its kind.
 
 Another value of a member that says it remakes its element
 ([remakes](../contracts/member-facts.md#remakes)) replaces the element too
 (`LibraryContracts.remaking`), as a button another kind of control makes does
-(`Node.buttonMenuKind`): the host makes its control by the value, from the
+(`Node.buttonMenuOpening`): the host makes its control by the value, from the
 first patch it is made with.
 
 ## What a walk keeps
@@ -96,6 +101,25 @@ differ. The handlers a walk finds run after it, what left first and innermost
 first; the composed views it is inside name a bare container's content in
 `debugInfo()`; and the scene it is inside is the one a `@State(sceneKey:)`
 claims from.
+
+## The walk's stack
+
+The differ walks the tree by recursion - an element, its children, each
+child an element - so every level of the tree holds the walk's frames for
+it on the stack until its subtree is done. Those frames are kept SMALL: the
+element's work is done in steps that return before its children are walked
+(`expand` - its composed views unwrapped or carried, `describePage`,
+`prepare` - its description compared and its patch made, `finish`), their
+values handed on behind one reference (`ElementPass`), and the children's
+matching likewise (`identified`, `arranged`, `ChildMatching`); what stays on
+the stack across the recursion is little more than pointers. Every step is
+`@inline(never)`, so an optimizer folding it back cannot grow the frame
+again. The reason is a debug build, where every local of a function keeps a
+slot of its own: one function doing all of an element's work holds some
+forty kilobytes a level, and a tablet browser's stack - far less than a
+desktop's - overflows some fifteen levels down a WebAssembly Gallery, before
+its first frame (`RangeError: Maximum call stack size exceeded`).
+`DifferStackTests` holds a level under eight kilobytes.
 
 ## Ids are never reused
 
@@ -129,7 +153,10 @@ built, so everything it reads sees the surviving values.
 
 Same key, same view type, same state - the rule the differ applies to
 controls, one level up. A different view type at the same place starts over,
-as a different control type replaces the control.
+as a different control type replaces the control. A view a body ends on is
+the same view only when every view outside it is too, type and branch: the
+other branch of an `if` at a body's root holds a view of the same type, and
+starts over as it does inside a stack.
 
 ## Paths pair state
 
@@ -145,8 +172,49 @@ hold a different view each render, and naming only the property would hand the
 newcomer its predecessor's state.
 
 The walk stops at a `Binding` (the storage is its lender's), at an aim the view
-was handed (its parent's), at a `Node` (built interface), at any `Equatable`
-value (compared whole) and at any class (a reference keeps itself alive).
+was handed (its parent's), at a `Node` (built interface), at an `Equatable`
+value that owns no state (compared whole - one that does is read part by
+part, [below](#a-type-learnt-once)) and at any class (a reference keeps
+itself alive).
+
+### A type learnt once
+
+What a value is to the walk - a box, a slot, a binding, a node, a value
+compared whole, an object, or parts a mirror opens - is a matter of its type,
+so the walk asks it of the first value of each type it meets and keeps the
+answer (`StateParts.kinds`), with the bracketed name a stored view adds to its
+path: a value of a type met before is walked with no type name spelled and no
+failing casts. An optional and an `AnyHashable` are asked of each value, as a
+cast looks through them. The parts - a struct's fields, an enum's payload, a
+collection's elements - are read through a mirror, the one reflection every
+toolchain the library is built with offers: the standard library's walk of a
+struct's fields by key paths is an interface Apple's SDKs do not ship, so a
+library calling it builds for no iPhone. A library view standing once an item
+of a layout and generic over what it holds names its parts itself
+(`WalkedView`: a layout engine's holder): a mirror of a generic type works
+its fields' types out at every reading. A view held in an optional is named
+on the optional's part (`.header.some(StateUI.Text)`), never on the optional
+itself, whose value says what it holds: the paths stand the same whatever
+value of a type the process met first. A type that is `Equatable` is compared
+whole unless a value of it holds a state, a binding, an environment value or
+an aim of its own (`ownsState`, learnt with its kind): its author's equality
+cannot pair those with a predecessor's, so such a view is read part by part
+however it compares, and an author's `Equatable` only speeds up a view that
+owns none.
+
+### A view built as it was
+
+A composed view keeps its value with its walk (`ViewWalk`), walked at the
+first asking. Before its state is adopted, a view whose value lies in memory
+byte for byte as its predecessor's takes the predecessor's walk: the same
+values, the same objects, the same storage - the predecessor kept, so no
+address it held was reused - hence the same inputs and the same boxes, with
+no mirror made and nothing to adopt. A value that differs by a byte, a view
+owning a state (a fresh box each build) and a predecessor holding anything
+that cannot be compared - a closure counts as changed whatever its bytes -
+are walked as ever, so what is built and what is carried is decided as the
+walk decides it. A layout's icons built again as they were - the same names,
+the same flags - are compared at the cost of their bytes.
 
 ## Carrying a view
 
@@ -193,7 +261,10 @@ through a conversion written on the view makes it build as it always did.
 
 A carried view takes the handlers the parent wrote on it afresh, under the ids
 it keeps: the parent's closure ran again, so what those handlers captured is
-what the parent computed this time. The placeholder is kept fresh for the same
+what the parent computed this time. Its body's own handlers of the same event
+stand before them and stay, with their runs: the carry replaces only as many
+as the parent wrote last time, counted on the kept placeholder, because the
+names are compared and the counts are not. The placeholder is kept fresh for the same
 reason, so a later clean walk that builds the view from it runs the newest
 inputs.
 
@@ -202,7 +273,9 @@ inputs.
 A view's inputs say nothing about the style sheet or about a provider above
 replacing its object. The walk therefore suppresses every carry for the one
 walk in which the sheet moved, and a composed element keeps a snapshot of the
-nearest provided object per type (`RenderedNode.seen`) that a carry compares.
+nearest provided object per type (`RenderedNode.seen`) that a carry compares. Nor can they say what a body
+read outside StateUI: the walk a `setNeedsRender()` asked for carries no view
+(`buildsEveryView`).
 
 ## The clean walk
 
@@ -347,7 +420,9 @@ a number. A different count is a different set of engines and starts over, as
 with watches. The engines a conversion needs are armed beside the author's
 own, ahead of them, in property order. A board that has forgotten an element's
 engines, as after a session claimed afresh, gets them again under fresh
-numbers, which the element keeps from then on.
+numbers, which the element keeps from then on. A replaced element arms its engines
+only after the old one is let go, under fresh numbers: armed first, they
+would be the very numbers the old element's release disarms.
 
 ## Driven properties
 
@@ -364,8 +439,11 @@ and which of the view's values it is - the property's group, plus a colour's.
 What `.inherited` means for a driven value can be answered only here: the host
 knows what the application says, while an element's motion plan answers per
 kind of value. The differ resolves it and leaves the answer on the state's
-storage, which applies it at every crossing. Two elements resolving the same
-state differently is a complaint; the one described last wins.
+storage, which applies it at every crossing. Two live elements resolving the
+same state differently is a complaint; the one described last wins. The state
+keeps each live element's answer (`answers`), dropped with its tie or with the
+element, and the walk says a difference once it is done - after it let go of
+what left, so an element replaced in the same render answers nothing.
 
 ## Aims and readings on an element
 

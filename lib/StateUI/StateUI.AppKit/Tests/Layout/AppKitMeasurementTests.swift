@@ -36,7 +36,7 @@ final class AppKitMeasurementTests: XCTestCase {
 
         var growing = HostPatch(id: .manual("box"), type: .rectangle)
         growing.properties[.width] = .number(300)
-        growing.transitions[.width] = HostTransition(motion: .eased(200, .linear))
+        growing.transitions[.width] = HostTransition(motion: .eased(.milliseconds(200), .linear))
         renderer.applyForTesting(path(to: growing))
         scroll.layoutSubtreeIfNeeded()
 
@@ -57,7 +57,7 @@ final class AppKitMeasurementTests: XCTestCase {
         card.properties[.width] = .number(120)
         card.properties[.height] = .number(60)
         card.driven = .replace([
-            .translationX: HostStateBinding(state: 91, mode: .inOut, kind: .property, laneKind: .number),
+            .translationX: HostStateBinding(state: handMadeState(91), mode: .inOut, kind: .property, laneKind: .number),
         ])
         var caption = HostPatch(id: .manual("caption"), type: .text)
         caption.properties[.text] = .string("A card that slides sideways")
@@ -80,11 +80,11 @@ final class AppKitMeasurementTests: XCTestCase {
         let outerArrangements = nativeOuter.arrangementCountForTesting
         let captionMeasurements = nativeCaption.nativeMeasurementCountForTesting
 
-        renderer.applyStateForTesting(91, value: HostBoundary.value(of: HostJourney(
+        renderer.applyStateForTesting(handMadeState(91), value: HostBoundary.value(of: HostJourney(
             value: [40],
             destination: [60],
             velocity: [0],
-            motion: .eased(400, .linear),
+            motion: .eased(.milliseconds(400), .linear),
             completion: nil,
             stopped: 0)))
         nativeOuter.layoutSubtreeIfNeeded()
@@ -142,7 +142,7 @@ final class AppKitMeasurementTests: XCTestCase {
 
         var red = HostPatch(id: .manual("span"), type: .textSpan)
         red.properties[.textColor] = .color(red: 255, green: 0, blue: 0, alpha: 255)
-        red.transitions[.textColor] = HostTransition(motion: .eased(200, .linear))
+        red.transitions[.textColor] = HostTransition(motion: .eased(.milliseconds(200), .linear))
         var formattedPath = HostPatch(id: .manual("formatted"), type: .textSpans)
         formattedPath.children = .changed([red])
         var labelPath = HostPatch(id: .manual("label"), type: .text)
@@ -201,12 +201,12 @@ final class AppKitMeasurementTests: XCTestCase {
         card.properties[.opacity] = .number(1)
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.driven = .replace([
-            .area: HostStateBinding(state: 95, mode: .out, kind: .placement, laneKind: .number),
+            .area: HostStateBinding(state: handMadeState(95), mode: .out, kind: .placement, laneKind: .number),
         ])
         layout.children = .arranged([card])
         renderer.applyForTesting(layout)
         let run = PlacedRun([Placement(Rect(0, 0, 100, 60), transform: .rotate(30))]).carried
-        renderer.applyStateForTesting(95, value: run)
+        renderer.applyStateForTesting(handMadeState(95), value: run)
 
         let nativeLayout = try XCTUnwrap(renderer.viewForTesting(id: .manual("layout")))
         let nativeCard = try XCTUnwrap(renderer.viewForTesting(id: .manual("card")))
@@ -217,13 +217,13 @@ final class AppKitMeasurementTests: XCTestCase {
 
         var fading = HostPatch(id: .manual("card"), type: .rectangle)
         fading.properties[.opacity] = .number(0.4)
-        fading.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
+        fading.transitions[.opacity] = HostTransition(motion: .eased(.milliseconds(200), .linear))
         var path = HostPatch(id: .manual("layout"), type: .zStack)
         path.children = .changed([fading])
         renderer.applyForTesting(path)
         // The layout reads its placement from StateUI's state on every apply;
         // this test's state lives only in the host, so it is delivered again.
-        renderer.applyStateForTesting(95, value: run)
+        renderer.applyStateForTesting(handMadeState(95), value: run)
         nativeLayout.layoutSubtreeIfNeeded()
 
         now = 100
@@ -248,7 +248,7 @@ final class AppKitMeasurementTests: XCTestCase {
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.properties[.height] = .number(120)
         layout.driven = .replace([
-            .area: HostStateBinding(state: 96, mode: .out, kind: .placement, laneKind: .number),
+            .area: HostStateBinding(state: handMadeState(96), mode: .out, kind: .placement, laneKind: .number),
         ])
         layout.children = .arranged([card])
         var caption = HostPatch(id: .manual("caption"), type: .text)
@@ -256,7 +256,7 @@ final class AppKitMeasurementTests: XCTestCase {
         var outer = HostPatch(id: .manual("outer"), type: .vStack)
         outer.children = .arranged([layout, caption])
         renderer.applyForTesting(outer)
-        renderer.applyStateForTesting(96, value: PlacedRun([Placement(Rect(0, 0, 100, 60))]).carried)
+        renderer.applyStateForTesting(handMadeState(96), value: PlacedRun([Placement(Rect(0, 0, 100, 60))]).carried)
 
         let nativeOuter = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("outer")) as? AppKitStackView)
@@ -268,7 +268,7 @@ final class AppKitMeasurementTests: XCTestCase {
         let arrangements = nativeOuter.arrangementCountForTesting
         let measurements = nativeCaption.nativeMeasurementCountForTesting
 
-        renderer.applyStateForTesting(96, value: PlacedRun([Placement(Rect(80, 20, 100, 60))]).carried)
+        renderer.applyStateForTesting(handMadeState(96), value: PlacedRun([Placement(Rect(80, 20, 100, 60))]).carried)
         nativeOuter.layoutSubtreeIfNeeded()
 
         XCTAssertEqual(nativeCard.frame.origin.x, 80, accuracy: 0.001, "the run moved the card")

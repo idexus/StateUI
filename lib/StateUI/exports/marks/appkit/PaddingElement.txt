@@ -1,7 +1,8 @@
-# revision 1.1
+# revision 2.1
 Button.padding: cannot read padding of Button - AppKit's driver has no path for it yet
 Grid.padding: ✅
 HStack.padding: ✅
+LayoutEngine.padding: – A layout engine stands its views where its arithmetic says, from its own top left: it takes no padding.
 RadioButton.padding: cannot read padding of RadioButton - AppKit's driver has no path for it yet
 ScrollView.padding: ✅
 Text.padding: ✅

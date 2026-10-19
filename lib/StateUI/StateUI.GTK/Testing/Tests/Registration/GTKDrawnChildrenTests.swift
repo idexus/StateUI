@@ -108,7 +108,7 @@ final class GTKDrawnChildrenTests: XCTestCase {
             XCTAssertEqual(shelf.books.map { $0.value(BookContract.title) }, ["Dune", "Emma"])
             XCTAssertEqual(host.views(GTKUnsupportedView.self).count, 0)
             let realization = GTKRegistrations.registry.realization
-            XCTAssertTrue(realization.elements.contains(BookContract.name))
+            XCTAssertTrue(realization.elements.contains(BookContract.nodeType))
             XCTAssertTrue(realization.members.contains(
                 HostRealizedMember(element: BookContract.name, owner: BookContract.name, member: "title")))
             XCTAssertTrue(realization.members.contains(

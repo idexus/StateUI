@@ -35,8 +35,8 @@ export interface Suite {
  * - A Swift package with a test target runs with `swift test`. For AppKit an
  *   APPLICATION runs as the host - `STATEUI_HOST=appkit` on `.build/appkit`.
  * - A host's own package - `lib/StateUI/StateUI.AppKit`, or its tests' own,
- *   `lib/StateUI/StateUI.GTK/Testing` - and a backend for a host -
- *   `lib/Backends/WebView.GTK` - run only for that host.
+ *   `lib/StateUI/StateUI.GTK/Testing`, which test the host's backends too -
+ *   runs only for that host.
  * - For the Android host an application runs as plain Swift, its Android build
  *   running only on a device, and the host's own tests -
  *   `lib/StateUI/StateUI.Android/Tests` - run on the device chosen, by
@@ -61,9 +61,9 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
     const appKitEnvironment = Object.fromEntries(
         Object.entries(environment("appkit")).filter((entry): entry is [string, string] => entry[1] !== undefined));
 
-    // The library's packages stand in lib/StateUI, the backends in lib/Backends, and a package's own tests may
-    // stand in a package of their own, Testing, inside it.
-    const library = [path.join(root, "lib"), path.join(root, "lib", "StateUI"), path.join(root, "lib", "Backends")];
+    // The library's packages stand in lib/StateUI, and a package's own tests may stand in a package of their own,
+    // Testing, inside it; a backend has none of its own - its host's tests run it.
+    const library = [path.join(root, "lib"), path.join(root, "lib", "StateUI")];
     const grouped = library.flatMap(children);
     const packages = [root, ...grouped.flatMap((each) => [each, path.join(each, "Testing")]), ...children(path.join(root, "apps"))];
     for (const directory of packages) {
@@ -77,11 +77,6 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
         const owner = path.basename(directory) === "Testing" ? path.dirname(directory) : directory;
         const forHost = path.basename(owner).match(/\.(AppKit|UIKit|Android|WinUI|GTK|Web)$/)?.[1]?.toLowerCase();
         if (forHost && forHost !== host) {
-            continue;
-        }
-        // A backend - lib/Backends/<Element>.<Host> - runs for its host by swift test, never as the host's own package.
-        if (forHost && path.basename(path.dirname(owner)) === "Backends") {
-            suites.push({ label: name, detail: `swift test - a backend for the ${describe(forHost as Host).label} host`, command: "swift", args: ["test", "--package-path", directory], env: {} });
             continue;
         }
         const hostPackage = forHost;

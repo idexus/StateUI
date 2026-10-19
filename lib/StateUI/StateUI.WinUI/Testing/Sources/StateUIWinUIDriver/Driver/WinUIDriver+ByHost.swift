@@ -15,6 +15,12 @@ extension WinUIDriver {
         switch Ability(ability).act {
         case "dragAndDrop": return "the relay's drag reports told by the driver, no drag WinUI began"
         case "dropFiles": return "the relay's drop report told the driver's files, no drag WinUI began"
+        case "sweep": return "the relay's report of the hand handed to the host with its speed, no pointer sent"
+        case "pinch", "rotate": return "the relay's report of the manipulation handed to the host, no touch sent"
+        case "pressDown" where Ability(ability).element == "LayoutEngine",
+             "drag" where Ability(ability).element == "LayoutEngine",
+             "lift" where Ability(ability).element == "LayoutEngine":
+            return "the relay's report of the press over the layout handed to the host, no pointer sent"
         default: break
         }
         if ability == "read role of Button" {
@@ -35,7 +41,7 @@ extension WinUIDriver {
     /// The elements whose views stand left to right in WinUI whatever their direction (`WinUIView.directionHolder`):
     /// the layouts and a stack's parts, the drawings, and a web view, whose page says its own.
     static let standsLeftToRight: Set<String> = [
-        "ActivityIndicator", "Canvas", "Capsule", "Divider", "Ellipse", "Grid", "HStack", "Image", "Line", "Path", "Polygon",
-        "Polyline", "Rectangle", "ScrollView", "Spacer", "VStack", "WebView", "ZStack",
+        "ActivityIndicator", "Canvas", "Capsule", "Divider", "Ellipse", "Grid", "HStack", "Image", "LayoutEngine", "Line",
+        "Path", "Polygon", "Polyline", "Rectangle", "ScrollView", "Spacer", "VStack", "WebView", "ZStack",
     ]
 }

@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
@@ -21,7 +22,7 @@ final class StateUIListener implements View.OnClickListener, View.OnLongClickLis
         CompoundButton.OnCheckedChangeListener,
         SeekBar.OnSeekBarChangeListener, TextWatcher, TextView.OnEditorActionListener,
         View.OnScrollChangeListener, View.OnTouchListener, View.OnHoverListener, View.OnCreateContextMenuListener,
-        View.OnFocusChangeListener,
+        View.OnFocusChangeListener, View.OnGenericMotionListener,
         ViewTreeObserver.OnGlobalLayoutListener, ViewTreeObserver.OnScrollChangedListener {
     private final long view;
 
@@ -84,7 +85,7 @@ final class StateUIListener implements View.OnClickListener, View.OnLongClickLis
 
     @Override
     public void afterTextChanged(Editable text) {
-        StateUIHost.textChanged(view, text.toString());
+        StateUIHost.textChanged(view, text.toString(), BaseInputConnection.getComposingSpanStart(text) != -1);
     }
 
     /**
@@ -109,10 +110,13 @@ final class StateUIListener implements View.OnClickListener, View.OnLongClickLis
         StateUIHost.scrolled(view);
     }
 
-    /** What `touched`'s element listens for; see `StateUIGestures.configure`. */
-    void setGestures(View touched, float density, boolean countsTaps, boolean drags, boolean pinch, boolean pointer) {
+    /** What `touched`'s element listens for; see `StateUIGestures.configure`. A hand over a layout hears the wheel. */
+    void setGestures(
+            View touched, float density, boolean countsTaps, boolean drags, boolean pinch, boolean pointer,
+            boolean hand, boolean rotation) {
         if (gestures == null) gestures = new StateUIGestures(touched, view, density);
-        gestures.configure(countsTaps, drags, pinch, pointer);
+        gestures.configure(countsTaps, drags, pinch, pointer, hand, rotation);
+        touched.setOnGenericMotionListener(hand ? this : null);
     }
 
     /** Whether a gesture under way takes the rest of the touch from the view's own handling. */
@@ -145,6 +149,11 @@ final class StateUIListener implements View.OnClickListener, View.OnLongClickLis
     @Override
     public boolean onHover(View hovered, MotionEvent event) {
         return gestures != null && gestures.onHover(event);
+    }
+
+    @Override
+    public boolean onGenericMotion(View moved, MotionEvent event) {
+        return gestures != null && gestures.onGenericMotion(event);
     }
 
     @Override

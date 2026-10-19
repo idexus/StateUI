@@ -1,9 +1,8 @@
-# revision 1.1
+# revision 3.1
 WebView: ✅
 WebView.canGoBackChanged: ✅
 WebView.canGoForwardChanged: ✅
 WebView.evaluateJavaScript: ◐ waits on WebView.userAgent
-WebView.frameChanged: ✅
 WebView.goBack: ✅
 WebView.goForward: ✅
 WebView.navigated: ✅

@@ -14,42 +14,39 @@ extension View {
     ///
     /// The whole view answers, not a button inside it.
     public func onTapped(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(ViewContract.tapped, handler)
+        modified {
+            $0.hearsTaps(1)
+            $0.addHandler(ViewContract.tapped.token, handler)
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
     public func onTapped(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.tapped, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onTapped(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
+        modified {
+            $0.hearsTaps(1)
+            $0.addHandler(ViewContract.tapped.token, gate: gate, handler)
+        }
     }
 
     /// The same, for a double tap or more: `count` taps in a row.
     ///
     ///     Text("Reset").onTapped(count: 2) { taps = 0 }
     public func onTapped(count: Int, _ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onTapped(count: count, gate: .none) { try handler() }
+        // One `modified`: chaining would return `Modified.Modified`.
+        modified {
+            $0.hearsTaps(count)
+            $0.addHandler(ViewContract.tapped.token, handler)
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
     public func onTapped(count: Int, gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
-        // One `modified`: chaining would return `Modified.Modified`.
         modified {
-            $0.write(ViewContract.tapCount, count)
+            $0.hearsTaps(count)
             $0.addHandler(ViewContract.tapped.token, gate: gate, handler)
         }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(count: count, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onTapped(count: Int, _ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
     }
 
     // MARK: Swipe
@@ -71,7 +68,15 @@ extension View {
         threshold: Double? = nil,
         _ handler: @escaping @MainActor (SwipeDirection) throws -> Void
     ) -> Modified {
-        onSwiped(direction: direction, threshold: threshold, gate: .none) { try handler($0) }
+        modified {
+            $0.hearsSwipes(direction, threshold: threshold)
+            $0.addHandler(ViewContract.swiped.token) {
+                // A payload that does not read leaves the handler alone, and so does a direction it did not ask for.
+                if let went = SwipeDirection(EventBuffer.current.value()), direction.contains(went) {
+                    try handler(went)
+                }
+            }
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -83,25 +88,13 @@ extension View {
         _ handler: @escaping ValueEventHandler<SwipeDirection>
     ) -> Modified {
         modified {
-            $0.write(ViewContract.swipeDirection, direction)
-            $0.describe(ViewContract.swipeThreshold, threshold)
+            $0.hearsSwipes(direction, threshold: threshold)
             $0.addHandler(ViewContract.swiped.token, gate: gate) {
-                // A payload that does not read leaves the handler alone.
-                if let direction = SwipeDirection(EventBuffer.current.value()) {
-                    try await handler(direction)
+                if let went = SwipeDirection(EventBuffer.current.value()), direction.contains(went) {
+                    try await handler(went)
                 }
             }
         }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSwiped(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onSwiped(
-        direction: SwipeDirection = .all,
-        threshold: Double? = nil,
-        _ handler: @escaping ValueEventHandler<SwipeDirection>
-    ) -> Modified {
-        fatalError("unavailable")
     }
 
     // MARK: Pan
@@ -154,7 +147,16 @@ extension View {
         touchCount: Int? = nil,
         _ handler: @escaping @MainActor (PanUpdate) throws -> Void
     ) -> Modified {
-        onPanUpdated(touchCount: touchCount, gate: .none) { try handler($0) }
+        modified {
+            $0.hearsPans(touchCount)
+            $0.addHandler(ViewContract.panUpdated.token) {
+                if let (phase, totalX, totalY) = MemberValues.carried(
+                    EventBuffer.current, by: ViewContract.panUpdated.name,
+                    as: GesturePhase.self, Double.self, Double.self) {
+                    try handler(PanUpdate(phase: phase, totalX: totalX, totalY: totalY))
+                }
+            }
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -165,7 +167,7 @@ extension View {
         _ handler: @escaping ValueEventHandler<PanUpdate>
     ) -> Modified {
         modified {
-            $0.describe(ViewContract.panTouchCount, touchCount)
+            $0.hearsPans(touchCount)
             $0.addHandler(ViewContract.panUpdated.token, gate: gate) {
                 if let (phase, totalX, totalY) = MemberValues.carried(
                     EventBuffer.current, by: ViewContract.panUpdated.name,
@@ -176,15 +178,6 @@ extension View {
         }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPanUpdated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPanUpdated(
-        touchCount: Int? = nil,
-        _ handler: @escaping ValueEventHandler<PanUpdate>
-    ) -> Modified {
-        fatalError("unavailable")
-    }
-
     // MARK: Pinch
 
     /// Runs as two fingers move apart or together.
@@ -192,7 +185,9 @@ extension View {
     /// `scale` is relative - the change since the last report, not since the
     /// pinch began - so a view being pinched multiplies rather than assigns.
     public func onPinchUpdated(_ handler: @escaping @MainActor (PinchUpdate) throws -> Void) -> Modified {
-        onPinchUpdated(gate: .none) { try handler($0) }
+        onEvent(ViewContract.pinchUpdated) { phase, scale, origin in
+            try handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin))
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -201,12 +196,6 @@ extension View {
         onEvent(ViewContract.pinchUpdated, gate: gate) { phase, scale, origin in
             try await handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin))
         }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPinchUpdated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPinchUpdated(_ handler: @escaping ValueEventHandler<PinchUpdate>) -> Modified {
-        fatalError("unavailable")
     }
 
     // MARK: Pointer
@@ -225,12 +214,6 @@ extension View {
         onEvent(ViewContract.pointerEntered, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerEntered(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPointerEntered(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Runs when a pointer leaves the view - the other half of a hover.
     public func onPointerExited(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(ViewContract.pointerExited, handler)
@@ -242,17 +225,15 @@ extension View {
         onEvent(ViewContract.pointerExited, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerExited(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPointerExited(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Runs as the pointer moves over the view, with where it is in the view's
     /// own coordinates; a move the platform gives no position for does not run
     /// it.
     public func onPointerMoved(_ handler: @escaping @MainActor (Point) throws -> Void) -> Modified {
-        onPointerMoved(gate: .none) { try handler($0) }
+        onEvent(ViewContract.pointerMoved) { point in
+            if let point {
+                try handler(point)
+            }
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -265,16 +246,14 @@ extension View {
         }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerMoved(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPointerMoved(_ handler: @escaping ValueEventHandler<Point>) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Runs when a pointer button goes down over the view, with where it went
     /// down in the view's own coordinates.
     public func onPointerPressed(_ handler: @escaping @MainActor (Point) throws -> Void) -> Modified {
-        onPointerPressed(gate: .none) { try handler($0) }
+        onEvent(ViewContract.pointerPressed) { point in
+            if let point {
+                try handler(point)
+            }
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -287,15 +266,13 @@ extension View {
         }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerPressed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPointerPressed(_ handler: @escaping ValueEventHandler<Point>) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Runs when the pointer button comes back up, with where it came up.
     public func onPointerReleased(_ handler: @escaping @MainActor (Point) throws -> Void) -> Modified {
-        onPointerReleased(gate: .none) { try handler($0) }
+        onEvent(ViewContract.pointerReleased) { point in
+            if let point {
+                try handler(point)
+            }
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -306,12 +283,6 @@ extension View {
                 try await handler(point)
             }
         }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerReleased(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPointerReleased(_ handler: @escaping ValueEventHandler<Point>) -> Modified {
-        fatalError("unavailable")
     }
 
     // MARK: Drag and drop
@@ -334,7 +305,7 @@ extension View {
             $0.write(ViewContract.canDrag, canDrag)
 
             if let onDragStarting = onDragStarting {
-                $0.addHandler(ViewContract.dragStarting.token, gate: .none) { try onDragStarting() }
+                $0.addHandler(ViewContract.dragStarting.token, onDragStarting)
             }
         }
     }
@@ -350,18 +321,20 @@ extension View {
         onEvent(ViewContract.dragEnded, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDragEnded(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onDragEnded(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Accepts what is dropped on the view, with the text it carried.
     ///
     ///     VStack { … }
     ///         .onDrop { text in items.append(text) }
     public func onDrop(_ handler: @escaping @MainActor (String) throws -> Void) -> Modified {
-        onDrop(gate: .none) { try handler($0) }
+        modified {
+            $0.write(ViewContract.allowsDrop, true)
+            $0.addHandler(ViewContract.drop.token) {
+                if let text = MemberValues.carried(
+                    EventBuffer.current, by: ViewContract.drop.name, as: String.self) {
+                    try handler(text)
+                }
+            }
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -378,12 +351,6 @@ extension View {
         }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDrop(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onDrop(_ handler: @escaping ValueEventHandler<String>) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Accepts files the user drops on the view from the system - of
     /// `types`, any file where none is given - with those dropped.
     ///
@@ -397,7 +364,16 @@ extension View {
     public func onDrop(
         files types: [FileType] = [], _ handler: @escaping @MainActor ([ChosenFile]) throws -> Void
     ) -> Modified {
-        onDrop(files: types, gate: .none) { try handler($0) }
+        modified {
+            $0.takesFiles(types)
+            $0.addHandler(ViewContract.filesDropped.token) {
+                if let files = MemberValues.carried(
+                    EventBuffer.current, by: ViewContract.filesDropped.name, as: [ChosenFile].self)?
+                    .filter({ $0.isOne(of: types) }), !files.isEmpty {
+                    try handler(files)
+                }
+            }
+        }
     }
 
     /// The same, with a handler that awaits - reading a file does: its `gate` says what a drop does while a
@@ -406,20 +382,15 @@ extension View {
         files types: [FileType] = [], gate: some Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>
     ) -> Modified {
         modified {
-            $0.write(ViewContract.droppedFileTypes, types)
+            $0.takesFiles(types)
             $0.addHandler(ViewContract.filesDropped.token, gate: gate) {
                 if let files = MemberValues.carried(
-                    EventBuffer.current, by: ViewContract.filesDropped.name, as: [ChosenFile].self) {
+                    EventBuffer.current, by: ViewContract.filesDropped.name, as: [ChosenFile].self)?
+                    .filter({ $0.isOne(of: types) }), !files.isEmpty {
                     try await handler(files)
                 }
             }
         }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDrop(files: types, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onDrop(files types: [FileType] = [], _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Modified {
-        fatalError("unavailable")
     }
 
     /// Runs while a drag is over the view, before it is let go.
@@ -433,12 +404,6 @@ extension View {
         onEvent(ViewContract.dragOver, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDragOver(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onDragOver(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Runs when a drag leaves the view without being let go - the mirror of
     /// `onDragOver`, and where a highlight put up there is taken down.
     public func onDragLeave(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
@@ -450,10 +415,60 @@ extension View {
     public func onDragLeave(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ViewContract.dragLeave, gate: gate, handler)
     }
+}
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDragLeave(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onDragLeave(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
+// What one view hears of a gesture is the sum of what its handlers asked, each hearing its own.
+// Design: docs/design/views/modifiers.md#gestures
+extension Node {
+    /// Listens for `direction` beside the directions it listens for already; a second threshold is said.
+    fileprivate mutating func hearsSwipes(_ direction: SwipeDirection, threshold: Double?) {
+        let heard = props[ViewContract.swipeDirection.token].flatMap(SwipeDirection.init(propValue:)) ?? []
+        write(ViewContract.swipeDirection, heard.union(direction))
+
+        guard let threshold else { return }
+        if let said = props[ViewContract.swipeThreshold.token].flatMap(Double.init(propValue:)), said != threshold {
+            complain("A view hears swipes of one threshold: \(said) and \(threshold) were asked on it, and the "
+                + "last stands.")
+        }
+        describe(ViewContract.swipeThreshold, threshold)
+    }
+
+    /// Hears taps of `count`; a view asked for two counts is said, as it hears one.
+    fileprivate mutating func hearsTaps(_ count: Int) {
+        let said = props[ViewContract.tapCount.token].flatMap(Int.init(propValue:))
+            ?? (events[ViewContract.tapped.token] != nil ? 1 : nil)
+
+        if let said, said != count {
+            complain("A view hears taps of one count: \(said) and \(count) were asked on it, and the last "
+                + "stands. Put the other on a view of its own.")
+        }
+        if count != 1 || said != nil { write(ViewContract.tapCount, count) }
+    }
+
+    /// Hears pans of `touchCount`, a pan saying none keeping the one said; a view asked for two is said.
+    fileprivate mutating func hearsPans(_ touchCount: Int?) {
+        guard let touchCount else { return }
+        if let said = props[ViewContract.panTouchCount.token].flatMap(Int.init(propValue:)), said != touchCount {
+            complain("A view hears pans of one touch count: \(said) and \(touchCount) were asked on it, and "
+                + "the last stands. Put the other on a view of its own.")
+        }
+        describe(ViewContract.panTouchCount, touchCount)
+    }
+
+    /// Takes files of `types` beside those it takes already; no types is any file.
+    fileprivate mutating func takesFiles(_ types: [FileType]) {
+        guard let taken = props[ViewContract.droppedFileTypes.token].flatMap([FileType].init(propValue:)) else {
+            return write(ViewContract.droppedFileTypes, types)
+        }
+        write(ViewContract.droppedFileTypes, taken.isEmpty || types.isEmpty ? [] : taken + types.filter { !taken.contains($0) })
+    }
+}
+
+extension ChosenFile {
+    /// Whether the file is of one of `types` by its extension; no types is any file.
+    fileprivate func isOne(of types: [FileType]) -> Bool {
+        guard !types.isEmpty else { return true }
+        let ending = name.split(separator: ".").count > 1 ? name.split(separator: ".").last.map { $0.lowercased() } : nil
+        return types.contains { type in ending.map(type.extensions.contains) ?? false }
     }
 }

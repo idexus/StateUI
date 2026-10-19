@@ -26,7 +26,7 @@ namespace {
 
     /// A brush's first colour; none for no brush.
     uint32_t firstColor(StateUIBrush const &brush) {
-        return brush.kind != 0 && brush.count > 0 ? brush.colors[0] : 0u;
+        return brush.kind != StateUIBrushKindNone && brush.count > 0 ? brush.colors[0] : 0u;
     }
 
     /// An oval `width` by `height`, filled in one colour and outlined in another `lineWidth` wide inside its edge,
@@ -38,32 +38,40 @@ namespace {
             : fill(fill), stroke(stroke), lineWidth(lineWidth), width(width), height(height) {}
 
         void OnConnected() {
-            if (CompositionBrush()) return;
-            auto compositor = media::CompositionTarget::GetCompositorForCurrentThread();
-            auto geometry = compositor.CreateEllipseGeometry();
-            geometry.Center({width / 2, height / 2});
-            geometry.Radius({std::max(0.0f, (width - lineWidth) / 2), std::max(0.0f, (height - lineWidth) / 2)});
-            auto shape = compositor.CreateSpriteShape(geometry);
-            shape.FillBrush(compositor.CreateColorBrush(fill));
-            if (lineWidth > 0) {
-                shape.StrokeBrush(compositor.CreateColorBrush(stroke));
-                shape.StrokeThickness(lineWidth);
+            try {
+                if (CompositionBrush()) return;
+                auto compositor = media::CompositionTarget::GetCompositorForCurrentThread();
+                auto geometry = compositor.CreateEllipseGeometry();
+                geometry.Center({width / 2, height / 2});
+                geometry.Radius({std::max(0.0f, (width - lineWidth) / 2), std::max(0.0f, (height - lineWidth) / 2)});
+                auto shape = compositor.CreateSpriteShape(geometry);
+                shape.FillBrush(compositor.CreateColorBrush(fill));
+                if (lineWidth > 0) {
+                    shape.StrokeBrush(compositor.CreateColorBrush(stroke));
+                    shape.StrokeThickness(lineWidth);
+                }
+                auto visual = compositor.CreateShapeVisual();
+                visual.Size({width, height});
+                visual.Shapes().Append(shape);
+                auto surface = compositor.CreateVisualSurface();
+                surface.SourceVisual(visual);
+                surface.SourceSize({width, height});
+                auto painted = compositor.CreateSurfaceBrush(surface);
+                painted.Stretch(composition::CompositionStretch::Fill);
+                CompositionBrush(painted);
+            } catch (...) {
+                report("painting an oval");
             }
-            auto visual = compositor.CreateShapeVisual();
-            visual.Size({width, height});
-            visual.Shapes().Append(shape);
-            auto surface = compositor.CreateVisualSurface();
-            surface.SourceVisual(visual);
-            surface.SourceSize({width, height});
-            auto painted = compositor.CreateSurfaceBrush(surface);
-            painted.Stretch(composition::CompositionStretch::Fill);
-            CompositionBrush(painted);
         }
 
         void OnDisconnected() {
-            if (auto painted = CompositionBrush()) {
-                painted.Close();
-                CompositionBrush(nullptr);
+            try {
+                if (auto painted = CompositionBrush()) {
+                    painted.Close();
+                    CompositionBrush(nullptr);
+                }
+            } catch (...) {
+                report("letting an oval's paint go");
             }
         }
 

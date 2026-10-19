@@ -32,15 +32,22 @@ export function runTask(task: vscode.Task): Promise<number | undefined> {
 }
 
 /**
+ * Whether a task `running` gives way to the launch `starting`: a launch of the same application on the same device -
+ * never a build, a deploy or a suite, which run to their end.
+ */
+export function givesWay(running: vscode.TaskDefinition, starting: vscode.TaskDefinition): boolean {
+    return running.type === "stateui" && running.launch === true && starting.device !== undefined
+        && running.application === starting.application && running.device === starting.device;
+}
+
+/**
  * Starts `task`, which runs until it is stopped - a head followed by its log -
  * and answers once it has started. A StateUI task for the same application on
  * the same device still running is stopped first and waited for, so starting
  * again is a restart rather than a second run beside the first.
  */
 export async function startTask(task: vscode.Task): Promise<void> {
-    const { application, device } = task.definition;
-    const replaced = vscode.tasks.taskExecutions.filter((each) => device !== undefined && each.task.definition.type === "stateui"
-        && each.task.definition.application === application && each.task.definition.device === device);
+    const replaced = vscode.tasks.taskExecutions.filter((each) => givesWay(each.task.definition, task.definition));
 
     await Promise.all(replaced.map((execution) => new Promise<void>((resolve) => {
         const listener = vscode.tasks.onDidEndTask((event) => {

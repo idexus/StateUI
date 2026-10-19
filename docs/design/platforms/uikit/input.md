@@ -7,8 +7,8 @@ the pointer, and hands it to the host layer, which says what it means.
 
 A view listens only for what its element's handlers and channels ask to
 hear: a gesture recognizer of UIKit's own for each kind - taps, the pointer,
-a press dragged, a pinch - added as the tree asks for it and taken away as it
-stops asking. Its recognizers recognize together with every other, so a pan
+a press dragged, a pinch, two fingers turning - added as the tree asks for it
+and taken away as it stops asking. Its recognizers recognize together with every other, so a pan
 inside a scroller and a tap on a button both still happen. Every view
 StateUI shows takes touches, which a label and a picture of UIKit's do not
 of themselves.
@@ -41,6 +41,19 @@ A view's recognizers hear together, with one exception: a stack lets the user
 swipe back from anywhere in its page, and that swipe would take a drag meant
 for the view. A view listening for drags comes first: the stack's swipe waits
 for its drag to fail, and the two never recognize together.
+
+## The hand over a layout
+
+A layout an engine moves hears the hand by one pan (`UIKitListening`,
+`handMoved`): a finger, and with `allowedScrollTypesMask` `.continuous` a
+trackpad's two fingers, each step what moved under the hand since the last
+and, at the lift, the speed UIKit reads. A wheel turned notch by notch is a
+second pan, `.discrete` and touching nothing (`handNotched`): each of its
+steps a notch the way it went, a step of the run to the next target. Both
+begin only along the layout's axis - the first move, or the speed where a
+trackpad tells no move yet - by the host layer's rule, recognize alone, and
+a scroller holding the layout waits for them to fail, so a page scrolls by a
+hand across the layout's axis.
 
 ## A drag between views
 

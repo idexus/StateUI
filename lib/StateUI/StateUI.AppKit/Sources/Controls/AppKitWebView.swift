@@ -116,9 +116,10 @@ final class AppKitWebView: WKWebView, WKNavigationDelegate {
         decisionHandler(.allow)
     }
 
-    /// Whether a step through the history goes back or forward, by where it lands.
+    /// Whether a step through the history goes back or forward, by where it lands (`WebHistory.step`).
     private func backForward(to address: URL?) -> StateUI.WebNavigationType {
-        backForwardList.backList.contains { $0.url == address } ? .back : .forward
+        WebHistory.step(
+            landingOn: address?.absoluteString ?? "", behind: backForwardList.backList.map(\.url.absoluteString))
     }
 
     func webView(_ web: WKWebView, didCommit navigation: WKNavigation?) {

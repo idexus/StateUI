@@ -36,6 +36,9 @@ final class AppKitBoxWash: NSView {
         fatalError("AppKitBoxWash is made in code")
     }
 
+    /// The whole of the view under a transform, which AppKit leaves out of what it takes for visible.
+    override var visibleRect: NSRect { drawnRect(visible: super.visibleRect) }
+
     override func draw(_ dirtyRect: NSRect) {
         fill.draw(in: NSBezierPath(rect: bounds), bounds: bounds)
     }

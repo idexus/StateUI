@@ -37,11 +37,14 @@ and tinted in the accent colour.
 
 ## Scrolling to an item
 
-An item scrolled to is scrolled to at once, and again once it and the
-entries around it are built. A scroll gliding there would bring every cell
-it passed near the view, each would take its entry's own size, and the item
-would stand elsewhere when the scroll arrived: row 500 of rows a little
-smaller than a row's room stood 47 rows away.
+An item scrolled to is scrolled to at once, and again as the cells near it
+come and as their entries are built, while the host layer holds it ([scrolling
+to an item](../../host/items.md#scrolling-to-an-item)) - a cell keeps a row's
+room until its entry takes its own size. A wheel, a touch, a press or a key on
+the list is the user taking it, and lets the item go. A scroll gliding there
+would bring every cell it passed near the view, each would take its entry's
+own size, and the item would stand elsewhere when the scroll arrived: row 500
+of rows a little smaller than a row's room stood 47 rows away.
 
 ## Scrolled
 

@@ -37,6 +37,8 @@ class GTKTextualView: GTKView {
     /// Runs of words shown in place of the label's own, each in its own look; nil shows its own words again.
     /// Design: docs/design/platforms/gtk/controls.md#runs-of-words
     func setRuns(_ runs: [TextRun]?) {
+        // Shown without runs before, the label's own words stand already.
+        guard runs != nil || self.runs != nil else { return }
         self.runs = runs
         gtk_label_set_text(widget.opaque, runs.map { $0.map(\.text).joined() } ?? ownText)
         writeLook()

@@ -18,7 +18,7 @@ is done by hand for the same reason.
 a second and a millisecond. Each crosses as its integers - year, month, day,
 or hour, minute, second - which is also how a picker reports them back, so
 the two directions say the same thing and nothing has to agree about which
-number is the month. A value read back takes the whole part of each number
+number is the month. A value read back takes the whole number nearest each number
 and refuses any other shape, so a report that does not read leaves the
 handler alone. On a carried state each lies as three lanes in the same
 order.

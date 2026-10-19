@@ -56,8 +56,38 @@ against the step before (`PinchStep`), where their middle is in the view; a
 second finger ends the drag the first began, cancelled. A trackpad's pinch
 reaches the page as a wheel turned with a key held - each turn of a hundred
 points a step of e - or, in Safari, as its gesture, whose scale it carries;
-the page's own zoom is taken from it, and a wheel standing still a fifth of
-a second ends it.
+the page's own zoom is taken from it, and a wheel standing still 150
+milliseconds ends it (`HandReading.pause`).
+
+## The hand over a layout
+
+A layout an engine moves hears the hand by the pointer's events and the
+wheel's (`WebElement+Input.swift`). The page keeps a touch across the
+layout's axis for its own scroll (`touch-action: pan-y` for a horizontal
+layout); a pointer pressed on the layout is the layout's once it moves past
+four points along its axis - it is captured then, its moves told since the
+last with the event's time, from which the host layer reads the speed at its
+lift. A first move across the axis leaves the pointer to the page. Until
+the layout takes the press or lets it by, and while it holds it, the
+browser's own drag of a picture under it is taken (`dragstart`): Chromium's
+and Firefox's thresholds come before the four points, the one or the other
+first by no rule, and their drag takes the pointer away, its lift never told
+- the table dragged off as a picture rather than panned; Safari's comes
+after. A press the layout let by leaves the browser its drag. A touch
+the layout took is kept from the page's pan to its lift: the browser pans by
+a touch's moves, not the pointer's, and with `pan-y` Safari starts a pan -
+and cancels the pointer - once the touch has gone some ten points down,
+however far it went across; so the layout's `touchmove`, which comes after
+its pointer's move, is taken whenever the hand is the layout's, the relay
+listening to it as it does to a wheel, not passively. A wheel
+the browser measures in lines or pages turns notch by notch: each event a
+notch the way it went, a step of the run to the next target. One measured
+in pixels is told as a wheel and
+taken from the page where the layout moved; a trackpad reaches a page as a
+wheel, the system's momentum included, which the host layer tells by its
+fading steps: the run is thrown from there, and the momentum after it is
+taken from the page and moves nothing
+([the hand over a layout](../../host/runtime.md#the-hand-over-a-layout)).
 
 ## A drag between views
 
@@ -87,6 +117,18 @@ leaving it all: `focusin` says it came, and `focusout` that it left unless
 the focus went on to something inside it (`relatedTarget`) - told once a
 change. The program's `focus` and `unfocus` are the element's own `focus()`
 and `blur()`.
+
+## A shortcut's key
+
+A shortcut's letter or digit is the one the user's layout writes on the key
+pressed - a German keyboard's key in Z's place writes Y, a French one's in
+Q's place writes A - as a desktop's own applications read it (`key.key`,
+lowered: Shift writes a capital). Where the layout writes no Latin letter or
+digit there - a Russian layout, a French digit row writing marks, a key Alt
+turns on Apple's keyboards - the letter or digit of the key's own place
+(`key.code`) stands in, as the platforms' shortcuts do; a key that is no
+letter's place, `/`, is what it writes. The relay hands both, and Swift
+weighs them (`WebKeys.character`).
 
 ## What takes no input
 

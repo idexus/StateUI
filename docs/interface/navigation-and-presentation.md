@@ -120,6 +120,32 @@ On a phone - iOS and Android alike - the sidebar slides over the detail from
 the leading edge, the detail shaded behind it, and a tap on the shade closes
 it; on an iPad or a wide tablet it stands beside the detail.
 
+Where the sidebar stands is the host's to say: `.sidebarOverlays($over)`
+writes into a state whether it lies over the detail now, as the platform
+places it for the room - true on a phone and in a narrow window, false
+beside the detail, changing as the window is resized or the device turned.
+A sidebar row reads it to close a sidebar lying over the page once the user
+has chosen, and to leave one beside the page open:
+
+```swift quote
+@State private var menuOpen = false
+@State private var menuOverlays = false
+
+SplitView($menuOpen, sidebar: {
+    MenuPage(showsSidebar: $menuOpen, overlays: $menuOverlays)
+}, detail: {
+    MainPage()
+})
+.sidebarOverlays($menuOverlays)
+
+// In a row of MenuPage:
+section = .archive
+if overlays { showsSidebar = false }
+```
+
+Nothing the application writes into the state reaches the host; it is the
+platform's report alone.
+
 What the sidebar stands on is the split view's to say, for each of the two
 places, as a `Material` - a colour, a gradient, a blur, glass:
 

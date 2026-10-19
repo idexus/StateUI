@@ -16,37 +16,40 @@ enum VisualStateRules {
     }
 
     /// The states in the order they come first: the first that holds is the control's state, and wins a value.
-    static let precedence = ["Disabled", "Pressed", "PointerOver", "Focused", "On", "Checked", "Off", "Unchecked"]
+    static let precedence = [
+        VisualStateName.disabled, VisualStateName.pressed, VisualStateName.pointerOver, VisualStateName.focused,
+        VisualStateName.on, VisualStateName.checked, VisualStateName.off, VisualStateName.unchecked,
+    ]
 
     /// The state a control is in when no other of its states holds, written or not.
-    static let normal = "Normal"
+    static let normal = VisualStateName.normal
 
-    /// Whether the state named `name` holds for these facts; Normal is not asked.
-    static func holds(_ name: String, _ facts: Facts) -> Bool {
-        switch name {
-        case "Disabled": facts.disabled
-        case "Pressed": facts.pressed
-        case "PointerOver": facts.pointerOver
-        case "Focused": facts.focused
-        case "On", "Checked": facts.isOn == true
-        case "Off", "Unchecked": facts.isOn == false
+    /// Whether `state` holds for these facts; Normal is not asked.
+    static func holds(_ state: KeyName, _ facts: Facts) -> Bool {
+        switch state {
+        case VisualStateName.disabled: facts.disabled
+        case VisualStateName.pressed: facts.pressed
+        case VisualStateName.pointerOver: facts.pointerOver
+        case VisualStateName.focused: facts.focused
+        case VisualStateName.on, VisualStateName.checked: facts.isOn == true
+        case VisualStateName.off, VisualStateName.unchecked: facts.isOn == false
         default: false
         }
     }
 
     /// The declared states that hold, in precedence order.
-    static func holding(_ states: [DeclaredState], facts: Facts) -> [String] {
-        precedence.filter { name in holds(name, facts) && states.contains { $0.name == name } }
+    static func holding(_ states: [DeclaredState], facts: Facts) -> [KeyName] {
+        precedence.filter { state in holds(state, facts) && states.contains { $0.key == state } }
     }
 
     /// `props` with the setters of every state that holds laid over them, the first in precedence winning a value;
     /// Normal's where none holds.
-    static func resolved(_ props: [Prop: PropValue], states: [DeclaredState], holding: [String]) -> [Prop: PropValue] {
+    static func resolved(_ props: [Prop: PropValue], states: [DeclaredState], holding: [KeyName]) -> [Prop: PropValue] {
         var result = props
         let shown = holding.isEmpty ? [normal] : holding
 
-        for name in shown.reversed() {
-            guard let state = states.first(where: { $0.name == name }) else { continue }
+        for key in shown.reversed() {
+            guard let state = states.first(where: { $0.key == key }) else { continue }
             result.merge(state.setters) { _, setter in setter }
         }
 

@@ -31,8 +31,12 @@ public enum SplitViewContract: ElementContract {
     /// the platform's own surface there, never the window's.
     public static let flyoutBackground = ElementProperty<Self, Material>("flyoutBackground", layer: .adaptive)
 
+    /// Whether the sidebar lies over the detail rather than beside it, as the platform places it for the room: the
+    /// host writes it.
+    public static let sidebarOverlays = ElementProperty<Self, Bool>("sidebarOverlays", layer: .adaptive)
+
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        showsSidebar, showsSidebarChanged, sidebarBackground, flyoutBackground,
+        showsSidebar, showsSidebarChanged, sidebarBackground, flyoutBackground, sidebarOverlays,
     ]
 }

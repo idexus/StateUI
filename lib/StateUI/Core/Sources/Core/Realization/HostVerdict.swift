@@ -55,8 +55,13 @@
         member.map { "\(element).\($0)" } ?? element
     }
 
-    /// The verdict as a run writes it: "Button.clicked: ✅".
+    /// The verdict as a run writes it: "Button.clicked: ✅" - one line, whatever its words hold.
     public var description: String {
+        written.split(whereSeparator: \.isNewline).joined(separator: " ")
+    }
+
+    /// The verdict's words, as its mark says them.
+    private var written: String {
         switch mark {
         case .proven: "\(subject): ✅"
         case .partial(let missing): "\(subject): ☑️ \(missing)"
@@ -163,10 +168,11 @@
     private static func isProven(_ mark: Mark) -> Bool { if case .proven = mark { true } else { false } }
     private static func isByHost(_ mark: Mark) -> Bool { if case .byHost = mark { true } else { false } }
 
-    /// One verdict a subject, the worst its cases gave, in the order a run writes them.
+    /// One verdict a subject, the worst its cases gave, in the order a run writes them. Taken in the order of their
+    /// text, as `worse` is not associative: the same verdicts give the same mark whatever order the cases ran in.
     public static func merged(_ verdicts: some Sequence<HostVerdict>) -> [HostVerdict] {
         var chosen: [String: HostVerdict] = [:]
-        for verdict in verdicts {
+        for verdict in verdicts.sorted(by: { $0.description < $1.description }) {
             chosen[verdict.subject] = chosen[verdict.subject].map { worse($0, verdict) } ?? verdict
         }
         return chosen.values.sorted { $0.subject < $1.subject }

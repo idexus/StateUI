@@ -111,6 +111,28 @@ enum JavaNatives {
                 return dragging == true ? 1 : 0
             }
         }
+        let handed: @convention(c) (Environment, jclass?, jlong, jint, jfloat, jfloat, jfloat, jfloat) -> jboolean = {
+            _, _, number, phase, x, y, speedX, speedY in
+            MainActor.assumeIsolated {
+                let taken = AndroidView.find(number)?.heardHand(
+                    phase: phase, moved: Point(x: Double(x), y: Double(y)),
+                    speed: Point(x: Double(speedX), y: Double(speedY)))
+                return taken == true ? 1 : 0
+            }
+        }
+        let fingers: @convention(c) (Environment, jclass?, jlong, jint, jfloat, jfloat, jfloat, jfloat) -> Void = {
+            _, _, number, phase, firstX, firstY, secondX, secondY in
+            MainActor.assumeIsolated {
+                AndroidView.find(number)?.heardFingers(
+                    phase: phase, first: Point(x: Double(firstX), y: Double(firstY)),
+                    second: Point(x: Double(secondX), y: Double(secondY)))
+            }
+        }
+        let notched: @convention(c) (Environment, jclass?, jlong, jfloat, jfloat) -> jboolean = { _, _, number, x, y in
+            MainActor.assumeIsolated {
+                AndroidView.find(number)?.heardNotches(Point(x: Double(x), y: Double(y))) == true ? 1 : 0
+            }
+        }
         let focusChanged: @convention(c) (Environment, jclass?, jlong, jboolean) -> Void = { _, _, number, focused in
             MainActor.assumeIsolated {
                 AndroidView.find(number)?.onFocusChanged?(focused != 0)
@@ -155,10 +177,21 @@ enum JavaNatives {
                 (AndroidView.find(number) as? AndroidSliderView)?.onReleased?()
             }
         }
-        let textChanged: @convention(c) (Environment, jclass?, jlong, jstring?) -> Void = { _, _, number, text in
+        let heldWords: @convention(c) (Environment, jclass?, jstring?, jint, jboolean) -> jstring? = {
+            _, _, text, bound, composing in
+            nonisolated(unsafe) let text = text
+            nonisolated(unsafe) var held: jstring?
+            MainActor.assumeIsolated {
+                held = InputWords.held(Java.text(text), in: nil, toBound: Int(bound), composing: composing != 0)
+                    .flatMap(Java.string)
+            }
+            return held
+        }
+        let textChanged: @convention(c) (Environment, jclass?, jlong, jstring?, jboolean) -> Void = {
+            _, _, number, text, composing in
             nonisolated(unsafe) let text = text
             MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidTextFieldView)?.typed(Java.text(text))
+                (AndroidView.find(number) as? AndroidTextFieldView)?.typed(Java.text(text), composing: composing != 0)
             }
         }
         let submitted: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
@@ -266,7 +299,7 @@ enum JavaNatives {
             nonisolated(unsafe) var made: jobject?
             MainActor.assumeIsolated {
                 guard let list = AndroidView.find(number) as? AndroidItemsView else { return }
-                made = Java.jni.NewLocalRef(Java.env, list.makeCell(item: kind == 0).reference)
+                made = Java.jni.NewLocalRef(Java.env, list.makeCell(item: AndroidItemKind(rawValue: kind) == .item).reference)
             }
             return made
         }
@@ -343,6 +376,9 @@ enum JavaNatives {
             ("keyTaken", "(ZIII)Z", unsafeBitCast(keyTaken, to: UnsafeMutableRawPointer.self)),
             ("gestured", "(JIIFFF)V", unsafeBitCast(gestured, to: UnsafeMutableRawPointer.self)),
             ("pressed", "(JIFF)Z", unsafeBitCast(pressed, to: UnsafeMutableRawPointer.self)),
+            ("handed", "(JIFFFF)Z", unsafeBitCast(handed, to: UnsafeMutableRawPointer.self)),
+            ("fingers", "(JIFFFF)V", unsafeBitCast(fingers, to: UnsafeMutableRawPointer.self)),
+            ("notched", "(JFF)Z", unsafeBitCast(notched, to: UnsafeMutableRawPointer.self)),
             ("focusChanged", "(JZ)V", unsafeBitCast(focusChanged, to: UnsafeMutableRawPointer.self)),
             ("destroying", "()V", unsafeBitCast(destroying, to: UnsafeMutableRawPointer.self)),
             ("environmentChanged", "()V", unsafeBitCast(environmentChanged, to: UnsafeMutableRawPointer.self)),
@@ -352,7 +388,8 @@ enum JavaNatives {
             ("moved", "(JI)V", unsafeBitCast(moved, to: UnsafeMutableRawPointer.self)),
             ("dragStarted", "(J)V", unsafeBitCast(dragStarted, to: UnsafeMutableRawPointer.self)),
             ("dragCompleted", "(J)V", unsafeBitCast(dragCompleted, to: UnsafeMutableRawPointer.self)),
-            ("textChanged", "(JLjava/lang/String;)V", unsafeBitCast(textChanged, to: UnsafeMutableRawPointer.self)),
+            ("textChanged", "(JLjava/lang/String;Z)V", unsafeBitCast(textChanged, to: UnsafeMutableRawPointer.self)),
+            ("heldWords", "(Ljava/lang/String;IZ)Ljava/lang/String;", unsafeBitCast(heldWords, to: UnsafeMutableRawPointer.self)),
             ("submitted", "(J)V", unsafeBitCast(submitted, to: UnsafeMutableRawPointer.self)),
             ("scrolled", "(J)V", unsafeBitCast(scrolled, to: UnsafeMutableRawPointer.self)),
             ("held", "(JZ)V", unsafeBitCast(held, to: UnsafeMutableRawPointer.self)),

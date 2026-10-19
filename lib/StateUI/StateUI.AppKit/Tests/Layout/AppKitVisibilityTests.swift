@@ -14,7 +14,7 @@ import XCTest
 @MainActor
 final class AppKitVisibilityTests: XCTestCase {
     /// A label, visible or not, crossing under `motion`.
-    private func label(visible: Bool, motion: Motion = .eased(100, .linear)) -> HostPatch {
+    private func label(visible: Bool, motion: Motion = .eased(.milliseconds(100), .linear)) -> HostPatch {
         var label = HostPatch(id: .manual("label"), type: .text)
         label.properties[.text] = .string("here")
         label.properties[.isVisible] = .bool(visible)
@@ -105,12 +105,12 @@ final class AppKitVisibilityTests: XCTestCase {
 
         func rows(firstVisible: Bool) -> HostPatch {
             var stack = HostPatch(id: .manual("stack"), type: .vStack)
-            stack.motion = HostLayoutMotion(motion: .eased(200, .linear), lanes: .all)
+            stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
             var first = HostPatch(id: .manual("first"), type: .rectangle)
             first.properties = [
                 .width: .number(100), .height: .number(40), .isVisible: .bool(firstVisible),
             ]
-            first.motion = HostLayoutMotion(motion: .eased(100, .linear), lanes: .all)
+            first.motion = HostLayoutMotion(motion: .eased(.milliseconds(100), .linear), lanes: .all)
             var second = HostPatch(id: .manual("second"), type: .rectangle)
             second.properties = [.width: .number(100), .height: .number(40)]
             stack.children = .arranged([first, second])

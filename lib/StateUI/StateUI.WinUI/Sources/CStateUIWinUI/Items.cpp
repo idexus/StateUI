@@ -42,23 +42,28 @@ namespace {
         winrt::Windows::Foundation::Collections::IObservableVector<IInspectable> source =
             winrt::single_threaded_observable_vector<IInspectable>();
 
-        /// Each identity's kind: an item (0), or a header or a footer (1).
-        std::unordered_map<std::wstring, int32_t> kinds;
+        /// Each identity's kind.
+        std::unordered_map<std::wstring, StateUIItemKind> kinds;
 
         /// Every container made, by its interface, with its panel's number and its kind; and those put aside.
         struct Made {
             int64_t number;
-            int32_t kind;
+            StateUIItemKind kind;
             winrt::weak_ref<controls::ItemContainer> container;
         };
         std::unordered_map<void *, Made> made;
-        std::vector<controls::ItemContainer> aside[2];
+        std::vector<controls::ItemContainer> aside[StateUIItemKindEdge + 1];
 
-        /// How the entries stand: down (0), across (1) or in columns (2).
-        int32_t shape = 0;
+        /// How the entries stand.
+        StateUIItemsShape shape = StateUIItemsShapeList;
 
         /// Whether the program is choosing, which the user's choice is not told of.
         bool choosing = false;
+
+        /// The scroller the list's handlers hang on - once, however often WinUI loads the list - and how many sets
+        /// hang on it.
+        winrt::weak_ref<controls::ScrollView> heard;
+        int32_t scrollerHandlers = 0;
 
         /// How deep the list is in asking for cells, and what waits for it to be done.
         int32_t laying = 0;
@@ -73,7 +78,7 @@ namespace {
             try {
                 auto identity = winrt::unbox_value_or<winrt::hstring>(args.Data(), L"");
                 auto found = kinds.find(std::wstring(identity));
-                auto kind = found == kinds.end() ? 0 : found->second;
+                auto kind = found == kinds.end() ? StateUIItemKindItem : found->second;
                 ++laying;
                 controls::ItemContainer container{nullptr};
                 if (!aside[kind].empty()) {
@@ -114,7 +119,7 @@ namespace {
         }
 
         /// A container around a new panel of the host's.
-        controls::ItemContainer make(int32_t kind) {
+        controls::ItemContainer make(StateUIItemKind kind) {
             int64_t number = 0;
             auto panel = callbacks.itemCell(view, kind, &number);
             controls::ItemContainer container;
@@ -194,11 +199,11 @@ namespace {
     }
 
     /// The scroller moves across for a row, down otherwise.
-    void standScroller(controls::ItemsView const &list, int32_t shape) {
+    void standScroller(controls::ItemsView const &list, StateUIItemsShape shape) {
         auto scroller = list.ScrollView();
         if (!scroller) return;
-        scroller.ContentOrientation(
-            shape == 1 ? controls::ScrollingContentOrientation::Horizontal : controls::ScrollingContentOrientation::Vertical);
+        scroller.ContentOrientation(shape == StateUIItemsShapeRow ? controls::ScrollingContentOrientation::Horizontal
+                                                                   : controls::ScrollingContentOrientation::Vertical);
     }
 }
 
@@ -226,8 +231,11 @@ extern "C" StateUIObjectRef stateui_winui_items_make(int64_t view) {
         }));
         list.Loaded(guarded("handling Loaded", [view](IInspectable const &sender, xaml::RoutedEventArgs const &) {
             auto list = sender.as<controls::ItemsView>();
-            standScroller(list, cellsOf(list)->shape);
-            if (auto scroller = list.ScrollView()) {
+            auto cells = cellsOf(list);
+            standScroller(list, cells->shape);
+            if (auto scroller = list.ScrollView(); scroller && cells->heard.get() != scroller) {
+                cells->heard = winrt::make_weak(scroller);
+                cells->scrollerHandlers = 0;
                 winrt::weak_ref<controls::ItemsView> weak = list;
                 scroller.ViewChanged(guarded("handling ViewChanged",
                     [weak, view](controls::ScrollView const &, IInspectable const &) {
@@ -238,6 +246,7 @@ extern "C" StateUIObjectRef stateui_winui_items_make(int64_t view) {
                     [weak, view](controls::ScrollView const &, IInspectable const &) {
                     if (auto list = weak.get()) tellShowing(list, view);
                 }));
+                ++cells->scrollerHandlers;
             }
             tellShowing(list, view);
         }));
@@ -245,6 +254,15 @@ extern "C" StateUIObjectRef stateui_winui_items_make(int64_t view) {
     } catch (...) {
         report("making an ItemsView");
         return nullptr;
+    }
+}
+
+extern "C" int32_t stateui_winui_items_scroller_handlers(StateUIObjectRef handle) {
+    try {
+        return cellsOf(borrow<controls::ItemsView>(handle))->scrollerHandlers;
+    } catch (...) {
+        report("counting a list's scroller handlers");
+        return -1;
     }
 }
 
@@ -256,7 +274,8 @@ extern "C" void stateui_winui_items_set_entries(
         auto list = borrow<controls::ItemsView>(handle);
         auto cells = cellsOf(list);
         std::vector<winrt::hstring> names;
-        std::vector<int32_t> sorts(kinds, kinds + count);
+        std::vector<StateUIItemKind> sorts;
+        for (int32_t index = 0; index < count; ++index) sorts.push_back(static_cast<StateUIItemKind>(kinds[index]));
         for (int32_t index = 0; index < count; ++index) names.push_back(text(identities[index]));
         std::vector<int32_t> removals(removed, removed + removedCount);
         std::vector<int32_t> insertions(inserted, inserted + insertedCount);
@@ -279,7 +298,7 @@ extern "C" void stateui_winui_items_set_entries(
 }
 
 extern "C" void stateui_winui_items_set_layout(
-    StateUIObjectRef handle, int32_t shape, double spacing, double minimumItemWidth
+    StateUIObjectRef handle, StateUIItemsShape shape, double spacing, double minimumItemWidth
 ) {
     try {
         auto list = borrow<controls::ItemsView>(handle);
@@ -289,7 +308,7 @@ extern "C" void stateui_winui_items_set_layout(
             auto list = weak.get();
             if (!list) return;
             cells->shape = shape;
-            if (shape == 2) {
+            if (shape == StateUIItemsShapeGrid) {
                 controls::UniformGridLayout grid;
                 grid.MinItemWidth(minimumItemWidth);
                 grid.MinColumnSpacing(spacing);
@@ -298,7 +317,7 @@ extern "C" void stateui_winui_items_set_layout(
                 list.Layout(grid);
             } else {
                 controls::StackLayout stack;
-                stack.Orientation(shape == 1 ? controls::Orientation::Horizontal : controls::Orientation::Vertical);
+                stack.Orientation(shape == StateUIItemsShapeRow ? controls::Orientation::Horizontal : controls::Orientation::Vertical);
                 stack.Spacing(spacing);
                 list.Layout(stack);
             }
@@ -353,7 +372,7 @@ extern "C" void stateui_winui_items_scroll_to(StateUIObjectRef handle, int32_t i
             // Nearest leaves the ratios unset: WinUI then moves the item only as far as brings it wholly into view.
             if (anchor != 3) {
                 auto ratio = anchor == 0 ? 0.0 : anchor == 1 ? 0.5 : 1.0;
-                if (cells->shape == 1) options.HorizontalAlignmentRatio(ratio); else options.VerticalAlignmentRatio(ratio);
+                if (cells->shape == StateUIItemsShapeRow) options.HorizontalAlignmentRatio(ratio); else options.VerticalAlignmentRatio(ratio);
             }
             list.StartBringItemIntoView(index, options);
         });

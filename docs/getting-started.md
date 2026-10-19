@@ -296,19 +296,19 @@ import StateUIAppKit
 
 stateui_app_register()
 
-let application = URL(fileURLWithPath: #filePath)
-    .deletingLastPathComponent()
-    .deletingLastPathComponent()
-    .deletingLastPathComponent()
-let resources = application.appendingPathComponent("Resources/Images", isDirectory: true)
+let beside = Bundle.main.executableURL!.deletingLastPathComponent()
+let application = FileManager.default.fileExists(atPath: beside.appendingPathComponent("Resources").path)
+    ? beside
+    : URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
 
 StateUIAppKit.run(
-    resourceDirectory: resources,
+    resourceDirectory: application.appendingPathComponent("Resources/Images", isDirectory: true),
     applicationIcon: application.appendingPathComponent("Resources/AppIcon/appicon_macos.svg"))
 ```
 
-The head finds its artwork from its own source file, so it runs from any
-directory. Its icon is drawn on macOS's icon grid; see
+The head finds its artwork beside itself where a deployed copy carries it -
+`.scripts/AppKit/deploy.sh` lays the application's `Resources` there - else
+from its own source file, so it runs from any directory, and on another Mac. Its icon is drawn on macOS's icon grid; see
 [AppKit host](hosts/appkit.md).
 
 Registration and `run` happen once per process. All scenes and windows then
@@ -339,6 +339,7 @@ The Gallery's GTK head registers both:
 
 ```swift quote
 import GalleryUI
+import StateUIFoundation
 import StateUIGTK
 import StateUIWebViewGTK
 
@@ -347,7 +348,7 @@ GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
 StateUIWebViewGTK.register()
-StateUIGTK.run(applicationID: "com.stateui.gallery")
+exit(StateUIGTK.run(applicationID: "com.stateui.gallery"))
 ```
 
 `GalleryControls`, `GalleryActs` and `GalleryEventSources` are the Gallery's

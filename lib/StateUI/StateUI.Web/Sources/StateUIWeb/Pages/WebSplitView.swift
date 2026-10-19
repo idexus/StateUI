@@ -25,6 +25,9 @@ final class WebSplitView: WebDOMView {
     /// The width from which the sidebar stands beside the detail rather than over it - the stylesheet's.
     static let breakpoint = 900.0
 
+    /// Whether the sidebar lies over the detail, as the style sheet stands it for the page.
+    var overlays: Bool { WebRelay.standsOver(sidebar.node) }
+
     init() {
         super.init(tag: "div")
         attribute("class", "stateui-split")
@@ -54,6 +57,8 @@ final class WebSplitView: WebDOMView {
 
     /// The first room the split view is given: where it is wide, the sidebar shows, as the user's - at once.
     func adapt() {
+        // Only the first room decides: after it, a render reads the page's layout for nothing.
+        guard !adaptation.decided else { return }
         let width = WebRelay.box(of: node).width
         if adaptation.room(width, breakpoint: Self.breakpoint, shown: isPresented) { userPresents(true, moves: false) }
     }

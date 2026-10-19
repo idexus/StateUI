@@ -33,7 +33,7 @@ final class WebItemCell: WebLayoutView, ItemsHolding {
         shown = item
         let placed = item?.web.placedElement
         if placed != nil { keep(nil) }
-        setItems(placed.map { [($0.view!, $0.element.layoutValues)] } ?? [])
+        setItems(placed.map { item in [(item.view!, { [weak item] in item?.element.layoutValues ?? LayoutValues() })] } ?? [])
     }
 
     /// The cell lets its entry go, keeping the room it took: the cells after it stand where they stood.

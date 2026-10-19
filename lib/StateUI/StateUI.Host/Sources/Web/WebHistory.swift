@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
+
 /// Whether there is a page behind and a page ahead, as a web view last said it: a way is said only as it changes.
 /// Design: docs/design/host/web.md#the-way-back-and-forward
 @_spi(Host) public struct WebHistory {
@@ -10,6 +12,12 @@
 
     /// No way back or forward, as a web view stands before its first page.
     public init() {}
+
+    /// Whether a step through the history the page takes goes back or forward: back where it lands on a page of the
+    /// way back, `behind`, as the addresses there stand, else forward.
+    public static func step(landingOn address: String, behind: [String]) -> WebNavigationType {
+        behind.contains(address) ? .back : .forward
+    }
 
     /// Takes the ways as they stand; answers each that changed - nil for one that did not - the way back first to be
     /// said.

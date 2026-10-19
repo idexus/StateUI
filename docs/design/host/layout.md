@@ -172,6 +172,17 @@ natural size is the room its neediest child needs at its natural size: a
 rectangle in points to its far corner, a fraction as much as leaves the child
 its natural size in its share, and anything else its size and margins.
 
+## A layout engine
+
+A layout engine has no size of its own: it takes the room its layout gives
+it, whatever its views need, as a shape does - its padding and nothing more.
+Its views stand where arithmetic of that room puts them, so a size taken
+from them, as a ZStack takes its children's, would feed the very room the
+arithmetic is worked out from: a scroller's content is the room plus how far
+the run reaches. Each host stands the engine on its ZStack and measures it
+by `ZStackArithmetic.size(of:padding:width:engine:)`; on the Web, CSS's size
+containment says the same.
+
 ## A placing run
 
 A state that places a ZStack's children - a placing run - stands each child
@@ -192,8 +203,8 @@ the same on both axes, which is what a run draws.
 
 ## Drawing order
 
-A grid's and a ZStack's children can overlap, so their order is
-the order they are drawn in: by `zIndex`, lower first, and children of the same
+A grid's, a ZStack's and a layout engine's children can overlap, so their
+order is the order they are drawn in: by `zIndex`, lower first, and children of the same
 `zIndex` in the order the view wrote them. The mounted element keeps
 `children` in that order and remembers the order written, so a sparse change
 or a bound `zIndex` moving in a frame restacks them and arranges the layout

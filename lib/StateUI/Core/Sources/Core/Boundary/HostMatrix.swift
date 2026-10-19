@@ -2,17 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The platform's C maths library, for the drawing matrix's `sin` and `cos`.
-#if canImport(Darwin)
-import Darwin
-#elseif canImport(Android)
-import Android
-#elseif canImport(Glibc)
-import Glibc
-#elseif canImport(CRT)
-import CRT
-#elseif canImport(WASILibc)
-import WASILibc
-#endif
+import StateUIFoundation
 
 /// A 4×4 drawing matrix acting on row vectors: a point (x, y, z, 1) is drawn
 /// at (x, y, z, 1)·M divided by its fourth coordinate. `m41` and `m42` move,

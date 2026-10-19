@@ -25,6 +25,9 @@ final class AppKitCanvasView: AppKitHitTestView {
         needsDisplay = true
     }
 
+    /// The whole of the view under a transform, which AppKit leaves out of what it takes for visible.
+    override var visibleRect: NSRect { drawnRect(visible: super.visibleRect) }
+
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
         guard let context = NSGraphicsContext.current else { return }

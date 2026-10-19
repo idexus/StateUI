@@ -21,7 +21,7 @@ final class UIKitSliderView: UISlider {
             onValueChanged?(Double(value))
         }, for: .valueChanged)
         addAction(UIAction { [weak self] _ in self?.onPressed?() }, for: .touchDown)
-        addAction(UIAction { [weak self] _ in self?.onReleased?() }, for: [.touchUpInside, .touchUpOutside])
+        addAction(UIAction { [weak self] _ in self?.onReleased?() }, for: [.touchUpInside, .touchUpOutside, .touchCancel])
     }
 
     @available(*, unavailable)

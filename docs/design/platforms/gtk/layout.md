@@ -49,14 +49,15 @@ label wraps to the width it is given.
 ## Where a view stands
 
 A view whose frame the tree reads - a state its frame drives, or a handler
-for its changes - says where it stands on the display's next frame after a
-layout or a scroll: its frame in its parent, its place in the window, and
+for its changes - says where it stands in the frame that lays it out or
+scrolls it, in the frame clock's layout phase: its frame in its parent, its place in the window, and
 that place from the top left of its page's content, beneath the page's own
 header bar, all in logical pixels. The host hears every StateUI panel GTK
 allocates and every scroller's movement, and asks only the views that are
 read, in the order they were made; a view that did not move says nothing. It
-speaks on a frame rather than inside GTK's allocation, so what a handler
-renders is laid out in a pass of its own. A view in no window, or one not laid
+speaks after GTK's allocation rather than inside it, and what a handler
+renders is laid out again before the frame is drawn: the frame clock repeats
+its layout for it. A view in no window, or one not laid
 out yet by the host layer's rule (`MountedElement.isLaidOut`, [where a view
 stands](../../host/runtime.md#where-a-view-stands)), stands nowhere and says
 nothing: a frame's tick comes before its layout, so a view made just before it

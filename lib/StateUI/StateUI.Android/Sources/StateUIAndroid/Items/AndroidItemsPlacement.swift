@@ -8,13 +8,14 @@
 /// groups (`ItemsPlacement`), in the relay's numbers: its shape, each entry's kind and columns, and its room in pixels.
 /// Design: docs/design/platforms/android/items.md#the-layout
 struct AndroidItemsPlacement: Equatable {
-    /// The relay's shape: down (0), across (1), or in columns (2).
+    /// The relay's shape: down, across, or in columns (`AndroidItemsShape`).
     let shape: Int32
 
     /// The grid's columns; one for a list or a row.
     let columns: Int
 
-    /// Each entry's kind - an item (0), or a header or a footer (1) - and columns, in the order the entries show.
+    /// Each entry's kind - an item, or a header or a footer (`AndroidItemKind`) - and columns, in the order the
+    /// entries show.
     let kinds: [Int32]
     let spans: [Int32]
 
@@ -25,12 +26,12 @@ struct AndroidItemsPlacement: Equatable {
     init(_ entries: ItemsEntries, layout: ItemsLayout, width: Double, density: Double) {
         let placement = ItemsPlacement(entries, layout: layout, width: width, spanning: true)
         shape = switch layout {
-        case .list: 0
-        case .row: 1
-        case .grid: 2
+        case .list: AndroidItemsShape.list.rawValue
+        case .row: AndroidItemsShape.row.rawValue
+        case .grid: AndroidItemsShape.grid.rawValue
         }
         columns = placement.columns
-        kinds = placement.edges.map { $0 ? 1 : 0 }
+        kinds = placement.edges.map { ($0 ? AndroidItemKind.edge : .item).rawValue }
         spans = placement.spans.map { Int32($0) }
         insets = placement.rooms.flatMap { room in
             [room.leading, room.top, room.trailing, 0].map { Int32(($0 * density).rounded()) }

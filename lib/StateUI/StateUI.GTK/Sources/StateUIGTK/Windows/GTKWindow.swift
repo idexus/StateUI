@@ -15,7 +15,6 @@ final class GTKWindow {
 
     /// The number its signals carry to the runtime, one across the process.
     let number: Int64
-    private static var nextNumber: Int64 = 1
 
     /// Whether the window has closed - the user's close or the tree's.
     private(set) var isClosed = false
@@ -50,13 +49,12 @@ final class GTKWindow {
     private var presented = false
 
     /// Whether its scene hides it.
-    private var isHidden = false
+    private(set) var isHidden = false
 
     init(application: UnsafeMutablePointer<GtkApplication>) {
         widget = adw_application_window_new(application)!
         g_object_ref(widget)
-        number = Self.nextNumber
-        Self.nextNumber += 1
+        number = HostNumbers.next()
         gtk_window_set_default_size(widget.of(GtkWindow.self), 560, 440)
         // GNOME's smallest window, which a window that adapts to its width must say.
         gtk_widget_set_size_request(widget, 360, 294)
@@ -107,8 +105,12 @@ final class GTKWindow {
         }
     }
 
-    /// The frame each window's readers last said where they stand in, by the window's number.
+    /// The frame each window's readers last said where they stand in, by the window's number - a window gone
+    /// forgotten.
     private static var reported: [Int64: Int64] = [:]
+
+    /// Whether the frame of the window numbered `number` is kept - what a test reads.
+    static func keepsFrame(of number: Int64) -> Bool { reported[number] != nil }
 
     /// Lets what reads a frame say where it stands, once a frame of `clock`, the clock of the window numbered
     /// `window`: the layout that what they say changes repeats once, and ends.
@@ -219,12 +221,14 @@ final class GTKWindow {
 
     /// Closes the window as the tree or the host does: nobody hears it as the user's.
     func close() {
+        Self.reported[number] = nil
         isClosed = true
         gtk_window_close(widget.of(GtkWindow.self))
     }
 
     /// The window went - the user closed it: it closes nothing more.
     func closed() {
+        Self.reported[number] = nil
         isClosed = true
     }
 }

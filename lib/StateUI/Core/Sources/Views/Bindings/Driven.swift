@@ -35,17 +35,28 @@ extension Button {
     }
 }
 
+extension RadioButton {
+    /// What the radio button says, carried from a state; see `Text.text(_:)`.
+    ///
+    /// - Parameter state: the state the caption is read from.
+    /// - Returns: the radio button, with its caption carried from that state.
+    public func text(_ state: Binding<String>) -> RadioButton {
+        setValue(TextualElementContract.text, on: state, mode: .out)
+    }
+}
+
 // MARK: - The feeds
 
 extension VisualElement {
     /// The frame the platform gave the view - where it sits in its parent and
     /// how big it is - written into a state as it changes, with no view rebuilt.
     ///
-    ///     @State private var room = Rect(0, 0, 0, 0)
+    ///     @State private var room = Rect.zero
+    ///     @State private var columns = 1.0
     ///
-    ///     PlacedLayout(cards, id: \.name) { face($0) }
-    ///         .placement($run)
+    ///     Grid { tiles }
     ///         .frame($room)
+    ///         .engine(following: $room) { _ in columns = max((room.width / 240).rounded(.down), 1) }
     ///
     /// For arithmetic that lays views out; `GeometryReader` is for content built
     /// from the frame. Writing the state moves nothing: the frame is the

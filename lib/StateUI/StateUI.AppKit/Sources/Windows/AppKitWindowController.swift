@@ -38,6 +38,9 @@ final class AppKitWindowController: NSWindowController {
     /// What AppKit last told of the window: whether it is minimized, and whether it holds the keyboard.
     var isMinimized = false
     var isKey = false
+
+    /// Whether the window is the main one - what the user works in; a sheet over it takes the key, never this.
+    var isMain = false
     var closingFromTree = false
     var modals: [AppKitModalWindowController] = []
 
@@ -213,7 +216,7 @@ final class AppKitWindowController: NSWindowController {
         if let bounds { bound(bounds, window) }
         if let traits = changes.traits { apply(traits, window) }
         if let hidden = changes.hidden { setHidden(hidden, window) }
-        refreshVisiblePageChrome()
+        refreshChrome()
         host?.nativeWindowAvailable(window)
 
         guard !presented else {
@@ -223,6 +226,21 @@ final class AppKitWindowController: NSWindowController {
 
         presented = true
         if presentsWindow, !hiddenByScene { window.makeKeyAndOrderFront(nil) }
+    }
+
+    /// What a frame moved of the window, shown again - its frame, its bounds, its traits, its bars' colours, a page's
+    /// words on its bar - and nothing a frame cannot move: no window, sheet, menu or restorable state.
+    func followFrame(in runtime: HostRuntime) {
+        guard let element, let window else { return }
+        let changes = presentation.show(element, in: runtime.lifecycle)
+        if let frame = changes.frame { request(frame, of: window) }
+        if let bounds = changes.bounds {
+            self.bounds = bounds
+            bound(bounds, window)
+        }
+        if let traits = changes.traits { apply(traits, window) }
+        if let hidden = changes.hidden { setHidden(hidden, window) }
+        refreshVisiblePageChrome()
     }
 
     /// Stands the window where the tree asks, each request alone: a size is the content area the title bar and
@@ -304,9 +322,6 @@ final class AppKitWindowController: NSWindowController {
 }
 
 extension AppKitWindowController {
-    /// A key equivalent no view took choosing the bar's item stating it (`KeyboardShortcuts`): AppKit holds no
-    /// shortcut on a toolbar's item. A button's and a menu bar entry's are AppKit's own.
-    /// Design: docs/design/types/keyboard.md#on-each-platform
     /// A key a view takes, pressed in this window or a sheet over it, handed to that view (`KeyPresses`): out from the
     /// view holding the keyboard, else from the page in front. Whether one took it.
     func takesKey(_ key: String, _ modifiers: NSEvent.ModifierFlags, in window: NSWindow?) -> Bool {
@@ -320,6 +335,9 @@ extension AppKitWindowController {
             pressed.key, modifiers: pressed.modifiers, focused: holder, front: presentation.frontPage, in: runtime)
     }
 
+    /// A key equivalent no view took choosing the bar's item stating it (`KeyboardShortcuts`): AppKit holds no
+    /// shortcut on a toolbar's item. A button's and a menu bar entry's are AppKit's own.
+    /// Design: docs/design/types/keyboard.md#on-each-platform
     func choosesABarItem(by event: NSEvent) -> Bool {
         guard let element, let runtime = host?.runtime,
               let shortcut = AppKitKeys.shortcut(

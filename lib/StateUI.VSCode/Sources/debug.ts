@@ -223,7 +223,7 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         const facts = path.join(application.directory, ".build", "android", "debugger.json");
         fs.rmSync(facts, { force: true });
         const task = new vscode.Task(
-            { type: "stateui", application: application.name, configuration, device: serial }, root,
+            { type: "stateui", launch: true, application: application.name, configuration, device: serial }, root,
             `Run ${application.name} (Android, ${configuration})`, "StateUI",
             new vscode.ShellExecution("bash",
                 [script, application.directory, configuration, serial, ...(debug ? ["--debugger"] : [])],
@@ -269,7 +269,7 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         const facts = path.join(application.directory, ".build", "uikit", "debugger.json");
         fs.rmSync(facts, { force: true });
         const task = new vscode.Task(
-            { type: "stateui", application: application.name, configuration, device }, root,
+            { type: "stateui", launch: true, application: application.name, configuration, device }, root,
             `Run ${application.name} (UIKit, ${configuration})`, "StateUI",
             new vscode.ShellExecution("bash",
                 [script, application.directory, configuration, device, ...(debug ? ["--debugger"] : [])],
@@ -394,7 +394,7 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         const facts = path.join(application.directory, ".build", "web", "server.json");
         fs.rmSync(facts, { force: true });
         const task = new vscode.Task(
-            { type: "stateui", application: application.name, configuration, device: "web" }, root,
+            { type: "stateui", launch: true, application: application.name, configuration, device: "web" }, root,
             `Run ${application.name} (Web, ${configuration})`, "StateUI",
             new vscode.ShellExecution("bash",
                 [script, application.directory, configuration, "--browser", debugged ? "none" : browser.id],

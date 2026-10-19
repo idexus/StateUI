@@ -21,7 +21,7 @@ struct TabsPage: View {
             VStack {
                 SectionTitle("A section arranged as tabs")
 
-                Text("A TabView of two")
+                Text("A TabView whose tabs come and go")
                     .fontSize(26)
                     .fontWeight(.bold)
 

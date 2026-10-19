@@ -29,7 +29,10 @@ extension LanguageConventions {
 }
 
 extension LibraryWords {
-    static let polish = LibraryWords(ok: "OK", cancel: "Anuluj")
+    static let polish = LibraryWords(
+        ok: "OK", cancel: "Anuluj",
+        chrome: ChromeWords(
+            back: "Wstecz", sidebar: "Pasek boczny", close: "Zamknij", more: "Więcej", mainMenu: "Menu główne"))
 }
 
 extension RegionConventions {

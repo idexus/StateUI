@@ -57,7 +57,7 @@ extension AndroidDriver {
             let answered = Java.frame {
                 Java.callStaticBool(
                     Self.files, Self.answerForTesting, .object(TestContext.window.reference),
-                    .object(Java.array(of: JavaAPI.string, names.map { Java.string(filesFolder + $0) })))
+                    .object(Java.strings(names.map { filesFolder + $0 })))
             }
             guard answered else { throw DriverCannot("answer a file dialog: none is held") }
         case (.choose(let place), let picker as AndroidPickerView) where picker.presentation != .menu:
@@ -77,9 +77,18 @@ extension AndroidDriver {
             guard Self.tap(tab: place, of: tabs) else { throw DriverCannot(act, on: element) }
         case (.tap(let count), let view?): Self.tap(view, count: count)
         case (.pan(let offset), let view?): Self.pan(view, by: offset)
+        case (.sweep(let offset, let speed), let view?):
+            _ = view.heardHand(phase: GesturePhase.began.rawValue, moved: .zero, speed: .zero)
+            _ = view.heardHand(phase: GesturePhase.changed.rawValue, moved: offset, speed: .zero)
+            _ = view.heardHand(phase: GesturePhase.ended.rawValue, moved: .zero, speed: speed)
+        case (.notch(let notches), let view?):
+            _ = view.heardNotches(notches)
         case (.pinch(let scale, let point), let view?):
             let (width, height) = (Float(view.frame.width), Float(view.frame.height))
             TestTouches.pinch(view, x: Float(point.x) * width, y: Float(point.y) * height, by: Float(scale))
+        case (.rotate(let degrees, let point), let view?):
+            let (width, height) = (Float(view.frame.width), Float(view.frame.height))
+            TestTouches.rotate(view, x: Float(point.x) * width, y: Float(point.y) * height, by: Float(degrees))
         case (.pressDown(let point), let view?): view.touch(Self.down, x: Self.pixels(point.x), y: Self.pixels(point.y))
         case (.drag(let point), let view?): view.touch(Self.move, x: Self.pixels(point.x), y: Self.pixels(point.y))
         case (.lift(let point), let view?): view.touch(Self.up, x: Self.pixels(point.x), y: Self.pixels(point.y))

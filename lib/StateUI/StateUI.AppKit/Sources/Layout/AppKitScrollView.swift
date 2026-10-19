@@ -227,7 +227,8 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
 
         if let target = writtenOffset.laidOutNow() {
             move(to: NSPoint(x: target.x, y: target.y), asUser: false)
-        } else {
+        } else if !movement.isMoving, reachable(normalized(contentView.bounds.origin)) != contentView.bounds.origin {
+            // Only a scroller the content left off its reach: a move stops a throw and cuts the stretch past an edge.
             move(to: contentView.bounds.origin, asUser: false)
         }
     }

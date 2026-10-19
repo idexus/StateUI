@@ -24,6 +24,9 @@
     /// What the frame presents through.
     weak var presenter: (any FramePresenter)?
 
+    /// The runtime an open wheel's let-go is said in.
+    weak var runtime: HostRuntime?
+
     private let core: CoreLink
     private let clock: any FrameClock
     private let animator: Animator
@@ -31,6 +34,7 @@
     private let describedMotion: DescribedMotion
     private let layoutMotion: LayoutMotion
     private let sidebarSlide: SidebarSlide
+    private let handPace: HandPace
     private let reducesMotion: () -> Bool
 
     /// Whether the core's last cycle said it has more to do.
@@ -40,6 +44,9 @@
     /// the runtime's own; neither takes the cycle back.
     /// Design: docs/design/host/runtime.md#one-frame
     private var time = -Double.infinity
+
+    /// Whether the toolkit lays out the frame the cycle last ran at, whose time stands while it does.
+    private var layingOut = false
 
     /// The frame's batch: bound states' values, and moved properties per mounted element.
     private var states: [Int32: HostStateValue] = [:]
@@ -54,6 +61,7 @@
         describedMotion: DescribedMotion,
         layoutMotion: LayoutMotion,
         sidebarSlide: SidebarSlide,
+        handPace: HandPace = HandPace(),
         reducesMotion: @escaping () -> Bool
     ) {
         self.core = core
@@ -63,13 +71,15 @@
         self.describedMotion = describedMotion
         self.layoutMotion = layoutMotion
         self.sidebarSlide = sidebarSlide
+        self.handPace = handPace
         self.reducesMotion = reducesMotion
     }
 
     /// One frame: the user's reports, the animations, the core's cycle, one walk, the hold, a render.
     public func frame(now: Double) {
         let now = onward(now)
-        presenter?.commitUserReports(now: now)
+        HostProbe.timed(.events) { presenter?.commitUserReports(now: now) }
+        if let runtime { handPace.pace(now: now, in: runtime) }
         drain(now: now)
         presenter?.renderIfNeeded()
     }
@@ -82,9 +92,9 @@
 
         let reducesMotion = reducesMotion()
         sidebarSlide.pace(now: now)
-        follow(animator.advance(to: now, reducesMotion: reducesMotion))
+        HostProbe.timed(.animations) { follow(animator.advance(to: now, reducesMotion: reducesMotion)) }
 
-        let cycle = core.cycle(now: now, reducesMotion: reducesMotion)
+        let cycle = HostProbe.timed(.cycle) { core.cycle(now: now, reducesMotion: reducesMotion) }
 
         for change in cycle.changes {
             states[change.state] = change.value
@@ -104,17 +114,30 @@
         sidebarSlide.pace(now: now)
         follow(animator.advance(to: now, reducesMotion: reducesMotion))
         present()
+        hold()
     }
 
-    /// Presents the state channels on their own, after a render attached new ones.
+    /// Presents the state channels on their own, after a render attached new ones, and holds the clock for what the
+    /// render set moving.
     public func presentStateChannels() {
         collectStateChannels()
         present()
+        hold()
     }
 
-    /// `now`, or the cycle's latest time where `now` stands before it.
+    /// Runs `body` within the toolkit's layout pass of the frame the cycle last ran at: every turn it takes runs at
+    /// that frame's time, so what the pass says moves no animation on.
+    /// Design: docs/design/host/runtime.md#where-a-view-stands
+    public func inLayoutPass(_ body: () -> Void) {
+        let outer = layingOut
+        layingOut = true
+        defer { layingOut = outer }
+        body()
+    }
+
+    /// `now`, or the cycle's latest time where `now` stands before it or a layout pass holds the frame's.
     private func onward(_ now: Double) -> Double {
-        time = max(time, now)
+        if !layingOut || time == -.infinity { time = max(time, now) }
         return time
     }
 
@@ -122,6 +145,7 @@
     public func hold() {
         clock.held = continues
             || animator.isMoving
+            || handPace.isOpen
             || core.cyclesPending
             || presenter?.wantsFrames == true
     }
@@ -152,7 +176,7 @@
     /// Presents the batch in one walk, then answers every finished animation's waiter.
     private func present() {
         if !states.isEmpty || !properties.isEmpty {
-            presenter?.present(states: states, properties: properties)
+            HostProbe.timed(.present) { presenter?.present(states: states, properties: properties) }
         }
 
         states.removeAll(keepingCapacity: true)

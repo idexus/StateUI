@@ -160,6 +160,7 @@
                 try s.settle { try s.held(StepperContract.value, on: stepper) == -25 }
                 s.expect(try s.held(StepperContract.value, on: stepper), -25, "wholly below the value")
                 s.expect(count.wrappedValue, -25)
+                s.turn()
                 s.expect(heard.values, [], "the program's writes are heard by nobody")
             },
             ConformanceCase("aStepIsAsLongAsTheTreeSays", proves: [

@@ -3,42 +3,38 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+import CStateUIAndroid
 
 /// Android's part of the acts every host performs (`HostActPerformer`): the clock and the zones, a question in the
 /// platform's own dialog, a word to TalkBack, the focus and the keyboard, a value kept, and a web view's own acts.
-/// A dialog and a script answer later, under a ticket they hand back: a dialog's counts up from one, a script's
-/// down from minus one.
+/// A dialog and a script answer later, under a ticket they hand back - a number of the host's one count
+/// (`HostNumbers`).
 /// Design: docs/design/platforms/android/runtime.md#acts
 @MainActor
 final class AndroidActToolkit: ActToolkit {
     private let core: CoreLink
-    private let context: JavaObject
-    private let root: JavaObject
-    private let tree: () -> MountedTree
 
-    /// Where a scene's value goes to be kept with the scenes.
-    private let keepSceneValue: (HostActCall) -> Void
+    /// The activity standing now, which shows a dialog, and its root and tree: the process's acts outlive each.
+    private var context: jobject { AndroidRenderer.context }
+    private var root: jobject { AndroidRenderer.shared!.root.reference }
+    private func tree() -> MountedTree { AndroidRenderer.shared!.runtime.tree }
 
     /// The dialogs showing, by ticket, each with what hears its answer.
-    private var dialogs: [Int64: (Bool, String?) -> Void] = [:]
-    private static var nextDialogTicket: Int64 = 1
+    private let dialogs = Numbered<(Result<HostQuestion.Given, ActFailure>) -> Void>()
 
     /// The scripts not answered yet, by ticket.
-    private var scripts: [Int64: HostActCall] = [:]
+    private let scripts = Numbered<HostActCall>()
 
-    /// The next script's ticket: one number across every renderer of the process, below zero so it is never a
-    /// dialog's.
-    private(set) static var nextScriptTicket: Int64 = -1
+    /// The tickets of the scripts waiting for their answer, oldest first.
+    var waitingScripts: [Int64] { scripts.numbers }
 
-    init(
-        core: CoreLink, context: JavaObject, root: JavaObject, tree: @escaping () -> MountedTree,
-        keepSceneValue: @escaping (HostActCall) -> Void
-    ) {
+    init(core: CoreLink) {
         self.core = core
-        self.context = context
-        self.root = root
-        self.tree = tree
-        self.keepSceneValue = keepSceneValue
+    }
+
+    /// Lets go of the dialogs the activity before left unanswered: their questions are asked again.
+    func forgetDialogs() {
+        dialogs.removeAll()
     }
 
     let host = "Android Views"
@@ -63,12 +59,10 @@ final class AndroidActToolkit: ActToolkit {
     }
 
     /// Puts a question to the user in the platform's own dialog; its answer comes back by its ticket.
-    func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
-        let ticket = Self.nextDialogTicket
-        Self.nextDialogTicket += 1
-        dialogs[ticket] = answered
+    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
+        let ticket = dialogs.hold(answered)
         Java.frame {
-            let context = context.reference
+            let context = context
             switch question.kind {
             case .alert:
                 Java.callStatic(
@@ -85,14 +79,15 @@ final class AndroidActToolkit: ActToolkit {
                     JavaAPI.dialogs, JavaAPI.chooseAction, .object(context), .long(ticket),
                     .object(Java.string(question.title ?? "")), .object(question.cancel.flatMap(Java.string)),
                     .object(question.destruction.flatMap(Java.string)),
-                    .object(Java.array(of: JavaAPI.string, question.choices.map(Java.string))))
+                    .object(Java.strings(question.choices)))
             case .prompt:
                 Java.callStatic(
                     JavaAPI.dialogs, JavaAPI.prompt, .object(context), .long(ticket),
                     .object(Java.string(question.title ?? "")), .object(Java.string(question.message ?? "")),
                     .object(Java.string(question.accept)), .object(Java.string(question.cancel ?? "Cancel")),
                     .object(question.placeholder.flatMap(Java.string)),
-                    .int(Int32(question.maximumLength ?? -1)), .int(Self.inputType(question.purpose)),
+                    .int(Int32(question.maximumLength ?? -1)),
+                    .int(question.traits.inputType(password: false, multiLine: false)),
                     .object(Java.string(question.words)))
             }
         }
@@ -100,31 +95,20 @@ final class AndroidActToolkit: ActToolkit {
     }
 
     /// The act under `ticket` was answered: a dialog accepted or not, with the words chosen or typed; or a script's
-    /// value as JSON, said as text (`ScriptAnswer`).
+    /// value as JSON, said as text (`ScriptAnswer`) - one not accepted fails, its page gone before it answered.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
-        if let call = scripts.removeValue(forKey: ticket) {
+        if let call = scripts.take(ticket) {
+            guard accepted else {
+                return core.fail(call, "the page went before the script answered", log: { AndroidRenderer.log.error($0) })
+            }
             return core.reply(call, [ScriptAnswer.text(json: words).propValue])
         }
-        dialogs.removeValue(forKey: ticket)?(accepted, words)
-    }
-
-    /// Android's input type for what a typed answer is for.
-    private static func inputType(_ purpose: InputPurpose) -> Int32 {
-        // InputType's text, number and phone classes, and the variations and flags each purpose asks for.
-        switch purpose {
-        case .numeric: 0x2
-        case .telephone: 0x3
-        case .email: 0x21
-        case .url: 0x11
-        case .plain: 0x8_0001
-        case .chat, .text: 0xC001
-        case .default: 0x1
-        }
+        dialogs.take(ticket)?(.success(HostQuestion.Given(accepted: accepted, words: words)))
     }
 
     func announce(_ words: String) {
         Java.frame {
-            Java.call(root.reference, JavaAPI.announceForAccessibility, .object(Java.string(words)))
+            Java.call(root, JavaAPI.announceForAccessibility, .object(Java.string(words)))
         }
     }
 
@@ -134,7 +118,7 @@ final class AndroidActToolkit: ActToolkit {
     }
 
     func hideOnScreenKeyboard() -> Bool {
-        Java.callStaticBool(JavaAPI.environment, JavaAPI.hideKeyboard, .object(root.reference))
+        Java.callStaticBool(JavaAPI.environment, JavaAPI.hideKeyboard, .object(root))
     }
 
     func focus(_ element: MountedElement) -> Bool? {
@@ -150,8 +134,8 @@ final class AndroidActToolkit: ActToolkit {
 
     func keep(_ call: HostActCall) -> Bool {
         switch call.act {
-        case .persistValue: AndroidPersistence.keep(call, core: core, context: context.reference)
-        case .persistSceneValue: keepSceneValue(call)
+        case .persistValue: AndroidPersistence.keep(call, core: core, context: context)
+        case .persistSceneValue: AndroidRenderer.shared?.keepSceneValue(call)
         default: return false
         }
         return true
@@ -197,10 +181,7 @@ final class AndroidActToolkit: ActToolkit {
 
     /// Keeps a script's `call` waiting for its answer, under the ticket this answers.
     private func waitForScript(_ call: HostActCall) -> Int64 {
-        let ticket = Self.nextScriptTicket
-        Self.nextScriptTicket -= 1
-        scripts[ticket] = call
-        return ticket
+        scripts.hold(call)
     }
 
     func performRegistered(_ call: HostActCall) -> Bool {

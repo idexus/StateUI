@@ -49,7 +49,7 @@ final class PlacesRulesTests: XCTestCase {
     func testALayoutsChildrenTravelOnlyWhereAPatchSentThem() {
         let animator = Animator()
         let motion = LayoutMotion(animator: animator, now: { 0 }, reducesMotion: { false })
-        motion.applicationMotion = .spring(response: 240)
+        motion.applicationMotion = .spring(response: .milliseconds(240))
         let places = TravellingPlaces()
         let child = Placed()
         var values = LayoutValues()

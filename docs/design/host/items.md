@@ -49,8 +49,10 @@ Every render walks the whole tree, so a render a cell would make a scroll
 cost as much as the application is large. The tree builds the entries
 within reach of the cells instead: as many before and after each cell as
 the cells hold, eight at least. A cell coming on screen finds its entry
-built and costs no render; one reaching past the built entries tells the
-tree once, and the render builds a reach at a time. A cell that ends
+built and costs no render; one coming within half a reach of the end of the
+built entries tells the tree, before any cell finds its entry unbuilt, so
+each render of a scroll builds about half a reach - short renders, often,
+rather than long ones a reach apart. A cell that ends
 showing its entry tells nothing: the entry stays built while it is within
 reach, and leaves with the next render once the cells have moved away.
 Cells far apart, after a jump, build around each and nothing between.
@@ -117,3 +119,14 @@ the start of the room, its centre or its end. Nearest leaves an item wholly
 in view where it is; otherwise it moves it the shorter way - to the start
 when it stands before the room, to the end when after it. The scroller keeps
 the place within its reach.
+
+A host that works the place out itself does so from the frames its layout
+holds, and those are estimates for the cells not measured yet. The cells a
+scroll brings into view take their entries a turn later - the tree builds
+them - and a cell measured as its entry comes moves the items after it. So
+the host layer holds the item scrolled to (`ItemsCells.scrollTarget`) until a
+cell shows its own entry and no cell waits for one - the cells near the place
+it was scrolled to may come after a pass, as a browser tells them: the host
+stands it again after every pass that brought entries (`laidOut`), once more
+as the last one comes, and then lets it go. The user moving the list lets it go at once, and so does the next
+scroll; a scroll that glides stands its item again as it stops.

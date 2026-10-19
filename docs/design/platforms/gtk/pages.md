@@ -76,14 +76,20 @@ the next render. The host's own way back is
 the window's (`WindowPresentation.wayBack`): a top page that refuses it - no
 back button - offers none. A page is pushed named as the
 tree names it, or after the application until it does: libadwaita asks every
-page for a title.
+page for a title. The view holds a reference of each navigation page it made
+while the page stands in it, and lets go of one the moment it goes - popped,
+replaced or taken back by the user - libadwaita keeping its own while it shows
+the page going; held longer, the page and every widget in it live on.
 
 ## A split view
 
 A split view is libadwaita's `AdwOverlaySplitView`: the sidebar beside the
-detail, and over it in a window narrower than 400sp - a breakpoint of the
-window's, as GNOME's applications collapse theirs, the window then saying the
-smallest size GNOME's windows keep. Whether the sidebar shows is StateUI's
+detail, and over it in a room narrower than 400sp, as GNOME's applications
+collapse theirs - a breakpoint of an `AdwBreakpointBin` the split stands in,
+which measures the split's own room and goes with it, where a window's would
+gather one for every split the window ever showed. The bin takes no hold of
+its breakpoint and keeps it past its own end, so the split holds it and takes
+it off as it goes. Whether the sidebar shows is StateUI's
 binding: the program's write shows or hides it, and GTK's own change - a click
 beside a sidebar over the detail, a swipe - and the detail's toggle report
 back into it. The split's first room wider than nothing decides, by the host
@@ -113,7 +119,9 @@ colour.
 ## Tabs
 
 A tabbed view is a `GtkStack` of its tabs, each named by its page's title,
-and its `GtkStackSwitcher` - the captions joined in one control - stands at
+in the tree's order - the stack adds a page last alone, so from the first tab
+out of its place each is taken off and added again in turn - and its
+`GtkStackSwitcher` - the captions joined in one control - stands at
 the start of a bar of its own beneath the header bar of the frame the tabbed
 view stands in, painted as the header bar is. The header bar keeps its room
 for the title - the host layer's: tabs on a stack name it by their own
@@ -139,7 +147,10 @@ entries between two separators a section, a submenu a link - each item an
 action of a group the menu hands the widget it stands on, which GTK runs only
 while it is enabled; a submenu out of reach is one whose tracking action is
 not. GNOME's menus show words alone: no picture beside them, no entry marked
-as destroying something.
+as destroying something. GTK finds an item's action by its group's name on
+the widget, so each place a menu stands names its own - a button's menu, a
+context menu, the main menu: two under one name on one widget, a button's
+and its context menu, would run each other's items.
 
 A view's context menu is a `GtkPopoverMenu` on the view's widget, opened where
 the user clicks with the secondary button or holds a finger, at that point; a

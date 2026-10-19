@@ -130,12 +130,12 @@ public enum PropValue: Equatable, Sendable {
         return nil
     }
 
-    /// The number's whole part, when this value is a finite number - what an
-    /// index or a position payload is read with: 2.7 answers 2; text, infinity
-    /// or a number past `Int` answers nil.
+    /// The whole number nearest the number, when this value is a finite number - what
+    /// an index or a position payload is read with, as a carried lane is: 2.6 answers 3;
+    /// text, infinity or a number past `Int` answers nil.
     public var int: Int? {
-        guard case .number(let value) = self, value.isFinite else { return nil }
-        return Int(exactly: value.rounded(.towardZero))
+        guard case .number(let value) = self else { return nil }
+        return Int(nearest: value)
     }
 
     /// True or false, when this value is one - nil for any other kind.
@@ -209,7 +209,7 @@ public typealias EventHandler = @MainActor () async throws -> Void
 /// the event declares them. An event with nothing to say takes an `EventHandler`.
 ///
 ///     TextField("").onTextChanged(gate: .cancelPrevious) { text in try await model.search(text) }
-///     let heard = HostEvents.on(NotesContract.batteryChanged, gate: .none) { level, charging in … }
+///     let heard = HostEvents.on(NotesContract.batteryChanged, gate: .cancelPrevious) { level, _ in try await log(level) }
 public typealias ValueEventHandler<each Value> = @MainActor (repeat each Value) async throws -> Void
 
 /// One element of the UI tree: its type, properties, children and handlers.
@@ -346,6 +346,11 @@ public struct Node {
         events[event, default: []].append(Handler(run: handler, gate: gate))
     }
 
+    /// The same, for a step - a handler that does not await, which passes no gate.
+    mutating func addHandler(_ event: Event, _ handler: @escaping @MainActor () throws -> Void) {
+        events[event, default: []].append(Handler(step: handler))
+    }
+
     /// Takes `handlers` for `event` after any it already has - what is written on a composed view, moved onto
     /// its body.
     mutating func addHandlers(_ event: Event, _ handlers: [Handler]) {
@@ -359,13 +364,13 @@ public struct Node {
         id: String? = nil,
         props: [Prop: PropValue] = [:],
         children: [Node] = [],
-        events: [Event: EventHandler] = [:]
+        events: [Event: @MainActor () throws -> Void] = [:]
     ) {
         self.type = type
         self.id = id
         self.props = props
         self.children = children
-        self.events = events.mapValues { [Handler(run: $0, gate: .none)] }
+        self.events = events.mapValues { [Handler(step: $0)] }
     }
 
     /// A node of an element's own type: how every element's view begins.

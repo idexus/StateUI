@@ -86,11 +86,12 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
         font: NSFont,
         textColor: NSColor,
         tint: NSColor?,
-        alignment: NSTextAlignment,
+        alignment: TextAlignment,
         enabled: Bool,
         open: Bool,
         writeOpen: Bool
     ) {
+        let alignment = NSTextAlignment(alignment, in: userInterfaceLayoutDirection)
         ProgramWrite.perform {
             let write = written.write(items, chosen: selectedIndex, choiceChanged: writeSelection)
             if let choices = write.choices {
@@ -171,7 +172,7 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
         openingScheduled = true
         let opensForTesting = Self.opensMenuForTesting
 
-        DispatchQueue.main.async { [weak self] in
+        Task { @MainActor [weak self] in
             guard let self else { return }
             self.openingScheduled = false
             guard self.requestedOpen, self.window != nil, self.opening.programAsks(open: true, shown: self.menuOpen)

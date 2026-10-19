@@ -70,6 +70,8 @@ final class GTKDriver: HostDriver {
     /// What the driver reaches past GTK, through the host's own entry or record - ✓.
     func byHost(_ ability: String) -> String? {
         if Ability(ability).act == "pressKeys" { return "the shortcut controller's action run, no key event" }
+        if Ability(ability).act == "sweep" { return "the hand handed to the host's entry with its speed, no event" }
+        if Ability(ability).act == "notch" { return "a wheel's notches handed to the host's entry, no event" }
         if Ability(ability).readsATransform { return "the host's own transform: GTK reads back no part of one" }
         if ability.hasPrefix("read background of "), ["Grid", "HStack", "VStack", "ZStack"].contains(Ability(ability).element) {
             return "the brush the host draws the box with: GTK reads back no drawing"
@@ -113,6 +115,7 @@ final class GTKDriver: HostDriver {
         "read windowType of Window": "the scenes the host keeps for the next start",
         "read windowValue of Window": "the scenes the host keeps for the next start",
         "pinch": "the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down",
+        "rotate": "the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down",
         "pickTime": "the clock set at once through the host's own, its minute's wheel telling it; a user moves each",
         "read minimumDate of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
         "read maximumDate of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
@@ -132,6 +135,7 @@ final class GTKDriver: HostDriver {
         clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree {
         written.listen()
+        GTKActToolkit.announcedForTesting = []
         let renderer = GTKRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         self.renderer = renderer
         Self.holdFiles(of: renderer)
@@ -277,6 +281,7 @@ final class GTKDriver: HostDriver {
         case (.contentMode, let image as GTKImageView): return image.aspect.propValue
         case (.text, let check as GTKCheckView): return check.text.propValue
         case (.showsSidebar, let split as GTKSplitView): return split.showsSidebar.propValue
+        case (.sidebarOverlays, let split as GTKSplitView): return split.isCollapsed.propValue
         case (.sidebarBackground, let split as GTKSplitView), (.flyoutBackground, let split as GTKSplitView):
             // The sidebar's class in the place it stands; the other place's colour as the split keeps it.
             guard split.isCollapsed == (property == .flyoutBackground) else {

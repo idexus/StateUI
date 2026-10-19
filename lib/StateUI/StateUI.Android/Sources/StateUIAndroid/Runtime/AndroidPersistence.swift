@@ -24,7 +24,7 @@ enum AndroidPersistence {
     /// The words the preferences keep under `names`, in order; nil for a name they keep nothing under.
     static func words(_ names: [String], context: jobject) -> [String?] {
         Java.frame {
-            let array = Java.array(of: JavaAPI.string, names.map { Java.string($0) })
+            let array = Java.strings(names)
             let read = Java.callStaticObject(JavaAPI.store, JavaAPI.readStore, .object(context), .object(array))
             return read.map { array in
                 (0..<names.count).map { index -> String? in

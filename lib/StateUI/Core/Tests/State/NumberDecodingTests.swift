@@ -24,6 +24,17 @@ final class NumberDecodingTests: XCTestCase {
         XCTAssertTrue(hasComplained("past 2^53"))
     }
 
+    /// 2^53 IS MEASURED THE SAME WHATEVER AN INT'S WIDTH: on the Web an `Int` has 32 bits, none of them past 2^53,
+    /// where shifting one 53 places measured nought and every whole number but nought was said past it.
+    func testTwoToTheFiftyThirdIsMeasuredWhateverTheWidth() {
+        XCTAssertFalse(Int32(1).isPastExactNumbers)
+        XCTAssertFalse(Int32.max.isPastExactNumbers)
+        XCTAssertFalse(Int32.min.isPastExactNumbers)
+        XCTAssertFalse((Int64(1) << 53).isPastExactNumbers)
+        XCTAssertTrue(((Int64(1) << 53) + 1).isPastExactNumbers)
+        XCTAssertTrue(Int64.min.isPastExactNumbers)
+    }
+
     func testAKeptWholeNumberNoIntHoldsComesBackAsNothing() {
         for number in unheld {
             XCTAssertNil(Int(persisted: .number(number)), "\(number) kept on disk")
@@ -66,6 +77,16 @@ final class NumberDecodingTests: XCTestCase {
     func testAnOpacityThatIsNoNumberLetsNothingThrough() {
         XCTAssertEqual(Color("#FF0000").opacity(.nan).light.alpha, 0)
         XCTAssertEqual(Color("#FF0000").opacity(0.5).light.alpha, 128)
+    }
+
+    /// One whole number has one rounding, whichever road it came by: a payload's, a value back from the host and a
+    /// carried state's lane read 2.6 alike.
+    func testAWholeNumberIsRoundedAlikeOnEveryRoad() {
+        for number in [2.4, 2.5, 2.6, -2.6, 0.49] {
+            let lane = Int(carried: .lanes([number]))
+            XCTAssertEqual(Int(propValue: .number(number)), lane, "\(number) back from the host")
+            XCTAssertEqual(PropValue.number(number).int, lane, "\(number) as a payload")
+        }
     }
 
     func testAPayloadNumberNoIntHoldsIsNoWholeNumber() {

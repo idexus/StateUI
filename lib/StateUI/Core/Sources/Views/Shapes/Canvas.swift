@@ -67,12 +67,6 @@ public struct Canvas: ElementView, CanvasProperties {
         onEvent(CanvasContract.pressed, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPressed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPressed(_ handler: @escaping ValueEventHandler<Point>) -> Self {
-        fatalError("unavailable")
-    }
-
     /// It moved while still down, with where it is now - the canvas's own
     /// coordinates again.
     public func onDragged(_ handler: @escaping @MainActor (Point) throws -> Void) -> Self {
@@ -85,12 +79,6 @@ public struct Canvas: ElementView, CanvasProperties {
         onEvent(CanvasContract.dragged, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDragged(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onDragged(_ handler: @escaping ValueEventHandler<Point>) -> Self {
-        fatalError("unavailable")
-    }
-
     /// It was lifted, with where it left off.
     public func onReleased(_ handler: @escaping @MainActor (Point) throws -> Void) -> Self {
         onEvent(CanvasContract.released, handler)
@@ -100,11 +88,5 @@ public struct Canvas: ElementView, CanvasProperties {
     /// again while a run is under way.
     public func onReleased(gate: some Gate, _ handler: @escaping ValueEventHandler<Point>) -> Self {
         onEvent(CanvasContract.released, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onReleased(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onReleased(_ handler: @escaping ValueEventHandler<Point>) -> Self {
-        fatalError("unavailable")
     }
 }

@@ -143,6 +143,8 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
             // Design: docs/design/views/modifiers.md#slot-children
             $0.children.removeAll { $0.type == .buttonMenu }
             $0.children.append(Node(contract: ButtonMenuContract.self, children: entries().map { $0.node }))
+            // Its kind with it: a menu saying none takes no kind an earlier one said.
+            $0.props[ButtonContract.menuKind.token] = nil
         }
         return kind == .automatic ? menu : menu.setValue(ButtonContract.menuKind, kind)
     }
@@ -162,12 +164,6 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
         onEvent(ButtonContract.clicked, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClicked(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onClicked(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
-    }
-
     /// Runs the moment a press begins, before it ends.
     public func onPressed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(ButtonContract.pressed, handler)
@@ -177,12 +173,6 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     /// again while a run is under way.
     public func onPressed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         onEvent(ButtonContract.pressed, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPressed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPressed(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
     }
 
     /// Runs when the press ends, wherever the pointer ends up - unlike
@@ -195,12 +185,6 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     /// again while a run is under way.
     public func onReleased(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         onEvent(ButtonContract.released, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onReleased(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onReleased(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
     }
 }
 
@@ -226,12 +210,6 @@ extension Button {
     /// stands, and no view is rebuilt for it.
     public func iconPosition(_ state: Binding<IconPosition>) -> Modified {
         twin(ButtonContract.iconPosition, by: state)
-    }
-
-    /// `showsMenuArrow` from a state, `$x`: the host sets each new value as it
-    /// stands, and no view is rebuilt for it.
-    public func showsMenuArrow(_ state: Binding<Bool>) -> Modified {
-        twin(ButtonContract.showsMenuArrow, by: state)
     }
 
     /// `iconSpacing` from a state, `$x`: the host animates the property to each

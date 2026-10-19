@@ -106,6 +106,26 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(bare.tree.root?.first(id: .manual("root"))?.tabsStandInWindow, true, "a modal stack's root")
     }
 
+    /// Every tabbed view an arrangement of pages shows - through its pages and the arrangements in them, a sheet's
+    /// own - is what the chrome paints the bars' colours on again; none in a page's content.
+    func testTheTabbedViewsAnArrangementShowsAreFoundThroughItsPages() throws {
+        let tabs = { (id: String) in self.node(id, .tabView, children: [self.node("\(id).page", .page)]) }
+        let runtime = runtime(node("window", .window, children: [
+            node("modal", .modalStack, children: [
+                node("split", .splitView, children: [
+                    tabs("sidebar"),
+                    node("stack", .navigationStack, children: [node("detail", .tabView, children: [tabs("inner")])]),
+                ]),
+                tabs("sheet"),
+            ]),
+        ])) { _ in }
+        let modal = try XCTUnwrap(runtime.tree.root?.first(id: .manual("modal")))
+
+        XCTAssertEqual(
+            modal.tabViewsShown.map(\.id), [.manual("sidebar"), .manual("detail"), .manual("inner"), .manual("sheet")])
+        XCTAssertEqual(try XCTUnwrap(modal.first(id: .manual("sheet"))).tabViewsShown.map(\.id), [.manual("sheet")])
+    }
+
     /// A page's bar says its title; a sidebar's page that says none - itself, or the root of a stack there - shows the
     /// application's name, as a sidebar stands under it; any other page says none.
     func testAnUntitledSidebarShowsTheApplicationsName() throws {
@@ -189,6 +209,12 @@ final class PagesTests: XCTestCase {
         XCTAssertNil(choice.choose(1, of: 3), "the tab shown already")
         XCTAssertNil(choice.choose(5, of: 3), "no such tab")
         XCTAssertEqual(choice.shown, 1)
+
+        // The tabs shrank under a choice: the tab shown before is the one there is, not the one that went.
+        var shrunk = TabChoice()
+        _ = shrunk.request(4)
+        XCTAssertEqual(shrunk.choose(0, of: 3), 2, "the last of the three shown, not the fifth that went")
+        XCTAssertEqual(shrunk.choose(2, of: 3), 0)
     }
 
     /// The tab shown among the tabs there are: the chosen one while it is there, else the last - one answer for the
@@ -206,7 +232,9 @@ final class PagesTests: XCTestCase {
     func testASidebarShowsOnTheFirstWideRoomOnly() {
         var adaptation = SidebarAdaptation()
         XCTAssertFalse(adaptation.room(0, breakpoint: 700, shown: false), "no room yet")
+        XCTAssertFalse(adaptation.decided, "a host still measures the room")
         XCTAssertTrue(adaptation.room(900, breakpoint: 700, shown: false))
+        XCTAssertTrue(adaptation.decided, "a host measures it no more")
         XCTAssertFalse(adaptation.room(900, breakpoint: 700, shown: false), "decided once")
 
         var narrow = SidebarAdaptation()
@@ -242,6 +270,40 @@ final class PagesTests: XCTestCase {
         let page = try XCTUnwrap(runtime.tree.root)
 
         XCTAssertEqual(page.chromeActions.primary.map(\.showsActionWords), [true, false, true, true])
+    }
+
+    /// Choosing a checked entry turns it and clicks it in one transaction of the user's: one render shows both.
+    func testChoosingACheckedEntryRendersOnce() throws {
+        stateUIUseApp(CheckedApplication())
+        let runtime = HostRuntime.still()
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let entry = try XCTUnwrap(runtime.tree.root?.first(type: .menuItem))
+        let renders = runtime.core.tally.renders
+
+        entry.chosen(in: runtime)
+
+        XCTAssertEqual(runtime.core.tally.renders, renders + 1, "the turn and the click render together")
+        XCTAssertEqual(runtime.tree.root?.first(type: .text)?.value(.text), .string("clicks 1, bold true"))
+    }
+
+    /// The back button's words, where the page below says none, are the library's own in the system's language.
+    func testTheBackButtonSpeaksTheSystemsLanguage() throws {
+        let runtime = runtime(node("window", .window, children: [
+            node("stack", .navigationStack, children: [
+                node("home", .page, [.title: .string("Home")]),
+                node("detail", .page, [.title: .string("Detail")]),
+            ]),
+        ])) { _ in }
+        let root = try XCTUnwrap(runtime.tree.root)
+        let english = try XCTUnwrap(HostLocaleInfo(words: ["en", "GB", "en-GB", "Europe/London", "1", "1", "1", "0"]))
+        let polish = try XCTUnwrap(HostLocaleInfo(words: ["pl", "PL", "pl-PL", "Europe/Warsaw", "1", "1", "1", "0"]))
+        defer { runtime.core.setLocaleInfo(english) }
+
+        runtime.core.setLocaleInfo(polish)
+        let chrome = WindowChrome(window: root, arrangement: root.first(id: .manual("stack")))
+
+        XCTAssertEqual(chrome.back?.1, "Wstecz")
     }
 
     /// A page saying it shows no title still names the window; the chrome shows no title for it.
@@ -819,4 +881,20 @@ private final class TabsReading: NativeElement {
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
     func leave() {}
+}
+
+/// A page whose text's context menu holds a checked entry that also counts its clicks.
+private struct CheckedApplication: Application {
+    var body: some Scene { WindowGroup { CheckedPage() } }
+}
+
+private struct CheckedPage: View {
+    @State private var bold = false
+    @State private var clicks = 0
+
+    var body: some View {
+        Text("clicks \(clicks), bold \(bold)").contextMenu {
+            MenuItem("Bold").isOn($bold).onClicked { clicks += 1 }
+        }
+    }
 }

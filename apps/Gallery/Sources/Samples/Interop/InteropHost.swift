@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-#if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
+#if APPKIT || UIKIT || ANDROID || WINUI || GTK || WEB
 /// The host this build of the gallery runs on, as its interop group names it: the one place the group's samples
 /// differ by host, beside each sample's host half - and the language of the relay beneath it, where it has one.
 enum InteropHost {

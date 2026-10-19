@@ -14,7 +14,8 @@ final class AppKitFrameTests: XCTestCase {
     /// Turns the host until `done` holds: its jobs, its pump, and a display frame each turn.
     @MainActor
     private func settle(_ renderer: AppKitRenderer, until done: () -> Bool) {
-        for _ in 0..<150 where !done() {
+        for _ in 0..<150 {
+            guard !done() else { break }
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
             renderer.runtime.pump.turn()
             renderer.displayFrameForTesting()
@@ -62,6 +63,33 @@ final class AppKitFrameTests: XCTestCase {
         settle(renderer) { heard.values.count >= 2 || heard.values.first?[2] == 120 }
 
         XCTAssertEqual(heard.values.first.map { Array($0.prefix(4)) }, [0, 20, 120, 60])
+    }
+
+    /// A view on a sheet says where it stands as the sheet is laid out, before it draws, as on a window: the sheet's
+    /// root is a window's, so what the report changes draws in the same frame.
+    @MainActor
+    func testAViewOnASheetSaysWhereItStandsAsTheSheetIsLaidOut() throws {
+        let heard = Received<[Double]>()
+        let sheets = State(wrappedValue: [1])
+        let renderer = AppKitRenderer.running {
+            ModalStack(sheets.projectedValue) {
+                Text("home")
+            } destination: { _ in
+                VStack {
+                    Rectangle().fill(.steelBlue).width(120).height(60)
+                        .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let sheet = try XCTUnwrap(renderer.windowsForTesting.first?.modals.first?.window?.contentView)
+
+        sheet.layoutSubtreeIfNeeded()
+
+        XCTAssertTrue(sheet is AppKitWindowContentView, "the sheet's root is a window's")
+        XCTAssertEqual(heard.values.first.map { Array($0.prefix(4)) }, [0, 0, 120, 60], "said as it is laid out")
     }
 
     /// A list's scroll moves its rows with no layout: a view in a row says where it stands once the list moved - by

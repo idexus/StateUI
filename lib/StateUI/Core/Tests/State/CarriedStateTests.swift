@@ -474,7 +474,7 @@ final class CarriedStateTests: XCTestCase {
     /// described next.
     func testAJourneyOnAStateNothingWearsAnswersAtOnce() throws {
         let fade = State(wrappedValue: 1.0)
-        let arrival = fade.projectedValue.journey.move(to: 0.1, .eased(400, .cubicOut))
+        let arrival = fade.projectedValue.journey.move(to: 0.1, .eased(.milliseconds(400), .cubicOut))
 
         XCTAssertEqual(arrival.ended, true, "it arrived as it was sent")
         XCTAssertEqual(fade.projectedValue.journey.value, 0.1, "the value is at the target")
@@ -531,47 +531,6 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(node.props[.panYChannel], .number(Double(down.number)))
     }
 
-    // MARK: - The reader
-
-    /// A `ScrollReader` lays an empty scroller over what it holds, as long as
-    /// the room plus how far the run goes beyond it, reporting into the
-    /// state - and hearing the scroller come to rest.
-    func testAScrollReaderReportsIntoItsState() {
-        let across = State(wrappedValue: Point.zero)
-        let renders = Renders()
-
-        func tree() -> Node {
-            ScrollReader(across: 540) { Text("under") }
-                .scrollOffset(across.projectedValue)
-                .onScrollStopped {}
-                .id("reader")
-                .node
-        }
-
-        func find(_ patch: HostPatch, _ match: (HostPatch) -> Bool) -> HostPatch? {
-            if match(patch) { return patch }
-
-            for child in patch.children {
-                if let found = find(child, match) { return found }
-            }
-
-            return nil
-        }
-
-        // The scroller stands once the reader knows its room.
-        let first = renders.render(tree())
-        let room = find(first) { $0.events?[.frameChanged] != nil }?.events?[.frameChanged] ?? -1
-        renders.fire(room, with: [.numbers([0, 0, 300, 200, 0, 0, 0, 0])])
-        let patch = renders.renderFromScratch(tree())
-        let found = find(patch) { $0.type == .scrollView }
-
-        XCTAssertEqual(
-            found?.driven?[.scrollOffset],
-            HostStateBinding(state: across.number, mode: .inOut, kind: .property, laneKind: .number))
-        XCTAssertNotNil(found?.events?[.scrollStopped], "the scroller hears itself come to rest")
-        XCTAssertEqual(found?.props[.orientation]?.enumeration, ScrollOrientation.horizontal.rawValue)
-    }
-
     // MARK: - The law a driven value travels under
 
     /// `.inherited` on a driven value means THE ELEMENT'S own law, and this
@@ -586,12 +545,12 @@ final class CarriedStateTests: XCTestCase {
         let fade = State(wrappedValue: 1.0)
         let renders = Renders()
 
-        renders.render(Text("x").motion(.spring(response: 450, damping: 0.7))
+        renders.render(Text("x").motion(.spring(response: .milliseconds(450), damping: 0.7))
             .opacity(fade.projectedValue).id("one").node)
 
         XCTAssertEqual(
             standing(fade.number, as: JourneyLanes<Double>.self)?.motion,
-            .spring(response: 450, damping: 0.7))
+            .spring(response: .milliseconds(450), damping: 0.7))
     }
 
     /// And the IMAGE goes on saying what the author wrote. `.inherited` is a
@@ -612,14 +571,14 @@ final class CarriedStateTests: XCTestCase {
         let fade = State(wrappedValue: 1.0)
         let renders = Renders()
 
-        renders.render(Text("x").motion(.eased(90, .linear))
+        renders.render(Text("x").motion(.eased(.milliseconds(90), .linear))
             .opacity(fade.projectedValue).id("one").node)
-        renders.render(Text("x").motion(.eased(700, .cubicIn))
+        renders.render(Text("x").motion(.eased(.milliseconds(700), .cubicIn))
             .opacity(fade.projectedValue).id("one").node)
 
         XCTAssertEqual(
             standing(fade.number, as: JourneyLanes<Double>.self)?.motion,
-            .eased(700, .cubicIn))
+            .eased(.milliseconds(700), .cubicIn))
     }
 
     /// A rule naming COLOURS answers a driven colour, which the property alone
@@ -629,12 +588,12 @@ final class CarriedStateTests: XCTestCase {
         let tint = State(wrappedValue: Color("#102030"))
         let renders = Renders()
 
-        renders.render(Text("x").motion(.none).motion(.eased(640, .cubicIn), .color)
+        renders.render(Text("x").motion(.none).motion(.eased(.milliseconds(640), .cubicIn), .color)
             .background(tint.projectedValue).id("one").node)
 
         XCTAssertEqual(
             standing(tint.number, as: JourneyLanes<Color>.self)?.motion,
-            .eased(640, .cubicIn))
+            .eased(.milliseconds(640), .cubicIn))
     }
 
     /// A value NO element drives holds `.inherited` as its law - there being

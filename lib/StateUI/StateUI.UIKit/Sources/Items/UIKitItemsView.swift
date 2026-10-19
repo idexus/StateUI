@@ -14,13 +14,15 @@ import UIKit
 final class UIKitItemsView: UIView, UICollectionViewDelegate {
     let cells: ItemsCells
     private(set) var collection: UICollectionView
-    private var source: UICollectionViewDiffableDataSource<Int, String>!
+    private var source: UICollectionViewDiffableDataSource<String, String>!
     private var layout = ItemsLayout.list()
     private var mode = SelectionMode.none
 
     /// Whether the layout stands the list's own header and footer - which UIKit fixes as the layout is made.
     private var framed = (header: false, footer: false)
 
+    /// Whether each group stands a header and a footer, as last applied.
+    private var groupsFramed: [Bool] = []
 
     /// Whether the motion of a scroll the tree asks for is left out.
     private let reducesMotion: () -> Bool
@@ -76,15 +78,21 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
         select(cells.selected)
     }
 
-    /// The identities as UIKit's snapshot, one section a group; a header or a footer is the section's own.
+    /// The identities as UIKit's snapshot, one section a group known by its name; a header or a footer is the
+    /// section's own.
     private func applyEntries(_ changes: ItemsChanges) {
-        var snapshot = NSDiffableDataSourceSnapshot<Int, String>()
-        for (index, section) in cells.entries.sections.enumerated() {
-            snapshot.appendSections([index])
-            snapshot.appendItems(section.items, toSection: index)
+        var snapshot = NSDiffableDataSourceSnapshot<String, String>()
+        for section in cells.entries.sections {
+            snapshot.appendSections([section.identity])
+            snapshot.appendItems(section.items, toSection: section.identity)
         }
-        // A header or a footer the tree added or took away is a change of the layout's shape.
-        collection.collectionViewLayout.invalidateLayout()
+        // A group's header or footer added or taken away changes the layout's shape; nothing else drops what the
+        // layout measured. Design: docs/design/platforms/uikit/items.md#the-layout
+        let groupsFramed = cells.entries.sections.flatMap { [$0.header != nil, $0.footer != nil] }
+        if groupsFramed != self.groupsFramed {
+            self.groupsFramed = groupsFramed
+            collection.collectionViewLayout.invalidateLayout()
+        }
         source.apply(snapshot, animatingDifferences: !changes.isEmpty && !reducesMotion())
     }
 
@@ -99,9 +107,11 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
         }
     }
 
-    /// The tree's entries changed: every cell shows the subtree its entry has now (`ItemsCells.childrenChanged`).
+    /// The tree's entries changed: every cell shows the subtree its entry has now (`ItemsCells.childrenChanged`), and
+    /// the item the program scrolled to stands again from the cells measured.
     func childrenChanged() {
         cells.childrenChanged()
+        settle()
     }
 
     /// An entry's size would change: the cell holding it is measured again - none, for an entry still on its way
@@ -114,11 +124,11 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
 
     // MARK: - The cells
 
-    private func makeSource() -> UICollectionViewDiffableDataSource<Int, String> {
+    private func makeSource() -> UICollectionViewDiffableDataSource<String, String> {
         let cell = UICollectionView.CellRegistration<UIKitItemCell, String> { [weak self] cell, _, identity in
             self?.hold(identity, in: cell.holding)
         }
-        let source = UICollectionViewDiffableDataSource<Int, String>(collectionView: collection) {
+        let source = UICollectionViewDiffableDataSource<String, String>(collectionView: collection) {
             collection, indexPath, identity in
             collection.dequeueConfiguredReusableCell(using: cell, for: indexPath, item: identity)
         }
@@ -227,12 +237,49 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
     // MARK: - Acts
 
     /// Scrolls until the item of `identity` stands where `anchor` says, by the host layer's rule
-    /// (`ScrollAnchor.place`), within the room the collection's insets leave and within its reach.
-    /// Design: docs/design/host/items.md#scrolling-to-an-item
+    /// (`ScrollAnchor.place`), within the room the collection's insets leave and within its reach - gliding there
+    /// unless the user asks for less motion.
+    /// Design: docs/design/platforms/uikit/items.md#scrolling-to-an-item
     func scroll(to identity: String, anchor: ScrollAnchor) {
-        guard let indexPath = source.indexPath(for: identity),
+        cells.scroll(to: identity, anchor: anchor)
+        gliding = false
+        guard reducesMotion() else {
+            gliding = stand(ItemsScrollTarget(identity: identity, anchor: anchor), animated: true)
+            return
+        }
+        settle()
+    }
+
+    /// Stands the item the program scrolled to, lays out what that brings into view, and stands it again from the
+    /// cells measured - and so after every pass that brings cells their entries, while the host layer holds it.
+    /// Design: docs/design/platforms/uikit/items.md#scrolling-to-an-item
+    private func settle() {
+        guard !gliding, let target = cells.scrollTarget else { return }
+        stand(target, animated: false)
+        collection.layoutIfNeeded()
+        if let target = cells.laidOut() { stand(target, animated: false) }
+    }
+
+    /// Whether a scroll the program asked for glides now, which stands its item again as it stops.
+    private var gliding = false
+
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        gliding = false
+        cells.userScrolled()
+    }
+
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        gliding = false
+        settle()
+    }
+
+    /// Stands `target` where its anchor says from the frames the layout holds now; whether the collection moved.
+    @discardableResult
+    private func stand(_ target: ItemsScrollTarget, animated: Bool) -> Bool {
+        let anchor = target.anchor
+        guard let indexPath = source.indexPath(for: target.identity),
               let item = collection.layoutAttributesForItem(at: indexPath)?.frame
-        else { return }
+        else { return false }
         let across = layout.isAcross
         let insets = collection.adjustedContentInset
         let (before, after) = across ? (insets.left, insets.right) : (insets.top, insets.bottom)
@@ -241,11 +288,13 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
             ? (item.minX, item.width, bounds.width, size.width, standing.x)
             : (item.minY, item.height, bounds.height, size.height, standing.y)
         let room = side - before - after
-        guard let place = anchor.place(of: start, length: length, in: room, at: now + before) else { return }
+        guard let place = anchor.place(of: start, length: length, in: room, at: now + before) else { return false }
         let offset = min(max(-before, place - before), max(-before, content + after - side))
         var point = collection.contentOffset
         if across { point.x = offset } else { point.y = offset }
-        collection.setContentOffset(point, animated: !reducesMotion())
+        guard point != collection.contentOffset else { return false }
+        collection.setContentOffset(point, animated: animated)
+        return true
     }
 
     // MARK: - For the tests

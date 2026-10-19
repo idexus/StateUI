@@ -94,7 +94,9 @@ What a shortcut reaches is decided once, in the host layer
 (`KeyboardShortcuts`): the elements it acts on are buttons, bars' items and
 the entries of a menu bar, standing in sight - shown, on the top page of a
 stack, the chosen tab, the sheet over the others - and enabled; the first in
-reading order takes a pressed one. A shortcut two elements in sight state in
+reading order takes a pressed one. A bar or a menu written on an arrangement
+stands in its slots, apart from its pages, and in sight with the arrangement
+whichever page it shows - the chrome shows its items, so their shortcuts act. A shortcut two elements in sight state in
 one window is said once, as the patch stating it is applied, since which acts
 is then not the application's choice. A pressed shortcut clicks a button and
 chooses an item as the user choosing it does (`MountedElement.chosen`).

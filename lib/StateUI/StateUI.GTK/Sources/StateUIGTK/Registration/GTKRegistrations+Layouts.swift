@@ -48,6 +48,16 @@ extension GTKRegistrations {
             layout.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
+        // A layout engine stands on the ZStack: its children where its run of placements puts them.
+        registry.add(LayoutEngineContract.self, create: { _ in
+            let layout = GTKZStackView()
+            layout.engine = true
+            return layout
+        }) { layout in
+            layout.applies(boxMembers) { view, values in applyBox(view, values) }
+            layout.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
+        }
+
         // Where the user moves it is reported by the element, on the display's frames.
         // Design: docs/design/platforms/gtk/layout.md#scrolling
         registry.add(ScrollViewContract.self, create: { _ in GTKScrollView() }) { scroll in

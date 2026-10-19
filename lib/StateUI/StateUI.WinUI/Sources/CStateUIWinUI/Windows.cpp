@@ -39,26 +39,34 @@ namespace {
             : thin(thin), opacity(opacity), tintOpacity(tintOpacity), argb(argb) {}
 
         void OnTargetConnected(ICompositionSupportsSystemBackdrop const &target, xaml::XamlRoot const &root) {
-            SystemBackdropT::OnTargetConnected(target, root);
-            controller = backdrops::DesktopAcrylicController();
-            controller.Kind(thin ? backdrops::DesktopAcrylicKind::Thin : backdrops::DesktopAcrylicKind::Base);
-            // Every colour written: a controller given one value keeps none of the theme's own.
-            auto colour = winrt::Windows::UI::Color{255, static_cast<uint8_t>(argb >> 16),
-                static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)};
-            controller.TintColor(colour);
-            controller.TintOpacity(tintOpacity);
-            controller.LuminosityOpacity(opacity);
-            controller.FallbackColor(colour);
-            controller.SetSystemBackdropConfiguration(GetDefaultSystemBackdropConfiguration(target, root));
-            controller.AddSystemBackdropTarget(target);
+            try {
+                SystemBackdropT::OnTargetConnected(target, root);
+                controller = backdrops::DesktopAcrylicController();
+                controller.Kind(thin ? backdrops::DesktopAcrylicKind::Thin : backdrops::DesktopAcrylicKind::Base);
+                // Every colour written: a controller given one value keeps none of the theme's own.
+                auto colour = winrt::Windows::UI::Color{255, static_cast<uint8_t>(argb >> 16),
+                    static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)};
+                controller.TintColor(colour);
+                controller.TintOpacity(tintOpacity);
+                controller.LuminosityOpacity(opacity);
+                controller.FallbackColor(colour);
+                controller.SetSystemBackdropConfiguration(GetDefaultSystemBackdropConfiguration(target, root));
+                controller.AddSystemBackdropTarget(target);
+            } catch (...) {
+                report("connecting a window's acrylic");
+            }
         }
 
         void OnTargetDisconnected(ICompositionSupportsSystemBackdrop const &target) {
-            SystemBackdropT::OnTargetDisconnected(target);
-            if (!controller) return;
-            controller.RemoveSystemBackdropTarget(target);
-            controller.Close();
-            controller = nullptr;
+            try {
+                SystemBackdropT::OnTargetDisconnected(target);
+                if (!controller) return;
+                controller.RemoveSystemBackdropTarget(target);
+                controller.Close();
+                controller = nullptr;
+            } catch (...) {
+                report("disconnecting a window's acrylic");
+            }
         }
 
         bool const thin;
@@ -469,12 +477,30 @@ extern "C" bool stateui_winui_window_background(StateUIObjectRef handle, uint32_
     }
 }
 
+namespace stateui {
+    xaml::ElementTheme elementTheme(int32_t scheme) {
+        switch (static_cast<StateUIColorScheme>(scheme)) {
+        case StateUIColorSchemeSystem: return xaml::ElementTheme::Default;
+        case StateUIColorSchemeLight: return xaml::ElementTheme::Light;
+        case StateUIColorSchemeDark: return xaml::ElementTheme::Dark;
+        }
+        return xaml::ElementTheme::Default;
+    }
+
+    int32_t colorScheme(xaml::ElementTheme theme) {
+        switch (theme) {
+        case xaml::ElementTheme::Light: return StateUIColorSchemeLight;
+        case xaml::ElementTheme::Dark: return StateUIColorSchemeDark;
+        default: return StateUIColorSchemeSystem;
+        }
+    }
+}
+
 extern "C" void stateui_winui_window_set_theme(StateUIObjectRef handle, int32_t scheme) {
     try {
         auto root = borrow<xaml::Window>(handle).Content().try_as<xaml::FrameworkElement>();
         if (!root) return;
-        root.RequestedTheme(scheme == 1 ? xaml::ElementTheme::Light
-                            : scheme == 2 ? xaml::ElementTheme::Dark : xaml::ElementTheme::Default);
+        root.RequestedTheme(elementTheme(scheme));
     } catch (...) {
         report("showing a window in a theme");
     }
@@ -483,10 +509,10 @@ extern "C" void stateui_winui_window_set_theme(StateUIObjectRef handle, int32_t 
 extern "C" int32_t stateui_winui_window_actual_theme(StateUIObjectRef handle) {
     try {
         auto root = borrow<xaml::Window>(handle).Content().try_as<xaml::FrameworkElement>();
-        return root && root.ActualTheme() == xaml::ElementTheme::Dark ? 2 : 1;
+        return root && root.ActualTheme() == xaml::ElementTheme::Dark ? StateUIColorSchemeDark : StateUIColorSchemeLight;
     } catch (...) {
         report("reading a window's theme");
-        return 1;
+        return StateUIColorSchemeLight;
     }
 }
 

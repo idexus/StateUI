@@ -172,11 +172,13 @@ final class GTKButtonView: GTKView {
             if let held { held.show(menu) } else { held = GTKContextMenu(menu, on: widget, heldByMouse: true) }
         case .none: break
         }
-        gtk_widget_insert_action_group(widget, GTKMenu.actionGroup, OpaquePointer(menu.actions))
+        gtk_widget_insert_action_group(widget, menu.group, OpaquePointer(menu.actions))
     }
 
-    /// The menu a held button opens, where it is held or clicked with the secondary button.
-    private var held: GTKContextMenu?
+    /// The menu a held button opens, where it is held or clicked with the secondary button; one let go is taken off.
+    private var held: GTKContextMenu? {
+        didSet { if held !== oldValue { oldValue?.remove() } }
+    }
 
     /// Whether a menu button shows the arrow saying its click opens the menu.
     var showsArrow: Bool {
@@ -340,6 +342,7 @@ final class GTKButtonView: GTKView {
 
     override func detach() {
         super.detach()
+        held = nil
         (onClicked, onPressed, onReleased) = (nil, nil, nil)
     }
 }

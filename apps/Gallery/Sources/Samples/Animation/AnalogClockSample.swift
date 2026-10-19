@@ -128,9 +128,9 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                     let toMinute = atMinute + (minute - atMinute).forwardTurn
                     let toHour = atHour + (hour - atHour).forwardTurn
 
-                    let s = $sAngle.journey.move(to: toSecond, .eased(260, .backOut))
-                    let m = $mAngle.journey.move(to: toMinute, .eased(300, .cubicOut))
-                    let h = $hAngle.journey.move(to: toHour, .eased(300, .cubicOut))
+                    let s = $sAngle.journey.move(to: toSecond, .eased(.milliseconds(260), .backOut))
+                    let m = $mAngle.journey.move(to: toMinute, .eased(.milliseconds(300), .cubicOut))
+                    let h = $hAngle.journey.move(to: toHour, .eased(.milliseconds(300), .cubicOut))
                     try await s.arrived()
                     try await m.arrived()
                     try await h.arrived()

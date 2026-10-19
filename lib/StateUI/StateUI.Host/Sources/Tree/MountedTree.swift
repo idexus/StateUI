@@ -5,8 +5,10 @@
 
 /// What presenting an element on a frame asks of the elements around it.
 @_spi(Host) public struct FrameImpact: Equatable, Sendable {
-    /// The element's own presentation changed.
-    public var content: Bool
+    /// The element arranges its children again: a value moved that is more than its own run of places, which its
+    /// presentation puts.
+    /// Design: docs/design/host/tree.md#a-frame-arranges-what-moved
+    public var arrangesChildren: Bool
 
     /// The element's place in its parent changed, so the parent arranges again.
     public var arrangement: Bool
@@ -16,8 +18,8 @@
     public var windowChrome: Bool
 
     /// An impact of the parts named.
-    public init(content: Bool = false, arrangement: Bool = false, windowChrome: Bool = false) {
-        self.content = content
+    public init(arrangesChildren: Bool = false, arrangement: Bool = false, windowChrome: Bool = false) {
+        self.arrangesChildren = arrangesChildren
         self.arrangement = arrangement
         self.windowChrome = windowChrome
     }
@@ -28,7 +30,7 @@
     /// What either impact asks.
     public func union(_ other: FrameImpact) -> FrameImpact {
         FrameImpact(
-            content: content || other.content,
+            arrangesChildren: arrangesChildren || other.arrangesChildren,
             arrangement: arrangement || other.arrangement,
             windowChrome: windowChrome || other.windowChrome)
     }
@@ -114,6 +116,25 @@
     private let reducesMotion: () -> Bool
     let makeNative: (MountedElement) -> any NativeElement
     private var nextMount: UInt64 = 0
+
+    /// Every element mounted, by its mount, and the elements presenting each state a frame carries, by its number:
+    /// what a frame presents, with no walk of the tree.
+    /// Design: docs/design/host/runtime.md#one-frame
+    private var byMount: [UInt64: Held] = [:]
+    private var presenters: [Int32: Set<UInt64>] = [:]
+
+    /// How many elements frames have visited, an element a visit: what says a frame costs what it touches, however
+    /// large the tree.
+    var frameVisits = 0
+
+    /// Whether the patches applied since the last take changed what the windows' chrome is made of.
+    /// Design: docs/design/host/pages.md#a-render-that-touches-the-chrome
+    var chromeTouched = false
+
+    /// An element held weakly: an index never keeps one the tree let go.
+    private struct Held {
+        weak var element: MountedElement?
+    }
     private var patchTime: Double?
     private(set) var languageDirection: LayoutDirection?
     private var patchReducesMotion: Bool?
@@ -180,6 +201,13 @@
         if let root { KeyboardShortcuts.complainOfRepeats(in: root, after: patch) }
     }
 
+    /// Whether the patches applied since the last take changed what the windows' chrome is made of; forgotten as
+    /// it is taken.
+    public func takeChromeTouched() -> Bool {
+        defer { chromeTouched = false }
+        return chromeTouched
+    }
+
     /// Lays the whole tree out again where the language's direction turned since the tree last followed it.
     /// Design: docs/design/host/layout.md#right-to-left
     public func followTheLanguagesDirection() {
@@ -189,11 +217,38 @@
         root?.directionTurned(arrangingItself: true)
     }
 
-    /// Presents one frame's batch in one walk of the tree, every write in it the program's.
+    /// Presents one frame's batch to the elements it touched - found by their mount and by the states they present -
+    /// deepest first, every write in it the program's.
     /// Design: docs/design/host/patches.md#program-write
     @discardableResult
     public func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) -> FrameImpact {
-        ProgramWrite.perform { root?.applyFrame(states: states, properties: properties) ?? .none }
+        ProgramWrite.perform {
+            var touched = Set(properties.keys)
+            for state in states.keys { touched.formUnion(presenters[state] ?? []) }
+            return MountedElement.presentFrame(
+                touched.sorted().compactMap { byMount[$0]?.element }, states: states, properties: properties)
+        }
+    }
+
+    /// `element` is mounted: a frame finds it by its mount.
+    func mounted(_ element: MountedElement) {
+        byMount[element.mount] = Held(element: element)
+    }
+
+    /// `element` presents `states` now rather than `before`, the states its bound properties take a frame's values
+    /// from.
+    func presents(_ element: MountedElement, _ states: [Int32], before: [Int32]) {
+        for state in before {
+            presenters[state]?.remove(element.mount)
+            if presenters[state]?.isEmpty == true { presenters[state] = nil }
+        }
+        for state in states { presenters[state, default: []].insert(element.mount) }
+    }
+
+    /// `element` leaves, with the states it presented: no frame finds it again.
+    func unmounted(_ element: MountedElement, presenting states: [Int32]) {
+        byMount[element.mount] = nil
+        presents(element, [], before: states)
     }
 
     /// Starts, retargets or cuts short the animation of `property` on the element `mount`.
@@ -224,7 +279,8 @@
     }
 
     func presentedValue(for binding: HostStateBinding, from carried: HostStateValue) -> HostStateValue {
-        stateChannels.presentedValue(for: binding, from: carried, now: now(), reducesMotion: reducesMotion())
+        stateChannels.presentedValue(
+            for: binding, from: carried, now: patchTime ?? now(), reducesMotion: patchReducesMotion ?? reducesMotion())
     }
 
     func allocateMount() -> UInt64 {

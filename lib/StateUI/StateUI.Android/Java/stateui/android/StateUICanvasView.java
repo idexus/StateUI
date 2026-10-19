@@ -23,14 +23,20 @@ import java.util.ArrayDeque;
  */
 final class StateUICanvasView extends View {
     /** The instructions' kinds, as StateUI numbers them. */
-    private static final int FILL_COLOR = 0, STROKE_COLOR = 1, TEXT_COLOR = 2, STROKE_WIDTH = 3, FONT_SIZE = 4,
-            ALPHA = 5, DRAW_LINE = 6, DRAW_RECTANGLE = 7, DRAW_ROUNDED_RECTANGLE = 8, DRAW_ELLIPSE = 9,
-            DRAW_PATH = 11, FILL_RECTANGLE = 12, FILL_ROUNDED_RECTANGLE = 13, FILL_ELLIPSE = 14,
-            FILL_PATH = 16, DRAW_TEXT = 17, TRANSLATE = 18, ROTATE = 19, SCALE = 20, SAVE = 21,
-            RESTORE = 22;
+    // Swift: HostDrawing.Kind
+    private static final int FILL_COLOR = 0, STROKE_COLOR = 1, TEXT_COLOR = 2, LINE_WIDTH = 3, FONT_SIZE = 4,
+            OPACITY = 5, STROKE_LINE = 6, STROKE_RECTANGLE = 7, STROKE_ROUNDED_RECTANGLE = 8, STROKE_ELLIPSE = 9,
+            STROKE_PATH = 11, FILL_RECTANGLE = 12, FILL_ROUNDED_RECTANGLE = 13, FILL_ELLIPSE = 14,
+            FILL_PATH = 16, TEXT = 17, TRANSLATE = 18, ROTATE = 19, SCALE = 20, SAVE_STATE = 21,
+            RESTORE_STATE = 22;
 
     /** A path command's kinds, as the Swift host numbers them, each followed by its points. */
-    private static final int MOVE = 0, LINE = 1, CUBIC = 2, QUADRATIC = 3;
+    /** A finger's touch on the canvas, as the Swift host numbers it. */
+    // Swift: AndroidCanvasTouch
+    private static final int PRESSED = 0, DRAGGED = 1, RELEASED = 2;
+
+    // Swift: HostCurveCommand.Kind
+    private static final int MOVE = 0, LINE = 1, CUBIC = 2, QUADRATIC = 3, CLOSE = 4;
 
     private final long view;
     private final float density;
@@ -106,22 +112,22 @@ final class StateUICanvasView extends View {
                 case FILL_COLOR: state.fill = ints[at++]; break;
                 case STROKE_COLOR: state.stroke = ints[at++]; break;
                 case TEXT_COLOR: state.text = ints[at++]; break;
-                case STROKE_WIDTH: state.strokeWidth = Math.max(0, numbers[number++]); break;
+                case LINE_WIDTH: state.strokeWidth = Math.max(0, numbers[number++]); break;
                 case FONT_SIZE: state.fontSize = Math.max(0, numbers[number++]); break;
-                case ALPHA: state.alpha = Math.min(Math.max(numbers[number++], 0), 1); break;
-                case DRAW_LINE:
+                case OPACITY: state.alpha = Math.min(Math.max(numbers[number++], 0), 1); break;
+                case STROKE_LINE:
                     if (stroking(state)) {
                         canvas.drawLine(numbers[number], numbers[number + 1], numbers[number + 2], numbers[number + 3], paint);
                     }
                     number += 4;
                     break;
-                case DRAW_RECTANGLE: case FILL_RECTANGLE:
+                case STROKE_RECTANGLE: case FILL_RECTANGLE:
                     box.set(numbers[number], numbers[number + 1],
                             numbers[number] + numbers[number + 2], numbers[number + 1] + numbers[number + 3]);
                     number += 4;
                     if (kind == FILL_RECTANGLE ? filling(state) : stroking(state)) canvas.drawRect(box, paint);
                     break;
-                case DRAW_ROUNDED_RECTANGLE: case FILL_ROUNDED_RECTANGLE: {
+                case STROKE_ROUNDED_RECTANGLE: case FILL_ROUNDED_RECTANGLE: {
                     box.set(numbers[number], numbers[number + 1],
                             numbers[number] + numbers[number + 2], numbers[number + 1] + numbers[number + 3]);
                     float radius = Math.max(0, numbers[number + 4]);
@@ -131,19 +137,19 @@ final class StateUICanvasView extends View {
                     }
                     break;
                 }
-                case DRAW_ELLIPSE: case FILL_ELLIPSE:
+                case STROKE_ELLIPSE: case FILL_ELLIPSE:
                     box.set(numbers[number], numbers[number + 1],
                             numbers[number] + numbers[number + 2], numbers[number + 1] + numbers[number + 3]);
                     number += 4;
                     if (kind == FILL_ELLIPSE ? filling(state) : stroking(state)) canvas.drawOval(box, paint);
                     break;
-                case DRAW_PATH: case FILL_PATH: {
+                case STROKE_PATH: case FILL_PATH: {
                     int count = ints[at++];
                     number = path(number, count);
                     if (kind == FILL_PATH ? filling(state) : stroking(state)) canvas.drawPath(path, paint);
                     break;
                 }
-                case DRAW_TEXT: {
+                case TEXT: {
                     box.set(numbers[number], numbers[number + 1],
                             numbers[number] + numbers[number + 2], numbers[number + 1] + numbers[number + 3]);
                     number += 4;
@@ -155,11 +161,11 @@ final class StateUICanvasView extends View {
                 case TRANSLATE: canvas.translate(numbers[number], numbers[number + 1]); number += 2; break;
                 case ROTATE: canvas.rotate(numbers[number++]); break;
                 case SCALE: canvas.scale(numbers[number], numbers[number + 1]); number += 2; break;
-                case SAVE:
+                case SAVE_STATE:
                     saved.push(state.copy());
                     canvas.save();
                     break;
-                case RESTORE:
+                case RESTORE_STATE:
                     if (!saved.isEmpty()) {
                         state = saved.pop();
                         canvas.restore();
@@ -202,7 +208,7 @@ final class StateUICanvasView extends View {
                     path.quadTo(numbers[number + 1], numbers[number + 2], numbers[number + 3], numbers[number + 4]);
                     number += 5;
                     break;
-                default: path.close(); number += 1;
+                case CLOSE: default: path.close(); number += 1;
             }
         }
         return number;
@@ -234,10 +240,10 @@ final class StateUICanvasView extends View {
         float x = event.getX() / density;
         float y = event.getY() / density;
         switch (event.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN: StateUIHost.canvasTouched(view, 0, x, y); return true;
-            case MotionEvent.ACTION_MOVE: StateUIHost.canvasTouched(view, 1, x, y); return true;
+            case MotionEvent.ACTION_DOWN: StateUIHost.canvasTouched(view, PRESSED, x, y); return true;
+            case MotionEvent.ACTION_MOVE: StateUIHost.canvasTouched(view, DRAGGED, x, y); return true;
             case MotionEvent.ACTION_UP: case MotionEvent.ACTION_CANCEL:
-                StateUIHost.canvasTouched(view, 2, x, y);
+                StateUIHost.canvasTouched(view, RELEASED, x, y);
                 return true;
             default: return super.onTouchEvent(event);
         }

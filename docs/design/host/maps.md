@@ -22,7 +22,8 @@ percent of the radius.
 ## A tap on the map
 
 A tap on the map itself is the map's `mapClicked`; one on a marker, or on what
-a marker opened, is the marker's. The host hears the map's taps with a recognizer
+a marker opened, is the marker's. A double tap is the map's own zoom, no two
+taps on it: the tap waits for a double tap to fail. The host hears the map's taps with a recognizer
 of its own, beside the engine's, and what decides whether a tap is the
 map's is a delegate apart from the map: MapKit's map is the delegate of its
 own recognizers, and a map answering a recognizer's question itself would

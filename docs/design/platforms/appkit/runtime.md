@@ -58,9 +58,10 @@ minimizing and coming back - and the application's being hidden settle into
 the phases of the application, its scenes and its windows by the host
 layer's rule ([the application's
 phase](../../host/runtime.md#the-applications-phase)): each tells whether the
-window stands minimized and whether it holds the keyboard. Another
-application in front takes the keyboard from every window, which is all
-AppKit tells of it. A window its scene hides is ordered out, and ordered in
+window stands minimized and whether it is the main window - the one the user
+works in. A sheet, an alert or a file panel over it takes the keyboard and
+never the main window, so it deactivates nothing; another application in front
+takes the main window from every window, which is all AppKit tells of it. A window its scene hides is ordered out, and ordered in
 again without the keyboard. A window the user closes is heard by it and its
 scene; the application ending tells every window. *File ▸ New Window*, and the
 Dock with no window open, open one more window of the group with no name.

@@ -18,9 +18,12 @@ look: it is what executing the contract DOES.
 A case asserts effects of executing the contract: a state written, a handler
 heard once or not at all, which choice, tab or page is selected or shown, a
 value kept inside its range, words cut to their bound, what holds the focus,
-what a press reaches, what is let go. Never a pixel, a colour, a font, a
-native widget's kind or an exact place: those belong to the host's own tests,
-beside the native API they prove.
+what a press reaches, what is let go. Never a look the platform decides - a
+native widget's pixels, its font, its kind, where the toolkit puts its own
+parts: those belong to the host's own tests, beside the native API they
+prove. What StateUI decides itself a case reads as an effect: the place its
+layout gives a view, and the colours of what it draws, which hold no native
+value to read ([a drawing read by its colours](#a-drawing-read-by-its-colours)).
 
 ## A case
 
@@ -33,6 +36,13 @@ can never pass on a host that does not claim the member, and its verdict is
 on what it proves alone. A case proving a member the host's family does not
 plan says so and does not run; one proving or needing a member the host lacks
 names the gap. A case never asks which host it runs on.
+
+A case proves its own family's contract alone - an element's family the
+element and its own members, a tier's family its members on their wearers;
+another contract's member it leans on, a text whose words show a button's
+click, is what it needs. A verdict proved in another family's file would
+outlive that family's revision: a fix there would leave the old ❌ standing in
+the cell. `ContractCompletenessTests` holds the rule.
 
 ## One family per contract
 
@@ -151,8 +161,16 @@ A case reaches its host only through its session: the page it starts, the
 elements it finds, the acts it performs, the values it reads, and its
 expectations. A session waits for an effect by stepping the host until it
 holds, at most 150 steps, and sees that nothing happens by one turn of the
-pump alone. Motion is driven by a test clock and display frames, never by
+pump alone. A wait that runs out fails the case: what a case waits for
+comes, else the case proved nothing - a shape never drawn would pass "it
+moved away from where it stood". Motion is driven by a test clock and display frames, never by
 the time a machine takes.
+
+A wait, a session's or a test's own, asks once a step and stops as it holds:
+`for _ in 0..<n { guard waiting else { break }; step() }`. Under a `where`
+clause the loop skips its step but goes on asking to its bound, and a
+question that acts - a run of the main loop, a browser asked - then takes
+the whole bound; `WaitTests` refuses the spelling.
 
 What another process does is waited for by the clock: a web view's page
 loads in its engine's own process, as fast as the machine lets it, and on a
@@ -171,8 +189,7 @@ and `expect(_:shows:)` take each channel within four steps of the colour;
 nothing drawn at the point shows no colour. A colour read is a `ShownColor`,
 which answers `shows` and is never compared with a colour whole: whole, an
 edge's smoothing may keep it from ever matching, and a `settle` waiting on it
-runs out without a word - the case passes having proved nothing, its time the
-whole of the settle's steps.
+would run out and fail the case, its time the whole of the settle's steps.
 
 A run of points is read at once (`Session.colors`, `shows(_:on:at:)` with
 points): a host that reads its window a frame at a time reads every point

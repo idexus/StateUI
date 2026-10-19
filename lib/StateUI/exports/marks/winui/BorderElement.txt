@@ -1,25 +1,22 @@
-# revision 8.1
-Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+# revision 10.1
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
-Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 Grid.lineWidth: ✅
 Grid.shape: ✅
 Grid.stroke: ✅
-HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
-ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+LayoutEngine.lineWidth: ✅
+LayoutEngine.shape: ✅
+LayoutEngine.stroke: ✅
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅
-VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅
-ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 ZStack.lineWidth: ✅
 ZStack.shape: ✅
 ZStack.stroke: ✅

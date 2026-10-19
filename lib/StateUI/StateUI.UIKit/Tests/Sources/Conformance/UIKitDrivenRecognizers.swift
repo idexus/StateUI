@@ -107,3 +107,25 @@ final class DrivenPinch: UIPinchGestureRecognizer, UIKitDrivenRecognizer {
     }
     override func location(in view: UIView?) -> CGPoint { placed(in: view) }
 }
+
+/// A rotation the driver turns: its state and how far it has turned, in radians clockwise.
+@MainActor
+final class DrivenRotation: UIRotationGestureRecognizer, UIKitDrivenRecognizer {
+    var driven = UIGestureRecognizer.State.began
+    var point = CGPoint.zero
+    var drivenRotation = 0.0
+    let on: UIView
+    init(on view: UIView) {
+        on = view
+        super.init(target: nil, action: nil)
+    }
+    override var state: UIGestureRecognizer.State {
+        get { driven }
+        set { driven = newValue }
+    }
+    override var rotation: CGFloat {
+        get { drivenRotation }
+        set { drivenRotation = newValue }
+    }
+    override func location(in view: UIView?) -> CGPoint { placed(in: view) }
+}

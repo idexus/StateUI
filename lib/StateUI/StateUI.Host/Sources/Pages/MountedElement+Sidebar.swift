@@ -16,6 +16,18 @@ extension MountedElement {
         HostMaterial(value(over ? .flyoutBackground : .sidebarBackground))
     }
 
+    /// Says whether this split view's sidebar lies `over` the detail, as the host stands it for the room, onto the
+    /// state its place drives - where that changed since it last said, or the state is another. A host says it with
+    /// the split view's frame, once laid out (`readsOwnFrame`).
+    /// Design: docs/design/host/pages.md#where-a-sidebar-stands
+    @MainActor public func reportSidebarOverlays(_ over: Bool, in runtime: HostRuntime) {
+        guard let binding = driven[.sidebarOverlays],
+              reportedOverlays.map({ $0.binding != binding || $0.over != over }) ?? true
+        else { return }
+        reportedOverlays = (binding, over)
+        if !runtime.report(.lanes([over ? 1 : 0]), through: binding) { reportedOverlays = nil }
+    }
+
     /// Whether this split view gives its sidebar a material of its own, beside the detail or over it - the
     /// sidebar is then the application's to paint, not the platform's.
     /// Design: docs/design/host/pages.md#a-sidebars-material

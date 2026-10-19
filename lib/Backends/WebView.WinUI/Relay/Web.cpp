@@ -75,6 +75,16 @@ namespace {
     /// The agent each web view's runtime names itself by, as its CoreWebView2 stood: what an agent taken away gives back.
     std::unordered_map<int64_t, winrt::hstring> ownAgents;
 
+    /// How many request filters each web view holds - what a test reads.
+    std::unordered_map<int64_t, int32_t> filters;
+
+    /// The address each web view's own documents stand under, one filter answering them all.
+    std::unordered_map<int64_t, std::wstring> ownAddresses;
+
+    /// The agent each web view was asked for last: what its CoreWebView2 names it by as it stands, whatever came
+    /// while it was coming.
+    std::unordered_map<int64_t, winrt::hstring> askedAgents;
+
     /// Names the view `view` by `agent`, or by the runtime's own for an empty one.
     void name(core::CoreWebView2 const &page, int64_t view, winrt::hstring const &agent) {
         auto own = ownAgents.find(view);
@@ -94,6 +104,9 @@ namespace {
     /// place - once its CoreWebView2 stands.
     void hear(core::CoreWebView2 const &page, int64_t view) {
         ownAgents[view] = page.Settings().UserAgent();
+        page.AddWebResourceRequestedFilter(winrt::hstring(ownAddresses[view] + L"*"),
+            core::CoreWebView2WebResourceContext::Document);
+        filters[view] += 1;
         page.HistoryChanged(guarded("handling HistoryChanged",
             [view](core::CoreWebView2 const &sender, winrt::Windows::Foundation::IInspectable const &) {
             callbacks.history(view, sender.CanGoBack(), sender.CanGoForward());
@@ -109,25 +122,42 @@ namespace {
         }));
     }
 
+    /// The view's CoreWebView2 did not stand: why, said on standard error, and the view told.
+    void unstarted(int64_t view, winrt::hresult const &why) {
+        std::fprintf(stderr, "StateUI WebView WinUI: WebView2 did not start: %s - Windows 11 carries its runtime; "
+            "elsewhere install the WebView2 Evergreen runtime.\n", winrt::to_string(winrt::hresult_error(why).message()).c_str());
+        std::fflush(stderr);
+        callbacks.unstarted(view);
+    }
+
     /// Goes to `address` asking as `agent`; where `document` is given, it is what the address answers, whenever
     /// the view asks for it again, and nothing is fetched.
     void go(core::CoreWebView2 const &page, int64_t view, winrt::hstring const &address,
             std::shared_ptr<std::string> const &document, winrt::hstring const &agent) {
         name(page, view, agent);
         if (document) {
-            served[view][std::wstring(address)] = document;
-            page.AddWebResourceRequestedFilter(address, core::CoreWebView2WebResourceContext::Document);
+            auto &documents = served[view];
+            std::wstring at(address);
+            // An address of the view's own, or one it served before, is answered through a filter it holds already.
+            bool filtered = at.rfind(ownAddresses[view], 0) == 0 || documents.count(at) != 0;
+            documents[at] = document;
+            if (!filtered) {
+                page.AddWebResourceRequestedFilter(address, core::CoreWebView2WebResourceContext::Document);
+                filters[view] += 1;
+            }
         }
         page.Navigate(address);
     }
 }
 
-extern "C" WebViewObjectRef stateui_webview_winui_make(int64_t view) {
+extern "C" WebViewObjectRef stateui_webview_winui_make(int64_t view, char const *own) {
     try {
+        ownAddresses[view] = std::wstring(text(own));
         controls::WebView2 web;
         web.CoreWebView2Initialized(guarded("handling CoreWebView2Initialized",
-            [view](controls::WebView2 const &sender, auto const &) {
+            [view](controls::WebView2 const &sender, auto const &args) {
             if (auto page = sender.CoreWebView2()) hear(page, view);
+            else unstarted(view, args.Exception());
         }));
         web.NavigationStarting(guarded("handling NavigationStarting", [view](controls::WebView2 const &,
                                       core::CoreWebView2NavigationStartingEventArgs const &args) {
@@ -159,13 +189,15 @@ extern "C" void stateui_webview_winui_show(WebViewObjectRef handle, int64_t view
         auto held = document ? std::make_shared<std::string>(document) : nullptr;
         auto asking = text(agent);
         if (auto page = web.CoreWebView2()) return go(page, view, at, held, asking);
-        // Its CoreWebView2 stands a moment after it is asked for: the page is gone to then, in the order asked.
+        // Its CoreWebView2 stands a moment after it is asked for: the page is gone to then, in the order asked,
+        // asking as the agent asked for last.
+        askedAgents[view] = asking;
         auto token = std::make_shared<winrt::event_token>();
         *token = web.CoreWebView2Initialized(
             guarded("handling CoreWebView2Initialized",
-                [token, view, at, held, asking](controls::WebView2 const &sender, auto const &) {
+                [token, view, at, held](controls::WebView2 const &sender, auto const &) {
                 sender.CoreWebView2Initialized(*token);
-                if (auto page = sender.CoreWebView2()) go(page, view, at, held, asking);
+                if (auto page = sender.CoreWebView2()) go(page, view, at, held, askedAgents[view]);
             }));
         web.EnsureCoreWebView2Async();
     } catch (...) {
@@ -181,6 +213,9 @@ extern "C" void stateui_webview_winui_release(WebViewObjectRef handle, int64_t v
     try {
         served.erase(view);
         ownAgents.erase(view);
+        askedAgents.erase(view);
+        filters.erase(view);
+        ownAddresses.erase(view);
         winrt::Windows::Foundation::IInspectable object{nullptr};
         winrt::attach_abi(object, handle);
     } catch (...) {
@@ -190,7 +225,8 @@ extern "C" void stateui_webview_winui_release(WebViewObjectRef handle, int64_t v
 
 extern "C" void stateui_webview_winui_set_agent(WebViewObjectRef handle, int64_t view, char const *agent) {
     try {
-        if (auto page = as<controls::WebView2>(handle).CoreWebView2()) name(page, view, text(agent));
+        askedAgents[view] = text(agent);
+        if (auto page = as<controls::WebView2>(handle).CoreWebView2()) name(page, view, askedAgents[view]);
     } catch (...) {
         report("naming a web view's agent");
     }
@@ -236,6 +272,7 @@ extern "C" int32_t stateui_webview_winui_read(
         std::string read = asked == "address" ? address
             : asked == "agent" && web.CoreWebView2() ? winrt::to_string(web.CoreWebView2().Settings().UserAgent())
             : asked == "document" ? servedAt(view, address)
+            : asked == "filters" ? std::to_string(filters[view])
             : std::string();
         if (utf8 && capacity > 0) {
             auto size = std::min<size_t>(read.size(), static_cast<size_t>(capacity - 1));

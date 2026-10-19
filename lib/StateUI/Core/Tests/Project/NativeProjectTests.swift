@@ -45,8 +45,9 @@ final class NativeProjectTests: XCTestCase {
 
     /// Every head gets its host from `lib/StateUI.Head`, which reads the build's
     /// `STATEUI_HOST` variable once for every application: it depends on that host's
-    /// package alone and re-exports it, and a WinUI head links as a windowed
-    /// application. No application names a host's package itself, and each
+    /// package alone and brings it into the head's graph - re-exporting nothing, as
+    /// a head imports its host by its own name - and a WinUI head links as a
+    /// windowed application. No application names a host's package itself, and each
     /// reads the same hosts the head package does.
     func testEveryHeadGetsItsHostFromTheHeadPackage() throws {
         let repository = SourceTree.repository
@@ -67,9 +68,10 @@ final class NativeProjectTests: XCTestCase {
                     atPath: repository.appendingPathComponent("lib/StateUI/StateUI.\(host)/Package.swift").path),
                 "no host package lib/StateUI/StateUI.\(host)")
             XCTAssertTrue(
-                source.contains("if \(host.uppercased())\n@_exported import StateUI\(host)\n"),
-                "StateUIHead does not re-export StateUI\(host) under #if \(host.uppercased())")
+                source.contains("if \(host.uppercased())\nimport StateUI\(host)\n"),
+                "StateUIHead does not bring StateUI\(host) under #if \(host.uppercased())")
         }
+        XCTAssertFalse(source.contains("@_exported"), "StateUIHead re-exports a host: a head imports its host by name")
 
         for application in try SourceTree.applications() {
             let name = application.lastPathComponent
@@ -81,6 +83,10 @@ final class NativeProjectTests: XCTestCase {
             for host in hosts {
                 XCTAssertFalse(
                     manifest.contains("lib/StateUI.\(host)\""), "\(name) names StateUI\(host)'s package itself")
+                let head = application.appendingPathComponent("Platforms/\(host)/main.swift")
+                if let main = try? String(contentsOf: head, encoding: .utf8) {
+                    XCTAssertTrue(main.contains("import StateUI\(host)\n"), "\(name)'s \(host) head does not import its host")
+                }
             }
         }
     }
@@ -141,6 +147,23 @@ final class NativeProjectTests: XCTestCase {
         }
 
         XCTAssertGreaterThan(read, 100, "the walk read almost nothing")
+    }
+
+    /// A Java array of strings is made by `Java.strings`, which lets each string go once it stands in the array: an
+    /// array of strings each still held as a local reference fills the native frame - an ItemsView's fifty thousand
+    /// identities in a frame of sixty-four. Design: docs/design/platforms/android/jni.md#local-references
+    func testAnAndroidStringArrayHoldsNoStringOfItsOwn() throws {
+        let host = SourceTree.repository.appendingPathComponent("lib/StateUI/StateUI.Android")
+        var made: [String] = []
+        for folder in ["Sources", "Tests/Sources"] {
+            let sources = host.appendingPathComponent(folder)
+            for path in try SourceTree.files(under: sources, entering: SourceTree.entersSources)
+            where path.hasSuffix(".swift") {
+                let text = try String(contentsOf: sources.appendingPathComponent(path), encoding: .utf8)
+                if text.contains("Java.array(of: JavaAPI.string") { made.append("\(folder)/\(path)") }
+            }
+        }
+        XCTAssertEqual(made, [], "each makes its array by Java.strings")
     }
 
     /// The Android Views host is a Swift package beside AppKit's, with its Java
@@ -238,21 +261,44 @@ final class NativeProjectTests: XCTestCase {
 
     /// No exception leaves a handler the relays give WinUI either: WinUI calls it from its own loop, and one leaving
     /// it is stowed and ends the process (a window's activation read as UI Automation closed it, 0xc000027b). Every
-    /// handler goes through `guarded`.
+    /// handler goes through `guarded` - a lambda, an object's member, a static event's - and every override WinUI
+    /// calls (`OnLaunched`) catches what its body throws.
     func testNoCppExceptionLeavesARelaysHandler() throws {
-        let bare = try NSRegularExpression(pattern: #"(\.[A-Z]\w*|::\w*Handler)\(\s*(winrt::auto_revoke,\s*)?\["#)
+        // A Win32 enumeration's callback runs inside the call that enumerates, not from WinUI's loop.
+        let bare = try NSRegularExpression(
+            pattern: #"(?<!\w)(?!Enum\w*Windows\()[A-Z]\w*\(\s*(winrt::auto_revoke,\s*)?(\[|\{\s*(this|get_weak\(\))\s*,)"#)
+        let override = try NSRegularExpression(pattern: #"void On[A-Z]\w*\([^)]*\)\s*\{"#)
         var open: [String] = []
+        var overrides = 0
         for folder in ["lib/StateUI/StateUI.WinUI/Sources/CStateUIWinUI", "lib/Backends/WebView.WinUI/Relay"] {
             let root = SourceTree.repository.appendingPathComponent(folder)
             for name in try FileManager.default.contentsOfDirectory(atPath: root.path) where name.hasSuffix(".cpp") {
                 let text = try String(contentsOf: root.appendingPathComponent(name), encoding: .utf8)
+                let line = { (range: NSRange) in text[..<Range(range, in: text)!.lowerBound].filter { $0 == "\n" }.count + 1 }
                 for match in bare.matches(in: text, range: NSRange(text.startIndex..., in: text)) {
-                    let before = text[..<Range(match.range, in: text)!.lowerBound]
-                    open.append("\(name):\(before.filter { $0 == "\n" }.count + 1)")
+                    open.append("\(name):\(line(match.range))")
+                }
+                for match in override.matches(in: text, range: NSRange(text.startIndex..., in: text)) {
+                    overrides += 1
+                    if !Self.block(in: text, openingAt: Range(match.range, in: text)!.upperBound).contains("catch (...)") {
+                        open.append("\(name):\(line(match.range))")
+                    }
                 }
             }
         }
+        XCTAssertGreaterThan(overrides, 0, "the walk read no override")
         XCTAssertEqual(open, [], "a handler WinUI calls is not guarded")
+    }
+
+    /// The block whose opening brace stands just before `start`: its text up to its closing brace.
+    private static func block(in text: String, openingAt start: String.Index) -> Substring {
+        var depth = 1
+        var index = start
+        while index < text.endIndex, depth > 0 {
+            if text[index] == "{" { depth += 1 } else if text[index] == "}" { depth -= 1 }
+            index = text.index(after: index)
+        }
+        return text[start..<index]
     }
 
     /// Each `extern "C"` function `text` defines: its name, and its body - braces counted outside words, letters and

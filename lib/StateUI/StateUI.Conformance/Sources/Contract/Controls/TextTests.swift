@@ -38,8 +38,8 @@
                 s.expect(try s.held(TextContract.isSelectable, on: s.element("label")), false, "not to select again")
             },
             ConformanceCase("aTextShowsItsWords", proves: [
-                Covered(TextualElementContract.text, on: "Text"),
-            ]) { s in
+                Covered(TextContract.self),
+            ], needs: [Covered(TextualElementContract.text, on: "Text")]) { s in
                 s.start { VStack { Text("Some words").id("label") } }
 
                 s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "Some words")

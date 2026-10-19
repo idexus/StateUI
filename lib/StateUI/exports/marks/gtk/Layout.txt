@@ -1,10 +1,13 @@
-# revision 1.2
+# revision 2.2
 Grid.avoidsSafeArea: – A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.
 Grid.clipsContent: ✅
 Grid.letsInputThrough: ✅
 HStack.avoidsSafeArea: – A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.
 HStack.clipsContent: ✅
 HStack.letsInputThrough: ✅
+LayoutEngine.avoidsSafeArea: – A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.
+LayoutEngine.clipsContent: ✅
+LayoutEngine.letsInputThrough: ✅
 VStack.avoidsSafeArea: – A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.
 VStack.clipsContent: ✅
 VStack.letsInputThrough: ✅

@@ -35,9 +35,9 @@ decides again; one concept has one owner, one spelling and one source:
   `.id()`, then its builder path, then its position, and only the patch tells
   a host what changed. ([Keys](../design/core/identity-and-diffing.md#keys))
 - **The patch is deterministic.** The same session gives the same patch and
-  exports on every run: node types, properties and events compare by name,
-  whatever a dictionary or a set yields is sorted, and the core numbers the
-  scenes.
+  exports on every run: node types, properties and events are keys - a name
+  and its number, the same in every process - ordered by name, whatever a
+  dictionary or a set yields is sorted, and the core numbers the scenes.
   ([Tokens](../design/core/contracts.md#tokens))
 - **The UI thread is `MainActor`.** The core has no thread, run loop or timer
   of its own; everything happens inside a call the host makes on its UI
@@ -59,7 +59,7 @@ lib/StateUI/Core/Sources/
     Shapes/ Collections/
     Styles/ Inspector/              styles and visual states, the inspector
   Types/         the values an application passes, and how each crosses
-    Geometry/ Layout/ Colour/ Drawing/ Text/ Time/
+    Geometry/ Layout/ Colour/ Drawing/ Text/ Time/ Keyboard/ Localization/
     Motion/ Gestures/ Environment/ Sessions/ Controls/ Collections/ Files/
   Contracts/     the library's contracts, and LibraryContracts
     Elements/    one contract per node type, in its view's topic folder
@@ -170,10 +170,10 @@ turns the nodes into the patch.
   `ItemsView` and `Marker` have none. *Application.*
   ([Controls](../design/views/controls.md);
   [controls and input](../interface/controls-and-input.md), [layout](../interface/layout.md))
-- **The composed layouts** - `GeometryReader`, `ScrollReader` and `PlacedLayout`
-  (`Layouts/`), `GalleryView` and `PositionIndicator` (`Collections/`) - are
-  StateUI's composition over measurement, placement and scrolling, which no
-  host builds again. *Application.*
+- **The composed layouts** - `GeometryReader` and `LayoutEngine` (`Layouts/`),
+  `GalleryView` and `PositionIndicator` (`Collections/`) - are StateUI's
+  composition over measurement, placement and scrolling, which no host builds
+  again. *Application.*
   ([Measured layouts](../design/views/measured-layouts.md);
   [StateUI-authored layouts](../interface/layout.md#stateui-authored-layouts))
 - **`Style`**, **`StyleSheet`**, **`StyleTarget`** and **`VisualState`**
@@ -201,7 +201,7 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
 | Folder | What it holds | Reasons |
 | --- | --- | --- |
 | `Geometry/` | `Point`, `Rect`, `Insets`, `CornerRadius`, `ViewTransform` | [runs of numbers](../design/types/values.md#runs-of-numbers), [transforms](../design/types/transforms.md) |
-| `Layout/` | `Alignment`, `Area`, `GridLength`, `LayoutDirection`, `SafeArea`, `SafeAreaEdges`, `Placement`, `PlacedRun` | [placement](../design/types/placement.md) |
+| `Layout/` | `Alignment`, `Area`, `GridLength`, `LayoutDirection`, `SafeArea`, `SafeAreaEdges`, `Placement`, `PlacedRun`, `LayoutInput` | [placement](../design/types/placement.md), [layout engine](../design/views/layout-engine.md) |
 | `Colour/` | `Color`, `GradientStop`, `Brush`, `Material`, `Blur`, `Glass` | [colour and theme](../design/types/colour-and-theme.md), [brushes](../design/types/brushes.md); [styles and drawing](../interface/styles-and-drawing.md) |
 | `Drawing/` | `ImageSource`, `ContainerShape`, `ContentMode`, the strokes, `Draw`, `DrawCommand`, `DrawingBuilder` | [drawing on a canvas](../design/types/drawing.md) |
 | `Text/` | `Name`, `FontAttributes`, `LineBreak`, `TextAlignment`, `TextCase`, `TextDecorations`, `InputPurpose`, `SubmitLabel`, `AccessibilityHeadingLevel` | [text and names](../design/types/values.md#text-and-names), [closed vocabularies](../design/types/vocabularies.md) |
@@ -450,10 +450,13 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 - **`MemberFacts`** is what a member says of itself - whether it travels, is
   cleared, which group it moves with - read by name. *Internal.*
   ([Member facts](../design/core/contracts.md#member-facts))
-- **`NodeType`**, **`Prop`**, **`Event`** and **`Act`** are tokens: a name and
-  only a name. The types are public, since a contract spells its node type as
-  one; the library's entries (`Tokens.swift`), made from its members, are the
-  host's. ([Tokens](../design/core/contracts.md#tokens))
+- **`NodeType`**, **`Prop`**, **`Event`** and **`Act`** are tokens, each a key
+  (`KeyName`): a name and its number, equal and hashed by the number and
+  ordered by the name; `KeyNumbers` stops a second name of one number. The
+  types are public, since a contract spells its node type as one; the
+  library's entries (`Tokens.swift`), made from its members, are the host's.
+  ([Tokens](../design/core/contracts.md#tokens),
+  [a key is a number](../design/core/contracts.md#a-key-is-a-number))
 
 ### Realization
 
@@ -627,6 +630,10 @@ never against a stored copy
   condition, and a library that exports no C function;
   `RuntimeArchitectureTests` reads the layer's and every host's sources
   ([what a host never does](host-layer.md#what-a-host-never-does));
+  `HeldByNumberTests` holds every number a host hands out to the one count;
+  `RelayVocabularyTests` holds every vocabulary a relay numbers by hand to
+  the Swift it mirrors; `ConformanceCaseTests` holds the conformance cases to
+  the session's rules;
   `ToolchainTests`, `ReleaseTests`, `AppsTests` and `VsCodeTests` keep one
   Swift release, one version, the applications and the editor.
 - **The host layer's suite**, `swift test --package-path lib/StateUI/StateUI.Host`,

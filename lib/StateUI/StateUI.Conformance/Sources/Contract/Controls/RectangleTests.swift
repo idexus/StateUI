@@ -13,8 +13,8 @@
         [
             Aspects.standsAlone("Rectangle"),
             ConformanceCase("aRectangleFillsItsRoom", proves: [
-                Covered(FilledShapeContract.fill, on: "Rectangle"),
-            ]) { s in
+                Covered(RectangleContract.self),
+            ], needs: [Covered(FilledShapeContract.fill, on: "Rectangle")]) { s in
                 s.start { VStack { Rectangle().fill(.red).width(100).height(60).id("shape") }.horizontalAlignment(.start) }
                 let shape = try s.element("shape")
 
@@ -43,8 +43,8 @@
                 s.expect(try s.color(of: shape, at: Point(1, 1)), shows: .red, "square once the tree says so")
             },
             ConformanceCase("aFillFromAStateTakesTheColourItTurnsTo", proves: [
-                Covered(FilledShapeContract.fill, on: "Rectangle"),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                Covered(RectangleContract.self),
+            ], needs: [Covered(FilledShapeContract.fill, on: "Rectangle"), Covered(ButtonContract.clicked)]) { s in
                 let colour = State(wrappedValue: Color.red)
                 s.start {
                     VStack {

@@ -148,7 +148,10 @@ extension PersistentValue where Self: RawRepresentable, Self.RawValue: Persisten
 /// with it stops the program the first time the view is built.
 public struct PersistentKey: Hashable, Sendable, CustomStringConvertible {
     /// The name in the store - what the host reads and writes under.
-    public let name: String
+    public var name: String { key.name }
+
+    /// The name and the number the key is worked by (`KeyName`).
+    let key: KeyName
 
     /// What kind of value it holds, taken from the type it was declared with.
     public let kind: PersistentKind
@@ -161,7 +164,7 @@ public struct PersistentKey: Hashable, Sendable, CustomStringConvertible {
     ///   - name: the name in the platform's store, the application's own.
     ///   - type: the type of the state kept under it.
     public init<Value: PersistentValue>(_ name: String, of type: Value.Type) {
-        self.name = name
+        key = KeyName(name)
         self.kind = Value.persistentKind
     }
 
@@ -176,39 +179,41 @@ final class PersistentStore {
     /// The one store: a process has one host.
     static let shared = PersistentStore()
 
-    /// What the host read out of the store before the first render, by key name.
+    /// What the host read out of the store before the first render, by the name the store keeps it under: a key
+    /// claims its own by its name, and a word of the store never makes a key.
     private var hydrated: [String: PropValue] = [:]
 
     /// The storage standing for each key, with the typed write that lands a restored
     /// value in it - the first state to claim a key puts its own here.
-    private var storages: [String: (storage: AnyObject, land: @MainActor (PropValue) -> Void)] = [:]
+    private var storages: [KeyName: (storage: AnyObject, land: @MainActor (PropValue) -> Void)] = [:]
 
     /// The keys written since the last take, each with its last value.
-    private var waiting: [String: PropValue] = [:]
+    private var waiting: [KeyName: PropValue] = [:]
 
-    /// The names the application lists, once the host has read them.
-    private var listed: Set<String>?
+    /// The keys the application lists, once the host has read them.
+    private var listed: Set<KeyName>?
 
     /// The host read the keys the application lists: a key a state keeps and the list leaves out is said.
     /// Design: docs/design/core/state.md#kept-state
     func listed(_ keys: [PersistentKey]) {
-        listed = Set(keys.map(\.name))
-        for name in storages.keys.sorted() { sayUnlisted(name) }
+        listed = Set(keys.map { $0.key })
+        for key in storages.keys.sorted() { sayUnlisted(key) }
     }
 
-    /// Says once that the host never reads `name` at launch, where the list leaves it out.
-    private func sayUnlisted(_ name: String) {
-        guard let listed, !listed.contains(name) else { return }
-        complain("'\(name)' keeps a state but application.persistentKeys does not list it: the host never reads it "
+    /// Says once that the host never reads `key` at launch, where the list leaves it out.
+    private func sayUnlisted(_ key: KeyName) {
+        guard let listed, !listed.contains(key) else { return }
+        complain("'\(key.name)' keeps a state but application.persistentKeys does not list it: the host never reads it "
             + "at launch, so its value comes back one launch late. List it in the application's init.")
     }
 
     /// Takes what the host read out of the store, before the first render; a storage
     /// claimed earlier takes its value now.
     func hydrate(_ values: [(name: String, value: PropValue)]) {
+        let claimed = Dictionary(uniqueKeysWithValues: storages.map { ($0.key.name, $0.value.land) })
         for pair in values {
             hydrated[pair.name] = pair.value
-            storages[pair.name]?.land(pair.value)
+            claimed[pair.name]?(pair.value)
         }
     }
 
@@ -220,14 +225,14 @@ final class PersistentStore {
         orAdopt storage: AnyObject,
         landing land: @escaping @MainActor (PropValue) -> Void
     ) -> AnyObject {
-        if let standing = storages[key.name] {
+        if let standing = storages[key.key] {
             return standing.storage
         }
 
-        storages[key.name] = (storage, land)
-        sayUnlisted(key.name)
+        storages[key.key] = (storage, land)
+        sayUnlisted(key.key)
 
-        if let held = hydrated[key.name] {
+        if let held = hydrated[key.key.name] {
             land(held)
         }
 
@@ -236,7 +241,7 @@ final class PersistentStore {
 
     /// Marks a key for saving with its value; the write wakes the host.
     func record(_ key: PersistentKey, _ value: PropValue) {
-        waiting[key.name] = value
+        waiting[key.key] = value
     }
 
     /// How many keys are waiting - work the host takes whether or not a render was
@@ -247,7 +252,7 @@ final class PersistentStore {
     func takeWaiting() -> [(name: String, value: PropValue)] {
         let taken = waiting.sorted { $0.key < $1.key }
         waiting.removeAll(keepingCapacity: true)
-        return taken.map { (name: $0.key, value: $0.value) }
+        return taken.map { (name: $0.key.name, value: $0.value) }
     }
 
     /// Forgets everything, for tests building many sessions in one process.

@@ -20,9 +20,8 @@ name: Core Windows
 
 on:
   push:
-    branches: [main]
+    branches: [main, code]
   pull_request:
-    branches: [main]
   workflow_dispatch:
 
 permissions:

@@ -40,7 +40,7 @@ final class WinUIWebView: WinUIControl {
     init() {
         WinUIWebViewRelay.listen()
         number = WinUIWebViewRelay.reserve()
-        element = stateui_webview_winui_make(number)!
+        element = stateui_webview_winui_make(number, Self.ownAddress(number))!
         WinUIWebViewRelay.hold(self, as: number)
     }
 
@@ -71,7 +71,7 @@ final class WinUIWebView: WinUIControl {
         loaded = source
         switch source {
         case .url(let address): go((address, nil))
-        case .html(let document, let base?): go((base, document))
+        case .html(let document, let base?): go((Self.asAsked(base), document))
         case .html(let document, nil):
             written += 1
             go((Self.documentAddress(number, written), document))
@@ -87,9 +87,26 @@ final class WinUIWebView: WinUIControl {
         }
     }
 
+    /// `address` as WebView2 asks for it again - its scheme and host in small letters, its path at least a slash -
+    /// which a document written in place there is served by.
+    /// Design: docs/design/platforms/winui/controls.md#a-web-view
+    static func asAsked(_ address: String) -> String {
+        guard let marker = address.firstRange(of: "://") else { return address }
+        let rest = address[marker.upperBound...]
+        let hostEnd = rest.firstIndex { "/?#".contains($0) } ?? rest.endIndex
+        let path = rest[hostEnd...]
+        return address[..<marker.lowerBound].lowercased() + "://" + rest[..<hostEnd].lowercased()
+            + (path.first == "/" ? "" : "/") + path
+    }
+
     /// Where the view `view` shows its `count`th document with no address of its own: a name no network answers.
     static func documentAddress(_ view: Int64, _ count: Int) -> String {
-        "https://page.stateui.invalid/\(view)/\(count)"
+        ownAddress(view) + "\(count)"
+    }
+
+    /// The address the view `view`'s documents with no address of their own stand under.
+    static func ownAddress(_ view: Int64) -> String {
+        "https://page.stateui.invalid/\(view)/"
     }
 
     // MARK: - Its acts
@@ -155,5 +172,11 @@ final class WinUIWebView: WinUIControl {
 
     func ended() {
         onProcessGone?()
+    }
+
+    /// WebView2 did not start: the page asked for failed, and no other comes.
+    func unstarted() {
+        loading = false
+        onNavigated?(.failure, cause.begin(told: .newPage), asked?.address ?? "")
     }
 }

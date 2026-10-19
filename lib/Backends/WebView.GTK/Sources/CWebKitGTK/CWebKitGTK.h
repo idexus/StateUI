@@ -29,3 +29,7 @@ extern char *jsc_value_to_json(void *value, unsigned indent);
 
 extern void *webkit_navigation_policy_decision_get_navigation_action(void *decision);
 extern int webkit_navigation_action_get_navigation_type(void *action);
+extern void *webkit_navigation_action_get_request(void *action);
+extern const char *webkit_uri_request_get_uri(void *request);
+extern void *webkit_back_forward_list_get_nth_item(void *back_forward_list, int index);
+extern const char *webkit_back_forward_list_item_get_uri(void *item);

@@ -19,8 +19,7 @@ class AndroidView {
     /// Pixels per point, the display's density.
     var density: Double { AndroidRenderer.density }
 
-    private static var nextNumber: Int64 = 0
-    private static var live: [Int64: Weak] = [:]
+    private static let live = LiveViews<AndroidView>()
 
     /// The background the view was made with, often none, read before the first change.
     private var madeBackground: JavaObject??
@@ -40,19 +39,18 @@ class AndroidView {
 
     /// Takes the next number and holds the view `make` makes, handed that number.
     init(_ make: (_ number: Int64) -> JavaObject) {
-        Self.nextNumber += 1
-        number = Self.nextNumber
+        number = Self.live.reserve()
         object = make(number)
-        Self.live[number] = Weak(self)
+        Self.live.hold(self, as: number)
     }
 
     isolated deinit {
-        Self.live[number] = nil
+        Self.live.release(number)
     }
 
     /// The live view a Java callback names; nil once it has left.
     static func find(_ number: Int64) -> AndroidView? {
-        live[number]?.view
+        live.find(number)
     }
 
     /// How many views Swift holds - what a test counts to see every one let go.
@@ -76,9 +74,9 @@ class AndroidView {
     }
 
     /// Lets the view's listener see its touches and its hovering pointer, for the gestures its element listens
-    /// for. A view made of parts lets it see what its parts get, before they get it.
+    /// for - `hearing`. A view made of parts lets it see what its parts get, before they get it.
     /// Design: docs/design/platforms/android/controls.md#gestures
-    func watchTouches() {
+    func watchTouches(_ hearing: Hearing) {
         listen(JavaAPI.setOnTouchListener, JavaAPI.setOnHoverListener)
     }
 
@@ -89,10 +87,13 @@ class AndroidView {
     var listening = Listening.nothing
 
     /// What hears the user's input the view heard.
-    var onHeard: ((HeardInput) -> Void)?
+    var onHeard: ((HeardInput) -> Bool)?
 
     /// The press the view heard, on its way to a drag by the host layer's rule.
     var press = DragRecognition(distance: .radius(0))
+
+    /// Two fingers over a layout they turn, read as the turn between them.
+    var fingers = TwoFingers()
 
     /// What the view offers and takes of a drag between views, as last told to its drag listener.
     var offered = DragAndDrop.none
@@ -292,9 +293,30 @@ class AndroidView {
         onTapped?()
     }
 
-    /// The user held the view down long: whether the view took it - else Android goes on to its context menu.
+    /// The user held the view down long - the one place deciding what that does: the view's own (a button's menu),
+    /// else its drag; whether it took it - else Android goes on to its context menu.
+    /// Design: docs/design/platforms/android/controls.md#a-long-press
     func longClicked() -> Bool {
-        false
+        startDrag()
+    }
+
+    /// Whether a long press is the view's to decide: it can be dragged, or - a button's menu - holds its own.
+    var takesLongPress: Bool {
+        offered.words != nil
+    }
+
+    /// Hands the view's one long-press listener on, or takes it back, as `takesLongPress` now says - a view that took
+    /// a long press of itself, or offers a context menu, still takes one.
+    func longPressChanged() {
+        guard takesLongPress != listensForLongPress else { return }
+        listensForLongPress = takesLongPress
+        if takesLongPress {
+            longClickableOfItself = Java.callBool(reference, JavaAPI.isLongClickable)
+            listen(JavaAPI.setOnLongClickListener)
+        } else {
+            Java.call(reference, JavaAPI.setOnLongClickListener, .object(nil))
+            Java.call(reference, JavaAPI.setLongClickable, .bool(longClickableOfItself || onMenuOpening != nil))
+        }
     }
 
     /// What the view writes into its context menu as the user opens it; nil where it offers none.
@@ -305,6 +327,10 @@ class AndroidView {
 
     /// Whether the view took a long press before it offered a menu, given back when it offers none.
     private var longClickableWithoutMenu = false
+
+    /// Whether the view's one long-press listener is handed on, and whether it took a long press before.
+    private var listensForLongPress = false
+    private var longClickableOfItself = false
 
     /// Makes the view offer a context menu, which `opening` writes as the user asks for it - a long press, a
     /// secondary click - or offer none for nil.
@@ -319,7 +345,7 @@ class AndroidView {
             listen(JavaAPI.setOnCreateContextMenuListener)
         } else {
             Java.call(reference, JavaAPI.setOnCreateContextMenuListener, .object(nil))
-            Java.call(reference, JavaAPI.setLongClickable, .bool(longClickableWithoutMenu))
+            Java.call(reference, JavaAPI.setLongClickable, .bool(longClickableWithoutMenu || listensForLongPress))
             onMenuChose = nil
         }
     }
@@ -415,12 +441,6 @@ class AndroidView {
     /// A colour as Android's packed ARGB, the host layer's number as Java's `int`; nil for a value that is no colour.
     static func argb(_ value: HostValue) -> Int32? {
         value.argb.map { Int32(bitPattern: $0) }
-    }
-
-    private struct Weak {
-        weak var view: AndroidView?
-
-        init(_ view: AndroidView) { self.view = view }
     }
 }
 

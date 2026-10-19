@@ -31,16 +31,16 @@ final class AndroidCanvasView: AndroidView {
             Java.call(
                 reference, JavaAPI.setDrawing, .object(Java.ints(drawing.ints)),
                 .object(Java.floats(drawing.numbers.map(Float.init))),
-                .object(Java.array(of: JavaAPI.string, drawing.strings.map(Java.string))))
+                .object(Java.strings(drawing.strings)))
         }
     }
 
     /// A finger's phase - down, moved, lifted - at `point`.
     func touched(phase: Int32, at point: Point) {
-        switch phase {
-        case 0: onPressed?(point)
-        case 1: onDragged?(point)
-        default: onReleased?(point)
+        switch AndroidCanvasTouch(rawValue: phase) {
+        case .pressed: onPressed?(point)
+        case .dragged: onDragged?(point)
+        case .released, nil: onReleased?(point)
         }
     }
 

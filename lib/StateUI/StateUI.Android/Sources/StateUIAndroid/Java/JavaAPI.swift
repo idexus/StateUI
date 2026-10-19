@@ -177,6 +177,7 @@ enum JavaAPI {
 
     static let drags = Java.findClass("stateui/android/StateUIDrags")
     static let offerDrag = Java.staticMethod(drags, "offer", "(Landroid/view/View;JLjava/lang/String;ZZ)V")
+    static let startDrag = Java.staticMethod(drags, "start", "(Landroid/view/View;JLjava/lang/String;)Z")
 
     static let files = Java.findClass("stateui/android/StateUIFiles")
     static let openFiles = Java.staticMethod(files, "open", "(Landroid/content/Context;J[Ljava/lang/String;Z)V")
@@ -396,6 +397,7 @@ enum JavaAPI {
         viewGroupHost, "<init>", "(Landroid/content/Context;J)V")
     static let setChildren = Java.method(viewGroupHost, "setChildren", "([Landroid/view/View;)V")
     static let setIgnoresInput = Java.method(viewGroupHost, "setIgnoresInput", "(Z)V")
+    static let watchLayout = Java.method(viewGroupHost, "watch", "(Lstateui/android/StateUIListener;Z)V")
 
     static let itemCell = Java.findClass("stateui/android/StateUIItemCell")
     static let newItemCell = Java.method(itemCell, "<init>", "(Landroid/content/Context;JZ)V")
@@ -418,7 +420,7 @@ enum JavaAPI {
     static let listener = Java.findClass("stateui/android/StateUIListener")
     static let newListener = Java.method(listener, "<init>", "(J)V")
     static let takeDownX = Java.method(listener, "takeDownX", "()F")
-    static let setGestures = Java.method(listener, "setGestures", "(Landroid/view/View;FZZZZ)V")
+    static let setGestures = Java.method(listener, "setGestures", "(Landroid/view/View;FZZZZZZ)V")
 
     static let viewConfiguration = Java.findClass("android/view/ViewConfiguration")
     static let viewConfigurationOf = Java.staticMethod(
@@ -438,6 +440,7 @@ enum JavaAPI {
         environment, "title", "(Landroid/content/Context;Ljava/lang/String;)V")
     static let deviceFacts = Java.staticMethod(environment, "device", "(Landroid/content/Context;)[Ljava/lang/String;")
     static let displayFacts = Java.staticMethod(environment, "display", "(Landroid/app/Activity;)[F")
+    static let density = Java.staticMethod(environment, "density", "(Landroid/content/Context;)F")
     static let applicationFacts = Java.staticMethod(
         environment, "application", "(Landroid/content/Context;)[Ljava/lang/String;")
     static let localeFacts = Java.staticMethod(environment, "locale", "(Landroid/content/Context;)[Ljava/lang/String;")

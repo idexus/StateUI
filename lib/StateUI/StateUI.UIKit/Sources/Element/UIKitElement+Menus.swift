@@ -15,11 +15,11 @@ extension UIKitElement {
         let holds = contextMenuSlot.map { !MenuEntry.entries(of: $0).isEmpty } ?? false
         if holds, contextMenu == nil {
             let menu = UIKitContextMenu(owner: self)
-            view.addInteraction(UIContextMenuInteraction(delegate: menu))
+            view.addInteraction(menu.interaction)
             contextMenu = menu
         } else if !holds, let menu = contextMenu {
-            view.interactions.filter { $0 is UIContextMenuInteraction }.forEach(view.removeInteraction)
-            _ = menu
+            // Only its own: a control's own menu - a button's, a picker's - is an interaction of the same kind.
+            view.removeInteraction(menu.interaction)
             contextMenu = nil
         }
     }

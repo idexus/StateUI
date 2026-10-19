@@ -152,14 +152,14 @@ final class StateCostTests: XCTestCase {
             _ items: Items,
             _ name: KeyPath<Items.Element, String>
         ) -> Int {
-            stateParts(in: PlacedLayout(items, id: name) { item in
+            stateParts(in: LayoutEngine(items, id: name) { item in
                 Text(item[keyPath: name])
-            }).boxes.count
+            } placements: { _, _ in [] }).boxes.count
         }
 
         XCTAssertEqual(
             placed(carrying, \Carrying.name), placed(plain, \Plain.name),
-            "PlacedLayout holds its items behind a reference")
+            "LayoutEngine holds its items behind a reference")
 
         func run<Items: RandomAccessCollection>(
             _ items: Items,

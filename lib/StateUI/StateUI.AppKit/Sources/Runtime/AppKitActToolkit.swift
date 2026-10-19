@@ -20,8 +20,8 @@ final class AppKitActToolkit: ActToolkit {
     /// The question showing now, where one is.
     private(set) var showing: AppKitQuestion?
 
-    /// What the host told the screen reader, in order.
-    private(set) var announcedForTesting: [String] = []
+    /// What the host told the screen reader, in order, where a test asked for it with `[]`; nil keeps nothing.
+    var announcedForTesting: [String]?
 
     init(renderer: AppKitRenderer) {
         self.renderer = renderer
@@ -50,20 +50,20 @@ final class AppKitActToolkit: ActToolkit {
 
     /// Asks in AppKit's alert, a sheet on the window the user is looking at.
     /// Design: docs/design/host/runtime.md#questions-for-the-user
-    func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
+    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
         guard let window = renderer.userWindow else { return false }
         let asked = AppKitQuestion(question, in: window)
         showing = asked
         asked.ask(presenting: renderer.presentsWindows) { [weak self] accepted, words in
             self?.showing = nil
-            answered(accepted, words)
+            answered(.success(HostQuestion.Given(accepted: accepted, words: words)))
         }
         return true
     }
 
     /// Tells the screen reader `words`, now, over whatever it was saying.
     func announce(_ words: String) {
-        announcedForTesting.append(words)
+        announcedForTesting?.append(words)
         NSAccessibility.post(
             element: renderer.userWindow ?? NSApp as Any, notification: .announcementRequested,
             userInfo: [.announcement: words, .priority: NSAccessibilityPriorityLevel.high.rawValue])

@@ -12,6 +12,8 @@ final class AndroidActTests: XCTestCase {
         [
             ("testTheClockAndTheZoneAnswerFromThePlatform", testTheClockAndTheZoneAnswerFromThePlatform),
             ("testFocusPutsTheKeyboardOnTheAimedField", testFocusPutsTheKeyboardOnTheAimedField),
+            ("testAPromptsKeyboardIsAFieldsOfItsPurpose", testAPromptsKeyboardIsAFieldsOfItsPurpose),
+            ("testAPromptHoldsItsBoundInCharacters", testAPromptHoldsItsBoundInCharacters),
         ]
     }
 
@@ -34,6 +36,62 @@ final class AndroidActTests: XCTestCase {
             XCTAssertFalse(parts.last?.isEmpty ?? true)
         }
     }
+
+    /// A prompt's field offers the keyboard a text field of its purpose offers: a number its decimal point.
+    func testAPromptsKeyboardIsAFieldsOfItsPurpose() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    TextField(State(wrappedValue: "").projectedValue).inputPurpose(.numeric)
+                    Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                        _ = try await Dialogs.prompt("How many?", accept: "OK", cancel: "No", inputPurpose: .numeric)
+                    }
+                }
+            }
+            let field = try XCTUnwrap(host.views(AndroidTextFieldView.self).first)
+            try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
+            let fieldType = { Java.callStaticInt(AndroidDriver.dialogs, Self.fieldInputType) }
+            host.settle { fieldType() != -1 }
+
+            XCTAssertEqual(fieldType(), Java.callInt(field.reference, Self.getInputType))
+            XCTAssertTrue(Java.frame {
+                Java.callStaticBool(AndroidDriver.dialogs, AndroidDriver.answer, .object(Java.string("No")), .object(nil))
+            })
+            host.settle {
+                TestWindow.run(for: 10)
+                return fieldType() == -1
+            }
+        }
+    }
+
+    /// A prompt's field holds its bound in characters, as every field does: an emoji with its skin tone is one.
+    func testAPromptHoldsItsBoundInCharacters() throws {
+        try onMainActor {
+            let answers = Received<String>()
+            let host = AndroidRenderer.running {
+                Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                    answers.values.append(
+                        try await Dialogs.prompt("Name", accept: "OK", cancel: "No", maximumLength: 3) ?? "nothing")
+                }
+            }
+            try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
+            host.settle { Java.callStaticInt(AndroidDriver.dialogs, Self.fieldInputType) != -1 }
+
+            XCTAssertTrue(Java.frame {
+                Java.callStaticBool(
+                    AndroidDriver.dialogs, AndroidDriver.answer, .object(Java.string("OK")),
+                    .object(Java.string("a👍🏽bc")))
+            })
+            host.settle {
+                TestWindow.run(for: 10)
+                return !answers.values.isEmpty
+            }
+            XCTAssertEqual(answers.values, ["a👍🏽b"])
+        }
+    }
+
+    @MainActor private static let fieldInputType = Java.staticMethod(AndroidDriver.dialogs, "fieldInputType", "()I")
+    @MainActor private static let getInputType = Java.method(JavaAPI.textView, "getInputType", "()I")
 
     func testFocusPutsTheKeyboardOnTheAimedField() throws {
         try onMainActor {

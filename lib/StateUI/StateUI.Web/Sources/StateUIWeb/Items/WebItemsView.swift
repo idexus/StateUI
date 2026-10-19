@@ -21,10 +21,6 @@ final class WebItemsView: WebDOMView {
     /// The entries near the view now, which the end reached is told from.
     private var near: Set<String> = []
 
-    /// An entry scrolled to, stood there again once the entries around it are built - their own sizes, where the
-    /// cells kept a row's room, move it.
-    private var scrolledTo: (identity: String, anchor: ScrollAnchor)?
-
     init(cells: ItemsCells) {
         self.cells = cells
         super.init(tag: "div")
@@ -32,6 +28,10 @@ final class WebItemsView: WebDOMView {
         content.attribute("class", "stateui-items-content")
         WebRelay.insert(content.node, into: node, at: 0)
         lay(.list())
+        // The user taking the list: where it stands is theirs.
+        for event in ["wheel", "touchstart", "pointerdown", "keydown"] {
+            listen(event) { [weak self] in self?.cells.userScrolled() }
+        }
     }
 
     // MARK: - What the tree says
@@ -49,23 +49,24 @@ final class WebItemsView: WebDOMView {
         }
     }
 
-    /// The tree's entries changed: every cell shows the subtree its entry has now.
+    /// The tree's entries changed: every cell shows the subtree its entry has now, and the entry the program scrolled
+    /// to stands again from the cells built.
     func childrenChanged() {
         cells.childrenChanged()
-        guard let scrolledTo, made[scrolledTo.identity]?.shown != nil else { return }
-        self.scrolledTo = nil
-        scroll(to: scrolledTo.identity, anchor: scrolledTo.anchor, again: false)
+        stand(cells.laidOut())
     }
 
-    /// A cell for each entry, in order: one already made keeps its room, one new is watched for coming near.
+    /// A cell for each entry, in order: one already made keeps its room, one new is watched for coming near; the
+    /// cells of entries gone go in the order they stood.
     private func writeEntries() {
         var kept: [String: WebItemCell] = [:]
+        let before = order
         order = cells.identities.map { identity in
             let cell = made[identity] ?? makeCell(identity)
             kept[identity] = cell
             return cell
         }
-        for (identity, cell) in made where kept[identity] == nil {
+        for cell in before where kept[cell.entry] !== cell {
             cells.endShowing(in: cell)
             cell.detach()
         }
@@ -81,7 +82,7 @@ final class WebItemsView: WebDOMView {
 
     private func makeCell(_ identity: String) -> WebItemCell {
         let cell = WebItemCell(identity)
-        cell.listen("itemtap") { [weak self, weak cell] in
+        cell.hear(.itemTap) { [weak self, weak cell] in
             guard let self, let cell else { return }
             cells.userTapped(cell.entry)
         }
@@ -124,13 +125,20 @@ final class WebItemsView: WebDOMView {
         }
     }
 
-    /// Scrolls the entry of `identity` into view at once, standing where `anchor` says - and again, `again`, once
-    /// it and its neighbours are built. A scroll gliding there would build every entry it passed, each then keeping
-    /// its own size, and the entry would stand elsewhere when it arrived.
-    func scroll(to identity: String, anchor: ScrollAnchor, again: Bool = true) {
-        guard let cell = made[identity] else { return }
-        WebRelay.scrollIntoView(cell.node, anchor: anchor.rawValue)
-        if again, cell.shown == nil { scrolledTo = (identity, anchor) }
+    /// Scrolls the entry of `identity` into view at once, standing where `anchor` says - and again as the cells near
+    /// it come and take their entries, while the host layer holds it. A scroll gliding there would build every entry
+    /// it passed, each then keeping its own size, and the entry would stand elsewhere when it arrived.
+    /// Design: docs/design/platforms/web/items.md#scrolling-to-an-item
+    func scroll(to identity: String, anchor: ScrollAnchor) {
+        guard made[identity] != nil else { return }
+        cells.scroll(to: identity, anchor: anchor)
+        stand(cells.scrollTarget)
+    }
+
+    /// Scrolls the entry `target` names into view, standing where its anchor says.
+    private func stand(_ target: ItemsScrollTarget?) {
+        guard let target, let cell = made[target.identity] else { return }
+        WebRelay.scrollIntoView(cell.node, anchor: target.anchor.rawValue)
     }
 
     override func detach() {

@@ -12,4 +12,9 @@
 set -euo pipefail
 
 repository_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# The foundation's own tests on Linux - its C library and its thread numbers, the Glibc branches no other machine
+# runs - before the host's own, in a run of them whole.
+if [[ $# -eq 0 ]]; then
+  swift test --package-path "$repository_dir" --filter StateUIFoundationTests
+fi
 exec swift test --package-path "$repository_dir/lib/StateUI/StateUI.GTK/Testing" "$@"

@@ -39,8 +39,7 @@ extension AppKitRegistrations {
                     textColor: values[TextStyleElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
                     tint: values[TintElementContract.tint].flatMap { nsColor($0.propValue) },
-                    alignment: appKitTextAlignment(
-                        values[TextAlignmentElementContract.horizontalTextAlignment]?.rawValue),
+                    alignment: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start,
                     enabled: values[VisualElementContract.isEnabled] ?? true,
                     open: values[PickerContract.isOpen] ?? false,
                     writeOpen: values.changed(PickerContract.isOpen))

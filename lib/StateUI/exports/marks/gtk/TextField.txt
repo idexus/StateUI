@@ -1,9 +1,6 @@
-# revision 2.1
-Text.text: ✅
+# revision 3.1
 TextField: ✅
-TextField.frameChanged: ✅
 TextField.isPassword: ✅
 TextField.showsClearButton: – GTK's entry has no button of its own that empties it.
 TextField.submitLabel: ☑️ The return key's word: GTK gives an entry no word for the return key of a keyboard on the screen; Next hands the keyboard on all the same.
 TextField.submitted: ✅
-TextField.text: ✅

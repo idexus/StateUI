@@ -12,10 +12,8 @@ import android.graphics.Shader;
 /** A brush as StateUI says it - a colour, or a gradient's stops over a shape - put on a paint for the shape's bounds. */
 final class StateUIBrush {
     /** The brush's kinds, as StateUI numbers them. */
-    static final int NONE = 0;
-    static final int SOLID = 1;
-    static final int LINEAR = 2;
-    static final int RADIAL = 3;
+    // Swift: AndroidBrushKind
+    static final int NONE = 0, SOLID = 1, LINEAR = 2, RADIAL = 3;
 
     private int kind = NONE;
     private int[] colors = new int[0];

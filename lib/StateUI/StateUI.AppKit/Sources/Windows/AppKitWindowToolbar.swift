@@ -42,6 +42,9 @@ struct AppKitWindowChrome {
     var center: NSView?
     var actions: [[AppKitToolbarAction]] = []
     var overflow: [AppKitToolbarAction] = []
+
+    /// What the chrome's own controls say: the way back's glyph and the overflow.
+    var words: ChromeWords
 }
 
 /// The one native toolbar of a StateUI window.
@@ -57,10 +60,15 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     static let center = NSToolbarItem.Identifier("StateUI.center")
     static let overflow = NSToolbarItem.Identifier("StateUI.overflow")
 
-    /// The system's own glyph for going back.
-    static let backImage = NSImage(
-        systemSymbolName: "chevron.backward",
-        accessibilityDescription: "Back")
+    /// The system's own glyph for going back, saying `words`: one image for each.
+    static func backImage(saying words: String) -> NSImage? {
+        if let made = backImages[words] { return made }
+        let made = NSImage(systemSymbolName: "chevron.backward", accessibilityDescription: words)
+        backImages[words] = made
+        return made
+    }
+
+    private static var backImages: [String: NSImage] = [:]
 
     let toolbar: NSToolbar
 
@@ -69,6 +77,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     private var views: [NSToolbarItem.Identifier: NSView] = [:]
     private var actions: [NSToolbarItem.Identifier: AppKitToolbarAction] = [:]
     private var overflowActions: [AppKitToolbarAction] = []
+    private var words: ChromeWords?
 
     /// The chrome last shown, shown again as a slot comes to hold something or nothing.
     private var shown: AppKitWindowChrome?
@@ -148,12 +157,14 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         }
             && chrome.overflow.count == overflowActions.count
             && zip(chrome.overflow, overflowActions).allSatisfy { $0.draws(like: $1) }
+            && chrome.words == words
 
         identifiers = nextIdentifiers
         sidebar = chrome.sidebar
         views = nextViews
         actions = nextActions
         overflowActions = chrome.overflow
+        words = chrome.words
         toolbar.centeredItemIdentifiers = center == nil ? [] : [Self.center]
 
         if sameItems {
@@ -227,10 +238,8 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         }
 
         if identifier == Self.overflow, let menuItem = item as? NSMenuToolbarItem {
-            menuItem.image = NSImage(
-                systemSymbolName: "ellipsis.circle",
-                accessibilityDescription: "More")
-            menuItem.label = "More"
+            menuItem.image = NSImage(systemSymbolName: "ellipsis.circle", accessibilityDescription: words?.more)
+            menuItem.label = words?.more ?? ""
             menuItem.showsIndicator = false
             menuItem.menu = overflowMenu()
             return

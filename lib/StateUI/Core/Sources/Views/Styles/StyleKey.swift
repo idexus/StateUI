@@ -12,11 +12,19 @@
 ///     Button("Delete").style(.danger)
 public struct StyleKey<Target: StyleTarget>: Hashable, Sendable {
     /// The name the style is kept under.
-    public let name: String
+    public var name: String { key.name }
+
+    /// The name and the number the key is worked by (`KeyName`).
+    let key: KeyName
 
     /// A key named `name`, for styles of `Target`.
     public init(_ name: String) {
-        self.name = name
+        key = KeyName(name)
+    }
+
+    /// A key already made.
+    init(key: KeyName) {
+        self.key = key
     }
 }
 
@@ -25,9 +33,9 @@ extension StyleKey {
     /// every control of its type wears nor one filed under a name.
     ///
     ///     Button("Delete").style(.platform).role(.destructive)
-    public static var platform: Self { Self(platformStyleName) }
+    public static var platform: Self { Self(key: platformStyle) }
 }
 
 /// The name the platform's own look is asked for by: none, which no style is filed under.
-let platformStyleName = ""
+let platformStyle = KeyName("")
 

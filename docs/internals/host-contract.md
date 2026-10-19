@@ -93,15 +93,17 @@ A host applies one generation as one transaction:
 2. find the mounted element by `ElementID`, or create the native object for
    a new complete patch;
 3. replace an element only when `replace` says so;
-4. clear `clearedProperties`, then apply changed `properties` and their
-   `transitions`;
+4. clear `clearedProperties`, then take the changed `properties`;
 5. replace driven bindings and event subscriptions only when their optional
    update is present;
 6. apply the changed layout-motion rule;
 7. reconcile children according to `changed` or `arranged`;
-8. detach every external subscription, recognizer, menu, timer, and native
+8. tell the native half the element's changes with its children in place:
+   each property - its animation beginning there, along its `transitions` -
+   the stacking, the enablement and the direction;
+9. detach every external subscription, recognizer, menu, timer, and native
    object belonging to an element that left;
-9. retain the generation only after the transaction is complete.
+10. retain the generation only after the transaction is complete.
 
 `HostChildrenUpdate.changed` is a sparse path to descendants. It never changes
 the sibling arrangement. `arranged` is the complete ordered list and is the
@@ -158,8 +160,9 @@ On a native display frame the host:
 3. runs the core's cycle: pending program writes latched, StateUI engines run
    in deterministic priority order, and the complete value and changed-lane
    mask published for every changed state;
-4. presents what moved in one walk of the mounted tree, then renders when the
-   core needs one;
+4. presents what moved to the elements it touched - found by their mount and
+   by the states they present - deepest first, then renders when the core
+   needs one;
 5. requests another display frame only while motion or an engine continues.
 
 All journey values emitted by one clock tick are applied in one post-order tree
@@ -199,7 +202,7 @@ an unknown node as unsupported, and an unknown property has no effect. A token
 alone is not an implementation.
 
 The human-readable inventory and implementation matrix for AppKit, UIKit,
-GTK 4, Android Views, WinUI 3, and Web are maintained in
+Android Views, WinUI 3, GTK 4 and Web are maintained in
 [Platform contract](../platform-contract.md), and member by member in the
 [control dictionary](../controls/README.md). A check mark is evidence about a
 host implementation, not merely the existence of a Swift declaration.
@@ -231,8 +234,9 @@ tokens. They never enter application source, `HostPatch`, event payloads, or
 state values.
 
 Each host is a sibling package linked to the `StateUI` library, so platform
-dependencies never enter the core. `PlacedLayout` and
-`GalleryView` remain StateUI-owned composition mechanisms and do not justify a
+dependencies never enter the core. `LayoutEngine` and
+`GalleryView` are StateUI's own layouts: a host stands the layout engine on its
+ZStack and wears the run of placements it is handed, and neither justifies a
 larger renderer surface.
 
 ## Collections
@@ -245,11 +249,13 @@ WinUI `ItemsView`, and GTK 4 `GtkListView` or `GtkGridView`.
 
 Nothing new crosses the boundary for it. Every identity the list shows, in
 order and in groups, is one property, `ItemsViewContract.items`. The
-identities the host holds in its cells come back as an event,
-`realizedChanged`, and the element's children are those entries alone, each
-keyed by its identity; the host layer's `ItemsCells` sends the event and runs
-the turn at once, so the toolkit's synchronous call for a cell finds its
-subtree mounted ([items](../design/host/items.md)).
+identities within reach of those the host holds in its cells - as many
+before and after each cell as the cells hold, eight at least - come back as
+an event, `realizedChanged`, and the element's children are those entries
+alone, each keyed by its identity; the host layer's `ItemsCells` sends the
+event, asks for the next ones half a reach before a cell finds one unbuilt,
+and runs the turn at once, so the toolkit's synchronous call for a cell
+finds its subtree mounted ([items](../design/host/items.md)).
 
 ## Values a host is handed
 

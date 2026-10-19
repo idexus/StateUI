@@ -6,7 +6,9 @@ package stateui.android;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.text.InputFilter;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.inputmethod.BaseInputConnection;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -80,6 +82,12 @@ final class StateUIDialogs {
         return words.toArray(new String[0]);
     }
 
+    /** The input type of the question on top's field: what its keyboard offers; -1 where it asks no words. */
+    static int fieldInputType() {
+        Shown top = top();
+        return top == null || top.field == null ? -1 : top.field.getInputType();
+    }
+
     /**
      * Answers the question on top as the user does: its field first given `words` where it has one, then its button
      * or its list's item of `caption` pressed; whether one was.
@@ -109,6 +117,19 @@ final class StateUIDialogs {
         ArrayList<Shown> all = new ArrayList<>(showing);
         showing.clear();
         for (int index = all.size() - 1; index >= 0; index--) all.get(index).dialog.dismiss();
+    }
+
+    /**
+     * Takes every dialog showing away unanswered: the activity goes, to be made again, and the next one asks each
+     * question again - the process's acts wait for it.
+     */
+    static void leaveAll() {
+        ArrayList<Shown> all = new ArrayList<>(showing);
+        showing.clear();
+        for (int index = all.size() - 1; index >= 0; index--) {
+            all.get(index).answer.given = true;
+            all.get(index).dialog.dismiss();
+        }
     }
 
     /** Tells the user something, with one button. */
@@ -157,10 +178,23 @@ final class StateUIDialogs {
         EditText field = new EditText(context);
         field.setInputType(inputType);
         field.setSingleLine(true);
+        if (maximumLength >= 0) field.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence text, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence text, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable text) {
+                String held = StateUIHost.heldWords(
+                        text.toString(), maximumLength, BaseInputConnection.getComposingSpanStart(text) != -1);
+                if (held != null) text.replace(0, text.length(), held);
+            }
+        });
         field.setText(initial);
-        field.setSelection(initial.length());
+        field.setSelection(field.getText().length());
         if (placeholder != null) field.setHint(placeholder);
-        if (maximumLength >= 0) field.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maximumLength)});
         FrameLayout room = new FrameLayout(context);
         int side = Math.round(20 * context.getResources().getDisplayMetrics().density);
         room.setPadding(side, 0, side, 0);

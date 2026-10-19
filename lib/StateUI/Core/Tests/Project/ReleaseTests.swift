@@ -10,8 +10,8 @@ final class ReleaseTests: XCTestCase {
     /// extension's `package.json` states, the release's only home: the
     /// published-package line in the root's Package.swift, the library's own
     /// `stateUIVersion()`, each Android head's version, the Gallery's AppKit
-    /// bundle, every UIKit bundle and the bug report's example. A reader copying any of them gets this release, not
-    /// the one before.
+    /// bundle, every UIKit bundle, the bug report's example, and the newest section of the changes. A reader copying
+    /// any of them gets this release, not the one before.
     func testEveryMentionOfTheReleaseNamesThisOne() throws {
         let manifest = try JSONSerialization.jsonObject(
             with: Data(contentsOf: SourceTree.repository.appendingPathComponent("lib/StateUI.VSCode/package.json")))
@@ -41,5 +41,10 @@ final class ReleaseTests: XCTestCase {
                 text.occurrences(between: mention.before, and: mention.after), [release],
                 "\(mention.file) names a release other than \(release).")
         }
+
+        let changes = try String(contentsOf: SourceTree.repository.appendingPathComponent("CHANGELOG.md"), encoding: .utf8)
+        XCTAssertEqual(
+            changes.occurrences(between: "\n## ", and: " ").first, release,
+            "CHANGELOG.md says nothing of \(release) above the releases before it.")
     }
 }

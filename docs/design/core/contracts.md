@@ -78,7 +78,7 @@ animates, is cleared, and says nothing of motion.
 ## Values that cross
 
 `HostRepresentable` is a member's value and how it crosses and comes back:
-`Bool`, `Int` (a `Double`, read back as its whole part - exact up to 2^53, and
+`Bool`, `Int` (a `Double`, read back as the whole number nearest it - exact up to 2^53, and
 a whole number past it, which arrives rounded, said once; a carried `Int` lane
 alike), `Double`, `String`, `UInt8` (a byte), an
 optional of any of them (nil crosses as `.nothing`), `PropValue` itself, and an
@@ -97,18 +97,19 @@ platform does not know.
 
 ## Tokens
 
-`NodeType`, `Prop`, `Event` and `Act` are tokens: structs holding a name, with
-the library's entries as static members. A token is a name and only a name;
-a host reads it by that name. That is what makes the library's tokens and an
-application's the same thing.
+`NodeType`, `Prop`, `Event` and `Act` are tokens: structs holding a key - a
+name and its number - with the library's entries as static members. A token is
+a key and only a key; a host reads it by its name. That is what makes the
+library's tokens and an application's the same thing.
 
 Nobody writes a token by hand. A member's token is made from its name, and each
 name is spelled once, where a contract declares its member; the library's
 tokens (`Tokens.swift`, for the hosts, behind `@_spi(Host)`) are
 made from the members, and a guard names any source that spells a name out
 instead. A node type is the one token a contract spells, as a literal. Node
-types, properties and events compare by name, because the differ walks
-properties and numbers handlers in name order.
+types, properties and events are ordered by name, because the differ walks
+properties and numbers handlers in name order, and equal where their keys
+are ([a key is a number](#a-key-is-a-number)).
 
 An application's own node type can be one no host knows; the host draws an
 unknown type as a red marker rather than failing, which keeps a lagging host
@@ -116,6 +117,36 @@ visible without hiding the rest of the interface. An application's act shares
 the one vocabulary with the library's, and the library's case is consulted
 first, so a registration can never shadow it; prefixing an application's names
 with its own keeps the two sets apart.
+
+## A key is a number
+
+A key is a name and the number its work is done by (`KeyName`): the name's
+64-bit FNV-1a hash, so one name has one number in every process on every
+platform, and no run depends on which key it met first. Two keys are equal
+where their numbers are, a key hashes its number, and keys order by their
+names' bytes - the differ walks properties and numbers handlers in that order;
+bytes, as the number is, so two keys are ordered exactly where they are not
+equal, which a text comparison treating "é" composed and decomposed alike would
+not give. Every element's
+values, handlers and type are looked up by key on every render and every
+frame; a name would be hashed and compared byte by byte at each, a number is
+one word. The number never leaves the process: what crosses to a host or a
+file is the name.
+
+A name becomes a key once, where the key is declared: a `static let`, a
+contract's member (`token`, `owner`), a host's realization as it is read at
+start-up and what the core works out of it when first asked, and a view
+type's key, made once a type as the walk first meets it (`typeKey(of:)`).
+Making one takes the process's table under a lock (`KeyNumbers`), which stops
+a second name of one number, so the library makes no key of a word it meets
+during work: a window's kind the platform kept is found among the kinds the
+scenes declare, and `Prop`, `Event` and `Act` have no literal form.
+`KeyGuardTests` reads every library source for a key made - called or its
+initializer named - or a key's name compared or looked up, anywhere else. A name in a file - a kept value, a scene's - stays the file's
+word: a key claims its own by its name, and a file never makes a key. A
+collection keyed by strings holds the words of a file, an export or a
+diagnostic, an identity of the application's data - which comes and goes, and
+is no key - or the toolkit's own vocabulary; the guard lists each with which.
 
 ## Realizations
 
@@ -147,7 +178,10 @@ registration and at report alike. `apply` puts changed properties registered
 alone in name order, then runs each whole applier whose members changed, every
 value read as the host presents it - a value in motion or carried by a state
 included. An element whose view the host makes itself, because its making needs
-machinery no contract describes, registers its members with `madeByHost`.
+machinery no contract describes, registers its members with `madeByHost`. A
+view of another class than the registration takes gets nothing applied and is
+said once, rather than leaving every member realized in the register and none
+on the screen.
 
 A runtime hands over its registry's realization before its first render,
 through `CoreLink.setRealization`, with the library's elements it shows none
@@ -156,7 +190,9 @@ what it leaves to the application and each backend no one registered: every
 other element of the library's is realized, and so is every element and member
 the registry names, the application's own controls and the events its head
 declared among them. Until a host says, the core knows of nothing realized and
-says nothing.
+says nothing. With it the host hands its register, which the core reads when
+first asked rather than as it is handed: building one costs, and a host hands
+it at each start.
 
 ## What a platform honours
 
@@ -166,7 +202,11 @@ an "Open the list" where no list opens by the program. The answer is the
 host's register (`HostRegister`), handed to the core as the runtime starts:
 the host's own judgements - in full, in part, never with why - over what its
 registry realizes, the same answer the platform contract shows. Before a host
-hands one, what its registry said it realizes answers.
+hands one, what its registry said it realizes answers. A tier's member the
+register records element by element - realized on a slider, never on a
+switch - is honoured by its tier in part, so the answer to
+`honours(TintElementContract.tint)` is the same before the register comes and
+after.
 
 ## Declarations
 
@@ -180,7 +220,10 @@ contracts themselves, so an owner is never written by hand.
 Shared members are said apart because they are realized apart: a host applies
 margins, opacity, gestures and focus around every view it makes, so naming them
 under one element would be false and under all of them a list nobody maintains.
-Each reaches every element wearing the tier that declares it. Acts are said
+Each reaches every element wearing the tier that declares it - a tier, never
+the element itself: a menu's own `isEnabled` takes nothing from the shared
+machinery's, and `realization` and `tierMembers` read a shared name by that
+one rule. Acts are said
 whole, because a host performs an act against the key it names, and nothing in
 the call says which element it belongs to; the contracts do. `tierMembers`
 answers shared members from the contracts rather than through the elements, so

@@ -25,16 +25,20 @@ import java.util.HashSet;
  */
 final class StateUIItemsView extends RecyclerView {
     /** An entry's kind: an item, or a header or a footer. */
+    // Swift: AndroidItemKind
     static final int ITEM = 0, EDGE = 1;
 
     /** How the entries stand: down, across, or in columns. */
+    // Swift: AndroidItemsShape
     static final int LIST = 0, ROW = 1, GRID = 2;
 
     /** How many items the user may choose, as StateUI numbers it. */
-    static final int MULTIPLE = 2;
+    // Swift: SelectionMode
+    static final int NONE = 0, SINGLE = 1, MULTIPLE = 2;
 
     /** Where an item scrolled to stands, as StateUI numbers it. */
-    private static final int START = 0, END = 2, NEAREST = 3;
+    // Swift: ScrollAnchor
+    private static final int START = 0, CENTER = 1, END = 2, NEAREST = 3;
 
     private final long view;
     private final Adapter adapter = new Adapter();

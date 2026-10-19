@@ -43,7 +43,8 @@ extension AndroidElement {
 extension AndroidElement: FrameReporter {
     /// Says where the element stands, where that changed (`MountedElement.reportFrame`): its place in its parent as
     /// Android holds it, its corner in the window, and that corner from the page's - under its stack's bar - or the
-    /// window's content where no page holds it; nothing before a layout placed it.
+    /// window's content where no page holds it; nothing before a layout placed it - a split view, where its sidebar
+    /// stands too.
     /// Design: docs/design/platforms/android/layout.md#where-a-view-stands
     func reportFrame() {
         guard let host, let view, readsFrame, view.isLaidOut else { return }
@@ -52,5 +53,6 @@ extension AndroidElement: FrameReporter {
             MountedElement.frameNumbers(
                 place: view.standingFrame, corner: view.cornerInWindow, content: page?.cornerInWindow ?? host.safeAreaOrigin),
             in: host.runtime)
+        if let split = view as? AndroidSplitView { element.reportSidebarOverlays(split.overlays, in: host.runtime) }
     }
 }

@@ -164,4 +164,26 @@ final class ColorTests: XCTestCase {
         XCTAssertEqual(Color.accent.propValue.resolvingTheme(), Color("#FF0A84FF").propValue)
         XCTAssertEqual(Color.accent.opacity(0.5).propValue.resolvingTheme(), Color("#800A84FF").propValue)
     }
+
+    /// The accent as one half of a pair is the accent in force in that theme, not black; a pair handed as a half
+    /// gives the half of that theme; and the pair reads back as itself.
+    func testAPairKeepsTheAccentAndThePairsItIsMadeOf() {
+        let info = StandardEnvironment.application.info
+        let before = info.accentColor
+        defer { HostBoundary.setAccentColor(before) }
+        HostBoundary.setAccentColor(Color("#FFFF0000"))
+
+        let accented = Color(light: .accent, dark: .white)
+        XCTAssertEqual(accented.propValue.resolvingTheme(), Color("#FFFF0000").propValue, "the accent in the light")
+        withTheme(.dark) { XCTAssertEqual(accented.propValue.resolvingTheme(), Color.white.propValue) }
+        XCTAssertEqual(Color(propValue: accented.propValue), accented, "and back")
+        XCTAssertEqual(
+            accented.opacity(0.5).propValue.resolvingTheme(), Color("#80FF0000").propValue, "let through, still the accent")
+
+        let surface = Color(light: .white, dark: .black)
+        let nested = Color(light: .gray, dark: surface)
+        withTheme(.dark) {
+            XCTAssertEqual(nested.propValue.resolvingTheme(), Color.black.propValue, "a pair's dark half in the dark")
+        }
+    }
 }

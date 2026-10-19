@@ -30,6 +30,9 @@
     /// Split views' sidebars sliding in and out, where a host slides them itself.
     public let sidebarSlide: SidebarSlide
 
+    /// The wheels open over layouts, which its frames let go.
+    public let handPace = HandPace()
+
     /// One display frame's order: the user's reports, the animations, the core's cycle, a walk, a render.
     public let displayCycle: DisplayCycle
 
@@ -69,6 +72,7 @@
     ) {
         self.clock = clock
         self.reducesMotion = reducesMotion
+        core.clockStarted()
         stateChannels = StateChannels(animator: animator)
         describedMotion = DescribedMotion(animator: animator)
         layoutMotion = LayoutMotion(animator: animator, now: clock.now, reducesMotion: reducesMotion)
@@ -76,9 +80,10 @@
         displayCycle = DisplayCycle(
             core: core, clock: clock, animator: animator, stateChannels: stateChannels,
             describedMotion: describedMotion, layoutMotion: layoutMotion, sidebarSlide: sidebarSlide,
-            reducesMotion: reducesMotion)
+            handPace: handPace, reducesMotion: reducesMotion)
         var diagnostics = DiagnosticText.environment
         diagnostics.views = views
+        HostProbe.start(where: diagnostics)
         tree = MountedTree(
             core: core, intake: intake, stateChannels: stateChannels, describedMotion: describedMotion,
             layoutMotion: layoutMotion, now: clock.now, reducesMotion: reducesMotion, diagnostics: diagnostics,
@@ -91,6 +96,8 @@
         clock.onFrame = { [weak self] now in self?.displayCycle.frame(now: now) }
         layoutMotion.onStart = { [weak self] in self?.displayCycle.hold() }
         sidebarSlide.onStart = { [weak self] in self?.displayCycle.hold() }
+        handPace.onOpen = { [weak self] in self?.displayCycle.hold() }
+        displayCycle.runtime = self
         tree.onAnimation = { [weak self] in self?.displayCycle.hold() }
     }
 
@@ -99,10 +106,11 @@
     /// language's direction, the windows, then the turns. Each step but the first and the direction is the host's.
     /// Design: docs/design/host/runtime.md#starting
     public func start(
-        realizing realization: HostRealization, unrealized: Set<String>, register: HostRegister? = nil,
+        realizing realization: HostRealization, unrealized: [any ElementContract.Type],
+        register: @autoclosure @escaping () -> HostRegister? = nil,
         environment: () -> Void, kept: () -> Void = {}, windows: () -> Void = {}, turns: () -> Void = {}
     ) {
-        core.setRealization(realization, unrealized: unrealized, register: register)
+        core.setRealization(realization, unrealized: unrealized, register: register())
         environment()
         kept()
         tree.followTheLanguagesDirection()
@@ -186,7 +194,7 @@
         let moves = lifecycle.settle(windows: tree.root?.windows ?? [])
         if let phase = moves.phase { core.setApplicationPhase(phase) }
         tell(moves.told)
-        if moves.standing { presenter?.presentRendered() }
+        if moves.standing { presenter?.presentRendered(touchedChrome: true) }
     }
 
     /// Hands the core a window the platform made - its first, a new one of no kind, or one it kept, of `kind`, for
@@ -274,7 +282,7 @@
 }
 
 extension HostRuntime: TurnPresenter {
-    func presentRendered() { presenter?.presentRendered() }
+    func presentRendered(touchedChrome: Bool) { presenter?.presentRendered(touchedChrome: touchedChrome) }
 
     func perform(_ call: HostActCall) { presenter?.perform(call) }
 }

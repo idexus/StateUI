@@ -13,10 +13,12 @@
         [
             Aspects.standsAlone("SearchField"),
             ConformanceCase("theUsersSearchIsHeardAndTheProgramsIsNot", proves: [
+                Covered(SearchFieldContract.submitted),
+            ], needs: [
                 Covered(TextualElementContract.text, on: SearchFieldContract.self),
                 Covered(TextInputContract.textChanged, on: SearchFieldContract.self),
-                Covered(SearchFieldContract.submitted),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                Covered(ButtonContract.clicked),
+            ]) { s in
                 let query = State(wrappedValue: "")
                 let heard = Received<String>()
                 s.start {

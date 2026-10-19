@@ -1,7 +1,6 @@
-# revision 6.2
+# revision 8.2
 Button: ✅
 Button.clicked: ✅
-Button.frameChanged: ✅
 Button.icon: ✅
 Button.iconPosition: ✅
 Button.iconSpacing: ✅
@@ -12,5 +11,3 @@ Button.pressed: ✓ pressDown on Button: the view's listening handed the recogni
 Button.released: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
 Button.role: ✅
 Button.showsMenuArrow: ✅
-Button.style: ✅
-Text.text: ✅

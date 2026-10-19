@@ -93,6 +93,8 @@ final class ControlTests: XCTestCase {
         let hasBack = State(false)
         let hasForward = State(false)
         let chosen = State<String?>(wrappedValue: "two")
+        let turn = State(wrappedValue: 0.0)
+        let dial = State(wrappedValue: ControlDial())
 
         return [
             ControlCase("Text", source: "Text.swift",
@@ -316,6 +318,35 @@ final class ControlTests: XCTestCase {
                     .onItemActivated { _ in }
                     .onEndReached(within: 5) {}
                     .node.built),
+
+            // The layout engine as its view writes it: the views, the arithmetic, the
+            // phase and the hand over them. A composed view, so the case is its body built.
+            ControlCase("LayoutEngine", sources: ["PlacedStack.swift", "LayoutEngine.swift"],
+                LayoutEngine(["one", "two"]) { Text($0) } placements: { room, phase in
+                    [Placement(Rect(phase, 0, room.width / 2, room.height)), Placement(Rect(room.width / 2, 0, 10, 10))]
+                }
+                .phase(turn.projectedValue)
+                .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .every(1))
+                .following(chosen.projectedValue)
+                .shade(Rectangle(.black))
+                .motion(.spring(response: .milliseconds(240)))
+                .onItemTapped { _ in }
+                .itemDrag(begins: .held)
+                .onItemDragged { _ in }
+                .onItemDismissed(.up, beyond: 80) { _ in }
+                .node.built),
+
+            // A pan and two fingers over the layout engine: a rotation and a magnification, each driving its axis.
+            ControlCase("LayoutEngine", sources: ["PlacedStack.swift", "LayoutEngine.swift"],
+                LayoutEngine(["one", "two"]) { Text($0) } placements: { room, dial in
+                    [Placement(Rect(dial.turn, 0, room.width / 2 * dial.size, room.height)), Placement(.zero)]
+                }
+                .phase(dial.projectedValue)
+                .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...1, snaps: .limits)
+                .axis(\.size, input: .magnification, range: 1...2, snaps: .limits)
+                .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .limits)
+                .axis(\.y, input: .scroll(.vertical, pointsPerUnit: 90), range: 0...1, snaps: .limits)
+                .node.built),
 
             // Both halves of a map: the control, and the markers on it. A Marker is
             // not a control of its own - it is a marker on the map - so this
@@ -577,6 +608,34 @@ final class ControlTests: XCTestCase {
     /// registrations, transitions and handlers its element's contract - its
     /// own members and its tiers' - declares, and nothing a host would have to
     /// guess at.
+    /// A menu written again stands in for the last, all of it: a button's kind of menu, and a view's context menu.
+    func testAMenuWrittenAgainStandsInForTheLast() {
+        let button = Button("Share").menu(.held) { MenuItem("Mail") }.menu { MenuItem("Message") }.node
+        XCTAssertNil(button.props[ButtonContract.menuKind.token], "the second menu says no kind, so none stands")
+
+        let text = Text("Row").contextMenu { MenuItem("Copy") }.contextMenu { MenuItem("Paste") }.node
+        XCTAssertEqual(text.children.filter { $0.type == ContextMenuContract.nodeType }.count, 1)
+    }
+
+    /// A picker opened by a state is closed by the user into that state: `isOpen($x)` goes both ways.
+    func testAPickerClosedByTheUserWritesItsState() {
+        let showing = State(wrappedValue: true)
+        let day = State(wrappedValue: CalendarDate(year: 2026, month: 10, day: 18))
+        let renders = Renders()
+
+        let patch = renders.render(DatePicker(day.projectedValue).isOpen(showing.projectedValue).node)
+        renders.fire(patch.events?["closed"] ?? -1)
+
+        XCTAssertFalse(showing.wrappedValue, "the user's close came back")
+    }
+
+    /// Runs written on a text replace the runs it had and nothing else: a menu written on it first stays.
+    func testRunsWrittenAfterAMenuLeaveTheMenu() {
+        let node = Text().contextMenu { MenuItem("Copy") }.spans { TextSpan("let ") }.node
+
+        XCTAssertEqual(node.children.map(\.type), [TextSpansContract.nodeType, ContextMenuContract.nodeType])
+    }
+
     func testEveryControlCarriesOnlyWhatItsContractDeclares() throws {
         var checked = 0
 
@@ -715,7 +774,7 @@ final class ControlTests: XCTestCase {
         let remaking = Set(LibraryContracts.remaking.map(\.name))
         let allowed: Set<String> = remaking.union([
             // Named rather than valued.
-            "style", "fontFamily", "groupName", "source", "userAgent", "data", "content", "format",
+            "style", "fontFamily", "groupName", "accessibilityIdentifier", "source", "userAgent", "data", "content", "format",
             // A value the host cannot be handed whole.
             "background", "pageBackground", "fill", "stroke", "icon", "icon",
             "icon", "maximumDate",
@@ -752,18 +811,29 @@ final class ControlTests: XCTestCase {
 
                 guard !name.contains("<") else { continue }
 
+                // Keyed by the file: a twin stands beside its value form, in the file of its tier or control, so
+                // one type's twin never hides another's missing one.
                 if type.hasPrefix("Binding<"), type.hasSuffix(">") {
                     let bare = String(type.dropFirst("Binding<".count).dropLast())
 
-                    twins.insert(name + ":" + bare)
+                    twins.insert(path + "|" + name + ":" + bare)
                 } else if !type.contains("<"), line[returns.upperBound...].hasPrefix("Modified") {
-                    values.insert(name + ":" + type)
+                    values.insert(path + "|" + name + ":" + type)
                 }
             }
         }
 
+        // A menu item is a tier no view wears: its words and its enabling are rebuilt with its menu. The driven
+        // text goes per control, its direction differing (bindings.md, driven text): the tier holds the value form.
+        let tiersNoViewWears = ["Views/Mixins/MenuItemElement.swift"]
+        let perControl = ["Views/Mixins/TextualElement.swift|text:String"]
         let missing = values
-            .filter { !twins.contains($0) && !allowed.contains(String($0.split(separator: ":")[0])) }
+            .filter { value in
+                let parts = value.split(separator: "|")
+                let name = parts[1].split(separator: ":")[0]
+                return !twins.contains(value) && !allowed.contains(String(name))
+                    && !tiersNoViewWears.contains(String(parts[0])) && !perControl.contains(value)
+            }
             .sorted()
 
         XCTAssertGreaterThan(values.count, 130, "the scan read almost nothing")
@@ -773,6 +843,21 @@ final class ControlTests: XCTestCase {
 
             \(missing.joined(separator: "\n"))
             """)
+    }
+
+    /// A member that makes its element anew takes no binding twin: a state the host carries past the tree never
+    /// reaches the patch the element is made from, so later writes would change nothing on screen.
+    func testNoRemakingMemberHasABindingTwin() throws {
+        let remaking = Set(LibraryContracts.remaking.map(\.name))
+        var twinned: [String] = []
+
+        for (path, text) in try SourceTree.allSources() where path.contains("Views") {
+            for match in text.matches(of: /twin\(\w+Contract\.(\w+), by:/) where remaking.contains(String(match.1)) {
+                twinned.append("\(path): \(match.1)")
+            }
+        }
+
+        XCTAssertEqual(twinned, [], "a remaking member is written by value, read in the body")
     }
 
     /// THE SIBLING OF THE MODIFIER GUARD, for the modifiers it cannot see.
@@ -1363,8 +1448,21 @@ final class ControlTests: XCTestCase {
         var node = node
         node.materialize()
 
-        return node.children.reduce(into: Set(node.props.keys.map(\.name))) { names, child in
+        // A property driven from a state is carried as much as one stated.
+        let carried = Set(node.props.keys.map(\.name)).union(node.driven.keys.map(\.name))
+
+        return node.children.reduce(into: carried) { names, child in
             names.formUnion(propNames(in: child))
         }
     }
+}
+
+/// A phase a pan and two fingers move: where a layout is panned to, how far it is turned, and how large it stands.
+private struct ControlDial: LayoutPhase {
+    var x = 0.0
+    var y = 0.0
+    var turn = 0.0
+    var size = 1.0
+
+    static var axes: [WritableKeyPath<ControlDial, Double>] { [\.x, \.y, \.turn, \.size] }
 }

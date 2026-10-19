@@ -21,7 +21,7 @@ final class UIKitFrameClock: NSObject, FrameClock {
         didSet { link?.isPaused = !held }
     }
 
-    private var link: CADisplayLink?
+    private(set) var link: CADisplayLink?
 
     /// A clock telling `now`'s time, its frames the display's where `ticksWithTheDisplay`.
     init(now: @escaping () -> Double = { CACurrentMediaTime() * 1_000 }, ticksWithTheDisplay: Bool = true) {
@@ -29,10 +29,16 @@ final class UIKitFrameClock: NSObject, FrameClock {
         super.init()
         guard ticksWithTheDisplay else { return }
         let link = CADisplayLink(target: self, selector: #selector(frame(_:)))
+        link.preferredFrameRateRange = Self.fullRate
         link.isPaused = true
         link.add(to: .main, forMode: .common)
         self.link = link
     }
+
+    /// The display's own rate: a motion asks every frame a ProMotion display draws, which an iPhone gives only to an
+    /// application whose `Info.plist` says `CADisableMinimumFrameDurationOnPhone`.
+    /// Design: docs/design/platforms/uikit/runtime.md#the-frame-clock
+    static let fullRate = CAFrameRateRange(minimum: 80, maximum: 120, preferred: 120)
 
     /// Lets the display go - a display link holds its clock until then - so no frame comes after.
     func stop() {

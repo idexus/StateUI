@@ -325,12 +325,10 @@ final class HostEnvironmentTests: XCTestCase {
         HostBoundary.setRealization(HostRealization(
             elements: ["Picker"],
             members: [HostRealizedMember(element: "Picker", owner: "VisualElement", member: "tooltip")]))
-        HostBoundary.setRegister(HostRegister(
-            records: [
-                HostRecord(owner: "VisualElement", member: "tooltip", judgement: .notPlanned(reason: "no pointer")),
-                HostRecord(owner: "Picker", member: "isOpen", judgement: .partial(missing: "its closing")),
-            ],
-            unrealized: [], viewless: []))
+        HostBoundary.setRegister(HostRegister(records: [
+            .notPlanned(VisualElementContract.tooltip, reason: "no pointer"),
+            .partial(PickerContract.isOpen, missing: "its closing"),
+        ]))
         defer {
             HostBoundary.setRegister(nil)
             HostBoundary.setRealization(HostRealization())
@@ -340,5 +338,26 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertFalse(device.honours(VisualElementContract.tooltip), "never on this family")
         XCTAssertTrue(device.honours(PickerContract.isOpen), "in part")
         XCTAssertFalse(device.honours(PickerContract.placeholder), "said nowhere")
+    }
+
+    /// A tier's member the register records element by element - realized on one wearer, never on another - is
+    /// honoured in part: the device answers as it did before the register came.
+    func testTheDeviceHonoursATierMemberSomeElementsRealize() {
+        HostBoundary.setRealization(HostRealization(
+            elements: ["Slider", "Switch"],
+            members: [HostRealizedMember(element: "Slider", owner: "TintElement", member: "tint")]))
+        let device = Device()
+        XCTAssertTrue(device.honours(TintElementContract.tint), "before the register")
+
+        HostBoundary.setRegister(HostRegister(records: [
+            .complete(TintElementContract.tint, on: SliderContract.self),
+            .notPlanned(TintElementContract.tint, on: SwitchContract.self, reason: "no tint"),
+        ]))
+        defer {
+            HostBoundary.setRegister(nil)
+            HostBoundary.setRealization(HostRealization())
+        }
+
+        XCTAssertTrue(device.honours(TintElementContract.tint), "after it, the same answer")
     }
 }

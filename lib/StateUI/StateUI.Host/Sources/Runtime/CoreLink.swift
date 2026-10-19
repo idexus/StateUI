@@ -47,6 +47,12 @@
     /// Whether any state or engine waits for a display cycle.
     public var cyclesPending: Bool { HostBoundary.cyclesPending }
 
+    /// Whether a cycle waits on something a turn answers at once, an engine going on of its own aside.
+    public var cyclesAsked: Bool { HostBoundary.cyclesAsked }
+
+    /// A runtime brought its frame clock: the cycles' time starts over on it.
+    public func clockStarted() { HostBoundary.clockStarted() }
+
     /// What this process's renders came to - the tally a runtime prints to count leaks.
     public var tally: HostTally { HostBoundary.tally }
 
@@ -146,10 +152,13 @@
     /// Tells the core what this runtime realizes before its first render: its registry's elements and members,
     /// and every element of the library's but those it names `unrealized`.
     /// Design: docs/design/core/contracts.md#unrealized-names
-    public func setRealization(_ registry: HostRealization, unrealized: Set<String>, register: HostRegister? = nil) {
-        let library = Set(LibraryContracts.elements.map { $0.nodeType.name }).subtracting(unrealized)
+    public func setRealization(
+        _ registry: HostRealization, unrealized: [any ElementContract.Type],
+        register: @autoclosure @escaping () -> HostRegister? = nil
+    ) {
+        let library = Set(LibraryContracts.elements.map { $0.nodeType }).subtracting(unrealized.map { $0.nodeType })
         HostBoundary.setRealization(HostRealization(elements: library.union(registry.elements), members: registry.members))
-        HostBoundary.setRegister(register)
+        HostBoundary.setRegister(register())
     }
 
     // MARK: - The application, its scenes and its kept values
@@ -194,6 +203,9 @@
 
     /// Reports the user's locale.
     public func setLocaleInfo(_ info: HostLocaleInfo) { HostBoundary.setLocaleInfo(info) }
+
+    /// What a window's chrome says of its own controls, in the system's language.
+    public var chromeWords: ChromeWords { HostBoundary.chromeWords }
 
     /// Reports the application's lifecycle phase.
     public func setApplicationPhase(_ phase: ApplicationPhase) {

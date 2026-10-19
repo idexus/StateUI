@@ -16,6 +16,14 @@
   }
 </script>
 <meta name="color-scheme" content="light dark">
+<script>
+  // The colour the page wore under its window last time, worn from the first paint: Safari takes the colour above the
+  // page and around its bars once, then - before the application has said its window's.
+  try {
+    const colour = localStorage.getItem("stateui.page-colour." + (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+    if (colour) document.documentElement.style.setProperty("--stateui-page", colour);
+  } catch {}
+</script>
 {{head}}
 <link rel="stylesheet" href="./stateui-web.css?v={{stamp}}">
 <script>

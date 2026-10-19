@@ -206,6 +206,9 @@ final class AppKitLabel: NSTextField {
             && (lineBreakMode == .byWordWrapping || lineBreakMode == .byCharWrapping)
     }
 
+    /// The whole of the view under a transform, which AppKit leaves out of what it takes for visible.
+    override var visibleRect: NSRect { drawnRect(visible: super.visibleRect) }
+
     override func draw(_ dirtyRect: NSRect) {
         guard drawsKeptLayout else { return super.draw(dirtyRect) }
         keepLayout()

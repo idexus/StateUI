@@ -392,9 +392,26 @@ private final class Renders {
 
         func walk(_ node: RenderedNode) {
             for view in node.views {
-                let bare = view.type.prefix { $0 != "<" }
+                let bare = view.type.name.prefix { $0 != "<" }
                 let name = String(bare.split(separator: ".").last ?? "")
                 counted[name] = max(counted[name] ?? 0, node.builds)
+            }
+
+            node.children.forEach(walk)
+        }
+
+        rendered.map(walk)
+        return counted
+    }
+
+    /// How many times each composed view named `name` has been described, one
+    /// number a view, in the tree's order.
+    func builds(of name: String) -> [Int] {
+        var counted: [Int] = []
+
+        func walk(_ node: RenderedNode) {
+            for view in node.views where view.type.name.split(separator: ".").last.map(String.init) == name {
+                counted.append(node.builds)
             }
 
             node.children.forEach(walk)
@@ -681,7 +698,7 @@ final class CatalogTests: XCTestCase {
     }
 
 
-    #if APPKIT || UIKIT || GTK || WINUI || ANDROID
+    #if APPKIT || UIKIT || ANDROID || WINUI || GTK
     /// Every example of this host's interop group shows both halves, named by
     /// what they ARE: the application's half "In StateUI", and the host's in
     /// each language it is written in - its Swift first, then the relay
@@ -982,7 +999,7 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(SamplePage.shown(held, nav: Place().nav, look: SessionStyle().look(dark: false), system: .blue).node.type, .tabView)
         XCTAssertEqual(
-            SamplePage.shown(scrolling, nav: Place().nav, look: SessionStyle().look(dark: false), system: .blue).node.stateful?.viewType,
+            SamplePage.shown(scrolling, nav: Place().nav, look: SessionStyle().look(dark: false), system: .blue).node.stateful?.viewType.name,
             String(reflecting: SamplePage.self))
         XCTAssertEqual(held.tabs, [.example(0), .code])
         XCTAssertEqual(held.tabs.map(held.caption(of:)), ["Example", "In Code"])
@@ -1001,7 +1018,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
 
         XCTAssertEqual(place.section.wrappedValue, .home)
-        XCTAssertEqual(mainPage(place.nav).root().node.stateful?.viewType, String(reflecting: HomePage.self))
+        XCTAssertEqual(mainPage(place.nav).root().node.stateful?.viewType.name, String(reflecting: HomePage.self))
     }
 
     /// The gallery is a menu over a stack, and both halves are pages.
@@ -1012,7 +1029,7 @@ final class CatalogTests: XCTestCase {
     /// title, and the detail is a stack that opens on its root alone.
     func testTheWindowIsAMenuOverAStack() throws {
         let gallery = try XCTUnwrap(GalleryScene().declaredWindows.opening)
-        let window = Node.window(showing: { gallery.page(nil, nil) }, kind: gallery.kind, session: WindowSession()).built
+        let window = Node.window(showing: { gallery.page(nil, nil) }, session: WindowSession()).built
 
         XCTAssertEqual(window.type, "Window")
 
@@ -1134,7 +1151,7 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(windows.map(\.type), [nil, .fonts, .colours, .debugInspector, .swatch])
         XCTAssertEqual(windows.filter(\.single).compactMap(\.type), [.fonts, .colours, .debugInspector])
         XCTAssertEqual(windows.filter { $0.valueType != nil }.compactMap(\.type), [.swatch])
-        XCTAssertEqual(windows.first?.kind, String(reflecting: GalleryWindow.self))
+        XCTAssertEqual(windows.first?.page(nil, nil).stateful?.viewType.name, String(reflecting: GalleryWindow.self))
     }
 
     /// The application's scenes: the galleries, which launch opens; the
@@ -1185,12 +1202,13 @@ final class CatalogTests: XCTestCase {
     }
 
     /// Choosing a section is three writes and no await: the section, its new
-    /// path, and the menu closing behind it. Navigation remains application
-    /// state rather than a host command.
+    /// path, and the menu closing behind it where it lies over the page.
+    /// Navigation remains application state rather than a host command.
     func testChoosingASectionMovesTheApplicationAndClosesTheMenu() throws {
         let place = Place()
         place.path.wrappedValue = [.sample("grid")]
         place.menu.wrappedValue = true
+        place.nav.menuOverlays = true
 
         let menu = MenuPage(catalog: catalog(place.nav), nav: place.nav,
                             log: WindowLog(), listsHiddenRow: false)
@@ -1202,6 +1220,22 @@ final class CatalogTests: XCTestCase {
             place.path.wrappedValue, [.group("layout")],
             "the group replaces whatever was pushed, and is itself pushed onto home")
         XCTAssertFalse(place.menu.wrappedValue, "the menu stayed open over the page it opened")
+    }
+
+    /// A menu beside the page stays open as the user chooses in it, the way a
+    /// sidebar does.
+    func testChoosingASectionLeavesAMenuBesideThePageOpen() throws {
+        let place = Place()
+        place.menu.wrappedValue = true
+        place.nav.menuOverlays = false
+
+        let menu = MenuPage(catalog: catalog(place.nav), nav: place.nav,
+                            log: WindowLog(), listsHiddenRow: false)
+
+        Renderer.shared.start(EventRegistration(try XCTUnwrap(rowHandler("Layout", in: menu.node))))
+
+        XCTAssertEqual(place.path.wrappedValue, [.group("layout")])
+        XCTAssertTrue(place.menu.wrappedValue, "the menu beside the page stayed open")
     }
 
     /// A card on a group's page PUSHES the sample it names, with the id riding
@@ -1502,27 +1536,25 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(heights.count, 1,
                        "the run's height is described rather than driven")
 
-        // THREE rooms: the page's own, which that height is arithmetic over,
-        // the gallery's, which its cards are placed in, and where its
-        // scroller's run is laid out, which a change of room waits for.
-        XCTAssertEqual(rooms, ["Grid", "ZStack", "ZStack"],
-                       "the page, its run and the scroller's run are measured onto numbers")
+        // TWO rooms: the page's own, which that height is arithmetic over,
+        // and the gallery's, which its cards are placed in.
+        XCTAssertEqual(rooms, ["Grid", "LayoutEngine"],
+                       "the page and its run are measured onto numbers")
 
         // And the entrance is the third number - so the page waits for its room
         // to settle and then comes in, with nothing built for either.
         XCTAssertEqual(fades.count, 1,
                        "the page comes in through a render rather than through the cycle")
 
-        XCTAssertEqual(engines, 3,
-                       "the page and its run of cards keep three engines between them")
+        XCTAssertEqual(engines, 2,
+                       "the page and its run of cards keep one engine each")
     }
 
-    /// And the home page's groups answer one, which is the gallery's; the
-    /// banner over them answers its own, opening StateUI's home.
+    /// And the home page's groups answer the gallery's, one a card; the banner
+    /// over them answers its own, opening StateUI's home.
     ///
-    /// A `GalleryView` is swiped to choose and tapped to open, so there is ONE
-    /// handler however many groups there are - inside the scroller lying over
-    /// the cards, which is the only thing there a finger can reach.
+    /// A `GalleryView` is swiped to choose and tapped to open: the hand and a
+    /// tap both land on the card itself.
     func testTheHomePagesGalleryAnswersATap() throws {
         let (shown, nav) = (catalog(), Place().nav)
         let page = Renders().laid { HomePage(catalog: shown, nav: nav).node }
@@ -1535,8 +1567,8 @@ final class CatalogTests: XCTestCase {
 
         walk(page)
 
-        XCTAssertEqual(carriers, ["ZStack", "Rectangle"],
-                       "the banner opens StateUI's home, the gallery a tap on the run")
+        XCTAssertEqual(carriers, ["ZStack"] + Array(repeating: "Grid", count: shown.groups.count),
+                       "the banner opens StateUI's home, each card its own group")
     }
 
     /// Finds what answers a tap and insists there is one per thing listed, each
@@ -1716,6 +1748,89 @@ final class CatalogTests: XCTestCase {
 
         let third = renders.render(PinchSample().node, changed: Renderer.shared.pendingChanges)
         XCTAssertEqual(try XCTUnwrap(number("scale", in: third)), 1.0404, accuracy: 0.0001)
+    }
+
+    /// Removing the front card of the changing deck brings the card behind it
+    /// forward ON A JOURNEY, the last card of the deck too: there the phase
+    /// itself moves to the card behind, under the deck's motion - landed at
+    /// once, the card behind jumped to the front.
+    func testRemovingTheLastCardBringsTheOneBehindForwardOnAJourney() throws {
+        let renders = Renders()
+        func tree() -> Node { ChangingDeckSample().node }
+
+        let first = renders.render(tree())
+        let remove = try XCTUnwrap(buttons(in: first).first { $0.props[.text] == .string("Remove") })
+        let phase = try XCTUnwrap(driven(.phase, in: first))
+
+        // From the second of four cards: twice the card at the front leaves
+        // and the one behind stands there, the second of two - the last.
+        for _ in 0..<2 {
+            XCTAssertTrue(renders.fire(try XCTUnwrap(remove.events?[.clicked])))
+            renders.render(tree(), changed: Renderer.shared.pendingChanges)
+        }
+        XCTAssertTrue(renders.fire(try XCTUnwrap(remove.events?[.clicked])))
+
+        // One frame: what the host is given to show.
+        _ = HostBoundary.cycle(.display, now: 16, reducesMotion: false)
+
+        let journey = try XCTUnwrap(HostBoundary.value(for: phase).flatMap(HostBoundary.journey(from:)))
+        XCTAssertEqual(journey.destination, [0], "the card behind, at the front")
+        XCTAssertGreaterThan(journey.value[0], 0.5, "on its way there, from where the deck stood")
+    }
+
+    /// MOVING AN ICON BUILDS NO ICON AGAIN: the home screen's new order is one
+    /// build of its body, and every icon - a view of its own, its inputs the
+    /// same - is carried to its new place.
+    func testMovingAnIconBuildsNoIconAgain() throws {
+        let renders = Renders()
+        func tree() -> Node { HomeScreenSample().node }
+
+        let first = renders.render(tree())
+        func layout(in patch: HostPatch) -> HostPatch? {
+            patch.type == .layoutEngine ? patch : patch.children.lazy.compactMap(layout).first
+        }
+        let engine = try XCTUnwrap(layout(in: first))
+        guard case .replace(let driven)? = engine.driven, let room = driven[.frame] else {
+            return XCTFail("the boards report no room")
+        }
+        let moved = try XCTUnwrap(engine.events?[.itemMoved])
+
+        // The boards placed in a room of 360 by 600: four icons across, five down.
+        var now = 50_000_000.0
+        func frame() {
+            now += 16
+            _ = HostBoundary.cycle(.display, now: now, reducesMotion: false)
+        }
+        frame()
+        XCTAssertTrue(HostBoundary.report(.lanes([0, 0, 360, 600]), through: room))
+        frame()
+        frame()
+
+        // Mail, the first icon, lifted: the one icon built again.
+        XCTAssertTrue(renders.fire(moved, with: MemberValues.encode(GesturePhase.began, Point(51, 66), Point.zero, 0.0)))
+        renders.render(tree(), changed: Renderer.shared.pendingChanges)
+        let (sample, icons) = (renders.builds["HomeScreenSample"] ?? 0, renders.builds(of: "HomeTile"))
+        XCTAssertEqual(icons.count, 48)
+
+        // Moved to the third place: a new order.
+        XCTAssertTrue(
+            renders.fire(moved, with: MemberValues.encode(GesturePhase.changed, Point(223, 66), Point.zero, 0.0)))
+        renders.render(tree(), changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(renders.builds["HomeScreenSample"], sample + 1, "the body built for the new order")
+        XCTAssertEqual(
+            renders.builds(of: "HomeTile").reduce(0, +), icons.reduce(0, +), "no icon built again")
+    }
+
+    /// The state a patch drives a property with, wherever in the tree it landed.
+    private func driven(_ prop: Prop, in patch: HostPatch) -> HostStateBinding? {
+        if case .replace(let map)? = patch.driven, let binding = map[prop] { return binding }
+
+        for child in patch.children {
+            if let binding = driven(prop, in: child) { return binding }
+        }
+
+        return nil
     }
 
     /// The id a patch assigned to an event, wherever in the tree it landed.

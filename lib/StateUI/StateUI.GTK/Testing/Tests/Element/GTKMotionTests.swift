@@ -33,7 +33,7 @@ final class GTKMotionTests: XCTestCase {
 
             var changed = HostPatch(id: .manual("label"), type: .text)
             changed.properties[.opacity] = .number(0.75)
-            changed.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
+            changed.transitions[.opacity] = HostTransition(motion: .eased(.milliseconds(200), .linear))
             host.apply(changed)
 
             let label = try XCTUnwrap(host.view(id: .manual("label")))
@@ -50,6 +50,33 @@ final class GTKMotionTests: XCTestCase {
         }
     }
 
+    /// What a class of the host's style sheet paints on a control's widget - its background, its room, its accent -
+    /// arrives at once: on its way it would write the sheet a rule a frame, and parse it whole each time.
+    func testAControlsBackgroundArrivesAtOnceAddingNoRuleAFrame() {
+        onUIThread {
+            let clock = TestClock()
+            let host = GTKRenderer.bare(clock: clock)
+            var initial = HostPatch(id: .manual("picture"), type: .image)
+            initial.properties[.background] = Color(red: 255, green: 0, blue: 0).propValue
+            host.apply(initial)
+            let rules = GTKStyleSheet.ruleCount
+
+            var changed = HostPatch(id: .manual("picture"), type: .image)
+            changed.properties[.background] = Color(red: 0, green: 0, blue: 255).propValue
+            changed.transitions[.background] = HostTransition(motion: .eased(.milliseconds(200), .linear))
+            host.apply(changed)
+            for now in stride(from: 16.0, through: 240, by: 16) {
+                clock.now = now
+                host.frame()
+            }
+
+            XCTAssertLessThanOrEqual(GTKStyleSheet.ruleCount, rules + 1, "a rule for each colour on its way")
+            XCTAssertFalse(GTKTransitionSurface.presents(.background, on: .image))
+            XCTAssertFalse(GTKTransitionSurface.presents(.tint, on: .checkBox))
+            XCTAssertTrue(GTKTransitionSurface.presents(.background, on: .vStack), "a layout draws its own box")
+        }
+    }
+
     func testLessMotionPutsThePropertyAtItsValueAtOnce() throws {
         try onUIThread {
             let host = GTKRenderer.bare(clock: TestClock(), reducesMotion: true)
@@ -59,7 +86,7 @@ final class GTKMotionTests: XCTestCase {
 
             var changed = HostPatch(id: .manual("label"), type: .text)
             changed.properties[.opacity] = .number(0.75)
-            changed.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
+            changed.transitions[.opacity] = HostTransition(motion: .eased(.milliseconds(200), .linear))
             host.apply(changed)
 
             XCTAssertEqual(try XCTUnwrap(host.view(id: .manual("label"))).drawnOpacity, 0.75, accuracy: GTKView.opacityStep)
@@ -79,7 +106,7 @@ final class GTKMotionTests: XCTestCase {
                     Slider(level.projectedValue)
                     Slider(level.projectedValue)
                     Button("Go").onClicked(gate: .ignoreWhileRunning) {
-                        try await level.projectedValue.journey.move(to: 1, .eased(200, .linear)).arrived()
+                        try await level.projectedValue.journey.move(to: 1, .eased(.milliseconds(200), .linear)).arrived()
                         arrived.wrappedValue = true
                     }
                 }
@@ -142,7 +169,7 @@ final class GTKMotionTests: XCTestCase {
                 VStack {
                     Text("moving").translationX(offset.projectedValue)
                     Button("Go").onClicked(gate: .ignoreWhileRunning) {
-                        try await offset.projectedValue.journey.move(to: 100, .eased(200, .linear)).arrived()
+                        try await offset.projectedValue.journey.move(to: 100, .eased(.milliseconds(200), .linear)).arrived()
                     }
                 }
             }

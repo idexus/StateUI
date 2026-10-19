@@ -22,16 +22,15 @@ final class GTKWindowShortcuts {
         self.widget = widget
         controller = gtk_shortcut_controller_new()!
         gtk_widget_add_controller(widget, controller)
-        number = Self.nextNumber
-        Self.nextNumber += 1
-        Self.pressed[number] = { [weak self] index in
+        number = Self.pressed.reserve()
+        Self.pressed.hold({ [weak self] index in
             guard let self, self.held.indices.contains(index) else { return false }
             return self.onPressed?(self.held[index]) == true
-        }
+        }, as: number)
     }
 
     isolated deinit {
-        Self.pressed[number] = nil
+        Self.pressed.release(number)
     }
 
     /// Holds `shortcuts`, in place of those held before.
@@ -46,7 +45,7 @@ final class GTKWindowShortcuts {
             let spelled = GTKKeys.spelled(shortcut)
             let presses = gtk_callback_action_new({ _, arguments, data in
                 let index = arguments.map { Int(g_variant_get_int32($0)) } ?? -1
-                return MainActor.assumeIsolated { GTKWindowShortcuts.pressed[viewNumber(data)]?(index) == true ? 1 : 0 }
+                return MainActor.assumeIsolated { GTKWindowShortcuts.pressed.find(viewNumber(data))?(index) == true ? 1 : 0 }
             }, UnsafeMutableRawPointer(bitPattern: Int(number)), nil)
             let made = gtk_shortcut_new(gtk_keyval_trigger_new(spelled.keyval, spelled.modifiers), presses)!
             gtk_shortcut_set_arguments(made, g_variant_new_int32(Int32(index)))
@@ -67,6 +66,5 @@ final class GTKWindowShortcuts {
     }
 
     /// Each window's choice, by the number its shortcuts' actions carry.
-    private static var pressed: [Int64: (Int) -> Bool] = [:]
-    private static var nextNumber: Int64 = 1
+    private static let pressed = Numbered<(Int) -> Bool>()
 }

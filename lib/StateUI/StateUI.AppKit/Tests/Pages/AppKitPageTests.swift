@@ -32,12 +32,44 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(controller.window?.title, "Details")
         XCTAssertEqual(back.label, "Start")
         XCTAssertTrue(back.isNavigational)
-        XCTAssertTrue(back.image === AppKitWindowToolbar.backImage)
+        XCTAssertTrue(back.image === AppKitWindowToolbar.backImage(saying: renderer.runtime.core.chromeWords.back))
 
         renderer.applyForTesting(tree(navigation([home])))
 
         XCTAssertEqual(controller.window?.title, "Home")
         XCTAssertNil(controller.toolbarForTesting.itemForTesting(AppKitWindowToolbar.back))
+    }
+
+    /// The chrome's own controls speak the system's language: the way back's glyph and the overflow say their words
+    /// as the library has them.
+    @MainActor
+    func testTheChromesOwnControlsSpeakTheSystemsLanguage() throws {
+        let locale = StandardEnvironment.locale
+        let before = HostLocaleInfo(
+            language: locale.language, region: locale.region, name: locale.name, timeZone: locale.timeZone,
+            uses24HourClock: locale.uses24HourClock, firstDayOfWeek: locale.firstDayOfWeek,
+            isMetric: locale.isMetric, layoutDirection: locale.layoutDirection)
+        defer { HostBoundary.setLocaleInfo(before) }
+        HostBoundary.setLocaleInfo(HostLocaleInfo(
+            language: "pl", region: "PL", name: "pl-PL", timeZone: before.timeZone, uses24HourClock: true,
+            firstDayOfWeek: before.firstDayOfWeek, isMetric: true, layoutDirection: .leftToRight))
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        var delete = HostPatch(id: .manual("delete"), type: .toolbarItem)
+        delete.properties = [.text: .string("Delete"), .placement: .enumeration(2)]
+        var group = HostPatch(id: .manual("later"), type: .toolbarItemGroup)
+        group.children = .arranged([delete])
+        var details = page("details", title: "Details")
+        details.children = .arranged(details.children.arrangedForTesting + [group])
+        renderer.applyForTesting(tree(navigation([page("home", title: "Home"), details])))
+
+        let toolbar = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
+        let back = try XCTUnwrap(toolbar.itemForTesting(AppKitWindowToolbar.back))
+        XCTAssertEqual(back.image?.accessibilityDescription, "Wstecz")
+        let overflow = try XCTUnwrap(toolbar.itemForTesting(AppKitWindowToolbar.overflow))
+        XCTAssertEqual(overflow.label, "Więcej")
+        XCTAssertEqual(overflow.image?.accessibilityDescription, "Więcej")
     }
 
     /// The window's chrome is the system's: a unified toolbar over full-size

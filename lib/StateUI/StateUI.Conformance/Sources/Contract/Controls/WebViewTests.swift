@@ -145,6 +145,39 @@
                 s.settle(for: Self.pageSeconds) { !heard.values.isEmpty }
                 s.expect(heard.values, ["ended"])
             },
+            ConformanceCase("aPageGivenAgainAfterNoneIsShownAgain", proves: [Covered(WebViewContract.source)], needs: [
+                Covered(WebViewContract.navigated), Covered(WebViewContract.evaluateJavaScript),
+                Covered(ButtonContract.clicked),
+            ]) { s in
+                let web = Aim(WebView.self)
+                let given = State(wrappedValue: true)
+                let arrived = Received<Bool>()
+                let said = Received<String>()
+                s.start {
+                    VStack {
+                        (given.wrappedValue ? WebView().source(html: Self.page("First")) : WebView()).aim(web)
+                            .onNavigated { _ in arrived.values.append(true) }.height(200).id("web")
+                        Button("Change").onClicked(gate: .ignoreWhileRunning) {
+                            said.values.append(try await web.evaluateJavaScript("document.body.innerText = 'Changed'"))
+                        }.id("change")
+                        Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                            said.values.append(try await web.evaluateJavaScript("document.body.innerText"))
+                        }.id("ask")
+                    }
+                }
+                s.settle(for: Self.pageSeconds) { !arrived.values.isEmpty }
+
+                // No page given leaves the page as it is; the user changes it; the page given again shows again.
+                given.wrappedValue = false
+                s.turn()
+                try s.perform(.activate, on: s.element("change"))
+                s.settle(for: Self.pageSeconds) { said.values == ["Changed"] }
+                given.wrappedValue = true
+                s.settle(for: Self.pageSeconds) { arrived.values.count == 2 }
+                try s.perform(.activate, on: s.element("ask"))
+                s.settle(for: Self.pageSeconds) { said.values.count == 2 }
+                s.expect(said.values.last, "First", "the page given again, not the one the user left")
+            },
         ]
     }
 

@@ -100,12 +100,6 @@ public struct TimePicker: ElementView, TextStyleElement, FontElement, TimePicker
         onEvent(TimePickerContract.timeChanged, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTimeChanged(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onTimeChanged(_ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
-        fatalError("unavailable")
-    }
-
     /// The user has opened the clock face. Opening it with `isOpen(true)` raises
     /// nothing: the application already knows.
     public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Self {
@@ -118,12 +112,6 @@ public struct TimePicker: ElementView, TextStyleElement, FontElement, TimePicker
         onEvent(TimePickerContract.opened, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onOpened(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onOpened(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
-    }
-
     /// It has closed - by a choice, by a tap outside, or by the platform.
     public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(TimePickerContract.closed, handler)
@@ -134,10 +122,12 @@ public struct TimePicker: ElementView, TextStyleElement, FontElement, TimePicker
     public func onClosed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         onEvent(TimePickerContract.closed, gate: gate, handler)
     }
+}
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClosed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onClosed(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
+extension TimePicker {
+    /// `isOpen` from a state, `$x`, both ways: the host opens and closes the clock face as the state stands, and
+    /// the user's opening and closing come back into it; no view is rebuilt for it.
+    public func isOpen(_ state: Binding<Bool>) -> Modified {
+        opening(TimePickerContract.isOpen, by: state, opened: TimePickerContract.opened, closed: TimePickerContract.closed)
     }
 }

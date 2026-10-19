@@ -23,7 +23,8 @@ final class AppKitTurnTests: XCTestCase {
         DispatchQueue.main.async { said.text = "after" }
 
         // A run of the loop returns once its pass is over; the pass that ran the write is the last one run.
-        for _ in 0..<100 where said.text != "after" {
+        for _ in 0..<100 {
+            guard said.text != "after" else { break }
             RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
         }
 
@@ -41,7 +42,8 @@ final class AppKitTurnTests: XCTestCase {
 
         Task.detached { binding.post("posted") }
 
-        for _ in 0..<100 where shown() != "posted" {
+        for _ in 0..<100 {
+            guard shown() != "posted" else { break }
             RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
         }
 
@@ -57,15 +59,60 @@ final class AppKitTurnTests: XCTestCase {
         let shown = { renderer.nativeViews(AppKitTextView.self).first?.textForTesting.string }
 
         try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first).clickForTesting()
-        for _ in 0..<100 where renderer.actToolkit.showing == nil {
+        for _ in 0..<100 {
+            guard renderer.actToolkit.showing == nil else { break }
             RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
         }
         XCTAssertTrue(try XCTUnwrap(renderer.actToolkit.showing).pressForTesting("Delete", typing: nil))
-        for _ in 0..<100 where shown() != "deleted" {
+        for _ in 0..<100 {
+            guard shown() != "deleted" else { break }
             RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
         }
 
         XCTAssertEqual(shown(), "deleted", "the answer waits for an event")
+    }
+
+    /// A RENDER THAT CHANGES NOTHING THE CHROME IS MADE OF LEAVES THE WINDOWS AS THEY STAND: a page's words change,
+    /// and no window, title or bar is composed again.
+    func testARenderOfThePageAloneShowsNoWindowAgain() throws {
+        let renderer = AppKitRenderer.running { BarAndPage() }
+        defer { renderer.closeForTesting() }
+        let shown = { renderer.nativeViews(AppKitTextView.self).first?.textForTesting.string }
+        let shownBefore = renderer.windowSynchronizationCountForTesting
+
+        try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first).clickForTesting()
+
+        XCTAssertEqual(shown(), "counted 1")
+        XCTAssertEqual(renderer.windowSynchronizationCountForTesting, shownBefore, "the page's words alone moved")
+    }
+
+    /// A render that changes what a bar's action says shows the window's chrome again, with the new words.
+    func testARenderOfABarsActionShowsTheChromeAgain() throws {
+        let renderer = AppKitRenderer.running { BarAndPage() }
+        defer { renderer.closeForTesting() }
+        let toolbar = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
+        let shownBefore = renderer.windowSynchronizationCountForTesting
+
+        try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).last).clickForTesting()
+
+        XCTAssertEqual(toolbar.actionTitlesForTesting, ["Said 1"])
+        XCTAssertEqual(renderer.windowSynchronizationCountForTesting, shownBefore + 1)
+    }
+}
+
+/// A page whose words and whose bar's action each follow a state of their own.
+private struct BarAndPage: View {
+    @State private var counted = 0
+    @State private var said = 0
+
+    var body: some View {
+        VStack {
+            Text("counted \(counted)")
+            Button("Count").onClicked { counted += 1 }
+            Button("Say").onClicked { said += 1 }
+        }
+        .title("Page")
+        .toolbar { ToolbarItem("Said \(said)").onClicked {} }
     }
 }
 

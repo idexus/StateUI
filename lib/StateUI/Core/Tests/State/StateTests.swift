@@ -177,6 +177,18 @@ final class StateTests: XCTestCase {
         XCTAssertEqual(owner.profile.age, 30, "and leaves the rest of it alone")
     }
 
+    /// A write through a part of a state puts the whole back, and reads the whole it starts from without being its
+    /// reader: a body writing through `$profile.name` does not become `profile`'s reader by that write.
+    func testAWriteThroughAPartRecordsNoRead() {
+        let settings = Settings()
+        let name = settings.name
+
+        let (_, reads) = ReadScope.collect { name.wrappedValue = "typed" }
+
+        XCTAssertTrue(reads.isEmpty, "the write read nothing a view would be built again for")
+        XCTAssertEqual(settings.profile.name, "typed")
+    }
+
     func testStateOnAViewSurvivesTheRebuild() {
         let renders = Renders()
 
@@ -218,6 +230,28 @@ final class StateTests: XCTestCase {
 
         XCTAssertEqual(second.child("b")?.props["text"], .string("Count: 0"),
                        "an element the author renamed is a new element, state included")
+    }
+
+    /// The other branch of an `if` at a body's root is another view, though of the same type: it starts over, as
+    /// it does inside a stack.
+    func testAnotherBranchAtABodysRootStartsOver() {
+        struct Choosing: View {
+            let editing: Bool
+
+            var body: some View {
+                if editing { Counter() } else { Counter() }
+            }
+        }
+
+        let renders = Renders()
+
+        let first = renders.render(Choosing(editing: true).node)
+        renders.fire(first.events?["clicked"] ?? -1)
+        _ = renders.render(Choosing(editing: true).node, changed: Renderer.shared.pendingChanges)
+
+        let swapped = renders.render(Choosing(editing: false).node, changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(swapped.props["text"], .string("Count: 0"), "the other branch's counter keeps nothing of the first")
     }
 
     func testAViewInsideAViewKeepsItsOwnState() {
@@ -705,12 +739,12 @@ extension StateTests {
         _ = Renderer.shared.renderHost(baseline: 0)
         XCTAssertEqual(readers.count, 1)
 
-        fade.projectedValue.journey.move(to: 0.2, .eased(400, .linear))
+        fade.projectedValue.journey.move(to: 0.2, .eased(.milliseconds(400), .linear))
         _ = renders.revisit(changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(readers.count, 2, "the body that printed the state was not built again for the move")
         XCTAssertEqual(fade.get(), 0.2, "and it reads where the value is going")
-        XCTAssertEqual(fade.projectedValue.journey.motion, .eased(400, .linear), "on the move's own law")
+        XCTAssertEqual(fade.projectedValue.journey.motion, .eased(.milliseconds(400), .linear), "on the move's own law")
         XCTAssertEqual(fade.projectedValue.journey.value, 1, "the value waits for the host to walk it")
     }
 
@@ -729,7 +763,7 @@ extension StateTests {
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
             Shown { _ = shown.get() }
-                .samples(fade.projectedValue, into: shown.projectedValue, .every(0))
+                .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(0)))
                 .node,
         ], id: "root"))
 
@@ -754,7 +788,7 @@ extension StateTests {
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
             Shown { _ = shown.get() }
-                .samples(fade.projectedValue, into: shown.projectedValue, .every(0))
+                .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(0)))
                 .node,
         ], id: "root"))
         _ = Renderer.shared.renderHost(baseline: 0)
@@ -781,7 +815,7 @@ extension StateTests {
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
             Shown { _ = shown.get() }
-                .samples(fade.projectedValue, into: shown.projectedValue, .every(30))
+                .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(30)))
                 .node,
         ], id: "root"))
 
@@ -814,7 +848,7 @@ extension StateTests {
 
             renders.render(stack([
                 Shown { _ = shown.get() }
-                    .samples(fade.projectedValue, into: shown.projectedValue, .every(100))
+                    .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(100)))
                     .node,
             ], id: "root"))
 
@@ -846,7 +880,7 @@ extension StateTests {
             stack([
                 Text("walked").opacity(fade.projectedValue).node,
                 Shown { _ = shown.get() }
-                    .samples(fade.projectedValue, into: shown.projectedValue, .every(100_000))
+                    .samples(fade.projectedValue, into: shown.projectedValue, .every(.seconds(100)))
                     .node,
             ], id: "root")
         }
@@ -880,10 +914,10 @@ extension StateTests {
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
             Shown { _ = quick.get() }
-                .samples(fade.projectedValue, into: quick.projectedValue, .every(0))
+                .samples(fade.projectedValue, into: quick.projectedValue, .every(.milliseconds(0)))
                 .node,
             Shown { _ = slow.get() }
-                .samples(fade.projectedValue, into: slow.projectedValue, .every(100_000))
+                .samples(fade.projectedValue, into: slow.projectedValue, .every(.seconds(100)))
                 .node,
         ], id: "root"))
 

@@ -12,6 +12,7 @@ final class AndroidButtonViewTests: XCTestCase {
     static var allTests: [(String, (AndroidButtonViewTests) -> () throws -> Void)] {
         [
             ("testAButtonIsAsBigAsItsWordsAndItsRoom", testAButtonIsAsBigAsItsWordsAndItsRoom),
+            ("testALongPressOpensASplitButtonsMenuThoughItCanBeDragged", testALongPressOpensASplitButtonsMenuThoughItCanBeDragged),
             ("testAnIconAloneFitsTheRoomInsideThePadding", testAnIconAloneFitsTheRoomInsideThePadding),
             ("testAnIconBesideWordsStandsWhereItsPositionSays", testAnIconBesideWordsStandsWhereItsPositionSays),
             ("testAWideButtonsIconStandsBesideItsWords", testAWideButtonsIconStandsBesideItsWords),
@@ -219,6 +220,29 @@ final class AndroidButtonViewTests: XCTestCase {
             XCTAssertGreaterThan(Self.padding(of: buttons[2]).width, Self.padding(of: buttons[0]).width)
         }
     }
+
+    /// A long press on a split button opens its menu - the road TalkBack offers - whether or not the button can be
+    /// dragged: one owner decides what a long press does.
+    func testALongPressOpensASplitButtonsMenuThoughItCanBeDragged() throws {
+        try onMainActor {
+            let drags = State(wrappedValue: true)
+            let heard = Received<String>()
+            let host = AndroidRenderer.running {
+                Button("Save").onClicked {}.menu { MenuItem("Save as") }
+                    .draggable(text: "Save", canDrag: drags.wrappedValue) { heard.values.append("drag") }
+            }
+            host.layOut()
+            let save = try XCTUnwrap(host.views(AndroidButtonView.self).first)
+
+            XCTAssertTrue(Java.callBool(save.reference, Self.performLongClick), "held, it opens its menu")
+            drags.wrappedValue = false
+            host.runtime.pump.turn()
+            XCTAssertTrue(Java.callBool(save.reference, Self.performLongClick), "and so where it cannot be dragged")
+            XCTAssertEqual(heard.values, [], "no drag")
+        }
+    }
+
+    @MainActor private static let performLongClick = Java.method(JavaAPI.view, "performLongClick", "()Z")
 
     /// A finger on a split button's arrow opens its menu rather than clicking it; anywhere else it clicks it.
     func testASplitButtonsArrowIsNotItsClick() throws {

@@ -71,6 +71,9 @@
         update(connectivity, \.connectionProfiles, info.connectionProfiles)
     }
 
+    /// What a window's chrome says of its own controls - back, the sidebar, close, more - in the system's language.
+    public static var chromeWords: ChromeWords { LibraryWords.inSystemLanguage.chrome }
+
     /// Replaces the standard locale report.
     public static func setLocaleInfo(_ info: HostLocaleInfo) {
         let locale = StandardEnvironment.locale
@@ -104,7 +107,7 @@
     public static func connectWindow(
         kind: String? = nil, value: String? = nil, restoring values: [String: HostValue] = [:]
     ) -> String? {
-        OpenScenes.shared.connected(kind.map(WindowType.init), text: value, restoring: values)
+        OpenScenes.shared.connected(kind: kind, text: value, restoring: values)
     }
 
     /// Updates the process-wide application session from native lifecycle.
@@ -196,8 +199,7 @@
                     opacity: $0.opacity,
                     zIndex: $0.zIndex,
                     shade: $0.shade)
-            },
-            motion: run.motion)
+            })
     }
 
     /// Builds and returns a typed patch against the generation the host holds.
@@ -317,7 +319,7 @@
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
     ) {
-        RaisedEvents.shared.raise(event.token.name, MemberValues.encode(repeat each value))
+        RaisedEvents.shared.raise(EventMember(event), MemberValues.encode(repeat each value))
     }
 
     /// Tells the core what this host realizes - its `Registry.realization` -
@@ -329,11 +331,12 @@
         HostRealizations.current = realization
     }
 
-    /// Tells the core what the host judges it realizes, member by member - what `Device.honours` answers from.
+    /// Tells the core what the host judges it realizes, member by member - what `Device.honours` answers from. The
+    /// register is read when first asked, not as it is told: building it costs, and a host tells it at each start.
     ///
     /// - Parameter register: the host's register, its runtime's realization behind its own records.
-    public static func setRegister(_ register: HostRegister?) {
-        HostRealizations.register = register
+    public static func setRegister(_ register: @autoclosure @escaping () -> HostRegister?) {
+        HostRealizations.registerSource = register
     }
 
     /// Whether this host makes a view for an element.
@@ -341,7 +344,7 @@
     /// - Parameter contract: the element's contract.
     /// - Returns: whether the host said it realizes the element.
     public static func realizes(_ contract: any ElementContract.Type) -> Bool {
-        HostRealizations.current.elements.contains(contract.nodeType.name)
+        HostRealizations.current.elements.contains(contract.nodeType)
     }
 
     /// Whether this host realizes a property, on any element.
@@ -349,7 +352,7 @@
     /// - Parameter member: the property, written with its contract.
     /// - Returns: whether the host said it realizes the property.
     public static func realizes<Owner: Contract, Value>(_ member: ElementProperty<Owner, Value>) -> Bool {
-        HostRealizations.current.members.contains { $0.owner == Owner.name && $0.member == member.name }
+        HostRealizations.realizes(member.token.key, of: member.owner)
     }
 
     /// Whether this host raises an event, on any element.
@@ -357,7 +360,7 @@
     /// - Parameter member: the event, written with its contract.
     /// - Returns: whether the host said it raises the event.
     public static func realizes<Owner: Contract, Payload>(_ member: ElementEvent<Owner, Payload>) -> Bool {
-        HostRealizations.current.members.contains { $0.owner == Owner.name && $0.member == member.name }
+        HostRealizations.realizes(member.token.key, of: member.owner)
     }
 
     /// Claims the calling thread as the UI thread, whose jobs are `MainActor`'s, and runs what waits - what a host's
@@ -382,12 +385,22 @@
     }
 
     /// Whether a turn has anything to do: jobs on the UI executor, acts or saves not taken, a render, a cycle
-    /// awake.
+    /// asked for - a write, an engine armed or stirred; an engine going on of its own waits for the display's frame.
     /// Design: docs/design/host/runtime.md#the-turn-on-apple
     public static var wantsTurn: Bool {
         let renderer = Renderer.shared
         return UIThreadExecutor.shared.pendingCount > 0 || renderer.actCallsPending > 0 || renderer.needsRender
-            || renderer.cycleAwake() != 0
+            || renderer.cycleAsked()
+    }
+
+    /// Whether a cycle waits on something a turn answers at once - a write, an engine armed or woken - rather than
+    /// on an engine going on of its own, which the display's frame serves.
+    public static var cyclesAsked: Bool { Renderer.shared.cycleAsked() }
+
+    /// A runtime brought its frame clock: the cycles take their time from it from its start, the first a start.
+    /// Design: docs/design/core/cycle.md#a-start-is-a-gap
+    public static func clockStarted() {
+        Renderer.shared.clockStarted()
     }
 
     #if os(WASI)

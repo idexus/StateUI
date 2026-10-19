@@ -9,7 +9,7 @@ import PackageDescription
 // The GTK host's tests register it and run the web view's family through it.
 
 // NonisolatedNonsendingByDefault, as every StateUI package; see ../../../Package.swift.
-let settings: [SwiftSetting] = [.enableUpcomingFeature("NonisolatedNonsendingByDefault"), .define("GTK")]
+let settings: [SwiftSetting] = [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
 
 let package = Package(
     name: "StateUIWebViewGTK",

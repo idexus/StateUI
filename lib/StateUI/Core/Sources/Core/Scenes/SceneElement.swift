@@ -18,7 +18,7 @@ struct SceneElement: Element {
         let authored = SceneElement.unwrapped(scene)
 
         var node = Node.composed(
-            self, type: String(reflecting: type(of: authored)), scene: record
+            self, type: typeKey(of: type(of: authored)), scene: record
         ) { [record, scene] in
             SceneElement.build(record, scene)
         }
@@ -60,16 +60,16 @@ struct SceneElement: Element {
         var node = Node(contract: SceneContract.self, children: children)
 
         // The user closed a window of the scene - its key is the payload; the scene ends with its last.
-        node.addHandler(SceneContract.windowClosed.token, gate: .none) {
+        node.addHandler(SceneContract.windowClosed.token) {
             if let key = EventBuffer.current.value()?.string {
                 record.closed(key: key)
             }
         }
 
         // Where the scene stands, as the host sees it.
-        node.addHandler(SceneContract.activated.token, gate: .none) { record.session.phase = .active }
-        node.addHandler(SceneContract.deactivated.token, gate: .none) { record.session.phase = .inactive }
-        node.addHandler(SceneContract.stopped.token, gate: .none) { record.session.phase = .background }
+        node.addHandler(SceneContract.activated.token) { record.session.phase = .active }
+        node.addHandler(SceneContract.deactivated.token) { record.session.phase = .inactive }
+        node.addHandler(SceneContract.stopped.token) { record.session.phase = .background }
 
         return node
     }
@@ -78,7 +78,7 @@ struct SceneElement: Element {
     /// Design: docs/design/views/inspector.md#where-it-docks
     private static func window(_ declared: DeclaredWindows, opened: OpenedWindow, _ record: SceneRecord) -> Node {
         var node = Node.window(
-            showing: { declared.page(opened, record) }, kind: declared.kind,
+            showing: { declared.page(opened, record) },
             session: record.windowSession(opened.key), inspector: { Inspector.docked(in: record, window: opened.key) })
         node.environments.insert(contentsOf: declared.environments, at: 0)
         return node

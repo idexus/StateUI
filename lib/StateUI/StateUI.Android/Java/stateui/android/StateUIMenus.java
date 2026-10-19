@@ -26,16 +26,21 @@ import java.util.ArrayDeque;
  * its id is that place plus one - a submenu's is none.
  */
 final class StateUIMenus {
-    /** An entry's kind, in its lowest bits. */
-    static final int ITEM = 0, MENU = 1, END = 2, SEPARATOR = 3, KIND = 3;
+    /** An entry's kind, in its lowest bits - the bits `KIND` masks. */
+    // Swift: AndroidMenuEntry
+    static final int ITEM = 0, MENU = 1, END = 2, SEPARATOR = 3;
+    // Swift: none
+    static final int KIND = 3;
 
     /**
      * An entry's flags: not enabled, destructive, standing on the bar beside the title where room allows, showing
      * its words there beside its picture where room allows, standing checked or not, and checked.
      */
+    // Swift: AndroidMenuMark
     static final int DISABLED = 4, DESTRUCTIVE = 8, ON_BAR = 16, WITH_TEXT = 32, CHECKABLE = 64, CHECKED = 128;
 
     /** An item's shortcut: the modifiers held with its key, whose character stands in the entry's upper half. */
+    // Swift: AndroidMenuModifier
     static final int CONTROL = 256, SHIFT = 512, ALT = 1024;
 
     private StateUIMenus() {}

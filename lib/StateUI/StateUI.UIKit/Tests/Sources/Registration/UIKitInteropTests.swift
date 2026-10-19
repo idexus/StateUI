@@ -228,7 +228,7 @@ final class UIKitInteropTests: XCTestCase {
     func testTheApplicationsOwnElementIsNotWhatThisHostDeclares() {
         Self.registerLamp()
 
-        XCTAssertTrue(UIKitRegistrations.registry.realization.elements.contains(LampContract.nodeType.name))
+        XCTAssertTrue(UIKitRegistrations.registry.realization.elements.contains(LampContract.nodeType))
         XCTAssertNil(LibraryContracts.elements.first { $0.nodeType.name == LampContract.nodeType.name })
     }
 }

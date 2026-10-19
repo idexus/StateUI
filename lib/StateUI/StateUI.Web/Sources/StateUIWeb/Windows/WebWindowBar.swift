@@ -60,10 +60,11 @@ final class WebWindowBar: WebDOMView {
                              (leading, "actions"), (trailing, "actions")] {
             part.attribute("class", "stateui-bar-\(kind)")
         }
-        glyph(toggle, "sidebar", label: "Sidebar")
-        glyph(back, "back", label: "Back")
-        glyph(closer, "close", label: "Close")
-        glyph(more, "more", label: "More")
+        let words = CoreLink().chromeWords
+        glyph(toggle, "sidebar", label: words.sidebar)
+        glyph(back, "back", label: words.back)
+        glyph(closer, "close", label: words.close)
+        glyph(more, "more", label: words.more)
         more.attribute("aria-haspopup", "menu")
         more.listen("click") { [weak self] in
             guard let self else { return }

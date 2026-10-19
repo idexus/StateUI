@@ -133,6 +133,57 @@ export async function chooseListedUIKitDevice(state: vscode.Memento, wanted: str
     return found?.name;
 }
 
+const suitesKey = "stateui.uiKitSuiteSimulator";
+
+/**
+ * The simulator a suite runs on - the host's suite runs on none but a simulator: the device chosen where it is one,
+ * else the simulator chosen for suites, each while it is listed; nothing where one is to be asked for.
+ */
+export function simulatorForSuites(
+    listed: UIKitDevice[], chosen?: ChosenUIKitDevice, forSuites?: ChosenUIKitDevice,
+): string | undefined {
+    const simulators = new Set(listed.filter((each) => each.kind === "simulator").map((each) => each.id));
+    return [chosen, forSuites].find((each) => each !== undefined && simulators.has(each.id))?.id;
+}
+
+/**
+ * The simulator a suite runs on (`simulatorForSuites`), else asked for among the simulators alone and remembered for
+ * suites: the iPhone or iPad a launch runs on stays as it is.
+ */
+export async function uiKitSimulatorToTestOn(state: vscode.Memento): Promise<string | undefined> {
+    const listed = await listUIKitDevices();
+    if (!listed) {
+        return undefined;
+    }
+    const found = simulatorForSuites(listed, chosenUIKitDevice(state), state.get<ChosenUIKitDevice>(suitesKey));
+    if (found) {
+        return found;
+    }
+    const simulators = listed.filter((each) => each.kind === "simulator");
+    if (simulators.length === 0) {
+        void vscode.window.showErrorMessage(
+            `StateUI: the host's suite runs on a simulator, and none of iOS ${oldestIOS} or later is available - add one in Xcode's Devices and Simulators.`);
+        return undefined;
+    }
+    const simulator = (await vscode.window.showQuickPick(simulators.map((each) => entry(each)),
+        { placeHolder: "Which simulator do StateUI's suites run on? Launches keep the iPhone or iPad chosen for them.", ignoreFocusOut: true }))?.device;
+    if (!simulator) {
+        return undefined;
+    }
+    await state.update(suitesKey, { id: simulator.id, name: simulator.name } satisfies ChosenUIKitDevice);
+    return simulator.id;
+}
+
+/** How `device` stands in a list to pick from - `current` where it is the one chosen. */
+function entry(device: UIKitDevice, current?: string): vscode.QuickPickItem & { device: UIKitDevice } {
+    return {
+        label: `$(${device.name.startsWith("iPad") ? "device-tablet" : "device-mobile"}) ${device.name}`,
+        description: [`iOS ${device.os}`, device.state || undefined, device.id === current ? "current" : undefined]
+            .filter(Boolean).join(" · "),
+        device,
+    };
+}
+
 /** Asks for a device among the iPhones and iPads paired and the simulators, remembers it, and answers its id. */
 export async function askForUIKitDevice(state: vscode.Memento, listed?: UIKitDevice[]): Promise<string | undefined> {
     listed ??= await listUIKitDevices();
@@ -147,19 +198,13 @@ export async function askForUIKitDevice(state: vscode.Memento, listed?: UIKitDev
 
     const current = chosenUIKitDevice(state)?.id;
     type Item = vscode.QuickPickItem & { device?: UIKitDevice };
-    const entry = (device: UIKitDevice): Item => ({
-        label: `$(${device.name.startsWith("iPad") ? "device-tablet" : "device-mobile"}) ${device.name}`,
-        description: [`iOS ${device.os}`, device.state || undefined, device.id === current ? "current" : undefined]
-            .filter(Boolean).join(" · "),
-        device,
-    });
     const devices = listed.filter((each) => each.kind === "device");
     const simulators = listed.filter((each) => each.kind === "simulator");
     const items: Item[] = [
         ...(devices.length > 0 ? [{ label: "Devices", kind: vscode.QuickPickItemKind.Separator }] : []),
-        ...devices.map(entry),
+        ...devices.map((each) => entry(each, current)),
         ...(simulators.length > 0 ? [{ label: "Simulators", kind: vscode.QuickPickItemKind.Separator }] : []),
-        ...simulators.map(entry),
+        ...simulators.map((each) => entry(each, current)),
     ];
 
     const device = (await vscode.window.showQuickPick(items,

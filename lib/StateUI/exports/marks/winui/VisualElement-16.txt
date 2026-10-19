@@ -1,62 +1,60 @@
-# revision 12.2
+# revision 14.2
 ActivityIndicator.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
-Button.frameChanged: ✅
 Button.maximumHeight: ✅
 Button.maximumWidth: ✅
 Button.minimumHeight: ✅
 Button.minimumWidth: ✅
 Button.rotationY: ✓ read rotationY of Button: the host's own tip, checked against the projection it laid on the element
-Canvas.tooltip: ✅
-Capsule.isEnabled: does not apply - read isEnabled of Capsule - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Capsule.rotation: ✅
-CheckBox.accessibilityHeading: ✅
-CheckBox.translationY: ✅
-DatePicker.layoutDirection: ✅
-Divider.ignoresInput: ✅
-Divider.scale: ✅
-Ellipse.scaleY: ✅
-Ellipse.style: ✅
-Grid.isAccessibilityHidden: ✅
-HStack.isVisible: ✅
-HStack.pivotX: ✅
-Image.frameChanged: ✅
-Image.maximumHeight: ✅
-Image.maximumWidth: ✅
-Image.minimumHeight: ✅
-Image.minimumWidth: ✅
-Image.rotationY: ✓ read rotationY of Image: the host's own tip, checked against the projection it laid on the element
-ItemsView.accessibilityHint: ✅
-Line.translationX: ✅
-Line.zIndex: ✅
-Map.automationExcludedWithChildren: 🧩
-Path.accessibilityHeading: ✅
-Picker.isEnabled: ✅
-Picker.rotation: ✅
-Polygon.accessibilityLabel: ✅
-Polygon.isEnabled: ✅
-Polyline.layoutDirection: ✓ read layoutDirection of Polyline: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-ProgressBar.frame: ✅
-ProgressBar.scaleX: ✅
-RadioButton.accessibilityHeading: ✅
-Rectangle.frameChanged: ✅
-Rectangle.height: ✅
-Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own tip, checked against the projection it laid on the element
-Rectangle.width: ✅
-ScrollView.accessibilityLabel: ✅
-ScrollView.isEnabled: ✅
+Canvas.accessibilityHint: ✅
+Capsule.opacity: ✅
+Capsule.pivotY: ✅
+CheckBox.translationX: ✅
+CheckBox.zIndex: ✅
+DatePicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Divider.frame: ✅
+Divider.scaleX: ✅
+Ellipse.frame: ✅
+Ellipse.scaleX: ✅
+Grid.accessibilityHeading: ✅
+Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Image.opacity: ✅
+Image.pivotY: ✅
+ItemsView.translationX: ✅
+ItemsView.zIndex: ✅
+LayoutEngine.ignoresInput: ✅
+LayoutEngine.scale: ✅
+Line.accessibilityHeading: ✅
+Line.translationY: ✅
+Map.background: 🧩
+Path.isAccessibilityHidden: ✅
+Picker.height: ✅
+Picker.rotationX: ✓ read rotationX of Picker: the host's own tip, checked against the projection it laid on the element
+Picker.width: ✅
+Polygon.accessibilityHint: ✅
+Polyline.isVisible: ✅
+Polyline.pivotX: ✅
+ProgressBar.scaleY: ✅
+ProgressBar.style: ✅
+RadioButton.isAccessibilityHidden: ✅
+Rectangle.maximumHeight: ✅
+Rectangle.maximumWidth: ✅
+Rectangle.minimumHeight: ✅
+Rectangle.minimumWidth: ✅
+Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own tip, checked against the projection it laid on the element
+ScrollView.accessibilityHint: ✅
+ScrollView.layoutDirection: ✅
 SearchField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 Slider.frame: ✅
 Slider.scaleX: ✅
 Spacer.isAccessibilityHidden: ✅
-Stepper.frameChanged: ✅
 Stepper.maximumHeight: ✅
 Stepper.maximumWidth: ✅
 Stepper.minimumHeight: ✅
 Stepper.minimumWidth: ✅
 Stepper.rotationY: ✓ read rotationY of Stepper: the host's own tip, checked against the projection it laid on the element
 Switch.tooltip: ✅
-Text.opacity: ✅
-Text.pivotY: ✅
+Text.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 TextEditor.isEnabled: ✅
 TextEditor.rotation: ✅
 TextField.accessibilityLabel: ✅
@@ -64,6 +62,6 @@ TimePicker.isVisible: ✅
 TimePicker.pivotX: ✅
 VStack.translationX: ✅
 VStack.zIndex: ✅
-WebView.accessibilityHint: ✅
-ZStack.opacity: ✅
-ZStack.pivotY: ✅
+WebView.accessibilityLabel: ✅
+ZStack.isVisible: ✅
+ZStack.pivotX: ✅

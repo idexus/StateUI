@@ -14,7 +14,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
 
     static let id = "textField"
     static let title = "TextField"
-    static let summary = "A single-line field. Given a binding it writes every edit back."
+    static let summary = "A single-line field writing every edit back to its binding."
 
     // listing: TextFieldSample
     var body: some View {
@@ -109,9 +109,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         Text("The binding IS the two-way part: `TextField($name)` hands the state to the "
-            + "host, which shows it in the field and lands every edit back on it. "
-            + "`.onTextChanged` written afterwards runs beside it, never instead of "
-            + "it, and after the state already holds the text.")
+            + "host, which shows it in the field and lands every edit back on it.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

@@ -31,9 +31,19 @@ public struct Color: Equatable, Sendable, HostRepresentable {
     /// Design: docs/design/types/colour-and-theme.md#a-pair-for-each-theme
     let dark: Rgba?
 
-    /// Whether this is the accent in force, whose alpha is `light`'s - the
-    /// differ reads it as the view wearing it is built.
-    let isAccent: Bool
+    /// The halves that are the accent in force rather than channels, each keeping only its alpha - the differ
+    /// reads the accent as the view wearing it is built.
+    let accentHalves: Halves
+
+    /// The halves of a colour: the light one, and the dark one of a pair.
+    struct Halves: OptionSet, Equatable, Sendable {
+        let rawValue: UInt8
+        static let light = Halves(rawValue: 1)
+        static let dark = Halves(rawValue: 2)
+    }
+
+    /// Whether this is the accent in force, whole - no pair around it.
+    var isAccent: Bool { dark == nil && accentHalves.contains(.light) }
 
     /// A colour from hex: "#RGB", "#ARGB", "#RRGGBB" or "#AARRGGBB", with or
     /// without the leading `#` - the alpha, when it is written, first.
@@ -50,7 +60,7 @@ public struct Color: Equatable, Sendable, HostRepresentable {
 
         self.light = parsed
         self.dark = nil
-        self.isAccent = false
+        self.accentHalves = []
     }
 
     /// The same color named twice, once for each theme.
@@ -62,24 +72,31 @@ public struct Color: Equatable, Sendable, HostRepresentable {
     ///
     /// Design: docs/design/types/colour-and-theme.md#a-pair-for-each-theme
     public init(light: Color, dark: Color) {
+        // A pair handed as a half gives the half of that theme; the accent stays the accent.
         self.light = light.light
-        self.dark = dark.light
-        self.isAccent = false
+        self.dark = dark.dark ?? dark.light
+        var halves: Halves = []
+        if light.accentHalves.contains(.light) { halves.insert(.light) }
+        if dark.accentHalves.contains(dark.dark == nil ? .light : .dark) { halves.insert(.dark) }
+        self.accentHalves = halves
     }
 
     /// The channels themselves, and the ones for dark mode when there are any.
-    init(_ light: Rgba, dark: Rgba? = nil) {
+    init(_ light: Rgba, dark: Rgba? = nil, accentHalves: Halves = []) {
         self.light = light
         self.dark = dark
-        self.isAccent = false
+        self.accentHalves = accentHalves
     }
 
     /// The accent in force, let through to `alpha`.
     private init(accentAlpha alpha: UInt8) {
-        light = Rgba(red: 0, green: 0, blue: 0, alpha: alpha)
+        light = Color.accentHalf(alpha)
         dark = nil
-        isAccent = true
+        accentHalves = .light
     }
+
+    /// The channels an accent half keeps: its alpha alone.
+    private static func accentHalf(_ alpha: UInt8) -> Rgba { Rgba(red: 0, green: 0, blue: 0, alpha: alpha) }
 
     /// The accent in force: the one the user chose for the system - or, on a
     /// platform with none, the application's own tint - read as the view
@@ -117,16 +134,17 @@ public struct Color: Equatable, Sendable, HostRepresentable {
             Rgba(red: channels.red, green: channels.green, blue: channels.blue,
                  alpha: UInt8((Double(channels.alpha) * kept).rounded()))
         }
-        return isAccent ? Color(accentAlpha: scaled(light).alpha) : Color(scaled(light), dark: dark.map(scaled))
+        return Color(scaled(light), dark: dark.map(scaled), accentHalves: accentHalves)
     }
 
     /// Four bytes under the colour kind, both halves as a themed pair, or the
     /// accent in force as the system's colour the differ resolves.
     public var propValue: PropValue {
-        if isAccent { return .systemColor(0, alpha: light.alpha) }
-        guard let dark else { return Color.tagged(light) }
+        let lightHalf = accentHalves.contains(.light) ? .systemColor(0, alpha: light.alpha) : Color.tagged(light)
+        guard let dark else { return lightHalf }
 
-        return .themed(light: Color.tagged(light), dark: Color.tagged(dark))
+        let darkHalf = accentHalves.contains(.dark) ? .systemColor(0, alpha: dark.alpha) : Color.tagged(dark)
+        return .themed(light: lightHalf, dark: darkHalf)
     }
 
     /// A colour back: four channels, or a pair of them - nil for anything
@@ -139,11 +157,12 @@ public struct Color: Equatable, Sendable, HostRepresentable {
         case .color(let red, let green, let blue, let alpha):
             self.init(Rgba(red: red, green: green, blue: blue, alpha: alpha))
 
-        case .themed(light: .color(let red, let green, let blue, let alpha),
-                     dark: .color(let darkRed, let darkGreen, let darkBlue, let darkAlpha)):
-            self.init(
-                Rgba(red: red, green: green, blue: blue, alpha: alpha),
-                dark: Rgba(red: darkRed, green: darkGreen, blue: darkBlue, alpha: darkAlpha))
+        case .themed(let lightHalf, let darkHalf):
+            guard let light = Color(propValue: lightHalf), let dark = Color(propValue: darkHalf),
+                  light.dark == nil, dark.dark == nil
+            else { return nil }
+
+            self.init(light: light, dark: dark)
 
         default:
             return nil

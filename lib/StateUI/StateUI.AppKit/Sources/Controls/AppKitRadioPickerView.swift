@@ -37,7 +37,7 @@ final class AppKitRadioPickerView: NSStackView, AppKitChoosing {
 
     func apply(
         items: [String], selectedIndex: Int, writeSelection: Bool, title: String?, font: NSFont, textColor: NSColor,
-        tint: NSColor?, alignment: NSTextAlignment, enabled: Bool, open: Bool, writeOpen: Bool
+        tint: NSColor?, alignment: TextAlignment, enabled: Bool, open: Bool, writeOpen: Bool
     ) {
         ProgramWrite.perform {
             let write = written.write(items, chosen: selectedIndex, choiceChanged: writeSelection)
@@ -57,9 +57,9 @@ final class AppKitRadioPickerView: NSStackView, AppKitChoosing {
                     string: written.choices[place], attributes: [.font: font, .foregroundColor: textColor])
             }
             self.alignment = switch alignment {
+            case .start: .leading
             case .center: .centerX
-            case .right: .trailing
-            default: .leading
+            case .end: .trailing
             }
             isEnabled = enabled
         }

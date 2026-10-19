@@ -24,15 +24,15 @@
     }
 
     /// The numbers the kinds cross as, which a relay switches on.
-    private enum Kind {
-        static let fillColor: Int32 = 0, strokeColor: Int32 = 1, textColor: Int32 = 2
-        static let lineWidth: Int32 = 3, fontSize: Int32 = 4, opacity: Int32 = 5
-        static let strokeLine: Int32 = 6, strokeRectangle: Int32 = 7, strokeRoundedRectangle: Int32 = 8
-        static let strokeEllipse: Int32 = 9, strokePath: Int32 = 11
-        static let fillRectangle: Int32 = 12, fillRoundedRectangle: Int32 = 13, fillEllipse: Int32 = 14
-        static let fillPath: Int32 = 16, text: Int32 = 17
-        static let translate: Int32 = 18, rotate: Int32 = 19, scale: Int32 = 20
-        static let saveState: Int32 = 21, restoreState: Int32 = 22
+    enum Kind: Int32 {
+        case fillColor = 0, strokeColor = 1, textColor = 2
+        case lineWidth = 3, fontSize = 4, opacity = 5
+        case strokeLine = 6, strokeRectangle = 7, strokeRoundedRectangle = 8
+        case strokeEllipse = 9, strokePath = 11
+        case fillRectangle = 12, fillRoundedRectangle = 13, fillEllipse = 14
+        case fillPath = 16, text = 17
+        case translate = 18, rotate = 19, scale = 20
+        case saveState = 21, restoreState = 22
     }
 
     private mutating func append(_ instruction: CanvasInstruction) {
@@ -59,29 +59,29 @@
                 in: rect, start: start, end: end, clockwise: clockwise, closed: true, wedge: true))
         case .fillPath(let curves): path(Kind.fillPath, curves)
         case .text(let text, let rect, let horizontal, let vertical):
-            ints += [Kind.text, horizontal.rawValue, vertical.rawValue, Int32(strings.count)]
+            ints += [Kind.text.rawValue, horizontal.rawValue, vertical.rawValue, Int32(strings.count)]
             numbers += Self.numbers(rect)
             strings.append(text)
         case .translate(let x, let y): record(Kind.translate, [x, y])
         case .rotate(let degrees): record(Kind.rotate, [degrees])
         case .scale(let x, let y): record(Kind.scale, [x, y])
-        case .saveState: ints.append(Kind.saveState)
-        case .restoreState: ints.append(Kind.restoreState)
+        case .saveState: ints.append(Kind.saveState.rawValue)
+        case .restoreState: ints.append(Kind.restoreState.rawValue)
         }
     }
 
-    private mutating func record(_ kind: Int32, _ values: [Double]) {
-        ints.append(kind)
+    private mutating func record(_ kind: Kind, _ values: [Double]) {
+        ints.append(kind.rawValue)
         numbers += values
     }
 
-    private mutating func colour(_ kind: Int32, _ color: HostValue) {
+    private mutating func colour(_ kind: Kind, _ color: HostValue) {
         guard let argb = color.argb else { return }
-        ints += [kind, Int32(bitPattern: argb)]
+        ints += [kind.rawValue, Int32(bitPattern: argb)]
     }
 
-    private mutating func path(_ kind: Int32, _ curves: [HostCurveCommand]) {
-        ints += [kind, Int32(curves.count)]
+    private mutating func path(_ kind: Kind, _ curves: [HostCurveCommand]) {
+        ints += [kind.rawValue, Int32(curves.count)]
         numbers += curves.flatMap(\.numbers)
     }
 

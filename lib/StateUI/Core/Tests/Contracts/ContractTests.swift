@@ -54,6 +54,17 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(lamp.node.props["count"], .number(3))
     }
 
+    /// A property is kept only where the contract declares a property of that name: an event of the same name is
+    /// another member, so a property named like a button's event is left out of a button.
+    func testAPropertyNamedLikeAnEventItWearsIsLeftOut() {
+        let button = Button("Save").setValue(EchoContract.clicked, true)
+
+        let patch = Renders().render(button.id("save").node)
+
+        XCTAssertNil(patch.props["clicked"])
+        XCTAssertTrue(hasComplained("Button takes no clicked - its contract does not wear it"))
+    }
+
     /// A library element keeps only what its contract wears: a member another contract declares, written on it by
     /// the generic road, reaches no host - it is left out and said once - and what it wears stays.
     func testALibraryElementLeavesOutWhatItsContractDoesNotWear() {
@@ -74,7 +85,7 @@ final class ContractTests: XCTestCase {
     /// What comes back from a host is the declared kind or no value at all -
     /// never a guess, and never a trap on a number that is not one.
     func testAValueBackFromTheHostIsTheDeclaredKindOrNone() {
-        XCTAssertEqual(Int(propValue: .number(2.7)), 2)
+        XCTAssertEqual(Int(propValue: .number(2.7)), 3)
         XCTAssertNil(Int(propValue: .number(.nan)))
         XCTAssertNil(Int(propValue: .number(.infinity)))
         XCTAssertNil(Int(propValue: .string("2")))
@@ -209,9 +220,11 @@ final class ContractTests: XCTestCase {
             FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarItemPlacement(rawValue: 1)!, ToolbarSide.leading,
             SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, ButtonRole.cancel, [Key.escape, "a"], MapType(rawValue: 1)!,
             WebNavigationType(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.changed,
+            LayoutInput.Axis.vertical,
+            ItemDragStart.held,
             ItemsLayout.list(), ItemsLayout.row(spacing: 8), ItemsLayout.grid(minimumItemWidth: 120, spacing: 4),
             SelectionMode.multiple, ScrollAnchor.center,
-            ItemsEntries(header: "h", sections: [ItemsEntries.Section(footer: "f", items: ["1", "2"])]),
+            ItemsEntries(header: "h", sections: [ItemsEntries.Section("0", footer: "f", items: ["1", "2"])]),
             [0, 7, 255] as [UInt8], FileType("Page", extensions: ["html", "htm"]),
             [FileType("Text", extensions: ["txt"]), FileType("Page", extensions: ["html"])] as [FileType],
             ChosenFile(address: "C:\\Reports\\Report.html", name: "Report.html"),
@@ -372,11 +385,27 @@ final class ContractTests: XCTestCase {
         }
         defer { subscription.cancel() }
 
-        XCTAssertEqual(HostEvents.dispatch("Test.BatteryChanged", [.number(0.87), .bool(true)]), 1)
-        XCTAssertEqual(HostEvents.dispatch("Test.BatteryChanged", [.number(0.87)]), 1)
+        XCTAssertEqual(HostEvents.dispatch(EventMember(TestDevice.batteryChanged), [.number(0.87), .bool(true)]), 1)
+        XCTAssertEqual(HostEvents.dispatch(EventMember(TestDevice.batteryChanged), [.number(0.87)]), 1)
         stateUIRunJobs()
 
         XCTAssertEqual(heard.lines, ["battery 0.87 true"])
+    }
+
+    /// Two tiers may each name an event alike: a raise of one reaches its own subscribers, never the other's.
+    func testTwoTiersEventsOfOneNameAreHeardApart() {
+        let heard = Heard()
+        let mine = HostEvents.on(TestDevice.changed) { heard.lines.append("device") }
+        let theirs = HostEvents.on(TestSync.changed) { heard.lines.append("sync") }
+        defer {
+            mine.cancel()
+            theirs.cancel()
+        }
+
+        HostEvents.dispatch(EventMember(TestDevice.changed), [])
+        stateUIRunJobs()
+
+        XCTAssertEqual(heard.lines, ["device"])
     }
 
     // MARK: - Support
@@ -438,8 +467,27 @@ private enum TestDevice: ApplicationTier {
     static let battery = ElementAct<Self, Void, (Double, Bool)>("Test.Battery")
     static let copy = ElementAct<Self, String, Void>("Test.Copy")
     static let batteryChanged = ElementEvent<Self, (Double, Bool)>("Test.BatteryChanged")
+    static let changed = ElementEvent<Self, Void>("changed")
 
-    static let members: [any ContractMember] = [battery, copy, batteryChanged]
+    static let members: [any ContractMember] = [battery, copy, batteryChanged, changed]
+}
+
+/// A contract declaring a property under the name a button's event has.
+private enum EchoContract: Contract {
+    static let name = "TestEcho"
+
+    static let clicked = ElementProperty<Self, Bool>("clicked")
+
+    static let members: [any ContractMember] = [clicked]
+}
+
+/// Another tier of the application's, naming an event as the first one does.
+private enum TestSync: ApplicationTier {
+    static let name = "TestSync"
+
+    static let changed = ElementEvent<Self, Void>("changed")
+
+    static let members: [any ContractMember] = [changed]
 }
 
 /// The lamp's view: its node from its contract.

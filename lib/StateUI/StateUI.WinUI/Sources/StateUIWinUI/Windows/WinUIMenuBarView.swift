@@ -37,9 +37,8 @@ final class WinUIMenuBarView: WinUIView {
         painted = (background, foreground)
         let fill = background?.argb
         let words = BandWords.color(on: background, written: foreground)?.argb
-        let light = background.flatMap(BandWords.light(on:))
-        stateui_winui_menu_bar_set_colours(
-            handle, fill != nil, fill ?? 0, words != nil, words ?? 0, light.map { $0 ? 1 : 2 } ?? 0)
+        let theme: ColorScheme = background.flatMap(BandWords.light(on:)).map { $0 ? .dark : .light } ?? .system
+        stateui_winui_menu_bar_set_colours(handle, fill != nil, fill ?? 0, words != nil, words ?? 0, theme.rawValue)
     }
 
     override func detach() {

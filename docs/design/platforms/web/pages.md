@@ -18,7 +18,9 @@ at its own size, the same view for as long as it is declared - and the
 trailing actions and the overflow at its end, each group of actions together
 on a glass of its own, apart from the next. Each action is a button with
 its picture, its words beside it where it shows them, its name for assistive
-technology and its tooltip. The bar's colours are the arrangement's, written
+technology and its tooltip. The bar's own buttons - the toggle, the way
+back, a sheet's close, the overflow - are named in the library's words, in
+the user's language (`ChromeWords`). The bar's colours are the arrangement's, written
 as CSS variables the stylesheet paints it with; without them the bar is the
 page's surface, translucent, blurred and deepened over what lies behind it;
 the room stands in the row below the bar, so nothing scrolls beneath it.
@@ -41,6 +43,23 @@ in words, and the browser's tab shows the site's own icon.
 
 The page is one window: an application's second window has no place of its
 own in it.
+
+## The colour under the window
+
+The page under the window wears the window's colour, where the window is one
+opaque colour (`WebWindowController.pageColour`): `--stateui-page` on the
+document, which `body` and the loading screen wear before the page's own
+surface. Safari on an iPhone - and a page added to the home screen - takes
+the colour above the page and around its bars ONCE, at the first paint, from
+what stands there then; the window's colour comes with the program after it.
+So the relay
+keeps the colour in the viewer's browser (`localStorage`, one an appearance:
+`stateui.page-colour.light` and `.dark`, as the system's stood when it was
+written), and `index.html` wears it before anything is drawn: from the second
+start the bars are the window's colour; the very first shows the page's own.
+A translucent window, a blur or the platform's own keeps none - the page
+under it would show through. A per-viewer convenience: nothing depends on it,
+and a browser keeping nothing paints as before.
 
 ## The tab
 
@@ -92,8 +111,12 @@ over everything (`popover="auto"`): an item a button, a separator a line, a
 submenu a button opening its own popover beside it, inside the one it stands
 in so that both stay open. A click beside it or Escape takes it down - the
 browser's own light dismissal - and so does choosing an item, which then
-hears it chosen. A popover is kept in the window whole, under what opened
-it, above where there is no room under, at the pointer for a context menu.
+hears it chosen. An open menu holds the keyboard: the page's own keys - a
+view taking the arrows, Enter or Escape - pass it by, so its arrows go
+through its items whatever the page takes, and as it goes the browser gives
+the keyboard back to what held it. A popover is kept in the window whole,
+under what opened it, above where there is no room under, at the pointer
+for a context menu.
 Its entries stand in a grid of rows each as tall as it is: WebKit spreads a
 grid held to a maximum height over its rows, and a menu of three stood the
 window's height in Safari.
@@ -102,8 +125,10 @@ A bar's action that is a menu opens its entries under it. The actions
 standing behind the bar - its overflow - and the menus the page's path
 declares stand in one menu at the bar's end, the overflow first. A view
 whose element declares a context menu opens it as the user asks: a right
-click, or a finger held still half a second; its entries are read as they
-stand then.
+click, or a finger held still the host layer's hold (`HandReading.hold`) -
+still meaning no farther from where it pressed than a finger goes before
+its press is a drag (`WebPress.finger`), so steps each too short to count
+still add up; its entries are read as they stand then.
 
 ## Sheets
 

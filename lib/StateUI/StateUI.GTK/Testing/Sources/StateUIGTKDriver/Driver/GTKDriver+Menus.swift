@@ -44,8 +44,8 @@ extension GTKDriver {
     /// Chooses the item `element` as the user does: the action its menu runs, which GTK refuses where it cannot be
     /// chosen. Whether a menu shows it.
     func chooseMenuItem(_ element: MountedElement) throws {
-        guard let (widget, _, name) = menuItem(element) else { throw DriverCannot(.activate, on: element) }
-        _ = gtk_widget_activate_action_variant(widget, GTKMenu.actionGroup + "." + name, nil)
+        guard let (widget, menu, name) = menuItem(element) else { throw DriverCannot(.activate, on: element) }
+        _ = gtk_widget_activate_action_variant(widget, menu.group + "." + name, nil)
     }
 
     /// What the menu showing the item `element` holds of it: its caption, whether it can be chosen, and whether it

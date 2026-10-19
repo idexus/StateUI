@@ -29,15 +29,15 @@ final class AppKitFrameClockTests: XCTestCase {
         XCTAssertEqual(found, [], "frames and time come from AppKitFrameClock alone")
     }
 
-    /// Frames come only while something holds the clock, and a closing window
-    /// hands the frames to the next one - holding as it was.
+    /// Frames come only while something holds the clock, and the window followed
+    /// next takes the frames - holding as it was.
     @MainActor
     func testFramesComeOnlyWhileHeldAndFollowTheWindows() {
         let first = window()
         let second = window()
         let clock = AppKitFrameClock(now: { 0 })
 
-        clock.attach(to: first)
+        clock.follow(first)
         XCTAssertFalse(clock.isRunning, "nothing holds it yet")
 
         clock.held = true
@@ -47,14 +47,11 @@ final class AppKitFrameClockTests: XCTestCase {
         XCTAssertFalse(clock.isRunning, "a still page costs no frames")
 
         clock.held = true
-        clock.release(second, next: nil)
-        XCTAssertTrue(clock.window === first, "a window that gives no frames releases nothing")
-
-        clock.release(first, next: second)
+        clock.follow(second)
         XCTAssertTrue(clock.window === second)
         XCTAssertTrue(clock.isRunning, "the next window's frames keep the hold")
 
-        clock.stop()
+        clock.follow(nil)
         XCTAssertNil(clock.window)
         XCTAssertFalse(clock.isRunning)
     }

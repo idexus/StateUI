@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ActivityIndicator.area: ✅
 ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the views' drag listeners' reports told by the driver, no drag started
@@ -407,6 +407,40 @@ ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
 ItemsView.tapped: ✅
 ItemsView.verticalAlignment: ✅
+LayoutEngine.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+LayoutEngine.area: ✅
+LayoutEngine.canDrag: ✓ dragAndDrop on LayoutEngine: the views' drag listeners' reports told by the driver, no drag started
+LayoutEngine.dragEnded: ✓ dragAndDrop on LayoutEngine: the views' drag listeners' reports told by the driver, no drag started
+LayoutEngine.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+LayoutEngine.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+LayoutEngine.dragStarting: ✓ dragAndDrop on LayoutEngine: the views' drag listeners' reports told by the driver, no drag started
+LayoutEngine.dragText: ✓ dragAndDrop on LayoutEngine: the views' drag listeners' reports told by the driver, no drag started
+LayoutEngine.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+LayoutEngine.droppedFileTypes: ✓ dropFiles on LayoutEngine: the view's drag listener's report told the driver's documents, no drag started
+LayoutEngine.filesDropped: ✓ dropFiles on LayoutEngine: the view's drag listener's report told the driver's documents, no drag started
+LayoutEngine.frameChanged: ✅
+LayoutEngine.gridColumn: ✅
+LayoutEngine.gridColumnSpan: ✅
+LayoutEngine.gridRow: ✅
+LayoutEngine.gridRowSpan: ✅
+LayoutEngine.horizontalAlignment: ✅
+LayoutEngine.margin: ✅
+LayoutEngine.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+LayoutEngine.panUpdated: ✅
+LayoutEngine.panXChannel: ✅
+LayoutEngine.panYChannel: ✅
+LayoutEngine.pinchUpdated: ✅
+LayoutEngine.pointerEntered: ✅
+LayoutEngine.pointerExited: ✅
+LayoutEngine.pointerMoved: ✅
+LayoutEngine.pointerPressed: ✅
+LayoutEngine.pointerReleased: ✅
+LayoutEngine.swipeDirection: ✅
+LayoutEngine.swipeThreshold: ✅
+LayoutEngine.swiped: ✅
+LayoutEngine.tapCount: ✅
+LayoutEngine.tapped: ✅
+LayoutEngine.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Line.area: ✅
 Line.canDrag: ✓ dragAndDrop on Line: the views' drag listeners' reports told by the driver, no drag started

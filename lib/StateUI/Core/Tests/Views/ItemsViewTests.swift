@@ -13,6 +13,15 @@ private final class Received<Value> {
     var values: [Value] = []
 }
 
+/// A list of the numbers a state holds, built again as they change.
+private struct NumbersList: View {
+    let numbers: State<[Int]>
+
+    var body: some View {
+        ItemsView(numbers.wrappedValue) { Text("\($0)") }
+    }
+}
+
 /// How many times each item was built - a class, so the closure that counts
 /// into it is not walked for state.
 private final class Built {
@@ -107,6 +116,20 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertEqual(patch.child("3")?.props[.text], .string("★"))
     }
 
+    /// A change that moves the entries builds, in the same render, the entry it brings to where a held one stood: the
+    /// collection laying the change out finds it built, and measures it before it moves a row.
+    func testAChangeBuildsTheEntryItBringsWhereAHeldOneStood() throws {
+        let numbers = State(wrappedValue: Array(0..<100))
+        let renders = Renders()
+        let list = try list(in: renders.render(NumbersList(numbers: numbers).node))
+        _ = try hold(["0", "1", "2"], in: renders, list: list)
+
+        numbers.wrappedValue = [99] + Array(0..<99)
+        let moved = try self.list(in: renders.revisit(changed: Renderer.shared.pendingChanges))
+
+        XCTAssertEqual(moved.arrangement, [.manual("99"), .manual("0"), .manual("1"), .manual("2")])
+    }
+
     /// The parent building the list again builds every entry held again, as a
     /// `ForEach` builds its rows: a value the closure captured may have changed.
     func testTheParentBuildingTheListAgainBuildsEveryHeldEntry() throws {
@@ -186,6 +209,7 @@ final class ItemsViewTests: XCTestCase {
         ]).node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        XCTAssertEqual(entries.sections.map(\.identity), ["Fruit", "Cider"], "each group by its name")
         XCTAssertEqual(entries.sections.map(\.header), ["Fruit\u{1E}header", nil])
         XCTAssertEqual(entries.sections.map(\.footer), [nil, "Cider\u{1E}footer"])
         XCTAssertEqual(entries.sections.map(\.items), [
@@ -206,6 +230,18 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertEqual(entries.sections[0].items, ["a", "b", "a\u{0}1"])
     }
 
+    /// Two groups of one name are told apart - a group named as another's place too - so a host knowing each group
+    /// by its name finds two.
+    func testTwoGroupsOfOneNameAreToldApart() throws {
+        let renders = Renders()
+        let list = try list(in: renders.render(ItemsView(groups: [
+            Section(["a"]) { Text($0) }, Section(["b"]) { Text($0) }.id("0"), Section(["c"]) { Text($0) }.id("0"),
+        ]).node))
+
+        let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        XCTAssertEqual(entries.sections.map(\.identity), ["0", "0\u{0}1", "0\u{0}2"])
+    }
+
     /// With no items the list is its empty view; a header alone is no item.
     func testAnEmptyListIsItsEmptyView() throws {
         let renders = Renders()
@@ -220,7 +256,7 @@ final class ItemsViewTests: XCTestCase {
     /// The entries round-trip through what crosses.
     func testTheEntriesCrossAndComeBackWhole() {
         let entries = ItemsEntries(header: "h", footer: nil, sections: [
-            ItemsEntries.Section(header: nil, footer: "f", items: ["1", "2"]),
+            ItemsEntries.Section("0", header: nil, footer: "f", items: ["1", "2"]),
         ])
         XCTAssertEqual(ItemsEntries(propValue: entries.propValue), entries)
         XCTAssertEqual(entries.identities, ["h", "1", "2", "f"])

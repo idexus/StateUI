@@ -16,8 +16,8 @@ final class UIKitActToolkit: ActToolkit {
     /// The question showing now, where one is.
     private(set) var showing: UIKitQuestion?
 
-    /// What the host told VoiceOver, in order.
-    private(set) var announcedForTesting: [String] = []
+    /// What the host told VoiceOver, in order, where a test asked for it with `[]`; nil keeps nothing.
+    var announcedForTesting: [String]?
 
     init(renderer: UIKitRenderer) {
         self.renderer = renderer
@@ -44,20 +44,20 @@ final class UIKitActToolkit: ActToolkit {
         return zone.secondsFromGMT(for: date) / 60
     }
 
-    /// Asks in UIKit's alert over what the user's window shows now - its top sheet, else its pages.
-    func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
-        guard let presenter = renderer.userPresenter else { return false }
+    /// Asks in UIKit's alert over what the user's window shows - its top sheet, else its pages - once nothing moves.
+    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
+        guard let root = renderer.userRoot else { return false }
         let asked = UIKitQuestion(question)
         showing = asked
-        asked.ask(over: presenter) { [weak self] accepted, words in
+        asked.ask(in: root) { [weak self] accepted, words in
             self?.showing = nil
-            answered(accepted, words)
+            answered(.success(HostQuestion.Given(accepted: accepted, words: words)))
         }
         return true
     }
 
     func announce(_ words: String) {
-        announcedForTesting.append(words)
+        announcedForTesting?.append(words)
         UIAccessibility.post(notification: .announcement, argument: words)
     }
 

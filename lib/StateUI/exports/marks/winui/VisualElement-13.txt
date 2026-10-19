@@ -1,48 +1,48 @@
-# revision 12.2
+# revision 14.2
 ActivityIndicator.tooltip: ✅
 Button.opacity: ✅
 Button.pivotY: ✅
-Canvas.accessibilityHeading: ✅
-Canvas.translationY: ✅
-Capsule.layoutDirection: ✓ read layoutDirection of Capsule: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-CheckBox.frame: ✅
-CheckBox.scaleX: ✅
-DatePicker.isAccessibilityHidden: ✅
-Divider.isEnabled: does not apply - read isEnabled of Divider - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Divider.rotation: ✅
-Ellipse.frameChanged: ✅
-Ellipse.maximumHeight: ✅
-Ellipse.maximumWidth: ✅
-Ellipse.minimumHeight: ✅
-Ellipse.minimumWidth: ✅
-Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own tip, checked against the projection it laid on the element
-Grid.accessibilityHint: ✅
+Canvas.translationX: ✅
+Canvas.zIndex: ✅
+Capsule.background: – A WinUI shape is its figure alone: it paints no ground around it.
+CheckBox.ignoresInput: ✅
+CheckBox.scale: ✅
+DatePicker.accessibilityHeading: ✅
+Divider.height: ✅
+Divider.rotationX: ✓ read rotationX of Divider: the host's own tip, checked against the projection it laid on the element
+Divider.width: ✅
+Ellipse.height: ✅
+Ellipse.rotationX: ✓ read rotationX of Ellipse: the host's own tip, checked against the projection it laid on the element
+Ellipse.width: ✅
+Grid.accessibilityLabel: ✅
 Grid.isEnabled: ✅
-HStack.automationExcludedWithChildren: ✅
-Image.opacity: ✅
-Image.pivotY: ✅
-ItemsView.translationX: ✅
-ItemsView.zIndex: ✅
-Line.ignoresInput: ✅
-Line.scale: ✅
-Map.tooltip: 🧩
-Path.accessibilityLabel: ✅
-Path.isEnabled: ✅
-Picker.layoutDirection: ✅
-Polygon.scaleY: ✅
-Polygon.style: ✅
-Polyline.isAccessibilityHidden: ✅
-ProgressBar.frameChanged: ✅
-ProgressBar.height: ✅
-ProgressBar.rotationX: ✓ read rotationX of ProgressBar: the host's own tip, checked against the projection it laid on the element
-ProgressBar.width: ✅
-RadioButton.accessibilityLabel: ✅
-Rectangle.isVisible: ✅
-Rectangle.pivotX: ✅
-ScrollView.scaleY: ✅
-ScrollView.style: ✅
+HStack.accessibilityHeading: ✅
+HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Image.background: – WinUI's picture paints the picture alone, no ground around it.
+ItemsView.ignoresInput: ✅
+ItemsView.scale: ✅
+LayoutEngine.isEnabled: does not apply - read isEnabled of LayoutEngine - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+LayoutEngine.rotation: ✅
+Line.frame: ✅
+Line.scaleX: ✅
+Map.accessibilityHeading: 🧩
+Path.accessibilityHint: ✅
+Picker.isVisible: ✅
+Picker.pivotX: ✅
+Polygon.translationX: ✅
+Polygon.zIndex: ✅
+Polyline.automationExcludedWithChildren: ✅
+ProgressBar.maximumHeight: ✅
+ProgressBar.maximumWidth: ✅
+ProgressBar.minimumHeight: ✅
+ProgressBar.minimumWidth: ✅
+ProgressBar.rotationY: ✓ read rotationY of ProgressBar: the host's own tip, checked against the projection it laid on the element
+RadioButton.accessibilityHint: ✅
+Rectangle.opacity: ✅
+Rectangle.pivotY: ✅
+ScrollView.translationX: ✅
+ScrollView.zIndex: ✅
 SearchField.accessibilityHeading: ✅
-Slider.frameChanged: ✅
 Slider.height: ✅
 Slider.rotationX: ✓ read rotationX of Slider: the host's own tip, checked against the projection it laid on the element
 Slider.width: ✅
@@ -51,13 +51,13 @@ Stepper.opacity: ✅
 Stepper.pivotY: ✅
 Switch.accessibilityHeading: ✅
 Switch.translationY: ✅
-Text.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Text.accessibilityHeading: ✅
 TextEditor.layoutDirection: ✅
 TextField.scaleY: ✅
 TextField.style: ✅
 TimePicker.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 VStack.ignoresInput: ✅
 VStack.scale: ✅
-WebView.translationX: ✅
-WebView.zIndex: ✅
-ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+WebView.scaleY: ✅
+WebView.style: ✅
+ZStack.automationExcludedWithChildren: ✅

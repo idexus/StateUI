@@ -48,9 +48,8 @@ struct SearchFieldSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("Two events: `.onTextChanged` on every edit - which runs after the binding "
-                + "has landed the words on `query` - and `.onSubmitted` when the "
-                + "user says they mean it.")
+            Text("Every edit lands on `query`, and `.onSubmitted` hears the user say "
+                + "they mean it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
