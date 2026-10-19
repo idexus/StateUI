@@ -124,6 +124,8 @@ that is usable now.
   host's suite passes on.
 - [Design notes](docs/design/README.md) — the rule, the reason and the trap behind
   each part of the code.
+- [Changes](CHANGELOG.md) — what each release changes, and how to move over
+  what it breaks.
 - [Contributing](CONTRIBUTING.md) — rules for changing the public contract.
 
 Public API declarations provide the focused reference beside the code.
