@@ -87,8 +87,8 @@ out at sizes nobody chose.
 
 ## One name one set of facts
 
-The differ and the hosts hold a property as a token, which is a name, and
-read what it says by that name: `Prop.facts` looks it up in
+The differ and the hosts hold a property as a token - a key, a name and its
+number - and read what it says by that key: `Prop.facts` looks it up in
 `LibraryContracts.facts`, where the first member met under a name answers
 for every member of it. So every member of one name says the same of its
 layer, travel, clearing and motion; two that disagreed would each be half

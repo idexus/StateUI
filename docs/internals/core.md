@@ -35,9 +35,9 @@ decides again; one concept has one owner, one spelling and one source:
   `.id()`, then its builder path, then its position, and only the patch tells
   a host what changed. ([Keys](../design/core/identity-and-diffing.md#keys))
 - **The patch is deterministic.** The same session gives the same patch and
-  exports on every run: node types, properties and events compare by name,
-  whatever a dictionary or a set yields is sorted, and the core numbers the
-  scenes.
+  exports on every run: node types, properties and events are keys - a name
+  and its number, the same in every process - ordered by name, whatever a
+  dictionary or a set yields is sorted, and the core numbers the scenes.
   ([Tokens](../design/core/contracts.md#tokens))
 - **The UI thread is `MainActor`.** The core has no thread, run loop or timer
   of its own; everything happens inside a call the host makes on its UI
@@ -450,10 +450,13 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 - **`MemberFacts`** is what a member says of itself - whether it travels, is
   cleared, which group it moves with - read by name. *Internal.*
   ([Member facts](../design/core/contracts.md#member-facts))
-- **`NodeType`**, **`Prop`**, **`Event`** and **`Act`** are tokens: a name and
-  only a name. The types are public, since a contract spells its node type as
-  one; the library's entries (`Tokens.swift`), made from its members, are the
-  host's. ([Tokens](../design/core/contracts.md#tokens))
+- **`NodeType`**, **`Prop`**, **`Event`** and **`Act`** are tokens, each a key
+  (`KeyName`): a name and its number, equal and hashed by the number and
+  ordered by the name; `KeyNumbers` stops a second name of one number. The
+  types are public, since a contract spells its node type as one; the
+  library's entries (`Tokens.swift`), made from its members, are the host's.
+  ([Tokens](../design/core/contracts.md#tokens),
+  [a key is a number](../design/core/contracts.md#a-key-is-a-number))
 
 ### Realization
 
