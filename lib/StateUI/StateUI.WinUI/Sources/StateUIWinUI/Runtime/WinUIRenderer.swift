@@ -59,6 +59,11 @@ final class WinUIRenderer {
         return front.flatMap { controller(of: $0)?.window } ?? window
     }
 
+    /// The window element whose window is `window`.
+    func element(of window: WinUIWindow) -> MountedElement? {
+        roster.windows.first { $0.controller.window === window }?.element
+    }
+
     /// A runtime on the performance counter and WinUI's frames, or on `clock` and the frames its owner gives, with
     /// the motion `reducesMotion` allows.
     init(clock: (() -> Double)? = nil, reducesMotion: @escaping () -> Bool = { !stateui_winui_animations_enabled() }) {
@@ -139,8 +144,8 @@ final class WinUIRenderer {
     }
 
     /// Shows every window element in a WinUI window of its own, in the tree's order - a window the tree no longer
-    /// holds closes, a question over it standing again over the window the user is in - and tells each, once, in its
-    /// turn, that it was made.
+    /// holds closes, what was asked over it answered as dismissed - and tells each, once, in its turn, that it was
+    /// made.
     /// Design: docs/design/platforms/winui/runtime.md#the-window
     private func showWindows() {
         var gone: [WinUIWindow] = []
@@ -157,6 +162,7 @@ final class WinUIRenderer {
             controller.present(element, in: runtime)
         }
         for window in gone { actToolkit.windowWent(window) }
+        acts.windowsOpen(roster.windows.map(\.element))
     }
 
     /// Composes every window's chrome again from what it shows now.

@@ -161,6 +161,16 @@ final class AppKitRenderer {
         NSApp.keyWindow ?? windowControllers.first?.window
     }
 
+    /// The window element `window` shows, or the one it stands over as a sheet; else the tree's first.
+    func element(of window: NSWindow) -> MountedElement? {
+        var native: NSWindow? = window
+        while let each = native {
+            if let shown = roster.windows.first(where: { $0.controller.window === each }) { return shown.element }
+            native = each.sheetParent
+        }
+        return roster.windows.first?.element
+    }
+
     /// A window's first responder moved. Every element that follows its focus
     /// is told once the move has settled: AppKit hands the focus through
     /// passing holders on its way - the window among them - within one turn.

@@ -74,12 +74,17 @@ final class WebQuestion {
 
     private func answer(_ accepted: Bool, _ words: String?) {
         guard let answered else { return }
-        self.answered = nil
+        withdraw()
+        answered(accepted, words)
+    }
+
+    /// Takes the question away, answering nobody: the window it stood over went.
+    func withdraw() {
+        answered = nil
         WebRelay.closeModal(dialog.node)
         for part in parts { part.detach() }
         field?.detach()
         dialog.detach()
-        answered(accepted, words)
     }
 
     private func add(_ tag: String, _ words: String) {

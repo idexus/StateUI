@@ -232,11 +232,12 @@ showing ends in an error does.
 
 A window can go before the user answered what stands over it - closed by
 the tree in the turn its page asked, before WinUI loaded it, or later by the
-tree or the user. The host remembers the window each dialog stands over; as
-the window leaves, the question stands again over the window the user is in
-then (`HostActPerformer.askAgain`) and the old dialog's answer counts for
-nothing. Otherwise its `Loaded` never comes, the queue waits on it, and every
-later question with it.
+tree or the user. Its dialog goes with it, and the host layer answers its
+question as dismissed ([questions for the
+user](../../host/runtime.md#questions-for-the-user)); the host forgets the
+dialog's ticket, so an answer it gives later counts for nothing. Otherwise its
+`Loaded` never comes, the queue waits on it, and every later question with
+it.
 
 ## Files
 

@@ -59,7 +59,10 @@ final class AndroidActToolkit: ActToolkit {
     }
 
     /// Puts a question to the user in the platform's own dialog; its answer comes back by its ticket.
-    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
+    func show(
+        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let window = AndroidRenderer.window else { return nil }
         let ticket = dialogs.hold(answered)
         Java.frame {
             let context = context
@@ -91,7 +94,7 @@ final class AndroidActToolkit: ActToolkit {
                     .object(Java.string(question.words)))
             }
         }
-        return true
+        return window
     }
 
     /// The act under `ticket` was answered: a dialog accepted or not, with the words chosen or typed; or a script's

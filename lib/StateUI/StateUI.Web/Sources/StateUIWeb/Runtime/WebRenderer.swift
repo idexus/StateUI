@@ -38,13 +38,17 @@ final class WebRenderer {
     /// The Web's part of the acts and of the files, and what performs them and answers them by the host layer's rules.
     private(set) lazy var actToolkit = WebActToolkit(renderer: self)
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: WebFileToolkit(), answers: runtime.core, tree: { [unowned self] in runtime.tree })
+        toolkit: actToolkit, files: WebFileToolkit(renderer: self), answers: runtime.core,
+        tree: { [unowned self] in runtime.tree })
 
     /// Whether the call ending reports what it laid out: a call the browser makes inside it reports nothing.
     private var ending = false
 
     /// The windows the tree holds, each with its controller, in the tree's order. The browser shows the first.
     let roster = WindowRoster<WebWindowController>()
+
+    /// The window element the browser shows, which a question and a file dialog stand over.
+    var shownWindow: MountedElement? { roster.windows.first?.element }
 
     /// What is kept of the scenes for the page's next start.
     let scenes = SceneKeeper()
@@ -150,12 +154,17 @@ final class WebRenderer {
         if let wait = runtime.core.nextWake { WebRelay.wake(after: wait) }
     }
 
-    /// Shows the first window element in the browser's window - a window the tree no longer holds closes - each told
-    /// once, in its turn, that it was made.
+    /// Shows the first window element in the browser's window - a window the tree no longer holds closes, what was
+    /// asked over it answered as dismissed - each told once, in its turn, that it was made.
     private func showWindows() {
+        let shown = roster.windows.first?.controller
         roster.update(
             root: runtime.tree.root, make: { [runtime] in WebWindowController($0, runtime: runtime) },
-            close: { $0.close() })
+            close: { [actToolkit] closing in
+                if closing === shown { actToolkit.windowWent() }
+                closing.close()
+            })
+        acts.windowsOpen(roster.windows.map(\.element))
         if let (element, controller) = roster.windows.first {
             controller.present(element, in: runtime)
             controller.refreshChrome()

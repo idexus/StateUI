@@ -88,9 +88,9 @@ final class WinUIActsTests: XCTestCase {
         }
     }
 
-    /// A question whose window goes before the user answered stands again over the window the user is in, rather than
-    /// hold every later question behind it.
-    func testAQuestionWhoseWindowWentStandsOverTheWindowTheUserIsIn() throws {
+    /// A question whose window goes before the user answered goes with it, answered as dismissed: nothing stands over
+    /// the window the user is in, and no later question waits behind it.
+    func testAQuestionWhoseWindowWentGoesWithIt() throws {
         try onUIThread {
             let host = WinUIRenderer.running(application: { ClosingApplication() })
             let main = try XCTUnwrap(host.window)
@@ -105,10 +105,9 @@ final class WinUIActsTests: XCTestCase {
             host.settle(until: { Self.asks(tool) })
             XCTAssertTrue(Self.asks(tool), "over the tool window the user is in")
             stateui_winui_button_invoke(try XCTUnwrap(host.views(WinUIButtonView.self).last).handle)
-            host.settle(until: { host.windows.count == 1 && Self.asks(main) })
-            XCTAssertTrue(Self.asks(main), "the question shown as its window closed")
-            _ = stateui_winui_answer(try XCTUnwrap(main.content).handle, 1, nil)
-            host.settle(until: { !Self.asks(main) })
+            host.settle(until: { host.windows.count == 1 })
+            host.step()
+            XCTAssertFalse(Self.asks(main), "nothing stands over the window the user is in")
         }
     }
 

@@ -23,7 +23,7 @@ TitleView 3
 MenuBar 3
 MenuItem 3
 Window 6
-Scene 2
+Scene 3
 ModalStack 6
 Overlay 5
 BarElement 4

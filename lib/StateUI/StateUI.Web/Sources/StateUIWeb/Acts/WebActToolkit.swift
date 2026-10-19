@@ -35,14 +35,24 @@ final class WebActToolkit: ActToolkit {
     private var asking: WebQuestion?
 
     /// Design: docs/design/platforms/web/pages.md#questions-for-the-user
-    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
+    func show(
+        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let window = renderer.shownWindow else { return nil }
         let shown = WebQuestion(question) { [weak self] accepted, words in
             self?.asking = nil
             answered(.success(HostQuestion.Given(accepted: accepted, words: words)))
         }
         asking = shown
         shown.show()
-        return true
+        return window
+    }
+
+    /// The window shown went: the question standing over it goes with it, answering nobody - the host layer answers
+    /// it (`HostActPerformer.windowsOpen`).
+    func windowWent() {
+        asking?.withdraw()
+        asking = nil
     }
 
     func announce(_ words: String) {

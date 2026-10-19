@@ -64,6 +64,11 @@ final class GTKRenderer {
         return front.flatMap { roster.controller(of: $0)?.window } ?? window
     }
 
+    /// The window element whose window is `window`.
+    func element(of window: GTKWindow) -> MountedElement? {
+        roster.windows.first { $0.controller.window === window }?.element
+    }
+
     /// What is kept of the scenes for the next start: the desktop restores no windows.
     let scenes = SceneKeeper()
 
@@ -151,6 +156,7 @@ final class GTKRenderer {
         roster.update(
             root: runtime.tree.root, make: { [application] in GTKWindowController($0, application: application) },
             close: { $0.window.close() })
+        acts.windowsOpen(roster.windows.map(\.element))
         for (element, controller) in roster.windows {
             controller.present(element, in: runtime)
         }

@@ -50,8 +50,11 @@ final class WinUIActToolkit: ActToolkit {
 
     /// Asks in WinUI's own dialog over the window the user is in; its answer comes back by its ticket.
     /// Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
-    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
-        guard let window = renderer.userWindow, let content = window.content else { return false }
+    func show(
+        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let window = renderer.userWindow, let element = renderer.element(of: window), let content = window.content
+        else { return nil }
         let ticket = dialogs.hold(answered)
         showing = Showing(ticket: ticket, window: window)
 
@@ -78,7 +81,7 @@ final class WinUIActToolkit: ActToolkit {
                 stateui_winui_ask(content.handle, ticket, &relayed)
             }
         }
-        return true
+        return element
     }
 
     /// The dialog under `ticket` was answered - accepted or not, and the words chosen or typed - or failed.
@@ -87,14 +90,13 @@ final class WinUIActToolkit: ActToolkit {
         dialogs.take(ticket)?(answer)
     }
 
-    /// `window` closed: the question standing over it - shown, or waiting for WinUI to load the window - stands
-    /// again over the window the user is in, and its own dialog's answer counts for nothing.
+    /// `window` closed: the dialog standing over it - shown, or waiting for WinUI to load the window - goes with it,
+    /// and its answer counts for nothing; the host layer answers its question (`HostActPerformer.windowsOpen`).
     /// Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
     func windowWent(_ window: WinUIWindow) {
         guard let went = showing, went.window === window else { return }
         showing = nil
         _ = dialogs.take(went.ticket)
-        renderer.acts.askAgain()
     }
 
     /// Shows every window in `theme`: each window's content in WinUI's own theme, the system's for `.system`.

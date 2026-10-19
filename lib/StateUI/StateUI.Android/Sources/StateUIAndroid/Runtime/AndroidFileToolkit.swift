@@ -25,7 +25,10 @@ final class AndroidFileToolkit: FileToolkit {
         dialogs.removeAll()
     }
 
-    func show(_ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void) -> Bool {
+    func show(
+        _ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let window = AndroidRenderer.window else { return nil }
         let ticket = dialogs.hold(answered)
         Java.frame {
             switch dialog.kind {
@@ -41,7 +44,7 @@ final class AndroidFileToolkit: FileToolkit {
                     .object(Java.bytes(dialog.contents)))
             }
         }
-        return true
+        return window
     }
 
     /// The extension a save's type is read from: its name's, else its first kind's.

@@ -19,6 +19,11 @@ final class AndroidRenderer {
     /// The context every view is made in: the activity.
     static var context: jobject { shared!.context.reference }
 
+    /// The window element the activity shows - a question and a file dialog stand over it - else the tree's root.
+    static var window: MountedElement? {
+        shared?.runtime.tree.root.flatMap { $0.first(type: .window) ?? $0 }
+    }
+
     /// Pixels per point, the display's density.
     static var density: Double { shared?.density ?? 1 }
 

@@ -694,6 +694,16 @@ time in the order asked, each under a ticket of its own across the process
 (`QuestionQueue`), so an answer after its runtime has gone answers nothing
 of another's.
 
+A question or a file dialog stands over the window the toolkit asked in, and
+goes with it: once that window is no longer open, the host layer answers it
+as the user dismissing it does - a confirmation not accepted, nothing chosen
+- and the next asks over the window the user is in then
+(`HostActPerformer.windowsOpen`), which every host tells after its windows
+change. Its caller almost always stood in that window too and went with it;
+a question standing over a window gone would otherwise hold every later
+question behind it, and an answer its dialog gives later counts for
+nothing.
+
 ## Files
 
 A file dialog is read from its act alike on every host (`HostFileDialog`):

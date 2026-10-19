@@ -262,6 +262,7 @@ final class UIKitRenderer {
             bringBack(insteadOf: closing, staying: root.windows)
             closing.close()
         })
+        acts.windowsOpen(roster.windows.map(\.element))
         for (element, controller) in roster.windows {
             controller.present(element, in: runtime)
         }
@@ -326,6 +327,11 @@ final class UIKitRenderer {
     /// The window the user is looking at: the key one, else the first.
     var userWindow: UIWindow? {
         roster.windows.first { $0.1.window?.isKeyWindow == true }?.1.window ?? roster.windows.first?.1.window
+    }
+
+    /// The window element whose window is `window`.
+    func element(of window: UIWindow) -> MountedElement? {
+        roster.windows.first { $0.controller.window === window }?.element
     }
 
     /// The root of the user's window, which presents a question, a dialog or a preview over what the window shows.

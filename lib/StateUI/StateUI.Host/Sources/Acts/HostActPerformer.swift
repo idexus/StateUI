@@ -24,6 +24,9 @@
     /// showing.
     private var showing: (ticket: Int64, count: Int)?
 
+    /// The window the question showing asks in, which takes it away when it goes.
+    private weak var askedIn: MountedElement?
+
     /// What the user is asked: a question, or a dialog for files.
     private enum Asked {
         case question(HostQuestion)
@@ -110,16 +113,19 @@
     private func show(_ ticket: Int64, call: HostActCall, asked: Asked) {
         let count = (showing?.ticket == ticket ? showing?.count ?? 0 : 0) + 1
         showing = (ticket, count)
-        let shown = switch asked {
+        let window = switch asked {
         case .question(let question):
             toolkit.show(question) { [weak self] given in
                 guard let self, showing?.ticket == ticket, showing?.count == count else { return }
                 answer(ticket, given.map { question.answer(accepted: $0.accepted, words: $0.words) })
             }
         case .files(let dialog):
-            files?.show(dialog) { [weak self] chosen in self?.answer(ticket, chosen.map(dialog.answer)) } ?? false
+            files?.show(dialog) { [weak self] chosen in self?.answer(ticket, chosen.map(dialog.answer)) }
         }
-        guard !shown else { return }
+        if let window {
+            if showing?.ticket == ticket { askedIn = window }
+            return
+        }
         forget(ticket)
         fail(call, "there is no window to ask the user in")
         if questions.answered(ticket)?.next != nil { showFirst() }
@@ -144,18 +150,37 @@
     /// gives later counts for nothing.
     public func dismissAll() {
         while let (ticket, first) = questions.first {
-            forget(ticket)
-            _ = questions.answered(ticket)
-            switch first.asked {
-            case .question(let question): deliver(first.call, .success(question.answer(accepted: false, words: nil)))
-            case .files(let dialog): deliver(first.call, .success(dialog.answer([])))
-            }
+            dismiss(ticket, first.asked, of: first.call)
+        }
+    }
+
+    /// The windows open now are `open`: what shows over a window gone - a question, a file dialog - is answered as
+    /// the user dismissing it does, as nobody is left to answer it, and the next asks over the window the user is in
+    /// now; an answer its dialog gives later counts for nothing.
+    /// Design: docs/design/host/runtime.md#questions-for-the-user
+    public func windowsOpen(_ open: [MountedElement]) {
+        guard let showing, let (ticket, first) = questions.first, ticket == showing.ticket,
+              !open.contains(where: { $0 === askedIn })
+        else { return }
+        dismiss(ticket, first.asked, of: first.call)
+        showFirst()
+    }
+
+    /// Answers what was asked under `ticket` as the user dismissing it does.
+    private func dismiss(_ ticket: Int64, _ asked: Asked, of call: HostActCall) {
+        forget(ticket)
+        _ = questions.answered(ticket)
+        switch asked {
+        case .question(let question): deliver(call, .success(question.answer(accepted: false, words: nil)))
+        case .files(let dialog): deliver(call, .success(dialog.answer([])))
         }
     }
 
     /// What was shown under `ticket` is shown no more.
     private func forget(_ ticket: Int64) {
-        if showing?.ticket == ticket { showing = nil }
+        guard showing?.ticket == ticket else { return }
+        showing = nil
+        askedIn = nil
     }
 
     /// What was asked under `ticket` was answered: its caller hears the answer, and the next shows.

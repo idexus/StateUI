@@ -11,6 +11,8 @@ private final class Toolkit: ActToolkit {
     let host = "Test"
     var zones: [String: Int] = ["Europe/Warsaw": 120]
     var windowToAsk = true
+    /// The window a question asks in.
+    var window = HostActPerformerTests.window
     var shown: [(question: HostQuestion, answered: (Result<HostQuestion.Given, ActFailure>) -> Void)] = []
     var announced: [String] = []
     var themes: [ColorScheme] = []
@@ -24,10 +26,12 @@ private final class Toolkit: ActToolkit {
     func localZone() -> String { "Europe/Warsaw" }
     func utcOffset(of zone: String?, on day: CalendarDate?) -> Int? { zones[zone ?? "Europe/Warsaw"] }
 
-    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
-        guard windowToAsk else { return false }
+    func show(
+        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard windowToAsk else { return nil }
         shown.append((question, answered))
-        return true
+        return window
     }
 
     func announce(_ words: String) { announced.append(words) }
@@ -71,6 +75,21 @@ final class HostActPerformerTests: XCTestCase {
     private func performer(_ toolkit: Toolkit, _ answers: Answers, tree: MountedTree? = nil) -> HostActPerformer {
         HostActPerformer(toolkit: toolkit, answers: answers, tree: { tree })
     }
+
+    /// Two windows of one tree, which the tests' questions ask in.
+    private static let windows: (runtime: HostRuntime, first: MountedElement, second: MountedElement) = {
+        let runtime = HostRuntime.still()
+        var root = HostPatch(id: .manual("root"), type: .vStack)
+        root.children = .arranged([
+            HostPatch(id: .manual("notes"), type: .window), HostPatch(id: .manual("drafts"), type: .window),
+        ])
+        runtime.tree.apply(root, complete: true)
+        let windows = runtime.tree.root?.windows ?? []
+        return (runtime, windows[0], windows[1])
+    }()
+
+    /// The window the tests' toolkits ask in, unless a test says another.
+    static var window: MountedElement { windows.first }
 
     /// The time and the zones are the toolkit's, answered as every host answers them; a zone nobody knows fails
     /// with the reason.
@@ -259,6 +278,31 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(toolkit.shown.last?.question.title, "Next", "the next shows at once")
     }
 
+    /// What was asked over a window that went - a question, a file dialog - is answered as the user dismissing it
+    /// does, as nobody is left to answer it, and the next asks at once; what was asked over a window still open
+    /// waits on, and an answer the dialog of a window gone gives later counts for nothing.
+    func testWhatWasAskedOverAWindowThatWentIsDismissed() throws {
+        let (toolkit, files, answers) = (Toolkit(), Files(), Answers())
+        let acts = HostActPerformer(toolkit: toolkit, files: files, answers: answers, tree: { nil })
+        let (notes, drafts) = (Self.windows.first, Self.windows.second)
+        acts.perform(HostActCall(act: .confirm, arguments: [.string("Delete?")], completion: 1))
+        files.window = drafts
+        acts.perform(HostActCall(act: .openFiles, arguments: [[FileType]().propValue, .bool(true)], completion: 2))
+
+        acts.windowsOpen([notes, drafts])
+        XCTAssertNil(answers.replies[1], "its window stands: it waits on")
+
+        acts.windowsOpen([drafts])
+        toolkit.shown[0].answered(.success(.init(accepted: true, words: nil)))
+        XCTAssertEqual(answers.replies[1], [.bool(false)], "not accepted; the late answer counts for nothing")
+        XCTAssertEqual(files.shown.count, 1, "the next asks at once")
+
+        acts.windowsOpen([drafts])
+        XCTAssertNil(answers.replies[2], "its window stands")
+        acts.windowsOpen([])
+        XCTAssertEqual(answers.replies[2], [[ChosenFile]().propValue], "nothing chosen")
+    }
+
     /// A file is read and launched, and an address launched, as the toolkit answers.
     func testAFileIsReadAndLaunchedAndAnAddressLaunched() {
         let (files, answers) = (Files(), Answers())
@@ -313,12 +357,16 @@ final class HostActPerformerTests: XCTestCase {
 @MainActor
 private final class Files: FileToolkit {
     var shown: [(dialog: HostFileDialog, answered: (Result<[ChosenFile], ActFailure>) -> Void)] = []
+    /// The window a dialog asks in.
+    var window = HostActPerformerTests.window
     var contents: [ChosenFile: [UInt8]] = [:]
     var launched: [String] = []
 
-    func show(_ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void) -> Bool {
+    func show(
+        _ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
+    ) -> MountedElement? {
         shown.append((dialog, answered))
-        return true
+        return window
     }
 
     /// The most bytes each read asked for, in turn; nil for a whole file.
