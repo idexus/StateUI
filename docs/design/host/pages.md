@@ -50,6 +50,18 @@ the window presents it, and the one before it that it is not: a move where a
 sheet came or went, the window's coming otherwise (`WindowPresentation`).
 The window then hears that it was made, before the host shows it.
 
+## A page that leaves the tree
+
+A page shown that leaves the tree - its window closed, by the user or by the
+tree, its stack's path cut by the tree - hears that it disappears, then that
+it is destroyed, the same on every host: appearing and disappearing go in
+pairs. The core does it as the element leaves (`Differ.forget`), since only
+it still holds the page's handlers then: by the time a host meets the patch
+that takes the page away, nothing of it answers. The core knows a page
+stands shown by the phases the host told it (`Differ.heard`); a page that
+listens for its disappearing alone hears its appearing too, unseen, so the
+host tells it.
+
 ## Tabs
 
 A tabbed view's choice (`TabChoice`) is none until the tree or the user makes

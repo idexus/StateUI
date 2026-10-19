@@ -671,8 +671,9 @@ every window hears that it is going.
 A window the user closes hears that it is going, then its scene hears that
 it closed, carrying the window's key - each rendered before the next
 (`HostRuntime.userClosed`). The scene forgets the window and its session, and
-ends with its last. A window the tree closes tells nothing: the tree already
-knows.
+ends with its last. A window the tree closes tells its scene nothing: the
+tree already knows. Either way its page hears it disappears before it is
+destroyed ([a page that leaves the tree](pages.md#a-page-that-leaves-the-tree)).
 
 ## Acts
 

@@ -494,6 +494,15 @@ extension Differ {
             register(written, under: handlerId)
         }
 
+        // A page listening for its disappearing hears its appearing too, so the core knows it stands shown.
+        // Design: docs/design/host/pages.md#a-page-that-leaves-the-tree
+        if node.type == .page, events[.disappearing] != nil, events[.appearing] == nil {
+            let handlerId = previous?.events[.appearing] ?? allocateHandlerId()
+            events[.appearing] = handlerId
+            register([], under: handlerId)
+        }
+        if node.type == .page { keepPhases(of: id, events) }
+
         if let previous = previous {
             // An event this element no longer handles takes its id and its runs with it.
             for (name, handlerId) in previous.events.sorted(by: { $0.key < $1.key }) where events[name] == nil {

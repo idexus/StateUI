@@ -21,6 +21,7 @@ extension Renderer {
         // The differ holds these: a carried element still answers for its buttons.
         guard let registration = differ.handler(handlerId) else { return false }
 
+        differ.heard(handlerId)
         start(registration)
         return true
     }

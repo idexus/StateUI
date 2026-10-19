@@ -69,6 +69,26 @@
                 s.settle { log.values.suffix(2) == ["Root appearing", "Root navigatedTo"] }
                 s.expect(Array(log.values.suffix(2)), ["Root appearing", "Root navigatedTo"], "the page beneath comes back")
             },
+            ConformanceCase("aPageThePathCutsHearsItDisappearsAsItGoes", proves: [
+                Covered(PageContract.disappearing),
+            ]) { s in
+                let path = State(wrappedValue: [1])
+                let log = Received<String>()
+                s.start {
+                    NavigationStack(path.projectedValue) {
+                        PhasePage(title: "Root", log: log)
+                    } destination: { _ in
+                        PhasePage(title: "Pushed", log: log).onDestroying { log.values.append("Pushed destroying") }
+                    }
+                }
+                s.settle { log.values.contains("Pushed navigatedTo") }
+
+                log.values = []
+                path.wrappedValue = []
+                s.settle { log.values.contains("Root navigatedTo") }
+                s.expect(Array(log.values.prefix(2)), ["Pushed disappearing", "Pushed destroying"],
+                         "the page the tree took away hears it goes, then that it is destroyed")
+            },
             pushedHolds(PageContract.showsBackButton, false, then: true) { $0.showsBackButton($1) },
             pushedHolds(PageContract.backButtonTitle, "Notes", then: "All notes") { $0.backButtonTitle($1) },
             pushedHolds(PageContract.showsNavigationBar, false, then: true) { $0.showsNavigationBar($1) },

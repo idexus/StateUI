@@ -70,6 +70,13 @@ final class Differ {
     /// Design: docs/design/core/identity-and-diffing.md#handlers-and-their-ids
     var handlers: [Int: EventRegistration] = [:]
 
+    /// The two phases of each page listening for its disappearing, by their handler ids: the page, and whether the
+    /// phase is its appearing.
+    private var pagePhases: [Int: (page: ElementID, appears: Bool)] = [:]
+
+    /// The pages the host told they appeared and not yet that they disappeared.
+    private var shownPages: Set<ElementID> = []
+
     /// The scene the walk is inside; `OpenScenes.building` follows it.
     var sceneRecord: SceneRecord? {
         didSet { OpenScenes.shared.building = sceneRecord }
@@ -210,6 +217,20 @@ final class Differ {
         handlers[id]
     }
 
+    /// The host told the event under `handlerId`: a page appearing stands shown, one disappearing no longer.
+    /// Design: docs/design/host/pages.md#a-page-that-leaves-the-tree
+    func heard(_ handlerId: Int) {
+        guard let phase = pagePhases[handlerId] else { return }
+        if phase.appears { shownPages.insert(phase.page) } else { shownPages.remove(phase.page) }
+    }
+
+    /// Keeps the two phases of page `id` that tell whether it stands shown, under the ids its `events` hold them by.
+    func keepPhases(of id: ElementID, _ events: [Event: Int]) {
+        guard let appearing = events[.appearing], let disappearing = events[.disappearing] else { return }
+        pagePhases[appearing] = (id, true)
+        pagePhases[disappearing] = (id, false)
+    }
+
     /// The handlers the last walk found - what left first, then the rest - taken so
     /// each runs once.
     func takeFired() -> [Fired] {
@@ -220,8 +241,14 @@ final class Differ {
     }
 
     /// Drops the handlers and engines of an element that left the tree, and of
-    /// everything under it, and books its `.onDestroying`.
+    /// everything under it, and books its `.onDestroying` - a page standing
+    /// shown its `.onDisappearing` first.
     func forget(_ node: RenderedNode) {
+        if shownPages.remove(node.id) != nil, let id = node.events[.disappearing], let registration = handlers[id] {
+            leaving.append(contentsOf: registration.handlers.map(\.run))
+        }
+        for id in node.events.values { pagePhases[id] = nil }
+
         for (_, id) in node.events.sorted(by: { $0.key < $1.key }) {
             handlers.removeValue(forKey: id)?.orphan()
         }

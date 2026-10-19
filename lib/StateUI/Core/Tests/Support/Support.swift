@@ -257,6 +257,22 @@ final class Renders {
     func fire(_ id: Int32, with payload: [PropValue] = []) -> Bool {
         fire(Int(id), with: payload)
     }
+
+    /// Tells the `index`th page of the tree, in its order, the phase `event`, as a host does: the core hears it, and
+    /// its handlers run.
+    func tell(_ event: Event, page index: Int) {
+        var pages: [RenderedNode] = []
+        func walk(_ node: RenderedNode) {
+            if node.type == .page { pages.append(node) }
+            node.children.forEach(walk)
+        }
+        rendered.map(walk)
+        guard pages.indices.contains(index), let id = pages[index].events[event] else {
+            return XCTFail("page \(index) hears no \(event.name)")
+        }
+        differ.heard(id)
+        fire(id)
+    }
 }
 
 extension Differ {

@@ -11,11 +11,11 @@ import Foundation
 /// host layer, which settles what each scene and window hears.
 /// Design: docs/design/platforms/appkit/runtime.md#the-applications-phase
 extension AppKitWindowController: NSWindowDelegate {
-    /// The tree no longer holds the window: its page hears it goes, its sheets go, and it closes, telling nothing.
+    /// The tree no longer holds the window: its sheets go, and it closes, telling nothing - its page heard it goes as
+    /// it left the tree.
     func closeFromTree() {
         guard !closingFromTree else { return }
         closingFromTree = true
-        (presentation.sheets.last ?? presentation.arrangement)?.setPagePresented(false, reason: .window)
 
         if let window {
             while !modals.isEmpty {
