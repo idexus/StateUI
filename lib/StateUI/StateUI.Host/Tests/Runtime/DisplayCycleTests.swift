@@ -52,7 +52,8 @@ final class DisplayCycleTests: XCTestCase {
     @MainActor
     func testAdvancingTheAnimationsLetsTheClockGoAsAFrameDoes() {
         let runtime = HostRuntime.still()
-        runtime.displayCycle.presenter = CountingPresenter()
+        let presenter = CountingPresenter()
+        runtime.displayCycle.presenter = presenter
         runtime.tree.receiveProperty(
             mount: 1, property: .opacity, standing: .number(0), target: .number(1), motion: .eased(.milliseconds(200), .linear))
         XCTAssertTrue(runtime.clock.held)
@@ -60,6 +61,7 @@ final class DisplayCycleTests: XCTestCase {
         runtime.displayCycle.advanceAnimations(now: 300, reducesMotion: false)
 
         XCTAssertFalse(runtime.clock.held, "nothing moves any more")
+        withExtendedLifetime(presenter) {}
     }
 
     /// The frame clock is held from the moment something starts moving - a property, a layout's child, a scroller
