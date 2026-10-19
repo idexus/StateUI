@@ -44,7 +44,9 @@ page fades it away.
 JavaScript/stateui-web.js loads the module and hands it two sets of functions:
 the relay's, which the C header `CStateUIWeb.h` declares as the module's
 imports, and the system interface, WASI, which a Swift program asks of its
-machine. The relay keeps every DOM element Swift makes under a number, and
+machine. The relay keeps every DOM element Swift makes under a number - one
+let go of is no element's again, so what still names it, an act that waited,
+reaches nothing rather than an element made after it - and
 words cross as UTF-8 and their length in bytes. It decides nothing of
 StateUI's: it makes, places and changes elements as Swift says, calls Swift
 back when one hears an event, and keeps the keyboard's way through a strip of

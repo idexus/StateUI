@@ -42,6 +42,31 @@ final class WebLeaveTests: XCTestCase {
         XCTAssertEqual(WebRelay.listenerCount, before, "a listener outlived the window that hung it")
     }
 
+    /// A DOM element's number, let go of, is no other element's: what reaches a view that went - an act that waited -
+    /// reaches nothing, not the element made after it.
+    func testAReleasedElementsNumberIsNoOneElses() throws {
+        WebRenderer.shared?.leave()
+        let first = State(wrappedValue: true)
+        let second = State(wrappedValue: false)
+        let host = WebRenderer.running {
+            VStack {
+                if first.wrappedValue { Text("Gone") }
+                if second.wrappedValue { Text("Come") }
+            }
+        }
+        host.step()
+        let gone = try XCTUnwrap(host.views(WebTextView.self).first?.node)
+
+        first.wrappedValue = false
+        for _ in 0..<3 { host.step() }
+        second.wrappedValue = true
+        for _ in 0..<3 { host.step() }
+        let come = try XCTUnwrap(host.views(WebTextView.self).first?.node)
+
+        XCTAssertNotEqual(come, gone, "the number of the element that went was made again")
+        host.leave()
+    }
+
     /// A page the browser keeps to come back to - its back-forward cache - is hidden, not gone: its window hears no
     /// destroying, and stands again as the browser shows the page.
     func testAPageTheBrowserKeepsIsHiddenNotGone() throws {
