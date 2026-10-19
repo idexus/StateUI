@@ -124,7 +124,7 @@ final class WebWindowController {
         for entry in sheets.reversed() { entry.sheet.close() }
         sheets = []
         window.close()
-        WebRelay.stopListeningToHistory(historyListener)
+        WebRelay.forget(historyListener)
     }
 
     /// The user took the top sheet away: the modal stack is told how many remain.

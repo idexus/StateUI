@@ -69,6 +69,9 @@ STATEUI_WEB(read_value) int32_t stateui_web_read_value(int32_t element);
 /// Copies what the relay read last into `into`, which holds its length.
 STATEUI_WEB(copy_read) void stateui_web_copy_read(char *into);
 
+/// Takes off whatever the relay hung for listener `listener` - on the page or on an element.
+STATEUI_WEB(forget) void stateui_web_forget(int32_t listener);
+
 /// Calls listener `listener` whenever the element hears the DOM event named `event`.
 STATEUI_WEB(listen) void stateui_web_listen(int32_t element, const char *event, int32_t length, int32_t listener);
 
@@ -117,11 +120,10 @@ STATEUI_WEB(frame_evaluate) int32_t stateui_web_frame_evaluate(int32_t element, 
 
 /// Puts one entry of the page's own on the browser's history; `back_history` goes back over it where it stands on
 /// it, 1 where it went; `listen_history` calls `listener` whenever the browser's history moves - its way back, or
-/// forward - until `unlisten_history` lets it go.
+/// forward - until `forget` takes it off.
 STATEUI_WEB(push_history) void stateui_web_push_history(void);
 STATEUI_WEB(back_history) int32_t stateui_web_back_history(void);
 STATEUI_WEB(listen_history) void stateui_web_listen_history(int32_t listener);
-STATEUI_WEB(unlisten_history) void stateui_web_unlisten_history(int32_t listener);
 
 /// What the page stands as: 1 its tab shows, 2 it holds the keyboard; `listen_page` calls `changed` once as the
 /// page starts and again as either changes, and `leaving` as the browser leaves the page.
@@ -211,6 +213,9 @@ STATEUI_WEB(use_color_scheme) void stateui_web_use_color_scheme(int32_t scheme);
 
 STATEUI_WEB(accent_color) int32_t stateui_web_accent_color(void);
 STATEUI_WEB(listen_appearance) void stateui_web_listen_appearance(int32_t listener);
+
+/// Calls `listener` whenever the screen's density turns: as many device pixels to a CSS pixel as before no more.
+STATEUI_WEB(listen_density) void stateui_web_listen_density(int32_t listener);
 
 /// The smallest width of the screen in CSS pixels where its user points by touch; 0 where by a mouse or a pen.
 STATEUI_WEB(touch_screen) double stateui_web_touch_screen(void);

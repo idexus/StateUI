@@ -146,6 +146,56 @@ final class WebLeaveTests: XCTestCase {
         XCTAssertFalse(try reads(second), "a document's address outlived its web view")
     }
 
+    /// A host that leaves takes off the page - its window, its document, its body, the appearance it follows -
+    /// every handler it hung there: another host after it hears each key once.
+    func testAHostThatLeavesTakesItsHandlersOffThePage() throws {
+        WebRenderer.shared?.leave()
+        try WebBrowser.run("""
+            const add = EventTarget.prototype.addEventListener, remove = EventTarget.prototype.removeEventListener;
+            const page = (t) => t === window || t === document || t === document.body || t instanceof MediaQueryList;
+            globalThis.__hung = 0;
+            globalThis.__restore = () => {
+              EventTarget.prototype.addEventListener = add;
+              EventTarget.prototype.removeEventListener = remove;
+            };
+            EventTarget.prototype.addEventListener = function (...a) { if (page(this)) __hung++; return add.apply(this, a); };
+            EventTarget.prototype.removeEventListener = function (...a) { if (page(this)) __hung--; return remove.apply(this, a); };
+            """)
+        defer { try? WebBrowser.run("__restore()") }
+        let host = WebRenderer.running { Text("Shown") }
+        host.step()
+        XCTAssertGreaterThan(try XCTUnwrap(WebBrowser.number("__hung", on: 0)), 0, "the host hears the page")
+
+        host.leave()
+
+        XCTAssertEqual(try WebBrowser.number("__hung", on: 0), 0, "a handler outlived its host on the page")
+    }
+
+    /// A list lets go of the cells of the entries it no longer shows in their order, the same every run.
+    func testAListLetsGoOfItsCellsInTheirOrder() throws {
+        WebRenderer.shared?.leave()
+        let items = State(wrappedValue: (0..<12).map { "Item \($0)" })
+        let host = WebRenderer.running { ItemsView(items.wrappedValue) { Text($0) }.height(600) }
+        for _ in 0..<4 { host.step() }
+        try WebBrowser.run("""
+            globalThis.__names = new Map([...document.querySelectorAll('.stateui-item')].map((c) => [c, c.textContent]));
+            globalThis.__left = [];
+            globalThis.__remove = Element.prototype.remove;
+            Element.prototype.remove = function () {
+              if (__names.has(this)) __left.push(__names.get(this));
+              return __remove.call(this);
+            };
+            """)
+        defer { try? WebBrowser.run("Element.prototype.remove = __remove") }
+
+        items.wrappedValue = ["Item 0"]
+        for _ in 0..<3 { host.step() }
+
+        let left = try WebBrowser.evaluate("__left.join('|')", on: 0) ?? ""
+        XCTAssertEqual(left, (1..<12).map { "Item \($0)" }.joined(separator: "|"))
+        host.leave()
+    }
+
     /// A window closed lets go of every view it made, its bar's with the page's.
     func testAClosedWindowLetsGoOfEveryViewItMade() throws {
         WebRenderer.shared?.leave()

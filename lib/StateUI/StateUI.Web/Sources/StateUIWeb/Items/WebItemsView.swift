@@ -57,15 +57,17 @@ final class WebItemsView: WebDOMView {
         scroll(to: scrolledTo.identity, anchor: scrolledTo.anchor, again: false)
     }
 
-    /// A cell for each entry, in order: one already made keeps its room, one new is watched for coming near.
+    /// A cell for each entry, in order: one already made keeps its room, one new is watched for coming near; the
+    /// cells of entries gone go in the order they stood.
     private func writeEntries() {
         var kept: [String: WebItemCell] = [:]
+        let before = order
         order = cells.identities.map { identity in
             let cell = made[identity] ?? makeCell(identity)
             kept[identity] = cell
             return cell
         }
-        for (identity, cell) in made where kept[identity] == nil {
+        for cell in before where kept[cell.entry] !== cell {
             cells.endShowing(in: cell)
             cell.detach()
         }
