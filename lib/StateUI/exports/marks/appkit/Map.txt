@@ -1,6 +1,5 @@
-# revision 1.1
+# revision 2.1
 Map: ✅
-Map.frameChanged: ✅
 Map.isScrollEnabled: ✅
 Map.isZoomEnabled: ✅
 Map.mapClicked: ✓ tap on Map: handed to the host's recognizer or handler, no NSEvent sent

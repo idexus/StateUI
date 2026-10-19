@@ -12,8 +12,8 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("standsAloneShowingItsDetail", proves: [
-                Covered(SplitViewContract.self), Covered(ViewContract.frameChanged, on: "Text"),
-            ]) { s in
+                Covered(SplitViewContract.self),
+            ], needs: [Covered(ViewContract.frameChanged, on: "Text")]) { s in
                 let frames = Received<[Double]>()
                 s.start {
                     SplitView(State(wrappedValue: true).projectedValue) {

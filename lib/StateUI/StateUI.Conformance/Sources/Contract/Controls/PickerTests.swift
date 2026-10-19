@@ -24,9 +24,9 @@
                 s.expect(try s.held(PickerContract.selectedIndex, on: picker), 1)
             },
             ConformanceCase("aUsersChoiceLandsOnceAndTheProgramsComesBackFromNobody", proves: [
-                Covered(PickerContract.selectedIndex), Covered(PickerContract.selectedIndexChanged),
-                Covered(TextualElementContract.text, on: TextContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                Covered(PickerContract.selectedIndex),
+                Covered(PickerContract.selectedIndexChanged),
+            ], needs: [Covered(TextualElementContract.text, on: TextContract.self), Covered(ButtonContract.clicked)]) { s in
                 let size = State(wrappedValue: "M")
                 let written = Received<String>()
                 let chosen = Binding(get: { size.wrappedValue }, set: { written.values.append($0); size.wrappedValue = $0 })

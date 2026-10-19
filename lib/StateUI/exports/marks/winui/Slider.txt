@@ -1,10 +1,8 @@
-# revision 2.1
+# revision 3.1
 Slider: ✅
-Slider.frameChanged: ✅
 Slider.maximum: ✅
 Slider.minimum: ✅
 Slider.pressed: not realized
 Slider.released: not realized
 Slider.value: ✅
 Slider.valueChanged: ✅
-Text.text: ✅

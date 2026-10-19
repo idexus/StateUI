@@ -13,6 +13,8 @@
         [
             Aspects.standsAlone("TextEditor"),
             ConformanceCase("anEditorsLinesAreHeardWithinTheirBound", proves: [
+                Covered(TextEditorContract.self),
+            ], needs: [
                 Covered(TextualElementContract.text, on: TextEditorContract.self),
                 Covered(TextInputContract.textChanged, on: TextEditorContract.self),
                 Covered(TextInputContract.maximumLength, on: TextEditorContract.self),

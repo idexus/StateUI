@@ -34,6 +34,13 @@ on what it proves alone. A case proving a member the host's family does not
 plan says so and does not run; one proving or needing a member the host lacks
 names the gap. A case never asks which host it runs on.
 
+A case proves its own family's contract alone - an element's family the
+element and its own members, a tier's family its members on their wearers;
+another contract's member it leans on, a text whose words show a button's
+click, is what it needs. A verdict proved in another family's file would
+outlive that family's revision: a fix there would leave the old ❌ standing in
+the cell. `ContractCompletenessTests` holds the rule.
+
 ## One family per contract
 
 Cases stand in families, one for each contract the library declares, as the

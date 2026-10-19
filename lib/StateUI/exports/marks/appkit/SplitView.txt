@@ -1,8 +1,7 @@
-# revision 5.1
+# revision 6.1
 SplitView: ✅
 SplitView.flyoutBackground: – A Mac sidebar always stands beside the detail: a window too narrow for both hides it.
 SplitView.showsSidebar: ✅
 SplitView.showsSidebarChanged: ✅
 SplitView.sidebarBackground: ✅
 SplitView.sidebarOverlays: ✅
-Text.frameChanged: ✅

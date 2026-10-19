@@ -13,8 +13,8 @@
     public static let name = "VisualElement"
 
     public static var cases: [ConformanceCase] {
-        Specimens.wearing(VisualElementContract.self).flatMap { element in
-            [
+        Specimens.wearing(VisualElementContract.self).flatMap { element -> [ConformanceCase] in
+            let held: [ConformanceCase] = [
                 shown(element), opacity(element), enabled(element), sized(element), bounded(element),
                 reachable(element), framed(element), styled(element), layered(element),
                 headed(element),
@@ -38,10 +38,12 @@
                 Aspects.holds(VisualElementContract.translationX, on: element, 0, then: 10),
                 Aspects.holds(VisualElementContract.translationY, on: element, 0, then: -10),
             ]
-                + (answeringByGestures.contains(element) ? [answering(element)] : [])
-                + (layouts.contains(element) ? [disablingItsBranch(element), directingItsChild(element)] : [])
-                + (boxes.contains(element) ? [blurredOrGlass(element)] : [])
-                + (element == "VStack" ? [followsAMaterial] : [])
+            let answered: [ConformanceCase] = answeringByGestures.contains(element) ? [answering(element)] : []
+            let laidOut: [ConformanceCase] = layouts.contains(element)
+                ? [disablingItsBranch(element), directingItsChild(element)] : []
+            let boxed: [ConformanceCase] = boxes.contains(element) ? [blurredOrGlass(element)] : []
+            let material: [ConformanceCase] = element == "VStack" ? [followsAMaterial] : []
+            return held + answered + laidOut + boxed + boxFilled(element) + material
         }
     }
 
@@ -309,13 +311,18 @@
         }
     }
 
+    /// A drawn box's fill, where `element` is one (`BorderElementTests.drawnBoxes`).
+    @MainActor
+    static func boxFilled(_ element: String) -> [ConformanceCase] {
+        BorderElementTests.drawnBoxes.contains(element) ? [BorderElementTests.boxFilled(element)] : []
+    }
+
     /// A view stands at the size the tree states.
     @MainActor
     static func sized(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsAtItsStatedSize", proves: [
             Covered(VisualElementContract.width, on: element), Covered(VisualElementContract.height, on: element),
-            Covered(ViewContract.frameChanged, on: element),
-        ]) { s in
+        ], needs: [Covered(ViewContract.frameChanged, on: element)]) { s in
             let frames = Received<[Double]>()
             s.start {
                 VStack {
@@ -339,8 +346,8 @@
             Covered(VisualElementContract.maximumWidth, on: element),
             Covered(VisualElementContract.minimumWidth, on: element),
             Covered(VisualElementContract.maximumHeight, on: element),
-            Covered(VisualElementContract.minimumHeight, on: element), Covered(ViewContract.frameChanged, on: element),
-        ]) { s in
+            Covered(VisualElementContract.minimumHeight, on: element),
+        ], needs: [Covered(ViewContract.frameChanged, on: element)]) { s in
             let narrowed = Received<[Double]>()
             let widened = Received<[Double]>()
             s.start {

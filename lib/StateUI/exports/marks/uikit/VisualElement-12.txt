@@ -1,53 +1,49 @@
-# revision 13.1
+# revision 14.1
 ActivityIndicator.accessibilityHint: ✅
 Button.frame: ✅
-Canvas.isEnabled: ✅
-Canvas.translationX: ✓ read translationX of Canvas: the host's own transform, checked against the layer it composed itself
-Capsule.rotationY: ✓ read rotationY of Capsule: the host's own transform, checked against the layer it composed itself
-CheckBox.layoutDirection: ✅
-DatePicker.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-Divider.frame: ✅
-Ellipse.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-Grid.frameChanged: ✅
-Grid.isEnabled: ✓ tap on Grid: the view's listening handed the recognizer's states, no touch sent
-Grid.maximumHeight: ✅
-Grid.maximumWidth: ✅
-Grid.minimumHeight: ✅
-Grid.minimumWidth: ✅
-HStack.rotation: ✓ read rotation of HStack: the host's own transform, checked against the layer it composed itself
-Image.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-ItemsView.style: not realized
-LayoutEngine.rotationY: ✓ read rotationY of LayoutEngine: the host's own transform, checked against the layer it composed itself
-Line.automationExcludedWithChildren: ✅
-Map.accessibilityLabel: ✅
-Path.isEnabled: ✅
-Path.translationX: ✓ read translationX of Path: the host's own transform, checked against the layer it composed itself
-Picker.rotationX: ✓ read rotationX of Picker: the host's own transform, checked against the layer it composed itself
-Polygon.layoutDirection: ✅
-Polyline.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-ProgressBar.style: ✅
-RadioButton.isEnabled: ✅
-RadioButton.translationX: ✓ read translationX of RadioButton: the host's own transform, checked against the layer it composed itself
-Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.layoutDirection: ✅
-SearchField.accessibilityHint: ✅
-Slider.style: ✅
-Spacer.frameChanged: ✅
-Spacer.height: ✅
-Spacer.translationY: ✓ read translationY of Spacer: the host's own transform, checked against the layer it composed itself
-Spacer.width: ✅
-Stepper.scale: ✓ read scale of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.pivotY: ✓ read pivotY of Switch: the host's own transform, checked against the layer it composed itself
-Text.frameChanged: ✅
-Text.height: ✅
-Text.translationY: ✓ read translationY of Text: the host's own transform, checked against the layer it composed itself
-Text.width: ✅
-TextEditor.automationExcludedWithChildren: ✅
-TextField.accessibilityHint: ✅
-TimePicker.style: ✅
-VStack.frameChanged: ✅
-VStack.height: ✅
-VStack.translationY: ✓ read translationY of VStack: the host's own transform, checked against the layer it composed itself
-VStack.width: ✅
-WebView.pivotX: ✓ read pivotX of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.isAccessibilityHidden: ✅
+Canvas.opacity: ✅
+Canvas.scaleY: ✓ read scaleY of Canvas: the host's own transform, checked against the layer it composed itself
+Capsule.rotationX: ✓ read rotationX of Capsule: the host's own transform, checked against the layer it composed itself
+CheckBox.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+DatePicker.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+Divider.isEnabled: ✅
+Divider.translationX: ✓ read translationX of Divider: the host's own transform, checked against the layer it composed itself
+Ellipse.zIndex: ✅
+Grid.height: ✅
+Grid.translationY: ✓ read translationY of Grid: the host's own transform, checked against the layer it composed itself
+Grid.width: ✅
+HStack.pivotX: ✓ read pivotX of HStack: the host's own transform, checked against the layer it composed itself
+Image.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+ItemsView.maximumHeight: ✅
+ItemsView.maximumWidth: ✅
+ItemsView.minimumHeight: ✅
+ItemsView.minimumWidth: ✅
+LayoutEngine.pivotY: ✓ read pivotY of LayoutEngine: the host's own transform, checked against the layer it composed itself
+Line.accessibilityHint: ✅
+Map.frame: ✅
+Path.rotationY: ✓ read rotationY of Path: the host's own transform, checked against the layer it composed itself
+Picker.layoutDirection: ✅
+Polygon.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+Polyline.zIndex: ✅
+ProgressBar.height: ✅
+ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform, checked against the layer it composed itself
+ProgressBar.width: ✅
+RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own transform, checked against the layer it composed itself
+Rectangle.pivotX: ✓ read pivotX of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+SearchField.frame: ✅
+Slider.isEnabled: ✅
+Slider.translationX: ✓ read translationX of Slider: the host's own transform, checked against the layer it composed itself
+Spacer.rotationY: ✓ read rotationY of Spacer: the host's own transform, checked against the layer it composed itself
+Stepper.pivotX: ✓ read pivotX of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.isAccessibilityHidden: ✅
+Text.isVisible: ✅
+Text.scaleX: ✓ read scaleX of Text: the host's own transform, checked against the layer it composed itself
+TextEditor.accessibilityLabel: ✅
+TextField.frame: ✅
+TimePicker.isEnabled: ✅
+TimePicker.translationX: ✓ read translationX of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.rotationY: ✓ read rotationY of VStack: the host's own transform, checked against the layer it composed itself
+WebView.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+ZStack.background: ✅
+ZStack.zIndex: ✅

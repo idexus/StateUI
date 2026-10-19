@@ -125,9 +125,9 @@
                 s.expect(heard.values, [], "and no frame of its journey was heard as the user's")
             },
             ConformanceCase("aUsersMoveTakesTheJourneyAndIsHeard", proves: [
-                Covered(SliderContract.value), Covered(SliderContract.valueChanged),
-                Covered(TextualElementContract.text, on: TextContract.self),
-            ]) { s in
+                Covered(SliderContract.value),
+                Covered(SliderContract.valueChanged),
+            ], needs: [Covered(TextualElementContract.text, on: TextContract.self)]) { s in
                 let level = State(wrappedValue: 0.0)
                 let moves = Received<Double>()
                 s.start {

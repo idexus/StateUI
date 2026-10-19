@@ -22,11 +22,11 @@ extension BorderElementTests {
     static func boxCases(_ element: String) -> [ConformanceCase] {
         guard drawnBoxes.contains(element) else { return [] }
         return [
-            boxFilled(element), boxOutlined(element), boxWidened(element), boxShaped(element), boxCapsuled(element),
+            boxOutlined(element), boxWidened(element), boxShaped(element), boxCapsuled(element),
         ]
     }
 
-    /// A layout's box is filled in its background.
+    /// A layout's box is filled in its background - a case of the VisualElement family, whose member it proves.
     @MainActor
     static func boxFilled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).fillsItsBoxInItsBackground", proves: [

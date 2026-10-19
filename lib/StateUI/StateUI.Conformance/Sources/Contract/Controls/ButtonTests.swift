@@ -15,8 +15,7 @@
             Aspects.standsAlone("Button"),
             ConformanceCase("eachClickIsHeardOnceAndRendersWhatItsHandlerChanged", proves: [
                 Covered(ButtonContract.clicked),
-                Covered(TextualElementContract.text, on: TextContract.self),
-            ]) { s in
+            ], needs: [Covered(TextualElementContract.text, on: TextContract.self)]) { s in
                 let count = State(wrappedValue: 0)
                 let heard = Received<Int>()
                 s.start {
@@ -203,8 +202,8 @@
             Aspects.holds(ButtonContract.lineBreak, on: "Button", .wordWrap, then: .tailTruncation,
                           with: [Write(TextualElementContract.text, "Words enough to break across more than one line")]),
             ConformanceCase("aStyleThatLeavesTakesItsLookWithIt", proves: [
-                Covered(VisualElementContract.style, on: "Button"),
-            ]) { s in
+                Covered(ButtonContract.self),
+            ], needs: [Covered(VisualElementContract.style, on: "Button")]) { s in
                 let platform = State(wrappedValue: false)
                 s.start { LeavingStyle(platform: platform.projectedValue) }
                 let (styled, bare) = (try s.element("styled"), try s.element("bare"))

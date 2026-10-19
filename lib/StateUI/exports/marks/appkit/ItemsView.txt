@@ -1,8 +1,7 @@
-# revision 1.1
+# revision 2.1
 ItemsView: ✅
 ItemsView.endReached: ✅
 ItemsView.endReachedWithin: ✅
-ItemsView.frameChanged: ✅
 ItemsView.itemActivated: ✓ activate on an item of ItemsView: the collection's delegate told, no click
 ItemsView.items: ✅
 ItemsView.itemsLayout: ✅

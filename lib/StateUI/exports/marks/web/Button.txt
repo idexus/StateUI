@@ -1,7 +1,6 @@
-# revision 7.1
+# revision 8.1
 Button: ✅
 Button.clicked: ✅
-Button.frameChanged: ✅
 Button.icon: ✅
 Button.iconPosition: ✅
 Button.iconSpacing: ✅
@@ -12,5 +11,3 @@ Button.pressed: ✅
 Button.released: ✅
 Button.role: ✅
 Button.showsMenuArrow: ✅
-Button.style: ✅
-Text.text: ✅

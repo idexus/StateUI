@@ -1,5 +1,4 @@
-# revision 2.1
-ToolbarItem.clicked: ✓ activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched
+# revision 3.1
 ToolbarItemGroup: ✅
 ToolbarItemGroup.order: ✅
 ToolbarItemGroup.side: ✅

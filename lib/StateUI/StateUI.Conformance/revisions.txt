@@ -12,26 +12,26 @@
 # cases, or what every host decides alike - and a host's own where that host's
 # change alone does. A change that proves nothing new raises nothing.
 
-TextEditor 2
-SplitView 5
+TextEditor 3
+SplitView 6
 android TextAlignmentElement 2
 appkit TextInput 2
 android TextInput 2
-ToolbarItem 3
-ToolbarItemGroup 2
+ToolbarItem 4
+ToolbarItemGroup 3
 TitleView 2
-MenuBar 2
-MenuItem 2
+MenuBar 3
+MenuItem 3
 Window 6
 Scene 2
-ModalStack 4
+ModalStack 5
 Overlay 4
 BarElement 4
-NavigationStack 2
+NavigationStack 3
 uikit WebView 2
 android WebView 3
 winui WebView 2
-Button 7
+Button 8
 appkit Button 2
 uikit Button 2
 winui Button 3
@@ -39,42 +39,60 @@ MenuItemElement 3
 FontElement 3
 winui MenuItemElement 2
 winui PageElement 2
-DatePicker 3
-TimePicker 3
-Picker 3
-Image 2
+DatePicker 4
+TimePicker 4
+Picker 4
+Image 3
 Page 5
 PageElement 2
 View 7
-VisualElement 13
+VisualElement 14
 Shape 5
-BorderElement 9
-TextInput 3
+BorderElement 10
+TextInput 4
 Application 5
-TextSpan 3
-Divider 3
-Canvas 2
-Rectangle 2
-Stepper 3
+TextSpan 4
+Divider 4
+Canvas 3
+Rectangle 3
+Stepper 4
 KeyboardElement 3
 LineHeightElement 2
 TextAlignmentElement 2
-Text 3
+Text 4
 TextStyleElement 2
 TintElement 2
-ContextMenu 2
+ContextMenu 3
 winui VisualElement 2
 winui Layout 2
 gtk Layout 2
-TextField 2
-SearchField 2
-Polyline 2
+TextField 3
+SearchField 3
+Polyline 3
 FilledShape 2
 AutomationElement 3
 Layout 2
 PaddingElement 2
-LayoutEngine 10
+LayoutEngine 11
 FocusElement 3
-ScrollView 2
-Slider 2
-Switch 2
+ScrollView 3
+Slider 3
+Switch 3
+ActivityIndicator 2
+Capsule 2
+CheckBox 2
+Ellipse 2
+Grid 2
+HStack 2
+ItemsView 2
+Line 2
+Map 2
+Path 2
+Polygon 2
+ProgressBar 2
+RadioButton 2
+Spacer 2
+TabView 2
+VStack 2
+WebView 2
+ZStack 2

@@ -12,8 +12,8 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("anItemChosenRunsItsHandler", proves: [
-                Covered(ToolbarItemContract.self), Covered(MenuItemElementContract.clicked, on: "ToolbarItem"),
-            ]) { s in
+                Covered(ToolbarItemContract.self),
+            ], needs: [Covered(MenuItemElementContract.clicked, on: "ToolbarItem")]) { s in
                 let heard = Received<String>()
                 s.start {
                     Self.page {

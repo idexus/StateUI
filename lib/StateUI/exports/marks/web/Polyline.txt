@@ -1,5 +1,4 @@
-# revision 2.1
+# revision 3.1
 Polyline: ✅
 Polyline.fillRule: ✅
-Polyline.frameChanged: ✅
 Polyline.points: ✅

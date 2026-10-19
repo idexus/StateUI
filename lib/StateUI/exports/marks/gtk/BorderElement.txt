@@ -1,29 +1,22 @@
-# revision 9.1
-Button.background: ☑️ A brush fills the view with its first colour alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's colour standing in, its tint over it.
+# revision 10.1
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
-Grid.background: ✅
 Grid.lineWidth: ✅
 Grid.shape: ✅
 Grid.stroke: ✅
-HStack.background: ✅
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
-LayoutEngine.background: ✅
 LayoutEngine.lineWidth: ◐ cannot read lineWidth of LayoutEngine - GTK's driver has no path for it yet
 LayoutEngine.shape: ◐ cannot read shape of LayoutEngine - GTK's driver has no path for it yet
 LayoutEngine.stroke: ◐ cannot read stroke of LayoutEngine - GTK's driver has no path for it yet
-ScrollView.background: ✅
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅
-VStack.background: ✅
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅
-ZStack.background: ✅
 ZStack.lineWidth: ✅
 ZStack.shape: ✅
 ZStack.stroke: ✅

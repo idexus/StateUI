@@ -12,8 +12,8 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("aTextsSpansAreItsWordsRunByRun", proves: [
-                Covered(TextSpanContract.self), Covered(TextualElementContract.text, on: "TextSpan"),
-            ]) { s in
+                Covered(TextSpanContract.self),
+            ], needs: [Covered(TextualElementContract.text, on: "TextSpan")]) { s in
                 s.start {
                     VStack {
                         Text().spans {
@@ -30,8 +30,8 @@
                          "a span a run")
             },
             ConformanceCase("aSpanTheTreeChangesChangesItsRun", proves: [
-                Covered(TextualElementContract.text, on: "TextSpan"),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                Covered(TextSpanContract.self),
+            ], needs: [Covered(TextualElementContract.text, on: "TextSpan"), Covered(ButtonContract.clicked)]) { s in
                 let changed = State(wrappedValue: false)
                 s.start {
                     VStack {

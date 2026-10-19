@@ -1,5 +1,3 @@
-# revision 4.1
+# revision 5.1
 ModalStack: ◐ cannot read what reaches Rectangle - Android's driver has no path for it yet
 ModalStack.popped: ✅
-Page.appearing: ✅
-Page.disappearing: ✅

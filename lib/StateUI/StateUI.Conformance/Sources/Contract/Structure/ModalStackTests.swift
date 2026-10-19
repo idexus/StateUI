@@ -13,8 +13,8 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("aPresentedPageStandsOverTheWindow", proves: [
-                Covered(ModalStackContract.self), Covered(PageContract.disappearing),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                Covered(ModalStackContract.self),
+            ], needs: [Covered(PageContract.disappearing), Covered(ButtonContract.clicked)]) { s in
                 let log = Received<String>()
                 let sheets = State(wrappedValue: [Int]())
                 s.start { sheetsOver(SheetsPage(sheets: sheets, log: log), sheets) }
@@ -63,8 +63,9 @@
                 s.expect(try sheetReached(), true, "a sheet over a page pushed since")
             },
             ConformanceCase("theUsersWayBackTakesTheTopPageAway", proves: [
-                Covered(ModalStackContract.self), Covered(ModalStackContract.popped), Covered(PageContract.appearing),
-            ]) { s in
+                Covered(ModalStackContract.self),
+                Covered(ModalStackContract.popped),
+            ], needs: [Covered(PageContract.appearing)]) { s in
                 let log = Received<String>()
                 let sheets = State(wrappedValue: [1, 2])
                 s.start { sheetsOver(SheetsPage(sheets: sheets, log: log), sheets) }

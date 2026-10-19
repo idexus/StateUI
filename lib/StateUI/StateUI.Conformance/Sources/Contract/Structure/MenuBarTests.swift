@@ -13,8 +13,8 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("thePagesMenusStandOnItsWindowsBar", proves: [
-                Covered(MenuBarContract.self), Covered(MenuContract.text), Covered(MenuItemElementContract.isEnabled, on: "MenuItem"),
-            ]) { s in
+                Covered(MenuBarContract.self),
+            ], needs: [Covered(MenuContract.text), Covered(MenuItemElementContract.isEnabled, on: "MenuItem")]) { s in
                 s.start { onAStack(MenusPage(heard: Received())) }
                 let window = try s.element(ofType: WindowContract.nodeType)
 
@@ -22,8 +22,8 @@
                 s.expect(try s.menu(of: window), "File[New;-;Recent[a.txt]];Edit[!Undo]")
             },
             ConformanceCase("anItemChosenFromTheBarRunsItsHandler", proves: [
-                Covered(MenuBarContract.self), Covered(MenuItemElementContract.clicked, on: "MenuItem"),
-            ]) { s in
+                Covered(MenuBarContract.self),
+            ], needs: [Covered(MenuItemElementContract.clicked, on: "MenuItem")]) { s in
                 let heard = Received<String>()
                 s.start { onAStack(MenusPage(heard: heard)) }
 

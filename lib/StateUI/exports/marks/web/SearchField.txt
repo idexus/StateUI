@@ -1,7 +1,4 @@
-# revision 2.1
+# revision 3.1
 SearchField: ✅
-SearchField.frameChanged: ✅
 SearchField.submitLabel: ✅
 SearchField.submitted: ✅
-SearchField.text: ✅
-SearchField.textChanged: ✅

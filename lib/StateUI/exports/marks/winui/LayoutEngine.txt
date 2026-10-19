@@ -1,6 +1,5 @@
-# revision 10.1
+# revision 11.1
 LayoutEngine: ✅
-LayoutEngine.frameChanged: ✅
 LayoutEngine.handAxis: ✓ sweep on LayoutEngine: the relay's report of the hand handed to the host with its speed, no pointer sent
 LayoutEngine.handMoved: ✓ sweep on LayoutEngine: the relay's report of the hand handed to the host with its speed, no pointer sent
 LayoutEngine.handStepped: – A wheel reaches the layout as WinUI's own scroller takes it, its tracker's: a notch goes as far as the platform scrolls for it, and the tracker tells no notch.

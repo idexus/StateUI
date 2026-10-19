@@ -61,8 +61,8 @@
     /// size. What says the host makes the element, whatever else of it the host realizes or its driver reads.
     public static func standsAlone(_ element: String) -> ConformanceCase {
         ConformanceCase("standsAloneOnAPage", proves: [
-            Covered(member: nil, element: element, tier: nil), Covered(ViewContract.frameChanged, on: element),
-        ]) { s in
+            Covered(member: nil, element: element, tier: nil),
+        ], needs: [Covered(ViewContract.frameChanged, on: element)]) { s in
             let frames = Received<[Double]>()
             s.start { Specimens.view(element, [Hear(ViewContract.frameChanged) { frames.values.append($0) }]) }
             s.settle { laidOut(frames) }

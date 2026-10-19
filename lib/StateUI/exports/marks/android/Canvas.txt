@@ -1,7 +1,6 @@
-# revision 2.1
+# revision 3.1
 Canvas: ✅
 Canvas.dragged: ✅
 Canvas.drawing: ✅
-Canvas.frameChanged: ✅
 Canvas.pressed: ✅
 Canvas.released: ✅

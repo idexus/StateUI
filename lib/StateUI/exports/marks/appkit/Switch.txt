@@ -1,6 +1,4 @@
-# revision 2.1
+# revision 3.1
 Switch: ✅
-Switch.frameChanged: ✅
 Switch.isOn: ✅
 Switch.toggled: ✅
-Text.text: ✅

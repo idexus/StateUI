@@ -12,8 +12,8 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("standsAloneShowingItsRoot", proves: [
-                Covered(NavigationStackContract.self), Covered(ViewContract.frameChanged, on: "Text"),
-            ]) { s in
+                Covered(NavigationStackContract.self),
+            ], needs: [Covered(ViewContract.frameChanged, on: "Text")]) { s in
                 let frames = Received<[Double]>()
                 s.start {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
@@ -24,8 +24,8 @@
                 s.expect(Aspects.laidOut(frames), true, "its root laid out in the window")
             },
             ConformanceCase("theTopPageOfThePathShows", proves: [
-                Covered(PageElementContract.title, on: "Page"),
-            ]) { s in
+                Covered(NavigationStackContract.self),
+            ], needs: [Covered(PageElementContract.title, on: "Page")]) { s in
                 let path = State(wrappedValue: [Int]())
                 s.start {
                     NavigationStack(path.projectedValue) {

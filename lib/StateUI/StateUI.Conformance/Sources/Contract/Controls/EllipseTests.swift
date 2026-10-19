@@ -12,8 +12,8 @@
         [
             Aspects.standsAlone("Ellipse"),
             ConformanceCase("anEllipseFillsItsRoomInsideItsCurve", proves: [
-                Covered(FilledShapeContract.fill, on: "Ellipse"),
-            ]) { s in
+                Covered(EllipseContract.self),
+            ], needs: [Covered(FilledShapeContract.fill, on: "Ellipse")]) { s in
                 s.start { VStack { Ellipse().fill(.red).width(100).height(60).id("shape") }.horizontalAlignment(.start) }
                 let shape = try s.element("shape")
 
