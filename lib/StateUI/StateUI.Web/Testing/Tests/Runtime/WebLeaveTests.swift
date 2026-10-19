@@ -42,6 +42,23 @@ final class WebLeaveTests: XCTestCase {
         XCTAssertEqual(WebRelay.listenerCount, before, "a listener outlived the window that hung it")
     }
 
+    /// A heading keeps its role whether the user taps it or not: one writer says the role, from everything the view
+    /// is - a heading, a container tapped, one assistive technology skips.
+    func testAHeadingKeepsItsRoleTappedOrNot() throws {
+        WebRenderer.shared?.leave()
+        let host = WebRenderer.running { VStack { Text("Section") }.accessibilityHeading(.h2).id("heading") }
+        host.step()
+        let heading = try XCTUnwrap((host.runtime.tree.root?.first(id: .manual("heading"))?.native as? WebElement)?.view)
+        let role = { try WebBrowser.evaluate("e.getAttribute('role') ?? ''", on: heading.node) ?? "" }
+        XCTAssertEqual(try role(), "heading")
+
+        heading.isTapped = true
+        XCTAssertEqual(try role(), "heading", "a tap took the heading's role")
+        heading.isTapped = false
+        XCTAssertEqual(try role(), "heading", "the tap gone took the role with it")
+        host.leave()
+    }
+
     /// A split button lets go of its arrow with itself, and a menu of no entries - never shown - of its popover.
     func testASplitButtonsArrowAndAnEmptyMenuLeaveNothing() throws {
         WebRenderer.shared?.leave()

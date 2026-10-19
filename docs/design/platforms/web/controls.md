@@ -27,8 +27,10 @@ WebAssembly most of a frame.
 An element's words for assistive technology are ARIA's: its label
 `aria-label`, what it does `aria-description`, its level as a heading the
 `heading` role with `aria-level`, hidden with what it holds `aria-hidden`, and
-hidden alone the `none` role. Its identifier, which a driver finds it by, is
-`data-identifier`.
+hidden alone the `none` role. One writer says the role, from all the element
+is: a heading, else skipped, else its own - a container the user taps a
+button - so a tap coming or going leaves a heading a heading. Its
+identifier, which a driver finds it by, is `data-identifier`.
 
 ## Words
 

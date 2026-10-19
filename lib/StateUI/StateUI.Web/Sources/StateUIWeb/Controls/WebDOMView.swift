@@ -278,9 +278,9 @@ class WebDOMView {
         attribute("data-identifier", words.identifier)
         named.attribute("aria-label", words.label?.isEmpty == false ? words.label : nil)
         named.attribute("aria-description", words.hint?.isEmpty == false ? words.hint : nil)
-        let heading = words.headingLevel > 0
-        attribute("role", heading ? "heading" : words.presence == .hidden ? "none" : role)
-        attribute("aria-level", heading ? String(words.headingLevel) : nil)
+        spoken = (words.headingLevel > 0, words.presence == .hidden)
+        writeRole()
+        attribute("aria-level", spoken.heading ? String(words.headingLevel) : nil)
         attribute("aria-hidden", words.presence == .hiddenWithChildren ? "true" : nil)
     }
 
@@ -301,8 +301,17 @@ class WebDOMView {
             guard isTapped != oldValue else { return }
             attribute("data-taps", isTapped ? "" : nil)
             attribute("tabindex", isTapped ? "0" : nil)
-            attribute("role", role)
+            writeRole()
         }
+    }
+
+    /// Whether assistive technology meets the view as a heading, and whether it skips it, as its words last said.
+    private var spoken = (heading: false, skipped: false)
+
+    /// The one writer of the view's role, from all it is: a heading, else skipped, else its own (`role`) - a
+    /// container the user taps a button.
+    private func writeRole() {
+        attribute("role", spoken.heading ? "heading" : spoken.skipped ? "none" : role)
     }
 
     /// The direction the view lays out and writes in.
