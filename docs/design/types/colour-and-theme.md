@@ -22,7 +22,7 @@ half way between two others is made of.
 
 A toolkit holds a colour as one number, eight bits a channel with alpha
 highest, or as four fractions of full from 0 to 1. The host layer turns
-either into the four channels and back (`ColorChannel`, `Color(argb:)`,
+either into the four channels and back (`ColorComponent`, `Color(argb:)`,
 `Color(fractions:)`, `HostValue.fractions`): a fraction stands at its nearest
 channel, held to the range. The accent a host reports and the colour it
 draws are converted by that one rule, so the same colour stands at the same

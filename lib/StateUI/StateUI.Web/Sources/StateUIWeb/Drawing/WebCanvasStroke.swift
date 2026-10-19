@@ -102,7 +102,7 @@ struct WebCanvasStroke {
     private static func color(_ value: HostValue, _ pen: CanvasPen) -> [Double]? {
         guard let color = value.color else { return nil }
         return [Double(color.red), Double(color.green), Double(color.blue),
-                ColorChannel.fraction(color.alpha) * pen.alpha]
+                ColorComponent.fraction(color.alpha) * pen.alpha]
     }
 
     private static func code(_ operation: Operation) -> Double {

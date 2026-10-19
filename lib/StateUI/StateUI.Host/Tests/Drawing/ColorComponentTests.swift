@@ -7,7 +7,7 @@ import XCTest
 
 /// A colour as a toolkit holds it - one ARGB number, or four fractions of full - read and written the same on every
 /// host.
-final class ColorChannelTests: XCTestCase {
+final class ColorComponentTests: XCTestCase {
     /// A colour packed in one number unpacks to its channels, alpha highest.
     func testAColourPackedInOneNumberUnpacks() {
         XCTAssertEqual(Color(argb: 0x80FF_4020), Color(red: 255, green: 64, blue: 32, alpha: 128))
@@ -31,7 +31,7 @@ final class ColorChannelTests: XCTestCase {
         XCTAssertNil(PropValue.number(1).fractions, "no colour")
 
         for channel in UInt8.min...UInt8.max {
-            XCTAssertEqual(ColorChannel.nearest(ColorChannel.fraction(channel)), channel)
+            XCTAssertEqual(ColorComponent.nearest(ColorComponent.fraction(channel)), channel)
         }
     }
 }

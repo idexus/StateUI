@@ -8,14 +8,23 @@
 @_spi(Host) public struct MarkerLook: Equatable, Sendable {
     /// A marker's hue, drawn as the platform's own colour of that name.
     public enum Hue: Sendable {
-        case red, blue, yellow, purple
+        /// A plain marker's.
+        case red
+        /// A place's.
+        case blue
+        /// One the user saved.
+        case yellow
+        /// One a search turned up.
+        case purple
     }
 
+    /// The marker's hue.
     public let hue: Hue
 
     /// The SF Symbol the marker wears - the icons Apple's platforms ship; none for a plain marker.
     public let sfSymbol: String?
 
+    /// A look of `hue`, wearing `sfSymbol`.
     public init(hue: Hue, sfSymbol: String?) {
         self.hue = hue
         self.sfSymbol = sfSymbol

@@ -12,6 +12,6 @@
 
     /// The band over `accent`, both packed in one number, eight bits a channel with alpha highest.
     public static func argb(over accent: UInt32) -> UInt32 {
-        accent & 0x00FF_FFFF | UInt32(ColorChannel.nearest(opacity)) << 24
+        accent & 0x00FF_FFFF | UInt32(ColorComponent.nearest(opacity)) << 24
     }
 }

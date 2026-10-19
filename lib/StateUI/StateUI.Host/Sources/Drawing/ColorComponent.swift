@@ -5,7 +5,7 @@
 
 /// A colour's channel as a toolkit holds it: a byte, 0-255, or a fraction of full, 0 to 1.
 /// Design: docs/design/types/colour-and-theme.md#as-a-toolkit-holds-it
-@_spi(Host) public enum ColorChannel {
+@_spi(Host) public enum ColorComponent {
     /// The fraction of full `channel` is.
     public static func fraction(_ channel: UInt8) -> Double {
         Double(channel) / 255
@@ -20,8 +20,8 @@
 extension PropValue {
     /// The colour as four fractions of full, as a toolkit draws it; nil for a value that is no colour.
     @_spi(Host) public var fractions: (red: Double, green: Double, blue: Double, alpha: Double)? {
-        color.map { (ColorChannel.fraction($0.red), ColorChannel.fraction($0.green),
-                     ColorChannel.fraction($0.blue), ColorChannel.fraction($0.alpha)) }
+        color.map { (ColorComponent.fraction($0.red), ColorComponent.fraction($0.green),
+                     ColorComponent.fraction($0.blue), ColorComponent.fraction($0.alpha)) }
     }
 }
 
@@ -34,7 +34,7 @@ extension Color {
 
     /// A colour a toolkit reports as four fractions of full, each at its nearest channel.
     @_spi(Host) public init(fractions: (red: Double, green: Double, blue: Double, alpha: Double)) {
-        self.init(red: Int(ColorChannel.nearest(fractions.red)), green: Int(ColorChannel.nearest(fractions.green)),
-                  blue: Int(ColorChannel.nearest(fractions.blue)), alpha: Int(ColorChannel.nearest(fractions.alpha)))
+        self.init(red: Int(ColorComponent.nearest(fractions.red)), green: Int(ColorComponent.nearest(fractions.green)),
+                  blue: Int(ColorComponent.nearest(fractions.blue)), alpha: Int(ColorComponent.nearest(fractions.alpha)))
     }
 }

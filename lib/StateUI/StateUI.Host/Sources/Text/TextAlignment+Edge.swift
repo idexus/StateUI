@@ -5,7 +5,12 @@
 
 /// The edge words stand at across their room, as a toolkit names it with no direction of its own.
 @_spi(Host) public enum TextEdge: Int32, Sendable {
-    case left, center, right
+    /// The left edge.
+    case left = 0
+    /// The middle.
+    case center = 1
+    /// The right edge.
+    case right = 2
 }
 
 extension TextAlignment {
