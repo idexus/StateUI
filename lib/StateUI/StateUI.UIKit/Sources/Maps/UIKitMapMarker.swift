@@ -29,15 +29,5 @@ final class UIKitMapMarker: NSObject, @MainActor MKAnnotation {
         subtitle = child.value(MarkerContract.subtitle)
         type = child.value(MarkerContract.type) ?? .generic
     }
-
-    /// The marker's colour and symbol for a marker's kind.
-    static func look(of type: MarkerType) -> (tint: UIColor, symbol: String?) {
-        switch type {
-        case .generic: (.systemRed, nil)
-        case .place: (.systemBlue, "building.2.fill")
-        case .saved: (.systemYellow, "star.fill")
-        case .searchResult: (.systemPurple, "magnifyingglass")
-        }
-    }
 }
 #endif

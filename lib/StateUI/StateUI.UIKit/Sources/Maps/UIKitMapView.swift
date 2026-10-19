@@ -160,11 +160,21 @@ final class UIKitMapView: MKMapView, MKMapViewDelegate {
         (view.annotation as? UIKitMapMarker)?.child.reports.raise(MarkerContract.detailsClicked)
     }
 
-    /// Gives `marker` the colour and symbol of a marker's kind.
+    /// Gives `marker` the colour and symbol of a marker's kind (`MarkerLook`).
     static func dress(_ marker: MKMarkerAnnotationView, as type: MarkerType) {
-        let look = UIKitMapMarker.look(of: type)
-        marker.markerTintColor = look.tint
-        marker.glyphImage = look.symbol.flatMap { UIImage(systemName: $0) }
+        let look = MarkerLook(type)
+        marker.markerTintColor = tint(look.hue)
+        marker.glyphImage = look.sfSymbol.flatMap { UIImage(systemName: $0) }
+    }
+
+    /// The platform's own colour of a marker's hue.
+    static func tint(_ hue: MarkerLook.Hue) -> UIColor {
+        switch hue {
+        case .red: .systemRed
+        case .blue: .systemBlue
+        case .yellow: .systemYellow
+        case .purple: .systemPurple
+        }
     }
 }
 

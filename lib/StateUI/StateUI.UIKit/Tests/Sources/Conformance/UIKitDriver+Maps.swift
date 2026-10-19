@@ -35,7 +35,7 @@ extension UIKitDriver {
         case .type:
             let tint = try marker(of: pin, on: map).markerTintColor
             let kinds: [MarkerType] = [.generic, .place, .saved, .searchResult]
-            return kinds.first { UIKitMapMarker.look(of: $0).tint == tint }?.propValue
+            return kinds.first { UIKitMapView.tint(MarkerLook($0).hue) == tint }?.propValue
         default: throw DriverCannot("read \(property.name) of a Marker")
         }
     }
