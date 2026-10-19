@@ -11,10 +11,10 @@ extension ContainerShape {
     /// The outline's kind, and its corners' radius at a size `width` by `height` (`BoxArithmetic.cornerRadius`).
     func relay(width: Double, height: Double) -> (outline: StateUIOutline, radius: Double) {
         switch self {
-        case .rectangle: (StateUIOutlineRectangle, 0)
+        case .rectangle: (.rectangle, 0)
         case .roundedRectangle, .capsule:
-            (StateUIOutlineRounded, BoxArithmetic.cornerRadius(of: self, width: width, height: height))
-        case .ellipse: (StateUIOutlineEllipse, 0)
+            (.rounded, BoxArithmetic.cornerRadius(of: self, width: width, height: height))
+        case .ellipse: (.ellipse, 0)
         }
     }
 }

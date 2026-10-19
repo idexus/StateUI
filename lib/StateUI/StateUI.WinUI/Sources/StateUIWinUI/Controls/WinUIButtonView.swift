@@ -50,10 +50,10 @@ final class WinUIButtonView: WinUIView {
     /// Design: docs/design/platforms/winui/controls.md#a-buttons-menu
     init(menu opening: ButtonMenuOpening = .none, showsArrow: Bool = false) {
         self.opening = opening
-        let kind: Int32 = switch opening {
-        case .arrow: 2
-        case .click where showsArrow: 1
-        case .none, .click, .hold: 0
+        let kind: StateUIButtonKind = switch opening {
+        case .arrow: .split
+        case .click where showsArrow: .dropDown
+        case .none, .click, .hold: .button
         }
         super.init { number in stateui_winui_button_make(number, kind) }
     }

@@ -379,21 +379,28 @@ extern "C" void stateui_winui_split_slide(StateUIObjectRef handle, double pane, 
 }
 
 extern "C" void stateui_winui_split_set_pane_grounds(
-    StateUIObjectRef handle, int32_t besideKind, uint32_t besideArgb, float besideOpacity, float besideTintOpacity,
-    int32_t overKind, uint32_t overArgb, float overOpacity, float overTintOpacity
+    StateUIObjectRef handle, StateUIGround besideKind, uint32_t besideArgb, float besideOpacity, float besideTintOpacity,
+    StateUIGround overKind, uint32_t overArgb, float overOpacity, float overTintOpacity
 ) {
     try {
         // Each place's own brush - the whole pane's, around the page in it too; none is WinUI's own.
         // Design: docs/design/platforms/winui/pages.md#a-split-view
-        auto ground = [](int32_t kind, uint32_t argb, float opacity, float tintOpacity) -> xaml::Media::Brush {
-            if (kind == 1) return media::SolidColorBrush(color(argb));
-            if (kind != 2) return nullptr;
-            media::AcrylicBrush acrylic;
-            acrylic.TintColor(color(argb | 0xFF000000u));
-            acrylic.TintOpacity(tintOpacity);
-            acrylic.TintLuminosityOpacity(static_cast<double>(opacity));
-            acrylic.FallbackColor(color(argb | 0xFF000000u));
-            return acrylic;
+        auto ground = [](StateUIGround kind, uint32_t argb, float opacity, float tintOpacity) -> xaml::Media::Brush {
+            switch (kind) {
+            case StateUIGroundOwn:
+                return nullptr;
+            case StateUIGroundColour:
+                return media::SolidColorBrush(color(argb));
+            case StateUIGroundAcrylic: {
+                media::AcrylicBrush acrylic;
+                acrylic.TintColor(color(argb | 0xFF000000u));
+                acrylic.TintOpacity(tintOpacity);
+                acrylic.TintLuminosityOpacity(static_cast<double>(opacity));
+                acrylic.FallbackColor(color(argb | 0xFF000000u));
+                return acrylic;
+            }
+            }
+            return nullptr;
         };
         auto split = borrow<controls::SplitView>(handle);
         auto keep = [&](wchar_t const *name, xaml::Media::Brush const &brush) {

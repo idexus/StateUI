@@ -174,7 +174,7 @@ final class WinUIDriver: HostDriver {
             _ = view.heardHand(phase: GesturePhase.ended.rawValue, moved: Point(x: 0, y: 0))
         case (.pressDown(let point), let view?): try press(view, down: true, at: point, element)
         case (.lift(let point), let view?): try press(view, down: false, at: point, element)
-        case (.drag(let point), let canvas as WinUICanvasView): canvas.pressed(phase: 1, at: point)
+        case (.drag(let point), let canvas as WinUICanvasView): canvas.pressed(.moved, at: point)
         case (.drag(let point), let view?) where view.hearing.contains(.pointer):
             view.heard(.pointer(.pointerMoved, point))
         case (.hover(let point), let view?) where view.hearing.contains(.pointer):
@@ -186,9 +186,9 @@ final class WinUIDriver: HostDriver {
             for run in 1...max(count, 1) { view.heard(.tap(run: run)) }
         case (.pan(let offset), let view?) where view.hearing.contains(.drags):
             // The press the relay tells, which the host layer's rule makes a drag.
-            view.heardPress(phase: 0, at: Point(x: 100, y: 100))
-            view.heardPress(phase: 1, at: Point(x: 100 + offset.x, y: 100 + offset.y))
-            view.heardPress(phase: 2, at: Point(x: 100 + offset.x, y: 100 + offset.y))
+            view.heardPress(.down, at: Point(x: 100, y: 100))
+            view.heardPress(.moved, at: Point(x: 100 + offset.x, y: 100 + offset.y))
+            view.heardPress(.letGo, at: Point(x: 100 + offset.x, y: 100 + offset.y))
         // A throw's speed is the pointer's times, which no input a driver sends carries: the hand reaches the
         // host's entry as the relay would hand it, with the speed - ✓.
         case (.sweep(let offset, let speed), let view?) where view.hearing.contains(.hand):
@@ -294,7 +294,7 @@ final class WinUIDriver: HostDriver {
             WinUICallbacks.table.held(button.number, down)
             done = true
         case let canvas as WinUICanvasView:
-            canvas.pressed(phase: down ? 0 : 2, at: point)
+            canvas.pressed(down ? .down : .letGo, at: point)
             done = true
         case let slider as WinUISliderView:
             WinUICallbacks.table.held(slider.number, down)

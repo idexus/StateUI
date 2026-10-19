@@ -129,7 +129,7 @@ final class WinUIRendererTests: XCTestCase {
         onUIThread {
             let host = WinUIRenderer.running { EnvironmentPage() }
             var bytes = [CChar](repeating: 0, count: 8)
-            _ = stateui_winui_facts(StateUIFactsTheme, nil, &bytes, 8)
+            _ = stateui_winui_facts(.theme, nil, &bytes, 8)
             let dark = bytes[0] == 0x31
 
             XCTAssertEqual(host.views(WinUITextView.self).map(\.text), ["Windows desktop", dark ? "dark" : "light"])

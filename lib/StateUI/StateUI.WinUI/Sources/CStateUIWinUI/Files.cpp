@@ -37,7 +37,7 @@ namespace {
     /// What a dialog asks for, held past the call that asked: its kind, its kinds of file - each a caption and its
     /// extensions with their dots - a save's name and contents.
     struct Request {
-        int32_t kind = 0;
+        StateUIFileDialogKind kind = StateUIFileDialogKindOpen;
         std::vector<std::pair<winrt::hstring, std::vector<winrt::hstring>>> types;
         winrt::hstring name;
         std::vector<uint8_t> contents;
@@ -185,7 +185,7 @@ extern "C" void stateui_winui_show_file_dialog(StateUIObjectRef handle, int64_t 
     try {
         auto window = borrow<xaml::Window>(handle).AppWindow().Id();
         auto asked = std::make_shared<Request>(request(*dialog));
-        if (asked->kind == 2) {
+        if (asked->kind == StateUIFileDialogKindSave) {
             pickers::FileSavePicker picker(window);
             if (!asked->name.empty()) picker.SuggestedFileName(asked->name);
             if (!testFolder.empty()) picker.SuggestedFolder(testFolder);
@@ -205,7 +205,7 @@ extern "C" void stateui_winui_show_file_dialog(StateUIObjectRef handle, int64_t 
                 if (!picker.FileTypeFilter().IndexOf(extension, place)) picker.FileTypeFilter().Append(extension);
             }
         }
-        if (asked->kind == 1) return chosenSeveral(picker.PickMultipleFilesAsync(), ticket);
+        if (asked->kind == StateUIFileDialogKindOpenSeveral) return chosenSeveral(picker.PickMultipleFilesAsync(), ticket);
         chosenOne(picker.PickSingleFileAsync(), ticket, nullptr);
     } catch (...) {
         handOver(ticket, {{}, "the file dialog could not be shown: 0x" + std::to_string(report("showing a file dialog"))});

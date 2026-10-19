@@ -112,12 +112,12 @@ final class WinUIPathView: WinUIView {
         switch geometry {
         case .rectangle(let radii, let transform):
             Self.moving(by: transform) { moved in
-                stateui_winui_path_draw(handle, 0, radii, nil, 0, false, moved, room.width, room.height, inset)
+                stateui_winui_path_draw(handle, .rectangle, radii, nil, 0, false, moved, room.width, room.height, inset)
             }
             standFigure(filled)
         case .ellipse(let transform):
             Self.moving(by: transform) { moved in
-                stateui_winui_path_draw(handle, 1, nil, nil, 0, false, moved, room.width, room.height, inset)
+                stateui_winui_path_draw(handle, .ellipse, nil, nil, 0, false, moved, room.width, room.height, inset)
             }
             standFigure(filled)
         case .authored(let commands, let evenOdd, let aspect, let transform):
@@ -125,7 +125,7 @@ final class WinUIPathView: WinUIView {
                 of: bounds, in: LayoutSize(width: room.width, height: room.height), aspect: aspect,
                 transform: transform)
             stateui_winui_path_draw(
-                handle, 2, nil, commands, Int32(commands.count), evenOdd, placement, room.width, room.height, inset)
+                handle, .authored, nil, commands, Int32(commands.count), evenOdd, placement, room.width, room.height, inset)
             standFigure(LayoutSize(
                 width: bounds.width * (placement[0] * placement[0] + placement[1] * placement[1]).squareRoot(),
                 height: bounds.height * (placement[2] * placement[2] + placement[3] * placement[3]).squareRoot()))

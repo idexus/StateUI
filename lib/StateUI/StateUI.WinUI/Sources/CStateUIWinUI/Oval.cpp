@@ -26,7 +26,7 @@ namespace {
 
     /// A brush's first colour; none for no brush.
     uint32_t firstColor(StateUIBrush const &brush) {
-        return brush.kind != 0 && brush.count > 0 ? brush.colors[0] : 0u;
+        return brush.kind != StateUIBrushKindNone && brush.count > 0 ? brush.colors[0] : 0u;
     }
 
     /// An oval `width` by `height`, filled in one colour and outlined in another `lineWidth` wide inside its edge,

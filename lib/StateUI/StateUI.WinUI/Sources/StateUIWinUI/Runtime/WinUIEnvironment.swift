@@ -12,10 +12,10 @@ import CStateUIWinUI
 enum WinUIEnvironment {
     /// Tells `core` what the host stands on: what never changes, then what may.
     static func report(to core: CoreLink) {
-        if let device = HostDeviceInfo(words: facts(StateUIFactsDevice), formFactor: .desktop, platform: "Windows") {
+        if let device = HostDeviceInfo(words: facts(.device), formFactor: .desktop, platform: "Windows") {
             core.setDeviceInfo(device)
         }
-        let application = facts(StateUIFactsApplication)
+        let application = facts(.application)
         if application.count == 4 {
             core.setApplicationInfo(HostApplicationInfo(
                 name: application[0], packageName: application[1], versionString: application[2],
@@ -26,7 +26,7 @@ enum WinUIEnvironment {
 
     /// Tells `core` the theme and the accent, the user's locale, the battery and the network, as they stand now.
     static func reportChanging(to core: CoreLink) {
-        let theme = facts(StateUIFactsTheme)
+        let theme = facts(.theme)
         core.setColorScheme(theme.first == "1" ? .dark : .light)
         if theme.count == 2, let accent = UInt32(theme[1]) {
             core.setAccentColor(Color(
@@ -34,9 +34,9 @@ enum WinUIEnvironment {
                 alpha: Int(accent >> 24 & 255)))
         }
 
-        if let locale = HostLocaleInfo(words: facts(StateUIFactsLocale)) { core.setLocaleInfo(locale) }
+        if let locale = HostLocaleInfo(words: facts(.locale)) { core.setLocaleInfo(locale) }
 
-        let battery = facts(StateUIFactsBattery)
+        let battery = facts(.battery)
         if battery.count == 5 {
             let level = Double(battery[1]) ?? 1
             core.setBatteryInfo(HostBatteryInfo(
@@ -44,7 +44,7 @@ enum WinUIEnvironment {
                 full: level >= 1, saving: battery[4] == "1"))
         }
 
-        let network = facts(StateUIFactsConnectivity)
+        let network = facts(.connectivity)
         if network.count == 2 {
             core.setConnectivityInfo(HostConnectivityInfo(
                 access: Int32(Double(network[0]) ?? 0), connections: Int32(Double(network[1]) ?? 0)))
@@ -53,7 +53,7 @@ enum WinUIEnvironment {
 
     /// Tells `core` the screen `window` stands on, as it is turned now.
     static func reportDisplay(to core: CoreLink, window: WinUIWindow) {
-        let display = facts(StateUIFactsDisplay, window: window.handle)
+        let display = facts(.display, window: window.handle)
         guard display.count == 5 else { return }
 
         core.setDisplayInfo(HostDisplayInfo(

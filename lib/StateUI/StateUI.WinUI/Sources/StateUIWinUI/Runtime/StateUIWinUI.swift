@@ -89,8 +89,9 @@ enum WinUICallbacks {
                 MainActor.assumeIsolated { WinUIRenderer.shared?.environmentChanged() }
             },
             heard: { view, what, phase, x, y, scale in
-                if what == StateUIHeardPress {
-                    return MainActor.assumeIsolated { WinUIView.find(view)?.heardPress(phase: phase, at: Point(x: x, y: y)) }
+                if what == .press {
+                    guard let phase = StateUIPressPhase(rawValue: phase) else { return }
+                    return MainActor.assumeIsolated { WinUIView.find(view)?.heardPress(phase, at: Point(x: x, y: y)) }
                 }
                 guard let heard = HeardInput(what, phase: phase, x: x, y: y, scale: scale) else { return }
                 MainActor.assumeIsolated { WinUIView.find(view)?.heard(heard) }
@@ -117,9 +118,9 @@ enum WinUICallbacks {
             launchAnswered: { ticket, taken in
                 MainActor.assumeIsolated { WinUIRenderer.shared?.fileToolkit.launched(ticket: ticket, taken: taken) }
             },
-            dragHeard: { view, kind, words in
+            dragHeard: { view, heard, words in
                 let said = words.map { String(cString: $0) } ?? ""
-                MainActor.assumeIsolated { WinUIView.find(view)?.heardDrag(kind: kind, words: said) }
+                MainActor.assumeIsolated { WinUIView.find(view)?.heardDrag(heard, words: said) }
             },
             filesDragged: { view, count, paths, names in
                 let files = (0..<Int(count)).compactMap { index -> ChosenFile? in
@@ -130,7 +131,7 @@ enum WinUICallbacks {
             },
             canvasPressed: { view, phase, x, y in
                 MainActor.assumeIsolated {
-                    (WinUIView.find(view) as? WinUICanvasView)?.pressed(phase: phase, at: Point(x: x, y: y))
+                    (WinUIView.find(view) as? WinUICanvasView)?.pressed(phase, at: Point(x: x, y: y))
                 }
             },
             picked: { view, first, second, third in
@@ -155,7 +156,7 @@ enum WinUICallbacks {
                 nonisolated(unsafe) let cell = cell
                 nonisolated(unsafe) var panel: StateUIObjectRef?
                 MainActor.assumeIsolated {
-                    guard let made = WinUIItemsList.owner(of: view)?.makeCell(item: kind == 0) else { return }
+                    guard let made = WinUIItemsList.owner(of: view)?.makeCell(item: kind == .item) else { return }
                     cell?.pointee = made.number
                     panel = made.handle
                 }

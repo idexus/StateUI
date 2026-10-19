@@ -56,11 +56,11 @@ final class WinUIActToolkit: ActToolkit {
         showing = Showing(ticket: ticket, window: window)
 
         // The title, the message, the captions that accept, cancel and destroy, the placeholder, the first words.
-        let kind: Int32 = switch question.kind {
-        case .alert: 0
-        case .confirm: 1
-        case .chooseAction: 2
-        case .prompt: 3
+        let kind: StateUIQuestionKind = switch question.kind {
+        case .alert: .alert
+        case .confirm: .confirm
+        case .chooseAction: .chooseAction
+        case .prompt: .prompt
         }
         let words: [String?] = [
             question.title, question.message, question.accept, question.cancel, question.destruction,

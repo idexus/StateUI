@@ -37,9 +37,9 @@ namespace {
         return found != offered.end() ? &found->second : nullptr;
     }
 
-    /// Tells the host what the view heard of a drag: 0 started, 1 ended, 2 over, 3 left, 4 dropped with its words.
-    void tell(int64_t view, int32_t kind, std::string const &words = {}) {
-        callbacks.dragHeard(view, kind, words.c_str());
+    /// Tells the host what the view heard of a drag, a drop with its words.
+    void tell(int64_t view, StateUIDragHeard heard, std::string const &words = {}) {
+        callbacks.dragHeard(view, heard, words.c_str());
     }
 
     /// Whether the drag carries what the view takes.
@@ -66,24 +66,24 @@ namespace {
             if (!entry || !entry->draggable) return;
             args.Data().SetText(entry->words);
             args.Data().RequestedOperation(transfer::DataPackageOperation::Copy);
-            tell(view, 0);
+            tell(view, StateUIDragHeardStarted);
         }));
         element.DropCompleted(guarded("handling DropCompleted",
             [view](xaml::UIElement const &, xaml::DropCompletedEventArgs const &) {
-            if (auto *entry = offer(view); entry && entry->draggable) tell(view, 1);
+            if (auto *entry = offer(view); entry && entry->draggable) tell(view, StateUIDragHeardEnded);
         }));
         auto over = [view](IInspectable const &, xaml::DragEventArgs const &args) {
             auto *entry = offer(view);
             if (!entry || !taken(*entry, args.DataView())) return;
             args.AcceptedOperation(transfer::DataPackageOperation::Copy);
             args.Handled(true);
-            tell(view, 2);
+            tell(view, StateUIDragHeardOver);
         };
         element.DragEnter(guarded("handling DragEnter", over));
         element.DragOver(guarded("handling DragOver", over));
         element.DragLeave(guarded("handling DragLeave", [view](IInspectable const &, xaml::DragEventArgs const &args) {
             auto *entry = offer(view);
-            if (entry && taken(*entry, args.DataView())) tell(view, 3);
+            if (entry && taken(*entry, args.DataView())) tell(view, StateUIDragHeardLeft);
         }));
         element.Drop(guarded("handling Drop", [view](IInspectable const &, xaml::DragEventArgs const &args) {
             auto *entry = offer(view);
@@ -110,7 +110,7 @@ namespace {
                 IAsyncOperation<winrt::hstring> const &text, AsyncStatus status) {
                 auto words = status == AsyncStatus::Completed ? winrt::to_string(text.GetResults()) : std::string{};
                 deferral.Complete();
-                runOnUIThread([view, words] { tell(view, 4, words); });
+                runOnUIThread([view, words] { tell(view, StateUIDragHeardDropped, words); });
             }));
         }));
     }

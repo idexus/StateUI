@@ -307,12 +307,12 @@ class WinUIView {
     /// of 0 for none.
     /// Design: docs/design/platforms/winui/controls.md#what-assistive-technology-meets
     func setAccessibility(_ words: AccessibilityWords) {
-        let met: Int32 = switch words.presence {
-        case nil: 0
-        case .met: 1
-        case .hidden: 2
+        let met: StateUIPresence = switch words.presence {
+        case nil: .own
+        case .met: .met
+        case .hidden: .skipped
         // A control's parts are its template's, left out with it; a layout holds its children back itself.
-        case .hiddenWithChildren: self is WinUILayoutView ? 2 : 3
+        case .hiddenWithChildren: self is WinUILayoutView ? .skipped : .skippedWithParts
         }
         stateui_winui_set_accessibility(handle, words.identifier, words.label, words.hint, words.headingLevel, met)
     }
@@ -397,13 +397,13 @@ class WinUIView {
         guard way != hand.way || pinches != hand.pinches else { return }
 
         hand = (way, pinches)
-        let code: Int32 = switch way {
-        case .horizontal: 0
-        case .vertical: 1
-        case .everyWay: 2
-        case nil: -1
+        let axis: StateUIHandAxis = switch way {
+        case .horizontal: .horizontal
+        case .vertical: .vertical
+        case .everyWay: .everyWay
+        case nil: .none
         }
-        stateui_winui_hear_hand(handle, number, code, pinches ? 1 : 0)
+        stateui_winui_hear_hand(handle, number, axis, pinches ? 1 : 0)
     }
 
     /// What the relay says the view heard.
@@ -440,17 +440,16 @@ class WinUIView {
         stateui_winui_offer_drag(handle, number, offered.words, offered.takesWords, offered.takesFiles)
     }
 
-    /// What the relay says the view heard of a drag, by the kind `Drags.cpp` numbers.
-    func heardDrag(kind: Int32, words: String) {
-        let input: HeardInput? = switch kind {
-        case 0: .dragStarted
-        case 1: .dragEnded
-        case 2: .dragOver
-        case 3: .dragLeft
-        case 4: .dropped(words)
-        default: nil
+    /// What the relay says the view heard of a drag, a drop with its words.
+    func heardDrag(_ heard: StateUIDragHeard, words: String) {
+        let input: HeardInput = switch heard {
+        case .started: .dragStarted
+        case .ended: .dragEnded
+        case .over: .dragOver
+        case .left: .dragLeft
+        case .dropped: .dropped(words)
         }
-        if let input { heardDrag(input) }
+        heardDrag(input)
     }
 
     /// What the view heard of a drag, handed to what hears it.
@@ -461,17 +460,17 @@ class WinUIView {
     /// A press the relay tells - down, moved, let go or taken away, at `point` of the window's content: a drag by the
     /// host layer's rule, and as it becomes one the view holds the pointer.
     /// Design: docs/design/platforms/winui/input.md#a-press-dragged
-    func heardPress(phase: Int32, at point: Point) {
+    func heardPress(_ phase: StateUIPressPhase, at point: Point) {
         switch phase {
-        case 0:
+        case .down:
             press.pressed(at: point)
-        case 1:
+        case .moved:
             let wasDragging = press.isDragging
             let told = press.moved(to: point)
             if press.isDragging, !wasDragging { stateui_winui_press_dragged(number) }
             for each in told { heard(each) }
-        default:
-            if let end = press.ended(letGo: phase == 2) { heard(end) }
+        case .letGo, .takenAway:
+            if let end = press.ended(letGo: phase == .letGo) { heard(end) }
         }
     }
 

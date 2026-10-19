@@ -25,10 +25,10 @@ final class WinUIFileToolkit: FileToolkit {
     func show(_ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void) -> Bool {
         guard let window = renderer.userWindow else { return false }
         let ticket = dialogs.hold(answered)
-        let kind: Int32 = switch dialog.kind {
-        case .open: 0
-        case .openSeveral: 1
-        case .save: 2
+        let kind: StateUIFileDialogKind = switch dialog.kind {
+        case .open: .open
+        case .openSeveral: .openSeveral
+        case .save: .save
         }
         let captions = dialog.types.map(\.caption)
         let counts = dialog.types.map { Int32($0.extensions.count) }

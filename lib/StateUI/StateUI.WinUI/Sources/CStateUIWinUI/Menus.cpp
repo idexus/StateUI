@@ -30,9 +30,8 @@ namespace {
         }
     }
 
-    /// Writes a menu's flat entries into the lists they belong to: an item (0), a separator (1), a submenu opening
-    /// (2) and closing (3), an item standing unchecked (4) or checked (5). On a bar, a menu at the top is one of the
-    /// bar's own. An item's shortcut is WinUI's accelerator on a bar, whose words WinUI shows beside it; a context
+    /// Writes a menu's flat entries into the lists they belong to, each of its `StateUIMenuEntry` kind. On a bar, a menu
+    /// at the top is one of the bar's own. An item's shortcut is WinUI's accelerator on a bar, whose words WinUI shows beside it; a context
     /// menu's item only shows its words, its accelerator held disabled.
     struct Writer {
         int64_t view;
@@ -40,14 +39,15 @@ namespace {
         std::vector<Entries> levels;
         int32_t chosen = 0;
 
-        void write(int32_t kind, char const *title, bool enabled, char const *identifier, char const *icon,
+        void write(int32_t number, char const *title, bool enabled, char const *identifier, char const *icon,
                    bool destructive, int32_t key, int32_t modifiers, bool givesWay) {
-            if (kind == 3) {
+            auto kind = static_cast<StateUIMenuEntry>(number);
+            if (kind == StateUIMenuEntryMenuClosing) {
                 if (levels.size() > (bar ? 0u : 1u)) levels.pop_back();
                 return;
             }
             if (bar && levels.empty()) {
-                if (kind != 2) return;
+                if (kind != StateUIMenuEntryMenuOpening) return;
                 controls::MenuBarItem menu;
                 menu.Title(text(title));
                 menu.IsEnabled(enabled);
@@ -57,11 +57,13 @@ namespace {
                 return;
             }
             switch (kind) {
-            case 0:
-            case 4:
-            case 5: {
-                controls::MenuFlyoutItem item = kind == 0 ? controls::MenuFlyoutItem() : controls::ToggleMenuFlyoutItem();
-                if (kind != 0) item.as<controls::ToggleMenuFlyoutItem>().IsChecked(kind == 5);
+            case StateUIMenuEntryItem:
+            case StateUIMenuEntryItemOff:
+            case StateUIMenuEntryItemOn: {
+                controls::MenuFlyoutItem item =
+                    kind == StateUIMenuEntryItem ? controls::MenuFlyoutItem() : controls::ToggleMenuFlyoutItem();
+                if (kind != StateUIMenuEntryItem)
+                    item.as<controls::ToggleMenuFlyoutItem>().IsChecked(kind == StateUIMenuEntryItemOn);
                 item.Text(text(title));
                 item.IsEnabled(enabled);
                 identify(item, identifier);
@@ -84,10 +86,12 @@ namespace {
                 levels.back().Append(item);
                 break;
             }
-            case 1:
+            case StateUIMenuEntrySeparator:
                 levels.back().Append(controls::MenuFlyoutSeparator());
                 break;
-            case 2: {
+            case StateUIMenuEntryMenuClosing:
+                break;
+            case StateUIMenuEntryMenuOpening: {
                 controls::MenuFlyoutSubItem sub;
                 sub.Text(text(title));
                 sub.IsEnabled(enabled);

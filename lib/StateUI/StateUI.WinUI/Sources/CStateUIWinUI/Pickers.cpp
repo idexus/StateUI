@@ -33,7 +33,8 @@ namespace {
 
 extern "C" StateUIObjectRef stateui_winui_picker_make(int64_t view, int32_t kind) {
     try {
-        if (kind == 1) {
+        auto presentation = static_cast<StateUIPickerPresentation>(kind);
+        if (presentation == StateUIPickerPresentationSegmented) {
             controls::SelectorBar bar;
             bar.SelectionChanged(guarded("handling SelectionChanged",
                 [view](controls::SelectorBar const &sender, controls::SelectorBarSelectionChangedEventArgs const &) {
@@ -41,7 +42,7 @@ extern "C" StateUIObjectRef stateui_winui_picker_make(int64_t view, int32_t kind
             }));
             return detach(bar);
         }
-        if (kind == 2) {
+        if (presentation == StateUIPickerPresentationRadio) {
             controls::RadioButtons radios;
             radios.SelectionChanged(guarded("handling SelectionChanged",
                 [view](IInspectable const &sender, controls::SelectionChangedEventArgs const &) {
@@ -115,9 +116,12 @@ extern "C" void stateui_winui_picker_set_alignment(StateUIObjectRef handle, int3
         // stand as WinUI stands them.
         auto box = choicesOf(handle).try_as<controls::ComboBox>();
         if (!box) return;
-        auto across = alignment == 1 ? xaml::HorizontalAlignment::Center
-                      : alignment == 2 ? xaml::HorizontalAlignment::Right
-                                       : xaml::HorizontalAlignment::Left;
+        auto across = xaml::HorizontalAlignment::Left;
+        switch (static_cast<StateUITextAlignment>(alignment)) {
+        case StateUITextAlignmentStart: across = xaml::HorizontalAlignment::Left; break;
+        case StateUITextAlignmentCenter: across = xaml::HorizontalAlignment::Center; break;
+        case StateUITextAlignmentEnd: across = xaml::HorizontalAlignment::Right; break;
+        }
         box.HorizontalContentAlignment(across);
         xaml::Style items{winrt::xaml_typename<controls::ComboBoxItem>()};
         items.Setters().Append(xaml::Setter(controls::Control::HorizontalContentAlignmentProperty(), winrt::box_value(across)));

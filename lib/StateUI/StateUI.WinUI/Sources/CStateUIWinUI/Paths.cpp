@@ -76,26 +76,29 @@ namespace {
         geometry.FillRule(evenOdd ? media::FillRule::EvenOdd : media::FillRule::Nonzero);
         media::PathFigure figure{nullptr};
         for (int32_t index = 0; index < count;) {
-            auto op = static_cast<int32_t>(commands[index++]);
-            auto need = op == 0 || op == 1 ? 2 : op == 2 ? 6 : op == 3 ? 4 : 0;
+            auto op = static_cast<StateUICurve>(static_cast<int32_t>(commands[index++]));
+            auto need = op == StateUICurveMove || op == StateUICurveLine ? 2
+                : op == StateUICurveCubic ? 6 : op == StateUICurveQuadratic ? 4 : 0;
             if (index + need > count) break;
             auto const *p = commands + index;
             index += need;
-            if (op == 0 || !figure) {
+            if (op == StateUICurveMove || !figure) {
                 figure = media::PathFigure();
-                figure.StartPoint(op == 0 ? at(p[0], p[1]) : at(0, 0));
+                figure.StartPoint(op == StateUICurveMove ? at(p[0], p[1]) : at(0, 0));
                 figure.IsFilled(true);
                 geometry.Figures().Append(figure);
-                if (op == 0) continue;
+                if (op == StateUICurveMove) continue;
             }
             switch (op) {
-            case 1: {
+            case StateUICurveMove:
+                break;
+            case StateUICurveLine: {
                 media::LineSegment segment;
                 segment.Point(at(p[0], p[1]));
                 figure.Segments().Append(segment);
                 break;
             }
-            case 2: {
+            case StateUICurveCubic: {
                 media::BezierSegment segment;
                 segment.Point1(at(p[0], p[1]));
                 segment.Point2(at(p[2], p[3]));
@@ -103,7 +106,7 @@ namespace {
                 figure.Segments().Append(segment);
                 break;
             }
-            case 3: {
+            case StateUICurveQuadratic: {
                 media::QuadraticBezierSegment segment;
                 segment.Point1(at(p[0], p[1]));
                 segment.Point2(at(p[2], p[3]));
@@ -172,22 +175,27 @@ extern "C" void stateui_winui_path_bounds(double const *commands, int32_t count,
 }
 
 extern "C" void stateui_winui_path_draw(
-    StateUIObjectRef handle, int32_t kind, double const *radii, double const *commands, int32_t count, bool evenOdd,
+    StateUIObjectRef handle, StateUIFigureKind figure, double const *radii, double const *commands, int32_t count, bool evenOdd,
     double const *placement, double width, double height, double inset
 ) {
     try {
         auto path = ::path(handle);
         media::Geometry geometry{nullptr};
-        if (kind == 0) {
+        switch (figure) {
+        case StateUIFigureKindRectangle:
             geometry = rounded(inset, inset, width - inset, height - inset, radii);
-        } else if (kind == 1) {
+            break;
+        case StateUIFigureKindEllipse: {
             media::EllipseGeometry ellipse;
             ellipse.Center(at(width / 2, height / 2));
             ellipse.RadiusX(std::max(0.0, width / 2 - inset));
             ellipse.RadiusY(std::max(0.0, height / 2 - inset));
             geometry = ellipse;
-        } else {
+            break;
+        }
+        case StateUIFigureKindAuthored:
             geometry = authored(commands, count, evenOdd);
+            break;
         }
         if (placement) {
             winrt::Microsoft::UI::Xaml::Media::Matrix place{

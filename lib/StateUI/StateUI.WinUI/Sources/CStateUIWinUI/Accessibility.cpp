@@ -48,7 +48,7 @@ namespace {
 
 extern "C" void stateui_winui_set_accessibility(
     StateUIObjectRef handle, char const *identifier, char const *label, char const *hint, int32_t heading,
-    int32_t presence
+    StateUIPresence presence
 ) {
     try {
         // A label's words are what assistive technology meets of it; the border they stand in has no peer.
@@ -58,8 +58,12 @@ extern "C" void stateui_winui_set_accessibility(
         words(element, Properties::HelpTextProperty(), hint);
         if (heading > 0) Properties::SetHeadingLevel(element, static_cast<peers::AutomationHeadingLevel>(std::min(heading, 9)));
         else element.ClearValue(Properties::HeadingLevelProperty());
-        if (presence == 0) element.ClearValue(Properties::AccessibilityViewProperty());
-        else Properties::SetAccessibilityView(element, presence == 1 ? peers::AccessibilityView::Content : peers::AccessibilityView::Raw);
+        switch (presence) {
+        case StateUIPresenceOwn: element.ClearValue(Properties::AccessibilityViewProperty()); break;
+        case StateUIPresenceMet: Properties::SetAccessibilityView(element, peers::AccessibilityView::Content); break;
+        case StateUIPresenceSkipped:
+        case StateUIPresenceSkippedWithParts: Properties::SetAccessibilityView(element, peers::AccessibilityView::Raw); break;
+        }
     } catch (...) {
         report("telling assistive technology of an element");
     }

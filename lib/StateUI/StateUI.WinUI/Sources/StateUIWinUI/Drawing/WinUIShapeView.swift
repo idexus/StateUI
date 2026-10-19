@@ -16,7 +16,7 @@ final class WinUIShapeView: WinUIView {
 
     init(ellipse: Bool) {
         isEllipse = ellipse
-        super.init { _ in stateui_winui_shape_make(ellipse ? StateUIOutlineEllipse : StateUIOutlineRectangle) }
+        super.init { _ in stateui_winui_shape_make(ellipse ? .ellipse : .rectangle) }
     }
 
     /// Paints the shape, written only where it differs from what was; its corners round as far as its size holds

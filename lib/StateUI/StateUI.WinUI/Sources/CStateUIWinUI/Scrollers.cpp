@@ -14,11 +14,12 @@ using namespace stateui;
 namespace {
     controls::ScrollBarVisibility visibility(bool scrolls, int32_t bar) {
         if (!scrolls) return controls::ScrollBarVisibility::Disabled;
-        switch (bar) {
-        case 1: return controls::ScrollBarVisibility::Visible;
-        case 2: return controls::ScrollBarVisibility::Hidden;
-        default: return controls::ScrollBarVisibility::Auto;
+        switch (static_cast<StateUIScrollIndicatorVisibility>(bar)) {
+        case StateUIScrollIndicatorVisibilityVisible: return controls::ScrollBarVisibility::Visible;
+        case StateUIScrollIndicatorVisibilityNever: return controls::ScrollBarVisibility::Hidden;
+        case StateUIScrollIndicatorVisibilityAutomatic: return controls::ScrollBarVisibility::Auto;
         }
+        return controls::ScrollBarVisibility::Auto;
     }
 }
 
@@ -50,8 +51,9 @@ extern "C" void stateui_winui_scroller_set(
 ) {
     try {
         auto scroller = borrow<controls::ScrollViewer>(handle);
-        auto down = orientation == 0 || orientation == 2;
-        auto across = orientation == 1 || orientation == 2;
+        auto ways = static_cast<StateUIScrollOrientation>(orientation);
+        auto down = ways == StateUIScrollOrientationVertical || ways == StateUIScrollOrientationBoth;
+        auto across = ways == StateUIScrollOrientationHorizontal || ways == StateUIScrollOrientationBoth;
         scroller.VerticalScrollMode(down ? controls::ScrollMode::Enabled : controls::ScrollMode::Disabled);
         scroller.HorizontalScrollMode(across ? controls::ScrollMode::Enabled : controls::ScrollMode::Disabled);
         scroller.VerticalScrollBarVisibility(visibility(down, verticalBar));

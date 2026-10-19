@@ -35,9 +35,12 @@ namespace {
 
     /// The words across a text box for StateUI's `TextAlignment`: centred, at the end, or at the start.
     xaml::TextAlignment across(int32_t alignment) {
-        return alignment == 1 ? xaml::TextAlignment::Center
-               : alignment == 2 ? xaml::TextAlignment::Right
-                                : xaml::TextAlignment::Left;
+        switch (static_cast<StateUITextAlignment>(alignment)) {
+        case StateUITextAlignmentStart: return xaml::TextAlignment::Left;
+        case StateUITextAlignmentCenter: return xaml::TextAlignment::Center;
+        case StateUITextAlignmentEnd: return xaml::TextAlignment::Right;
+        }
+        return xaml::TextAlignment::Left;
     }
 
     media::SolidColorBrush brush(uint32_t argb) {
@@ -54,9 +57,13 @@ namespace {
 
     /// The case a text box puts typed letters in for StateUI's `TextCase`: upper, lower, or as typed.
     controls::CharacterCasing casing(int32_t textCase) {
-        return textCase == 3   ? controls::CharacterCasing::Upper
-               : textCase == 2 ? controls::CharacterCasing::Lower
-                               : controls::CharacterCasing::Normal;
+        switch (static_cast<StateUITextCase>(textCase)) {
+        case StateUITextCaseUppercase: return controls::CharacterCasing::Upper;
+        case StateUITextCaseLowercase: return controls::CharacterCasing::Lower;
+        case StateUITextCaseNone:
+        case StateUITextCaseDefault: return controls::CharacterCasing::Normal;
+        }
+        return controls::CharacterCasing::Normal;
     }
 
     /// Tells the view `view` that Enter was pressed in `field`.

@@ -39,6 +39,23 @@ Windows ends the process there. The test thread's WinUI itself is the one
 exception: destroying its statics as the process exits is its shutdown
 (`testTheWinUIRelaysDestroyNoWinRTObjectAtExit`).
 
+## A shared vocabulary
+
+What crosses the C boundary as a choice among a few - a question's kind, a
+press's phase, a menu entry, a list's shape - is a named enum of the C
+surface, never a bare number. Two kinds stand there. One that is the
+relay's own is `STATEUI_CLOSED_ENUM`: Swift imports it as an enum of its
+own, the host maps StateUI's meaning onto it in an exhaustive `switch`, and
+the relay switches over its members by name - a case either side adds
+fails to compile on the other. One that mirrors a Swift enum whose raw
+values cross as plain numbers - `GesturePhase`, `TextAlignment`, the
+host layer's drawing and curve kinds, which an array of numbers carries -
+says so on the line before it, `// Swift: <Enum>`, and
+`RelayVocabularyTests` holds its members name for name and number for
+number with that enum's cases. A relay `switch` over a mirrored stream
+keeps a `default` for a number no member names and is compiled with
+`-Wswitch-enum`, so every member still has its case.
+
 ## The callbacks
 
 The host hands the relay one table of functions, which the relay calls on the

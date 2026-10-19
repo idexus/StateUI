@@ -340,7 +340,7 @@ namespace {
         auto given = box.InputScope();
         if (!given || given.Names().Size() == 0) return "0";
         auto name = given.Names().GetAt(0).NameValue();
-        for (int32_t index = 0; index < 7; ++index) {
+        for (int32_t index = StateUIInputScopeDefault; index <= StateUIInputScopeUrl; ++index) {
             if (inputScope(index).Names().GetAt(0).NameValue() == name) return number(index);
         }
         return "0";

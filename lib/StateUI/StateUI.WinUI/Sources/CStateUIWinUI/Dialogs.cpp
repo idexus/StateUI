@@ -84,13 +84,13 @@ namespace {
         auto hasMessage = question.message && *question.message;
 
         switch (question.kind) {
-        case 0:
+        case StateUIQuestionKindAlert:
             if (hasMessage) dialog.Content(paragraph(question.message));
             dialog.CloseButtonText(text(question.accept));
             dialog.DefaultButton(controls::ContentDialogButton::Close);
             closed = [ticket](auto) { answer(ticket, true, {}, false); };
             break;
-        case 1:
+        case StateUIQuestionKindConfirm:
             if (hasMessage) dialog.Content(paragraph(question.message));
             dialog.PrimaryButtonText(text(question.accept));
             dialog.CloseButtonText(text(question.cancel));
@@ -99,7 +99,7 @@ namespace {
                 answer(ticket, result == controls::ContentDialogResult::Primary, {}, false);
             };
             break;
-        case 2: {
+        case StateUIQuestionKindChooseAction: {
             // A choice is a button of its own, the dangerous one first; the answer is the caption pressed.
             auto chosen = std::make_shared<std::string>();
             auto pressed = std::make_shared<bool>(false);
@@ -133,7 +133,7 @@ namespace {
             closed = [ticket, chosen, pressed](auto) { answer(ticket, *pressed, *chosen, *pressed); };
             break;
         }
-        default: {
+        case StateUIQuestionKindPrompt: {
             controls::StackPanel content;
             content.Spacing(12);
             if (hasMessage) content.Children().Append(paragraph(question.message));
@@ -169,12 +169,19 @@ namespace {
 namespace stateui {
     xaml::Input::InputScope inputScope(int32_t number) {
         using name = input::InputScopeNameValue;
-        // WinUIInputScope: default, text, chat, email, number, telephone, url.
-        static name const names[] = {name::Default, name::Text, name::Chat, name::EmailSmtpAddress,
-                                     name::Number, name::TelephoneNumber, name::Url};
+        auto named = name::Default;
+        switch (static_cast<StateUIInputScope>(number)) {
+        case StateUIInputScopeDefault: named = name::Default; break;
+        case StateUIInputScopeText: named = name::Text; break;
+        case StateUIInputScopeChat: named = name::Chat; break;
+        case StateUIInputScopeEmail: named = name::EmailSmtpAddress; break;
+        case StateUIInputScopeNumber: named = name::Number; break;
+        case StateUIInputScopeTelephone: named = name::TelephoneNumber; break;
+        case StateUIInputScopeUrl: named = name::Url; break;
+        }
         input::InputScope scope;
         input::InputScopeName scopeName;
-        scopeName.NameValue(number >= 0 && number < 7 ? names[number] : name::Default);
+        scopeName.NameValue(named);
         scope.Names().Append(scopeName);
         return scope;
     }

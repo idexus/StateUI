@@ -11,25 +11,25 @@ import StateUIFoundation
 extension HeardInput {
     /// What the relay's callback says - `phase` a tap's place in its run or a gesture's phase, a pinch's `scale`
     /// since its last step, a rotation's degrees clockwise in its place, a wheel's notches turned with Control in its
-    /// place - nil for what it does not name.
+    /// place - nil for a press, which the view's own rule reads (`heardPress`).
     init?(_ what: StateUIHeard, phase: Int32, x: Double, y: Double, scale: Double) {
         let point = Point(x: x, y: y)
         switch what {
-        case StateUIHeardTap: self = .tap(run: Int(phase))
-        case StateUIHeardPointerEntered: self = .pointer(.pointerEntered, point)
-        case StateUIHeardPointerExited: self = .pointer(.pointerExited, point)
-        case StateUIHeardPointerMoved: self = .pointer(.pointerMoved, point)
-        case StateUIHeardPointerPressed: self = .pointer(.pointerPressed, point)
-        case StateUIHeardPointerReleased: self = .pointer(.pointerReleased, point)
-        case StateUIHeardPinch:
+        case .tap: self = .tap(run: Int(phase))
+        case .pointerEntered: self = .pointer(.pointerEntered, point)
+        case .pointerExited: self = .pointer(.pointerExited, point)
+        case .pointerMoved: self = .pointer(.pointerMoved, point)
+        case .pointerPressed: self = .pointer(.pointerPressed, point)
+        case .pointerReleased: self = .pointer(.pointerReleased, point)
+        case .pinch:
             guard let phase = GesturePhase(rawValue: phase) else { return nil }
             self = .pinch(phase, scale: scale, at: point)
-        case StateUIHeardRotation:
+        case .rotation:
             guard let phase = GesturePhase(rawValue: phase) else { return nil }
             self = .rotation(phase, degrees: scale)
-        case StateUIHeardWheelPinch: self = .wheelPinch(scale: pow(WheelPinch.notch, scale), at: point)
-        case StateUIHeardWheelScale: self = .wheelPinch(scale: scale, at: point)
-        default: return nil
+        case .wheelPinch: self = .wheelPinch(scale: pow(WheelPinch.notch, scale), at: point)
+        case .wheelScale: self = .wheelPinch(scale: scale, at: point)
+        case .press: return nil
         }
     }
 }
