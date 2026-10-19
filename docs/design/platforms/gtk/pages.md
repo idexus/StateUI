@@ -76,7 +76,10 @@ the next render. The host's own way back is
 the window's (`WindowPresentation.wayBack`): a top page that refuses it - no
 back button - offers none. A page is pushed named as the
 tree names it, or after the application until it does: libadwaita asks every
-page for a title.
+page for a title. The view holds a reference of each navigation page it made
+while the page stands in it, and lets go of one the moment it goes - popped,
+replaced or taken back by the user - libadwaita keeping its own while it shows
+the page going; held longer, the page and every widget in it live on.
 
 ## A split view
 
