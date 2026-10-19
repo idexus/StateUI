@@ -17,7 +17,11 @@ final class AppKitRenderer {
     let resourceDirectory: URL?
     let presentsWindows: Bool
     let preferences: UserDefaults
-    private let images = NSCache<AppKitPictureKey, NSImage>()
+    /// Pictures made lately, which the system may let go of under memory pressure.
+    let images = NSCache<AppKitPictureKey, NSImage>()
+
+    /// Every picture made that something still holds - a view showing it: asked for again, it is the same picture.
+    private let held = NSMapTable<AppKitPictureKey, NSImage>.strongToWeakObjects()
     let frameClock: AppKitFrameClock
     let reducesMotion: () -> Bool
 
@@ -182,13 +186,19 @@ final class AppKitRenderer {
     /// again, no measurement is forgotten and a bar or a tab row finds nothing changed.
     func image(_ picture: HostPicture) -> NSImage? {
         let key = AppKitPictureKey(picture)
-        if let kept = images.object(forKey: key) { return kept }
+        if let kept = images.object(forKey: key) ?? held.object(forKey: key) {
+            images.setObject(kept, forKey: key)
+            return kept
+        }
         let made: NSImage? = switch picture {
         case .file(let name): loadImage(named: name)
         case .icon(let icon): NSImage(systemSymbolName: icon.sfSymbol, accessibilityDescription: nil)
         case .bytes(let bytes): NSImage(data: Data(bytes))
         }
-        if let made { images.setObject(made, forKey: key) }
+        if let made {
+            images.setObject(made, forKey: key)
+            held.setObject(made, forKey: key)
+        }
         return made
     }
 
@@ -221,7 +231,7 @@ extension AppKitElement: PlacedView {
 }
 
 /// A picture as the key of a renderer's images.
-private final class AppKitPictureKey: NSObject {
+final class AppKitPictureKey: NSObject {
     let picture: HostPicture
 
     init(_ picture: HostPicture) {

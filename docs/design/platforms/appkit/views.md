@@ -8,7 +8,10 @@ themselves.
 What crosses the boundary for a picture is a name, and the files behind it
 belong to the renderer: it knows the application's resource directory and
 keeps the cache over it, so one name is loaded once however many views draw
-it. A registration is made once for the whole process and has no renderer to
+it. The cache lets go of pictures under memory pressure, as the system asks;
+a picture something still holds - a view showing it - stays found by its
+name through a table that holds it weakly, so a view handed it again finds
+the same image and nothing changed. A registration is made once for the whole process and has no renderer to
 ask, so the host hands every view it makes, through `AppKitPictureResolving`,
 the means to resolve a name. A name the application has no file for resolves
 to nothing. An icon resolves to its SF Symbol (`Icon.sfSymbol`), a template

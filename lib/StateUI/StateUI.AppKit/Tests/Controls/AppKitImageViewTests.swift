@@ -86,6 +86,19 @@ final class AppKitImageViewTests: XCTestCase {
         XCTAssertFalse(renderer.image(.icon(.add)) === renderer.image(.icon(.remove)), "each icon its own")
     }
 
+    /// A picture something still shows is the same picture asked for again, even after the system let the
+    /// renderer's cache go under memory pressure: a view handed it again finds nothing changed.
+    @MainActor
+    func testAPictureStillShownOutlastsTheCache() throws {
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        let shown = try XCTUnwrap(renderer.image(.icon(.add)))
+
+        renderer.images.removeAllObjects()
+
+        XCTAssertTrue(renderer.image(.icon(.add)) === shown, "made again while shown")
+    }
+
     @MainActor
     /// A name the application has no file for resolves to nothing, as on every host: no picture stands in.
     func testANameWithNoFileResolvesToNothing() {
