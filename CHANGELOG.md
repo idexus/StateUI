@@ -49,6 +49,12 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   measured it; what a layout pass reports moves no animation on, on every host.
 - On UIKit a scroller tied to `.scrollOffset($)` stretches past its edge as the user pulls it.
 - On an iPhone a page turned to landscape and back hears its new room with the display already turned.
+- A list scrolled to an item stands it where the anchor says once the rows around it are measured, on UIKit,
+  AppKit, GTK and the Web - on an iPad it stood a point short; the user moving the list lets it go.
+- A change that moves a list's rows - an item put first, one taken out - builds the items it brings into view in
+  the same render, so the platform's collection measures them as it animates the change: on an iPhone the rows no
+  longer jump above where they stood, and on AppKit they no longer settle a few points off once the animation
+  ends. AppKit's list keeps its own header and footer through the animation.
 - Rendering is several times cheaper without a JIT: a home screen's render at a new icon's place takes some 45 ms
   in Safari with no JIT, against some 210 ms, and a list of 1000 rows scrolls at 41-43 frames a second, against
   26-27.
@@ -57,3 +63,5 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 - A wait that runs out fails its case, a case proves its own family's contract alone, and a case whose driver
   cannot read what it needs says so: some marks fell, to tell the truth.
+- A wait - a session's, a driver's, a host test's - stops as what it waits for holds, rather than asking again to
+  its bound.
