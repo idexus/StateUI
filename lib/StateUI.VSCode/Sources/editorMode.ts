@@ -160,9 +160,26 @@ async function settle(directories: readonly string[]): Promise<void> {
 
 /** Whether a process names `directory` on its command line - a build there. */
 function building(directory: string): Promise<boolean> {
+    const { command, args } = buildingCommand(directory);
     return new Promise((resolve) => {
-        execFile("pgrep", ["-f", directory], (error) => resolve(error === null));
+        execFile(command, args, (error) => resolve(error === null));
     });
+}
+
+/**
+ * The command that ends well where a process names `directory` on its command line, on `platform`: `pgrep`, which
+ * Windows has none of - there PowerShell asks for the processes, itself left out.
+ */
+export function buildingCommand(directory: string, platform: NodeJS.Platform = process.platform): { command: string; args: string[] } {
+    if (platform !== "win32") {
+        return { command: "pgrep", args: ["-f", directory] };
+    }
+    const quoted = directory.replace(/'/g, "''");
+    return {
+        command: "powershell",
+        args: ["-NoProfile", "-Command", `if (Get-CimInstance Win32_Process | Where-Object { $_.ProcessId -ne $PID -and $_.CommandLine `
+            + `-and $_.CommandLine.Contains('${quoted}') }) { exit 0 } else { exit 1 }`],
+    };
 }
 
 /**

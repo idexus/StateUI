@@ -19,10 +19,12 @@ application="$(basename "$app_dir")"
 product="${application}AppKit"
 build="$app_dir/.build/appkit/release"
 bundler="$script_dir/build-$(tr '[:upper:]' '[:lower:]' <<< "$application")-appkit.sh"
+# A bundling script is the checkout's own application's alone: one of the same name elsewhere is laid out plainly.
+[[ "$app_dir" == "$(cd "$script_dir/../.." && pwd)/apps/$application" ]] || bundler=""
 
 rm -rf "$destination"
 mkdir -p "$destination"
-if [[ -x "$bundler" ]]; then
+if [[ -n "$bundler" && -x "$bundler" ]]; then
   "$bundler" release
   cp -R "$build/$product.app" "$destination/"
   echo "deployed:   $destination/$product.app"

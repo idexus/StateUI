@@ -99,7 +99,7 @@ final class GTKWebView: GTKControl {
     }
 
     /// Ends the web process under the view, as the system does when memory runs short.
-    func endWebProcess() {
+    func endContent() {
         webkit_web_view_terminate_web_process(webView)
     }
 

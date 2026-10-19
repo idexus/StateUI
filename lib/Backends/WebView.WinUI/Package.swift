@@ -8,7 +8,7 @@ import PackageDescription
 // view on WinUI depends on it from its WinUI head and calls
 // StateUIWebViewWinUI.register() before it runs. The relay includes the
 // projection the WinUI host generated.
-let settings: [SwiftSetting] = [.enableUpcomingFeature("NonisolatedNonsendingByDefault"), .define("WINUI")]
+let settings: [SwiftSetting] = [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
 
 let package = Package(
     name: "StateUIWebViewWinUI",

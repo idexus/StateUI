@@ -13,13 +13,13 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
-import { findApplications, hasHead, winUIProgram } from "../Sources/applications";
+import { bundlerFor, findApplications, hasHead, winUIProgram } from "../Sources/applications";
 import { checkoutNamedBy } from "../Sources/checkouts";
 import { configurations, StateUIDebugConfigurationProvider, uiKitAttach, webLaunch } from "../Sources/debug";
 import { parseDevices } from "../Sources/devices";
 import { isChromium, parseBrowsers } from "../Sources/browsers";
 import { parseDevices as parseUIKitDevices, parseSimulators, simulatorForSuites } from "../Sources/uiKitDevices";
-import { otherHostsExcluded, serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
+import { buildingCommand, otherHostsExcluded, serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
 import { findSuites, forDevice } from "../Sources/tests";
 import { givesWay } from "../Sources/tasks";
 import { availableHosts, describe, environment, Host, hosts } from "../Sources/hosts";
@@ -330,6 +330,21 @@ export async function run(): Promise<void> {
                 before === path.join(directory, ".build", "winui", "release", "NotesWinUI.exe")
                 && winUIProgram(notes, "release") === "C:\\built\\NotesWinUI.exe");
             fs.rmSync(directory, { recursive: true, force: true });
+        }
+        {
+            const checkout = root.uri.fsPath;
+            const elsewhere = fs.mkdtempSync(path.join(os.tmpdir(), "stateui-apps-"));
+            check("the Gallery's bundling script bundles the checkout's own Gallery, not an application of its name elsewhere",
+                bundlerFor(checkout, path.join(checkout, "apps", "Gallery")) === path.join(checkout, ".scripts", "AppKit", "build-gallery-appkit.sh")
+                && bundlerFor(checkout, path.join(elsewhere, "Gallery")) === undefined
+                && bundlerFor(checkout, path.join(checkout, "apps", "HelloWorld")) === undefined);
+            fs.rmSync(elsewhere, { recursive: true, force: true });
+        }
+        {
+            const windows = buildingCommand("C:\\Users\\O'Neil\\apps\\Notes\\.build", "win32");
+            check("a build is looked for with pgrep, and on Windows - which has no pgrep - with PowerShell's process list",
+                JSON.stringify(buildingCommand("/apps/Notes/.build", "darwin")) === JSON.stringify({ command: "pgrep", args: ["-f", "/apps/Notes/.build"] })
+                && windows.command === "powershell" && windows.args.join(" ").includes("Contains('C:\\Users\\O''Neil\\apps\\Notes\\.build')"));
         }
         {
             const launch = { type: "stateui", launch: true, application: "Notes", configuration: "debug", device: "SIM-1" };

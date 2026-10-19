@@ -318,8 +318,8 @@ Everything an AppKit build writes stays in the application's `.build/appkit/`.
 
 In VS Code, choose **AppKit** as the host and press **F5**. **StateUI: Debug**
 builds the head - with the application's bundling script,
-`.scripts/AppKit/build-<application>-appkit.sh`, where it has one, else with
-SwiftPM - and starts it under `lldb-dap`, so a breakpoint in the application,
+`.scripts/AppKit/build-<application>-appkit.sh`, where the checkout's own
+`apps/<application>` has one, else with SwiftPM - and starts it under `lldb-dap`, so a breakpoint in the application,
 in StateUI or in the host holds from the first line. **StateUI: Release**
 builds and starts the optimized head the same way.
 
