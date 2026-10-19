@@ -132,8 +132,8 @@ final class WebMenu {
         guard !released else { return }
         released = true
         for submenu in submenus { submenu.release() }
-        for part in owned { part.detach() }
-        popover.detach()
+        for part in owned { part.release() }
+        popover.release()
     }
 
     /// A menu never shown - one of no entries - lets go as nobody holds it.

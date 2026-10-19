@@ -51,8 +51,8 @@ final class WebSwitchView: WebDOMView {
         style("--stateui-on", WebCSS.color(tint))
     }
 
-    override func detach() {
-        box.detach()
-        super.detach()
+    override func release() {
+        box.release()
+        super.release()
     }
 }

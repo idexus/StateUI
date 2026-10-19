@@ -15,8 +15,8 @@ final class WebWindowTests: XCTestCase {
         let window = WebWindow()
         let (notice, inspector) = (WebLayoutView(arrangement: .single), WebLayoutView(arrangement: .single))
         defer {
-            notice.detach()
-            inspector.detach()
+            notice.release()
+            inspector.release()
             window.close()
         }
 

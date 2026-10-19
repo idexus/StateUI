@@ -13,7 +13,7 @@ final class WebPickerViewTests: XCTestCase {
     /// look draws as the field's background picture - a search field's glass too.
     func testABackgroundLeavesThePickersChevron() {
         let picker = WebPickerView()
-        defer { picker.detach() }
+        defer { picker.release() }
 
         picker.setBackground(Color(red: 255, green: 255, blue: 255, alpha: 20).propValue)
 

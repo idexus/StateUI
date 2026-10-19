@@ -89,7 +89,7 @@ final class WebElement: NativeElement {
 
     func leave() {
         host?.placements.beforeChange(along: layoutsUp)
-        view?.detach()
+        view?.release()
     }
 
     /// An event the view raised, with what it carries.

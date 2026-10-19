@@ -44,9 +44,9 @@ final class WebRadioView: WebDOMView, WebWordsView {
         attribute("aria-disabled", enabled ? nil : "true")
     }
 
-    override func detach() {
-        button.detach()
-        caption.detach()
-        super.detach()
+    override func release() {
+        button.release()
+        caption.release()
+        super.release()
     }
 }

@@ -82,8 +82,8 @@ final class WebFrameView: WebDOMView {
         return (true, ScriptAnswer.text(json: json))
     }
 
-    override func detach() {
-        frame.detach()
-        super.detach()
+    override func release() {
+        frame.release()
+        super.release()
     }
 }

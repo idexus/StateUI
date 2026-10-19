@@ -24,7 +24,7 @@ final class WebDatePickerViewTests: XCTestCase {
     func testADayTypedPastTheRangeStandsAtItsEndOnceTheUserLeaves() {
         var told: [CalendarDate] = []
         let picker = picker { told.append($0) }
-        defer { picker.detach() }
+        defer { picker.release() }
 
         WebPage.enter("2035-03-03", into: picker.node)
         XCTAssertEqual(told, [last])
@@ -38,7 +38,7 @@ final class WebDatePickerViewTests: XCTestCase {
     func testAFieldLeftEmptyShowsTheDayHeld() {
         var told: [CalendarDate] = []
         let picker = picker { told.append($0) }
-        defer { picker.detach() }
+        defer { picker.release() }
 
         WebPage.enter("", into: picker.node)
         WebPage.leave(picker.node)
@@ -51,7 +51,7 @@ final class WebDatePickerViewTests: XCTestCase {
     func testTheDayToldIsNotWrittenBack() {
         var told: [CalendarDate] = []
         let picker = picker { told.append($0) }
-        defer { picker.detach() }
+        defer { picker.release() }
 
         WebPage.enter("2035-03-03", into: picker.node)
         picker.setDate(last)
@@ -67,7 +67,7 @@ final class WebTimePickerViewTests: XCTestCase {
         var told: [ClockTime] = []
         let picker = WebTimePickerView()
         picker.onChosen = { told.append($0) }
-        defer { picker.detach() }
+        defer { picker.release() }
 
         picker.setTime(ClockTime(hour: 7, minute: 30))
         XCTAssertEqual(WebPage.value(of: picker.node), "07:30")

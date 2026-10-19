@@ -11,7 +11,7 @@ import XCTest
 final class WebScrollViewTests: XCTestCase {
     func testAScrollerKeepsOnlyTheWaysItScrolls() {
         let scroller = WebScrollView()
-        defer { scroller.detach() }
+        defer { scroller.release() }
 
         scroller.apply(orientation: .horizontal, bars: .automatic, offset: nil)
         XCTAssertEqual(WebPage.style(of: scroller.node, "overscroll-behavior-x"), "contain")

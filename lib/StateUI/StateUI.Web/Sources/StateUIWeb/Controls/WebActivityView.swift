@@ -32,8 +32,8 @@ final class WebActivityView: WebDOMView {
         style("--stateui-on", WebCSS.color(tint))
     }
 
-    override func detach() {
-        ring.detach()
-        super.detach()
+    override func release() {
+        ring.release()
+        super.release()
     }
 }

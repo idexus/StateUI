@@ -72,7 +72,7 @@ final class WebItemsView: WebDOMView {
         }
         for cell in before where kept[cell.entry] !== cell {
             cells.endShowing(in: cell)
-            cell.detach()
+            cell.release()
         }
         made = kept
         near = near.filter { kept[$0] != nil }
@@ -145,9 +145,9 @@ final class WebItemsView: WebDOMView {
         WebRelay.scrollIntoView(cell.node, anchor: target.anchor.rawValue)
     }
 
-    override func detach() {
-        for cell in order { cell.detach() }
-        content.detach()
-        super.detach()
+    override func release() {
+        for cell in order { cell.release() }
+        content.release()
+        super.release()
     }
 }

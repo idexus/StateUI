@@ -13,7 +13,7 @@ final class WebControlFrameTests: XCTestCase {
     func testADrawnControlTakesNoSizeOfItsFrame() {
         let layout = WebLayoutView(arrangement: .stack(.horizontal))
         let views: [WebDOMView] = [WebSwitchView(switch: false), WebSwitchView(switch: true), WebActivityView()]
-        defer { for view in [layout] + views { view.detach() } }
+        defer { for view in [layout] + views { view.release() } }
         var framed = LayoutValues()
         framed.minimumWidth = 44
         framed.minimumHeight = 44

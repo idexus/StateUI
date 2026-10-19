@@ -307,8 +307,8 @@ final class WebHostedView<Control: WebControl>: WebDOMView {
         super.init(adopting: control.element.node)
     }
 
-    override func detach() {
+    override func release() {
         for listener in control.element.listeners { WebRelay.forget(listener) }
-        super.detach()
+        super.release()
     }
 }

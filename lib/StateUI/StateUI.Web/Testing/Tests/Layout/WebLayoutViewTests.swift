@@ -13,7 +13,7 @@ final class WebLayoutViewTests: XCTestCase {
     func testAReorderedLayoutStandsItsChildrenInTheirNewOrder() {
         let layout = WebLayoutView(arrangement: .stack(.vertical))
         let (a, b, c) = (WebTextView(), WebTextView(), WebTextView())
-        defer { for view in [layout, a, b, c] { view.detach() } }
+        defer { for view in [layout, a, b, c] { view.release() } }
 
         layout.setItems([a, b, c].map { ($0, { LayoutValues() }) })
         XCTAssertEqual(WebPage.children(of: layout.node), [a.node, b.node, c.node])
@@ -30,7 +30,7 @@ final class WebLayoutViewTests: XCTestCase {
     func testAMarginBelowNothingShiftsTheChild() {
         let layout = WebLayoutView(arrangement: .grid)
         let mark = WebTextView()
-        defer { for view in [layout, mark] { view.detach() } }
+        defer { for view in [layout, mark] { view.release() } }
         var values = LayoutValues()
         values.margin = Insets(left: -188, top: -94, right: 0, bottom: 0)
         layout.setItems([(mark, { values })])
@@ -44,7 +44,7 @@ final class WebLayoutViewTests: XCTestCase {
     func testAStackedChildKeepsItsOwnOpacityAsItIsPlacedAgain() {
         let layout = WebLayoutView(arrangement: .layers)
         let light = WebLayoutView(arrangement: .single)
-        defer { for view in [layout, light] { view.detach() } }
+        defer { for view in [layout, light] { view.release() } }
         layout.setItems([(light, { LayoutValues() })])
         light.setOpacity(0)
 
@@ -59,10 +59,10 @@ final class WebLayoutViewLeavingTests: XCTestCase {
     func testAChildLetGoOfFirstLeavesItsLayoutAlone() {
         let layout = WebLayoutView(arrangement: .single)
         let (kept, gone) = (WebTextView(), WebTextView())
-        defer { for view in [layout, kept] { view.detach() } }
+        defer { for view in [layout, kept] { view.release() } }
 
         layout.setItems([kept, gone].map { ($0, { LayoutValues() }) })
-        gone.detach()
+        gone.release()
         layout.setItems([(kept, { LayoutValues() })])
 
         XCTAssertEqual(WebPage.children(of: layout.node), [kept.node])

@@ -11,7 +11,7 @@ final class WebTabViewTests: XCTestCase {
     func testTheTabTheUserChoosesShowsAndIsTold() {
         let tabs = WebTabView()
         let (first, second) = (WebDOMView(tag: "section"), WebDOMView(tag: "section"))
-        defer { for view in [tabs, first, second] { view.detach() } }
+        defer { for view in [tabs, first, second] { view.release() } }
         var told: [(Int, Int)] = []
         tabs.onSelection = { told.append(($0, $1)) }
 
@@ -38,7 +38,7 @@ final class WebTabViewTests: XCTestCase {
     func testEveryPageStandsInTheOneCell() {
         let tabs = WebTabView()
         let pages = [WebDOMView(tag: "section"), WebDOMView(tag: "section"), WebDOMView(tag: "section")]
-        defer { for view in [tabs] + pages { view.detach() } }
+        defer { for view in [tabs] + pages { view.release() } }
 
         tabs.setTabs(pages)
 
@@ -51,7 +51,7 @@ final class WebTabViewTests: XCTestCase {
     /// where nothing is said.
     func testTheStripWearsTheBarsColour() {
         let tabs = WebTabView()
-        defer { tabs.detach() }
+        defer { tabs.release() }
 
         tabs.showColors(background: Color.transparent.propValue, foreground: nil)
         XCTAssertEqual(WebPage.style(of: tabs.strip.node, "--stateui-bar-background"), "rgb(255 255 255 / 0)")

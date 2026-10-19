@@ -102,8 +102,8 @@ final class WebStepperView: WebDOMView {
         showEnds()
     }
 
-    override func detach() {
-        for part in [down, field, up] { part.detach() }
-        super.detach()
+    override func release() {
+        for part in [down, field, up] { part.release() }
+        super.release()
     }
 }

@@ -89,7 +89,7 @@ final class WebButtonView: WebDOMView, WebWordsView {
     /// filling the button as `aspect` says; none shows the words alone.
     func setIcon(_ source: ImageSource?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
         guard let source = HostPicture(source, dark: false) else {
-            picture?.detach()
+            picture?.release()
             picture = nil
             attribute("data-alone", nil)
             return
@@ -114,13 +114,13 @@ final class WebButtonView: WebDOMView, WebWordsView {
 
     override var isControl: Bool { true }
 
-    override func detach() {
+    override func release() {
         opensMenu = nil
-        picture?.detach()
-        arrow?.detach()
+        picture?.release()
+        arrow?.release()
         arrow = nil
-        words.detach()
-        super.detach()
+        words.release()
+        super.release()
     }
 
     override func setEnabled(_ enabled: Bool) {

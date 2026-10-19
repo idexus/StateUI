@@ -10,7 +10,7 @@ import XCTest
 final class WebTextInputViewTests: XCTestCase {
     func testAFieldIsAsWideAsItsWordsOrItsPlaceholder() {
         let field = WebTextInputView(.field)
-        defer { field.detach() }
+        defer { field.release() }
 
         field.setPlaceholder("type here")
         XCTAssertEqual(WebPage.attribute(of: field.node, "size"), "9", "its placeholder's characters")

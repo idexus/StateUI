@@ -43,9 +43,9 @@ final class WebBarButton: WebDOMView {
         attribute("aria-keyshortcuts", entry.keyboardShortcut.map { WebKeys.spelled($0, onApple: WebRelay.onApple) })
     }
 
-    override func detach() {
-        picture.detach()
-        words.detach()
-        super.detach()
+    override func release() {
+        picture.release()
+        words.release()
+        super.release()
     }
 }

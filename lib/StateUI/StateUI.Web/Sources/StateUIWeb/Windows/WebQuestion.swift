@@ -82,9 +82,9 @@ final class WebQuestion {
     func withdraw() {
         answered = nil
         WebRelay.closeModal(dialog.node)
-        for part in parts { part.detach() }
-        field?.detach()
-        dialog.detach()
+        for part in parts { part.release() }
+        field?.release()
+        dialog.release()
     }
 
     private func add(_ tag: String, _ words: String) {

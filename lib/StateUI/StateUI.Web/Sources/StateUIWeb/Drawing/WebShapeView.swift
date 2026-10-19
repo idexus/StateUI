@@ -88,7 +88,7 @@ final class WebShapeView: WebDOMView {
         path.attribute("transform", placed.flatMap(WebVector.matrix))
         let painted = Rect(x: -lineWidth, y: -lineWidth, width: width + lineWidth * 2, height: height + lineWidth * 2)
         let undone = placed.flatMap(WebVector.inverse).flatMap(WebVector.matrix)
-        for gone in shown { gone.detach() }
+        for gone in shown { gone.release() }
         shown = []
         path.attribute("fill", brush(fill, "fill", over: painted, undoing: undone))
         path.attribute("stroke", outlined ? brush(stroke, "stroke", over: painted, undoing: undone) : "none")
@@ -115,11 +115,11 @@ final class WebShapeView: WebDOMView {
         return "url(#\(gradient.id))"
     }
 
-    override func detach() {
-        for each in shown { each.detach() }
-        path.detach()
-        brushes.detach()
-        surface.detach()
-        super.detach()
+    override func release() {
+        for each in shown { each.release() }
+        path.release()
+        brushes.release()
+        surface.release()
+        super.release()
     }
 }

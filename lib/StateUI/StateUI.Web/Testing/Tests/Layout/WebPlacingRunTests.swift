@@ -22,7 +22,7 @@ final class WebPlacingRunTests: XCTestCase {
     func testTheSameTurnAtANewSizeTurnsAboutItsNewMiddle() {
         let layout = WebLayoutView(arrangement: .layers)
         let card = WebLayoutView(arrangement: .single)
-        defer { for view in [layout, card] { view.detach() } }
+        defer { for view in [layout, card] { view.release() } }
         layout.setItems([(card, { LayoutValues() })])
 
         layout.setPlacement(run(width: 10, height: 10))
@@ -44,7 +44,7 @@ final class WebPlacingRunTests: XCTestCase {
     func testAChildTheRunPlacesNeverReadsItsOwnValues() {
         let layout = WebLayoutView(arrangement: .layers)
         let (placed, beyond) = (WebLayoutView(arrangement: .single), WebLayoutView(arrangement: .single))
-        defer { for view in [layout, placed, beyond] { view.detach() } }
+        defer { for view in [layout, placed, beyond] { view.release() } }
         var reads = [0, 0]
         layout.setPlacement(run(width: 40, height: 40))
 
@@ -62,7 +62,7 @@ final class WebPlacingRunTests: XCTestCase {
     func testARunsPlaceIsAMoveOnALayerOfItsOwn() {
         let layout = WebLayoutView(arrangement: .layers)
         let card = WebLayoutView(arrangement: .single)
-        defer { for view in [layout, card] { view.detach() } }
+        defer { for view in [layout, card] { view.release() } }
         layout.setItems([(card, { LayoutValues() })])
 
         layout.setPlacement(HostPlacementRun(placements: [
@@ -83,7 +83,7 @@ final class WebPlacingRunTests: XCTestCase {
         let layout = WebLayoutView(arrangement: .layers)
         let card = WebLayoutView(arrangement: .grid)
         let (face, shade) = (WebLayoutView(arrangement: .single), WebLayoutView(arrangement: .single))
-        defer { for view in [layout, card, face, shade] { view.detach() } }
+        defer { for view in [layout, card, face, shade] { view.release() } }
         card.setItems([(face, { LayoutValues() }), (shade, { LayoutValues() })])
         layout.setItems([(card, { LayoutValues() })])
 
@@ -100,7 +100,7 @@ final class WebPlacingRunTests: XCTestCase {
     func testACardTheRunPlacesIsNotBoundByItsRoom() {
         let layout = WebLayoutView(arrangement: .layers)
         let card = WebLayoutView(arrangement: .single)
-        defer { for view in [layout, card] { view.detach() } }
+        defer { for view in [layout, card] { view.release() } }
         layout.setItems([(card, { LayoutValues() })])
         XCTAssertEqual(WebPage.style(of: card.node, "max-height"), "100%", "an unplaced child stays in its room")
 
