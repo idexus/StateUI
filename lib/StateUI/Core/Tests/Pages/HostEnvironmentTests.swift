@@ -325,12 +325,10 @@ final class HostEnvironmentTests: XCTestCase {
         HostBoundary.setRealization(HostRealization(
             elements: ["Picker"],
             members: [HostRealizedMember(element: "Picker", owner: "VisualElement", member: "tooltip")]))
-        HostBoundary.setRegister(HostRegister(
-            records: [
-                HostRecord(owner: "VisualElement", member: "tooltip", judgement: .notPlanned(reason: "no pointer")),
-                HostRecord(owner: "Picker", member: "isOpen", judgement: .partial(missing: "its closing")),
-            ],
-            unrealized: [], viewless: []))
+        HostBoundary.setRegister(HostRegister(records: [
+            .notPlanned(VisualElementContract.tooltip, reason: "no pointer"),
+            .partial(PickerContract.isOpen, missing: "its closing"),
+        ]))
         defer {
             HostBoundary.setRegister(nil)
             HostBoundary.setRealization(HostRealization())
@@ -351,12 +349,10 @@ final class HostEnvironmentTests: XCTestCase {
         let device = Device()
         XCTAssertTrue(device.honours(TintElementContract.tint), "before the register")
 
-        HostBoundary.setRegister(HostRegister(
-            records: [
-                HostRecord(owner: "Slider", member: "tint", judgement: .complete),
-                HostRecord(owner: "Switch", member: "tint", judgement: .notPlanned(reason: "no tint")),
-            ],
-            unrealized: [], viewless: []))
+        HostBoundary.setRegister(HostRegister(records: [
+            .complete(TintElementContract.tint, on: SliderContract.self),
+            .notPlanned(TintElementContract.tint, on: SwitchContract.self, reason: "no tint"),
+        ]))
         defer {
             HostBoundary.setRegister(nil)
             HostBoundary.setRealization(HostRealization())

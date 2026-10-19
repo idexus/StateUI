@@ -19,7 +19,7 @@ final class CoreLinkTests: XCTestCase {
             HostRealization(
                 elements: ["Text", "Test.Lamp"],
                 members: [HostRealizedMember(element: "Application", owner: "Test", member: "Test.BatteryChanged")]),
-            unrealized: ["Map"])
+            unrealized: [MapContract.self])
 
         XCTAssertNil(HostRealizations.unrealized(ButtonContract.nodeType))
         XCTAssertNil(HostRealizations.unrealized(PageContract.nodeType))

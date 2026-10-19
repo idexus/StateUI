@@ -138,23 +138,29 @@ of each element that has it: one element may realize what another does not,
 so the platform contract names them with no mark rather than one that says
 both.
 
+A host writes its records with the contracts' members, so a misspelt name
+does not compile: `.complete(SwitchContract.isOn)` judges a member on every
+element wearing its contract, and `on:` judges it on one element alone -
+`.notPlanned(VisualElementContract.background, on: SliderContract.self,
+reason:)`. The elements it realizes none of, never has, or leaves to the
+application it names by their contracts too (`[MapContract.self]`).
+
 A tier's record reaches every element wearing the tier, and what the
 host's shared machinery realizes becomes one: it serves each view the host
 makes. Where an element wearing the tier does not take such a member - a
 toolbar item AppKit holds as no view - the element's own record says so,
-`.unrealized("ToolbarItem", "accessibilityIdentifier", why:)`, and stands
-over the tier's: the member's case does not run there and its cell stays
-empty. An element's record is the only one that says unrealized. An element
-the host presents with no view of its own (`viewless`) is reached by no
-tier's record: only its own records speak for it.
+`.unrealized(AutomationElementContract.accessibilityIdentifier, on:
+ToolbarItemContract.self, why:)`, and stands over the tier's: the member's
+case does not run there and its cell stays empty. Only an element's record
+says unrealized, which its type keeps. A text span has no view of its own on
+any host - it is a run of its label's words - so no tier's record reaches it
+(`HostRegister.viewless`): only its own records speak for it.
 
 A host checks its own register in its suite (`HostRegister.problems`): a
-record naming what its owner does not declare, one written twice, a partial
+record naming a member its owner does not wear, one written twice, a partial
 one saying nothing is missing, a never or an unrealized one saying no
-reason, an unrealized one on a tier - and an element called both unrealized
-and never, both never and the application's, or both unrealized and the
-application's, or one left to the application that the library does not
-declare.
+reason - and an element called both unrealized and never, both never and
+the application's, or both unrealized and the application's.
 
 ```text
   ✅   proven by every test of it that ran on that host

@@ -43,9 +43,10 @@ final class UIKitDeclarationExportTests: XCTestCase {
         let types = LibraryContracts.elements.map { $0.nodeType }
         let unsupported = Set(types.filter { UIKitElement.showsUnsupported($0) }.map(\.name))
         let made = Set(UIKitRegistrations.registry.realization.elements.map(\.name))
+        let unrealized = Set(UIKitRealization.unrealized.map { $0.name })
 
-        XCTAssertEqual(unsupported.subtracting(UIKitRealization.unrealized).sorted(), [])
-        XCTAssertEqual(made.intersection(UIKitRealization.unrealized).sorted(), [])
+        XCTAssertEqual(unsupported.subtracting(unrealized).sorted(), [])
+        XCTAssertEqual(made.intersection(unrealized).sorted(), [])
     }
 
     /// What this host wrote of its register by hand is true of the contracts: no record names what its owner does

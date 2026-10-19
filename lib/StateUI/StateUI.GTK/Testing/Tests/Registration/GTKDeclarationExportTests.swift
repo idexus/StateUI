@@ -49,9 +49,10 @@ final class GTKDeclarationExportTests: XCTestCase {
         let types = LibraryContracts.elements.map { $0.nodeType }
         let unsupported = Set(types.filter { GTKElement.showsUnsupported($0) }.map(\.name))
         let made = Set(GTKRegistrations.registry.realization.elements.map(\.name))
+        let unmade = Set(GTKRealization.unmade.map { $0.name })
 
-        XCTAssertEqual(unsupported.subtracting(GTKRealization.unmade).sorted(), [])
-        XCTAssertEqual(made.intersection(GTKRealization.unmade).sorted(), [])
+        XCTAssertEqual(unsupported.subtracting(unmade).sorted(), [])
+        XCTAssertEqual(made.intersection(unmade).sorted(), [])
     }
 
     /// What this host wrote of its register by hand is true of the contracts: no record names what its owner does

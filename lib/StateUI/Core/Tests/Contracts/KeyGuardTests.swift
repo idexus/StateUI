@@ -103,7 +103,6 @@ final class KeyGuardTests: XCTestCase {
         "Persistence.swift": keyType,
         "ElementAct.swift": member, "ElementEvent.swift": member, "ElementProperty.swift": member,
         "HostRealization.swift": startUp, "HostRealizations.swift": startUp, "HostDeclaration.swift": startUp,
-        "CoreLink.swift": startUp,
         "StateWalk.swift": "a view type's key, made once a type, as the walk first meets it",
         "LibraryContracts.swift": "the members' facts: a table made once",
         "Differ+Arrangements.swift": "each arrangement's declared members: a table made once",
@@ -138,9 +137,6 @@ final class KeyGuardTests: XCTestCase {
         "AppKitWindowController+Lifecycle.swift": file, "HostRuntime.swift": file + ", and " + register,
         // The register and its exports.
         "HostDeclaration.swift": register, "HostRegister.swift": register, "HostVerdict.swift": register,
-        "AppKitRealization.swift": register, "UIKitRealization.swift": register,
-        "AndroidRealization.swift": register, "WinUIRealization.swift": register,
-        "GTKRealization.swift": register, "WebRealization.swift": register,
         "CoreLink.swift": register + ", and " + diagnostic,
         // Diagnostics.
         "HostBoundary+Inspection.swift": diagnostic, "Complaint.swift": diagnostic, "Inspection.swift": diagnostic,

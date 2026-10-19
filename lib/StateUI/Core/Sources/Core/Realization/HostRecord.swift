@@ -28,30 +28,38 @@
     /// What the record says of it.
     public let judgement: Judgement
 
-    /// `member` of `owner`, judged as `judgement` says.
-    public init(owner: String, member: String, judgement: Judgement) {
+    /// `member` of `owner`, judged as `judgement` says: a record the register derives from what a runtime realizes.
+    init(owner: String, member: String, judgement: Judgement) {
         self.owner = owner
         self.member = member
         self.judgement = judgement
     }
 
-    /// `member` of `owner`, realized in full.
-    public static func complete(_ owner: String, _ member: String) -> HostRecord {
-        HostRecord(owner: owner, member: member, judgement: .complete)
+    /// `member`, realized in full: on every element wearing its contract, or on `element` alone.
+    public static func complete<Member: ContractMember>(_ member: Member, on element: (any Contract.Type)? = nil) -> HostRecord {
+        HostRecord(owner: (element ?? Member.Owner.self).name, member: member.name, judgement: .complete)
     }
 
-    /// `member` of `owner`, realized in part: `missing` says what is not.
-    public static func partial(_ owner: String, _ member: String, missing: String) -> HostRecord {
-        HostRecord(owner: owner, member: member, judgement: .partial(missing: missing))
+    /// `member`, realized in part - on every element wearing its contract, or on `element` alone: `missing` says what
+    /// is not.
+    public static func partial<Member: ContractMember>(
+        _ member: Member, on element: (any Contract.Type)? = nil, missing: String
+    ) -> HostRecord {
+        HostRecord(owner: (element ?? Member.Owner.self).name, member: member.name, judgement: .partial(missing: missing))
     }
 
-    /// `member` of `owner`, not planned for the host's family: `reason` says why.
-    public static func notPlanned(_ owner: String, _ member: String, reason: String) -> HostRecord {
-        HostRecord(owner: owner, member: member, judgement: .notPlanned(reason: reason))
+    /// `member`, not planned for the host's family - on every element wearing its contract, or on `element` alone:
+    /// `reason` says why.
+    public static func notPlanned<Member: ContractMember>(
+        _ member: Member, on element: (any Contract.Type)? = nil, reason: String
+    ) -> HostRecord {
+        HostRecord(owner: (element ?? Member.Owner.self).name, member: member.name, judgement: .notPlanned(reason: reason))
     }
 
-    /// `member` of the element `owner`, not realized there though a tier's record reaches it: `why` says why.
-    public static func unrealized(_ owner: String, _ member: String, why: String) -> HostRecord {
-        HostRecord(owner: owner, member: member, judgement: .unrealized(why: why))
+    /// `member`, not realized on `element` though a tier's record reaches it: `why` says why.
+    public static func unrealized<Member: ContractMember>(
+        _ member: Member, on element: any ElementContract.Type, why: String
+    ) -> HostRecord {
+        HostRecord(owner: element.name, member: member.name, judgement: .unrealized(why: why))
     }
 }

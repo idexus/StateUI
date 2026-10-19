@@ -80,8 +80,8 @@ final class HostRealizationTests: XCTestCase {
     /// A host says what it realizes, and judges it member by member, at every start - a test's every case on a
     /// phone: what the core answers from is worked out when first asked, once, not at each saying.
     func testAHostSayingItsRegisterAtEveryStartCostsNothingUntilAsked() {
-        let records = (0..<2_000).map { HostRecord.complete("Owner\($0 % 40)", "member\($0)") }
-        let register = HostRegister(records: records, unrealized: [], viewless: [])
+        let records = (0..<2_000).map { HostRecord(owner: "Owner\($0 % 40)", member: "member\($0)", judgement: .complete) }
+        let register = HostRegister(records: records)
         let realization = HostRealization(
             elements: ["Text"],
             members: Set(records.map { HostRealizedMember(element: "Text", owner: $0.owner, member: $0.member) }))

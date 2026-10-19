@@ -106,7 +106,7 @@
     /// language's direction, the windows, then the turns. Each step but the first and the direction is the host's.
     /// Design: docs/design/host/runtime.md#starting
     public func start(
-        realizing realization: HostRealization, unrealized: Set<String>,
+        realizing realization: HostRealization, unrealized: [any ElementContract.Type],
         register: @autoclosure @escaping () -> HostRegister? = nil,
         environment: () -> Void, kept: () -> Void = {}, windows: () -> Void = {}, turns: () -> Void = {}
     ) {

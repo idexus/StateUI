@@ -153,9 +153,10 @@
     /// and every element of the library's but those it names `unrealized`.
     /// Design: docs/design/core/contracts.md#unrealized-names
     public func setRealization(
-        _ registry: HostRealization, unrealized: Set<String>, register: @autoclosure @escaping () -> HostRegister? = nil
+        _ registry: HostRealization, unrealized: [any ElementContract.Type],
+        register: @autoclosure @escaping () -> HostRegister? = nil
     ) {
-        let library = Set(LibraryContracts.elements.map { $0.nodeType }).subtracting(unrealized.map { NodeType($0) })
+        let library = Set(LibraryContracts.elements.map { $0.nodeType }).subtracting(unrealized.map { $0.nodeType })
         HostBoundary.setRealization(HostRealization(elements: library.union(registry.elements), members: registry.members))
         HostBoundary.setRegister(register())
     }
