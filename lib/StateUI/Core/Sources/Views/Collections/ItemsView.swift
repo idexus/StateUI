@@ -23,8 +23,8 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
     /// The items, their identities and their views - one source a build.
     private let source: ItemsSource<ID>
 
-    /// The identities within reach of the host's cells, as it last said.
-    @State private var realized: [String] = []
+    /// The entries within reach of the host's cells, as it last said.
+    @State private var reach = ItemsReach()
 
     private var layout = ItemsLayout.list()
     private var headerView: (any View)?
@@ -63,22 +63,23 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
         if source.entries.isEmpty, let empty { return ModifiedContent(node: empty.node) }
 
         let source = self.source
-        let realized = self.realized
-        let held = $realized
+        let reach = self.reach
+        let held = $reach
         var element = ItemsViewElement()
         element.node.write(ItemsViewContract.items, source.entries)
         element.node.write(ItemsViewContract.itemsLayout, layout)
-        element.node.producer = { source.children(realized: realized) }
+        element.node.producer = { source.children(within: reach) }
         element.node.aim = aimed?.box
         aimed?.box.resolves = { item in (item as? ID).map { source.identities(of: [$0]) } ?? [] }
 
         element.node.addHandler(ItemsViewContract.realizedChanged.token) {
             guard let identities = MemberValues.carried(
-                EventBuffer.current, by: ItemsViewContract.realizedChanged.name, as: [String].self),
-                identities != held.wrappedValue
+                EventBuffer.current, by: ItemsViewContract.realizedChanged.name, as: [String].self)
             else { return }
+            let said = ItemsReach(identities: identities, positions: source.positions(of: identities))
+            guard said != held.wrappedValue else { return }
 
-            held.wrappedValue = identities
+            held.wrappedValue = said
         }
 
         if let choice {

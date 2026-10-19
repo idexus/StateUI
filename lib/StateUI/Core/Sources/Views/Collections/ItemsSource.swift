@@ -35,6 +35,7 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
 
     private var places: [String: Place] = [:]
     private var order: [String: Int] = [:]
+    private var ordered: [String] = []
     private var identities: [ID: [String]] = [:]
 
     /// The source of `groups`; a list with no groups is one group standing for none.
@@ -76,7 +77,8 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
             footer: footer.map { _ in named("\u{1E}footer", .footer) },
             sections: sections)
 
-        for (position, identity) in entries.identities.enumerated() {
+        ordered = entries.identities
+        for (position, identity) in ordered.enumerated() {
             order[identity] = position
         }
     }
@@ -133,10 +135,18 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         ids.flatMap { identities[$0] ?? [] }.sorted { (order[$0] ?? 0) < (order[$1] ?? 0) }
     }
 
-    /// The entries the host holds in its cells, each its own view, in the order
-    /// they show; an identity the list no longer shows is left out.
-    func children(realized: [String]) -> [Node] {
-        realized.filter { places[$0] != nil }
+    /// The positions `identities` stand at in this build.
+    func positions(of identities: [String]) -> [Int] {
+        identities.compactMap { order[$0] }
+    }
+
+    /// The entries within `reach` of the host's cells, each its own view, in
+    /// the order they show: the ones it said, and the ones standing now where
+    /// those stood. An identity the list no longer shows is left out.
+    /// Design: docs/design/views/items.md#built-when-a-cell-asks
+    func children(within reach: ItemsReach) -> [Node] {
+        let standing = reach.positions.compactMap { ordered.indices.contains($0) ? ordered[$0] : nil }
+        return Set(reach.identities + standing).filter { places[$0] != nil }
             .sorted { (order[$0] ?? 0) < (order[$1] ?? 0) }
             .map { identity in
                 var node = ItemsEntry(identity: identity, source: self).node

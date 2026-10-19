@@ -13,6 +13,15 @@ private final class Received<Value> {
     var values: [Value] = []
 }
 
+/// A list of the numbers a state holds, built again as they change.
+private struct NumbersList: View {
+    let numbers: State<[Int]>
+
+    var body: some View {
+        ItemsView(numbers.wrappedValue) { Text("\($0)") }
+    }
+}
+
 /// How many times each item was built - a class, so the closure that counts
 /// into it is not walked for state.
 private final class Built {
@@ -105,6 +114,20 @@ final class ItemsViewTests: XCTestCase {
 
         XCTAssertEqual(built.counts, [3: 2, 4: 1])
         XCTAssertEqual(patch.child("3")?.props[.text], .string("★"))
+    }
+
+    /// A change that moves the entries builds, in the same render, the entry it brings to where a held one stood: the
+    /// collection laying the change out finds it built, and measures it before it moves a row.
+    func testAChangeBuildsTheEntryItBringsWhereAHeldOneStood() throws {
+        let numbers = State(wrappedValue: Array(0..<100))
+        let renders = Renders()
+        let list = try list(in: renders.render(NumbersList(numbers: numbers).node))
+        _ = try hold(["0", "1", "2"], in: renders, list: list)
+
+        numbers.wrappedValue = [99] + Array(0..<99)
+        let moved = try self.list(in: renders.revisit(changed: Renderer.shared.pendingChanges))
+
+        XCTAssertEqual(moved.arrangement, [.manual("99"), .manual("0"), .manual("1"), .manual("2")])
     }
 
     /// The parent building the list again builds every entry held again, as a

@@ -36,6 +36,15 @@ and renders at once, so the platform's synchronous call for a cell finds the
 entry's subtree mounted. An entry the host lets go leaves the tree, its
 state with it.
 
+The ItemsView keeps, with the identities, the positions they stood at as the
+host said them, and builds the entries standing at those positions too
+(`ItemsReach`). A change that moves the entries - one put first, one taken
+out - brings others to the places the cells stand at, and they are built in
+the render of the change: the patch mounts them before the host takes the
+new entries, so the collection measures them as it lays the change out,
+where an entry built a turn later would be laid out at an estimate and move
+every row after it once measured. The host's next word replaces both.
+
 Each entry is a composed view of its own, `ItemsEntry`, keyed by its
 identity: a state one item reads builds that item alone, and a change to it
 reaches the host as any child's does.

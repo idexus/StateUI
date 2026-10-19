@@ -158,5 +158,54 @@ final class AppKitItemsViewTests: XCTestCase {
         settle { shown() == ["Row 0", "Row 1", "Row 2"] }
         XCTAssertEqual(shown(), ["Row 0", "Row 1", "Row 2"])
     }
+
+    /// Every row moved one place down travels from where it stood to where the next one stood, never past it: the
+    /// entry the change brings to the top is measured as the change is laid out, not once it ends.
+    @MainActor
+    func testRowsMovedOnePlaceDownTravelStraightToTheirPlace() throws {
+        let numbers = State(wrappedValue: Array(0..<1_000))
+        let renderer = autoreleasepool {
+            AppKitRenderer.running {
+                ItemsView(numbers.wrappedValue) { Text("Row \($0)").padding(10) }.width(300).height(500)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let items = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first)
+        func drawn() -> [String: CGFloat] {
+            Dictionary(uniqueKeysWithValues: items.collection.visibleItems().compactMap { item in
+                guard let cell = item as? AppKitItemCell, let identity = cell.holding.identity else { return nil }
+                return (identity, cell.view.layer?.presentation()?.frame.minY ?? cell.view.frame.minY)
+            })
+        }
+        func step() {
+            RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
+            renderer.runtime.pump.turn()
+            renderer.windowsForTesting.first?.window?.layoutIfNeeded()
+        }
+        for _ in 0..<100 {
+            let cells = items.collection.visibleItems().compactMap { $0 as? AppKitItemCell }
+            guard cells.count < 5 || cells.contains(where: { $0.holding.shown == nil }) else { break }
+            step()
+        }
+        let stood = drawn().filter { Int($0.key)! < 6 }
+
+        numbers.wrappedValue = [999] + Array(0..<999)
+        var astray: [String] = []
+        for index in 0..<40 {
+            step()
+            let now = drawn()
+            for row in 0..<5 {
+                guard let at = now["\(row)"], let from = stood["\(row)"], let to = stood["\(row + 1)"] else { continue }
+                if at < from - 0.5 || at > to + 0.5 { astray.append("step \(index): row \(row) at \(at), not within \(from)...\(to)") }
+            }
+        }
+        for _ in 0..<100 {
+            guard drawn()["0"] != stood["1"] else { break }
+            step()
+        }
+
+        XCTAssertEqual(astray, [])
+        XCTAssertEqual(drawn()["0"], stood["1"], "row 0 ends where row 1 stood")
+    }
 }
 #endif
