@@ -32,9 +32,10 @@ nothing.
 
 What the library offers has one spelling, its name (`EnvironmentValues`). The
 type spelling, `@Environment var device: Device`, compiles - nothing in the
-type system tells the library's objects from an application's - so it is
-refused as the view is made, the message naming `@Environment(\.device)`
-(`Environment.refusal`). An object the application provides with
+type system tells the library's objects from an application's - so the
+library complains as the view is made, the message naming
+`@Environment(\.device)` (`Environment.refusal`), and the read still answers
+by the type. An object the application provides with
 `.environment(_:)` has no name in the library and is read by its type.
 
 ## How the host writes it
