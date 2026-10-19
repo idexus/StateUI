@@ -40,8 +40,11 @@ final class GTKSplitView: GTKLayoutView {
     private var paneClass: String?
 
     private let split = GTKWidgetView { adw_overlay_split_view_new() }
+
+    /// The bin the split stands in, which collapses it by the split's own room: its breakpoint stands and goes with it.
+    private let bin = GTKWidgetView { adw_breakpoint_bin_new() }
+
     private var panes: [GTKView] = []
-    private var adapted = false
     private var adaptation = SidebarAdaptation()
 
     /// Where GNOME's applications collapse a split, in scale-independent pixels: logical pixels at the desktop's
@@ -51,7 +54,12 @@ final class GTKSplitView: GTKLayoutView {
     override init() {
         super.init()
         split.placingLayout = self
-        setChildren([split])
+        bin.placingLayout = self
+        adw_breakpoint_bin_set_child(bin.widget.of(AdwBreakpointBin.self), split.widget)
+        // The bin is as small as its room allows: the breakpoint is what shrinks the split within it.
+        gtk_widget_set_size_request(bin.widget, 1, 1)
+        collapseWhenNarrow()
+        setChildren([bin])
         connectNotify(UnsafeMutableRawPointer(split.widget), "show-sidebar", number: number) { _, _, data in
             MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKSplitView)?.sidebarMoved() }
         }
@@ -141,21 +149,26 @@ final class GTKSplitView: GTKLayoutView {
         onPresentationChanged?(shows)
     }
 
-    /// Collapses the split in a window narrower than 400sp, as GNOME's applications do - a breakpoint of the
-    /// window's, added once the split stands in one.
+    /// Collapses the split in a room narrower than 400sp, as GNOME's applications do - a breakpoint of the bin it
+    /// stands in, which measures the split's own room.
     /// Design: docs/design/platforms/gtk/pages.md#a-split-view
-    func adapt(in window: GTKWidget) {
-        guard !adapted else { return }
-        adapted = true
-
+    private func collapseWhenNarrow() {
         let breakpoint = adw_breakpoint_new(adw_breakpoint_condition_parse("max-width: \(Int(Self.collapsesAt))sp"))!
         var collapsed = GValue()
         g_value_init(&collapsed, g_type_from_name("gboolean"))
         g_value_set_boolean(&collapsed, 1)
         adw_breakpoint_add_setter(breakpoint, split.widget.of(GObject.self), "collapsed", &collapsed)
         g_value_unset(&collapsed)
-        adw_application_window_add_breakpoint(window.of(AdwApplicationWindow.self), breakpoint)
+        adw_breakpoint_bin_add_breakpoint(bin.widget.of(AdwBreakpointBin.self), breakpoint)
+        self.breakpoint = breakpoint
     }
+
+    /// The breakpoint collapsing the split, held until it goes: the bin takes none of it, and keeps it past its own
+    /// end unless it is taken off.
+    private var breakpoint: OpaquePointer?
+
+    /// The breakpoint - what a test watches go with the split.
+    var breakpointForTesting: OpaquePointer? { breakpoint }
 
     /// The host's one adaptation (`SidebarAdaptation`): a split first given room wide enough for both panes opens
     /// with its sidebar shown, and says so - once GTK has laid the frame out, not inside its allocation.
@@ -178,8 +191,14 @@ final class GTKSplitView: GTKLayoutView {
     }
 
     override func arrange(in bounds: Rect) {
-        split.layout(bounds)
+        bin.layout(bounds)
         adaptToFirstRoom(width: bounds.width)
+    }
+
+    isolated deinit {
+        guard let breakpoint else { return }
+        adw_breakpoint_bin_remove_breakpoint(bin.widget.of(AdwBreakpointBin.self), breakpoint)
+        g_object_unref(UnsafeMutableRawPointer(breakpoint))
     }
 
     override func detach() {

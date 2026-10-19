@@ -84,9 +84,12 @@ the page going; held longer, the page and every widget in it live on.
 ## A split view
 
 A split view is libadwaita's `AdwOverlaySplitView`: the sidebar beside the
-detail, and over it in a window narrower than 400sp - a breakpoint of the
-window's, as GNOME's applications collapse theirs, the window then saying the
-smallest size GNOME's windows keep. Whether the sidebar shows is StateUI's
+detail, and over it in a room narrower than 400sp, as GNOME's applications
+collapse theirs - a breakpoint of an `AdwBreakpointBin` the split stands in,
+which measures the split's own room and goes with it, where a window's would
+gather one for every split the window ever showed. The bin takes no hold of
+its breakpoint and keeps it past its own end, so the split holds it and takes
+it off as it goes. Whether the sidebar shows is StateUI's
 binding: the program's write shows or hides it, and GTK's own change - a click
 beside a sidebar over the detail, a swipe - and the detail's toggle report
 back into it. The split's first room wider than nothing decides, by the host

@@ -93,7 +93,6 @@ final class GTKWindowController {
             window.pageFrame?.show(arrangement.chrome)
         }
         arrangement?.composeChrome()
-        if let split = arrangement?.view as? GTKSplitView { split.adapt(in: window.widget) }
         for (page, sheet) in sheets {
             let chrome = page.gtk.chrome
             sheet.frame?.show(chrome)

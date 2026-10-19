@@ -35,6 +35,58 @@ final class GTKSplitViewTests: XCTestCase {
         }
     }
 
+    /// A split collapses - the sidebar over the detail - in a room narrower than GNOME's 400sp, and stands beside it
+    /// again in a wider one.
+    func testASplitCollapsesInANarrowRoom() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                SplitView(State(wrappedValue: true).projectedValue) {
+                    TitledPage(title: "Menu")
+                } detail: { TitledPage(title: "Detail") }
+            }
+            let split = try XCTUnwrap(host.views(GTKSplitView.self).first)
+            let window = try XCTUnwrap(host.window)
+
+            window.request(WindowFrame(width: 360, height: 500))
+            host.settle { split.isCollapsed }
+            XCTAssertTrue(split.isCollapsed, "narrow")
+
+            window.request(WindowFrame(width: 900, height: 500))
+            host.settle { !split.isCollapsed }
+            XCTAssertFalse(split.isCollapsed, "wide")
+        }
+    }
+
+    /// A split view the window shows in another's place is let go of with its collapsing: the breakpoint stands with
+    /// the split, not with the window, which would gather one for every split it ever showed.
+    func testASplitViewShownInAnothersPlaceIsLetGoOf() throws {
+        try onUIThread {
+            let first = State(wrappedValue: true)
+            let host = GTKRenderer.running {
+                if first.wrappedValue {
+                    SplitView(State(wrappedValue: true).projectedValue) {
+                        TitledPage(title: "Menu")
+                    } detail: { TitledPage(title: "First") }
+                } else {
+                    SplitView(State(wrappedValue: true).projectedValue) {
+                        TitledPage(title: "Menu")
+                    } detail: { TitledPage(title: "Second") }
+                }
+            }
+            host.layOut()
+            let watched = UnsafeMutablePointer<gpointer?>.allocate(capacity: 1)
+            defer { watched.deallocate() }
+            let breakpoint = try XCTUnwrap(host.views(GTKSplitView.self).first?.breakpointForTesting)
+            watched.pointee = UnsafeMutableRawPointer(breakpoint)
+            g_object_add_weak_pointer(UnsafeMutablePointer<GObject>(breakpoint), watched)
+
+            first.wrappedValue = false
+            host.settle { host.windowTitle == "Second" && watched.pointee == nil }
+            XCTAssertNil(watched.pointee, "the first split's breakpoint outlived it")
+            if let left = watched.pointee { g_object_remove_weak_pointer(left.assumingMemoryBound(to: GObject.self), watched) }
+        }
+    }
+
     /// A sidebar whose page says no title names its pane's bar by the application's name; the detail stays untitled.
     func testAnUntitledSidebarIsNamedByTheApplication() throws {
         try onUIThread {
