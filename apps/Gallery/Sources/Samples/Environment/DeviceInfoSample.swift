@@ -46,9 +46,9 @@ struct DeviceInfoSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("The formFactor is the value this gallery itself builds by: a "
-                + "desktop leaves the menu open after a choice, and the Multi-window "
-                + "sample is listed only where a second window has room. It is known "
+            Text("The formFactor is the value this gallery itself builds by: the "
+                + "Multi-window sample is listed only where a second window has room. "
+                + "It is known "
                 + "BEFORE the first render, so the first tree already has it - which "
                 + "pages exist is decided while the tree is built.")
                 .fontSize(12)

@@ -4,7 +4,7 @@
 application's arithmetic that places them on the host's frames, the phase the
 arithmetic is worked out from, and the hand that moves the phase. A ring, a
 fan, a wheel of cards, a timeline and a gallery are one layout with different
-arithmetic; `GalleryView` is one with the arithmetic of three shapes written.
+arithmetic; `GalleryView` is one with the arithmetic of four shapes written.
 
 ```text
   LayoutEngine - the element, a host's ZStack, wearing the phase   ◀── the host walks it

@@ -74,7 +74,7 @@ logical pixel.
 
 ## The shapes
 
-Each of the six shapes is a panel drawing its geometry with GSK's own paths
+Each of the seven shapes is a panel drawing its geometry with GSK's own paths
 in its snapshot, for the room its layout gives it, again whenever that room
 changes. A rectangle and an ellipse fill the room, drawn half their outline in
 from its edges so the outline stays inside; a rectangle's corners are each

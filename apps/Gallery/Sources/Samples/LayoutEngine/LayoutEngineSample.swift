@@ -331,7 +331,7 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
                 + "above - a card farther round drawn smaller, higher and darker, the chosen one "
                 + "nearest - and its dots are a few lines of arithmetic. `GalleryView`, under "
                 + "Items and Cards, is the same "
-                + "layout with the arithmetic for a wheel, a fan and a row already written.")
+                + "layout with the arithmetic for a wheel, a fan, a row and a deck already written.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

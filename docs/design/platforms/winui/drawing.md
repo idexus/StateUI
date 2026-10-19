@@ -82,7 +82,7 @@ that tips nothing has no projection.
 
 ## The shapes
 
-Each of the six shapes is one WinUI `Path` in a figure of the relay's (see
+Each of the seven shapes is one WinUI `Path` in a figure of the relay's (see
 [what assistive technology meets](controls.md#what-assistive-technology-meets)),
 whose geometry the host hands over for the room its layout gives it, again
 whenever that room changes. A

@@ -7,9 +7,10 @@ views can follow a finger with no view built.
 
 ```text
   GalleryView
-   ├── LayoutEngine: the cards, the wheel's, fan's or row's arithmetic, the
-   │     phase the card in front, a scroll the hand (layout-engine.md)
-   └── PositionWatcher: an empty view watching the card in front
+   ├── LayoutEngine: the cards, the wheel's, fan's, row's or deck's
+   │     arithmetic, the phase the card in front, a scroll the hand
+   │     (layout-engine.md)
+   └── Watcher: an empty view watching the asked position
 ```
 
 ## Frame reports
@@ -135,9 +136,10 @@ new shape says.
 - A gallery nobody may swipe has no scroll: an assigned position places the
   cards there, and the card in front answers a tap itself.
 
-The sensitivity is one number, how far the hand travels to turn the run by one
-card: three fifths of a card's width, far enough that the coarsest step a
-device reports is part of a card, near enough that a deck is quick to cross.
+The hand carries the card in front: it turns the run by one card as it travels
+as far as that card moves for one, whatever size the room draws the run - the
+layout engine's own unit ([the hand](layout-engine.md#the-hand)), with no
+number of the gallery's.
 
 The run is fitted to its room by a scale, not a rectangle. A card takes at most
 half the room's width and stands within its height, the smaller answering, so

@@ -86,8 +86,8 @@ makes that whole view rebuild for every change it watches.
 
 The library's own composed views put such a watcher in a view of its own: an
 empty view beside the ones it serves, reading the value so the read is its
-own. `GalleryView`'s `Turning` watches the asked position and shape, and every
-card crossed rebuilds that empty view rather than the deck. Handlers that need
+own. `GalleryView`'s `Watcher` watches the asked position, and every card
+crossed rebuilds that empty view rather than the deck. Handlers that need
 the value when they fire ask it through a closure rather than reading it at
 build.
 

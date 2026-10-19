@@ -31,7 +31,7 @@ struct MainPage: View {
 
     /// Which kind of device this is, from the standard environment - answered by
     /// the host before the first render, so the first window build already knows
-    /// whether this is a desktop, which leaves the menu open after a choice.
+    /// which samples the device lists.
     @Environment(\.device) private var device
 
     /// Every sample there is, already built.

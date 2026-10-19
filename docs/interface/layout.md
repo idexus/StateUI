@@ -459,7 +459,7 @@ The [platform contract](../platform-contract.md) says where each is realized.
 
 `LayoutEngine` and `GalleryView` are StateUI's own layouts: the core
 implements them once - a `GalleryView` is a `LayoutEngine` with the
-arithmetic of three shapes written - and the Gallery exercises both on every
+arithmetic of four shapes written - and the Gallery exercises both on every
 host.
 
 `GalleryView` shows one card at a time, swiped through, in a shape one word
