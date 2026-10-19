@@ -50,6 +50,33 @@ final class GTKMotionTests: XCTestCase {
         }
     }
 
+    /// What a class of the host's style sheet paints on a control's widget - its background, its room, its accent -
+    /// arrives at once: on its way it would write the sheet a rule a frame, and parse it whole each time.
+    func testAControlsBackgroundArrivesAtOnceAddingNoRuleAFrame() throws {
+        try onUIThread {
+            let clock = TestClock()
+            let host = GTKRenderer.bare(clock: clock)
+            var initial = HostPatch(id: .manual("picture"), type: .image)
+            initial.properties[.background] = Color(red: 255, green: 0, blue: 0).propValue
+            host.apply(initial)
+            let rules = GTKStyleSheet.ruleCount
+
+            var changed = HostPatch(id: .manual("picture"), type: .image)
+            changed.properties[.background] = Color(red: 0, green: 0, blue: 255).propValue
+            changed.transitions[.background] = HostTransition(motion: .eased(.milliseconds(200), .linear))
+            host.apply(changed)
+            for now in stride(from: 16.0, through: 240, by: 16) {
+                clock.now = now
+                host.frame()
+            }
+
+            XCTAssertLessThanOrEqual(GTKStyleSheet.ruleCount, rules + 1, "a rule for each colour on its way")
+            XCTAssertFalse(GTKTransitionSurface.presents(.background, on: .image))
+            XCTAssertFalse(GTKTransitionSurface.presents(.tint, on: .checkBox))
+            XCTAssertTrue(GTKTransitionSurface.presents(.background, on: .vStack), "a layout draws its own box")
+        }
+    }
+
     func testLessMotionPutsThePropertyAtItsValueAtOnce() throws {
         try onUIThread {
             let host = GTKRenderer.bare(clock: TestClock(), reducesMotion: true)
