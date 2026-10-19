@@ -92,7 +92,7 @@ extension GTKDriver {
     }
 
     func announced() throws -> [String] {
-        GTKActToolkit.announced
+        GTKActToolkit.announcedForTesting ?? []
     }
 
     /// Whether libadwaita shows the application dark now.

@@ -14,7 +14,7 @@ final class GTKActToolkit: ActToolkit {
     private unowned let renderer: GTKRenderer
 
     init(renderer: GTKRenderer) {
-        Self.announced = []
+        if Self.announcedForTesting != nil { Self.announcedForTesting = [] }
         self.renderer = renderer
     }
 
@@ -54,7 +54,7 @@ final class GTKActToolkit: ActToolkit {
     }
 
     func announce(_ words: String) {
-        Self.announced.append(words)
+        Self.announcedForTesting?.append(words)
         guard let window = renderer.userWindow, Self.reachesAScreenReader(window.widget) else { return }
         gtk_accessible_announce(window.widget.opaque, words, GTK_ACCESSIBLE_ANNOUNCEMENT_PRIORITY_MEDIUM)
     }
@@ -151,8 +151,8 @@ final class GTKActToolkit: ActToolkit {
 }
 
 extension GTKActToolkit {
-    /// What the host asked GTK to announce, in order, since it started.
-    private(set) static var announced: [String] = []
+    /// What the host asked GTK to announce, in order, where a test listens; nil, and nothing kept, where none does.
+    static var announcedForTesting: [String]?
 
     /// Whether what `widget` announces reaches a screen reader: through GTK's AT-SPI context alone. Without the
     /// accessibility bus GTK stands a context of no assistive technology, which GTK 4.14 announces through a call it

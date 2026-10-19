@@ -65,8 +65,8 @@ struct GTKPageChrome {
     var trailing: [[GTKToolbarAction]] = []
     var overflow: [GTKToolbarAction] = []
 
-    /// The menus the page's path declares, which stand in the bar's main menu; nil for none.
-    var mainMenu: GTKMenu?
+    /// The menus the page's path declares, which stand in the bar's main menu; none for no main menu.
+    var mainMenu: [MenuEntry] = []
     var showsBar = true
     var offersBack = true
 

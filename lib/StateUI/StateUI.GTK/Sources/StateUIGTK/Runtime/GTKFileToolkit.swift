@@ -19,7 +19,8 @@ final class GTKFileToolkit: FileToolkit {
     /// The dialog a test holds, with what hears its answer.
     private(set) var held: (dialog: HostFileDialog, answered: (Result<[ChosenFile], ActFailure>) -> Void)?
 
-    /// What the host handed the desktop to launch, in order: an address as written, a file by its path.
+    /// What the host handed the desktop to launch, in order - an address as written, a file by its path - while a
+    /// test holds the files.
     private(set) var launchedForTesting: [String] = []
 
     init(renderer: GTKRenderer) {
@@ -58,7 +59,7 @@ final class GTKFileToolkit: FileToolkit {
     }
 
     func launch(_ file: ChosenFile, answered: @escaping (Bool) -> Void) {
-        launchedForTesting.append(file.address)
+        if holdsForTesting { launchedForTesting.append(file.address) }
         launch(answered) { parent, done, data in
             let gfile = g_file_new_for_path(file.address)
             let launcher = gtk_file_launcher_new(gfile)
@@ -74,7 +75,7 @@ final class GTKFileToolkit: FileToolkit {
             Task { @MainActor in answered(false) }
             return
         }
-        launchedForTesting.append(address)
+        if holdsForTesting { launchedForTesting.append(address) }
         launch(answered) { parent, done, data in
             gtk_uri_launcher_launch(gtk_uri_launcher_new(address), parent, nil, done, data)
         } finish: { source, result in

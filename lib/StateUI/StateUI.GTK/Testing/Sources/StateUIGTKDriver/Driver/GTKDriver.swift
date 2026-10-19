@@ -135,6 +135,7 @@ final class GTKDriver: HostDriver {
         clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree {
         written.listen()
+        GTKActToolkit.announcedForTesting = []
         let renderer = GTKRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         self.renderer = renderer
         Self.holdFiles(of: renderer)

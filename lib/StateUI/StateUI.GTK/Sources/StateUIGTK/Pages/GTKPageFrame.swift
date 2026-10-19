@@ -235,7 +235,8 @@ final class GTKPageFrame {
 extension GTKPageFrame {
     /// The menus at the bar's very end, as GNOME's applications hold theirs: a main menu holding each as a submenu.
     /// Design: docs/design/platforms/gtk/pages.md#menus
-    private func showMainMenu(_ menu: GTKMenu?) {
+    private func showMainMenu(_ entries: [MenuEntry]) {
+        let menu = entries.isEmpty ? nil : GTKMenu(entries, at: .main)
         if let mainMenu, let menu, menu.stands(like: mainMenu.menu) { return }
         if let mainMenu { gtk_box_remove(endBox.of(GtkBox.self), mainMenu.button) }
         mainMenu = nil

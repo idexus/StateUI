@@ -45,6 +45,12 @@ final class GTKRendererTests: XCTestCase {
             host.runtime.windowStateChanged(try XCTUnwrap(second.element), minimized: true, activated: false)
             host.runtime.settlePhases()
             XCTAssertTrue(host.frameClock.widget == first.window.widget, "the second minimized: the first's")
+
+            let clock = try XCTUnwrap(gtk_widget_get_frame_clock(second.window.widget))
+            GTKWindow.reportLaidOut(clock, window: second.window.number)
+            XCTAssertTrue(GTKWindow.keepsFrame(of: second.window.number))
+            second.window.close()
+            XCTAssertFalse(GTKWindow.keepsFrame(of: second.window.number), "a window gone keeps no frame of its readers")
         }
     }
 
