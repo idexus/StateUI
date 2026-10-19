@@ -138,7 +138,7 @@ extension LayoutEngine.Run {
     /// length a length of the layout's motion.
     func flight(of hand: LayoutItemHand, in room: Rect) -> Point {
         var speed = hand.speed ?? Point(x: 0, y: 0)
-        let length = max(Double(law.resolved(against: .standard).milliseconds), 1) / 1_000
+        let length = max(Double(resolvedLaw.milliseconds), 1) / 1_000
         let across = hand.at.x - hand.from.x, down = hand.at.y - hand.from.y
         if abs(down) >= abs(across) {
             speed.y = down < 0 ? min(speed.y, -room.height / length) : max(speed.y, room.height / length)

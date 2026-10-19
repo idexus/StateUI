@@ -10,7 +10,7 @@ extension LayoutEngine.Run {
     /// and one joining from nothing; a change that changes nothing changes no way.
     /// Design: docs/design/views/layout-engine.md#a-change-at-the-current-phase
     func changed(at now: Double, from: Phase, reducesMotion: Bool) -> LayoutShown<Phase> {
-        let motion = law.resolved(against: .standard)
+        let motion = resolvedLaw
         var memory = states.shown.wrappedValue
         guard memory.description != description || memory.from != from, let last = memory.phase, !reducesMotion,
               !motion.isNothing
@@ -36,7 +36,7 @@ extension LayoutEngine.Run {
         reducesMotion: Bool
     ) -> Bool {
         let identities = slots.map { $0.identity }
-        let motion = law.resolved(against: .standard)
+        let motion = resolvedLaw
         let still = reducesMotion || motion.isNothing
 
         var shown = poses

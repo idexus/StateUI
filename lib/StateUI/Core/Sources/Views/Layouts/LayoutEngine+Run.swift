@@ -73,6 +73,11 @@ extension LayoutEngine {
         var focus: Hand?
         let law: Motion
 
+        /// The law the run moves under: its own, or - `.inherited` - the application's, as a host's channel answers
+        /// it, so a change and a program's write of the phase travel alike.
+        /// Design: docs/design/views/layout-engine.md#a-change-at-the-current-phase
+        var resolvedLaw: Motion { law.resolved(against: StandardEnvironment.application.motion) }
+
         /// The run working on `hand`'s axis.
         func on(_ hand: Hand) -> Run {
             var run = self
@@ -447,7 +452,7 @@ extension LayoutEngine {
         func goOn(_ letting: Letting, to value: Double) {
             let along = toHand(value)
             let left = along - letting.point
-            let motion = law.resolved(against: .standard)
+            let motion = resolvedLaw
             let flight = Self.flight(left, at: letting.speed, by: throwing)
             let onward = stops.isEmpty || !next(from: fromHand(letting.point), to: value)
                 || flight <= abs(left) * Double(motion.milliseconds)

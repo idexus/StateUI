@@ -70,6 +70,22 @@ final class LayoutChangeTests: XCTestCase {
         XCTAssertEqual(after(5, renders, tree)[0].bounds.x, 0, accuracy: 0.001, "where its arithmetic puts it")
     }
 
+    /// A LAYOUT SAYING NO LAW OF ITS OWN TAKES THE APPLICATION'S, as the host's channel does - one answer to
+    /// `.inherited` everywhere: an application that turned motion off sees a change land at once.
+    func testALayoutWithNoLawOfItsOwnTakesTheApplications() {
+        StandardEnvironment.application.motion = .none
+        defer { StandardEnvironment.application.motion = .standard }
+        let items = State(wrappedValue: [0, 1, 2])
+        let renders = Renders()
+        func tree() -> Node { row(items, motion: .inherited) }
+        _ = bench.laid(renders, tree)
+
+        items.wrappedValue = [1, 2]
+        _ = renders.render(tree())
+
+        XCTAssertEqual(after(1, renders, tree)[0].bounds.x, 0, accuracy: 0.001, "no motion: where its arithmetic puts it")
+    }
+
     /// A VIEW JOINING FADES IN where its arithmetic puts it.
     func testAViewJoiningFadesIn() {
         let items = State(wrappedValue: [0, 1])

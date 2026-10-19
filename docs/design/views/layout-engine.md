@@ -86,7 +86,11 @@ state - a view joining or leaving, a new order, a value read in the body - is
 a new description of the layout, and it travels, as does a new place the
 motion sets out from ([where a motion set out](#where-a-motion-set-out)): each
 view goes from where it was shown to where the new arithmetic puts it, under
-the layout's motion, while the phase goes on as it goes. Three layers each own
+the layout's motion, while the phase goes on as it goes. A layout that says no
+motion of its own (`.inherited`) moves under the application's
+(`application.motion`), as a host's channel answers `.inherited`: a change and
+a program's write of the phase travel alike, and an application that turned
+motion off sees a change land at once. Three layers each own
 one thing: the motion times the phase, the arithmetic turns a phase into
 poses, and a shift per identity (`LayoutShift`) turns a pose into what is
 shown.
