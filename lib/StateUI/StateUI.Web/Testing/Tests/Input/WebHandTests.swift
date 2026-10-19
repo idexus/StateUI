@@ -113,23 +113,29 @@ final class WebHandTests: XCTestCase {
                 .contextMenu { MenuItem("Copy") }
                 .id("shape")
         }
-        host.step()
         let shape = try XCTUnwrap((host.runtime.tree.root?.first(id: .manual("shape"))?.native as? WebElement)?.view)
-        let left = try XCTUnwrap(WebBrowser.number("e.getBoundingClientRect().left", on: shape.node))
-        let top = try XCTUnwrap(WebBrowser.number("e.getBoundingClientRect().top", on: shape.node))
+        host.settle { (try? WebBrowser.number("e.getBoundingClientRect().width", on: shape.node)) == 200 }
         let open = "[...document.querySelectorAll('.stateui-menu')].some((m) => m.matches(':popover-open'))"
+        let rang = "window.heldAsLong === true"
 
+        // Read once a timer as long as the hold, set by the same press after the page's own, has rung: the hold has
+        // rung by then, or the drag called it off - however late the page's timers run.
         func asksForTheMenu(steps: Int, of step: Double) throws -> Bool {
+            try WebBrowser.run("""
+                window.heldAsLong = false;
+                e.addEventListener("pointerdown", () => setTimeout(() => { window.heldAsLong = true; }, \(HandReading.hold)),
+                  { once: true })
+                """, on: shape.node)
+            let left = try XCTUnwrap(WebBrowser.number("e.getBoundingClientRect().left", on: shape.node))
+            let top = try XCTUnwrap(WebBrowser.number("e.getBoundingClientRect().top", on: shape.node))
             let pressed = Point(x: left + 40, y: top + 100)
             WebBrowser.ask([("touch", .words("touchStart")), ("points", .points([pressed]))])
             for each in 0..<steps {
                 let at = Point(x: pressed.x + step * Double(each + 1), y: pressed.y)
                 WebBrowser.ask([("touch", .words("touchMove")), ("points", .points([at]))])
             }
-            let began = try XCTUnwrap(WebBrowser.number("performance.now()", on: 0))
-            while try XCTUnwrap(WebBrowser.number("performance.now()", on: 0)) - began < HandReading.hold + 200 {
-                WebBrowser.pause()
-            }
+            host.settle { (try? WebBrowser.truth(rang, on: 0)) == true }
+            XCTAssertTrue(try WebBrowser.truth(rang, on: 0), "the press reached the shape")
             let asked = try WebBrowser.truth(open, on: 0)
             WebBrowser.ask([("touch", .words("touchEnd")), ("points", .points([]))])
             try WebBrowser.run("document.querySelectorAll('.stateui-menu').forEach((m) => m.hidePopover?.())")
