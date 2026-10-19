@@ -15,6 +15,7 @@ final class AndroidFrameReportTests: XCTestCase {
             ("testAViewSaysNothingBeforeItIsLaidOut", testAViewSaysNothingBeforeItIsLaidOut),
             ("testAViewThatJoinsSaysNothingBeforeItIsLaidOut", testAViewThatJoinsSaysNothingBeforeItIsLaidOut),
             ("testAViewInAListSaysWhereItStandsOnceTheListMoved", testAViewInAListSaysWhereItStandsOnceTheListMoved),
+            ("testARoomAndroidNarrowedPlacesItsLayoutBeforeItIsDrawn", testARoomAndroidNarrowedPlacesItsLayoutBeforeItIsDrawn),
         ]
     }
 
@@ -103,6 +104,33 @@ final class AndroidFrameReportTests: XCTestCase {
             let after = try XCTUnwrap(heard.values.last)
             XCTAssertEqual(after[5], before[5] - 30, "30 higher in its window")
             XCTAssertEqual(Array(after.prefix(4)), Array(before.prefix(4)), "where it was in its cell")
+        }
+    }
+
+    /// A room Android alone narrowed places its layout in the frame that measured it: what reads a frame says where
+    /// it stands before that frame is drawn, and what that moves is laid out again - not a display frame later.
+    func testARoomAndroidNarrowedPlacesItsLayoutBeforeItIsDrawn() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                LayoutEngine([0]) { _ in Rectangle(.red) } placements: { room, _ in
+                    [Placement(Rect(room.width / 2 - 10, 0, 20, 20))]
+                }
+            }
+            host.followDrawing()
+            let middle = { (host.views(AndroidGridView.self).first?.frame).map { $0.x + $0.width / 2 } }
+            host.layOut(width: 1080, height: 1920)
+            host.settle {
+                host.runtime.frames.laidOut()
+                host.frame()
+                host.layOut(width: 1080, height: 1920)
+                return middle() == 540
+            }
+
+            host.layOut(width: 880, height: 1920)
+            host.runtime.frames.laidOut()
+            host.drawn()
+
+            XCTAssertEqual(middle(), 440, "in the middle of the new width")
         }
     }
 

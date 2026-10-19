@@ -405,6 +405,10 @@ typedef struct {
     /// The window `window` names closed - the user's click, or the program's.
     void (*windowClosed)(int64_t window);
 
+    /// The window numbered `window` was laid out, before it is drawn: whether what reads a frame said where it stands,
+    /// which the window then lays out again.
+    bool (*windowLaidOut)(int64_t window);
+
     /// An ItemsView needs a cell of `kind`: the host answers the panel that holds an entry, and its number in `cell`;
     /// the relay stands it in an ItemContainer kept for the list's life.
     StateUIObjectRef (*itemCell)(int64_t view, StateUIItemKind kind, int64_t *cell);

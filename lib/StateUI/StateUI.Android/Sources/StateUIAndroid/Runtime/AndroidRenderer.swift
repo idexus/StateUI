@@ -114,6 +114,14 @@ final class AndroidRenderer {
             Java.call(observer, JavaAPI.addOnScrollChangedListener, .object(listener.reference))
         }
         Java.release(local: observer)
+        followDrawing()
+    }
+
+    /// Follows the drawing of the root's window: before each frame is drawn, what reads a frame says where it stands,
+    /// and what that changes is laid out again in the same pass (`StateUIDrawing`).
+    /// Design: docs/design/host/runtime.md#where-a-view-stands
+    func followDrawing() {
+        Java.callStatic(JavaAPI.drawing, JavaAPI.followDrawing, .object(root.reference))
     }
 
     /// The pages the window presents over its page.

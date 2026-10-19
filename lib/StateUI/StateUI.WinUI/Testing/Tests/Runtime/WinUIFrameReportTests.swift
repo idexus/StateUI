@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import CStateUIWinUI
 @_spi(Host) import StateUI
 @testable import StateUIWinUI
 @testable import StateUIWinUIDriver
@@ -49,6 +50,36 @@ final class WinUIFrameReportTests: XCTestCase {
             host.settle { heard.values.count >= 2 || heard.values.first?[2] == 120 }
 
             XCTAssertEqual(heard.values.first.map { Array($0.prefix(4)) }, [0, 20, 120, 60])
+        }
+    }
+
+    /// A room WinUI alone narrowed - a split view's pane widened, as its slide widens it - places its layout in the
+    /// pass that measured it: what reads a frame says where it stands as the layout ends, and what that moves is laid
+    /// out again before it is drawn.
+    func testARoomWinUINarrowedPlacesItsLayoutBeforeItIsDrawn() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
+                SplitView(State(wrappedValue: true).projectedValue) {
+                    Text("Menu").title("Menu")
+                } detail: {
+                    LayoutEngine([0]) { _ in Rectangle(.red) } placements: { room, _ in
+                        [Placement(Rect(room.width / 2 - 10, 0, 20, 20))]
+                    }
+                }
+            }
+            let window = try XCTUnwrap(host.window)
+            let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
+            let width = { host.views(WinUIZStackView.self).first?.frame.2 ?? 0 }
+            let middle = { host.views(WinUIGridView.self).first.map { $0.frame.0 + $0.frame.2 / 2 } ?? 0 }
+            for _ in 0..<60 { host.step() }
+            host.settle { width() > 0 && abs(middle() - width() / 2) < 0.5 }
+            let wide = width()
+
+            stateui_winui_split_slide(split.sidebar.handle, 420, 420)
+            stateui_winui_update_layout(try XCTUnwrap(window.content).handle)
+
+            XCTAssertLessThan(width(), wide, "narrowed")
+            XCTAssertEqual(middle(), width() / 2, accuracy: 0.5, "in the middle of the new width")
         }
     }
 

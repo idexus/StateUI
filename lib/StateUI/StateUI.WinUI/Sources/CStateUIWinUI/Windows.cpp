@@ -170,6 +170,14 @@ extern "C" StateUIObjectRef stateui_winui_window_make(int64_t number) {
         xaml::Window window;
         window.SystemBackdrop(xaml::Media::MicaBackdrop());
         window.Content(rows({true, true, true, false}));
+        // After each layout pass, before the frame is drawn, what reads a frame says where it stands, and what that
+        // moves is laid out again: a room WinUI alone narrowed places its layout in the frame that measured it.
+        auto content = window.Content().as<xaml::FrameworkElement>();
+        content.LayoutUpdated(guarded("handling LayoutUpdated",
+            [number, laidOut = winrt::make_weak(content)](IInspectable const &, IInspectable const &) {
+            if (!callbacks.windowLaidOut(number)) return;
+            if (auto root = laidOut.get()) root.UpdateLayout();
+        }));
         // The window's state is read at each of them: a minimized window is also told it lost its activation, and
         // one hidden - with the window it belongs to, or by its scene - stands off the screen as a minimized one.
         window.Activated(guarded("handling Activated",

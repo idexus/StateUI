@@ -190,6 +190,12 @@ final class StateUIHost {
     /** The window's views were laid out or scrolled: what stands where may have moved. */
     static native void laidOut();
 
+    /**
+     * The window is about to be drawn: what reads a frame says where it stands, by the host layer; whether anything
+     * was laid out to say.
+     */
+    static native boolean reportLaidOut();
+
     /** A layout is measured; its width in the high half, its height in the low one. */
     static native long measure(long view, int widthSpec, int heightSpec);
 

@@ -349,6 +349,9 @@ enum JavaNatives {
                 AndroidRenderer.shared?.runtime.frames.laidOut()
             }
         }
+        let reportLaidOut: @convention(c) (Environment, jclass?) -> jboolean = { _, _ in
+            MainActor.assumeIsolated { AndroidRenderer.shared?.runtime.frames.reportLaidOut() == true ? 1 : 0 }
+        }
         let measure: @convention(c) (Environment, jclass?, jlong, jint, jint) -> jlong = {
             _, _, number, widthSpec, heightSpec in
             MainActor.assumeIsolated {
@@ -419,6 +422,7 @@ enum JavaNatives {
             ("itemsShowing", "(J[Ljava/lang/String;)V", unsafeBitCast(itemsShowing, to: UnsafeMutableRawPointer.self)),
             ("itemsDistance", "(JIIIII)I", unsafeBitCast(itemsDistance, to: UnsafeMutableRawPointer.self)),
             ("laidOut", "()V", unsafeBitCast(laidOut, to: UnsafeMutableRawPointer.self)),
+            ("reportLaidOut", "()Z", unsafeBitCast(reportLaidOut, to: UnsafeMutableRawPointer.self)),
             ("measure", "(JII)J", unsafeBitCast(measure, to: UnsafeMutableRawPointer.self)),
             ("arrange", "(JII)V", unsafeBitCast(arrange, to: UnsafeMutableRawPointer.self)),
         ]

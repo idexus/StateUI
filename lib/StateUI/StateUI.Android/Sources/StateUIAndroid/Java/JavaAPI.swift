@@ -430,6 +430,9 @@ enum JavaAPI {
     static let frameCallback = Java.findClass("stateui/android/StateUIFrameCallback")
     static let newFrameCallback = Java.method(frameCallback, "<init>", "()V")
 
+    static let drawing = Java.findClass("stateui/android/StateUIDrawing")
+    static let followDrawing = Java.staticMethod(drawing, "follow", "(Landroid/view/View;)V")
+
     static let listener = Java.findClass("stateui/android/StateUIListener")
     static let newListener = Java.method(listener, "<init>", "(J)V")
     static let takeDownX = Java.method(listener, "takeDownX", "()F")

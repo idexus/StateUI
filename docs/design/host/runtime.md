@@ -343,7 +343,13 @@ a page UIKit alone narrows - an iPad's sidebar sliding beside it, its inset
 set each frame - would otherwise place a layout's views for the last frame's
 room, a frame behind its width. GTK lets it say in its frame clock's layout
 phase, after the window's own layout, and the clock lays out again what that
-changed before it paints.
+changed before it paints. Android lets it say as the root's window is about
+to be drawn (`StateUIDrawing`, a pre-draw listener) and measures and lays the
+root out again where that asked for it, before the frame is drawn - the
+display's frame runs before a traversal's layout, so its report alone would
+draw a narrowed room's layout a frame late; WinUI as each layout pass of a
+window's content ends (`LayoutUpdated`), laying it out again
+(`UpdateLayout`) before it is drawn.
 
 A layout pass lays out the frame the cycle last ran at, and what it says runs
 at that frame's time (`DisplayCycle.inLayoutPass`), though the runtime's

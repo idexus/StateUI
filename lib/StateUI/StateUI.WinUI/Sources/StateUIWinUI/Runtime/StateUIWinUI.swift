@@ -160,6 +160,9 @@ enum WinUICallbacks {
             windowClosed: { window in
                 MainActor.assumeIsolated { WinUIRenderer.shared?.windowClosed(number: window) }
             },
+            windowLaidOut: { _ in
+                MainActor.assumeIsolated { WinUIRenderer.shared?.runtime.frames.reportLaidOut() == true }
+            },
             itemCell: { view, kind, cell in
                 // The relay's own out-parameter, and the panel it takes a reference of.
                 nonisolated(unsafe) let cell = cell

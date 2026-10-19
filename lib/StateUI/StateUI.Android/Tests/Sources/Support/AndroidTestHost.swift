@@ -266,6 +266,17 @@ extension AndroidRenderer {
         Java.call(root.reference, JavaAPI.layout, .int(0), .int(0), .int(width), .int(height))
     }
 
+    /// Android is about to draw the root's window, as its traversal tells before each frame drawn.
+    func drawn() {
+        Java.frame {
+            let observer = Java.callObject(root.reference, JavaAPI.getViewTreeObserver)
+            _ = observer.map { Java.callBool($0, Self.dispatchOnPreDraw) }
+        }
+    }
+
+    @MainActor private static let dispatchOnPreDraw = Java.method(
+        Java.findClass("android/view/ViewTreeObserver"), "dispatchOnPreDraw", "()Z")
+
     /// Every view of `type` in the mounted tree, depth first.
     func views<Native: AndroidView>(_ type: Native.Type) -> [Native] {
         guard let root = runtime.tree.root else { return [] }
