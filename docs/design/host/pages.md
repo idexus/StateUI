@@ -124,7 +124,9 @@ back to the page on top of those that stay, however many go; anything else -
 a page under the top replaced, a stack's first pages, a stack emptied - is a
 replacement, which does not move. No change moves for a user who asked for
 less motion. A host moves its toolkit's way: UIKit's navigation controller,
-libadwaita's navigation view, the browser's animations on the page.
+libadwaita's navigation view, WinUI's entrance of a panel's children,
+Android's transitions, the browser's animations on the page. AppKit changes
+the page without motion, as the Mac's own applications do in a window.
 
 ## Sheets
 

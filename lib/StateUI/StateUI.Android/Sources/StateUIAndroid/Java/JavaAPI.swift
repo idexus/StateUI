@@ -75,6 +75,18 @@ enum JavaAPI {
     static let setScrollbarFadingEnabled = Java.method(view, "setScrollbarFadingEnabled", "(Z)V")
     static let getViewTreeObserver = Java.method(view, "getViewTreeObserver", "()Landroid/view/ViewTreeObserver;")
     static let viewTreeObserver = Java.findClass("android/view/ViewTreeObserver")
+
+    // A transition over a change the next frame lays out: pages sliding as a stack's path changes.
+    static let transitionManager = Java.findClass("android/transition/TransitionManager")
+    static let beginDelayedTransition = Java.staticMethod(
+        transitionManager, "beginDelayedTransition", "(Landroid/view/ViewGroup;Landroid/transition/Transition;)V")
+    static let transitionSet = Java.findClass("android/transition/TransitionSet")
+    static let newTransitionSet = Java.method(transitionSet, "<init>", "()V")
+    static let addTransition = Java.method(
+        transitionSet, "addTransition", "(Landroid/transition/Transition;)Landroid/transition/TransitionSet;")
+    static let slide = Java.findClass("android/transition/Slide")
+    static let newSlide = Java.method(slide, "<init>", "(I)V")
+    static let setVisibilityMode = Java.method(slide, "setMode", "(I)V")
     static let addOnGlobalLayoutListener = Java.method(
         viewTreeObserver, "addOnGlobalLayoutListener", "(Landroid/view/ViewTreeObserver$OnGlobalLayoutListener;)V")
     static let addOnScrollChangedListener = Java.method(

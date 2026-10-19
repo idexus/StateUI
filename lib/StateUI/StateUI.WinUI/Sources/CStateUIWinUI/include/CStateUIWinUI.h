@@ -621,6 +621,8 @@ int32_t stateui_winui_tooltip(StateUIObjectRef element, char *utf8, int32_t capa
 
 StateUIObjectRef stateui_winui_panel_make(int64_t view);
 void stateui_winui_panel_set_children(StateUIObjectRef panel, StateUIObjectRef const *children, int32_t count);
+/// How a child the panel is given enters: WinUI's entrance from `offset` DIPs across, toward its place; 0 for none.
+void stateui_winui_panel_set_entrance(StateUIObjectRef panel, double offset);
 
 /// What stands in a stack beside its controls: a spacer, an empty panel asking for no room, and a divider, a panel
 /// holding a line in the theme's divider stroke, one pixel thick both ways.

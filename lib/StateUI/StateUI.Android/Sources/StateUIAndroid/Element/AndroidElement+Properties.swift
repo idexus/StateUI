@@ -28,7 +28,7 @@ extension AndroidElement {
             return AndroidSingleChildView()
 
         case .navigationStack:
-            return AndroidNavigationView()
+            return AndroidNavigationView(reducesMotion: { [weak host] in host?.runtime.reducesMotion() ?? false })
 
         case .splitView:
             return AndroidSplitView()

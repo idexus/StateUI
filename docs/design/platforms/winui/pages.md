@@ -80,7 +80,11 @@ buttons and what the place holds, and never lands where nothing shows.
 
 A navigation stack shows its top page across its whole frame; the pages below
 are kept by their elements and held by no view, so each keeps what it showed
-for when the user comes back to it. Its bar is the window's chrome.
+for when the user comes back to it. Its bar is the window's chrome. A page
+pushed enters from the end and one popped back to from the start, by WinUI's
+own entrance (`EntranceThemeTransition` on the panel's children), as the host
+layer says the path changed
+([a path that changes](../../host/pages.md#a-path-that-changes)).
 
 ## A page's heading
 
