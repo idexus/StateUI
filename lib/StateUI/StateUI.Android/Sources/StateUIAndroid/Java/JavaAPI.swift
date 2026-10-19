@@ -413,7 +413,7 @@ enum JavaAPI {
     static let watchLayout = Java.method(viewGroupHost, "watch", "(Lstateui/android/StateUIListener;Z)V")
 
     static let itemCell = Java.findClass("stateui/android/StateUIItemCell")
-    static let newItemCell = Java.method(itemCell, "<init>", "(Landroid/content/Context;JZ)V")
+    static let newItemCell = Java.method(itemCell, "<init>", "(Landroid/content/Context;JZI)V")
 
     static let itemsView = Java.findClass("stateui/android/StateUIItemsView")
     static let newItemsView = Java.method(itemsView, "<init>", "(Landroid/content/Context;J)V")

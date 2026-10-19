@@ -416,7 +416,7 @@ body {
 .stateui-item:empty { min-height: var(--stateui-item-down); }
 .stateui-items[data-layout="row"] .stateui-item:empty { min-height: 0; min-width: var(--stateui-item-across); }
 .stateui-item[aria-selected] { cursor: pointer; border-radius: 8px; }
-.stateui-item[aria-selected="true"] { background: color-mix(in srgb, var(--stateui-accent) 16%, transparent); }
+.stateui-item[aria-selected="true"] { background: color-mix(in srgb, var(--stateui-accent) var(--stateui-chosen-band), transparent); }
 
 /* A web view: the browser's own frame over the room its layout gives it, the box taking no room of its own. */
 .stateui-frame { position: relative; min-width: 0; min-height: 0; background: white; }

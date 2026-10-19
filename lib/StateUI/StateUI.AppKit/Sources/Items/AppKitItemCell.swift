@@ -80,10 +80,10 @@ final class AppKitItemCellView: NSView {
         didSet { if chosen != oldValue { needsDisplay = true } }
     }
 
-    /// What the cell lays over the page: the platform's accent at a fifth of its strength where its item is chosen;
-    /// nothing at rest.
+    /// What the cell lays over the page: the platform's accent as the band of a chosen item (`ChosenBand`) where its
+    /// item is chosen; nothing at rest.
     var fill: NSColor? {
-        chosen ? NSColor.controlAccentColor.withAlphaComponent(0.2) : nil
+        chosen ? NSColor.controlAccentColor.withAlphaComponent(ChosenBand.opacity) : nil
     }
 
     override var isFlipped: Bool { true }

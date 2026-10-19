@@ -86,7 +86,7 @@ final class UIKitItemCell: UICollectionViewCell {
     override func updateConfiguration(using state: UICellConfigurationState) {
         var background = UIBackgroundConfiguration.listCell().updated(for: state)
         if state.isSelected || state.isHighlighted {
-            background.backgroundColor = tintColor.withAlphaComponent(0.2)
+            background.backgroundColor = tintColor.withAlphaComponent(ChosenBand.opacity)
         } else if !state.isFocused {
             background.backgroundColor = .clear
         }

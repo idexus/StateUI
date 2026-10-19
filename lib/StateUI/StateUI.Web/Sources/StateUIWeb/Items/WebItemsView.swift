@@ -28,6 +28,7 @@ final class WebItemsView: WebDOMView {
         // The room an empty cell keeps, down and across, as every host's does (`ItemsCells.estimatedExtent`).
         style("--stateui-item-down", WebCSS.pixels(ItemsCells.estimatedExtent(across: false)))
         style("--stateui-item-across", WebCSS.pixels(ItemsCells.estimatedExtent(across: true)))
+        style("--stateui-chosen-band", WebCSS.number(ChosenBand.opacity * 100) + "%")
         content.attribute("class", "stateui-items-content")
         WebRelay.insert(content.node, into: node, at: 0)
         lay(.list())

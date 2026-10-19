@@ -352,6 +352,13 @@ final class ItemsCellsTests: XCTestCase {
 
         XCTAssertEqual(reader.said, 1)
     }
+
+    /// The band behind a chosen item is the accent's hue at a fifth of its strength, packed as a toolkit takes it.
+    func testAChosenItemsBandIsTheAccentAtAFifth() {
+        XCTAssertEqual(ChosenBand.opacity, 0.2)
+        XCTAssertEqual(ChosenBand.argb(over: 0xFF0A_84FF), 0x330A_84FF)
+        XCTAssertEqual(ChosenBand.argb(over: 0x8012_3456), 0x3312_3456, "the accent's own alpha gives way")
+    }
 }
 
 private struct PlainListApplication: Application {

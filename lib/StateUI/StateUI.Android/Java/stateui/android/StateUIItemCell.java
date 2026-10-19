@@ -19,19 +19,18 @@ final class StateUIItemCell extends StateUIViewGroup {
     /** Whether many items may be chosen: a chosen item is then checked rather than selected. */
     private boolean many;
 
-    StateUIItemCell(Context context, long view, boolean item) {
+    /** A cell of an item - `band` the colour it shows chosen in, as ARGB - or of a header or a footer. */
+    StateUIItemCell(Context context, long view, boolean item, int band) {
         super(context, view);
         if (!item) return;
 
-        TypedArray theme = context.obtainStyledAttributes(
-                new int[] {android.R.attr.selectableItemBackground, android.R.attr.colorAccent});
+        TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.selectableItemBackground});
         setForeground(theme.getDrawable(0));
-        int accent = theme.getColor(1, 0xFF6200EE);
         theme.recycle();
 
-        StateListDrawable band = new StateListDrawable();
-        band.addState(new int[] {android.R.attr.state_activated}, new ColorDrawable(accent & 0x00FFFFFF | 0x33000000));
-        setBackground(band);
+        StateListDrawable chosen = new StateListDrawable();
+        chosen.addState(new int[] {android.R.attr.state_activated}, new ColorDrawable(band));
+        setBackground(chosen);
     }
 
     /** Shows the item chosen or not, `many` saying whether many may be. */

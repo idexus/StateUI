@@ -18,7 +18,8 @@ call.
 The recycler holds no choice of its own and hears a tap and nothing more,
 so a tap on an item's cell goes to the host layer's rule
 ([a tap](../../host/items.md#a-tap)). A chosen item is drawn on a band of
-the theme's accent, the cell activated; TalkBack hears it selected, or
+the theme's accent ([the chosen band](../../host/items.md#the-chosen-band)),
+the cell activated; TalkBack hears it selected, or
 checked where many may be chosen. An item takes a touch - the theme's
 ripple - only where a tap does something: where items may be chosen, or
 something hears one opened.

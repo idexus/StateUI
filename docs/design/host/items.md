@@ -123,6 +123,14 @@ item to the choice or takes it away, and opens nothing. A collection that
 holds its choice itself tells what it holds (`userChose`) and what it opens
 (`userActivated`).
 
+## The chosen band
+
+Where a host draws the band behind an item the user chose from the accent, it
+draws the accent's hue at a fifth of its strength (`ChosenBand`): AppKit over
+the platform's accent, UIKit over the cell's tint, Android over the theme's
+accent, the Web over its own. GTK shades a chosen row in the colour of its
+words, as GNOME's sidebars do, and WinUI's item container draws its own.
+
 ## Scrolling to an item
 
 `ScrollAnchor.place` says where the scroller stands for the item to stand at

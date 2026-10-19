@@ -180,6 +180,8 @@ enum TestJava {
     static let getBackground = Java.method(JavaAPI.view, "getBackground", "()Landroid/graphics/drawable/Drawable;")
     static let getColor = Java.method(Java.findClass("android/graphics/drawable/ColorDrawable"), "getColor", "()I")
     static let drawable = Java.findClass("android/graphics/drawable/Drawable")
+    static let getCurrent = Java.method(drawable, "getCurrent", "()Landroid/graphics/drawable/Drawable;")
+    static let setActivated = Java.method(JavaAPI.view, "setActivated", "(Z)V")
     static let getOutline = Java.method(drawable, "getOutline", "(Landroid/graphics/Outline;)V")
     static let outline = Java.findClass("android/graphics/Outline")
     static let newOutline = Java.method(outline, "<init>", "()V")

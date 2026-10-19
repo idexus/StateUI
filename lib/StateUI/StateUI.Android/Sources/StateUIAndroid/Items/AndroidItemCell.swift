@@ -21,11 +21,15 @@ final class AndroidItemCell: AndroidSingleChildView, ItemsHolding {
     /// Whether the cell is as tall as the list, and asks for its width - in a row.
     var across = false
 
-    /// A cell of an item, or of a header or a footer.
+    /// A cell of an item, shown chosen on the theme's accent as the band of a chosen item (`ChosenBand`), or of a
+    /// header or a footer.
     init(item: Bool) {
         super.init(making: { number in
-            Java.new(
-                JavaAPI.itemCell, JavaAPI.newItemCell, .object(AndroidRenderer.context), .long(number), .bool(item))
+            let context = AndroidRenderer.context
+            let accent = UInt32(bitPattern: Java.callStaticInt(JavaAPI.environment, JavaAPI.accent, .object(context)))
+            return Java.new(
+                JavaAPI.itemCell, JavaAPI.newItemCell, .object(context), .long(number), .bool(item),
+                .int(Int32(bitPattern: ChosenBand.argb(over: accent))))
         })
         if item { listen(JavaAPI.setOnClickListener) }
     }
