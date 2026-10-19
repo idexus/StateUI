@@ -30,6 +30,7 @@
                 try s.settle { try s.held(SwitchContract.isOn, on: toggle) == true }
 
                 s.expect(try s.held(SwitchContract.isOn, on: toggle), true, "the state the button wrote reached the switch")
+                s.turn()
                 s.expect(heard.values, [], "and nobody heard it as the user's")
             },
             ConformanceCase("aUsersTurnReachesTheStateAndTheHandlerOnce", proves: [

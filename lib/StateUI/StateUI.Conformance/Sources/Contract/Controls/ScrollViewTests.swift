@@ -78,6 +78,7 @@
                 try s.perform(.activate, on: s.element("past"))
                 try s.settle { try s.held(ScrollViewContract.scrollOffset, on: scroller) == Point(0, 1500) }
                 s.expect(try s.held(ScrollViewContract.scrollOffset, on: scroller), Point(0, 1500), "no further than its end")
+                s.turn()
                 s.expect(heard.values, [], "the program's move heard by nobody")
             },
             ConformanceCase("theUsersScrollLandsOnTheFrameAndRestsOnce", proves: [

@@ -136,6 +136,7 @@
             try s.settle { try s.held(TextualElementContract.text, on: view) == "Ada" }
 
             s.expect(try s.held(TextualElementContract.text, on: view), "Ada")
+            s.turn()
             s.expect(heard.values, [])
         }
     }

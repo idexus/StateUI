@@ -97,6 +97,7 @@
                 try s.settle { try s.held(SliderContract.value, on: slider) == -25 }
                 s.expect(try s.held(SliderContract.value, on: slider), -25, within: 1e-9, "wholly below the value")
                 s.expect(level.wrappedValue, -25)
+                s.turn()
                 s.expect(heard.values, [], "the program's writes are heard by nobody")
             },
             ConformanceCase("aStateWriteTravelsToTheThumbUnheard", proves: [
@@ -120,6 +121,7 @@
                 }
 
                 s.expect(try s.held(SliderContract.value, on: slider), 1, within: 1e-9, "the thumb travelled to it")
+                s.turn()
                 s.expect(heard.values, [], "and no frame of its journey was heard as the user's")
             },
             ConformanceCase("aUsersMoveTakesTheJourneyAndIsHeard", proves: [

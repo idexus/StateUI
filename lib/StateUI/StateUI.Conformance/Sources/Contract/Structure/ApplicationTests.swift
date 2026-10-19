@@ -39,6 +39,7 @@
                 try s.perform(.activate, on: s.element("ask"))
                 try s.settle { try s.question() != nil }
                 s.expect(try s.question(), Question(title: "Saved", message: "The draft is kept", buttons: ["Fine"]))
+                s.turn()
                 s.expect(said.values, [], "the handler waits for the answer")
 
                 try s.perform(.answer("Fine"), on: s.element(ofType: WindowContract.nodeType))

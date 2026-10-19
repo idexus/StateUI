@@ -113,6 +113,7 @@
                 try s.perform(.focus, on: field)
                 try s.settle { try s.focused(field) }
                 try s.perform(.pressKeys(KeyboardShortcut("1", modifiers: [])), on: s.element("one"))
+                s.turn()
                 s.expect(heard.values, [], "the key is the field's, the button stays as it was")
             },
             ConformanceCase("aHeldButtonsClickIsItsOwnItsMenuApart", proves: [

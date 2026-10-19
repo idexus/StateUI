@@ -41,6 +41,7 @@
             s.expect(took.values.count, 1, "the focus act answered")
             guard took.values == [true] else {
                 guard took.values == [false] else { return }
+                s.turn()
                 s.expect(heard.values, [], "a view that refused the keyboard hears nothing")
                 s.expect(try s.focused(view), false)
                 throw s.absent("\(element) takes no keyboard focus here: it refuses it, and nothing is heard")
