@@ -70,6 +70,9 @@ enum WinUIWebViewRelay {
                     guard ran else { return answer.resume(throwing: ScriptDidNotRun()) }
                     answer.resume(returning: ScriptAnswer.text(json: words))
                 }
+            },
+            unstarted: { view in
+                MainActor.assumeIsolated { WinUIWebViewRelay.view(view)?.unstarted() }
             })
         stateui_webview_winui_set_callbacks(&callbacks)
     }

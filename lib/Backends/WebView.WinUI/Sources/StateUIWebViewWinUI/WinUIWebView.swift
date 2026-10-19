@@ -168,4 +168,10 @@ final class WinUIWebView: WinUIControl {
     func ended() {
         onProcessGone?()
     }
+
+    /// WebView2 did not start: the page asked for failed, and no other comes.
+    func unstarted() {
+        loading = false
+        onNavigated?(.failure, cause.begin(told: .newPage), asked?.address ?? "")
+    }
 }

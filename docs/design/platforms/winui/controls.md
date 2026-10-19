@@ -447,7 +447,10 @@ ahead as it changes ([a web view](../../host/web.md)). A page the program
 loads again while it is still coming, which WebView2 leaves as it is, is
 asked for again instead. A script's answer is the JSON WebView2 writes its
 value in, read by the host layer's rule, and the end of the page's web
-process is heard as WebView2 tells it. The agent it names itself by is the
+process is heard as WebView2 tells it. A WebView2 that does not start - no
+runtime where its loader looks, as on a Windows 10 without the Evergreen
+runtime - tells the page asked for failed, and says why on standard error,
+never a blank view and nothing. The agent it names itself by is the
 tree's, and the runtime's own where the tree gives none, taken back from
 when its `CoreWebView2` stood; an agent the tree gives while the
 `CoreWebView2` still comes is the one its first page asks as - the relay

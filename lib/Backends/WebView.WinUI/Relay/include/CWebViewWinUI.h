@@ -32,6 +32,10 @@ typedef struct {
 
     /// The script waiting under `ticket` ran, or did not: the JSON its value is written in.
     void (*answered)(int64_t ticket, bool ran, char const *json);
+
+    /// Its WebView2 did not start - no runtime where the loader looks, or one that refused: the page asked for never
+    /// comes. Why is said on standard error.
+    void (*unstarted)(int64_t view);
 } WebViewWinUICallbacks;
 
 /// Hands the relay what it tells; said once, before any web view is made.

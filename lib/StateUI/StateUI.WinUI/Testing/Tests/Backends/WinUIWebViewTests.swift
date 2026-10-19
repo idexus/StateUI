@@ -7,6 +7,7 @@
 @testable import StateUIWinUIDriver
 @testable import StateUIWebViewWinUI
 import StateUIConformance
+import StateUIFoundation
 import XCTest
 
 /// The web view's backend on WinUI, registered as an application registers it: what WebView2 does that no family
@@ -110,6 +111,21 @@ final class WinUIWebViewTests: XCTestCase {
             host.step()
             Self.wait(host) { !arrived.values.isEmpty }
             XCTAssertEqual(web.read("agent"), "Second agent")
+        }
+    }
+
+    /// A web view whose WebView2 cannot start - no runtime where its loader looks - tells its page failed, not a blank
+    /// view and nothing.
+    func testAWebViewWhoseRuntimeCannotStartTellsItsPageFailed() throws {
+        try onUIThread {
+            _ = _putenv("WEBVIEW2_BROWSER_EXECUTABLE_FOLDER=C:\\StateUI\\no-such-runtime")
+            defer { _ = _putenv("WEBVIEW2_BROWSER_EXECUTABLE_FOLDER=") }
+            let arrived = Received<WebNavigationResult>()
+            let host = WinUIRenderer.running {
+                WebView().source(html: "<p>First</p>").onNavigated { arrived.values.append($0.result) }.height(200)
+            }
+            Self.wait(host) { !arrived.values.isEmpty }
+            XCTAssertEqual(arrived.values, [.failure])
         }
     }
 

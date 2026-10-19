@@ -113,6 +113,14 @@ namespace {
         }));
     }
 
+    /// The view's CoreWebView2 did not stand: why, said on standard error, and the view told.
+    void unstarted(int64_t view, winrt::hresult const &why) {
+        std::fprintf(stderr, "StateUI WebView WinUI: WebView2 did not start: %s - Windows 11 carries its runtime; "
+            "elsewhere install the WebView2 Evergreen runtime.\n", winrt::to_string(winrt::hresult_error(why).message()).c_str());
+        std::fflush(stderr);
+        callbacks.unstarted(view);
+    }
+
     /// Goes to `address` asking as `agent`; where `document` is given, it is what the address answers, whenever
     /// the view asks for it again, and nothing is fetched.
     void go(core::CoreWebView2 const &page, int64_t view, winrt::hstring const &address,
@@ -130,8 +138,9 @@ extern "C" WebViewObjectRef stateui_webview_winui_make(int64_t view) {
     try {
         controls::WebView2 web;
         web.CoreWebView2Initialized(guarded("handling CoreWebView2Initialized",
-            [view](controls::WebView2 const &sender, auto const &) {
+            [view](controls::WebView2 const &sender, auto const &args) {
             if (auto page = sender.CoreWebView2()) hear(page, view);
+            else unstarted(view, args.Exception());
         }));
         web.NavigationStarting(guarded("handling NavigationStarting", [view](controls::WebView2 const &,
                                       core::CoreWebView2NavigationStartingEventArgs const &args) {
