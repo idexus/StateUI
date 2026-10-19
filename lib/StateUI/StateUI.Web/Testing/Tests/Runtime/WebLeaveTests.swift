@@ -119,6 +119,33 @@ final class WebLeaveTests: XCTestCase {
         host.leave()
     }
 
+    /// A web view lets go, as it leaves, of the address of every document it was written - each its history could
+    /// lead back to while it stood.
+    func testAWebViewLetsGoOfItsDocumentsAddresses() throws {
+        WebRenderer.shared?.leave()
+        let document = State(wrappedValue: "<p>One</p>")
+        let host = WebRenderer.running { WebView().source(html: document.wrappedValue) }
+        host.step()
+        let frame = try XCTUnwrap(host.views(WebFrameView.self).first?.named.node)
+        let address = { try XCTUnwrap(WebBrowser.evaluate("e.src", on: frame)) }
+        let first = try address()
+        document.wrappedValue = "<p>Two</p>"
+        for _ in 0..<3 { host.step() }
+        let second = try address()
+        XCTAssertNotEqual(first, second)
+        let reads = { (address: String) in
+            try WebBrowser.truth(
+                "(() => { const r = new XMLHttpRequest(); try { r.open('GET', \(WebBrowser.quoted(address)), false); "
+                    + "r.send(); return r.status === 200; } catch { return false; } })()", on: 0)
+        }
+        XCTAssertTrue(try reads(first), "a document its history leads back to")
+
+        host.leave()
+
+        XCTAssertFalse(try reads(first), "a document's address outlived its web view")
+        XCTAssertFalse(try reads(second), "a document's address outlived its web view")
+    }
+
     /// A window closed lets go of every view it made, its bar's with the page's.
     func testAClosedWindowLetsGoOfEveryViewItMade() throws {
         WebRenderer.shared?.leave()

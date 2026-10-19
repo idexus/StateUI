@@ -191,7 +191,9 @@ written in place shown at a `blob:` address of the page's own made for it -
 of the page's own site, a `<base>` in it where the document says where its
 links resolve, placed by Swift right after the doctype (before it, the
 browser would read the document in quirks mode) - and reported by the `data:` address that holds it
-(`WebDocument`). The trap: the browser takes a `srcdoc` written again in place
+(`WebDocument`). The frame holds the address of each document it was
+written while its history may lead back to it, and lets them all go as it
+leaves - an address keeps its document alive while it stands. The trap: the browser takes a `srcdoc` written again in place
 of the one before, so a frame of documents written in place would have no way
 back; a frame's own navigation is a step in its history. The page hears
 the frame's document load, and tells it navigated, for the reason the

@@ -165,6 +165,10 @@ only where its scheme is a page's, mail's, a call's or the relay's own file's
 address, its spaces and controls at the ends and its tabs and line breaks
 anywhere dropped - decided in Swift: a `javascript:` or `data:` address would
 run its script in the application's origin, one with no scheme opens nothing.
+A file downloaded or launched goes to the browser at a `blob:` address of
+the page's own, which keeps the file alive while it stands: the relay holds
+the last one alone - the browser may still be reading it - and lets the one
+before go as it hands over the next.
 On a page a test drives (`stateui.holdsFiles`) the
 relay shows no dialog and opens no window: it holds the dialog for the test
 to answer from its own files, by name, and records what it would open.
