@@ -152,5 +152,7 @@ final class KeyGuardTests: XCTestCase {
         "GTKMenu.swift": toolkit + ": GAction names", "GTKQuestion.swift": toolkit + ": a dialog's responses",
         "WebDOMView.swift": toolkit + ": the DOM's styles and attributes", "WebFrameView.swift": toolkit,
         "WebImageView.swift": toolkit + ": the DOM's attributes",
+        "AppKitWindowToolbar.swift": "the words a back button says, in the language the system speaks",
+        "WebFileToolkit.swift": toolkit + ": the schemes of an address the browser opens",
     ]
 }
