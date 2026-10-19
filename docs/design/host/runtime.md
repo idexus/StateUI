@@ -292,7 +292,8 @@ tablet browser's stack - far less than a desktop's - overflows a WebAssembly
 Gallery before its first frame where one function does all of a level's
 work, in the differ as in the mount; `MountStackTests` holds a level under
 eight kilobytes. A WebAssembly start that fails takes the loading screen away, so
-its reason stands on the page rather than a load with no end.
+its reason stands on the page rather than a load with no end, and ends the
+program with 1, so a test's runner waiting for it hears it failed.
 
 ## After a layout pass
 
