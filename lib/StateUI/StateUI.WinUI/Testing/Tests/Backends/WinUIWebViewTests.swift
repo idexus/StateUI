@@ -28,6 +28,18 @@ final class WinUIWebViewTests: XCTestCase {
         }
     }
 
+    /// A document written in place at an address of no path - no slash after its host - stands there too: WebView2
+    /// asks for the address as it writes it, its path a slash, and the view answers that.
+    func testADocumentAtAnAddressOfNoPathStandsThere() throws {
+        try onUIThread {
+            let (host, said) = try Self.asking(
+                { WebView().source(html: "<p>Based</p>", baseURL: "https://Example.invalid") },
+                "document.body.innerText + ' ' + location.href")
+            XCTAssertEqual(said.values, ["Based https://example.invalid/"])
+            _ = host
+        }
+    }
+
     /// Gone back to, a document written in place with no address of its own arrives again: WebView2 left a
     /// `data:` address it was sent to or taken back to unfinished, and every navigation after it.
     func testADocumentWrittenInPlaceIsGoneBackTo() throws {

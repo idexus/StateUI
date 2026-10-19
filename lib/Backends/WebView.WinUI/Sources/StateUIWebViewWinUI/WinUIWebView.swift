@@ -71,7 +71,7 @@ final class WinUIWebView: WinUIControl {
         loaded = source
         switch source {
         case .url(let address): go((address, nil))
-        case .html(let document, let base?): go((base, document))
+        case .html(let document, let base?): go((Self.asAsked(base), document))
         case .html(let document, nil):
             written += 1
             go((Self.documentAddress(number, written), document))
@@ -85,6 +85,18 @@ final class WinUIWebView: WinUIControl {
         } else {
             stateui_webview_winui_show(element, number, page.address, nil, agent)
         }
+    }
+
+    /// `address` as WebView2 asks for it again - its scheme and host in small letters, its path at least a slash -
+    /// which a document written in place there is served by.
+    /// Design: docs/design/platforms/winui/controls.md#a-web-view
+    static func asAsked(_ address: String) -> String {
+        guard let marker = address.firstRange(of: "://") else { return address }
+        let rest = address[marker.upperBound...]
+        let hostEnd = rest.firstIndex { "/?#".contains($0) } ?? rest.endIndex
+        let path = rest[hostEnd...]
+        return address[..<marker.lowerBound].lowercased() + "://" + rest[..<hostEnd].lowercased()
+            + (path.first == "/" ? "" : "/") + path
     }
 
     /// Where the view `view` shows its `count`th document with no address of its own: a name no network answers.

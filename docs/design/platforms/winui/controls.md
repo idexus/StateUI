@@ -455,7 +455,10 @@ keeps the one asked for last. Its page takes the user's hand: a web view hears n
 of it as a view does - WebView2, listened to by WinUI, ends the process - so
 its taps, pans, swipes, pinch and pointer are none on WinUI.
 
-A document written in place is what its address answers, the view serving
+A document written in place is what its address answers - written as
+WebView2 asks for it again, its scheme and host in small letters and its
+path at least a slash, else the request would not match and go to the
+network - the view serving
 it through `WebResourceRequested` whenever the view asks for it - going back
 to it too - and nothing is fetched: at its own address, which its relative
 links resolve against, else at one the backend gives it, under
