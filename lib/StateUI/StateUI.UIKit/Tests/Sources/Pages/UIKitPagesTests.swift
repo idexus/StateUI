@@ -39,6 +39,39 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(window.windowScene?.title, "ItemsView", "the scene's")
     }
 
+    /// Pages joining on top move in as one push, however many join, and pages taken from the top move back as one
+    /// pop, however many go; a page under the top replaced shows without a move.
+    @MainActor
+    func testSeveralPagesMoveAsOnePushOrOnePop() throws {
+        let path = State(wrappedValue: [Int]())
+        let host = UIKitRenderer.running {
+            NavigationStack(path.projectedValue) {
+                Text("Root")
+            } destination: { level in
+                Text("Level \(level)")
+            }
+        }
+        defer { host.finish() }
+        let stack = try XCTUnwrap(host.runtime.tree.root?.first(type: .navigationStack))
+        let navigation = try XCTUnwrap((stack.native as? UIKitElement)?.controller as? UIKitNavigationController)
+        host.settle { navigation.view.window != nil && navigation.transitionCoordinator == nil }
+
+        path.wrappedValue = [1, 2]
+        host.settle { navigation.viewControllers.count == 3 }
+        XCTAssertNotNil(navigation.transitionCoordinator, "two pages pushed in one move")
+        host.settle { navigation.transitionCoordinator == nil }
+
+        path.wrappedValue = [3, 2]
+        host.settle { navigation.viewControllers.count == 3 && navigation.topViewController != nil }
+        host.runtime.pump.turn()
+        XCTAssertNil(navigation.transitionCoordinator, "a page under the top replaced: no move")
+
+        path.wrappedValue = []
+        host.settle { navigation.viewControllers.count == 1 }
+        XCTAssertNotNil(navigation.transitionCoordinator, "two pages popped in one move back")
+        host.settle { navigation.transitionCoordinator == nil }
+    }
+
     /// The user's way back is not undone by a render while the page goes. The stack is told once the move ends, so a
     /// render meanwhile still describes the page going - and the stack shows it no more.
     @MainActor

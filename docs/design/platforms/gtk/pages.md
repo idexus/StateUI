@@ -66,10 +66,12 @@ a page with no title leaves the window's own.
 ## A navigation stack
 
 A navigation stack is libadwaita's `AdwNavigationView`, each page in a
-navigation page holding its frame. A path one page longer pushes the page, a
-shorter one that keeps the stack's first pages pops to where it now ends, any
-other change replaces the stack - each as the program's move, whose `popped`
-is its echo. The user's back - the back button, the swipe, Alt+Left, the
+navigation page holding its frame. The path changes as the host layer says
+([a path that changes](../../host/pages.md#a-path-that-changes)): pages
+joining on top are pushed - those under the last at once, with libadwaita's
+transitions off, the last arriving - pages taken from the top are popped to
+where the path now ends, and any other change replaces the stack, each as
+the program's move, whose `popped` is its echo. The user's back - the back button, the swipe, Alt+Left, the
 mouse's back button - pops in GTK first, and the stack's `popped` then tells
 the path how many pages remain; a path that does not follow is put back by
 the next render. The host's own way back is

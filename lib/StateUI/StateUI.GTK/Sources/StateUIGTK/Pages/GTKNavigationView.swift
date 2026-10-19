@@ -37,24 +37,34 @@ final class GTKNavigationView: GTKLayoutView {
     /// The frame of every page, bottom first.
     var frames: [GTKPageFrame] { stack.map(\.frame) }
 
-    /// The pages: pushed where one joins the top, popped to where the path shortened, replaced otherwise - each as
-    /// the program's move.
+    /// The pages as the host layer says they change (`PathChange`) - pushed, the last arriving; popped to the
+    /// pages that stay; replaced otherwise - each as the program's move.
+    /// Design: docs/design/host/pages.md#a-path-that-changes
     @discardableResult
     override func setItems(_ items: [GTKLayoutItem]) -> Bool {
         let pages = items.map(\.view)
-        guard pages.count != stack.count || !zip(pages, stack).allSatisfy({ $0 === $1.frame.page }) else { return false }
+        guard let change = PathChange.of(from: stack.map(\.frame.page), to: pages, same: ===) else { return false }
         for page in pages { page.placingLayout = nil }
 
-        let kept = zip(pages, stack).prefix { $0 === $1.frame.page }.count
         ProgramWrite.perform {
-            if kept == stack.count, pages.count == kept + 1 {
-                stack.append(entry(for: pages[kept], at: kept))
-                adw_navigation_view_push(navigation.widget.opaque, stack[kept].page.of(AdwNavigationPage.self))
-            } else if kept == pages.count, kept > 0 {
-                adw_navigation_view_pop_to_page(navigation.widget.opaque, stack[kept - 1].page.of(AdwNavigationPage.self))
-                letGo(stack[kept...].map(\.page))
-                stack.removeLast(stack.count - kept)
-            } else {
+            switch change {
+            case .push:
+                // Pages joining under the last stand at once, the last arrives over them.
+                let top = pages.count - 1
+                adw_navigation_view_set_animate_transitions(navigation.widget.opaque, 0)
+                for index in stack.count..<top {
+                    stack.append(entry(for: pages[index], at: index))
+                    adw_navigation_view_push(navigation.widget.opaque, stack[index].page.of(AdwNavigationPage.self))
+                }
+                adw_navigation_view_set_animate_transitions(navigation.widget.opaque, 1)
+                stack.append(entry(for: pages[top], at: top))
+                adw_navigation_view_push(navigation.widget.opaque, stack[top].page.of(AdwNavigationPage.self))
+            case .pop(let staying):
+                adw_navigation_view_pop_to_page(
+                    navigation.widget.opaque, stack[staying - 1].page.of(AdwNavigationPage.self))
+                letGo(stack[staying...].map(\.page))
+                stack.removeLast(stack.count - staying)
+            case .replace:
                 let previous = stack
                 stack = pages.enumerated().map { index, page in
                     previous.first { $0.frame.page === page } ?? entry(for: page, at: index)

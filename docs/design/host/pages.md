@@ -115,6 +115,17 @@ one page and its top page shows its bar and its way back. Going back tells the
 stack it is one page shorter, or the window's modal stack how many sheets
 remain (`HostRuntime.goBack`).
 
+## A path that changes
+
+A navigation stack's pages change one way on every host (`PathChange`):
+pages joining on top of every page that stays are a push, the last of them
+arriving, however many join; pages taken from the top are a pop, one move
+back to the page on top of those that stay, however many go; anything else -
+a page under the top replaced, a stack's first pages, a stack emptied - is a
+replacement, which does not move. No change moves for a user who asked for
+less motion. A host moves its toolkit's way: UIKit's navigation controller,
+libadwaita's navigation view, the browser's animations on the page.
+
 ## Sheets
 
 A window's sheets follow its modal stack by one rule (`SheetChange`): the

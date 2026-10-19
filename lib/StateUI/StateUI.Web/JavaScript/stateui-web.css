@@ -467,6 +467,7 @@ body {
 /* A covered tab is laid out unseen, so a page sized by its own frame knows it before it shows. */
 .stateui-tab-pages > [data-covered] { visibility: hidden !important; overflow: clip; }
 .stateui-stack > [data-arriving] { animation: stateui-arrive 0.22s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.stateui-stack > [data-returning] { animation: stateui-return 0.22s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
 /* A scroller. */
 .stateui-scroller {
@@ -690,6 +691,7 @@ body {
 @keyframes stateui-fade-in { from { opacity: 0; } }
 @keyframes stateui-turn { to { transform: rotate(1turn); } }
 @keyframes stateui-arrive { from { opacity: 0; transform: translateY(6px); } }
+@keyframes stateui-return { from { opacity: 0; transform: translateY(-6px); } }
 /* What the page tells a screen reader, which nobody sees. */
 .stateui-announcer { position: fixed; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
@@ -699,7 +701,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .stateui-sidebar, .stateui-split, .stateui-bar, .stateui-bar *, .stateui-stack > [data-arriving], .stateui-scrim,
+  .stateui-sidebar, .stateui-split, .stateui-bar, .stateui-bar *, .stateui-stack > [data-arriving],
+  .stateui-stack > [data-returning], .stateui-scrim,
   .stateui-loading, .stateui-loading-bar, .stateui-loading-bar::-webkit-progress-value, progress::-webkit-progress-value,
   .stateui-switch::before, .stateui-sheet, .stateui-sheet::backdrop, .stateui-question, .stateui-menu {
     transition: none !important;

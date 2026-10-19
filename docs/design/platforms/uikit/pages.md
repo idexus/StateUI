@@ -76,9 +76,11 @@ change. A blur or glass behind a window shows its colour
 ## A navigation stack
 
 A NavigationStack is UIKit's navigation controller over its pages, the top
-one showing, and the bar hidden where the top page hides it. A page coming or
-going is pushed or popped as UIKit does it, unless the user asked for less
-motion. The user taking pages away - the back button, the edge swipe, the
+one showing, and the bar hidden where the top page hides it. Pages joining on
+top are pushed, the last arriving, and pages taken from the top are popped in
+one move back, as UIKit does it, by the host layer's rule
+([a path that changes](../../host/pages.md#a-path-that-changes)); any other
+change, or one for a user who asked for less motion, shows without a move. The user taking pages away - the back button, the edge swipe, the
 back button's menu - is told to the stack as how many stay, as the index of
 its top; where the application keeps its pages, the stack stays as it is.
 UIKit tells it once the move ends, so a render while the pages go still

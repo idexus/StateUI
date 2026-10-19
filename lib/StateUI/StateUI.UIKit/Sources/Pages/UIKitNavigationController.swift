@@ -30,8 +30,9 @@ final class UIKitNavigationController: UINavigationController, UINavigationContr
         fatalError("UIKitNavigationController is made in code")
     }
 
-    /// Shows `pages`, the last on top: moving there as a push or a pop where one page came or went.
-    func setPages(_ pages: [UIViewController], animated: Bool) {
+    /// Shows `pages`, the last on top: moving there as a push or a pop as the host layer says (`PathChange`).
+    /// Design: docs/design/host/pages.md#a-path-that-changes
+    func setPages(_ pages: [UIViewController], reducingMotion: Bool) {
         defer { showTopsBar() }
         // The user is taking pages away and the tree hears it once the move ends: a render meanwhile still
         // describes them, and showing them again would undo the user's way back.
@@ -42,10 +43,9 @@ final class UIKitNavigationController: UINavigationController, UINavigationContr
         guard !pages.elementsEqual(self.pages, by: ===) || !viewControllers.elementsEqual(pages, by: ===) else {
             return
         }
-        let moved = abs(pages.count - viewControllers.count) == 1
-            && zip(pages, viewControllers).allSatisfy { $0 === $1 }
+        let change = PathChange.of(from: viewControllers, to: pages, same: ===)
         self.pages = pages
-        let moves = animated && moved && view.window != nil
+        let moves = (change?.moves(reducingMotion: reducingMotion) ?? false) && view.window != nil
         setViewControllers(pages, animated: moves)
         // Shown without a move, the page stands laid out at once: a move begun in the same turn - the sidebar's
         // slide - carries it from its place, where laying it out within that move would grow it from nothing.

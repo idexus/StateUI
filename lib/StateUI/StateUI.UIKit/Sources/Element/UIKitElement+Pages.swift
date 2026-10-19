@@ -107,7 +107,7 @@ extension UIKitElement {
             // A page comes in wearing its own bar: UIKit takes the bar's look as the move starts, which a layout in
             // the same turn - a sidebar going - can start before the window's chrome is composed.
             children.forEach { $0.composeChrome() }
-            navigation.setPages(children.compactMap(\.controller), animated: !(host?.reducesMotion() ?? true))
+            navigation.setPages(children.compactMap(\.controller), reducingMotion: host?.reducesMotion() ?? true)
         case .tabView:
             guard let tabs = controller as? UIKitTabBarController else { return }
             tabs.show(
