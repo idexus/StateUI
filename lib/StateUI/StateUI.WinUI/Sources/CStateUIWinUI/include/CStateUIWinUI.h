@@ -246,6 +246,10 @@ typedef enum STATEUI_CLOSED_ENUM {
     StateUIItemsShapeGrid,
 } StateUIItemsShape;
 
+/// A theme an element stands in: the system's, light, dark.
+// Swift: ColorScheme
+typedef enum { StateUIColorSchemeSystem, StateUIColorSchemeLight, StateUIColorSchemeDark } StateUIColorScheme;
+
 /// What a question for the user is.
 typedef enum STATEUI_CLOSED_ENUM {
     StateUIQuestionKindAlert,
@@ -510,10 +514,10 @@ void stateui_winui_window_clear_detail(StateUIObjectRef window, bool clear);
 /// The colour the window shows behind its pages, as ARGB; false where it shows WinUI's own.
 bool stateui_winui_window_background(StateUIObjectRef window, uint32_t *argb);
 
-/// Shows the window in a theme: 1 light, 2 dark, 0 the system's.
+/// Shows the window in a theme, a `StateUIColorScheme`.
 void stateui_winui_window_set_theme(StateUIObjectRef window, int32_t scheme);
 
-/// The theme the window shows in now: 1 light, 2 dark.
+/// The theme the window shows in now, light or dark, a `StateUIColorScheme`.
 int32_t stateui_winui_window_actual_theme(StateUIObjectRef window);
 
 /// What a test reads of a window, into 13 values: x, y, width, height, the four limits in the order they are set,
@@ -779,10 +783,10 @@ void stateui_winui_menu_bar_set(StateUIObjectRef bar, int64_t view, int32_t cons
                                 bool const *destructive, int32_t const *keys, int32_t const *modifiers,
                                 bool const *givesWay, int32_t count);
 
-/// Paints a menu bar as one of the window's bars: its background, its menus' words - `words` 1 light, 2 dark, 0 the
-/// theme's - and the platform's own again where none is given.
+/// Paints a menu bar as one of the window's bars: its background, its menus' words, the theme it stands in - a
+/// `StateUIColorScheme` - and the platform's own again where none is given.
 void stateui_winui_menu_bar_set_colours(StateUIObjectRef bar, bool hasBackground, uint32_t background,
-                                        bool hasForeground, uint32_t foreground, int32_t words);
+                                        bool hasForeground, uint32_t foreground, int32_t theme);
 
 /// A view's context menu, or a bar's menus, as a test reads them: items by caption, "!" before one that cannot be
 /// chosen, "-" a separator, a submenu's entries - and a bar's menu's - in brackets after its caption, ";" between -
@@ -1057,11 +1061,11 @@ int32_t stateui_winui_items_row_name(StateUIObjectRef items, int64_t cell, char 
 /// edges or in its overflow, and the title view in its middle. The way back is chosen as -1, the toggle as -2, an
 /// action by its place.
 StateUIObjectRef stateui_winui_title_bar_make(int64_t view);
-/// `foreground` is the colour of the words on a bar the tree paints, its title's and its actions' alike; `words`
-/// stand light (1) or dark (2) on it, the bar's buttons and commands with them; 0 for the theme's own.
+/// `foreground` is the colour of the words on a bar the tree paints, its title's and its actions' alike; the bar
+/// stands in `theme`, a `StateUIColorScheme` - dark for light words on a dark bar - its buttons and commands with it.
 void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, char const *subtitle, char const *icon,
                                  bool back, bool paneToggle, bool hasBackground, uint32_t background,
-                                 bool hasForeground, uint32_t foreground, int32_t words);
+                                 bool hasForeground, uint32_t foreground, int32_t theme);
 /// The page's actions on a window's chrome, in reading order: each one's words, the identifier automation finds it
 /// by (empty for none), the files its picture may stand in - each ended by a line feed, empty for none - whether its
 /// words stand beside its picture, whether choosing it destroys something, its group's place - the first
@@ -1074,8 +1078,8 @@ void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const
                                          bool const *enabled, int32_t const *keys, int32_t const *modifiers,
                                          bool const *givesWay, int32_t count);
 
-/// What a test reads: whether a title bar's words stand light (1), dark (2), or as the theme has them (0).
-int32_t stateui_winui_title_bar_words(StateUIObjectRef bar);
+/// What a test reads: the theme a title bar stands in, a `StateUIColorScheme`.
+int32_t stateui_winui_title_bar_theme(StateUIObjectRef bar);
 
 /// What a test reads: the room a title bar keeps at its trailing edge, and the room the window's own buttons there
 /// take, both in DIPs - -1 kept where the bar stands in no window - and how many of its two padding columns the

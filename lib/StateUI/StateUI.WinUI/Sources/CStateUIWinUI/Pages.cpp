@@ -183,7 +183,7 @@ extern "C" StateUIObjectRef stateui_winui_title_bar_make(int64_t view) {
 
 extern "C" void stateui_winui_title_bar_set(
     StateUIObjectRef handle, char const *title, char const *subtitle, char const *icon, bool back, bool paneToggle,
-    bool hasBackground, uint32_t background, bool hasForeground, uint32_t foreground, int32_t words
+    bool hasBackground, uint32_t background, bool hasForeground, uint32_t foreground, int32_t theme
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
@@ -196,9 +196,7 @@ extern "C" void stateui_winui_title_bar_set(
         else bar.ClearValue(controls::Control::BackgroundProperty());
         if (hasForeground) bar.Foreground(media::SolidColorBrush(color(foreground)));
         else bar.ClearValue(controls::Control::ForegroundProperty());
-        auto theme = words == 1 ? xaml::ElementTheme::Dark
-            : words == 2 ? xaml::ElementTheme::Light : xaml::ElementTheme::Default;
-        if (bar.RequestedTheme() != theme) bar.RequestedTheme(theme);
+        if (bar.RequestedTheme() != elementTheme(theme)) bar.RequestedTheme(elementTheme(theme));
         paintActions(bar);
     } catch (...) {
         report("setting a title bar");
@@ -217,16 +215,12 @@ extern "C" void stateui_winui_title_bar_caption_room(
     }
 }
 
-extern "C" int32_t stateui_winui_title_bar_words(StateUIObjectRef handle) {
+extern "C" int32_t stateui_winui_title_bar_theme(StateUIObjectRef handle) {
     try {
-        switch (borrow<controls::TitleBar>(handle).RequestedTheme()) {
-        case xaml::ElementTheme::Dark: return 1;
-        case xaml::ElementTheme::Light: return 2;
-        default: return 0;
-        }
+        return colorScheme(borrow<controls::TitleBar>(handle).RequestedTheme());
     } catch (...) {
-        report("reading a title bar's words");
-        return 0;
+        report("reading a title bar's theme");
+        return StateUIColorSchemeSystem;
     }
 }
 
@@ -417,7 +411,7 @@ extern "C" void stateui_winui_split_set_pane_grounds(
 }
 
 extern "C" void stateui_winui_menu_bar_set_colours(
-    StateUIObjectRef handle, bool hasBackground, uint32_t background, bool hasForeground, uint32_t foreground, int32_t words
+    StateUIObjectRef handle, bool hasBackground, uint32_t background, bool hasForeground, uint32_t foreground, int32_t theme
 ) {
     try {
         // One of the window's bars, painted as the title bar is; its menus' words through the brush their template reads.
@@ -425,9 +419,7 @@ extern "C" void stateui_winui_menu_bar_set_colours(
         auto bar = borrow<controls::MenuBar>(handle);
         if (hasBackground) bar.Background(media::SolidColorBrush(color(background)));
         else bar.ClearValue(controls::Control::BackgroundProperty());
-        auto theme = words == 1 ? xaml::ElementTheme::Dark
-            : words == 2 ? xaml::ElementTheme::Light : xaml::ElementTheme::Default;
-        if (bar.RequestedTheme() != theme) bar.RequestedTheme(theme);
+        if (bar.RequestedTheme() != elementTheme(theme)) bar.RequestedTheme(elementTheme(theme));
         auto brush = hasForeground ? xaml::Media::Brush(media::SolidColorBrush(color(foreground))) : nullptr;
         writeResources(bar, {{L"MenuBarItemForeground", brush}});
     } catch (...) {

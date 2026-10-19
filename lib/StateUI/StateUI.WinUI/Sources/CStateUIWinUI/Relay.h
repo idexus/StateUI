@@ -146,6 +146,10 @@ namespace stateui {
     /// stays.
     void holdHitArea(xaml::UIElement const &element, int64_t view);
 
+    /// The theme an element is asked to stand in for `scheme`, a `StateUIColorScheme`; and the scheme of a theme.
+    xaml::ElementTheme elementTheme(int32_t scheme);
+    int32_t colorScheme(xaml::ElementTheme theme);
+
     /// WinUI's input scope the relay numbers `scope` (`WinUIInputScope`): the on-screen keyboard a field brings up.
     xaml::Input::InputScope inputScope(int32_t scope);
 

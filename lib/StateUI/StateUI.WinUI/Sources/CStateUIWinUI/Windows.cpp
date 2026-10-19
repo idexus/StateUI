@@ -477,12 +477,30 @@ extern "C" bool stateui_winui_window_background(StateUIObjectRef handle, uint32_
     }
 }
 
+namespace stateui {
+    xaml::ElementTheme elementTheme(int32_t scheme) {
+        switch (static_cast<StateUIColorScheme>(scheme)) {
+        case StateUIColorSchemeSystem: return xaml::ElementTheme::Default;
+        case StateUIColorSchemeLight: return xaml::ElementTheme::Light;
+        case StateUIColorSchemeDark: return xaml::ElementTheme::Dark;
+        }
+        return xaml::ElementTheme::Default;
+    }
+
+    int32_t colorScheme(xaml::ElementTheme theme) {
+        switch (theme) {
+        case xaml::ElementTheme::Light: return StateUIColorSchemeLight;
+        case xaml::ElementTheme::Dark: return StateUIColorSchemeDark;
+        default: return StateUIColorSchemeSystem;
+        }
+    }
+}
+
 extern "C" void stateui_winui_window_set_theme(StateUIObjectRef handle, int32_t scheme) {
     try {
         auto root = borrow<xaml::Window>(handle).Content().try_as<xaml::FrameworkElement>();
         if (!root) return;
-        root.RequestedTheme(scheme == 1 ? xaml::ElementTheme::Light
-                            : scheme == 2 ? xaml::ElementTheme::Dark : xaml::ElementTheme::Default);
+        root.RequestedTheme(elementTheme(scheme));
     } catch (...) {
         report("showing a window in a theme");
     }
@@ -491,10 +509,10 @@ extern "C" void stateui_winui_window_set_theme(StateUIObjectRef handle, int32_t 
 extern "C" int32_t stateui_winui_window_actual_theme(StateUIObjectRef handle) {
     try {
         auto root = borrow<xaml::Window>(handle).Content().try_as<xaml::FrameworkElement>();
-        return root && root.ActualTheme() == xaml::ElementTheme::Dark ? 2 : 1;
+        return root && root.ActualTheme() == xaml::ElementTheme::Dark ? StateUIColorSchemeDark : StateUIColorSchemeLight;
     } catch (...) {
         report("reading a window's theme");
-        return 1;
+        return StateUIColorSchemeLight;
     }
 }
 
