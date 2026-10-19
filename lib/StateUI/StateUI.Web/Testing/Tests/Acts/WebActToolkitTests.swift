@@ -22,6 +22,25 @@ final class WebActToolkitTests: XCTestCase {
         XCTAssertNil(WebRelay.utcOffset(of: "Nowhere/Land", on: summer))
     }
 
+    /// A launch opens a page's address, mail's, a call's or the relay's own file - read as the browser reads an
+    /// address, its spaces, controls, tabs and line breaks dropped - and never one that runs a script in the
+    /// application's origin.
+    func testALaunchOpensNoScript() {
+        for address in [
+            "https://example.com", "http://example.com/a", "mailto:a@example.com", "tel:+48123456789",
+            "blob:https://example.com/0f1e", "HTTPS://EXAMPLE.COM",
+        ] {
+            XCTAssertTrue(WebFileToolkit.launches(address), address)
+        }
+        for address in [
+            "javascript:alert(1)", "JaVaScRiPt:alert(1)", " javascript:alert(1)", "java\tscript:alert(1)",
+            "java\nscript:alert(1)", "\u{1}javascript:alert(1)", "data:text/html,<script>alert(1)</script>",
+            "vbscript:msgbox(1)", "file:///etc/passwd", "example.com", "", ":",
+        ] {
+            XCTAssertFalse(WebFileToolkit.launches(address), address.debugDescription)
+        }
+    }
+
     /// The local time of day stands within its day, and the local zone has a name.
     func testTheLocalTimeStandsWithinItsDay() {
         let now = WebRelay.localTime

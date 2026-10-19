@@ -157,8 +157,13 @@ runs, and reads it as the browser hands it.
 
 A file or an address is launched in a window of the browser's own, opened at
 once while the user's press lets the page open one - a file's sent there as
-it is read; each answers whether the browser opened it, and an address with
-no scheme opens nothing. On a page a test drives (`stateui.holdsFiles`) the
+it is read; each answers whether the browser opened it. An address opens
+only where its scheme is a page's, mail's, a call's or the relay's own file's
+(`http`, `https`, `mailto`, `tel`, `blob`) - read as the browser reads an
+address, its spaces and controls at the ends and its tabs and line breaks
+anywhere dropped - decided in Swift: a `javascript:` or `data:` address would
+run its script in the application's origin, one with no scheme opens nothing.
+On a page a test drives (`stateui.holdsFiles`) the
 relay shows no dialog and opens no window: it holds the dialog for the test
 to answer from its own files, by name, and records what it would open.
 

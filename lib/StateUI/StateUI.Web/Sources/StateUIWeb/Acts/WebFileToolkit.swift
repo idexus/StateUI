@@ -36,6 +36,26 @@ final class WebFileToolkit: FileToolkit {
     }
 
     func launch(address: String, answered: @escaping (Bool) -> Void) {
+        guard Self.launches(address) else {
+            Task { @MainActor in answered(false) }
+            return
+        }
         WebRelay.launchAddress(address, WebRelay.once { answered(WebRelay.fileKept) })
+    }
+
+    /// The schemes a launch opens: a page's, mail's, a call's, and the relay's own files.
+    private static let launchedSchemes: Set<String> = ["http", "https", "mailto", "tel", "blob"]
+
+    /// Whether a launch opens `address`: its scheme read as the browser reads an address - spaces and controls at
+    /// its ends dropped, tabs and line breaks anywhere - one of `launchedSchemes`; never `javascript:` or `data:`,
+    /// which would run in the application's origin.
+    /// Design: docs/design/platforms/web/runtime.md#files
+    static func launches(_ address: String) -> Bool {
+        let read = address.unicodeScalars
+            .drop { $0.value <= 0x20 }.reversed().drop { $0.value <= 0x20 }.reversed()
+            .filter { !["\t", "\n", "\r"].contains($0) }
+        guard let colon = read.firstIndex(of: ":") else { return false }
+        let scheme = String(String.UnicodeScalarView(read[..<colon])).lowercased()
+        return launchedSchemes.contains(scheme)
     }
 }
