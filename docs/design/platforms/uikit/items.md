@@ -17,12 +17,9 @@ lets its entry go. The user's choice is the collection's selection -
 none, one or many as the tree says - told back in the list's order; what
 the tree selects is selected inside `ProgramWrite` and told nobody. An item
 opened is the collection's primary action, which a tap performs.
-`scrollTo` stands the item where its anchor says, by the host layer's rule
-(`ScrollAnchor.place`), from the item's frame as the layout holds it, within
-the room the collection's insets leave and within its reach - gliding there
-unless the user asks for less motion; nearest scrolls only where the item is
-not wholly in view, the shorter way. The end
-reached is watched as the collection scrolls and lays out.
+`scrollTo` stands the item where its anchor says ([scrolling to an
+item](#scrolling-to-an-item)). The end reached is watched as the collection
+scrolls and lays out.
 
 ## The layout
 
@@ -65,3 +62,21 @@ header or a footer - are the host layer's three moments, `hold`, `show` and
 Scrolled back, UIKit shows again a cell that ended showing its item a moment
 before without asking the data source for it; its `willDisplay` is what
 gives it its entry back.
+
+## Scrolling to an item
+
+`scrollTo` stands the item where its anchor says, by the host layer's rule
+(`ScrollAnchor.place`), from the item's frame as the layout holds it, within
+the room the collection's insets leave and within its reach - gliding there
+unless the user asks for less motion; nearest scrolls only where the item is
+not wholly in view, the shorter way. Every size the layout holds of a cell not
+measured yet is its estimate, and the cells the scroll brings into view
+measure only once their entries come, a turn later: at two pixels a point a
+text with its padding measures 44.5 against the 44 estimated, and two cells
+measured above the item moved it a point down. So the item stands, the
+collection lays out what that brought into view, and the item stands again
+from the cells measured - and once more after every pass that brings cells
+their entries, while the host layer holds it ([scrolling to an
+item](../../host/items.md#scrolling-to-an-item)). A scroll that glides
+stands its item again as its animation ends; the user's drag lets it go.
+
