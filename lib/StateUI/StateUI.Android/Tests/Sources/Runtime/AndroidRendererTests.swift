@@ -181,18 +181,25 @@ final class AndroidRendererTests: XCTestCase {
     func testAQuestionWaitingAsTheActivityFinishesIsDismissed() throws {
         try onMainActor {
             let answers = Received<Bool>()
+            let thrown = Received<String>()
             let host = AndroidRenderer.running {
                 Button("Ask").onClicked(gate: .ignoreWhileRunning) {
-                    answers.values.append(try await Dialogs.confirm("Sure?", message: "", accept: "Yes", cancel: "No"))
+                    do {
+                        answers.values.append(
+                            try await Dialogs.confirm("Sure?", message: "", accept: "Yes", cancel: "No"))
+                    } catch {
+                        thrown.values.append("\(error)")
+                    }
                 }
             }
             try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
             host.settle { Self.asked() != nil }
+            XCTAssertEqual(Self.asked(), "Sure?", "the question shows")
 
             host.destroying()
-            host.settle { !answers.values.isEmpty }
+            host.settle { !answers.values.isEmpty || !thrown.values.isEmpty }
 
-            XCTAssertEqual(answers.values, [false])
+            XCTAssertEqual(answers.values, [false], "answered as dismissed; the handler threw \(thrown.values)")
             Java.callStatic(AndroidDriver.dialogs, AndroidDriver.dismissAll)
         }
     }
