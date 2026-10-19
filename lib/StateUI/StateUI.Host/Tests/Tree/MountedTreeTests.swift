@@ -650,6 +650,19 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertNil(presence("plain"), "as its view stands of itself")
     }
 
+    /// Whether a view is an element to assistive technology: as its presence says, else as the view stood of itself
+    /// before any word reached it - never as the last word left it.
+    func testAViewIsAnElementAsItsPresenceSaysElseAsItStoodOfItself() {
+        func words(_ presence: AccessibilityWords.Presence?) -> AccessibilityWords {
+            AccessibilityWords(identifier: nil, label: nil, hint: nil, headingLevel: 0, presence: presence)
+        }
+        XCTAssertTrue(words(.met).isElement(standing: false))
+        XCTAssertFalse(words(.hidden).isElement(standing: true))
+        XCTAssertFalse(words(.hiddenWithChildren).isElement(standing: true))
+        XCTAssertTrue(words(nil).isElement(standing: true))
+        XCTAssertFalse(words(nil).isElement(standing: false))
+    }
+
     /// An element is drawn moved, turned and scaled as it says: `scale` on top of each axis's own, about its middle
     /// where it names no pivot.
     @MainActor

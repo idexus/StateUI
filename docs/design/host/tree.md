@@ -254,6 +254,10 @@ of its own, a label standing for all it holds, a hint or a heading, or answers
 a tap - and as its view is of itself otherwise. A host puts those words on its
 view in its platform's terms, and puts them again whenever any of them
 changes; one the tree stops saying anything of stands as its view is again.
+Whether a view is an element to assistive technology is one rule
+(`AccessibilityWords.isElement(standing:)`): as its presence says, else as
+the view stood of itself before any word reached it - never as the last word
+left it.
 
 Where a toolkit's screen reader reads a row by its name alone - a list's
 container - the row is named by what its entry says (`spokenWords`): an

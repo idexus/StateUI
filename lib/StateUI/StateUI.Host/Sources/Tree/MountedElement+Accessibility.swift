@@ -32,6 +32,13 @@
     /// Whether it is met; nil for as its view is of itself.
     public var presence: Presence?
 
+    /// Whether its view is an element to assistive technology: as its presence says, else as the view `standing`
+    /// was of itself, before any word reached it.
+    /// Design: docs/design/host/tree.md#what-assistive-technology-meets
+    public func isElement(standing: Bool) -> Bool {
+        presence.map { $0 == .met } ?? standing
+    }
+
     /// Words of these parts.
     public init(identifier: String?, label: String?, hint: String?, headingLevel: Int32, presence: Presence?) {
         self.identifier = identifier

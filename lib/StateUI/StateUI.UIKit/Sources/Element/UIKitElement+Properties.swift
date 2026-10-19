@@ -118,7 +118,7 @@ extension UIView {
         if words.headingLevel > 0 { accessibilityTraits.insert(.header) } else { accessibilityTraits.remove(.header) }
         accessibilityElementsHidden = words.presence == .hiddenWithChildren
             || (words.presence == .hidden && holdingNoChildren)
-        isAccessibilityElement = words.presence.map { $0 == .met } ?? standing
+        isAccessibilityElement = words.isElement(standing: standing)
     }
 }
 
