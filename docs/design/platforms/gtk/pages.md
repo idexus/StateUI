@@ -178,6 +178,11 @@ of its own ([the visible path](../../host/pages.md#the-visible-path)): it
 wears no bar of what stands around it, and names the dialog by its page's
 title.
 
+A window asked to close while a dialog stands over it - a sheet, a question -
+closes the dialog first, as libadwaita closes it, and stays: the user's close
+answers the question "no" or takes the sheet away, and the next closes the
+window. A window the tree closes goes at once, its dialogs with it.
+
 ## The window's overlays
 
 What a window lays over everything it shows - the overlays the pages on its
