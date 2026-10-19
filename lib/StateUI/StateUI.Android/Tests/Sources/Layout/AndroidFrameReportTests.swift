@@ -109,8 +109,8 @@ final class AndroidFrameReportTests: XCTestCase {
 
     /// A room Android alone narrowed places its layout in the frame that measured it: what reads a frame says where
     /// it stands before that frame is drawn, and what that moves is laid out again - not a display frame later.
-    func testARoomAndroidNarrowedPlacesItsLayoutBeforeItIsDrawn() throws {
-        try onMainActor {
+    func testARoomAndroidNarrowedPlacesItsLayoutBeforeItIsDrawn() {
+        onMainActor {
             let host = AndroidRenderer.running {
                 LayoutEngine([0]) { _ in Rectangle(.red) } placements: { room, _ in
                     [Placement(Rect(room.width / 2 - 10, 0, 20, 20))]
