@@ -143,11 +143,7 @@ final class AppKitCanvasView: AppKitHitTestView {
         text: String, in rectangle: NSRect, horizontal: TextAlignment, vertical: TextAlignment, pen: CanvasPen
     ) {
         let paragraph = NSMutableParagraphStyle()
-        paragraph.alignment = switch horizontal {
-        case .center: .center
-        case .end: .right
-        case .start: .left
-        }
+        paragraph.alignment = NSTextAlignment(horizontal, in: userInterfaceLayoutDirection)
         let attributes: [NSAttributedString.Key: Any] = [
             .font: NSFont.systemFont(ofSize: pen.fontSize ?? NSFont.systemFontSize),
             .foregroundColor: Self.color(pen.text, pen) ?? .black,

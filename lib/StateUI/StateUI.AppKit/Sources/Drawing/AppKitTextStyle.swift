@@ -93,12 +93,13 @@ func appKitAttributes(_ look: TextLook, font: NSFont, fallbackColor: NSColor) ->
 }
 
 extension NSTextAlignment {
-    /// Where text sits across its element, as AppKit draws it: a line's start and end as `direction` says them.
+    /// Where text sits across its element, as AppKit draws it: a line's start and end as `direction` reads them
+    /// (`TextAlignment.edge(in:)`).
     init(_ alignment: TextAlignment?, in direction: NSUserInterfaceLayoutDirection) {
-        self = switch alignment ?? .start {
-        case .start: direction == .rightToLeft ? .right : .left
+        self = switch (alignment ?? .start).edge(in: direction == .rightToLeft ? .rightToLeft : .leftToRight) {
+        case .left: .left
         case .center: .center
-        case .end: direction == .rightToLeft ? .left : .right
+        case .right: .right
         }
     }
 }

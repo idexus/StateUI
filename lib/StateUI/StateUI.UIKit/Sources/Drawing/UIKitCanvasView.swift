@@ -100,11 +100,7 @@ final class UIKitCanvasView: UIView {
     ) {
         let box = Self.rect(room)
         let paragraph = NSMutableParagraphStyle()
-        paragraph.alignment = switch across {
-        case .start: .left
-        case .center: .center
-        case .end: .right
-        }
+        paragraph.alignment = NSTextAlignment(across, in: effectiveUserInterfaceLayoutDirection)
         let attributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: pen.fontSize ?? UIFont.body.pointSize),
             .foregroundColor: Self.color(pen.text, pen) ?? .black,

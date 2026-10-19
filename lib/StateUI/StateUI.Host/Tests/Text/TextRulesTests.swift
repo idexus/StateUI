@@ -210,4 +210,14 @@ final class TextRulesTests: XCTestCase {
         XCTAssertTrue(program.writesChoice)
         XCTAssertNil(program.chosen, "a place no choice stands at is none")
     }
+
+    /// Words stand at the edge their alignment names as the layout reads: a line's start on the left left to right
+    /// and on the right right to left, its end the other way, the middle either way.
+    func testAnAlignmentStandsAtTheEdgeTheDirectionReads() {
+        XCTAssertEqual(TextAlignment.start.edge(in: .leftToRight), .left)
+        XCTAssertEqual(TextAlignment.start.edge(in: .rightToLeft), .right)
+        XCTAssertEqual(TextAlignment.end.edge(in: .leftToRight), .right)
+        XCTAssertEqual(TextAlignment.end.edge(in: .rightToLeft), .left)
+        XCTAssertEqual(TextAlignment.center.edge(in: .rightToLeft), .center)
+    }
 }

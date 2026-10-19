@@ -81,6 +81,14 @@ measuring large words is the costliest call a toolkit makes, and a frame that
 makes it at every width stalls. A view that is not words keeps one answer a
 width.
 
+## Words across their room
+
+Words aligned to a line's start or end stand at the edge the layout direction
+reads (`TextAlignment.edge(in:)`): the start is the left left to right and
+the right right to left, the end the other way, the middle either way - the
+same on every host, the words a canvas draws included, so no host leaves the
+start to its toolkit's guess from the words themselves.
+
 ## A child measured
 
 A layout measures a child the same way on every host: at its stated width,

@@ -58,11 +58,7 @@ extension UIKitTextInputView {
 
     /// A line's start and end as the view's own direction says them.
     func alignment(_ alignment: TextAlignment) -> NSTextAlignment {
-        switch alignment {
-        case .start: .natural
-        case .center: .center
-        case .end: effectiveUserInterfaceLayoutDirection == .rightToLeft ? .left : .right
-        }
+        NSTextAlignment(alignment, in: effectiveUserInterfaceLayoutDirection)
     }
 }
 
