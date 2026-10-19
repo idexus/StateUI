@@ -91,6 +91,14 @@ display cycle, in this order, in every runtime:
 A user's own change drains steps 2 to 5 at once, so the followers and
 the engines move on the user's frame.
 
+Where a toolkit gives frames one window at a time - AppKit's display link,
+GTK's frame clock - the clock takes them from a window the screen shows
+(`ApplicationLifecycle.framesWindow`): the one the user is in, else the
+first that stands on the screen, else the first. A window minimized, or
+hidden by its scene, draws nothing, and its frames stop; held there, every
+other window's motion would stand still. The host follows the rule after
+every render of its windows and every state its windows tell.
+
 Step 4 visits the elements that present a state the cycle moved or hold a
 property an animation moved - found by their state's number and their mount,
 not by a walk - and the parents their moves ask to arrange, up through

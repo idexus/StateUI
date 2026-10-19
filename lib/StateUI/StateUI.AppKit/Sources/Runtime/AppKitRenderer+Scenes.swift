@@ -54,9 +54,7 @@ extension AppKitRenderer {
             controller.present(element, in: runtime, cascade: index)
         }
 
-        if let window = windowControllers.compactMap(\.window).first {
-            frameClock.attach(to: window)
-        }
+        followFrames()
         runtime.displayCycle.hold()
     }
 
@@ -114,6 +112,16 @@ extension AppKitRenderer {
         guard !controller.closingFromTree, let element = controller.element else { return }
         // Main, not key: a sheet, an alert or a file panel over the window takes the key, never the user's window.
         runtime.windowStateChanged(element, minimized: controller.isMinimized, activated: controller.isMain)
+        followFrames()
+    }
+
+    /// Takes the display's frames from a window the screen shows, by the host layer's rule
+    /// (`ApplicationLifecycle.framesWindow`) - never from `closing`.
+    /// Design: docs/design/host/runtime.md#one-frame
+    func followFrames(leaving closing: AppKitWindowController? = nil) {
+        let open = roster.windows.filter { $0.controller !== closing && $0.controller.window != nil }
+        let element = runtime.lifecycle.framesWindow(among: open.map(\.element))
+        frameClock.follow(open.first { $0.element === element }?.controller.window)
     }
 
     /// A window closes: one the tree closed tells nothing; one the user closed is heard by it and its scene.
@@ -124,19 +132,14 @@ extension AppKitRenderer {
             installPageMenus([])
         }
 
-        if let closing = controller.window {
-            frameClock.release(closing, next: windowControllers
-                .filter { $0 !== controller }
-                .compactMap(\.window)
-                .first)
-        }
+        followFrames(leaving: controller)
 
         guard !controller.closingFromTree, let element = controller.element else { return }
         runtime.userClosed(element)
     }
 
     func nativeWindowAvailable(_ window: NSWindow) {
-        frameClock.attach(to: window)
+        followFrames()
     }
 
     func pageMenusChanged(in controller: AppKitWindowController) {

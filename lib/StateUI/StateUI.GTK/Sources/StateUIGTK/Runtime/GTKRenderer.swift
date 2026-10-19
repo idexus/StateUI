@@ -151,12 +151,21 @@ final class GTKRenderer {
         roster.update(
             root: runtime.tree.root, make: { [application] in GTKWindowController($0, application: application) },
             close: { $0.window.close() })
-        if let window, frameClock.widget != window.widget { frameClock.widget = window.widget }
         for (element, controller) in roster.windows {
             controller.present(element, in: runtime)
         }
+        followFrames()
         reportDisplayOnceRealized()
         refreshChrome()
+    }
+
+    /// Ticks the display cycle with a window GTK draws - one hidden by its scene or minimized stops its frames - by
+    /// the host layer's rule (`ApplicationLifecycle.framesWindow`).
+    /// Design: docs/design/host/runtime.md#one-frame
+    private func followFrames() {
+        let element = runtime.lifecycle.framesWindow(among: roster.windows.map(\.element))
+        let widget = element.flatMap { roster.controller(of: $0)?.window.widget }
+        if frameClock.widget != widget { frameClock.widget = widget }
     }
 
     /// The display's facts, told once the first window is realized - which GTK does after the render making it.
@@ -188,6 +197,7 @@ final class GTKRenderer {
         else { return }
         guard controller.window.statesChanged() else { return }
         runtime.windowStateChanged(element, minimized: controller.window.isMinimized, activated: controller.window.isActive)
+        followFrames()
     }
 
     /// The window numbered `number` went: one the tree closed tells nothing; one the user closed is heard by it and

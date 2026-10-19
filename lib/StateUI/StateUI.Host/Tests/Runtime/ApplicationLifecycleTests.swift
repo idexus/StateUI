@@ -80,6 +80,35 @@ final class ApplicationLifecycleTests: XCTestCase {
         XCTAssertNil(lifecycle.activatedLast(among: []))
     }
 
+    /// The display's frames come from a window the screen shows: the one the user is in, else the first on the screen
+    /// - one minimized, or hidden by its scene, draws no frame - else the first.
+    func testTheFramesComeFromAWindowTheScreenShows() throws {
+        let (runtime, lifecycle) = Self.application([
+            ("1", [Self.window("window 1", [.hidesWhenInactive: .bool(true)])]), ("2", [Self.window("window 1")]),
+        ])
+        let first = try Self.window("window 1", in: "1", of: runtime)
+        let second = try Self.window("window 1", in: "2", of: runtime)
+        let windows = [first, second]
+        XCTAssertTrue(lifecycle.framesWindow(among: windows) === first, "none told: the first")
+
+        lifecycle.report(second, minimized: false, activated: true)
+        _ = lifecycle.settle(windows: runtime.tree.root!.windows)
+        XCTAssertTrue(lifecycle.framesWindow(among: windows) === second, "the one the user is in")
+        XCTAssertTrue(lifecycle.isHiddenByScene(first))
+
+        lifecycle.report(second, minimized: true, activated: false)
+        _ = lifecycle.settle(windows: runtime.tree.root!.windows)
+        XCTAssertTrue(lifecycle.framesWindow(among: windows) === first, "every window off the screen: the first")
+
+        lifecycle.report(first, minimized: false, activated: true)
+        _ = lifecycle.settle(windows: runtime.tree.root!.windows)
+        XCTAssertTrue(lifecycle.framesWindow(among: windows) === first, "back on the screen, the user in it")
+        lifecycle.report(first, minimized: true, activated: false)
+        lifecycle.report(second, minimized: false, activated: false)
+        _ = lifecycle.settle(windows: runtime.tree.root!.windows)
+        XCTAssertTrue(lifecycle.framesWindow(among: windows) === second, "the first minimized: the next on the screen")
+    }
+
     /// The scene in front is the one whose window was activated last: the application going behind another moves it
     /// nowhere, another scene's window activated moves it there - and that scene hears it.
     func testOnlyAnotherScenesWindowMovesTheSceneInFront() throws {

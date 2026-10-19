@@ -440,6 +440,30 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertTrue(renderer.frameClockWindowForTesting === second)
     }
 
+    /// The display's frames come from a window the screen shows (`ApplicationLifecycle.framesWindow`): a window hidden
+    /// by its scene, or minimized, hands them to one shown.
+    @MainActor
+    func testDisplayClockFollowsAWindowTheScreenShows() throws {
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        var hiding = window("window 1")
+        hiding.properties[.hidesWhenInactive] = .bool(true)
+        renderer.applyForTesting(tree(scene("1", windows: [hiding]), scene("2", windows: [window("window 1")])))
+        let (first, second) = (renderer.windowsForTesting[0], renderer.windowsForTesting[1])
+        XCTAssertTrue(renderer.frameClockWindowForTesting === first.window)
+
+        for (controller, main) in [(first, false), (second, true)] {
+            renderer.runtime.windowStateChanged(try XCTUnwrap(controller.element), minimized: false, activated: main)
+        }
+        renderer.runtime.settlePhases()
+        XCTAssertTrue(renderer.frameClockWindowForTesting === second.window, "the first hidden by its scene")
+
+        renderer.runtime.windowStateChanged(try XCTUnwrap(first.element), minimized: false, activated: true)
+        renderer.runtime.windowStateChanged(try XCTUnwrap(second.element), minimized: true, activated: false)
+        renderer.runtime.settlePhases()
+        XCTAssertTrue(renderer.frameClockWindowForTesting === first.window, "the second minimized")
+    }
+
     /// A sheet, an alert or a file panel takes the keyboard from its window, not the user: the window stays the
     /// one the user works in, and the application stays active.
     @MainActor

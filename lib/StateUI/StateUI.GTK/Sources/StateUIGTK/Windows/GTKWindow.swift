@@ -49,7 +49,7 @@ final class GTKWindow {
     private var presented = false
 
     /// Whether its scene hides it.
-    private var isHidden = false
+    private(set) var isHidden = false
 
     init(application: UnsafeMutablePointer<GtkApplication>) {
         widget = adw_application_window_new(application)!
