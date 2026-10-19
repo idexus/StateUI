@@ -32,6 +32,20 @@ final class ConformanceCaseTests: XCTestCase {
         XCTAssertEqual(bare, [], "nothing heard, expected before a turn: " + bare.joined(separator: ", "))
     }
 
+    /// THE CLOCK WAITS ONLY FOR ANOTHER PROCESS: a web view's page loads in its engine's own, as fast as the machine
+    /// lets it; whatever the application's process does, steps wait for, so a verdict is never the machine's speed.
+    func testTheClockWaitsOnlyForAnotherProcess() throws {
+        let cases = SourceTree.repository.appendingPathComponent("lib/StateUI/StateUI.Conformance/Sources/Contract")
+        let anotherProcess: Set<String> = ["WebViewTests.swift"]
+        var clocked: [String] = []
+        for file in try SourceTree.files(under: cases, entering: { _ in true }) where file.hasSuffix(".swift") {
+            let name = (file as NSString).lastPathComponent
+            let text = try String(contentsOf: cases.appendingPathComponent(file), encoding: .utf8)
+            if text.contains("settle(for:"), !anotherProcess.contains(name) { clocked.append(name) }
+        }
+        XCTAssertEqual(clocked, [], "a case waits by the clock on its own process")
+    }
+
     private static func matches(_ expression: NSRegularExpression, _ line: String) -> Bool {
         expression.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)) != nil
     }
