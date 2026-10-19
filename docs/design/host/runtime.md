@@ -735,7 +735,9 @@ A file dialog is read from its act alike on every host (`HostFileDialog`):
 one file to open, several, or a place to save, the kinds it offers, a
 save's contents and its name. A save's name ends in an extension of its
 kinds: where it ends in none, the first kind's first is added - unless it
-is empty, which the platform names. A dialog that filters by extension
+is empty, which the platform names. A platform that takes the kind a save
+writes as one extension reads it from the name, else from the first kind
+(`savedExtension`). A dialog that filters by extension
 alone shows every kind's, in order, each once. A file dialog waits its turn
 among the questions, one showing at a time, so a question never stands
 over a dialog the user is still in, or under one. A host performing files

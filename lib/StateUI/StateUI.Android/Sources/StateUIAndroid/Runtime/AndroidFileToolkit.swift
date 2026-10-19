@@ -40,19 +40,11 @@ final class AndroidFileToolkit: FileToolkit {
             case .save:
                 Java.callStatic(
                     JavaAPI.files, JavaAPI.saveFile, .object(context), .long(ticket),
-                    .object(Java.string(dialog.name)), .object(Self.savedExtension(dialog).flatMap(Java.string)),
+                    .object(Java.string(dialog.name)), .object(dialog.savedExtension.flatMap(Java.string)),
                     .object(Java.bytes(dialog.contents)))
             }
         }
         return window
-    }
-
-    /// The extension a save's type is read from: its name's, else its first kind's.
-    private static func savedExtension(_ dialog: HostFileDialog) -> String? {
-        if let dot = dialog.name.lastIndex(of: "."), dialog.name.index(after: dot) < dialog.name.endIndex {
-            return String(dialog.name[dialog.name.index(after: dot)...]).lowercased()
-        }
-        return dialog.extensions.first
     }
 
     /// The picker under `ticket` closed: the documents chosen, by their addresses and names, or why it failed.
