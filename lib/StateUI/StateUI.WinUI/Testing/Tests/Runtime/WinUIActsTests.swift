@@ -87,7 +87,7 @@ final class WinUIActsTests: XCTestCase {
             let content = try XCTUnwrap(window.content).handle
 
             stateui_winui_prompt_write(content, "😀😀😀😀")
-            host.step()
+            host.settle(until: { Self.field(of: window) == "😀😀😀" })
             XCTAssertEqual(Self.field(of: window), "😀😀😀")
 
             _ = stateui_winui_answer(content, 1, nil)
@@ -184,7 +184,8 @@ final class WinUIActsTests: XCTestCase {
         guard length >= 0 else { return nil }
         var bytes = [CChar](repeating: 0, count: Int(length) + 1)
         _ = stateui_winui_question(content, &bytes, Int32(bytes.count))
-        let parts = String(cString: bytes).split(separator: "\u{1F}", omittingEmptySubsequences: false)
+        let words = String(decoding: bytes.prefix(Int(length)).map { UInt8(bitPattern: $0) }, as: UTF8.self)
+        let parts = words.split(separator: "\u{1F}", omittingEmptySubsequences: false)
         return parts.count > 4 ? String(parts[4]) : nil
     }
 }

@@ -181,6 +181,14 @@ namespace {
             if (auto dialog = popup.Child().try_as<controls::ContentDialog>()) return dialog;
         return nullptr;
     }
+
+    /// The field of the prompt `dialog` shows, as its content holds it - loaded or not; null for none.
+    controls::TextBox promptField(controls::ContentDialog const &dialog) {
+        if (auto panel = dialog.Content().try_as<controls::StackPanel>())
+            for (auto const &child : panel.Children())
+                if (auto field = child.try_as<controls::TextBox>()) return field;
+        return nullptr;
+    }
 }
 
 namespace stateui {
@@ -230,7 +238,7 @@ extern "C" void stateui_winui_ask(StateUIObjectRef handle, int64_t ticket, State
 extern "C" void stateui_winui_prompt_write(StateUIObjectRef handle, char const *words) {
     try {
         auto dialog = shown(as<xaml::UIElement>(handle).XamlRoot());
-        auto field = dialog ? first<controls::TextBox>(dialog) : nullptr;
+        auto field = dialog ? promptField(dialog) : nullptr;
         if (!field) return;
         auto written = text(words);
         field.Text(written);
@@ -245,7 +253,7 @@ extern "C" bool stateui_winui_answer(StateUIObjectRef handle, int32_t button, ch
         auto dialog = shown(as<xaml::UIElement>(handle).XamlRoot());
         if (!dialog) return false;
         if (words) {
-            if (auto field = first<controls::TextBox>(dialog)) field.Text(text(words));
+            if (auto field = promptField(dialog)) field.Text(text(words));
         }
         controls::Button pressed{nullptr};
         if (button < 2) {
