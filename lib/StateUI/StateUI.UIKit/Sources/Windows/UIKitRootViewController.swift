@@ -51,6 +51,10 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
     /// command is known by chosen.
     var onMenuEntry: ((UInt64) -> Void)?
 
+    /// What UIKit setting out to give the window a new size - the screen turned, the scene resized - tells, before
+    /// it lays the window out at that size.
+    var onResizing: (() -> Void)?
+
     @objc func chooseMenuEntry(_ command: UIKeyCommand) {
         (command.propertyList as? NSNumber).map { onMenuEntry?($0.uint64Value) }
     }
@@ -252,6 +256,11 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
         } else {
             presentPassing()
         }
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator) {
+        onResizing?()
+        super.viewWillTransition(to: size, with: coordinator)
     }
 
     override func viewDidLayoutSubviews() {

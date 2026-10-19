@@ -255,6 +255,7 @@ final class UIKitRenderer {
             if scene == nil, ownsScenes, launched { requestScene() }
             let controller = UIKitWindowController(element, scene: scene)
             controller.onFrontMoved = { [weak self] scene in self?.frontMoved(in: scene) }
+            controller.onResizing = { [weak self] scene in self?.environment.displayMoved(for: scene) }
             return controller
         }, close: { [unowned self] closing in
             guard ownsScenes else { return closing.hide() }

@@ -100,6 +100,15 @@ battery saver. The network is reachable when its path is satisfied, local
 when interfaces stand but no route leads out; each interface available to
 the path - Wi-Fi, wired, cellular - is a connection profile.
 
+The display is told again as UIKit sets out to give a window a new size
+(`viewWillTransition(to:with:)` on its root): the scene stands turned
+already, and the window is laid out at the turned size after it. A page
+measured there - its frame reported in the same layout pass - is heard with
+the display it is measured on, so an answer worked out from the two holds.
+The scene's own report of its new geometry comes after that layout and finds
+nothing new; told only there, a page turned back would answer from the last
+turn and never be measured again.
+
 ## Acts
 
 The acts every host performs are the host layer's performer's; UIKit's part

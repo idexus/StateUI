@@ -5,6 +5,7 @@ import UIKit
 @_spi(Host) @testable import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIUIKit
+@_spi(Host) import StateUIConformance
 import XCTest
 
 /// What the application stands on, as UIKit tells it: the theme, the user's locale, the battery.
@@ -92,6 +93,40 @@ final class UIKitEnvironmentTests: XCTestCase {
         XCTAssertEqual(display.orientation, .landscape)
         XCTAssertEqual(display.rotation, .rotation90)
         XCTAssertEqual([display.width, display.height], [height, width])
+    }
+
+    /// The display's turn is told before the page is laid out turned: what hears the turned room hears the turned
+    /// display with it, so an answer worked out from the two holds - and is not left standing on the display's last
+    /// turn, which a page turned back never measures again.
+    @MainActor
+    func testTheDisplayTurnsBeforeThePageIsLaidOutTurned() throws {
+        let scene = try XCTUnwrap(TestScene.scene)
+        Self.turn(scene, to: .portrait)
+        guard scene.effectiveGeometry.interfaceOrientation == .portrait else {
+            throw XCTSkip("iOS turns this scene with the device alone, as it does an iPad's")
+        }
+        let heard = Received<[Bool]>()
+        let host = UIKitRenderer.running {
+            VStack { Rectangle().fill(.steelBlue) }
+                .onFrameChanged { room in
+                    heard.values.append([
+                        room.width > room.height, StandardEnvironment.device.display.orientation == .landscape,
+                    ])
+                }
+        }
+        defer {
+            host.finish()
+            Self.turn(scene, to: .portrait)
+        }
+        host.settle { !heard.values.isEmpty }
+
+        Self.turn(scene, to: .landscapeRight)
+        host.settle { heard.values.last?.first == true }
+        XCTAssertEqual(heard.values.last, [true, true], "the wide room is heard with the display turned")
+
+        Self.turn(scene, to: .portrait)
+        host.settle { heard.values.last?.first == false }
+        XCTAssertEqual(heard.values.last, [false, false], "and the tall one with the display turned back")
     }
 
     /// Asks iOS to turn `scene` to `orientation`, and waits until it has.

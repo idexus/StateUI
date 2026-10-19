@@ -30,6 +30,11 @@ final class UIKitWindowController {
     /// and dims those the user is not in, which their scene's active appearance tells.
     var onFrontMoved: ((UIWindowScene) -> Void)?
 
+    /// What the window's scene tells as UIKit sets out to give the window a new size, standing turned already: the
+    /// display is told then, before the window is laid out at that size.
+    /// Design: docs/design/platforms/uikit/runtime.md#the-environment
+    var onResizing: ((UIWindowScene) -> Void)?
+
     /// The scene's active appearance followed, while the window stands in it.
     private var frontWatch: (scene: UIWindowScene, registration: UITraitChangeRegistration)?
 
@@ -71,6 +76,10 @@ final class UIKitWindowController {
         window.backgroundColor = background
         window.overrideUserInterfaceStyle = UIKitActToolkit.style(HostThemes.held)
         window.rootViewController = root
+        root.onResizing = { [weak self, weak scene] in
+            guard let scene else { return }
+            self?.onResizing?(scene)
+        }
         window.makeKeyAndVisible()
         self.window = window
         session = scene.session
