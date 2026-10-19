@@ -42,6 +42,24 @@ final class WebLeaveTests: XCTestCase {
         XCTAssertEqual(WebRelay.listenerCount, before, "a listener outlived the window that hung it")
     }
 
+    /// A page the browser keeps to come back to - its back-forward cache - is hidden, not gone: its window hears no
+    /// destroying, and stands again as the browser shows the page.
+    func testAPageTheBrowserKeepsIsHiddenNotGone() throws {
+        WebRenderer.shared?.leave()
+        let host = WebRenderer.running { WindowPhaseText() }
+        host.step()
+        let phase = { (try? WebBrowser.evaluate("e.textContent", on: host.views(WebTextView.self).first?.node ?? 0)) ?? "" }
+
+        try WebBrowser.run("dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true }))")
+        for _ in 0..<5 { host.step() }
+        XCTAssertNotEqual(phase(), "destroying", "a page kept for coming back heard its end")
+
+        try WebBrowser.run("dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }))")
+        for _ in 0..<5 { host.step() }
+        XCTAssertNotEqual(phase(), "destroying")
+        host.leave()
+    }
+
     /// A window closed lets go of every view it made, its bar's with the page's.
     func testAClosedWindowLetsGoOfEveryViewItMade() throws {
         WebRenderer.shared?.leave()
@@ -53,4 +71,11 @@ final class WebLeaveTests: XCTestCase {
 
         XCTAssertEqual(WebDOMView.liveCount, before, "a view of the closed window outlived it")
     }
+}
+
+/// The phase of the window it stands in, in words.
+private struct WindowPhaseText: View {
+    @Environment(\.window) private var window
+
+    var body: some View { Text("\(window.phase)") }
 }

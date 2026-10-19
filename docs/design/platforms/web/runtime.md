@@ -186,8 +186,12 @@ The window's phases are the page's, told to the host layer's lifecycle
 (`ApplicationLifecycle`) as the browser tells them: the window is put away
 while the page's tab hides - it stops, and resumes as the tab shows - and it
 is in front while the page holds the keyboard; the browser leaving the page
-ends it. The page tells what it stands as once as it starts, in a task of its
-own, so the window hears it was made before it hears it is in front.
+ends it - but a page the browser keeps to come back to, its back-forward
+cache (`pagehide` with `persisted`), is only hidden, and stands again as the
+browser shows it (`pageshow`): ended there, it would come back after
+cleaning up as it went. The page tells what it stands as once as it starts,
+in a task of its own, so the window hears it was made before it hears it is
+in front.
 
 ## The conformance run
 
