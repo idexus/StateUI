@@ -299,25 +299,11 @@ enum WebRelay {
             utf8(address) { _ = stateui_web_frame_show(element, FrameSource.address.rawValue, $0, $1) }
             return nil
         case .html(let words, let base):
-            let length = utf8(document(words, base: base)) {
+            let length = utf8(WebDocument.document(words, base: base)) {
                 stateui_web_frame_show(element, FrameSource.document.rawValue, $0, $1)
             }
             return copyRead(length: length)
         }
-    }
-
-    /// `words` with its links resolved against `base` where one is given: a `<base>` right after its doctype, else
-    /// first - before the doctype, the browser reads the document in quirks mode.
-    /// Design: docs/design/platforms/web/controls.md#a-web-view
-    nonisolated static func document(_ words: String, base: String?) -> String {
-        guard let base, !base.isEmpty else { return words }
-        let href = base.replacing("&", with: "&amp;").replacing("\"", with: "&quot;")
-        let tag = "<base href=\"\(href)\">"
-        let leading = words.prefix { $0.isWhitespace }
-        let rest = words.dropFirst(leading.count)
-        guard rest.lowercased().hasPrefix("<!doctype"), let end = rest.firstIndex(of: ">") else { return tag + words }
-        let doctype = rest[...end]
-        return String(leading) + doctype + tag + rest[rest.index(after: end)...]
     }
 
     /// What the page can know of the frame's document: whether it is of the page's own site, and its history.
