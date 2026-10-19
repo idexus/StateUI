@@ -529,6 +529,17 @@ waits on), WinUI's pointer's key modifiers (the relay's `mirrored`), GTK's
 controller state (`GDK_ALT_MASK`, a drag of its own claimed or denied at its
 start), the Web's pointer event's `altKey`.
 
+## A run of taps
+
+Where the platform's toolkit counts a run of taps - AppKit's click count,
+UIKit's tap recognizer, GTK's presses, a browser's `detail` - the host takes
+its count. Where it counts none, the relay tells each tap with its time on
+the pointer's clock and where it landed, and the host layer counts the run
+(`TapRun`): a tap carries the run on where it comes within the platform's
+double tap of the last - Android's double-tap timeout and slop, Windows'
+double-click time and rectangle - and starts one otherwise, so two quick taps
+far apart are two single taps on both.
+
 ## A swipe
 
 A host whose toolkit tells it a press and how far it has moved, and no swipe,

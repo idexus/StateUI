@@ -1145,6 +1145,10 @@ void stateui_winui_press_dragged(int64_t view);
 /// The system's drag distance, across and down, in DIPs.
 void stateui_winui_drag_distance(double *distance);
 
+/// The system's double click: how long after the first a second click may come, in seconds, and how far from it, in
+/// DIPs.
+void stateui_winui_double_tap(double *tap);
+
 /// Presses `element` as assistive technology does, through its automation peer; whether it could be pressed.
 bool stateui_winui_press(StateUIObjectRef element);
 

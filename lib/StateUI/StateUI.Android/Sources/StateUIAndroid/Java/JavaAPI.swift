@@ -438,6 +438,8 @@ enum JavaAPI {
     static let viewConfigurationOf = Java.staticMethod(
         viewConfiguration, "get", "(Landroid/content/Context;)Landroid/view/ViewConfiguration;")
     static let scaledTouchSlop = Java.method(viewConfiguration, "getScaledTouchSlop", "()I")
+    static let scaledDoubleTapSlop = Java.method(viewConfiguration, "getScaledDoubleTapSlop", "()I")
+    static let doubleTapTimeout = Java.staticMethod(viewConfiguration, "getDoubleTapTimeout", "()I")
 
     static let environment = Java.findClass("stateui/android/StateUIEnvironment")
     static let clock = Java.staticMethod(environment, "clock", "()[I")

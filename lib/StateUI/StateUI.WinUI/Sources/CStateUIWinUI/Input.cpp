@@ -33,13 +33,10 @@ namespace provider = winrt::Microsoft::UI::Xaml::Automation::Provider;
 namespace interactions = winrt::Microsoft::UI::Composition::Interactions;
 
 namespace {
-    /// One view's listening: what it listens for, the run of taps it heard, the press it holds, whether the host
-    /// said that became a drag and whether the view is yet to hold the pointer, and the handlers hung on its element.
+    /// One view's listening: what it listens for, the press it holds, whether the host said that became a drag and
+    /// whether the view is yet to hold the pointer, and the handlers hung on its element.
     struct Listening {
         uint32_t hearing = 0;
-
-        int32_t run = 0;
-        ULONGLONG lastTap = 0;
 
         uint32_t pointer = 0;
         bool dragging = false;
@@ -87,15 +84,12 @@ namespace {
                 height > 0 ? static_cast<float>(point.Y / height) : 0.5f};
     }
 
-    /// A tap, its place in a quick run: a tap soon after the last continues the run, and WinUI tells a second tap
-    /// as a double tap in place of a tap.
-    void tap(int64_t view, Point point, bool second) {
-        auto *entry = listener(view, StateUIHearingTaps);
-        if (!entry) return;
-        auto now = GetTickCount64();
-        entry->run = second || now - entry->lastTap <= GetDoubleClickTime() ? entry->run + 1 : 1;
-        entry->lastTap = now;
-        tell(view, StateUIHeardTap, entry->run, point);
+    /// A tap, when - in milliseconds from the relay's first - and where it landed in its element, in DIPs - WinUI
+    /// tells a second tap soon after the first as a double tap in its place: Swift counts the run (TapRun).
+    void tap(int64_t view, Point point) {
+        if (!listener(view, StateUIHearingTaps)) return;
+        static ULONGLONG const first = GetTickCount64();
+        tell(view, StateUIHeardTap, static_cast<int32_t>(GetTickCount64() - first), point);
     }
 
     /// The press ends, `phase` saying how: let go or taken away. The host says whether a drag ends with it.
@@ -260,14 +254,14 @@ namespace {
             [view](IInspectable const &sender, input::TappedRoutedEventArgs const &args) {
             if (!listener(view, StateUIHearingTaps)) return;
             args.Handled(true);
-            tap(view, args.GetPosition(sender.as<xaml::UIElement>()), false);
+            tap(view, args.GetPosition(sender.as<xaml::UIElement>()));
         }));
         entry.doubleTapped = element.DoubleTapped(
             guarded("handling DoubleTapped",
                 [view](IInspectable const &sender, input::DoubleTappedRoutedEventArgs const &args) {
                 if (!listener(view, StateUIHearingTaps)) return;
                 args.Handled(true);
-                tap(view, args.GetPosition(sender.as<xaml::UIElement>()), true);
+                tap(view, args.GetPosition(sender.as<xaml::UIElement>()));
             }));
         entry.entered = element.PointerEntered(guarded("handling PointerEntered",
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
@@ -553,6 +547,15 @@ extern "C" void stateui_winui_drag_distance(double *distance) {
         distance[1] = GetSystemMetricsForDpi(SM_CYDRAG, USER_DEFAULT_SCREEN_DPI);
     } catch (...) {
         report("reading the drag distance");
+    }
+}
+
+extern "C" void stateui_winui_double_tap(double *tap) {
+    try {
+        tap[0] = GetDoubleClickTime() / 1000.0;
+        tap[1] = GetSystemMetricsForDpi(SM_CXDOUBLECLK, USER_DEFAULT_SCREEN_DPI) / 2.0;
+    } catch (...) {
+        report("reading the double click");
     }
 }
 

@@ -32,7 +32,8 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     private final long view;
     private final float density;
     private final int slop;
-    private final int tapTimeout;
+    /** When the listener was made, on the events' clock: a tap's time is told from here. */
+    private final long madeAt = android.os.SystemClock.uptimeMillis();
     private final ScaleGestureDetector scale;
 
     /**
@@ -80,19 +81,12 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     private float pinchX;
     private float pinchY;
 
-    /** The taps of the run so far, when the last lifted, and where. */
-    private int tapped;
-    private long lastTap;
-    private float lastTapX;
-    private float lastTapY;
-
     StateUIGestures(View host, long view, float density) {
         this.host = host;
         this.view = view;
         this.density = density;
         ViewConfiguration configuration = ViewConfiguration.get(host.getContext());
         slop = configuration.getScaledTouchSlop();
-        tapTimeout = ViewConfiguration.getDoubleTapTimeout();
         scale = new ScaleGestureDetector(host.getContext(), this);
     }
 
@@ -159,7 +153,6 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
                 if (hand) handUp(event, false);
                 pressing = false;
                 dragging = false;
-                tapped = 0;
                 break;
             default:
                 break;
@@ -306,17 +299,11 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     }
 
     /**
-     * One more tap in the run where it is near the last and soon after it, as Android measures a double tap, which
-     * itself counts no run past two; each tap is told with its place in the run.
+     * A tap, told with its time in milliseconds from the listener's own start and where it lands on the screen in
+     * points: Swift counts its run (TapRun).
      */
     private void tap(MotionEvent event) {
-        long now = event.getEventTime();
-        boolean near = Math.hypot(event.getRawX() - lastTapX, event.getRawY() - lastTapY) <= slop * 4;
-        tapped = tapped > 0 && near && now - lastTap <= tapTimeout ? tapped + 1 : 1;
-        lastTap = now;
-        lastTapX = event.getRawX();
-        lastTapY = event.getRawY();
-        report(TAPPED, tapped, 0, 0, 0);
+        report(TAPPED, (int) (event.getEventTime() - madeAt), event.getRawX() / density, event.getRawY() / density, 0);
     }
 
     /** The view's own handling of the touch is called off: a drag is no press, and no click. */

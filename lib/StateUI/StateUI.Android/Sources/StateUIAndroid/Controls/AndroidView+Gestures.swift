@@ -28,6 +28,7 @@ extension AndroidView {
         if listening == .nothing || listening.hearing.contains(.hand) != hearing.contains(.hand) { watchTouches(hearing) }
         listening = told
         if hearing.contains(.drags) { press = DragRecognition(distance: .radius(Self.touchSlop(density: density))) }
+        if countsTaps, hearing.contains(.taps) { taps = Self.doubleTap(density: density) }
         Java.call(
             listener.reference, JavaAPI.setGestures, .object(reference), .float(Float(density)),
             .bool(countsTaps && hearing.contains(.taps)), .bool(hearing.contains(.drags)),
@@ -35,12 +36,13 @@ extension AndroidView {
             .bool(hearing.contains(.rotations)))
     }
 
-    /// What the listener says the view heard, by the kind `StateUIGestures` numbers: a tap and its place in its run,
-    /// a pinch's step and where it is centred in points, the pointer.
+    /// What the listener says the view heard, by the kind `StateUIGestures` numbers: a tap where it landed on the
+    /// screen and when, in `phase`'s milliseconds - its place in its run counted by the host layer (`TapRun`) - a
+    /// pinch's step and where it is centred in points, the pointer.
     func heard(kind: Int32, phase: Int32, x: Double, y: Double, z: Double) {
         let point = Point(x: x, y: y)
         let input: HeardInput? = switch AndroidGestureKind(rawValue: kind) {
-        case .tapped: .tap(run: Int(phase))
+        case .tapped: .tap(run: taps.tapped(at: point, time: .milliseconds(Int(phase))))
         case .pinched: GesturePhase(rawValue: phase).map { phase in
             let size = standingFrame
             let at = PinchStep.share(of: Point(x: y, y: z), width: size.width, height: size.height)
@@ -148,6 +150,18 @@ extension AndroidView {
     }
 
     /// How far a finger moves before it is a drag, as Android measures it, in points at `density`.
+    /// A run of taps as Android measures its double tap: its timeout, and its slop in points.
+    private static func doubleTap(density: Double) -> TapRun {
+        let timeout = Java.callStaticInt(JavaAPI.viewConfiguration, JavaAPI.doubleTapTimeout)
+        let slop = Java.frame {
+            guard let configuration = Java.callStaticObject(
+                JavaAPI.viewConfiguration, JavaAPI.viewConfigurationOf, .object(AndroidRenderer.context))
+            else { return 100.0 }
+            return Double(Java.callInt(configuration, JavaAPI.scaledDoubleTapSlop)) / density
+        }
+        return TapRun(interval: .milliseconds(Int(timeout)), slop: slop)
+    }
+
     private static func touchSlop(density: Double) -> Double {
         Java.frame {
             guard let configuration = Java.callStaticObject(

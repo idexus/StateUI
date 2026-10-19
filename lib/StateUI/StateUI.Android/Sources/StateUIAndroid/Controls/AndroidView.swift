@@ -92,6 +92,9 @@ class AndroidView {
     /// The press the view heard, on its way to a drag by the host layer's rule.
     var press = DragRecognition(distance: .radius(0))
 
+    /// The run of taps the view heard, by the host layer's rule, as Android measures its double tap.
+    var taps = TapRun(interval: .zero, slop: 0)
+
     /// Two fingers over a layout they turn, read as the turn between them.
     var fingers = TwoFingers()
 

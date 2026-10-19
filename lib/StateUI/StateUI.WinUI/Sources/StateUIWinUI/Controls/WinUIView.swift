@@ -375,6 +375,16 @@ class WinUIView {
     /// The press the view heard, on its way to a drag by the host layer's rule.
     private var press = DragRecognition(distance: WinUIView.dragDistance)
 
+    /// The run of taps the view heard, by the host layer's rule, as Windows measures its double click.
+    private var taps = WinUIView.doubleTap
+
+    /// The system's double click, as a run of taps.
+    private static let doubleTap: TapRun = {
+        var tap = [0.5, 2.0]
+        stateui_winui_double_tap(&tap)
+        return TapRun(interval: .milliseconds(Int((tap[0] * 1000).rounded())), slop: tap[1])
+    }()
+
     /// The system's drag distance, in DIPs.
     private static let dragDistance: DragRecognition.Distance = {
         var distance = [4.0, 4.0]
@@ -409,6 +419,12 @@ class WinUIView {
     /// What the relay says the view heard.
     func heard(_ heard: HeardInput) {
         _ = onHeard?(heard)
+    }
+
+    /// A tap the relay says landed at `point` in the view at `time`, its place in its run counted by the host
+    /// layer's rule (`TapRun`).
+    func heardTap(at point: Point, time: Duration) {
+        heard(.tap(run: taps.tapped(at: point, time: time)))
     }
 
     /// The hand over a layout the relay tells - begun where a pointer went down, none for a trackpad's fingers;
