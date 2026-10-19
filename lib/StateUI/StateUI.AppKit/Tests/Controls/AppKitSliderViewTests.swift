@@ -46,6 +46,30 @@ final class AppKitSliderViewTests: XCTestCase {
         XCTAssertEqual(view.doubleValue, 30)
     }
 
+    /// An arrow key moves the thumb a hundredth of the range and a page key a tenth, as on every host
+    /// (`ValueArithmetic.sliderSteps`), and each move is the user's.
+    @MainActor
+    func testTheKeysMoveTheThumbAHundredthAndATenthOfTheRange() {
+        let view = AppKitSliderView()
+        var reports: [Double] = []
+        view.onValueChanged = { reports.append($0) }
+        view.apply(value: 50, minimum: 0, maximum: 200, tint: nil, enabled: true)
+
+        view.moveRight(nil)
+        XCTAssertEqual(view.doubleValue, 52, accuracy: 1e-9)
+        view.moveDown(nil)
+        XCTAssertEqual(view.doubleValue, 50, accuracy: 1e-9)
+        view.pageUp(nil)
+        XCTAssertEqual(view.doubleValue, 70, accuracy: 1e-9)
+        view.moveLeft(nil)
+        view.pageDown(nil)
+        XCTAssertEqual(view.doubleValue, 48, accuracy: 1e-9)
+        view.apply(value: 199, minimum: 0, maximum: 200, tint: nil, enabled: true)
+        view.pageUp(nil)
+        XCTAssertEqual(view.doubleValue, 200, accuracy: 1e-9, "a key stops at the range's end")
+        XCTAssertEqual(reports, [52, 50, 70, 68, 48, 200])
+    }
+
     @MainActor
     func testAStateWriteDoesNotBecomeAUserReport() {
         let view = AppKitSliderView()

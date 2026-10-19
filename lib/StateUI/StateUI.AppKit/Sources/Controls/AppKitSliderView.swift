@@ -43,6 +43,29 @@ final class AppKitSliderView: NSSlider {
         onValueChanged?(sender.doubleValue)
     }
 
+    /// The keys move the thumb as on every host: an arrow a hundredth of the range, a page key a tenth
+    /// (`ValueArithmetic.sliderSteps`), each move the user's.
+    /// Design: docs/design/platforms/appkit/input.md#a-slider-and-its-keys
+    override func moveRight(_ sender: Any?) { step(by: steps.key, forward: true) }
+    override func moveLeft(_ sender: Any?) { step(by: -steps.key, forward: true) }
+    override func moveUp(_ sender: Any?) { step(by: steps.key, forward: false) }
+    override func moveDown(_ sender: Any?) { step(by: -steps.key, forward: false) }
+    override func pageUp(_ sender: Any?) { step(by: steps.page, forward: false) }
+    override func pageDown(_ sender: Any?) { step(by: -steps.page, forward: false) }
+
+    private var steps: (key: Double, page: Double) { ValueArithmetic.sliderSteps(lower: minValue, upper: maxValue) }
+
+    /// Moves the thumb by `amount` within the range and says it as the user's; a horizontal arrow follows the
+    /// direction the layout reads in.
+    private func step(by amount: Double, forward: Bool) {
+        guard isEnabled else { return }
+        let way = forward && userInterfaceLayoutDirection == .rightToLeft ? -amount : amount
+        let moved = min(max(doubleValue + way, minValue), maxValue)
+        guard moved != doubleValue else { return }
+        doubleValue = moved
+        sendAction(action, to: target)
+    }
+
     override func mouseDown(with event: NSEvent) {
         beginDrag()
         super.mouseDown(with: event)

@@ -4,7 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `ProgressBarContract` on a host: a bar stands at its share of the work, within its ends.
+/// `ProgressBarContract` on a host: a bar stands at its share of the work, within its ends - one that is no number
+/// at the start.
 @_spi(Host) public enum ProgressBarTests: ConformanceFamily {
     public static let name = "ProgressBar"
 
@@ -19,12 +20,14 @@
                         ProgressBar(0.5).id("half")
                         ProgressBar(1.5).id("over")
                         ProgressBar(-1).id("under")
+                        ProgressBar(.nan).id("none")
                     }
                 }
 
                 s.expect(try s.held(ProgressBarContract.progress, on: s.element("half")), 0.5, within: 1e-9)
                 s.expect(try s.held(ProgressBarContract.progress, on: s.element("over")), 1, within: 1e-9)
                 s.expect(try s.held(ProgressBarContract.progress, on: s.element("under")), 0, within: 1e-9)
+                s.expect(try s.held(ProgressBarContract.progress, on: s.element("none")), 0, within: 1e-9)
             },
             Aspects.holds(ProgressBarContract.progress, on: "ProgressBar", 0.25, then: 0.75),
         ]

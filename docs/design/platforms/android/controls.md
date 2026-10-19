@@ -76,7 +76,10 @@ and name.
 
 `SeekBar` moves in whole steps from zero. The host gives it ten thousand steps
 across the range and turns a step into a value and back, so a value the user
-reports has the range's ten-thousandth as its finest step. A new range keeps
+reports has the range's ten-thousandth as its finest step. An arrow key moves
+it a hundredth of the range, as on every host (`ValueArithmetic.sliderSteps`);
+the `SeekBar`'s own is a twentieth, and setting its steps sets that again, so
+the host gives the key's step after them. A new range keeps
 the value the thumb stands at, inside the range, unless the tree wrote a new
 value with it: a hand on the thumb is never argued with.
 

@@ -129,7 +129,10 @@ itself, and the peers the host layer turns off are turned off on the page.
 ## Values in a range
 
 A Slider is the browser's range, which says each move of its thumb as it goes
-(`input`). A Stepper is a field of words with the role of a spin button
+(`input`). Its step is `any`, so a drag stands where the hand leaves it, and
+for such a range Blink and WebKit move the thumb a hundredth of the range for
+an arrow key and a tenth for a page key - the host layer's rule
+(`ValueArithmetic.sliderSteps`) already. A Stepper is a field of words with the role of a spin button
 between a button taking a step down and one taking a step up, the keyboard's
 arrows a step too. A step is a whole step from where the number stands, kept
 inside its range, and a number typed past an end stands at it. Words that are

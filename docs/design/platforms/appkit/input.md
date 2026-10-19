@@ -58,6 +58,16 @@ window and a sheet work that loop out themselves
 after the window, and a window keeping the loop it was given leaves a field
 alone in its own - Tab then selects the field's words instead of moving on.
 
+## A slider and its keys
+
+An arrow key moves a slider's thumb a hundredth of its range and Page Up or
+Page Down a tenth, as on every host (`ValueArithmetic.sliderSteps`). AppKit's
+own slider moves a twentieth for an arrow and goes to an end for a page key,
+and holds no step to set, so the host's slider answers the responder's own
+actions - `moveRight:`, `moveUp:`, `pageUp:` and their opposites, which the
+slider's key handling sends - and says each move as the user's. A horizontal
+arrow follows the direction the layout reads in.
+
 ## Scrolling
 
 The scrolling is the platform's, and the host layer's `ScrollMovement` says

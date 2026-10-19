@@ -89,7 +89,7 @@ Line 2
 Map 2
 Path 2
 Polygon 2
-ProgressBar 2
+ProgressBar 3
 RadioButton 2
 Spacer 2
 TabView 2

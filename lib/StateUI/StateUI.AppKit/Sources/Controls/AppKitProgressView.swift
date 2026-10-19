@@ -3,6 +3,7 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) import StateUIHost
 
 /// AppKit's determinate rendering of StateUI's unit progress value.
 @MainActor
@@ -26,7 +27,7 @@ final class AppKitProgressView: NSProgressIndicator {
     }
 
     func apply(progress: Double) {
-        doubleValue = min(max(progress.isFinite ? progress : 0, 0), 1)
+        doubleValue = ValueArithmetic.share(progress)
     }
 }
 

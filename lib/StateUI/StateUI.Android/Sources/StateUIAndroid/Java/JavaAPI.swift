@@ -287,6 +287,7 @@ enum JavaAPI {
     static let newSeekBar = Java.method(seekBar, "<init>", "(Landroid/content/Context;)V")
     static let setOnSeekBarChangeListener = Java.method(
         seekBar, "setOnSeekBarChangeListener", "(Landroid/widget/SeekBar$OnSeekBarChangeListener;)V")
+    static let setKeyProgressIncrement = Java.method(seekBar, "setKeyProgressIncrement", "(I)V")
     static let setThumbTintList = Java.method(
         seekBar, "setThumbTintList", "(Landroid/content/res/ColorStateList;)V")
     static let getThumbTintList = Java.method(
