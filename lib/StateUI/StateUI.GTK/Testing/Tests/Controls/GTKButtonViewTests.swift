@@ -10,6 +10,27 @@ import XCTest
 
 @MainActor
 final class GTKButtonViewTests: XCTestCase {
+    /// A button holding a menu opened as it is held lets the menu go as it leaves: its popover, its actions and its
+    /// place in the menus shown.
+    func testAHeldMenuLeavesWithItsButton() throws {
+        try onUIThread {
+            let shown = State(wrappedValue: true)
+            let host = GTKRenderer.running {
+                VStack {
+                    if shown.wrappedValue {
+                        Button("Save").menu(.held) { MenuItem("Save as") }
+                    }
+                }
+            }
+            host.settle { GTKContextMenu.shownCount > 0 }
+            let menus = GTKContextMenu.shownCount
+
+            shown.wrappedValue = false
+            host.settle { host.views(GTKButtonView.self).isEmpty && GTKContextMenu.shownCount < menus }
+            XCTAssertEqual(GTKContextMenu.shownCount, menus - 1, "the held menu outlived its button")
+        }
+    }
+
     /// A button's menu and its context menu each run their own items: GTK finds an item's action by its group's name
     /// on the widget, and two menus under one name would run each other's.
     func testAButtonsMenuAndItsContextMenuRunTheirOwnItems() throws {

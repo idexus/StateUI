@@ -21,6 +21,9 @@ final class GTKContextMenu {
     private var controllers: [OpaquePointer] = []
     private static let shown = Numbered<GTKContextMenu>()
 
+    /// How many menus stand on widgets now - what a test counts to see every one let go.
+    static var shownCount: Int { shown.count }
+
     /// `menu` on `widget`, which it opens over - held by a mouse too where `heldByMouse`, a held button's menu.
     init(_ menu: GTKMenu, on widget: GTKWidget, heldByMouse: Bool = false) {
         self.menu = menu
