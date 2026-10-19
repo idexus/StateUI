@@ -31,6 +31,10 @@ final class Conversion {
     /// Works the sources out from the derived value, where a control reports into it.
     var back: (() -> Void)?
 
+    /// How many of the derived state's reports the way back has taken: a write of the derived state that is no
+    /// report - the forward way's, settling what the application wrote - goes back to nobody.
+    private var reportsTaken = 0
+
     /// The derived state, for the back engine to follow.
     var derived: () -> (any FollowedState)? = { nil }
 
@@ -42,7 +46,9 @@ final class Conversion {
 
         if let back {
             made.append(
-                EngineDeclaration(follows: derived().map { [$0] } ?? [], sync: .display, priority: -2) { _ in
+                EngineDeclaration(follows: derived().map { [$0] } ?? [], sync: .display, priority: -2) { [self] _ in
+                    guard let reports = derived()?.reports, reports != reportsTaken else { return .wait }
+                    reportsTaken = reports
                     back()
                     return .wait
                 })

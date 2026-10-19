@@ -263,6 +263,35 @@ final class ConversionTests: XCTestCase {
         XCTAssertFalse(value.storage.readAtBuild, "and so is the second")
     }
 
+    /// The way back is the host's reports alone: what the application writes goes forward and stays as written,
+    /// however the conversion rounds it on the way - only a report comes back.
+    func testTheApplicationsWriteIsNotWorkedBack() throws {
+        let volume = State(wrappedValue: 0.2)
+        let renders = Renders()
+
+        let patch = renders.render(
+            Slider(volume.projectedValue.convert { ($0 * 100).rounded() }.convertBack { $0 / 100 })
+                .maximum(100)
+                .node)
+
+        let number = try XCTUnwrap(patch.driven?[.value]?.state)
+        let board = Renderer.shared.board(of: try XCTUnwrap(Renderer.shared.storage(of: number)))
+        board.cycle(now: 0, reducesMotion: false)
+
+        volume.wrappedValue = 0.123
+        board.cycle(now: 16, reducesMotion: false)
+        board.cycle(now: 32, reducesMotion: false)
+
+        XCTAssertEqual(volume.wrappedValue, 0.123, accuracy: 1e-12, "the application's write stays as written")
+        XCTAssertEqual(destination(of: number), 12, "and goes forward rounded")
+
+        _ = board.dirty()  // the host reads the frame, as it does every frame, before the user moves the thumb
+        dragged(number, to: 40)
+        board.cycle(now: 48, reducesMotion: false)
+
+        XCTAssertEqual(volume.wrappedValue, 0.4, accuracy: 1e-12, "a report still comes back")
+    }
+
     /// A report into a two-source conversion lands on both sources.
     func testAReportComesBackIntoBothSources() throws {
         let hours = State(wrappedValue: 1.0)

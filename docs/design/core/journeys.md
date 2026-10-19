@@ -208,9 +208,13 @@ from the first by an engine the differ writes: whenever the source moves, the
 engine runs on the display's frames and settles the derived value where the
 control reads it, and nothing is built. `.convertBack { $0 / 100 }` is the
 engine the other way, for a control that reports, so the user's change lands
-on the source in the source's terms. `convertBack` is meant as the inverse;
-where it is not exactly - a rounding, a clamp - the source settles once on the
-value the round trip lands on.
+on the source in the source's terms. It is woken by the host's reports alone
+(`HostStorage.reports`), never by the forward engine settling the derived
+value: what the application writes goes forward and stays as written - `v =
+0.123` through a slider converting by hundredths stays 0.123, the control
+showing 12 - as the application's writes never come back as the user's.
+`convertBack` is meant as the inverse; where it is not exactly - a rounding, a
+clamp - a report lands on the source as the round trip makes it.
 
 ```text
   derived state   known to the first source's storage under the element being

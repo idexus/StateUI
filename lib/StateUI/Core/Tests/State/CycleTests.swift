@@ -261,6 +261,9 @@ private final class Stamped: FollowedState {
 
     var stamp: Int { written.load(ordering: .relaxed) }
 
+    /// None: nothing behind it is the host's.
+    var reports: Int { 0 }
+
     func write() { written.add(1, ordering: .relaxed) }
 }
 

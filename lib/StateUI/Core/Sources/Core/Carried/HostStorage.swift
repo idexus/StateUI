@@ -29,6 +29,9 @@ final class HostStorage: NamedState {
     /// How many times the value was written, equal bytes included - what an engine compares.
     var stamp: Int = 0
 
+    /// How many host reports laid anything on it: what a conversion's way back follows (journeys.md#conversions).
+    var reports: Int = 0
+
     /// The number the host quotes it back by, once anything has asked.
     var number: Int32?
 

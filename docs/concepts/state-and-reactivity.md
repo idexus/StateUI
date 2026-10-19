@@ -423,7 +423,9 @@ VStack {
 
 `convertBack` is needed when a reporting control edits the derived value. It
 maps that report back into the source's units. Without it, reports into the
-derived binding have no source-side destination.
+derived binding have no source-side destination. Only the user's change comes
+back: a value the application writes goes forward as written, however the
+conversion rounds it on the way.
 
 Use `.multi` for a forward conversion of two through ten states:
 

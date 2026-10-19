@@ -56,6 +56,9 @@ public struct EngineCycle: Sendable {
 protocol FollowedState: AnyObject {
     /// How many times the state has been written.
     var stamp: Int { get }
+
+    /// How many of those writes were the host's reports.
+    var reports: Int { get }
 }
 
 /// An engine as the tree carries it, before the differ numbers it. Its closure

@@ -114,6 +114,7 @@ final class CycleBoard {
         }
 
         storage.stamp &+= 1
+        if laid != 0 { storage.reports &+= 1 }
 
         if cycling {
             lay(into: &storage.image)

@@ -21,6 +21,9 @@ extension State {
         /// where it shows it - what an engine following it compares.
         @usableFromInline var stamp: Int { written &+ shownMoves &+ (image?.stamp ?? 0) }
 
+        /// How many times the host reported the state.
+        var reports: Int { image?.reports ?? 0 }
+
         /// Where a run the hand or the core moves shows the value while it does, and
         /// which run: what the journey's value answers then, the state's own still the
         /// target named. Nothing carries it to the host, which walks the target.
