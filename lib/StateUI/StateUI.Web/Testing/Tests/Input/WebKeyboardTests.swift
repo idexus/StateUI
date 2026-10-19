@@ -41,6 +41,22 @@ final class WebKeyboardTests: XCTestCase {
         host.leave()
     }
 
+    /// A menu that closes gives the keyboard back to what held it as the menu opened, not to the page's body.
+    func testAClosedMenuGivesTheKeyboardBack() throws {
+        WebRenderer.shared?.leave()
+        let host = WebRenderer.running { Button("Share").menu { MenuItem("Mail") } }
+        host.step()
+        let button = try XCTUnwrap(host.views(WebButtonView.self).first)
+        try WebBrowser.run("e.focus(); e.click()", on: button.node)
+        for _ in 0..<3 { host.step() }
+        XCTAssertTrue(try WebBrowser.truth("!!document.querySelector('.stateui-menu:popover-open')", on: 0), "the menu open")
+
+        try WebBrowser.run("document.querySelector('.stateui-menu:popover-open').hidePopover()")
+        for _ in 0..<3 { host.step() }
+        XCTAssertTrue(try WebBrowser.truth("document.activeElement === e", on: button.node), "the keyboard back on the button")
+        host.leave()
+    }
+
     private func focused() throws -> String {
         try WebBrowser.evaluate("document.activeElement?.textContent ?? ''", on: 0) ?? ""
     }
