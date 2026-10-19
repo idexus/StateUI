@@ -109,8 +109,12 @@ over everything (`popover="auto"`): an item a button, a separator a line, a
 submenu a button opening its own popover beside it, inside the one it stands
 in so that both stay open. A click beside it or Escape takes it down - the
 browser's own light dismissal - and so does choosing an item, which then
-hears it chosen. A popover is kept in the window whole, under what opened
-it, above where there is no room under, at the pointer for a context menu.
+hears it chosen. An open menu holds the keyboard: the page's own keys - a
+view taking the arrows, Enter or Escape - pass it by, so its arrows go
+through its items whatever the page takes, and as it goes the browser gives
+the keyboard back to what held it. A popover is kept in the window whole,
+under what opened it, above where there is no room under, at the pointer
+for a context menu.
 Its entries stand in a grid of rows each as tall as it is: WebKit spreads a
 grid held to a maximum height over its rows, and a menu of three stood the
 window's height in Safari.

@@ -107,4 +107,31 @@ final class WebKeyboardTests: XCTestCase {
         press("End", host)
         XCTAssertEqual(try focused(), "Ruler")
     }
+
+    /// An open menu holds the keyboard though the page takes the arrows, Enter and Escape itself: the page's keys are
+    /// for the page, not for a menu standing over it.
+    func testAMenuKeepsItsKeysFromAPageTakingThem() throws {
+        WebRenderer.shared?.leave()
+        var taken: [Key] = []
+        let host = WebRenderer.running {
+            VStack {
+                Text("Row").contextMenu {
+                    MenuItem("Copy")
+                    MenuItem("Paste")
+                }
+            }
+            .onKeyPressed(.downArrow, .upArrow, .return, .escape) { taken.append($0) }
+        }
+        host.step()
+        let row = try XCTUnwrap(host.views(WebTextView.self).first)
+        try WebBrowser.run("e.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true }))", on: row.node)
+        host.step()
+
+        press("ArrowDown", host)
+        XCTAssertEqual(try focused(), "Copy")
+        press("ArrowDown", host)
+        XCTAssertEqual(try focused(), "Paste")
+        XCTAssertEqual(taken, [], "the page took the menu's keys")
+        host.leave()
+    }
 }
