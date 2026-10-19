@@ -101,6 +101,11 @@ final class WinUIRenderer {
         actToolkit.answered(ticket: ticket, answer)
     }
 
+    /// The words of the prompt asked under `ticket` changed, an input method `composing` them or not.
+    func promptTyped(ticket: Int64, _ words: String, composing: Bool) {
+        actToolkit.typed(ticket: ticket, words, composing: composing)
+    }
+
     /// Windows said the theme, the power, the network or a screen changed: the core hears it, and renders what it
     /// changed.
     func environmentChanged() {

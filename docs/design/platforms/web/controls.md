@@ -96,7 +96,11 @@ Return key - but not the Return that commits an input method's words, which
 is the method's (`isComposing`, and Safari's key of number 229): heard, a
 Japanese candidate chosen would submit half a word. The tree writes its words only where they differ from what the
 field holds: writing the same words again would move the user's caret to
-their end. The keyboard and the help the user's typing gets are the host
+their end. The most a field holds is counted in characters, as on every host:
+the browser's `maxlength` counts UTF-16 units, two to an emoji, so the field
+has none and the host holds the words as they are typed (`InputWords.held`),
+whole while an input method composes them and once it commits them - a
+prompt's field the same. The keyboard and the help the user's typing gets are the host
 layer's traits (`InputTraits`): `inputmode`, `autocapitalize`, `spellcheck`,
 `autocorrect` and `autocomplete`, and what the Return key says
 `enterkeyhint`. The caret and the selection are placed in the page's own

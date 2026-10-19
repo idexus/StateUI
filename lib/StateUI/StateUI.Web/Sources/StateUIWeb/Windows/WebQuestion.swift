@@ -97,7 +97,7 @@ final class WebQuestion {
         let field = WebTextInputView(.field)
         field.setTraits(question.traits)
         field.setPlaceholder(question.placeholder)
-        field.attribute("maxlength", question.maximumLength.map(String.init))
+        field.setMaximumLength(question.maximumLength)
         WebRelay.setValue(field.node, question.words)
         field.hear(.enter) { [weak self] in
             guard let self else { return }

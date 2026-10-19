@@ -16,12 +16,13 @@ final class WinUIActToolkit: ActToolkit {
     /// What hears each dialog's answer, by the ticket the dialog hands back.
     private let dialogs = Numbered<(Result<HostQuestion.Given, ActFailure>) -> Void>()
 
-    /// The dialog showing: its ticket, and the window it stands over.
+    /// The dialog showing: its ticket, the window it stands over, and the most characters its field takes.
     private var showing: Showing?
 
     private struct Showing {
         let ticket: Int64
         weak var window: WinUIWindow?
+        let bound: Int?
     }
 
     init(renderer: WinUIRenderer) {
@@ -56,7 +57,7 @@ final class WinUIActToolkit: ActToolkit {
         guard let window = renderer.userWindow, let element = renderer.element(of: window), let content = window.content
         else { return nil }
         let ticket = dialogs.hold(answered)
-        showing = Showing(ticket: ticket, window: window)
+        showing = Showing(ticket: ticket, window: window, bound: question.maximumLength)
 
         // The title, the message, the captions that accept, cancel and destroy, the placeholder, the first words.
         let kind: StateUIQuestionKind = switch question.kind {
@@ -82,6 +83,16 @@ final class WinUIActToolkit: ActToolkit {
             }
         }
         return element
+    }
+
+    /// The words of the prompt asked under `ticket` changed: held within its bound in characters, whole while an input
+    /// method is `composing` them (`InputWords.held`) - WinUI's own bound counts UTF-16 units.
+    /// Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
+    func typed(ticket: Int64, _ words: String, composing: Bool) {
+        guard let showing, showing.ticket == ticket, let content = showing.window?.content,
+              let held = InputWords.held(words, in: nil, toBound: showing.bound, composing: composing)
+        else { return }
+        stateui_winui_prompt_write(content.handle, held)
     }
 
     /// The dialog under `ticket` was answered - accepted or not, and the words chosen or typed - or failed.

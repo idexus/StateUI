@@ -36,14 +36,9 @@ final class WebTextInputView: WebDOMView, WebWordsView {
             attribute("type", kind == .search ? "search" : "text")
             attribute("class", "stateui-field")
         }
-        listen("input") { [weak self] in
-            guard let self else { return }
-            let words = WebRelay.value(of: node)
-            guard words != said else { return }
-            said = words
-            fit()
-            onTextChanged(words)
-        }
+        listen("input") { [weak self] in self?.typed(composing: WebRelay.eventComposing) }
+        // Safari ends a composition after its last input: the words are held as it ends.
+        listen("compositionend") { [weak self] in self?.typed(composing: false) }
         if kind != .editor { hear(.enter) { [weak self] in self?.onSubmitted() } }
     }
 
@@ -78,7 +73,24 @@ final class WebTextInputView: WebDOMView, WebWordsView {
 
     /// The most characters the field takes; nil for no bound.
     func setMaximumLength(_ length: Int?) {
-        attribute("maxlength", length.map(String.init))
+        maximumLength = length
+    }
+
+    /// The most characters the field takes, held as the user types: the browser's own bound counts UTF-16 units.
+    private var maximumLength: Int?
+
+    /// The user changed the words: held within `maximumLength` - whole while an input method is `composing` them
+    /// (`InputWords.held`) - then handed on where they differ from what the field said.
+    private func typed(composing: Bool) {
+        var words = WebRelay.value(of: node)
+        if let held = InputWords.held(words, in: nil, toBound: maximumLength, composing: composing) {
+            words = held
+            WebRelay.setValue(node, held)
+        }
+        guard words != said else { return }
+        said = words
+        fit()
+        onTextChanged(words)
     }
 
     /// Whether a field hides its words, as a password's.

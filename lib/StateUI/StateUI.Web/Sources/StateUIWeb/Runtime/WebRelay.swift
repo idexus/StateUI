@@ -200,6 +200,9 @@ enum WebRelay {
     /// Whether ⌥/Alt was held as the event being heard happened.
     static var eventAlt: Bool { stateui_web_event_number(20) != 0 }
 
+    /// Whether an input method was composing the words as the event being heard happened.
+    static var eventComposing: Bool { stateui_web_event_number(21) != 0 }
+
     /// The size of the element hearing the event.
     static var eventSize: LayoutSize {
         LayoutSize(width: stateui_web_event_number(11), height: stateui_web_event_number(12))

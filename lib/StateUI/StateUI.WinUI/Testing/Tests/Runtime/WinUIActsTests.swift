@@ -75,6 +75,26 @@ final class WinUIActsTests: XCTestCase {
         }
     }
 
+    /// A prompt's field holds its bound in characters, as a field of the tree does: WinUI's own counts UTF-16 units,
+    /// in which two of these are four.
+    func testAPromptsFieldHoldsItsBoundInCharacters() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                Text("Draft").onCreated { _ = try await Dialogs.prompt("Name", maximumLength: 3) }
+            }
+            let window = try XCTUnwrap(host.window)
+            host.settle(until: { Self.asks(window) })
+            let content = try XCTUnwrap(window.content).handle
+
+            stateui_winui_prompt_write(content, "😀😀😀😀")
+            host.step()
+            XCTAssertEqual(Self.field(of: window), "😀😀😀")
+
+            _ = stateui_winui_answer(content, 1, nil)
+            host.settle(until: { !Self.asks(window) })
+        }
+    }
+
     /// A question asked as its window's page is made, before WinUI has loaded the window, stands once it is loaded.
     func testAQuestionAskedAsItsWindowOpensStandsOverIt() throws {
         try onUIThread {
@@ -155,6 +175,17 @@ final class WinUIActsTests: XCTestCase {
     @MainActor
     private static func asks(_ window: WinUIWindow) -> Bool {
         window.content.map { stateui_winui_question($0.handle, nil, 0) >= 0 } ?? false
+    }
+
+    /// The words in the field of the question showing over `window`; nil for none.
+    @MainActor private static func field(of window: WinUIWindow) -> String? {
+        guard let content = window.content?.handle else { return nil }
+        let length = stateui_winui_question(content, nil, 0)
+        guard length >= 0 else { return nil }
+        var bytes = [CChar](repeating: 0, count: Int(length) + 1)
+        _ = stateui_winui_question(content, &bytes, Int32(bytes.count))
+        let parts = String(cString: bytes).split(separator: "\u{1F}", omittingEmptySubsequences: false)
+        return parts.count > 4 ? String(parts[4]) : nil
     }
 }
 

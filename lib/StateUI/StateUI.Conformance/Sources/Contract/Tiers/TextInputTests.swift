@@ -96,7 +96,7 @@
         }
     }
 
-    /// Typing stops at the most characters the tree allows.
+    /// Typing stops at the most characters the tree allows - characters, however many units each is to the platform.
     @MainActor
     static func bounded(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).typingStopsAtTheMaximumLength", proves: [
@@ -113,6 +113,11 @@
 
             s.expect(words.wrappedValue, "Ada")
             s.expect(try s.held(TextualElementContract.text, on: view), "Ada")
+
+            try s.perform(.type("😀😀😀😀"), on: view)
+            s.settle { words.wrappedValue == "😀😀😀" }
+            s.expect(words.wrappedValue, "😀😀😀", "three characters, two units each to some platforms")
+            s.expect(try s.held(TextualElementContract.text, on: view), "😀😀😀")
         }
     }
 

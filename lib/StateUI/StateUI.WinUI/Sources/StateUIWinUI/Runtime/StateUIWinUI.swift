@@ -67,6 +67,10 @@ enum WinUICallbacks {
                 let text = utf8.map { String(cString: $0) } ?? ""
                 MainActor.assumeIsolated { (WinUIView.find(view) as? WinUITextInputView)?.typed(text, composing: composing) }
             },
+            promptTyped: { ticket, utf8, composing in
+                let words = utf8.map { String(cString: $0) } ?? ""
+                MainActor.assumeIsolated { WinUIRenderer.shared?.promptTyped(ticket: ticket, words, composing: composing) }
+            },
             submitted: { view in
                 MainActor.assumeIsolated { (WinUIView.find(view) as? WinUITextInputView)?.onSubmitted?() }
             },

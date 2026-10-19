@@ -9,6 +9,7 @@
 #include "Relay.h"
 
 #include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -139,7 +140,23 @@ namespace {
             if (hasMessage) content.Children().Append(paragraph(question.message));
             controls::TextBox field;
             if (question.placeholder) field.PlaceholderText(text(question.placeholder));
-            if (question.maximumLength > 0) field.MaxLength(question.maximumLength);
+            // The words are held within the prompt's bound in characters by the host: WinUI's MaxLength counts
+            // UTF-16 units. Each change is told, whether an input method composes them, and again as it commits.
+            auto composing = std::make_shared<bool>(false);
+            field.TextChanging(guarded("handling a prompt's TextChanging",
+                [ticket, composing](controls::TextBox const &sender, controls::TextBoxTextChangingEventArgs const &args) {
+                if (!args.IsContentChanging()) return;
+                callbacks.promptTyped(ticket, winrt::to_string(sender.Text()).c_str(), *composing);
+            }));
+            field.TextCompositionStarted(guarded("handling a prompt's TextCompositionStarted",
+                [composing](controls::TextBox const &, controls::TextCompositionStartedEventArgs const &) {
+                *composing = true;
+            }));
+            field.TextCompositionEnded(guarded("handling a prompt's TextCompositionEnded",
+                [ticket, composing](controls::TextBox const &sender, controls::TextCompositionEndedEventArgs const &) {
+                *composing = false;
+                callbacks.promptTyped(ticket, winrt::to_string(sender.Text()).c_str(), false);
+            }));
             field.IsSpellCheckEnabled(question.spellChecked);
             field.IsTextPredictionEnabled(question.predicted);
             field.InputScope(inputScope(question.scope));
@@ -207,6 +224,19 @@ extern "C" void stateui_winui_ask(StateUIObjectRef handle, int64_t ticket, State
         }));
     } catch (...) {
         failed(ticket, "asking the user");
+    }
+}
+
+extern "C" void stateui_winui_prompt_write(StateUIObjectRef handle, char const *words) {
+    try {
+        auto dialog = shown(as<xaml::UIElement>(handle).XamlRoot());
+        auto field = dialog ? first<controls::TextBox>(dialog) : nullptr;
+        if (!field) return;
+        auto written = text(words);
+        field.Text(written);
+        field.Select(static_cast<int32_t>(written.size()), 0);
+    } catch (...) {
+        report("writing a prompt's words");
     }
 }
 

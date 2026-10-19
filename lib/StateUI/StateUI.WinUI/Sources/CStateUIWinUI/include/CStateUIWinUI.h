@@ -339,6 +339,10 @@ typedef struct {
     /// them, told again as it commits them.
     void (*textChanged)(int64_t view, char const *utf8, bool composing);
 
+    /// The words of the prompt asked under `ticket` changed - an input method composing them or not: the host holds
+    /// them within the prompt's bound (`stateui_winui_prompt_write`).
+    void (*promptTyped)(int64_t ticket, char const *utf8, bool composing);
+
     /// A single-line field's Enter, or a search box's query.
     void (*submitted)(int64_t view);
 
@@ -1317,6 +1321,10 @@ void stateui_winui_svgs_read(StateUIObjectRef element, int32_t *counts);
 /// a number, 0 or 1, words, sides and corners as four numbers - answering its whole length; -1 for a property the
 /// element has none of. What a test reads.
 int32_t stateui_winui_read(StateUIObjectRef element, char const *what, char *utf8, int32_t capacity);
+
+/// Writes `utf8` in the field of the prompt showing over `element`'s window, the caret after them - each change told
+/// through `promptTyped`, as the user's typing is.
+void stateui_winui_prompt_write(StateUIObjectRef element, char const *utf8);
 
 /// The question showing over `element`'s window, in UTF-8, as far as `capacity` goes: its title, message, accepting
 /// and cancelling captions, its field's words (0x01 for none) and its choices, each ended by the unit separator
