@@ -99,9 +99,11 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
     }
 
     /// Stands UIKit's scroll view over the whole of the room and the document in it, then an offset the tree wrote
-    /// before there was one.
+    /// before there was one. A frame set again, the same, pulls a stretch past the edge back within reach.
+    /// Design: docs/design/platforms/uikit/layout.md#scrolling
     override func arrange(in bounds: Rect) {
-        scroller.frame = CGRect(x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height)
+        let frame = CGRect(x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height)
+        if scroller.frame != frame { scroller.frame = frame }
         let size = document.documentSize(in: LayoutSize(width: bounds.width, height: bounds.height))
         let documentSize = CGSize(width: size.width, height: size.height)
         if document.frame.size != documentSize { document.frame = CGRect(origin: .zero, size: documentSize) }
