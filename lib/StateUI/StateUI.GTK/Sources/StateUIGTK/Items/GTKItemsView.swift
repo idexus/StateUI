@@ -70,6 +70,17 @@ final class GTKItemsView: GTKLayoutView {
                 MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKItemsView)?.tellShowing() }
             }
         }
+        // The user taking the list: where it stands is theirs.
+        let hand = gtk_event_controller_scroll_new(GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES)!
+        gtk_event_controller_set_propagation_phase(hand, GTK_PHASE_CAPTURE)
+        connectSignal(UnsafeMutableRawPointer(hand), "scroll-begin", number: number) { (_: UnsafeMutableRawPointer?, data: gpointer?) in
+            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKItemsView)?.cells.userScrolled() }
+        }
+        connectAnswering(UnsafeMutableRawPointer(hand), "scroll", number: number) { _, _, _, data in
+            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKItemsView)?.cells.userScrolled() }
+            return 0
+        }
+        gtk_widget_add_controller(scroller.widget, hand)
         scroller.placingLayout = self
         setChildren([scroller])
         makeList()
@@ -243,6 +254,7 @@ final class GTKItemsView: GTKLayoutView {
     /// The tree's entries changed: every cell shows the subtree its entry has now (`ItemsCells.childrenChanged`).
     func childrenChanged() {
         cells.childrenChanged()
+        if cells.scrollTarget != nil { settle() }
     }
 
     /// An entry's size would change: the cell holding it is measured again.
@@ -353,7 +365,9 @@ final class GTKItemsView: GTKLayoutView {
     // MARK: - Acts
 
     /// Scrolls until the item of `identity` stands where `anchor` says: GTK brings it into view, and once it is laid
-    /// out the scrolled window stands where the anchor says (`ScrollAnchor.place`).
+    /// out the scrolled window stands where the anchor says (`ScrollAnchor.place`) - again on every frame its cells
+    /// are laid out, while the host layer holds it.
+    /// Design: docs/design/platforms/gtk/items.md#scrolling-to-an-item
     func scroll(to identity: String, anchor: ScrollAnchor) {
         guard let list, let place = cells.identities.firstIndex(of: identity) else { return }
         if case .grid = shape {
@@ -361,29 +375,39 @@ final class GTKItemsView: GTKLayoutView {
         } else {
             gtk_list_view_scroll_to(list.opaque, guint(place), GTK_LIST_SCROLL_NONE, nil)
         }
-        let waiting = settling != nil
-        settling = (identity, anchor, Self.settlingFrames)
+        cells.scroll(to: identity, anchor: anchor)
+        settle()
+    }
+
+    /// Waits the frames GTK takes to lay the item out, standing it on each it is laid out on.
+    private func settle() {
+        let waiting = settlingFrames > 0
+        settlingFrames = Self.settlingFrames
         guard !waiting else { return }
         g_timeout_add_full(G_PRIORITY_DEFAULT, 16, { data in
             MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKItemsView)?.settleAFrame() ?? false } ? 1 : 0
         }, UnsafeMutableRawPointer(bitPattern: Int(number)), nil)
     }
 
-    /// The item a scroll brings into the list, where it is to stand, and how many frames more it is waited for.
-    private var settling: (identity: String, anchor: ScrollAnchor, frames: Int)?
+    /// How many frames more the item scrolled to is waited for.
+    private var settlingFrames = 0
 
-    /// A scroll brings its item over the next layouts: a second's frames.
+    /// An item scrolled to comes over the next layouts: a second's frames.
     private static let settlingFrames = 60
 
-    /// Stands the scrolled window for the item a scroll brings, once GTK has laid it out; whether to wait a frame
-    /// more.
+    /// Stands the item scrolled to, where GTK has laid it out - the host layer lets it go once its cells are
+    /// measured; whether to wait a frame more.
     private func settleAFrame() -> Bool {
-        guard let goal = settling, !released else { return false }
-        if stand(goal.identity, anchor: goal.anchor) || goal.frames <= 1 {
-            settling = nil
+        settlingFrames -= 1
+        guard !released, let target = cells.scrollTarget else {
+            settlingFrames = 0
             return false
         }
-        settling?.frames -= 1
+        if stand(target.identity, anchor: target.anchor) { _ = cells.laidOut() }
+        guard settlingFrames > 0, cells.scrollTarget != nil else {
+            settlingFrames = 0
+            return false
+        }
         return true
     }
 
