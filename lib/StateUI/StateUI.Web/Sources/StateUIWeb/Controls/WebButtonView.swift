@@ -117,6 +117,8 @@ final class WebButtonView: WebDOMView, WebWordsView {
     override func detach() {
         opensMenu = nil
         picture?.detach()
+        arrow?.detach()
+        arrow = nil
         words.detach()
         super.detach()
     }

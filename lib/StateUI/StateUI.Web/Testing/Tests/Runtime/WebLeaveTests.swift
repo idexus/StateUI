@@ -42,6 +42,23 @@ final class WebLeaveTests: XCTestCase {
         XCTAssertEqual(WebRelay.listenerCount, before, "a listener outlived the window that hung it")
     }
 
+    /// A split button lets go of its arrow with itself, and a menu of no entries - never shown - of its popover.
+    func testASplitButtonsArrowAndAnEmptyMenuLeaveNothing() throws {
+        WebRenderer.shared?.leave()
+        let before = (WebDOMView.liveCount, WebRelay.listenerCount)
+        let host = WebRenderer.running { Button("Save").onClicked {}.menu(.split) { MenuItem("Save as") } }
+        host.step()
+        host.leave()
+        XCTAssertEqual(WebDOMView.liveCount, before.0, "a split button's arrow outlived it")
+
+        do {
+            let menu = WebMenu([])
+            menu.show()
+        }
+        XCTAssertEqual(WebDOMView.liveCount, before.0, "an empty menu's popover outlived it")
+        XCTAssertEqual(WebRelay.listenerCount, before.1, "and its listener")
+    }
+
     /// A DOM element's number, let go of, is no other element's: what reaches a view that went - an act that waited -
     /// reaches nothing, not the element made after it.
     func testAReleasedElementsNumberIsNoOneElses() throws {
