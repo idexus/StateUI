@@ -22,8 +22,8 @@ import CStateUIWinUI
 public enum StateUIWinUI {
     /// Starts WinUI on this thread and runs the application until its last window closes.
     ///
-    /// - Returns: the process's exit code - 0, or the failure WinUI started with.
-    @discardableResult
+    /// - Returns: the process's exit code - 0, or the failure WinUI started with - which the head ends the process
+    ///   with: `exit(StateUIWinUI.run())`.
     public static func run() -> Int32 {
         var callbacks = WinUICallbacks.table
         return stateui_winui_run(&callbacks)

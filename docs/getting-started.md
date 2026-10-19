@@ -339,6 +339,7 @@ The Gallery's GTK head registers both:
 
 ```swift quote
 import GalleryUI
+import StateUIFoundation
 import StateUIGTK
 import StateUIWebViewGTK
 
@@ -347,7 +348,7 @@ GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
 StateUIWebViewGTK.register()
-StateUIGTK.run(applicationID: "com.stateui.gallery")
+exit(StateUIGTK.run(applicationID: "com.stateui.gallery"))
 ```
 
 `GalleryControls`, `GalleryActs` and `GalleryEventSources` are the Gallery's

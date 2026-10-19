@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import GalleryUI
+import StateUIFoundation
 import StateUIWebViewWinUI
 import StateUIWinUI
 
@@ -20,4 +21,4 @@ GalleryEventSources.start()
 // listing: end
 // The backends the Gallery shows a library element through: the web view, over WebView2.
 StateUIWebViewWinUI.register()
-StateUIWinUI.run()
+exit(StateUIWinUI.run())

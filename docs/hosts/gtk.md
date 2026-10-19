@@ -57,14 +57,17 @@ The host builds on Linux, on arm64 or x64:
 ## The head
 
 An application's GTK head is an executable. Its `main` names the application
-and hands the thread to the host, under the application's reverse-DNS name:
+and hands the thread to the host, under the application's reverse-DNS name,
+and ends the process with the code GTK ended with - a start GTK refused
+fails it:
 
 ```swift quote
 import NotesUI
+import StateUIFoundation
 import StateUIGTK
 
 stateui_app_register()
-StateUIGTK.run(applicationID: "com.example.notes")
+exit(StateUIGTK.run(applicationID: "com.example.notes"))
 ```
 
 The name is the one the desktop knows the application by. GTK keeps one
