@@ -18,6 +18,8 @@
                 let notice = State(wrappedValue: false)
                 s.start { OverlaidPage(notice: notice) }
                 let beneath = try s.element("beneath")
+                // Where the notice stands: over the top-leading corner of the rectangle the page starts with.
+                let underNotice = Point(40, 10)
 
                 try s.perform(.activate, on: s.element("show"))
                 try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("notice")) == true }
@@ -25,11 +27,12 @@
                 // A view coming into a layer standing already fades in: pressed once it stands.
                 try s.settle { try s.reaches(over, at: Point(40, 10)) }
                 s.expect(try s.reaches(over, at: Point(40, 10)), true, "the overlay takes a press on it")
-                s.expect(try s.reaches(beneath, at: Point(5, 200)), true, "a press beside it reaches the page")
+                s.expect(try s.reaches(beneath, at: Point(5, 100)), true, "a press beside it reaches the page")
+                s.expect(try s.reaches(beneath, at: underNotice), false, "a press on it reaches nothing beneath")
 
                 try s.perform(.activate, on: s.element("hide"))
-                s.settle { (try? s.element("notice")) == nil }
-                s.expect((try? s.element("notice")) == nil, true, "gone once the tree takes it away")
+                try s.settle { try s.reaches(beneath, at: underNotice) }
+                s.expect(try s.reaches(beneath, at: underNotice), true, "gone, a press where it stood reaches the page")
             },
             ConformanceCase("anOverlayGoesWithThePageDeclaringIt", proves: [Covered(OverlayContract.self)]) { s in
                 let path = State(wrappedValue: [Int]())
@@ -81,15 +84,15 @@ struct OverlaidPage: View {
     var body: some View {
         let notice = notice
         return VStack {
+            Rectangle().fill(.red).width(200).height(160).id("beneath")
             Button("Show").onClicked { notice.wrappedValue = true }.id("show")
             Button("Hide").onClicked { notice.wrappedValue = false }.id("hide")
-            Rectangle().fill(.red).height(300).id("beneath")
         }
         .horizontalAlignment(.start)
         .verticalAlignment(.start)
         .overlays {
             if notice.wrappedValue {
-                Text("Offline").width(80).height(20).horizontalAlignment(.end).verticalAlignment(.start).id("notice")
+                Text("Offline").width(80).height(20).horizontalAlignment(.start).verticalAlignment(.start).id("notice")
             }
         }
     }

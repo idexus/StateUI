@@ -62,10 +62,12 @@
         self.report = report
     }
 
-    /// Shows `page` in a window of its own on the host, its display frames at `clock`'s time where one is given.
+    /// Shows `page` in a window of its own on the host, its display frames at `clock`'s time where one is given. The
+    /// case's first start finds nothing kept, whatever earlier runs wrote.
     public func start(
         clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) {
+        if tree == nil { driver.forgetWhatIsKept() }
         tree = driver.start(clock: clock, reducesMotion: reducesMotion, page)
     }
 

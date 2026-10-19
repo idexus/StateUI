@@ -37,7 +37,10 @@
 
             try s.perform(.activate, on: s.element("focus"))
             s.settle { !took.values.isEmpty && (took.values == [false] || heard.values == [true]) }
+            // The act answers, taken or refused: one that never answers is a host's failure, not the toolkit's refusal.
+            s.expect(took.values.count, 1, "the focus act answered")
             guard took.values == [true] else {
+                guard took.values == [false] else { return }
                 s.expect(heard.values, [], "a view that refused the keyboard hears nothing")
                 s.expect(try s.focused(view), false)
                 throw s.absent("\(element) takes no keyboard focus here: it refuses it, and nothing is heard")

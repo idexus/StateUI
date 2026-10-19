@@ -26,7 +26,8 @@
 
                 try s.perform(.activate, on: s.element("another1"))
                 try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("sheet2")) == true }
-                s.expect(sheets.wrappedValue, [1, 2], "one over the other")
+                s.expect(try s.held(VisualElementContract.isVisible, on: s.element("sheet2")), true, "the second shown")
+                s.expect(try s.held(VisualElementContract.isVisible, on: s.element("sheet1")), true, "over the first")
             },
             ConformanceCase("aSheetStandsOverAPageArrangedBeneathIt", proves: [
                 Covered(ModalStackContract.self),

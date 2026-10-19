@@ -25,7 +25,9 @@
                 }
 
                 s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "let x = 1")
-                s.expect(s.elements(ofType: TextSpanContract.nodeType).count, 3, "a span a run")
+                let spans = s.elements(ofType: TextSpanContract.nodeType)
+                s.expect(try spans.map { try s.held(TextualElementContract.text, on: $0) }, ["let ", "x", " = 1"],
+                         "a span a run")
             },
             ConformanceCase("aSpanTheTreeChangesChangesItsRun", proves: [
                 Covered(TextualElementContract.text, on: "TextSpan"),
