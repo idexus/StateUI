@@ -16,13 +16,13 @@ final class WebPressTests: XCTestCase {
     /// is then no tap.
     func testAMousePressMovedFarEnoughIsADrag() {
         var press = WebPress()
-        XCTAssertEqual(press.down(1, at: Point(x: 150, y: 150), kind: 0, origin: corner, size: size), [])
+        XCTAssertEqual(press.down(1, at: Point(x: 150, y: 150), kind: .mouse, origin: corner, size: size), [])
         XCTAssertEqual(press.moved(1, to: Point(x: 153, y: 150), origin: corner, size: size), [])
         XCTAssertEqual(press.moved(1, to: Point(x: 160, y: 155), origin: corner, size: size),
                        [.drag(.began, x: 0, y: 0), .drag(.changed, x: 10, y: 5)])
         XCTAssertEqual(press.up(1, letGo: true, origin: corner, size: size), [.drag(.ended, x: 10, y: 5)])
         XCTAssertTrue(press.wasDragged)
-        _ = press.down(1, at: Point(x: 150, y: 150), kind: 0, origin: corner, size: size)
+        _ = press.down(1, at: Point(x: 150, y: 150), kind: .mouse, origin: corner, size: size)
         XCTAssertFalse(press.wasDragged, "a new press is no drag yet")
     }
 
@@ -30,9 +30,9 @@ final class WebPressTests: XCTestCase {
     /// stand against the step before, where their middle is in the view.
     func testASecondFingerPinches() {
         var press = WebPress()
-        _ = press.down(1, at: Point(x: 180, y: 200), kind: 2, origin: corner, size: size)
+        _ = press.down(1, at: Point(x: 180, y: 200), kind: .touch, origin: corner, size: size)
         _ = press.moved(1, to: Point(x: 160, y: 200), origin: corner, size: size)
-        XCTAssertEqual(press.down(2, at: Point(x: 240, y: 200), kind: 2, origin: corner, size: size), [
+        XCTAssertEqual(press.down(2, at: Point(x: 240, y: 200), kind: .touch, origin: corner, size: size), [
             .drag(.cancelled, x: -20, y: 0), .pinch(.began, scale: 1, at: Point(x: 0.5, y: 0.5)),
             .rotation(.began, degrees: 0),
         ])
@@ -45,8 +45,8 @@ final class WebPressTests: XCTestCase {
     /// Two fingers turning the line between them turn the view: a quarter turn clockwise, the fingers as far apart.
     func testTwoFingersTurning() {
         var press = WebPress()
-        _ = press.down(1, at: Point(x: 200, y: 200), kind: 2, origin: corner, size: size)
-        _ = press.down(2, at: Point(x: 300, y: 200), kind: 2, origin: corner, size: size)
+        _ = press.down(1, at: Point(x: 200, y: 200), kind: .touch, origin: corner, size: size)
+        _ = press.down(2, at: Point(x: 300, y: 200), kind: .touch, origin: corner, size: size)
 
         XCTAssertEqual(press.moved(2, to: Point(x: 200, y: 300), origin: corner, size: size).last,
                        .rotation(.changed, degrees: 90))

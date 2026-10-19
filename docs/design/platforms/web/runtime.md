@@ -72,6 +72,19 @@ Words read back - a field's value - are read in two steps: the relay encodes
 them and answers their length, and Swift hands it a buffer of that length to
 copy them into.
 
+A DOM event crosses by its name, and a name is only ever the DOM's - an
+application's custom element hears its own `closed` or `focus`. What the
+relay reads for the host out of one event or more - Return that commits no
+input method's words, the keyboard coming into an element or leaving it, a
+popover taken down, a key for a shortcut - crosses as a number of a Swift
+enum (`WebHearing`), as every closed vocabulary the two share does: a
+canvas's operations, a pointer's kind, a frame's step, a colour scheme. The
+relay holds each as an object whose names and numbers mirror its enum's
+cases, marked `// Swift: <Enum>`, and switches over those names, never over a
+bare number; `RelayVocabularyTests` holds both. What only Swift knows, it
+tells: the names of the keys writing no character, which the relay numbers
+by, it hands over as it starts (`name_keys`).
+
 The relay answers WASI for a page that has no files: standard output and
 error go to the console a line at a time, the clocks are the page's, random
 bytes are the browser's, and the environment is the page address's `STATEUI_`

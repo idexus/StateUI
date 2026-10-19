@@ -81,7 +81,7 @@ final class WebItemsView: WebDOMView {
 
     private func makeCell(_ identity: String) -> WebItemCell {
         let cell = WebItemCell(identity)
-        cell.listen("itemtap") { [weak self, weak cell] in
+        cell.hear(.itemTap) { [weak self, weak cell] in
             guard let self, let cell else { return }
             cells.userTapped(cell.entry)
         }

@@ -23,6 +23,16 @@ enum WebRelay {
     /// Hands the page the two functions it calls Swift through.
     static func start() {
         handOver()
+        nameKeys()
+    }
+
+    /// Tells the relay the page's name of each key writing no character, by its number: Swift's names alone.
+    private static func nameKeys() {
+        let named = WebKeys.names.sorted { $0.key.rawValue < $1.key.rawValue }
+        let numbers = named.map { Double($0.key.rawValue) }
+        utf8(named.map(\.value).joined(separator: "\u{0}")) { text, length in
+            numbers.withUnsafeBufferPointer { stateui_web_name_keys($0.baseAddress, Int32(numbers.count), text, length) }
+        }
     }
 
     /// Hands them over from a nonisolated function: a closure written in a `@MainActor` one is MainActor's.
@@ -150,6 +160,11 @@ enum WebRelay {
         utf8(event) { stateui_web_listen(element, $0, $1, listener) }
     }
 
+    /// Calls `listener` whenever the relay hears `kind` on the element.
+    static func hear(_ element: Int32, _ kind: WebHearing, _ listener: Int32) {
+        stateui_web_hear(element, kind.rawValue, listener)
+    }
+
     /// Calls `listener` as the user asks for the element's menu: a right click, or a finger held still.
     static func listenForMenu(_ element: Int32, _ listener: Int32) {
         stateui_web_listen_menu(element, HandReading.hold, WebPress.finger, listener)
@@ -164,11 +179,10 @@ enum WebRelay {
     /// Where the pointer of the event being heard is, from the listening element's top left corner.
     static var eventPoint: Point { Point(x: stateui_web_event_number(1), y: stateui_web_event_number(2)) }
 
-    /// The pointer of the event being heard: its number, where it is on the page, its kind - 0 a mouse, 1 a pen, 2 a
-    /// touch - and its button.
-    static var eventPointer: (id: Int, at: Point, kind: Int, button: Int) {
+    /// The pointer of the event being heard: its number, where it is on the page, its kind and its button.
+    static var eventPointer: (id: Int, at: Point, kind: WebPress.Pointer, button: Int) {
         (Int(stateui_web_event_number(3)), Point(x: stateui_web_event_number(4), y: stateui_web_event_number(5)),
-         Int(stateui_web_event_number(6)), Int(stateui_web_event_number(7)))
+         WebPress.Pointer(rawValue: Int32(stateui_web_event_number(6))) ?? .mouse, Int(stateui_web_event_number(7)))
     }
 
     /// The wheel's turn down of the event being heard, and whether a key made it a pinch.
@@ -284,10 +298,12 @@ enum WebRelay {
     static func showInFrame(_ element: Int32, _ source: WebViewSource) -> String? {
         switch source {
         case .url(let address):
-            utf8(address) { _ = stateui_web_frame_show(element, 0, $0, $1) }
+            utf8(address) { _ = stateui_web_frame_show(element, FrameSource.address.rawValue, $0, $1) }
             return nil
         case .html(let words, let base):
-            let length = utf8(document(words, base: base)) { stateui_web_frame_show(element, 1, $0, $1) }
+            let length = utf8(document(words, base: base)) {
+                stateui_web_frame_show(element, FrameSource.document.rawValue, $0, $1)
+            }
             return copyRead(length: length)
         }
     }
@@ -317,9 +333,22 @@ enum WebRelay {
         copyRead(length: stateui_web_frame_address(element))
     }
 
-    /// A step of the frame's own - back, forward, the page again; whether it could take it.
-    static func frameStep(_ element: Int32, _ step: Int32) -> Bool {
-        stateui_web_frame_step(element, step) != 0
+    /// A step of the frame's own; whether it could take it.
+    static func frameStep(_ element: Int32, _ step: FrameStep) -> Bool {
+        stateui_web_frame_step(element, step.rawValue) != 0
+    }
+
+    /// What a frame is given to show: an address, or a document written in place.
+    enum FrameSource: Int32 {
+        case address = 0
+        case document
+    }
+
+    /// A step of a frame's own: back, forward, or the page again.
+    enum FrameStep: Int32 {
+        case back = 0
+        case forward
+        case reload
     }
 
     /// The JSON a script run in the frame's document answers; nil where it could not run.

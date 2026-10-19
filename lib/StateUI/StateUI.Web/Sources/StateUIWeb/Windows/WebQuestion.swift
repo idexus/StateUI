@@ -50,7 +50,7 @@ final class WebQuestion {
             button(question.accept, role: "accept") { $0.answer(true, $0.typed) }
         }
         let cancels = question.kind != .alert && (question.kind != .chooseAction || question.cancel != nil)
-        dialog.listen("dismiss") { [weak self] in
+        dialog.hear(.dismiss) { [weak self] in
             guard let self else { return }
             if question.kind == .alert {
                 answer(true, nil)
@@ -94,7 +94,7 @@ final class WebQuestion {
         field.setPlaceholder(question.placeholder)
         field.attribute("maxlength", question.maximumLength.map(String.init))
         WebRelay.setValue(field.node, question.words)
-        field.listen("enter") { [weak self] in
+        field.hear(.enter) { [weak self] in
             guard let self else { return }
             answer(true, typed)
         }

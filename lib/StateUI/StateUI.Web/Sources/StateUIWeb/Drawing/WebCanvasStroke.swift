@@ -4,19 +4,42 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A canvas's drawing as the relay replays it on a 2D context, in one call: numbers - each operation's code, then
-/// what it takes - and the words it writes, by their place. Codes: 0 save, 1 restore, 2 translate x y, 3 rotate
-/// radians, 4 scale x y, 5 begin a path, 6 move x y, 7 line x y, 8 cubic x1 y1 x2 y2 x y, 9 quadratic x1 y1 x y,
-/// 10 close, 11 fill r g b a, 12 stroke r g b a width, 13 text word x y width height size r g b a across down.
+/// A canvas's drawing as the relay replays it on a 2D context, in one call: numbers - each operation, then what it
+/// takes - and the words it writes, by their place.
 /// Design: docs/design/platforms/web/drawing.md#a-canvas
 struct WebCanvasStroke {
     private(set) var numbers: [Double] = []
     private(set) var words: [String] = []
 
+    /// An operation of the drawing; what follows it in the numbers stands beside each.
+    enum Operation: Int32 {
+        case save = 0
+        case restore
+        case translate  // x y
+        case rotate  // radians
+        case scale  // x y
+        case beginPath
+        case move  // x y
+        case line  // x y
+        case cubic  // x1 y1 x2 y2 x y
+        case quadratic  // x1 y1 x y
+        case close
+        case fill  // r g b a
+        case stroke  // r g b a width
+        case text  // word x y width height size r g b a across down
+    }
+
+    /// Where words stand in their room, across or down.
+    enum Placed: Int32 {
+        case start = 0
+        case middle
+        case end
+    }
+
     /// The drawing `instructions` replay by the host layer's rule (`CanvasPen.replay`).
     init(_ instructions: [CanvasInstruction]) {
         CanvasPen.replay(
-            instructions, save: { numbers.append(0) }, restore: { numbers.append(1) },
+            instructions, save: { numbers.append(Self.code(.save)) }, restore: { numbers.append(Self.code(.restore)) },
             draw: { instruction, pen in draw(instruction, pen: pen) })
     }
 
@@ -42,11 +65,11 @@ struct WebCanvasStroke {
         case .text(let text, let room, let across, let down):
             guard let color = Self.color(pen.text, pen) else { return }
             words.append(text)
-            numbers += [13, Double(words.count - 1), room.x, room.y, room.width, room.height, pen.fontSize ?? 0]
-                + color + [Self.code(across), Self.code(down)]
-        case .translate(let x, let y): numbers += [2, x, y]
-        case .rotate(let degrees): numbers += [3, degrees * .pi / 180]
-        case .scale(let x, let y): numbers += [4, x, y]
+            numbers += [Self.code(.text), Double(words.count - 1), room.x, room.y, room.width, room.height]
+                + [pen.fontSize ?? 0] + color + [Self.placed(across), Self.placed(down)]
+        case .translate(let x, let y): numbers += [Self.code(.translate), x, y]
+        case .rotate(let degrees): numbers += [Self.code(.rotate), degrees * .pi / 180]
+        case .scale(let x, let y): numbers += [Self.code(.scale), x, y]
         default: break
         }
     }
@@ -54,25 +77,26 @@ struct WebCanvasStroke {
     private mutating func stroke(_ curves: [HostCurveCommand], _ pen: CanvasPen) {
         guard pen.lineWidth > 0, let color = Self.color(pen.stroke, pen) else { return }
         path(curves)
-        numbers += [12] + color + [pen.lineWidth]
+        numbers += [Self.code(.stroke)] + color + [pen.lineWidth]
     }
 
     private mutating func fill(_ curves: [HostCurveCommand], _ pen: CanvasPen) {
         guard let color = Self.color(pen.fill, pen) else { return }
         path(curves)
-        numbers += [11] + color
+        numbers += [Self.code(.fill)] + color
     }
 
     private mutating func path(_ curves: [HostCurveCommand]) {
-        numbers.append(5)
+        numbers.append(Self.code(.beginPath))
         for curve in curves {
             switch curve {
-            case .move(let to): numbers += [6, to.x, to.y]
-            case .line(let to): numbers += [7, to.x, to.y]
+            case .move(let to): numbers += [Self.code(.move), to.x, to.y]
+            case .line(let to): numbers += [Self.code(.line), to.x, to.y]
             case .cubic(let first, let second, let end):
-                numbers += [8, first.x, first.y, second.x, second.y, end.x, end.y]
-            case .quadratic(let control, let end): numbers += [9, control.x, control.y, end.x, end.y]
-            case .close: numbers.append(10)
+                numbers += [Self.code(.cubic), first.x, first.y, second.x, second.y, end.x, end.y]
+            case .quadratic(let control, let end):
+                numbers += [Self.code(.quadratic), control.x, control.y, end.x, end.y]
+            case .close: numbers.append(Self.code(.close))
             }
         }
     }
@@ -83,8 +107,13 @@ struct WebCanvasStroke {
         return [Double(color.red), Double(color.green), Double(color.blue), Double(color.alpha) / 255 * pen.alpha]
     }
 
-    private static func code(_ alignment: TextAlignment) -> Double {
-        alignment == .center ? 1 : alignment == .end ? 2 : 0
+    private static func code(_ operation: Operation) -> Double {
+        Double(operation.rawValue)
+    }
+
+    private static func placed(_ alignment: TextAlignment) -> Double {
+        let placed: Placed = alignment == .center ? .middle : alignment == .end ? .end : .start
+        return Double(placed.rawValue)
     }
 
     /// A rectangle, its corners rounded by `radius` as far as the rectangle holds.

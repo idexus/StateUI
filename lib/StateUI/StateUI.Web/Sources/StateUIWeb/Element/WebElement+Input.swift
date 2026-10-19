@@ -19,7 +19,7 @@ extension WebElement {
                 guard let self, !press.wasDragged, !WebRelay.eventPassesToControl else { return }
                 heard(.taps, .tap(run: WebRelay.eventClicks))
             }
-            view.listen("activate") { [weak self] in self?.heard(.taps, .tap(run: 0)) }
+            view.hear(.activate) { [weak self] in self?.heard(.taps, .tap(run: 0)) }
         }
         if !hearing.isDisjoint(with: Self.presses), listening.isDisjoint(with: Self.presses) {
             listening.formUnion(Self.presses)
@@ -37,7 +37,7 @@ extension WebElement {
         }
         if element.handler(.isFocusedChanged) != nil, !listensForFocus {
             listensForFocus = true
-            view.listen("focus") { [weak self] in self?.send(.isFocusedChanged, [.bool(WebRelay.eventDetail != 0)]) }
+            view.hear(.within) { [weak self] in self?.send(.isFocusedChanged, [.bool(WebRelay.eventDetail != 0)]) }
         }
         view.isTapped = hearing.contains(.taps) && !view.isControl
         view.offerDrag(element.dragAndDrop) { [weak self] heard in
@@ -61,7 +61,7 @@ extension WebElement {
         view.style("-webkit-user-select", "none")
         view.listen("pointerdown") { [weak self, weak view] in
             let pointer = WebRelay.eventPointer
-            guard let self, let view, pointer.kind != 0 || pointer.button == 0 else { return }
+            guard let self, let view, pointer.kind != .mouse || pointer.button == 0 else { return }
             WebRelay.capturePointer(view.node)
             // A press with ⌥/Alt over a view two fingers move is two fingers, mirrored about its middle.
             if WebRelay.eventAlt, element.hearsMirroredFingers, mirroring == nil {
@@ -131,7 +131,7 @@ extension WebElement {
         view.style("-webkit-touch-callout", "none")
         view.listen("pointerdown") { [weak self, weak view] in
             let pointer = WebRelay.eventPointer
-            guard let self, let view, pointer.kind != 0 || pointer.button == 0 else { return }
+            guard let self, let view, pointer.kind != .mouse || pointer.button == 0 else { return }
             // A press with ⌥/Alt over a layout two fingers move is theirs.
             guard !(WebRelay.eventAlt && element.hearsMirroredFingers) else { return }
             // Another finger on a hand under way joins it, moving its middle nowhere.

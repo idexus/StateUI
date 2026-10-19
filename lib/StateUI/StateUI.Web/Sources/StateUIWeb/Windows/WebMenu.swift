@@ -34,7 +34,7 @@ final class WebMenu {
         popover.attribute("role", "menu")
         popover.attribute("tabindex", "-1")
         for entry in entries { add(entry) }
-        popover.listen("closed") { [weak self] in self?.closed() }
+        popover.hear(.closed) { [weak self] in self?.closed() }
     }
 
     var isEmpty: Bool { placed == 0 }

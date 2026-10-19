@@ -83,8 +83,8 @@ final class WebRenderer {
         let shortcuts = WebRelay.listener { [weak self] in self?.pressedShortcut() }
         let keys = WebRelay.listener { [weak self] in self?.pressedKey() }
         pageListeners += [shortcuts, keys]
-        WebRelay.listen(WebRelay.body, "shortcut", shortcuts)
-        WebRelay.listen(WebRelay.body, "key", keys)
+        WebRelay.hear(WebRelay.body, .shortcut, shortcuts)
+        WebRelay.hear(WebRelay.body, .key, keys)
         runtime.start(
             realizing: WebRegistrations.registry.realization, unrealized: WebRealization.unmade,
             register: WebRealization.register,

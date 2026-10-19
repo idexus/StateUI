@@ -143,6 +143,13 @@ class WebDOMView {
         WebRelay.listen(node, event, listener)
     }
 
+    /// Runs `action` whenever the relay hears `kind` on the element.
+    func hear(_ kind: WebHearing, _ action: @escaping @MainActor () -> Void) {
+        let listener = WebRelay.listener(action)
+        listeners.append(listener)
+        WebRelay.hear(node, kind, listener)
+    }
+
     /// Runs `action` whenever the user asks for the element's menu: a right click, or a finger held still.
     func listenForMenu(_ action: @escaping @MainActor () -> Void) {
         let listener = WebRelay.listener(action)

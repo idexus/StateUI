@@ -64,12 +64,12 @@ final class WebFrameView: WebDOMView {
     /// of another site takes none but the page again, which loads the address the page gave it. Whether it took one.
     func step(_ step: WebNavigationType) -> Bool {
         cause.ask(step)
-        let code: Int32 = step == .back ? 0 : step == .forward ? 1 : 2
-        if WebRelay.frameStep(frame.node, code) {
+        let taken: WebRelay.FrameStep = step == .back ? .back : step == .forward ? .forward : .reload
+        if WebRelay.frameStep(frame.node, taken) {
             onNavigating(cause.begin(told: step), shown)
             return true
         }
-        guard code == 2, !given.isEmpty, !given.hasPrefix("data:") else { return false }
+        guard taken == .reload, !given.isEmpty, !given.hasPrefix("data:") else { return false }
         frame.attribute("src", nil)
         frame.attribute("src", given)
         onNavigating(cause.begin(told: .reload), given)

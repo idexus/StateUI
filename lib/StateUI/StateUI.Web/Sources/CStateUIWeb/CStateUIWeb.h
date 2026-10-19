@@ -15,6 +15,10 @@ typedef void (*stateui_web_frame)(double time);
 /// Hands the page the two functions it calls Swift through.
 STATEUI_WEB(start) void stateui_web_start(stateui_web_heard heard, stateui_web_frame frame);
 
+/// Names the keys writing no character that the relay tells by number: each of `words`, ended by a zero byte, the
+/// page's name of the key whose number stands at the same place of the `count` `numbers`.
+STATEUI_WEB(name_keys) void stateui_web_name_keys(const double *numbers, int32_t count, const char *words, int32_t length);
+
 /// The page's body, where the window stands.
 STATEUI_WEB(body) int32_t stateui_web_body(void);
 
@@ -65,10 +69,11 @@ STATEUI_WEB(read_value) int32_t stateui_web_read_value(int32_t element);
 /// Copies what the relay read last into `into`, which holds its length.
 STATEUI_WEB(copy_read) void stateui_web_copy_read(char *into);
 
-/// Calls listener `listener` whenever the element hears `event`: a DOM event's name; `enter` for the Return key;
-/// `activate` for Return or Space pressed on the element itself; `itemtap` for a click on it but on no control inside
-/// it; `dismiss` for the user's asking a modal dialog to close; `closed` for a popover taken down.
+/// Calls listener `listener` whenever the element hears the DOM event named `event`.
 STATEUI_WEB(listen) void stateui_web_listen(int32_t element, const char *event, int32_t length, int32_t listener);
+
+/// Calls listener `listener` whenever the relay hears `kind` - a `WebHearing` - on the element.
+STATEUI_WEB(hear) void stateui_web_hear(int32_t element, int32_t kind, int32_t listener);
 
 /// Calls listener `listener` whenever the user asks for the element's menu: a right click, or a finger held `hold`
 /// milliseconds no farther than `reach` points from where it pressed.
@@ -94,8 +99,8 @@ STATEUI_WEB(show_popover) void stateui_web_show_popover(
     int32_t element, int32_t anchor, double x, double y, int32_t side);
 STATEUI_WEB(hide_popover) void stateui_web_hide_popover(int32_t element);
 
-/// The `<iframe>` shows the address `words` for `kind` 0, or for 1 the document `words` - at an address of the
-/// page's own made for it, read as `read_value` is: its length, then `copy_read`; 0 for an address shown.
+/// The `<iframe>` shows `words` as `kind` - a `WebRelay.FrameSource` - says: an address, or a document at an address
+/// of the page's own made for it, read as `read_value` is: its length, then `copy_read`; 0 for an address shown.
 STATEUI_WEB(frame_show) int32_t stateui_web_frame_show(int32_t element, int32_t kind, const char *words, int32_t length);
 
 /// What the page can know of the frame's document: 1 it is of the page's own site, 2 it can go back, 4 forward.
@@ -104,7 +109,7 @@ STATEUI_WEB(frame_state) int32_t stateui_web_frame_state(int32_t element);
 /// The frame's document's address where it is of the page's site, read in two steps: its length, then `copy_read`.
 STATEUI_WEB(frame_address) int32_t stateui_web_frame_address(int32_t element);
 
-/// A step of the frame's own - 0 back, 1 forward, 2 the page again; whether it could take it.
+/// A step of the frame's own - a `WebRelay.FrameStep`; whether it could take it.
 STATEUI_WEB(frame_step) int32_t stateui_web_frame_step(int32_t element, int32_t step);
 
 /// Runs the script in the frame's document: its value as JSON, read as `copy_read` reads; -1 where it could not.
@@ -200,7 +205,10 @@ STATEUI_WEB(now) double stateui_web_now(void);
 
 /// Whether the user's system is in its dark appearance; `listen_appearance` calls `listener` when it turns.
 STATEUI_WEB(prefers_dark) int32_t stateui_web_prefers_dark(void);
+
+/// Shows the page in `scheme`, a `ColorScheme`.
 STATEUI_WEB(use_color_scheme) void stateui_web_use_color_scheme(int32_t scheme);
+
 STATEUI_WEB(accent_color) int32_t stateui_web_accent_color(void);
 STATEUI_WEB(listen_appearance) void stateui_web_listen_appearance(int32_t listener);
 

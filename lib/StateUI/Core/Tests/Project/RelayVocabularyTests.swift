@@ -4,9 +4,9 @@
 import Foundation
 import XCTest
 
-/// The closed vocabularies a relay beneath a host numbers by hand - Java's constants, the WinUI relay's C enums -
-/// stand name for name and number for number with the Swift enum each mirrors, both ways: a number one side
-/// renumbers, or a member one side adds, fails here rather than compile and mean something else.
+/// The closed vocabularies a relay beneath a host numbers by hand - Java's constants, the WinUI relay's C enums, the
+/// Web relay's objects - stand name for name and number for number with the Swift enum each mirrors, both ways: a
+/// number one side renumbers, or a member one side adds, fails here rather than compile and mean something else.
 /// Design: docs/design/platforms/android/jni.md#numbers-across
 @MainActor
 final class RelayVocabularyTests: XCTestCase {
@@ -78,6 +78,81 @@ final class RelayVocabularyTests: XCTestCase {
 
         XCTAssertGreaterThan(found.count, 3, "the walk read almost no enum")
         XCTAssertEqual(broken, [], broken.joined(separator: "\n"))
+    }
+
+    /// Every object of numbers the Web relay declares mirrors a Swift enum - `// Swift: <Enum>` right before it - and
+    /// stands as that enum does; the relay switches over those names, never over a bare number.
+    func testTheWebRelaysNumbersStandAsTheSwiftTheyMirror() throws {
+        let relay = try String(
+            contentsOf: SourceTree.repository.appendingPathComponent("lib/StateUI/StateUI.Web/JavaScript/stateui-web.js"),
+            encoding: .utf8)
+        let enums = try Self.swiftEnums()
+        var broken: [String] = []
+        let found = Self.javaScriptObjects(in: relay)
+
+        for each in found {
+            guard let mirror = each.mirror else {
+                broken.append("\(each.name) holds only numbers and says no Swift it mirrors")
+                continue
+            }
+            guard let cases = enums[mirror] else {
+                broken.append("\(each.name): \(mirror) is no Swift enum of Int32")
+                continue
+            }
+            let swift = Dictionary(uniqueKeysWithValues: cases.map { ($0.name, $0.value) })
+            if each.members != swift {
+                broken.append("\(each.name): \(mirror) - JavaScript \(each.members.sorted { $0.key < $1.key }), "
+                    + "Swift \(swift.sorted { $0.key < $1.key })")
+            }
+        }
+        for (number, line) in relay.components(separatedBy: "\n").enumerated()
+        where line.range(of: #"\bcase -?[0-9]+\s*:"#, options: .regularExpression) != nil {
+            broken.append("stateui-web.js:\(number + 1) switches over a bare number")
+        }
+
+        XCTAssertGreaterThan(found.count, 5, "the walk read almost no object")
+        XCTAssertEqual(broken, [], broken.joined(separator: "\n"))
+    }
+
+    /// Each `const <name> = { … };` of JavaScript whose members are whole numbers, each its own - a vocabulary, not a
+    /// set of counters at zero: its name, the Swift its marker names - the line comment `// Swift: <Enum>` right
+    /// before it - and its members.
+    private static func javaScriptObjects(in text: String) -> [(name: String, mirror: String?, members: [String: Int])] {
+        var found: [(name: String, mirror: String?, members: [String: Int])] = []
+        let lines = text.components(separatedBy: "\n")
+        var index = 0
+        while index < lines.count {
+            let line = lines[index].trimmingCharacters(in: .whitespaces)
+            guard line.hasPrefix("const "), line.contains("= {") else {
+                index += 1
+                continue
+            }
+            let previous = index > 0 ? lines[index - 1].trimmingCharacters(in: .whitespaces) : ""
+            let mirror = previous.hasPrefix("// Swift: ") ? String(previous.dropFirst("// Swift: ".count)) : nil
+            var statement = line
+            while !statement.contains("}"), index + 1 < lines.count {
+                index += 1
+                statement += " " + lines[index].trimmingCharacters(in: .whitespaces)
+            }
+            index += 1
+            guard let open = statement.firstIndex(of: "{"), let close = statement.firstIndex(of: "}") else { continue }
+            let name = statement.dropFirst("const ".count).prefix { $0 != " " && $0 != "=" }
+            var members: [String: Int] = [:]
+            var whole = true
+            for pair in statement[statement.index(after: open)..<close].components(separatedBy: ",") {
+                let parts = pair.components(separatedBy: ":").map { $0.trimmingCharacters(in: .whitespaces) }
+                guard parts.count == 2, !parts[0].isEmpty else { continue }
+                guard let value = Int(parts[1]) else {
+                    whole = false
+                    break
+                }
+                members[parts[0]] = value
+            }
+            if whole, !members.isEmpty, Set(members.values).count == members.count {
+                found.append((String(name), mirror, members))
+            }
+        }
+        return found
     }
 
     /// Each `typedef enum` of a C header: its name, whether it is closed, the Swift its marker names - the line
@@ -164,7 +239,7 @@ final class RelayVocabularyTests: XCTestCase {
         var found: [String: [(name: String, value: Int)]] = [:]
         let roots = [
             "lib/StateUI/Core/Sources", "lib/StateUI/StateUI.Host/Sources", "lib/StateUI/StateUI.Android/Sources",
-            "lib/StateUI/StateUI.WinUI/Sources",
+            "lib/StateUI/StateUI.WinUI/Sources", "lib/StateUI/StateUI.Web/Sources",
         ]
         for root in roots {
             let folder = SourceTree.repository.appendingPathComponent(root)
@@ -201,7 +276,7 @@ final class RelayVocabularyTests: XCTestCase {
         var depth = 1
         var next = 0
         for line in lines[start...] {
-            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            let trimmed = (line.components(separatedBy: "//").first ?? "").trimmingCharacters(in: .whitespaces)
             depth += trimmed.filter { $0 == "{" }.count - trimmed.filter { $0 == "}" }.count
             if depth <= 0 { break }
             guard depth == 1, trimmed.hasPrefix("case ") else { continue }

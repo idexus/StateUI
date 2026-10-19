@@ -44,7 +44,7 @@ final class WebTextInputView: WebDOMView, WebWordsView {
             fit()
             onTextChanged(words)
         }
-        if kind != .editor { listen("enter") { [weak self] in self?.onSubmitted() } }
+        if kind != .editor { hear(.enter) { [weak self] in self?.onSubmitted() } }
     }
 
     override var role: String? { nil }
