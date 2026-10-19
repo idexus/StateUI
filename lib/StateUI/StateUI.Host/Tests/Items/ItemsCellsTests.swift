@@ -140,6 +140,37 @@ final class ItemsCellsTests: XCTestCase {
         XCTAssertNotNil(cells.item("60"))
     }
 
+    /// The item the program scrolled to is stood again after every pass while a cell waits for its entry - one
+    /// measured as it comes moves the items after it - once more as the last entry comes, and then let go.
+    func testAnItemScrolledToStandsAgainWhileACellWaitsForItsEntry() {
+        let waiting = Cell()
+        cells.hold("79", in: waiting)
+        cells.hold("80", in: Cell())
+        waiting.shown = nil
+        cells.scroll(to: "80", anchor: .start)
+
+        XCTAssertEqual(cells.laidOut(), ItemsScrollTarget(identity: "80", anchor: .start), "a cell waits")
+        XCTAssertEqual(cells.laidOut(), ItemsScrollTarget(identity: "80", anchor: .start), "and waits still")
+        cells.childrenChanged()
+        XCTAssertEqual(cells.laidOut(), ItemsScrollTarget(identity: "80", anchor: .start), "its entry came")
+        XCTAssertNil(cells.laidOut(), "none waits any more")
+    }
+
+    /// The user moving the list lets the item the program scrolled to go, and so does the next scroll: the last
+    /// word on where the list stands is theirs.
+    func testTheUsersMoveAndTheNextScrollLetTheItemScrolledToGo() {
+        let waiting = Cell()
+        cells.hold("10", in: waiting)
+        waiting.shown = nil
+        cells.scroll(to: "10", anchor: .center)
+        cells.userScrolled()
+        XCTAssertNil(cells.laidOut(), "the user moved the list")
+
+        cells.scroll(to: "10", anchor: .center)
+        cells.scroll(to: "20", anchor: .end)
+        XCTAssertEqual(cells.laidOut(), ItemsScrollTarget(identity: "20", anchor: .end), "the next scroll's")
+    }
+
     /// Cells far apart - a jump to another place in the list - build what is within reach of each, nothing between.
     func testCellsFarApartBuildOnlyAroundThemselves() {
         cells.hold("0", in: Cell())

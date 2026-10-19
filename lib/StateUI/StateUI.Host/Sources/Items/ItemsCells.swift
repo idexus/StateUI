@@ -45,6 +45,11 @@
     /// The entries the tree was last told to build: those within reach of the cells.
     private var built: Set<String> = []
 
+    /// The item the program scrolled to, which the host stands again after every pass while a cell waits for its
+    /// entry: a cell measured as its entry comes moves the items after it.
+    /// Design: docs/design/host/items.md#scrolling-to-an-item
+    public private(set) var scrollTarget: ItemsScrollTarget?
+
     /// The cells of `element`, telling `runtime`.
     public init(_ element: MountedElement, in runtime: HostRuntime) {
         self.element = element
@@ -71,7 +76,30 @@
             if holding.identity == identity { holding.letGo() }
             holders[identity] = nil
         }
+        if let scrollTarget, positions[scrollTarget.identity] == nil { self.scrollTarget = nil }
         return ItemsChanges(from: old, to: identities)
+    }
+
+    // MARK: - The program's scroll
+
+    /// The program scrolls the list to the item of `identity`, to stand where `anchor` says - held while a cell
+    /// waits for its entry.
+    public func scroll(to identity: String, anchor: ScrollAnchor) {
+        scrollTarget = ItemsScrollTarget(identity: identity, anchor: anchor)
+    }
+
+    /// The collection laid out what its cells hold: the item to stand again, where one is held - let go after this
+    /// once no cell waits for its entry.
+    /// Design: docs/design/host/items.md#scrolling-to-an-item
+    public func laidOut() -> ItemsScrollTarget? {
+        guard let scrollTarget else { return nil }
+        if !holders.contains(where: { $0.key == $0.value.identity && $0.value.shown == nil }) { self.scrollTarget = nil }
+        return scrollTarget
+    }
+
+    /// The user moved the list: where it stands is theirs.
+    public func userScrolled() {
+        scrollTarget = nil
     }
 
     /// Down, across or in columns.

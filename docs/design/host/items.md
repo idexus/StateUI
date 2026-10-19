@@ -119,3 +119,13 @@ the start of the room, its centre or its end. Nearest leaves an item wholly
 in view where it is; otherwise it moves it the shorter way - to the start
 when it stands before the room, to the end when after it. The scroller keeps
 the place within its reach.
+
+A host that works the place out itself does so from the frames its layout
+holds, and those are estimates for the cells not measured yet. The cells a
+scroll brings into view take their entries a turn later - the tree builds
+them - and a cell measured as its entry comes moves the items after it. So
+the host layer holds the item scrolled to (`ItemsCells.scrollTarget`) while a
+cell waits for its entry: the host stands it again after every pass that
+brought entries (`laidOut`), once more as the last one comes, and then lets
+it go. The user moving the list lets it go at once, and so does the next
+scroll; a scroll that glides stands its item again as it stops.
