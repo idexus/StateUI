@@ -21,4 +21,10 @@
     public func lines(maximum: Int?) -> Int? {
         wraps ? maximum.flatMap { $0 > 0 ? $0 : nil } : 1
     }
+
+    /// Whether the last line shown ends with an ellipsis: words that wrap under a limit of lines do, so the reader
+    /// sees there is more.
+    public func endsWithEllipsis(maximum: Int?) -> Bool {
+        wraps && lines(maximum: maximum) != nil
+    }
 }

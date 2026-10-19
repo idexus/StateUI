@@ -118,7 +118,7 @@ TapSample.swift ecedf1892e5dde5c
 TaskSleepSample.swift 2b47ce00e9732b16
 TextEditorSample.swift 9cc806f939101a0a
 TextFieldSample.swift 6f222b0aad1c3aa6
-TextSample.swift d988ffd7c7700c30
+TextSample.swift fd1e9a5d171f8c21
 TextSpanSample.swift 2c0155e7602cf784
 TextStyleSample.swift 3dd262f829737d60
 TickerSample.swift ecca16670e47a404

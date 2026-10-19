@@ -119,6 +119,17 @@ final class TextRulesTests: XCTestCase {
         XCTAssertFalse(fixed.over(TextLook()).scales, "a run that does not scale over a label that does")
     }
 
+    /// Wrapped words held to a number of lines end the last with an ellipsis; words free of a limit, or kept to
+    /// one line by their break, end with none of their own.
+    func testWrappedWordsHeldToSomeLinesEndWithAnEllipsis() {
+        XCTAssertTrue(LineBreak.wordWrap.endsWithEllipsis(maximum: 2))
+        XCTAssertTrue(LineBreak.characterWrap.endsWithEllipsis(maximum: 1))
+        XCTAssertFalse(LineBreak.wordWrap.endsWithEllipsis(maximum: nil))
+        XCTAssertFalse(LineBreak.wordWrap.endsWithEllipsis(maximum: 0), "no more than nothing is no limit")
+        XCTAssertFalse(LineBreak.noWrap.endsWithEllipsis(maximum: 2), "one line, cut")
+        XCTAssertFalse(LineBreak.tailTruncation.endsWithEllipsis(maximum: 2), "its own ellipsis, on its one line")
+    }
+
     /// A break that does not wrap keeps one line; wrapped words stand on the lines allowed, none where none are.
     func testABreakAllowsItsLines() {
         XCTAssertEqual(LineBreak.tailTruncation.lines(maximum: 3), 1)

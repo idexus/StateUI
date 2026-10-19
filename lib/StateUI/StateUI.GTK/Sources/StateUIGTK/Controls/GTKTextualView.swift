@@ -88,7 +88,8 @@ class GTKTextualView: GTKView {
         let lines = breaking.lines(maximum: maximum)
         let cut: PangoEllipsizeMode = switch breaking {
         case .noWrap: PANGO_ELLIPSIZE_NONE
-        case .wordWrap, .characterWrap: lines == nil ? PANGO_ELLIPSIZE_NONE : PANGO_ELLIPSIZE_END
+        case .wordWrap, .characterWrap:
+            breaking.endsWithEllipsis(maximum: maximum) ? PANGO_ELLIPSIZE_END : PANGO_ELLIPSIZE_NONE
         case .headTruncation: PANGO_ELLIPSIZE_START
         case .middleTruncation: PANGO_ELLIPSIZE_MIDDLE
         case .tailTruncation: PANGO_ELLIPSIZE_END

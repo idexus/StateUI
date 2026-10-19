@@ -106,7 +106,7 @@ class AndroidTextualView: AndroidView {
     }
 
     /// How the words break, and how many lines show: a line cut or truncated is one line, and only a
-    /// truncated one says so.
+    /// truncated one says so; wrapped words held to some lines end the last with an ellipsis.
     func setLines(breaking: LineBreak, maximum: Int?) {
         let lines = breaking.lines(maximum: maximum).map { Int32(clamping: $0) } ?? Int32.max
         Java.call(reference, JavaAPI.setMaxLines, .int(lines))
@@ -116,7 +116,7 @@ class AndroidTextualView: AndroidView {
         case .headTruncation: "START"
         case .middleTruncation: "MIDDLE"
         case .tailTruncation: "END"
-        default: nil
+        default: breaking.endsWithEllipsis(maximum: maximum) ? "END" : nil
         }
         let at = truncation.map { Java.staticObject(JavaAPI.truncateAt, $0, "Landroid/text/TextUtils$TruncateAt;") }
         withExtendedLifetime(at) { Java.call(reference, JavaAPI.setEllipsize, .object(at?.reference)) }

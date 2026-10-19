@@ -45,10 +45,11 @@ class WinUITextualView: WinUIView {
     }
 
     /// How the words break - wrapped, on one line, or cut short - and the most lines; nil for any
-    /// (`LineBreak.lines`).
+    /// (`LineBreak.lines`): wrapped words held to some lines end the last with an ellipsis.
     func setLines(breaking: LineBreak, maximum: Int?) {
         stateui_winui_text_set_lines(
-            handle, breaking.wraps, Int32(breaking.lines(maximum: maximum) ?? 0), breaking.truncates)
+            handle, breaking.wraps, Int32(breaking.lines(maximum: maximum) ?? 0),
+            breaking.truncates || breaking.endsWithEllipsis(maximum: maximum))
     }
 
     /// Where the words stand across the label.

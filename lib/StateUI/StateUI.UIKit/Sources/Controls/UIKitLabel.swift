@@ -40,9 +40,11 @@ struct UIKitLabelWords {
         }
     }
 
-    /// How a line too long for the room breaks, or where it is cut.
+    /// How a line too long for the room breaks, or where it is cut: wrapped words held to some lines end the last
+    /// with an ellipsis (`LineBreak.endsWithEllipsis`), which UIKit draws wrapping at words.
     var lineBreakMode: NSLineBreakMode {
-        switch breaking {
+        if breaking.endsWithEllipsis(maximum: lines) { return .byTruncatingTail }
+        return switch breaking {
         case .noWrap: .byClipping
         case .wordWrap: .byWordWrapping
         case .characterWrap: .byCharWrapping

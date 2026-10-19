@@ -63,7 +63,8 @@ A text's lines break as its line break says: at words or anywhere onto more
 lines, or on one line, cut short where they do not fit; the page cuts words
 only at their end, so a cut at their head or in their middle stands at the end
 too. The most lines a text stands on is `-webkit-line-clamp`, where its words
-wrap (`LineBreak.lines`).
+wrap (`LineBreak.lines`), which ends the last with an ellipsis
+(`LineBreak.endsWithEllipsis`).
 
 ## A button
 

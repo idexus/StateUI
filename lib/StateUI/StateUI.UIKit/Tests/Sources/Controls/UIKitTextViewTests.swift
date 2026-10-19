@@ -13,6 +13,23 @@ final class UIKitTextViewTests: XCTestCase {
     /// Words the user selects stand as a label's: the same height for the same words and padding, measured the
     /// same wherever they stand, and at the room's foot where the tree aligns them there - and they can be selected.
     @MainActor
+    /// Wrapped words held to some lines end the last with an ellipsis, wrapping at words as UIKit does then; words
+    /// free of a limit wrap as they say, and a line cut stays cut.
+    func testWrappedWordsHeldToSomeLinesEndWithAnEllipsis() {
+        let host = UIKitRenderer.running {
+            VStack {
+                Text("Words held to two lines").maximumLines(2)
+                Text("Words free of a limit")
+                Text("Characters held to one line").lineBreak(.characterWrap).maximumLines(1)
+                Text("A line cut").lineBreak(.noWrap).maximumLines(2)
+            }
+        }
+        defer { host.finish() }
+
+        XCTAssertEqual(host.views(UIKitTextView.self).map(\.lineBreakMode),
+                       [.byTruncatingTail, .byWordWrapping, .byTruncatingTail, .byClipping])
+    }
+
     func testSelectableWordsStandAsALabelsDo() {
         let label = UIKitTextView()
         let selectable = UIKitSelectableTextView()

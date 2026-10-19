@@ -182,7 +182,8 @@ is. The label's letter spacing is in points and Android counts it in the
 text's own size, so it is worked out again whenever the size changes; a
 run's own spacing is not drawn, as no span of Android's spaces letters. A line that is
 cut or truncated is one line and only a truncated one says so; otherwise the
-label wraps, to at most as many lines as it allows. A stated width, within
+label wraps, to at most as many lines as it allows, the last of a limited
+number ending with an ellipsis (`ellipsize` at its end). A stated width, within
 the room its layout offers, is the width a view is measured at, so wrapped
 words are as tall as they will stand.
 

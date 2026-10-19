@@ -221,7 +221,10 @@ is made of named once (`TextMembers.lookMembers`), so a host's own list of a
 field's or a picker's members takes them whole. A break keeps the words on one line unless
 it wraps - word and character wrapping do - and wrapped words stand on as
 many lines as the tree allows, any number where it allows none or fewer than
-one (`LineBreak.lines`); a truncating break cuts them with an ellipsis. A
+one (`LineBreak.lines`), the last of a limited number ending with an ellipsis
+so the reader sees there is more (`LineBreak.endsWithEllipsis`); a truncating
+break cuts them with an ellipsis. On UIKit, whose label ends a line with an
+ellipsis only by its own break, words held to some lines wrap at words. A
 toolkit spacing letters in ems is handed the space as a share of the font's
 size.
 

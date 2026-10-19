@@ -113,7 +113,8 @@ window resized). A label that wraps and shows every line therefore draws
 from a layout of its words it keeps in TextKit (`NSLayoutManager`), laid out
 again only when its words or its width change, drawing only the lines the
 strip shows; its lines stand where the cell's do, 2 points in from each
-side. A truncated label draws as its cell does.
+side. A truncated label draws as its cell does, and so does one held to some
+lines, its last line ending with an ellipsis (`truncatesLastVisibleLine`).
 
 ## A view under a transform
 

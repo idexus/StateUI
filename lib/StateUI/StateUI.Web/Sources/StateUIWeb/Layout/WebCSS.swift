@@ -134,7 +134,7 @@ enum WebCSS {
 
     /// How words break across lines and where they stop - at most `lines` of them, nil for any - as CSS says it.
     static func lines(_ lineBreak: LineBreak, most lines: Int?) -> [(String, String?)] {
-        let clamped = lineBreak.wraps && lines != nil
+        let clamped = lineBreak.endsWithEllipsis(maximum: lines)
         return [
             ("white-space", lineBreak.wraps ? "pre-wrap" : "pre"),
             ("overflow-wrap", lineBreak.wraps ? "break-word" : nil),

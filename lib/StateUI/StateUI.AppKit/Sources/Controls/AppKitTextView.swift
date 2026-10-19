@@ -84,6 +84,7 @@ final class AppKitTextView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
         textField.maximumNumberOfLines = max(0, maximumNumberOfLines)
         textField.lineBreakMode = lineBreakMode
         textField.cell?.wraps = breaking.wraps
+        textField.cell?.truncatesLastVisibleLine = breaking.endsWithEllipsis(maximum: maximumNumberOfLines)
         textField.cell?.isScrollable = false
 
         self.padding = padding

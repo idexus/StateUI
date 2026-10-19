@@ -34,6 +34,12 @@ struct TextSample: SampleContent, ExampleContent {
                 .lineBreak(.tailTruncation)
                 .maximumLines(1)
 
+            Text("Held to two lines, words that wrap end the second with an ellipsis where they go on past it")
+                .fontSize(16)
+                .maximumLines(2)
+                .width(260)
+                .horizontalAlignment(.start)
+
             Text("Letters spaced out")
                 .fontSize(16)
                 .tracking(3)
