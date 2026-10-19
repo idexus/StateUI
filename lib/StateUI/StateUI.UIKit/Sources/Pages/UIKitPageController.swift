@@ -153,6 +153,10 @@ final class UIKitPageController: UIViewController {
         (page?.element.pageScroller?.uiKit.view as? UIKitScrollView)?.keepEndClear(
             right: clearance.right, bottom: clearance.bottom)
         page?.view?.layoutIfNeeded()
+        // What reads a frame says where it stands within this pass, and what that moves is laid out again: a room
+        // UIKit alone narrowed - a sidebar sliding - places its layout in the frame that measured it.
+        // Design: docs/design/host/runtime.md#where-a-view-stands
+        if page?.host?.runtime.frames.reportLaidOut() == true { page?.view?.layoutIfNeeded() }
     }
 }
 

@@ -80,6 +80,39 @@ final class UIKitFrameReportTests: XCTestCase {
         XCTAssertEqual(Array(report[6...7]), [0, 0], "at the corner of the safe area")
     }
 
+    /// A page narrowed by UIKit's layout alone - a sidebar sliding beside it, as far as it has come - places a layout's
+    /// views in its new room within that pass: they stand in the middle of the new width as the pass ends, not in
+    /// the old one's until the display's next frame.
+    @MainActor
+    func testAPageNarrowedByUIKitPlacesItsLayoutWithinThatPass() throws {
+        let host = UIKitRenderer.running {
+            LayoutEngine([0]) { _ in Rectangle(.red) } placements: { room, _ in
+                [Placement(Rect(room.width / 2 - 10, 0, 20, 20))]
+            }
+        }
+        defer { host.finish() }
+        let engine = try XCTUnwrap(host.views(UIKitZStackView.self).first)
+        host.settle { engine.subviews.first.map { abs($0.frame.midX - engine.bounds.width / 2) < 0.5 } ?? false }
+        let page = try XCTUnwrap(Self.pageController(of: engine))
+        host.frame()
+
+        page.slidingInset = 100
+        page.view.layoutIfNeeded()
+
+        let card = try XCTUnwrap(engine.subviews.first)
+        XCTAssertEqual(card.frame.midX, engine.bounds.width / 2, accuracy: 0.5, "in the middle of the new width")
+    }
+
+    /// The page's controller `view` stands in.
+    private static func pageController(of view: UIView) -> UIKitPageController? {
+        var responder: UIResponder? = view
+        while let next = responder?.next {
+            if let page = next as? UIKitPageController { return page }
+            responder = next
+        }
+        return nil
+    }
+
     /// A scroll moves what stands in the scroller: a view's place in the window is said again, though nothing laid
     /// it out anew - its place in its parent stays.
     @MainActor

@@ -337,9 +337,13 @@ same in each room's layout pass - the window's content, a split view's
 pane - laying the page out, letting it say, and laying it out again where
 anything did (`layOutReporting`): a split view sliding its sidebar lays out
 only its panes, and a report left to the display's next frame would stand the
-page's content in the last frame's width every other frame. GTK lets it say
-in its frame clock's layout phase, after the window's own layout, and the
-clock lays out again what that changed before it paints.
+page's content in the last frame's width every other frame. UIKit does the
+same in each page's layout pass (`UIKitPageController.viewDidLayoutSubviews`):
+a page UIKit alone narrows - an iPad's sidebar sliding beside it, its inset
+set each frame - would otherwise place a layout's views for the last frame's
+room, a frame behind its width. GTK lets it say in its frame clock's layout
+phase, after the window's own layout, and the clock lays out again what that
+changed before it paints.
 
 ## A scroller's movement
 
