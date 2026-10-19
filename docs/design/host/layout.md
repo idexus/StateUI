@@ -86,8 +86,9 @@ width.
 Words aligned to a line's start or end stand at the edge the layout direction
 reads (`TextAlignment.edge(in:)`): the start is the left left to right and
 the right right to left, the end the other way, the middle either way - the
-same on every host, the words a canvas draws included, so no host leaves the
-start to its toolkit's guess from the words themselves.
+same on every host, so no host leaves the start to its toolkit's guess from
+the words themselves. A canvas's words stand in the canvas's own coordinates
+instead ([text in a box](../types/drawing.md#text-in-a-box)).
 
 ## A child measured
 

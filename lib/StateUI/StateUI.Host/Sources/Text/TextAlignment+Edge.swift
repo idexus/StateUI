@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 
 /// The edge words stand at across their room, as a toolkit names it with no direction of its own.
-@_spi(Host) public enum TextEdge: Sendable {
+@_spi(Host) public enum TextEdge: Int32, Sendable {
     case left, center, right
 }
 

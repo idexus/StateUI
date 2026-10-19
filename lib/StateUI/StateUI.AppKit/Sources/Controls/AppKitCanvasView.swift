@@ -143,7 +143,7 @@ final class AppKitCanvasView: AppKitHitTestView {
         text: String, in rectangle: NSRect, horizontal: TextAlignment, vertical: TextAlignment, pen: CanvasPen
     ) {
         let paragraph = NSMutableParagraphStyle()
-        paragraph.alignment = NSTextAlignment(horizontal, in: userInterfaceLayoutDirection)
+        paragraph.alignment = NSTextAlignment(CanvasArithmetic.wordsEdge(horizontal))
         let attributes: [NSAttributedString.Key: Any] = [
             .font: NSFont.systemFont(ofSize: pen.fontSize ?? NSFont.systemFontSize),
             .foregroundColor: Self.color(pen.text, pen) ?? .black,
@@ -153,11 +153,7 @@ final class AppKitCanvasView: AppKitHitTestView {
             with: rectangle.size,
             options: [.usesLineFragmentOrigin, .usesFontLeading],
             attributes: attributes)
-        let y: CGFloat = switch vertical {
-        case .center: rectangle.midY - measured.height / 2
-        case .end: rectangle.maxY - measured.height
-        case .start: rectangle.minY
-        }
+        let y = CanvasArithmetic.wordsTop(height: measured.height, in: rectangle.placed, down: vertical)
 
         NSGraphicsContext.saveGraphicsState()
         NSBezierPath(rect: rectangle).addClip()

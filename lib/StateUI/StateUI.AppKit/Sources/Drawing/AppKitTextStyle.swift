@@ -96,7 +96,12 @@ extension NSTextAlignment {
     /// Where text sits across its element, as AppKit draws it: a line's start and end as `direction` reads them
     /// (`TextAlignment.edge(in:)`).
     init(_ alignment: TextAlignment?, in direction: NSUserInterfaceLayoutDirection) {
-        self = switch (alignment ?? .start).edge(in: direction == .rightToLeft ? .rightToLeft : .leftToRight) {
+        self.init((alignment ?? .start).edge(in: direction == .rightToLeft ? .rightToLeft : .leftToRight))
+    }
+
+    /// Text standing at `edge` of its room.
+    init(_ edge: TextEdge) {
+        self = switch edge {
         case .left: .left
         case .center: .center
         case .right: .right

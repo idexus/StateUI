@@ -23,10 +23,10 @@ final class AndroidCanvasView: AndroidView {
         }
     }
 
-    /// The drawing, its instructions in the order they were written, as the host layer lays them out; nil draws
-    /// nothing.
+    /// The drawing, its instructions in the order they were written, as the host layer lays them out - its words
+    /// at the size of body text until it sets one; nil draws nothing.
     func draw(_ drawing: [DrawCommand]?) {
-        let drawing = HostDrawing(drawing ?? [])
+        let drawing = HostDrawing(drawing ?? [], wordsSize: TextStyle.body.androidSize)
         Java.frame {
             Java.call(
                 reference, JavaAPI.setDrawing, .object(Java.ints(drawing.ints)),

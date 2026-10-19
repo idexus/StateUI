@@ -30,12 +30,27 @@ final class WebCanvasStrokeTests: XCTestCase {
         XCTAssertEqual(drawn.numbers, [0, 2, 4, 2, 1])
     }
 
-    /// Words go by their place among the drawing's words, with their room, size, colour and alignments.
+    /// Words go by their place among the drawing's words, with their room, their size and the height of their lines,
+    /// their colour, the edge they stand at and its point across, and their alignment down.
     func testWordsAreWrittenByTheirPlace() {
         let drawn = stroke([
-            .fontSize(11), .text("42", in: Rect(x: 1, y: 2, width: 30, height: 14), horizontal: .center, vertical: .start),
+            .fontSize(20), .text("42", in: Rect(x: 1, y: 2, width: 30, height: 14), horizontal: .center, vertical: .start),
         ])
         XCTAssertEqual(drawn.words, ["42"])
-        XCTAssertEqual(drawn.numbers, [13, 0, 1, 2, 30, 14, 11, 0, 0, 0, 1, 1, 0])
+        XCTAssertEqual(drawn.numbers, [13, 0, 1, 2, 30, 14, 20, 28, 0, 0, 0, 1, 1, 16, 0])
+    }
+
+    /// Words written before the drawing sets a size stand at the body's, and a size of nought stays nought; the end
+    /// of a box is its right whichever way the page reads.
+    func testWordsStandAtTheBodysSizeAtTheEdgeTheirBoxSays() {
+        let room = Rect(x: 0, y: 0, width: 40, height: 10)
+        let drawn = stroke([
+            .text("a", in: room, horizontal: .end, vertical: .end),
+            .fontSize(0), .text("b", in: room, horizontal: .start, vertical: .center),
+        ])
+        XCTAssertEqual(drawn.numbers, [
+            13, 0, 0, 0, 40, 10, 15, 21, 0, 0, 0, 1, 2, 40, 2,
+            13, 1, 0, 0, 40, 10, 0, 0, 0, 0, 0, 1, 0, 0, 1,
+        ])
     }
 }

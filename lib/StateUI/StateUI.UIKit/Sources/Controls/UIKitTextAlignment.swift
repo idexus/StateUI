@@ -10,7 +10,12 @@ extension NSTextAlignment {
     /// Where words sit across their room, as UIKit draws them: a line's start and end as `direction` reads them
     /// (`TextAlignment.edge(in:)`).
     init(_ alignment: TextAlignment, in direction: UIUserInterfaceLayoutDirection) {
-        self = switch alignment.edge(in: direction == .rightToLeft ? .rightToLeft : .leftToRight) {
+        self.init(alignment.edge(in: direction == .rightToLeft ? .rightToLeft : .leftToRight))
+    }
+
+    /// Words standing at `edge` of their room.
+    init(_ edge: TextEdge) {
+        self = switch edge {
         case .left: .left
         case .center: .center
         case .right: .right

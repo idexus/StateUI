@@ -114,7 +114,8 @@ namespace {
         D2D1_COLOR_F fill = D2D1::ColorF(D2D1::ColorF::Black);
         D2D1_COLOR_F stroke = D2D1::ColorF(D2D1::ColorF::Black);
         D2D1_COLOR_F text = D2D1::ColorF(D2D1::ColorF::Black);
-        float width = 1, size = 14, alpha = 1;
+        // The words' size until a drawing sets one: the drawing's first record, the host's own body text.
+        float width = 1, size = 0, alpha = 1;
         D2D1::Matrix3x2F transform = D2D1::Matrix3x2F::Identity();
     };
 
@@ -188,8 +189,9 @@ namespace {
         return reader.whole ? geometry : nullptr;
     }
 
-    /// `text` wrapped in the box `at`, set across it and down it as `across` and `down` say, cut at its edges.
-    void write(ID2D1DeviceContext *context, ID2D1Brush *brush, float size, double const *at, int32_t across,
+    /// `text` wrapped in the box `at` - at its left, middle or right `edge`, read left to right, and down it as
+    /// `down` says - cut at its edges.
+    void write(ID2D1DeviceContext *context, ID2D1Brush *brush, float size, double const *at, int32_t edge,
                int32_t down, std::wstring const &text) {
         winrt::com_ptr<IDWriteTextFormat> format;
         if (size <= 0
@@ -197,9 +199,10 @@ namespace {
                                                       DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, size,
                                                       devices.language, format.put())))
             return;
-        format->SetTextAlignment(across == 1   ? DWRITE_TEXT_ALIGNMENT_CENTER
-                                 : across == 2 ? DWRITE_TEXT_ALIGNMENT_TRAILING
-                                               : DWRITE_TEXT_ALIGNMENT_LEADING);
+        format->SetReadingDirection(DWRITE_READING_DIRECTION_LEFT_TO_RIGHT);
+        format->SetTextAlignment(edge == 1   ? DWRITE_TEXT_ALIGNMENT_CENTER
+                                 : edge == 2 ? DWRITE_TEXT_ALIGNMENT_TRAILING
+                                             : DWRITE_TEXT_ALIGNMENT_LEADING);
         format->SetParagraphAlignment(down == 1   ? DWRITE_PARAGRAPH_ALIGNMENT_CENTER
                                       : down == 2 ? DWRITE_PARAGRAPH_ALIGNMENT_FAR
                                                   : DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -287,9 +290,9 @@ namespace {
                 shape(curves(reader, reader.integer()).get(), kind == StateUIDrawingFillPath);
                 break;
             case StateUIDrawingText: {
-                auto across = reader.integer(), down = reader.integer(), word = reader.integer();
+                auto edge = reader.integer(), down = reader.integer(), word = reader.integer();
                 if (!(at = reader.numbers(4)) || word < 0 || static_cast<size_t>(word) >= drawing.words.size()) return;
-                write(context, paint(pen.text), pen.size, at, across, down, drawing.words[word]);
+                write(context, paint(pen.text), pen.size, at, edge, down, drawing.words[word]);
                 break;
             }
             case StateUIDrawingTranslate:

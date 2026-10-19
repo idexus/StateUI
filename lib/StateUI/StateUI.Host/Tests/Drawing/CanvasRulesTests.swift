@@ -103,4 +103,23 @@ final class CanvasRulesTests: XCTestCase {
             .fillRoundedRectangle(Rect(x: 50, y: 50, width: -40, height: 10), radius: 5),
         ])
     }
+
+    /// A canvas's words stand in its own coordinates - a box's start is its left and its end its right, whichever way
+    /// the page reads - and down it at its top, its middle or its bottom; a toolkit writing them from a point anchors
+    /// them at the edge they stand at.
+    func testACanvassWordsStandInTheirBoxByTheCanvassOwnCoordinates() {
+        XCTAssertEqual(CanvasArithmetic.wordsEdge(.start), .left)
+        XCTAssertEqual(CanvasArithmetic.wordsEdge(.center), .center)
+        XCTAssertEqual(CanvasArithmetic.wordsEdge(.end), .right)
+
+        let box = Rect(x: 10, y: 20, width: 100, height: 60)
+        XCTAssertEqual(CanvasArithmetic.wordsTop(height: 20, in: box, down: .start), 20)
+        XCTAssertEqual(CanvasArithmetic.wordsTop(height: 20, in: box, down: .center), 40)
+        XCTAssertEqual(CanvasArithmetic.wordsTop(height: 20, in: box, down: .end), 60)
+        XCTAssertEqual(CanvasArithmetic.wordsTop(height: 90, in: box, down: .end), -10, "taller than its box")
+
+        XCTAssertEqual(CanvasArithmetic.wordsAnchor(.left, in: box), 10)
+        XCTAssertEqual(CanvasArithmetic.wordsAnchor(.center, in: box), 60)
+        XCTAssertEqual(CanvasArithmetic.wordsAnchor(.right, in: box), 110)
+    }
 }

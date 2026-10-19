@@ -100,7 +100,7 @@ final class UIKitCanvasView: UIView {
     ) {
         let box = Self.rect(room)
         let paragraph = NSMutableParagraphStyle()
-        paragraph.alignment = NSTextAlignment(across, in: effectiveUserInterfaceLayoutDirection)
+        paragraph.alignment = NSTextAlignment(CanvasArithmetic.wordsEdge(across))
         let attributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: pen.fontSize ?? UIFont.body.pointSize),
             .foregroundColor: Self.color(pen.text, pen) ?? .black,
@@ -108,11 +108,7 @@ final class UIKitCanvasView: UIView {
         ]
         let measured = (text as NSString).boundingRect(
             with: box.size, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: attributes, context: nil)
-        let top: CGFloat = switch down {
-        case .start: box.minY
-        case .center: box.midY - measured.height / 2
-        case .end: box.maxY - measured.height
-        }
+        let top = CanvasArithmetic.wordsTop(height: measured.height, in: room, down: down)
         context.saveGState()
         context.clip(to: box)
         (text as NSString).draw(

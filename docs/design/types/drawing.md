@@ -95,8 +95,19 @@ compiles: a chart draws a bar per value that way.
 two alignments place the text in and what clips it, and its top is the top
 of the box, not a baseline. `.start` and `.end` mean the box's left and
 right, or top and bottom: a canvas draws in its own coordinates, not in a
-reading direction. Text written before the drawing sets a size stands at the
-size a Text has with nothing said - the platform's own body text.
+reading direction, so words written beside a shape stay beside it whichever
+way the page reads. Text written before the drawing sets a size stands at the
+size a Text has with nothing said - the platform's own body text - and its
+lines stand as that host's Text's do.
+
+The host layer decides it once (`CanvasArithmetic.wordsEdge`, `wordsTop`,
+`wordsAnchor`): the edge a box's alignment stands at, the top of words
+measured so tall, and the point a toolkit writing from a point anchors them
+at. A host measuring its words in Swift places them by it; a relay that
+measures them itself takes the edge and the size from its first record
+(`HostDrawing`), and the Web's takes its size, the height of its lines, its
+edge and the point across from Swift - it wraps the words and stands them
+down the box as the rule says.
 
 ## Themes in a drawing
 

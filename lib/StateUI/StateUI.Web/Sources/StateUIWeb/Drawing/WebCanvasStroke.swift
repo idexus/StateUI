@@ -26,14 +26,7 @@ struct WebCanvasStroke {
         case close
         case fill  // r g b a
         case stroke  // r g b a width
-        case text  // word x y width height size r g b a across down
-    }
-
-    /// Where words stand in their room, across or down.
-    enum Placed: Int32 {
-        case start = 0
-        case middle
-        case end
+        case text  // word x y width height size lineHeight r g b a edge anchor down
     }
 
     /// The drawing `instructions` replay by the host layer's rule (`CanvasPen.replay`).
@@ -65,8 +58,12 @@ struct WebCanvasStroke {
         case .text(let text, let room, let across, let down):
             guard let color = Self.color(pen.text, pen) else { return }
             words.append(text)
+            // The size of body text until the drawing sets one; the edge and its point as the host layer places them.
+            let size = pen.fontSize ?? TextStyle.body.webSize
+            let edge = CanvasArithmetic.wordsEdge(across)
             numbers += [Self.code(.text), Double(words.count - 1), room.x, room.y, room.width, room.height]
-                + [pen.fontSize ?? 0] + color + [Self.placed(across), Self.placed(down)]
+                + [size, size * WebCSS.lineHeight] + color
+                + [Double(edge.rawValue), CanvasArithmetic.wordsAnchor(edge, in: room), Double(down.rawValue)]
         case .translate(let x, let y): numbers += [Self.code(.translate), x, y]
         case .rotate(let degrees): numbers += [Self.code(.rotate), degrees * .pi / 180]
         case .scale(let x, let y): numbers += [Self.code(.scale), x, y]
@@ -110,11 +107,6 @@ struct WebCanvasStroke {
 
     private static func code(_ operation: Operation) -> Double {
         Double(operation.rawValue)
-    }
-
-    private static func placed(_ alignment: TextAlignment) -> Double {
-        let placed: Placed = alignment == .center ? .middle : alignment == .end ? .end : .start
-        return Double(placed.rawValue)
     }
 
     /// A rectangle, its corners rounded by `radius` - kept within its sides as the instruction is read.

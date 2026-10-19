@@ -10,6 +10,7 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.text.Layout;
 import android.text.StaticLayout;
+import android.text.TextDirectionHeuristics;
 import android.text.TextPaint;
 import android.view.MotionEvent;
 import android.view.View;
@@ -52,7 +53,8 @@ final class StateUICanvasView extends View {
     /** What an instruction may change, kept and put back by `saveState` and `restoreState`. */
     private static final class State {
         int fill = 0xFF000000, stroke = 0xFF000000, text = 0xFF000000;
-        float strokeWidth = 1, fontSize = 14, alpha = 1;
+        // The words' size until a drawing sets one: the drawing's first record, the host's own body text.
+        float strokeWidth = 1, fontSize = 0, alpha = 1;
 
         State copy() {
             State copy = new State();
@@ -153,9 +155,9 @@ final class StateUICanvasView extends View {
                     box.set(numbers[number], numbers[number + 1],
                             numbers[number] + numbers[number + 2], numbers[number + 1] + numbers[number + 3]);
                     number += 4;
-                    int horizontal = ints[at++];
+                    int edge = ints[at++];
                     int vertical = ints[at++];
-                    text(canvas, strings[ints[at++]], horizontal, vertical, state);
+                    text(canvas, strings[ints[at++]], edge, vertical, state);
                     break;
                 }
                 case TRANSLATE: canvas.translate(numbers[number], numbers[number + 1]); number += 2; break;
@@ -214,16 +216,20 @@ final class StateUICanvasView extends View {
         return number;
     }
 
-    /** `text` wrapped in `box`, across it and down it as the instruction says, cut at its edges. */
-    private void text(Canvas canvas, String text, int horizontal, int vertical, State state) {
+    /**
+     * `text` wrapped in `box` - at its left, middle or right `edge`, whichever way the words read, and down it as
+     * the instruction says - cut at its edges.
+     */
+    private void text(Canvas canvas, String text, int edge, int vertical, State state) {
         words.setTextSize(state.fontSize);
         words.setColor(state.text);
         words.setAlpha(Math.round(((state.text >>> 24) & 0xFF) * state.alpha));
-        Layout.Alignment across = horizontal == 1 ? Layout.Alignment.ALIGN_CENTER
-                : horizontal == 2 ? Layout.Alignment.ALIGN_OPPOSITE : Layout.Alignment.ALIGN_NORMAL;
+        Layout.Alignment across = edge == 1 ? Layout.Alignment.ALIGN_CENTER
+                : edge == 2 ? Layout.Alignment.ALIGN_OPPOSITE : Layout.Alignment.ALIGN_NORMAL;
         StaticLayout lines = StaticLayout.Builder
                 .obtain(text, 0, text.length(), words, Math.max(1, (int) Math.ceil(box.width())))
                 .setAlignment(across)
+                .setTextDirection(TextDirectionHeuristics.LTR)
                 .build();
         float height = lines.getHeight();
         float top = vertical == 1 ? box.centerY() - height / 2 : vertical == 2 ? box.bottom - height : box.top;

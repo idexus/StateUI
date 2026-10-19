@@ -8,8 +8,9 @@
 /// works out an arc of its own.
 /// Design: docs/design/types/drawing.md#three-lists-for-a-relay
 @_spi(Host) public struct HostDrawing: Equatable, Sendable {
-    /// Each instruction's kind, as `DrawCommand` numbers it, then its whole numbers: a colour as ARGB, an alignment
-    /// as its member's number, a text's index in `strings`, a path's count of curves.
+    /// Each instruction's kind, as `DrawCommand` numbers it, then its whole numbers: a colour as ARGB, words' edge
+    /// across their box (`TextEdge`) and their alignment down it as its member's number, a text's index in
+    /// `strings`, a path's count of curves.
     public private(set) var ints: [Int32] = []
 
     /// Each instruction's numbers in order, a path's curves among them as `HostCurveCommand.numbers` lays them.
@@ -18,8 +19,10 @@
     /// What the instructions write.
     public private(set) var strings: [String] = []
 
-    /// The instructions of `drawing` in order; one whose values do not read whole is left out.
-    public init(_ drawing: [DrawCommand]) {
+    /// The instructions of `drawing` in order, after the size words stand at until the drawing sets one - the
+    /// host's own body text - where one is given; an instruction whose values do not read whole is left out.
+    public init(_ drawing: [DrawCommand], wordsSize: Double?) {
+        if let wordsSize { record(Kind.fontSize, [wordsSize]) }
         for instruction in CanvasInstruction.instructions(drawing) { append(instruction) }
     }
 
@@ -59,7 +62,10 @@
                 in: rect, start: start, end: end, clockwise: clockwise, closed: true, wedge: true))
         case .fillPath(let curves): path(Kind.fillPath, curves)
         case .text(let text, let rect, let horizontal, let vertical):
-            ints += [Kind.text.rawValue, horizontal.rawValue, vertical.rawValue, Int32(strings.count)]
+            ints += [
+                Kind.text.rawValue, CanvasArithmetic.wordsEdge(horizontal).rawValue, vertical.rawValue,
+                Int32(strings.count),
+            ]
             numbers += Self.numbers(rect)
             strings.append(text)
         case .translate(let x, let y): record(Kind.translate, [x, y])

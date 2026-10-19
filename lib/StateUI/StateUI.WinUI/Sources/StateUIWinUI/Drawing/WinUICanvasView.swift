@@ -25,9 +25,10 @@ final class WinUICanvasView: WinUIView {
         stateui_winui_canvas_set_ground(handle, WinUIBrush(value).colors.first ?? 0)
     }
 
-    /// The drawing, its instructions in the order they were written; nil draws nothing.
+    /// The drawing, its instructions in the order they were written - its words at the size of body text until it
+    /// sets one; nil draws nothing.
     func draw(_ drawing: [DrawCommand]?) {
-        let flat = HostDrawing(drawing ?? [])
+        let flat = HostDrawing(drawing ?? [], wordsSize: TextStyle.body.winUISize)
         let words = flat.strings.flatMap { $0.utf8.map { CChar(bitPattern: $0) } }
         let lengths = flat.strings.map { Int32($0.utf8.count) }
         flat.ints.withUnsafeBufferPointer { ints in
