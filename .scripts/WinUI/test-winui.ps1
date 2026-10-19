@@ -42,6 +42,14 @@ param(
 
 Initialize-StateUIProjection
 $testing = Join-Path $StateUIWinUIHost 'Testing'
+
+# The foundation's own tests on Windows - its C library and its thread numbers, the branches no other machine
+# runs - before the host's own, in a run of them whole.
+if (-not $Filter -and -not $Conformance -and -not $Stale) {
+    Write-Host 'testing StateUIFoundation on Windows'
+    swift test --package-path $StateUIRepository --filter StateUIFoundationTests
+    if ($LASTEXITCODE) { throw 'StateUIFoundation failed its tests on Windows' }
+}
 $env:STATEUI_STALE_ONLY = if ($Stale) { '1' } else { '' }
 $scratch = @()
 if ($ScratchPath) { $scratch = @('--scratch-path', $ScratchPath) }

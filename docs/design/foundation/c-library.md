@@ -28,3 +28,12 @@ Apple, `pthread_self` where there are other POSIX threads, `GetCurrentThreadId`
 on Windows, and nought on the Web, where one thread runs everything. Two
 threads alive at once never share one; an ended thread's may come back. The UI
 thread's executor keeps the number of the thread it drains on, and compares.
+
+## Its tests on every platform
+
+Each branch is proved where it runs: the foundation's tests
+(`StateUIFoundationTests`) on the Mac with the root package's, on Linux and on
+Windows first in a whole run of the GTK and the WinUI host's tests
+(`test-gtk.sh`, `test-winui.ps1`), and the thread number in Android's test
+application and in the Web suite, the one platform each that compiles its
+branch.
