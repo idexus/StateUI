@@ -465,7 +465,12 @@ network - the view serving
 it through `WebResourceRequested` whenever the view asks for it - going back
 to it too - and nothing is fetched: at its own address, which its relative
 links resolve against, else at one the backend gives it, under
-`https://page.stateui.invalid/`, which no network answers. WebView2 leaves a
+`https://page.stateui.invalid/<view>/`, which no network answers. The view
+keeps each document while its history may lead back to it, and answers its
+own addresses through one filter - WebView2 checks every request against
+every filter it holds, and a preview written again at each key would add
+one a key; an address of the document's own gets a filter the first time
+it is served. WebView2 leaves a
 `data:` address unfinished, sent to it or taken back to - `NavigateToString`
 goes to one - and every navigation after it.
 

@@ -75,6 +75,12 @@ namespace {
     /// The agent each web view's runtime names itself by, as its CoreWebView2 stood: what an agent taken away gives back.
     std::unordered_map<int64_t, winrt::hstring> ownAgents;
 
+    /// How many request filters each web view holds - what a test reads.
+    std::unordered_map<int64_t, int32_t> filters;
+
+    /// The address each web view's own documents stand under, one filter answering them all.
+    std::unordered_map<int64_t, std::wstring> ownAddresses;
+
     /// The agent each web view was asked for last: what its CoreWebView2 names it by as it stands, whatever came
     /// while it was coming.
     std::unordered_map<int64_t, winrt::hstring> askedAgents;
@@ -98,6 +104,9 @@ namespace {
     /// place - once its CoreWebView2 stands.
     void hear(core::CoreWebView2 const &page, int64_t view) {
         ownAgents[view] = page.Settings().UserAgent();
+        page.AddWebResourceRequestedFilter(winrt::hstring(ownAddresses[view] + L"*"),
+            core::CoreWebView2WebResourceContext::Document);
+        filters[view] += 1;
         page.HistoryChanged(guarded("handling HistoryChanged",
             [view](core::CoreWebView2 const &sender, winrt::Windows::Foundation::IInspectable const &) {
             callbacks.history(view, sender.CanGoBack(), sender.CanGoForward());
@@ -127,15 +136,23 @@ namespace {
             std::shared_ptr<std::string> const &document, winrt::hstring const &agent) {
         name(page, view, agent);
         if (document) {
-            served[view][std::wstring(address)] = document;
-            page.AddWebResourceRequestedFilter(address, core::CoreWebView2WebResourceContext::Document);
+            auto &documents = served[view];
+            std::wstring at(address);
+            // An address of the view's own, or one it served before, is answered through a filter it holds already.
+            bool filtered = at.rfind(ownAddresses[view], 0) == 0 || documents.count(at) != 0;
+            documents[at] = document;
+            if (!filtered) {
+                page.AddWebResourceRequestedFilter(address, core::CoreWebView2WebResourceContext::Document);
+                filters[view] += 1;
+            }
         }
         page.Navigate(address);
     }
 }
 
-extern "C" WebViewObjectRef stateui_webview_winui_make(int64_t view) {
+extern "C" WebViewObjectRef stateui_webview_winui_make(int64_t view, char const *own) {
     try {
+        ownAddresses[view] = std::wstring(text(own));
         controls::WebView2 web;
         web.CoreWebView2Initialized(guarded("handling CoreWebView2Initialized",
             [view](controls::WebView2 const &sender, auto const &args) {
@@ -197,6 +214,8 @@ extern "C" void stateui_webview_winui_release(WebViewObjectRef handle, int64_t v
         served.erase(view);
         ownAgents.erase(view);
         askedAgents.erase(view);
+        filters.erase(view);
+        ownAddresses.erase(view);
         winrt::Windows::Foundation::IInspectable object{nullptr};
         winrt::attach_abi(object, handle);
     } catch (...) {
@@ -253,6 +272,7 @@ extern "C" int32_t stateui_webview_winui_read(
         std::string read = asked == "address" ? address
             : asked == "agent" && web.CoreWebView2() ? winrt::to_string(web.CoreWebView2().Settings().UserAgent())
             : asked == "document" ? servedAt(view, address)
+            : asked == "filters" ? std::to_string(filters[view])
             : std::string();
         if (utf8 && capacity > 0) {
             auto size = std::min<size_t>(read.size(), static_cast<size_t>(capacity - 1));

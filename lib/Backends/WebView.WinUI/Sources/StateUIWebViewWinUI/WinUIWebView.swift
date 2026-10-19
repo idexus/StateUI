@@ -40,7 +40,7 @@ final class WinUIWebView: WinUIControl {
     init() {
         WinUIWebViewRelay.listen()
         number = WinUIWebViewRelay.reserve()
-        element = stateui_webview_winui_make(number)!
+        element = stateui_webview_winui_make(number, Self.ownAddress(number))!
         WinUIWebViewRelay.hold(self, as: number)
     }
 
@@ -101,7 +101,12 @@ final class WinUIWebView: WinUIControl {
 
     /// Where the view `view` shows its `count`th document with no address of its own: a name no network answers.
     static func documentAddress(_ view: Int64, _ count: Int) -> String {
-        "https://page.stateui.invalid/\(view)/\(count)"
+        ownAddress(view) + "\(count)"
+    }
+
+    /// The address the view `view`'s documents with no address of their own stand under.
+    static func ownAddress(_ view: Int64) -> String {
+        "https://page.stateui.invalid/\(view)/"
     }
 
     // MARK: - Its acts

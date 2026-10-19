@@ -129,6 +129,26 @@ final class WinUIWebViewTests: XCTestCase {
         }
     }
 
+    /// Documents written in place one after another - a preview written again as the user types - are served
+    /// through one filter of the view's: WebView2 checks every request against every filter it holds.
+    func testDocumentsWrittenInPlaceAreServedThroughOneFilter() throws {
+        try onUIThread {
+            let words = State(wrappedValue: "First")
+            let arrived = Received<Bool>()
+            let host = WinUIRenderer.running {
+                WebView().source(html: "<p>\(words.wrappedValue)</p>").onNavigated { _ in arrived.values.append(true) }
+                    .height(200)
+            }
+            let web = try XCTUnwrap(host.views(WinUIHostedView<WinUIWebView>.self).first?.control)
+            for (count, next) in ["Second", "Third", "Fourth"].enumerated() {
+                Self.wait(host) { arrived.values.count == count + 1 }
+                words.wrappedValue = next
+            }
+            Self.wait(host) { arrived.values.count == 4 }
+            XCTAssertEqual(web.read("filters"), "1")
+        }
+    }
+
     /// A web view an application listens to as a view stands, and its page arrives: WebView2, listened to by
     /// WinUI, ends the process - its page takes the user's hand.
     func testAWebViewListenedToStands() {

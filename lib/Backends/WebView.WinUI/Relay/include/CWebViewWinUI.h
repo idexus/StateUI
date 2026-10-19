@@ -45,7 +45,9 @@ void stateui_webview_winui_set_callbacks(WebViewWinUICallbacks const *callbacks)
 /// given, that is what the address answers whenever the view asks for it, and nothing is fetched; its CoreWebView2 stands a
 /// moment after it is first asked. A step goes back (1), forward (2) or loads the page again. Let go of, with its
 /// documents, by `stateui_webview_winui_release`.
-WebViewObjectRef stateui_webview_winui_make(int64_t view);
+/// A web view `view`, which answers every address under `own` - its documents with no address of their own - from
+/// what it was given, through one filter.
+WebViewObjectRef stateui_webview_winui_make(int64_t view, char const *own);
 void stateui_webview_winui_release(WebViewObjectRef web, int64_t view);
 void stateui_webview_winui_show(
     WebViewObjectRef web, int64_t view, char const *address, char const *document, char const *agent);
