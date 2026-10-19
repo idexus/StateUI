@@ -58,10 +58,11 @@ final class GTKCheckViewTests: XCTestCase {
     /// the track up to the thumb - in their tint, and nothing in it where they have none.
     func testAControlDrawsItsAccentInItsTint() {
         onUIThread {
+            let ticked = State(wrappedValue: true)
             let host = GTKRenderer.running {
                 VStack {
                     Switch(true).tint(Color("#FF0000"))
-                    CheckBox(State(wrappedValue: true).projectedValue).tint(Color("#FF0000"))
+                    CheckBox(ticked.projectedValue).tint(Color("#FF0000"))
                     Slider(0.5).tint(Color("#FF0000")).width(200)
                     Switch(true)
                 }
