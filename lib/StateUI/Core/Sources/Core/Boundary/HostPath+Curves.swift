@@ -20,16 +20,6 @@ import StateUIFoundation
     /// A command's kind as a relay numbers it, ahead of its points.
     public enum Kind: Int32, Sendable {
         case move = 0, line = 1, cubic = 2, quadratic = 3, close = 4
-
-        /// How many numbers - two a point - follow the kind.
-        public var coordinates: Int {
-            switch self {
-            case .move, .line: 2
-            case .cubic: 6
-            case .quadratic: 4
-            case .close: 0
-            }
-        }
     }
 
     /// The command as a relay reads it: its kind (`Kind`), then its points.
@@ -46,6 +36,18 @@ import StateUIFoundation
 
     private static func number(_ kind: Kind) -> Double {
         Double(kind.rawValue)
+    }
+}
+
+extension HostCurveCommand.Kind {
+    /// How many numbers - two a point - follow the kind.
+    public var coordinates: Int {
+        switch self {
+        case .move, .line: 2
+        case .cubic: 6
+        case .quadratic: 4
+        case .close: 0
+        }
     }
 }
 
