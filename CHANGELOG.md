@@ -55,9 +55,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   the same render, so the platform's collection measures them as it animates the change: on an iPhone the rows no
   longer jump above where they stood, and on AppKit they no longer settle a few points off once the animation
   ends. AppKit's list keeps its own header and footer through the animation.
-- Rendering is several times cheaper without a JIT: a home screen's render at a new icon's place takes some 45 ms
-  in Safari with no JIT, against some 210 ms, and a list of 1000 rows scrolls at 41-43 frames a second, against
-  26-27.
+- Rendering on the Web is several times cheaper. In WebKit with no JIT, as Safari runs WebAssembly on an iPad, a
+  home screen's render at a new icon's place takes some 47 ms, against some 213 ms, and a list of 1000 rows scrolls
+  at some 41 frames a second, against 27. With the JIT both already kept 60 frames a second; the same render takes
+  some 4-5 ms, against 8-9, and the list's longest frame some 19 ms, against 30-37.
 
 ### Conformance
 
