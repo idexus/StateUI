@@ -35,6 +35,12 @@ enum AndroidShapeKind: Int32 {
     case rectangle = 0, ellipse = 1, drawn = 2
 }
 
+/// What a press of a question answers (`StateUIDialogs.answer`): its accepting button, its cancel, an action of
+/// its list.
+enum AndroidAnswer: Int32 {
+    case accept = 0, cancel = 1, action = 2
+}
+
 /// What a bar's navigation button does (`StateUIBar`).
 enum AndroidBarNavigation: Int32 {
     case none = 0, back = 1, sidebar = 2

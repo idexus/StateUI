@@ -107,9 +107,8 @@ final class StateUIDialogs {
     }
 
     /** What a press answers: the accepting button, the cancel, an action of a list. */
-    static final int ACCEPT = 0;
-    static final int CANCEL = 1;
-    static final int ACTION = 2;
+    // Swift: AndroidAnswer
+    static final int ACCEPT = 0, CANCEL = 1, ACTION = 2;
 
     /** Takes every dialog showing away, each answered as dismissed: the window they stand over goes. */
     static void dismissAll() {
