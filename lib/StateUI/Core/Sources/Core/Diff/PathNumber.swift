@@ -15,6 +15,22 @@ struct PathNumber: Hashable, Sendable {
         return next
     }
 
+    /// The empty path, where every path starts.
+    init() {}
+
+    /// The place a call is written: its file, line and column.
+    init(file: StaticString, line: UInt, column: UInt) {
+        self = PathNumber().appending(file).appending(UInt64(line)).appending(UInt64(column))
+    }
+
+    /// The path a step on, the step a name the compiler wrote.
+    func appending(_ step: StaticString) -> PathNumber {
+        var next = self
+        next.mix(0xFF)
+        step.withUTF8Buffer { bytes in for byte in bytes { next.mix(byte) } }
+        return next
+    }
+
     /// The path a step on, the step a number.
     func appending(_ step: UInt64) -> PathNumber {
         var next = self
@@ -31,5 +47,15 @@ struct PathNumber: Hashable, Sendable {
     private mutating func mix(_ byte: UInt8) {
         number ^= UInt64(byte)
         number &*= 0x0000_0100_0000_01b3
+    }
+}
+
+extension PathNumber {
+    /// An element's key as a path: its number, or the author's name.
+    init(_ element: ElementID) {
+        switch element {
+        case .auto(let number): self = PathNumber().appending(UInt64(truncatingIfNeeded: number))
+        case .manual(let name): self = PathNumber().appending(name)
+        }
     }
 }

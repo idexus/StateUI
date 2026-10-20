@@ -22,7 +22,7 @@ public struct MultiBinding<Out: StateValue, Sources> {
 
     /// The derived state: one object per line that wrote a conversion, kept on the
     /// first source, with the engine that keeps it up to date.
-    func made(at key: String, _ read: @escaping () -> Out) -> Binding<Out> {
+    func made(at key: PathNumber, _ read: @escaping () -> Out) -> Binding<Out> {
         let storages = parts.compactMap { $0 }
 
         guard storages.count == parts.count, let first = storages.first else {
@@ -258,7 +258,7 @@ extension MultiBinding {
     ) -> Binding<Out> where Sources == (A, B) {
         let values = values
 
-        return made(at: "\(file):\(line):\(column)") {
+        return made(at: PathNumber(file: file, line: line, column: column)) {
             let read = values()
 
             return transform(read.0, read.1)
@@ -283,7 +283,7 @@ extension MultiBinding {
     ) -> Binding<Out> where Sources == (A, B, C) {
         let values = values
 
-        return made(at: "\(file):\(line):\(column)") {
+        return made(at: PathNumber(file: file, line: line, column: column)) {
             let read = values()
 
             return transform(read.0, read.1, read.2)
@@ -308,7 +308,7 @@ extension MultiBinding {
     ) -> Binding<Out> where Sources == (A, B, C, D) {
         let values = values
 
-        return made(at: "\(file):\(line):\(column)") {
+        return made(at: PathNumber(file: file, line: line, column: column)) {
             let read = values()
 
             return transform(read.0, read.1, read.2, read.3)
@@ -333,7 +333,7 @@ extension MultiBinding {
     ) -> Binding<Out> where Sources == (A, B, C, D, E) {
         let values = values
 
-        return made(at: "\(file):\(line):\(column)") {
+        return made(at: PathNumber(file: file, line: line, column: column)) {
             let read = values()
 
             return transform(read.0, read.1, read.2, read.3, read.4)
@@ -358,7 +358,7 @@ extension MultiBinding {
     ) -> Binding<Out> where Sources == (A, B, C, D, E, F) {
         let values = values
 
-        return made(at: "\(file):\(line):\(column)") {
+        return made(at: PathNumber(file: file, line: line, column: column)) {
             let read = values()
 
             return transform(read.0, read.1, read.2, read.3, read.4, read.5)
@@ -383,7 +383,7 @@ extension MultiBinding {
     ) -> Binding<Out> where Sources == (A, B, C, D, E, F, G) {
         let values = values
 
-        return made(at: "\(file):\(line):\(column)") {
+        return made(at: PathNumber(file: file, line: line, column: column)) {
             let read = values()
 
             return transform(read.0, read.1, read.2, read.3, read.4, read.5, read.6)
@@ -408,7 +408,7 @@ extension MultiBinding {
     ) -> Binding<Out> where Sources == (A, B, C, D, E, F, G, H) {
         let values = values
 
-        return made(at: "\(file):\(line):\(column)") {
+        return made(at: PathNumber(file: file, line: line, column: column)) {
             let read = values()
 
             return transform(read.0, read.1, read.2, read.3, read.4, read.5, read.6, read.7)
@@ -433,7 +433,7 @@ extension MultiBinding {
     ) -> Binding<Out> where Sources == (A, B, C, D, E, F, G, H, I) {
         let values = values
 
-        return made(at: "\(file):\(line):\(column)") {
+        return made(at: PathNumber(file: file, line: line, column: column)) {
             let read = values()
 
             return transform(read.0, read.1, read.2, read.3, read.4, read.5, read.6, read.7, read.8)
@@ -458,7 +458,7 @@ extension MultiBinding {
     ) -> Binding<Out> where Sources == (A, B, C, D, E, F, G, H, I, J) {
         let values = values
 
-        return made(at: "\(file):\(line):\(column)") {
+        return made(at: PathNumber(file: file, line: line, column: column)) {
             let read = values()
 
             return transform(read.0, read.1, read.2, read.3, read.4, read.5, read.6, read.7, read.8, read.9)
