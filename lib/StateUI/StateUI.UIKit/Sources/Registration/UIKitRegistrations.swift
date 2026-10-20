@@ -26,7 +26,7 @@ enum UIKitRegistrations {
         layouts(registry)
         scrolling(registry)
         WebKitView.register(in: registry)
-        maps(registry)
+        MapKitView.register(in: registry) { UIKitMapView() }
         shared(registry)
         return registry
     }()

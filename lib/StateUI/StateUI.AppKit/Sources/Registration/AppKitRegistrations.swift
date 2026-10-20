@@ -19,7 +19,7 @@ enum AppKitRegistrations {
 
         indicators(registry)
         items(registry)
-        maps(registry)
+        MapKitView.register(in: registry) { AppKitMapView() }
         WebKitView.register(in: registry)
         toggles(registry)
         values(registry)

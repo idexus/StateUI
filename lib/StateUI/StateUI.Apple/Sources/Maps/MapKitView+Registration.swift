@@ -1,18 +1,21 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-#if os(iOS)
-import UIKit
+import MapKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-extension UIKitRegistrations {
-    /// A Map: MapKit's own map - the region it opens on, the kind of map, what the user may do with it, a tap on
-    /// it - and its markers as MapKit's markers.
-    static func maps(_ registry: Registry<UIView>) {
+/// A Map as Apple's hosts register it.
+/// Design: docs/design/platforms/apple/maps.md#a-map
+extension MapKitView {
+    /// Registers a Map in `registry`, its view made by `make` - the host's own map: the region it opens on, the kind
+    /// of map, what the user may do with it, a click or tap on it - and its markers as MapKit's markers.
+    public static func register<View: AnyObject, Map: MapKitView>(
+        in registry: Registry<View>, making make: @escaping @MainActor () -> Map
+    ) {
         registry.add(MapContract.self, create: { reports in
-            let map = UIKitMapView()
-            map.onTapped = { reports.raise(MapContract.mapClicked, $0) }
+            let map = make()
+            map.onClicked = { reports.raise(MapContract.mapClicked, $0) }
             return map
         }, members: { map in
             map.property(MapContract.region) { view, region in
@@ -34,4 +37,3 @@ extension UIKitRegistrations {
         })
     }
 }
-#endif

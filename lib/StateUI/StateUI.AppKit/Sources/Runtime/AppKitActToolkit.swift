@@ -127,7 +127,7 @@ final class AppKitActToolkit: ActToolkit {
                 items.scroll(
                     to: call.arguments.value(1)?.string ?? "",
                     anchor: call.arguments.value(2).flatMap(ScrollAnchor.init(propValue:)) ?? .nearest)
-            case (.moveToRegion, let map as AppKitMapView):
+            case (.moveToRegion, let map as MapKitView):
                 let number = { call.arguments.value($0)?.number ?? 0 }
                 map.show(MapRegion(latitude: number(1), longitude: number(2), radiusMeters: number(3)), sliding: true)
             case (.goBack, let web as WebKitView), (.goForward, let web as WebKitView), (.reload, let web as WebKitView),

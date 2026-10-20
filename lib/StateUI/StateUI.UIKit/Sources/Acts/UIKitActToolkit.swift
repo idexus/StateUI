@@ -137,7 +137,7 @@ final class UIKitActToolkit: ActToolkit {
             return true
         }
         if call.act == .moveToRegion {
-            guard let map = (element.native as? UIKitElement)?.view as? UIKitMapView else {
+            guard let map = (element.native as? UIKitElement)?.view as? MapKitView else {
                 core.fail(call, "moveToRegion is an act of a Map", log: { UIKitRenderer.log.error($0) })
                 return true
             }

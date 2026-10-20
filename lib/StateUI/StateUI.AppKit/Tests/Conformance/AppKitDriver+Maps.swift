@@ -6,6 +6,7 @@ import AppKit
 import MapKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 @testable import StateUIAppKit
 @_spi(Host) import StateUIConformance
 
@@ -55,7 +56,7 @@ extension AppKitDriver {
     }
 
     /// The map a marker stands on, and MapKit's annotation for it.
-    private func mapPin(_ element: MountedElement) throws -> (AppKitMapView, AppKitMapMarker) {
+    private func mapPin(_ element: MountedElement) throws -> (AppKitMapView, MapKitMarker) {
         guard let renderer, let map = (element.parent?.native as? AppKitElement)?.view as? AppKitMapView,
               let pin = map.pin(of: ChildElement(element.asChild(in: renderer.runtime)))
         else { throw DriverCannot("find a Marker on its map") }
@@ -63,7 +64,7 @@ extension AppKitDriver {
     }
 
     /// The marker MapKit drew for `pin`.
-    private func marker(of pin: AppKitMapMarker, on map: AppKitMapView) throws -> MKMarkerAnnotationView {
+    private func marker(of pin: MapKitMarker, on map: AppKitMapView) throws -> MKMarkerAnnotationView {
         for _ in 0..<50 {
             guard map.view(for: pin) == nil else { break }
             step()
