@@ -68,6 +68,20 @@ showing its entry tells nothing: the entry stays built while it is within
 reach, and leaves with the next render once the cells have moved away.
 Cells far apart, after a jump, build around each and nothing between.
 
+## Cells told together
+
+A collection that learns which cells came near its view and which went away
+once a frame - a browser - tells them all at once
+(`ItemsCells.hold(_:endingShowing:)`): the cells gone let their entries go
+first, the cells near take theirs, and the tree is told once, for where the
+cells stand now. A collection asking for a cell in its own layout pass tells
+one at a time, a batch of one.
+
+The trap: told one by one, a fast scroll keeps the cells gone held while the
+cells near ask - each render builds a reach around where the list stood a
+frame before, and each cell costs a render and a layout of its own. The list
+chases where it was, and the cells in view stand empty until it stops.
+
 ## Changes one by one
 
 A collection that applies a snapshot works out its own changes. One told its

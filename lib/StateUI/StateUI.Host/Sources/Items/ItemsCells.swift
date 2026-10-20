@@ -145,13 +145,26 @@
     /// reach where the tree can build it, else with the turn under way.
     /// Design: docs/design/host/items.md#one-cell-an-entry
     public func hold(_ identity: String, in holding: any ItemsHolding) {
-        if let previous = holding.identity, previous != identity { letGo(previous, from: holding) }
-        if let other = holders[identity], other !== holding { other.letGo() }
-        holders[identity] = holding
-        held.insert(identity)
-        if !built.contains(identity) || nearsTheBuiltEnd(identity) { tell() }
-        let item = item(identity)
-        if holding.identity != identity || holding.shown !== item { holding.hold(identity, item) }
+        hold([(identity, holding)], endingShowing: [])
+    }
+
+    /// The cells that came near the view and those that went away from it, told together as one frame saw them: the
+    /// ones gone let their entries go first, the ones near take theirs, and the tree is told once - for where the
+    /// cells stand now.
+    /// Design: docs/design/host/items.md#cells-told-together
+    public func hold(_ near: [(identity: String, holding: any ItemsHolding)], endingShowing gone: [any ItemsHolding]) {
+        for holding in gone { endShowing(in: holding) }
+        for (identity, holding) in near {
+            if let previous = holding.identity, previous != identity { letGo(previous, from: holding) }
+            if let other = holders[identity], other !== holding { other.letGo() }
+            holders[identity] = holding
+            held.insert(identity)
+        }
+        if near.contains(where: { !built.contains($0.identity) || nearsTheBuiltEnd($0.identity) }) { tell() }
+        for (identity, holding) in near where holders[identity] === holding {
+            let item = item(identity)
+            if holding.identity != identity || holding.shown !== item { holding.hold(identity, item) }
+        }
     }
 
     /// `holding` comes on screen showing the entry of `identity`: a collection shows again, without asking for it, a

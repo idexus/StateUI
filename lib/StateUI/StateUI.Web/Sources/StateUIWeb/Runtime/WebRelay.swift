@@ -226,13 +226,18 @@ enum WebRelay {
         return Point(x: notch(stateui_web_event_number(18)), y: notch(stateui_web_event_number(8)))
     }
 
-    /// Calls `listener` as `element` comes near the view of the scroller `root`, and as it goes away (`eventNear`).
+    /// Calls `listener` as `element` comes near the view of the scroller `root`, and as it goes away - the scroller's
+    /// one listener, once for every element a frame saw (`eventNearness`).
     static func watchNearness(_ element: Int32, of root: Int32, _ listener: Int32) {
         stateui_web_watch_nearness(element, root, listener)
     }
 
-    /// Whether the element the nearness being heard is of came near.
-    static var eventNear: Bool { stateui_web_event_number(0) != 0 }
+    /// The elements the nearness being heard is of, each with whether it came near.
+    static var eventNearness: [(element: Int32, near: Bool)] {
+        (0..<Int(stateui_web_event_number(0))).map { index in
+            (Int32(stateui_web_event_number(Int32(1 + 2 * index))), stateui_web_event_number(Int32(2 + 2 * index)) != 0)
+        }
+    }
 
     /// Puts one entry of the page's own on the browser's history.
     static func pushHistory() {

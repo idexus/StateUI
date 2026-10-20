@@ -169,6 +169,24 @@ final class ItemsCellsTests: XCTestCase {
         XCTAssertNotNil(cells.item("13"), "a reach around every cell held")
     }
 
+    /// Cells coming near and going away in one batch - a fast scroll seen in one frame - are told together: the ones
+    /// gone let their entries go first, the tree is told once, and builds around the cells near now alone.
+    func testCellsComingAndGoingTogetherTellTheTreeOnce() {
+        let gone = (60..<70).map { _ in Cell() }
+        for (offset, cell) in gone.enumerated() { cells.hold("\(60 + offset)", in: cell) }
+        let coming = (0..<10).map { (identity: "\($0)", holding: Cell()) }
+        let renders = runtime.core.tally.renders
+
+        cells.hold(coming.map { ($0.identity, $0.holding as any ItemsHolding) }, endingShowing: gone)
+
+        XCTAssertEqual(runtime.core.tally.renders, renders + 1, "one render for the batch")
+        XCTAssertNotNil(cells.item("19"), "a reach of ten after the last cell near")
+        XCTAssertNil(cells.item("20"))
+        XCTAssertNil(cells.item("65"), "nothing kept around the cells gone")
+        for (identity, cell) in coming { XCTAssertEqual(cell.shown?.value(.text), .string(identity)) }
+        XCTAssertTrue(gone.allSatisfy { $0.identity == nil })
+    }
+
     /// A cell that ended showing its entry tells the tree nothing at once; the entry leaves once the cells moved out
     /// of its reach.
     func testAnEntryLetGoLeavesOnceTheCellsMoveAway() {
