@@ -73,9 +73,10 @@ private struct LabelledCounter: View, @MainActor Equatable {
 /// The walk over a view's stored properties: what it finds and under which paths, the same however the type is read.
 @MainActor
 final class StateWalkTests: XCTestCase {
-    /// The walk's inputs as words: each path and what it is compared as.
+    /// The walk's inputs as words: each path's name and what it is compared as.
     private func said(_ view: Any) -> [String] {
-        stateParts(in: view).inputs.map { path, input in
+        let names = partNames(in: view)
+        return stateParts(in: view).inputs.map { path, input in
             let kind = switch input {
             case .value: "value"
             case .reference: "reference"
@@ -85,7 +86,7 @@ final class StateWalkTests: XCTestCase {
             case .parts(let count): "parts \(count)"
             case .opaque: "opaque"
             }
-            return "\(path) \(kind)"
+            return "\(names[path] ?? "unnamed") \(kind)"
         }
     }
 
@@ -164,18 +165,33 @@ final class StateWalkTests: XCTestCase {
     /// AN EQUATABLE VIEW OWNING A STATE IS LOOKED INTO: its author's equality cannot pair its state with its
     /// predecessor's, so the walk reads it part by part; one holding no state is compared whole.
     func testAnEquatableViewOwningAStateIsLookedInto() {
-        let parts = stateParts(in: LabelledCounter(label: "Taps"))
+        let view = LabelledCounter(label: "Taps")
+        let parts = stateParts(in: view)
 
         XCTAssertEqual(parts.boxes.count, 1)
-        XCTAssertTrue(parts.boxes.first?.path.hasPrefix("._count") == true, "\(parts.boxes)")
+        XCTAssertEqual(parts.boxes.first.flatMap { partNames(in: view)[$0.path] }, "._count")
         XCTAssertEqual(said(Icon(name: "Mail", glyph: 1)), [" value"])
+    }
+
+    /// A WALK SPELLS NO PATH: its paths are numbers, equal for two walks of one view, and a part's name is spelled
+    /// only where one is asked.
+    func testAWalkSpellsNoPath() {
+        let view = Tile(icon: Icon(name: "Mail", glyph: 1), lifted: true)
+        let texts = Renderer.shared.texts
+
+        let (first, second) = (stateParts(in: view), stateParts(in: view))
+
+        XCTAssertEqual(Renderer.shared.texts, texts, "no text built")
+        XCTAssertEqual(first.inputs.map(\.path), second.inputs.map(\.path), "two walks, equal paths")
+        XCTAssertEqual(Set(first.inputs.map(\.path)).count, first.inputs.count, "a path a part")
     }
 
     /// A STATE IS FOUND UNDER ITS PROPERTY'S BACKING NAME, a box to pair with its predecessor's.
     func testAStateIsFoundUnderItsBackingName() {
-        let parts = stateParts(in: Counter())
+        let view = Counter()
+        let parts = stateParts(in: view)
 
         XCTAssertEqual(parts.boxes.count, 1)
-        XCTAssertTrue(parts.boxes[0].path.hasPrefix("._count"), parts.boxes[0].path)
+        XCTAssertEqual(partNames(in: view)[parts.boxes[0].path], "._count")
     }
 }

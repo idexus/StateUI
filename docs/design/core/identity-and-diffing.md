@@ -177,6 +177,19 @@ value that owns no state (compared whole - one that does is read part by
 part, [below](#a-type-learnt-once)) and at any class (a reference keeps
 itself alive).
 
+### A path is a number
+
+A path is worked as one number (`PathNumber`): the 64-bit FNV-1a hash of its
+steps, each step's bytes after a byte no UTF-8 text holds - a property's
+label, an element's place in a collection, the key of a view stored there. Two
+walks of one view give equal numbers, in every process, and pairing and
+comparing them costs a word, so a walk spells nothing. A name is spelled only
+where one is shown: the walk's second mode (`partNames`) builds the same paths
+with their text beside them, which the differ asks for once a view holds a
+state whose storage has no name yet - its first build, not its rebuilds - and
+an inspector for the reason a view was built. A state's name is the path
+tidied (`BuildScope.readable`): `._count` is `count`.
+
 ### A type learnt once
 
 What a value is to the walk - a box, a slot, a binding, a node, a value

@@ -132,7 +132,7 @@ extension Differ {
                     !stateful.walk.takes(rendered.views[step].walk) {
                     // By path, not by position.
                     // Design: docs/design/core/identity-and-diffing.md#paths-pair-state
-                    var kept: [String: StateBox] = [:]
+                    var kept: [PathNumber: StateBox] = [:]
 
                     for (path, box) in rendered.views[step].boxes where kept[path] == nil {
                         kept[path] = box
@@ -143,6 +143,14 @@ extension Differ {
                             fresh.adopt(from: previous)
                         }
                     }
+                }
+
+                // A state met for the first time is named by its property: the walk's paths spelled
+                // once, for the new storages alone.
+                // Design: docs/design/core/identity-and-diffing.md#a-path-is-a-number
+                if stateful.boxes.contains(where: { !$0.box.isNamed }) {
+                    let names = stateful.walk.names
+                    for (path, box) in stateful.boxes where !box.isNamed { box.named(names[path] ?? "") }
                 }
 
                 // A state a scene keeps takes the scene's storage for its key, before the body
@@ -675,7 +683,7 @@ extension Differ {
             return "its parent wrote it differently"
         }
 
-        if let input = Input.difference(stateful.inputs, kept.inputs) {
+        if let input = Input.difference(stateful.inputs, kept.inputs, names: stateful.walk.names) {
             return "built with a new \(input)"
         }
 

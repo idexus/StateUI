@@ -34,8 +34,8 @@
 typealias BuiltView = (
     type: KeyName,
     walk: ViewWalk,
-    boxes: [(path: String, box: StateBox)],
-    inputs: [(path: String, input: Input)],
+    boxes: [(path: PathNumber, box: StateBox)],
+    inputs: [(path: PathNumber, input: Input)],
     branch: String?)
 
 /// One element as it stands on the host - a class, so unchanged parts of one

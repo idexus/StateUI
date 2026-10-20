@@ -603,20 +603,23 @@ final class InspectionTests: XCTestCase {
     }
 
     func testADifferenceIsNamedByItsProperty() {
+        let (text, run) = (PathNumber().appending("text"), PathNumber().appending("_run"))
+        let names = [text: "text", run: "_run"]
+
         XCTAssertNil(Input.difference(
-            [(path: "text", input: .value("a"))],
-            [(path: "text", input: .value("a"))]))
+            [(path: text, input: .value("a"))],
+            [(path: text, input: .value("a"))], names: names))
 
         XCTAssertEqual(
             Input.difference(
-                [(path: "text", input: .value("a"))],
-                [(path: "text", input: .value("b"))]),
+                [(path: text, input: .value("a"))],
+                [(path: text, input: .value("b"))], names: names),
             "text")
 
         XCTAssertEqual(
             Input.difference(
-                [(path: "_run", input: .opaque)],
-                [(path: "_run", input: .opaque)]),
+                [(path: run, input: .opaque)],
+                [(path: run, input: .opaque)], names: names),
             "run, which cannot be compared")
     }
 }

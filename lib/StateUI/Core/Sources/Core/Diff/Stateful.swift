@@ -15,11 +15,17 @@ protocol StateBox: AnyObject {
     /// The storage this box holds after adoption - what says two boxes are one state.
     var lender: AnyObject { get }
 
-    /// Tells the box the property the author declared it as (Builds.swift).
+    /// Whether the storage the box holds has its name: a state the walk met before has.
+    var isNamed: Bool { get }
+
+    /// Tells the box the property the author declared it as, spelled as the walk reached it (Builds.swift).
     func named(_ path: String)
 }
 
 extension StateBox {
+    /// A borrowed value and an author's own class answer to no name.
+    var isNamed: Bool { true }
+
     /// A borrowed value and an author's own class answer to no name.
     func named(_ path: String) {}
 }
@@ -62,8 +68,8 @@ enum Input {
 
     /// Whether every input matches its predecessor, path for path.
     static func same(
-        _ fresh: [(path: String, input: Input)],
-        _ kept: [(path: String, input: Input)]
+        _ fresh: [(path: PathNumber, input: Input)],
+        _ kept: [(path: PathNumber, input: Input)]
     ) -> Bool {
         guard fresh.count == kept.count else { return false }
 
@@ -74,17 +80,18 @@ enum Input {
         return true
     }
 
-    /// The first input that does not match, by its property's name - the reason an
+    /// The first input that does not match, by its property's name in `names` - the reason an
     /// inspector gives for a build.
     static func difference(
-        _ fresh: [(path: String, input: Input)],
-        _ kept: [(path: String, input: Input)]
+        _ fresh: [(path: PathNumber, input: Input)],
+        _ kept: [(path: PathNumber, input: Input)],
+        names: [PathNumber: String]
     ) -> String? {
         guard fresh.count == kept.count else { return "set of properties" }
 
         for (now, then) in zip(fresh, kept) where now.path != then.path
             || !matches(now.input, then.input) {
-            let name = BuildScope.readable(now.path)
+            let name = BuildScope.readable(names[now.path] ?? "")
 
             if case .opaque = now.input {
                 return "\(name), which cannot be compared"
@@ -140,7 +147,7 @@ extension Node {
         let walk: ViewWalk
 
         /// The state boxes the fresh view owns, under the paths the walk found them at.
-        var boxes: [(path: String, box: StateBox)] { walk.parts.boxes }
+        var boxes: [(path: PathNumber, box: StateBox)] { walk.parts.boxes }
 
         /// The `@Environment` slots, filled before the body builds
         /// (Environment.swift).
@@ -148,7 +155,7 @@ extension Node {
 
         /// What the view was built with, compared against last render's to decide whether
         /// it is built or carried.
-        var inputs: [(path: String, input: Input)] { walk.parts.inputs }
+        var inputs: [(path: PathNumber, input: Input)] { walk.parts.inputs }
 
         /// Builds the subtree - after the boxes have adopted their predecessors' storage.
         let build: () -> Node
