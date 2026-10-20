@@ -95,8 +95,10 @@ one thing: the motion times the phase, the arithmetic turns a phase into
 poses, and a shift per identity (`LayoutShift`) turns a pose into what is
 shown.
 
-A description is told apart by a number each gets as it is made (an object's
-address would not do: one let go is soon another's). On the first frame of
+A view's identity is its item's own, the value `id:` names, compared as that
+value (`AnyHashable`): two items that describe alike are two views, and none
+is spelled. A description is told apart by a number each gets as it is made
+(an object's address would not do: one let go is soon another's). On the first frame of
 a new one, the engine works its arithmetic out where the last frame stood -
 that phase, that room - and compares it identity by identity with the last
 frame's poses: a view whose pose is the same goes on as it was, so a render

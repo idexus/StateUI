@@ -32,7 +32,7 @@ extension LayoutEngine {
 
     /// One view being placed: its identity, its index and its item.
     struct Slot {
-        let identity: String
+        let identity: AnyHashable
         let index: Int
         let item: Items.Element
     }

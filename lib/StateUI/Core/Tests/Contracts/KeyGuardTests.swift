@@ -128,7 +128,6 @@ final class KeyGuardTests: XCTestCase {
         // Identities.
         "Differ+Children.swift": identity,
         "ItemsSource.swift": identity,
-        "LayoutEngine.swift": identity, "LayoutEngine+Change.swift": identity, "LayoutEngine+Item.swift": identity,
         "ItemsCells.swift": identity, "AppKitItemsView.swift": identity, "WebItemsView.swift": identity,
         "SceneRecord.swift": identity + ", and " + file,
         // Files.

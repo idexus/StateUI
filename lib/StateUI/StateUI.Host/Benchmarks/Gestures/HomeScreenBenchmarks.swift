@@ -27,7 +27,7 @@ final class HomeScreenBenchmarks: XCTestCase {
         bench.frames(for: 1_000)
 
         XCTAssertEqual(work, Work(
-            renders: 12, built: 36, walks: 12, texts: 1_152, made: 0, applied: 60, arranged: 0, presented: 92,
+            renders: 12, built: 36, walks: 12, texts: 576, made: 0, applied: 60, arranged: 0, presented: 92,
             placed: 4_416, left: 0))
     }
 }

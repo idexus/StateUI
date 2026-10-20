@@ -35,6 +35,30 @@ final class LayoutEngineTests: XCTestCase {
         XCTAssertEqual(engine.walkedParts.map(\.label), Mirror(reflecting: engine).children.map { $0.label ?? "" })
     }
 
+    /// A SLOT IS ITS ITEM'S OWN IDENTITY, compared as the value it is: two identities that describe alike - a class
+    /// prints its type's name - are two slots, and naming one spells nothing.
+    func testASlotIsItsItemsOwnIdentity() {
+        let tags = [Tag(1), Tag(2)]
+        let engine = LayoutEngine(tags, id: \.self) { _ in Rectangle(.red) } placements: { _, _ in [] }
+        let texts = Renderer.shared.texts
+
+        let slots = engine.run.slots
+
+        XCTAssertEqual(Set(slots.map(\.identity)).count, 2, "two identities, two slots")
+        XCTAssertEqual(slots.map(\.identity), tags.map(AnyHashable.init), "each its item's own")
+        XCTAssertEqual(Renderer.shared.texts, texts, "no text built")
+    }
+
+    /// An identity whose description says only its type.
+    private final class Tag: Hashable {
+        let number: Int
+
+        init(_ number: Int) { self.number = number }
+
+        static func == (lhs: Tag, rhs: Tag) -> Bool { lhs.number == rhs.number }
+        func hash(into hasher: inout Hasher) { hasher.combine(number) }
+    }
+
     // MARK: - The arithmetic
 
     /// THE ROOM FROM THE LAYOUT'S OWN TOP LEFT: the arithmetic is handed the size the layout was given at the

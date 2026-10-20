@@ -538,17 +538,16 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     }
 
     /// What the engine and the handlers are handed: the layout as locals, the hand along it in focus.
-    private var run: Run {
+    var run: Run {
         let items = Array(source.items)
         let path = source.path
         // Closures, not key paths: one written in a generic type is made anew at every call.
         let hands = axes.compactMap { $0.hand }
-        Renderer.shared.texts += items.count
 
         return Run(
             items: items,
             slots: items.enumerated().map { offset, item in
-                Slot(identity: String(describing: item[keyPath: path]), index: offset, item: item)
+                Slot(identity: AnyHashable(item[keyPath: path]), index: offset, item: item)
             },
             make: source.view,
             holder: source.holder,
@@ -677,7 +676,7 @@ struct LayoutShown<Phase: LayoutPhase>: Equatable {
     var phase: Phase?
     var from: Phase?
     var room = Rect.zero
-    var poses: [String: Placement] = [:]
-    var shown: [String: Placement] = [:]
-    var travels: [String: LayoutTravel] = [:]
+    var poses: [AnyHashable: Placement] = [:]
+    var shown: [AnyHashable: Placement] = [:]
+    var travels: [AnyHashable: LayoutTravel] = [:]
 }

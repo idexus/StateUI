@@ -40,7 +40,7 @@ extension LayoutEngine.Run {
         let still = reducesMotion || motion.isNothing
 
         var shown = poses
-        var travels: [String: LayoutTravel] = [:]
+        var travels: [AnyHashable: LayoutTravel] = [:]
         for (index, identity) in identities.enumerated() where !still {
             guard let travel = memory.travels[identity] else { continue }
 
@@ -53,7 +53,7 @@ extension LayoutEngine.Run {
 
         let holding = showHeld(&shown, travels: &travels, poses: poses, at: now, room: room)
 
-        func byIdentity(_ run: [Placement]) -> [String: Placement] {
+        func byIdentity(_ run: [Placement]) -> [AnyHashable: Placement] {
             Dictionary(zip(identities, run), uniquingKeysWith: { first, _ in first })
         }
         states.shown.wrappedValue = LayoutShown(
