@@ -84,7 +84,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 gallery
                     .arrangement(shape.arrangement)
                     .position($shown)
-                    .onItemTapped { card in opened = "tapped \(card.name)" }
+                    .onItemActivated { name in opened = "opened \(name)" }
                     // Another card in the middle, swiped or assigned.
                     .onPositionChanged { _ in moves += 1 }
             }
@@ -255,7 +255,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             Text("`Shaded` is `.shade(Rectangle(Color(hex: 0x000000)).cornerRadius(16))`: "
                 + "the cards away from the middle are DARKENED by a view drawn over them "
                 + "rather than faded, so what is behind a far card stays hidden. "
-                + "`.onItemTapped` is handed the card in the MIDDLE.")
+                + "`.onItemActivated` is handed the card in the MIDDLE.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

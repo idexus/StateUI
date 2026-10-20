@@ -14,7 +14,7 @@
 ///     }
 ///     .arrangement(.default)
 ///     .position($shown)
-///     .onItemTapped { album in open(album) }
+///     .onItemActivated { title in open(title) }
 ///
 /// The initializer is the card's face, one card per item; where a card goes
 /// and which way it faces is the arrangement's. Give the gallery a bounded
@@ -22,7 +22,8 @@
 /// and the cards are fitted to it.
 ///
 /// A swipe settles on a card, and `.position(_:)` says which; assigning it
-/// moves the run. A tap opens the middle card, handed to `.onItemTapped`. No
+/// moves the run. A tap on the card in front activates it, and
+/// `.onItemActivated` hears its identity. No
 /// view is rebuilt while the run moves: the one render is the card changing.
 public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     // State first: boxes are adopted by path, and the card faces stored below
@@ -52,8 +53,8 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// What runs when the middle card changes, beside any binding, through its gate.
     private var moved: ValueHandler<Int>?
 
-    /// What runs when the user taps the run, through its gate.
-    private var tapped: ValueHandler<Items.Element>?
+    /// What runs when the user activates the card in front, with its identity, through its gate.
+    private var activated: ValueHandler<ID>?
 
     /// Which shape the cards stand in.
     private var look = GalleryArrangement.default
@@ -168,30 +169,28 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         return copy
     }
 
-    /// Runs when the user taps the card in front, with its item.
+    /// Hears the user open the card in front, handed its identity.
     ///
     ///     GalleryView(groups, id: \.route) { … }
     ///         .position($shown)
-    ///         .onItemTapped { group in open(group) }
+    ///         .onItemActivated { route in open(route) }
     ///
-    /// The tap lands on the card in front as its shape draws it, whether the
+    /// A tap lands on the card in front as its shape draws it, whether the
     /// user may swipe the run or not.
     ///
-    /// - Parameter handler: what to run, given the middle item.
-    /// - Returns: the gallery, answering a tap.
-    public func onItemTapped(_ handler: @escaping @MainActor (Items.Element) throws -> Void) -> Self {
+    /// - Parameter handler: what to run, given the card's identity.
+    /// - Returns: the gallery, answering its card's activation.
+    public func onItemActivated(_ handler: @escaping @MainActor (ID) throws -> Void) -> Self {
         var copy = self
-        copy.tapped = ValueHandler(step: handler)
+        copy.activated = ValueHandler(step: handler)
         return copy
     }
 
-    /// The same, with a handler that awaits - opening a page does: its `gate` says what a tap does while a run
-    /// is under way.
-    public func onItemTapped(
-        gate: some Gate, _ handler: @escaping ValueEventHandler<Items.Element>
-    ) -> Self {
+    /// The same, with a handler that awaits - opening a page does: its `gate` says what opening the card again
+    /// does while a run is under way.
+    public func onItemActivated(gate: some Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.tapped = ValueHandler(run: handler, gate: gate)
+        copy.activated = ValueHandler(run: handler, gate: gate)
         return copy
     }
 
@@ -374,9 +373,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         if let mask { engine = engine.shade(mask) }
 
         // The tap, answered on the card in front: the press shows, and the card is back at its size, before the
-        // tap's own work, which usually builds a page.
-        if let tapped {
-            engine = engine.onItemTapped(gate: tapped.gate) { item in
+        // activation's own work, which usually builds a page.
+        if let activated {
+            engine = engine.onItemTapped(gate: activated.gate) { item in
                 let front = items[items.index(items.startIndex, offsetBy: asked())]
 
                 guard item[keyPath: path] == front[keyPath: path] else { return }
@@ -387,7 +386,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
                 dips.wrappedValue = nil
 
-                try await tapped.run(item)
+                try await activated.run(item[keyPath: path])
             }
         }
 

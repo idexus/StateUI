@@ -661,12 +661,13 @@ final class GalleryViewTests: XCTestCase {
         }
     }
 
-    /// A tap is answered ON THE CARD IN FRONT, on the card itself, rather than
-    /// anywhere along the run: a card behind it hears the tap and does nothing.
-    func testATapIsAnsweredOnTheCardInFront() async throws {
+    /// A tap ACTIVATES THE CARD IN FRONT, on the card itself, rather than
+    /// anywhere along the run: a card behind it hears the tap and does nothing,
+    /// and the card in front is handed over by its identity.
+    func testATapActivatesTheCardInFront() async throws {
         var heard: [Int] = []
         let renders = Renders()
-        let shown = laid(renders, { self.gallery(5).onItemTapped { heard.append($0) }.node })
+        let shown = laid(renders, { self.gallery(5).onItemActivated { heard.append($0) }.node })
         let cards = try XCTUnwrap(find(.layoutEngine, in: shown.whole)).children.compactMap { $0.events?[.tapped] }
 
         XCTAssertEqual(cards.count, 5, "every card hears a tap")
@@ -687,7 +688,7 @@ final class GalleryViewTests: XCTestCase {
     /// target stands where the card does.
     func testAGalleryNobodyMaySwipeAnswersATapOnItsCardInFront() throws {
         let renders = Renders()
-        let shown = laid(renders, { self.gallery(5).isSwipeEnabled(false).onItemTapped { _ in }.node })
+        let shown = laid(renders, { self.gallery(5).isSwipeEnabled(false).onItemActivated { _ in }.node })
 
         XCTAssertNotNil(tappable(in: shown.whole), "the gallery laid no target")
     }
@@ -707,7 +708,7 @@ final class GalleryViewTests: XCTestCase {
     @MainActor
     func testTheCardInFrontIsPressedWhileTheTapIsAnswered() async throws {
         let renders = Renders()
-        let view = gallery(5).onItemTapped { _ in }
+        let view = gallery(5).onItemActivated { _ in }
         let showing = laid(renders, { view.node }).whole
 
         let target = try XCTUnwrap(tappable(in: showing))

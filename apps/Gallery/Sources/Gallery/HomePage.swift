@@ -205,7 +205,7 @@ struct HomePage: View {
                 }
                 .position($chosen)
                 .throwing(.spring(response: .milliseconds(500), damping: 0.8))
-                .onItemTapped { group in nav.push(.group(group.route)) }
+                .onItemActivated { route in nav.push(.group(route)) }
                 // THE FAR CARDS DARKEN RATHER THAN FADE. A faded card here
                 // would show the card BEHIND it - the wheel stands them one
                 // over another - so what reads as depth is a shade over the

@@ -483,7 +483,7 @@ struct AlbumsPage: View {
             }
             .arrangement(.fan)
             .position($shown)
-            .onItemTapped { album in opened = album.title }
+            .onItemActivated { title in opened = title }
             .gridRow(0)
 
             Text("\(opened) · card \(shown + 1) of \(albums.count)")
@@ -501,8 +501,9 @@ way it faces is the arrangement's - `.default` (a wheel), `.fan`, `.row` or
 the hand goes and under the next - and changing it animates every card to the
 new shape. `.position($shown)` is
 the card in the middle, counted from 0 and two-way: a swipe writes the card it
-settled on, and a write moves the run. `.onItemTapped` hears a tap on the
-card in front, with its item, and `.onPositionChanged` another card coming to
+settled on, and a write moves the run. `.onItemActivated` hears the card in
+front opened - a tap on it - with its identity, as a list's item is, and
+`.onPositionChanged` another card coming to
 the middle; a swipe carries the card in front with it, however big the room
 draws the cards, and `.throwing(_:)` says how one let go with speed goes on, as a
 [layout engine's](#a-layout-engine) input does, and `.itemSize(width:height:)`,

@@ -3743,7 +3743,7 @@ enum Listings {
                     gallery
                         .arrangement(shape.arrangement)
                         .position($shown)
-                        .onItemTapped { card in opened = "tapped \(card.name)" }
+                        .onItemActivated { name in opened = "opened \(name)" }
                         // Another card in the middle, swiped or assigned.
                         .onPositionChanged { _ in moves += 1 }
                 }

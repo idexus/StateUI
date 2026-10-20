@@ -129,10 +129,13 @@ new shape says.
   own beside the deck (composition.md, a watcher is a view of its own).
 - A press is drawn on the view inside the card's holder, since the holder is
   written by the placement on every frame and a press there would be snapped
-  away. Only the card in front answers a tap; the press shows and the card is
-  back at its size before the tap's own work begins: opening a card usually
-  builds a page, and a page built on the UI thread takes every frame beside
-  it.
+  away. Only the card in front answers a tap, which activates it - handed to
+  `onItemActivated` by its identity, as a list's item is; the press shows and
+  the card is back at its size before the activation's own work begins:
+  opening a card usually builds a page, and a page built on the UI thread
+  takes every frame beside it. A tap is what activates a card: a composed
+  view states no role a keyboard or a screen reader acts on
+  ([accessibility and automation](modifiers.md#accessibility-and-automation)).
 - A gallery nobody may swipe has no scroll: an assigned position places the
   cards there, and the card in front answers a tap itself.
 
