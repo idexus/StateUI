@@ -165,10 +165,10 @@ final class AndroidPagesTests: XCTestCase {
                 "Pushed appearing", "Pushed navigatedTo",
             ])
 
-            // The popped page has left the tree, and a page that left hears nothing more.
+            // The popped page hears it disappears as it leaves the tree, then the page beneath comes back.
             log.values = []
             XCTAssertTrue(host.goBack())
-            XCTAssertEqual(log.values, ["Root appearing", "Root navigatedTo"])
+            XCTAssertEqual(log.values, ["Pushed disappearing", "Root appearing", "Root navigatedTo"])
         }
     }
 
@@ -606,12 +606,12 @@ extension AndroidPagesTests {
             XCTAssertTrue(host.goBack())
             XCTAssertEqual(sheets.wrappedValue, [])
             XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 1)
-            XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Page appearing"])
+            XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Sheet 1 disappearing", "Page appearing"])
         }
     }
 
-    /// The program shortening the stack takes its pages down after the tree has let them go - a page that left
-    /// hears nothing more - and the page under them shows again.
+    /// The program shortening the stack takes its pages down after the tree has let them go - a page shown hears it
+    /// disappears as it leaves, and nothing more - and the page under them shows again.
     func testThePageUnderPagesTheProgramTakesDownShowsAgain() {
         onMainActor {
             let sheets = State(wrappedValue: [Int]())
@@ -625,17 +625,18 @@ extension AndroidPagesTests {
             sheets.wrappedValue = [1]
             host.runtime.pump.turn()
             XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 2)
-            XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Sheet 1 appearing"])
+            XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Sheet 2 disappearing", "Sheet 1 appearing"])
 
             log.values = []
             sheets.wrappedValue = []
             host.runtime.pump.turn()
             XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 1)
-            XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Page appearing"])
+            XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Sheet 1 disappearing", "Page appearing"])
         }
     }
 
-    /// A window showing another arrangement: the new one appears, and the one the tree let go hears nothing more.
+    /// A window showing another arrangement: the one the tree let go hears it disappears as it goes, then the new one
+    /// appears.
     func testAnArrangementTheWindowShowsInsteadAppears() {
         onMainActor {
             let stacked = State(wrappedValue: false)
@@ -654,7 +655,7 @@ extension AndroidPagesTests {
             stacked.wrappedValue = true
             host.runtime.pump.turn()
             XCTAssertEqual(host.views(AndroidTextView.self).map(\.text), ["Root"])
-            XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Root appearing"])
+            XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Page disappearing", "Root appearing"])
         }
     }
 

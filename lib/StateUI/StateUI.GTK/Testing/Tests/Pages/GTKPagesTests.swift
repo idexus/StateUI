@@ -64,10 +64,10 @@ final class GTKPagesTests: XCTestCase {
                 "Pushed appearing", "Pushed navigatedTo",
             ])
 
-            // The popped page has left the tree, and a page that left hears nothing more.
+            // The popped page hears it disappears as it leaves the tree, then the page beneath comes back.
             log.values = []
             XCTAssertTrue(host.goBack())
-            XCTAssertEqual(log.values, ["Root appearing", "Root navigatedTo"])
+            XCTAssertEqual(log.values, ["Pushed disappearing", "Root appearing", "Root navigatedTo"])
         }
     }
 
