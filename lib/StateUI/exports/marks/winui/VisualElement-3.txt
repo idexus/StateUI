@@ -1,4 +1,4 @@
-# revision 14.2
+# revision 15.2
 ActivityIndicator.isEnabled: ✅
 ActivityIndicator.rotation: ✅
 Button.accessibilityHeading: ✅
@@ -53,9 +53,9 @@ Text.width: ✅
 TextEditor.layoutDirection: ✅
 TextField.scaleY: ✅
 TextField.style: ✅
-TimePicker.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
+TimePicker.hidesChildrenFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 VStack.ignoresInput: ✅
 VStack.scale: ✅
 WebView.scaleY: ✅
 WebView.style: ✅
-ZStack.automationExcludedWithChildren: ✅
+ZStack.hidesChildrenFromAccessibility: ✅

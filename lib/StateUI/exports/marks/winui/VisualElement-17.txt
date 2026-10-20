@@ -1,4 +1,4 @@
-# revision 14.2
+# revision 15.2
 ActivityIndicator.background: – WinUI's progress ring paints its Background as its track, no ground under its frame.
 Button.ignoresInput: ✅
 Button.scale: ✅
@@ -24,7 +24,7 @@ LayoutEngine.scaleX: ✅
 Line.accessibilityLabel: ✅
 Line.isEnabled: ✅
 Map.layoutDirection: 🧩
-Path.automationExcludedWithChildren: ✅
+Path.hidesChildrenFromAccessibility: ✅
 Picker.maximumHeight: ✅
 Picker.maximumWidth: ✅
 Picker.minimumHeight: ✅
@@ -35,7 +35,7 @@ Polyline.opacity: ✅
 Polyline.pivotY: ✅
 ProgressBar.translationX: ✅
 ProgressBar.zIndex: ✅
-Rectangle.automationExcludedWithChildren: ✅
+Rectangle.hidesChildrenFromAccessibility: ✅
 ScrollView.maximumHeight: ✅
 ScrollView.maximumWidth: ✅
 ScrollView.minimumHeight: ✅
@@ -46,7 +46,7 @@ SearchField.translationY: ✅
 Slider.layoutDirection: ✅
 Spacer.scaleY: ✅
 Spacer.style: ✅
-Stepper.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
+Stepper.hidesChildrenFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 Switch.ignoresInput: ✅
 Switch.scale: ✅
 Text.layoutDirection: ✅

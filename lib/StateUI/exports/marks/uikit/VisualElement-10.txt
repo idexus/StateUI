@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Button.background: ✅
 Button.maximumHeight: ✅
@@ -25,13 +25,13 @@ Map.maximumWidth: ✅
 Map.minimumHeight: ✅
 Map.minimumWidth: ✅
 Path.rotation: ✓ read rotation of Path: the host's own transform, checked against the layer it composed itself
-Picker.automationExcludedWithChildren: ✅
+Picker.hidesChildrenFromAccessibility: ✅
 Polygon.accessibilityHint: ✅
 Polyline.frame: ✅
 ProgressBar.opacity: ✅
 ProgressBar.scaleY: ✓ read scaleY of ProgressBar: the host's own transform, checked against the layer it composed itself
 Rectangle.rotation: ✓ read rotation of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.automationExcludedWithChildren: ✅
+ScrollView.hidesChildrenFromAccessibility: ✅
 SearchField.zIndex: ✅
 Slider.maximumHeight: ✅
 Slider.maximumWidth: ✅

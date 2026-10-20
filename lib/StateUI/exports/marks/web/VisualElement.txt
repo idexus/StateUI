@@ -1,11 +1,11 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.accessibilityHeading: ✅
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
-ActivityIndicator.automationExcludedWithChildren: ✅
 ActivityIndicator.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 ActivityIndicator.frame: ✅
 ActivityIndicator.height: ✅
+ActivityIndicator.hidesChildrenFromAccessibility: ✅
 ActivityIndicator.ignoresInput: ✅
 ActivityIndicator.isAccessibilityHidden: ✅
 ActivityIndicator.isEnabled: ✅
@@ -33,10 +33,10 @@ ActivityIndicator.zIndex: ✅
 Button.accessibilityHeading: ✅
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
-Button.automationExcludedWithChildren: ✅
 Button.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Button.frame: ✅
 Button.height: ✅
+Button.hidesChildrenFromAccessibility: ✅
 Button.ignoresInput: ✅
 Button.isAccessibilityHidden: ✅
 Button.isEnabled: ✅
@@ -64,10 +64,10 @@ Button.zIndex: ✅
 Canvas.accessibilityHeading: ✅
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
-Canvas.automationExcludedWithChildren: ✅
 Canvas.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Canvas.frame: ✅
 Canvas.height: ✅
+Canvas.hidesChildrenFromAccessibility: ✅
 Canvas.ignoresInput: ✅
 Canvas.isAccessibilityHidden: ✅
 Canvas.isEnabled: ✅
@@ -95,10 +95,10 @@ Canvas.zIndex: ✅
 Capsule.accessibilityHeading: ✅
 Capsule.accessibilityHint: ✅
 Capsule.accessibilityLabel: ✅
-Capsule.automationExcludedWithChildren: ✅
 Capsule.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Capsule.frame: ✅
 Capsule.height: ✅
+Capsule.hidesChildrenFromAccessibility: ✅
 Capsule.ignoresInput: ✅
 Capsule.isAccessibilityHidden: ✅
 Capsule.isEnabled: ✅
@@ -126,10 +126,10 @@ Capsule.zIndex: ✅
 CheckBox.accessibilityHeading: ✅
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
-CheckBox.automationExcludedWithChildren: ✅
 CheckBox.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 CheckBox.frame: ✅
 CheckBox.height: ✅
+CheckBox.hidesChildrenFromAccessibility: ✅
 CheckBox.ignoresInput: ✅
 CheckBox.isAccessibilityHidden: ✅
 CheckBox.isEnabled: ✅
@@ -157,10 +157,10 @@ CheckBox.zIndex: ✅
 DatePicker.accessibilityHeading: ✅
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
-DatePicker.automationExcludedWithChildren: ✅
 DatePicker.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 DatePicker.frame: ✅
 DatePicker.height: ✅
+DatePicker.hidesChildrenFromAccessibility: ✅
 DatePicker.ignoresInput: ✅
 DatePicker.isAccessibilityHidden: ✅
 DatePicker.isEnabled: ✅
@@ -188,10 +188,10 @@ DatePicker.zIndex: ✅
 Divider.accessibilityHeading: ✅
 Divider.accessibilityHint: ✅
 Divider.accessibilityLabel: ✅
-Divider.automationExcludedWithChildren: ✅
 Divider.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Divider.frame: ✅
 Divider.height: ✅
+Divider.hidesChildrenFromAccessibility: ✅
 Divider.ignoresInput: ✅
 Divider.isAccessibilityHidden: ✅
 Divider.isEnabled: ✅
@@ -219,10 +219,10 @@ Divider.zIndex: ✅
 Ellipse.accessibilityHeading: ✅
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
-Ellipse.automationExcludedWithChildren: ✅
 Ellipse.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Ellipse.frame: ✅
 Ellipse.height: ✅
+Ellipse.hidesChildrenFromAccessibility: ✅
 Ellipse.ignoresInput: ✅
 Ellipse.isAccessibilityHidden: ✅
 Ellipse.isEnabled: ✅
@@ -250,10 +250,10 @@ Ellipse.zIndex: ✅
 Grid.accessibilityHeading: ✅
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
-Grid.automationExcludedWithChildren: ✅
 Grid.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
 Grid.frame: ✅
 Grid.height: ✅
+Grid.hidesChildrenFromAccessibility: ✅
 Grid.ignoresInput: ✅
 Grid.isAccessibilityHidden: ✅
 Grid.isEnabled: ✅
@@ -281,10 +281,10 @@ Grid.zIndex: ✅
 HStack.accessibilityHeading: ✅
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
-HStack.automationExcludedWithChildren: ✅
 HStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
 HStack.frame: ✅
 HStack.height: ✅
+HStack.hidesChildrenFromAccessibility: ✅
 HStack.ignoresInput: ✅
 HStack.isAccessibilityHidden: ✅
 HStack.isEnabled: ✅
@@ -312,10 +312,10 @@ HStack.zIndex: ✅
 Image.accessibilityHeading: ✅
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
-Image.automationExcludedWithChildren: ✅
 Image.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Image.frame: ✅
 Image.height: ✅
+Image.hidesChildrenFromAccessibility: ✅
 Image.ignoresInput: ✅
 Image.isAccessibilityHidden: ✅
 Image.isEnabled: ✅
@@ -343,10 +343,10 @@ Image.zIndex: ✅
 ItemsView.accessibilityHeading: ✅
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
-ItemsView.automationExcludedWithChildren: ✅
 ItemsView.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 ItemsView.frame: ✅
 ItemsView.height: ✅
+ItemsView.hidesChildrenFromAccessibility: ✅
 ItemsView.ignoresInput: ✅
 ItemsView.isAccessibilityHidden: ✅
 ItemsView.isEnabled: ✅
@@ -374,10 +374,10 @@ ItemsView.zIndex: ✅
 LayoutEngine.accessibilityHeading: ✅
 LayoutEngine.accessibilityHint: ✅
 LayoutEngine.accessibilityLabel: ✅
-LayoutEngine.automationExcludedWithChildren: ✅
 LayoutEngine.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
 LayoutEngine.frame: ✅
 LayoutEngine.height: ✅
+LayoutEngine.hidesChildrenFromAccessibility: ✅
 LayoutEngine.ignoresInput: ✅
 LayoutEngine.isAccessibilityHidden: ✅
 LayoutEngine.isEnabled: ✅
@@ -405,10 +405,10 @@ LayoutEngine.zIndex: ✅
 Line.accessibilityHeading: ✅
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
-Line.automationExcludedWithChildren: ✅
 Line.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Line.frame: ✅
 Line.height: ✅
+Line.hidesChildrenFromAccessibility: ✅
 Line.ignoresInput: ✅
 Line.isAccessibilityHidden: ✅
 Line.isEnabled: ✅
@@ -436,10 +436,10 @@ Line.zIndex: ✅
 Map.accessibilityHeading: 🧩
 Map.accessibilityHint: 🧩
 Map.accessibilityLabel: 🧩
-Map.automationExcludedWithChildren: 🧩
 Map.background: 🧩
 Map.frame: 🧩
 Map.height: 🧩
+Map.hidesChildrenFromAccessibility: 🧩
 Map.ignoresInput: 🧩
 Map.isAccessibilityHidden: 🧩
 Map.isEnabled: 🧩
@@ -467,10 +467,10 @@ Map.zIndex: 🧩
 Path.accessibilityHeading: ✅
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
-Path.automationExcludedWithChildren: ✅
 Path.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Path.frame: ✅
 Path.height: ✅
+Path.hidesChildrenFromAccessibility: ✅
 Path.ignoresInput: ✅
 Path.isAccessibilityHidden: ✅
 Path.isEnabled: ✅
@@ -498,10 +498,10 @@ Path.zIndex: ✅
 Picker.accessibilityHeading: ✅
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
-Picker.automationExcludedWithChildren: ✅
 Picker.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Picker.frame: ✅
 Picker.height: ✅
+Picker.hidesChildrenFromAccessibility: ✅
 Picker.ignoresInput: ✅
 Picker.isAccessibilityHidden: ✅
 Picker.isEnabled: ✅
@@ -529,10 +529,10 @@ Picker.zIndex: ✅
 Polygon.accessibilityHeading: ✅
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
-Polygon.automationExcludedWithChildren: ✅
 Polygon.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Polygon.frame: ✅
 Polygon.height: ✅
+Polygon.hidesChildrenFromAccessibility: ✅
 Polygon.ignoresInput: ✅
 Polygon.isAccessibilityHidden: ✅
 Polygon.isEnabled: ✅
@@ -560,10 +560,10 @@ Polygon.zIndex: ✅
 Polyline.accessibilityHeading: ✅
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
-Polyline.automationExcludedWithChildren: ✅
 Polyline.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Polyline.frame: ✅
 Polyline.height: ✅
+Polyline.hidesChildrenFromAccessibility: ✅
 Polyline.ignoresInput: ✅
 Polyline.isAccessibilityHidden: ✅
 Polyline.isEnabled: ✅
@@ -591,10 +591,10 @@ Polyline.zIndex: ✅
 ProgressBar.accessibilityHeading: ✅
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
-ProgressBar.automationExcludedWithChildren: ✅
 ProgressBar.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 ProgressBar.frame: ✅
 ProgressBar.height: ✅
+ProgressBar.hidesChildrenFromAccessibility: ✅
 ProgressBar.ignoresInput: ✅
 ProgressBar.isAccessibilityHidden: ✅
 ProgressBar.isEnabled: ✅
@@ -622,10 +622,10 @@ ProgressBar.zIndex: ✅
 Rectangle.accessibilityHeading: ✅
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
-Rectangle.automationExcludedWithChildren: ✅
 Rectangle.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Rectangle.frame: ✅
 Rectangle.height: ✅
+Rectangle.hidesChildrenFromAccessibility: ✅
 Rectangle.ignoresInput: ✅
 Rectangle.isAccessibilityHidden: ✅
 Rectangle.isEnabled: ✅
@@ -653,10 +653,10 @@ Rectangle.zIndex: ✅
 ScrollView.accessibilityHeading: ✅
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
-ScrollView.automationExcludedWithChildren: ✅
 ScrollView.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 ScrollView.frame: ✅
 ScrollView.height: ✅
+ScrollView.hidesChildrenFromAccessibility: ✅
 ScrollView.ignoresInput: ✅
 ScrollView.isAccessibilityHidden: ✅
 ScrollView.isEnabled: ✅
@@ -684,10 +684,10 @@ ScrollView.zIndex: ✅
 SearchField.accessibilityHeading: ✅
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
-SearchField.automationExcludedWithChildren: ✅
 SearchField.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 SearchField.frame: ✅
 SearchField.height: ✅
+SearchField.hidesChildrenFromAccessibility: ✅
 SearchField.ignoresInput: ✅
 SearchField.isAccessibilityHidden: ✅
 SearchField.isEnabled: ✅
@@ -715,10 +715,10 @@ SearchField.zIndex: ✅
 Slider.accessibilityHeading: ✅
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
-Slider.automationExcludedWithChildren: ✅
 Slider.background: – The browser draws its slider over the whole box and paints no background under it.
 Slider.frame: ✅
 Slider.height: ✅
+Slider.hidesChildrenFromAccessibility: ✅
 Slider.ignoresInput: ✅
 Slider.isAccessibilityHidden: ✅
 Slider.isEnabled: ✅
@@ -746,10 +746,10 @@ Slider.zIndex: ✅
 Spacer.accessibilityHeading: ✅
 Spacer.accessibilityHint: ✅
 Spacer.accessibilityLabel: ✅
-Spacer.automationExcludedWithChildren: ✅
 Spacer.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Spacer.frame: ✅
 Spacer.height: ✅
+Spacer.hidesChildrenFromAccessibility: ✅
 Spacer.ignoresInput: ✅
 Spacer.isAccessibilityHidden: ✅
 Spacer.isEnabled: ✅
@@ -777,10 +777,10 @@ Spacer.zIndex: ✅
 Stepper.accessibilityHeading: ✅
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
-Stepper.automationExcludedWithChildren: ✅
 Stepper.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Stepper.frame: ✅
 Stepper.height: ✅
+Stepper.hidesChildrenFromAccessibility: ✅
 Stepper.ignoresInput: ✅
 Stepper.isAccessibilityHidden: ✅
 Stepper.isEnabled: ✅
@@ -808,10 +808,10 @@ Stepper.zIndex: ✅
 Switch.accessibilityHeading: ✅
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
-Switch.automationExcludedWithChildren: ✅
 Switch.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Switch.frame: ✅
 Switch.height: ✅
+Switch.hidesChildrenFromAccessibility: ✅
 Switch.ignoresInput: ✅
 Switch.isAccessibilityHidden: ✅
 Switch.isEnabled: ✅
@@ -839,10 +839,10 @@ Switch.zIndex: ✅
 Text.accessibilityHeading: ✅
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
-Text.automationExcludedWithChildren: ✅
 Text.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Text.frame: ✅
 Text.height: ✅
+Text.hidesChildrenFromAccessibility: ✅
 Text.ignoresInput: ✅
 Text.isAccessibilityHidden: ✅
 Text.isEnabled: ✅
@@ -870,10 +870,10 @@ Text.zIndex: ✅
 TextEditor.accessibilityHeading: ✅
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
-TextEditor.automationExcludedWithChildren: ✅
 TextEditor.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 TextEditor.frame: ✅
 TextEditor.height: ✅
+TextEditor.hidesChildrenFromAccessibility: ✅
 TextEditor.ignoresInput: ✅
 TextEditor.isAccessibilityHidden: ✅
 TextEditor.isEnabled: ✅
@@ -901,10 +901,10 @@ TextEditor.zIndex: ✅
 TextField.accessibilityHeading: ✅
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
-TextField.automationExcludedWithChildren: ✅
 TextField.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 TextField.frame: ✅
 TextField.height: ✅
+TextField.hidesChildrenFromAccessibility: ✅
 TextField.ignoresInput: ✅
 TextField.isAccessibilityHidden: ✅
 TextField.isEnabled: ✅
@@ -932,10 +932,10 @@ TextField.zIndex: ✅
 TimePicker.accessibilityHeading: ✅
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
-TimePicker.automationExcludedWithChildren: ✅
 TimePicker.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 TimePicker.frame: ✅
 TimePicker.height: ✅
+TimePicker.hidesChildrenFromAccessibility: ✅
 TimePicker.ignoresInput: ✅
 TimePicker.isAccessibilityHidden: ✅
 TimePicker.isEnabled: ✅
@@ -963,10 +963,10 @@ TimePicker.zIndex: ✅
 VStack.accessibilityHeading: ✅
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
-VStack.automationExcludedWithChildren: ✅
 VStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
 VStack.frame: ✅
 VStack.height: ✅
+VStack.hidesChildrenFromAccessibility: ✅
 VStack.ignoresInput: ✅
 VStack.isAccessibilityHidden: ✅
 VStack.isEnabled: ✅
@@ -994,10 +994,10 @@ VStack.zIndex: ✅
 WebView.accessibilityHeading: ✅
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
-WebView.automationExcludedWithChildren: ✅
 WebView.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 WebView.frame: ✅
 WebView.height: ✅
+WebView.hidesChildrenFromAccessibility: ✅
 WebView.ignoresInput: ✅
 WebView.isAccessibilityHidden: ✅
 WebView.isEnabled: ✅
@@ -1025,10 +1025,10 @@ WebView.zIndex: ✅
 ZStack.accessibilityHeading: ✅
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
-ZStack.automationExcludedWithChildren: ✅
 ZStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
 ZStack.frame: ✅
 ZStack.height: ✅
+ZStack.hidesChildrenFromAccessibility: ✅
 ZStack.ignoresInput: ✅
 ZStack.isAccessibilityHidden: ✅
 ZStack.isEnabled: ✅

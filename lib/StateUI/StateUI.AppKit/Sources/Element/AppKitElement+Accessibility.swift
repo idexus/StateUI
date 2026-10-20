@@ -27,7 +27,7 @@ extension AppKitElement {
         }
         target.setAccessibilityHelp(string(.accessibilityHint))
 
-        let excludesChildren = value(.automationExcludedWithChildren)?.bool == true
+        let excludesChildren = value(.hidesChildrenFromAccessibility)?.bool == true
         if excludesChildren {
             view.setAccessibilityChildren([])
             accessibilityChildrenSuppressed = true

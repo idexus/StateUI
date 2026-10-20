@@ -28,7 +28,7 @@ final class AndroidAccessibilityTests: XCTestCase {
                         .accessibilityHeading(.h2)
                     Text("Hidden").isAccessibilityHidden(true)
                     Text("Met").isAccessibilityHidden(false)
-                    VStack { Text("Inside") }.automationExcludedWithChildren(true)
+                    VStack { Text("Inside") }.hidesChildrenFromAccessibility(true)
                     Text("Plain")
                 }
             }

@@ -1,6 +1,6 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.rotation: ✓ read rotation of ActivityIndicator: the host's own transform, checked against the layer it composed itself
-Button.automationExcludedWithChildren: ✅
+Button.hidesChildrenFromAccessibility: ✅
 Canvas.accessibilityLabel: ✅
 Capsule.frame: ✅
 CheckBox.opacity: ✅
@@ -20,7 +20,7 @@ LayoutEngine.maximumWidth: ✅
 LayoutEngine.minimumHeight: ✅
 LayoutEngine.minimumWidth: ✅
 Line.rotation: ✓ read rotation of Line: the host's own transform, checked against the layer it composed itself
-Map.automationExcludedWithChildren: ✅
+Map.hidesChildrenFromAccessibility: ✅
 Path.style: ✅
 Picker.isEnabled: ✅
 Picker.translationX: ✓ read translationX of Picker: the host's own transform, checked against the layer it composed itself
@@ -31,7 +31,7 @@ Rectangle.style: ✅
 ScrollView.isEnabled: ✅
 ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.pivotY: ✓ read pivotY of SearchField: the host's own transform, checked against the layer it composed itself
-Slider.automationExcludedWithChildren: ✅
+Slider.hidesChildrenFromAccessibility: ✅
 Spacer.accessibilityHint: ✅
 Stepper.style: ✅
 Switch.height: ✅
@@ -40,7 +40,7 @@ Switch.width: ✅
 Text.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 TextEditor.scale: ✓ read scale of TextEditor: the host's own transform, checked against the layer it composed itself
 TextField.pivotY: ✓ read pivotY of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.automationExcludedWithChildren: ✅
+TimePicker.hidesChildrenFromAccessibility: ✅
 VStack.accessibilityHint: ✅
 WebView.opacity: ✅
 WebView.scaleY: ✓ read scaleY of WebView: the host's own transform, checked against the layer it composed itself

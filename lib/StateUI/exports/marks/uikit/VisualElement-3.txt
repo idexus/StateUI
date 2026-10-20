@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.isEnabled: ✅
 ActivityIndicator.translationX: ✓ read translationX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.rotationX: ✓ read rotationX of Button: the host's own transform, checked against the layer it composed itself
@@ -36,7 +36,7 @@ Slider.rotationX: ✓ read rotationX of Slider: the host's own transform, checke
 Spacer.layoutDirection: ✅
 Stepper.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 Switch.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-Text.automationExcludedWithChildren: ✅
+Text.hidesChildrenFromAccessibility: ✅
 TextEditor.ignoresInput: ✅
 TextField.opacity: ✅
 TextField.scaleY: ✓ read scaleY of TextField: the host's own transform, checked against the layer it composed itself

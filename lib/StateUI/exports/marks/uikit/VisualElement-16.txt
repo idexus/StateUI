@@ -1,5 +1,5 @@
-# revision 14.1
-ActivityIndicator.automationExcludedWithChildren: ✅
+# revision 15.1
+ActivityIndicator.hidesChildrenFromAccessibility: ✅
 Button.accessibilityLabel: ✅
 Canvas.ignoresInput: ✅
 Capsule.opacity: ✅
@@ -14,7 +14,7 @@ HStack.rotationY: ✓ read rotationY of HStack: the host's own transform, checke
 Image.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 ItemsView.zIndex: ✅
 LayoutEngine.scale: ✓ read scale of LayoutEngine: the host's own transform, checked against the layer it composed itself
-Line.automationExcludedWithChildren: ✅
+Line.hidesChildrenFromAccessibility: ✅
 Map.accessibilityLabel: ✅
 Path.isEnabled: ✅
 Path.translationX: ✓ read translationX of Path: the host's own transform, checked against the layer it composed itself

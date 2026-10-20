@@ -310,7 +310,6 @@ WebView
   accessibilityLabel
   allowsDrop
   area
-  automationExcludedWithChildren
   canDrag
   dragText
   droppedFileTypes
@@ -320,6 +319,7 @@ WebView
   gridRow
   gridRowSpan
   height
+  hidesChildrenFromAccessibility
   horizontalAlignment
   ignoresInput
   isAccessibilityHidden

@@ -607,7 +607,7 @@ Text("Order total")
 `accessibilityLabel` states what the element is, `accessibilityHint` explains the
 result of interacting with it, and heading level describes document structure.
 Use `isAccessibilityHidden` and
-`automationExcludedWithChildren` to control exposure only when the composed
+`hidesChildrenFromAccessibility` to control exposure only when the composed
 semantics require it.
 
 `accessibilityIdentifier` is an external stable identifier for UI automation. It is not

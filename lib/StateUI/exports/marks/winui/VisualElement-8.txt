@@ -1,4 +1,4 @@
-# revision 14.2
+# revision 15.2
 ActivityIndicator.scaleY: ✅
 ActivityIndicator.style: ✅
 Button.isAccessibilityHidden: ✅
@@ -19,7 +19,7 @@ HStack.zIndex: ✅
 Image.accessibilityHint: ✅
 ItemsView.isVisible: ✅
 ItemsView.pivotX: ✅
-LayoutEngine.automationExcludedWithChildren: ✅
+LayoutEngine.hidesChildrenFromAccessibility: ✅
 Line.opacity: ✅
 Line.pivotY: ✅
 Map.translationX: 🧩

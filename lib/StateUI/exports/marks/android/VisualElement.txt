@@ -1,11 +1,11 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
-ActivityIndicator.automationExcludedWithChildren: ✅
 ActivityIndicator.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ActivityIndicator.frame: ✅
 ActivityIndicator.height: ✅
+ActivityIndicator.hidesChildrenFromAccessibility: ✅
 ActivityIndicator.ignoresInput: not realized
 ActivityIndicator.isAccessibilityHidden: ✅
 ActivityIndicator.isEnabled: ✅
@@ -33,10 +33,10 @@ ActivityIndicator.zIndex: ✅
 Button.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
-Button.automationExcludedWithChildren: ✅
 Button.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Button.frame: ✅
 Button.height: ✅
+Button.hidesChildrenFromAccessibility: ✅
 Button.ignoresInput: not realized
 Button.isAccessibilityHidden: ✅
 Button.isEnabled: ✅
@@ -64,10 +64,10 @@ Button.zIndex: – Android draws a raised button over the flat views beside it w
 Canvas.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
-Canvas.automationExcludedWithChildren: ✅
 Canvas.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Canvas.frame: ✅
 Canvas.height: ✅
+Canvas.hidesChildrenFromAccessibility: ✅
 Canvas.ignoresInput: not realized
 Canvas.isAccessibilityHidden: ✅
 Canvas.isEnabled: ✅
@@ -95,10 +95,10 @@ Canvas.zIndex: ✅
 Capsule.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Capsule.accessibilityHint: ✅
 Capsule.accessibilityLabel: ✅
-Capsule.automationExcludedWithChildren: ✅
 Capsule.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Capsule.frame: ✅
 Capsule.height: ✅
+Capsule.hidesChildrenFromAccessibility: ✅
 Capsule.ignoresInput: not realized
 Capsule.isAccessibilityHidden: ✅
 Capsule.isEnabled: ✅
@@ -126,10 +126,10 @@ Capsule.zIndex: ✅
 CheckBox.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
-CheckBox.automationExcludedWithChildren: ✅
 CheckBox.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 CheckBox.frame: ✅
 CheckBox.height: ✅
+CheckBox.hidesChildrenFromAccessibility: ✅
 CheckBox.ignoresInput: not realized
 CheckBox.isAccessibilityHidden: ✅
 CheckBox.isEnabled: ✅
@@ -157,10 +157,10 @@ CheckBox.zIndex: ✅
 DatePicker.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
-DatePicker.automationExcludedWithChildren: ✅
 DatePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 DatePicker.frame: ✅
 DatePicker.height: ✅
+DatePicker.hidesChildrenFromAccessibility: ✅
 DatePicker.ignoresInput: not realized
 DatePicker.isAccessibilityHidden: ✅
 DatePicker.isEnabled: ✅
@@ -188,10 +188,10 @@ DatePicker.zIndex: ✅
 Divider.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Divider.accessibilityHint: ✅
 Divider.accessibilityLabel: ✅
-Divider.automationExcludedWithChildren: ✅
 Divider.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Divider.frame: ✅
 Divider.height: ✅
+Divider.hidesChildrenFromAccessibility: ✅
 Divider.ignoresInput: not realized
 Divider.isAccessibilityHidden: ✅
 Divider.isEnabled: ✅
@@ -219,10 +219,10 @@ Divider.zIndex: ✅
 Ellipse.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
-Ellipse.automationExcludedWithChildren: ✅
 Ellipse.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Ellipse.frame: ✅
 Ellipse.height: ✅
+Ellipse.hidesChildrenFromAccessibility: ✅
 Ellipse.ignoresInput: not realized
 Ellipse.isAccessibilityHidden: ✅
 Ellipse.isEnabled: ✅
@@ -250,10 +250,10 @@ Ellipse.zIndex: ✅
 Grid.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
-Grid.automationExcludedWithChildren: ✅
 Grid.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Grid.frame: ✅
 Grid.height: ✅
+Grid.hidesChildrenFromAccessibility: ✅
 Grid.ignoresInput: cannot read what reaches Grid - Android's driver has no path for it yet
 Grid.isAccessibilityHidden: ✅
 Grid.isEnabled: ✅
@@ -281,10 +281,10 @@ Grid.zIndex: ✅
 HStack.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
-HStack.automationExcludedWithChildren: ✅
 HStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 HStack.frame: ✅
 HStack.height: ✅
+HStack.hidesChildrenFromAccessibility: ✅
 HStack.ignoresInput: cannot read what reaches HStack - Android's driver has no path for it yet
 HStack.isAccessibilityHidden: ✅
 HStack.isEnabled: ✅
@@ -312,10 +312,10 @@ HStack.zIndex: ✅
 Image.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
-Image.automationExcludedWithChildren: ✅
 Image.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Image.frame: ✅
 Image.height: ✅
+Image.hidesChildrenFromAccessibility: ✅
 Image.ignoresInput: not realized
 Image.isAccessibilityHidden: ✅
 Image.isEnabled: ✅
@@ -343,10 +343,10 @@ Image.zIndex: ✅
 ItemsView.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
-ItemsView.automationExcludedWithChildren: ✅
 ItemsView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ItemsView.frame: ✅
 ItemsView.height: ✅
+ItemsView.hidesChildrenFromAccessibility: ✅
 ItemsView.ignoresInput: not realized
 ItemsView.isAccessibilityHidden: ✅
 ItemsView.isEnabled: ✅
@@ -374,10 +374,10 @@ ItemsView.zIndex: ✅
 LayoutEngine.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 LayoutEngine.accessibilityHint: ✅
 LayoutEngine.accessibilityLabel: ✅
-LayoutEngine.automationExcludedWithChildren: ✅
 LayoutEngine.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 LayoutEngine.frame: ✅
 LayoutEngine.height: ✅
+LayoutEngine.hidesChildrenFromAccessibility: ✅
 LayoutEngine.ignoresInput: cannot read what reaches LayoutEngine - Android's driver has no path for it yet
 LayoutEngine.isAccessibilityHidden: ✅
 LayoutEngine.isEnabled: ✅
@@ -405,10 +405,10 @@ LayoutEngine.zIndex: ✅
 Line.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
-Line.automationExcludedWithChildren: ✅
 Line.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Line.frame: ✅
 Line.height: ✅
+Line.hidesChildrenFromAccessibility: ✅
 Line.ignoresInput: not realized
 Line.isAccessibilityHidden: ✅
 Line.isEnabled: ✅
@@ -436,10 +436,10 @@ Line.zIndex: ✅
 Map.accessibilityHeading: 🧩
 Map.accessibilityHint: 🧩
 Map.accessibilityLabel: 🧩
-Map.automationExcludedWithChildren: 🧩
 Map.background: 🧩
 Map.frame: 🧩
 Map.height: 🧩
+Map.hidesChildrenFromAccessibility: 🧩
 Map.ignoresInput: 🧩
 Map.isAccessibilityHidden: 🧩
 Map.isEnabled: 🧩
@@ -467,10 +467,10 @@ Map.zIndex: 🧩
 Path.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
-Path.automationExcludedWithChildren: ✅
 Path.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Path.frame: ✅
 Path.height: ✅
+Path.hidesChildrenFromAccessibility: ✅
 Path.ignoresInput: not realized
 Path.isAccessibilityHidden: ✅
 Path.isEnabled: ✅
@@ -498,10 +498,10 @@ Path.zIndex: ✅
 Picker.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
-Picker.automationExcludedWithChildren: ✅
 Picker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Picker.frame: ✅
 Picker.height: ✅
+Picker.hidesChildrenFromAccessibility: ✅
 Picker.ignoresInput: not realized
 Picker.isAccessibilityHidden: ✅
 Picker.isEnabled: ✅
@@ -529,10 +529,10 @@ Picker.zIndex: ✅
 Polygon.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
-Polygon.automationExcludedWithChildren: ✅
 Polygon.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Polygon.frame: ✅
 Polygon.height: ✅
+Polygon.hidesChildrenFromAccessibility: ✅
 Polygon.ignoresInput: not realized
 Polygon.isAccessibilityHidden: ✅
 Polygon.isEnabled: ✅
@@ -560,10 +560,10 @@ Polygon.zIndex: ✅
 Polyline.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
-Polyline.automationExcludedWithChildren: ✅
 Polyline.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Polyline.frame: ✅
 Polyline.height: ✅
+Polyline.hidesChildrenFromAccessibility: ✅
 Polyline.ignoresInput: not realized
 Polyline.isAccessibilityHidden: ✅
 Polyline.isEnabled: ✅
@@ -591,10 +591,10 @@ Polyline.zIndex: ✅
 ProgressBar.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
-ProgressBar.automationExcludedWithChildren: ✅
 ProgressBar.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ProgressBar.frame: ✅
 ProgressBar.height: ✅
+ProgressBar.hidesChildrenFromAccessibility: ✅
 ProgressBar.ignoresInput: not realized
 ProgressBar.isAccessibilityHidden: ✅
 ProgressBar.isEnabled: ✅
@@ -622,10 +622,10 @@ ProgressBar.zIndex: ✅
 Rectangle.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
-Rectangle.automationExcludedWithChildren: ✅
 Rectangle.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Rectangle.frame: ✅
 Rectangle.height: ✅
+Rectangle.hidesChildrenFromAccessibility: ✅
 Rectangle.ignoresInput: not realized
 Rectangle.isAccessibilityHidden: ✅
 Rectangle.isEnabled: ✅
@@ -653,10 +653,10 @@ Rectangle.zIndex: ✅
 ScrollView.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
-ScrollView.automationExcludedWithChildren: ✅
 ScrollView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ScrollView.frame: ✅
 ScrollView.height: ✅
+ScrollView.hidesChildrenFromAccessibility: ✅
 ScrollView.ignoresInput: not realized
 ScrollView.isAccessibilityHidden: ✅
 ScrollView.isEnabled: ✅
@@ -684,10 +684,10 @@ ScrollView.zIndex: ✅
 SearchField.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
-SearchField.automationExcludedWithChildren: ✅
 SearchField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 SearchField.frame: ✅
 SearchField.height: ✅
+SearchField.hidesChildrenFromAccessibility: ✅
 SearchField.ignoresInput: not realized
 SearchField.isAccessibilityHidden: ✅
 SearchField.isEnabled: ✅
@@ -715,10 +715,10 @@ SearchField.zIndex: ✅
 Slider.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
-Slider.automationExcludedWithChildren: ✅
 Slider.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Slider.frame: ✅
 Slider.height: ✅
+Slider.hidesChildrenFromAccessibility: ✅
 Slider.ignoresInput: not realized
 Slider.isAccessibilityHidden: ✅
 Slider.isEnabled: ✅
@@ -746,10 +746,10 @@ Slider.zIndex: ✅
 Spacer.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Spacer.accessibilityHint: ✅
 Spacer.accessibilityLabel: ✅
-Spacer.automationExcludedWithChildren: ✅
 Spacer.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Spacer.frame: ✅
 Spacer.height: ✅
+Spacer.hidesChildrenFromAccessibility: ✅
 Spacer.ignoresInput: not realized
 Spacer.isAccessibilityHidden: ✅
 Spacer.isEnabled: ✅
@@ -777,10 +777,10 @@ Spacer.zIndex: ✅
 Stepper.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
-Stepper.automationExcludedWithChildren: ✅
 Stepper.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Stepper.frame: ✅
 Stepper.height: ✅
+Stepper.hidesChildrenFromAccessibility: ✅
 Stepper.ignoresInput: not realized
 Stepper.isAccessibilityHidden: ✅
 Stepper.isEnabled: ✅
@@ -808,10 +808,10 @@ Stepper.zIndex: ✅
 Switch.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
-Switch.automationExcludedWithChildren: ✅
 Switch.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Switch.frame: ✅
 Switch.height: ✅
+Switch.hidesChildrenFromAccessibility: ✅
 Switch.ignoresInput: not realized
 Switch.isAccessibilityHidden: ✅
 Switch.isEnabled: ✅
@@ -839,10 +839,10 @@ Switch.zIndex: ✅
 Text.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
-Text.automationExcludedWithChildren: ✅
 Text.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Text.frame: ✅
 Text.height: ✅
+Text.hidesChildrenFromAccessibility: ✅
 Text.ignoresInput: not realized
 Text.isAccessibilityHidden: ✅
 Text.isEnabled: ✅
@@ -870,10 +870,10 @@ Text.zIndex: ✅
 TextEditor.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
-TextEditor.automationExcludedWithChildren: ✅
 TextEditor.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 TextEditor.frame: ✅
 TextEditor.height: ✅
+TextEditor.hidesChildrenFromAccessibility: ✅
 TextEditor.ignoresInput: not realized
 TextEditor.isAccessibilityHidden: ✅
 TextEditor.isEnabled: ✅
@@ -901,10 +901,10 @@ TextEditor.zIndex: ✅
 TextField.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
-TextField.automationExcludedWithChildren: ✅
 TextField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 TextField.frame: ✅
 TextField.height: ✅
+TextField.hidesChildrenFromAccessibility: ✅
 TextField.ignoresInput: not realized
 TextField.isAccessibilityHidden: ✅
 TextField.isEnabled: ✅
@@ -932,10 +932,10 @@ TextField.zIndex: ✅
 TimePicker.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
-TimePicker.automationExcludedWithChildren: ✅
 TimePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 TimePicker.frame: ✅
 TimePicker.height: ✅
+TimePicker.hidesChildrenFromAccessibility: ✅
 TimePicker.ignoresInput: not realized
 TimePicker.isAccessibilityHidden: ✅
 TimePicker.isEnabled: ✅
@@ -963,10 +963,10 @@ TimePicker.zIndex: ✅
 VStack.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
-VStack.automationExcludedWithChildren: ✅
 VStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 VStack.frame: ✅
 VStack.height: ✅
+VStack.hidesChildrenFromAccessibility: ✅
 VStack.ignoresInput: cannot read what reaches VStack - Android's driver has no path for it yet
 VStack.isAccessibilityHidden: ✅
 VStack.isEnabled: ✅
@@ -994,10 +994,10 @@ VStack.zIndex: ✅
 WebView.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
-WebView.automationExcludedWithChildren: ✅
 WebView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 WebView.frame: ✅
 WebView.height: ✅
+WebView.hidesChildrenFromAccessibility: ✅
 WebView.ignoresInput: not realized
 WebView.isAccessibilityHidden: ✅
 WebView.isEnabled: ✅
@@ -1025,10 +1025,10 @@ WebView.zIndex: ✅
 ZStack.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
-ZStack.automationExcludedWithChildren: ✅
 ZStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ZStack.frame: ✅
 ZStack.height: ✅
+ZStack.hidesChildrenFromAccessibility: ✅
 ZStack.ignoresInput: cannot read what reaches ZStack - Android's driver has no path for it yet
 ZStack.isAccessibilityHidden: ✅
 ZStack.isEnabled: ✅

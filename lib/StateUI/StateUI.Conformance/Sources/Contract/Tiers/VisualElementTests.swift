@@ -24,7 +24,7 @@
                 Aspects.holds(VisualElementContract.accessibilityHeading, on: element, .h2, then: .h3),
                 Aspects.holds(VisualElementContract.isAccessibilityHidden, on: element, false, then: true, with: named),
                 Aspects.holds(
-                    VisualElementContract.automationExcludedWithChildren, on: element, false, then: true, with: named),
+                    VisualElementContract.hidesChildrenFromAccessibility, on: element, false, then: true, with: named),
                 Aspects.holds(VisualElementContract.background, on: element, .color(.red), then: .color(.blue)),
                 Aspects.holds(VisualElementContract.layoutDirection, on: element, .leftToRight, then: .rightToLeft),
                 Aspects.holds(VisualElementContract.pivotX, on: element, 0.5, then: 0, with: turned),

@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Button.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
 Button.maximumHeight: ✅
@@ -25,13 +25,13 @@ Map.maximumWidth: ✅
 Map.minimumHeight: ✅
 Map.minimumWidth: ✅
 Path.rotation: ✓ read rotation of Path: the host's own transform, checked against the layer it composed itself
-Picker.automationExcludedWithChildren: ✅
+Picker.hidesChildrenFromAccessibility: ✅
 Polygon.accessibilityHint: ✅
 Polyline.frame: ✅
 ProgressBar.opacity: ✅
 ProgressBar.scaleY: ✓ read scaleY of ProgressBar: the host's own transform, checked against the layer it composed itself
 Rectangle.rotation: ✓ read rotation of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.automationExcludedWithChildren: ✅
+ScrollView.hidesChildrenFromAccessibility: ✅
 SearchField.zIndex: ✅
 Slider.maximumHeight: ✅
 Slider.maximumWidth: ✅

@@ -1,9 +1,9 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.ignoresInput: ✅
 Button.isVisible: ✅
 Button.scaleX: ✓ read scaleX of Button: the host's own transform, checked against the layer it composed itself
 Canvas.pivotY: ✓ read pivotY of Canvas: the host's own transform, checked against the layer it composed itself
-Capsule.automationExcludedWithChildren: ✅
+Capsule.hidesChildrenFromAccessibility: ✅
 CheckBox.accessibilityLabel: ✅
 DatePicker.frame: ✅
 Divider.rotation: ✓ read rotation of Divider: the host's own transform, checked against the layer it composed itself

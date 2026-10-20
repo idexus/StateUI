@@ -1,10 +1,10 @@
-# revision 14.2
+# revision 15.2
 ActivityIndicator.accessibilityHint: ✅
 Button.isVisible: ✅
 Button.pivotX: ✅
 Canvas.scaleY: ✅
 Canvas.style: ✅
-Capsule.automationExcludedWithChildren: ✅
+Capsule.hidesChildrenFromAccessibility: ✅
 CheckBox.maximumHeight: ✅
 CheckBox.maximumWidth: ✅
 CheckBox.minimumHeight: ✅
@@ -19,7 +19,7 @@ Grid.accessibilityHeading: ✅
 Grid.translationY: ✅
 HStack.layoutDirection: ✅
 HStack.tooltip: ✅
-Image.automationExcludedWithChildren: ✅
+Image.hidesChildrenFromAccessibility: ✅
 ItemsView.maximumHeight: ✅
 ItemsView.maximumWidth: ✅
 ItemsView.minimumHeight: ✅

@@ -166,7 +166,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     .padding(12)
                 }
                 .style(.card)
-                .automationExcludedWithChildren(true)
+                .hidesChildrenFromAccessibility(true)
             }
             .spacing(12)
             .horizontalAlignment(.center)

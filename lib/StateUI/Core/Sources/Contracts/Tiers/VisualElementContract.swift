@@ -25,8 +25,8 @@ public enum VisualElementContract: Contract {
 
     /// Whether the element and everything in it are left out of what a screen
     /// reader reads.
-    public static let automationExcludedWithChildren = ElementProperty<Self, Bool>(
-        "automationExcludedWithChildren", layer: .native)
+    public static let hidesChildrenFromAccessibility = ElementProperty<Self, Bool>(
+        "hidesChildrenFromAccessibility", layer: .native)
 
     /// What the element's surface is made of: a colour, a gradient, a blur of
     /// what lies behind it, or the platform's glass.
@@ -133,7 +133,7 @@ public enum VisualElementContract: Contract {
     /// The tier's own members.
     public static let members: [any ContractMember] = [
         accessibilityHeading, accessibilityHint, accessibilityLabel,
-        automationExcludedWithChildren, background, frame, height, ignoresInput,
+        background, frame, height, hidesChildrenFromAccessibility, ignoresInput,
         isAccessibilityHidden, isEnabled, isVisible, layoutDirection,
         maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY,
         rotation, rotationX, rotationY, scale, scaleX, scaleY, style, tooltip, translationX,

@@ -1,4 +1,4 @@
-# revision 14.2
+# revision 15.2
 ActivityIndicator.accessibilityHeading: ✅
 Button.isEnabled: ✅
 Button.rotation: ✅

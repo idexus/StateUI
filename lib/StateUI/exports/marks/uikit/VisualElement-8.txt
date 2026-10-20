@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.style: ✅
 Button.isEnabled: ✅
 Button.translationX: ✓ read translationX of Button: the host's own transform, checked against the layer it composed itself
@@ -17,7 +17,7 @@ HStack.isAccessibilityHidden: ✅
 Image.ignoresInput: ✅
 ItemsView.isVisible: ✅
 ItemsView.scaleX: ✓ read scaleX of ItemsView: the host's own transform, checked against the layer it composed itself
-LayoutEngine.automationExcludedWithChildren: ✅
+LayoutEngine.hidesChildrenFromAccessibility: ✅
 Line.style: ✅
 Map.isEnabled: ✅
 Map.translationX: ✓ read translationX of Map: the host's own transform, checked against the layer it composed itself

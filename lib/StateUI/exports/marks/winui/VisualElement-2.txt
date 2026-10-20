@@ -1,9 +1,9 @@
-# revision 14.2
+# revision 15.2
 ActivityIndicator.opacity: ✅
 ActivityIndicator.pivotY: ✅
 Button.translationX: ✅
 Button.zIndex: ✅
-Canvas.automationExcludedWithChildren: ✅
+Canvas.hidesChildrenFromAccessibility: ✅
 Capsule.ignoresInput: ✅
 Capsule.scale: ✅
 CheckBox.tooltip: ✅
@@ -27,7 +27,7 @@ Path.isVisible: ✅
 Path.pivotX: ✅
 Picker.scaleY: ✅
 Picker.style: ✅
-Polygon.automationExcludedWithChildren: ✅
+Polygon.hidesChildrenFromAccessibility: ✅
 Polyline.maximumHeight: ✅
 Polyline.maximumWidth: ✅
 Polyline.minimumHeight: ✅

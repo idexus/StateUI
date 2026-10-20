@@ -1,4 +1,4 @@
-# revision 14.2
+# revision 15.2
 ActivityIndicator.isAccessibilityHidden: ✅
 Button.height: ✅
 Button.rotationX: ✓ read rotationX of Button: the host's own tip, checked against the projection it laid on the element
@@ -8,14 +8,14 @@ Capsule.isVisible: ✅
 Capsule.pivotX: ✅
 CheckBox.scaleY: ✅
 CheckBox.style: ✅
-DatePicker.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
+DatePicker.hidesChildrenFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 Divider.ignoresInput: ✅
 Divider.scale: ✅
 Ellipse.ignoresInput: ✅
 Ellipse.scale: ✅
 Grid.layoutDirection: ✅
 Grid.tooltip: ✅
-HStack.automationExcludedWithChildren: ✅
+HStack.hidesChildrenFromAccessibility: ✅
 Image.isVisible: ✅
 Image.pivotX: ✅
 ItemsView.scaleY: ✅
@@ -27,7 +27,7 @@ LayoutEngine.minimumWidth: ✅
 LayoutEngine.rotationY: ✓ read rotationY of LayoutEngine: the host's own tip, checked against the projection it laid on the element
 Line.translationX: ✅
 Line.zIndex: ✅
-Map.automationExcludedWithChildren: 🧩
+Map.hidesChildrenFromAccessibility: 🧩
 Path.accessibilityHeading: ✅
 Picker.isEnabled: ✅
 Picker.rotation: ✅
@@ -41,14 +41,14 @@ ScrollView.isEnabled: ✅
 ScrollView.rotation: ✅
 SearchField.scaleY: ✅
 SearchField.style: ✅
-Slider.automationExcludedWithChildren: ✅
+Slider.hidesChildrenFromAccessibility: ✅
 Spacer.ignoresInput: ✅
 Spacer.scale: ✅
 Stepper.accessibilityHeading: ✅
 Switch.height: ✅
 Switch.rotationX: ✓ read rotationX of Switch: the host's own tip, checked against the projection it laid on the element
 Switch.width: ✅
-Text.automationExcludedWithChildren: ✅
+Text.hidesChildrenFromAccessibility: ✅
 TextEditor.accessibilityHint: ✅
 TextField.opacity: ✅
 TextField.pivotY: ✅

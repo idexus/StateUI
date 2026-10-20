@@ -21,7 +21,7 @@ extension AppKitDriver {
             }
             return transform(property, drawn)
         case .accessibilityLabel, .accessibilityHint, .accessibilityIdentifier, .isAccessibilityHidden,
-             .automationExcludedWithChildren:
+             .hidesChildrenFromAccessibility:
             guard let native else { return nil }
             return accessibility(property, native.accessibilityTarget(of: view), view)
         case .accessibilityHeading:
@@ -99,7 +99,7 @@ extension AppKitDriver {
         case .accessibilityHint: return target.accessibilityHelp().propValue
         case .accessibilityIdentifier: return target.accessibilityIdentifier().propValue
         case .isAccessibilityHidden: return (!target.isAccessibilityElement()).propValue
-        case .automationExcludedWithChildren:
+        case .hidesChildrenFromAccessibility:
             return (!target.isAccessibilityElement() && (view.accessibilityChildren() ?? []).isEmpty).propValue
         default: return nil
         }

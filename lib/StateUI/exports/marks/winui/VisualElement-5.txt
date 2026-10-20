@@ -1,4 +1,4 @@
-# revision 14.2
+# revision 15.2
 ActivityIndicator.maximumHeight: ✅
 ActivityIndicator.maximumWidth: ✅
 ActivityIndicator.minimumHeight: ✅
@@ -9,7 +9,7 @@ Canvas.isVisible: ✅
 Canvas.pivotX: ✅
 Capsule.translationX: ✅
 Capsule.zIndex: ✅
-CheckBox.automationExcludedWithChildren: ✅
+CheckBox.hidesChildrenFromAccessibility: ✅
 DatePicker.ignoresInput: ✅
 DatePicker.scale: ✅
 Divider.accessibilityHeading: ✅
@@ -20,7 +20,7 @@ HStack.ignoresInput: ✅
 HStack.scale: ✅
 Image.translationX: ✅
 Image.zIndex: ✅
-ItemsView.automationExcludedWithChildren: ✅
+ItemsView.hidesChildrenFromAccessibility: ✅
 LayoutEngine.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 LayoutEngine.tooltip: ✅
 Line.background: – A WinUI shape is its figure alone: it paints no ground around it.
@@ -40,7 +40,7 @@ Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own tip, checke
 Rectangle.width: ✅
 ScrollView.accessibilityLabel: ✅
 ScrollView.isEnabled: ✅
-SearchField.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
+SearchField.hidesChildrenFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 Slider.ignoresInput: ✅
 Slider.scale: ✅
 Spacer.accessibilityHeading: ✅

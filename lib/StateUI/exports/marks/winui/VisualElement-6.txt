@@ -1,4 +1,4 @@
-# revision 14.2
+# revision 15.2
 ActivityIndicator.ignoresInput: not realized
 ActivityIndicator.scale: ✅
 Button.tooltip: ✅
@@ -34,7 +34,7 @@ Polygon.opacity: ✅
 Polygon.pivotY: ✅
 Polyline.translationX: ✅
 Polyline.zIndex: ✅
-ProgressBar.automationExcludedWithChildren: ✅
+ProgressBar.hidesChildrenFromAccessibility: ✅
 Rectangle.maximumHeight: ✅
 Rectangle.maximumWidth: ✅
 Rectangle.minimumHeight: ✅

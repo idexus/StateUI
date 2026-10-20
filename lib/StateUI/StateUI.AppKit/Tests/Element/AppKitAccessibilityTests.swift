@@ -83,7 +83,7 @@ final class AppKitAccessibilityTests: XCTestCase {
         stack.properties = [
             .accessibilityLabel: .string("Skipped panel"),
             .isAccessibilityHidden: .bool(false),
-            .automationExcludedWithChildren: .bool(true),
+            .hidesChildrenFromAccessibility: .bool(true),
         ]
         stack.children = .arranged([child])
 

@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.scale: ✓ read scale of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.pivotX: ✓ read pivotX of Button: the host's own transform, checked against the layer it composed itself
 Canvas.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
@@ -11,7 +11,7 @@ DatePicker.isVisible: ✅
 DatePicker.scaleX: ✓ read scaleX of DatePicker: the host's own transform, checked against the layer it composed itself
 Divider.isAccessibilityHidden: ✅
 Ellipse.rotation: ✓ read rotation of Ellipse: the host's own transform, checked against the layer it composed itself
-Grid.automationExcludedWithChildren: ✅
+Grid.hidesChildrenFromAccessibility: ✅
 HStack.frame: ✅
 HStack.layoutDirection: ✅
 Image.rotationX: ✓ read rotationX of Image: the host's own transform, checked against the layer it composed itself
@@ -25,7 +25,7 @@ Picker.ignoresInput: ✅
 Polygon.opacity: ✅
 Polygon.scaleY: ✓ read scaleY of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.rotation: ✓ read rotation of Polyline: the host's own transform, checked against the layer it composed itself
-ProgressBar.automationExcludedWithChildren: ✅
+ProgressBar.hidesChildrenFromAccessibility: ✅
 Rectangle.accessibilityLabel: ✅
 ScrollView.ignoresInput: ✅
 ScrollView.layoutDirection: ✅

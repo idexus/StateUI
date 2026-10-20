@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.layoutDirection: ✅
 Button.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Canvas.style: ✅
@@ -12,7 +12,7 @@ Ellipse.isAccessibilityHidden: ✅
 Grid.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 HStack.isVisible: ✅
 HStack.scaleX: ✓ read scaleX of HStack: the host's own transform, checked against the layer it composed itself
-Image.automationExcludedWithChildren: ✅
+Image.hidesChildrenFromAccessibility: ✅
 ItemsView.accessibilityLabel: ✅
 LayoutEngine.opacity: ✅
 LayoutEngine.scaleY: ✓ read scaleY of LayoutEngine: the host's own transform, checked against the layer it composed itself

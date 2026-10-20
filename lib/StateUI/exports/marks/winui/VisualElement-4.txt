@@ -1,4 +1,4 @@
-# revision 14.2
+# revision 15.2
 ActivityIndicator.height: ✅
 ActivityIndicator.rotationX: ✓ read rotationX of ActivityIndicator: the host's own tip, checked against the projection it laid on the element
 ActivityIndicator.width: ✅
@@ -27,7 +27,7 @@ Image.style: ✅
 ItemsView.isAccessibilityHidden: ✅
 LayoutEngine.accessibilityHint: ✅
 LayoutEngine.layoutDirection: ✅
-Line.automationExcludedWithChildren: ✅
+Line.hidesChildrenFromAccessibility: ✅
 Map.maximumHeight: 🧩
 Map.maximumWidth: 🧩
 Map.minimumHeight: 🧩

@@ -1,10 +1,10 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.accessibilityLabel: ✅
 Button.ignoresInput: ✅
 Canvas.isVisible: ✅
 Canvas.scaleX: ✓ read scaleX of Canvas: the host's own transform, checked against the layer it composed itself
 Capsule.rotation: ✓ read rotation of Capsule: the host's own transform, checked against the layer it composed itself
-CheckBox.automationExcludedWithChildren: ✅
+CheckBox.hidesChildrenFromAccessibility: ✅
 DatePicker.accessibilityHint: ✅
 Divider.opacity: ✅
 Divider.scaleY: ✓ read scaleY of Divider: the host's own transform, checked against the layer it composed itself
@@ -39,5 +39,5 @@ TextField.accessibilityHeading: ☑️ AppKit marks a heading, not its level: ev
 TimePicker.ignoresInput: ✅
 VStack.opacity: ✅
 VStack.scaleY: ✓ read scaleY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.automationExcludedWithChildren: ✅
+WebView.hidesChildrenFromAccessibility: ✅
 ZStack.accessibilityHint: ✅

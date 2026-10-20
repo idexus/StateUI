@@ -357,7 +357,6 @@ ZStack
   accessibilityLabel
   allowsDrop
   area
-  automationExcludedWithChildren
   canDrag
   dragText
   droppedFileTypes
@@ -367,6 +366,7 @@ ZStack
   gridRow
   gridRowSpan
   height
+  hidesChildrenFromAccessibility
   horizontalAlignment
   isAccessibilityHidden
   isEnabled

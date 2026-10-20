@@ -53,7 +53,7 @@ extension MountedElement {
     /// What assistive technology meets; a change to any of them puts the element's words on its view again.
     public static let accessibilityProperties: Set<Prop> = [
         .accessibilityIdentifier, .accessibilityLabel, .accessibilityHint, .accessibilityHeading,
-        .isAccessibilityHidden, .automationExcludedWithChildren,
+        .isAccessibilityHidden, .hidesChildrenFromAccessibility,
     ]
 
     /// The element's words for assistive technology: left out with its children, or hidden, or met, as it says -
@@ -64,7 +64,7 @@ extension MountedElement {
         let (label, hint) = (string(.accessibilityLabel), string(.accessibilityHint))
         let headingLevel = max(0, value(.accessibilityHeading)?.enumeration ?? 0)
         let presence: AccessibilityWords.Presence? = switch (
-            bool(.automationExcludedWithChildren), bool(.isAccessibilityHidden)
+            bool(.hidesChildrenFromAccessibility), bool(.isAccessibilityHidden)
         ) {
         case (true?, _): .hiddenWithChildren
         case (_, true?): .hidden

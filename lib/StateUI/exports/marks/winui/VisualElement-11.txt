@@ -1,4 +1,4 @@
-# revision 14.2
+# revision 15.2
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.isEnabled: ✅
 Button.layoutDirection: ✅
@@ -52,11 +52,11 @@ Switch.layoutDirection: ✅
 Text.accessibilityHint: ✅
 TextEditor.scaleY: ✅
 TextEditor.style: ✅
-TextField.automationExcludedWithChildren: ✅
+TextField.hidesChildrenFromAccessibility: ✅
 TimePicker.ignoresInput: ✅
 TimePicker.scale: ✅
 VStack.accessibilityHeading: ✅
 VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-WebView.automationExcludedWithChildren: ✅
+WebView.hidesChildrenFromAccessibility: ✅
 ZStack.ignoresInput: ✅
 ZStack.scale: ✅

@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
 Button.accessibilityHint: ✅
 Canvas.frame: ✅
@@ -28,7 +28,7 @@ Rectangle.height: ✅
 Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform, checked against the layer it composed itself
 Rectangle.width: ✅
 ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.automationExcludedWithChildren: ✅
+SearchField.hidesChildrenFromAccessibility: ✅
 Slider.accessibilityHint: ✅
 Spacer.style: ✅
 Stepper.height: ✅
@@ -37,7 +37,7 @@ Stepper.width: ✅
 Switch.scale: ✓ read scale of Switch: the host's own transform, checked against the layer it composed itself
 Text.ignoresInput: ✅
 TextEditor.pivotY: ✓ read pivotY of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.automationExcludedWithChildren: ✅
+TextField.hidesChildrenFromAccessibility: ✅
 TimePicker.accessibilityHint: ✅
 VStack.background: ✅
 VStack.style: ✅

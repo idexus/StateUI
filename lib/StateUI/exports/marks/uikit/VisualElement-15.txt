@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.isAccessibilityHidden: ✅
 Button.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Canvas.maximumHeight: ✅
@@ -8,7 +8,7 @@ Canvas.minimumWidth: ✅
 Capsule.isVisible: ✅
 Capsule.scaleX: ✓ read scaleX of Capsule: the host's own transform, checked against the layer it composed itself
 CheckBox.pivotY: ✓ read pivotY of CheckBox: the host's own transform, checked against the layer it composed itself
-DatePicker.automationExcludedWithChildren: ✅
+DatePicker.hidesChildrenFromAccessibility: ✅
 Divider.ignoresInput: ✅
 Ellipse.accessibilityHint: ✅
 Grid.frame: ✅
@@ -43,4 +43,4 @@ TimePicker.accessibilityHeading: ☑️ UIKit marks a heading, not its level: ev
 VStack.ignoresInput: ✅
 VStack.isEnabled: ✅
 WebView.pivotY: ✓ read pivotY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.automationExcludedWithChildren: ✅
+ZStack.hidesChildrenFromAccessibility: ✅

@@ -1,4 +1,4 @@
-# revision 14.2
+# revision 15.2
 ActivityIndicator.accessibilityHeading: ✅
 ActivityIndicator.translationY: ✅
 Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
@@ -26,7 +26,7 @@ Line.width: ✅
 Map.accessibilityLabel: 🧩
 Path.translationX: ✅
 Path.zIndex: ✅
-Picker.automationExcludedWithChildren: ✅
+Picker.hidesChildrenFromAccessibility: ✅
 Polygon.ignoresInput: ✅
 Polygon.scale: ✅
 Polyline.tooltip: ✅
@@ -34,7 +34,7 @@ ProgressBar.opacity: ✅
 ProgressBar.pivotY: ✅
 Rectangle.translationX: ✅
 Rectangle.zIndex: ✅
-ScrollView.automationExcludedWithChildren: ✅
+ScrollView.hidesChildrenFromAccessibility: ✅
 SearchField.isEnabled: ✅
 SearchField.rotation: ✅
 Slider.accessibilityLabel: ✅

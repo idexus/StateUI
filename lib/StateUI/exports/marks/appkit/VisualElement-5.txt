@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.isEnabled: ✓ tap on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.maximumHeight: ✅
 ActivityIndicator.maximumWidth: ✅
@@ -24,20 +24,20 @@ Line.maximumWidth: ✅
 Line.minimumHeight: ✅
 Line.minimumWidth: ✅
 Map.scale: ✓ read scale of Map: the host's own transform, checked against the layer it composed itself
-Path.automationExcludedWithChildren: ✅
+Path.hidesChildrenFromAccessibility: ✅
 Picker.accessibilityLabel: ✅
 Polygon.frame: ✅
 Polyline.opacity: ✅
 Polyline.scaleY: ✓ read scaleY of Polyline: the host's own transform, checked against the layer it composed itself
 ProgressBar.rotation: ✓ read rotation of ProgressBar: the host's own transform, checked against the layer it composed itself
-Rectangle.automationExcludedWithChildren: ✅
+Rectangle.hidesChildrenFromAccessibility: ✅
 ScrollView.accessibilityLabel: ✅
 SearchField.height: ✅
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform, checked against the layer it composed itself
 SearchField.width: ✅
 Slider.scale: ✓ read scale of Slider: the host's own transform, checked against the layer it composed itself
 Spacer.pivotY: ✓ read pivotY of Spacer: the host's own transform, checked against the layer it composed itself
-Stepper.automationExcludedWithChildren: ✅
+Stepper.hidesChildrenFromAccessibility: ✅
 Switch.accessibilityHint: ✅
 Text.layoutDirection: ✅
 TextEditor.style: ✅

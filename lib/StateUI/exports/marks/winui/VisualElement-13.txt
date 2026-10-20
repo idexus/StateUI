@@ -1,4 +1,4 @@
-# revision 14.2
+# revision 15.2
 ActivityIndicator.tooltip: ✅
 Button.opacity: ✅
 Button.pivotY: ✅
@@ -31,7 +31,7 @@ Picker.isVisible: ✅
 Picker.pivotX: ✅
 Polygon.translationX: ✅
 Polygon.zIndex: ✅
-Polyline.automationExcludedWithChildren: ✅
+Polyline.hidesChildrenFromAccessibility: ✅
 ProgressBar.maximumHeight: ✅
 ProgressBar.maximumWidth: ✅
 ProgressBar.minimumHeight: ✅
@@ -55,8 +55,8 @@ TextEditor.translationY: ✅
 TextField.layoutDirection: ✅
 TimePicker.scaleY: ✅
 TimePicker.style: ✅
-VStack.automationExcludedWithChildren: ✅
 VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+VStack.hidesChildrenFromAccessibility: ✅
 WebView.layoutDirection: ✓ read layoutDirection of WebView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 ZStack.scaleY: ✅
 ZStack.style: ✅

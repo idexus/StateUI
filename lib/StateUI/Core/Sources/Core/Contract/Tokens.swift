@@ -100,7 +100,7 @@ extension NodeType {
     static let pivotX = VisualElementContract.pivotX.token
     static let pivotY = VisualElementContract.pivotY.token
     static let contentMode = ShapeContract.contentMode.token
-    static let automationExcludedWithChildren = VisualElementContract.automationExcludedWithChildren.token
+    static let hidesChildrenFromAccessibility = VisualElementContract.hidesChildrenFromAccessibility.token
     static let growsWithText = TextEditorContract.growsWithText.token
     static let background = VisualElementContract.background.token
     static let barBackgroundColor = BarElementContract.barBackgroundColor.token

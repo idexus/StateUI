@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.zIndex: ✅
 Button.height: ✅
 Button.translationY: ✓ read translationY of Button: the host's own transform, checked against the layer it composed itself
@@ -11,7 +11,7 @@ Divider.scale: ✓ read scale of Divider: the host's own transform, checked agai
 Ellipse.ignoresInput: ✅
 Grid.isVisible: ✅
 Grid.scaleX: ✓ read scaleX of Grid: the host's own transform, checked against the layer it composed itself
-HStack.automationExcludedWithChildren: ✅
+HStack.hidesChildrenFromAccessibility: ✅
 Image.frame: ✅
 ItemsView.opacity: ✅
 ItemsView.scaleY: ✓ read scaleY of ItemsView: the host's own transform, checked against the layer it composed itself
@@ -34,7 +34,7 @@ Slider.translationY: ✓ read translationY of Slider: the host's own transform, 
 Slider.width: ✅
 Spacer.scale: ✓ read scale of Spacer: the host's own transform, checked against the layer it composed itself
 Stepper.pivotY: ✓ read pivotY of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.automationExcludedWithChildren: ✅
+Switch.hidesChildrenFromAccessibility: ✅
 Text.rotationX: ✓ read rotationX of Text: the host's own transform, checked against the layer it composed itself
 TextEditor.accessibilityHint: ✅
 TextField.style: ✅

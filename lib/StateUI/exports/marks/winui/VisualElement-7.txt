@@ -1,4 +1,4 @@
-# revision 14.2
+# revision 15.2
 ActivityIndicator.frame: ✅
 ActivityIndicator.scaleX: ✅
 Button.accessibilityHeading: ✅
@@ -9,8 +9,8 @@ Capsule.isEnabled: ✅
 CheckBox.layoutDirection: ✅
 DatePicker.scaleY: ✅
 DatePicker.style: ✅
-Divider.automationExcludedWithChildren: ✅
-Ellipse.automationExcludedWithChildren: ✅
+Divider.hidesChildrenFromAccessibility: ✅
+Ellipse.hidesChildrenFromAccessibility: ✅
 Grid.maximumHeight: ✅
 Grid.maximumWidth: ✅
 Grid.minimumHeight: ✅
@@ -41,7 +41,7 @@ ScrollView.tooltip: ✅
 SearchField.layoutDirection: ✅
 Slider.scaleY: ✅
 Slider.style: ✅
-Spacer.automationExcludedWithChildren: ✅
+Spacer.hidesChildrenFromAccessibility: ✅
 Stepper.ignoresInput: ✅
 Stepper.scale: ✅
 Switch.accessibilityHeading: ✅

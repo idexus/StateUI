@@ -378,7 +378,7 @@ extension GTKDriver {
                 }
             }
             return nil
-        case .isAccessibilityHidden, .automationExcludedWithChildren:
+        case .isAccessibilityHidden, .hidesChildrenFromAccessibility:
             return (!differs(stateui_test_accessible_state_is(
                 UnsafeMutableRawPointer(accessible), Int32(GTK_ACCESSIBLE_STATE_HIDDEN.rawValue), 1))).propValue
         default: return nil

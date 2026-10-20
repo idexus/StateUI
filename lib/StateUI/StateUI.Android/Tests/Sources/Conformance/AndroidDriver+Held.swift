@@ -189,7 +189,7 @@ extension AndroidDriver {
         case .isAccessibilityHidden:
             let presence = Java.callInt(reference, JavaAPI.getImportantForAccessibility)
             return (presence == 2 || presence == 4).propValue
-        case .automationExcludedWithChildren:
+        case .hidesChildrenFromAccessibility:
             return (Java.callInt(reference, JavaAPI.getImportantForAccessibility) == 4).propValue
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "Android marks a heading, not its level")

@@ -348,7 +348,6 @@ ZStack
   accessibilityLabel
   allowsDrop
   area
-  automationExcludedWithChildren
   background
   canDrag
   dragText
@@ -359,6 +358,7 @@ ZStack
   gridRow
   gridRowSpan
   height
+  hidesChildrenFromAccessibility
   horizontalAlignment
   ignoresInput
   isAccessibilityHidden

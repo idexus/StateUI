@@ -577,7 +577,7 @@ final class MountedTreeTests: XCTestCase {
                 .accessibilityHint: .string("Says hello"), .accessibilityHeading: .enumeration(2),
                 .isAccessibilityHidden: .bool(false),
             ]),
-            label("both", [.isAccessibilityHidden: .bool(true), .automationExcludedWithChildren: .bool(true)]),
+            label("both", [.isAccessibilityHidden: .bool(true), .hidesChildrenFromAccessibility: .bool(true)]),
             label("hidden", [.isAccessibilityHidden: .bool(true)]),
             label("silent", [:]),
         ])

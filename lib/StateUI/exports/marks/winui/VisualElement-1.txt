@@ -1,4 +1,4 @@
-# revision 14.2
+# revision 15.2
 ActivityIndicator.isVisible: ✅
 ActivityIndicator.pivotX: ✅
 Button.scaleY: ✅
@@ -52,7 +52,7 @@ Switch.scaleY: ✅
 Switch.style: ✅
 Text.opacity: ✅
 Text.pivotY: ✅
-TextEditor.automationExcludedWithChildren: ✅
+TextEditor.hidesChildrenFromAccessibility: ✅
 TextField.ignoresInput: ✅
 TextField.scale: ✅
 TimePicker.accessibilityHeading: ✅

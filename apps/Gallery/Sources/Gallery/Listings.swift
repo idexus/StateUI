@@ -9253,7 +9253,7 @@ enum Listings {
                         }
                     }
                     .style(.card)
-                    .automationExcludedWithChildren(true)
+                    .hidesChildrenFromAccessibility(true)
                 }
                 .horizontalAlignment(.center)
 

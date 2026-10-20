@@ -1,8 +1,8 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.opacity: ✅
 ActivityIndicator.scaleY: ✓ read scaleY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.rotation: ✓ read rotation of Button: the host's own transform, checked against the layer it composed itself
-Canvas.automationExcludedWithChildren: ✅
+Canvas.hidesChildrenFromAccessibility: ✅
 Capsule.accessibilityHint: ✅
 CheckBox.frame: ✅
 DatePicker.isEnabled: ✅

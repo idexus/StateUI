@@ -34,11 +34,11 @@ extension VisualElementProperties {
 
     /// Whether a screen reader skips this view and everything inside it.
     ///
-    ///     VStack { … }.automationExcludedWithChildren(true)
+    ///     VStack { … }.hidesChildrenFromAccessibility(true)
     ///
     /// For a panel on screen that is not the user's business - a decorative
     /// header, a card standing behind the one in front.
-    public func automationExcludedWithChildren(_ value: Bool) -> Modified { setValue(VisualElementContract.automationExcludedWithChildren, value) }
+    public func hidesChildrenFromAccessibility(_ value: Bool) -> Modified { setValue(VisualElementContract.hidesChildrenFromAccessibility, value) }
 
     /// That this view is a heading, and how deep.
     ///
@@ -56,10 +56,10 @@ extension VisualElement {
         words(AutomationElementContract.accessibilityIdentifier, by: state)
     }
 
-    /// `automationExcludedWithChildren` from a state, `$x`: the host sets each
+    /// `hidesChildrenFromAccessibility` from a state, `$x`: the host sets each
     /// new value as it stands, and no view is rebuilt for it.
-    public func automationExcludedWithChildren(_ state: Binding<Bool>) -> Modified {
-        twin(VisualElementContract.automationExcludedWithChildren, by: state)
+    public func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Modified {
+        twin(VisualElementContract.hidesChildrenFromAccessibility, by: state)
     }
 
     /// `isAccessibilityHidden` from a state, `$x`: the host sets each new value

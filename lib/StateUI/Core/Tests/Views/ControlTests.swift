@@ -511,7 +511,7 @@ final class ControlTests: XCTestCase {
                         .tooltip("Every view can say what it does")
                         .accessibilityHeading(.h2)
                         .isAccessibilityHidden(false)
-                        .automationExcludedWithChildren(false)
+                        .hidesChildrenFromAccessibility(false)
                         .gridRow(1)
                         .gridColumn(2)
                         .gridRowSpan(3)

@@ -159,7 +159,7 @@ Six modifiers say what a view is to somebody not looking at it, and they are
 two jobs that do not stand in for one another: an identifier for automation;
 and a label, a hint, a heading level, and whether a screen reader skips the
 view (`isAccessibilityHidden`) or the view and everything in it
-(`automationExcludedWithChildren`).
+(`hidesChildrenFromAccessibility`).
 
 `accessibilityIdentifier` is a handle nothing reads out: a UI test, a script or
 an agent driving the application asks the platform's automation for it, where

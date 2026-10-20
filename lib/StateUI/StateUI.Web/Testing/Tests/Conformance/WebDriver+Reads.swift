@@ -183,7 +183,7 @@ extension WebDriver {
             return AccessibilityHeadingLevel(rawValue: Int32(level))?.propValue ?? AccessibilityHeadingLevel.none.propValue
         case .isAccessibilityHidden:
             return try WebBrowser.truth("e.getAttribute('role') === 'none' || e.ariaHidden === 'true'", on: e).propValue
-        case .automationExcludedWithChildren: return try WebBrowser.truth("e.ariaHidden === 'true'", on: e).propValue
+        case .hidesChildrenFromAccessibility: return try WebBrowser.truth("e.ariaHidden === 'true'", on: e).propValue
         default: return nil
         }
     }

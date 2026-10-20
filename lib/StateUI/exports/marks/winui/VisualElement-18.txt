@@ -1,4 +1,4 @@
-# revision 14.2
+# revision 15.2
 ActivityIndicator.layoutDirection: ✓ read layoutDirection of ActivityIndicator: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Button.frame: ✅
 Button.scaleX: ✅
@@ -13,7 +13,7 @@ Divider.translationX: ✅
 Divider.zIndex: ✅
 Ellipse.translationX: ✅
 Ellipse.zIndex: ✅
-Grid.automationExcludedWithChildren: ✅
+Grid.hidesChildrenFromAccessibility: ✅
 HStack.isVisible: ✅
 HStack.pivotX: ✅
 Image.height: ✅

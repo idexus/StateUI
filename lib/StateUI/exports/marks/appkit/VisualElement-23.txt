@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.rotationY: ✓ read rotationY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.layoutDirection: ✅
 Canvas.tooltip: ✅
@@ -13,7 +13,7 @@ Grid.isAccessibilityHidden: ✅
 HStack.ignoresInput: ✅
 HStack.isEnabled: ✅
 Image.rotation: ✓ read rotation of Image: the host's own transform, checked against the layer it composed itself
-ItemsView.automationExcludedWithChildren: ✅
+ItemsView.hidesChildrenFromAccessibility: ✅
 LayoutEngine.background: ✅
 LayoutEngine.frame: ✅
 Line.rotationY: ✓ read rotationY of Line: the host's own transform, checked against the layer it composed itself

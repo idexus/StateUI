@@ -373,10 +373,10 @@ of its own; no case gives them a verdict of their own, so no page marks them:
 | `accessibilityHeading` | [VisualElement](controls/tiers/VisualElement.md) | property |
 | `accessibilityHint` | [VisualElement](controls/tiers/VisualElement.md) | property |
 | `accessibilityLabel` | [VisualElement](controls/tiers/VisualElement.md) | property |
-| `automationExcludedWithChildren` | [VisualElement](controls/tiers/VisualElement.md) | property |
 | `background` | [VisualElement](controls/tiers/VisualElement.md) | property |
 | `frame` | [VisualElement](controls/tiers/VisualElement.md) | property |
 | `height` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `hidesChildrenFromAccessibility` | [VisualElement](controls/tiers/VisualElement.md) | property |
 | `ignoresInput` | [VisualElement](controls/tiers/VisualElement.md) | property |
 | `isAccessibilityHidden` | [VisualElement](controls/tiers/VisualElement.md) | property |
 | `isEnabled` | [VisualElement](controls/tiers/VisualElement.md) | property |
@@ -534,7 +534,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | Tier | Members | Count |
 | --- | --- | --- |
 | [AutomationElement](controls/tiers/AutomationElement.md) | `accessibilityIdentifier` | 1 |
-| [VisualElement](controls/tiers/VisualElement.md) | `accessibilityHeading`, `accessibilityHint`, `accessibilityLabel`, `automationExcludedWithChildren`, `background`, `frame`, `height`, `ignoresInput`, `isAccessibilityHidden`, `isEnabled`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `style`, `tooltip`, `translationX`, `translationY`, `width`, `zIndex` | 31 |
+| [VisualElement](controls/tiers/VisualElement.md) | `accessibilityHeading`, `accessibilityHint`, `accessibilityLabel`, `background`, `frame`, `height`, `hidesChildrenFromAccessibility`, `ignoresInput`, `isAccessibilityHidden`, `isEnabled`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `style`, `tooltip`, `translationX`, `translationY`, `width`, `zIndex` | 31 |
 | [View](controls/tiers/View.md) | `allowsDrop`, `area`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `droppedFileTypes`, `onDragEnded` (`dragEnded`), `onDrop` (`filesDropped`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 34 |
 | [Layout](controls/tiers/Layout.md) | `avoidsSafeArea`, `clipsContent`, `letsInputThrough` | 3 |
 | [Stack](controls/tiers/Stack.md) | `spacing` | 1 |
@@ -634,15 +634,15 @@ realizes the element and each of its members.
 ### Properties
 
 `accessibilityHeading`, `accessibilityHint`, `accessibilityIdentifier`,
-`accessibilityLabel`, `allowsDrop`, `area`, `automationExcludedWithChildren`,
-`avoidsSafeArea`, `backButtonTitle`, `background`, `barBackgroundColor`,
-`barForegroundColor`, `barIcon`, `barSubtitle`, `barTitle`, `canDrag`,
-`clipsContent`, `columns`, `columnSpacing`, `contentMode`, `cornerRadius`,
-`cursorPosition`, `dash`, `dashPhase`, `data`, `date`, `dragText`, `drawing`,
-`droppedFileTypes`, `endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`,
-`flyoutBackground`, `fontAttributes`, `fontFamily`, `fontSize`, `fontWeight`,
-`format`, `frame`, `geometryTransform`, `gridColumn`, `gridColumnSpan`,
-`gridRow`, `gridRowSpan`, `growsWithText`, `handAxis`, `height`,
+`accessibilityLabel`, `allowsDrop`, `area`, `avoidsSafeArea`, `backButtonTitle`,
+`background`, `barBackgroundColor`, `barForegroundColor`, `barIcon`,
+`barSubtitle`, `barTitle`, `canDrag`, `clipsContent`, `columns`,
+`columnSpacing`, `contentMode`, `cornerRadius`, `cursorPosition`, `dash`,
+`dashPhase`, `data`, `date`, `dragText`, `drawing`, `droppedFileTypes`,
+`endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`, `flyoutBackground`,
+`fontAttributes`, `fontFamily`, `fontSize`, `fontWeight`, `format`, `frame`,
+`geometryTransform`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`,
+`growsWithText`, `handAxis`, `height`, `hidesChildrenFromAccessibility`,
 `hidesWhenInactive`, `horizontalAlignment`, `horizontalScrollIndicator`,
 `horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
 `ignoresInput`, `inputPurpose`, `isAccessibilityHidden`, `isAnimating`,

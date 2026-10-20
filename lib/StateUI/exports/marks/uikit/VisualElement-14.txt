@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 Button.zIndex: ✅
 Canvas.height: ✅
@@ -23,7 +23,7 @@ Map.zIndex: ✅
 Path.isVisible: ✅
 Path.scaleX: ✓ read scaleX of Path: the host's own transform, checked against the layer it composed itself
 Picker.pivotY: ✓ read pivotY of Picker: the host's own transform, checked against the layer it composed itself
-Polygon.automationExcludedWithChildren: ✅
+Polygon.hidesChildrenFromAccessibility: ✅
 Polyline.accessibilityLabel: ✅
 ProgressBar.ignoresInput: ✅
 Rectangle.isVisible: ✅

@@ -27,10 +27,10 @@ How each of them realizes these members is on its own page.
 | `accessibilityHeading` | property | `AccessibilityHeadingLevel` | native |
 | `accessibilityHint` | property | `String` | native |
 | `accessibilityLabel` | property | `String` | native |
-| `automationExcludedWithChildren` | property | `Bool` | native |
 | `background` | property | `Material` | adaptive |
 | `frame` | property | `Rect` | structure |
 | `height` | property | `Double` | native |
+| `hidesChildrenFromAccessibility` | property | `Bool` | native |
 | `ignoresInput` | property | `Bool` | native |
 | `isAccessibilityHidden` | property | `Bool` | native |
 | `isEnabled` | property | `Bool` | native |

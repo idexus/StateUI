@@ -58,7 +58,7 @@ extension Registry {
         everyElementRealizes(VisualElementContract.accessibilityHint)
         everyElementRealizes(VisualElementContract.accessibilityHeading)
         everyElementRealizes(VisualElementContract.isAccessibilityHidden)
-        everyElementRealizes(VisualElementContract.automationExcludedWithChildren)
+        everyElementRealizes(VisualElementContract.hidesChildrenFromAccessibility)
     }
 
     /// The words a view shows while the pointer rests on it, which a toolkit showing tooltips holds on any view.

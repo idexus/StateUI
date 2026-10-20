@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 ActivityIndicator.pivotX: ✓ read pivotX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 Canvas.zIndex: ✅
@@ -10,7 +10,7 @@ Capsule.minimumWidth: ✅
 CheckBox.scale: ✓ read scale of CheckBox: the host's own transform, checked against the layer it composed itself
 DatePicker.pivotY: ✓ read pivotY of DatePicker: the host's own transform, checked against the layer it composed itself
 Divider.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-Ellipse.automationExcludedWithChildren: ✅
+Ellipse.hidesChildrenFromAccessibility: ✅
 Grid.accessibilityLabel: ✅
 HStack.opacity: ✅
 HStack.scaleY: ✓ read scaleY of HStack: the host's own transform, checked against the layer it composed itself
@@ -24,7 +24,7 @@ Path.ignoresInput: ✅
 Picker.isVisible: ✅
 Picker.scaleX: ✓ read scaleX of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.rotation: ✓ read rotation of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.automationExcludedWithChildren: ✅
+Polyline.hidesChildrenFromAccessibility: ✅
 ProgressBar.accessibilityLabel: ✅
 Rectangle.ignoresInput: ✅
 ScrollView.isVisible: ✅
