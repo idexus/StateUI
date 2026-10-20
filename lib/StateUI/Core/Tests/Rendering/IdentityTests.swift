@@ -26,9 +26,74 @@ private final class MenuChoice: Hashable {
     func hash(into hasher: inout Hasher) { hasher.combine(number) }
 }
 
+/// An identity whose description differs at every asking - an address, a clock - and whose value does not.
+private struct Restless: Hashable, CustomStringConvertible {
+    let number: Int
+
+    nonisolated(unsafe) static var asked = 0
+
+    var description: String {
+        Self.asked += 1
+        return "restless \(Self.asked)"
+    }
+}
+
+/// A view holding a state and a conversion of it, so a render walks it and converts.
+private struct Converting: View {
+    @State private var level = 0.5
+
+    var body: some View {
+        Slider($level.journey.convert { $0.value * 2 })
+    }
+}
+
 /// Who a view is: the value an identity was written from, compared as that value, and its name in the patch.
 @MainActor
 final class IdentityTests: XCTestCase {
+    /// A RENDER THAT MAKES NO ELEMENT SPELLS NO IDENTITY: walk paths, builder paths, conversion sites, layout slots,
+    /// routes and authors' identities are worked as numbers and values; a text is made only as an element is born.
+    func testARenderThatMakesNoElementSpellsNoIdentity() {
+        let renders = Renders()
+        let path = State(wrappedValue: [1, 2])
+        let shown = true
+        func tree() -> Node {
+            NavigationStack(path.projectedValue) {
+                VStack {
+                    if shown { Text("then") } else { Text("else") }
+                    ForEach([Ticket(1), Ticket(2)], id: \.self) { ticket in Text("\(ticket.number)") }
+                    LayoutEngine(["a", "b"]) { Text($0) } placements: { _, _ in [] }
+                    Converting()
+                    Text("marked").id(Restless(number: 1))
+                }
+            } destination: { (level: Int) in
+                Text("level \(level)")
+            }.node
+        }
+        renders.render(tree())
+        let texts = Renderer.shared.texts
+
+        renders.render(tree())
+
+        XCTAssertEqual(Renderer.shared.texts, texts, "a second render, no element born: no text")
+    }
+
+    /// AN IDENTITY WHOSE DESCRIPTION CHANGES KEEPS ITS ELEMENT: it is matched as the value it is, its description
+    /// asked once, as the element is born.
+    func testAnIdentityWhoseDescriptionChangesKeepsItsElement() {
+        let renders = Renders()
+        func list() -> Node {
+            VStack { ForEach([Restless(number: 1), Restless(number: 2)], id: \.self) { Text("\($0.number)") } }.node
+        }
+
+        let first = renders.render(list()).children.map(\.id)
+        let asked = Restless.asked
+        let second = renders.render(list())
+
+        XCTAssertNil(second.arrangement, "the same elements, in the same order")
+        XCTAssertEqual(Restless.asked, asked, "described once each, as they were born")
+        XCTAssertEqual(first.count, 2)
+    }
+
     /// Two siblings written with one identity are told apart by a variant - and that is said: the second never keeps
     /// the first's state.
     func testTwoSiblingsWithOneIdentityAreSaid() {
