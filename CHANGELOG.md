@@ -3,6 +3,68 @@
 What each release changes for an application and for a host, newest first. A breaking change says how to move
 over. StateUI is before 1.0: a release may break what the one before it promised, and says so here.
 
+## 0.7.1 - 2026-10-20
+
+### Breaking changes
+
+- **An identity is compared as the value it is.** `.id(_:)` and `ForEach`'s `id:` match an element by its value,
+  not by its description: two values that describe themselves alike - two instances of one class - are two
+  elements, and a route or a tab need not describe itself apart from the others. `Node.id` can no longer be set;
+  a view takes its identity with `.id(_:)`.
+- **For host and backend authors (`@_spi(Host)`):** AppKit and UIKit share one web view, one map and the
+  system's facts from `StateUIApple` (`lib/StateUI/StateUI.Apple`). What two hosts decided alike is the host
+  layer's, and each host asks it: a scroller's echo, a navigation path change, a run of taps, a hand over a
+  layout, a slider's and a stepper's step, a list's estimate and its scroll to an item, a window's dialogs, the
+  focus, a frame reader's following (`FrameFollowers.follow(_:of:reads:)`). A collection that learns its cells'
+  nearness once a frame tells the cells together (`ItemsCells.hold(_:endingShowing:)`).
+
+### New
+
+- A registered control takes properties together: `applies([...]) { view, values in ... }` hands a view every
+  property it names whenever one of them changes, each as its contract's type and whether it changed
+  (`ControlValues`) - a web view its agent before its page.
+- A member the running host does not realize is said once in Debug, with the reason its register gives:
+  "Switch.tint is never realized on this host: AppKit draws it in the accent colour the user chooses".
+- A host writes its lines, and every complaint the application routes nowhere, where its platform's developers
+  read: Apple's system log, WinUI's debugger output, GLib's log, logcat, the browser's console.
+
+### Fixed
+
+- Words held to some lines end with an ellipsis on every host.
+- A navigation path change moves alike on every host: a push brings its last page in however many came, a pop
+  moves back once, a replacement and reduced motion move nothing. On UIKit two pages no longer slide in at once.
+- A page hears it goes when the tree closes its window, and when the user pops it, on every host.
+- A question or a file dialog over a window the tree closes is answered as dismissed, and the next one asks.
+- A text field's bound counts characters on every host, a question's field included; WinUI, Android and the Web
+  counted UTF-16 units.
+- A slider's keyboard step and a stepper's step follow one arithmetic on every host, and a fractional step lands
+  on its decimals: 0.2 and a step of 0.1 make 0.3. AppKit's arrow keys moved a twentieth and Page Up to the end;
+  Android's slider stepped a twentieth; UIKit's progress view took a value that is not a number.
+- A label's and a field's start follows the layout's direction on AppKit and UIKit, not the script of their words.
+- A vector picture stretched to its room is drawn at the room's own pixels on GTK and WinUI - on GTK it was
+  covered and squeezed.
+- Android and WinUI count a run of taps with the platform's own interval and distance.
+- A scroll to an item glides there unless the user asks for less motion, on every host.
+- On Android and WinUI a layout the toolkit narrows is placed before it is drawn, not a frame behind its width.
+- A chosen item's band is the accent at a fifth on every host, and a map's search result is purple on the Web
+  too.
+
+### Faster
+
+- A body is built only for what it read: a page whose body ends on a view with its own state is no longer built
+  for that state. In the host layer's benchmark, scrolling 1000 rows builds some 1200 bodies, against 5500.
+- A render that makes no element spells no identity as text.
+- On the Web a change inside a child arranges none of its ancestors, and a list takes the cells the browser saw
+  coming and going in one frame together, with one render. A fling of 20 000 points a second in Chrome keeps every
+  frame on time, where the rows in view stood empty until the list stopped; a list's page opens in some 1.9 s in
+  WebKit with no JIT, against 3.8 s, and with the JIT in some 160 ms, against 530. Measured on an M1 Max MacBook
+  Pro.
+
+### Tooling
+
+- The host layer's benchmarks gate four gestures' work by counts in every run; a walk opens every Gallery sample
+  and checks nothing it made stays alive; the Web modules hold their size budgets.
+
 ## 0.7.0 - 2026-10-19
 
 ### Breaking changes
