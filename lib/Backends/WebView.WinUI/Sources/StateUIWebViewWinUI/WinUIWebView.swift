@@ -29,12 +29,11 @@ final class WinUIWebView: WinUIControl {
     private var written = 0
 
     /// What the view calls itself; the page last asked for - its address, and the document written in place there -
-    /// and whether a navigation is under way; a page not loaded yet, loaded once the element's values are applied;
-    /// and the source loaded last, which `shownSource` answers while the view shows its document.
+    /// and whether a navigation is under way; and the source loaded last, which `shownSource` answers while the view
+    /// shows its document.
     private var agent = ""
     private var asked: (address: String, document: String?)?
     private var loading = false
-    private var pending: WebViewSource?
     private var loaded: WebViewSource?
 
     init() {
@@ -58,16 +57,9 @@ final class WinUIWebView: WinUIControl {
     }
 
     /// Shows the page at an address, or a document written in place - at its own address, else at one the backend
-    /// gives it - once the element's other values are applied; no source leaves the page as it is.
+    /// gives it - the agent it is handed with already the view's (`applies`); no source leaves the page as it is.
     func show(_ source: WebViewSource?) {
         guard let source else { return }
-        if pending == nil { Task { @MainActor [weak self] in self?.loadPending() } }
-        pending = source
-    }
-
-    private func loadPending() {
-        guard let source = pending else { return }
-        pending = nil
         loaded = source
         switch source {
         case .url(let address): go((address, nil))
