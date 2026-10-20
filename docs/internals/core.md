@@ -339,10 +339,10 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 - **`Renderer`** is the one renderer, `Renderer.shared`: it holds the
   application, the states written since the last render and their live
   readers, the generation, the act queue and the completions, and takes one
-  of three roads - the clean walk, a build, or the complete tree. An
-  application reaches `setApplication` through `stateUIUseApp`, and
-  `setNeedsRender` to bridge a model it observes itself; a host reaches the
-  rest through `HostBoundary`.
+  of three roads - the clean walk, a build, or the complete tree. It is host
+  SPI (`@_spi(Host)`): an application reaches `setApplication` through
+  `stateUIUseApp` and tells every change by writing a state; a host reaches
+  the rest through `HostBoundary`.
   ([Three roads](../design/core/render.md#three-roads),
   [generations and baseline](../design/core/render.md#generations-and-baseline))
 - **`ReadScope`** and **`BuildScope`** record what a build reads and which

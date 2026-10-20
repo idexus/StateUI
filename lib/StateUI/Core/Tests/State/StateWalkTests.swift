@@ -3,7 +3,7 @@
 
 import XCTest
 
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// A value compared whole.
 private struct Icon: Equatable {

@@ -6,8 +6,9 @@
 // Design: docs/design/core/render.md#one-renderer
 
 /// The one renderer: it holds the application and renders what changed for
-/// the host, which calls in from the thread it draws on.
-@MainActor
+/// the host, which calls in from the thread it draws on. A host's; an application
+/// reaches it only through `stateUIUseApp` and its states.
+@_spi(Host) @MainActor
 public final class Renderer {
     // The UI thread's actor's: the host enters it from that thread, synchronously.
     // Design: docs/design/core/render.md#one-renderer
@@ -128,7 +129,7 @@ public final class Renderer {
     /// - Parameter application: the application, made at its first need, once
     ///   what an earlier registration wrote into the application's session is
     ///   forgotten and the host has told what the device is.
-    @_spi(Host) public func setApplication(_ application: @escaping @autoclosure () -> any Application) {
+    public func setApplication(_ application: @escaping @autoclosure () -> any Application) {
         StandardEnvironment.application.forget()
 
         // A new application is a new tree: the old one is let go, and every element of
@@ -196,7 +197,7 @@ public final class Renderer {
     ///
     /// - Returns: whether a build was open to record it.
     @discardableResult
-    @usableFromInline func stateRead(_ state: AnyObject) -> Bool {
+    func stateRead(_ state: AnyObject) -> Bool {
         #if DEBUG
         HandlerRun.noteRead(of: state)
         #endif

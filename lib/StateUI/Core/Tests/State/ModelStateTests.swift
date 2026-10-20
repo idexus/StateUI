@@ -53,9 +53,24 @@ private final class Cart {
 /// A model of the kind another package ships: Swift's own `@Observable`,
 /// which reports its writes to an observation scope rather than to this
 /// library. Held here so the tests can measure that difference.
-@Observable
+@MainActor @Observable
 private final class ForeignCart {
     var note = ""
+}
+
+/// The handbook's bridge to it: what the interface reads, copied into a state
+/// inside an observation scope and again on each change.
+@MainActor
+private final class ForeignCartAdapter {
+    @State var note = ""
+
+    func follow(_ cart: ForeignCart) {
+        withObservationTracking {
+            note = cart.note
+        } onChange: {
+            Task { @MainActor [weak self] in self?.follow(cart) }
+        }
+    }
 }
 
 /// A view that keeps a model rather than a value.
@@ -523,6 +538,29 @@ final class ModelStateTests: XCTestCase {
             deprecation in Observable.swift names at the declaration, \
             and this is the measurement it stands on.
             """)
+    }
+
+    /// A model another package owns reaches the interface through an adapter of states: each change of the model is
+    /// copied as a state's write, which its readers hear - the next one too, the scope armed anew by the copy.
+    func testAnAdapterTellsEachChangeOfAnObservableModelAsAState() async throws {
+        let cart = ForeignCart()
+        let adapter = ForeignCartAdapter()
+        adapter.follow(cart)
+        let reader = reading { _ = adapter.note }
+        defer { _ = reader }
+        settled()
+
+        for note in ["for later", "for now"] {
+            cart.note = note
+            for _ in 0..<200 {
+                guard adapter.note != note else { break }
+                try await Task.sleep(for: .milliseconds(1))
+            }
+
+            XCTAssertEqual(adapter.note, note, "copied by the change handler")
+            XCTAssertTrue(Renderer.shared.needsRender, "a state's write, heard by the view reading it")
+            settled()
+        }
     }
 
     func testHoldingAnObservableModelIsSaidAtTheDeclaration() throws {

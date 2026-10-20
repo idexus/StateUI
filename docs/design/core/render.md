@@ -39,9 +39,9 @@ ancestors contribute only the path of patches down to them. It is sound only
 when every cause of the render named the state it wrote. Two asks name
 nothing and force a build: the core's own `setNeedsBuild()` (a scene opened, a
 new application), whose build carries every composed view whose inputs and
-reads stand, and the public `setNeedsRender()`, whose build carries none,
+reads stand, and the host's `setNeedsRender()`, whose build carries none,
 because what moved is outside StateUI and no view's inputs or reads can say
-it stands.
+it stands. An application has no unnamed ask: what it changes is a state.
 
 The root build reads the open scenes, whatever the application's `body`
 reads, and the application session's styles and motion. Those reads are kept

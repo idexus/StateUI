@@ -148,6 +148,12 @@ extension State {
             return made
         }
 
+        /// What every read starts with: the renderer hears it, and the state keeps whether a build read it.
+        @usableFromInline
+        func noteRead() {
+            if Renderer.shared.stateRead(self) { readAtBuild = true }
+        }
+
         /// What every write ends with, this side's and the host's: the readers are asked,
         /// and nobody where no build read the state.
         /// Design: docs/design/core/invalidation.md#live-readers

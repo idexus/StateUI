@@ -144,32 +144,41 @@ write to an `@Observable` property alone does not request a render. Holding an
 its member writes leave the interface unchanged.
 
 Declare properties on a model you own with `@State`. When another package owns
-an `@Observable` type, bridge it explicitly: read the properties the interface
-uses inside `withObservationTracking`, and in `onChange` re-arm that one-shot
-tracking before calling `Renderer.shared.setNeedsRender()`.
+an `@Observable` type, bridge it with an adapter whose properties are `@State`:
+copy what the interface reads inside `withObservationTracking`, and in
+`onChange` copy again, which arms the one-shot tracking anew. Each copy is a
+write to a state, so only the views that read that property are built again.
 
-```swift quote
+```swift
 import Observation
+import StateUI
+
+/// Another package's model.
+@MainActor @Observable
+final class ExternalModel {
+    var title = ""
+    var progress = 0.0
+}
 
 @MainActor
-func observe(_ model: ExternalModel) {
-    withObservationTracking {
-        _ = model.title
-        _ = model.progress
-    } onChange: {
-        Task { @MainActor in
-            observe(model) // Observation tracking is one-shot.
-            Renderer.shared.setNeedsRender()
+final class PlayerAdapter {
+    @State var title = ""
+    @State var progress = 0.0
+
+    func follow(_ model: ExternalModel) {
+        withObservationTracking {
+            title = model.title
+            progress = model.progress
+        } onChange: {
+            Task { @MainActor [weak self] in self?.follow(model) } // Observation tracking is one-shot.
         }
     }
 }
 ```
 
-Call the bridge from the lifetime owner and stop retaining that owner when its
-element leaves. `setNeedsRender()` is a full, unnamed invalidation: it cannot
-identify which composed body read which external property. For selective
-StateUI invalidation, copy the external values needed by the interface into an
-adapter whose properties are `@State`.
+The views read the adapter, never the model. Start following from the lifetime
+owner - an action or `.onAppearing` - and let the adapter go when its element
+leaves; the weak reference ends the following with it.
 
 ## Borrowing with `@Binding`
 

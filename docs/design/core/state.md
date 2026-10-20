@@ -339,9 +339,10 @@ interface showing the old value with nothing failing anywhere. Holding one in a
 `@State` is therefore deprecated with a message naming the line - a warning, not
 a refusal, because the model still works as an object and an application that
 arms the tracking itself may hold one. A model declared elsewhere is bridged
-in the application: read it inside `withObservationTracking` and call
-`Renderer.shared.setNeedsRender()` from its change handler, arming again after
-every change.
+in the application by an adapter whose properties are `@State`: it copies the
+model's values inside `withObservationTracking` and again from its change
+handler, which arms the tracking anew - one way to tell a change, a write to a
+state, so only the views that read the copied value are built again.
 
 ## Sendable
 

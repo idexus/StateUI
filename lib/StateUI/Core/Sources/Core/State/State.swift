@@ -62,7 +62,7 @@ public final class State<Value> {
     @inlinable
     public var wrappedValue: Value {
         get {
-            if Renderer.shared.stateRead(storage) { storage.readAtBuild = true }
+            storage.noteRead()
             return storage.value
         }
         set {
@@ -142,7 +142,7 @@ public final class State<Value> {
     /// plain name reads the same value, and that is the spelling to use.
     @inlinable
     public func get() -> Value {
-        if Renderer.shared.stateRead(storage) { storage.readAtBuild = true }
+        storage.noteRead()
         return storage.value
     }
 }
