@@ -54,9 +54,9 @@ final class UIKitActToolkit: ActToolkit {
         else { return nil }
         let asked = UIKitQuestion(question)
         showing = asked
-        asked.ask(in: root) { [weak self] accepted, words in
+        asked.ask(in: root) { [weak self] given in
             self?.showing = nil
-            answered(.success(HostQuestion.Given(accepted: accepted, words: words)))
+            answered(.success(given))
         }
         return window
     }

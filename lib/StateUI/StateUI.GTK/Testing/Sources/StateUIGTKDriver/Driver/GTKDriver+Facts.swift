@@ -128,8 +128,8 @@ extension GTKDriver {
             self.renderer?.runtime.windowStateChanged(window, minimized: minimized, activated: activated)
         }
         switch act {
-        case .answer(let caption, let words):
-            try renderer?.answer(caption, typing: words, over: try? window(of: element))
+        case .answer(let button, let words):
+            try renderer?.answer(button, typing: words, over: try? window(of: element))
         case .switchAway:
             for window in renderer?.windows.compactMap(\.element) ?? [] { tell(window, false, false) }
         case .switchBack, .restore: tell(element, false, true)

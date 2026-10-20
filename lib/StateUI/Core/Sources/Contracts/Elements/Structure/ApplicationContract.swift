@@ -24,13 +24,13 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// See `ApplicationSession.announce`.
     public static let announce = ElementAct<Self, String, Void>("announce")
 
-    /// Offers the user a list of choices over a window - the window, the title,
-    /// the cancel and the destructive captions where there are ones, and the
-    /// choices - answering the pressed caption, or nothing where the sheet was
-    /// dismissed.
+    /// Offers the user a list of actions over a window - the window, the title,
+    /// each action's caption, the place of the destructive one where there is
+    /// one, and the cancel's caption - answering the place of the one chosen,
+    /// or nothing where the choice was cancelled or dismissed.
     ///
     /// See `WindowSession.chooseAction`.
-    public static let chooseAction = ElementAct<Self, (Name, Name, String, String?, String?, [String]), String?>(
+    public static let chooseAction = ElementAct<Self, (Name, Name, String, [String], Int?, String), Int?>(
         "chooseAction")
 
     /// Asks the user a yes-or-no question over a window - the window, the

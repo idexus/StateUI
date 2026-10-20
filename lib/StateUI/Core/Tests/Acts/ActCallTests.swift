@@ -237,20 +237,32 @@ final class ActCallTests: XCTestCase {
         XCTAssertEqual(answer, "Delete")
     }
 
-    /// A dialog's answer can be NOTHING - a cancelled prompt, a sheet
-    /// dismissed without choosing - and can also be EMPTY, which is an answer:
-    /// a prompt accepted with nothing typed. The reply's COUNT is what keeps
-    /// the two apart: a choice is one string value, empty included, and a
-    /// dismissal is no values at all.
+    /// A dialog's answer can be NOTHING - a cancelled prompt, a choice
+    /// cancelled - and can also be EMPTY, which is an answer: a prompt accepted
+    /// with nothing typed. The reply's COUNT is what keeps the two apart: an
+    /// answer is one value, empty included, and a dismissal is no values at
+    /// all. A choice answers the place of its action, which comes back as the
+    /// action itself.
     func testADialogAnswerTellsNothingFromEmpty() async throws {
         drain()
 
         let sheet = Self.begin {
-            try await WindowSession().chooseAction("Share via", buttons: ["Mail"])
+            try await WindowSession().chooseAction("Share via", among: ["Mail", "Message"])
         }
-        await report(try completionId(in: drain()), .finished([.string("Mail")]))
+        await report(try completionId(in: drain()), .finished([.number(1)]))
         let choice = try await sheet.value
-        XCTAssertEqual(choice, "Mail")
+        XCTAssertEqual(choice, "Message")
+
+        let beyond = Self.begin {
+            try await WindowSession().chooseAction("Share via", among: ["Mail"])
+        }
+        await report(try completionId(in: drain()), .finished([.number(4)]))
+        do {
+            _ = try await beyond.value
+            XCTFail("a place no action stands at is the host's mistake")
+        } catch let error as StateUIError {
+            XCTAssertEqual(error.message, "the host answered action 4 of 1 offered")
+        }
 
         let accepted = Self.begin { try await WindowSession().prompt("Rename") }
         await report(try completionId(in: drain()), .finished([.string("")]))

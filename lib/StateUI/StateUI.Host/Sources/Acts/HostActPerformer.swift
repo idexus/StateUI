@@ -134,7 +134,7 @@
         case .question(let question):
             toolkit.show(question, over: over) { [weak self] given in
                 guard let self, showing?.ticket == ticket, showing?.count == count else { return }
-                answer(ticket, given.map { question.answer(accepted: $0.accepted, words: $0.words) })
+                answer(ticket, given.map(question.answer))
             }
         case .files(let dialog):
             files?.show(dialog, over: over) { [weak self] chosen in self?.answer(ticket, chosen.map(dialog.answer)) }
@@ -188,7 +188,7 @@
         forget(ticket)
         _ = questions.answered(ticket)
         switch asked {
-        case .question(let question): deliver(call, .success(question.answer(accepted: false, words: nil)))
+        case .question(let question): deliver(call, .success(question.answer(.dismissed)))
         case .files(let dialog): deliver(call, .success(dialog.answer([])))
         }
     }

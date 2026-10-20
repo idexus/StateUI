@@ -214,9 +214,9 @@ nothing of another's. Questions are asked one at a time, in the order the
 application asked them, by the host layer's queue ([questions for the
 user](../../host/runtime.md#questions-for-the-user)): the next shows once the
 one before is answered. A choice of actions is a
-button a choice, the dangerous one first, and the pressed caption is the
-answer - the cancelling one too; a dialog dismissed any other way, Escape
-among them, answers that nothing was chosen. A prompt's field takes the
+button an action, in order - WinUI draws no dangerous button apart - and the
+place of the one pressed is the answer; the cancel, and a dialog dismissed
+any other way, Escape among them, answer that nothing was chosen. A prompt's field takes the
 placeholder and the keyboard its purpose asks for; the most it may hold is
 counted in characters, as a field of the tree counts them: WinUI's
 `MaxLength` counts UTF-16 units, so the field tells each change of its words

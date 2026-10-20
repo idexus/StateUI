@@ -106,17 +106,22 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
-    /// The window, title, cancel, destruction, then the buttons as ONE argument - the list
-    /// of their captions, an argument being one value. An absent caption
-    /// crosses as NOTHING, never as an empty string: an empty string is a
-    /// caption someone could have written.
+    /// The window, the title, the actions' captions as ONE argument - an
+    /// argument being one value - the place of the dangerous one, and the
+    /// cancel's caption, the system's word where none is given. No dangerous
+    /// action crosses as NOTHING, never as a place no action stands at.
     func testAChoiceOfActionsCrossesWithItsArgumentsInPlace() async throws {
         try await check("chooseAction", Self.usersWindow + [
-            .string("Share via"), .string("Cancel"), .string("Delete"), .strings(["Mail", "Message"]),
+            .string("Share via"), .strings(["Mail", "Message", "Delete"]), .number(2), .string("Back"),
         ]) {
             _ = try await WindowSession().chooseAction(
-                "Share via", cancel: "Cancel", destruction: "Delete",
-                buttons: ["Mail", "Message"])
+                "Share via", among: ["Mail", "Message", "Delete"], destructive: "Delete", cancel: "Back")
+        }
+        try await check("chooseAction", Self.usersWindow + [
+            .string("Share via"), .strings(["mail"]), .nothing, .string("Cancel"),
+        ]) {
+            enum Share: CaseIterable { case mail }
+            _ = try await WindowSession().chooseAction("Share via", among: Share.allCases)
         }
     }
 

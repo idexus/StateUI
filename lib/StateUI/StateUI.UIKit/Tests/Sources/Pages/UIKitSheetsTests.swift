@@ -50,7 +50,7 @@ final class UIKitSheetsTests: XCTestCase {
         host.settle { host.actToolkit.showing?.alert.viewIfLoaded?.window != nil }
         XCTAssertNotNil(host.actToolkit.showing?.alert.viewIfLoaded?.window, "the question stands")
 
-        XCTAssertEqual(host.actToolkit.showing?.press("Yes", typing: nil), true)
+        XCTAssertEqual(host.actToolkit.showing?.press(.accept, typing: nil), true)
         host.settle {
             root.presentedViewController?.presentedViewController?.viewIfLoaded?.window != nil
                 && root.presentedViewController?.presentedViewController?.transitionCoordinator == nil

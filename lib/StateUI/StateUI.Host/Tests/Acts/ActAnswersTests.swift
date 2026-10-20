@@ -18,11 +18,16 @@ final class ActAnswersTests: XCTestCase {
         XCTAssertEqual(confirm.cancelling, "Cancel", "a confirmation always offers its cancel")
 
         let choose = try XCTUnwrap(HostQuestion(HostActCall(
-            act: .chooseAction, arguments: HostActCall.usersWindow + [.string("Share"), .nothing, .string("Delete"), ["Mail", "Copy"].propValue],
+            act: .chooseAction,
+            arguments: HostActCall.usersWindow + [.string("Share"), ["Mail", "Copy", "Delete"].propValue, .number(2)],
             completion: 2)))
-        XCTAssertNil(choose.cancel, "a choice offers a cancel only where it names one")
-        XCTAssertEqual(choose.destruction, "Delete")
-        XCTAssertEqual(choose.choices, ["Mail", "Copy"])
+        XCTAssertEqual(choose.cancelling, "Cancel", "a choice always offers its cancel")
+        XCTAssertEqual(choose.choices, ["Mail", "Copy", "Delete"])
+        XCTAssertEqual(choose.destructive, 2)
+        let beyond = try XCTUnwrap(HostQuestion(HostActCall(
+            act: .chooseAction, arguments: HostActCall.usersWindow + [.string("Share"), ["Mail"].propValue, .number(4)],
+            completion: 2)))
+        XCTAssertNil(beyond.destructive, "a dangerous place beyond the actions marks none")
 
         let prompt = try XCTUnwrap(HostQuestion(HostActCall(
             act: .prompt, arguments: HostActCall.usersWindow + [.string("Name"), .nothing, .nothing, .nothing, .string("Ada"), .number(8),
@@ -49,18 +54,45 @@ final class ActAnswersTests: XCTestCase {
         XCTAssertFalse(try prompt(.plain).traits.checksSpelling)
     }
 
-    /// A confirmation answers yes or no; a choice or a prompt its words where the user accepted, nothing where
-    /// not; an alert nothing.
+    /// A confirmation answers yes or no; a choice the place of an action it offers, a prompt its words, where the user
+    /// accepted, nothing where not; an alert nothing.
     func testAQuestionAnswersAsItsKindDoes() throws {
         func question(_ act: Act) throws -> HostQuestion { try XCTUnwrap(HostQuestion(HostActCall(act: act, arguments: [], completion: 1))) }
-        XCTAssertEqual(try question(.confirm).answer(accepted: true, words: nil), [.bool(true)])
-        XCTAssertEqual(try question(.prompt).answer(accepted: true, words: "Ada"), ["Ada".propValue])
-        XCTAssertEqual(try question(.prompt).answer(accepted: false, words: "Ada"), [(nil as String?).propValue])
-        XCTAssertEqual(try question(.alert).answer(accepted: true, words: nil), [])
+        XCTAssertEqual(try question(.confirm).answer(.init(accepted: true)), [.bool(true)])
+        XCTAssertEqual(try question(.prompt).answer(.init(accepted: true, words: "Ada")), ["Ada".propValue])
+        XCTAssertEqual(try question(.prompt).answer(.init(accepted: false, words: "Ada")), [(nil as String?).propValue])
+        XCTAssertEqual(try question(.alert).answer(.init(accepted: true)), [])
+
+        let choose = try XCTUnwrap(HostQuestion(HostActCall(
+            act: .chooseAction, arguments: HostActCall.usersWindow + [.string("Share"), ["Mail", "Copy"].propValue],
+            completion: 3)))
+        XCTAssertEqual(choose.answer(.init(chosen: 1)), [1.propValue])
+        XCTAssertEqual(choose.answer(.init(chosen: 5)), [(nil as Int?).propValue], "no action of its offers nothing")
+        XCTAssertEqual(choose.answer(.dismissed), [(nil as Int?).propValue])
+        XCTAssertEqual(choose.answer(.init(pressed: .cancel)), [(nil as Int?).propValue], "its cancel offers nothing")
+    }
+
+    /// A question's buttons are what every host draws, each answering by what it does: an alert's one; a
+    /// confirmation's and a prompt's accept, then the cancel; a choice's actions in order, then the cancel.
+    func testAQuestionsButtonsAnswerByWhatTheyDo() throws {
+        func question(_ act: Act, _ arguments: [HostValue]) throws -> HostQuestion {
+            try XCTUnwrap(HostQuestion(HostActCall(act: act, arguments: HostActCall.usersWindow + arguments, completion: 1)))
+        }
+        func roles(_ question: HostQuestion) -> [String] { question.buttons.map { "\($0.caption) \($0.role)" } }
+        XCTAssertEqual(roles(try question(.alert, [.string("Saved")])), ["OK accept"])
+        XCTAssertEqual(
+            roles(try question(.confirm, [.string("Delete?"), .nothing, .string("Delete"), .string("Keep")])),
+            ["Delete accept", "Keep cancel"])
+        XCTAssertEqual(
+            roles(try question(.chooseAction, [.string("Share"), ["Mail", "Copy"].propValue, .nothing, .string("Back")])),
+            ["Mail action(0)", "Copy action(1)", "Back cancel"])
+        let prompt = try question(.prompt, [.string("Name"), .nothing, .string("Save"), .string("Back")])
+        XCTAssertEqual(prompt.answer(.init(pressed: .accept, typing: "Ada")), ["Ada".propValue])
+        XCTAssertEqual(prompt.answer(.init(pressed: .cancel, typing: "Ada")), [(nil as String?).propValue])
 
         let bounded = try XCTUnwrap(HostQuestion(HostActCall(
             act: .prompt, arguments: HostActCall.usersWindow + [.string("Name"), .nothing, .nothing, .nothing, .nothing, .number(3)], completion: 4)))
-        XCTAssertEqual(bounded.answer(accepted: true, words: "Adé👍x"), ["Adé".propValue], "cut to its bound, by characters")
+        XCTAssertEqual(bounded.answer(.init(accepted: true, words: "Adé👍x")), ["Adé".propValue], "cut to its bound, by characters")
     }
 
     /// Questions show one at a time, in the order asked; answering the one showing shows the next, and an answer

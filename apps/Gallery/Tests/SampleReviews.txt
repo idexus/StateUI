@@ -33,7 +33,7 @@ Cube3DSample.swift da05c5b4d44ecc04
 DatePickerSample.swift 98ec31b1e84de06c
 DeviceDisplaySample.swift a9241d0b33fff4dc
 DeviceInfoSample.swift cb6c33fedbd844cf
-DialogsSample.swift 92864e4606681b66
+DialogsSample.swift cba009922c4830ec
 DragAndDropSample.swift 4fbe44109e627724
 DrivenReadingSample.swift a58a0b1d8786607a
 DrivenSample.swift 7ead46a5789b6651

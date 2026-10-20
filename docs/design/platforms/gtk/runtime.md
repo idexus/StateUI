@@ -144,9 +144,11 @@ across the process, so an answer that arrives after its renderer has gone
 answers nothing of another's. The host layer shows one question at a time,
 as a desktop's sheets are, so a question asked while one shows waits for it
 to close. A
-choice of actions is a button a choice, the dangerous one first, and the
-pressed caption is the answer - the cancelling one too; a dialog dismissed
-any other way, Escape among them, answers that nothing was chosen. A
+question's cancel stands first, as GNOME stands it, and a choice of actions
+is a button an action, in order, the dangerous one marked: the place of the
+one pressed is the answer, and the cancel - Escape among the ways - answers
+that nothing was chosen. Each response is named by what it answers
+(`accept`, `cancel`, `action-<place>`). A
 prompt's field takes the placeholder, the most characters and the keyboard
 its purpose asks for, holds the keyboard as the dialog shows, and Enter in
 it accepts.

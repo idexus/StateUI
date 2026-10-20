@@ -39,7 +39,7 @@ final class WebLookTests: XCTestCase {
                 .string("Keep"),
             ],
             completion: nil)
-        let asked = WebQuestion(try XCTUnwrap(HostQuestion(call))) { _, _ in }
+        let asked = WebQuestion(try XCTUnwrap(HostQuestion(call))) { _ in }
         asked.show()
         try withExtendedLifetime(asked) {
             let dialog = "document.querySelector('dialog.stateui-question[open]')"

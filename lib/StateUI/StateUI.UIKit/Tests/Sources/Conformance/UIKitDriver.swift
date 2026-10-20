@@ -298,9 +298,9 @@ final class UIKitDriver: HostDriver {
             guard let focusable = Self.focusable(in: view) else { throw DriverCannot(act, on: element) }
             focusable.becomeFirstResponder()
             renderer?.focusMoved()
-        case (.answer(let caption, let words), _):
-            guard renderer?.actToolkit.showing?.press(caption, typing: words) == true else {
-                throw DriverCannot("press \(caption): no question shows it")
+        case (.answer(let button, let words), _):
+            guard renderer?.actToolkit.showing?.press(button, typing: words) == true else {
+                throw DriverCannot("press \(button): no question shows it")
             }
         case (.dragAndDrop(let target, let across), _):
             try dragAndDrop(element, onto: target, across: across)

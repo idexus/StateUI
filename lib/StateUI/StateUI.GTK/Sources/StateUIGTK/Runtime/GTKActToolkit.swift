@@ -52,7 +52,7 @@ final class GTKActToolkit: ActToolkit {
         answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement? {
         guard let window = renderer.window(asked: window), let element = renderer.element(of: window) else { return nil }
-        GTKQuestion(question) { answered(.success(HostQuestion.Given(accepted: $0, words: $1))) }.show(over: window)
+        GTKQuestion(question) { answered(.success($0)) }.show(over: window)
         return element
     }
 

@@ -50,7 +50,7 @@ VisualElement 14
 Shape 5
 BorderElement 10
 TextInput 6
-Application 5
+Application 6
 TextSpan 4
 Divider 4
 Canvas 3

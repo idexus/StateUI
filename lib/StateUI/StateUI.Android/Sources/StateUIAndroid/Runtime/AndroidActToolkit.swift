@@ -80,11 +80,11 @@ final class AndroidActToolkit: ActToolkit {
                     .object(Java.string(question.title ?? "")), .object(Java.string(question.message ?? "")),
                     .object(Java.string(question.accept)), .object(Java.string(question.cancelling)))
             case .chooseAction:
+                // Android's list of actions draws no dangerous one apart.
                 Java.callStatic(
                     JavaAPI.dialogs, JavaAPI.chooseAction, .object(context), .long(ticket),
-                    .object(Java.string(question.title ?? "")), .object(question.cancel.flatMap(Java.string)),
-                    .object(question.destruction.flatMap(Java.string)),
-                    .object(Java.strings(question.choices)))
+                    .object(Java.string(question.title ?? "")), .object(Java.strings(question.choices)),
+                    .object(Java.string(question.cancelling)))
             case .prompt:
                 Java.callStatic(
                     JavaAPI.dialogs, JavaAPI.prompt, .object(context), .long(ticket),
@@ -109,6 +109,11 @@ final class AndroidActToolkit: ActToolkit {
             return core.reply(call, [ScriptAnswer.text(json: words).propValue])
         }
         dialogs.take(ticket)?(.success(HostQuestion.Given(accepted: accepted, words: words)))
+    }
+
+    /// The choice of actions under `ticket` was answered by the action at `place`.
+    func actionChosen(ticket: Int64, place: Int) {
+        dialogs.take(ticket)?(.success(HostQuestion.Given(chosen: place)))
     }
 
     func announce(_ words: String) {

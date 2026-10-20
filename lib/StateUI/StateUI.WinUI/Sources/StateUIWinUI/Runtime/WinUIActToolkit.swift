@@ -60,7 +60,7 @@ final class WinUIActToolkit: ActToolkit {
         let ticket = dialogs.hold(answered)
         showing = Showing(ticket: ticket, window: window, bound: question.maximumLength)
 
-        // The title, the message, the captions that accept, cancel and destroy, the placeholder, the first words.
+        // The title, the message, the captions that accept and cancel, the placeholder, the first words.
         let kind: StateUIQuestionKind = switch question.kind {
         case .alert: .alert
         case .confirm: .confirm
@@ -68,18 +68,18 @@ final class WinUIActToolkit: ActToolkit {
         case .prompt: .prompt
         }
         let words: [String?] = [
-            question.title, question.message, question.accept, question.cancel, question.destruction,
-            question.placeholder, question.words,
+            question.title, question.message, question.accept, question.cancel, question.placeholder, question.words,
         ]
         let traits = question.traits
         WinUIStrings.withCStrings(words.map { $0 ?? "" } + question.choices) { pointers in
             func at(_ index: Int) -> UnsafePointer<CChar>? { words[index] == nil ? nil : pointers[index] }
             Array(pointers.dropFirst(words.count)).withUnsafeBufferPointer { offered in
                 var relayed = StateUIQuestion(
-                    kind: kind, title: at(0), message: at(1), accept: at(2), cancel: at(3), destruction: at(4),
-                    choices: offered.baseAddress, choiceCount: Int32(question.choices.count), placeholder: at(5),
+                    kind: kind, title: at(0), message: at(1), accept: at(2), cancel: at(3),
+                    choices: offered.baseAddress, choiceCount: Int32(question.choices.count),
+                    destructive: Int32(question.destructive ?? -1), placeholder: at(4),
                     maximumLength: Int32(question.maximumLength ?? 0), spellChecked: traits.checksSpelling,
-                    predicted: traits.predicts, scope: WinUIInputScope(traits).rawValue, initial: at(6))
+                    predicted: traits.predicts, scope: WinUIInputScope(traits).rawValue, initial: at(5))
                 stateui_winui_ask(content.handle, ticket, &relayed)
             }
         }

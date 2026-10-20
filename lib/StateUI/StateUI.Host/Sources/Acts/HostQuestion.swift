@@ -28,26 +28,25 @@
     /// Its message; a choice has none.
     public let message: String?
 
-    /// The caption of the button accepting it: "OK" where the act says none.
+    /// The caption of the button accepting it: "OK" where the act says none; a choice has none.
     public let accept: String
 
-    /// The caption of the button cancelling it: "Cancel" where a confirmation or a prompt says none; a choice's
-    /// only where it says one.
+    /// The caption of the button cancelling it, which every question but an alert offers: "Cancel" where the act
+    /// says none; nil for an alert.
     public let cancel: String?
 
-    /// The caption of the button cancelling a confirmation or a prompt, which always offer one: `cancel`, or
-    /// "Cancel" where the act names none.
+    /// The caption of the button cancelling a confirmation, a choice or a prompt, which always offer one: `cancel`.
     public var cancelling: String { cancel ?? Self.cancelWord }
 
     /// The cancelling caption of a question whose act names none - the core sends the library's own words in the
     /// system's language, so this stands only for an act that came without them.
     private static let cancelWord = "Cancel"
 
-    /// A choice's dangerous action.
-    public let destruction: String?
-
-    /// The other actions a choice offers.
+    /// The actions a choice offers, in order.
     public let choices: [String]
+
+    /// The place of a choice's dangerous action among `choices`; nil for none.
+    public let destructive: Int?
 
     /// A prompt's placeholder.
     public let placeholder: String?
@@ -80,15 +79,17 @@
         if kind == .chooseAction {
             message = nil
             accept = "OK"
-            cancel = text(1)
-            destruction = text(2)
-            choices = arguments.count > 3 ? [String](propValue: arguments[3]) ?? [] : []
+            let offered = arguments.count > 1 ? [String](propValue: arguments[1]) ?? [] : []
+            let dangerous = arguments.count > 2 ? arguments[2].number.map(Int.init) : nil
+            choices = offered
+            destructive = dangerous.flatMap { offered.indices.contains($0) ? $0 : nil }
+            cancel = text(3) ?? Self.cancelWord
         } else {
             message = text(1)
             accept = text(2) ?? "OK"
             cancel = kind == .alert ? nil : text(3) ?? Self.cancelWord
-            destruction = nil
             choices = []
+            destructive = nil
         }
         placeholder = kind == .prompt ? text(4) : nil
         maximumLength = kind == .prompt && arguments.count > 5 ? arguments[5].number.map(Int.init).flatMap { $0 > 0 ? $0 : nil } : nil
@@ -96,30 +97,66 @@
         words = kind == .prompt ? text(7) ?? "" : ""
     }
 
-    /// What the user gave the question: whether they accepted it, and the words they chose or typed.
-    public struct Given: Equatable, Sendable {
-        /// Whether they accepted it.
-        public let accepted: Bool
-
-        /// The caption they chose, or the words they typed; nil for none.
-        public let words: String?
-
-        /// The user accepted where `accepted`, giving `words`.
-        public init(accepted: Bool, words: String?) {
-            self.accepted = accepted
-            self.words = words
+    /// The question's buttons, each its caption and what pressing it answers: an alert's one; a confirmation's and
+    /// a prompt's accepting one, then the cancel; a choice's actions in order, then the cancel.
+    /// Design: docs/design/host/runtime.md#questions-for-the-user
+    public var buttons: [(caption: String, role: QuestionButton)] {
+        switch kind {
+        case .alert: [(accept, .accept)]
+        case .confirm, .prompt: [(accept, .accept), (cancelling, .cancel)]
+        case .chooseAction: choices.enumerated().map { ($1, .action($0)) } + [(cancelling, .cancel)]
         }
     }
 
-    /// The act's answer: a confirmation's yes or no; a choice's action or a prompt's words - cut to its bound - where
-    /// the user accepted, nothing where not; an alert's nothing.
-    public func answer(accepted: Bool, words: String?) -> [HostValue] {
+    /// What the user gave the question: whether they accepted it, the words they typed, and the place of the
+    /// action they chose.
+    public struct Given: Equatable, Sendable {
+        /// Whether they accepted it: pressed its accepting button, or chose an action.
+        public let accepted: Bool
+
+        /// The words they typed; nil for none.
+        public let words: String?
+
+        /// The place of the action they chose among a choice's; nil for none.
+        public let chosen: Int?
+
+        /// The user accepted where `accepted`, typing `words`.
+        public init(accepted: Bool, words: String? = nil) {
+            self.accepted = accepted
+            self.words = words
+            chosen = nil
+        }
+
+        /// The user chose the action at `place` among a choice's.
+        public init(chosen place: Int) {
+            accepted = true
+            words = nil
+            chosen = place
+        }
+
+        /// The user pressed `button`, a prompt's field holding `words`.
+        public init(pressed button: QuestionButton, typing words: String? = nil) {
+            switch button {
+            case .accept: self.init(accepted: true, words: words)
+            case .cancel: self.init(accepted: false)
+            case .action(let place): self.init(chosen: place)
+            }
+        }
+
+        /// The user cancelled or dismissed the question.
+        public static let dismissed = Given(accepted: false)
+    }
+
+    /// The act's answer: a confirmation's yes or no; a choice's place - of an action it offers - or a prompt's words,
+    /// cut to its bound, where the user accepted, nothing where not; an alert's nothing.
+    public func answer(_ given: Given) -> [HostValue] {
         switch kind {
         case .alert: []
-        case .confirm: [.bool(accepted)]
-        case .chooseAction: [(accepted ? words : nil).propValue]
+        case .confirm: [.bool(given.accepted)]
+        case .chooseAction:
+            [(given.accepted ? given.chosen.flatMap { choices.indices.contains($0) ? $0 : nil } : nil).propValue]
         case .prompt:
-            [(accepted ? words.map { InputWords.cut($0, toBound: maximumLength) ?? $0 } : nil).propValue]
+            [(given.accepted ? given.words.map { InputWords.cut($0, toBound: maximumLength) ?? $0 } : nil).propValue]
         }
     }
 }

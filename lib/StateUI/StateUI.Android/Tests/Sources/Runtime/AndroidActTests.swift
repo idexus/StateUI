@@ -55,7 +55,7 @@ final class AndroidActTests: XCTestCase {
 
             XCTAssertEqual(fieldType(), Java.callInt(field.reference, Self.getInputType))
             XCTAssertTrue(Java.frame {
-                Java.callStaticBool(AndroidDriver.dialogs, AndroidDriver.answer, .object(Java.string("No")), .object(nil))
+                Java.callStaticBool(AndroidDriver.dialogs, AndroidDriver.answer, .int(1), .int(-1), .object(nil))
             })
             host.settle {
                 TestWindow.run(for: 10)
@@ -79,8 +79,7 @@ final class AndroidActTests: XCTestCase {
 
             XCTAssertTrue(Java.frame {
                 Java.callStaticBool(
-                    AndroidDriver.dialogs, AndroidDriver.answer, .object(Java.string("OK")),
-                    .object(Java.string("a👍🏽bc")))
+                    AndroidDriver.dialogs, AndroidDriver.answer, .int(0), .int(-1), .object(Java.string("a👍🏽bc")))
             })
             host.settle {
                 TestWindow.run(for: 10)

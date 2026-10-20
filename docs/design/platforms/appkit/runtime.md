@@ -134,8 +134,8 @@ A question is AppKit's own alert, a sheet on the window that asked - over the
 top of its sheets - or the window the user is looking at where the act names
 none, one at a time (`QuestionQueue`): a confirmation's and a prompt's accepting
 button first, a choice's actions, its dangerous one marked, then its cancel.
-A choice answers the caption pressed, its cancel's included; a prompt its
-field's words, cut to their bound. A host that shows no window holds the
+A choice answers the place of the action pressed, nothing for its cancel; a
+prompt its field's words, cut to their bound. A host that shows no window holds the
 alert unshown, answered as a press answers it.
 
 ## Files

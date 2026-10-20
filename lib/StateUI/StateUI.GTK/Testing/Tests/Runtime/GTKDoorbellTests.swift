@@ -78,7 +78,7 @@ final class GTKDoorbellTests: XCTestCase {
                 guard host.dialog == nil else { break }
                 GTKTestHost.pump(0.01)
             }
-            try host.answer("Delete")
+            try host.answer(.accept)
 
             XCTAssertTrue(Self.loopShows("deleted", host), "the answer waits for an event that never comes")
         }

@@ -31,7 +31,7 @@
                     WithSessions { window, application in
                         VStack {
                             Button("Alert").onClicked(gate: .ignoreWhileRunning) {
-                                try await window.alert("Saved", message: "The draft is kept", cancel: "Fine")
+                                try await window.alert("Saved", message: "The draft is kept", accept: "Fine")
                                 said.values.append("dismissed")
                             }.id("ask")
                         }
@@ -44,7 +44,7 @@
                 s.turn()
                 s.expect(said.values, [], "the handler waits for the answer")
 
-                try s.perform(.answer("Fine"), on: s.element(ofType: WindowContract.nodeType))
+                try s.perform(.answer(.accept), on: s.element(ofType: WindowContract.nodeType))
                 s.settle { said.values == ["dismissed"] }
                 s.expect(said.values, ["dismissed"])
                 s.expect(try s.question(), nil, "and the question is gone")
@@ -69,16 +69,16 @@
                 try s.settle { try s.question() != nil }
                 s.expect(try s.question(),
                          Question(title: "Delete draft?", message: "It goes for good", buttons: ["Delete", "Keep"]))
-                try s.perform(.answer("Delete"), on: window)
+                try s.perform(.answer(.accept), on: window)
                 s.settle { said.values == [true] }
 
                 try s.perform(.activate, on: s.element("ask"))
                 try s.settle { try s.question() != nil }
-                try s.perform(.answer("Keep"), on: window)
+                try s.perform(.answer(.cancel), on: window)
                 s.settle { said.values.count == 2 }
                 s.expect(said.values, [true, false], "accepted, then cancelled")
             },
-            ConformanceCase("aChoiceAnswersTheCaptionPressed", proves: [
+            ConformanceCase("aChoiceAnswersTheActionChosen", proves: [
                 Covered(ApplicationContract.chooseAction),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
@@ -87,7 +87,8 @@
                         VStack {
                             Button("Share").onClicked(gate: .ignoreWhileRunning) {
                                 let chosen = try await window.chooseAction(
-                                    "Share via", cancel: "Cancel", destruction: "Delete", buttons: ["Mail", "Message"])
+                                    "Share via", among: ["Mail", "Message", "Delete"], destructive: "Delete",
+                                    cancel: "Cancel")
                                 said.values.append(chosen ?? "nothing")
                             }.id("ask")
                         }
@@ -98,19 +99,19 @@
                 try s.perform(.activate, on: s.element("ask"))
                 try s.settle { try s.question() != nil }
                 s.expect(try s.question()?.buttons, ["Cancel", "Delete", "Mail", "Message"])
-                try s.perform(.answer("Mail"), on: window)
+                try s.perform(.answer(.action(0)), on: window)
                 s.settle { said.values == ["Mail"] }
 
                 try s.perform(.activate, on: s.element("ask"))
                 try s.settle { try s.question() != nil }
-                try s.perform(.answer("Delete"), on: window)
+                try s.perform(.answer(.action(2)), on: window)
                 s.settle { said.values.count == 2 }
 
                 try s.perform(.activate, on: s.element("ask"))
                 try s.settle { try s.question() != nil }
-                try s.perform(.answer("Cancel"), on: window)
+                try s.perform(.answer(.cancel), on: window)
                 s.settle { said.values.count == 3 }
-                s.expect(said.values, ["Mail", "Delete", "Cancel"], "a choice, the dangerous one, and the cancel")
+                s.expect(said.values, ["Mail", "Delete", "nothing"], "an action, the dangerous one, and the cancel")
             },
             ConformanceCase("aPromptAnswersTheWordsTypedOrNothing", proves: [
                 Covered(ApplicationContract.prompt),
@@ -134,12 +135,12 @@
                 try s.settle { try s.question() != nil }
                 s.expect(try s.question(), Question(
                     title: "Rename", message: "A new name", buttons: ["Cancel", "Save"], field: "Draft"))
-                try s.perform(.answer("Save", typing: "Ada"), on: window)
+                try s.perform(.answer(.accept, typing: "Ada"), on: window)
                 s.settle { said.values == ["Ada"] }
 
                 try s.perform(.activate, on: s.element("ask"))
                 try s.settle { try s.question() != nil }
-                try s.perform(.answer("Cancel"), on: window)
+                try s.perform(.answer(.cancel), on: window)
                 s.settle { said.values.count == 2 }
                 s.expect(said.values, ["Ada", "nothing"], "the words typed, then nothing for the cancel")
             },
@@ -167,10 +168,10 @@
                 try s.perform(.activate, on: s.element("second"))
                 try s.settle { try s.question()?.title == "First" }
                 s.expect(try s.question()?.title, "First", "the first asked stands first")
-                try s.perform(.answer("OK"), on: window)
+                try s.perform(.answer(.accept), on: window)
                 try s.settle { try s.question()?.title == "Second" }
                 s.expect(try s.question()?.title, "Second", "then the second")
-                try s.perform(.answer("Yes"), on: window)
+                try s.perform(.answer(.accept), on: window)
                 s.settle { said.values.count == 2 }
                 s.expect(said.values, ["first", "second true"])
             },

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import StateUI
+import StateUIHost
 
 /// What a user does to a control, a page or a window, which a driver does through its toolkit's own path.
 public enum UserAct: Equatable, Sendable, CustomStringConvertible {
@@ -77,8 +78,9 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     case switchBack
     /// A window of the application brought in front of its others, as the user picks it.
     case bringToFront
-    /// The question the window shows answered by its button of that caption, its field first holding the words.
-    case answer(String, typing: String? = nil)
+    /// The question the window shows answered by its button doing that - accepting, cancelling, an action of a
+    /// choice - its field first holding the words.
+    case answer(QuestionButton, typing: String? = nil)
     /// The file dialog the window shows answered by the files of these names in the driver's own folder - a save's
     /// place by one; none cancels it.
     case answerFiles([String])

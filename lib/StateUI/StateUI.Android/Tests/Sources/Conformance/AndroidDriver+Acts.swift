@@ -42,12 +42,18 @@ extension AndroidDriver {
             // The keyboard's own action, as the field's return key says it - done where it says nothing.
             let action = Java.callInt(field.reference, Self.getImeOptions) & 0xff
             Java.call(field.reference, Self.onEditorAction, .int(action == 0 ? 6 : action))
-        case (.answer(let caption, let words), _):
+        case (.answer(let button, let words), _):
+            // StateUIDialogs' roles: 0 the accepting button, 1 the cancel, 2 an action of a list.
+            let (role, place): (Int32, Int32) = switch button {
+            case .accept: (0, -1)
+            case .cancel: (1, -1)
+            case .action(let place): (2, Int32(place))
+            }
             let answered = Java.frame {
                 Java.callStaticBool(
-                    Self.dialogs, Self.answer, .object(Java.string(caption)), .object(words.flatMap(Java.string)))
+                    Self.dialogs, Self.answer, .int(role), .int(place), .object(words.flatMap(Java.string)))
             }
-            guard answered else { throw DriverCannot("answer by \(caption)") }
+            guard answered else { throw DriverCannot("answer by \(button)") }
         case (.dragAndDrop(let target, let across), _):
             try dragAndDrop(element, onto: target, across: across)
         case (.dropFiles(let names), let view?):

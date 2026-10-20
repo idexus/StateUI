@@ -181,8 +181,7 @@ enum JavaAPI {
         dialogs, "confirm",
         "(Landroid/content/Context;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V")
     static let chooseAction = Java.staticMethod(
-        dialogs, "chooseAction",
-        "(Landroid/content/Context;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V")
+        dialogs, "chooseAction", "(Landroid/content/Context;JLjava/lang/String;[Ljava/lang/String;Ljava/lang/String;)V")
     static let prompt = Java.staticMethod(
         dialogs, "prompt",
         "(Landroid/content/Context;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;)V")

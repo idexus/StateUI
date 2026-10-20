@@ -194,8 +194,16 @@ Button("Delete").onClicked(gate: .ignoreWhileRunning) {
 ```
 
 StateUI also provides a one-button `alert`, a `chooseAction` that returns the
-chosen caption, and a prompt that returns typed text or `nil` on cancellation.
-An accepted empty prompt is `""`, distinct from cancellation.
+action chosen - one of the values it offers, or `nil` for its cancel - and a
+prompt that returns typed text or `nil` on cancellation. An accepted empty
+prompt is `""`, distinct from cancellation. A cancel left unnamed says the
+system's own word, in the user's language:
+
+```swift quote
+let choice = try await window.chooseAction(
+    "Share via", among: Share.allCases, caption: \.title, destructive: .delete)
+if choice == .delete { drafts.removeAll() }
+```
 
 The host presents a dialog over the window that asked, on the page it shows,
 including the top modal page; a view outside every window asks in the window

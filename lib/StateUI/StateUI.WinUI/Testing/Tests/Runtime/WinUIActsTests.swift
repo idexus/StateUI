@@ -156,9 +156,9 @@ final class WinUIActsTests: XCTestCase {
             "Standing".withCString { title in
                 "OK".withCString { accept in
                     var other = StateUIQuestion(
-                        kind: .alert, title: title, message: nil, accept: accept, cancel: nil, destruction: nil, choices: nil,
-                        choiceCount: 0, placeholder: nil, maximumLength: 0, spellChecked: false, predicted: false, scope: 0,
-                        initial: nil)
+                        kind: .alert, title: title, message: nil, accept: accept, cancel: nil, choices: nil, choiceCount: 0,
+                        destructive: -1, placeholder: nil, maximumLength: 0, spellChecked: false, predicted: false,
+                        scope: 0, initial: nil)
                     stateui_winui_ask(content.handle, -1, &other)
                 }
             }

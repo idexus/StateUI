@@ -100,6 +100,9 @@ final class StateUIHost {
      */
     static native void answered(long ticket, boolean accepted, String words);
 
+    /** The choice of actions waiting under `ticket` was answered: the place of the action the user chose. */
+    static native void actionChosen(long ticket, int place);
+
     /** The document picker under `ticket` closed: the documents chosen, by address and name, or why it failed. */
     static native void filesChosen(long ticket, String[] addresses, String[] names, String failure);
 

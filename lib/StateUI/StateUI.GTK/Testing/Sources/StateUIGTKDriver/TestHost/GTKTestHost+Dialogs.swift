@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import CStateUIGTK
+import StateUIHost
 @testable import StateUIGTK
 
 /// A dialog, its field or its button a test looks for over a window and does not find.
@@ -31,9 +32,9 @@ extension GTKRenderer {
         dialog.flatMap { adw_alert_dialog_get_heading($0.of(AdwAlertDialog.self)) }.map { String(cString: $0) }
     }
 
-    /// Answers the dialog showing as the user would: its field first holding `words`, then its button of that
-    /// caption pressed - and, as libadwaita does once its sheet has gone, the dialog told it closed.
-    func answer(_ caption: String, typing words: String? = nil, over window: GTKWindow? = nil) throws {
+    /// Answers the dialog showing as the user would: its field first holding `words`, then its button doing `button`
+    /// pressed - its response - and, as libadwaita does once its sheet has gone, the dialog told it closed.
+    func answer(_ button: QuestionButton, typing words: String? = nil, over window: GTKWindow? = nil) throws {
         guard let dialog = visibleDialog(over: window) ?? (window == nil ? self.dialog : nil) else {
             throw GTKNoDialog(description: "no dialog showed")
         }
@@ -44,11 +45,9 @@ extension GTKRenderer {
             }
             gtk_editable_set_text(field.opaque, words)
         }
-        guard let button = widgets.first(where: { widget in
-            GTKTestHost.holds(widget, gtk_button_get_type())
-                && gtk_button_get_label(widget.of(GtkButton.self)).map { String(cString: $0) } == caption
-        }) else { throw GTKNoDialog(description: "no button \(caption)") }
-        GTKTestHost.click(button)
+        GTKTestHost.emit(dialog.opaque, "response", words: GTKQuestion.response(of: button))
+        // The response pressed closes the dialog, as its button does.
+        adw_dialog_force_close(dialog.of(AdwDialog.self))
         if visibleDialog(over: window) == dialog { GTKTestHost.emit(dialog.opaque, "closed") }
         settle { true }
     }

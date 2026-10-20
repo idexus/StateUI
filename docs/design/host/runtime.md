@@ -702,14 +702,18 @@ the control it hands an aimed act.
 
 A question - an alert, a confirmation, a choice of actions, a prompt - is
 read from its act the same way on every host (`HostQuestion`): its title and
-message, the accepting caption, the cancelling one (a choice's only where it
-names one) - the core sends the library's own words in the system's language
-where the application names none, so "OK" and "Cancel" here stand only for an
-act that came without them - a choice's dangerous action and its others, a prompt's placeholder,
-bound, purpose and starting words. It answers as its kind does: a
-confirmation yes or no, a choice or a prompt its words where the user
-accepted - a prompt's cut to its bound, by characters - and nothing where
-not, an alert nothing. A question the toolkit could not show - another
+message, the accepting caption, the cancelling one - every question but an
+alert offers one; the core sends the library's own words in the system's
+language where the application names none, so "OK" and "Cancel" here stand
+only for an act that came without them - a choice's actions and the place of
+its dangerous one, a prompt's placeholder, bound, purpose and starting words.
+Its buttons are the host layer's too (`HostQuestion.buttons`), each a caption
+and what pressing it answers (`QuestionButton`: accept, cancel, an action's
+place), so a host draws them in its own order and look and a driver presses
+one by what it does, never by its words. It answers as its kind does: a
+confirmation yes or no, a choice the place of the action chosen, a prompt its
+words where the user accepted - cut to its bound, by characters - and nothing
+where not, an alert nothing. A question the toolkit could not show - another
 dialog standing where it would - fails its call with the toolkit's reason:
 the toolkit answers a `Result`, as a file dialog does, and a failure is never
 read as the user saying no. Questions show one at a

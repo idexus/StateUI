@@ -276,8 +276,7 @@ final class AndroidDriver: HostDriver {
     static let getParent = Java.method(JavaAPI.view, "getParent", "()Landroid/view/ViewParent;")
     static let dialogs = Java.findClass("stateui/android/StateUIDialogs")
     static let question = Java.staticMethod(dialogs, "question", "()[Ljava/lang/String;")
-    static let answer = Java.staticMethod(
-        dialogs, "answer", "(Ljava/lang/String;Ljava/lang/String;)Z")
+    static let answer = Java.staticMethod(dialogs, "answer", "(IILjava/lang/String;)Z")
     static let dismissAll = Java.staticMethod(dialogs, "dismissAll", "()V")
     static let files = Java.findClass("stateui/android/StateUIFiles")
     static let holdForTesting = Java.staticMethod(files, "holdForTesting", "()V")

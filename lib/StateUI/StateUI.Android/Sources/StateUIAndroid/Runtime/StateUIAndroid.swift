@@ -241,6 +241,9 @@ enum JavaNatives {
                 AndroidRenderer.shared?.answered(ticket: ticket, accepted: accepted != 0, words: words.map { Java.text($0) })
             }
         }
+        let actionChosen: @convention(c) (Environment, jclass?, jlong, jint) -> Void = { _, _, ticket, place in
+            MainActor.assumeIsolated { AndroidRenderer.shared?.actionChosen(ticket: ticket, place: Int(place)) }
+        }
         let filesChosen: @convention(c) (Environment, jclass?, jlong, jobjectArray?, jobjectArray?, jstring?) -> Void = {
             _, _, ticket, addresses, names, failure in
             nonisolated(unsafe) let (addresses, names, failure) = (addresses, names, failure)
@@ -404,6 +407,7 @@ enum JavaNatives {
             ("chose", "(JI)V", unsafeBitCast(chose, to: UnsafeMutableRawPointer.self)),
             ("canvasTouched", "(JIFF)V", unsafeBitCast(canvasTouched, to: UnsafeMutableRawPointer.self)),
             ("answered", "(JZLjava/lang/String;)V", unsafeBitCast(answered, to: UnsafeMutableRawPointer.self)),
+            ("actionChosen", "(JI)V", unsafeBitCast(actionChosen, to: UnsafeMutableRawPointer.self)),
             ("filesChosen", "(J[Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)V",
              unsafeBitCast(filesChosen, to: UnsafeMutableRawPointer.self)),
             ("fileRead", "(J[BLjava/lang/String;)V", unsafeBitCast(fileRead, to: UnsafeMutableRawPointer.self)),

@@ -78,7 +78,7 @@
                 try s.perform(.activate, on: s.element("ask again"))
                 try s.settle { try s.question()?.title == "Close draft?" }
                 s.expect(try s.question()?.title, "Close draft?", "the question over the window gone is in no way")
-                try s.perform(.answer("Close"), on: s.element(ofType: WindowContract.nodeType))
+                try s.perform(.answer(.accept), on: s.element(ofType: WindowContract.nodeType))
                 s.settle { said.values.last == true }
                 s.expect(said.values.filter { $0 }, [true], "the one over the window gone, where heard at all, not accepted")
             },

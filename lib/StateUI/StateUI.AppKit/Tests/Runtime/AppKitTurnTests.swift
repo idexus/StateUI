@@ -63,7 +63,7 @@ final class AppKitTurnTests: XCTestCase {
             guard renderer.actToolkit.showing == nil else { break }
             RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
         }
-        XCTAssertTrue(try XCTUnwrap(renderer.actToolkit.showing).pressForTesting("Delete", typing: nil))
+        XCTAssertTrue(try XCTUnwrap(renderer.actToolkit.showing).pressForTesting(.accept, typing: nil))
         for _ in 0..<100 {
             guard shown() != "deleted" else { break }
             RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))

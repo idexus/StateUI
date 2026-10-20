@@ -275,18 +275,19 @@ typedef enum STATEUI_CLOSED_ENUM {
     StateUIDragHeardDropped,
 } StateUIDragHeard;
 
-/// A question for the user: its kind; its title and message; the captions that accept and cancel; for a choice, the dangerous one and the choices; for a
-/// prompt, the field's placeholder, its most characters (0 for any), whether its words are spell checked and
-/// predicted, its input scope (`WinUIInputScope`) and what it starts holding. Null for a caption there is none of.
+/// A question for the user: its kind; its title and message; the captions that accept and cancel; for a choice, its
+/// actions in order and the place of the dangerous one, -1 for none; for a prompt, the field's placeholder, its most
+/// characters (0 for any), whether its words are spell checked and predicted, its input scope (`WinUIInputScope`) and
+/// what it starts holding. Null for a caption there is none of.
 typedef struct {
     StateUIQuestionKind kind;
     char const *title;
     char const *message;
     char const *accept;
     char const *cancel;
-    char const *destruction;
     char const *const *choices;
     int32_t choiceCount;
+    int32_t destructive;
     char const *placeholder;
     int32_t maximumLength;
     bool spellChecked;
@@ -365,9 +366,10 @@ typedef struct {
     /// What a view heard of the user's input, as `StateUIHeard` says: `phase` a tap's place or a gesture's phase.
     void (*heard)(int64_t view, StateUIHeard what, int32_t phase, double x, double y, double scale);
 
-    /// The user answered the question asked under `ticket`: whether it was accepted, and the words chosen or
-    /// typed, in UTF-8, null for none; or why WinUI could not ask it, in UTF-8, null where it did.
-    void (*answered)(int64_t ticket, bool accepted, char const *utf8, char const *failure);
+    /// The user answered the question asked under `ticket`: whether it was accepted, the words typed, in UTF-8, null
+    /// for none, and the place of the action a choice's user chose, -1 for none; or why WinUI could not ask it, in
+    /// UTF-8, null where it did.
+    void (*answered)(int64_t ticket, bool accepted, char const *utf8, int32_t chosen, char const *failure);
 
     /// The file dialog shown under `ticket` closed: the `count` files chosen - a save's once its contents stand
     /// written - their paths and names in UTF-8, none for a cancel; or why it failed, in UTF-8, null where it did not.
@@ -1260,9 +1262,9 @@ bool stateui_winui_hide_keyboard(StateUIObjectRef element);
 /// one at a time; the answer comes back through `answered`, under `ticket`.
 void stateui_winui_ask(StateUIObjectRef element, int64_t ticket, StateUIQuestion const *question);
 
-/// Answers the dialog showing over `element`'s window as the user would: `button` 0 accepts, 1 cancels, 2 and on
-/// press the choices in order; a prompt's field first holding `words` where they are given. Whether a dialog
-/// was showing and had that button. What a test does.
+/// Answers the dialog showing over `element`'s window as the user would: `button` 0 accepts - an alert's one button
+/// too - 1 cancels, 2 and on press a choice's actions in order; a prompt's field first holding `words` where they are
+/// given. Whether a dialog was showing and had that button. What a test does.
 bool stateui_winui_answer(StateUIObjectRef element, int32_t button, char const *words);
 
 /// Shows `dialog` in Windows' own file dialog over `window` (a `Window`); a save writes its contents where the user

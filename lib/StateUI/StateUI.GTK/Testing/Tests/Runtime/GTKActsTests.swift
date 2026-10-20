@@ -82,7 +82,7 @@ private struct QuestionsPage: View {
             }
             Button("Choose").onClicked(gate: .ignoreWhileRunning) {
                 let chosen = try await window.chooseAction(
-                    "Share via", cancel: "Cancel", destruction: "Delete", buttons: ["Mail", "Message"])
+                    "Share via", among: ["Mail", "Message", "Delete"], destructive: "Delete")
                 said += "chose \(chosen ?? "nothing"); "
             }
             Button("Prompt").onClicked(gate: .ignoreWhileRunning) {
@@ -149,21 +149,21 @@ final class GTKActsTests: XCTestCase {
         }
     }
 
-    /// A question cancelled answers so: a confirmation not accepted, a choice the cancelling caption, a prompt
-    /// nothing; a choice dismissed by Escape, nothing chosen.
+    /// A question cancelled answers so: a confirmation not accepted, a choice and a prompt nothing; a choice dismissed
+    /// by Escape, nothing chosen.
     func testACancelledQuestionAnswersSo() throws {
         try onUIThread {
             let host = GTKRenderer.running { QuestionsPage() }
 
             try host.press("Confirm")
-            try host.answer("Keep")
+            try host.answer(.cancel)
             try host.press("Choose")
-            try host.answer("Cancel")
+            try host.answer(.cancel)
             try host.press("Prompt")
-            try host.answer("Cancel")
+            try host.answer(.cancel)
             try host.press("Choose")
             try host.dismiss()
-            let expected = "confirmed false; chose Cancel; typed nothing; chose nothing; "
+            let expected = "confirmed false; chose nothing; typed nothing; chose nothing; "
             host.settle { host.said == expected }
 
             XCTAssertEqual(host.said, expected)
@@ -180,7 +180,7 @@ final class GTKActsTests: XCTestCase {
             let focus = try XCTUnwrap(adw_dialog_get_focus(dialog.of(AdwDialog.self)))
 
             XCTAssertNotNil(gtk_widget_get_ancestor(focus, gtk_entry_get_type()), "the focus is the field, or its text")
-            try host.answer("Cancel")
+            try host.answer(.cancel)
         }
     }
 

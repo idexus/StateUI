@@ -153,7 +153,7 @@ final class AndroidRendererTests: XCTestCase {
 
             let pressed = Java.frame {
                 Java.callStaticBool(
-                    AndroidDriver.dialogs, AndroidDriver.answer, .object(Java.string("Yes")), .object(nil))
+                    AndroidDriver.dialogs, AndroidDriver.answer, .int(0), .int(-1), .object(nil))
             }
             XCTAssertTrue(pressed)
             // The dialog hands its button's press on in a message of the UI thread's own.

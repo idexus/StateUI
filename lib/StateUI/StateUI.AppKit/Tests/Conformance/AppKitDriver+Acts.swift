@@ -108,9 +108,9 @@ extension AppKitDriver {
                 throw DriverCannot(act, on: element)
             }
             window.makeFirstResponder(focusable)
-        case (.answer(let caption, let words), _):
-            guard renderer?.actToolkit.showing?.pressForTesting(caption, typing: words) == true else {
-                throw DriverCannot("press \(caption): no question shows it")
+        case (.answer(let button, let words), _):
+            guard renderer?.actToolkit.showing?.pressForTesting(button, typing: words) == true else {
+                throw DriverCannot("press \(button): no question shows it")
             }
         case (.dragAndDrop(let target, let across), _):
             try dragAndDrop(element, onto: target, across: across)

@@ -15,7 +15,7 @@ contract declares them.
 ```text
   alert                  window.alert               the title, the message, the button's caption
   confirm                window.confirm             answers whether it was accepted
-  chooseAction           window.chooseAction        answers the chosen caption, or nothing
+  chooseAction           window.chooseAction        answers the chosen action's place, or nothing
   prompt                 window.prompt              answers the text, or nothing
   openFiles              window.openFile(s)         answers the files chosen, none for a cancel
   saveFile               window.saveFile            writes the contents, answers the file, or nothing

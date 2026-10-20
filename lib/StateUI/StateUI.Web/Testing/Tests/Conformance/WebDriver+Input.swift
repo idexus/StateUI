@@ -31,7 +31,7 @@ extension WebDriver {
         if element.type == .menuItem, act == .activate { return try choose(element) }
         if let page = Self.pageState(after: act) { return try running().pageChanged(page) }
         if act == .close, element.type == .window { return try running().runtime.ending() }
-        if case .answer(let caption, let typing) = act { return try answer(caption, typing: typing, on: element) }
+        if case .answer(let button, let typing) = act { return try answer(button, typing: typing, on: element) }
         if case .answerFiles(let names) = act { return try answerFiles(names, on: element) }
         if case .dragAndDrop(let target, let across) = act { return try dragAndDrop(element, onto: target, across: across) }
         if case .dropFiles(let names) = act { return try dropFiles(names, on: element) }

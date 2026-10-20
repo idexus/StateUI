@@ -40,9 +40,9 @@ final class WebActToolkit: ActToolkit {
         answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement? {
         guard let window = renderer.window(asked: window) else { return nil }
-        let shown = WebQuestion(question) { [weak self] accepted, words in
+        let shown = WebQuestion(question) { [weak self] given in
             self?.asking = nil
-            answered(.success(HostQuestion.Given(accepted: accepted, words: words)))
+            answered(.success(given))
         }
         asking = shown
         shown.show()

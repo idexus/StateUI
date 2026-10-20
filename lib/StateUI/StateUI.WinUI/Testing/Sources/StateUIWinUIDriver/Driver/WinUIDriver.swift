@@ -222,7 +222,7 @@ final class WinUIDriver: HostDriver {
                 WinUICallbacks.table.windowStateChanged(window.window.number, false, false)
             }
             try state(of: element, minimized: false, activated: true)
-        case (.answer(let caption, let words), _): try answer(caption, typing: words)
+        case (.answer(let button, let words), _): try answer(button, typing: words)
         case (.answerFiles(let names), _): try answerFiles(names)
         case (.dragAndDrop(let target, let across), _): try dragAndDrop(element, onto: target, across: across)
         case (.dropFiles(let names), let view?):
@@ -327,19 +327,24 @@ final class WinUIDriver: HostDriver {
         }
     }
 
-    /// Answers the question showing as the user does, by its button of `caption`, its field first holding `words`:
-    /// a dialog takes a press once WinUI has shown it whole, so the press is tried until it lands.
-    private func answer(_ caption: String, typing words: String?) throws {
+    /// Answers the question showing as the user does, by its button doing `button`, its field first holding
+    /// `words`: a dialog takes a press once WinUI has shown it whole, so the press is tried until it lands.
+    private func answer(_ button: QuestionButton, typing words: String?) throws {
         guard let content = try window().content else { throw DriverCannot("answer a question with no window") }
+        // The relay's buttons: 0 the accepting one, 1 the cancel, 2 and on a choice's actions.
+        let pressed: Int32 = switch button {
+        case .accept: 0
+        case .cancel: 1
+        case .action(let place): Int32(place + 2)
+        }
         for _ in 0..<150 {
-            if let asked = asked(over: content.handle), let button = Self.button(of: caption, in: asked),
-               stateui_winui_answer(content.handle, button, words) {
+            if asked(over: content.handle) != nil, stateui_winui_answer(content.handle, pressed, words) {
                 WinUITestHost.pump(0.05)
                 return
             }
             step()
         }
-        throw DriverCannot("answer by \(caption)")
+        throw DriverCannot("answer by \(button)")
     }
 
     /// Answers the file dialog showing as the user does, by the files of `names` in the driver's folder - none
@@ -368,13 +373,6 @@ final class WinUIDriver: HostDriver {
             _ = stateui_winui_answer_file_dialog(0, nil, 0)
             WinUITestHost.pump(0.05)
         }
-    }
-
-    /// The place of the dialog's button of `caption`: its accept 0, its cancel 1, its choices from 2; nil for none.
-    private static func button(of caption: String, in asked: WinUIAsked) -> Int32? {
-        if caption == asked.accept { return 0 }
-        if caption == asked.cancel { return 1 }
-        return asked.choices.firstIndex(of: caption).map { Int32($0 + 2) }
     }
 
     /// Types `words` as the whole of a field's words: written outside a program's write, which WinUI reports through

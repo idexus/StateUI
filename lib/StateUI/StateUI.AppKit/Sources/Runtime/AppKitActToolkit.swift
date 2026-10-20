@@ -60,9 +60,9 @@ final class AppKitActToolkit: ActToolkit {
         }
         let asked = AppKitQuestion(question, in: window)
         showing = asked
-        asked.ask(presenting: renderer.presentsWindows) { [weak self] accepted, words in
+        asked.ask(presenting: renderer.presentsWindows) { [weak self] given in
             self?.showing = nil
-            answered(.success(HostQuestion.Given(accepted: accepted, words: words)))
+            answered(.success(given))
         }
         return element
     }

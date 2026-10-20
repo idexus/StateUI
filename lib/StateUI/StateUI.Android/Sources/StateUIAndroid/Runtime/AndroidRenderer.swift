@@ -151,6 +151,11 @@ final class AndroidRenderer {
         actToolkit.answered(ticket: ticket, accepted: accepted, words: words)
     }
 
+    /// The choice of actions waiting under a ticket was answered by the action at `place`.
+    func actionChosen(ticket: Int64, place: Int) {
+        actToolkit.actionChosen(ticket: ticket, place: place)
+    }
+
     /// The tickets of the scripts waiting for their answer, oldest first.
     var waitingScripts: [Int64] {
         actToolkit.waitingScripts

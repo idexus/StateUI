@@ -127,13 +127,13 @@ final class HostActPerformerTests: XCTestCase {
         acts.perform(HostActCall(act: .alert, arguments: HostActCall.usersWindow + [.string("Done")], completion: 2))
         XCTAssertEqual(toolkit.shown.map(\.question.title), ["Delete?"], "the second waits")
 
-        toolkit.shown[0].answered(.success(.init(accepted: true, words: nil)))
+        toolkit.shown[0].answered(.success(.init(accepted: true)))
         XCTAssertEqual(answers.replies[1], [.bool(true)])
         XCTAssertEqual(toolkit.shown.map(\.question.title), ["Delete?", "Done"], "then the next shows")
 
         toolkit.windowToAsk = false
         acts.perform(HostActCall(act: .alert, arguments: HostActCall.usersWindow + [.string("Lost")], completion: 3))
-        toolkit.shown[1].answered(.success(.init(accepted: true, words: nil)))
+        toolkit.shown[1].answered(.success(.init(accepted: true)))
         XCTAssertEqual(answers.failures[3], "there is no window to ask the user in")
     }
 
@@ -162,9 +162,9 @@ final class HostActPerformerTests: XCTestCase {
         acts.perform(HostActCall(act: .alert, arguments: HostActCall.usersWindow + [.string("Last")], completion: 4))
         XCTAssertTrue(try XCTUnwrap(toolkit.over.first) === second, "over the second scene's window")
 
-        toolkit.shown[0].answered(.success(.init(accepted: true, words: nil)))
+        toolkit.shown[0].answered(.success(.init(accepted: true)))
         XCTAssertNil(try XCTUnwrap(toolkit.over.last), "then over the window the user is in")
-        toolkit.shown[1].answered(.success(.init(accepted: true, words: nil)))
+        toolkit.shown[1].answered(.success(.init(accepted: true)))
 
         XCTAssertEqual(answers.replies[3], [], "a window not open answers as the user dismissing it")
         XCTAssertEqual(toolkit.shown.map(\.question.title), ["Delete?", "Done", "Last"], "and the next shows")
@@ -279,13 +279,13 @@ final class HostActPerformerTests: XCTestCase {
             completion: 4))
         XCTAssertTrue(files.shown.isEmpty, "the dialog waits for the question")
 
-        toolkit.shown[0].answered(.success(.init(accepted: true, words: nil)))
+        toolkit.shown[0].answered(.success(.init(accepted: true)))
         XCTAssertEqual(files.shown.map(\.dialog.kind), [.openSeveral], "then shows")
         XCTAssertEqual(toolkit.shown.count, 1, "and the question behind it waits for it")
 
         files.shown[0].answered(.success([report]))
         XCTAssertEqual(answers.replies[2], [[report].propValue])
-        toolkit.shown[1].answered(.success(.init(accepted: true, words: nil)))
+        toolkit.shown[1].answered(.success(.init(accepted: true)))
         XCTAssertEqual(files.shown.map(\.dialog.contents), [[], [7]])
 
         files.shown[1].answered(.failure(ActFailure("the disk is full")))
@@ -302,9 +302,9 @@ final class HostActPerformerTests: XCTestCase {
 
         acts.askAgain()
         XCTAssertEqual(toolkit.shown.map(\.question.title), ["Delete?", "Delete?"])
-        toolkit.shown[0].answered(.success(.init(accepted: true, words: nil)))
+        toolkit.shown[0].answered(.success(.init(accepted: true)))
         XCTAssertNil(answers.replies[1], "the dialog that went answers nothing")
-        toolkit.shown[1].answered(.success(.init(accepted: false, words: nil)))
+        toolkit.shown[1].answered(.success(.init(accepted: false)))
         XCTAssertEqual(answers.replies[1], [.bool(false)])
 
         acts.perform(HostActCall(act: .openFiles, arguments: HostActCall.usersWindow + [[FileType]().propValue, .bool(true)], completion: 2))
@@ -321,7 +321,7 @@ final class HostActPerformerTests: XCTestCase {
         acts.perform(HostActCall(act: .openFiles, arguments: HostActCall.usersWindow + [[FileType]().propValue, .bool(true)], completion: 2))
 
         acts.dismissAll()
-        toolkit.shown[0].answered(.success(.init(accepted: true, words: nil)))
+        toolkit.shown[0].answered(.success(.init(accepted: true)))
 
         XCTAssertEqual(answers.replies[1], [.bool(false)], "not accepted, and the late answer counts for nothing")
         XCTAssertEqual(answers.replies[2], [[ChosenFile]().propValue], "nothing chosen")
@@ -344,7 +344,7 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertNil(answers.replies[1], "its window stands: it waits on")
 
         acts.windowsOpen([drafts])
-        toolkit.shown[0].answered(.success(.init(accepted: true, words: nil)))
+        toolkit.shown[0].answered(.success(.init(accepted: true)))
         XCTAssertEqual(answers.replies[1], [.bool(false)], "not accepted; the late answer counts for nothing")
         XCTAssertEqual(files.shown.count, 1, "the next asks at once")
 

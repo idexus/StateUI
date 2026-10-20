@@ -2504,6 +2504,20 @@ enum Listings {
         @State private var answer = "nothing asked yet"
         @State private var name = "Draft 1"
 
+        /// What the draft can be done with.
+        enum Share: CaseIterable {
+            case mail, message, delete
+
+            /// What each says on its button.
+            var title: String {
+                switch self {
+                case .mail: "Mail"
+                case .message: "Message"
+                case .delete: "Delete"
+                }
+            }
+        }
+
         var body: some View {
             VStack {
                 // The answer is read here, so every dialog that closes builds
@@ -2520,24 +2534,21 @@ enum Listings {
                     }
 
                 // Ask, await, branch - in one place, which is what an act is for.
+                // The cancel says the system's own word.
                 Button("Ask me a question")
                     .onClicked(gate: .ignoreWhileRunning) {
                         let ok = try await window.confirm(
-                            "Delete draft?", message: "This cannot be undone",
-                            accept: "Delete", cancel: "Keep")
-                        answer = ok ? "Delete pressed" : "Keep pressed"
+                            "Delete draft?", message: "This cannot be undone", accept: "Delete")
+                        answer = ok ? "Delete pressed" : "cancelled"
                     }
 
-                // The answer is the pressed CAPTION, cancel and destruction
-                // included - nil only when the sheet was dismissed with nothing
-                // chosen, tapping beside it where the platform allows that.
+                // The answer is the action chosen, as a value - nil for the
+                // cancel, or a sheet tapped away where the platform allows that.
                 Button("Offer me choices")
                     .onClicked(gate: .ignoreWhileRunning) {
                         let choice = try await window.chooseAction(
-                            "Share via", cancel: "Cancel", destruction: "Delete",
-                            buttons: ["Mail", "Message"])
-                        answer = choice.map { "\($0) pressed" }
-                            ?? "dismissed with nothing chosen"
+                            "Share via", among: Share.allCases, caption: \.title, destructive: .delete)
+                        answer = choice.map { "\($0.title) chosen" } ?? "nothing chosen"
                     }
 
                 // nil is CANCELLED; an accepted prompt with nothing typed comes

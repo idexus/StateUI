@@ -19,55 +19,75 @@ extension WindowSession {
     /// - Parameters:
     ///   - title: what the alert is about, in bold.
     ///   - message: the sentence under it.
-    ///   - cancel: the one button's caption; nil says "OK" in the system's language, as the platform's own
+    ///   - accept: the one button's caption; nil says "OK" in the system's language, as the platform's own
     ///     buttons do.
     /// - Throws: `WindowError` for a window no longer open, and `StateUIError` when there is no window to show it.
-    public func alert(_ title: String, message: String, cancel: String? = nil) async throws {
+    public func alert(_ title: String, message: String, accept: String? = nil) async throws {
         let (scene, window) = try address
         let words = await LibraryWords.inSystemLanguage
-        try await stateUICall(ApplicationContract.alert, scene, window, title, message, cancel ?? words.ok)
+        try await stateUICall(ApplicationContract.alert, scene, window, title, message, accept ?? words.ok)
     }
 
     /// Asks the user a yes-or-no question over this window.
     ///
     ///     let ok = try await window.confirm(
-    ///         "Delete draft?", message: "This cannot be undone",
-    ///         accept: "Delete", cancel: "Keep")
+    ///         "Delete draft?", message: "This cannot be undone", accept: "Delete")
     ///     if ok { drafts.remove(draft) }
     ///
     /// - Parameters:
     ///   - title: the question, in bold.
     ///   - message: the sentence under it.
     ///   - accept: the caption of the button that answers yes.
-    ///   - cancel: the caption of the button that answers no.
+    ///   - cancel: the caption of the button that answers no; nil says "Cancel" in the system's language.
     /// - Returns: true when `accept` was pressed.
     /// - Throws: `WindowError` for a window no longer open, and `StateUIError` when there is no window to show it.
-    public func confirm(_ title: String, message: String, accept: String, cancel: String) async throws -> Bool {
+    public func confirm(
+        _ title: String, message: String, accept: String, cancel: String? = nil
+    ) async throws -> Bool {
         let (scene, window) = try address
-        return try await stateUICall(ApplicationContract.confirm, scene, window, title, message, accept, cancel)
+        let words = await LibraryWords.inSystemLanguage
+        return try await stateUICall(
+            ApplicationContract.confirm, scene, window, title, message, accept, cancel ?? words.cancel)
     }
 
-    /// Offers the user a list of things to do, over this window.
+    /// Offers the user a list of things to do, over this window, and answers the one they chose - here `Share`, an
+    /// enum of the actions each saying its `title`:
     ///
     ///     let choice = try await window.chooseAction(
-    ///         "Share via", cancel: "Cancel", buttons: ["Mail", "Message"])
+    ///         "Share via", among: Share.allCases, caption: \.title, destructive: .delete)
+    ///     switch choice {
+    ///     case .mail?: try await mail()
+    ///     case .message?: try await message()
+    ///     case .delete?: drafts.remove(draft)
+    ///     case nil: break
+    ///     }
     ///
-    /// What comes back is the pressed caption - `cancel` and `destruction`
-    /// included - so a `switch` over the same strings is the whole handling.
+    /// A choice always offers its cancel, which answers nil, as dismissing the
+    /// choice does where the platform lets the user tap beside it.
     ///
     /// - Parameters:
     ///   - title: what the choice is about.
-    ///   - cancel: the dismissing button, drawn apart on iOS. Nil for none.
-    ///   - destruction: the dangerous one, drawn red on iOS. Nil for none.
-    ///   - buttons: the choices themselves, in order.
-    /// - Returns: the pressed caption, or nil when the sheet was dismissed
-    ///   without choosing - tapping beside it, where the platform allows that.
+    ///   - choices: the actions offered, in order.
+    ///   - caption: what each says; its description where nothing else is said.
+    ///   - destructive: the dangerous one among them, drawn as the platform draws one. Nil for none.
+    ///   - cancel: the dismissing button's caption; nil says "Cancel" in the system's language.
+    /// - Returns: the action chosen, or nil where the choice was cancelled.
     /// - Throws: `WindowError` for a window no longer open, and `StateUIError` when there is no window to show it.
-    public func chooseAction(
-        _ title: String, cancel: String? = nil, destruction: String? = nil, buttons: [String]
-    ) async throws -> String? {
+    public func chooseAction<Choice: Equatable>(
+        _ title: String, among choices: [Choice], caption: (Choice) -> String = { "\($0)" },
+        destructive: Choice? = nil, cancel: String? = nil
+    ) async throws -> Choice? {
         let (scene, window) = try address
-        return try await stateUICall(ApplicationContract.chooseAction, scene, window, title, cancel, destruction, buttons)
+        let words = await LibraryWords.inSystemLanguage
+        let dangerous = destructive.flatMap { choices.firstIndex(of: $0) }
+        let chosen = try await stateUICall(
+            ApplicationContract.chooseAction, scene, window, title, choices.map(caption), dangerous,
+            cancel ?? words.cancel)
+        guard let chosen else { return nil }
+        guard choices.indices.contains(chosen) else {
+            throw StateUIError(message: "the host answered action \(chosen) of \(choices.count) offered")
+        }
+        return choices[chosen]
     }
 
     /// Asks the user to type something, over this window.
