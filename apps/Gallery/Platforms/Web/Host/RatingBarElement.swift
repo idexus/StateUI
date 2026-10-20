@@ -4,7 +4,7 @@
 import GalleryUI
 import StateUIWeb
 
-/// Five stars in a row, as many lit as the rating: the gallery's own element, `<gallery-rating-bar>` of
+/// Stars in a row, as many lit as the rating: the gallery's own element, `<gallery-rating-bar>` of
 /// Page/rating-bar.js, which knows nothing of StateUI.
 ///
 /// The Swift half is Sources/Samples/Interop/RatingBar.swift; the act aimed at a bar, `flash`, is registered at the
@@ -13,21 +13,19 @@ import StateUIWeb
 final class RatingBarElement: WebControl {
     let element = WebPageElement(tag: "gallery-rating-bar")
 
-    /// The user chose a rating, 1 through 5.
+    /// The user chose a rating, 1 through the bar's stars.
     var onRatingChanged: ((Double) -> Void)?
 
-    /// How many stars are lit.
-    var rating = 0.0 {
-        didSet { if rating != oldValue { element.setAttribute("rating", String(rating)) } }
+    init() {
+        show(rating: 0, of: 5)
+        element.listen("ratingchange", number: { [weak self] chosen in self?.onRatingChanged?(chosen) })
     }
 
-    init() {
-        element.setAttribute("rating", String(rating))
-        element.listen("ratingchange", number: { [weak self] chosen in
-            guard let self else { return }
-            rating = chosen
-            onRatingChanged?(chosen)
-        })
+    /// Shows `count` stars, `rating` of them lit: the stars first, so a rating stands within them.
+    func show(rating: Double, of count: Int) {
+        let count = max(count, 1)
+        element.setAttribute("stars", String(count))
+        element.setAttribute("rating", String(min(max(rating, 0), Double(count))))
     }
 
     // listing: InteropActsSample.Web.swift
@@ -52,8 +50,10 @@ extension RatingBarElement {
             }
             return bar
         }) { bar in
-            bar.property(RatingBarContract.rating) { control, rating in
-                control.rating = rating ?? 0
+            // The stars and the rating come together: a rating stands within the stars, whichever of the two changed.
+            bar.applies([RatingBarContract.maximum, RatingBarContract.rating]) { control, values in
+                control.show(
+                    rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
             bar.raises(RatingBarContract.ratingChanged)
         }

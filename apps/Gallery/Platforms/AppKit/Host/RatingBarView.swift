@@ -5,11 +5,12 @@ import AppKit
 import GalleryUI
 import StateUIAppKit
 
-/// Five stars, filled up to a rating - an ordinary `NSView` with one value.
+/// Stars, filled up to a rating - an ordinary `NSView` with two values.
 ///
 /// `register()`, at the end of this file, adds it for `RatingBarContract` with
-/// `rating`, so the host assigns it whenever a patch carries it, a style sets
-/// it, and a state walks it - and performs the `flash` act aimed at one bar.
+/// its stars and its rating taken together, so the host assigns them whenever
+/// a patch carries either, a style sets them, and a state walks the rating -
+/// and performs the `flash` act aimed at one bar.
 /// The Swift half is Sources/Samples/Interop/RatingBar.swift.
 final class RatingBarView: NSView {
     /// The rating changed - a tap on a star. An assignment the host makes, on
@@ -17,10 +18,23 @@ final class RatingBarView: NSView {
     /// what it was told, not deciding.
     var onRatingChanged: ((Double) -> Void)?
 
-    /// How many stars are filled, 0 through 5. A fraction fills a star once
-    /// the value reaches it, which is what a walk shows star by star.
-    var rating: Double = 0 {
-        didSet { if rating != oldValue { repaint() } }
+    /// How many stars are filled, 0 through the bar's stars. A fraction fills a
+    /// star once the value reaches it, which is what a walk shows star by star.
+    private(set) var rating: Double = 0
+
+    /// Shows `count` stars, `rating` of them filled: the stars first, so a
+    /// rating stands within them.
+    func show(rating: Double, of count: Int) {
+        let count = max(count, 1)
+        if count != stars.count {
+            stars.forEach { $0.removeFromSuperview() }
+            stars = (0..<count).map { _ in Self.star() }
+            stars.forEach(addSubview)
+            invalidateIntrinsicContentSize()
+            needsLayout = true
+        }
+        self.rating = min(max(rating, 0), Double(count))
+        repaint()
     }
 
     private static let lit = NSColor(srgbRed: 0.961, green: 0.710, blue: 0.275, alpha: 1)
@@ -32,17 +46,10 @@ final class RatingBarView: NSView {
 
     override var isFlipped: Bool { true }
 
-    /// The five stars, wired once.
+    /// Five stars, wired once.
     init() {
         super.init(frame: .zero)
-
-        for _ in 0..<5 {
-            let star = NSTextField(labelWithString: "★")
-            star.font = .systemFont(ofSize: Self.size)
-            star.alignment = .center
-            addSubview(star)
-            stars.append(star)
-        }
+        show(rating: 0, of: 5)
 
         // ONE recognizer on the row, the star read from the click's position:
         // a recognizer per star would have to be kept in step with the layout,
@@ -57,17 +64,25 @@ final class RatingBarView: NSView {
         fatalError("RatingBarView is created in code")
     }
 
+    /// One star, its words at the bar's size.
+    private static func star() -> NSTextField {
+        let star = NSTextField(labelWithString: "★")
+        star.font = .systemFont(ofSize: size)
+        star.alignment = .center
+        return star
+    }
+
     override var intrinsicContentSize: NSSize {
         let star = stars.first?.intrinsicContentSize ?? NSSize(width: Self.size, height: Self.size)
         return NSSize(
-            width: star.width * 5 + Self.spacing * 4,
+            width: star.width * CGFloat(stars.count) + Self.spacing * CGFloat(stars.count - 1),
             height: star.height)
     }
 
     override func layout() {
         super.layout()
 
-        let width = (bounds.width - Self.spacing * 4) / 5
+        let width = (bounds.width - Self.spacing * CGFloat(stars.count - 1)) / CGFloat(stars.count)
 
         for (index, star) in stars.enumerated() {
             star.frame = NSRect(
@@ -103,10 +118,11 @@ final class RatingBarView: NSView {
         guard bounds.width > 0 else { return }
 
         let at = recognizer.location(in: self)
-        let star = Int(at.x / (bounds.width / 5))
-        let chosen = Double(min(max(star, 0), 4) + 1)
+        let star = Int(at.x / (bounds.width / CGFloat(stars.count)))
+        let chosen = Double(min(max(star, 0), stars.count - 1) + 1)
 
         rating = chosen
+        repaint()
         onRatingChanged?(chosen)
     }
 
@@ -140,8 +156,12 @@ extension RatingBarView {
             }
             return bar
         }) { bar in
-            bar.property(RatingBarContract.rating) { view, rating in
-                view.rating = rating ?? 0
+            // The stars and the rating come together: a rating stands within
+            // the stars, whichever of the two changed.
+            bar.applies([RatingBarContract.maximum, RatingBarContract.rating]) { view, values in
+                view.show(
+                    rating: values[RatingBarContract.rating] ?? 0,
+                    of: Int(values[RatingBarContract.maximum] ?? 5))
             }
             bar.raises(RatingBarContract.ratingChanged)
         }

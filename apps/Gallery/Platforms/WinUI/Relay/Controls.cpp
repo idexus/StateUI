@@ -109,6 +109,20 @@ extern "C" GalleryObjectRef gallery_rating_bar_make(int64_t control) {
     }
 }
 
+extern "C" void gallery_rating_bar_set_maximum(GalleryObjectRef bar, int32_t stars) {
+    try {
+        auto rating = as<controls::RatingControl>(bar);
+        auto held = stars > 0 ? stars : 1;
+        if (rating.MaxRating() == held) return;
+        writingRating = true;
+        rating.MaxRating(held);
+        writingRating = false;
+    } catch (...) {
+        writingRating = false;
+        report("stars");
+    }
+}
+
 extern "C" void gallery_rating_bar_set_rating(GalleryObjectRef bar, double value) {
     try {
         auto rating = as<controls::RatingControl>(bar);

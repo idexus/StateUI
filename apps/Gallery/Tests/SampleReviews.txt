@@ -51,8 +51,8 @@ IconButtonSample.swift 0af5b21d299babec
 IconSample.swift 98f855aecd97b045
 IdentitySample.swift 3161e5c1e7445fbf
 ImageSample.swift b31a1a7de284fb82
-InteropActsSample.swift 4e8f35f8be9a5a78
-InteropControlSample.swift 90121d5d742b0ac0
+InteropActsSample.swift c2f50755cc641b96
+InteropControlSample.swift 8214d6ed8e1f00fa
 InteropEventsSample.swift cfcc0bc84d5ab117
 ItemsViewSample.swift 53d356987267d768
 KeyPressSample.swift 56c3fa94875fbba4

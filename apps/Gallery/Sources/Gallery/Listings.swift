@@ -4730,6 +4730,7 @@ enum Listings {
         // Sources/Samples/Interop/InteropActsSample.swift
         @State private var draft = "Copy me somewhere"
         @State private var status = "nothing asked yet"
+        @State private var tenStars = false
         @Aim(RatingBar.self) private var stars
 
         var body: some View {
@@ -4773,9 +4774,12 @@ enum Listings {
                     }
 
                 RatingBar()
+                    .maximum(tenStars ? 10 : 5)
                     .rating(4)
                     .horizontalAlignment(.center)
                     .aim(stars)
+
+                SwitchRow("Ten stars", $tenStars)
 
                 Button("Flash the bar")
                     .onClicked(gate: .ignoreWhileRunning) {
@@ -12884,7 +12888,11 @@ extension Listings {
                     }
                     return bar
                 }) { bar in
-                    bar.property(RatingBarContract.rating) { control, rating in control.rating = rating ?? 0 }
+                    // The stars and the rating come together: a rating stands within the stars, whichever of the two changed.
+                    bar.applies([RatingBarContract.maximum, RatingBarContract.rating]) { control, values in
+                        control.show(
+                            rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
+                    }
                     bar.raises(RatingBarContract.ratingChanged)
                 }
 

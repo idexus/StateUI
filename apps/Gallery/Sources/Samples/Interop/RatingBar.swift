@@ -21,6 +21,10 @@ public enum RatingBarContract: ElementContract {
     /// the host assigns it, walks it and lets a style set it.
     public static let rating = ElementProperty<Self, Double>("rating")
 
+    /// How many stars the bar has. Every host takes it with the rating, at
+    /// once (`applies`): a rating stands within its stars.
+    public static let maximum = ElementProperty<Self, Double>("maximum")
+
     /// A star was tapped. A value this side assigns - described, styled or
     /// walked - never comes back as this event.
     public static let ratingChanged = ElementEvent<Self, Double>("ratingChanged")
@@ -29,7 +33,7 @@ public enum RatingBarContract: ElementContract {
     /// view it is aimed at.
     public static let flash = ElementAct<Self, Void, Void>("Gallery.FlashRating")
 
-    public static let members: [any ContractMember] = [rating, ratingChanged, flash]
+    public static let members: [any ContractMember] = [rating, maximum, ratingChanged, flash]
 }
 
 /// The RatingBar's own properties. The control wears them and so does its
@@ -37,13 +41,18 @@ public enum RatingBarContract: ElementContract {
 public protocol RatingBarProperties: PropertyContainer {}
 
 extension RatingBarProperties {
-    /// How many stars are filled, 0 through 5.
+    /// How many stars are filled, 0 through the bar's stars.
     public func rating(_ value: Double) -> Modified {
         setValue(RatingBarContract.rating, value)
     }
+
+    /// How many stars the bar has - five unless said.
+    public func maximum(_ value: Double) -> Modified {
+        setValue(RatingBarContract.maximum, value)
+    }
 }
 
-/// Five stars drawn by a control the application registered with its host,
+/// Stars - five unless said - drawn by a control the application registered with its host,
 /// described here like a built-in one.
 public struct RatingBar: ElementView, RatingBarProperties {
     public var node = Node(contract: RatingBarContract.self)

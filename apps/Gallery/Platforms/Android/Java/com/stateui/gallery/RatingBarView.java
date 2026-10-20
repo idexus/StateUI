@@ -9,7 +9,7 @@ import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.View;
 
-/** Five stars, as many lit as the rating; a tap chooses the star under it and tells it. */
+/** Stars, as many lit as the rating; a tap chooses the star under it and tells it. */
 final class RatingBarView extends View {
     private static final int LIT = 0xFFF5B546, EMBER = 0x38F5B546;
     private static final float STAR = 34, SPACING = 6;
@@ -18,6 +18,7 @@ final class RatingBarView extends View {
     private final float density;
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private double rating;
+    private int stars = 5;
 
     RatingBarView(Context context, long control) {
         super(context);
@@ -28,10 +29,16 @@ final class RatingBarView extends View {
         setClickable(true);
     }
 
-    /** How many stars are lit. */
-    void setRating(double value) {
-        if (value == rating) return;
-        rating = value;
+    /** Shows {@code count} stars, {@code value} of them lit: the stars first, so a rating stands within them. */
+    void show(double value, int count) {
+        int counted = Math.max(count, 1);
+        double held = Math.min(Math.max(value, 0), counted);
+        if (counted == stars && held == rating) return;
+        if (counted != stars) {
+            stars = counted;
+            requestLayout();
+        }
+        rating = held;
         invalidate();
     }
 
@@ -46,16 +53,16 @@ final class RatingBarView extends View {
     protected void onMeasure(int width, int height) {
         Paint.FontMetrics metrics = paint.getFontMetrics();
         setMeasuredDimension(
-                resolveSize(Math.round((STAR * 5 + SPACING * 4) * density), width),
+                resolveSize(Math.round((STAR * stars + SPACING * (stars - 1)) * density), width),
                 resolveSize(Math.round(metrics.descent - metrics.ascent), height));
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        float width = (getWidth() - SPACING * 4 * density) / 5;
+        float width = (getWidth() - SPACING * (stars - 1) * density) / stars;
         Paint.FontMetrics metrics = paint.getFontMetrics();
         float baseline = (getHeight() - metrics.descent - metrics.ascent) / 2;
-        for (int star = 0; star < 5; star++) {
+        for (int star = 0; star < stars; star++) {
             paint.setColor(rating >= star + 1 ? LIT : EMBER);
             canvas.drawText("★", star * (width + SPACING * density) + width / 2, baseline, paint);
         }
@@ -64,9 +71,9 @@ final class RatingBarView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getActionMasked() == MotionEvent.ACTION_UP && getWidth() > 0) {
-            int star = (int) (event.getX() / (getWidth() / 5f));
-            double chosen = Math.min(Math.max(star, 0), 4) + 1;
-            setRating(chosen);
+            int star = (int) (event.getX() / ((float) getWidth() / stars));
+            double chosen = Math.min(Math.max(star, 0), stars - 1) + 1;
+            show(chosen, stars);
             GalleryNatives.rated(control, chosen);
         }
         return true;

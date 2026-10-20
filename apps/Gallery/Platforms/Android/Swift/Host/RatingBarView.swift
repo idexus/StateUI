@@ -5,8 +5,8 @@ import Android
 import GalleryUI
 import StateUIAndroid
 
-/// Five stars, as many lit as the rating: the gallery's own Java view, com.stateui.gallery.RatingBarView. A tap sets
-/// the rating and reports it; the bar flashes when its act asks.
+/// Stars, as many lit as the rating: the gallery's own Java view, com.stateui.gallery.RatingBarView. A tap sets the
+/// rating and reports it; the bar flashes when its act asks.
 @MainActor
 final class RatingBarView: AndroidControl {
     let view: JavaObject
@@ -14,16 +14,16 @@ final class RatingBarView: AndroidControl {
     /// The user chose a rating.
     var onRatingChanged: ((Double) -> Void)?
 
-    /// How many stars are lit.
-    var rating = 0.0 {
-        didSet { if rating != oldValue { Java.call(view.reference, Self.setRating, .double(rating)) } }
+    /// Shows `count` stars, `rating` of them lit: the stars first, so a rating stands within them.
+    func show(rating: Double, of count: Int) {
+        Java.call(view.reference, Self.showing, .double(rating), .int(Int32(count)))
     }
 
     private let number: Int64
 
     private static let viewClass = Java.findClass("com/stateui/gallery/RatingBarView")
     private static let make = Java.method(viewClass, "<init>", "(Landroid/content/Context;J)V")
-    private static let setRating = Java.method(viewClass, "setRating", "(D)V")
+    private static let showing = Java.method(viewClass, "show", "(DI)V")
     private static let flashing = Java.method(viewClass, "flash", "()V")
 
     init() {
@@ -43,7 +43,6 @@ final class RatingBarView: AndroidControl {
 
     /// The view says its user chose `value`, which it already shows.
     func rated(_ value: Double) {
-        rating = value
         onRatingChanged?(value)
     }
 }
@@ -60,7 +59,11 @@ extension RatingBarView {
             }
             return bar
         }) { bar in
-            bar.property(RatingBarContract.rating) { control, rating in control.rating = rating ?? 0 }
+            // The stars and the rating come together: a rating stands within the stars, whichever of the two changed.
+            bar.applies([RatingBarContract.maximum, RatingBarContract.rating]) { control, values in
+                control.show(
+                    rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
+            }
             bar.raises(RatingBarContract.ratingChanged)
         }
 
