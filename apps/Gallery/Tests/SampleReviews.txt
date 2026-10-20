@@ -9,7 +9,7 @@ AnimatedPropertySample.swift fef33f29ae910477
 AnimationSample.swift 81f886d98ac6d03f
 AppSwitcherSample.swift 07c52e1b524a8090
 AppThemeSample.swift cf321fd19548d57e
-AppearanceSample.swift b86b8c4eda4df293
+AppearanceSample.swift 9e14f68a1e2b1f10
 ApplicationSessionSample.swift d4b27d6c0f354d64
 BatterySample.swift 361332732b730510
 BindingReaderSample.swift 1239ebd325c706fa
@@ -72,10 +72,10 @@ LocalizationSample.swift 1636a0f168875c65
 MapSample.swift 0a52199d9ecebd75
 MaterialsSample.swift 627cb47bde052fd0
 MenuBarSample.swift c43adf3ebf7c85ac
-ModalSample.swift 69735010f26dc23b
+ModalSample.swift 64cc31225a4f4be6
 MotionSample.swift e2c7fe6d8c5af82b
 MultiWindowSample.swift 12f1c8ba843fad28
-NavigationSample.swift bb0a9a427e1bfa90
+NavigationSample.swift a8ab8f360486c553
 NextFieldSample.swift b365cbd1626b4437
 OnChangedSample.swift 69ae77869efe3165
 OutlineSample.swift c6873395a506661c
@@ -104,7 +104,7 @@ ShapesSample.swift b8954092be37d204
 ShortcutSample.swift daf4ef581131770c
 SizingSample.swift 1ced92cea7dceeeb
 SliderSample.swift de5c388891de8278
-SplitViewSample.swift 18869f9b1406c07b
+SplitViewSample.swift 776db65d38984df6
 StackLayoutSample.swift 36d649ba6717126d
 StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
@@ -112,7 +112,7 @@ StepperSample.swift a1eb96147d1526c6
 StyleSample.swift 319e5c4f2f6809ab
 SwipeSample.swift 66a58baed064554c
 SwitchSample.swift ee3ccdaf5a4a3003
-TabsSample.swift 33fc0a1f3dec9bbe
+TabsSample.swift 2dbfc2edf5929c27
 TapSample.swift ecedf1892e5dde5c
 TaskSleepSample.swift 2b47ce00e9732b16
 TextEditorSample.swift 9cc806f939101a0a
@@ -131,8 +131,8 @@ TwoFingersSample.swift 47512444b7046f28
 TwoLayersSample.swift b5cb1ec70d0a5b48
 VisualStateSample.swift 745e16ed51e9df83
 WebViewSample.swift 984456f0c9c5d673
-WindowBarSample.swift 78785d4b0eaadda7
-WindowOverlaySample.swift 5bc390a17a3308c4
+WindowBarSample.swift 302bfc3ebfdd4496
+WindowOverlaySample.swift 6886adf93cd4c933
 WindowPhaseSample.swift 17d57d2502b6ba90
-WindowSample.swift 643969d590f4571d
+WindowSample.swift 72ba0090223ac1fe
 ZStackSample.swift 3f31d30b7005f2ed

@@ -253,7 +253,7 @@ struct MainPage: View {
     /// The one section that is not a stack: a `TabView` over a list of the
     /// author's own enum, with a stack inside its `.stack` tab.
     func tabs() -> some View {
-        TabView(nav.tabs) { which in
+        TabView(nav.tabs, selection: nav.$tab) { which in
             switch which {
             case .stack:
                 NavigationStack(nav.$tabsPath) {
@@ -274,7 +274,6 @@ struct MainPage: View {
                 TabsExtraPage(nav: nav, number: number)
             }
         }
-        .selection(nav.$tab)
     }
     // listing: end
 

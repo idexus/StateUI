@@ -86,7 +86,7 @@ private struct MainPage: View {
     let count: Binding<Int>
 
     var body: some View {
-        TabView([Tab.home, .settings]) { which in
+        TabView([Tab.home, .settings], selection: tab.projectedValue) { which in
             switch which {
             case .home:
                 NavigationStack(path) {
@@ -104,7 +104,6 @@ private struct MainPage: View {
                 SettingsPage()
             }
         }
-        .selection(tab.projectedValue)
     }
 }
 

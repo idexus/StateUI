@@ -194,6 +194,10 @@ final class ContractRoadsTests: XCTestCase {
             closed: #"_ = Map(region: MapRegion(center: Location(latitude: 52, longitude: 21), radiusMeters: 500)).markers { Text("Castle") }"#,
             open: #"_ = Map(region: MapRegion(center: Location(latitude: 52, longitude: 21), radiusMeters: 500)).markers { Marker(at: Location(latitude: 52, longitude: 21)) }"#),
         Road(
+            name: "a tab selection of another type than the tabs",
+            closed: #"_ = TabView([1, 2], selection: Binding<String>(get: { "a" }, set: { _ in })) { Text("\($0)") }"#,
+            open: #"_ = TabView([1, 2], selection: Binding<Int>(get: { 1 }, set: { _ in })) { Text("\($0)") }"#),
+        Road(
             name: "a view standing on the menu bar",
             closed: #"_ = Text("Notes").menuBar { Text("File") }"#,
             open: #"_ = Text("Notes").menuBar { Menu("File") { MenuItem("New") } }"#),

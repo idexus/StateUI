@@ -275,11 +275,11 @@ carry.
 ## Tabs report an index
 
 Which tabs there are is a collection the author holds, of the author's own
-type; which one shows is a binding of that same type. A collection rather than
-a builder of pages is what makes the keys work: a tab is a value, so the page
-for it can be keyed by it. The tabs are held as `AnyHashable`, since a
-`TabView` is not generic, and opened again in `selection`, whose binding
-says which type to expect.
+type; which one shows is a state of that same type, given beside the tabs:
+`TabView(Tab.allCases, selection: $tab) { … }`. A collection rather than a
+builder of pages is what makes the keys work: a tab is a value, so the page
+for it can be keyed by it. `TabView` is generic over the tab, so a selection
+of another type does not compile.
 
 The selection crosses as the index of the current page among the children -
 the list the initializer described, so the two cannot mean different things. A

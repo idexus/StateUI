@@ -252,12 +252,11 @@ final class GTKTabViewTests: XCTestCase {
             let tab = State(wrappedValue: "one")
             let log = Received<String>()
             let host = GTKRenderer.running {
-                TabView(["one", "two"]) { name in
+                TabView(["one", "two"], selection: tab.projectedValue) { name in
                     TitledPage(
                         title: name == "one" ? "One" : "Two", log: log,
                         actions: name == "two" ? [ToolbarItem("Share")] : [])
                 }
-                .selection(tab.projectedValue)
             }
             let tabs = try XCTUnwrap(host.views(GTKTabView.self).first)
             let frame = try XCTUnwrap(host.window?.pageFrame)

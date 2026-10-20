@@ -327,10 +327,9 @@ final class AndroidPagesTests: XCTestCase {
         try onMainActor {
             let tab = State(wrappedValue: 0)
             let host = AndroidRenderer.running {
-                TabView([0, 1]) { number in
+                TabView([0, 1], selection: tab.projectedValue) { number in
                     TitledPage(title: "Tab \(number)")
                 }
-                .selection(tab.projectedValue)
             }
             host.layOut()
             let tabs = try XCTUnwrap(host.views(AndroidTabView.self).first)
@@ -348,8 +347,7 @@ final class AndroidPagesTests: XCTestCase {
         try onMainActor {
             let tab = State(wrappedValue: 0)
             let host = AndroidRenderer.running {
-                TabView([0, 1, 2]) { number in TitledPage(title: "Tab \(number)") }
-                    .selection(tab.projectedValue)
+                TabView([0, 1, 2], selection: tab.projectedValue) { number in TitledPage(title: "Tab \(number)") }
             }
             host.layOut()
             let tabs = try XCTUnwrap(host.views(AndroidTabView.self).first)

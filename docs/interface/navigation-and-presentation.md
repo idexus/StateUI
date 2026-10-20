@@ -67,14 +67,13 @@ enum Tab: Hashable, CaseIterable {
 
 @State private var selected = Tab.notes
 
-TabView(Tab.allCases) { tab in
+TabView(Tab.allCases, selection: $selected) { tab in
     switch tab {
     case .notes: NotesPage()
     case .search: SearchPage()
     case .settings: SettingsPage()
     }
 }
-.selection($selected)
 ```
 
 Assigning `selected` changes the visible tab. A user-selected tab is reported

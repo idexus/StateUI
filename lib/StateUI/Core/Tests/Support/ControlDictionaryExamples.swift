@@ -435,8 +435,7 @@ extension ControlDictionary {
 
             @State var shown = "Today"
 
-            TabView(["Today", "Archive"]) { name in Tab(name: name) }
-                .selection($shown)
+            TabView(["Today", "Archive"], selection: $shown) { name in Tab(name: name) }
             """#),
 
         (TextEditorContract.self, #"""

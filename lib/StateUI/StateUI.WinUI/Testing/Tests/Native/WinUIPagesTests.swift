@@ -166,7 +166,7 @@ final class WinUIPagesTests: XCTestCase {
             let tabs = State(wrappedValue: [0, 1, 2])
             let tab = State(wrappedValue: 2)
             let host = WinUIRenderer.running {
-                TabView(tabs.wrappedValue) { number in Text("Tab \(number)") }.selection(tab.projectedValue)
+                TabView(tabs.wrappedValue, selection: tab.projectedValue) { number in Text("Tab \(number)") }
             }
             let tabbed = try XCTUnwrap(host.views(WinUITabView.self).first)
             let row: WinUIView = tabbed.tabsShownByWindow ? try XCTUnwrap(host.window).tabRow : tabbed.row

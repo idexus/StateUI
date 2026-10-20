@@ -35,11 +35,10 @@ private struct TabPage: View {
 private func tabs(
     _ selection: Binding<Tab>,
     _ offered: [Tab] = Tab.allCases
-) -> TabView {
-    TabView(offered) { tab in
+) -> TabView<Tab> {
+    TabView(offered, selection: selection.projectedValue) { tab in
         TabPage(tab: tab)
     }
-    .selection(selection.projectedValue)
 }
 
 @MainActor
@@ -158,7 +157,7 @@ final class TabViewTests: XCTestCase {
         let selection = State<Tab>(.home)
         let path = State<[Int]>([1])
 
-        let patch = Renders().render(TabView([Tab.home]) { _ in
+        let patch = Renders().render(TabView([Tab.home], selection: selection.projectedValue) { _ in
             NavigationStack(path.projectedValue) {
                 TabPage(tab: .home)
             } destination: { _ in
@@ -167,7 +166,6 @@ final class TabViewTests: XCTestCase {
             .title("Home")
             .icon("house.png")
         }
-        .selection(selection.projectedValue)
         .node)
 
         let stack = try XCTUnwrap(patch.children.first)
@@ -236,7 +234,7 @@ final class TabViewTests: XCTestCase {
         let selection = State<Tab>(.settings)
         let path = State<[Int]>([])
 
-        let tree = TabView([Tab.home, .settings]) { tab in
+        let tree = TabView([Tab.home, .settings], selection: selection.projectedValue) { tab in
             switch tab {
             case .home:
                 NavigationStack(path.projectedValue) {
@@ -251,7 +249,6 @@ final class TabViewTests: XCTestCase {
                 TabPage(tab: tab)
             }
         }
-        .selection(selection.projectedValue)
         .barBackgroundColor(Color(hex: 0x512BD4))
         .node
 
@@ -345,29 +342,5 @@ final class TabViewTests: XCTestCase {
         XCTAssertEqual(node.children.map { $0.id }, ["home", "browse", "settings"])
         XCTAssertNil(node.props["selectedTab"], "nothing says which tab is showing")
         XCTAssertTrue(node.events.isEmpty, "and nothing is listening for one")
-    }
-
-    /// A binding of a type the TABS are not - the one mistake erasing them to
-    /// `AnyHashable` makes possible - names no tab and writes nothing.
-    ///
-    /// It cannot be caught at compile time: `selection` is generic over any
-    /// `Hashable` because the page it sits on is not generic at all. So it
-    /// behaves as a selection naming a tab that is not offered does, which is
-    /// the neighbouring test above - no index out, no trap, and the host's
-    /// report simply finds nothing to write.
-    func testASelectionOfAnotherTypeEntirelyNamesNoTab() {
-        let selection = State<String>("home")
-        let renders = Renders()
-
-        let page = TabView(Tab.allCases) { TabPage(tab: $0) }
-            .selection(selection.projectedValue)
-
-        let patch = renders.settled(page.node)
-
-        XCTAssertNil(page.node.built.props["selectedTab"],
-                     "a String is not one of these tabs, whatever it spells")
-
-        XCTAssertTrue(renders.fire(patch.events?["selectedTabChanged"] ?? -1, with: [.number(2)]))
-        XCTAssertEqual(selection.wrappedValue, "home", "and the report writes nothing")
     }
 }
