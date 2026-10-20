@@ -225,7 +225,8 @@ struct SizeChooser: View {
 
 The answer is the host's own judgement, the one the
 [platform contract](../platform-contract.md) shows: in full or in part is
-honoured, never or not realized is not.
+honoured, never or not realized is not. A property, an event and an act are
+asked alike - `device.honors(MapContract.moveToRegion)`.
 
 `device.connectivity.networkAccess == .internet` means ordinary internet access.
 `.constrainedInternet` describes a route with a portal or another constraint,

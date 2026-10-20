@@ -51,5 +51,12 @@ extension Device {
     public func honors<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) -> Bool {
         HostRealizations.honors(event.token.key, of: event.owner)
     }
+
+    /// Whether the platform the application runs on performs `act` - its host realizes it.
+    ///
+    ///     if device.honors(MapContract.moveToRegion) { Button("Old Town").onClicked { … } }
+    public func honors<Owner: Contract, Arguments, Answer>(_ act: ElementAct<Owner, Arguments, Answer>) -> Bool {
+        HostRealizations.honors(act.token.key, of: act.owner)
+    }
 }
 

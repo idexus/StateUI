@@ -306,17 +306,23 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(StandardEnvironment.application.phase, .inactive)
     }
 
-    /// The device says whether the platform honours a member: what its host realizes, and nothing it leaves out.
+    /// The device says whether the platform honours a member - a property, an event, an act: what its host
+    /// realizes, and nothing it leaves out.
     func testTheDeviceSaysWhatThePlatformHonours() {
         HostBoundary.setRealization(HostRealization(
-            elements: ["Picker"],
-            members: [HostRealizedMember(element: "Picker", owner: "Picker", member: "isOpen")]))
+            elements: ["Picker", "Map"],
+            members: [
+                HostRealizedMember(element: "Picker", owner: "Picker", member: "isOpen"),
+                HostRealizedMember(element: "Map", owner: "Map", member: "moveToRegion"),
+            ]))
         defer { HostBoundary.setRealization(HostRealization()) }
         let device = Device()
 
         XCTAssertTrue(device.honors(PickerContract.isOpen))
         XCTAssertFalse(device.honors(PickerContract.placeholder), "a member its host leaves out")
         XCTAssertFalse(device.honors(PickerContract.opened), "an event its host raises not")
+        XCTAssertTrue(device.honors(MapContract.moveToRegion), "an act its host performs")
+        XCTAssertFalse(device.honors(WebViewContract.goBack), "and one it does not")
     }
 
     /// Where the host hands its register, the register answers - what the platform contract shows: a member the
