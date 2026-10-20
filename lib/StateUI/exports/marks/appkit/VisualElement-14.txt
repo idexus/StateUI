@@ -26,26 +26,27 @@ Picker.pivotY: ✓ read pivotY of Picker: the host's own transform, checked agai
 Polygon.automationExcludedWithChildren: ✅
 Polyline.accessibilityLabel: ✅
 ProgressBar.ignoresInput: ✅
-Rectangle.rotation: ✓ read rotation of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.automationExcludedWithChildren: ✅
-SearchField.zIndex: ✅
-Slider.maximumHeight: ✅
-Slider.maximumWidth: ✅
-Slider.minimumHeight: ✅
-Slider.minimumWidth: ✅
-Spacer.isVisible: ✅
-Spacer.scaleX: ✓ read scaleX of Spacer: the host's own transform, checked against the layer it composed itself
-Stepper.rotation: ✓ read rotation of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+Rectangle.isVisible: ✅
+Rectangle.scaleX: ✓ read scaleX of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.pivotY: ✓ read pivotY of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.tooltip: ✅
+Slider.zIndex: ✅
+Spacer.maximumHeight: ✅
+Spacer.maximumWidth: ✅
+Spacer.minimumHeight: ✅
+Spacer.minimumWidth: ✅
+Stepper.isVisible: ✅
+Stepper.scaleX: ✓ read scaleX of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.rotation: ✓ read rotation of Switch: the host's own transform, checked against the layer it composed itself
 Text.isEnabled: ✅
 Text.translationX: ✓ read translationX of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.tooltip: ✅
-TextField.zIndex: ✅
-TimePicker.maximumHeight: ✅
-TimePicker.maximumWidth: ✅
-TimePicker.minimumHeight: ✅
-TimePicker.minimumWidth: ✅
-VStack.isVisible: ✅
-VStack.scaleX: ✓ read scaleX of VStack: the host's own transform, checked against the layer it composed itself
-WebView.isAccessibilityHidden: ✅
-ZStack.accessibilityLabel: ✅
+TextEditor.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+TextField.tooltip: ✅
+TimePicker.zIndex: ✅
+VStack.isEnabled: ✓ tap on VStack: handed to the host's recognizer or handler, no NSEvent sent
+VStack.maximumHeight: ✅
+VStack.maximumWidth: ✅
+VStack.minimumHeight: ✅
+VStack.minimumWidth: ✅
+WebView.pivotX: ✓ read pivotX of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.isAccessibilityHidden: ✅

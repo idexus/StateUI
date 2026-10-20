@@ -26,22 +26,21 @@ Polygon.accessibilityLabel: ✅
 Polyline.ignoresInput: ✅
 ProgressBar.isVisible: ✅
 ProgressBar.scaleX: ✓ read scaleX of ProgressBar: the host's own transform, checked against the layer it composed itself
-Rectangle.automationExcludedWithChildren: ✅
-ScrollView.accessibilityLabel: ✅
-SearchField.height: ✅
-SearchField.translationY: ✓ read translationY of SearchField: the host's own transform, checked against the layer it composed itself
-SearchField.width: ✅
-Slider.scale: ✓ read scale of Slider: the host's own transform, checked against the layer it composed itself
-Spacer.pivotY: ✓ read pivotY of Spacer: the host's own transform, checked against the layer it composed itself
-Stepper.automationExcludedWithChildren: ✅
-Switch.accessibilityHint: ✅
+Rectangle.pivotY: ✓ read pivotY of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.isAccessibilityHidden: ✅
+SearchField.style: ✅
+Slider.height: ✅
+Slider.translationY: ✓ read translationY of Slider: the host's own transform, checked against the layer it composed itself
+Slider.width: ✅
+Spacer.scale: ✓ read scale of Spacer: the host's own transform, checked against the layer it composed itself
+Stepper.pivotY: ✓ read pivotY of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.automationExcludedWithChildren: ✅
 Text.rotationX: ✓ read rotationX of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.style: ✅
-TextField.height: ✅
-TextField.translationY: ✓ read translationY of TextField: the host's own transform, checked against the layer it composed itself
-TextField.width: ✅
-TimePicker.scale: ✓ read scale of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.pivotY: ✓ read pivotY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-ZStack.ignoresInput: ✅
-ZStack.isEnabled: ✅
+TextEditor.accessibilityHint: ✅
+TextField.style: ✅
+TimePicker.height: ✅
+TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform, checked against the layer it composed itself
+TimePicker.width: ✅
+VStack.scale: ✓ read scale of VStack: the host's own transform, checked against the layer it composed itself
+WebView.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+ZStack.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.

@@ -26,20 +26,20 @@ Picker.scaleX: ✓ read scaleX of Picker: the host's own transform, checked agai
 Polygon.rotation: ✓ read rotation of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.automationExcludedWithChildren: ✅
 ProgressBar.accessibilityLabel: ✅
-Rectangle.opacity: ✅
-Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.rotation: ✓ read rotation of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-Slider.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-Spacer.ignoresInput: ✅
-Stepper.opacity: ✅
-Stepper.scaleY: ✓ read scaleY of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.rotationX: ✓ read rotationX of Switch: the host's own transform, checked against the layer it composed itself
+Rectangle.ignoresInput: ✅
+ScrollView.isVisible: ✅
+ScrollView.scaleX: ✓ read scaleX of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.layoutDirection: ✅
+Slider.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+Spacer.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+Stepper.ignoresInput: ✅
+Switch.opacity: ✅
+Switch.scaleY: ✓ read scaleY of Switch: the host's own transform, checked against the layer it composed itself
 Text.style: ✅
-TextEditor.layoutDirection: ✅
-TextField.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-TimePicker.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-VStack.ignoresInput: ✅
-VStack.isEnabled: ✅
-WebView.pivotY: ✓ read pivotY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.automationExcludedWithChildren: ✅
+TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.layoutDirection: ✅
+TimePicker.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+VStack.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+VStack.background: ✅
+WebView.scale: ✓ read scale of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.pivotY: ✓ read pivotY of ZStack: the host's own transform, checked against the layer it composed itself

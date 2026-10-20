@@ -22,23 +22,24 @@ Picker.rotationX: ✓ read rotationX of Picker: the host's own transform, checke
 Polygon.layoutDirection: ✅
 Polyline.tooltip: ✅
 ProgressBar.style: ✅
-Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.layoutDirection: ✅
-SearchField.accessibilityLabel: ✅
-Slider.frame: ✅
-Spacer.isEnabled: ✅
-Spacer.translationX: ✓ read translationX of Spacer: the host's own transform, checked against the layer it composed itself
-Stepper.rotationY: ✓ read rotationY of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.pivotX: ✓ read pivotX of Switch: the host's own transform, checked against the layer it composed itself
+Rectangle.isEnabled: ✅
+Rectangle.translationX: ✓ read translationX of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.isAccessibilityHidden: ✅
+Slider.accessibilityLabel: ✅
+Spacer.frame: ✅
+Stepper.isEnabled: ✅
+Stepper.translationX: ✓ read translationX of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.rotationY: ✓ read rotationY of Switch: the host's own transform, checked against the layer it composed itself
 Text.isEnabled: ✓ tap on Text: handed to the host's recognizer or handler, no NSEvent sent
 Text.maximumHeight: ✅
 Text.maximumWidth: ✅
 Text.minimumHeight: ✅
 Text.minimumWidth: ✅
-TextEditor.isAccessibilityHidden: ✅
-TextField.accessibilityLabel: ✅
-TimePicker.frame: ✅
-VStack.isEnabled: ✅
-VStack.translationX: ✓ read translationX of VStack: the host's own transform, checked against the layer it composed itself
-WebView.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
-ZStack.tooltip: ✅
+TextEditor.pivotX: ✓ read pivotX of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.isAccessibilityHidden: ✅
+TimePicker.accessibilityLabel: ✅
+VStack.frame: ✅
+VStack.layoutDirection: ✅
+WebView.rotation: ✓ read rotation of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.background: ✅

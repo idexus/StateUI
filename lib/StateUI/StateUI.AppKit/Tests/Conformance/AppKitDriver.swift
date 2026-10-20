@@ -271,6 +271,8 @@ final class AppKitDriver: HostDriver {
             return (editor.textView.isEditable || editor.textView.isSelectable).propValue
         case (.isReadOnly, let editor as AppKitTextEditorView):
             return (!editor.textView.isEditable && editor.textView.isSelectable).propValue
+        // A switch stands beside its words: the switch itself takes the input.
+        case (.isEnabled, let toggle as AppKitSwitchView): return toggle.control.isEnabled.propValue
         case (.isEnabled, let control as NSControl): return control.isEnabled.propValue
         case (.isEnabled, let picker as AppKitPickerView): return picker.isEnabled.propValue
         // A view that is no control holds whether it answers as assistive technology meets it.
