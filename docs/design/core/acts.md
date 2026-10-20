@@ -7,7 +7,7 @@ they are calls on the host's native objects. So the same split applies: Swift
 describes the act and the host performs it.
 
 ```text
-  handler: try await Dialogs.alert("Saved", message: "…")
+  handler: try await window.alert("Saved", message: "…")
      |
      v  Renderer.send -> ActCall(act, arguments, completion: -7) in the queue
      |                   (completion ids count down from -1)
@@ -156,7 +156,7 @@ model is the model's; the walk never enters a model.
 ## Focus and the keyboard
 
 Focus is an act with two forms: `field.focus()` on a known view, and
-`OnScreenKeyboard.hide()` for whatever has the keyboard. The first exists only
+`window.hideOnScreenKeyboard()` for whatever in a window has the keyboard. The first exists only
 on the aim of an element that takes the focus itself - the `FocusElement`
 tier, with `.isFocused` and the `.focused` visual state - so a text or a stack,
 which never can, offers none. The focused control is
@@ -164,7 +164,25 @@ whichever one the user touched last, so the host asks its native focus system,
 and StateUI does not mirror that identity as state. The second form lets a Done
 button close a keyboard it did not open. On iOS a search field on the
 navigation bar takes the whole bar while it has focus, the back button with it;
-`hide()` is what gives the bar back, which is why the keyboard sample offers it.
+`hideOnScreenKeyboard()` is what gives the bar back, which is why the keyboard sample offers it.
+
+## A window's acts
+
+A question, a file dialog and the keyboard taken down belong to a window, so
+they are its session's: `window.confirm(…)`, `window.openFile(…)`,
+`window.hideOnScreenKeyboard()`, as `window.close()` is. What happens for the
+whole application - an address launched, a word to the screen reader - is
+the application's: `application.launch(…)`, `application.announce(…)`. One
+road each, and on a desktop of several windows the question stands over the
+window whose view asked it.
+
+A window's act names the window by its first two arguments: its scene's key
+and its own, as the tree keys both. A session of no scene - the one a view
+outside every window reads - names none, and its act asks in the window the
+user is in; a session whose scene ended, or whose window closed, throws
+`WindowError` before anything is sent. The host finds the window by the two
+keys once, in the host layer; a window that closed while the act waited its
+turn is answered as the user dismissing it does.
 
 ## Dialogs
 
@@ -173,13 +191,13 @@ is up and resumes with the answer. Asking, waiting and branching is one
 sequential thought; an act keeps it in one place where a binding would split it
 into a state write here and a result closure there. No dialog names a page:
 a handler holds a description of a page, not the page, so the host shows the
-dialog on the page the user is looking at, the top of the modal stack
-included, which only the host can know.
+dialog on the page its window shows, the top of the modal stack included,
+which only the host can know.
 
 ## Files
 
-The dialogs that open and save files are dialogs too, asked of the showing
-page and awaited. Every platform's dialog answers a place - a path, a
+The dialogs that open and save files are dialogs too, asked of a window and
+awaited. Every platform's dialog answers a place - a path, a
 document's address, a browser's file - and no place is portable: one has no
 path at all. So a `ChosenFile` shows only its name; where it stands crosses
 to the host and back unread, and the host reads and launches it while the
@@ -199,14 +217,14 @@ platform has them.
 
 ## Launching
 
-`Links.launch` and `ChosenFile.launch` hand an address or a file to the
+`application.launch` and `ChosenFile.launch` hand an address or a file to the
 system, which opens it in the application it gives it. The answer is
 whether one took it - false where nothing opens that scheme or kind - and
 not that it opened: the application starts on its own.
 
 ## Announcements
 
-`ScreenReader.announce` is an act for the same reason every act is one: it is
+`application.announce` is an act for the same reason every act is one: it is
 something that happens, at a moment, and no value on a tree can say "again".
 It is for a change the user is not looking at - a finished search, a deleted
 row - and nothing happens where no screen reader runs.

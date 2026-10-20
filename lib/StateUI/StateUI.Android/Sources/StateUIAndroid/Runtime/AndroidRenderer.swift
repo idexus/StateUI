@@ -24,6 +24,13 @@ final class AndroidRenderer {
         shared?.runtime.tree.root.flatMap { $0.first(type: .window) ?? $0 }
     }
 
+    /// The window a window's act asks in: the one the activity shows, where the act names it or none; nil for
+    /// another.
+    static func window(asked element: MountedElement?) -> MountedElement? {
+        guard let window, element == nil || element?.enclosing(type: .window) === window else { return nil }
+        return window
+    }
+
     /// Pixels per point, the display's density.
     static var density: Double { shared?.density ?? 1 }
 

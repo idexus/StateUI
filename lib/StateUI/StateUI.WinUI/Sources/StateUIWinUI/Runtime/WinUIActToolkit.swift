@@ -49,12 +49,13 @@ final class WinUIActToolkit: ActToolkit {
         return Int(minutes)
     }
 
-    /// Asks in WinUI's own dialog over the window the user is in; its answer comes back by its ticket.
+    /// Asks in WinUI's own dialog over the window asked; its answer comes back by its ticket.
     /// Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
     func show(
-        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+        _ question: HostQuestion, over window: MountedElement?,
+        answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement? {
-        guard let window = renderer.userWindow, let element = renderer.element(of: window), let content = window.content
+        guard let window = renderer.window(asked: window), let element = renderer.element(of: window), let content = window.content
         else { return nil }
         let ticket = dialogs.hold(answered)
         showing = Showing(ticket: ticket, window: window, bound: question.maximumLength)
@@ -119,8 +120,8 @@ final class WinUIActToolkit: ActToolkit {
         if let content = renderer.userWindow?.content { stateui_winui_announce(content.handle, words) }
     }
 
-    func hideOnScreenKeyboard() -> Bool {
-        renderer.userWindow?.content.map { stateui_winui_hide_keyboard($0.handle) } ?? false
+    func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
+        renderer.window(asked: window)?.content.map { stateui_winui_hide_keyboard($0.handle) } ?? false
     }
 
     /// Design: docs/design/platforms/winui/runtime.md#acts

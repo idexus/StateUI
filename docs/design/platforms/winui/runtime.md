@@ -205,8 +205,9 @@ focus moves.
 ## Questions for the user
 
 A question - an alert, a confirmation, a choice of actions, a prompt - is
-WinUI's own dialog, over the window the user is in when its turn comes - the
-one activated last, else the first - and its call waits under a ticket the
+WinUI's own dialog, over the window that asked when its turn comes - where
+the act names none, the window the user is in, the one activated last, else
+the first - and its call waits under a ticket the
 dialog hands back as the user answers; a ticket is one number across the
 process, so an answer that arrives after its renderer has gone answers
 nothing of another's. Questions are asked one at a time, in the order the
@@ -244,7 +245,7 @@ it.
 ## Files
 
 A file dialog is Windows' own, from the Windows App SDK's pickers
-(`FileOpenPicker`, `FileSavePicker`), over the window the user is in, and it
+(`FileOpenPicker`, `FileSavePicker`), over the window that asked, and it
 waits its turn among the questions ([files](../../host/runtime.md#files)).
 A dialog that opens filters by every kind's extensions, as one list; one that
 saves offers each kind under its caption, the first as its default

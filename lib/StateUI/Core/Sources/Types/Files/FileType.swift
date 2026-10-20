@@ -5,7 +5,7 @@
 /// extensions its files end in.
 ///
 ///     let page = FileType("HTML page", extensions: ["html", "htm"])
-///     let file = try await Dialogs.openFile(types: [page])
+///     let file = try await window.openFile(types: [page])
 ///
 /// The dialog that opens files shows only these; the one that saves offers
 /// them to choose from, the first chosen.

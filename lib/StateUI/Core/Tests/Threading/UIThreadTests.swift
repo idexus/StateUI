@@ -356,7 +356,7 @@ final class UIThreadTests: XCTestCase {
         let patch = renders.render(
             Button("Go")
                 .onClicked(gate: .none) {
-                    try await Dialogs.alert("//list", message: "saved")
+                    try await WindowSession().alert("//list", message: "saved")
                     reached = true
                 }
                 .node)

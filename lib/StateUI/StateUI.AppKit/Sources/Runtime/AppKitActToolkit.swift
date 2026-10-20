@@ -49,12 +49,15 @@ final class AppKitActToolkit: ActToolkit {
         return zone.secondsFromGMT(for: date) / 60
     }
 
-    /// Asks in AppKit's alert, a sheet on the window the user is looking at.
+    /// Asks in AppKit's alert, a sheet on the window asked over.
     /// Design: docs/design/host/runtime.md#questions-for-the-user
     func show(
-        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+        _ question: HostQuestion, over window: MountedElement?,
+        answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement? {
-        guard let window = renderer.userWindow, let element = renderer.element(of: window) else { return nil }
+        guard let window = renderer.window(asked: window), let element = renderer.element(of: window) else {
+            return nil
+        }
         let asked = AppKitQuestion(question, in: window)
         showing = asked
         asked.ask(presenting: renderer.presentsWindows) { [weak self] accepted, words in
@@ -81,9 +84,9 @@ final class AppKitActToolkit: ActToolkit {
         }
     }
 
-    /// Takes the focus off whatever holds it in the window the user is looking at; whether anything did.
-    func hideOnScreenKeyboard() -> Bool {
-        guard let window = renderer.userWindow,
+    /// Takes the focus off whatever holds it in the window asked; whether anything did.
+    func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
+        guard let window = renderer.window(asked: window),
               let holder = window.firstResponder as? NSView,
               holder !== window.contentView
         else { return false }

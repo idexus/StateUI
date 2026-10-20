@@ -316,17 +316,18 @@ Focus is not a Boolean command hidden in the description. When state needs to
 observe it, use the `isFocused` feed. When an action needs to move it, use an
 `@Aim`; see [Interaction and actions](interaction-and-actions.md). Where the
 field holding the keyboard is not known - a Done button above a form of
-several fields - `OnScreenKeyboard.hide()` takes the focus off whatever has it
-on the page showing. It answers a `Bool`: `true` when something was focused
+several fields - `window.hideOnScreenKeyboard()` takes the focus off whatever
+has it in the window. It answers a `Bool`: `true` when something was focused
 and is not any more, `false` when the keyboard was already down, which is an
 answer and not a failure:
 
 ```swift
+@Environment(\.window) var window
 @State var said = ""
 
 Button("Close keyboard")
     .onClicked(gate: .ignoreWhileRunning) {
-        said = try await OnScreenKeyboard.hide()
+        said = try await window.hideOnScreenKeyboard()
             ? "Focus released"
             : "Nothing was focused"
     }

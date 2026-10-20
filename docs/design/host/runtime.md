@@ -717,12 +717,15 @@ time in the order asked, each under a ticket of its own across the process
 (`QuestionQueue`), so an answer after its runtime has gone answers nothing
 of another's.
 
-A question or a file dialog stands over the window the toolkit asked in, and
-goes with it: once that window is no longer open, the host layer answers it
-as the user dismissing it does - a confirmation not accepted, nothing chosen
-- and the next asks over the window the user is in then
-(`HostActPerformer.windowsOpen`), which every host tells after its windows
-change. Its caller almost always stood in that window too and went with it;
+A question or a file dialog stands over the window its act names - its
+scene's key and its own, found once in the host layer (`AskedWindow`); the
+window the user is in where it names none - and goes with it: once that
+window is no longer open, the host layer answers it as the user dismissing it
+does - a confirmation not accepted, nothing chosen - and the next asks over
+its own window (`HostActPerformer.windowsOpen`), which every host tells after
+its windows change. One whose window closed while it waited is answered so
+when its turn comes. The keyboard is taken down in the window named, and a
+window closed holds none. Its caller almost always stood in that window too and went with it;
 a question standing over a window gone would otherwise hold every later
 question behind it, and an answer its dialog gives later counts for
 nothing.

@@ -203,6 +203,7 @@ final class PumpTests: XCTestCase {
 
 /// A page whose handlers add one, the second also calling an act.
 private struct CountingPage: View {
+    @Environment(\.window) private var window
     @State private var count = 0
 
     var body: some View {
@@ -213,7 +214,7 @@ private struct CountingPage: View {
             Button("Add and hide")
                 .onClicked(gate: .none) {
                     count += 1
-                    _ = try? await OnScreenKeyboard.hide()
+                    _ = try? await window.hideOnScreenKeyboard()
                 }
         }
     }

@@ -130,8 +130,9 @@ names; a performer may await.
 
 ## Questions for the user
 
-A question is AppKit's own alert, a sheet on the window the user is looking
-at, one at a time (`QuestionQueue`): a confirmation's and a prompt's accepting
+A question is AppKit's own alert, a sheet on the window that asked - over the
+top of its sheets - or the window the user is looking at where the act names
+none, one at a time (`QuestionQueue`): a confirmation's and a prompt's accepting
 button first, a choice's actions, its dangerous one marked, then its cancel.
 A choice answers the caption pressed, its cancel's included; a prompt its
 field's words, cut to their bound. A host that shows no window holds the
@@ -139,8 +140,8 @@ alert unshown, answered as a press answers it.
 
 ## Files
 
-A file dialog is AppKit's own panel, a sheet on the window the user is
-looking at, waiting its turn among the questions
+A file dialog is AppKit's own panel, a sheet on the window that asked, waiting
+its turn among the questions
 ([files](../../host/runtime.md#files)). An open panel enables the files of
 every kind's extensions and chooses several only where asked; a save panel
 offers each kind once, by its first extension, under its caption in the

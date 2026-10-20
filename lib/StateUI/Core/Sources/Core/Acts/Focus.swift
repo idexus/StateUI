@@ -27,31 +27,10 @@ extension Aim where Target: FocusElement {
     ///     Button("Done").onClicked(gate: .ignoreWhileRunning) { try await email.unfocus() }
     ///
     /// For a keyboard whose view is not known here - a Done button above a form
-    /// of several fields - use `OnScreenKeyboard.hide()`, which asks the page.
+    /// of several fields - use `WindowSession.hideOnScreenKeyboard()`, which asks the window.
     ///
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its view is no longer shown.
     public func unfocus() async throws {
         try await call(FocusElementContract.unfocus)
-    }
-}
-
-/// The on-screen keyboard, as the page it is over sees it - reached without
-/// naming the view that opened it. A known view is released with `Aim.unfocus()`.
-public enum OnScreenKeyboard {
-    /// Closes the keyboard by taking the focus off whatever has it.
-    ///
-    ///     Button("Done").onClicked(gate: .ignoreWhileRunning) { try await OnScreenKeyboard.hide() }
-    ///
-    /// The host looks at the page that is showing and walks it for whatever
-    /// holds the focus - a search box in the navigation bar is an ordinary
-    /// view, a page's title view, so the same walk reaches it. Unfocusing the
-    /// search box is also what brings back the navigation bar on iOS, which
-    /// shows the search field in its place while it is focused.
-    ///
-    /// - Returns: true when something was focused and is not any more. False
-    ///   means the keyboard was already down - an answer, not a failure.
-    @discardableResult
-    public static func hide() async throws -> Bool {
-        try await stateUICall(ApplicationContract.hideOnScreenKeyboard)
     }
 }

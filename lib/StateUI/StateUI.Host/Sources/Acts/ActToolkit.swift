@@ -20,11 +20,12 @@
     /// zone the platform does not know.
     func utcOffset(of zone: String?, on day: CalendarDate?) -> Int?
 
-    /// Shows `question` to the user in the window they are looking at, and calls `answered` with what they gave
-    /// when they answer, or why the toolkit could not ask: the window element it asks in, which takes the question
-    /// away when it goes; nil where there is no window to ask in.
+    /// Shows `question` to the user over `window` - the window they are in where nil - and calls `answered` with
+    /// what they gave when they answer, or why the toolkit could not ask: the window element it asks in, which
+    /// takes the question away when it goes; nil where there is no window to ask in.
     func show(
-        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+        _ question: HostQuestion, over window: MountedElement?,
+        answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement?
 
     /// Tells the screen reader `words`, now.
@@ -33,8 +34,9 @@
     /// Shows the whole application in `theme`: light, dark, or the system's again.
     func useColorScheme(_ theme: ColorScheme)
 
-    /// Takes the on-screen keyboard down; whether one was up.
-    func hideOnScreenKeyboard() -> Bool
+    /// Takes the on-screen keyboard down from whatever in `window` - the window the user is in where nil - holds
+    /// the focus; whether one was up.
+    func hideOnScreenKeyboard(in window: MountedElement?) -> Bool
 
     /// Puts the focus on `element`'s view, or the first view in it that takes it: whether it took it; nil where the
     /// element shows no view.

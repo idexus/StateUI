@@ -36,9 +36,10 @@ final class WebActToolkit: ActToolkit {
 
     /// Design: docs/design/platforms/web/pages.md#questions-for-the-user
     func show(
-        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+        _ question: HostQuestion, over window: MountedElement?,
+        answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement? {
-        guard let window = renderer.shownWindow else { return nil }
+        guard let window = renderer.window(asked: window) else { return nil }
         let shown = WebQuestion(question) { [weak self] accepted, words in
             self?.asking = nil
             answered(.success(HostQuestion.Given(accepted: accepted, words: words)))
@@ -63,8 +64,9 @@ final class WebActToolkit: ActToolkit {
         WebRelay.useColorScheme(theme)
     }
 
-    func hideOnScreenKeyboard() -> Bool {
-        WebRelay.blurField()
+    /// Takes the focus off the field holding it in the window the browser shows, the one asked.
+    func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
+        renderer.window(asked: window) != nil && WebRelay.blurField()
     }
 
     func focus(_ element: MountedElement) -> Bool? {

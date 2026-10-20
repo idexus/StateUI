@@ -266,7 +266,7 @@ final class GateTests: XCTestCase {
         let (renders, id) = button(gate: .cancelPrevious) {
             await latch.wait()
             do {
-                try await Dialogs.alert("late", message: "")
+                try await WindowSession().alert("late", message: "")
                 failures.append(false)
             } catch {
                 failures.append(error is CancellationError)

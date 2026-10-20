@@ -11,21 +11,21 @@ import XCTest
 final class ActAnswersTests: XCTestCase {
     /// A question's arguments stand where every host reads them; a caption the act leaves out is the standing one.
     func testAQuestionIsReadAsItsActWritesIt() throws {
-        let confirm = try XCTUnwrap(HostQuestion(HostActCall(act: .confirm, arguments: [.string("Delete?")], completion: 1)))
+        let confirm = try XCTUnwrap(HostQuestion(HostActCall(act: .confirm, arguments: HostActCall.usersWindow + [.string("Delete?")], completion: 1)))
         XCTAssertEqual(confirm.title, "Delete?")
         XCTAssertEqual(confirm.accept, "OK")
         XCTAssertEqual(confirm.cancel, "Cancel")
         XCTAssertEqual(confirm.cancelling, "Cancel", "a confirmation always offers its cancel")
 
         let choose = try XCTUnwrap(HostQuestion(HostActCall(
-            act: .chooseAction, arguments: [.string("Share"), .nothing, .string("Delete"), ["Mail", "Copy"].propValue],
+            act: .chooseAction, arguments: HostActCall.usersWindow + [.string("Share"), .nothing, .string("Delete"), ["Mail", "Copy"].propValue],
             completion: 2)))
         XCTAssertNil(choose.cancel, "a choice offers a cancel only where it names one")
         XCTAssertEqual(choose.destruction, "Delete")
         XCTAssertEqual(choose.choices, ["Mail", "Copy"])
 
         let prompt = try XCTUnwrap(HostQuestion(HostActCall(
-            act: .prompt, arguments: [.string("Name"), .nothing, .nothing, .nothing, .string("Ada"), .number(8),
+            act: .prompt, arguments: HostActCall.usersWindow + [.string("Name"), .nothing, .nothing, .nothing, .string("Ada"), .number(8),
                                       InputPurpose.email.propValue, .string("ada@")], completion: 3)))
         XCTAssertEqual(prompt.placeholder, "Ada")
         XCTAssertEqual(prompt.maximumLength, 8)
@@ -40,7 +40,7 @@ final class ActAnswersTests: XCTestCase {
     func testAPromptsFieldTypesForItsPurpose() throws {
         func prompt(_ purpose: InputPurpose) throws -> HostQuestion {
             try XCTUnwrap(HostQuestion(HostActCall(
-                act: .prompt, arguments: [.string("Name"), .nothing, .nothing, .nothing, .nothing, .nothing,
+                act: .prompt, arguments: HostActCall.usersWindow + [.string("Name"), .nothing, .nothing, .nothing, .nothing, .nothing,
                                           purpose.propValue], completion: 1)))
         }
         for purpose in [InputPurpose.default, .plain, .email, .numeric] {
@@ -59,7 +59,7 @@ final class ActAnswersTests: XCTestCase {
         XCTAssertEqual(try question(.alert).answer(accepted: true, words: nil), [])
 
         let bounded = try XCTUnwrap(HostQuestion(HostActCall(
-            act: .prompt, arguments: [.string("Name"), .nothing, .nothing, .nothing, .nothing, .number(3)], completion: 4)))
+            act: .prompt, arguments: HostActCall.usersWindow + [.string("Name"), .nothing, .nothing, .nothing, .nothing, .number(3)], completion: 4)))
         XCTAssertEqual(bounded.answer(accepted: true, words: "Adé👍x"), ["Adé".propValue], "cut to its bound, by characters")
     }
 

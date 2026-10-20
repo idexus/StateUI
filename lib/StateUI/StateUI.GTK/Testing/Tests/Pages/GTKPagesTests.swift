@@ -540,11 +540,21 @@ private struct SheetedScene: Scene {
         WindowGroup { SheetedOpeningPage() }
         Window(WindowType("pages.sheeted")) {
             if asks {
-                Text("Asking").onCreated { _ = try await Dialogs.confirm("Keep?", message: "", accept: "Keep", cancel: "Drop") }
+                AskingSheetedPage()
             } else {
                 SheetedPage()
             }
         }
+    }
+}
+
+/// The sheeted window's page asking the user over its own window as it is made.
+private struct AskingSheetedPage: View {
+    @Environment(\.window) private var window
+
+    var body: some View {
+        let window = self.window
+        return Text("Asking").onCreated { _ = try await window.confirm("Keep?", message: "", accept: "Keep", cancel: "Drop") }
     }
 }
 

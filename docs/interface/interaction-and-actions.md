@@ -172,16 +172,18 @@ add methods such as history navigation or map movement. `.id(...)` and `.aim(...
 together because they answer different questions: identity says which element
 continues, while the aim says where an action goes.
 
-`OnScreenKeyboard.hide()` dismisses whichever text input currently owns the on-screen
-keyboard when the application does not hold that control's aim.
+`window.hideOnScreenKeyboard()` dismisses whichever text input in the window
+owns the on-screen keyboard when the application does not hold that control's
+aim.
 
 ## Dialogs
 
-Dialogs are sequential host actions rather than tree nodes:
+Dialogs are sequential host actions rather than tree nodes, asked of the window
+a view stands in - the session it reads with `@Environment(\.window)`:
 
 ```swift quote
 Button("Delete").onClicked(gate: .ignoreWhileRunning) {
-    let confirmed = try await Dialogs.confirm(
+    let confirmed = try await window.confirm(
         "Delete draft?",
         message: "This cannot be undone",
         accept: "Delete",
@@ -195,16 +197,21 @@ StateUI also provides a one-button `alert`, a `chooseAction` that returns the
 chosen caption, and a prompt that returns typed text or `nil` on cancellation.
 An accepted empty prompt is `""`, distinct from cancellation.
 
-The host presents a dialog from the page currently visible, including the top
-modal page. Dialogs show one at a time, in the order asked; one asked while
-another is up waits until that one is answered.
+The host presents a dialog over the window that asked, on the page it shows,
+including the top modal page; a view outside every window asks in the window
+the user is in. Dialogs show one at a time, in the order asked; one asked while
+another is up waits until that one is answered, and one whose window closed
+meanwhile is answered as if the user dismissed it.
 
 ## Files and links
 
-The dialogs that open and save files are dialogs too, awaited the same way:
+The dialogs that open and save files are dialogs too, a window's and awaited the
+same way; launching an address is the application's:
 
 ```swift
 struct ReportPage: View {
+    @Environment(\.window) private var window
+    @Environment(\.application) private var application
     @State private var report = "<h1>Report</h1>"
     @State private var opened = ""
 
@@ -212,29 +219,29 @@ struct ReportPage: View {
         VStack {
             Button("Save report…").onClicked(gate: .ignoreWhileRunning) {
                 let page = FileType("HTML page", extensions: ["html"])
-                let saved = try await Dialogs.saveFile(
+                let saved = try await window.saveFile(
                     Array(report.utf8), name: "Report", types: [page])
                 if let saved { try await saved.launch() }
             }
             Button("Open…").onClicked(gate: .ignoreWhileRunning) {
-                guard let file = try await Dialogs.openFile() else { return }
+                guard let file = try await window.openFile() else { return }
                 opened = String(decoding: try await file.read(), as: UTF8.self)
             }
             Button("Help").onClicked(gate: .ignoreWhileRunning) {
-                try await Links.launch("https://www.swift.org")
+                try await application.launch("https://www.swift.org")
             }
         }
     }
 }
 ```
 
-`Dialogs.openFile` answers the `ChosenFile` the user picked, or `nil` on
-cancellation; `Dialogs.openFiles` answers as many as they pick, none on
+`window.openFile` answers the `ChosenFile` the user picked, or `nil` on
+cancellation; `window.openFiles` answers as many as they pick, none on
 cancellation. A `FileType` gives a kind of file its caption and extensions;
 the dialog that opens shows only those kinds, the one that saves offers them
 with the first chosen. No kind means any file.
 
-`Dialogs.saveFile` takes the contents first and writes them where the user
+`window.saveFile` takes the contents first and writes them where the user
 says, answering the file saved or `nil`. Its name gains the first kind's
 extension where it ends in none of theirs. A browser with no save dialog
 downloads the file instead, and the call answers it at once.
@@ -242,7 +249,7 @@ downloads the file instead, and the call answers it at once.
 A `ChosenFile` shows only its `name`. Where it stands belongs to the platform -
 a path, a document's address, a browser's file - so the application reads it
 with `read()` and hands it to the system with `launch()`, which opens it in
-the application the system gives its kind. `Links.launch` does the same for an
+the application the system gives its kind. `application.launch` does the same for an
 address. Both answer whether an application took it. A chosen file stays good
 while the application runs.
 
@@ -252,11 +259,12 @@ the limit is enough to tell it is too long:
 
 ```swift
 struct NotePage: View {
+    @Environment(\.window) private var window
     @State private var note = ""
 
     var body: some View {
         Button("Open a note…").onClicked(gate: .ignoreWhileRunning) {
-            guard let file = try await Dialogs.openFile() else { return }
+            guard let file = try await window.openFile() else { return }
             let start = try await file.read(atMost: 1025)
             note = start.count > 1024
                 ? "\(file.name) is longer than 1 KB"
@@ -602,7 +610,7 @@ style do not, as automation never meets a run and a style dresses many controls.
 Announce an important asynchronous change that has no visible focused element:
 
 ```swift quote
-try await ScreenReader.announce("Import complete")
+try await application.announce("Import complete")
 ```
 
 Do not announce a tap result the user's focused control already expresses;

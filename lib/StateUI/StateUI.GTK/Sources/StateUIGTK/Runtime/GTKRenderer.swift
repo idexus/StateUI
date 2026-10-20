@@ -64,6 +64,13 @@ final class GTKRenderer {
         return front.flatMap { roster.controller(of: $0)?.window } ?? window
     }
 
+    /// The window a window's act asks in: the one `element` stands in, or, where nil, the one the user is in; nil
+    /// where `element` stands in no window shown.
+    func window(asked element: MountedElement?) -> GTKWindow? {
+        guard let element else { return userWindow }
+        return roster.controller(of: element)?.window
+    }
+
     /// The window element whose window is `window`.
     func element(of window: GTKWindow) -> MountedElement? {
         roster.windows.first { $0.controller.window === window }?.element

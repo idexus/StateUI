@@ -14,8 +14,12 @@ final class AppKitQuestionTests: XCTestCase {
     /// neither checks nor corrects its spelling.
     func testAPromptsFieldTypesForItsPurpose() throws {
         let question = try XCTUnwrap(HostQuestion(HostActCall(
-            act: .prompt, arguments: [.string("Code"), .nothing, .nothing, .nothing, .nothing, .nothing,
-                                      InputPurpose.plain.propValue], completion: 1)))
+            act: .prompt,
+            arguments: [
+                .string(""), .string(""), .string("Code"), .nothing, .nothing, .nothing, .nothing, .nothing,
+                InputPurpose.plain.propValue,
+            ],
+            completion: 1)))
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 300, height: 200), styleMask: [.titled], backing: .buffered,
             defer: true)

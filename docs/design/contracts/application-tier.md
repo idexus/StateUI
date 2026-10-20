@@ -13,17 +13,17 @@ write or the runtime, which hands the act its arguments in the order the
 contract declares them.
 
 ```text
-  alert                  Dialogs.alert              the title, the message, the button's caption
-  confirm                Dialogs.confirm            answers whether it was accepted
-  chooseAction           Dialogs.chooseAction       answers the chosen caption, or nothing
-  prompt                 Dialogs.prompt             answers the text, or nothing
-  openFiles              Dialogs.openFile(s)        answers the files chosen, none for a cancel
-  saveFile               Dialogs.saveFile           writes the contents, answers the file, or nothing
+  alert                  window.alert               the title, the message, the button's caption
+  confirm                window.confirm             answers whether it was accepted
+  chooseAction           window.chooseAction        answers the chosen caption, or nothing
+  prompt                 window.prompt              answers the text, or nothing
+  openFiles              window.openFile(s)         answers the files chosen, none for a cancel
+  saveFile               window.saveFile            writes the contents, answers the file, or nothing
   readFile               ChosenFile.read()          answers the file's bytes
   launchFile             ChosenFile.launch()        answers whether an application took the file
-  launchLink             Links.launch               answers whether an application took the address
-  announce               ScreenReader.announce      the screen reader says a text
-  hideOnScreenKeyboard   OnScreenKeyboard.hide()    answers whether a view held the focus
+  launchLink             application.launch         answers whether an application took the address
+  announce               application.announce       the screen reader says a text
+  hideOnScreenKeyboard   window.hideOnScreenKeyboard()  answers whether a view held the focus
   currentTime            ClockTime.now()            hour, minute, second, millisecond
   currentTimeZone        TimeZoneInfo.local()       an IANA identifier
   utcOffset              TimeZoneInfo.utcOffset     minutes, for a zone and a day
@@ -33,7 +33,7 @@ contract declares them.
   handlerFailed          the runtime                a handler's escaped error, told to the host
 ```
 
-A dialog opens on the page that is showing. The application element is a
+A dialog opens over the window that asked, on the page it shows. The application element is a
 `structure` element: it carries no platform control of its own.
 
 ## A tier of the application

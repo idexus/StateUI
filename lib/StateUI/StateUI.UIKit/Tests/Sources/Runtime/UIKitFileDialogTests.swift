@@ -10,13 +10,14 @@ import XCTest
 
 /// A save's words, exported under a name, and the name the file was saved as.
 private struct Saving: View {
+    @Environment(\.window) private var window
     @State private var answer = "-"
 
     var body: some View {
         VStack {
             Button("Save").onClicked(gate: .ignoreWhileRunning) {
                 let text = FileType("Text", extensions: ["txt"])
-                answer = try await Dialogs.saveFile(Array("Kept".utf8), name: "Note", types: [text])?.name ?? "nothing"
+                answer = try await window.saveFile(Array("Kept".utf8), name: "Note", types: [text])?.name ?? "nothing"
             }
             Text(answer)
         }
@@ -25,9 +26,11 @@ private struct Saving: View {
 
 /// A button opening files of two kinds.
 private struct Opening: View {
+    @Environment(\.window) private var window
+
     var body: some View {
         Button("Open").onClicked(gate: .ignoreWhileRunning) {
-            _ = try await Dialogs.openFiles(types: [
+            _ = try await window.openFiles(types: [
                 FileType("Text", extensions: ["txt", "md"]), FileType("Web page", extensions: ["html"]),
             ])
         }

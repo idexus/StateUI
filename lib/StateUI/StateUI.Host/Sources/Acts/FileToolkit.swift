@@ -7,11 +7,12 @@
 /// (`HostActs.files`), handed to its `HostActPerformer` beside its `ActToolkit`.
 /// Design: docs/design/host/runtime.md#files
 @_spi(Host) @MainActor public protocol FileToolkit: AnyObject {
-    /// Shows `dialog` over the window the user is looking at, and calls `answered` with the files chosen - none where
-    /// they cancelled, a save's once its contents stand written - or why it failed: the window element it shows it
-    /// over, which takes it away when it goes; nil where there is no window to show it over.
+    /// Shows `dialog` over `window` - the window the user is in where nil - and calls `answered` with the files
+    /// chosen - none where they cancelled, a save's once its contents stand written - or why it failed: the window
+    /// element it shows it over, which takes it away when it goes; nil where there is no window to show it over.
     func show(
-        _ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
+        _ dialog: HostFileDialog, over window: MountedElement?,
+        answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
     ) -> MountedElement?
 
     /// Reads `file` - whole for a nil `maximum`, else its first `maximum` bytes at most, never the rest of a longer

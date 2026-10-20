@@ -31,7 +31,7 @@
 
     /// The dialog `call` asks for; nil for an act that asks for none.
     public init?(_ call: HostActCall) {
-        let arguments = call.arguments
+        let arguments = AskedWindow.arguments(of: call)
         func kinds(_ index: Int) -> [FileType] { arguments.value(index).flatMap([FileType].init(propValue:)) ?? [] }
         switch call.act {
         case .openFiles:

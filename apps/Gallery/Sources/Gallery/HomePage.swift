@@ -24,6 +24,9 @@ struct HomePage: View {
     /// The gallery this page is in - its scene.
     @Environment(\.scene) var scene
 
+    /// The application, which launches the repository's address.
+    @Environment(\.application) private var application
+
     let catalog: Catalog
 
     /// Where the gallery is - a card pushes its group.
@@ -168,13 +171,13 @@ struct HomePage: View {
                             .stroke(.transparent)
                             .shape(.capsule)
                             .padding(horizontal: 14, vertical: 6)
-                            .onClicked(gate: opening) { try await Links.launch(Self.repository) }
+                            .onClicked(gate: opening) { try await application.launch(Self.repository) }
                     }
                     .padding(14)
                     .horizontalAlignment(.end)
                     .verticalAlignment(.start)
                 }
-                .onTapped(gate: opening) { try await Links.launch(Self.repository) }
+                .onTapped(gate: opening) { try await application.launch(Self.repository) }
                 .style(.card)
                 .background(Palette.identity)
                 .stroke(.transparent)

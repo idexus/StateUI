@@ -28,11 +28,13 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
-                    VStack {
-                        Button("Alert").onClicked(gate: .ignoreWhileRunning) {
-                            try await Dialogs.alert("Saved", message: "The draft is kept", cancel: "Fine")
-                            said.values.append("dismissed")
-                        }.id("ask")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Alert").onClicked(gate: .ignoreWhileRunning) {
+                                try await window.alert("Saved", message: "The draft is kept", cancel: "Fine")
+                                said.values.append("dismissed")
+                            }.id("ask")
+                        }
                     }
                 }
 
@@ -52,11 +54,13 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<Bool>()
                 s.start {
-                    VStack {
-                        Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
-                            said.values.append(try await Dialogs.confirm(
-                                "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep"))
-                        }.id("ask")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
+                                said.values.append(try await window.confirm(
+                                    "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep"))
+                            }.id("ask")
+                        }
                     }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -79,12 +83,14 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
-                    VStack {
-                        Button("Share").onClicked(gate: .ignoreWhileRunning) {
-                            let chosen = try await Dialogs.chooseAction(
-                                "Share via", cancel: "Cancel", destruction: "Delete", buttons: ["Mail", "Message"])
-                            said.values.append(chosen ?? "nothing")
-                        }.id("ask")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Share").onClicked(gate: .ignoreWhileRunning) {
+                                let chosen = try await window.chooseAction(
+                                    "Share via", cancel: "Cancel", destruction: "Delete", buttons: ["Mail", "Message"])
+                                said.values.append(chosen ?? "nothing")
+                            }.id("ask")
+                        }
                     }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -111,13 +117,15 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
-                    VStack {
-                        Button("Rename").onClicked(gate: .ignoreWhileRunning) {
-                            let typed = try await Dialogs.prompt(
-                                "Rename", message: "A new name", accept: "Save", cancel: "Cancel",
-                                placeholder: "Name", initialValue: "Draft")
-                            said.values.append(typed ?? "nothing")
-                        }.id("ask")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Rename").onClicked(gate: .ignoreWhileRunning) {
+                                let typed = try await window.prompt(
+                                    "Rename", message: "A new name", accept: "Save", cancel: "Cancel",
+                                    placeholder: "Name", initialValue: "Draft")
+                                said.values.append(typed ?? "nothing")
+                            }.id("ask")
+                        }
                     }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -140,15 +148,17 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
-                    VStack {
-                        Button("Alert").onClicked(gate: .ignoreWhileRunning) {
-                            try await Dialogs.alert("First", message: "")
-                            said.values.append("first")
-                        }.id("first")
-                        Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
-                            let accepted = try await Dialogs.confirm("Second", message: "", accept: "Yes", cancel: "No")
-                            said.values.append("second \(accepted)")
-                        }.id("second")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Alert").onClicked(gate: .ignoreWhileRunning) {
+                                try await window.alert("First", message: "")
+                                said.values.append("first")
+                            }.id("first")
+                            Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
+                                let accepted = try await window.confirm("Second", message: "", accept: "Yes", cancel: "No")
+                                said.values.append("second \(accepted)")
+                            }.id("second")
+                        }
                     }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -171,17 +181,19 @@
                 let said = Received<String>()
                 let text = FileType("Text", extensions: ["txt"])
                 s.start {
-                    VStack {
-                        Button("Save").onClicked(gate: .ignoreWhileRunning) {
-                            let saved = try await Dialogs.saveFile(Array("Kept words".utf8), name: "note", types: [text])
-                            said.values.append(saved?.name ?? "nothing")
-                        }.id("save")
-                        Button("Open").onClicked(gate: .ignoreWhileRunning) {
-                            guard let file = try await Dialogs.openFile(types: [text]) else {
-                                return said.values.append("nothing")
-                            }
-                            said.values.append("\(file.name): \(String(decoding: try await file.read(), as: UTF8.self))")
-                        }.id("open")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Save").onClicked(gate: .ignoreWhileRunning) {
+                                let saved = try await window.saveFile(Array("Kept words".utf8), name: "note", types: [text])
+                                said.values.append(saved?.name ?? "nothing")
+                            }.id("save")
+                            Button("Open").onClicked(gate: .ignoreWhileRunning) {
+                                guard let file = try await window.openFile(types: [text]) else {
+                                    return said.values.append("nothing")
+                                }
+                                said.values.append("\(file.name): \(String(decoding: try await file.read(), as: UTF8.self))")
+                            }.id("open")
+                        }
                     }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -209,21 +221,23 @@
                 let said = Received<String>()
                 let text = FileType("Text", extensions: ["txt"])
                 s.start {
-                    VStack {
-                        Button("Save").onClicked(gate: .ignoreWhileRunning) {
-                            let saved = try await Dialogs.saveFile(Array("Kept words".utf8), name: "start", types: [text])
-                            said.values.append(saved?.name ?? "nothing")
-                        }.id("save")
-                        Button("Open").onClicked(gate: .ignoreWhileRunning) {
-                            guard let file = try await Dialogs.openFile(types: [text]) else {
-                                return said.values.append("nothing")
-                            }
-                            let parts = [
-                                try await file.read(atMost: 4), try await file.read(atMost: 0),
-                                try await file.read(atMost: 100),
-                            ]
-                            said.values.append(parts.map { String(decoding: $0, as: UTF8.self) }.joined(separator: "|"))
-                        }.id("open")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Save").onClicked(gate: .ignoreWhileRunning) {
+                                let saved = try await window.saveFile(Array("Kept words".utf8), name: "start", types: [text])
+                                said.values.append(saved?.name ?? "nothing")
+                            }.id("save")
+                            Button("Open").onClicked(gate: .ignoreWhileRunning) {
+                                guard let file = try await window.openFile(types: [text]) else {
+                                    return said.values.append("nothing")
+                                }
+                                let parts = [
+                                    try await file.read(atMost: 4), try await file.read(atMost: 0),
+                                    try await file.read(atMost: 100),
+                                ]
+                                said.values.append(parts.map { String(decoding: $0, as: UTF8.self) }.joined(separator: "|"))
+                            }.id("open")
+                        }
                     }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -244,14 +258,16 @@
             ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile)]) { s in
                 let said = Received<String>()
                 s.start {
-                    VStack {
-                        Button("Save").onClicked(gate: .ignoreWhileRunning) {
-                            said.values.append(try await Dialogs.saveFile([1], name: "file.txt")?.name ?? "nothing")
-                        }.id("save")
-                        Button("Open").onClicked(gate: .ignoreWhileRunning) {
-                            let names = try await Dialogs.openFiles().map(\.name).sorted()
-                            said.values.append(names.joined(separator: " "))
-                        }.id("open")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Save").onClicked(gate: .ignoreWhileRunning) {
+                                said.values.append(try await window.saveFile([1], name: "file.txt")?.name ?? "nothing")
+                            }.id("save")
+                            Button("Open").onClicked(gate: .ignoreWhileRunning) {
+                                let names = try await window.openFiles().map(\.name).sorted()
+                                said.values.append(names.joined(separator: " "))
+                            }.id("open")
+                        }
                     }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -274,14 +290,16 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
-                    VStack {
-                        Button("Open").onClicked(gate: .ignoreWhileRunning) {
-                            said.values.append("opened \(try await Dialogs.openFiles().count)")
-                        }.id("open")
-                        Button("Save").onClicked(gate: .ignoreWhileRunning) {
-                            let saved = try await Dialogs.saveFile([1], name: "never.txt")
-                            said.values.append("saved \(saved?.name ?? "nothing")")
-                        }.id("save")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Open").onClicked(gate: .ignoreWhileRunning) {
+                                said.values.append("opened \(try await window.openFiles().count)")
+                            }.id("open")
+                            Button("Save").onClicked(gate: .ignoreWhileRunning) {
+                                let saved = try await window.saveFile([1], name: "never.txt")
+                                said.values.append("saved \(saved?.name ?? "nothing")")
+                            }.id("save")
+                        }
                     }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -302,13 +320,15 @@
             ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile)]) { s in
                 let said = Received<Bool>()
                 s.start {
-                    VStack {
-                        Button("Launch").onClicked(gate: .ignoreWhileRunning) {
-                            said.values.append(try await Links.launch("https://www.swift.org"))
-                            if let saved = try await Dialogs.saveFile(Array("<p>Report</p>".utf8), name: "report.html") {
-                                said.values.append(try await saved.launch())
-                            }
-                        }.id("launch")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Launch").onClicked(gate: .ignoreWhileRunning) {
+                                said.values.append(try await application.launch("https://www.swift.org"))
+                                if let saved = try await window.saveFile(Array("<p>Report</p>".utf8), name: "report.html") {
+                                    said.values.append(try await saved.launch())
+                                }
+                            }.id("launch")
+                        }
                     }
                 }
 
@@ -324,11 +344,13 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
-                    VStack {
-                        Button("Say").onClicked(gate: .ignoreWhileRunning) {
-                            try await ScreenReader.announce("Saved the draft")
-                            said.values.append("announced")
-                        }.id("say")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Say").onClicked(gate: .ignoreWhileRunning) {
+                                try await application.announce("Saved the draft")
+                                said.values.append("announced")
+                            }.id("say")
+                        }
                     }
                 }
 
@@ -441,9 +463,11 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<Bool>()
                 s.start {
-                    VStack {
-                        TextField("").id("field")
-                        Button("Done").onClicked(gate: .ignoreWhileRunning) { said.values.append(try await OnScreenKeyboard.hide()) }.id("done")
+                    WithSessions { window, application in
+                        VStack {
+                            TextField("").id("field")
+                            Button("Done").onClicked(gate: .ignoreWhileRunning) { said.values.append(try await window.hideOnScreenKeyboard()) }.id("done")
+                        }
                     }
                 }
                 let field = try s.element("field")

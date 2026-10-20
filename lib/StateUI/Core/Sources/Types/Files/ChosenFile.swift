@@ -4,7 +4,7 @@
 /// A file the user opened or saved in a dialog: its name, and its contents
 /// read through the host.
 ///
-///     if let file = try await Dialogs.openFile(types: [page]) {
+///     if let file = try await window.openFile(types: [page]) {
 ///         let html = String(decoding: try await file.read(), as: UTF8.self)
 ///     }
 ///

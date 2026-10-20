@@ -45,11 +45,12 @@ final class UIKitActToolkit: ActToolkit {
         return zone.secondsFromGMT(for: date) / 60
     }
 
-    /// Asks in UIKit's alert over what the user's window shows - its top sheet, else its pages - once nothing moves.
+    /// Asks in UIKit's alert over what the window asked shows - its top sheet, else its pages - once nothing moves.
     func show(
-        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+        _ question: HostQuestion, over window: MountedElement?,
+        answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement? {
-        guard let root = renderer.userRoot, let window = root.view.window.flatMap(renderer.element(of:))
+        guard let root = renderer.root(asked: window), let window = root.view.window.flatMap(renderer.element(of:))
         else { return nil }
         let asked = UIKitQuestion(question)
         showing = asked
@@ -81,9 +82,9 @@ final class UIKitActToolkit: ActToolkit {
         }
     }
 
-    /// Takes the keyboard down: whatever holds the focus in the user's window gives it up; whether anything did.
-    func hideOnScreenKeyboard() -> Bool {
-        guard let window = renderer.userWindow, Self.holder(in: window) != nil else { return false }
+    /// Takes the keyboard down: whatever holds the focus in the window asked gives it up; whether anything did.
+    func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
+        guard let window = renderer.window(asked: window), Self.holder(in: window) != nil else { return false }
         return window.endEditing(true)
     }
 

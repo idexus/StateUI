@@ -9,12 +9,13 @@ import XCTest
 
 /// A button offering a choice with no cancel, and the choice it was answered.
 private struct Choosing: View {
+    @Environment(\.window) private var window
     @State private var answer = "-"
 
     var body: some View {
         VStack {
             Button("Share").onClicked(gate: .ignoreWhileRunning) {
-                answer = try await Dialogs.chooseAction("Share via", buttons: ["Mail", "Message"]) ?? "none"
+                answer = try await window.chooseAction("Share via", buttons: ["Mail", "Message"]) ?? "none"
             }
             Text(answer)
         }

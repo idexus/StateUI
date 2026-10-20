@@ -155,6 +155,15 @@ final class AppKitRenderer {
         NSApp.keyWindow ?? windowControllers.first?.window
     }
 
+    /// The window a window's act asks in: the one `element` stands in - the top of the sheets over it - or, where
+    /// nil, the one the user is looking at; nil where `element` stands in no window shown.
+    func window(asked element: MountedElement?) -> NSWindow? {
+        guard let element else { return userWindow }
+        var window = roster.controller(of: element)?.window
+        while let sheet = window?.attachedSheet { window = sheet }
+        return window
+    }
+
     /// The window element `window` shows, or the one it stands over as a sheet; else the tree's first.
     func element(of window: NSWindow) -> MountedElement? {
         var native: NSWindow? = window

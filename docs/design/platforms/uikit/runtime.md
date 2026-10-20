@@ -116,7 +116,7 @@ is its toolkit's. The clock and the zones are the device's. A word to the
 screen reader is VoiceOver's announcement. On iOS only a field or an editor
 takes the focus: an act focusing a view gives it to the view, or the first
 view in it that takes it, and answers whether one did; taking the keyboard
-down ends the editing in the window the user is looking at. Where the focus
+down ends the editing in the window that asked. Where the focus
 is, each element following it hears as it moves - a field and an editor say
 so as their editing begins and ends, and every focus act says so too, as not
 every view taking the focus does. Kept values stand in the preferences, read

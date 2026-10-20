@@ -2500,6 +2500,7 @@ enum Listings {
         """#,
         "DialogsSample": #"""
         // Sources/Samples/Navigation/DialogsSample.swift
+        @Environment(\.window) private var window
         @State private var answer = "nothing asked yet"
         @State private var name = "Draft 1"
 
@@ -2513,7 +2514,7 @@ enum Listings {
                 // dismissed, so the next line runs with the alert already gone.
                 Button("Tell me something")
                     .onClicked(gate: .ignoreWhileRunning) {
-                        try await Dialogs.alert(
+                        try await window.alert(
                             "Saved", message: "The draft is safe")
                         answer = "the alert was dismissed"
                     }
@@ -2521,7 +2522,7 @@ enum Listings {
                 // Ask, await, branch - in one place, which is what an act is for.
                 Button("Ask me a question")
                     .onClicked(gate: .ignoreWhileRunning) {
-                        let ok = try await Dialogs.confirm(
+                        let ok = try await window.confirm(
                             "Delete draft?", message: "This cannot be undone",
                             accept: "Delete", cancel: "Keep")
                         answer = ok ? "Delete pressed" : "Keep pressed"
@@ -2532,7 +2533,7 @@ enum Listings {
                 // chosen, tapping beside it where the platform allows that.
                 Button("Offer me choices")
                     .onClicked(gate: .ignoreWhileRunning) {
-                        let choice = try await Dialogs.chooseAction(
+                        let choice = try await window.chooseAction(
                             "Share via", cancel: "Cancel", destruction: "Delete",
                             buttons: ["Mail", "Message"])
                         answer = choice.map { "\($0) pressed" }
@@ -2543,7 +2544,7 @@ enum Listings {
                 // back as "" - an empty answer, which is still an answer.
                 Button("Ask me to type")
                     .onClicked(gate: .ignoreWhileRunning) {
-                        let typed = try await Dialogs.prompt(
+                        let typed = try await window.prompt(
                             "Rename", message: "A new name for the draft",
                             placeholder: "Name", initialValue: name, maximumLength: 40)
                         if let typed { name = typed }
@@ -2926,6 +2927,8 @@ enum Listings {
         """#,
         "FilesSample": #"""
         // Sources/Samples/Navigation/FilesSample.swift
+        @Environment(\.window) private var window
+        @Environment(\.application) private var application
         @State private var words = "Words to keep"
         @State private var saved: ChosenFile?
         @State private var answer = "nothing opened or saved yet"
@@ -2940,7 +2943,7 @@ enum Listings {
                 Button("Save…")
                     .onClicked(gate: .ignoreWhileRunning) {
                         let text = FileType("Text", extensions: ["txt"])
-                        saved = try await Dialogs.saveFile(Array(words.utf8), name: "Note", types: [text])
+                        saved = try await window.saveFile(Array(words.utf8), name: "Note", types: [text])
                         answer = saved.map { "saved as \($0.name)" } ?? "cancelled"
                     }
 
@@ -2948,7 +2951,7 @@ enum Listings {
                 Button("Open…")
                     .onClicked(gate: .ignoreWhileRunning) {
                         let text = FileType("Text", extensions: ["txt", "md"])
-                        guard let file = try await Dialogs.openFile(types: [text]) else {
+                        guard let file = try await window.openFile(types: [text]) else {
                             return answer = "cancelled"
                         }
                         let start = try await file.read(atMost: 1025)
@@ -2965,7 +2968,7 @@ enum Listings {
                     }
 
                 Button("Launch swift.org")
-                    .onClicked(gate: .ignoreWhileRunning) { try await Links.launch("https://www.swift.org") }
+                    .onClicked(gate: .ignoreWhileRunning) { try await application.launch("https://www.swift.org") }
 
                 // A text file dragged from the system onto it is read into the editor.
                 ZStack {
@@ -4859,6 +4862,7 @@ enum Listings {
         """#,
         "KeyboardSample": #"""
         // Sources/Samples/Text/KeyboardSample.swift
+        @Environment(\.window) private var window
         @State private var name = ""
         @State private var note = ""
         @State private var said = ""
@@ -4889,7 +4893,7 @@ enum Listings {
 
                 Button("Close keyboard")
                     .onClicked(gate: .ignoreWhileRunning) {
-                        said = try await OnScreenKeyboard.hide()
+                        said = try await window.hideOnScreenKeyboard()
                             ? "Focus released"
                             : "Nothing was focused"
                     }
@@ -9022,6 +9026,7 @@ enum Listings {
         """#,
         "SearchSample": #"""
         // Sources/Samples/Navigation/SearchSample.swift
+        @Environment(\.window) private var window
         /// Where the gallery is: choosing a suggestion pushes a page.
         let nav: Navigation
 
@@ -9104,6 +9109,7 @@ enum Listings {
         """#,
         "SemanticsSample": #"""
         // Sources/Samples/BasicInput/SemanticsSample.swift
+        @Environment(\.application) private var application
         @State private var described = true
 
         @State private var taps = 0
@@ -9188,7 +9194,7 @@ enum Listings {
                     .horizontalAlignment(.center)
                     .onClicked(gate: .ignoreWhileRunning) {
                         let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"
-                        try await ScreenReader.announce(words)
+                        try await application.announce(words)
                         said = words
                     }
 

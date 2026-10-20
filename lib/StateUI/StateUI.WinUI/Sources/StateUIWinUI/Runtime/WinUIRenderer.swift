@@ -59,6 +59,13 @@ final class WinUIRenderer {
         return front.flatMap { controller(of: $0)?.window } ?? window
     }
 
+    /// The window a window's act asks in: the one `element` stands in, or, where nil, the one the user is in; nil
+    /// where `element` stands in no window shown.
+    func window(asked element: MountedElement?) -> WinUIWindow? {
+        guard let element else { return userWindow }
+        return controller(of: element)?.window
+    }
+
     /// The window element whose window is `window`.
     func element(of window: WinUIWindow) -> MountedElement? {
         roster.windows.first { $0.controller.window === window }?.element

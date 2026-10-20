@@ -120,6 +120,20 @@ public final class WindowSession {
         try record.closeWindow(key: key)
     }
 
+    /// The window as an act aimed at it names it: its scene's key and its own - both empty for a session of no
+    /// scene, whose acts ask in the window the user is in.
+    ///
+    /// - Throws: `WindowError.noScene` for a window whose scene ended, and `WindowError.notOpen` for one closed.
+    /// Design: docs/design/core/acts.md#a-windows-acts
+    var address: (scene: Name, window: Name) {
+        get throws {
+            guard let record else { return (Name(""), Name("")) }
+            guard OpenScenes.shared.record(id: record.id) === record else { throw WindowError.noScene }
+            guard record.windows.contains(where: { $0.key == key }) else { throw WindowError.notOpen }
+            return (Name(record.id), Name(key))
+        }
+    }
+
     /// The explicitly authored window properties. An absent value leaves that
     /// capability under native window management.
     var props: [Prop: PropValue] {

@@ -22,6 +22,6 @@ public struct InspectorButton: View {
             .padding(horizontal: 10, vertical: 2)
             .accessibilityIdentifier("stateui.inspector")
             .accessibilityLabel("Inspector")
-            .onClicked { Inspector.toggle(in: window) }
+            .onClicked { window.toggleInspector() }
     }
 }

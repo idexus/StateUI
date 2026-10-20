@@ -67,7 +67,7 @@
 
     /// The question `call` asks; nil for an act that is no question.
     public init?(_ call: HostActCall) {
-        let arguments = call.arguments
+        let arguments = AskedWindow.arguments(of: call)
         func text(_ index: Int) -> String? { index < arguments.count ? arguments[index].string : nil }
         switch call.act {
         case .alert: kind = .alert

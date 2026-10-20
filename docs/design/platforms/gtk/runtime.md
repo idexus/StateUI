@@ -71,9 +71,9 @@ bar is the window's title bar, an arrangement as it stands, its pages
 carrying their own ([pages](pages.md)). A window is presented the first time
 it shows something while its scene shows it, and told it was made once, in
 its turn. Every window is one of its own, and a window its scene hides while
-another is in front is hidden. A question, a word to the screen
-reader and the way back go to the window the user is in: the one activated
-last.
+another is in front is hidden. A word to the screen reader and the
+way back go to the window the user is in: the one activated last; a question
+goes over the window that asked, that one where it names none.
 
 ## A window's frame
 
@@ -154,7 +154,7 @@ it accepts.
 ## Files
 
 A file dialog is GTK's `GtkFileDialog` - the desktop's own dialog, through
-its portal, where the session has one - over the window the user is in,
+its portal, where the session has one - over the window that asked,
 waiting its turn among the questions ([files](../../host/runtime.md#files)).
 One that opens shows every kind's files under one filter; one that saves
 offers each kind under its caption, the first chosen, and suggests the act's

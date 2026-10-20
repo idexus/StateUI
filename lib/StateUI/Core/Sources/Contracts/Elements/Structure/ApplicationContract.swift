@@ -12,32 +12,33 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure
 
-    /// Tells the user something on the showing page, with one button that
-    /// dismisses it: the title, the message and the button's caption.
+    /// Tells the user something over a window, with one button that dismisses
+    /// it: the window, as its scene's key and its own - both empty for the
+    /// window the user is in - the title, the message and the button's caption.
     ///
-    /// See `Dialogs.alert`.
-    public static let alert = ElementAct<Self, (String, String, String), Void>("alert")
+    /// See `WindowSession.alert`.
+    public static let alert = ElementAct<Self, (Name, Name, String, String, String), Void>("alert")
 
     /// Has the platform's screen reader say a text.
     ///
-    /// See `ScreenReader.announce`.
+    /// See `ApplicationSession.announce`.
     public static let announce = ElementAct<Self, String, Void>("announce")
 
-    /// Offers the user a list of choices on the showing page - the title, the
-    /// cancel and the destructive captions where there are ones, and the
+    /// Offers the user a list of choices over a window - the window, the title,
+    /// the cancel and the destructive captions where there are ones, and the
     /// choices - answering the pressed caption, or nothing where the sheet was
     /// dismissed.
     ///
-    /// See `Dialogs.chooseAction`.
-    public static let chooseAction = ElementAct<Self, (String, String?, String?, [String]), String?>(
+    /// See `WindowSession.chooseAction`.
+    public static let chooseAction = ElementAct<Self, (Name, Name, String, String?, String?, [String]), String?>(
         "chooseAction")
 
-    /// Asks the user a yes-or-no question on the showing page - the title,
-    /// the message, and the captions that accept and cancel - answering whether
-    /// it was accepted.
+    /// Asks the user a yes-or-no question over a window - the window, the
+    /// title, the message, and the captions that accept and cancel - answering
+    /// whether it was accepted.
     ///
-    /// See `Dialogs.confirm`.
-    public static let confirm = ElementAct<Self, (String, String, String, String), Bool>("confirm")
+    /// See `WindowSession.confirm`.
+    public static let confirm = ElementAct<Self, (Name, Name, String, String, String, String), Bool>("confirm")
 
     /// The host's local time of day, as four numbers: hour, minute, second,
     /// millisecond.
@@ -53,11 +54,11 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// A handler's escaped error, reported to the host.
     public static let handlerFailed = ElementAct<Self, String, Void>("handlerFailed")
 
-    /// Takes the keyboard down from whichever view on the showing page holds
-    /// the focus, answering whether one did.
+    /// Takes the keyboard down from whichever view in a window holds the focus,
+    /// answering whether one did: the window.
     ///
-    /// See `OnScreenKeyboard.hide()`.
-    public static let hideOnScreenKeyboard = ElementAct<Self, Void, Bool>("hideOnScreenKeyboard")
+    /// See `WindowSession.hideOnScreenKeyboard()`.
+    public static let hideOnScreenKeyboard = ElementAct<Self, (Name, Name), Bool>("hideOnScreenKeyboard")
 
     /// Opens a file the user chose in the application the system gives its
     /// kind, answering whether one took it.
@@ -68,7 +69,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// Opens an address in the application the system gives it - a web page,
     /// a mail address - answering whether one took it.
     ///
-    /// See `Links.launch(_:)`.
+    /// See `ApplicationSession.launch(_:)`.
     public static let launchLink = ElementAct<Self, String, Bool>("launchLink")
 
     /// Shows the whole application in a theme - light, dark, or the system's,
@@ -77,12 +78,12 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// See `ApplicationSession.colorScheme`.
     public static let useColorScheme = ElementAct<Self, ColorScheme, Void>("useColorScheme")
 
-    /// Asks the user for files to open in the dialog over the showing page -
-    /// the kinds it shows, none for any, and whether it takes several -
+    /// Asks the user for files to open in the dialog over a window - the
+    /// window, the kinds it shows, none for any, and whether it takes several -
     /// answering the files chosen, none where it was cancelled.
     ///
-    /// See `Dialogs.openFile(types:)`.
-    public static let openFiles = ElementAct<Self, ([FileType], Bool), [ChosenFile]>("openFiles")
+    /// See `WindowSession.openFile(types:)`.
+    public static let openFiles = ElementAct<Self, (Name, Name, [FileType], Bool), [ChosenFile]>("openFiles")
 
     /// A scene key's new value, on its way to the platform's record of that
     /// scene: the scene, the key, the value.
@@ -91,14 +92,15 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// A kept key's new value, on its way to the store the host keeps it in.
     public static let persistValue = ElementAct<Self, (Name, PropValue), Void>("persistValue")
 
-    /// Asks the user to type something on the showing page - the title, the
-    /// message, the captions that accept and cancel, the placeholder, the most
-    /// characters, what the field is for and what it starts holding - answering
-    /// the text, or nothing where it was cancelled.
+    /// Asks the user to type something over a window - the window, the title,
+    /// the message, the captions that accept and cancel, the placeholder, the
+    /// most characters, what the field is for and what it starts holding -
+    /// answering the text, or nothing where it was cancelled.
     ///
-    /// See `Dialogs.prompt`.
-    public static let prompt = ElementAct<Self, (String, String, String, String, String?, Int?, InputPurpose, String), String?>(
-        "prompt")
+    /// See `WindowSession.prompt`.
+    public static let prompt = ElementAct<
+        Self, (Name, Name, String, String, String, String, String?, Int?, InputPurpose, String), String?
+    >("prompt")
 
     /// Reads a file the user chose: whole where nothing more is said, else at
     /// most so many bytes from its start.
@@ -106,13 +108,13 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// See `ChosenFile.read()` and `ChosenFile.read(atMost:)`.
     public static let readFile = ElementAct<Self, (ChosenFile, Int?), [UInt8]>("readFile")
 
-    /// Asks the user where to save in the dialog over the showing page, and
-    /// writes the contents there - the contents, the name it suggests and the
+    /// Asks the user where to save in the dialog over a window, and writes the
+    /// contents there - the window, the contents, the name it suggests and the
     /// kinds it offers - answering the file saved, or nothing where it was
     /// cancelled.
     ///
-    /// See `Dialogs.saveFile(_:name:types:)`.
-    public static let saveFile = ElementAct<Self, ([UInt8], String, [FileType]), ChosenFile?>("saveFile")
+    /// See `WindowSession.saveFile(_:name:types:)`.
+    public static let saveFile = ElementAct<Self, (Name, Name, [UInt8], String, [FileType]), ChosenFile?>("saveFile")
 
     /// How far a zone is from UTC on a day, in minutes: the zone's identifier,
     /// the local one where there is none, and the day, now where there is

@@ -22,9 +22,11 @@ extension ControlDictionary {
             }
 
             struct NotesPage: View {
+                @Environment(\.window) private var window
+
                 var body: some View {
                     Button("About")
-                        .onClicked(gate: .ignoreWhileRunning) { try await Dialogs.alert("Notes", message: "Version 1.0") }
+                        .onClicked(gate: .ignoreWhileRunning) { try await window.alert("Notes", message: "Version 1.0") }
                 }
             }
             """#),

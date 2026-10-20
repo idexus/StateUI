@@ -33,13 +33,13 @@ Cube3DSample.swift da05c5b4d44ecc04
 DatePickerSample.swift 98ec31b1e84de06c
 DeviceDisplaySample.swift a9241d0b33fff4dc
 DeviceInfoSample.swift cb6c33fedbd844cf
-DialogsSample.swift 6dd7731f4e168fa6
+DialogsSample.swift 92864e4606681b66
 DragAndDropSample.swift 4fbe44109e627724
 DrivenReadingSample.swift a58a0b1d8786607a
 DrivenSample.swift 7ead46a5789b6651
 EngineSample.swift d5a3e7207bb60bac
 EnvironmentSample.swift cb3fd389ce8ef814
-FilesSample.swift 7488409a57306202
+FilesSample.swift 9593e9f35f0a5b03
 FoundationProbeSample.swift 53fe7a3368cb73e8
 GalleryViewSample.swift 59dc7dfabd29f376
 GateSample.swift 0eb1cb01a376dac3
@@ -56,7 +56,7 @@ InteropControlSample.swift 8214d6ed8e1f00fa
 InteropEventsSample.swift cfcc0bc84d5ab117
 ItemsViewSample.swift 53d356987267d768
 KeyPressSample.swift 56c3fa94875fbba4
-KeyboardSample.swift 06a0fae1aeddb219
+KeyboardSample.swift c5e3fb02c6a6502d
 LayoutAxesSample.swift 2399b054d15ee4f6
 LayoutDirectionSample.swift 8f77f9e896d50693
 LayoutEngineSample.swift c35fcdbc60c44f73
@@ -97,9 +97,9 @@ SameInputsSample.swift 11581f61c6c4343c
 ScenesSample.swift 4325dc58daa1c9e7
 ScrollViewSample.swift cf26f19b3729064f
 SearchFieldSample.swift 32903a70f555dea0
-SearchSample.swift 38388654add4726f
+SearchSample.swift 679d1baa31dfcd8b
 SelectableTextSample.swift 32194d184067f26d
-SemanticsSample.swift 43bb632a77f4fe58
+SemanticsSample.swift 1e53c7cdc433d4bd
 ShapesSample.swift 16dac69d49bdaf58
 ShortcutSample.swift daf4ef581131770c
 SizingSample.swift 4941cf38e3890eb7

@@ -50,6 +50,13 @@ final class WebRenderer {
     /// The window element the browser shows, which a question and a file dialog stand over.
     var shownWindow: MountedElement? { roster.windows.first?.element }
 
+    /// The window a window's act asks in: the one the browser shows, where the act names it or none; nil for
+    /// another.
+    func window(asked element: MountedElement?) -> MountedElement? {
+        guard let shownWindow, element == nil || element?.enclosing(type: .window) === shownWindow else { return nil }
+        return shownWindow
+    }
+
     /// What is kept of the scenes for the page's next start.
     let scenes = SceneKeeper()
 

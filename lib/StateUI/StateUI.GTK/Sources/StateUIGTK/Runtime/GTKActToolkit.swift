@@ -48,9 +48,10 @@ final class GTKActToolkit: ActToolkit {
 
     /// Design: docs/design/platforms/gtk/runtime.md#questions-for-the-user
     func show(
-        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+        _ question: HostQuestion, over window: MountedElement?,
+        answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement? {
-        guard let window = renderer.userWindow, let element = renderer.element(of: window) else { return nil }
+        guard let window = renderer.window(asked: window), let element = renderer.element(of: window) else { return nil }
         GTKQuestion(question) { answered(.success(HostQuestion.Given(accepted: $0, words: $1))) }.show(over: window)
         return element
     }
@@ -71,10 +72,10 @@ final class GTKActToolkit: ActToolkit {
         adw_style_manager_set_color_scheme(adw_style_manager_get_default(), scheme)
     }
 
-    /// The keyboard GNOME shows on a touch screen stands for the field holding the focus: the field lets the focus
-    /// go, and the keyboard goes down. Whether a field held it.
-    func hideOnScreenKeyboard() -> Bool {
-        guard let window = renderer.userWindow, let root = gtk_widget_get_root(window.widget),
+    /// The keyboard GNOME shows on a touch screen stands for the field holding the focus in the window asked: the
+    /// field lets the focus go, and the keyboard goes down. Whether a field held it.
+    func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
+        guard let window = renderer.window(asked: window), let root = gtk_widget_get_root(window.widget),
               let held = gtk_root_get_focus(root),
               [gtk_text_get_type(), gtk_text_view_get_type()].contains(where: {
                   g_type_check_instance_is_a(held.of(GTypeInstance.self), $0) != 0

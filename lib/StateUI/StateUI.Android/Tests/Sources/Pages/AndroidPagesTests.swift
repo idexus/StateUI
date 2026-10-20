@@ -667,10 +667,10 @@ extension AndroidPagesTests {
             let windows = Received<WindowSession>()
             let host = AndroidRenderer.running(reducesMotion: true) { sheetsPage(sheets, windows: windows) }
             let session = try XCTUnwrap(windows.values.last)
-            defer { Inspector.close(in: session) }
+            defer { session.closeInspector() }
             host.layOut()
 
-            Inspector.open(in: session)
+            session.openInspector()
             host.runtime.pump.turn()
             host.layOut()
             let overlay = try XCTUnwrap((host.runtime.tree.root?.first(type: .overlay)?.native as? AndroidElement)?.view, "no overlay view")
@@ -686,7 +686,7 @@ extension AndroidPagesTests {
             XCTAssertEqual(Java.callInt(root, TestJava.getChildCount), 3)
             XCTAssertEqual(Java.callInt(root, TestJava.indexOfChild, .object(overlay.reference)), 2, "under the sheet")
 
-            Inspector.close(in: session)
+            session.closeInspector()
             host.runtime.pump.turn()
             XCTAssertEqual(Java.callInt(root, TestJava.getChildCount), 2, "the page and the sheet")
             XCTAssertEqual(Java.callInt(root, TestJava.indexOfChild, .object(overlay.reference)), -1)

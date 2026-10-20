@@ -20,7 +20,7 @@ final class WebQuestionTests: XCTestCase {
     }
 
     private func question(_ act: Act, _ arguments: [HostValue]) -> HostQuestion {
-        HostQuestion(HostActCall(act: act, arguments: arguments, completion: nil))!
+        HostQuestion(HostActCall(act: act, arguments: [.string(""), .string("")] + arguments, completion: nil))!
     }
 
     /// The button named as accepting answers yes; the one cancelling, no.

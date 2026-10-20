@@ -33,7 +33,11 @@ final class WebLookTests: XCTestCase {
     func testAQuestionStandsAsTallAsWhatItSays() throws {
         _ = WebRenderer.running { Text("Beneath") }
         let call = HostActCall(
-            act: .confirm, arguments: [.string("Delete draft?"), .string("Gone for good"), .string("Delete"), .string("Keep")],
+            act: .confirm,
+            arguments: [
+                .string(""), .string(""), .string("Delete draft?"), .string("Gone for good"), .string("Delete"),
+                .string("Keep"),
+            ],
             completion: nil)
         let asked = WebQuestion(try XCTUnwrap(HostQuestion(call))) { _, _ in }
         asked.show()

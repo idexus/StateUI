@@ -549,6 +549,24 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(again, .notOpen)
     }
 
+    /// A window's acts name it by its scene's key and its own; a session of no scene names none - its acts ask in
+    /// the window the user is in - and a window closed, or one whose scene ended, throws before anything is sent.
+    func testAWindowsActsNameItsSceneAndItself() async throws {
+        Renders().render(tree())
+        try await application.openWindow(.fonts)
+        let studio = try scene("1")
+        let fonts = studio.windowSession("fonts 2")
+
+        XCTAssertEqual(try fonts.address.scene, Name("1"))
+        XCTAssertEqual(try fonts.address.window, Name("fonts 2"))
+        XCTAssertEqual(try WindowSession().address.window, Name(""))
+
+        try await fonts.close()
+        XCTAssertThrowsError(try fonts.address) { XCTAssertEqual($0 as? WindowError, .notOpen) }
+        let refused = await refusal { _ = try await fonts.hideOnScreenKeyboard() }
+        XCTAssertEqual(refused, .notOpen)
+    }
+
     /// A window's session is the same one for as long as the window is open, and goes with it.
     func testAWindowsSessionLastsAsLongAsItsWindow() async throws {
         let renders = Renders()

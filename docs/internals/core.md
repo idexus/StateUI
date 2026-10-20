@@ -392,13 +392,14 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 - **`Aim`** is which control an act is aimed at: neither state nor a key.
   *Application.* ([Aims](../design/core/acts.md#aims);
   [aims and control methods](../interface/interaction-and-actions.md#aims-and-control-methods))
-- **`Dialogs`**, **`ScreenReader`**, **`OnScreenKeyboard`** and focus through
-  an aim are the library's own acts. *Application.*
-  ([Dialogs](../design/core/acts.md#dialogs),
+- A window's questions, file dialogs and keyboard (`WindowSession`), the
+  application's launches and announcements (`ApplicationSession`) and focus
+  through an aim are the library's own acts. *Application.*
+  ([A window's acts](../design/core/acts.md#a-windows-acts),
+  [Dialogs](../design/core/acts.md#dialogs),
   [focus and the keyboard](../design/core/acts.md#focus-and-the-keyboard))
-- **`ChosenFile`**, **`FileType`** (`Types/Files/`) and **`Links`** are the
-  files the dialogs open and save, read and launched, and an address
-  launched. *Application.*
+- **`ChosenFile`** and **`FileType`** (`Types/Files/`) are the files the
+  dialogs open and save, read and launched. *Application.*
   ([Files](../design/core/acts.md#files),
   [launching](../design/core/acts.md#launching);
   [files and links](../interface/interaction-and-actions.md#files-and-links))

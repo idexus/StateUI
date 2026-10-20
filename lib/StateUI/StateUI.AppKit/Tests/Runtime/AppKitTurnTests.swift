@@ -124,13 +124,14 @@ private final class Said {
 
 /// A page that asks the user, then says the answer.
 private struct AskingPage: View {
+    @Environment(\.window) private var window
     @State private var said = "asked"
 
     var body: some View {
         VStack {
             Text(said)
             Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
-                let deleting = try await Dialogs.confirm("Delete draft?", message: "", accept: "Delete", cancel: "Keep")
+                let deleting = try await window.confirm("Delete draft?", message: "", accept: "Delete", cancel: "Keep")
                 said = deleting ? "deleted" : "kept"
             }
         }

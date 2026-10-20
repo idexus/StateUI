@@ -139,7 +139,7 @@ final class AndroidRendererTests: XCTestCase {
             let answers = Received<Bool>()
             let first = AndroidRenderer.running {
                 Button("Ask").onClicked(gate: .ignoreWhileRunning) {
-                    answers.values.append(try await Dialogs.confirm("Sure?", message: "Both", accept: "Yes", cancel: "No"))
+                    answers.values.append(try await WindowSession().confirm("Sure?", message: "Both", accept: "Yes", cancel: "No"))
                 }
             }
             try XCTUnwrap(first.views(AndroidButtonView.self).first).click()
@@ -186,7 +186,7 @@ final class AndroidRendererTests: XCTestCase {
                 Button("Ask").onClicked(gate: .ignoreWhileRunning) {
                     do {
                         answers.values.append(
-                            try await Dialogs.confirm("Sure?", message: "", accept: "Yes", cancel: "No"))
+                            try await WindowSession().confirm("Sure?", message: "", accept: "Yes", cancel: "No"))
                     } catch {
                         thrown.values.append("\(error)")
                     }

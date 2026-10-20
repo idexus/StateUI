@@ -44,7 +44,7 @@ final class AndroidActTests: XCTestCase {
                 VStack {
                     TextField(State(wrappedValue: "").projectedValue).inputPurpose(.numeric)
                     Button("Ask").onClicked(gate: .ignoreWhileRunning) {
-                        _ = try await Dialogs.prompt("How many?", accept: "OK", cancel: "No", inputPurpose: .numeric)
+                        _ = try await WindowSession().prompt("How many?", accept: "OK", cancel: "No", inputPurpose: .numeric)
                     }
                 }
             }
@@ -71,7 +71,7 @@ final class AndroidActTests: XCTestCase {
             let host = AndroidRenderer.running {
                 Button("Ask").onClicked(gate: .ignoreWhileRunning) {
                     answers.values.append(
-                        try await Dialogs.prompt("Name", accept: "OK", cancel: "No", maximumLength: 3) ?? "nothing")
+                        try await WindowSession().prompt("Name", accept: "OK", cancel: "No", maximumLength: 3) ?? "nothing")
                 }
             }
             try XCTUnwrap(host.views(AndroidButtonView.self).first).click()

@@ -338,6 +338,18 @@ final class UIKitRenderer {
         userWindow?.rootViewController as? UIKitRootViewController
     }
 
+    /// The window a window's act asks in: the one `element` stands in, or, where nil, the one the user is looking
+    /// at; nil where `element` stands in no window shown.
+    func window(asked element: MountedElement?) -> UIWindow? {
+        guard let element else { return userWindow }
+        return roster.controller(of: element)?.window
+    }
+
+    /// The root of the window a window's act asks in (`window(asked:)`).
+    func root(asked element: MountedElement?) -> UIKitRootViewController? {
+        window(asked: element)?.rootViewController as? UIKitRootViewController
+    }
+
     /// A picture the application ships, by its name: its own file, else its drawing (`PictureArithmetic.drawnFiles`),
     /// each at the pixels a point it holds - read from exactly that file, as UIKit's own reading of a path would take
     /// a `@3x` file beside it for it. No name asks for no picture.

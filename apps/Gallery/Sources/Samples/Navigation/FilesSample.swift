@@ -3,6 +3,8 @@ import StateUI
 /// Files the user opens and saves in the platform's own dialogs, and what the system launches.
 struct FilesSample: SampleContent, ExampleContent {
     // listing: FilesSample
+    @Environment(\.window) private var window
+    @Environment(\.application) private var application
     @State private var words = "Words to keep"
     @State private var saved: ChosenFile?
     @State private var answer = "nothing opened or saved yet"
@@ -23,7 +25,7 @@ struct FilesSample: SampleContent, ExampleContent {
             Button("Save…")
                 .onClicked(gate: .ignoreWhileRunning) {
                     let text = FileType("Text", extensions: ["txt"])
-                    saved = try await Dialogs.saveFile(Array(words.utf8), name: "Note", types: [text])
+                    saved = try await window.saveFile(Array(words.utf8), name: "Note", types: [text])
                     answer = saved.map { "saved as \($0.name)" } ?? "cancelled"
                 }
 
@@ -31,7 +33,7 @@ struct FilesSample: SampleContent, ExampleContent {
             Button("Open…")
                 .onClicked(gate: .ignoreWhileRunning) {
                     let text = FileType("Text", extensions: ["txt", "md"])
-                    guard let file = try await Dialogs.openFile(types: [text]) else {
+                    guard let file = try await window.openFile(types: [text]) else {
                         return answer = "cancelled"
                     }
                     let start = try await file.read(atMost: 1025)
@@ -48,7 +50,7 @@ struct FilesSample: SampleContent, ExampleContent {
                 }
 
             Button("Launch swift.org")
-                .onClicked(gate: .ignoreWhileRunning) { try await Links.launch("https://www.swift.org") }
+                .onClicked(gate: .ignoreWhileRunning) { try await application.launch("https://www.swift.org") }
 
             // A text file dragged from the system onto it is read into the editor.
             ZStack {

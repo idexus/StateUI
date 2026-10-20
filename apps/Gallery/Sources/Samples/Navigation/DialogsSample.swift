@@ -3,6 +3,7 @@ import StateUI
 /// Native alerts, confirmations, choices of actions and prompts, asked as awaited StateUI acts.
 struct DialogsSample: SampleContent, ExampleContent {
     // listing: DialogsSample
+    @Environment(\.window) private var window
     @State private var answer = "nothing asked yet"
     @State private var name = "Draft 1"
     // listing: end
@@ -22,7 +23,7 @@ struct DialogsSample: SampleContent, ExampleContent {
             // dismissed, so the next line runs with the alert already gone.
             Button("Tell me something")
                 .onClicked(gate: .ignoreWhileRunning) {
-                    try await Dialogs.alert(
+                    try await window.alert(
                         "Saved", message: "The draft is safe")
                     answer = "the alert was dismissed"
                 }
@@ -30,7 +31,7 @@ struct DialogsSample: SampleContent, ExampleContent {
             // Ask, await, branch - in one place, which is what an act is for.
             Button("Ask me a question")
                 .onClicked(gate: .ignoreWhileRunning) {
-                    let ok = try await Dialogs.confirm(
+                    let ok = try await window.confirm(
                         "Delete draft?", message: "This cannot be undone",
                         accept: "Delete", cancel: "Keep")
                     answer = ok ? "Delete pressed" : "Keep pressed"
@@ -41,7 +42,7 @@ struct DialogsSample: SampleContent, ExampleContent {
             // chosen, tapping beside it where the platform allows that.
             Button("Offer me choices")
                 .onClicked(gate: .ignoreWhileRunning) {
-                    let choice = try await Dialogs.chooseAction(
+                    let choice = try await window.chooseAction(
                         "Share via", cancel: "Cancel", destruction: "Delete",
                         buttons: ["Mail", "Message"])
                     answer = choice.map { "\($0) pressed" }
@@ -52,7 +53,7 @@ struct DialogsSample: SampleContent, ExampleContent {
             // back as "" - an empty answer, which is still an answer.
             Button("Ask me to type")
                 .onClicked(gate: .ignoreWhileRunning) {
-                    let typed = try await Dialogs.prompt(
+                    let typed = try await window.prompt(
                         "Rename", message: "A new name for the draft",
                         placeholder: "Name", initialValue: name, maximumLength: 40)
                     if let typed { name = typed }
@@ -74,8 +75,9 @@ struct DialogsSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("A dialog is an act, not a view. The handler resumes with the "
-                + "native answer after the dialog closes.")
+            Text("A dialog is an act of the window that asks, not a view: it stands over "
+                + "that window, and the handler resumes with the native answer after "
+                + "the dialog closes.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

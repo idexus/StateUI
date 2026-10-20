@@ -3,6 +3,7 @@ import StateUI
 /// The accessible meaning and stable external identity of a StateUI view.
 struct SemanticsSample: SampleContent, ExampleContent {
     // listing: SemanticsSample
+    @Environment(\.application) private var application
     @State private var described = true
 
     @State private var taps = 0
@@ -118,7 +119,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
                 .onClicked(gate: .ignoreWhileRunning) {
                     let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"
-                    try await ScreenReader.announce(words)
+                    try await application.announce(words)
                     said = words
                 }
 

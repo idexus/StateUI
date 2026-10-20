@@ -19,13 +19,14 @@ private func sheetsOver(_ sheets: State<[Int]>) -> ModalStack {
 
 /// A page whose button asks for a sheet and a question in one turn, and for a second sheet once answered.
 private struct SheetAndQuestion: View {
+    @Environment(\.window) private var window
     @State private var sheets: [Int] = []
 
     var body: some View {
         ModalStack($sheets) {
             Button("Ask").onClicked(gate: .ignoreWhileRunning) {
                 sheets.append(1)
-                _ = try await Dialogs.confirm("Sure?", message: "Both come", accept: "Yes", cancel: "No")
+                _ = try await window.confirm("Sure?", message: "Both come", accept: "Yes", cancel: "No")
                 sheets.append(2)
             }
         } destination: { number in

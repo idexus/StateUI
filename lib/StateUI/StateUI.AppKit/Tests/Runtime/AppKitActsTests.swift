@@ -76,6 +76,7 @@ final class AppKitActsTests: XCTestCase {
 
 /// A field aimed at by three buttons, and what the last act answered.
 private struct Focusing: View {
+    @Environment(\.window) private var window
     @State private var name = ""
     @State private var answer = "-"
     @Aim(TextField.self) private var field
@@ -89,7 +90,7 @@ private struct Focusing: View {
                 answer = "released"
             }
             Button("Hide").onClicked(gate: .ignoreWhileRunning) {
-                answer = try await OnScreenKeyboard.hide() ? "hid" : "nothing"
+                answer = try await window.hideOnScreenKeyboard() ? "hid" : "nothing"
             }
             Text(answer)
         }

@@ -138,13 +138,14 @@ struct AskingScene: Scene {
 /// The page launch opens in `AskingApplication`: a button asking whether to delete the draft, one opening it.
 struct AskingPage: View {
     @Environment(\.application) private var application
+    @Environment(\.window) private var window
     let said: Received<Bool>
 
     var body: some View {
-        let (application, said) = (self.application, self.said)
+        let (application, window, said) = (self.application, self.window, self.said)
         return VStack {
             Button("Ask").onClicked(gate: .ignoreWhileRunning) {
-                said.values.append(try await Dialogs.confirm(
+                said.values.append(try await window.confirm(
                     "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep"))
             }.id("ask")
             Button("Open").onClicked(gate: .ignoreWhileRunning) {
@@ -156,13 +157,14 @@ struct AskingPage: View {
 
 /// The draft's page in `AskingApplication`: a button asking whether to close it.
 struct DraftPage: View {
+    @Environment(\.window) private var window
     let said: Received<Bool>
 
     var body: some View {
-        let said = self.said
+        let (window, said) = (self.window, self.said)
         return VStack {
             Button("Ask again").onClicked(gate: .ignoreWhileRunning) {
-                said.values.append(try await Dialogs.confirm(
+                said.values.append(try await window.confirm(
                     "Close draft?", message: "It is kept", accept: "Close", cancel: "Stay"))
             }.id("ask again")
         }

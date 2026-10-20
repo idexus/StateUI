@@ -58,11 +58,13 @@ final class AndroidActToolkit: ActToolkit {
         return minutes == Int32.min ? nil : Int(minutes)
     }
 
-    /// Puts a question to the user in the platform's own dialog; its answer comes back by its ticket.
+    /// Puts a question to the user in the platform's own dialog over the activity's window - the one asked, which
+    /// is the one it shows; its answer comes back by its ticket.
     func show(
-        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+        _ question: HostQuestion, over asked: MountedElement?,
+        answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement? {
-        guard let window = AndroidRenderer.window else { return nil }
+        guard let window = AndroidRenderer.window(asked: asked) else { return nil }
         let ticket = dialogs.hold(answered)
         Java.frame {
             let context = context
@@ -120,8 +122,10 @@ final class AndroidActToolkit: ActToolkit {
         Java.callStatic(JavaAPI.environment, JavaAPI.useNightMode, .object(AndroidRenderer.context), .int(theme.rawValue))
     }
 
-    func hideOnScreenKeyboard() -> Bool {
-        Java.callStaticBool(JavaAPI.environment, JavaAPI.hideKeyboard, .object(root))
+    /// Takes the keyboard down from whatever holds the focus in the activity's window, the one asked.
+    func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
+        guard AndroidRenderer.window(asked: window) != nil else { return false }
+        return Java.callStaticBool(JavaAPI.environment, JavaAPI.hideKeyboard, .object(root))
     }
 
     func focus(_ element: MountedElement) -> Bool? {

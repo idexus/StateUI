@@ -11,6 +11,7 @@ import XCTest
 /// A page that asks the host the time of day, its zone, and zones' distances from UTC on a winter's and a summer's
 /// day; then a zone nobody knows; then a word to a screen reader.
 private struct AskingPage: View {
+    @Environment(\.application) private var application
     @State private var said = ""
 
     var body: some View {
@@ -36,7 +37,7 @@ private struct AskingPage: View {
                 }
             }
             Button("Say").onClicked(gate: .ignoreWhileRunning) {
-                try await ScreenReader.announce("done")
+                try await application.announce("done")
                 said = "announced"
             }
         }
@@ -64,27 +65,28 @@ private struct FocusPage: View {
 
 /// A page whose buttons ask the user each kind of question, saying every answer after the last.
 private struct QuestionsPage: View {
+    @Environment(\.window) private var window
     @State private var said = ""
 
     var body: some View {
         VStack {
             Text(said)
             Button("Alert").onClicked(gate: .ignoreWhileRunning) {
-                try await Dialogs.alert("Saved", message: "The draft is kept")
+                try await window.alert("Saved", message: "The draft is kept")
                 said += "alerted; "
             }
             Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
-                let accepted = try await Dialogs.confirm(
+                let accepted = try await window.confirm(
                     "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep")
                 said += "confirmed \(accepted); "
             }
             Button("Choose").onClicked(gate: .ignoreWhileRunning) {
-                let chosen = try await Dialogs.chooseAction(
+                let chosen = try await window.chooseAction(
                     "Share via", cancel: "Cancel", destruction: "Delete", buttons: ["Mail", "Message"])
                 said += "chose \(chosen ?? "nothing"); "
             }
             Button("Prompt").onClicked(gate: .ignoreWhileRunning) {
-                let typed = try await Dialogs.prompt("Rename", placeholder: "Name", initialValue: "Draft")
+                let typed = try await window.prompt("Rename", placeholder: "Name", initialValue: "Draft")
                 said += "typed \(typed ?? "nothing"); "
             }
         }

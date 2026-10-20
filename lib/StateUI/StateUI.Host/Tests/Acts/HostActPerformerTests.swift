@@ -14,6 +14,10 @@ private final class Toolkit: ActToolkit {
     /// The window a question asks in.
     var window = HostActPerformerTests.window
     var shown: [(question: HostQuestion, answered: (Result<HostQuestion.Given, ActFailure>) -> Void)] = []
+    /// The window each question was asked over, in turn; nil for the window the user is in.
+    var over: [MountedElement?] = []
+    /// The window each keyboard taken down was in, in turn; nil for the window the user is in.
+    var keyboards: [MountedElement?] = []
     var announced: [String] = []
     var themes: [ColorScheme] = []
     var focusable: Set<ElementID> = []
@@ -27,16 +31,21 @@ private final class Toolkit: ActToolkit {
     func utcOffset(of zone: String?, on day: CalendarDate?) -> Int? { zones[zone ?? "Europe/Warsaw"] }
 
     func show(
-        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+        _ question: HostQuestion, over window: MountedElement?,
+        answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement? {
         guard windowToAsk else { return nil }
         shown.append((question, answered))
-        return window
+        over.append(window)
+        return window ?? self.window
     }
 
     func announce(_ words: String) { announced.append(words) }
     func useColorScheme(_ theme: ColorScheme) { themes.append(theme) }
-    func hideOnScreenKeyboard() -> Bool { true }
+    func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
+        keyboards.append(window)
+        return true
+    }
 
     func focus(_ element: MountedElement) -> Bool? {
         element.id == .manual("label") ? nil : focusable.contains(element.id)
@@ -114,8 +123,8 @@ final class HostActPerformerTests: XCTestCase {
         let (toolkit, answers) = (Toolkit(), Answers())
         let acts = performer(toolkit, answers)
 
-        acts.perform(HostActCall(act: .confirm, arguments: [.string("Delete?")], completion: 1))
-        acts.perform(HostActCall(act: .alert, arguments: [.string("Done")], completion: 2))
+        acts.perform(HostActCall(act: .confirm, arguments: HostActCall.usersWindow + [.string("Delete?")], completion: 1))
+        acts.perform(HostActCall(act: .alert, arguments: HostActCall.usersWindow + [.string("Done")], completion: 2))
         XCTAssertEqual(toolkit.shown.map(\.question.title), ["Delete?"], "the second waits")
 
         toolkit.shown[0].answered(.success(.init(accepted: true, words: nil)))
@@ -123,9 +132,51 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(toolkit.shown.map(\.question.title), ["Delete?", "Done"], "then the next shows")
 
         toolkit.windowToAsk = false
-        acts.perform(HostActCall(act: .alert, arguments: [.string("Lost")], completion: 3))
+        acts.perform(HostActCall(act: .alert, arguments: HostActCall.usersWindow + [.string("Lost")], completion: 3))
         toolkit.shown[1].answered(.success(.init(accepted: true, words: nil)))
         XCTAssertEqual(answers.failures[3], "there is no window to ask the user in")
+    }
+
+    /// A question asks over the window it names - its scene's key and its own, as one key stands in two scenes -
+    /// and one naming none over the window the user is in; one whose window closed while it waited is answered as
+    /// the user dismissing it does, and the next shows. The keyboard is taken down in the window named; in one
+    /// closed nothing holds it.
+    func testAQuestionAsksOverTheWindowItNames() throws {
+        let runtime = HostRuntime.still()
+        var root = HostPatch(id: .manual("application"), type: .application)
+        root.children = .arranged(["1", "2"].map { name in
+            var scene = HostPatch(id: .manual(name), type: .scene)
+            scene.children = .arranged([HostPatch(id: .manual("window 1"), type: .window)])
+            return scene
+        })
+        runtime.tree.apply(root, complete: true)
+        let second = try XCTUnwrap(runtime.tree.root?.first(id: .manual("2"))?.first(id: .manual("window 1")))
+        let (toolkit, answers) = (Toolkit(), Answers())
+        let acts = performer(toolkit, answers, tree: runtime.tree)
+
+        acts.perform(HostActCall(
+            act: .confirm, arguments: HostActCall.window("window 1", of: "2") + [.string("Delete?")], completion: 1))
+        acts.perform(HostActCall(act: .alert, arguments: HostActCall.usersWindow + [.string("Done")], completion: 2))
+        acts.perform(HostActCall(
+            act: .alert, arguments: HostActCall.window("window 7", of: "1") + [.string("Gone")], completion: 3))
+        acts.perform(HostActCall(act: .alert, arguments: HostActCall.usersWindow + [.string("Last")], completion: 4))
+        XCTAssertTrue(try XCTUnwrap(toolkit.over.first) === second, "over the second scene's window")
+
+        toolkit.shown[0].answered(.success(.init(accepted: true, words: nil)))
+        XCTAssertNil(try XCTUnwrap(toolkit.over.last), "then over the window the user is in")
+        toolkit.shown[1].answered(.success(.init(accepted: true, words: nil)))
+
+        XCTAssertEqual(answers.replies[3], [], "a window not open answers as the user dismissing it")
+        XCTAssertEqual(toolkit.shown.map(\.question.title), ["Delete?", "Done", "Last"], "and the next shows")
+
+        acts.perform(HostActCall(
+            act: .hideOnScreenKeyboard, arguments: HostActCall.window("window 1", of: "2"), completion: 5))
+        acts.perform(HostActCall(
+            act: .hideOnScreenKeyboard, arguments: HostActCall.window("window 7", of: "2"), completion: 6))
+        XCTAssertTrue(try XCTUnwrap(toolkit.keyboards.first) === second)
+        XCTAssertEqual(toolkit.keyboards.count, 1)
+        XCTAssertEqual(answers.replies[5], [.bool(true)])
+        XCTAssertEqual(answers.replies[6], [.bool(false)], "a closed window holds no keyboard")
     }
 
     /// A question the toolkit could not show fails its call with the toolkit's reason - no answer of the user's - and
@@ -134,8 +185,8 @@ final class HostActPerformerTests: XCTestCase {
         let (toolkit, answers) = (Toolkit(), Answers())
         let acts = performer(toolkit, answers)
 
-        acts.perform(HostActCall(act: .confirm, arguments: [.string("Delete?")], completion: 1))
-        acts.perform(HostActCall(act: .alert, arguments: [.string("Done")], completion: 2))
+        acts.perform(HostActCall(act: .confirm, arguments: HostActCall.usersWindow + [.string("Delete?")], completion: 1))
+        acts.perform(HostActCall(act: .alert, arguments: HostActCall.usersWindow + [.string("Done")], completion: 2))
         toolkit.shown[0].answered(.failure(ActFailure("another dialog stands over the window")))
 
         XCTAssertNil(answers.replies[1], "no answer of the user's")
@@ -220,11 +271,11 @@ final class HostActPerformerTests: XCTestCase {
         let (toolkit, files, answers) = (Toolkit(), Files(), Answers())
         let acts = HostActPerformer(toolkit: toolkit, files: files, answers: answers, tree: { nil })
 
-        acts.perform(HostActCall(act: .confirm, arguments: [.string("Delete?")], completion: 1))
-        acts.perform(HostActCall(act: .openFiles, arguments: [[FileType]().propValue, .bool(true)], completion: 2))
-        acts.perform(HostActCall(act: .alert, arguments: [.string("Done")], completion: 3))
+        acts.perform(HostActCall(act: .confirm, arguments: HostActCall.usersWindow + [.string("Delete?")], completion: 1))
+        acts.perform(HostActCall(act: .openFiles, arguments: HostActCall.usersWindow + [[FileType]().propValue, .bool(true)], completion: 2))
+        acts.perform(HostActCall(act: .alert, arguments: HostActCall.usersWindow + [.string("Done")], completion: 3))
         acts.perform(HostActCall(
-            act: .saveFile, arguments: [[UInt8]([7]).propValue, .string("Report"), [FileType]().propValue],
+            act: .saveFile, arguments: HostActCall.usersWindow + [[UInt8]([7]).propValue, .string("Report"), [FileType]().propValue],
             completion: 4))
         XCTAssertTrue(files.shown.isEmpty, "the dialog waits for the question")
 
@@ -247,7 +298,7 @@ final class HostActPerformerTests: XCTestCase {
     func testAQuestionWhoseDialogWentIsAskedAgain() throws {
         let (toolkit, files, answers) = (Toolkit(), Files(), Answers())
         let acts = HostActPerformer(toolkit: toolkit, files: files, answers: answers, tree: { nil })
-        acts.perform(HostActCall(act: .confirm, arguments: [.string("Delete?")], completion: 1))
+        acts.perform(HostActCall(act: .confirm, arguments: HostActCall.usersWindow + [.string("Delete?")], completion: 1))
 
         acts.askAgain()
         XCTAssertEqual(toolkit.shown.map(\.question.title), ["Delete?", "Delete?"])
@@ -256,7 +307,7 @@ final class HostActPerformerTests: XCTestCase {
         toolkit.shown[1].answered(.success(.init(accepted: false, words: nil)))
         XCTAssertEqual(answers.replies[1], [.bool(false)])
 
-        acts.perform(HostActCall(act: .openFiles, arguments: [[FileType]().propValue, .bool(true)], completion: 2))
+        acts.perform(HostActCall(act: .openFiles, arguments: HostActCall.usersWindow + [[FileType]().propValue, .bool(true)], completion: 2))
         acts.askAgain()
         XCTAssertEqual(files.shown.count, 1, "a file dialog is not asked again")
     }
@@ -266,15 +317,15 @@ final class HostActPerformerTests: XCTestCase {
     func testEveryQuestionWaitingIsDismissedWhenTheWindowGoes() throws {
         let (toolkit, files, answers) = (Toolkit(), Files(), Answers())
         let acts = HostActPerformer(toolkit: toolkit, files: files, answers: answers, tree: { nil })
-        acts.perform(HostActCall(act: .confirm, arguments: [.string("Delete?")], completion: 1))
-        acts.perform(HostActCall(act: .openFiles, arguments: [[FileType]().propValue, .bool(true)], completion: 2))
+        acts.perform(HostActCall(act: .confirm, arguments: HostActCall.usersWindow + [.string("Delete?")], completion: 1))
+        acts.perform(HostActCall(act: .openFiles, arguments: HostActCall.usersWindow + [[FileType]().propValue, .bool(true)], completion: 2))
 
         acts.dismissAll()
         toolkit.shown[0].answered(.success(.init(accepted: true, words: nil)))
 
         XCTAssertEqual(answers.replies[1], [.bool(false)], "not accepted, and the late answer counts for nothing")
         XCTAssertEqual(answers.replies[2], [[ChosenFile]().propValue], "nothing chosen")
-        acts.perform(HostActCall(act: .alert, arguments: [.string("Next")], completion: 3))
+        acts.perform(HostActCall(act: .alert, arguments: HostActCall.usersWindow + [.string("Next")], completion: 3))
         XCTAssertEqual(toolkit.shown.last?.question.title, "Next", "the next shows at once")
     }
 
@@ -285,9 +336,9 @@ final class HostActPerformerTests: XCTestCase {
         let (toolkit, files, answers) = (Toolkit(), Files(), Answers())
         let acts = HostActPerformer(toolkit: toolkit, files: files, answers: answers, tree: { nil })
         let (notes, drafts) = (Self.windows.first, Self.windows.second)
-        acts.perform(HostActCall(act: .confirm, arguments: [.string("Delete?")], completion: 1))
+        acts.perform(HostActCall(act: .confirm, arguments: HostActCall.usersWindow + [.string("Delete?")], completion: 1))
         files.window = drafts
-        acts.perform(HostActCall(act: .openFiles, arguments: [[FileType]().propValue, .bool(true)], completion: 2))
+        acts.perform(HostActCall(act: .openFiles, arguments: HostActCall.usersWindow + [[FileType]().propValue, .bool(true)], completion: 2))
 
         acts.windowsOpen([notes, drafts])
         XCTAssertNil(answers.replies[1], "its window stands: it waits on")
@@ -363,10 +414,11 @@ private final class Files: FileToolkit {
     var launched: [String] = []
 
     func show(
-        _ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
+        _ dialog: HostFileDialog, over window: MountedElement?,
+        answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
     ) -> MountedElement? {
         shown.append((dialog, answered))
-        return window
+        return window ?? self.window
     }
 
     /// The most bytes each read asked for, in turn; nil for a whole file.

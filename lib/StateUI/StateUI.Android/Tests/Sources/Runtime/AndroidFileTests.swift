@@ -76,18 +76,22 @@ final class AndroidFileTests: XCTestCase {
 
 /// A button saving words under a name of the text kind.
 private struct Saving: View {
+    @Environment(\.window) private var window
+
     var body: some View {
         Button("Save").onClicked(gate: .ignoreWhileRunning) {
-            _ = try await Dialogs.saveFile(Array("Kept".utf8), name: "Note", types: [FileType("Text", extensions: ["txt"])])
+            _ = try await window.saveFile(Array("Kept".utf8), name: "Note", types: [FileType("Text", extensions: ["txt"])])
         }
     }
 }
 
 /// A button opening files of two kinds.
 private struct Opening: View {
+    @Environment(\.window) private var window
+
     var body: some View {
         Button("Open").onClicked(gate: .ignoreWhileRunning) {
-            _ = try await Dialogs.openFiles(types: [
+            _ = try await window.openFiles(types: [
                 FileType("Text", extensions: ["txt", "md"]), FileType("Web page", extensions: ["html"]),
             ])
         }

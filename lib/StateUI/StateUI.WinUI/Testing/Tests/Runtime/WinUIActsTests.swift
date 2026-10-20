@@ -80,7 +80,7 @@ final class WinUIActsTests: XCTestCase {
     func testAPromptsFieldHoldsItsBoundInCharacters() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
-                Text("Draft").onCreated { _ = try await Dialogs.prompt("Name", maximumLength: 3) }
+                Text("Draft").onCreated { _ = try await WindowSession().prompt("Name", maximumLength: 3) }
             }
             let window = try XCTUnwrap(host.window)
             host.settle(until: { Self.asks(window) })
@@ -98,7 +98,9 @@ final class WinUIActsTests: XCTestCase {
     /// A question asked as its window's page is made, before WinUI has loaded the window, stands once it is loaded.
     func testAQuestionAskedAsItsWindowOpensStandsOverIt() throws {
         try onUIThread {
-            let host = WinUIRenderer.running { Text("Draft").onCreated { try await Dialogs.alert("Saved", message: "The draft is safe") } }
+            let host = WinUIRenderer.running {
+                Text("Draft").onCreated { try await WindowSession().alert("Saved", message: "The draft is safe") }
+            }
             let window = try XCTUnwrap(host.window)
             host.settle(until: { Self.asks(window) })
             XCTAssertTrue(Self.asks(window), "over the window just opened")
@@ -141,7 +143,7 @@ final class WinUIActsTests: XCTestCase {
                     Text(outcome.wrappedValue)
                     Button("Ask").onClicked(gate: .ignoreWhileRunning) {
                         do {
-                            outcome.wrappedValue = "answered \(try await Dialogs.confirm("Delete?", message: "The draft goes", accept: "Delete", cancel: "Keep"))"
+                            outcome.wrappedValue = "answered \(try await WindowSession().confirm("Delete?", message: "The draft goes", accept: "Delete", cancel: "Keep"))"
                         } catch {
                             outcome.wrappedValue = "failed"
                         }
@@ -198,9 +200,7 @@ private struct AskingApplication: Application {
 private struct AskingScene: Scene {
     var body: some Scene {
         WindowGroup { AskingOpeningPage() }
-        Window(WindowType("acts.tool")) {
-            Button("Ask").onClicked(gate: .ignoreWhileRunning) { try await Dialogs.alert("Saved", message: "The draft is safe") }
-        }
+        Window(WindowType("acts.tool")) { AskingToolPage() }
     }
 }
 
@@ -227,6 +227,7 @@ private struct ClosingOpeningPage: View {
 }
 
 private struct ClosedToolPage: View {
+    @Environment(\.window) private var window
     @Environment(\.application) private var application
 
     var body: some View {
@@ -235,7 +236,7 @@ private struct ClosedToolPage: View {
             Text("Tool")
             Button("Close").onClicked(gate: .ignoreWhileRunning) { try await application.closeWindow(WindowType("acts.closed")) }
         }
-        .onCreated { try await Dialogs.alert("Saved", message: "The draft is safe") }
+        .onCreated { try await window.alert("Saved", message: "The draft is safe") }
     }
 }
 
@@ -245,5 +246,15 @@ private struct AskingOpeningPage: View {
     var body: some View {
         let application = self.application
         return Button("Tool").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(WindowType("acts.tool")) }
+    }
+}
+
+/// The tool window's page in `AskingApplication`: a button asking the user over its own window.
+private struct AskingToolPage: View {
+    @Environment(\.window) private var window
+
+    var body: some View {
+        let window = self.window
+        return Button("Ask").onClicked(gate: .ignoreWhileRunning) { try await window.alert("Saved", message: "The draft is safe") }
     }
 }

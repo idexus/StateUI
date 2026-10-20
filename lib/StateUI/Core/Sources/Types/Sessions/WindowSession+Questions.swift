@@ -1,17 +1,17 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Dialogs: questions for the user, asked as acts - the handler suspends until the
-// user answers.
+// A window's questions for the user, asked as acts over that window - the handler suspends until the user answers.
 // Design: docs/design/core/acts.md#dialogs
 
-/// Questions for the user - an alert, a confirmation, a choice among actions, a
-/// prompt, files to open and a place to save - asked of the page that is
-/// showing. Each suspends the handler until the user answers.
-public enum Dialogs {
-    /// Tells the user something, with one button to dismiss it.
+extension WindowSession {
+    /// Tells the user something over this window, with one button to dismiss it.
     ///
-    ///     try await Dialogs.alert("Saved", message: "The draft is safe")
+    ///     @Environment(\.window) private var window
+    ///
+    ///     Button("Save").onClicked(gate: .ignoreWhileRunning) {
+    ///         try await window.alert("Saved", message: "The draft is safe")
+    ///     }
     ///
     /// Suspends until the button is pressed, so the next line runs with the
     /// alert already gone.
@@ -21,19 +21,16 @@ public enum Dialogs {
     ///   - message: the sentence under it.
     ///   - cancel: the one button's caption; nil says "OK" in the system's language, as the platform's own
     ///     buttons do.
-    /// - Throws: `StateUIError` when there is no page on screen to show it.
-    public static func alert(
-        _ title: String,
-        message: String,
-        cancel: String? = nil
-    ) async throws {
+    /// - Throws: `WindowError` for a window no longer open, and `StateUIError` when there is no window to show it.
+    public func alert(_ title: String, message: String, cancel: String? = nil) async throws {
+        let (scene, window) = try address
         let words = await LibraryWords.inSystemLanguage
-        try await stateUICall(ApplicationContract.alert, title, message, cancel ?? words.ok)
+        try await stateUICall(ApplicationContract.alert, scene, window, title, message, cancel ?? words.ok)
     }
 
-    /// Asks the user a yes-or-no question.
+    /// Asks the user a yes-or-no question over this window.
     ///
-    ///     let ok = try await Dialogs.confirm(
+    ///     let ok = try await window.confirm(
     ///         "Delete draft?", message: "This cannot be undone",
     ///         accept: "Delete", cancel: "Keep")
     ///     if ok { drafts.remove(draft) }
@@ -44,19 +41,15 @@ public enum Dialogs {
     ///   - accept: the caption of the button that answers yes.
     ///   - cancel: the caption of the button that answers no.
     /// - Returns: true when `accept` was pressed.
-    /// - Throws: `StateUIError` when there is no page on screen to show it.
-    public static func confirm(
-        _ title: String,
-        message: String,
-        accept: String,
-        cancel: String
-    ) async throws -> Bool {
-        try await stateUICall(ApplicationContract.confirm, title, message, accept, cancel)
+    /// - Throws: `WindowError` for a window no longer open, and `StateUIError` when there is no window to show it.
+    public func confirm(_ title: String, message: String, accept: String, cancel: String) async throws -> Bool {
+        let (scene, window) = try address
+        return try await stateUICall(ApplicationContract.confirm, scene, window, title, message, accept, cancel)
     }
 
-    /// Offers the user a list of things to do.
+    /// Offers the user a list of things to do, over this window.
     ///
-    ///     let choice = try await Dialogs.chooseAction(
+    ///     let choice = try await window.chooseAction(
     ///         "Share via", cancel: "Cancel", buttons: ["Mail", "Message"])
     ///
     /// What comes back is the pressed caption - `cancel` and `destruction`
@@ -69,19 +62,17 @@ public enum Dialogs {
     ///   - buttons: the choices themselves, in order.
     /// - Returns: the pressed caption, or nil when the sheet was dismissed
     ///   without choosing - tapping beside it, where the platform allows that.
-    /// - Throws: `StateUIError` when there is no page on screen to show it.
-    public static func chooseAction(
-        _ title: String,
-        cancel: String? = nil,
-        destruction: String? = nil,
-        buttons: [String]
+    /// - Throws: `WindowError` for a window no longer open, and `StateUIError` when there is no window to show it.
+    public func chooseAction(
+        _ title: String, cancel: String? = nil, destruction: String? = nil, buttons: [String]
     ) async throws -> String? {
-        try await stateUICall(ApplicationContract.chooseAction, title, cancel, destruction, buttons)
+        let (scene, window) = try address
+        return try await stateUICall(ApplicationContract.chooseAction, scene, window, title, cancel, destruction, buttons)
     }
 
-    /// Asks the user to type something.
+    /// Asks the user to type something, over this window.
     ///
-    ///     let name = try await Dialogs.prompt(
+    ///     let name = try await window.prompt(
     ///         "Rename", message: "A new name for the draft",
     ///         placeholder: "Name", initialValue: draft.name)
     ///     if let name { draft.name = name }
@@ -98,16 +89,17 @@ public enum Dialogs {
     ///     platform offers.
     /// - Returns: what was typed when `accept` was pressed - empty included,
     ///   which is an answer - or nil when the prompt was cancelled.
-    /// - Throws: `StateUIError` when there is no page on screen to show it.
-    public static func prompt(
+    /// - Throws: `WindowError` for a window no longer open, and `StateUIError` when there is no window to show it.
+    public func prompt(
         _ title: String, message: String = "",
         accept: String? = nil, cancel: String? = nil,
         placeholder: String? = nil, initialValue: String = "",
         maximumLength: Int? = nil, inputPurpose: InputPurpose = .default
     ) async throws -> String? {
+        let (scene, window) = try address
         let words = await LibraryWords.inSystemLanguage
         return try await stateUICall(
-            ApplicationContract.prompt, title, message, accept ?? words.ok, cancel ?? words.cancel, placeholder,
-            maximumLength, inputPurpose, initialValue)
+            ApplicationContract.prompt, scene, window, title, message, accept ?? words.ok, cancel ?? words.cancel,
+            placeholder, maximumLength, inputPurpose, initialValue)
     }
 }

@@ -15,6 +15,6 @@ extension ToolbarItem {
         ToolbarItem("ⓘ")
             .id("stateui.inspector")
             .accessibilityIdentifier("stateui.inspector")
-            .onClicked { Inspector.toggle(in: window) }
+            .onClicked { window.toggleInspector() }
     }
 }
