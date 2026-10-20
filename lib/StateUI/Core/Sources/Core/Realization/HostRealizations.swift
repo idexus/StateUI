@@ -113,13 +113,18 @@ enum HostRealizations {
         if let register, case .complete? = register.judgement(ofElement: type.name) {
             let tier = register.declaring(member.name, on: type.name)
             switch register.judgement(of: member.name, on: type.name, from: tier) {
-            case .unrealized(let why)?: said = "`\(key)` is not realized on this host: \(why)."
-            case .notPlanned(let reason)?: said = "`\(key)` is never realized on this host: \(reason)."
+            case .unrealized(let why)?: said = "`\(key)` is not realized on this host: \(Self.sentence(why))"
+            case .notPlanned(let reason)?: said = "`\(key)` is never realized on this host: \(Self.sentence(reason))"
             default: break
             }
         }
         unhonouredSaid[key] = .some(said)
         return said
+    }
+
+    /// `words` ending as a sentence ends, once.
+    private static func sentence(_ words: String) -> String {
+        words.hasSuffix(".") ? words : words + "."
     }
 
     /// What `unhonoured` said of each element's member, worked out when first asked.

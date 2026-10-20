@@ -106,7 +106,7 @@ final class HostRealizationTests: XCTestCase {
         HostBoundary.setRealization(Self.realization)
         HostBoundary.setRegister(HostRegister(records: [
             .unrealized(TintElementContract.tint, on: SliderContract.self, why: "a range input takes no tint"),
-            .notPlanned(SliderContract.pressed, reason: "a range input says no press"),
+            .notPlanned(SliderContract.pressed, reason: "a range input says no press."),
             .partial(SliderContract.value, missing: "steps"),
         ], unrealized: [ButtonContract.self]))
         defer { HostBoundary.setRegister(nil) }
