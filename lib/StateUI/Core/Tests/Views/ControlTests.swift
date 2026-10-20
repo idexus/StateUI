@@ -805,7 +805,8 @@ final class ControlTests: XCTestCase {
                 let name = String(line[line.index(line.startIndex, offsetBy: 12)..<open])
                 let type = String(inside[inside.index(after: colon)...].drop(while: { $0 == " " }))
 
-                guard !name.contains("<") else { continue }
+                // A view or a protocol's value - a header, a shade - is no value a state carries.
+                guard !name.contains("<"), !type.hasPrefix("some "), !type.hasPrefix("any ") else { continue }
 
                 // Keyed by the file: a twin stands beside its value form, in the file of its tier or control, so
                 // one type's twin never hides another's missing one.
@@ -813,16 +814,31 @@ final class ControlTests: XCTestCase {
                     let bare = String(type.dropFirst("Binding<".count).dropLast())
 
                     twins.insert(path + "|" + name + ":" + bare)
-                } else if !type.contains("<"), line[returns.upperBound...].hasPrefix("Modified") {
+                } else if !type.contains("<"),
+                          line[returns.upperBound...].hasPrefix("Modified") || line[returns.upperBound...].hasPrefix("Self") {
                     values.insert(path + "|" + name + ":" + type)
                 }
             }
         }
 
-        // A menu item and a bar's item are rebuilt with their menu or bar: no view wears them. The driven text goes
-        // per control, its direction differing (bindings.md, driven text): the tier holds the value form.
-        let tiersNoViewWears = ["Views/Mixins/MenuItemElement.swift", "Views/Menus/ToolbarItem.swift"]
-        let perControl = ["Views/Mixins/TextualElement.swift|text:String"]
+        // A menu, its items and a bar's item are rebuilt with their menu or bar, a scene's settings are its
+        // declaration's: no view wears them. The driven text goes per control, its direction differing (bindings.md,
+        // driven text): the tier holds the value form.
+        let tiersNoViewWears = [
+            "Views/Mixins/MenuItemElement.swift", "Views/Menus/ToolbarItem.swift", "Views/Menus/Menu.swift",
+            "Views/Structure/Window.swift", "Views/Structure/WindowGroup.swift",
+        ]
+        // A map's markers are rebuilt with the map; a composed view's configuration changes what it builds, which a
+        // state carried past the tree cannot - a gallery's shape and fading, a list's layout, a layout's drag.
+        let perControl = [
+            "Views/Mixins/TextualElement.swift|text:String",
+            "Views/Controls/Map.swift|label:String", "Views/Controls/Map.swift|subtitle:String",
+            "Views/Controls/Map.swift|type:MarkerType",
+            "Views/Collections/GalleryView.swift|arrangement:GalleryArrangement",
+            "Views/Collections/GalleryView.swift|fade:Double", "Views/Collections/GalleryView.swift|isSwipeEnabled:Bool",
+            "Views/Collections/GalleryView.swift|throwing:Motion", "Views/Collections/ItemsView.swift|itemsLayout:ItemsLayout",
+            "Views/Layouts/LayoutEngine.swift|itemDrag:ItemDragStart",
+        ]
         let missing = values
             .filter { value in
                 let parts = value.split(separator: "|")
