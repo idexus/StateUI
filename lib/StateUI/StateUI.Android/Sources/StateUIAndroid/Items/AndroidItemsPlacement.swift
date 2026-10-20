@@ -34,7 +34,7 @@ struct AndroidItemsPlacement: Equatable {
         kinds = placement.edges.map { ($0 ? AndroidItemKind.edge : .item).rawValue }
         spans = placement.spans.map { Int32($0) }
         insets = placement.rooms.flatMap { room in
-            [room.leading, room.top, room.trailing, 0].map { Int32(($0 * density).rounded()) }
+            [room.start, room.top, room.end, 0].map { Int32(($0 * density).rounded()) }
         }
     }
 }

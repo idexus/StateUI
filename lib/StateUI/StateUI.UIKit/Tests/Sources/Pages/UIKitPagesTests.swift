@@ -238,7 +238,7 @@ final class UIKitPagesTests: XCTestCase {
                         ToolbarItem("Save").accessibilityIdentifier("save")
                         ToolbarItem("Add").accessibilityIdentifier("add")
                     }
-                    .toolbar(.leading) { ToolbarItem("Filter").accessibilityIdentifier("filter") }
+                    .toolbar(.start) { ToolbarItem("Filter").accessibilityIdentifier("filter") }
             } destination: { _ in Text("Pushed") }
             .toolbar { ToolbarItem("Home").accessibilityIdentifier("home") }
         }

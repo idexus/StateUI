@@ -52,13 +52,6 @@ enum AppKitRegistrations {
         HostActs.performed + HostActs.files + [ItemsViewContract.scrollTo, MapContract.moveToRegion]
         + WebKitView.acts
 
-    static func edgeInsets(_ value: Insets?) -> NSEdgeInsets {
-        guard let numbers = value?.propValue.numbers, numbers.count >= 4 else { return NSEdgeInsets() }
-
-        return NSEdgeInsets(
-            top: numbers[1], left: numbers[0], bottom: numbers[3], right: numbers[2])
-    }
-
     /// The six components a render transform travels as - a LIST OF VALUES, not
     /// a list of numbers - or none where it is not six numbers.
     static func transform<Realized: ElementContract>(

@@ -57,8 +57,8 @@ extension GTKElement {
         (chrome.barBackground, chrome.barForeground) = element.barColors
 
         let actions = element.chromeActions
-        chrome.leading = actions.leading.map { $0.map(GTKToolbarAction.init) }
-        chrome.trailing = actions.trailing.map { $0.map(GTKToolbarAction.init) }
+        chrome.leading = actions.start.map { $0.map(GTKToolbarAction.init) }
+        chrome.trailing = actions.end.map { $0.map(GTKToolbarAction.init) }
         chrome.overflow = actions.overflow.map(GTKToolbarAction.init)
         chrome.mainMenu = element.chromeMenus.menus
         return chrome

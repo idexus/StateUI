@@ -99,7 +99,7 @@ enum WebCSS {
     /// An inset's four sides: leading, top, trailing and bottom, as CSS's logical sides - a margin's below nothing
     /// where `signed`, as it shifts a view, a padding's never.
     static func sides(_ insets: Insets?, signed: Bool = false) -> [(side: String, length: String?)] {
-        [("inline-start", insets?.left), ("block-start", insets?.top), ("inline-end", insets?.right),
+        [("inline-start", insets?.start), ("block-start", insets?.top), ("inline-end", insets?.end),
          ("block-end", insets?.bottom)].map {
             ($0, $1.flatMap { $0 == 0 ? nil : signed ? signedPixels($0) : pixels($0) })
         }

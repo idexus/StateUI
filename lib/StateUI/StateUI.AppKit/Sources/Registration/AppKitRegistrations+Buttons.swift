@@ -45,7 +45,7 @@ extension AppKitRegistrations {
                 let icon: NSImage? = source.flatMap { view.picture?($0) }
                 let position: NSControl.ImagePosition = caption.isEmpty
                     ? .imageOnly
-                    : Self.imagePosition(values[ButtonContract.iconPosition] ?? .leading)
+                    : Self.imagePosition(values[ButtonContract.iconPosition] ?? .start)
                 // Beside words a picture stands at its own size, smaller where the button is; so does an icon alone.
                 let scaling: NSImageScaling = if caption.isEmpty, case .icon? = source {
                     .scaleProportionallyDown
@@ -99,9 +99,9 @@ extension AppKitRegistrations {
     private static func imagePosition(_ position: IconPosition) -> NSControl.ImagePosition {
         switch position {
         case .top: .imageAbove
-        case .trailing: .imageTrailing
+        case .end: .imageTrailing
         case .bottom: .imageBelow
-        case .leading: .imageLeading
+        case .start: .imageLeading
         }
     }
 

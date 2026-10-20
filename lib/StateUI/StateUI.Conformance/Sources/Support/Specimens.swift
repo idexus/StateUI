@@ -191,7 +191,7 @@ public struct DeclaringPage: View {
     /// A page declaring `items` at `side` in `order` - joining `group` where one is named - and `title`, `beside` its
     /// words.
     public init(
-        beside: [any View] = [], key: String = "", side: ToolbarSide = .trailing, order: Int = 0, group: String? = nil,
+        beside: [any View] = [], key: String = "", side: ToolbarSide = .end, order: Int = 0, group: String? = nil,
         title: (any View)? = nil, _ items: @escaping @MainActor () -> [ToolbarItem] = { [] }
     ) {
         self.beside = beside

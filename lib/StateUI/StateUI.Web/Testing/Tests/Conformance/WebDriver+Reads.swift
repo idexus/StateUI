@@ -276,8 +276,8 @@ extension WebDriver {
             let clamp = try WebBrowser.evaluate("\(style).webkitLineClamp", on: e) ?? "none"
             return .some(Int(clamp).map(\.propValue))
         case .padding:
-            let sides = try numbers("['Left', 'Top', 'Right', 'Bottom'].map((s) => parseFloat(\(style)['padding' + s]))", on: e)
-            return sides.count == 4 ? Insets(left: sides[0], top: sides[1], right: sides[2], bottom: sides[3]).propValue : nil
+            let sides = try numbers("['InlineStart', 'Top', 'InlineEnd', 'Bottom'].map((s) => parseFloat(\(style)['padding' + s]))", on: e)
+            return sides.count == 4 ? Insets(start: sides[0], top: sides[1], end: sides[2], bottom: sides[3]).propValue : nil
         default: return nil
         }
     }
@@ -370,7 +370,7 @@ extension WebDriver {
                 .map { .string($0) })
         case .iconPosition:
             let positions: [String: IconPosition] = [
-                "row": .leading, "row-reverse": .trailing, "column": .top, "column-reverse": .bottom,
+                "row": .start, "row-reverse": .end, "column": .top, "column-reverse": .bottom,
             ]
             return .some(positions[try WebBrowser.evaluate("getComputedStyle(e).flexDirection", on: e) ?? ""]?.propValue)
         case .iconSpacing: return .some(try WebBrowser.number("parseFloat(getComputedStyle(e).gap) || 0", on: e)?.propValue)

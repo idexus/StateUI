@@ -14,7 +14,11 @@ final class UIKitSelectableTextView: UITextView, UIKitLabel {
     var shown = UIKitLabelWords()
 
     /// The room between the view's edge and its words.
-    private var padding = UIEdgeInsets.zero
+    /// The room between the view's edge and its words, as the tree says it.
+    private var insets = Insets(0)
+
+    /// That room in UIKit's sides, by the direction the view lays out in.
+    private var padding: UIEdgeInsets { UIEdgeInsets(insets, in: semanticContentAttribute) }
 
     /// What fills the view's box behind its words where it is a brush, and the layer painting it.
     private var fill = UIKitBrush()
@@ -42,7 +46,11 @@ final class UIKitSelectableTextView: UITextView, UIKitLabel {
     }
 
     func setPadding(_ insets: Insets?) {
-        padding = insets.map(UIEdgeInsets.init) ?? .zero
+        self.insets = insets ?? Insets(0)
+        directionTurned()
+    }
+
+    func directionTurned() {
         standWords()
         invalidateIntrinsicContentSize()
     }

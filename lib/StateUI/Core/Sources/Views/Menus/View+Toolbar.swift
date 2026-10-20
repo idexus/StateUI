@@ -33,7 +33,7 @@ extension View {
     ///     them in place.
     ///   - items: the group's actions, in reading order.
     public func toolbar(
-        _ side: ToolbarSide = .trailing, order: Int = 0, @ToolbarBuilder _ items: () -> [ToolbarItem]
+        _ side: ToolbarSide = .end, order: Int = 0, @ToolbarBuilder _ items: () -> [ToolbarItem]
     ) -> Modified {
         toolbarGroup(side, id: nil, order: order, items())
     }
@@ -65,7 +65,7 @@ extension View {
     ///     and where a group this declaration starts stands at its edge.
     ///   - items: the actions, in reading order.
     public func toolbar(
-        _ side: ToolbarSide = .trailing, id: some Hashable, order: Int = 0,
+        _ side: ToolbarSide = .end, id: some Hashable, order: Int = 0,
         @ToolbarBuilder _ items: () -> [ToolbarItem]
     ) -> Modified {
         toolbarGroup(side, id: AnyHashable(id), order: order, items())

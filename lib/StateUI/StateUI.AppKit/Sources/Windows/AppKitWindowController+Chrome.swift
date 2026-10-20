@@ -54,9 +54,9 @@ extension AppKitWindowController {
                     })
             },
             title: paintedTitle,
-            leadingActions: chrome.actions.leading.map { $0.map(Self.action) },
+            leadingActions: chrome.actions.start.map { $0.map(Self.action) },
             center: chrome.center?.appKit.view,
-            actions: chrome.actions.trailing.map { $0.map(Self.action) },
+            actions: chrome.actions.end.map { $0.map(Self.action) },
             overflow: chrome.actions.overflow.map(Self.action),
             words: words))
         synchronizeBar(window, color: barColor, split: split)

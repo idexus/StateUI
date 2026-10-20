@@ -61,9 +61,11 @@ extension AppKitDriver {
             // The words stand their padding in from the label's edges; a label is as tall as its words.
             let frame = field.frame
             let bounds = label.bounds
+            let (left, right) = (Double(frame.minX - bounds.minX), Double(bounds.maxX - frame.maxX))
+            let rightToLeft = label.userInterfaceLayoutDirection == .rightToLeft
             return Insets(
-                left: Double(frame.minX - bounds.minX), top: Double(frame.minY - bounds.minY),
-                right: Double(bounds.maxX - frame.maxX), bottom: Double(bounds.maxY - frame.maxY)).propValue
+                start: rightToLeft ? right : left, top: Double(frame.minY - bounds.minY),
+                end: rightToLeft ? left : right, bottom: Double(bounds.maxY - frame.maxY)).propValue
         default: return nil
         }
     }
@@ -135,7 +137,7 @@ extension AppKitDriver {
             return (kern?.doubleValue ?? 0).propValue
         case .iconPosition:
             let positions: [NSControl.ImagePosition: IconPosition] = [
-                .imageAbove: .top, .imageTrailing: .trailing, .imageBelow: .bottom, .imageLeading: .leading,
+                .imageAbove: .top, .imageTrailing: .end, .imageBelow: .bottom, .imageLeading: .start,
             ]
             return positions[button.imagePosition]?.propValue
         default: return nil

@@ -116,14 +116,14 @@ extension Rect: LaneValue {
 }
 
 extension Insets: LaneValue {
-    /// Left, top, right, bottom.
-    public var carried: StateCarried { .lanes([left, top, right, bottom]) }
+    /// Start, top, end, bottom.
+    public var carried: StateCarried { .lanes([start, top, end, bottom]) }
 
     /// Insets from those four lanes.
     public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == 4 else { return nil }
 
-        self.init(left: lanes[0], top: lanes[1], right: lanes[2], bottom: lanes[3])
+        self.init(start: lanes[0], top: lanes[1], end: lanes[2], bottom: lanes[3])
     }
 
     /// Four.

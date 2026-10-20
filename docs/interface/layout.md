@@ -443,7 +443,7 @@ struct Header: View {
         VStack {
             Text("StateUI")
         }
-        .padding(left: 20, top: 60, right: 20, bottom: 20)
+        .padding(start: 20, top: 60, end: 20, bottom: 20)
         .background(.steelBlue)
         .avoidsSafeArea(.none)
     }

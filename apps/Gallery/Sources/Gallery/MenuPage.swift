@@ -75,7 +75,7 @@ struct MenuPage: View {
                 .verticalAlignment(.center)
         }
         .spacing(10)
-        .padding(left: 20, top: 12, right: 20, bottom: 8)   // listing: keep
+        .padding(start: 20, top: 12, end: 20, bottom: 8)   // listing: keep
     }
 
     /// Home, one row per group, the row that is not always listed, and the one

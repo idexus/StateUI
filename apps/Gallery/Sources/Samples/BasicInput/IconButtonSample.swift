@@ -5,11 +5,11 @@ struct IconButtonSample: SampleContent, ExampleContent {
     // listing: IconButtonSample
     @State private var taps = 0
     @State private var pressed = false
-    @State private var side = IconPosition.leading
+    @State private var side = IconPosition.start
     @State private var gap = 8.0
     @State private var wide = false
 
-    static let sides: [IconPosition] = [.leading, .top, .trailing, .bottom]
+    static let sides: [IconPosition] = [.start, .top, .end, .bottom]
     // listing: end
 
     static let id = "iconButton"

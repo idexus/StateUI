@@ -44,13 +44,6 @@ extension Point {
     }
 }
 
-extension Insets {
-    /// Native edge insets as StateUI's.
-    init(_ insets: NSEdgeInsets) {
-        self.init(left: Double(insets.left), top: Double(insets.top), right: Double(insets.right), bottom: Double(insets.bottom))
-    }
-}
-
 /// A StateUI container or text surface that keeps its own measurements.
 @MainActor
 protocol AppKitMeasurementCaching: AnyObject {

@@ -29,7 +29,7 @@ private struct BarredPage: View {
                     .placement(.overflow)
                     .isDestructive(true)
             }
-            .toolbar(.leading, id: "edit", order: 1) {
+            .toolbar(.start, id: "edit", order: 1) {
                 ToolbarItem("Undo").id("undo")
             }
             .menuBar(order: 1) {

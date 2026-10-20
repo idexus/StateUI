@@ -27,26 +27,26 @@
 
         switch axis {
         case .vertical:
-            let childWidth = offered.map { max(0, $0 - padding.left - padding.right) }
+            let childWidth = offered.map { max(0, $0 - padding.start - padding.end) }
             for item in visible {
                 let margin = item.values.margin
-                let size = item.size(offered: childWidth.map { max(0, $0 - margin.left - margin.right) })
+                let size = item.size(offered: childWidth.map { max(0, $0 - margin.start - margin.end) })
                 along += size.height + margin.top + margin.bottom
-                across = max(across, size.width + margin.left + margin.right)
+                across = max(across, size.width + margin.start + margin.end)
             }
             return LayoutSize(
-                width: padding.left + padding.right + across,
+                width: padding.start + padding.end + across,
                 height: padding.top + padding.bottom + gaps + along)
 
         case .horizontal:
             for item in visible {
                 let size = item.size(offered: nil)
                 let margin = item.values.margin
-                along += size.width + margin.left + margin.right
+                along += size.width + margin.start + margin.end
                 across = max(across, size.height + margin.top + margin.bottom)
             }
             return LayoutSize(
-                width: padding.left + padding.right + gaps + along,
+                width: padding.start + padding.end + gaps + along,
                 height: padding.top + padding.bottom + across)
         }
     }
@@ -74,7 +74,7 @@
         let naturals: [LayoutSize?] = items.map { item in
             guard item.isShown else { return nil }
             let margin = item.values.margin
-            return item.size(offered: axis == .vertical ? max(0, cross - margin.left - margin.right) : nil)
+            return item.size(offered: axis == .vertical ? max(0, cross - margin.start - margin.end) : nil)
         }
         let share = growingShare(of: items, naturals: naturals, axis: axis, spacing: spacing, in: content)
         var offset = axis == .vertical ? content.y : content.x
@@ -87,19 +87,19 @@
             switch axis {
             case .vertical:
                 offset += margin.top
-                let available = max(0, content.width - margin.left - margin.right)
+                let available = max(0, content.width - margin.start - margin.end)
                 let width = Extent.of(
                     option: values.horizontal, stated: values.width, natural: natural.width,
                     available: available, minimum: values.minimumWidth, maximum: values.maximumWidth)
                 let x = Extent.start(
-                    option: values.horizontal, extent: width, start: content.x + margin.left, available: available)
+                    option: values.horizontal, extent: width, start: content.x + margin.start, available: available)
                 let height = values.boundedHeight(values.grows(along: axis) ? share : natural.height)
                 let place = Rect(x: x, y: offset, width: width, height: height)
                 offset += height + margin.bottom + spacing
                 return place
 
             case .horizontal:
-                offset += margin.left
+                offset += margin.start
                 let available = max(0, content.height - margin.top - margin.bottom)
                 let height = Extent.of(
                     option: values.vertical, stated: values.height, natural: natural.height,
@@ -108,7 +108,7 @@
                     option: values.vertical, extent: height, start: content.y + margin.top, available: available)
                 let width = values.boundedWidth(values.grows(along: axis) ? share : natural.width)
                 let place = Rect(x: offset, y: y, width: width, height: height)
-                offset += width + margin.right + spacing
+                offset += width + margin.end + spacing
                 return place
             }
         }
@@ -131,7 +131,7 @@
             case .vertical:
                 return sum + margin.top + margin.bottom + (item.values.grows(along: axis) ? 0 : item.values.boundedHeight(natural.height))
             case .horizontal:
-                return sum + margin.left + margin.right + (item.values.grows(along: axis) ? 0 : item.values.boundedWidth(natural.width))
+                return sum + margin.start + margin.end + (item.values.grows(along: axis) ? 0 : item.values.boundedWidth(natural.width))
             }
         }
         let length = axis == .vertical ? content.height : content.width
@@ -161,9 +161,9 @@ extension Rect {
     /// This rectangle with `insets` taken off each side, never below no room.
     func inset(_ insets: Insets) -> Rect {
         Rect(
-            x: x + insets.left,
+            x: x + insets.start,
             y: y + insets.top,
-            width: max(0, width - insets.left - insets.right),
+            width: max(0, width - insets.start - insets.end),
             height: max(0, height - insets.top - insets.bottom))
     }
 }

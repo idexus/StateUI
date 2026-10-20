@@ -124,17 +124,17 @@ final class AppKitMotionTests: XCTestCase {
         let stack = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("stack")) as? AppKitStackView)
         XCTAssertEqual(stack.padding.top, 0, accuracy: 0.000_001)
-        XCTAssertEqual(stack.padding.left, 0, accuracy: 0.000_001)
+        XCTAssertEqual(stack.padding.start, 0, accuracy: 0.000_001)
         XCTAssertEqual(stack.padding.bottom, 0, accuracy: 0.000_001)
-        XCTAssertEqual(stack.padding.right, 0, accuracy: 0.000_001)
+        XCTAssertEqual(stack.padding.end, 0, accuracy: 0.000_001)
         XCTAssertEqual(stack.spacing, 0, accuracy: 0.000_001)
 
         now = 100
         renderer.advanceAnimationsForTesting()
         XCTAssertEqual(stack.padding.top, 20, accuracy: 0.000_001)
-        XCTAssertEqual(stack.padding.left, 10, accuracy: 0.000_001)
+        XCTAssertEqual(stack.padding.start, 10, accuracy: 0.000_001)
         XCTAssertEqual(stack.padding.bottom, 40, accuracy: 0.000_001)
-        XCTAssertEqual(stack.padding.right, 30, accuracy: 0.000_001)
+        XCTAssertEqual(stack.padding.end, 30, accuracy: 0.000_001)
         XCTAssertEqual(stack.spacing, 5, accuracy: 0.000_001)
     }
 
@@ -183,7 +183,7 @@ final class AppKitMotionTests: XCTestCase {
             stack.arrangementCountForTesting - arrangementsBeforeFrame,
             1)
         XCTAssertEqual(stack.padding.top, 20, accuracy: 0.000_001)
-        XCTAssertEqual(stack.padding.left, 10, accuracy: 0.000_001)
+        XCTAssertEqual(stack.padding.start, 10, accuracy: 0.000_001)
         XCTAssertEqual(stack.spacing, 5, accuracy: 0.000_001)
         XCTAssertEqual(nativeLabel.alphaValue, 0.5, accuracy: 0.000_001)
         XCTAssertEqual(

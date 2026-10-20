@@ -121,8 +121,8 @@ final class WinUIWindowController {
             }
         }
         chrome.center = composed.center?.winUI.view
-        chrome.leading = composed.actions.leading.map { $0.map(Self.action) }
-        chrome.trailing = composed.actions.trailing.map { $0.map(Self.action) }
+        chrome.leading = composed.actions.start.map { $0.map(Self.action) }
+        chrome.trailing = composed.actions.end.map { $0.map(Self.action) }
         chrome.overflow = composed.actions.overflow.map(Self.action)
         chrome.background = composed.background
         chrome.foreground = composed.foreground

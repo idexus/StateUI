@@ -9,10 +9,12 @@
 /// Design: docs/design/host/layout.md#the-safe-area
 @_spi(Host) public enum SafeAreaArithmetic {
     /// The room a page's content stands in: `safe` - the window's room clear of its bars and notch - reaching out to
-    /// `whole` on each edge `edges` lets the content under the bars; `safe` where the content says nothing.
-    public static func room(safe: Rect, whole: Rect, edges: SafeAreaEdges?) -> Rect {
+    /// `whole` on each edge `edges` lets the content under the bars; `safe` where the content says nothing. The
+    /// start and the end are the content's `direction`'s: right to left, the start is the right edge.
+    public static func room(safe: Rect, whole: Rect, edges: SafeAreaEdges?, direction: LayoutDirection) -> Rect {
         guard let edges else { return safe }
-        let (left, top, right, bottom) = sides(edges)
+        let (start, top, end, bottom) = sides(edges)
+        let (left, right) = direction == .rightToLeft ? (end, start) : (start, end)
         let minX = underTheBars(left) ? whole.x : safe.x
         let minY = underTheBars(top) ? whole.y : safe.y
         let maxX = underTheBars(right) ? whole.x + whole.width : safe.x + safe.width
@@ -35,7 +37,7 @@
     private static func sides(_ edges: SafeAreaEdges) -> (SafeArea, SafeArea, SafeArea, SafeArea) {
         switch edges {
         case .uniform(let area): (area, area, area, area)
-        case .edges(let left, let top, let right, let bottom): (left, top, right, bottom)
+        case .edges(let start, let top, let end, let bottom): (start, top, end, bottom)
         }
     }
 }

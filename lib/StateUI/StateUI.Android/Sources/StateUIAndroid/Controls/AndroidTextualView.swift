@@ -142,6 +142,11 @@ class AndroidTextualView: AndroidView {
     /// The words' colours where none is written: the platform's, as the view was made.
     var plainWordColours: JavaObject { madeWith.colors }
 
+    /// The direction the view lays out in, which says which side its padding's start stands at.
+    var direction = LayoutDirection.leftToRight {
+        didSet { if direction != oldValue, padding != nil { applyPadding() } }
+    }
+
     /// The room around the words, in points; nil puts back the platform's.
     func setPadding(_ insets: Insets?) {
         padding = insets
@@ -155,7 +160,7 @@ class AndroidTextualView: AndroidView {
 
     /// The padding's right side in pixels, without the room kept beyond it: the tree's, else the platform's.
     var paddingRight: Int32 {
-        padding.map { pixels($0.right) } ?? platformPadding.right
+        padding.map { pixels($0.sides(in: direction).right) } ?? platformPadding.right
     }
 
     /// A new background brings its own padding; the tree's is put back over it.
@@ -167,7 +172,8 @@ class AndroidTextualView: AndroidView {
 
     private func applyPadding() {
         let platform = platformPadding
-        let sides = padding.map { (pixels($0.left), pixels($0.top), pixels($0.right), pixels($0.bottom)) } ?? platform
+        let sides = padding.map { $0.sides(in: direction) }
+            .map { (pixels($0.left), pixels($0.top), pixels($0.right), pixels($0.bottom)) } ?? platform
         Java.call(reference, JavaAPI.setPadding, .int(sides.0), .int(sides.1), .int(sides.2 + rightRoom), .int(sides.3))
     }
 

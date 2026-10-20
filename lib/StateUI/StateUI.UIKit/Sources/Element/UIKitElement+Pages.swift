@@ -54,8 +54,8 @@ extension UIKitElement {
         chrome.backButtonTitle = value(.backButtonTitle)?.string
         (chrome.barBackground, chrome.barForeground) = element.barColors
         let actions = element.chromeActions
-        chrome.leadingActions = actions.leading.map { $0.map(Self.action) }
-        chrome.actions = actions.trailing.map { $0.map(Self.action) }
+        chrome.leadingActions = actions.start.map { $0.map(Self.action) }
+        chrome.actions = actions.end.map { $0.map(Self.action) }
         chrome.overflow = actions.overflow.map(Self.action)
         return chrome
     }

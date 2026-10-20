@@ -145,9 +145,9 @@ final class AppKitButtonViewTests: XCTestCase {
     func testAButtonsIconPositionComesThroughTheHost() throws {
         let renderer = AppKitRenderer.running {
             VStack {
-                Button("Leading").icon("save.png").iconPosition(.leading)
+                Button("Leading").icon("save.png").iconPosition(.start)
                 Button("Top").icon("save.png").iconPosition(.top)
-                Button("Trailing").icon("save.png").iconPosition(.trailing)
+                Button("Trailing").icon("save.png").iconPosition(.end)
                 Button("Bottom").icon("save.png").iconPosition(.bottom)
             }
         }

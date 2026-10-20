@@ -63,7 +63,10 @@ extension AndroidDriver {
             let sides = read("padding")?.split(separator: ",").compactMap { Double($0) } ?? []
             guard sides.count == 4 else { return nil }
             let points = sides.map { ($0 / view.density).rounded() }
-            return Insets(left: points[0], top: points[1], right: points[2], bottom: points[3]).propValue
+            let rightToLeft = (view as? AndroidTextualView)?.direction == .rightToLeft
+            return Insets(
+                start: points[rightToLeft ? 2 : 0], top: points[1], end: points[rightToLeft ? 0 : 2], bottom: points[3]
+            ).propValue
         case .clipsContent where view is AndroidLayoutView: return (read("clipToOutline") == "1").propValue
         case .verticalScrollIndicator, .horizontalScrollIndicator:
             guard let scroller = (view as? AndroidScrollView)?.scrollers.first else { return nil }

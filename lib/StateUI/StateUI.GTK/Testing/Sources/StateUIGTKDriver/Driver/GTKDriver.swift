@@ -321,7 +321,7 @@ final class GTKDriver: HostDriver {
         guard let box = button.pictureAndCaption, let picture = button.picture else { return nil }
         let first = gtk_widget_get_first_child(box) == picture.widget
         return gtk_orientable_get_orientation(box.opaque) == GTK_ORIENTATION_HORIZONTAL
-            ? (first ? .leading : .trailing) : (first ? .top : .bottom)
+            ? (first ? .start : .end) : (first ? .top : .bottom)
     }
 
     /// How a label's words break, as it wraps them or cuts them.

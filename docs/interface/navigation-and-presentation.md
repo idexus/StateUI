@@ -328,7 +328,7 @@ actions go with it.
 One declaration is one group: its actions share one background where the
 platform groups a bar's actions, as macOS and iOS draw them on one piece of
 glass. A second group is a second declaration. A group stands at the bar's
-trailing edge unless `.toolbar(.leading)` puts it at the other.
+end unless `.toolbar(.start)` puts it at its start.
 
 A window's page and an arrangement declare actions for every page shown in
 them. The actions declared further in join them nearer the title, so the
@@ -372,10 +372,10 @@ VStack { … }
 
 On AppKit a page's furniture is its window's toolbar: the top page's title
 names the window, the way back is the system's back item, the actions are
-toolbar items - a space between two groups, a leading group before the
+toolbar items - a space between two groups, a group at the start before the
 flexible space - and those placed in the overflow sit in the toolbar's
-overflow menu. Android's bar has no leading edge beside its navigation button,
-so a leading group stands first among its actions. On AppKit, a tabbed
+overflow menu. Android's bar has no start beside its navigation button, so a
+group at the start stands first among its actions. On AppKit, a tabbed
 view on the window's page path shows its tabs in a row beneath the toolbar,
 beside any sidebar, the tabs sharing its width with each picture beside its
 title; one in a sidebar, a sheet or inside another tab is a tab view with its

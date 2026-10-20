@@ -495,9 +495,13 @@ final class UIKitDriver: HostDriver {
         case (.isEnabled, let view?): return (!view.accessibilityTraits.contains(.notEnabled)).propValue
         case (.padding, let button as UIButton):
             guard let insets = button.configuration?.contentInsets else { return nil }
-            return Insets(left: insets.leading, top: insets.top, right: insets.trailing, bottom: insets.bottom).propValue
+            return Insets(start: insets.leading, top: insets.top, end: insets.trailing, bottom: insets.bottom).propValue
         case (.padding, let label as UIKitTextView):
-            return Insets(left: label.padding.left, top: label.padding.top, right: label.padding.right, bottom: label.padding.bottom).propValue
+            let padding = label.padding
+            let rightToLeft = label.effectiveUserInterfaceLayoutDirection == .rightToLeft
+            return Insets(
+                start: rightToLeft ? padding.right : padding.left, top: padding.top,
+                end: rightToLeft ? padding.left : padding.right, bottom: padding.bottom).propValue
         case (_, let view?):
             if let held = try Self.viewHolds(property, view, element.native as? UIKitElement) { return held }
             throw DriverCannot(reading: property, of: element)

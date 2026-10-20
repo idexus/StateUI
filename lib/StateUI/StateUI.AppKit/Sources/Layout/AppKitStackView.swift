@@ -15,8 +15,8 @@ final class AppKitStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeasu
     var spacing: CGFloat = 0 {
         didSet { if spacing != oldValue { invalidateMeasurements() } }
     }
-    var padding = NSEdgeInsets() {
-        didSet { if !NSEdgeInsetsEqual(padding, oldValue) { invalidateMeasurements() } }
+    var padding = Insets(0) {
+        didSet { if padding != oldValue { invalidateMeasurements() } }
     }
     private(set) var items: [AppKitLayoutItem] = []
     private(set) var arrangementCountForTesting = 0
@@ -55,7 +55,7 @@ final class AppKitStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeasu
     /// Measures each visible child once for the width this stack offers it.
     private func measuredContentSize(width availableWidth: CGFloat?) -> NSSize {
         NSSize(StackArithmetic.size(
-            of: items, axis: axis, spacing: Double(spacing), padding: Insets(padding),
+            of: items, axis: axis, spacing: Double(spacing), padding: padding,
             width: availableWidth.map(Double.init)))
     }
 
@@ -64,7 +64,7 @@ final class AppKitStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeasu
 
         beginArrangement()
         let places = StackArithmetic.places(
-            of: items, axis: axis, spacing: Double(spacing), padding: Insets(padding), in: bounds.placed,
+            of: items, axis: axis, spacing: Double(spacing), padding: padding, in: bounds.placed,
             direction: direction)
         for (item, place) in zip(items, places) {
             if let place { self.place(item, at: NSRect(placed: place)) }

@@ -19,13 +19,13 @@ extension ButtonProperties {
         setValue(ButtonContract.icon, value)
     }
 
-    /// Which side of the caption the icon stands on. `.leading`, the default,
+    /// Which side of the caption the icon stands on. `.start`, the default,
     /// is the side a line of text starts from, so it follows the layout
     /// direction.
     ///
     ///     Button("Surprise me")
     ///         .icon("nav_surprise.png")
-    ///         .iconPosition(.leading)
+    ///         .iconPosition(.start)
     ///         .iconSpacing(8)
     public func iconPosition(_ value: IconPosition) -> Modified {
         setValue(ButtonContract.iconPosition, value)
@@ -191,13 +191,13 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
 /// Which side of a button's caption its picture is on.
 public enum IconPosition: Int32, Sendable, HostRepresentable {
     /// Before the words, on the side a line starts from - the default.
-    case leading = 0
+    case start = 0
 
     /// Above them.
     case top = 1
 
     /// After them, on the side a line ends.
-    case trailing = 2
+    case end = 2
 
     /// Below them.
     case bottom = 3

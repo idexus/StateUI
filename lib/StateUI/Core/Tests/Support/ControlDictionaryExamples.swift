@@ -511,7 +511,7 @@ extension ControlDictionary {
 
             TextEditor()
                 .onTextChanged { _ in edited = true }
-                .toolbar(.leading) {
+                .toolbar(.start) {
                     ToolbarItem("New")
                 }
                 .toolbar {

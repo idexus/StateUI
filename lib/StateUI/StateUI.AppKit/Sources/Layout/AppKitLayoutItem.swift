@@ -40,12 +40,6 @@ struct AppKitLayoutItem: LayoutChild {
 
     var isShown: Bool { !view.isHidden }
 
-    /// The child's margin, in AppKit's units.
-    var margin: NSEdgeInsets {
-        let margin = values.margin
-        return NSEdgeInsets(top: margin.top, left: margin.left, bottom: margin.bottom, right: margin.right)
-    }
-
     func size(offered width: Double?) -> LayoutSize {
         LayoutSize(fittingSize(width: width.map { CGFloat($0) }))
     }

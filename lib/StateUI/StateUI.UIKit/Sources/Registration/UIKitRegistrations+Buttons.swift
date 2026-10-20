@@ -33,7 +33,7 @@ extension UIKitRegistrations {
             button.applies([ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing]) { view, values in
                 view.setIcon(
                     HostPicture(values[ButtonContract.icon], dark: false).flatMap(UIKitRenderer.image),
-                    position: values[ButtonContract.iconPosition] ?? .leading,
+                    position: values[ButtonContract.iconPosition] ?? .start,
                     spacing: values[ButtonContract.iconSpacing])
             }
             // The box, and the role's look where the tree draws nothing of its own: the main action filled in the

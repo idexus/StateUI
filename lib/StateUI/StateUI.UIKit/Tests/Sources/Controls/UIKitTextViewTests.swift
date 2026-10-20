@@ -30,6 +30,30 @@ final class UIKitTextViewTests: XCTestCase {
                        [.byTruncatingTail, .byWordWrapping, .byTruncatingTail, .byClipping])
     }
 
+    /// A padding's start and end follow the direction: a text's start stands at the left left to right and at the
+    /// right right to left - again as the direction turns; a button takes it as UIKit's leading side, which it turns.
+    func testAPaddingsStartStandsWhereTheDirectionStarts() throws {
+        let rightToLeft = State(wrappedValue: false)
+        let host = UIKitRenderer.running {
+            VStack {
+                Text("Ada").padding(start: 16, top: 0, end: 2, bottom: 0)
+                Button("Go").padding(start: 16, top: 0, end: 2, bottom: 0)
+            }
+            .layoutDirection(rightToLeft.wrappedValue ? .rightToLeft : .leftToRight)
+        }
+        defer { host.finish() }
+        let label = try XCTUnwrap(host.views(UIKitTextView.self).first)
+        let button = try XCTUnwrap(host.views(UIKitButtonView.self).first)
+        XCTAssertEqual([label.padding.left, label.padding.right], [16, 2], "a text's start at the left")
+        XCTAssertEqual(button.configuration?.contentInsets.leading, 16, "a button's start leads")
+
+        rightToLeft.wrappedValue = true
+        host.settle { label.padding.right == 16 }
+        XCTAssertEqual([label.padding.left, label.padding.right], [2, 16], "a text's start at the right")
+        XCTAssertEqual(button.configuration?.contentInsets.leading, 16, "a button's start still leads")
+        XCTAssertEqual(button.effectiveUserInterfaceLayoutDirection, .rightToLeft, "and leading is the right")
+    }
+
     func testSelectableWordsStandAsALabelsDo() {
         let label = UIKitTextView()
         let selectable = UIKitSelectableTextView()

@@ -414,7 +414,7 @@ final class PagesTests: XCTestCase {
 
     /// A toolbar group of `items`, at `side`, in `order`.
     private func toolbarGroup(
-        _ id: String, _ items: [HostPatch], side: ToolbarSide = .trailing, order: Double = 0
+        _ id: String, _ items: [HostPatch], side: ToolbarSide = .end, order: Double = 0
     ) -> HostPatch {
         node(id, .toolbarItemGroup, [.side: .enumeration(side.rawValue), .order: .number(order)], children: items)
     }
@@ -443,20 +443,20 @@ final class PagesTests: XCTestCase {
         let runtime = runtime(pathWindow(
             outer: [
                 toolbarGroup("window", [toolbarAction("inspector"), toolbarAction("home")]),
-                toolbarGroup("start", [toolbarAction("compose")], side: .leading),
+                toolbarGroup("start", [toolbarAction("compose")], side: .start),
             ],
             inner: [
                 toolbarGroup("page", [toolbarAction("save"), toolbarAction("add")]),
                 toolbarGroup("later", [toolbarAction("share")], order: 1),
-                toolbarGroup("near", [toolbarAction("filter")], side: .leading),
+                toolbarGroup("near", [toolbarAction("filter")], side: .start),
             ])) { _ in }
         let page = try XCTUnwrap(runtime.tree.root?.first(id: .manual("detail")))
 
         let actions = page.chromeActions
-        XCTAssertEqual(actions.trailing.map { $0.map(\.id) }, [
+        XCTAssertEqual(actions.end.map { $0.map(\.id) }, [
             [.manual("save"), .manual("add")], [.manual("inspector"), .manual("home")], [.manual("share")],
         ])
-        XCTAssertEqual(actions.leading.map { $0.map(\.id) }, [[.manual("compose")], [.manual("filter")]])
+        XCTAssertEqual(actions.start.map { $0.map(\.id) }, [[.manual("compose")], [.manual("filter")]])
         XCTAssertEqual(actions.primary.map(\.id), [
             .manual("save"), .manual("add"), .manual("inspector"), .manual("home"), .manual("share"),
         ])
@@ -474,7 +474,7 @@ final class PagesTests: XCTestCase {
         let page = try XCTUnwrap(runtime.tree.root?.first(id: .manual("detail")))
 
         let actions = page.chromeActions
-        XCTAssertEqual(actions.trailing.map { $0.map(\.id) }, [[.manual("help"), .manual("inspector"), .manual("save")]])
+        XCTAssertEqual(actions.end.map { $0.map(\.id) }, [[.manual("help"), .manual("inspector"), .manual("save")]])
         XCTAssertEqual(actions.primary.last?.value(.text)?.string, "Save this page")
     }
 

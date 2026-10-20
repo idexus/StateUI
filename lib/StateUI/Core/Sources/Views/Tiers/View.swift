@@ -51,17 +51,17 @@ extension ViewProperties {
     /// Padding is the space inside.
     ///
     ///     Text("Total").margin(16)                      // all four sides
-    ///     Text("Total").margin(Insets(left: 16, top: 0, right: 0, bottom: 0))  // the left edge only
+    ///     Text("Total").margin(Insets(start: 16, top: 0, end: 0, bottom: 0))  // the start only
     public func margin(_ value: Insets) -> Modified { setValue(ViewContract.margin, value) }
 
-    /// The same on the left and the right, and the same above and below.
+    /// The same at the start and the end, and the same above and below.
     public func margin(horizontal: Double, vertical: Double) -> Modified {
         margin(Insets(horizontal: horizontal, vertical: vertical))
     }
 
     /// Each side by name.
-    public func margin(left: Double, top: Double, right: Double, bottom: Double) -> Modified {
-        margin(Insets(left: left, top: top, right: right, bottom: bottom))
+    public func margin(start: Double, top: Double, end: Double, bottom: Double) -> Modified {
+        margin(Insets(start: start, top: top, end: end, bottom: bottom))
     }
 
     /// How the view uses the width its parent offers - filling it, or sitting at

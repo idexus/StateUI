@@ -131,7 +131,7 @@ final class GTKButtonView: GTKView {
     /// The picture beside the caption or in its place, where it stands, how far from the words, and how it fills its
     /// room; nil for none.
     private(set) var picture: GTKImageView?
-    private var position = IconPosition.leading
+    private var position = IconPosition.start
     private var spacing: Double?
 
     /// What the button shows: its caption's label, its picture, or the two in a box.
@@ -256,12 +256,12 @@ final class GTKButtonView: GTKView {
             return writeWords()
         }
 
-        let across = position == .leading || position == .trailing
+        let across = position == .start || position == .end
         let box = gtk_box_new(across ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL, Int32((spacing ?? 6).rounded()))!
         gtk_widget_set_direction(box, gtk_widget_get_direction(widget))
         gtk_widget_set_halign(box, GTK_ALIGN_CENTER)
         let label = gtk_label_new(caption)!
-        let first = position == .leading || position == .top
+        let first = position == .start || position == .top
         for part in first ? [picture.widget, label] : [label, picture.widget] {
             gtk_box_append(box.of(GtkBox.self), part)
         }

@@ -146,7 +146,7 @@ final class UIKitPageController: UIViewController {
         let room = SafeAreaArithmetic.room(
             safe: Rect(x: safe.minX, y: safe.minY, width: safe.width, height: safe.height),
             whole: Rect(x: whole.minX, y: whole.minY, width: whole.width, height: whole.height),
-            edges: page?.element.contentSafeArea)
+            edges: page?.element.contentSafeArea, direction: page?.element.layoutDirection ?? .leftToRight)
         page?.placedFrame = room
         let clearance = SafeAreaArithmetic.endClearance(
             room: room, safe: Rect(x: safe.minX, y: safe.minY, width: safe.width, height: safe.height))

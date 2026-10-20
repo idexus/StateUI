@@ -1005,7 +1005,7 @@ final class AppKitPageTests: XCTestCase {
             if let icon { item.properties[.icon] = .string(icon) }
             return item
         }
-        func group(_ id: String, order: Double, side: ToolbarSide = .trailing, _ items: [HostPatch]) -> HostPatch {
+        func group(_ id: String, order: Double, side: ToolbarSide = .end, _ items: [HostPatch]) -> HostPatch {
             var group = HostPatch(id: .manual(id), type: .toolbarItemGroup)
             group.properties = [.order: .number(order), .side: .enumeration(side.rawValue)]
             group.children = .arranged(items)
@@ -1019,7 +1019,7 @@ final class AppKitPageTests: XCTestCase {
                 toolbarItem("delete", title: "Delete", placement: 2, destructive: true),
             ]),
             group("first", order: 0, [toolbarItem("earlier", title: "Earlier")]),
-            group("start", order: 0, side: .leading, [toolbarItem("compose", title: "Compose")]),
+            group("start", order: 0, side: .start, [toolbarItem("compose", title: "Compose")]),
         ])
         var stack = navigation([
             page("home", title: "Home", events: 100),

@@ -103,15 +103,34 @@ final class GTKTextViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     Text("words")
-                    Text("words").padding(left: 24, top: 8, right: 12, bottom: 4)
+                    Text("words").padding(start: 24, top: 8, end: 12, bottom: 4)
                 }
             }
             let labels = host.views(GTKTextView.self)
             let plain = try XCTUnwrap(labels.first).measure(width: nil, height: nil)
             let padded = try XCTUnwrap(labels.last).measure(width: nil, height: nil)
 
-            XCTAssertEqual(padded.width - plain.width, 36, "24 on the left, 12 on the right")
+            XCTAssertEqual(padded.width - plain.width, 36, "24 at the start, 12 at the end")
             XCTAssertEqual(padded.height - plain.height, 12, "8 above, 4 below")
+        }
+    }
+
+    /// A padding's start and end follow the direction: a text's start stands at the left left to right and at the
+    /// right right to left - again as the direction turns.
+    func testAPaddingsStartStandsWhereTheDirectionStarts() throws {
+        try onUIThread {
+            let rightToLeft = State(wrappedValue: false)
+            let host = GTKRenderer.running {
+                VStack { Text("words").padding(start: 24, top: 8, end: 12, bottom: 4) }
+                    .layoutDirection(rightToLeft.wrappedValue ? .rightToLeft : .leftToRight)
+            }
+            let label = try XCTUnwrap(host.views(GTKTextView.self).first)
+            // The class names its sides top, right, bottom, left.
+            XCTAssertNotEqual(gtk_widget_has_css_class(label.widget, "stateui-padding-8-12-4-24"), 0, "the start left")
+
+            rightToLeft.wrappedValue = true
+            host.step()
+            XCTAssertNotEqual(gtk_widget_has_css_class(label.widget, "stateui-padding-8-24-4-12"), 0, "the start right")
         }
     }
 

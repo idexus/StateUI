@@ -4474,11 +4474,11 @@ enum Listings {
         // Sources/Samples/BasicInput/IconButtonSample.swift
         @State private var taps = 0
         @State private var pressed = false
-        @State private var side = IconPosition.leading
+        @State private var side = IconPosition.start
         @State private var gap = 8.0
         @State private var wide = false
 
-        static let sides: [IconPosition] = [.leading, .top, .trailing, .bottom]
+        static let sides: [IconPosition] = [.start, .top, .end, .bottom]
 
         var body: some View {
             VStack {
@@ -6908,7 +6908,7 @@ enum Listings {
                         .tracking(-0.3)
                         .verticalAlignment(.center)
                 }
-                .padding(left: 20, top: 12, right: 20, bottom: 8)
+                .padding(start: 20, top: 12, end: 20, bottom: 8)
             }
 
             /// Home, one row per group, the row that is not always listed, and the one
@@ -10657,8 +10657,8 @@ enum Listings {
         /// Whether the sample's actions join the gallery's own group, by its id.
         @State private var inGallery = false
 
-        /// Whether the sample's group stands at the bar's leading edge.
-        @State private var atLeading = false
+        /// Whether the sample's group stands at the bar's start.
+        @State private var atStart = false
 
         /// Whether Add shows its words beside its picture on the bar.
         @State private var addWords = false
@@ -10683,7 +10683,7 @@ enum Listings {
 
                     switchRow($afterGallery, "After the gallery's actions", id: "toolbar.afterGallery")
                     switchRow($inGallery, "In the gallery's group", id: "toolbar.inGallery")
-                    switchRow($atLeading, "At the leading edge", id: "toolbar.atLeading")
+                    switchRow($atStart, "At the start", id: "toolbar.atStart")
 
                     SectionTitle("A picture and its words")
 
@@ -10692,7 +10692,7 @@ enum Listings {
                 // The page's actions, declared where their state lives: they follow
                 // it as the body builds - `saved` decides whether Clear can be pressed,
                 // `addWords` Add's words, the three switches where the group stands.
-                .toolbar(atLeading ? .leading : .trailing, id: inGallery ? "gallery" : "sample", order: afterGallery ? 1 : 0) {
+                .toolbar(atStart ? .start : .end, id: inGallery ? "gallery" : "sample", order: afterGallery ? 1 : 0) {
                     ToolbarItem("Save")
                         .id("save")
                         .onClicked { saved += 1 }

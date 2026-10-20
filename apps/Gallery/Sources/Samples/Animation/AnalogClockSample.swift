@@ -69,7 +69,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                 return Rectangle(Palette.outline)
                     .width(wide)
                     .height(tall)
-                    .margin(left: 2 * x, top: 2 * y, right: 0, bottom: 0)
+                    .margin(start: 2 * x, top: 2 * y, end: 0, bottom: 0)
                     .horizontalAlignment(.center)
                     .verticalAlignment(.center)
             }
@@ -215,7 +215,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             .rotation(angle)
             .width(width)
             .height(length)
-            .margin(left: 0, top: 0, right: 0, bottom: length)
+            .margin(start: 0, top: 0, end: 0, bottom: length)
             .pivotY(1)
             .horizontalAlignment(.center)
             .verticalAlignment(.center)

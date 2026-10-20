@@ -121,7 +121,7 @@ extension AppKitElement {
 
         if let layers = view as? AppKitZStackView {
             layers.placement = placement(.area)
-            layers.padding = insets(.padding)
+            layers.padding = element.insets(.padding)
         }
 
         if let layout = view as? AppKitTravellingLayout {
@@ -164,14 +164,13 @@ extension AppKitElement {
             value: maximumHeight,
             make: { view.heightAnchor.constraint(lessThanOrEqualToConstant: $0).stated })
 
-        if let button = view as? NSButton,
-           let padding = value(.padding)?.numbers, padding.count >= 4 {
-            (button.cell as? AppKitButtonCell)?.padding = NSEdgeInsets(
-                top: padding[1], left: padding[0], bottom: padding[3], right: padding[2])
+        if let button = view as? NSButton, value(.padding) != nil {
+            let padding = nativeInsets(.padding)
+            (button.cell as? AppKitButtonCell)?.padding = padding
             let intrinsic = button.intrinsicContentSize
             buttonWidthConstraint = reconciledConstraint(
                 buttonWidthConstraint,
-                value: intrinsic.width + padding[0] + padding[2],
+                value: intrinsic.width + padding.left + padding.right,
                 make: {
                     let constraint = button.widthAnchor.constraint(
                         greaterThanOrEqualToConstant: $0)
@@ -180,7 +179,7 @@ extension AppKitElement {
                 })
             buttonHeightConstraint = reconciledConstraint(
                 buttonHeightConstraint,
-                value: intrinsic.height + padding[1] + padding[3],
+                value: intrinsic.height + padding.top + padding.bottom,
                 make: {
                     let constraint = button.heightAnchor.constraint(
                         greaterThanOrEqualToConstant: $0)
@@ -279,8 +278,10 @@ extension AppKitElement {
         return numbers.count == components.count ? numbers : nil
     }
 
-    func insets(_ property: Prop) -> NSEdgeInsets {
-        let sides = element.insets(property)
+    /// `property`'s insets as a native control is padded by them: left and right by the element's direction.
+    /// Design: docs/design/host/layout.md#right-to-left
+    func nativeInsets(_ property: Prop) -> NSEdgeInsets {
+        let sides = element.insets(property).sides(in: element.layoutDirection)
         return NSEdgeInsets(top: sides.top, left: sides.left, bottom: sides.bottom, right: sides.right)
     }
 

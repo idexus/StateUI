@@ -14,7 +14,11 @@ final class UIKitTextView: UILabel, UIKitLabel {
     var shown = UIKitLabelWords()
 
     /// The room between the label's edge and its words.
-    private(set) var padding = UIEdgeInsets.zero
+    /// The room between the label's edge and its words, as the tree says it.
+    private var insets = Insets(0)
+
+    /// That room in UIKit's sides, by the direction the label lays out in.
+    var padding: UIEdgeInsets { UIEdgeInsets(insets, in: semanticContentAttribute) }
 
     /// What fills the label's box behind its words: a colour, or a brush; nothing where the tree says none.
     private var fill = UIKitBrush()
@@ -43,7 +47,11 @@ final class UIKitTextView: UILabel, UIKitLabel {
 
     /// The room between the label's edge and its words.
     func setPadding(_ insets: Insets?) {
-        padding = insets.map(UIEdgeInsets.init) ?? .zero
+        self.insets = insets ?? Insets(0)
+        directionTurned()
+    }
+
+    func directionTurned() {
         measurements.invalidate()
         invalidateIntrinsicContentSize()
         setNeedsDisplay()

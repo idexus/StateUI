@@ -128,7 +128,7 @@ final class GTKZStackViewTests: XCTestCase {
                     Rectangle().fill(.red)
                     Rectangle().fill(.blue).area(.absolute(10, 20, 30, 40))
                 }
-                .padding(left: 10, top: 5, right: 20, bottom: 15)
+                .padding(start: 10, top: 5, end: 20, bottom: 15)
             }
             let room = try XCTUnwrap(host.views(GTKZStackView.self).first).frame
 

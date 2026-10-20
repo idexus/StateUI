@@ -15,14 +15,14 @@ extension AppKitRegistrations {
         registry.add(VStackContract.self, create: { _ in AppKitStackView(axis: .vertical) }) { stack in
             stack.applies(Self.stackMembers) { view, values in
                 view.spacing = CGFloat(values[StackContract.spacing] ?? 0)
-                view.padding = Self.edgeInsets(values[PaddingElementContract.padding])
+                view.padding = values[PaddingElementContract.padding] ?? Insets(0)
             }
         }
 
         registry.add(HStackContract.self, create: { _ in AppKitStackView(axis: .horizontal) }) { stack in
             stack.applies(Self.stackMembers) { view, values in
                 view.spacing = CGFloat(values[StackContract.spacing] ?? 0)
-                view.padding = Self.edgeInsets(values[PaddingElementContract.padding])
+                view.padding = values[PaddingElementContract.padding] ?? Insets(0)
             }
         }
 
@@ -49,7 +49,7 @@ extension AppKitRegistrations {
 
                 view.apply(
                     orientation: (values[ScrollViewContract.orientation] ?? .vertical).rawValue,
-                    padding: Self.edgeInsets(values[PaddingElementContract.padding]),
+                    padding: values[PaddingElementContract.padding] ?? Insets(0),
                     verticalBarVisibility:
                         (values[ScrollViewContract.verticalScrollIndicator] ?? .automatic).rawValue,
                     horizontalBarVisibility:
@@ -76,7 +76,7 @@ extension AppKitRegistrations {
                 view.columns = Self.gridLengths(values[GridContract.columns])
                 view.rowSpacing = CGFloat(values[GridContract.rowSpacing] ?? 0)
                 view.columnSpacing = CGFloat(values[GridContract.columnSpacing] ?? 0)
-                view.padding = Self.edgeInsets(values[PaddingElementContract.padding])
+                view.padding = values[PaddingElementContract.padding] ?? Insets(0)
             }
         }
     }

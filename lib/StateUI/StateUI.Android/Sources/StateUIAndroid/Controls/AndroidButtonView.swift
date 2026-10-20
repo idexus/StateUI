@@ -354,8 +354,8 @@ final class AndroidButtonView: AndroidTextualView {
         shownIcon = shown
 
         let position: Int32 = switch icon.position {
-        case .leading: 0
-        case .trailing: 1
+        case .start: 0
+        case .end: 1
         case .top: 2
         case .bottom: 3
         }
@@ -413,7 +413,7 @@ final class AndroidButtonView: AndroidTextualView {
     private struct Icon {
         var source: HostPicture?
         var size: (width: Int32, height: Int32)?
-        var position: IconPosition = .leading
+        var position: IconPosition = .start
         var spacing: Double?
         var aspect: ContentMode = .fit
         var picture: JavaObject?

@@ -16,8 +16,8 @@ final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeas
     }
 
     /// The room inside the ZStack's own edge.
-    var padding = NSEdgeInsets() {
-        didSet { if !NSEdgeInsetsEqual(padding, oldValue) { invalidateMeasurements() } }
+    var padding = Insets(0) {
+        didSet { if padding != oldValue { invalidateMeasurements() } }
     }
 
     /// Whether the ZStack stands a layout engine, which has no size of its own.
@@ -57,7 +57,7 @@ final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeas
     }
 
     private func measuredContentSize(width: CGFloat?) -> NSSize {
-        NSSize(ZStackArithmetic.size(of: items, padding: Insets(padding), width: width.map(Double.init), engine: engine))
+        NSSize(ZStackArithmetic.size(of: items, padding: padding, width: width.map(Double.init), engine: engine))
     }
 
     override func layout() {
@@ -71,7 +71,7 @@ final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeas
         beginArrangement()
         for item in items { drawUnplaced(item) }
         let places = ZStackArithmetic.places(
-            of: items, in: bounds.placed, padding: Insets(padding), direction: direction)
+            of: items, in: bounds.placed, padding: padding, direction: direction)
         for (item, place) in zip(items, places) {
             if let place { self.place(item, at: NSRect(placed: place)) }
         }

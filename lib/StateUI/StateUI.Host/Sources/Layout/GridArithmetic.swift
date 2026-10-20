@@ -18,13 +18,13 @@
         var columnSizes = trackSizes(
             items, definitions: columnDefinitions, count: columnCount,
             available: nil, spacing: columnSpacing, vertical: false)
-        let width = padding.left + padding.right + columnSizes.reduce(0, +)
+        let width = padding.start + padding.end + columnSizes.reduce(0, +)
             + columnSpacing * Double(max(columnCount - 1, 0))
 
         if let offered, width > offered {
             columnSizes = trackSizes(
                 items, definitions: columnDefinitions, count: columnCount,
-                available: max(0, offered - padding.left - padding.right), spacing: columnSpacing, vertical: false)
+                available: max(0, offered - padding.start - padding.end), spacing: columnSpacing, vertical: false)
         }
         let rowSizes = trackSizes(
             items, definitions: completed(rows, count: rowCount), count: rowCount,
@@ -79,7 +79,7 @@
                 + columnSpacing * Double(max(columnEnd - column - 1, 0))
             let cellHeight = rowSizes[row..<rowEnd].reduce(0, +)
                 + rowSpacing * Double(max(rowEnd - row - 1, 0))
-            let availableWidth = max(0, cellWidth - margin.left - margin.right)
+            let availableWidth = max(0, cellWidth - margin.start - margin.end)
             let availableHeight = max(0, cellHeight - margin.top - margin.bottom)
             let natural = item.size(offered: availableWidth)
             let width = Extent.of(
@@ -92,7 +92,7 @@
             return Rect(
                 x: Extent.start(
                     option: values.horizontal, extent: width,
-                    start: columnOrigins[column] + margin.left, available: availableWidth),
+                    start: columnOrigins[column] + margin.start, available: availableWidth),
                 y: Extent.start(
                     option: values.vertical, extent: height,
                     start: rowOrigins[row] + margin.top, available: availableHeight),
@@ -137,11 +137,11 @@
                 let last = min(first + max(item.values.columnSpan, 1), columns.sizes.count)
                 let cell = columns.sizes[first..<last].reduce(0, +)
                     + columns.spacing * Double(max(last - first - 1, 0))
-                return max(0, cell - margin.left - margin.right)
+                return max(0, cell - margin.start - margin.end)
             })
             return vertical
                 ? measured.height + margin.top + margin.bottom
-                : measured.width + margin.left + margin.right
+                : measured.width + margin.start + margin.end
         }
 
         func track(_ item: Child) -> (index: Int, span: Int) {

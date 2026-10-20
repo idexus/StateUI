@@ -29,7 +29,7 @@ enum Look {
             .lineWidth(1)
             .shape(.roundedRectangle(7))
             .padding(horizontal: 10, vertical: 2)
-            .margin(left: 0, top: 0, right: 6, bottom: 4)
+            .margin(start: 0, top: 0, end: 6, bottom: 4)
             .onClicked { run() }
     }
 

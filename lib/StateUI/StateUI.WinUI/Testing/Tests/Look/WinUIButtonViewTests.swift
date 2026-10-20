@@ -93,7 +93,7 @@ final class WinUIButtonViewTests: XCTestCase {
             let host = WinUIRenderer.running {
                 VStack {
                     Button("Go")
-                    Button("Send").icon("test_wide.png").iconPosition(.trailing)
+                    Button("Send").icon("test_wide.png").iconPosition(.end)
                 }
             }
             let buttons = host.views(WinUIButtonView.self)

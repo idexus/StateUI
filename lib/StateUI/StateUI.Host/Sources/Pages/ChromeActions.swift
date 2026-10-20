@@ -8,17 +8,17 @@
 /// actions placed behind the overflow.
 /// Design: docs/design/host/pages.md#the-actions-of-a-path
 @_spi(Host) @MainActor public struct ChromeActions {
-    /// The groups at the bar's leading edge, in reading order.
-    public private(set) var leading: [[MountedElement]] = []
+    /// The groups at the bar's start, in reading order.
+    public private(set) var start: [[MountedElement]] = []
 
-    /// The groups at the bar's trailing edge, in reading order.
-    public private(set) var trailing: [[MountedElement]] = []
+    /// The groups at the bar's end, in reading order.
+    public private(set) var end: [[MountedElement]] = []
 
     /// The actions behind the overflow, in the order composed.
     public private(set) var overflow: [MountedElement] = []
 
-    /// The trailing actions in reading order, for a bar that draws no groups.
-    public var primary: [MountedElement] { trailing.flatMap { $0 } }
+    /// The actions at the end in reading order, for a bar that draws no groups.
+    public var primary: [MountedElement] { end.flatMap { $0 } }
 
     /// None.
     public init() {}
@@ -49,7 +49,7 @@
             return (head, items)
         }
 
-        let composed = [ToolbarSide.leading, .trailing].flatMap { side in
+        let composed = [ToolbarSide.start, .end].flatMap { side in
             placed.filter { $0.head.side == side }.sorted { $0.head.key(on: side) < $1.head.key(on: side) }
         }
         let standing = Self.standing(composed.flatMap(\.items))
@@ -59,7 +59,7 @@
             let onBar = items.filter { !$0.isOverflow }
             overflow += items.filter(\.isOverflow)
             guard !onBar.isEmpty else { continue }
-            if group.head.side == .leading { leading.append(onBar) } else { trailing.append(onBar) }
+            if group.head.side == .start { start.append(onBar) } else { end.append(onBar) }
         }
     }
 
@@ -99,13 +99,13 @@
             self.level = level
             self.index = index
             order = Int(group.value(.order)?.number ?? 0)
-            side = group.value(.side)?.enumeration.flatMap { ToolbarSide(rawValue: Int32($0)) } ?? .trailing
+            side = group.value(.side)?.enumeration.flatMap { ToolbarSide(rawValue: Int32($0)) } ?? .end
         }
 
-        /// Where it stands at `side`: by its order, then the outer in place at the edge - first on the leading side,
-        /// last on the trailing - then as declared.
+        /// Where it stands at `side`: by its order, then the outer in place at the edge - first at the start,
+        /// last at the end - then as declared.
         func key(on side: ToolbarSide) -> (Int, Int, Int) {
-            (order, side == .leading ? level : -level, index)
+            (order, side == .start ? level : -level, index)
         }
     }
 

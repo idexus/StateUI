@@ -46,7 +46,7 @@ extension WebRegistrations {
                 ImageElementContract.contentMode,
             ]) { view, values in
                 view.setIcon(
-                    values[ButtonContract.icon], position: values[ButtonContract.iconPosition] ?? .leading,
+                    values[ButtonContract.icon], position: values[ButtonContract.iconPosition] ?? .start,
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
             }
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLines(lineBreak) }

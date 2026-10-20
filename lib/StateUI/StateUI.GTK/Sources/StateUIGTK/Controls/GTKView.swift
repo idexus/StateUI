@@ -49,7 +49,9 @@ class GTKView {
     private var onFocusChanged: ((Bool) -> Void)?
     private var focusController: OpaquePointer?
 
-    /// The style sheet's class giving the view its padding.
+    /// The room between the view's edge and its content, as the tree says it, and the style sheet's class giving
+    /// it - its start at the side the view's direction starts from.
+    private var padding: Insets?
     private var paddingClass: String?
 
     /// The colour the view's accent is drawn in, as the host last wrote it, and its class; nil for the platform's.
@@ -135,6 +137,7 @@ class GTKView {
     /// Design: docs/design/platforms/gtk/layout.md#right-to-left
     func setDirection(_ direction: GtkTextDirection) {
         gtk_widget_set_direction(widget, direction)
+        if padding != nil { showPadding() }
         guard g_type_check_instance_is_a(widget.of(GTypeInstance.self), gtk_editable_get_type()) != 0,
               let words = gtk_editable_get_delegate(widget.opaque) else { return }
         gtk_widget_set_direction(UnsafeMutablePointer(words), direction)
@@ -168,7 +171,16 @@ class GTKView {
 
     /// The room between the view's edge and its content, as a class of the host's style sheet; nil for none.
     func setPadding(_ insets: Insets?) {
-        let wanted = insets.flatMap { $0 == Insets(0) ? nil : GTKStyleSheet.padding($0) }
+        padding = insets
+        showPadding()
+    }
+
+    /// The padding's class, its sides by the direction the view lays out in.
+    /// Design: docs/design/host/layout.md#right-to-left
+    private func showPadding() {
+        let rightToLeft = gtk_widget_get_direction(widget) == GTK_TEXT_DIR_RTL
+        let direction: LayoutDirection = rightToLeft ? .rightToLeft : .leftToRight
+        let wanted = padding.flatMap { $0 == Insets(0) ? nil : GTKStyleSheet.padding($0.sides(in: direction)) }
         guard wanted != paddingClass else { return }
         if let paddingClass { gtk_widget_remove_css_class(widget, paddingClass) }
         if let wanted { gtk_widget_add_css_class(widget, wanted) }

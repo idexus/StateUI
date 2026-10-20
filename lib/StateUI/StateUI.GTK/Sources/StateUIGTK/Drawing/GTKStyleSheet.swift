@@ -15,8 +15,8 @@ enum GTKStyleSheet {
     /// How many rules the sheet holds - what a test counts.
     static var ruleCount: Int { rules.count }
 
-    /// The class giving a widget `insets` of room between its edge and its content.
-    static func padding(_ insets: Insets) -> String {
+    /// The class giving a widget `insets` of room between its edge and its content, each side where it stands.
+    static func padding(_ insets: InsetSides) -> String {
         let sides = [insets.top, insets.right, insets.bottom, insets.left].map { max(0, $0.isFinite ? $0 : 0) }
         let name = "stateui-padding-" + sides.map { css($0).replacing(".", with: "_") }.joined(separator: "-")
         let room = sides.map { css($0) + "px" }.joined(separator: " ")

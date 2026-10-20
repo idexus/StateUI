@@ -111,8 +111,8 @@ final class WebWindowBar: WebDOMView {
 
         var kept: [ObjectIdentifier: WebBarButton] = [:]
         var made: [WebDOMView] = []
-        let ending = chrome.actions.trailing
-        for (edge, runs) in [(leading, chrome.actions.leading), (trailing, ending)] {
+        let ending = chrome.actions.end
+        for (edge, runs) in [(leading, chrome.actions.start), (trailing, ending)] {
             for (place, items) in runs.enumerated() {
                 let group = place < groups.count ? groups.removeFirst() : WebDOMView(tag: "div")
                 group.attribute("class", "stateui-bar-group")

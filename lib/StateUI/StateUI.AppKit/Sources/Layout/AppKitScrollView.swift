@@ -21,7 +21,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     var onFramesWanted: (() -> Void)?
 
     private(set) var orientation = ScrollOrientation.vertical
-    private(set) var padding = NSEdgeInsets()
+    private(set) var padding = Insets(0)
     private var verticalBarVisibility: Int32 = 0
     private var horizontalBarVisibility: Int32 = 0
 
@@ -69,7 +69,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         // same path, so the two can never drift apart.
         apply(
             orientation: ScrollOrientation.vertical.rawValue,
-            padding: NSEdgeInsets(),
+            padding: Insets(0),
             verticalBarVisibility: 0,
             horizontalBarVisibility: 0,
             offset: nil)
@@ -113,7 +113,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
 
     func apply(
         orientation: Int32,
-        padding: NSEdgeInsets,
+        padding: Insets,
         verticalBarVisibility: Int32,
         horizontalBarVisibility: Int32,
         offset: NSPoint?
@@ -386,8 +386,8 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
             invalidateMeasurements()
         }
     }
-    var padding = NSEdgeInsets() {
-        didSet { if !NSEdgeInsetsEqual(padding, oldValue) { invalidateMeasurements() } }
+    var padding = Insets(0) {
+        didSet { if padding != oldValue { invalidateMeasurements() } }
     }
     var orientation = ScrollOrientation.vertical {
         didSet { if orientation != oldValue { invalidateMeasurements() } }
@@ -404,7 +404,7 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
 
     private func measuredContentSize(width availableWidth: CGFloat?) -> NSSize {
         NSSize(ScrollArithmetic.contentSize(
-            of: item, padding: Insets(padding), orientation: orientation,
+            of: item, padding: padding, orientation: orientation,
             width: availableWidth.map(Double.init)))
     }
 
@@ -415,7 +415,7 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
         }
 
         let arranged = ScrollArithmetic.arrange(
-            item, padding: Insets(padding), orientation: orientation, in: LayoutSize(viewport), direction: direction)
+            item, padding: padding, orientation: orientation, in: LayoutSize(viewport), direction: direction)
         frame = NSRect(origin: .zero, size: NSSize(arranged.document))
         item.view.frame = NSRect(placed: arranged.place)
         item.view.needsLayout = true

@@ -118,7 +118,7 @@ extension UIKitDriver {
             return (radius > 0 ? ContainerShape.roundedRectangle(radius) : .rectangle).propValue
         case .iconPosition:
             let positions: [(NSDirectionalRectEdge, IconPosition)] = [
-                (.leading, .leading), (.top, .top), (.trailing, .trailing), (.bottom, .bottom),
+                (.leading, .start), (.top, .top), (.trailing, .end), (.bottom, .bottom),
             ]
             return positions.first { $0.0 == configuration.imagePlacement }?.1.propValue
         case .iconSpacing: return Double(configuration.imagePadding).propValue

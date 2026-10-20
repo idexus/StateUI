@@ -27,7 +27,10 @@ extension GTKDriver {
             guard let sides = named("stateui-padding-")?.split(separator: "-").compactMap({ Self.number($0) }),
                   sides.count == 4
             else { return .some(nil) }
-            return Insets(left: sides[3], top: sides[0], right: sides[1], bottom: sides[2]).propValue
+            // The class holds the sides where they stand: the start is the right right to left.
+            let rightToLeft = gtk_widget_get_direction(view.widget) == GTK_TEXT_DIR_RTL
+            let (start, end) = rightToLeft ? (sides[1], sides[3]) : (sides[3], sides[1])
+            return Insets(start: start, top: sides[0], end: end, bottom: sides[2]).propValue
         case (.background, let layout as GTKLayoutView):
             // A colour stands in for a blur: the blur whose colour the layout's box paints; nil reads its pixels.
             let painted = layout.box.fill

@@ -15,9 +15,9 @@
     public static func size<Child: LayoutChild>(
         of items: [Child], padding: Insets, width offered: Double?, engine: Bool = false
     ) -> LayoutSize {
-        guard !engine else { return LayoutSize(width: padding.left + padding.right, height: padding.top + padding.bottom) }
+        guard !engine else { return LayoutSize(width: padding.start + padding.end, height: padding.top + padding.bottom) }
 
-        let inner = offered.map { max(0, $0 - padding.left - padding.right) }
+        let inner = offered.map { max(0, $0 - padding.start - padding.end) }
         var width = 0.0
         var height = 0.0
 
@@ -27,7 +27,7 @@
             height = max(height, needs.height)
         }
 
-        return LayoutSize(width: padding.left + padding.right + width, height: padding.top + padding.bottom + height)
+        return LayoutSize(width: padding.start + padding.end + width, height: padding.top + padding.bottom + height)
     }
 
     /// Where each child stands in `room`, within `padding`, in order; nil for a hidden one. Right to left,
@@ -68,14 +68,14 @@
         case let .absolute(x, y, width, height)?:
             return LayoutSize(width: max(0, x + width), height: max(0, y + height))
         case let .proportional(_, _, width, height)?:
-            let natural = item.size(offered: offered.map { max(0, $0 * width - margin.left - margin.right) })
+            let natural = item.size(offered: offered.map { max(0, $0 * width - margin.start - margin.end) })
             return LayoutSize(
-                width: width > 0 ? (natural.width + margin.left + margin.right) / width : 0,
+                width: width > 0 ? (natural.width + margin.start + margin.end) / width : 0,
                 height: height > 0 ? (natural.height + margin.top + margin.bottom) / height : 0)
         case nil:
-            let natural = item.size(offered: offered.map { max(0, $0 - margin.left - margin.right) })
+            let natural = item.size(offered: offered.map { max(0, $0 - margin.start - margin.end) })
             return LayoutSize(
-                width: natural.width + margin.left + margin.right,
+                width: natural.width + margin.start + margin.end,
                 height: natural.height + margin.top + margin.bottom)
         }
     }

@@ -300,7 +300,7 @@ final class CycleTests: XCTestCase {
         trip(false)
         trip(Point(x: 3, y: -4))
         trip(Rect(1, 2, 3, 4))
-        trip(Insets(left: 1, top: 2, right: 3, bottom: 4))
+        trip(Insets(start: 1, top: 2, end: 3, bottom: 4))
         trip(Color(hex: 0x40C0FF, opacity: 0.5))
         trip("a caption, ż and 漢")
         trip("")

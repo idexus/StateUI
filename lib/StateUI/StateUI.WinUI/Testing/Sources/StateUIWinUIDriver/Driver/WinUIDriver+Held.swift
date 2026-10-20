@@ -288,9 +288,9 @@ extension WinUIDriver {
         case "stroke" where view is WinUIButtonView:
             return try Self.color(read(view, "borderBrush")).map { Brush.solidColor($0).propValue }
         case "lineWidth" where view is WinUIButtonView:
-            return try Self.insets(read(view, "borderThickness"))?.left.propValue
+            return try Self.insets(read(view, "borderThickness"))?.start.propValue
         case "shape" where view is WinUIButtonView:
-            let radius = try Self.insets(read(view, "cornerRadius"))?.left ?? 0
+            let radius = try Self.insets(read(view, "cornerRadius"))?.start ?? 0
             return (radius > 0 ? ContainerShape.roundedRectangle(radius) : .rectangle).propValue
         default: return nil
         }
@@ -630,10 +630,11 @@ extension WinUIDriver {
         Color(red: Int(argb >> 16 & 0xFF), green: Int(argb >> 8 & 0xFF), blue: Int(argb & 0xFF), alpha: Int(argb >> 24))
     }
 
-    /// Four sides the reader writes as numbers apart by commas.
+    /// Four sides the reader writes as numbers apart by commas - left first, the start, which WinUI turns with a
+    /// control laid out right to left.
     static func insets(_ words: String) -> Insets? {
         let sides = words.split(separator: ",").compactMap { Double($0) }
-        return sides.count == 4 ? Insets(left: sides[0], top: sides[1], right: sides[2], bottom: sides[3]) : nil
+        return sides.count == 4 ? Insets(start: sides[0], top: sides[1], end: sides[2], bottom: sides[3]) : nil
     }
 
     /// A day the reader writes as year-month-day.

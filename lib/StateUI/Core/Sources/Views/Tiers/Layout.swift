@@ -45,10 +45,10 @@ extension LayoutProperties {
     ///
     ///     Grid { … }.avoidsSafeArea(.none, .container)
     ///
-    /// Left and right take the first, top and bottom the second.
+    /// The start and the end take the first, top and bottom the second.
     ///
     /// - Parameters:
-    ///   - horizontal: what the left and right edges stay clear of.
+    ///   - horizontal: what the start and the end edges stay clear of.
     ///   - vertical: what the top and bottom edges stay clear of.
     public func avoidsSafeArea(
         _ horizontal: SafeArea,
@@ -57,20 +57,20 @@ extension LayoutProperties {
         avoidsSafeArea(horizontal, vertical, horizontal, vertical)
     }
 
-    /// The same, one edge at a time: left, top, right, bottom.
+    /// The same, one edge at a time: start, top, end, bottom - the start and the end as the layout lays out.
     ///
     /// - Parameters:
-    ///   - left: what the left edge stays clear of.
+    ///   - start: what the edge a line of words starts from stays clear of.
     ///   - top: what the top edge stays clear of.
-    ///   - right: what the right edge stays clear of.
+    ///   - end: what the edge a line of words ends at stays clear of.
     ///   - bottom: what the bottom edge stays clear of.
     public func avoidsSafeArea(
-        _ left: SafeArea,
+        _ start: SafeArea,
         _ top: SafeArea,
-        _ right: SafeArea,
+        _ end: SafeArea,
         _ bottom: SafeArea
     ) -> Modified {
-        setValue(LayoutContract.avoidsSafeArea, .edges(left: left, top: top, right: right, bottom: bottom))
+        setValue(LayoutContract.avoidsSafeArea, .edges(start: start, top: top, end: end, bottom: bottom))
     }
 }
 

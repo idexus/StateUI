@@ -15,7 +15,36 @@ final class AndroidTextViewTests: XCTestCase {
             ("testATextsCaseAndLetterSpacingAreItsOwn", testATextsCaseAndLetterSpacingAreItsOwn),
             ("testABackgroundBrushIsDrawnAcrossTheView", testABackgroundBrushIsDrawnAcrossTheView),
             ("testALabelsWordsStandInTheThemesPrimaryColour", testALabelsWordsStandInTheThemesPrimaryColour),
+            ("testAPaddingsStartStandsWhereTheDirectionStarts", testAPaddingsStartStandsWhereTheDirectionStarts),
         ]
+    }
+
+    /// A padding's start and end follow the direction: a text's and a button's start stand at the left left to right
+    /// and at the right right to left - again as the direction turns.
+    func testAPaddingsStartStandsWhereTheDirectionStarts() throws {
+        try onMainActor {
+            let rightToLeft = State(wrappedValue: false)
+            let host = AndroidRenderer.running {
+                VStack {
+                    Text("Ada").padding(start: 16, top: 0, end: 2, bottom: 0)
+                    Button("Go").padding(start: 16, top: 0, end: 2, bottom: 0)
+                }
+                .layoutDirection(rightToLeft.wrappedValue ? .rightToLeft : .leftToRight)
+            }
+            let views: [AndroidTextualView] = [
+                try XCTUnwrap(host.views(AndroidTextView.self).first),
+                try XCTUnwrap(host.views(AndroidButtonView.self).first),
+            ]
+            let (start, end) = (views[0].pixels(16), views[0].pixels(2))
+            @MainActor func sides(_ view: AndroidTextualView) -> [Int32] {
+                [JavaAPI.getPaddingLeft, JavaAPI.getPaddingRight].map { Java.callInt(view.reference, $0) }
+            }
+            XCTAssertEqual(views.map(sides), [[start, end], [start, end]], "the start at the left")
+
+            rightToLeft.wrappedValue = true
+            host.runtime.pump.turn()
+            XCTAssertEqual(views.map(sides), [[end, start], [end, start]], "the start at the right")
+        }
     }
 
     /// The runs' words are the label's, one after another, and a larger run makes the line taller.

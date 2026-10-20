@@ -74,7 +74,7 @@
             ConformanceCase("aLeadingGroupStandsAtTheLeadingEdge", proves: [Covered(ToolbarItemGroupContract.side)]) { s in
                 s.start {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                        DeclaringPage(side: .leading) { [ToolbarItem("Filter").id("filter")] }
+                        DeclaringPage(side: .start) { [ToolbarItem("Filter").id("filter")] }
                     } destination: { _ in Text("Pushed") }
                     .toolbar { ToolbarItem("Home").id("home") }
                 }

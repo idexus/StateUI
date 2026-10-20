@@ -125,7 +125,7 @@ extension AndroidElement {
         // No place at the leading edge beside the navigation button: those groups stand first.
         // Design: docs/design/platforms/android/pages.md#the-bar
         let actions = page?.chromeActions ?? ChromeActions()
-        let groups = actions.leading + actions.trailing
+        let groups = actions.start + actions.end
         let onBar = groups.flatMap { $0 }
         let shown = onBar + actions.overflow
         let colors = page?.barColors ?? element.barColors

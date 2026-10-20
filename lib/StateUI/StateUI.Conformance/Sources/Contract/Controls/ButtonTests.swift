@@ -62,7 +62,7 @@
             },
             Aspects.holds(ButtonContract.icon, on: "Button", "test_dot.png", then: "test_wide.png",
                           with: [Write(TextualElementContract.text, "Go")]),
-            Aspects.holds(ButtonContract.iconPosition, on: "Button", .leading, then: .top, with: [
+            Aspects.holds(ButtonContract.iconPosition, on: "Button", .start, then: .top, with: [
                 Write(TextualElementContract.text, "Go"), Write(ButtonContract.icon, "test_dot.png"),
             ]),
             Aspects.holds(ButtonContract.iconSpacing, on: "Button", 4, then: 12, with: [

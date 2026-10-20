@@ -32,7 +32,7 @@ final class WebLayoutViewTests: XCTestCase {
         let mark = WebTextView()
         defer { for view in [layout, mark] { view.release() } }
         var values = LayoutValues()
-        values.margin = Insets(left: -188, top: -94, right: 0, bottom: 0)
+        values.margin = Insets(start: -188, top: -94, end: 0, bottom: 0)
         layout.setItems([(mark, { values })])
 
         XCTAssertEqual(WebPage.style(of: mark.node, "margin-inline-start"), "-188px", "left of where it would stand")

@@ -99,8 +99,8 @@ final class WebButtonView: WebDOMView, WebWordsView {
         picture = shown
         shown.apply(picture: source, aspect: aspect)
         let direction: String? = switch position {
-        case .leading: nil
-        case .trailing: "row-reverse"
+        case .start: nil
+        case .end: "row-reverse"
         case .top: "column"
         case .bottom: "column-reverse"
         }

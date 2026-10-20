@@ -256,8 +256,8 @@ class WebLayoutView: WebDOMView {
             view.style("grid-area", "1 / 1 / 2 / 2")
             return view.style("position", "relative")
         }
-        let (left, top) = (WebCSS.pixels(padding.left)!, WebCSS.pixels(padding.top)!)
-        let room = "(100% - \(WebCSS.pixels(padding.left + padding.right)!))"
+        let (left, top) = (WebCSS.pixels(padding.start)!, WebCSS.pixels(padding.top)!)
+        let room = "(100% - \(WebCSS.pixels(padding.start + padding.end)!))"
         let tall = "(100% - \(WebCSS.pixels(padding.top + padding.bottom)!))"
         view.style("position", "absolute")
         view.style("grid-area", nil)

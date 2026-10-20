@@ -407,7 +407,7 @@ extension AndroidPagesTests {
                 } destination: { _ in
                     TitledPage(title: "Note")
                 }
-                .toolbar(.leading) { ToolbarItem("Filter") }
+                .toolbar(.start) { ToolbarItem("Filter") }
             }
             let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
             XCTAssertEqual(navigation.bar.content.actions.map(\.text), ["Filter", "Save"])

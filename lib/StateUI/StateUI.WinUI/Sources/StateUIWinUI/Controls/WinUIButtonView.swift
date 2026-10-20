@@ -120,7 +120,7 @@ final class WinUIButtonView: WinUIView {
     private struct Shown: Equatable {
         var hasWords = false
         var icon: [String] = []
-        var position = IconPosition.leading
+        var position = IconPosition.start
         var spacing: Double?
         var aspect = ContentMode.fit
         var lineBreak: LineBreak?

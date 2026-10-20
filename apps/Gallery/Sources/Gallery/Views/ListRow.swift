@@ -76,7 +76,7 @@ struct ListRow: View {
 
             Rectangle(Palette.outline)
                 .height(1)
-                .margin(left: 16, top: 0, right: 0, bottom: 0)
+                .margin(start: 16, top: 0, end: 0, bottom: 0)
                 .verticalAlignment(.start)
                 .isVisible(isSeparated)
 

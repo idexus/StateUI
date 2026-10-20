@@ -53,10 +53,12 @@ extension WinUIView {
         stateui_winui_set_foreground(handle, argb != nil, argb ?? 0)
     }
 
-    /// The room kept around the words, in DIPs; nil puts back the platform's.
+    /// The room kept around the words, in DIPs; nil puts back the platform's. Its start is the control's left, which
+    /// WinUI turns with the whole control right to left.
+    /// Design: docs/design/host/layout.md#right-to-left
     func setPadding(_ padding: Insets?) {
         let room = padding ?? Insets(0)
-        stateui_winui_set_padding(handle, padding != nil, room.left, room.top, room.right, room.bottom)
+        stateui_winui_set_padding(handle, padding != nil, room.start, room.top, room.end, room.bottom)
     }
 
     /// How the words look, as WinUI holds it.

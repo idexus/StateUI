@@ -22,7 +22,7 @@ extension AndroidRegistrations {
             ]) { view, values in
                 view.setIcon(
                     HostPicture(values[ButtonContract.icon], dark: false),
-                    position: values[ButtonContract.iconPosition] ?? .leading,
+                    position: values[ButtonContract.iconPosition] ?? .start,
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
             }
             button.applies([

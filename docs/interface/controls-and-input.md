@@ -479,11 +479,11 @@ Button(icon: "trash.png")
 
 Button("Surprise me")
     .icon("nav_surprise.png")
-    .iconPosition(.leading)
+    .iconPosition(.start)
     .iconSpacing(8)
 ```
 
-`.leading`, the default, is the side a line of text starts from, so the icon
+`.start`, the default, is the side a line of text starts from, so the icon
 follows the layout direction. A button with only an icon is the same control as
 one with a caption - the same outline, shape and pressed state - with
 `contentMode` for how its picture fills it. A picture alone gives it no name for a

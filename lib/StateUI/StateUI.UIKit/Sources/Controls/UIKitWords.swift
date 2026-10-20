@@ -53,9 +53,11 @@ extension UIButton {
 }
 
 extension UIEdgeInsets {
-    /// StateUI's insets in UIKit's order.
-    init(_ insets: Insets) {
-        self.init(top: insets.top, left: insets.left, bottom: insets.bottom, right: insets.right)
+    /// StateUI's insets in UIKit's sides: the start at the left or the right as a view of `attribute` lays out.
+    /// Design: docs/design/host/layout.md#right-to-left
+    init(_ insets: Insets, in attribute: UISemanticContentAttribute) {
+        let sides = insets.sides(in: attribute == .forceRightToLeft ? .rightToLeft : .leftToRight)
+        self.init(top: sides.top, left: sides.left, bottom: sides.bottom, right: sides.right)
     }
 }
 #endif

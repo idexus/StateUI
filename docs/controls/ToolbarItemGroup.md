@@ -9,7 +9,7 @@ A group of actions a page or an arrangement declares for its bar: one shared bac
 
 TextEditor()
     .onTextChanged { _ in edited = true }
-    .toolbar(.leading) {
+    .toolbar(.start) {
         ToolbarItem("New")
     }
     .toolbar {

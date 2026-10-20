@@ -372,6 +372,16 @@ ZStack's area counts from the right edge, a scroller's content stands from
 the right of its document, and padding and margins swap sides.
 Nothing vertical changes, and no transform or drawing is turned.
 
+An inset says its sides as `start` and `end`, never left and right, so the
+same words are true both ways. A toolkit's own control that pads its content
+by left and right - a text, a button - is given its padding's start and end
+by its element's direction (`Insets.sides(in:)`), and given them again
+whenever that direction turns; where a toolkit names its sides logically
+(the Web's CSS) or mirrors a control whole (WinUI's `FlowDirection`), the
+start goes as its leading side. The safe area's edges a layout lets its
+content under take their start and end by the content's direction too
+(`SafeAreaArithmetic.room`).
+
 The direction is the element's own `layoutDirection`, or - left at
 `.inherited` - its parent's, and at the root the language's, as the host
 reported the locale (`HostLocaleInfo.layoutDirection`). The mounted element

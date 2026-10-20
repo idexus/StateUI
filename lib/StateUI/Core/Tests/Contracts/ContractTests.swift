@@ -165,12 +165,12 @@ final class ContractTests: XCTestCase {
 
         XCTAssertEqual(SafeAreaEdges.uniform(.none).propValue, .enumeration(0))
         XCTAssertEqual(
-            SafeAreaEdges.edges(left: .none, top: .container, right: .none, bottom: .container).propValue,
+            SafeAreaEdges.edges(start: .none, top: .container, end: .none, bottom: .container).propValue,
             .values([.enumeration(0), .enumeration(2), .enumeration(0), .enumeration(2)]))
         XCTAssertEqual(SafeAreaEdges(propValue: .enumeration(3)), .uniform(.all))
         XCTAssertEqual(
             SafeAreaEdges(propValue: .values([.enumeration(0), .enumeration(1), .enumeration(2), .enumeration(3)])),
-            .edges(left: .none, top: .keyboard, right: .container, bottom: .all))
+            .edges(start: .none, top: .keyboard, end: .container, bottom: .all))
     }
 
     /// Every value a member holds comes back from its host form as itself -
@@ -190,12 +190,12 @@ final class ContractTests: XCTestCase {
             Material.color(.tomato), Material.gradient(.linearGradient([GradientStop(.gold, 0)])),
             Material.blur(.thin.tint(.indigo)), Material.glass(.clear.tint(.indigo).isInteractive(true)),
             Material(light: nil, dark: .blur(.thick)), Blur.Thickness.ultraThick, Glass.Clarity.clear,
-            Insets(left: 1, top: 2, right: 3, bottom: 4), Rect(1, 2, 3, 4), Point(5, 6),
+            Insets(start: 1, top: 2, end: 3, bottom: 4), Rect(1, 2, 3, 4), Point(5, 6),
             [Point(1, 2), Point(3, 4)] as [Point], [1, 2.5] as [Double], ["a", "b"] as [String],
             ImageSource("logo.png"), ImageSource(light: "logo.png", dark: "logo_dark.png"),
             ViewTransform.rotate(15).scaleX(1.2),
             SafeAreaEdges.uniform(.all),
-            SafeAreaEdges.edges(left: .none, top: .container, right: .none, bottom: .container),
+            SafeAreaEdges.edges(start: .none, top: .container, end: .none, bottom: .container),
             CornerRadius.uniform(8), CornerRadius.corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: 4),
             WebViewSource.url("https://example.com"), WebViewSource.html("<p/>", baseURL: nil),
             WebViewSource.html("<p/>", baseURL: "https://example.com"),
@@ -217,7 +217,7 @@ final class ContractTests: XCTestCase {
             MarkerType(rawValue: 1)!, ContentMode(rawValue: 1)!, LayoutDirection(rawValue: 1)!,
             AccessibilityHeadingLevel(rawValue: 1)!, ScrollIndicatorVisibility(rawValue: 1)!,
             LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,
-            FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarItemPlacement(rawValue: 1)!, ToolbarSide.leading,
+            FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarItemPlacement(rawValue: 1)!, ToolbarSide.start,
             SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, ButtonRole.cancel, [Key.escape, "a"], MapType(rawValue: 1)!,
             WebNavigationType(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.changed,
             LayoutInput.Axis.vertical,

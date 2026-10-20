@@ -17,8 +17,8 @@ struct ToolbarSample: SampleContent, ExampleContent {
     /// Whether the sample's actions join the gallery's own group, by its id.
     @State private var inGallery = false
 
-    /// Whether the sample's group stands at the bar's leading edge.
-    @State private var atLeading = false
+    /// Whether the sample's group stands at the bar's start.
+    @State private var atStart = false
 
     /// Whether Add shows its words beside its picture on the bar.
     @State private var addWords = false
@@ -54,7 +54,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
                 switchRow($afterGallery, "After the gallery's actions", id: "toolbar.afterGallery")
                 switchRow($inGallery, "In the gallery's group", id: "toolbar.inGallery")
-                switchRow($atLeading, "At the leading edge", id: "toolbar.atLeading")
+                switchRow($atStart, "At the start", id: "toolbar.atStart")
 
                 SectionTitle("A picture and its words")
 
@@ -64,7 +64,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
             // The page's actions, declared where their state lives: they follow
             // it as the body builds - `saved` decides whether Clear can be pressed,
             // `addWords` Add's words, the three switches where the group stands.
-            .toolbar(atLeading ? .leading : .trailing, id: inGallery ? "gallery" : "sample", order: afterGallery ? 1 : 0) {
+            .toolbar(atStart ? .start : .end, id: inGallery ? "gallery" : "sample", order: afterGallery ? 1 : 0) {
                 ToolbarItem("Save")
                     .id("save")
                     .onClicked { saved += 1 }
@@ -141,7 +141,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
             Text("The gallery's own actions stand at the edge on every page; the sample's "
                 + "come in from the title's side. `order: 1` moves its group after them, "
-                + "`id: \"gallery\"` joins their group, `.leading` takes it to the other edge.")
+                + "`id: \"gallery\"` joins their group, `.start` takes it to the other edge.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

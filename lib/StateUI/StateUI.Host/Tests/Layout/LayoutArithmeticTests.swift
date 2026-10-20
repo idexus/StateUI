@@ -8,6 +8,14 @@ import XCTest
 /// The layout arithmetic every Swift host places its children with.
 @MainActor
 final class LayoutArithmeticTests: XCTestCase {
+    /// An inset's start is the left left to right and the right right to left, its end the other way; top and bottom
+    /// stand - what a toolkit's own control, padded by left and right, is given.
+    func testAnInsetsStartIsTheSideItsDirectionStartsFrom() {
+        let insets = Insets(start: 16, top: 4, end: 2, bottom: 8)
+        XCTAssertEqual(insets.sides(in: .leftToRight), InsetSides(left: 16, top: 4, right: 2, bottom: 8))
+        XCTAssertEqual(insets.sides(in: .rightToLeft), InsetSides(left: 2, top: 4, right: 16, bottom: 8))
+    }
+
     /// A row of an arrangement's own stands across the top or the bottom of its room, the page taking the rest -
     /// never less than none where the row is taller than the room.
     func testARowBesideAPageLeavesItTheRest() {
@@ -98,11 +106,11 @@ final class LayoutArithmeticTests: XCTestCase {
     @MainActor
     func testARowRightToLeftFillsFromTheRight() {
         var first = Child(width: 20, height: 10)
-        first.values.margin = Insets(left: 3, top: 0, right: 0, bottom: 0)
+        first.values.margin = Insets(start: 3, top: 0, end: 0, bottom: 0)
         let items = [first, Child(width: 30, height: 10)]
 
         let places = StackArithmetic.places(
-            of: items, axis: .horizontal, spacing: 5, padding: Insets(left: 2, top: 0, right: 0, bottom: 0), in: Rect(0, 0, 100, 10),
+            of: items, axis: .horizontal, spacing: 5, padding: Insets(start: 2, top: 0, end: 0, bottom: 0), in: Rect(0, 0, 100, 10),
             direction: .rightToLeft)
 
         XCTAssertEqual(places[0], Rect(75, 0, 20, 10), "the first child against the right edge, inside padding and margin")
@@ -162,9 +170,9 @@ final class LayoutArithmeticTests: XCTestCase {
     /// A picture beside a button's words leaves half of what the two and their gap do not fill on each side, so they
     /// stand together in the middle; nothing where they fill the room, or where the picture stands above or below.
     func testAButtonsPictureAndWordsStandTogetherInTheMiddle() {
-        XCTAssertEqual(ButtonArithmetic.sideRoom(300, picture: 40, gap: 8, words: 52, position: .leading), 100)
-        XCTAssertEqual(ButtonArithmetic.sideRoom(300, picture: 40, gap: 8, words: 52, position: .trailing), 100)
-        XCTAssertEqual(ButtonArithmetic.sideRoom(80, picture: 40, gap: 8, words: 52, position: .leading), 0, "too narrow")
+        XCTAssertEqual(ButtonArithmetic.sideRoom(300, picture: 40, gap: 8, words: 52, position: .start), 100)
+        XCTAssertEqual(ButtonArithmetic.sideRoom(300, picture: 40, gap: 8, words: 52, position: .end), 100)
+        XCTAssertEqual(ButtonArithmetic.sideRoom(80, picture: 40, gap: 8, words: 52, position: .start), 0, "too narrow")
         XCTAssertEqual(ButtonArithmetic.sideRoom(300, picture: 40, gap: 8, words: 52, position: .top), 0)
         XCTAssertEqual(ButtonArithmetic.sideRoom(300, picture: 40, gap: 8, words: 52, position: .bottom), 0)
     }
@@ -174,7 +182,7 @@ final class LayoutArithmeticTests: XCTestCase {
     func testOneChildRightToLeftTurnsWithItsRoom() {
         var child = Child(width: 20, height: 10)
         child.values.horizontal = 0
-        child.values.margin = Insets(left: 4, top: 0, right: 0, bottom: 0)
+        child.values.margin = Insets(start: 4, top: 0, end: 0, bottom: 0)
 
         let room = Rect(0, 0, 100, 10)
         XCTAssertEqual(SingleChildArithmetic.place(of: child, in: room, direction: .rightToLeft), Rect(76, 0, 20, 10))
@@ -281,7 +289,7 @@ final class LayoutArithmeticTests: XCTestCase {
     @MainActor
     func testAZStackMeasuresAsItsNeediestChild() {
         var margined = Child(width: 30, height: 10)
-        margined.values.margin = Insets(left: 5, top: 0, right: 5, bottom: 0)
+        margined.values.margin = Insets(start: 5, top: 0, end: 5, bottom: 0)
         var badge = Child(width: 20, height: 10)
         badge.values.area = .absolute(10, 5, 40, 30)
         var half = Child(width: 30, height: 20)
@@ -366,7 +374,7 @@ final class LayoutArithmeticTests: XCTestCase {
         var child = Child(width: 20, height: 10)
         child.values.horizontal = 0
         child.values.vertical = 0
-        child.values.margin = Insets(left: 5, top: 0, right: 0, bottom: 0)
+        child.values.margin = Insets(start: 5, top: 0, end: 0, bottom: 0)
         let viewport = LayoutSize(width: 100, height: 50)
 
         XCTAssertEqual(ScrollArithmetic.arrange(

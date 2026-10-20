@@ -66,9 +66,9 @@ final class UIKitButtonView: UIButton {
     func setIcon(_ icon: UIImage?, position: IconPosition, spacing: Double?) {
         configuration?.image = icon
         configuration?.imagePlacement = switch position {
-        case .leading: .leading
+        case .start: .leading
         case .top: .top
-        case .trailing: .trailing
+        case .end: .trailing
         case .bottom: .bottom
         }
         configuration?.imagePadding = spacing ?? 8
@@ -145,7 +145,7 @@ final class UIKitButtonView: UIButton {
     /// The room between the button's edge and what it shows.
     func setPadding(_ insets: Insets?) {
         padding = insets.map {
-            NSDirectionalEdgeInsets(top: $0.top, leading: $0.left, bottom: $0.bottom, trailing: $0.right)
+            NSDirectionalEdgeInsets(top: $0.top, leading: $0.start, bottom: $0.bottom, trailing: $0.end)
         } ?? UIButton.Configuration.plain().contentInsets
         showPadding()
     }

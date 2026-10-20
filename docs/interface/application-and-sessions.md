@@ -592,7 +592,7 @@ struct NotesPage: View {
         .titleView {
             SearchField($query)
         }
-        .toolbar(.leading) {
+        .toolbar(.start) {
             ToolbarItem("New folder")
         }
         .toolbar {
@@ -609,8 +609,8 @@ the nearest arrangement on the visible path that declares it, so a stack
 further in paints its own bar or says its own line while it is shown; a
 sidebar takes only what its own split view declares, and a sheet takes nothing
 from around it. What stands on the bar is
-declared the same way: actions with `.toolbar`, `.toolbar(.leading)` at the
-leading edge, and a view in the title's place with `.titleView`
+declared the same way: actions with `.toolbar`, `.toolbar(.start)` at the
+start, and a view in the title's place with `.titleView`
 ([Toolbars](navigation-and-presentation.md#toolbars)).
 
 AppKit and WinUI show the name, the line and the mark where their platform

@@ -132,7 +132,7 @@
                 VStack {
                     reporting(element, frames, [
                         Write(VisualElementContract.width, 120), Write(VisualElementContract.height, 40),
-                        Write(ViewContract.margin, Insets(left: 10, top: 6, right: 0, bottom: 0)),
+                        Write(ViewContract.margin, Insets(start: 10, top: 6, end: 0, bottom: 0)),
                     ])
                 }
                 .horizontalAlignment(.start)

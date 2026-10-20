@@ -15,8 +15,11 @@ import AppKit
 /// arrangement, so AppKit is given no second navigation model to reconcile
 /// with StateUI's path.
 @MainActor
-final class AppKitNavigationView: AppKitHitTestView, AppKitWidthConstrainedMeasuring {
+final class AppKitNavigationView: AppKitHitTestView, AppKitWidthConstrainedMeasuring, AppKitDirectedLayout {
     private var items: [AppKitLayoutItem] = []
+
+    /// The direction the stack lays its page out in, which says which side its margin's start is.
+    var direction = LayoutDirection.leftToRight
 
     override var isFlipped: Bool { true }
 
@@ -42,17 +45,18 @@ final class AppKitNavigationView: AppKitHitTestView, AppKitWidthConstrainedMeasu
     /// The top page's size, measured by the page for the width offered.
     func fittingContentSize(width availableWidth: CGFloat?) -> NSSize {
         guard let item = items.last else { return .zero }
-        let size = item.fittingSize(width: availableWidth.map { max(0, $0 - item.margin.left - item.margin.right) })
+        let margin = item.values.margin.sides(in: direction)
+        let size = item.fittingSize(width: availableWidth.map { max(0, $0 - margin.left - margin.right) })
         return NSSize(
-            width: size.width + item.margin.left + item.margin.right,
-            height: size.height + item.margin.top + item.margin.bottom)
+            width: size.width + margin.left + margin.right,
+            height: size.height + margin.top + margin.bottom)
     }
 
     override func layout() {
         super.layout()
         guard let item = items.last else { return }
 
-        let margin = item.margin
+        let margin = item.values.margin.sides(in: direction)
         item.view.frame = NSRect(
             x: margin.left,
             y: margin.top,

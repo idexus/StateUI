@@ -107,6 +107,37 @@ final class AppKitTextViewTests: XCTestCase {
         XCTAssertEqual(renderer.nativeViews(AppKitTextEditorView.self).first?.textView.alignment, .left, "an editor")
     }
 
+    /// A padding's start and end follow the direction: a text's and a button's start stand at the left left to right
+    /// and at the right right to left - again as the direction turns.
+    @MainActor
+    func testAPaddingsStartStandsWhereTheDirectionStarts() throws {
+        let rightToLeft = State(wrappedValue: false)
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Text("Ada").padding(start: 16, top: 0, end: 2, bottom: 0)
+                Button("Go").padding(start: 16, top: 0, end: 2, bottom: 0)
+            }
+            .layoutDirection(rightToLeft.wrappedValue ? .rightToLeft : .leftToRight)
+        }
+        defer { renderer.closeForTesting() }
+        let label = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first)
+        let cell = try XCTUnwrap(renderer.nativeViews(NSButton.self).first?.cell as? AppKitButtonCell)
+        func settle(until done: () -> Bool) {
+            for _ in 0..<100 {
+                guard !done() else { break }
+                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
+                renderer.runtime.pump.turn()
+            }
+        }
+        XCTAssertEqual([label.padding.left, label.padding.right], [16, 2], "a text's start at the left")
+        XCTAssertEqual([cell.padding.left, cell.padding.right], [16, 2], "a button's start at the left")
+
+        rightToLeft.wrappedValue = true
+        settle { label.padding.right == 16 && cell.padding.right == 16 }
+        XCTAssertEqual([label.padding.left, label.padding.right], [2, 16], "a text's start at the right")
+        XCTAssertEqual([cell.padding.left, cell.padding.right], [2, 16], "a button's start at the right")
+    }
+
     /// A long text a scroller shows part of draws strip by strip from one layout of its words: uncovering more of
     /// it lays nothing out again, where a label of its own lays the whole text out for every strip.
     @MainActor

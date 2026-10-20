@@ -79,7 +79,7 @@ final class ItemsRulesTests: XCTestCase {
         XCTAssertEqual(list.rooms.map(\.top), [0, 0, 6, 0, 6])
         XCTAssertEqual(list.spans, [1, 1, 1, 1, 1])
         let row = ItemsPlacement(entries, layout: .row(spacing: 8), width: 300, spanning: true)
-        XCTAssertEqual(row.rooms.map(\.leading), [0, 0, 8, 0, 8])
+        XCTAssertEqual(row.rooms.map(\.start), [0, 0, 8, 0, 8])
     }
 
     /// Spanning, a grid's header spans every column and a group's last item what its row has left; each item is a
@@ -91,10 +91,10 @@ final class ItemsRulesTests: XCTestCase {
         XCTAssertEqual(grid.spans, [1, 1, 1, 3, 3, 3], "the fourth fills its row; the header all; the last its row")
         let itemWidth = (300.0 - 20) / 3
         for (place, room) in grid.rooms.enumerated() where !grid.edges[place] {
-            let width = Double(grid.spans[place]) * 100 - room.leading - room.trailing
+            let width = Double(grid.spans[place]) * 100 - room.start - room.end
             XCTAssertEqual(width, itemWidth, accuracy: 0.001, "entry \(place) a column's width")
         }
-        XCTAssertEqual(grid.rooms[1].leading, 10.0 / 3, accuracy: 0.001, "ten from the first")
+        XCTAssertEqual(grid.rooms[1].start, 10.0 / 3, accuracy: 0.001, "ten from the first")
         XCTAssertEqual(grid.rooms.map(\.top), [0, 0, 0, 10, 0, 0])
     }
 
@@ -104,7 +104,7 @@ final class ItemsRulesTests: XCTestCase {
         let grid = ItemsPlacement(entries, layout: .grid(minimumItemWidth: 90, spacing: 10), width: 300, spanning: false)
         XCTAssertEqual(grid.spans, [1, 1, 1, 1])
         XCTAssertEqual(grid.rooms.map(\.top), [0, 0, 0, 10])
-        XCTAssertEqual(grid.rooms[3].leading, 0, "the fourth cell starts the second row")
+        XCTAssertEqual(grid.rooms[3].start, 0, "the fourth cell starts the second row")
     }
 
     /// The end is told once as the last item in view comes within reach of the last of all; again only after the
