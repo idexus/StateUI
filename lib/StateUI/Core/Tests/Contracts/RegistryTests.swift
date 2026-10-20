@@ -28,6 +28,8 @@ final class RegistryTests: XCTestCase {
         var dialled: ((Int) -> Void)?
         var tuned: ((Double) -> Void)?
         var strayed: ((Double) -> Void)?
+        var settled: (() -> Void)?
+        var straySettled: (() -> Void)?
         var bulbs: [ChildElement<BulbContract>] = []
         var handed = 0
     }
@@ -176,6 +178,31 @@ final class RegistryTests: XCTestCase {
         view.strayed?(0.5)
 
         XCTAssertTrue(told.values.isEmpty, "the lamp wears no StrayDial, so nothing is reported")
+    }
+
+    /// An event a TIER the element wears declares is raised by member, as the
+    /// element's own is.
+    func testAnEventOfATierItWearsIsRaisedByMember() throws {
+        let registry = Self.lamps()
+        let told = Told()
+        let view = try XCTUnwrap(Self.view(of: LampContract.nodeType, in: registry, told: told) as? LampView)
+
+        view.settled?()
+
+        XCTAssertEqual(told.events, ["settled []"])
+    }
+
+    /// An event of a contract the element does not wear raises nothing at all,
+    /// and is said.
+    func testAnEventOfAContractItDoesNotWearRaisesNothing() throws {
+        let registry = Self.lamps()
+        let told = Told()
+        let view = try XCTUnwrap(Self.view(of: LampContract.nodeType, in: registry, told: told) as? LampView)
+
+        view.straySettled?()
+
+        XCTAssertTrue(told.events.isEmpty, "the lamp wears no StrayDial, so nothing is raised")
+        XCTAssertTrue(hasComplained("Test.Lamp raised `StrayDial.settled`"))
     }
 
     /// A view taking several members at once is applied whole, once, when any
@@ -382,6 +409,8 @@ final class RegistryTests: XCTestCase {
             lamp.strayed = { level in
                 reports.report(StrayDialContract.setting, level, as: StrayDialContract.settingChanged)
             }
+            lamp.settled = { reports.raise(DialContract.settled) }
+            lamp.straySettled = { reports.raise(StrayDialContract.settled) }
             return lamp
         }, members: { lamp in
             lamp.property(LampContract.signal) { view, signal in view.signal = signal }
@@ -432,8 +461,9 @@ private enum DialContract: Contract {
 
     static let setting = ElementProperty<Self, Double>("setting")
     static let settingChanged = ElementEvent<Self, Double>("settingChanged")
+    static let settled = ElementEvent<Self, Void>("settled")
 
-    static let members: [any ContractMember] = [setting, settingChanged]
+    static let members: [any ContractMember] = [setting, settingChanged, settled]
 }
 
 /// The same shape, worn by nothing here.
@@ -442,8 +472,9 @@ private enum StrayDialContract: Contract {
 
     static let setting = ElementProperty<Self, Double>("setting")
     static let settingChanged = ElementEvent<Self, Double>("settingChanged")
+    static let settled = ElementEvent<Self, Void>("settled")
 
-    static let members: [any ContractMember] = [setting, settingChanged]
+    static let members: [any ContractMember] = [setting, settingChanged, settled]
 }
 
 /// An element a host realizes, declared the way an application declares its

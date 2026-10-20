@@ -148,9 +148,9 @@ public enum StateUIEvents {
     }
 }
 
-/// What an element of the APPLICATION'S OWN tells the application: an event of its own, and a value its user
-/// changed. Handed to the control where it is made, so the control names members of its contract and never a
-/// handler.
+/// What an element of the APPLICATION'S OWN tells the application: an event of its own or of a tier it wears, and a
+/// value its user changed. Handed to the control where it is made, so the control names members of its contract and
+/// never a handler.
 public struct GTKReports<Realized: ElementContract> {
     private let reports: Reports<Realized>
 
@@ -158,13 +158,15 @@ public struct GTKReports<Realized: ElementContract> {
         self.reports = reports
     }
 
-    /// Raises one of the element's own events with the values its contract declares.
+    /// Raises an event with the values its contract declares - one of the
+    /// element's own, or one a tier it wears declares. An event of a contract
+    /// the element does not wear is refused, and said once.
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
     ///   - value: what it carries, in the order its contract declares.
-    public func raise<each Value: HostRepresentable>(
-        _ event: ElementEvent<Realized, (repeat each Value)>,
+    public func raise<Owner: Contract, each Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
     ) {
         reports.raise(event, repeat each value)

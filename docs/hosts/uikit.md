@@ -142,7 +142,7 @@ public static func add<Realized: ElementContract, Made: UIView>(
 
 - **`create`** makes the view once per element, and wires what the view
   reports: `reports.raise(Contract.member, values)` for an event of the
-  element's own, and `reports.report(property, value, as: event)` for a value
+  element's own or of a tier it wears, and `reports.report(property, value, as: event)` for a value
   the USER changed - which lands on the state the value is carried in and
   raises the event with it.
 - **`members`** registers what the view takes: `property(_:_:)` hands a value

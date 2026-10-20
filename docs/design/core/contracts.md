@@ -152,8 +152,8 @@ is no key - or the toolkit's own vocabulary; the guard lists each with which.
 
 A host registers each element contract it realizes with a `Registry`: how the
 element's view is made, which members the view takes - one at a time, or the
-element whole where a view takes several at once - and which of its own events
-it raises. The registration is the record of what the host realizes: the core
+element whole where a view takes several at once - and which events it
+raises, its own or a tier's it wears. The registration is the record of what the host realizes: the core
 answers "does this host realize X" from it, and the host makes and updates its
 views through it. It is generic over the platform's view type, so every Swift
 host takes the same machinery.
@@ -174,7 +174,7 @@ host takes the same machinery.
 ```
 
 A member of a contract the element does not wear is refused and said once, at
-registration and at report alike. `apply` puts changed properties registered
+registration, at a raise and at a report alike. `apply` puts changed properties registered
 alone in name order, then runs each whole applier whose members changed, every
 value read as the host presents it - a value in motion or carried by a state
 included. An element whose view the host makes itself, because its making needs

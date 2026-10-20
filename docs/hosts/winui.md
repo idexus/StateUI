@@ -133,9 +133,9 @@ public static func add<Realized: ElementContract, Made: WinUIControl>(
 ```
 
 - **`create`** makes the control once per element, and wires what it reports:
-  `reports.raise(Contract.member, values)` for an event of the element's own,
-  and `reports.report(property, value, as: event)` for a value the USER
-  changed.
+  `reports.raise(Contract.member, values)` for an event of the element's own
+  or of a tier it wears, and `reports.report(property, value, as: event)` for
+  a value the USER changed.
 - **`members`** registers what the control takes: `property(_:_:)` hands a
   value over as the type its contract declares, `nil` where it is no longer
   described, and `raises(_:)` records an event the control raises.
