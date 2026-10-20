@@ -62,13 +62,21 @@ final class WebElement: NativeElement {
     }
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
-        host?.placements.beforeChange(along: layoutsUp)
-        if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
-        applyProperties(changed: changed)
-        if let view, let host { element.applyDrawnChildren(to: view, through: WebRegistrations.registry, in: host.runtime) }
-        followPages(changed: changed, wasDescribed: wasDescribed)
+        // Nothing of its own changed and no child moved - a change inside a child, which the child applies: nothing
+        // of the element's own is placed, read or written again.
+        // Design: docs/design/platforms/web/layout.md#a-change-inside-a-child
+        let still = wasDescribed && changed.isEmpty && !element.childrenNeedArranging
+        if !still {
+            host?.placements.beforeChange(along: layoutsUp)
+            if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
+            applyProperties(changed: changed)
+            if let view, let host {
+                element.applyDrawnChildren(to: view, through: WebRegistrations.registry, in: host.runtime)
+            }
+            followPages(changed: changed, wasDescribed: wasDescribed)
+        }
         configureLayoutMotion()
-        arrangeChildren()
+        if !still { arrangeChildren() }
         listenForTheUser()
         offerContextMenu()
         offerButtonMenu()

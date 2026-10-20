@@ -29,6 +29,15 @@ wins over a stated size, so a button stated 30 high stood 36. A hidden child
 is `hidden`, which takes it out of the layout: it takes no room and no
 spacing.
 
+## A change inside a child
+
+An element named by a patch only for what changed below it - an ItemsView's
+batch names every element from the application down - places, reads and
+writes nothing of its own: where nothing of its own changed and no child moved
+(`childrenNeedArranging`, host/tree.md#a-patch-arranges-what-moved), its
+`applied` leaves its layout's places, the places read before a travel and its
+tabs' titles as they stand, and only hears the user's input again.
+
 ## Children in order
 
 A layout whose children changed stands each in its place in turn, from the

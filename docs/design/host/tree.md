@@ -129,6 +129,19 @@ place moved arranges its parent,
 passed up through an element with no view; a window's chrome is composed
 again where it shows what moved (`WindowChrome.follows`).
 
+## A patch arranges what moved
+
+A patch that changes a child somewhere below an element names the element too,
+and it is applied with nothing of its own changed. Whether its children are
+arranged again is the host layer's word (`childrenNeedArranging`): a new
+arrangement, a child made anew or drawn by the element, a page's own values -
+its title on a tab - and a child's place, size or drawing order changed
+(`arrangedProperties` and the z-index) ask it; a change inside a child that
+stands where it stood does not. A toolkit measuring its own views is told a
+size by the element whose size changed (`measuredUpward`), not by its parents.
+A host whose arranging costs - the Web's places every child again - leaves its
+children as they stand where the word is no.
+
 ## What every element realizes
 
 What the host layer's own rules realize on every element - a view's place in

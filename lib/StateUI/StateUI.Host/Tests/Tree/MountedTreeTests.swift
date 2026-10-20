@@ -841,6 +841,46 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertNotEqual(shown[0], [0], "and travel")
     }
 
+    /// A PATCH SAYS WHETHER THE ELEMENT ARRANGES ITS CHILDREN AGAIN: a new arrangement, a child made anew or drawn by
+    /// the element, a child's place or size changed - not a change inside a child that stands where it stood.
+    @MainActor
+    func testAPatchSaysWhetherTheElementArrangesItsChildrenAgain() throws {
+        let (tree, _) = Self.tree(viewless: ["drawn"])
+        tree.apply(Self.stack("stack", ["a", "drawn"]), complete: true)
+        let stack = try XCTUnwrap(tree.root)
+        XCTAssertTrue(stack.childrenNeedArranging, "a new arrangement")
+
+        func changed(_ id: String, _ change: (inout HostPatch) -> Void) -> Bool {
+            var child = HostPatch(id: .manual(id), type: .text)
+            change(&child)
+            var sparse = HostPatch(id: .manual("stack"), type: .vStack)
+            sparse.children = .changed([child])
+            tree.apply(sparse, complete: false)
+            return stack.childrenNeedArranging
+        }
+
+        XCTAssertFalse(changed("a") { $0.properties[.text] = .string("words") }, "a child's words, in its place")
+        XCTAssertTrue(changed("a") { $0.properties[.width] = .number(80) }, "a child's size")
+        XCTAssertTrue(changed("a") { $0.properties[.margin] = .numbers([1, 2, 3, 4]) }, "a child's place")
+        XCTAssertTrue(changed("drawn") { $0.properties[.text] = .string("words") }, "a child the element draws")
+        XCTAssertTrue(changed("a") { $0.replace = true }, "a child made anew")
+
+        var pages = HostPatch(id: .manual("pages"), type: .tabView)
+        pages.children = .arranged([HostPatch(id: .manual("page"), type: .page)])
+        tree.apply(pages, complete: true)
+        let holder = try XCTUnwrap(tree.root)
+        func paged(_ change: (inout HostPatch) -> Void) -> Bool {
+            var page = HostPatch(id: .manual("page"), type: .page)
+            change(&page)
+            var sparse = HostPatch(id: .manual("pages"), type: .tabView)
+            sparse.children = .changed([page])
+            tree.apply(sparse, complete: false)
+            return holder.childrenNeedArranging
+        }
+        XCTAssertTrue(paged { $0.properties[.title] = .string("Inbox") }, "a page's own title")
+        XCTAssertFalse(paged { $0.children = .changed([]) }, "something inside a page")
+    }
+
     // MARK: - A tree over a recording native half
 
     @MainActor
