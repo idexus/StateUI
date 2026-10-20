@@ -25,4 +25,18 @@ extension MountedElement {
         .miterLimit, .shape, .cornerRadius, .geometryTransform, .barBackgroundColor, .barForegroundColor,
         .drawing, .scrollOffset, .clipsContent, .ignoresInput, .letsInputThrough, .phase,
     ]).union(transformProperties).union(accessibilityProperties)
+
+    /// Where this element's size may change, the elements whose layouts forget what they measured - this one and
+    /// every one above it - and the ItemsView entry the walk stops at, its cell measuring it again: a list's own size
+    /// never follows its items.
+    public func measuredUpward() -> (layouts: [MountedElement], entry: MountedElement?) {
+        var layouts: [MountedElement] = []
+        var each: MountedElement? = self
+        while let element = each {
+            if element.parent?.type == .itemsView { return (layouts, element) }
+            layouts.append(element)
+            each = element.parent
+        }
+        return (layouts, nil)
+    }
 }

@@ -467,6 +467,28 @@ final class BuilderTests: XCTestCase {
         XCTAssertFalse(dump.contains("key:"), "the builder's path was sent to the host:\n\(dump)")
         XCTAssertTrue(dump.contains("\"turn 1\""), dump)
     }
+
+    /// A BUILDER'S PATH IS A NUMBER, spelled nowhere: two builds of one content give equal paths, every statement
+    /// and branch its own.
+    func testABuildersPathIsANumberSpelledNowhere() {
+        func content<Content: Views>(@ViewBuilder _ make: () -> Content) -> [Node] { make().nodes }
+        func built(_ flag: Bool) -> [PathNumber?] {
+            content {
+                Text("first")
+                if flag { Text("then") } else { Text("else") }
+                Text("last")
+            }.map(\.key)
+        }
+        let texts = Renderer.shared.texts
+
+        let (once, again, other) = (built(true), built(true), built(false))
+
+        XCTAssertEqual(Renderer.shared.texts, texts, "no text built")
+        XCTAssertEqual(once, again, "two builds, equal paths")
+        XCTAssertEqual(Set(once).count, 3, "a path a statement")
+        XCTAssertNotEqual(once[1], other[1], "the branches apart")
+        XCTAssertEqual([once[0], once[2]], [other[0], other[2]], "the statements around them where they were")
+    }
 }
 
 /// A field that is one of two, by what it is handed - its content root an `if/else`.

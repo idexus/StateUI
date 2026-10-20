@@ -104,6 +104,41 @@ final class LifetimeTests: XCTestCase {
         XCTAssertEqual(log.wrappedValue, ["created a", "destroying a"])
     }
 
+    /// A page told it appeared that leaves the tree hears it disappears before
+    /// it is destroyed - its window closed, its stack popped by the tree - one
+    /// listening for that alone too; a page never shown, or told it
+    /// disappeared, hears only that it is destroyed.
+    func testAShownPageLeavingHearsItDisappearsBeforeItIsDestroyed() {
+        let log = State(wrappedValue: [String]())
+        let shown = State(wrappedValue: true)
+        let renders = Renders()
+        func page(_ name: String) -> some View {
+            ModifiedContent(node: Node.page(
+                Text(name)
+                    .onDisappearing { log.wrappedValue.append("\(name) disappearing") }
+                    .onDestroying { log.wrappedValue.append("\(name) destroying") }))
+        }
+        let tree = {
+            VStack {
+                if shown.wrappedValue {
+                    page("a")
+                    page("b")
+                    page("c")
+                }
+            }.node
+        }
+
+        renders.render(tree())
+        renders.tell(.appearing, page: 0)
+        renders.tell(.appearing, page: 2)
+        renders.tell(.disappearing, page: 2)
+        log.wrappedValue = []
+        shown.wrappedValue = false
+        renders.render(tree(), changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(log.wrappedValue, ["a disappearing", "a destroying", "b destroying", "c destroying"])
+    }
+
     /// An element comes in before what is under it, and leaves after it - the
     /// innermost first.
     func testWhatIsUnderAnElementLeavesBeforeIt() {

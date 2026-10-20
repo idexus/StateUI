@@ -182,6 +182,23 @@ handed none - a registered element's children reach nothing. An application's
 own element is a leaf here: it draws the children of a contract it names
 itself, as the next section says, and no other child is shown.
 
+### Properties taken together
+
+A view that must take one property before another - a web view its agent
+before its page - names them with `applies`, and is handed them whole
+whenever any of them changes: each as the type its contract declares, and
+whether it changed (`ControlValues`). Each `property` alone comes in no
+promised order.
+
+```swift quote
+StateUIControls.add(WebViewContract.self, create: { reports -> MyWebView in … }) { web in
+    web.applies([WebViewContract.userAgent, WebViewContract.source]) { view, values in
+        if values.changed(WebViewContract.userAgent) { view.userAgent = values[WebViewContract.userAgent] }
+        if values.changed(WebViewContract.source) { view.show(values[WebViewContract.source]) }
+    }
+}
+```
+
 ### Children a control draws
 
 A view may draw the children of one contract itself - a map draws its markers.

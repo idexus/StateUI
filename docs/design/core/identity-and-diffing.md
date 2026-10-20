@@ -43,8 +43,16 @@ a page's appended title view, are matched by position among themselves, so a
 conditional beside them does not shift them.
 
 `ElementID` has two cases that are two namespaces: `.auto` is a number the
-differ assigns and `.manual` is the author's text. One is a number and the
-other a string, so they can never collide.
+differ assigns and `.manual` is the author's identity described. One is a
+number and the other a string, so they can never collide.
+
+An identity is matched as the value it is (`ElementIdentity`): the value, and
+its hash worked out once as it is written, so siblings are looked up by a
+number and two values compared only where their numbers meet. Its
+description is made once, as an element is born, for the patch's `.manual`
+key; an element matched by value keeps the key it was born with. Two values
+that describe themselves alike are two elements: the second born with a key
+the first already holds takes a fresh number instead.
 
 ## Another kind of view
 
@@ -130,15 +138,13 @@ closure.
 
 ## Repeated ids
 
-Two siblings written with the same `.id()` cannot both keep the bare id: the
-host matches children by key and one control cannot stand in two places. A
-fresh automatic id every render would rebuild the repeat's control, handlers
-and state each time. The repeat takes a stable variant instead - the id, a NUL
-and its occurrence number - which is the same key every render and can never
-equal an id an author spelled. A repeat is said once: a node keeps the value
-its identity was written from (`Node.identify`), so one value written twice is
-told from two values that only describe themselves alike - a class printing
-its type's name - and the complaint names the cure for each.
+Two siblings written with one value cannot both keep it: the host matches
+children by key and one control cannot stand in two places. A fresh automatic
+id every render would rebuild the repeat's control, handlers and state each
+time. The repeat takes a stable variant instead (`RepeatedIdentity`) - the
+value and its occurrence, described as the id, a NUL and the number - which is
+the same key every render and can never equal a value an author writes. A
+repeat is said once.
 
 ## State survives a rebuild
 
@@ -176,6 +182,19 @@ was handed (its parent's), at a `Node` (built interface), at an `Equatable`
 value that owns no state (compared whole - one that does is read part by
 part, [below](#a-type-learnt-once)) and at any class (a reference keeps
 itself alive).
+
+### A path is a number
+
+A path is worked as one number (`PathNumber`): the 64-bit FNV-1a hash of its
+steps, each step's bytes after a byte no UTF-8 text holds - a property's
+label, an element's place in a collection, the key of a view stored there. Two
+walks of one view give equal numbers, in every process, and pairing and
+comparing them costs a word, so a walk spells nothing. A name is spelled only
+where one is shown: the walk's second mode (`partNames`) builds the same paths
+with their text beside them, which the differ asks for once a view holds a
+state whose storage has no name yet - its first build, not its rebuilds - and
+an inspector for the reason a view was built. A state's name is the path
+tidied (`BuildScope.readable`): `._count` is `count`.
 
 ### A type learnt once
 
@@ -229,7 +248,14 @@ not sent, its state and handlers untouched - when all of these hold:
 ```
 
 The decision is taken on the outermost view alone; a view made of another is
-one element, and the inner view's inputs are the outer body's business.
+one element, and the inner view's inputs are the outer body's business. Each
+view the element stacks keeps what its own body read: where everything but
+the reads holds and only a view inside read what moved - a page whose body is
+one stateful list, gallery or layout - the views outside it stand as they
+were built, with their state, what they made and the environments they
+provided, and the walk builds from that view, from the node that held it.
+The outer body is built for a state it read, never for one only a view inside
+it read.
 
 ## What a view was built with
 
@@ -281,9 +307,11 @@ read outside StateUI: the walk a `setNeedsRender()` asked for carries no view
 
 `Differ.revisit` walks the tree the host holds with no fresh tree to compare
 against, and builds again exactly the elements whose reads intersect the
-changes. It runs the closure the element's placeholder captured last render,
-which is correct precisely because the walk got there: the parent was left
-alone, so nobody computed newer inputs. A parent that is rebuilt writes fresh
+changes. It runs the closure the placeholder captured last render - the
+placeholder of the outermost view whose own body read what moved, the views
+outside it standing, or of the innermost where only the content it ran or
+the values it wears read it - which is correct precisely because the walk got
+there: the parent was left alone, so nobody computed newer inputs. A parent that is rebuilt writes fresh
 placeholders for its children, and those go through the full `element` path.
 A clean walk moves nothing: a child's place among its siblings is its
 parent's business.

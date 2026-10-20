@@ -65,7 +65,7 @@ final class AndroidElement: NativeElement {
         arrangePages(changed: changed)
         configureContextMenu()
         configureButtonMenu()
-        host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: readsFrame)
+        host?.runtime.frames.follow(self, of: element, reads: readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) {
@@ -75,7 +75,6 @@ final class AndroidElement: NativeElement {
 
     func leave() {
         view?.detach()
-        host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: false)
     }
 }
 

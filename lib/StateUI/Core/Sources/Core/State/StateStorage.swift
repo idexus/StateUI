@@ -128,12 +128,12 @@ extension State {
 
         /// The derived states worked out from this one, by the element and the line that
         /// wrote each conversion - known weakly: the element holds them.
-        var derivations: [String: Derivation] = [:]
+        var derivations: [PathNumber: Derivation] = [:]
 
         /// The derived state a conversion written at `site` keeps - made once for the
         /// element being built, then kept while the element holds it.
         /// Design: docs/design/core/journeys.md#conversions
-        func derived<Out>(_: Out.Type, at site: String, make: @escaping () -> Out) -> State<Out>.Storage {
+        func derived<Out>(_: Out.Type, at site: PathNumber, make: @escaping () -> Out) -> State<Out>.Storage {
             let key = DerivationScope.key(site)
 
             if let kept = derivations[key]?.state as? State<Out>.Storage {

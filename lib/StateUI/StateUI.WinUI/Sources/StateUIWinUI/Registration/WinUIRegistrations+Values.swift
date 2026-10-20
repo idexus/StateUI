@@ -29,8 +29,8 @@ extension WinUIRegistrations {
         })
         registry.add(StepperContract.self, create: { reports in
             let stepper = WinUIStepperView()
-            stepper.onValueChanged = { stepped in
-                reports.report(StepperContract.value, stepped, as: StepperContract.valueChanged)
+            stepper.onValueChanged = { [unowned stepper] stepped in
+                reports.report(StepperContract.value, stepper.landed(stepped), as: StepperContract.valueChanged)
             }
             return stepper
         }, members: { stepper in

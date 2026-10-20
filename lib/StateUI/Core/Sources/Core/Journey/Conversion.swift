@@ -79,7 +79,7 @@ protocol AnyStateStorage: FollowedState {
     var readAtBuild: Bool { get set }
 
     /// The derived state a conversion written at `key` keeps on this source.
-    func derived<Out>(_: Out.Type, at key: String, make: @escaping () -> Out) -> State<Out>.Storage
+    func derived<Out>(_: Out.Type, at key: PathNumber, make: @escaping () -> Out) -> State<Out>.Storage
 }
 
 extension Journey {
@@ -119,7 +119,7 @@ extension Journey {
         _ = source.walkedImage()
 
         let journey = self
-        let derived = source.derived(Out.self, at: "\(file):\(line):\(column)") { transform(journey) }
+        let derived = source.derived(Out.self, at: PathNumber(file: file, line: line, column: column)) { transform(journey) }
         let conversion = derived.conversion ?? Conversion()
 
         conversion.sources = [source]
@@ -169,7 +169,7 @@ extension Journey {
         _ = second.walkedImage()
 
         let journey = self
-        let derived = source.derived(Out.self, at: "\(file):\(line):\(column)") {
+        let derived = source.derived(Out.self, at: PathNumber(file: file, line: line, column: column)) {
             transform(journey, other)
         }
         let conversion = derived.conversion ?? Conversion()
@@ -225,7 +225,7 @@ extension Binding where Value: StateValue {
             return Binding<Out>(get: { transform(self.wrappedValue) }, set: { _ in })
         }
 
-        let derived = source.derived(Out.self, at: "\(file):\(line):\(column)") { transform(source.value) }
+        let derived = source.derived(Out.self, at: PathNumber(file: file, line: line, column: column)) { transform(source.value) }
         let conversion = derived.conversion ?? Conversion()
 
         conversion.sources = [source]
@@ -267,7 +267,7 @@ extension Binding where Value: StateValue {
             return Binding<Out>(get: { transform(self.wrappedValue, other.wrappedValue) }, set: { _ in })
         }
 
-        let derived = source.derived(Out.self, at: "\(file):\(line):\(column)") {
+        let derived = source.derived(Out.self, at: PathNumber(file: file, line: line, column: column)) {
             transform(source.value, second.value)
         }
         let conversion = derived.conversion ?? Conversion()

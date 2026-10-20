@@ -295,7 +295,6 @@ extension WebDriver {
         case .selectionLength: return try WebBrowser.number("e.selectionEnd - e.selectionStart", on: e).map { Int($0).propValue }
         case .isSpellCheckEnabled: return try WebBrowser.truth("e.spellcheck", on: e).propValue
         case .isTextPredictionEnabled: return try WebBrowser.truth("e.autocomplete !== 'off'", on: e).propValue
-        case .maximumLength: return .some(try WebBrowser.number("e.maxLength < 0 ? null : e.maxLength", on: e).map { Int($0).propValue })
         case .submitLabel:
             let hint = try WebBrowser.evaluate("e.enterKeyHint", on: e) ?? ""
             let label: SubmitLabel = switch hint {

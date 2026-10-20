@@ -99,6 +99,47 @@ final class HostRealizationTests: XCTestCase {
         HostBoundary.setRegister(nil)
     }
 
+    /// A member the host's register says it does not realize on an element, or never will, is said with the
+    /// register's reason - on an element the host realizes; one it realizes, in part at least, and one on an
+    /// element it does not realize at all, go by without a word.
+    func testAMemberTheRegisterSaysTheHostDoesNotRealizeIsSaid() {
+        HostBoundary.setRealization(Self.realization)
+        HostBoundary.setRegister(HostRegister(records: [
+            .unrealized(TintElementContract.tint, on: SliderContract.self, why: "a range input takes no tint"),
+            .notPlanned(SliderContract.pressed, reason: "a range input says no press."),
+            .partial(SliderContract.value, missing: "steps"),
+        ], unrealized: [ButtonContract.self]))
+        defer { HostBoundary.setRegister(nil) }
+
+        XCTAssertEqual(
+            HostRealizations.unhonoured(TintElementContract.tint.token.key, on: SliderContract.nodeType),
+            "`Slider.tint` is not realized on this host: a range input takes no tint.")
+        XCTAssertEqual(
+            HostRealizations.unhonoured(SliderContract.pressed.token.key, on: SliderContract.nodeType),
+            "`Slider.pressed` is never realized on this host: a range input says no press.")
+        XCTAssertNil(HostRealizations.unhonoured(SliderContract.value.token.key, on: SliderContract.nodeType))
+        XCTAssertNil(HostRealizations.unhonoured(SliderContract.maximum.token.key, on: SliderContract.nodeType),
+                     "the register says nothing of it")
+        XCTAssertNil(HostRealizations.unhonoured(TintElementContract.tint.token.key, on: ButtonContract.nodeType),
+                     "an element the host does not realize is said once, as an element")
+    }
+
+    /// A Slider tinted on a host that does not realize its tint is said once as it is described, however often.
+    func testADescribedMemberTheHostDoesNotRealizeIsSaidOnce() {
+        HostBoundary.setRealization(Self.realization)
+        HostBoundary.setRegister(HostRegister(records: [
+            .unrealized(TintElementContract.tint, on: SliderContract.self, why: "a range input takes no tint"),
+        ]))
+        defer { HostBoundary.setRegister(nil) }
+        let value = State(wrappedValue: 0.5)
+        let renders = Renders()
+
+        renders.render(Slider(value.projectedValue).tint(.red).node)
+        renders.render(Slider(value.projectedValue).tint(.blue).node)
+
+        XCTAssertTrue(hasComplained("`Slider.tint` is not realized on this host"))
+    }
+
     // MARK: - Support
 
     /// A host realizing a label and a lamp, and raising one application event.

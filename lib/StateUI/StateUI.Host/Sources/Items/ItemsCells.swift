@@ -18,11 +18,26 @@
     func letGo()
 }
 
+@_spi(Host) extension ItemsHolding {
+    /// Whether the cell is to show `item` anew, its view `showing` a subtree or not: another entry than it shows, an
+    /// entry where its view shows nothing, or nothing where its view shows one.
+    public func showsAnew(_ item: MountedElement?, viewShowing showing: Bool) -> Bool {
+        item !== shown || showing != (item != nil)
+    }
+}
+
 /// What a platform's collection holds of one ItemsView, and what it tells the tree - alike on every host: the
 /// entries in order, the ones held in cells and built for them, the user's choice and opening in the list's order,
 /// and the end reached.
 /// Design: docs/design/host/items.md
 @_spi(Host) @MainActor public final class ItemsCells {
+    /// The room a cell keeps along the list before its entry is measured: a row's height down, an item's width
+    /// across - so the collection asks for about as many entries as it shows.
+    /// Design: docs/design/host/items.md#a-cell-before-its-entry
+    public static func estimatedExtent(across: Bool) -> Double {
+        across ? 100 : 44
+    }
+
     /// The ItemsView, while it stands in the tree: the toolkit may call its collection back after it left.
     public private(set) weak var element: MountedElement?
 
@@ -130,13 +145,26 @@
     /// reach where the tree can build it, else with the turn under way.
     /// Design: docs/design/host/items.md#one-cell-an-entry
     public func hold(_ identity: String, in holding: any ItemsHolding) {
-        if let previous = holding.identity, previous != identity { letGo(previous, from: holding) }
-        if let other = holders[identity], other !== holding { other.letGo() }
-        holders[identity] = holding
-        held.insert(identity)
-        if !built.contains(identity) || nearsTheBuiltEnd(identity) { tell() }
-        let item = item(identity)
-        if holding.identity != identity || holding.shown !== item { holding.hold(identity, item) }
+        hold([(identity, holding)], endingShowing: [])
+    }
+
+    /// The cells that came near the view and those that went away from it, told together as one frame saw them: the
+    /// ones gone let their entries go first, the ones near take theirs, and the tree is told once - for where the
+    /// cells stand now.
+    /// Design: docs/design/host/items.md#cells-told-together
+    public func hold(_ near: [(identity: String, holding: any ItemsHolding)], endingShowing gone: [any ItemsHolding]) {
+        for holding in gone { endShowing(in: holding) }
+        for (identity, holding) in near {
+            if let previous = holding.identity, previous != identity { letGo(previous, from: holding) }
+            if let other = holders[identity], other !== holding { other.letGo() }
+            holders[identity] = holding
+            held.insert(identity)
+        }
+        if near.contains(where: { !built.contains($0.identity) || nearsTheBuiltEnd($0.identity) }) { tell() }
+        for (identity, holding) in near where holders[identity] === holding {
+            let item = item(identity)
+            if holding.identity != identity || holding.shown !== item { holding.hold(identity, item) }
+        }
     }
 
     /// `holding` comes on screen showing the entry of `identity`: a collection shows again, without asking for it, a

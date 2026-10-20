@@ -200,6 +200,9 @@ enum WebRelay {
     /// Whether ⌥/Alt was held as the event being heard happened.
     static var eventAlt: Bool { stateui_web_event_number(20) != 0 }
 
+    /// Whether an input method was composing the words as the event being heard happened.
+    static var eventComposing: Bool { stateui_web_event_number(21) != 0 }
+
     /// The size of the element hearing the event.
     static var eventSize: LayoutSize {
         LayoutSize(width: stateui_web_event_number(11), height: stateui_web_event_number(12))
@@ -223,13 +226,18 @@ enum WebRelay {
         return Point(x: notch(stateui_web_event_number(18)), y: notch(stateui_web_event_number(8)))
     }
 
-    /// Calls `listener` as `element` comes near the view of the scroller `root`, and as it goes away (`eventNear`).
+    /// Calls `listener` as `element` comes near the view of the scroller `root`, and as it goes away - the scroller's
+    /// one listener, once for every element a frame saw (`eventNearness`).
     static func watchNearness(_ element: Int32, of root: Int32, _ listener: Int32) {
         stateui_web_watch_nearness(element, root, listener)
     }
 
-    /// Whether the element the nearness being heard is of came near.
-    static var eventNear: Bool { stateui_web_event_number(0) != 0 }
+    /// The elements the nearness being heard is of, each with whether it came near.
+    static var eventNearness: [(element: Int32, near: Bool)] {
+        (0..<Int(stateui_web_event_number(0))).map { index in
+            (Int32(stateui_web_event_number(Int32(1 + 2 * index))), stateui_web_event_number(Int32(2 + 2 * index)) != 0)
+        }
+    }
 
     /// Puts one entry of the page's own on the browser's history.
     static func pushHistory() {
@@ -296,25 +304,11 @@ enum WebRelay {
             utf8(address) { _ = stateui_web_frame_show(element, FrameSource.address.rawValue, $0, $1) }
             return nil
         case .html(let words, let base):
-            let length = utf8(document(words, base: base)) {
+            let length = utf8(WebDocument.document(words, base: base)) {
                 stateui_web_frame_show(element, FrameSource.document.rawValue, $0, $1)
             }
             return copyRead(length: length)
         }
-    }
-
-    /// `words` with its links resolved against `base` where one is given: a `<base>` right after its doctype, else
-    /// first - before the doctype, the browser reads the document in quirks mode.
-    /// Design: docs/design/platforms/web/controls.md#a-web-view
-    nonisolated static func document(_ words: String, base: String?) -> String {
-        guard let base, !base.isEmpty else { return words }
-        let href = base.replacing("&", with: "&amp;").replacing("\"", with: "&quot;")
-        let tag = "<base href=\"\(href)\">"
-        let leading = words.prefix { $0.isWhitespace }
-        let rest = words.dropFirst(leading.count)
-        guard rest.lowercased().hasPrefix("<!doctype"), let end = rest.firstIndex(of: ">") else { return tag + words }
-        let doctype = rest[...end]
-        return String(leading) + doctype + tag + rest[rest.index(after: end)...]
     }
 
     /// What the page can know of the frame's document: whether it is of the page's own site, and its history.

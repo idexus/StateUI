@@ -22,12 +22,14 @@ A layout an engine moves hears the hand through its view's one listener
 wheel's notches (`ACTION_SCROLL`, by the platform's scroll factor). The
 listener sees each touch before the layout's children do (`StateUIWatch`,
 as a view made of parts): a card answering a tap takes the finger down, yet
-once the hand claims it the card's press is called off. A finger
-down decides nothing and leaves the parent free to intercept; past the slop,
-its first move goes to the Swift host, whose host layer claims it along the
-layout's axis (`handed`) - claimed, the layout takes the rest of the touch and
-forbids its parent to intercept; left, a page's scroller takes it. At the
-lift the tracker's speed goes with it. A wheel's notches - Android's scroll
+once the hand claims it the card's press is called off. The listener tells
+each finger as it goes down, moves and lifts (`finger`), and the host layer
+reads them as one hand (`HandRecognition`, past Android's touch slop from
+where the fingers' middle went down): a finger down decides nothing and
+leaves the parent free to intercept; the first move past the slop claims the
+hand along the layout's axis or leaves it - claimed, the layout takes the
+rest of the touch and forbids its parent to intercept; left, a page's
+scroller takes it. At the lift the tracker's speed goes with it. A wheel's notches - Android's scroll
 axes count them, a part of one for a fine wheel - are told as notches
 (`notched`), each a step of the run to the next target.
 
@@ -76,7 +78,10 @@ and name.
 
 `SeekBar` moves in whole steps from zero. The host gives it ten thousand steps
 across the range and turns a step into a value and back, so a value the user
-reports has the range's ten-thousandth as its finest step. A new range keeps
+reports has the range's ten-thousandth as its finest step. An arrow key moves
+it a hundredth of the range, as on every host (`ValueArithmetic.sliderSteps`);
+the `SeekBar`'s own is a twentieth, and setting its steps sets that again, so
+the host gives the key's step after them. A new range keeps
 the value the thumb stands at, inside the range, unless the tree wrote a new
 value with it: a hand on the thumb is never argued with.
 
@@ -182,7 +187,8 @@ is. The label's letter spacing is in points and Android counts it in the
 text's own size, so it is worked out again whenever the size changes; a
 run's own spacing is not drawn, as no span of Android's spaces letters. A line that is
 cut or truncated is one line and only a truncated one says so; otherwise the
-label wraps, to at most as many lines as it allows. A stated width, within
+label wraps, to at most as many lines as it allows, the last of a limited
+number ending with an ellipsis (`ellipsize` at its end). A stated width, within
 the room its layout offers, is the width a view is measured at, so wrapped
 words are as tall as they will stand.
 

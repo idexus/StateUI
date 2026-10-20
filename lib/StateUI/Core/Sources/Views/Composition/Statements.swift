@@ -18,7 +18,7 @@ public struct Statements<each Part: Views>: Views {
         var all: [Node] = []
         var index = 0
         for part in repeat each parts {
-            all += BuilderPath.tagged(String(index), part.nodes)
+            all += BuilderPath.tagged(BuilderPath.statement(index), part.nodes)
             index += 1
         }
         return all

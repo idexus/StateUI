@@ -27,6 +27,6 @@ extension Array: Views where Element == any View {
 extension Optional: Views where Wrapped: Views {
     /// The branch's nodes, or none.
     public var nodes: [Node] {
-        map { BuilderPath.tagged("some", $0.nodes) } ?? []
+        map { BuilderPath.tagged(BuilderPath.some, $0.nodes) } ?? []
     }
 }

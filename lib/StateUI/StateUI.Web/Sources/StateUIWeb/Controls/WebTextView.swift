@@ -41,13 +41,13 @@ final class WebTextView: WebDOMView, WebWordsView {
         guard let shown else {
             // Shown without runs before, the words stand already.
             guard let spans = runs else { return }
-            for span in spans { span.detach() }
+            for span in spans { span.release() }
             runs = nil
             return WebRelay.setText(node, words)
         }
         if runs == nil { WebRelay.setText(node, "") }
         var spans = runs ?? []
-        while spans.count > shown.count { spans.removeLast().detach() }
+        while spans.count > shown.count { spans.removeLast().release() }
         while spans.count < shown.count { spans.append(WebDOMView(tag: "span")) }
         for (index, (span, run)) in zip(spans, shown).enumerated() {
             WebRelay.insert(span.node, into: node, at: index)
@@ -80,8 +80,8 @@ final class WebTextView: WebDOMView, WebWordsView {
         for (name, value) in WebCSS.spacing(look) { style(name, value) }
     }
 
-    override func detach() {
-        for span in runs ?? [] { span.detach() }
-        super.detach()
+    override func release() {
+        for span in runs ?? [] { span.release() }
+        super.release()
     }
 }

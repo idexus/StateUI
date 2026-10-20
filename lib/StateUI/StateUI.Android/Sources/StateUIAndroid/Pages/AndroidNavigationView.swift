@@ -11,6 +11,48 @@
 final class AndroidNavigationView: AndroidLayoutView {
     private(set) var bar = AndroidBarView()
 
+    /// Whether the user asked for less motion.
+    private let reducesMotion: () -> Bool
+
+    init(reducesMotion: @escaping () -> Bool) {
+        self.reducesMotion = reducesMotion
+        super.init()
+    }
+
+    /// The pages, moving as the host layer says the path changed (`PathChange`): a page pushed slides in from the
+    /// end over the one it covers going toward the start, one popped back to the other way - Android's own
+    /// transition; any other change shows at once.
+    /// Design: docs/design/host/pages.md#a-path-that-changes
+    @discardableResult
+    override func setItems(_ items: [AndroidLayoutItem]) -> Bool {
+        let change = PathChange.of(from: self.items.map(\.view), to: items.map(\.view), same: ===)
+        if let change, change.moves(reducingMotion: reducesMotion()) { slide(pushed: change == .push) }
+        return super.setItems(items)
+    }
+
+    /// Begins Android's transition over the pages' change the next frame lays out: the page arriving slides in from
+    /// one edge, the page leaving out toward the other.
+    private func slide(pushed: Bool) {
+        let (arriving, leaving) = pushed ? (Self.end, Self.start) : (Self.start, Self.end)
+        let transitions = Java.new(JavaAPI.transitionSet, JavaAPI.newTransitionSet)
+        for (edge, mode) in [(arriving, Self.appearing), (leaving, Self.disappearing)] {
+            let slide = Java.new(JavaAPI.slide, JavaAPI.newSlide, .int(edge))
+            Java.call(slide.reference, JavaAPI.setVisibilityMode, .int(mode))
+            Java.release(local: Java.callObject(transitions.reference, JavaAPI.addTransition, .object(slide.reference)))
+        }
+        Java.callStatic(
+            JavaAPI.transitionManager, JavaAPI.beginDelayedTransition, .object(reference), .object(transitions.reference))
+    }
+
+    /// `Gravity.START` and `Gravity.END`: the edges a page slides from, turned over for a language written from the
+    /// right.
+    private static let start: Int32 = 0x0080_0003
+    private static let end: Int32 = 0x0080_0005
+
+    /// `Visibility.MODE_IN` and `MODE_OUT`: a slide for the view appearing, or for the one disappearing.
+    private static let appearing: Int32 = 1
+    private static let disappearing: Int32 = 2
+
     /// The bar whose actions take `words`: the one standing, or one made in their theme in its place - a view's
     /// theme is fixed as it is made.
     func bar(taking words: AndroidBarView.Words) -> AndroidBarView {

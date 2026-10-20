@@ -25,7 +25,7 @@
 @_spi(Host) @MainActor public final class FrameFollowers {
     private unowned let runtime: HostRuntime
     private var scrollers: [Int64: HeldScroller] = [:]
-    private var reporters: [Int64: HeldReporter] = [:]
+    private var reporters: [UInt64: HeldReporter] = [:]
     private var moved = false
 
     private struct HeldScroller {
@@ -46,12 +46,18 @@
         runtime.displayCycle.hold()
     }
 
-    /// Follows where `reporter`, made `order`th, stands while `reads` - letting it go once the tree reads it no
-    /// more.
-    public func follow(_ reporter: any FrameReporter, order: Int64, reads: Bool) {
-        guard reads != (reporters[order] != nil) else { return }
-        reporters[order] = reads ? HeldReporter(reporter: reporter) : nil
+    /// Follows where `reporter`, the view of `element`, stands while `reads`, in the order the element was made -
+    /// letting it go once the tree reads it no more, or the element leaves.
+    public func follow(_ reporter: any FrameReporter, of element: MountedElement, reads: Bool) {
+        let mount = element.mount
+        guard reads != (reporters[mount] != nil) else { return }
+        reporters[mount] = reads ? HeldReporter(reporter: reporter) : nil
         if reads { laidOut() }
+    }
+
+    /// The element `mount` left the tree: where its view stands is said no more.
+    func forget(_ mount: UInt64) {
+        reporters[mount] = nil
     }
 
     /// Something was laid out or moved: whoever reads a frame says it on the display's next frame.

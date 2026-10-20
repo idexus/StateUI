@@ -67,22 +67,9 @@ final class GTKCanvasView: GTKPanelView {
         var room = graphene_rect_t(
             origin: graphene_point_t(x: 0, y: 0), size: graphene_size_t(width: Float(width), height: Float(height)))
         gtk_snapshot_push_clip(snapshot, &room)
-        var pen = CanvasPen()
-        var saved = 0
-        for instruction in instructions {
-            if pen.take(instruction) {
-                if instruction == .saveState {
-                    gtk_snapshot_save(snapshot)
-                    saved += 1
-                } else if instruction == .restoreState, saved > 0 {
-                    gtk_snapshot_restore(snapshot)
-                    saved -= 1
-                }
-                continue
-            }
-            draw(instruction, pen: pen, on: snapshot)
-        }
-        for _ in 0..<saved { gtk_snapshot_restore(snapshot) }
+        CanvasPen.replay(
+            instructions, save: { gtk_snapshot_save(snapshot) }, restore: { gtk_snapshot_restore(snapshot) },
+            draw: { instruction, pen in draw(instruction, pen: pen, on: snapshot) })
         gtk_snapshot_pop(snapshot)
     }
 
@@ -152,15 +139,17 @@ final class GTKCanvasView: GTKPanelView {
             pango_font_description_free(font)
         }
         pango_layout_set_width(layout, Int32(room.width * Double(PANGO_SCALE)))
-        pango_layout_set_alignment(
-            layout, horizontal == .center ? PANGO_ALIGN_CENTER : horizontal == .end ? PANGO_ALIGN_RIGHT : PANGO_ALIGN_LEFT)
+        // The edge stands as it is: Pango would swap left and right for a line reading the other way.
+        pango_layout_set_auto_dir(layout, 0)
+        let alignment = switch CanvasArithmetic.wordsEdge(horizontal) {
+        case .left: PANGO_ALIGN_LEFT
+        case .center: PANGO_ALIGN_CENTER
+        case .right: PANGO_ALIGN_RIGHT
+        }
+        pango_layout_set_alignment(layout, alignment)
         var measured: (width: Int32, height: Int32) = (0, 0)
         pango_layout_get_pixel_size(layout, &measured.width, &measured.height)
-        let y = switch vertical {
-        case .center: room.y + (room.height - Double(measured.height)) / 2
-        case .end: room.y + room.height - Double(measured.height)
-        case .start: room.y
-        }
+        let y = CanvasArithmetic.wordsTop(height: Double(measured.height), in: room, down: vertical)
 
         gtk_snapshot_save(snapshot)
         var clip = graphene_rect_t(
@@ -174,11 +163,9 @@ final class GTKCanvasView: GTKPanelView {
         gtk_snapshot_restore(snapshot)
     }
 
-    /// A rectangle, its corners rounded by `radius` as far as the rectangle holds.
+    /// A rectangle, its corners rounded by `radius` - kept within its sides as the instruction is read.
     private static func rounded(_ room: Rect, radius: Double) -> OpaquePointer {
-        let kept = BoxArithmetic.fitted(max(0, radius), width: room.width, height: room.height)
-        let corner = graphene_size_t(width: Float(kept), height: Float(kept))
-        return outline(room, corner: corner)
+        outline(room, corner: graphene_size_t(width: Float(radius), height: Float(radius)))
     }
 
     /// The ellipse a rectangle holds.

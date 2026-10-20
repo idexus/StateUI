@@ -74,12 +74,17 @@ final class WebQuestion {
 
     private func answer(_ accepted: Bool, _ words: String?) {
         guard let answered else { return }
-        self.answered = nil
-        WebRelay.closeModal(dialog.node)
-        for part in parts { part.detach() }
-        field?.detach()
-        dialog.detach()
+        withdraw()
         answered(accepted, words)
+    }
+
+    /// Takes the question away, answering nobody: the window it stood over went.
+    func withdraw() {
+        answered = nil
+        WebRelay.closeModal(dialog.node)
+        for part in parts { part.release() }
+        field?.release()
+        dialog.release()
     }
 
     private func add(_ tag: String, _ words: String) {
@@ -92,7 +97,7 @@ final class WebQuestion {
         let field = WebTextInputView(.field)
         field.setTraits(question.traits)
         field.setPlaceholder(question.placeholder)
-        field.attribute("maxlength", question.maximumLength.map(String.init))
+        field.setMaximumLength(question.maximumLength)
         WebRelay.setValue(field.node, question.words)
         field.hear(.enter) { [weak self] in
             guard let self else { return }

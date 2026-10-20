@@ -292,7 +292,8 @@
         let renderer = Renderer.shared
         return HostTally(
             renders: renderer.renders, empty: renderer.emptyRenders,
-            refused: renderer.refusedWrites, alive: renderer.liveNodes, runs: RunSlot.underWay)
+            refused: renderer.refusedWrites, alive: renderer.liveNodes, runs: RunSlot.underWay,
+            built: renderer.built, walks: renderer.walks, texts: renderer.texts)
     }
 
     /// Reports a native event: its handlers start at once on `MainActor`, each

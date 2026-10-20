@@ -18,7 +18,7 @@ final class GTKStepperView: GTKView {
         connect("value-changed") { _, data in
             MainActor.assumeIsolated {
                 guard let view = GTKView.find(viewNumber(data)) as? GTKStepperView else { return }
-                view.onValueChanged?(view.value)
+                view.onValueChanged?(view.landed())
             }
         }
         connectSignal(UnsafeMutableRawPointer(widget), "input", number: number) { button, number, _ in
@@ -42,10 +42,22 @@ final class GTKStepperView: GTKView {
     /// The number the stepper stands at.
     var value: Double { gtk_spin_button_get_value(button) }
 
+    /// The value it stood at before the user moved it, and the step it moves by.
+    private var shown = 0.0
+    private var step = 1.0
+
+    /// Where the user's move lands: a step on its decimals, a number typed as typed (`ValueArithmetic.landed`).
+    func landed() -> Double {
+        shown = ValueArithmetic.landed(value, from: shown, step: step)
+        return shown
+    }
+
     /// The range and the step, then `value`, kept inside the range; written with as many decimals as they take.
     func apply(value: Double, minimum: Double, maximum: Double, step: Double) {
         let (low, high) = ValueArithmetic.range(minimum, maximum)
         let step = ValueArithmetic.step(step)
+        self.step = step
+        shown = min(max(value, low), high)
         gtk_spin_button_set_digits(button, guint(ValueArithmetic.decimals(of: [step, low, high, value])))
         gtk_spin_button_set_range(button, low, high)
         gtk_spin_button_set_increments(button, step, step * 10)

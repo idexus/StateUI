@@ -5,6 +5,7 @@
 import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 
 /// UIKit's part of the acts every host performs (`HostActPerformer`): the clock and the zones, a question as an
 /// alert over what the user's window shows, a word to VoiceOver, the keyboard's focus, a value kept.
@@ -45,15 +46,18 @@ final class UIKitActToolkit: ActToolkit {
     }
 
     /// Asks in UIKit's alert over what the user's window shows - its top sheet, else its pages - once nothing moves.
-    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
-        guard let root = renderer.userRoot else { return false }
+    func show(
+        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let root = renderer.userRoot, let window = root.view.window.flatMap(renderer.element(of:))
+        else { return nil }
         let asked = UIKitQuestion(question)
         showing = asked
         asked.ask(in: root) { [weak self] accepted, words in
             self?.showing = nil
             answered(.success(HostQuestion.Given(accepted: accepted, words: words)))
         }
-        return true
+        return window
     }
 
     func announce(_ words: String) {
@@ -133,7 +137,7 @@ final class UIKitActToolkit: ActToolkit {
             return true
         }
         if call.act == .moveToRegion {
-            guard let map = (element.native as? UIKitElement)?.view as? UIKitMapView else {
+            guard let map = (element.native as? UIKitElement)?.view as? MapKitView else {
                 core.fail(call, "moveToRegion is an act of a Map", log: { UIKitRenderer.log.error($0) })
                 return true
             }
@@ -142,21 +146,11 @@ final class UIKitActToolkit: ActToolkit {
             core.reply(call, [])
             return true
         }
-        guard let web = (element.native as? UIKitElement)?.view as? UIKitWebView else {
+        guard let web = (element.native as? UIKitElement)?.view as? WebKitView else {
             core.fail(call, "\(call.act.name) is an act of a web view", log: { UIKitRenderer.log.error($0) })
             return true
         }
-        switch call.act {
-        case .goBack: web.step(.back)
-        case .goForward: web.step(.forward)
-        case .reload: web.step(.reload)
-        default:
-            web.evaluate(call.arguments.value(1)?.string ?? "") { answer in
-                core.reply(call, [answer.propValue])
-            }
-            return true
-        }
-        core.reply(call, [])
+        web.perform(call, through: core)
         return true
     }
 

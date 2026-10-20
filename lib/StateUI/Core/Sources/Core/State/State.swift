@@ -313,6 +313,9 @@ extension State: AnyModelState {
 }
 
 extension State: StateBox {
+    /// Whether the storage has its name.
+    var isNamed: Bool { storage.origin != nil }
+
     /// Tells the storage what the author calls it, tidied from the walk's path.
     func named(_ path: String) {
         storage.origin = BuildScope.readable(path)

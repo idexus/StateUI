@@ -97,6 +97,14 @@ typedef enum STATEUI_CLOSED_ENUM {
     StateUIPressPhaseTakenAway,
 } StateUIPressPhase;
 
+/// Where the hand over a layout stands after a finger's report: left to whatever holds the layout, still asking
+/// whether the layout takes it, or the layout's.
+typedef enum STATEUI_CLOSED_ENUM {
+    StateUIHandLeft,
+    StateUIHandAsking,
+    StateUIHandTaken,
+} StateUIHandState;
+
 /// Where words stand across or down their room: at its start, its centre, its end.
 // Swift: TextAlignment
 typedef enum { StateUITextAlignmentStart, StateUITextAlignmentCenter, StateUITextAlignmentEnd } StateUITextAlignment;
@@ -331,6 +339,10 @@ typedef struct {
     /// them, told again as it commits them.
     void (*textChanged)(int64_t view, char const *utf8, bool composing);
 
+    /// The words of the prompt asked under `ticket` changed - an input method composing them or not: the host holds
+    /// them within the prompt's bound (`stateui_winui_prompt_write`).
+    void (*promptTyped)(int64_t ticket, char const *utf8, bool composing);
+
     /// A single-line field's Enter, or a search box's query.
     void (*submitted)(int64_t view);
 
@@ -393,6 +405,10 @@ typedef struct {
     /// The window `window` names closed - the user's click, or the program's.
     void (*windowClosed)(int64_t window);
 
+    /// The window numbered `window` was laid out, before it is drawn: whether what reads a frame said where it stands,
+    /// which the window then lays out again.
+    bool (*windowLaidOut)(int64_t window);
+
     /// An ItemsView needs a cell of `kind`: the host answers the panel that holds an entry, and its number in `cell`;
     /// the relay stands it in an ItemContainer kept for the list's life.
     StateUIObjectRef (*itemCell)(int64_t view, StateUIItemKind kind, int64_t *cell);
@@ -420,6 +436,12 @@ typedef struct {
     /// (x, y) DIPs since the last, let go at (speedX, speedY) DIPs a second - NaN where untold - `time` its
     /// milliseconds on the pointer's clock: whether the layout took it.
     bool (*hand)(int64_t view, int32_t phase, double x, double y, double time, double speedX, double speedY);
+
+    /// A finger over a layout a hand moves - a press of the primary button, a finger, a pen - at its
+    /// `StateUIPressPhase`, by its number, at (x, y) DIPs of the window's content and (inX, inY) of the view, `time`
+    /// its milliseconds on the pointer's clock: where the hand stands, by the host layer's reading of the fingers.
+    StateUIHandState (*finger)(
+        int64_t view, int32_t phase, uint32_t pointer, double x, double y, double inX, double inY, double time);
 
     /// A wheel's step over a layout, as far as the platform scrolls for it, moving what is under it by (x, y)
     /// DIPs: whether the layout took it.
@@ -621,6 +643,8 @@ int32_t stateui_winui_tooltip(StateUIObjectRef element, char *utf8, int32_t capa
 
 StateUIObjectRef stateui_winui_panel_make(int64_t view);
 void stateui_winui_panel_set_children(StateUIObjectRef panel, StateUIObjectRef const *children, int32_t count);
+/// How a child the panel is given enters: WinUI's entrance from `offset` DIPs across, toward its place; 0 for none.
+void stateui_winui_panel_set_entrance(StateUIObjectRef panel, double offset);
 
 /// What stands in a stack beside its controls: a spacer, an empty panel asking for no room, and a divider, a panel
 /// holding a line in the theme's divider stroke, one pixel thick both ways.
@@ -1143,6 +1167,10 @@ void stateui_winui_press_dragged(int64_t view);
 /// The system's drag distance, across and down, in DIPs.
 void stateui_winui_drag_distance(double *distance);
 
+/// The system's double click: how long after the first a second click may come, in seconds, and how far from it, in
+/// DIPs.
+void stateui_winui_double_tap(double *tap);
+
 /// Presses `element` as assistive technology does, through its automation peer; whether it could be pressed.
 bool stateui_winui_press(StateUIObjectRef element);
 
@@ -1297,6 +1325,10 @@ void stateui_winui_svgs_read(StateUIObjectRef element, int32_t *counts);
 /// a number, 0 or 1, words, sides and corners as four numbers - answering its whole length; -1 for a property the
 /// element has none of. What a test reads.
 int32_t stateui_winui_read(StateUIObjectRef element, char const *what, char *utf8, int32_t capacity);
+
+/// Writes `utf8` in the field of the prompt showing over `element`'s window, the caret after them - each change told
+/// through `promptTyped`, as the user's typing is.
+void stateui_winui_prompt_write(StateUIObjectRef element, char const *utf8);
 
 /// The question showing over `element`'s window, in UTF-8, as far as `capacity` goes: its title, message, accepting
 /// and cancelling captions, its field's words (0x01 for none) and its choices, each ended by the unit separator

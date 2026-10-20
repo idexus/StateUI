@@ -3,6 +3,7 @@
 
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
+import Synchronization
 import XCTest
 
 /// A runtime's start, in the one order every host keeps.
@@ -15,7 +16,7 @@ final class HostStartTests: XCTestCase {
         var steps: [String] = []
 
         runtime.start(
-            realizing: HostRealization(elements: [], members: []), unrealized: [],
+            realizing: HostRealization(elements: [], members: []), unrealized: [], complainingTo: Self.log,
             environment: { steps.append("environment") }, kept: { steps.append("kept") },
             windows: { steps.append("windows") }, turns: { steps.append("turns") })
 
@@ -28,9 +29,33 @@ final class HostStartTests: XCTestCase {
         var directionAtWindows: LayoutDirection?
 
         runtime.start(
-            realizing: HostRealization(elements: [], members: []), unrealized: [], environment: {},
-            windows: { directionAtWindows = runtime.tree.languageDirection })
+            realizing: HostRealization(elements: [], members: []), unrealized: [], complainingTo: Self.log,
+            environment: {}, windows: { directionAtWindows = runtime.tree.languageDirection })
 
         XCTAssertEqual(directionAtWindows, runtime.core.languageDirection)
     }
+
+    /// From its start a host's log hears every complaint the application routes nowhere, as a line of the host's.
+    func testAStartedHostsLogHearsTheComplaints() {
+        let heard = Heard()
+        let runtime = HostRuntime.still()
+        runtime.start(
+            realizing: HostRealization(elements: [], members: []), unrealized: [],
+            complainingTo: HostLog(host: "Test") { line in heard.add(line) }, environment: {})
+        defer { Complaints.routeByDefault(to: nil) }
+
+        Complaints.say("HostStartTests: said to the host")
+
+        XCTAssertEqual(heard.lines, ["StateUI Test: HostStartTests: said to the host\n"])
+    }
+
+    /// A log that writes nowhere.
+    private static let log = HostLog(host: "Test") { _ in }
+}
+
+/// What a log was handed, from any thread.
+private final class Heard: Sendable {
+    private let held = Mutex<[String]>([])
+    var lines: [String] { held.withLock { $0 } }
+    func add(_ line: String) { held.withLock { $0.append(line) } }
 }

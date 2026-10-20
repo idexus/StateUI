@@ -34,13 +34,20 @@ import StateUIFoundation
         output(line(message))
     }
 
+    /// Hears every complaint the application routes nowhere (`Complaints.route`), each a line of its own.
+    /// Design: docs/design/host/runtime.md#the-log
+    public func hearComplaints() {
+        let log = self
+        Complaints.routeByDefault { words in log.note(words) }
+    }
+
     /// The line `message` is written as.
     public func line(_ message: String) -> String {
         "StateUI \(host): \(message)\n"
     }
 
     /// Writes `text` to file descriptor 2, which nothing buffers.
-    static func writeStandardError(_ text: String) {
+    public static func writeStandardError(_ text: String) {
         var text = text
         text.withUTF8 { bytes in
             #if os(Windows)

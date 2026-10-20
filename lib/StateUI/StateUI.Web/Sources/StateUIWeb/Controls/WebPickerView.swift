@@ -36,7 +36,7 @@ final class WebPickerView: WebDOMView, WebWordsView {
         WebRelay.setText(title.node, words ?? "")
         let write = written.write(choices, chosen: chosen, choiceChanged: writeChosen)
         if let choices = write.choices {
-            for option in options { option.detach() }
+            for option in options { option.release() }
             options = choices.enumerated().map { index, words in
                 let option = WebDOMView(tag: "option")
                 WebRelay.setText(option.node, words)
@@ -52,9 +52,9 @@ final class WebPickerView: WebDOMView, WebWordsView {
         attribute("disabled", enabled ? nil : "")
     }
 
-    override func detach() {
-        for option in options { option.detach() }
-        title.detach()
-        super.detach()
+    override func release() {
+        for option in options { option.release() }
+        title.release()
+        super.release()
     }
 }

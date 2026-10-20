@@ -24,8 +24,10 @@ public enum StateUIWebViewWinUI {
             web.onProcessGone = { reports.raise(WebViewContract.processTerminated) }
             return web
         }) { web in
-            web.property(WebViewContract.userAgent) { control, agent in control.setUserAgent(agent) }
-            web.property(WebViewContract.source) { control, source in control.show(source) }
+            web.applies([WebViewContract.userAgent, WebViewContract.source]) { control, values in
+                if values.changed(WebViewContract.userAgent) { control.setUserAgent(values[WebViewContract.userAgent]) }
+                if values.changed(WebViewContract.source) { control.show(values[WebViewContract.source]) }
+            }
             web.raises(WebViewContract.navigating)
             web.raises(WebViewContract.navigated)
             web.raises(WebViewContract.canGoBackChanged)

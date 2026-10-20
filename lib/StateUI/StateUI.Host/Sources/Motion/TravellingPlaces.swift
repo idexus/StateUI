@@ -18,7 +18,7 @@
     public var framesRead = false
 
     /// Whether a patch reached the layout since its last arrangement.
-    private var patched = false
+    private(set) var patched = false
 
     /// The width of the last arrangement; nil before the first.
     private var arrangedWidth: Double?

@@ -13,7 +13,7 @@ final class WebStepperViewTests: XCTestCase {
     /// tree disables disables both.
     func testAButtonAtTheRangesEndStandsDisabled() {
         let stepper = WebStepperView()
-        defer { stepper.detach() }
+        defer { stepper.release() }
         let buttons = WebPage.children(of: stepper.node).filter { WebPage.attribute(of: $0, "type") == "button" }
         let disabled = { buttons.map { WebPage.attribute(of: $0, "disabled") != nil } }
 

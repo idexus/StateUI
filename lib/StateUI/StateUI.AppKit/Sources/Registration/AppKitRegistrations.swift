@@ -5,6 +5,7 @@
 import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 
 /// The contracts this host realizes through the core's registry: how each
 /// element's view is made, which of its members the view takes, and what it
@@ -18,8 +19,8 @@ enum AppKitRegistrations {
 
         indicators(registry)
         items(registry)
-        maps(registry)
-        web(registry)
+        MapKitView.register(in: registry) { AppKitMapView() }
+        WebKitView.register(in: registry)
         toggles(registry)
         values(registry)
         pickers(registry)
@@ -49,7 +50,7 @@ enum AppKitRegistrations {
     /// (`HostActPerformer`) answers exactly these and the application's own; every other act it refuses by name.
     static let acts: [any ContractMember] =
         HostActs.performed + HostActs.files + [ItemsViewContract.scrollTo, MapContract.moveToRegion]
-        + webActs
+        + WebKitView.acts
 
     static func edgeInsets(_ value: Insets?) -> NSEdgeInsets {
         guard let numbers = value?.propValue.numbers, numbers.count >= 4 else { return NSEdgeInsets() }

@@ -8,6 +8,9 @@
 /// its leading side is the inline start, so a layout right to left turns them by itself.
 /// Design: docs/design/platforms/web/layout.md#values-in-css
 enum WebCSS {
+    /// The height of the page's lines of words, in sizes of their font: the style sheet's body stands at the same.
+    static let lineHeight = 1.4
+
     /// A number as CSS reads it: whole as it is, any other to a millionth with no nought trailing - spelt by whole
     /// numbers, as a double's shortest spelling costs a browser running WebAssembly with no compiler much.
     /// Design: docs/design/platforms/web/layout.md#values-in-css
@@ -134,7 +137,7 @@ enum WebCSS {
 
     /// How words break across lines and where they stop - at most `lines` of them, nil for any - as CSS says it.
     static func lines(_ lineBreak: LineBreak, most lines: Int?) -> [(String, String?)] {
-        let clamped = lineBreak.wraps && lines != nil
+        let clamped = lineBreak.endsWithEllipsis(maximum: lines)
         return [
             ("white-space", lineBreak.wraps ? "pre-wrap" : "pre"),
             ("overflow-wrap", lineBreak.wraps ? "break-word" : nil),
@@ -164,7 +167,7 @@ enum WebCSS {
     /// A colour as CSS's `rgb()`; nil for a value that is none.
     static func color(_ value: HostValue?) -> String? {
         guard let channels = value?.color else { return nil }
-        let alpha = number((Double(channels.alpha) / 255 * 1000).rounded() / 1000)
+        let alpha = number((ColorComponent.fraction(channels.alpha) * 1000).rounded() / 1000)
         return "rgb(\(channels.red) \(channels.green) \(channels.blue) / \(alpha))"
     }
 

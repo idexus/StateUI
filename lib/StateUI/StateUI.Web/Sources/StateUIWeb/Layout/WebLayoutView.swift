@@ -170,15 +170,21 @@ class WebLayoutView: WebDOMView {
     private func placeAll() {
         if travels { placing?.arrange(self) }
         let run = arrangement == .layers ? placement?.placements ?? [] : []
-        let order = ZStackArithmetic.drawingOrder(of: children.count, placedBy: run)
+        // A ZStack draws every child in its order, the placed and the unplaced alike, back to front: each child's
+        // place in that order, worked out once.
+        var drawnAt = Array(children.indices)
+        if arrangement == .layers {
+            for (place, index) in ZStackArithmetic.drawingOrder(of: children.count, placedBy: run).enumerated() {
+                drawnAt[index] = place
+            }
+        }
         for (index, view) in children.enumerated() {
             if index < run.count {
                 placeByRun(view, run[index])
             } else {
                 place(view, values(at: index))
             }
-            // A ZStack draws every child in its order, the placed and the unplaced alike, back to front.
-            if arrangement == .layers { view.style("z-index", String(order.firstIndex(of: index) ?? index)) }
+            if arrangement == .layers { view.style("z-index", String(drawnAt[index])) }
         }
     }
 

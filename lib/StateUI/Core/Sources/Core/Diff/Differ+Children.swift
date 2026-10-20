@@ -47,17 +47,16 @@ extension Differ {
     private func identified(
         _ written: Node, at index: Int, by matching: ChildMatching
     ) -> (id: ElementID, match: RenderedNode?, node: Node) {
-        // A repeated `.id()` takes a stable variant: the id, a NUL, its occurrence.
+        // A repeated identity takes a stable variant: the value and its occurrence.
         // Design: docs/design/core/identity-and-diffing.md#repeated-ids
         var childNode = written
-        if let rawId = childNode.id {
-            let seen = matching.manualSeen[rawId]
-            let occurrence = seen?.count ?? 0
-            matching.manualSeen[rawId] = (occurrence + 1, seen?.identity ?? childNode.identity)
+        if let identity = childNode.identity {
+            let occurrence = matching.identitiesSeen[identity, default: 0]
+            matching.identitiesSeen[identity] = occurrence + 1
 
             if occurrence > 0 {
-                childNode.id = "\(rawId)\u{0}\(occurrence)"
-                Self.sayRepeated(rawId, first: seen?.identity, again: childNode.identity)
+                childNode.identity = ElementIdentity(AnyHashable(RepeatedIdentity(identity: identity, occurrence: occurrence)))
+                Self.sayRepeated(identity)
             }
         }
 
@@ -65,7 +64,7 @@ extension Differ {
             childNode,
             at: childNode.key == nil ? matching.unkeyedSoFar : index,
             rendered: matching.unkeyed,
-            byManualId: matching.byManualId,
+            byIdentity: matching.byIdentity,
             byKey: matching.byKey,
             claimed: matching.claimed)
 
@@ -113,19 +112,19 @@ extension Differ {
         _ node: Node,
         at index: Int,
         rendered: [RenderedNode],
-        byManualId: [String: RenderedNode],
-        byKey: [String: RenderedNode],
+        byIdentity: [ElementIdentity: RenderedNode],
+        byKey: [PathNumber: RenderedNode],
         claimed: Set<ElementID>
     ) -> RenderedNode? {
-        if let id = node.id {
-            let match = byManualId[id]
+        if let identity = node.identity {
+            let match = byIdentity[identity]
             return match.flatMap { claimed.contains($0.id) ? nil : $0 }
         }
 
         if let key = node.key {
             let match = byKey[key]
             return match.flatMap {
-                claimed.contains($0.id) || $0.id.isManual ? nil : $0
+                claimed.contains($0.id) || $0.identity != nil ? nil : $0
             }
         }
 
@@ -140,17 +139,11 @@ extension Differ {
         return candidate
     }
 
-    /// Says a repeated identity once: one value written twice, or two values that describe themselves alike.
+    /// Says a repeated identity once: one value written twice among siblings.
     /// Design: docs/design/core/identity-and-diffing.md#repeated-ids
-    static func sayRepeated(_ id: String, first: AnyHashable?, again: AnyHashable?) {
-        if let first, let again, first != again {
-            complain("two different identities describe alike as \"\(id)\": a description that says less than the "
-                + "value - a class prints its type's name - gives two values one identity; identify each by what it "
-                + "holds (`id: \\.path`).")
-        } else {
-            complain("two siblings share the identity \"\(id)\": the second is told apart by where it stands, not by "
-                + "what it is; give each its own (`id:`).")
-        }
+    static func sayRepeated(_ identity: ElementIdentity) {
+        complain("two siblings share the identity \"\(Node.described(identity))\": the second is told apart by where "
+            + "it stands, not by what it is; give each its own (`id:`).")
     }
 }
 
@@ -160,8 +153,8 @@ extension Differ {
 @MainActor
 final class ChildMatching {
     let rendered: [RenderedNode]
-    var byManualId: [String: RenderedNode] = [:]
-    var byKey: [String: RenderedNode] = [:]
+    var byIdentity: [ElementIdentity: RenderedNode] = [:]
+    var byKey: [PathNumber: RenderedNode] = [:]
 
     /// Nodes put in by hand, matched by position among themselves.
     let unkeyed: [RenderedNode]
@@ -169,14 +162,14 @@ final class ChildMatching {
     var claimed: Set<ElementID> = []
     var used: Set<ElementID> = []
     var unkeyedSoFar = 0
-    var manualSeen: [String: (count: Int, identity: AnyHashable?)] = [:]
+    var identitiesSeen: [ElementIdentity: Int] = [:]
 
     init(_ rendered: [RenderedNode]) {
         self.rendered = rendered
         unkeyed = rendered.filter { $0.key == nil }
         for child in rendered {
-            if case .manual(let key) = child.id {
-                byManualId[key] = child
+            if let identity = child.identity, byIdentity[identity] == nil {
+                byIdentity[identity] = child
             }
 
             // First wins, so two elements claiming one path behave like a repeated `.id()`.
@@ -185,4 +178,14 @@ final class ChildMatching {
             }
         }
     }
+}
+
+/// An identity written again among its siblings: the value and which time - stable every render, and never equal to
+/// a value an author writes.
+/// Design: docs/design/core/identity-and-diffing.md#repeated-ids
+struct RepeatedIdentity: Hashable, CustomStringConvertible {
+    let identity: ElementIdentity
+    let occurrence: Int
+
+    var description: String { "\(String(describing: identity.value.base))\u{0}\(occurrence)" }
 }

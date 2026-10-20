@@ -16,8 +16,8 @@ extension Either: Views where First: Views, Second: Views {
     /// The branch's nodes under which branch it is.
     public var nodes: [Node] {
         switch self {
-        case .first(let first): BuilderPath.tagged("if", first.nodes)
-        case .second(let second): BuilderPath.tagged("else", second.nodes)
+        case .first(let first): BuilderPath.tagged(BuilderPath.first, first.nodes)
+        case .second(let second): BuilderPath.tagged(BuilderPath.second, second.nodes)
         }
     }
 }
@@ -28,8 +28,8 @@ extension Either: Element where First: Element, Second: Element {
     public var node: Node {
         get {
             switch self {
-            case .first(let first): BuilderPath.tagged("if", first.node)
-            case .second(let second): BuilderPath.tagged("else", second.node)
+            case .first(let first): BuilderPath.tagged(BuilderPath.first, first.node)
+            case .second(let second): BuilderPath.tagged(BuilderPath.second, second.node)
             }
         }
         set {}

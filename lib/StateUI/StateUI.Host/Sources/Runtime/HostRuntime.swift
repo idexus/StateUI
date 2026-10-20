@@ -93,6 +93,10 @@
         pump.presenter = self
         displayCycle.presenter = self
         tree.tellPhase = { [weak pump] handler in pump?.handlers.enqueuePhase(handler) }
+        tree.left = { [weak self] mount in
+            self?.frames.forget(mount)
+            self?.sidebarSlide.forget(mount)
+        }
         clock.onFrame = { [weak self] now in self?.displayCycle.frame(now: now) }
         layoutMotion.onStart = { [weak self] in self?.displayCycle.hold() }
         sidebarSlide.onStart = { [weak self] in self?.displayCycle.hold() }
@@ -107,9 +111,10 @@
     /// Design: docs/design/host/runtime.md#starting
     public func start(
         realizing realization: HostRealization, unrealized: [any ElementContract.Type],
-        register: @autoclosure @escaping () -> HostRegister? = nil,
+        register: @autoclosure @escaping () -> HostRegister? = nil, complainingTo log: HostLog,
         environment: () -> Void, kept: () -> Void = {}, windows: () -> Void = {}, turns: () -> Void = {}
     ) {
+        log.hearComplaints()
         core.setRealization(realization, unrealized: unrealized, register: register())
         environment()
         kept()
@@ -214,7 +219,8 @@
     }
 
     /// The user chose tab `selected` of `tabbed`, which showed `previous`: the pages hear it, then the state the
-    /// choice carries - in a turn taken here where nothing the choice carries takes one.
+    /// choice carries - in a turn taken here where nothing the choice carries takes one - and the window's chrome
+    /// shows again for the page the user sees, whether or not anything renders.
     /// Design: docs/design/host/pages.md#a-pages-phases
     public func tabChosen(_ tabbed: MountedElement, from previous: Int, to selected: Int) {
         let tabs = tabbed.children
@@ -225,7 +231,9 @@
             tabs[selected].setPagePresented(true, reason: .appearance)
         }
         tabbed.reportUserChange(.selectedTab, .selectedTabChanged, .number(Double(selected)), in: self) { _ in }
+        tree.chromeTouched = true
         pump.turnIfWanted()
+        if tree.takeChromeTouched() { presenter?.presentRendered(touchedChrome: true) }
     }
 
     /// The sidebar of `split` showed or hid on screen: its page hears it, then the state its binding carries.
@@ -235,14 +243,22 @@
         pump.turnIfWanted()
     }
 
+    /// The user took `stack`'s top pages away through the toolkit - its back button, a swipe, the keys - leaving
+    /// `staying` pages: its path is told how long it is now, the root aside.
+    /// Design: docs/design/host/pages.md#the-way-back
+    public func stackPopped(_ stack: MountedElement, staying: Int) {
+        guard staying >= 1, let handler = stack.handler(.popped) else { return }
+        dispatch(handler, payload: [.number(Double(staying - 1))])
+    }
+
     /// Goes `way` back in `window`: a stack's top page goes, the path told it is one shorter, or the top sheet goes,
     /// the modal stack told how many remain.
     /// Design: docs/design/host/pages.md#the-way-back
     public func goBack(_ way: WayBack, in window: MountedElement) {
         switch way {
         case .pop(let stack):
-            guard stack.children.count > 1, let handler = stack.handler(.popped) else { return }
-            dispatch(handler, payload: [.number(Double(stack.children.count - 2))])
+            guard stack.children.count > 1 else { return }
+            stackPopped(stack, staying: stack.children.count - 1)
         case .dismissSheet(let remaining):
             let stack = window.children.first { $0.type == .modalStack }
             guard let handler = stack?.handler(.popped) else { return }

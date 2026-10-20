@@ -79,6 +79,51 @@ final class ItemsCellsTests: XCTestCase {
         cells.takeEntries()
     }
 
+    /// A cell shows an entry anew where it is another than the one it shows, or where its view and the entry
+    /// disagree on whether there is a subtree to show; the same entry already in its view is left alone.
+    func testACellShowsAnEntryAnewOnlyWhereItChanges() throws {
+        let item = try XCTUnwrap(cells.element)
+        let cell = Cell()
+        XCTAssertTrue(cell.showsAnew(item, viewShowing: false), "an entry where none is shown")
+        cell.hold("0", item)
+        XCTAssertFalse(cell.showsAnew(item, viewShowing: true), "the same entry, shown")
+        XCTAssertTrue(cell.showsAnew(item, viewShowing: false), "the same entry, its view emptied")
+        XCTAssertTrue(cell.showsAnew(nil, viewShowing: true), "nothing where a subtree is shown")
+        cell.letGo()
+        XCTAssertFalse(cell.showsAnew(nil, viewShowing: false), "nothing, and nothing shown")
+    }
+
+    /// A cell keeps, before its entry is measured, the room of a row down a list and of an item across a row - one
+    /// estimate for every host, wide enough across that a row asks for about as many entries as it shows.
+    func testACellKeepsOneEstimateBeforeItsEntryIsMeasured() {
+        XCTAssertEqual(ItemsCells.estimatedExtent(across: false), 44)
+        XCTAssertEqual(ItemsCells.estimatedExtent(across: true), 100)
+    }
+
+    /// A size changing inside an entry is measured again from there up to the entry, whose cell measures it - the
+    /// list's own size never follows its items; outside a list every layout up to the root measures again.
+    func testMeasuringAgainStopsAtTheEntryACellMeasures() throws {
+        let cell = Cell()
+        cells.hold("42", in: cell)
+        let entry = try XCTUnwrap(cell.shown)
+
+        let inside = entry.measuredUpward()
+        XCTAssertTrue(inside.layouts.isEmpty, "the entry is its cell's to measure")
+        XCTAssertTrue(inside.entry === entry)
+
+        let list = try XCTUnwrap(cells.element)
+        let outside = list.measuredUpward()
+        XCTAssertNil(outside.entry)
+        XCTAssertTrue(outside.layouts.first === list)
+        XCTAssertTrue(outside.layouts.last === runtime.tree.root, "up to the root")
+    }
+
+    /// A scroll to an item glides there, unless the user asked for less motion.
+    func testAScrollToAnItemGlidesUnlessTheUserAsksForLessMotion() {
+        XCTAssertTrue(ItemsScrollTarget.glides(reducingMotion: false))
+        XCTAssertFalse(ItemsScrollTarget.glides(reducingMotion: true))
+    }
+
     /// Every identity is taken in order, and nothing is built before a cell holds it.
     func testTheEntriesAreTakenAndNothingIsBuiltUnasked() {
         XCTAssertEqual(cells.identities.count, 100)
@@ -122,6 +167,24 @@ final class ItemsCellsTests: XCTestCase {
 
         XCTAssertEqual(runtime.core.tally.renders, renders + 1, "built already, and half a reach from the end")
         XCTAssertNotNil(cells.item("13"), "a reach around every cell held")
+    }
+
+    /// Cells coming near and going away in one batch - a fast scroll seen in one frame - are told together: the ones
+    /// gone let their entries go first, the tree is told once, and builds around the cells near now alone.
+    func testCellsComingAndGoingTogetherTellTheTreeOnce() {
+        let gone = (60..<70).map { _ in Cell() }
+        for (offset, cell) in gone.enumerated() { cells.hold("\(60 + offset)", in: cell) }
+        let coming = (0..<10).map { (identity: "\($0)", holding: Cell()) }
+        let renders = runtime.core.tally.renders
+
+        cells.hold(coming.map { ($0.identity, $0.holding as any ItemsHolding) }, endingShowing: gone)
+
+        XCTAssertEqual(runtime.core.tally.renders, renders + 1, "one render for the batch")
+        XCTAssertNotNil(cells.item("19"), "a reach of ten after the last cell near")
+        XCTAssertNil(cells.item("20"))
+        XCTAssertNil(cells.item("65"), "nothing kept around the cells gone")
+        for (identity, cell) in coming { XCTAssertEqual(cell.shown?.value(.text), .string(identity)) }
+        XCTAssertTrue(gone.allSatisfy { $0.identity == nil })
     }
 
     /// A cell that ended showing its entry tells the tree nothing at once; the entry leaves once the cells moved out
@@ -298,7 +361,7 @@ final class ItemsCellsTests: XCTestCase {
         let cells = ItemsCells(try XCTUnwrap(runtime.tree.root?.first(type: .itemsView)), in: runtime)
         cells.takeEntries()
         let reader = Reader()
-        runtime.frames.follow(reader, order: 1, reads: true)
+        runtime.frames.follow(reader, of: try XCTUnwrap(runtime.tree.root?.first(type: .itemsView)), reads: true)
         runtime.frames.commit(now: 16)
         reader.said = 0
 
@@ -306,6 +369,13 @@ final class ItemsCellsTests: XCTestCase {
         runtime.frames.commit(now: 32)
 
         XCTAssertEqual(reader.said, 1)
+    }
+
+    /// The band behind a chosen item is the accent's hue at a fifth of its strength, packed as a toolkit takes it.
+    func testAChosenItemsBandIsTheAccentAtAFifth() {
+        XCTAssertEqual(ChosenBand.opacity, 0.2)
+        XCTAssertEqual(ChosenBand.argb(over: 0xFF0A_84FF), 0x330A_84FF)
+        XCTAssertEqual(ChosenBand.argb(over: 0x8012_3456), 0x3312_3456, "the accent's own alpha gives way")
     }
 }
 

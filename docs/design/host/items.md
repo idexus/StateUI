@@ -43,6 +43,17 @@ After every patch to the list, `childrenChanged` holds each cell to the
 subtree its entry has now: one built with the turn under way, or built
 again after the one before was let go.
 
+## A cell before its entry
+
+A cell keeps, before its entry is measured, the room the host layer says
+(`ItemsCells.estimatedExtent`): a row's 44 points down a list and a grid, an
+item's 100 points across a row. Measured of nothing, every cell would fit in
+view at once and the collection would ask for every entry; an estimate too
+narrow across would make a row ask for more entries than it shows. A cell
+shows its entry anew (`ItemsHolding.showsAnew`) only where it is another
+entry, or where its view and the entry disagree on whether there is a
+subtree to show.
+
 ## Within reach
 
 Every render walks the whole tree, so a render a cell would make a scroll
@@ -56,6 +67,20 @@ rather than long ones a reach apart. A cell that ends
 showing its entry tells nothing: the entry stays built while it is within
 reach, and leaves with the next render once the cells have moved away.
 Cells far apart, after a jump, build around each and nothing between.
+
+## Cells told together
+
+A collection that learns which cells came near its view and which went away
+once a frame - a browser - tells them all at once
+(`ItemsCells.hold(_:endingShowing:)`): the cells gone let their entries go
+first, the cells near take theirs, and the tree is told once, for where the
+cells stand now. A collection asking for a cell in its own layout pass tells
+one at a time, a batch of one.
+
+The trap: told one by one, a fast scroll keeps the cells gone held while the
+cells near ask - each render builds a reach around where the list stood a
+frame before, and each cell costs a render and a layout of its own. The list
+chases where it was, and the cells in view stand empty until it stops.
 
 ## Changes one by one
 
@@ -112,6 +137,14 @@ item to the choice or takes it away, and opens nothing. A collection that
 holds its choice itself tells what it holds (`userChose`) and what it opens
 (`userActivated`).
 
+## The chosen band
+
+Where a host draws the band behind an item the user chose from the accent, it
+draws the accent's hue at a fifth of its strength (`ChosenBand`): AppKit over
+the platform's accent, UIKit over the cell's tint, Android over the theme's
+accent, the Web over its own. GTK shades a chosen row in the colour of its
+words, as GNOME's sidebars do, and WinUI's item container draws its own.
+
 ## Scrolling to an item
 
 `ScrollAnchor.place` says where the scroller stands for the item to stand at
@@ -130,3 +163,7 @@ it was scrolled to may come after a pass, as a browser tells them: the host
 stands it again after every pass that brought entries (`laidOut`), once more
 as the last one comes, and then lets it go. The user moving the list lets it go at once, and so does the next
 scroll; a scroll that glides stands its item again as it stops.
+
+Whether a scroll to an item glides is one rule,
+`ItemsScrollTarget.glides(reducingMotion:)`: it glides unless the user asks
+for less motion, and stands there at once when they do.

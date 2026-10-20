@@ -4730,6 +4730,7 @@ enum Listings {
         // Sources/Samples/Interop/InteropActsSample.swift
         @State private var draft = "Copy me somewhere"
         @State private var status = "nothing asked yet"
+        @State private var tenStars = false
         @Aim(RatingBar.self) private var stars
 
         var body: some View {
@@ -4773,9 +4774,12 @@ enum Listings {
                     }
 
                 RatingBar()
+                    .maximum(tenStars ? 10 : 5)
                     .rating(4)
                     .horizontalAlignment(.center)
                     .aim(stars)
+
+                SwitchRow("Ten stars", $tenStars)
 
                 Button("Flash the bar")
                     .onClicked(gate: .ignoreWhileRunning) {
@@ -10325,6 +10329,12 @@ enum Listings {
                     .lineBreak(.tailTruncation)
                     .maximumLines(1)
 
+                Text("Held to two lines, words that wrap end the second with an ellipsis where they go on past it")
+                    .fontSize(16)
+                    .maximumLines(2)
+                    .width(260)
+                    .horizontalAlignment(.start)
+
                 Text("Letters spaced out")
                     .fontSize(16)
                     .tracking(3)
@@ -12878,7 +12888,11 @@ extension Listings {
                     }
                     return bar
                 }) { bar in
-                    bar.property(RatingBarContract.rating) { control, rating in control.rating = rating ?? 0 }
+                    // The stars and the rating come together: a rating stands within the stars, whichever of the two changed.
+                    bar.applies([RatingBarContract.maximum, RatingBarContract.rating]) { control, values in
+                        control.show(
+                            rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
+                    }
                     bar.raises(RatingBarContract.ratingChanged)
                 }
 
@@ -13762,7 +13776,7 @@ extension Listings {
 
             init() {
                 element.setAttribute("signal", String(signal.rawValue))
-                element.listen("lamptap") { [weak self] (index: Double) in self?.onLampTapped?(Int(index)) }
+                element.listen("lamptap", number: { [weak self] index in self?.onLampTapped?(Int(index)) })
             }
         }
 

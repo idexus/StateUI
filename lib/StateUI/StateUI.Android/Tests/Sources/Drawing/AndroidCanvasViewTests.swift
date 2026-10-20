@@ -14,6 +14,7 @@ final class AndroidCanvasViewTests: XCTestCase {
             ("testAFilledArcIsAWedge", testAFilledArcIsAWedge),
             ("testADrawingRunningPastItsListsStopsThere", testADrawingRunningPastItsListsStopsThere),
             ("testAFingersPressDragAndReleaseArriveInPoints", testAFingersPressDragAndReleaseArriveInPoints),
+            ("testWordsAtABoxsStartStandAtItsLeft", testWordsAtABoxsStartStandAtItsLeft),
         ]
     }
 
@@ -50,8 +51,8 @@ final class AndroidCanvasViewTests: XCTestCase {
             }
             host.layOut()
             let canvas = try XCTUnwrap(host.views(AndroidCanvasView.self).first)
-            let drawn = HostDrawing([Draw.fillColor(.red), Draw.fillRectangle(x: 0, y: 0, width: 20, height: 10)])
-            let cut = HostDrawing([Draw.fillRectangle(x: 0, y: 0, width: 20, height: 10)]).ints
+            let drawn = HostDrawing([Draw.fillColor(.red), Draw.fillRectangle(x: 0, y: 0, width: 20, height: 10)], wordsSize: nil)
+            let cut = HostDrawing([Draw.fillRectangle(x: 0, y: 0, width: 20, height: 10)], wordsSize: nil).ints
             Java.frame {
                 Java.call(
                     canvas.reference, JavaAPI.setDrawing, .object(Java.ints(drawn.ints + cut)),
@@ -100,6 +101,31 @@ final class AndroidCanvasViewTests: XCTestCase {
             canvas.touch(1, x: 30, y: 40)
 
             XCTAssertEqual(heard.values, ["pressed 10,20", "dragged 15,20", "released 15,20"])
+        }
+    }
+
+    /// Words at the start of their box stand at its left, words read right to left too: a canvas draws in its own
+    /// coordinates.
+    func testWordsAtABoxsStartStandAtItsLeft() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                Canvas {
+                    Draw.textColor(.red)
+                    Draw.text("ممممم", x: 0, y: 0, width: 200, height: 20)
+                }
+                .width(200).height(20).horizontalAlignment(.start)
+            }
+            host.layOut()
+            let canvas = try XCTUnwrap(host.views(AndroidCanvasView.self).first)
+            @MainActor func inked(from left: Int32) -> Bool {
+                let points = stride(from: Int32(4), to: 40, by: 4).flatMap { y in
+                    stride(from: left, to: left + 100, by: 2).map { (x: $0, y: y) }
+                }
+                return canvas.pixels(at: points).contains { $0 >> 24 > 0 }
+            }
+
+            XCTAssertTrue(inked(from: 0), "at the left")
+            XCTAssertFalse(inked(from: 300), "nothing at the right")
         }
     }
 }

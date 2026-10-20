@@ -233,21 +233,28 @@ public struct Node {
     /// `.vStack`, or an application's own registered type.
     public internal(set) var type: NodeType
 
-    /// Who this element is, when the author says so - `.id("row-7")`. An element that
-    /// keeps its key keeps its control, with its focus, caret and scroll offset;
-    /// a collection's rows need one.
-    public var id: String?
+    /// Who this element is, when the author says so - `.id("row-7")` - as its patch names it. An element that
+    /// keeps its key keeps its control, with its focus, caret and scroll offset; a collection's rows need one.
+    public internal(set) var id: String? {
+        get { identity.map(Self.described) }
+        set { identity = newValue.map { ElementIdentity(AnyHashable($0)) } }
+    }
 
-    /// The value `id` was written from, compared as that value: what tells a repeated
-    /// identity from two that only describe themselves alike.
-    var identity: AnyHashable?
+    /// The value the element is written as, compared as that value: what matches it with the element it continues.
+    /// Design: docs/design/core/identity-and-diffing.md#keys
+    var identity: ElementIdentity?
 
-    /// Writes `value` as who this element is: the value itself, and its name in the
-    /// patch, `String(describing:)`.
-    /// Design: docs/design/core/identity-and-diffing.md#repeated-ids
+    /// Writes `value` as who this element is.
     mutating func identify(_ value: some Hashable) {
-        identity = AnyHashable(value)
-        id = String(describing: value)
+        identity = ElementIdentity(AnyHashable(value))
+    }
+
+    /// An identity as the patch names it: its description, made where an element is born.
+    /// Design: docs/design/core/identity-and-diffing.md#keys
+    static func described(_ identity: ElementIdentity) -> String {
+        if let text = identity.value.base as? String { return text }
+        Renderer.shared.texts += 1
+        return String(describing: identity.value.base)
     }
 
     /// The aim put on this view with `.aim(_:)`: a box the differ fills with the
@@ -265,12 +272,12 @@ public struct Node {
     /// Where this node was written among its siblings - the builder path: which
     /// statement, which branch. Never crosses; the differ matches children by it.
     /// Design: docs/design/core/identity-and-diffing.md#keys
-    var key: String?
+    var key: PathNumber?
 
     /// The branch a composed view's content root was written in - an `if/else`
     /// there - which the placeholder's key covers; part of what the element is.
     /// Design: docs/design/core/identity-and-diffing.md#another-kind-of-view
-    var branch: String?
+    var branch: PathNumber?
 
     /// The element's properties, by token.
     var props: [Prop: PropValue]
@@ -367,7 +374,7 @@ public struct Node {
         events: [Event: @MainActor () throws -> Void] = [:]
     ) {
         self.type = type
-        self.id = id
+        self.identity = id.map { ElementIdentity(AnyHashable($0)) }
         self.props = props
         self.children = children
         self.events = events.mapValues { [Handler(step: $0)] }

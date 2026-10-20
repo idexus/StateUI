@@ -19,6 +19,15 @@ equal to it: MapKit's radius comes back up to half a percent short, its
 centre exact. A case compares a region within a meter of the centre and a
 percent of the radius.
 
+## A marker's look
+
+A marker of a kind wears one hue and one symbol on every host drawing it
+(`MarkerLook`): a plain one red with no symbol, a place blue with a
+building, one the user saved yellow with a star, a search result purple with
+a magnifying glass. The host draws the hue as its platform's own colour of
+that name, so a marker follows the platform's palette and its dark theme,
+and it reads a marker's kind back by that colour.
+
 ## A tap on the map
 
 A tap on the map itself is the map's `mapClicked`; one on a marker, or on what

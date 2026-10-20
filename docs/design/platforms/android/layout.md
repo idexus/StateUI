@@ -70,7 +70,9 @@ stood still. The tree's offset is written as the program's write, only where
 it differs from where the scroller stands, and waits for the first layout
 when the scroller has none yet, by the host layer's rule
 ([an offset the tree writes](../../host/layout.md#an-offset-the-tree-writes),
-`WrittenScrollOffset`); each scroller keeps it within what it can reach.
+`ScrollerOffset`); each scroller keeps it within what it can reach, says it
+inside the program's write, and is read once it is asked
+([where a scroller stands](../../host/layout.md#where-a-scroller-stands)).
 
 ## Where a view stands
 

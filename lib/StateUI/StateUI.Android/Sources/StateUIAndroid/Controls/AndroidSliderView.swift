@@ -28,6 +28,9 @@ final class AndroidSliderView: AndroidView {
     init() {
         super.init { _ in Java.new(JavaAPI.seekBar, JavaAPI.newSeekBar, .object(AndroidRenderer.context)) }
         Java.call(reference, JavaAPI.setMax, .int(Self.steps))
+        // An arrow key moves a hundredth of the range, as on every host; set after the steps, which reset it.
+        let key = ValueArithmetic.sliderSteps(lower: 0, upper: Double(Self.steps)).key
+        Java.call(reference, JavaAPI.setKeyProgressIncrement, .int(Int32(key.rounded())))
         listen(JavaAPI.setOnSeekBarChangeListener)
     }
 

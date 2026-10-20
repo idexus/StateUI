@@ -40,7 +40,7 @@ final class WebPlacementsTests: XCTestCase {
     /// rest where the page laid it out, drawn over nothing.
     func testAChildLaidOutElsewhereTravelsFromWhereItStood() {
         let (layout, first, second) = stack()
-        defer { for view in [layout, first, second] { view.detach() } }
+        defer { for view in [layout, first, second] { view.release() } }
         XCTAssertEqual(WebPage.style(of: second.node, "transform"), "", "the first arrangement arrives")
 
         placements.beforeChange(along: [layout])
@@ -63,7 +63,7 @@ final class WebPlacementsTests: XCTestCase {
     func testAChangeReadsThePlacesOfItsOwnLayoutsAlone() {
         let (layout, first, second) = stack()
         let (other, third, fourth) = stack()
-        defer { for view in [layout, first, second, other, third, fourth] { view.detach() } }
+        defer { for view in [layout, first, second, other, third, fourth] { view.release() } }
 
         WebPage.layOut(first.node, at: Rect(x: 0, y: 3, width: 100, height: 40))
         WebPage.layOut(third.node, at: Rect(x: 0, y: 7, width: 100, height: 40))
@@ -77,7 +77,7 @@ final class WebPlacementsTests: XCTestCase {
     /// rest its own CSS stands again.
     func testAChildLaidOutWiderGrowsInsideItsSlot() {
         let (layout, first, second) = stack()
-        defer { for view in [layout, first, second] { view.detach() } }
+        defer { for view in [layout, first, second] { view.release() } }
 
         placements.beforeChange(along: [layout])
         layout.places.patchArrived()

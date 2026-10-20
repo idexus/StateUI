@@ -66,10 +66,12 @@ a page with no title leaves the window's own.
 ## A navigation stack
 
 A navigation stack is libadwaita's `AdwNavigationView`, each page in a
-navigation page holding its frame. A path one page longer pushes the page, a
-shorter one that keeps the stack's first pages pops to where it now ends, any
-other change replaces the stack - each as the program's move, whose `popped`
-is its echo. The user's back - the back button, the swipe, Alt+Left, the
+navigation page holding its frame. The path changes as the host layer says
+([a path that changes](../../host/pages.md#a-path-that-changes)): pages
+joining on top are pushed - those under the last at once, with libadwaita's
+transitions off, the last arriving - pages taken from the top are popped to
+where the path now ends, and any other change replaces the stack, each as
+the program's move, whose `popped` is its echo. The user's back - the back button, the swipe, Alt+Left, the
 mouse's back button - pops in GTK first, and the stack's `popped` then tells
 the path how many pages remain; a path that does not follow is put back by
 the next render. The host's own way back is
@@ -175,6 +177,11 @@ a sheet the program takes away closes and tells nothing. A sheet starts a path
 of its own ([the visible path](../../host/pages.md#the-visible-path)): it
 wears no bar of what stands around it, and names the dialog by its page's
 title.
+
+A window asked to close while a dialog stands over it - a sheet, a question -
+closes the dialog first, as libadwaita closes it, and stays: the user's close
+answers the question "no" or takes the sheet away, and the next closes the
+window. A window the tree closes goes at once, its dialogs with it.
 
 ## The window's overlays
 

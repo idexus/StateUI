@@ -335,6 +335,8 @@ final class AppKitTextViewTests: XCTestCase {
             .byTruncatingHead, .byTruncatingTail, .byTruncatingMiddle,
         ])
         XCTAssertEqual(texts.map { $0?.maximumNumberOfLines }, [0, 1, 3, 3, 1, 1, 1])
+        XCTAssertEqual(texts.map { $0?.cell?.truncatesLastVisibleLine }, [false, false, true, true, false, false, false],
+                       "wrapped words held to some lines end the last with an ellipsis")
     }
 }
 

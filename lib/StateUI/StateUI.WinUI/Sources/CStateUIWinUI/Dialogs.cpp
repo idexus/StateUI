@@ -9,6 +9,7 @@
 #include "Relay.h"
 
 #include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -139,7 +140,23 @@ namespace {
             if (hasMessage) content.Children().Append(paragraph(question.message));
             controls::TextBox field;
             if (question.placeholder) field.PlaceholderText(text(question.placeholder));
-            if (question.maximumLength > 0) field.MaxLength(question.maximumLength);
+            // The words are held within the prompt's bound in characters by the host: WinUI's MaxLength counts
+            // UTF-16 units. Each change is told, whether an input method composes them, and again as it commits.
+            auto composing = std::make_shared<bool>(false);
+            field.TextChanging(guarded("handling a prompt's TextChanging",
+                [ticket, composing](controls::TextBox const &sender, controls::TextBoxTextChangingEventArgs const &args) {
+                if (!args.IsContentChanging()) return;
+                callbacks.promptTyped(ticket, winrt::to_string(sender.Text()).c_str(), *composing);
+            }));
+            field.TextCompositionStarted(guarded("handling a prompt's TextCompositionStarted",
+                [composing](controls::TextBox const &, controls::TextCompositionStartedEventArgs const &) {
+                *composing = true;
+            }));
+            field.TextCompositionEnded(guarded("handling a prompt's TextCompositionEnded",
+                [ticket, composing](controls::TextBox const &sender, controls::TextCompositionEndedEventArgs const &) {
+                *composing = false;
+                callbacks.promptTyped(ticket, winrt::to_string(sender.Text()).c_str(), false);
+            }));
             field.IsSpellCheckEnabled(question.spellChecked);
             field.IsTextPredictionEnabled(question.predicted);
             field.InputScope(inputScope(question.scope));
@@ -162,6 +179,14 @@ namespace {
     controls::ContentDialog shown(xaml::XamlRoot const &root) {
         for (auto const &popup : xaml::Media::VisualTreeHelper::GetOpenPopupsForXamlRoot(root))
             if (auto dialog = popup.Child().try_as<controls::ContentDialog>()) return dialog;
+        return nullptr;
+    }
+
+    /// The field of the prompt `dialog` shows, as its content holds it - loaded or not; null for none.
+    controls::TextBox promptField(controls::ContentDialog const &dialog) {
+        if (auto panel = dialog.Content().try_as<controls::StackPanel>())
+            for (auto const &child : panel.Children())
+                if (auto field = child.try_as<controls::TextBox>()) return field;
         return nullptr;
     }
 }
@@ -210,12 +235,25 @@ extern "C" void stateui_winui_ask(StateUIObjectRef handle, int64_t ticket, State
     }
 }
 
+extern "C" void stateui_winui_prompt_write(StateUIObjectRef handle, char const *words) {
+    try {
+        auto dialog = shown(as<xaml::UIElement>(handle).XamlRoot());
+        auto field = dialog ? promptField(dialog) : nullptr;
+        if (!field) return;
+        auto written = text(words);
+        field.Text(written);
+        field.Select(static_cast<int32_t>(written.size()), 0);
+    } catch (...) {
+        report("writing a prompt's words");
+    }
+}
+
 extern "C" bool stateui_winui_answer(StateUIObjectRef handle, int32_t button, char const *words) {
     try {
         auto dialog = shown(as<xaml::UIElement>(handle).XamlRoot());
         if (!dialog) return false;
         if (words) {
-            if (auto field = first<controls::TextBox>(dialog)) field.Text(text(words));
+            if (auto field = promptField(dialog)) field.Text(text(words));
         }
         controls::Button pressed{nullptr};
         if (button < 2) {

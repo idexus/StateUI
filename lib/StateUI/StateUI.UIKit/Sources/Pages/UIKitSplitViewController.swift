@@ -209,9 +209,8 @@ extension UIKitSplitViewController {
         if rested { slidPages.removeAllObjects() }
     }
 
-    /// Ends a slide where it stands, each page by its safe area again, as the split leaves the tree.
+    /// Each page stands by its safe area again as the split leaves the tree - the host layer ends its slide.
     func stopSliding() {
-        slide?.forget()
         standTheDetail(0, rested: true)
     }
 

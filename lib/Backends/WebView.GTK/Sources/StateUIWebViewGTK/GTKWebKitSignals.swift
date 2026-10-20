@@ -63,17 +63,6 @@ enum GTKWebKitSignals {
         }
     }
 
-    /// Loads `view`'s page once GLib's loop is idle: after the element's values are all applied.
-    static func whenIdle(_ view: GTKWebView) {
-        let load: @convention(c) (UnsafeMutableRawPointer?) -> Int32 = { data in
-            MainActor.assumeIsolated { Unmanaged<Link>.fromOpaque(data!).takeUnretainedValue().view?.loadPending() }
-            return 0
-        }
-        g_idle_add_full(
-            G_PRIORITY_DEFAULT_IDLE, load, Unmanaged.passRetained(Link(view)).toOpaque(),
-            { data in Unmanaged<Link>.fromOpaque(data!).release() })
-    }
-
     /// Runs `script` in `view`'s page, answering what it evaluated to as text; throws what WebKit says went wrong.
     static func evaluate(_ script: String, in view: GTKWebView) async throws -> String? {
         try await withCheckedThrowingContinuation { (answer: CheckedContinuation<String?, any Error>) in

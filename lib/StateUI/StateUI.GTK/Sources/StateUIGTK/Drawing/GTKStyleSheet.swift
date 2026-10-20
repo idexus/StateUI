@@ -227,14 +227,14 @@ enum GTKStyleSheet {
 
     /// A colour as CSS writes it.
     private static func css(_ color: GdkRGBA) -> String {
-        let channels = [color.red, color.green, color.blue].map { String(Int((min(max($0, 0), 1) * 255).rounded())) }
+        let channels = [color.red, color.green, color.blue].map { String(ColorComponent.nearest(Double($0))) }
         return "rgba(\(channels.joined(separator: ", ")), \(css(Double(min(max(color.alpha, 0), 1)))))"
     }
 
     /// A colour's channels in hex, red to alpha.
     private static func hex(_ color: GdkRGBA) -> String {
         [color.red, color.green, color.blue, color.alpha].map { channel in
-            let value = Int((min(max(channel, 0), 1) * 255).rounded())
+            let value = ColorComponent.nearest(Double(channel))
             let digits = String(value, radix: 16, uppercase: true)
             return value < 16 ? "0" + digits : digits
         }.joined()

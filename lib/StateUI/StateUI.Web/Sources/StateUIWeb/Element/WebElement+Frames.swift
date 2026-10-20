@@ -11,7 +11,7 @@ extension WebElement: FrameReporter {
     func followFrame() {
         guard let view, let host else { return }
         let reads = element.readsOwnFrame
-        host.runtime.frames.follow(self, order: view.serial, reads: reads)
+        host.runtime.frames.follow(self, of: element, reads: reads)
         if reads, !observesSize {
             observesSize = true
             view.followSize { [weak host] in host?.runtime.frames.laidOut() }
@@ -37,9 +37,8 @@ extension WebElement: FrameReporter {
         if let split = view as? WebSplitView { element.reportSidebarOverlays(split.overlays, in: host.runtime) }
     }
 
-    /// The element whose layout places this one: the nearest above it with a view.
+    /// The element whose layout places this one: the nearest above it with a view (`MountedElement.layoutParent`).
     var layoutParent: WebElement? {
-        guard let parent else { return nil }
-        return parent.view != nil ? parent : parent.layoutParent
+        element.layoutParent?.native as? WebElement
     }
 }

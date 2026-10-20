@@ -165,6 +165,23 @@ into with Direct3D 11.1, following WinUI's frames only while it spins and
 stands on screen - the same declaration Metal draws on AppKit and OpenGL on
 GTK.
 
+### Properties taken together
+
+A control that must take one property before another - a web view its agent
+before its page - names them with `applies`, and is handed them whole
+whenever any of them changes: each as the type its contract declares, and
+whether it changed (`ControlValues`). Each `property` alone comes in no
+promised order.
+
+```swift quote
+StateUIControls.add(WebViewContract.self, create: { reports -> MyWebView in … }) { web in
+    web.applies([WebViewContract.userAgent, WebViewContract.source]) { control, values in
+        if values.changed(WebViewContract.userAgent) { control.userAgent = values[WebViewContract.userAgent] }
+        if values.changed(WebViewContract.source) { control.show(values[WebViewContract.source]) }
+    }
+}
+```
+
 ### Children a control draws
 
 A control may draw the children of one contract itself - a map draws its markers.

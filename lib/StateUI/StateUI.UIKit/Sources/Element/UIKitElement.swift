@@ -26,9 +26,6 @@ final class UIKitElement: NativeElement {
     var listening: UIKitListening?
     var dragAndDrop: UIKitDragAndDrop?
 
-    /// Whether the view held the focus when the element last said so.
-    var reportedFocus = false
-
     /// What UIKit asks for the view's context menu, while it has one.
     var contextMenu: UIKitContextMenu?
 
@@ -107,7 +104,7 @@ final class UIKitElement: NativeElement {
         configureLayoutMotion()
         arrangeChildren()
         arrangePages(changed: changed)
-        host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: readsFrame)
+        host?.runtime.frames.follow(self, of: element, reads: readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) {
@@ -119,7 +116,6 @@ final class UIKitElement: NativeElement {
     }
 
     func leave() {
-        host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: false)
         listening?.detach()
         listening = nil
         dragAndDrop?.detach()

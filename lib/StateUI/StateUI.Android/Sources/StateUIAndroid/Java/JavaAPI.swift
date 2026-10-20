@@ -75,6 +75,18 @@ enum JavaAPI {
     static let setScrollbarFadingEnabled = Java.method(view, "setScrollbarFadingEnabled", "(Z)V")
     static let getViewTreeObserver = Java.method(view, "getViewTreeObserver", "()Landroid/view/ViewTreeObserver;")
     static let viewTreeObserver = Java.findClass("android/view/ViewTreeObserver")
+
+    // A transition over a change the next frame lays out: pages sliding as a stack's path changes.
+    static let transitionManager = Java.findClass("android/transition/TransitionManager")
+    static let beginDelayedTransition = Java.staticMethod(
+        transitionManager, "beginDelayedTransition", "(Landroid/view/ViewGroup;Landroid/transition/Transition;)V")
+    static let transitionSet = Java.findClass("android/transition/TransitionSet")
+    static let newTransitionSet = Java.method(transitionSet, "<init>", "()V")
+    static let addTransition = Java.method(
+        transitionSet, "addTransition", "(Landroid/transition/Transition;)Landroid/transition/TransitionSet;")
+    static let slide = Java.findClass("android/transition/Slide")
+    static let newSlide = Java.method(slide, "<init>", "(I)V")
+    static let setVisibilityMode = Java.method(slide, "setMode", "(I)V")
     static let addOnGlobalLayoutListener = Java.method(
         viewTreeObserver, "addOnGlobalLayoutListener", "(Landroid/view/ViewTreeObserver$OnGlobalLayoutListener;)V")
     static let addOnScrollChangedListener = Java.method(
@@ -275,6 +287,7 @@ enum JavaAPI {
     static let newSeekBar = Java.method(seekBar, "<init>", "(Landroid/content/Context;)V")
     static let setOnSeekBarChangeListener = Java.method(
         seekBar, "setOnSeekBarChangeListener", "(Landroid/widget/SeekBar$OnSeekBarChangeListener;)V")
+    static let setKeyProgressIncrement = Java.method(seekBar, "setKeyProgressIncrement", "(I)V")
     static let setThumbTintList = Java.method(
         seekBar, "setThumbTintList", "(Landroid/content/res/ColorStateList;)V")
     static let getThumbTintList = Java.method(
@@ -400,7 +413,7 @@ enum JavaAPI {
     static let watchLayout = Java.method(viewGroupHost, "watch", "(Lstateui/android/StateUIListener;Z)V")
 
     static let itemCell = Java.findClass("stateui/android/StateUIItemCell")
-    static let newItemCell = Java.method(itemCell, "<init>", "(Landroid/content/Context;JZ)V")
+    static let newItemCell = Java.method(itemCell, "<init>", "(Landroid/content/Context;JZI)V")
 
     static let itemsView = Java.findClass("stateui/android/StateUIItemsView")
     static let newItemsView = Java.method(itemsView, "<init>", "(Landroid/content/Context;J)V")
@@ -417,6 +430,9 @@ enum JavaAPI {
     static let frameCallback = Java.findClass("stateui/android/StateUIFrameCallback")
     static let newFrameCallback = Java.method(frameCallback, "<init>", "()V")
 
+    static let drawing = Java.findClass("stateui/android/StateUIDrawing")
+    static let followDrawing = Java.staticMethod(drawing, "follow", "(Landroid/view/View;)V")
+
     static let listener = Java.findClass("stateui/android/StateUIListener")
     static let newListener = Java.method(listener, "<init>", "(J)V")
     static let takeDownX = Java.method(listener, "takeDownX", "()F")
@@ -426,6 +442,8 @@ enum JavaAPI {
     static let viewConfigurationOf = Java.staticMethod(
         viewConfiguration, "get", "(Landroid/content/Context;)Landroid/view/ViewConfiguration;")
     static let scaledTouchSlop = Java.method(viewConfiguration, "getScaledTouchSlop", "()I")
+    static let scaledDoubleTapSlop = Java.method(viewConfiguration, "getScaledDoubleTapSlop", "()I")
+    static let doubleTapTimeout = Java.staticMethod(viewConfiguration, "getDoubleTapTimeout", "()I")
 
     static let environment = Java.findClass("stateui/android/StateUIEnvironment")
     static let clock = Java.staticMethod(environment, "clock", "()[I")

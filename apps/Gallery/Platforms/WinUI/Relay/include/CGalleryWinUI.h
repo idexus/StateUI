@@ -35,9 +35,12 @@ void gallery_winui_release(GalleryObjectRef object);
 GalleryObjectRef gallery_traffic_light_make(int64_t control);
 void gallery_traffic_light_set_signal(GalleryObjectRef light, int32_t signal);
 
-/// WinUI's rating control, five stars; the user's choice is told as `rated`, a program's is not.
+/// WinUI's rating control, its stars as told; the user's choice is told as `rated`, a program's is not.
 GalleryObjectRef gallery_rating_bar_make(int64_t control);
 void gallery_rating_bar_set_rating(GalleryObjectRef bar, double rating);
+
+/// The bar's stars, before its rating: WinUI's RatingControl holds its value within them.
+void gallery_rating_bar_set_maximum(GalleryObjectRef bar, int32_t stars);
 
 /// Flashes the rating: its opacity down and back, twice.
 void gallery_rating_bar_flash(GalleryObjectRef bar);

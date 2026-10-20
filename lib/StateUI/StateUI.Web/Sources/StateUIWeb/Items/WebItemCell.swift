@@ -29,19 +29,29 @@ final class WebItemCell: WebLayoutView, ItemsHolding {
 
     func hold(_ identity: String, _ item: MountedElement?) {
         self.identity = identity
-        guard item !== shown || children.isEmpty != (item == nil) else { return }
+        guard showsAnew(item, viewShowing: !children.isEmpty) else { return }
         shown = item
         let placed = item?.web.placedElement
         if placed != nil { keep(nil) }
         setItems(placed.map { item in [(item.view!, { [weak item] in item?.element.layoutValues ?? LayoutValues() })] } ?? [])
     }
 
+    /// The room the cell took, read before the cells going with it changed anything.
+    private var measured: LayoutSize?
+
+    /// Reads the room the cell takes, which it keeps once it lets its entry go: read with every cell going in one
+    /// frame before any lets go, no read waits for the browser to lay out another's change.
+    func measureRoom() {
+        measured = children.isEmpty ? nil : WebRelay.size(of: node)
+    }
+
     /// The cell lets its entry go, keeping the room it took: the cells after it stand where they stood.
     func letGo() {
         identity = nil
         shown = nil
+        defer { measured = nil }
         guard !children.isEmpty else { return }
-        keep(WebRelay.size(of: node))
+        keep(measured ?? WebRelay.size(of: node))
         setItems([])
     }
 

@@ -5,7 +5,7 @@ import CStateUIGTK
 import GalleryUI
 import StateUIGTK
 
-/// Five stars in a row, as many lit as the rating - a `GtkBox` of labels that knows nothing of StateUI.
+/// Stars in a row, as many lit as the rating - a `GtkBox` of labels that knows nothing of StateUI.
 ///
 /// The Swift half is Sources/Samples/Interop/RatingBar.swift; the act aimed at a bar, `flash`, is registered at the
 /// end of this file beside the control it flashes.
@@ -13,12 +13,24 @@ import StateUIGTK
 final class RatingBarWidget: GTKControl {
     let widget: UnsafeMutablePointer<GtkWidget>
 
-    /// The user chose a rating, 1 through 5.
+    /// The user chose a rating, 1 through the bar's stars.
     var onRatingChanged: ((Double) -> Void)?
 
     /// How many stars are lit.
-    var rating = 0.0 {
-        didSet { if rating != oldValue { repaint() } }
+    private var rating = 0.0
+
+    /// Shows `count` stars, `rating` of them lit: the stars first, so a rating stands within them.
+    func show(rating: Double, of count: Int) {
+        let count = max(count, 1)
+        let box = UnsafeMutablePointer<GtkBox>(OpaquePointer(widget))
+        while stars.count > count { gtk_box_remove(box, stars.removeLast()) }
+        while stars.count < count {
+            let star = gtk_label_new("★")!
+            gtk_box_append(box, star)
+            stars.append(star)
+        }
+        self.rating = min(max(rating, 0), Double(count))
+        repaint()
     }
 
     private var stars: [UnsafeMutablePointer<GtkWidget>] = []
@@ -29,11 +41,6 @@ final class RatingBarWidget: GTKControl {
     init() {
         widget = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6)
         g_object_ref_sink(widget)
-        for _ in 0..<5 {
-            let star = gtk_label_new("★")!
-            gtk_box_append(UnsafeMutablePointer<GtkBox>(OpaquePointer(widget)), star)
-            stars.append(star)
-        }
 
         click = gtk_gesture_click_new()
         let released: @convention(c) (OpaquePointer?, Int32, Double, Double, gpointer?) -> Void = { _, _, x, _, data in
@@ -45,7 +52,7 @@ final class RatingBarWidget: GTKControl {
             UnsafeMutableRawPointer(click), "released", unsafeBitCast(released, to: GCallback.self),
             Unmanaged.passUnretained(self).toOpaque(), nil, GConnectFlags(rawValue: 0))
         gtk_widget_add_controller(widget, click)
-        repaint()
+        show(rating: 0, of: 5)
     }
 
     isolated deinit {
@@ -70,8 +77,9 @@ final class RatingBarWidget: GTKControl {
     private func clicked(x: Double) {
         let width = Double(gtk_widget_get_width(widget))
         guard width > 0 else { return }
-        let chosen = Double(min(max(Int(x / (width / 5)), 0), 4) + 1)
+        let chosen = Double(min(max(Int(x / (width / Double(stars.count))), 0), stars.count - 1) + 1)
         rating = chosen
+        repaint()
         onRatingChanged?(chosen)
     }
 
@@ -106,8 +114,10 @@ extension RatingBarWidget {
             }
             return bar
         }) { bar in
-            bar.property(RatingBarContract.rating) { control, rating in
-                control.rating = rating ?? 0
+            // The stars and the rating come together: a rating stands within the stars, whichever of the two changed.
+            bar.applies([RatingBarContract.maximum, RatingBarContract.rating]) { control, values in
+                control.show(
+                    rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
             bar.raises(RatingBarContract.ratingChanged)
         }

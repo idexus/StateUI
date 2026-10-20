@@ -13,7 +13,7 @@ final class GTKRenderer {
     static var shared: GTKRenderer?
 
     /// What the host says for whoever reads its log: standard error, or wherever a test listens.
-    static var log = HostLog(host: "GTK")
+    static var log = HostLog(host: "GTK", output: GTKLog.write)
 
     let frameClock: GTKFrameClock
 
@@ -62,6 +62,11 @@ final class GTKRenderer {
     var userWindow: GTKWindow? {
         let front = runtime.lifecycle.activatedLast(among: roster.windows.map(\.element))
         return front.flatMap { roster.controller(of: $0)?.window } ?? window
+    }
+
+    /// The window element whose window is `window`.
+    func element(of window: GTKWindow) -> MountedElement? {
+        roster.windows.first { $0.controller.window === window }?.element
     }
 
     /// What is kept of the scenes for the next start: the desktop restores no windows.
@@ -129,6 +134,7 @@ final class GTKRenderer {
         runtime.start(
             realizing: GTKRegistrations.registry.realization, unrealized: GTKRealization.unmade,
             register: GTKRealization.register,
+            complainingTo: GTKRenderer.log,
             environment: {
                 GTKEnvironment.report(to: runtime.core, applicationID: applicationID)
                 GTKEnvironment.watch { [weak self] in self?.environmentChanged() }
@@ -151,6 +157,7 @@ final class GTKRenderer {
         roster.update(
             root: runtime.tree.root, make: { [application] in GTKWindowController($0, application: application) },
             close: { $0.window.close() })
+        acts.windowsOpen(roster.windows.map(\.element))
         for (element, controller) in roster.windows {
             controller.present(element, in: runtime)
         }

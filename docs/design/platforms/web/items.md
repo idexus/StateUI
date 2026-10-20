@@ -15,12 +15,26 @@ layout puts it.
 The page has no collection of its own that reuses its rows, so every entry
 has a cell - an empty one costs a `<div>`. A cell holds its entry's subtree
 while the browser says it is near the list's view - within half the view's
-size (`IntersectionObserver`) - and lets it go as it goes away; the tree
-builds the entries within reach of the cells held, and lets the others go
-with its next render ([within reach](../../host/items.md#within-reach)). A cell
-whose entry never came keeps a row's room, 44 points; one that lets its
-entry go keeps the room the entry took, so the cells after it stand where
-they stood.
+size before and after it (`IntersectionObserver`) - and lets it go as it goes
+away; the tree builds the entries within reach of the cells held, and lets
+the others go with its next render ([within
+reach](../../host/items.md#within-reach)). A cell whose entry never came
+keeps a row's room, 44 points; one that lets its entry go keeps the room the
+entry took, so the cells after it stand where they stood.
+
+The browser tells nearness once a frame, every cell it saw in one call, and
+the cells take their entries together ([cells told
+together](../../host/items.md#cells-told-together)). The cells going read
+the room they keep before any of them changes: a read after another cell's
+change makes the browser lay the whole list out for it.
+
+The margin is the lead a fling has: a cell is told near a frame after it
+came near, and shows its entry a frame after that, so a list moving faster
+than about half the margin a frame shows the strip it reveals empty - half
+the view holds a fling of 8 000 points a second. A wider margin holds more
+cells, the reach grows with them, and each render builds that much more: the
+whole view held a fling of 20 000 points a second, and made a frame without
+a JIT a third longer.
 
 The trap: the browser's own skipping of what is off screen
 (`content-visibility: auto`, with a size kept for it) measures nearness
@@ -33,12 +47,14 @@ the size kept for it: a thousand rows stood in 863 points.
 A tap on a cell, but for one on a control inside it, is the list's
 (`ItemsTap`): it opens the item, or chooses it as the list chooses. A list
 that chooses is a listbox, each item an option, the chosen ones selected
-and tinted in the accent colour.
+and tinted in the accent colour
+([the chosen band](../../host/items.md#the-chosen-band)).
 
 ## Scrolling to an item
 
 An item scrolled to is scrolled to at once, and again as the cells near it
-come and as their entries are built, while the host layer holds it ([scrolling
+come and as their entries are built - after every batch of cells taking
+their entries - while the host layer holds it ([scrolling
 to an item](../../host/items.md#scrolling-to-an-item)) - a cell keeps a row's
 room until its entry takes its own size. A wheel, a touch, a press or a key on
 the list is the user taking it, and lets the item go. A scroll gliding there

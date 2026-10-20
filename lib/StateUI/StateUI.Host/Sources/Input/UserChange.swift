@@ -29,6 +29,18 @@ extension MountedElement {
         if event == .submitted, let next = NextField.after(self) { runtime.presenter?.focus(next) }
     }
 
+    /// Tells every element in this subtree that follows its focus where the focus now is, where that changed since
+    /// it was last told - `holds` saying whether the focus stands in an element's view, nil where it shows none: what
+    /// a toolkit telling only that the focus moved asks, once the move has settled.
+    /// Design: docs/design/host/runtime.md#the-focus
+    public func reportFocus(in runtime: HostRuntime, holds: (MountedElement) -> Bool?) {
+        if handler(.isFocusedChanged) != nil, let focused = holds(self), focused != reportedFocus {
+            reportedFocus = focused
+            send(.isFocusedChanged, [.bool(focused)], in: runtime)
+        }
+        for child in children { child.reportFocus(in: runtime, holds: holds) }
+    }
+
     /// A value the user changed: onto the state carrying it, then the event with it. A radio button checked takes
     /// its set's other checks away first - `turnOff` writing each off as the program - each reporting that it is
     /// off, in one transaction. What the program writes reports nothing.

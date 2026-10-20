@@ -44,6 +44,21 @@ final class HostFileDialogTests: XCTestCase {
         XCTAssertEqual(HostFileDialog.name("Report", types: []), "Report")
     }
 
+    /// The extension a save's kind is read from: its name's own, in small letters, else its first kind's first; none
+    /// where it has neither.
+    func testASavesExtensionIsItsNamesElseItsFirstKinds() throws {
+        func save(_ name: String, _ types: [FileType]) throws -> HostFileDialog {
+            try XCTUnwrap(HostFileDialog(HostActCall(
+                act: .saveFile, arguments: [[UInt8]().propValue, .string(name), types.propValue], completion: 1)))
+        }
+        XCTAssertEqual(try save("Report", [page]).savedExtension, "html")
+        XCTAssertEqual(try save("Report.HTM", [page]).savedExtension, "htm")
+        XCTAssertEqual(try save("notes.txt", []).savedExtension, "txt")
+        XCTAssertEqual(try save("", [text]).savedExtension, "txt")
+        XCTAssertNil(try save("notes.", []).savedExtension, "a dot ending nothing")
+        XCTAssertNil(try save("notes", []).savedExtension)
+    }
+
     /// A dialog filtering by extension alone shows every kind's, in order, each once.
     func testEveryKindsExtensionsStandOnce() throws {
         let dialog = try XCTUnwrap(HostFileDialog(HostActCall(

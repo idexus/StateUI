@@ -64,10 +64,10 @@ final class GTKPagesTests: XCTestCase {
                 "Pushed appearing", "Pushed navigatedTo",
             ])
 
-            // The popped page has left the tree, and a page that left hears nothing more.
+            // The popped page hears it disappears as it leaves the tree, then the page beneath comes back.
             log.values = []
             XCTAssertTrue(host.goBack())
-            XCTAssertEqual(log.values, ["Root appearing", "Root navigatedTo"])
+            XCTAssertEqual(log.values, ["Pushed disappearing", "Root appearing", "Root navigatedTo"])
         }
     }
 
@@ -353,6 +353,40 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// A window the tree closes takes its sheets with it - libadwaita, asked to close a window a dialog stands over,
+    /// closes the dialog alone and keeps the window.
+    func testAWindowTheTreeClosesTakesItsSheets() throws {
+        try onUIThread {
+            let host = GTKRenderer.running(application: { SheetedApplication() })
+            try XCTUnwrap(host.views(GTKButtonView.self).first).click()
+            host.settle { host.windows.count == 2 && host.windows[1].sheets.count == 1 }
+            let sheeted = try XCTUnwrap(host.windows.last?.window.widget)
+            g_object_ref(UnsafeMutableRawPointer(sheeted))
+            defer { g_object_unref(UnsafeMutableRawPointer(sheeted)) }
+            XCTAssertNotEqual(gtk_widget_get_visible(sheeted), 0, "shown, its sheet over it")
+
+            host.views(GTKButtonView.self)[1].click()
+            host.settle { host.windows.count == 1 && gtk_widget_get_visible(sheeted) == 0 }
+            XCTAssertEqual(gtk_widget_get_visible(sheeted), 0, "the window closed, its sheet with it")
+        }
+    }
+
+    /// A window the tree closes while a question stands over it closes, the question with it.
+    func testAWindowTheTreeClosesTakesItsQuestion() throws {
+        try onUIThread {
+            let host = GTKRenderer.running(application: { SheetedApplication(asks: true) })
+            try XCTUnwrap(host.views(GTKButtonView.self).first).click()
+            host.settle { host.windows.count == 2 && host.visibleDialog(over: host.windows[1].window) != nil }
+            let asking = try XCTUnwrap(host.windows.last?.window.widget)
+            g_object_ref(UnsafeMutableRawPointer(asking))
+            defer { g_object_unref(UnsafeMutableRawPointer(asking)) }
+
+            host.views(GTKButtonView.self)[1].click()
+            host.settle { host.windows.count == 1 && gtk_widget_get_visible(asking) == 0 }
+            XCTAssertEqual(gtk_widget_get_visible(asking), 0, "the window closed, its question with it")
+        }
+    }
+
     /// A sheet swapped beneath one that stays stands beneath it: the sheets from the change up leave and come again,
     /// so the modal stack's last is the one on top.
     func testASheetSwappedBeneathAnotherStandsBeneathIt() throws {
@@ -487,5 +521,51 @@ private struct SearchingPage: View {
         return Text("Results")
             .titleView { TextField(query).placeholder("Search") }
             .title("Search")
+    }
+}
+
+/// An application whose page opens a window showing a sheet - or, `asks`, a question - and closes it.
+private struct SheetedApplication: Application {
+    var asks = false
+
+    var body: some Scene { SheetedScene(asks: asks) }
+}
+
+private struct SheetedScene: Scene {
+    let asks: Bool
+
+    var body: some Scene {
+        WindowGroup { SheetedOpeningPage() }
+        Window(WindowType("pages.sheeted")) {
+            if asks {
+                Text("Asking").onCreated { _ = try await Dialogs.confirm("Keep?", message: "", accept: "Keep", cancel: "Drop") }
+            } else {
+                SheetedPage()
+            }
+        }
+    }
+}
+
+private struct SheetedOpeningPage: View {
+    @Environment(\.application) private var application
+
+    var body: some View {
+        let application = self.application
+        return VStack {
+            Button("Open").onClicked(gate: .ignoreWhileRunning) {
+                try await application.openWindow(WindowType("pages.sheeted"))
+            }
+            Button("Close").onClicked(gate: .ignoreWhileRunning) {
+                try await application.closeWindow(WindowType("pages.sheeted"))
+            }
+        }
+    }
+}
+
+private struct SheetedPage: View {
+    @State private var sheets = [1]
+
+    var body: some View {
+        ModalStack($sheets) { TitledPage(title: "Beneath") } destination: { number in TitledPage(title: "Sheet \(number)") }
     }
 }

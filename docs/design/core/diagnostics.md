@@ -15,6 +15,11 @@ is in invalidation.md.
              the state (invalidation.md)
   alive      how many rendered elements are alive now
   runs       how many runs are under way or wait their turn now (runs.md)
+  built      how many composed views' bodies the renders built
+  walks      how many views the renders walked for their state and inputs
+  texts      how many identities the renders named with a text: a walked
+             part, a statement, a conversion, a layout slot, an author's
+             identity described, an ItemsView's entry
 ```
 
 `empty` is how a write that should have asked for nothing is found; `refused`
@@ -28,6 +33,10 @@ looks at its cancellation - holds the number up after the page is gone. A host r
 through `HostBoundary.tally` - a Swift runtime writes it with its own totals
 under `STATEUI_TALLY=1` (host/patches.md): this side has no environment to
 read.
+
+`built`, `walks` and `texts` are the renders' work rather than what stands:
+the host layer's benchmarks count each gesture's share of them
+(host/benchmarks.md), and a tally line leaves them out.
 
 ## The inspector
 
@@ -73,9 +82,9 @@ can be, and an author left wondering why the constant they wrote does nothing.
 Each message is said once per process, because a place that complains is often
 a modifier, and a modifier runs on every render: an author who wrote 1.4 where
 a fraction belongs would otherwise be told so as fast as the interface is
-described. It goes to standard output, outside the lock: a terminal on macOS,
-the console on iOS, a shell on Windows and Linux, logcat on Android, whose
-host routes the process's output there. An application that wants them
+described. It goes to the host's log, outside the lock - the platform's own
+log, where its developers read (`host/runtime.md#the-log`) - and to standard
+output where no host has started. An application that wants them
 elsewhere - its own log, a crash reporter - routes them (`Complaints.route`),
 and each comes to it on the thread that complained, outside every handler's
 run: a route posting what it heard to a state is not refused with a run that a

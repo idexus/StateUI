@@ -88,8 +88,9 @@ movement is joined up to the display's next frame, which reports it to its
 state and its handlers, and rests once it has stood still, as on every host
 ([a scroller's movement](../../host/runtime.md#a-scrollers-movement)). The
 program moves the view by setting the adjustments, which GTK tells inside the
-program's write: `ProgramWrite` drops that echo. An offset written before the
-first layout waits for it.
+program's write: the host layer takes that word as the program's move
+([where a scroller stands](../../host/layout.md#where-a-scroller-stands)). An
+offset written before the first layout waits for it.
 
 A viewport owns its child: a view whose parent is not a StateUI panel is not
 taken out by the view as it goes, and the scroller takes its document out of

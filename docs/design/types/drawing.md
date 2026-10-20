@@ -78,7 +78,12 @@ The instructions run in the order they are written, and a setting holds
 until the next of its kind: a `fillColor` paints every fill after it until
 another `fillColor`. `saveState` remembers the colours, sizes and transforms
 in force and `restoreState` puts them back, which is what keeps one rotated
-shape from turning the rest of the drawing.
+shape from turning the rest of the drawing. A state still saved as the
+drawing ends is put back then (`CanvasPen.replay`), so the platform's own
+state stands as it stood before the drawing on every host. A rounded
+rectangle's corners are rounded no less than nothing and no more than half
+its shorter side - a capsule past that - as the host layer reads the
+instruction, so every toolkit draws the same corners.
 
 `DrawingBuilder` collects the statements of a closure in order and, unlike
 `ViewBuilder`, has `buildArray`, so a plain `for` loop inside a drawing
@@ -90,7 +95,19 @@ compiles: a chart draws a bar per value that way.
 two alignments place the text in and what clips it, and its top is the top
 of the box, not a baseline. `.start` and `.end` mean the box's left and
 right, or top and bottom: a canvas draws in its own coordinates, not in a
-reading direction.
+reading direction, so words written beside a shape stay beside it whichever
+way the page reads. Text written before the drawing sets a size stands at the
+size a Text has with nothing said - the platform's own body text - and its
+lines stand as that host's Text's do.
+
+The host layer decides it once (`CanvasArithmetic.wordsEdge`, `wordsTop`,
+`wordsAnchor`): the edge a box's alignment stands at, the top of words
+measured so tall, and the point a toolkit writing from a point anchors them
+at. A host measuring its words in Swift places them by it; a relay that
+measures them itself takes the edge and the size from its first record
+(`HostDrawing`), and the Web's takes its size, the height of its lines, its
+edge and the point across from Swift - it wraps the words and stands them
+down the box as the rule says.
 
 ## Themes in a drawing
 

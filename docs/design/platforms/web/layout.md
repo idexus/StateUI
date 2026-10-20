@@ -29,6 +29,15 @@ wins over a stated size, so a button stated 30 high stood 36. A hidden child
 is `hidden`, which takes it out of the layout: it takes no room and no
 spacing.
 
+## A change inside a child
+
+An element named by a patch only for what changed below it - an ItemsView's
+batch names every element from the application down - places, reads and
+writes nothing of its own: where nothing of its own changed and no child moved
+(`childrenNeedArranging`, host/tree.md#a-patch-arranges-what-moved), its
+`applied` leaves its layout's places, the places read before a travel and its
+tabs' titles as they stand, and only hears the user's input again.
+
 ## Children in order
 
 A layout whose children changed stands each in its place in turn, from the
@@ -123,14 +132,15 @@ anything to scroll to; bars never shown are hidden by the page's style.
 The user's movement is the host layer's (`ScrollMovement`): each `scroll` the
 page raises moves it, a pointer down holds it, and the display's frames report
 where it went and that it came to rest. An offset the tree writes moves the
-element as the host layer's rule says (`WrittenScrollOffset`) - at once where
+element as the host layer's rule says (`ScrollerOffset`) - at once where
 the browser laid it out or it scrolls neither way, else at its first layout,
 which its size observer tells - and the `scroll` the element raises for it is
 no movement of the user's: it is taken where it stands, not reported back. Where it stands
 is read back once written - the browser stops an offset past the end at the
-end, and its `scroll` says that end, which waiting for the offset written
-heard as the user's; an offset that moved nothing raises no `scroll`, so
-nothing waits for one.
+end, and its `scroll` says that end - and the `scroll` within half a point of
+it is the program's move arriving; an offset that moved nothing raises no
+`scroll`, so nothing waits for one
+([where a scroller stands](../../host/layout.md#where-a-scroller-stands)).
 
 A scroller keeps the user's scrolling to itself only along the ways it
 scrolls (`overscroll-behavior-x`, `-y`): reaching its end there, the page

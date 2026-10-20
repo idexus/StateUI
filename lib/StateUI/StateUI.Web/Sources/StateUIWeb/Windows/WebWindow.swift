@@ -42,9 +42,9 @@ final class WebWindow {
     }
 
     func close() {
-        bar.detach()
-        room.detach()
-        overlays.detach()
-        frame.detach()
+        bar.release()
+        room.release()
+        overlays.release()
+        frame.release()
     }
 }

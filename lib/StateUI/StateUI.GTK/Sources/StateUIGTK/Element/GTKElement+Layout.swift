@@ -58,9 +58,8 @@ extension GTKElement {
         element.standsShown
     }
 
-    /// The element whose layout places this one: the nearest above it with a view.
+    /// The element whose layout places this one: the nearest above it with a view (`MountedElement.layoutParent`).
     var layoutParent: GTKElement? {
-        guard let parent else { return nil }
-        return parent.view != nil ? parent : parent.layoutParent
+        element.layoutParent?.native as? GTKElement
     }
 }

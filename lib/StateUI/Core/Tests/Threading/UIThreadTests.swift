@@ -514,7 +514,8 @@ final class UIThreadTests: XCTestCase {
             "RunLoop": "a RunLoop is drained by nothing there",
         ]) { $1 }
         let packages = [
-            ("StateUI/StateUI.AppKit", everywhere), ("StateUI/StateUI.UIKit", everywhere),
+            ("StateUI/StateUI.Apple", everywhere), ("StateUI/StateUI.AppKit", everywhere),
+            ("StateUI/StateUI.UIKit", everywhere),
             ("StateUI/StateUI.Android", withNoRunLoop), ("StateUI/StateUI.WinUI", withNoRunLoop),
             ("StateUI/StateUI.GTK", withNoRunLoop), ("StateUI/StateUI.Web", everywhere),
             ("Backends/WebView.GTK", withNoRunLoop), ("Backends/WebView.WinUI", withNoRunLoop),
@@ -589,6 +590,7 @@ final class UIThreadTests: XCTestCase {
     func testEverywhereSwiftIsCompiledInheritsTheCallersExecutor() throws {
         var places = [
             "Package.swift",
+            "lib/StateUI/StateUI.Apple/Package.swift",
             "lib/StateUI/StateUI.AppKit/Package.swift",
         ]
 

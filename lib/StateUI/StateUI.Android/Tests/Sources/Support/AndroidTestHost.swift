@@ -180,6 +180,8 @@ enum TestJava {
     static let getBackground = Java.method(JavaAPI.view, "getBackground", "()Landroid/graphics/drawable/Drawable;")
     static let getColor = Java.method(Java.findClass("android/graphics/drawable/ColorDrawable"), "getColor", "()I")
     static let drawable = Java.findClass("android/graphics/drawable/Drawable")
+    static let getCurrent = Java.method(drawable, "getCurrent", "()Landroid/graphics/drawable/Drawable;")
+    static let setActivated = Java.method(JavaAPI.view, "setActivated", "(Z)V")
     static let getOutline = Java.method(drawable, "getOutline", "(Landroid/graphics/Outline;)V")
     static let outline = Java.findClass("android/graphics/Outline")
     static let newOutline = Java.method(outline, "<init>", "()V")
@@ -265,6 +267,17 @@ extension AndroidRenderer {
             .int(ViewConstants.spec(ViewConstants.exactly, height)))
         Java.call(root.reference, JavaAPI.layout, .int(0), .int(0), .int(width), .int(height))
     }
+
+    /// Android is about to draw the root's window, as its traversal tells before each frame drawn.
+    func drawn() {
+        Java.frame {
+            let observer = Java.callObject(root.reference, JavaAPI.getViewTreeObserver)
+            _ = observer.map { Java.callBool($0, Self.dispatchOnPreDraw) }
+        }
+    }
+
+    @MainActor private static let dispatchOnPreDraw = Java.method(
+        Java.findClass("android/view/ViewTreeObserver"), "dispatchOnPreDraw", "()Z")
 
     /// Every view of `type` in the mounted tree, depth first.
     func views<Native: AndroidView>(_ type: Native.Type) -> [Native] {

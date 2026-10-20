@@ -6,13 +6,14 @@ import AppKit
 import QuartzCore
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 
 /// The AppKit runtime: the mounted tree over AppKit views, the scenes and windows around it, and the turn.
 /// Design: docs/design/platforms/appkit/runtime.md#the-appkit-runtime
 @MainActor
 final class AppKitRenderer {
     /// What the host says for whoever reads its log: standard error, or wherever a test listens.
-    static var log = HostLog(host: "AppKit")
+    static var log = HostLog(host: "AppKit", output: SystemLog.output(host: "AppKit"))
 
     let resourceDirectory: URL?
     let presentsWindows: Bool
@@ -89,6 +90,7 @@ final class AppKitRenderer {
         runtime.start(
             realizing: AppKitRegistrations.registry.realization, unrealized: AppKitRealization.unrealized,
             register: AppKitRealization.register,
+            complainingTo: AppKitRenderer.log,
             environment: {
                 configureEnvironment()
                 watching()
@@ -105,7 +107,6 @@ final class AppKitRenderer {
 
     func configureEnvironment() {
         let process = ProcessInfo.processInfo
-        let bundle = Bundle.main
         let core = runtime.core
 
         core.setDeviceInfo(HostDeviceInfo(
@@ -124,14 +125,7 @@ final class AppKitRenderer {
                 refreshRate: Double(screen.maximumFramesPerSecond)))
         }
 
-        core.setApplicationInfo(HostApplicationInfo(
-            name: bundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
-                ?? bundle.object(forInfoDictionaryKey: "CFBundleName") as? String
-                ?? process.processName,
-            packageName: bundle.bundleIdentifier ?? "",
-            versionString: bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString")
-                as? String ?? "",
-            buildString: bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? ""))
+        core.setApplicationInfo(SystemFacts.application)
     }
 
     func machineModel() -> String {
@@ -161,6 +155,16 @@ final class AppKitRenderer {
         NSApp.keyWindow ?? windowControllers.first?.window
     }
 
+    /// The window element `window` shows, or the one it stands over as a sheet; else the tree's first.
+    func element(of window: NSWindow) -> MountedElement? {
+        var native: NSWindow? = window
+        while let each = native {
+            if let shown = roster.windows.first(where: { $0.controller.window === each }) { return shown.element }
+            native = each.sheetParent
+        }
+        return roster.windows.first?.element
+    }
+
     /// A window's first responder moved. Every element that follows its focus
     /// is told once the move has settled: AppKit hands the focus through
     /// passing holders on its way - the window among them - within one turn.
@@ -171,7 +175,9 @@ final class AppKitRenderer {
         Task { @MainActor [weak self] in
             guard let self else { return }
             focusReportQueued = false
-            runtime.tree.root?.appKit.reportFocus()
+            runtime.tree.root?.reportFocus(in: runtime) { element in
+                (element.native as? AppKitElement)?.view.map { AppKitFocus.holds($0, $0.window?.firstResponder) }
+            }
         }
     }
 

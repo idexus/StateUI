@@ -129,6 +129,19 @@ place moved arranges its parent,
 passed up through an element with no view; a window's chrome is composed
 again where it shows what moved (`WindowChrome.follows`).
 
+## A patch arranges what moved
+
+A patch that changes a child somewhere below an element names the element too,
+and it is applied with nothing of its own changed. Whether its children are
+arranged again is the host layer's word (`childrenNeedArranging`): a new
+arrangement, a child made anew or drawn by the element, a page's own values -
+its title on a tab - and a child's place, size or drawing order changed
+(`arrangedProperties` and the z-index) ask it; a change inside a child that
+stands where it stood does not. A toolkit measuring its own views is told a
+size by the element whose size changed (`measuredUpward`), not by its parents.
+A host whose arranging costs - the Web's places every child again - leaves its
+children as they stand where the word is no.
+
 ## What every element realizes
 
 What the host layer's own rules realize on every element - a view's place in
@@ -221,7 +234,10 @@ is made of named once (`TextMembers.lookMembers`), so a host's own list of a
 field's or a picker's members takes them whole. A break keeps the words on one line unless
 it wraps - word and character wrapping do - and wrapped words stand on as
 many lines as the tree allows, any number where it allows none or fewer than
-one (`LineBreak.lines`); a truncating break cuts them with an ellipsis. A
+one (`LineBreak.lines`), the last of a limited number ending with an ellipsis
+so the reader sees there is more (`LineBreak.endsWithEllipsis`); a truncating
+break cuts them with an ellipsis. On UIKit, whose label ends a line with an
+ellipsis only by its own break, words held to some lines wrap at words. A
 toolkit spacing letters in ems is handed the space as a share of the font's
 size.
 
@@ -251,6 +267,10 @@ of its own, a label standing for all it holds, a hint or a heading, or answers
 a tap - and as its view is of itself otherwise. A host puts those words on its
 view in its platform's terms, and puts them again whenever any of them
 changes; one the tree stops saying anything of stands as its view is again.
+Whether a view is an element to assistive technology is one rule
+(`AccessibilityWords.isElement(standing:)`): as its presence says, else as
+the view stood of itself before any word reached it - never as the last word
+left it.
 
 Where a toolkit's screen reader reads a row by its name alone - a list's
 container - the row is named by what its entry says (`spokenWords`): an

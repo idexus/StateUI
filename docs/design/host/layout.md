@@ -60,7 +60,8 @@ change beneath it. A parent offers a child one or two widths in a pass - its
 natural width and the width it then lays it out in - so four kept answers
 cover a pass and the next. The host forgets them upward from the change,
 every layout to the root - on AppKit to the nearest room - and an
-ItemsView's entry stops at its cell, which measures it again; nothing beside
+ItemsView's entry stops at its cell, which measures it again
+(`MountedElement.measuredUpward`); nothing beside
 the change is measured again. Which change is which is one list on every
 native host (`MountedElement.arrangedProperties`,
 `unmeasuredProperties`): a property a parent reads into its child's place
@@ -79,6 +80,15 @@ beside it - measures its words once, not once a frame at each new width:
 measuring large words is the costliest call a toolkit makes, and a frame that
 makes it at every width stalls. A view that is not words keeps one answer a
 width.
+
+## Words across their room
+
+Words aligned to a line's start or end stand at the edge the layout direction
+reads (`TextAlignment.edge(in:)`): the start is the left left to right and
+the right right to left, the end the other way, the middle either way - the
+same on every host, so no host leaves the start to its toolkit's guess from
+the words themselves. A canvas's words stand in the canvas's own coordinates
+instead ([text in a box](../types/drawing.md#text-in-a-box)).
 
 ## A child measured
 
@@ -315,7 +325,11 @@ proportions kept, or at its own size - each in the room's middle - or
 stretched over the whole of it. A picture on a bar or a tab stands at the
 platform's icon height, as wide as its shape makes it, whatever size it is
 drawn at elsewhere (`PictureArithmetic.glyph`): the platform draws its own
-pictures there at that size, and one at its file's size stands far taller.
+pictures there at that size, and one at its file's size stands far taller. A
+host drawing an SVG draws it at the size it shows at, in the display's pixels
+- a stretched one at its room's own size, sharp both ways - and again only for
+more pixels, so a size in motion does not draw it every frame
+(`PictureArithmetic.vectorPixels`, `drawsAgain`).
 
 ## An icon
 
@@ -387,5 +401,21 @@ scrolling comes back as the state it wrote - moves nothing; any other moves
 it, kept between its origin and what it reaches. An offset written before
 the scroller's first layout waits for it, the last one written winning, and
 one that scrolls neither way stands at its origin at once
-(`WrittenScrollOffset`). A host moves its toolkit's scroller there as the
+(`ScrollerOffset`). A host moves its toolkit's scroller there as the
 program's write.
+
+## Where a scroller stands
+
+`ScrollerOffset` holds where a scroller stands as its host last knew it, and
+tells what the toolkit says apart, the same on every host. A word said inside
+the program's write is the program's move, wherever the toolkit stopped the
+scroller - the synchronous toolkits say it there. A toolkit that says the
+move later - WinUI's view in a later frame, a browser's `scroll` event - is
+heard arriving within half a point of where the program moved the scroller:
+a scroller lands a fraction off, and half a point is less than a pixel. A
+toolkit that keeps a move within what it reaches itself - Android's
+scrollers, a browser - is read once asked, and its word to come is to say
+where it stopped (`programLanded`). Any other word is the user's, from where
+the scroller stood; the user taking hold makes a move of the program's still
+on its way theirs. A move to where the scroller stands within half a point
+moves nothing.

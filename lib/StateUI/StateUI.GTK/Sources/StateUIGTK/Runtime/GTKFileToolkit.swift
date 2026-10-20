@@ -27,11 +27,13 @@ final class GTKFileToolkit: FileToolkit {
         self.renderer = renderer
     }
 
-    func show(_ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void) -> Bool {
-        guard let window = renderer.userWindow else { return false }
+    func show(
+        _ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let window = renderer.userWindow, let element = renderer.element(of: window) else { return nil }
         if holdsForTesting {
             held = (dialog, answered)
-            return true
+            return element
         }
         let parent = window.widget.of(GtkWindow.self)
         Task { @MainActor in
@@ -41,7 +43,7 @@ final class GTKFileToolkit: FileToolkit {
             }
             answered(await Self.write(dialog.contents, to: place.address).map { files })
         }
-        return true
+        return element
     }
 
     /// Answers the dialog held as the user does, by the files at `paths` - none cancels it: a save's contents written

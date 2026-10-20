@@ -96,12 +96,8 @@ func paintedColor(_ material: HostValue?) -> NSColor? {
 
 /// A StateUI colour is four sRGB channels, drawn in sRGB exactly.
 func nsColor(_ value: HostValue) -> NSColor? {
-    guard let color = value.color else { return nil }
-    return NSColor(
-        srgbRed: CGFloat(color.red) / 255,
-        green: CGFloat(color.green) / 255,
-        blue: CGFloat(color.blue) / 255,
-        alpha: CGFloat(color.alpha) / 255)
+    guard let color = value.fractions else { return nil }
+    return NSColor(srgbRed: color.red, green: color.green, blue: color.blue, alpha: color.alpha)
 }
 
 #endif

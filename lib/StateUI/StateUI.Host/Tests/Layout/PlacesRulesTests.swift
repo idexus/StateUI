@@ -33,6 +33,23 @@ final class PlacesRulesTests: XCTestCase {
             Rect(x: 50, y: 50, width: 0, height: 0))
     }
 
+    /// A vector picture is drawn at the size it shows at, in the display's pixels rounded up - the room's where it
+    /// is stretched, sharp both ways - and drawn again only for more pixels either way.
+    func testAVectorPictureIsDrawnAtTheSizeItShowsAt() {
+        let picture = LayoutSize(width: 20, height: 10)
+        let room = LayoutSize(width: 30, height: 40)
+        XCTAssertEqual(PictureArithmetic.vectorPixels(picture, in: room, aspect: .stretch, scale: 2),
+                       LayoutSize(width: 60, height: 80), "the room's, not its own proportions covering it")
+        XCTAssertEqual(PictureArithmetic.vectorPixels(picture, in: room, aspect: .fit, scale: 1.5),
+                       LayoutSize(width: 45, height: 23), "fitted, then rounded up")
+
+        XCTAssertTrue(PictureArithmetic.drawsAgain(drawn: nil, for: LayoutSize(width: 10, height: 10)))
+        XCTAssertFalse(PictureArithmetic.drawsAgain(
+            drawn: LayoutSize(width: 60, height: 80), for: LayoutSize(width: 50, height: 80)), "fewer pixels")
+        XCTAssertTrue(PictureArithmetic.drawsAgain(
+            drawn: LayoutSize(width: 60, height: 80), for: LayoutSize(width: 50, height: 81)), "more down")
+    }
+
     /// A bar's or a tab's picture stands at the platform's icon height, as wide as its shape makes it, whatever size
     /// it is drawn at; one of no height stays as it is.
     func testABarsPictureStandsAtTheIconsHeight() {

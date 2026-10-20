@@ -9,6 +9,7 @@ enum HostRealizations {
         didSet {
             realizedMembers = nil
             honouredMembers = nil
+            unhonouredSaid = [:]
         }
     }
 
@@ -18,6 +19,7 @@ enum HostRealizations {
         didSet {
             readRegister = nil
             honouredMembers = nil
+            unhonouredSaid = [:]
         }
     }
 
@@ -99,6 +101,34 @@ enum HostRealizations {
         return "the host realizes no `\(type.name)`"
             + nearMisses(type.name, among: Set(realization.elements.map(\.name))) + "."
     }
+
+    /// What to say about `member` described on an element of `type`: that the host's register says it does not
+    /// realize it there, or never will, with the register's reason - nothing where it realizes it, in part at least,
+    /// where the register says nothing of it, and on an element the host realizes none of.
+    /// Design: docs/design/core/contracts.md#unrealized-names
+    static func unhonoured(_ member: KeyName, on type: NodeType) -> String? {
+        let key = "\(type.name).\(member.name)"
+        if let said = unhonouredSaid[key] { return said }
+        var said: String?
+        if let register, case .complete? = register.judgement(ofElement: type.name) {
+            let tier = register.declaring(member.name, on: type.name)
+            switch register.judgement(of: member.name, on: type.name, from: tier) {
+            case .unrealized(let why)?: said = "`\(key)` is not realized on this host: \(Self.sentence(why))"
+            case .notPlanned(let reason)?: said = "`\(key)` is never realized on this host: \(Self.sentence(reason))"
+            default: break
+            }
+        }
+        unhonouredSaid[key] = .some(said)
+        return said
+    }
+
+    /// `words` ending as a sentence ends, once.
+    private static func sentence(_ words: String) -> String {
+        words.hasSuffix(".") ? words : words + "."
+    }
+
+    /// What `unhonoured` said of each element's member, worked out when first asked.
+    private static var unhonouredSaid: [String: String?] = [:]
 
     /// What to say about an event of the application's a handler listens for:
     /// nothing where the host raises it, or has said nothing at all, and

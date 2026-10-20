@@ -78,3 +78,7 @@ jobs:
 
       - name: The host's tests that run a host, in a browser
         run: .scripts/Web/test-web.sh --browser --host
+
+      # Each application's release module, gzipped, within its budget.
+      - name: Size budgets of the release modules
+        run: .scripts/Web/size-budgets.sh

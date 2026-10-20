@@ -29,9 +29,7 @@ enum WinUIEnvironment {
         let theme = facts(.theme)
         core.setColorScheme(theme.first == "1" ? .dark : .light)
         if theme.count == 2, let accent = UInt32(theme[1]) {
-            core.setAccentColor(Color(
-                red: Int(accent >> 16 & 255), green: Int(accent >> 8 & 255), blue: Int(accent & 255),
-                alpha: Int(accent >> 24 & 255)))
+            core.setAccentColor(Color(argb: accent))
         }
 
         if let locale = HostLocaleInfo(words: facts(.locale)) { core.setLocaleInfo(locale) }

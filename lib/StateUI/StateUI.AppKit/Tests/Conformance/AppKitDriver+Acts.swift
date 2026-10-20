@@ -5,6 +5,7 @@
 import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 @testable import StateUIAppKit
 @_spi(Host) import StateUIConformance
 
@@ -26,8 +27,8 @@ extension AppKitDriver {
         case (.tap(let count), let map as AppKitMapView):
             // A click on a map is the map's, and the view's where it hears taps too.
             for run in 1...max(count, 1) { native?.tapRecognizer?.clicked(run: run) }
-            map.click(at: NSPoint(x: map.bounds.midX, y: map.bounds.midY))
-        case (.endContent, let web as AppKitWebView):
+            map.clicked(at: NSPoint(x: map.bounds.midX, y: map.bounds.midY))
+        case (.endContent, let web as WebKitView):
             // As WebKit tells it when the page's process dies.
             web.navigationDelegate?.webViewWebContentProcessDidTerminate?(web)
         case (.activate, _) where element.parent?.type == .itemsView:

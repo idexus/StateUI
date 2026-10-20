@@ -26,15 +26,17 @@ final class AppKitFileToolkit: FileToolkit {
         self.renderer = renderer
     }
 
-    func show(_ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void) -> Bool {
-        guard let window = renderer.userWindow else { return false }
+    func show(
+        _ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let window = renderer.userWindow, let element = renderer.element(of: window) else { return nil }
         let asked = AppKitFileDialog(dialog, in: window)
         showing = asked
         asked.ask(presenting: renderer.presentsWindows) { [weak self] chosen in
             self?.showing = nil
             answered(chosen)
         }
-        return true
+        return element
     }
 
     func read(_ file: ChosenFile, atMost maximum: Int?, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {

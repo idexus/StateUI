@@ -15,6 +15,7 @@ final class ActAnswersTests: XCTestCase {
         XCTAssertEqual(confirm.title, "Delete?")
         XCTAssertEqual(confirm.accept, "OK")
         XCTAssertEqual(confirm.cancel, "Cancel")
+        XCTAssertEqual(confirm.cancelling, "Cancel", "a confirmation always offers its cancel")
 
         let choose = try XCTUnwrap(HostQuestion(HostActCall(
             act: .chooseAction, arguments: [.string("Share"), .nothing, .string("Delete"), ["Mail", "Copy"].propValue],
@@ -30,6 +31,7 @@ final class ActAnswersTests: XCTestCase {
         XCTAssertEqual(prompt.maximumLength, 8)
         XCTAssertEqual(prompt.purpose, .email)
         XCTAssertEqual(prompt.words, "ada@")
+        XCTAssertEqual(prompt.cancelling, "Cancel", "and so does a prompt")
         XCTAssertNil(HostQuestion(HostActCall(act: .announce, arguments: [], completion: nil)))
     }
 

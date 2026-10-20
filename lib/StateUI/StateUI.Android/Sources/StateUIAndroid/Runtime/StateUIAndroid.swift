@@ -111,11 +111,13 @@ enum JavaNatives {
                 return dragging == true ? 1 : 0
             }
         }
-        let handed: @convention(c) (Environment, jclass?, jlong, jint, jfloat, jfloat, jfloat, jfloat) -> jboolean = {
-            _, _, number, phase, x, y, speedX, speedY in
+        let finger: @convention(c) (
+            Environment, jclass?, jlong, jint, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat
+        ) -> jboolean = { _, _, number, phase, finger, x, y, inViewX, inViewY, speedX, speedY in
             MainActor.assumeIsolated {
-                let taken = AndroidView.find(number)?.heardHand(
-                    phase: phase, moved: Point(x: Double(x), y: Double(y)),
+                let taken = AndroidView.find(number)?.heardFinger(
+                    phase: phase, finger: Int(finger), at: Point(x: Double(x), y: Double(y)),
+                    inView: Point(x: Double(inViewX), y: Double(inViewY)),
                     speed: Point(x: Double(speedX), y: Double(speedY)))
                 return taken == true ? 1 : 0
             }
@@ -347,6 +349,9 @@ enum JavaNatives {
                 AndroidRenderer.shared?.runtime.frames.laidOut()
             }
         }
+        let reportLaidOut: @convention(c) (Environment, jclass?) -> jboolean = { _, _ in
+            MainActor.assumeIsolated { AndroidRenderer.shared?.runtime.frames.reportLaidOut() == true ? 1 : 0 }
+        }
         let measure: @convention(c) (Environment, jclass?, jlong, jint, jint) -> jlong = {
             _, _, number, widthSpec, heightSpec in
             MainActor.assumeIsolated {
@@ -376,7 +381,7 @@ enum JavaNatives {
             ("keyTaken", "(ZIII)Z", unsafeBitCast(keyTaken, to: UnsafeMutableRawPointer.self)),
             ("gestured", "(JIIFFF)V", unsafeBitCast(gestured, to: UnsafeMutableRawPointer.self)),
             ("pressed", "(JIFF)Z", unsafeBitCast(pressed, to: UnsafeMutableRawPointer.self)),
-            ("handed", "(JIFFFF)Z", unsafeBitCast(handed, to: UnsafeMutableRawPointer.self)),
+            ("finger", "(JIIFFFFFF)Z", unsafeBitCast(finger, to: UnsafeMutableRawPointer.self)),
             ("fingers", "(JIFFFF)V", unsafeBitCast(fingers, to: UnsafeMutableRawPointer.self)),
             ("notched", "(JFF)Z", unsafeBitCast(notched, to: UnsafeMutableRawPointer.self)),
             ("focusChanged", "(JZ)V", unsafeBitCast(focusChanged, to: UnsafeMutableRawPointer.self)),
@@ -417,6 +422,7 @@ enum JavaNatives {
             ("itemsShowing", "(J[Ljava/lang/String;)V", unsafeBitCast(itemsShowing, to: UnsafeMutableRawPointer.self)),
             ("itemsDistance", "(JIIIII)I", unsafeBitCast(itemsDistance, to: UnsafeMutableRawPointer.self)),
             ("laidOut", "()V", unsafeBitCast(laidOut, to: UnsafeMutableRawPointer.self)),
+            ("reportLaidOut", "()Z", unsafeBitCast(reportLaidOut, to: UnsafeMutableRawPointer.self)),
             ("measure", "(JII)J", unsafeBitCast(measure, to: UnsafeMutableRawPointer.self)),
             ("arrange", "(JII)V", unsafeBitCast(arrange, to: UnsafeMutableRawPointer.self)),
         ]

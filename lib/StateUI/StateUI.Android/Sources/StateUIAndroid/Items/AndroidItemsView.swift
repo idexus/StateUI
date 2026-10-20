@@ -180,7 +180,7 @@ final class AndroidItemsView: AndroidView {
         Java.frame {
             Java.call(
                 reference, JavaAPI.scrollToItem, .object(Java.string(identity)), .int(anchor.rawValue),
-                .bool(!reducesMotion()))
+                .bool(ItemsScrollTarget.glides(reducingMotion: reducesMotion())))
         }
     }
 

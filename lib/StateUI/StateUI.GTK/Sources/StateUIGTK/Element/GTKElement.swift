@@ -61,7 +61,7 @@ final class GTKElement: NativeElement {
         arrangePages(changed: changed)
         offerContextMenu()
         offerButtonMenu()
-        if let view { host?.runtime.frames.follow(self, order: view.number, reads: readsFrame) }
+        host?.runtime.frames.follow(self, of: element, reads: view != nil && readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) {
@@ -70,7 +70,6 @@ final class GTKElement: NativeElement {
     }
 
     func leave() {
-        if let view { host?.runtime.frames.follow(self, order: view.number, reads: false) }
         view?.detach()
     }
 }

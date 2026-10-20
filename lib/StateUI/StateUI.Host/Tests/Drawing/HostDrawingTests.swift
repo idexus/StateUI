@@ -8,7 +8,8 @@ import XCTest
 @MainActor
 final class HostDrawingTests: XCTestCase {
     /// Each instruction lays its kind and whole numbers, its numbers and its text out in the three lists, in the
-    /// order the drawing wrote them - an arc as the path the host layer works out for it.
+    /// order the drawing wrote them - after the size words stand at with none said, an arc as the path the host layer
+    /// works out for it, words at the edge of their box they stand at.
     func testEachInstructionLaysItsValuesOutInTheThreeLists() {
         let outline = CanvasArithmetic.arc(
             in: Rect(x: 0, y: 0, width: 10, height: 20), start: 0, end: 90, clockwise: true, closed: false, wedge: false)
@@ -25,21 +26,23 @@ final class HostDrawingTests: XCTestCase {
             Draw.translateBy(x: 3, y: 4),
             Draw.text("two", x: 5, y: 6, width: 7, height: 8, verticalAlignment: .end),
             Draw.restoreState(),
-        ])
+        ], wordsSize: 14)
 
         XCTAssertEqual(drawing.ints, [
+            4,
             0, Int32(bitPattern: 0xFFFF_0000),
             3,
             13,
             11, Int32(outline.count),
             16, Int32(wedge.count),
-            17, TextAlignment.center.rawValue, TextAlignment.start.rawValue, 0,
+            17, TextEdge.center.rawValue, TextAlignment.start.rawValue, 0,
             21,
             18,
-            17, TextAlignment.start.rawValue, TextAlignment.end.rawValue, 1,
+            17, TextEdge.left.rawValue, TextAlignment.end.rawValue, 1,
             22,
         ])
         XCTAssertEqual(drawing.numbers, [
+            14,
             2,
             1, 2, 30, 40, 5,
         ] + outline.flatMap(\.numbers) + wedge.flatMap(\.numbers) + [
@@ -60,7 +63,7 @@ final class HostDrawingTests: XCTestCase {
             Draw.fillRectangle(x: .infinity, y: 0, width: 1, height: 1),
             untold,
             Draw.rotate(by: 45),
-        ])
+        ], wordsSize: nil)
 
         XCTAssertEqual(drawing.ints, [19])
         XCTAssertEqual(drawing.numbers, [45])
@@ -72,7 +75,7 @@ final class HostDrawingTests: XCTestCase {
     func testAPathCrossesAsItsCurves() throws {
         let data = "M 0 0 L 10 0 A 10 10 0 0 1 20 10 Z"
         let curves = try XCTUnwrap(HostPath(svg: data)).arcsAsCubics
-        let drawing = HostDrawing([Draw.fillPath(data), Draw.strokePath("not a path")])
+        let drawing = HostDrawing([Draw.fillPath(data), Draw.strokePath("not a path")], wordsSize: nil)
 
         XCTAssertEqual(drawing.ints, [16, Int32(curves.count)])
         XCTAssertEqual(Array(drawing.numbers.prefix(6)), [0, 0, 0, 1, 10, 0])

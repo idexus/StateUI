@@ -35,12 +35,9 @@ final class WebElement: NativeElement {
     /// The pointer pressed with ⌥/Alt over the element, read as two fingers, while it is down.
     var mirroring: Int?
 
-    /// The hand over a layout: its fingers, read as one at their middle, how far that middle has gone while the hand
-    /// is still nobody's, and whether its first move is yet to pass the drag distance, or the layout took it.
-    var handFingers = PointerMiddle()
-    var handTravel = Point(x: 0, y: 0)
-    var handPending = false
-    var handTaking = false
+    /// The hand over a layout, its fingers as the host layer reads them: past four CSS pixels along either axis it
+    /// asks the layout.
+    var handRecognition = HandRecognition(distance: .eachAxis(x: 4, y: 4))
 
     init(_ element: MountedElement, host: WebRenderer) {
         self.element = element
@@ -65,13 +62,21 @@ final class WebElement: NativeElement {
     }
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
-        host?.placements.beforeChange(along: layoutsUp)
-        if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
-        applyProperties(changed: changed)
-        if let view, let host { element.applyDrawnChildren(to: view, through: WebRegistrations.registry, in: host.runtime) }
-        followPages(changed: changed, wasDescribed: wasDescribed)
+        // Nothing of its own changed and no child moved - a change inside a child, which the child applies: nothing
+        // of the element's own is placed, read or written again.
+        // Design: docs/design/platforms/web/layout.md#a-change-inside-a-child
+        let still = wasDescribed && changed.isEmpty && !element.childrenNeedArranging
+        if !still {
+            host?.placements.beforeChange(along: layoutsUp)
+            if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
+            applyProperties(changed: changed)
+            if let view, let host {
+                element.applyDrawnChildren(to: view, through: WebRegistrations.registry, in: host.runtime)
+            }
+            followPages(changed: changed, wasDescribed: wasDescribed)
+        }
         configureLayoutMotion()
-        arrangeChildren()
+        if !still { arrangeChildren() }
         listenForTheUser()
         offerContextMenu()
         offerButtonMenu()
@@ -92,8 +97,7 @@ final class WebElement: NativeElement {
 
     func leave() {
         host?.placements.beforeChange(along: layoutsUp)
-        if let view { host?.runtime.frames.follow(self, order: view.serial, reads: false) }
-        view?.detach()
+        view?.release()
     }
 
     /// An event the view raised, with what it carries.

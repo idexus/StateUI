@@ -15,6 +15,10 @@ final class WebItemsView: WebDOMView {
     private let content = WebDOMView(tag: "div")
     private var made: [String: WebItemCell] = [:]
     private var order: [WebItemCell] = []
+    private var byNode: [Int32: WebItemCell] = [:]
+
+    /// What hears the cells coming near the view and going away.
+    private var nearness: Int32 = 0
     private var shape = ItemsLayout.list()
     private var mode = SelectionMode.none
 
@@ -25,6 +29,10 @@ final class WebItemsView: WebDOMView {
         self.cells = cells
         super.init(tag: "div")
         attribute("class", "stateui-items")
+        // The room an empty cell keeps, down and across, as every host's does (`ItemsCells.estimatedExtent`).
+        style("--stateui-item-down", WebCSS.pixels(ItemsCells.estimatedExtent(across: false)))
+        style("--stateui-item-across", WebCSS.pixels(ItemsCells.estimatedExtent(across: true)))
+        style("--stateui-chosen-band", WebCSS.number(ChosenBand.opacity * 100) + "%")
         content.attribute("class", "stateui-items-content")
         WebRelay.insert(content.node, into: node, at: 0)
         lay(.list())
@@ -32,6 +40,7 @@ final class WebItemsView: WebDOMView {
         for event in ["wheel", "touchstart", "pointerdown", "keydown"] {
             listen(event) { [weak self] in self?.cells.userScrolled() }
         }
+        nearness = held(WebRelay.listener { [weak self] in self?.nearnessChanged() })
     }
 
     // MARK: - What the tree says
@@ -68,9 +77,10 @@ final class WebItemsView: WebDOMView {
         }
         for cell in before where kept[cell.entry] !== cell {
             cells.endShowing(in: cell)
-            cell.detach()
+            cell.release()
         }
         made = kept
+        byNode = Dictionary(uniqueKeysWithValues: order.map { ($0.node, $0) })
         near = near.filter { kept[$0] != nil }
         for (index, cell) in order.enumerated() {
             cell.across = shape.isAcross
@@ -86,22 +96,30 @@ final class WebItemsView: WebDOMView {
             guard let self, let cell else { return }
             cells.userTapped(cell.entry)
         }
-        WebRelay.watchNearness(cell.node, of: node, cell.held(WebRelay.listener { [weak self, weak cell] in
-            guard let self, let cell else { return }
-            nearnessChanged(cell, isNear: WebRelay.eventNear)
-        }))
+        WebRelay.watchNearness(cell.node, of: node, nearness)
         return cell
     }
 
-    /// A cell came near the view, or went away from it: it holds its entry, or lets it go to the tree's reach.
-    private func nearnessChanged(_ cell: WebItemCell, isNear: Bool) {
-        if isNear {
-            near.insert(cell.entry)
-            cells.hold(cell.entry, in: cell)
-        } else {
-            near.remove(cell.entry)
-            cells.endShowing(in: cell)
+    /// Cells came near the view or went away from it, all a frame saw: those going keep the room they take, read
+    /// before any changes, the cells take their entries together, telling the tree once, and the item the program
+    /// scrolled to stands again once they all have.
+    /// Design: docs/design/platforms/web/items.md#a-cell-an-entry
+    private func nearnessChanged() {
+        var coming: [(identity: String, holding: any ItemsHolding)] = []
+        var going: [WebItemCell] = []
+        for (element, isNear) in WebRelay.eventNearness {
+            guard let cell = byNode[element] else { continue }
+            if isNear {
+                near.insert(cell.entry)
+                coming.append((cell.entry, cell))
+            } else {
+                near.remove(cell.entry)
+                going.append(cell)
+            }
         }
+        for cell in going { cell.measureRoom() }
+        cells.hold(coming, endingShowing: going)
+        stand(cells.laidOut())
         cells.showing(near)
     }
 
@@ -141,9 +159,9 @@ final class WebItemsView: WebDOMView {
         WebRelay.scrollIntoView(cell.node, anchor: target.anchor.rawValue)
     }
 
-    override func detach() {
-        for cell in order { cell.detach() }
-        content.detach()
-        super.detach()
+    override func release() {
+        for cell in order { cell.release() }
+        content.release()
+        super.release()
     }
 }

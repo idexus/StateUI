@@ -16,6 +16,21 @@
         return String(decoding: bytes, as: UTF8.self)
     }
 
+    /// `document` with its links resolved against `base` where one is given: a `<base>` right after its doctype,
+    /// else first - before the doctype, a browser reads the document in quirks mode.
+    /// Design: docs/design/host/web.md#a-document-with-no-address
+    public static func document(_ document: String, base: String?) -> String {
+        guard let base, !base.isEmpty else { return document }
+        let href = base.replacing("&", with: "&amp;").replacing("\"", with: "&quot;")
+        let tag = "<base href=\"\(href)\">"
+        let leading = document.prefix { $0.isWhitespace }
+        let rest = document.dropFirst(leading.count)
+        guard rest.lowercased().hasPrefix("<!doctype"), let end = rest.firstIndex(of: ">") else {
+            return tag + document
+        }
+        return String(leading) + rest[...end] + tag + rest[rest.index(after: end)...]
+    }
+
     /// What every such address starts with.
     static let prefix = "data:text/html;charset=utf-8;base64,"
 

@@ -248,9 +248,10 @@ Tabs are keyed by value alone. A tab bar holding one tab twice is a mistake,
 and keying by value lets the tabs be reordered without their pages being
 rebuilt.
 
-Routes, sheets and tabs are described into text, the way `ForEach` keys are
-(builders.md, ForEach keys are text), so distinct values must describe
-differently and a class does not qualify.
+Routes, sheets and tabs are compared as the values they are, the way
+`ForEach` keys are (builders.md, ForEach keys are values): a page above the
+root is its depth and its value together (`StackedPage`), so any `Hashable`
+qualifies.
 
 ## A pop report only shortens
 

@@ -34,7 +34,7 @@ extension AppKitElement {
 
         // Met as the host layer says - by the author, or by words of its own or a tap - else as the view is.
         let words = element.accessibilityWords
-        target.setAccessibilityElement(words.presence.map { $0 == .met } ?? defaults.isElement)
+        target.setAccessibilityElement(words.isElement(standing: defaults.isElement))
         // An element that answers a tap is a button to assistive technology,
         // pressed by the handler a click runs. See `AppKitHitTestView`.
         let pressable = events[.tapped] != nil && view is AppKitHitTestView

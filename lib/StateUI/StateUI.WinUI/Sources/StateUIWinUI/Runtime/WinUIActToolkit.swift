@@ -16,12 +16,13 @@ final class WinUIActToolkit: ActToolkit {
     /// What hears each dialog's answer, by the ticket the dialog hands back.
     private let dialogs = Numbered<(Result<HostQuestion.Given, ActFailure>) -> Void>()
 
-    /// The dialog showing: its ticket, and the window it stands over.
+    /// The dialog showing: its ticket, the window it stands over, and the most characters its field takes.
     private var showing: Showing?
 
     private struct Showing {
         let ticket: Int64
         weak var window: WinUIWindow?
+        let bound: Int?
     }
 
     init(renderer: WinUIRenderer) {
@@ -50,10 +51,13 @@ final class WinUIActToolkit: ActToolkit {
 
     /// Asks in WinUI's own dialog over the window the user is in; its answer comes back by its ticket.
     /// Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
-    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
-        guard let window = renderer.userWindow, let content = window.content else { return false }
+    func show(
+        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let window = renderer.userWindow, let element = renderer.element(of: window), let content = window.content
+        else { return nil }
         let ticket = dialogs.hold(answered)
-        showing = Showing(ticket: ticket, window: window)
+        showing = Showing(ticket: ticket, window: window, bound: question.maximumLength)
 
         // The title, the message, the captions that accept, cancel and destroy, the placeholder, the first words.
         let kind: StateUIQuestionKind = switch question.kind {
@@ -78,7 +82,17 @@ final class WinUIActToolkit: ActToolkit {
                 stateui_winui_ask(content.handle, ticket, &relayed)
             }
         }
-        return true
+        return element
+    }
+
+    /// The words of the prompt asked under `ticket` changed: held within its bound in characters, whole while an input
+    /// method is `composing` them (`InputWords.held`) - WinUI's own bound counts UTF-16 units.
+    /// Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
+    func typed(ticket: Int64, _ words: String, composing: Bool) {
+        guard let showing, showing.ticket == ticket, let content = showing.window?.content,
+              let held = InputWords.held(words, in: nil, toBound: showing.bound, composing: composing)
+        else { return }
+        stateui_winui_prompt_write(content.handle, held)
     }
 
     /// The dialog under `ticket` was answered - accepted or not, and the words chosen or typed - or failed.
@@ -87,14 +101,13 @@ final class WinUIActToolkit: ActToolkit {
         dialogs.take(ticket)?(answer)
     }
 
-    /// `window` closed: the question standing over it - shown, or waiting for WinUI to load the window - stands
-    /// again over the window the user is in, and its own dialog's answer counts for nothing.
+    /// `window` closed: the dialog standing over it - shown, or waiting for WinUI to load the window - goes with it,
+    /// and its answer counts for nothing; the host layer answers its question (`HostActPerformer.windowsOpen`).
     /// Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
     func windowWent(_ window: WinUIWindow) {
         guard let went = showing, went.window === window else { return }
         showing = nil
         _ = dialogs.take(went.ticket)
-        renderer.acts.askAgain()
     }
 
     /// Shows every window in `theme`: each window's content in WinUI's own theme, the system's for `.system`.

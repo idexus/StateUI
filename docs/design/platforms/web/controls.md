@@ -63,7 +63,8 @@ A text's lines break as its line break says: at words or anywhere onto more
 lines, or on one line, cut short where they do not fit; the page cuts words
 only at their end, so a cut at their head or in their middle stands at the end
 too. The most lines a text stands on is `-webkit-line-clamp`, where its words
-wrap (`LineBreak.lines`).
+wrap (`LineBreak.lines`), which ends the last with an ellipsis
+(`LineBreak.endsWithEllipsis`).
 
 ## A button
 
@@ -95,7 +96,11 @@ Return key - but not the Return that commits an input method's words, which
 is the method's (`isComposing`, and Safari's key of number 229): heard, a
 Japanese candidate chosen would submit half a word. The tree writes its words only where they differ from what the
 field holds: writing the same words again would move the user's caret to
-their end. The keyboard and the help the user's typing gets are the host
+their end. The most a field holds is counted in characters, as on every host:
+the browser's `maxlength` counts UTF-16 units, two to an emoji, so the field
+has none and the host holds the words as they are typed (`InputWords.held`),
+whole while an input method composes them and once it commits them - a
+prompt's field the same. The keyboard and the help the user's typing gets are the host
 layer's traits (`InputTraits`): `inputmode`, `autocapitalize`, `spellcheck`,
 `autocorrect` and `autocomplete`, and what the Return key says
 `enterkeyhint`. The caret and the selection are placed in the page's own
@@ -128,7 +133,10 @@ itself, and the peers the host layer turns off are turned off on the page.
 ## Values in a range
 
 A Slider is the browser's range, which says each move of its thumb as it goes
-(`input`). A Stepper is a field of words with the role of a spin button
+(`input`). Its step is `any`, so a drag stands where the hand leaves it, and
+for such a range Blink and WebKit move the thumb a hundredth of the range for
+an arrow key and a tenth for a page key - the host layer's rule
+(`ValueArithmetic.sliderSteps`) already. A Stepper is a field of words with the role of a spin button
 between a button taking a step down and one taking a step up, the keyboard's
 arrows a step too. A step is a whole step from where the number stands, kept
 inside its range, and a number typed past an end stands at it. Words that are
@@ -189,8 +197,8 @@ A WebView is the browser's own `<iframe>` over a box with no size of its
 own, as every host's web view: an address it loads, a document
 written in place shown at a `blob:` address of the page's own made for it -
 of the page's own site, a `<base>` in it where the document says where its
-links resolve, placed by Swift right after the doctype (before it, the
-browser would read the document in quirks mode) - and reported by the `data:` address that holds it
+links resolve, placed by the host layer
+([a document with no address](../../host/web.md#a-document-with-no-address)) - and reported by the `data:` address that holds it
 (`WebDocument`). The frame holds the address of each document it was
 written while its history may lead back to it, and lets them all go as it
 leaves - an address keeps its document alive while it stands. The trap: the browser takes a `srcdoc` written again in place

@@ -54,11 +54,11 @@ final class WebCanvasView: WebDOMView {
         WebRelay.drawCanvas(surface.node, stroke.numbers, words: stroke.words)
     }
 
-    override func detach() {
-        surface.detach()
+    override func release() {
+        surface.release()
         onPressed = nil
         onDragged = nil
         onReleased = nil
-        super.detach()
+        super.release()
     }
 }

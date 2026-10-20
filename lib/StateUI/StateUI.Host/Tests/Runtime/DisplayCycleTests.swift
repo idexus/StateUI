@@ -127,8 +127,9 @@ final class DisplayCycleTests: XCTestCase {
         runtime.pump.turn()
         let slider = try XCTUnwrap(runtime.tree.root?.first(id: .manual("slider")))
         let up = try XCTUnwrap(runtime.tree.root?.first(id: .manual("up"))?.handler(.clicked))
-        let view = LaidOut(try XCTUnwrap(runtime.tree.root?.first(id: .manual("read"))), in: runtime)
-        runtime.frames.follow(view, order: 1, reads: true)
+        let read = try XCTUnwrap(runtime.tree.root?.first(id: .manual("read")))
+        let view = LaidOut(read, in: runtime)
+        runtime.frames.follow(view, of: read, reads: true)
 
         runtime.pump.dispatch(up)
         clock.time = 100
@@ -265,15 +266,6 @@ private final class LaidOut: FrameReporter {
             MountedElement.frameNumbers(place: place, corner: Point(x: 0, y: 0), content: Point(x: 0, y: 0)),
             in: runtime)
     }
-}
-
-/// A clock a test winds by hand.
-@MainActor
-private final class WoundClock: FrameClock {
-    var time = 0.0
-    var held = false
-    var onFrame: ((Double) -> Void)?
-    var now: () -> Double { { [unowned self] in time } }
 }
 
 /// A view that stands where it is placed.

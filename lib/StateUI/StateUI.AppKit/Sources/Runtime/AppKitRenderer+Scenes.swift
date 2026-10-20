@@ -50,6 +50,7 @@ extension AppKitRenderer {
 
         sceneValues.keep(only: Set(SceneValues.scenes(of: root).map(SceneValues.key(of:))))
         roster.update(root: root, make: makeWindowController, close: { $0.closeFromTree() })
+        acts.windowsOpen(roster.windows.map(\.element))
         for (index, (element, controller)) in roster.windows.enumerated() {
             controller.present(element, in: runtime, cascade: index)
         }

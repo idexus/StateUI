@@ -307,7 +307,7 @@ to be told a pass is over and then takes a turn: GTK at the idle after its
 layout and paint, WinUI in the next turn it posts, as WinUI lays out before its
 queue's next message. Android's list holds its changes in its relay until the
 recycler stops laying out. A scroller's offset written before its first layout
-is not this queue's: it waits in the scroller (`WrittenScrollOffset`), which
+is not this queue's: it waits in the scroller (`ScrollerOffset`), which
 applies it in its own arrange, before it draws and only once it has a size.
 
 ## Where a view stands
@@ -320,7 +320,9 @@ one it last said (`MountedElement.reportFrame`). The runtime's
 `FrameFollowers` keeps the frames coming while a scroller moves or has
 something to say, or a frame read may have moved, and on each frame lets the
 scrollers say what they did, then the elements where they stand, each in the
-order its view was made, as one user's transaction. A list's view moving
+order it was made, as one user's transaction. A host follows an element by
+the element (`FrameFollowers.follow(_:of:reads:)`); one that leaves the tree
+is followed no more, the tree telling it as it unmounts the element. A list's view moving
 says it too (items.md, `The view moving`). A host says only what its
 toolkit knows: the numbers of the place. It says nothing while the view
 stands in no window or before a layout placed it - a view that joins a shown
@@ -343,7 +345,13 @@ a page UIKit alone narrows - an iPad's sidebar sliding beside it, its inset
 set each frame - would otherwise place a layout's views for the last frame's
 room, a frame behind its width. GTK lets it say in its frame clock's layout
 phase, after the window's own layout, and the clock lays out again what that
-changed before it paints.
+changed before it paints. Android lets it say as the root's window is about
+to be drawn (`StateUIDrawing`, a pre-draw listener) and measures and lays the
+root out again where that asked for it, before the frame is drawn - the
+display's frame runs before a traversal's layout, so its report alone would
+draw a narrowed room's layout a frame late; WinUI as each layout pass of a
+window's content ends (`LayoutUpdated`), laying it out again
+(`UpdateLayout`) before it is drawn.
 
 A layout pass lays out the frame the cycle last ran at, and what it says runs
 at that frame's time (`DisplayCycle.inLayoutPass`), though the runtime's
@@ -451,7 +459,14 @@ the last frame as one (`HandPace`): a toolkit telling the hand faster than
 the display draws, 120 times a second or in a burst a busy thread held back,
 moves the run once a frame. A layout claims a hand
 whose first move is more along its axis than across it; the rest is left to
-whatever holds the layout, a page's scroller. What the hand does to the run -
+whatever holds the layout, a page's scroller. Where the toolkit tells fingers
+and no pan of its own - Android's touches, WinUI's pointers, the browser's -
+the host layer reads them as that hand (`HandRecognition`): the first finger
+down begins it where it went down in the view, the fingers' middle moving it
+(`PointerMiddle`); its first move past the platform's distance - Android's
+slop all round, WinUI's drag rectangle and the browser's four points along
+either axis (`DragRecognition.Distance`) - asks the layout; a hand taken says
+every move after; the last finger up ends it, taken or not. What the hand does to the run -
 the phase moving with it, a throw to the target nearest its end - is the
 core's (views/layout-engine.md, the hand).
 
@@ -528,6 +543,27 @@ reads Alt as its toolkit holds it: AppKit's event's ⌥ (a recognizer a pan
 waits on), WinUI's pointer's key modifiers (the relay's `mirrored`), GTK's
 controller state (`GDK_ALT_MASK`, a drag of its own claimed or denied at its
 start), the Web's pointer event's `altKey`.
+
+## A run of taps
+
+Where the platform's toolkit counts a run of taps - AppKit's click count,
+UIKit's tap recognizer, GTK's presses, a browser's `detail` - the host takes
+its count. Where it counts none, the relay tells each tap with its time on
+the pointer's clock and where it landed, and the host layer counts the run
+(`TapRun`): a tap carries the run on where it comes within the platform's
+double tap of the last - Android's double-tap timeout and slop, Windows'
+double-click time and rectangle - and starts one otherwise, so two quick taps
+far apart are two single taps on both.
+
+## The focus
+
+Where the toolkit tells each view as it takes the focus or loses it - Android,
+GTK, WinUI, the browser - the view tells its element at once. Where it tells
+only that the focus moved - AppKit's first responder, UIKit's - the host lets
+every element following its focus hear where the focus is now in one pass
+(`MountedElement.reportFocus(in:holds:)`), once the move has settled: the
+host says only whether the focus stands in an element's view, and an element
+told already hears nothing again.
 
 ## A swipe
 
@@ -635,8 +671,9 @@ every window hears that it is going.
 A window the user closes hears that it is going, then its scene hears that
 it closed, carrying the window's key - each rendered before the next
 (`HostRuntime.userClosed`). The scene forgets the window and its session, and
-ends with its last. A window the tree closes tells nothing: the tree already
-knows.
+ends with its last. A window the tree closes tells its scene nothing: the
+tree already knows. Either way its page hears it disappears before it is
+destroyed ([a page that leaves the tree](pages.md#a-page-that-leaves-the-tree)).
 
 ## Acts
 
@@ -683,13 +720,25 @@ time in the order asked, each under a ticket of its own across the process
 (`QuestionQueue`), so an answer after its runtime has gone answers nothing
 of another's.
 
+A question or a file dialog stands over the window the toolkit asked in, and
+goes with it: once that window is no longer open, the host layer answers it
+as the user dismissing it does - a confirmation not accepted, nothing chosen
+- and the next asks over the window the user is in then
+(`HostActPerformer.windowsOpen`), which every host tells after its windows
+change. Its caller almost always stood in that window too and went with it;
+a question standing over a window gone would otherwise hold every later
+question behind it, and an answer its dialog gives later counts for
+nothing.
+
 ## Files
 
 A file dialog is read from its act alike on every host (`HostFileDialog`):
 one file to open, several, or a place to save, the kinds it offers, a
 save's contents and its name. A save's name ends in an extension of its
 kinds: where it ends in none, the first kind's first is added - unless it
-is empty, which the platform names. A dialog that filters by extension
+is empty, which the platform names. A platform that takes the kind a save
+writes as one extension reads it from the name, else from the first kind
+(`savedExtension`). A dialog that filters by extension
 alone shows every kind's, in order, each once. A file dialog waits its turn
 among the questions, one showing at a time, so a question never stands
 over a dialog the user is still in, or under one. A host performing files
@@ -818,7 +867,12 @@ tenth; a stepped number is written with as many decimals as its step,
 its ends and its value take, so each reads exactly, and no more than six;
 and a stepper's step moves only away from the range's end it stands at
 (`ValueArithmetic.stepsWay`), its button of that way standing disabled where
-the host draws the buttons itself.
+the host draws the buttons itself. Where it does, one step moves a whole step
+from the value and stops at the range's end (`ValueArithmetic.step(from:)`).
+A step lands on the decimals of its step and the value it left
+(`ValueArithmetic.landed`): a tenth from 0.2 is 0.3, not what binary arithmetic
+adds up to, on every host - a native stepper's report is held there too, and a
+number the user typed with more decimals keeps them.
 
 Such a control is written, as its value and its ends apply, by one rule
 (`ElementValues.written`): the tree's value where the tree changed the value
@@ -856,9 +910,13 @@ opened is the user's, and heard.
 
 What a host says for whoever reads its log rather than its screen is one
 line a message, begun by `StateUI` and the host's name (`HostLog`), written
-to standard error, which nothing buffers, so a line stands in the log before
-whatever went wrong next; a platform whose log is its own - Android's - hands
-the lines there.
+where its platform's developers read: Apple's hosts to the system's log and to
+standard error (`SystemLog`), WinUI to the debugger's output and to standard
+error, GTK to GLib's log, Android to logcat, the Web to the browser's console,
+where its standard error goes. Standard error is written as it comes, so a line
+stands before whatever went wrong next. From its start (`HostRuntime.start`) a
+host's log also hears every complaint the application routes nowhere
+(`HostLog.hearComplaints`) - an application's own route stays first.
 
 ## Core link
 

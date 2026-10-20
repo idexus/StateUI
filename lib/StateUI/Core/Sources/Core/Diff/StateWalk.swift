@@ -15,13 +15,24 @@ import StateUIFoundation
 func stateParts(
     in value: Any
 ) -> (
-    boxes: [(path: String, box: StateBox)],
+    boxes: [(path: PathNumber, box: StateBox)],
     slots: [EnvironmentSlot],
-    inputs: [(path: String, input: Input)]
+    inputs: [(path: PathNumber, input: Input)]
 ) {
+    Renderer.shared.walks += 1
     var parts = StateParts()
-    parts.walk(value, at: "")
+    parts.walk(value, at: PathNumber(), named: nil)
     return (parts.boxes, parts.slots, parts.inputs)
+}
+
+/// What each part of `value` the walk reaches is called, by its path: the names a path stands for, spelled only
+/// where one is shown - a state's first naming, an inspector's reason.
+/// Design: docs/design/core/identity-and-diffing.md#a-path-is-a-number
+@MainActor
+func partNames(in value: Any) -> [PathNumber: String] {
+    var parts = StateParts()
+    parts.walk(value, at: PathNumber(), named: "")
+    return parts.names
 }
 
 /// A composed view's value and what the walk finds in it, walked at the first asking - or taken from its
@@ -32,21 +43,24 @@ func stateParts(
 final class ViewWalk {
     /// The view, kept while its element is: what a successor is laid against.
     let view: Any
-    private var found: (boxes: [(path: String, box: StateBox)], slots: [EnvironmentSlot],
-                        inputs: [(path: String, input: Input)])?
+    private var found: (boxes: [(path: PathNumber, box: StateBox)], slots: [EnvironmentSlot],
+                        inputs: [(path: PathNumber, input: Input)])?
 
     init(_ view: Any) {
         self.view = view
     }
 
     /// What the walk found: the state boxes by path, the `@Environment` slots, the inputs.
-    var parts: (boxes: [(path: String, box: StateBox)], slots: [EnvironmentSlot],
-                inputs: [(path: String, input: Input)]) {
+    var parts: (boxes: [(path: PathNumber, box: StateBox)], slots: [EnvironmentSlot],
+                inputs: [(path: PathNumber, input: Input)]) {
         if let found { return found }
         let walked = stateParts(in: view)
         found = walked
         return walked
     }
+
+    /// What each part the walk reached is called, spelled at the first asking.
+    private(set) lazy var names = partNames(in: view)
 
     /// Takes `kept`'s walk, where this view lies in memory as `kept`'s does and `kept` holds nothing that cannot be
     /// compared - a closure counts as changed whatever its bytes; whether it did.
@@ -106,9 +120,10 @@ protocol WalkedView {
 /// What one walk has found, and what every walk has learnt of the types it met.
 @MainActor
 private struct StateParts {
-    var boxes: [(path: String, box: StateBox)] = []
+    var boxes: [(path: PathNumber, box: StateBox)] = []
     var slots: [EnvironmentSlot] = []
-    var inputs: [(path: String, input: Input)] = []
+    var inputs: [(path: PathNumber, input: Input)] = []
+    var names: [PathNumber: String] = [:]
 
     /// What a value of a type is to the walk, decided by the first value of it met.
     /// Design: docs/design/core/identity-and-diffing.md#a-type-learnt-once
@@ -123,27 +138,35 @@ private struct StateParts {
         case each
     }
 
-    /// What every type met is, and the bracketed name it adds to a path where it is a stored view.
-    static var kinds: [ObjectIdentifier: (kind: Kind, stored: String)] = [:]
+    /// What a type met is to the walk, and the step a stored view of it adds to a path - its name in brackets, and
+    /// that as a number.
+    struct Learnt {
+        var kind: Kind
+        let stored: String
+        let storedNumber: UInt64?
+    }
+
+    /// What every type met is.
+    static var kinds: [ObjectIdentifier: Learnt] = [:]
     static var names: [ObjectIdentifier: KeyName] = [:]
 
-    /// Adds what `value`, at `path`, holds.
-    mutating func walk(_ value: Any, at path: String) {
+    /// Adds what `value`, at `path`, holds - each part's name spelled under `name` where one is asked.
+    mutating func walk(_ value: Any, at path: PathNumber, named name: String?, declared: Bool = false) {
         var kind = Self.learnt(value).kind
         if case .each = kind { kind = Self.kind(of: value) }
+        if let name { names[path] = name }
 
         switch kind {
         case .aim:
             // An aim the view was handed is compared by its box and never adopted; one it
             // declares is `@Aim`'s underscored backing property, adopted like any state.
-            guard path.split(separator: ".").last?.hasPrefix("_") ?? false else {
+            guard declared else {
                 return inputs.append((path: path, input: .borrowed(ObjectIdentifier((value as! Aiming).box), nil)))
             }
-            mirrored(value, at: path, declaredAim: true)
+            mirrored(value, at: path, named: name, declaredAim: true)
         case .box:
             let box = value as! StateBox
             boxes.append((path: path, box: box))
-            box.named(path)
             inputs.append((path: path, input: .box(box)))
         case .slot:
             let slot = value as! EnvironmentSlot
@@ -167,22 +190,36 @@ private struct StateParts {
             let parts = parts(value)
             inputs.append((path: path, input: .parts(parts.count)))
             for (label, part) in parts {
-                walk(part, at: "\(path).\(label)\(Self.learnt(part).stored)")
+                walk(part, label: label, offset: nil, under: path, named: name)
             }
         case .mirrored, .each:
-            mirrored(value, at: path, declaredAim: false)
+            mirrored(value, at: path, named: name, declaredAim: false)
         }
+    }
+
+    /// Walks `part`, the stored property `label` - or the element at `offset` of a collection - of the value at
+    /// `path`: a step on by its label, and by the type of a view stored there.
+    private mutating func walk(_ part: Any, label: String?, offset: Int?, under path: PathNumber, named name: String?) {
+        let stored = Self.learnt(part)
+        var next = label.map(path.appending) ?? path.appending(UInt64(offset ?? 0))
+        if let number = stored.storedNumber { next = next.appending(number) }
+
+        var spelled: String?
+        if let name {
+            Renderer.shared.texts += 1
+            spelled = "\(name).\(label ?? String(offset ?? 0))\(stored.stored)"
+        }
+        walk(part, at: next, named: spelled, declared: label?.hasPrefix("_") ?? false)
     }
 
     /// The parts of a value - a struct's fields, an enum's payload, a tuple's or a collection's elements - read
     /// through a mirror.
-    private mutating func mirrored(_ value: Any, at path: String, declaredAim: Bool) {
+    private mutating func mirrored(_ value: Any, at path: PathNumber, named name: String?, declaredAim: Bool) {
         if declaredAim {
             guard let box = value as? StateBox else {
                 return inputs.append((path: path, input: .reference(ObjectIdentifier(value as AnyObject))))
             }
             boxes.append((path: path, box: box))
-            box.named(path)
             return inputs.append((path: path, input: .box(box)))
         }
 
@@ -199,12 +236,12 @@ private struct StateParts {
 
         // A collection's children have no labels, so their position stands in.
         for (offset, child) in children.enumerated() {
-            walk(child.value, at: "\(path).\(child.label ?? String(offset))\(Self.learnt(child.value).stored)")
+            walk(child.value, label: child.label, offset: offset, under: path, named: name)
         }
     }
 
     /// What `value`'s type is to the walk, learnt from it where no value of its type was met before.
-    private static func learnt(_ value: Any) -> (kind: Kind, stored: String) {
+    private static func learnt(_ value: Any) -> Learnt {
         let type = ObjectIdentifier(Swift.type(of: value))
         if let known = kinds[type] { return known }
 
@@ -213,10 +250,10 @@ private struct StateParts {
         // optional is what it holds - a cast looks through it - so what it holds is named
         // on its own part, the same whatever value of it came first.
         let held = Mirror(reflecting: value).displayStyle == .optional || Swift.type(of: value) == AnyHashable.self
-        let stored = !held && value is Element ? "(\(typeKey(of: Swift.type(of: value)).name))" : ""
+        let key = !held && value is Element ? typeKey(of: Swift.type(of: value)) : nil
         var kind = held ? Kind.each : kind(of: value)
         if case .value = kind, ownsState(value) { kind = .mirrored }
-        let learnt = (kind: kind, stored: stored)
+        let learnt = Learnt(kind: kind, stored: key.map { "(\($0.name))" } ?? "", storedNumber: key?.number)
         kinds[type] = learnt
         return learnt
     }

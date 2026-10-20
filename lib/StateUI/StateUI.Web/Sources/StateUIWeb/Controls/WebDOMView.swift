@@ -94,7 +94,7 @@ class WebDOMView {
     private(set) var isReleased = false
 
     /// Takes the element off the page and lets go of it and of everything hung on it, once.
-    func detach() {
+    func release() {
         guard !isReleased else { return }
         isReleased = true
         for listener in listeners { WebRelay.forget(listener) }

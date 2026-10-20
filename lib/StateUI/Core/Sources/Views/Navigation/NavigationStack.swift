@@ -57,8 +57,7 @@
 ///     NavigationStack(router.$path) { RoutedHomePage() } destination: { … }
 ///
 /// A route may repeat: `[.level(1), .level(2), .level(2)]` holds two different
-/// `.level(2)` pages. A route must be a value whose distinct values describe
-/// differently (`String(describing:)`), so a class does not qualify.
+/// `.level(2)` pages.
 ///
 /// `.onChanged(path)` observes every committed arrival and departure. The
 /// title on the bar belongs to the top page; `.title` and `.icon` on the
@@ -105,14 +104,14 @@ public struct NavigationStack: ElementView, Arrangement, BarElement, AutomationE
 
     /// Who a pushed page is: its depth and its route together.
     /// Design: docs/design/views/pages.md#an-arrangement-keys-its-pages
-    private static func identity(depth: Int, route: some Hashable) -> String {
-        "\(depth)/\(String(describing: route))"
+    private static func identity(depth: Int, route: some Hashable) -> StackedPage {
+        StackedPage(depth: depth, value: AnyHashable(route))
     }
 
     /// A page node wearing the key the stack gives it.
-    private static func identified(_ node: Node, as identity: String) -> Node {
+    private static func identified(_ node: Node, as identity: some Hashable) -> Node {
         var copy = node
-        copy.id = identity
+        copy.identify(identity)
         return copy
     }
 }

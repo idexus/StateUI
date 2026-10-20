@@ -31,7 +31,7 @@ final class WebInteropTests: XCTestCase {
         }
         let view = try XCTUnwrap(WebRegistrations.registry.makeView(
             for: ProbeContract.nodeType, sending: { _, _ in }, reporting: { _, _, _ in }))
-        defer { view.detach() }
+        defer { view.release() }
 
         XCTAssertEqual(view.node, made.element.node, "the host's view is the control's own element")
         WebRegistrations.registry.apply(

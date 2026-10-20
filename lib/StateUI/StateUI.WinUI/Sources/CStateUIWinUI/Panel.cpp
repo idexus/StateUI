@@ -11,6 +11,7 @@
 
 #include <winrt/Microsoft.UI.Xaml.Automation.Peers.h>
 #include <winrt/Microsoft.UI.Xaml.Automation.Provider.h>
+#include <winrt/Microsoft.UI.Xaml.Media.Animation.h>
 
 using namespace stateui;
 using winrt::Windows::Foundation::Size;
@@ -99,6 +100,25 @@ extern "C" void stateui_winui_panel_set_children(
         items.ReplaceAll(held);
     } catch (...) {
         report("holding a panel's children");
+    }
+}
+
+extern "C" void stateui_winui_panel_set_entrance(StateUIObjectRef handle, double offset) {
+    try {
+        auto held = borrow<controls::Panel>(handle);
+        if (offset == 0) {
+            held.ChildrenTransitions(nullptr);
+            return;
+        }
+        winrt::Microsoft::UI::Xaml::Media::Animation::EntranceThemeTransition entrance;
+        entrance.FromHorizontalOffset(offset);
+        entrance.FromVerticalOffset(0);
+        entrance.IsStaggeringEnabled(false);
+        winrt::Microsoft::UI::Xaml::Media::Animation::TransitionCollection transitions;
+        transitions.Append(entrance);
+        held.ChildrenTransitions(transitions);
+    } catch (...) {
+        report("setting how a panel's children enter");
     }
 }
 

@@ -88,7 +88,11 @@ the user off the site from one it did not put there. One entry, never one a
 page: a page the application pushes is the
 tree's, and the browser could hand none of them back on its way forward.
 A window hears the history move until it closes, and closing lets that
-listener go on both sides of the relay.
+listener go on both sides of the relay. The browser tells a going back
+after it is asked, so a window closing before the page's own going back
+over its entry is told leaves it to the page: the next window to hear the
+history move takes it as the page's, not the user's - a window opened at
+once after another's way back went is not taken a step back by it.
 
 A window closing takes its sheets away first, the top one first: each is a
 modal dialog of the page's, which would hold every page after it still.
@@ -216,8 +220,10 @@ pages and the state, and the bar follows the page the user now sees.
 
 A stack holds its pages one over another in one cell, the top one shown:
 those beneath stay in the page, hidden, where the user left them - scrolled
-as they were - and a page pushed arrives with a short rise, at whose end
-every view the tree reads says where it stands: the rise moves the page on
+as they were - and a page pushed arrives with a short rise, one popped back
+to returns with a short fall, as the host layer says the path changed
+([a path that changes](../../host/pages.md#a-path-that-changes)); at the
+end of either every view the tree reads says where it stands: the rise moves the page on
 the browser's own animation, which no observer of the page tells, so a frame
 read during it stood 6 points low until something else moved. A covered page is
 hidden over its own inline `display`, the stylesheet's rule being

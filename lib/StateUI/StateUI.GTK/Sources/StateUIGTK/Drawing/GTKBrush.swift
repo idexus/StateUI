@@ -41,10 +41,9 @@ enum GTKBrush: Equatable {
 
     /// A colour as GDK's.
     static func rgba(_ value: HostValue) -> GdkRGBA? {
-        guard let channels = value.color else { return nil }
-        return GdkRGBA(
-            red: Float(channels.red) / 255, green: Float(channels.green) / 255,
-            blue: Float(channels.blue) / 255, alpha: Float(channels.alpha) / 255)
+        guard let color = value.fractions else { return nil }
+        return GdkRGBA(red: Float(color.red), green: Float(color.green), blue: Float(color.blue),
+                       alpha: Float(color.alpha))
     }
 
     /// Paints `bounds` with the brush: a radial gradient is a circle, its radius the one reach (`HostBrush.reach`)

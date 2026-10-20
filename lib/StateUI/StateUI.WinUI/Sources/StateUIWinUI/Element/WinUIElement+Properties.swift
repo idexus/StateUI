@@ -37,18 +37,12 @@ extension WinUIElement {
         }
         switch type {
         case .page, .overlay: return WinUISingleChildView()
-        case .navigationStack: return WinUINavigationView()
+        case .navigationStack:
+            return WinUINavigationView(reducesMotion: { [weak host] in host?.runtime.reducesMotion() ?? false })
         case .splitView: return WinUISplitView()
         case .tabView: return WinUITabView()
         default: return WinUIUnsupportedView(type)
         }
-    }
-
-    /// Whether the host shows an entry as unsupported: no registration makes it, and it is no page's, no overlay, no
-    /// part of another view and no structure.
-    static func showsUnsupported(_ type: NodeType) -> Bool {
-        !WinUIRegistrations.registry.realizes(type)
-            && !NodeType.viewlessTypes.contains(type) && !NodeType.pageTypes.contains(type) && type != .overlay
     }
 
     /// Puts the changed properties on the element - a patch's or a frame's, the program's write either way: its
@@ -94,19 +88,13 @@ extension WinUIElement {
         }
     }
 
-    /// Forgets the sizes kept by this element's layout and every one above it, and asks WinUI to measure again.
+    /// Forgets the sizes kept by this element's layout and every one above it - up to an ItemsView's entry, whose
+    /// cell measures it again (`MountedElement.measuredUpward`) - and asks WinUI to measure again.
+    /// Design: docs/design/host/layout.md#measured-once
     func invalidateMeasurements() {
-        var element: WinUIElement? = self
-        while let each = element {
-            // An entry of an ItemsView is measured by its cell; the list's own size never follows its items.
-            if let items = each.parent?.view as? WinUIItemsView {
-                items.remeasure(each.element)
-                break
-            }
-            (each.view as? WinUILayoutView)?.forgetMeasurements()
-            element = each.parent
-        }
-
+        let walk = element.measuredUpward()
+        for each in walk.layouts { (each.winUI.view as? WinUILayoutView)?.forgetMeasurements() }
+        if let entry = walk.entry { (entry.parent?.winUI.view as? WinUIItemsView)?.remeasure(entry) }
         (view ?? parent?.nearestView)?.invalidateMeasure()
     }
 

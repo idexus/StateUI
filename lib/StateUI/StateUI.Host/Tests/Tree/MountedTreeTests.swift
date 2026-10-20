@@ -650,6 +650,19 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertNil(presence("plain"), "as its view stands of itself")
     }
 
+    /// Whether a view is an element to assistive technology: as its presence says, else as the view stood of itself
+    /// before any word reached it - never as the last word left it.
+    func testAViewIsAnElementAsItsPresenceSaysElseAsItStoodOfItself() {
+        func words(_ presence: AccessibilityWords.Presence?) -> AccessibilityWords {
+            AccessibilityWords(identifier: nil, label: nil, hint: nil, headingLevel: 0, presence: presence)
+        }
+        XCTAssertTrue(words(.met).isElement(standing: false))
+        XCTAssertFalse(words(.hidden).isElement(standing: true))
+        XCTAssertFalse(words(.hiddenWithChildren).isElement(standing: true))
+        XCTAssertTrue(words(nil).isElement(standing: true))
+        XCTAssertFalse(words(nil).isElement(standing: false))
+    }
+
     /// An element is drawn moved, turned and scaled as it says: `scale` on top of each axis's own, about its middle
     /// where it names no pivot.
     @MainActor
@@ -826,6 +839,46 @@ final class MountedTreeTests: XCTestCase {
         }
         XCTAssertEqual(shown[0], shown[1], "both set out at the message's time")
         XCTAssertNotEqual(shown[0], [0], "and travel")
+    }
+
+    /// A PATCH SAYS WHETHER THE ELEMENT ARRANGES ITS CHILDREN AGAIN: a new arrangement, a child made anew or drawn by
+    /// the element, a child's place or size changed - not a change inside a child that stands where it stood.
+    @MainActor
+    func testAPatchSaysWhetherTheElementArrangesItsChildrenAgain() throws {
+        let (tree, _) = Self.tree(viewless: ["drawn"])
+        tree.apply(Self.stack("stack", ["a", "drawn"]), complete: true)
+        let stack = try XCTUnwrap(tree.root)
+        XCTAssertTrue(stack.childrenNeedArranging, "a new arrangement")
+
+        func changed(_ id: String, _ change: (inout HostPatch) -> Void) -> Bool {
+            var child = HostPatch(id: .manual(id), type: .text)
+            change(&child)
+            var sparse = HostPatch(id: .manual("stack"), type: .vStack)
+            sparse.children = .changed([child])
+            tree.apply(sparse, complete: false)
+            return stack.childrenNeedArranging
+        }
+
+        XCTAssertFalse(changed("a") { $0.properties[.text] = .string("words") }, "a child's words, in its place")
+        XCTAssertTrue(changed("a") { $0.properties[.width] = .number(80) }, "a child's size")
+        XCTAssertTrue(changed("a") { $0.properties[.margin] = .numbers([1, 2, 3, 4]) }, "a child's place")
+        XCTAssertTrue(changed("drawn") { $0.properties[.text] = .string("words") }, "a child the element draws")
+        XCTAssertTrue(changed("a") { $0.replace = true }, "a child made anew")
+
+        var pages = HostPatch(id: .manual("pages"), type: .tabView)
+        pages.children = .arranged([HostPatch(id: .manual("page"), type: .page)])
+        tree.apply(pages, complete: true)
+        let holder = try XCTUnwrap(tree.root)
+        func paged(_ change: (inout HostPatch) -> Void) -> Bool {
+            var page = HostPatch(id: .manual("page"), type: .page)
+            change(&page)
+            var sparse = HostPatch(id: .manual("pages"), type: .tabView)
+            sparse.children = .changed([page])
+            tree.apply(sparse, complete: false)
+            return holder.childrenNeedArranging
+        }
+        XCTAssertTrue(paged { $0.properties[.title] = .string("Inbox") }, "a page's own title")
+        XCTAssertFalse(paged { $0.children = .changed([]) }, "something inside a page")
     }
 
     // MARK: - A tree over a recording native half

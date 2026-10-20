@@ -30,6 +30,27 @@ final class GTKItemsViewTests: XCTestCase {
             XCTAssertEqual(rows.count, Int((300 / tall).rounded(.up)), "as many as 300 holds, the last cut short")
         }
     }
+
+    /// An item laid out already glides to where its anchor stands it, unless the user asks for less motion; one
+    /// further off is brought into view at once, as GTK lays its rows out only as it comes to them.
+    func testAnItemLaidOutGlidesToItsPlace() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                ItemsView(0..<100) { Text("Item \($0)").padding(12) }.width(300).height(300)
+            }
+            let list = try XCTUnwrap(host.views(GTKItemsView.self).first)
+            host.settle { list.shownRows.count > 4 }
+            let row = Double(try XCTUnwrap(list.shownRows.first))
+
+            list.scroll(to: "3", anchor: .start)
+            XCTAssertEqual(list.glidesForTesting, !host.runtime.reducesMotion(), "laid out: it glides")
+            host.settle { !list.glidesForTesting && abs(list.offsetForTesting - 3 * row) < 0.5 }
+            XCTAssertEqual(list.offsetForTesting, 3 * row, accuracy: 0.5, "row 3 at the start")
+
+            list.scroll(to: "90", anchor: .start)
+            XCTAssertFalse(list.glidesForTesting, "too far to be laid out: brought into view at once")
+        }
+    }
 }
 
 extension GTKItemsViewTests {

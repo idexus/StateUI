@@ -33,17 +33,12 @@ extension UIKitElement {
     /// Crosses a change of visibility by the host layer's rule; as a fade out ends, the layout closes over it.
     func crossVisibility() {
         guard let drawing else { return }
-        element.crossVisibility(drawing) { [weak self] in
-            guard let layout = self?.placingParent else { return }
-            (layout.view as? UIKitLayoutView)?.places.patchArrived()
-            layout.arrangeChildren()
-        }
+        element.crossVisibility(drawing, closingIn: (layoutParent?.view as? UIKitLayoutView)?.places)
     }
 
-    /// The element whose layout places this one: the nearest above it with a view.
-    var placingParent: UIKitElement? {
-        guard let parent else { return nil }
-        return parent.view != nil ? parent : parent.placingParent
+    /// The element whose layout places this one: the nearest above it with a view (`MountedElement.layoutParent`).
+    var layoutParent: UIKitElement? {
+        element.layoutParent?.native as? UIKitElement
     }
 }
 

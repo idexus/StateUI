@@ -13,7 +13,7 @@ final class WinUIRenderer {
     static var shared: WinUIRenderer?
 
     /// What the host says for whoever reads its log: standard error, or wherever a test listens.
-    static var log = HostLog(host: "WinUI")
+    static var log = HostLog(host: "WinUI", output: WinUILog.write)
 
     let frameClock: WinUIFrameClock
 
@@ -59,6 +59,11 @@ final class WinUIRenderer {
         return front.flatMap { controller(of: $0)?.window } ?? window
     }
 
+    /// The window element whose window is `window`.
+    func element(of window: WinUIWindow) -> MountedElement? {
+        roster.windows.first { $0.controller.window === window }?.element
+    }
+
     /// A runtime on the performance counter and WinUI's frames, or on `clock` and the frames its owner gives, with
     /// the motion `reducesMotion` allows.
     init(clock: (() -> Double)? = nil, reducesMotion: @escaping () -> Bool = { !stateui_winui_animations_enabled() }) {
@@ -94,6 +99,11 @@ final class WinUIRenderer {
     /// what it changes renders.
     func answered(ticket: Int64, _ answer: Result<HostQuestion.Given, ActFailure>) {
         actToolkit.answered(ticket: ticket, answer)
+    }
+
+    /// The words of the prompt asked under `ticket` changed, an input method `composing` them or not.
+    func promptTyped(ticket: Int64, _ words: String, composing: Bool) {
+        actToolkit.typed(ticket: ticket, words, composing: composing)
     }
 
     /// Windows said the theme, the power, the network or a screen changed: the core hears it, and renders what it
@@ -132,6 +142,7 @@ final class WinUIRenderer {
         runtime.start(
             realizing: WinUIRegistrations.registry.realization, unrealized: WinUIRealization.unmade,
             register: WinUIRealization.register,
+            complainingTo: WinUIRenderer.log,
             environment: { WinUIEnvironment.report(to: runtime.core) },
             kept: { if restoringKept { WinUIPersistence.restore(into: runtime.core) } },
             windows: { scenes.restore(WinUIPersistence.readScenes(), in: runtime) },
@@ -139,8 +150,8 @@ final class WinUIRenderer {
     }
 
     /// Shows every window element in a WinUI window of its own, in the tree's order - a window the tree no longer
-    /// holds closes, a question over it standing again over the window the user is in - and tells each, once, in its
-    /// turn, that it was made.
+    /// holds closes, what was asked over it answered as dismissed - and tells each, once, in its turn, that it was
+    /// made.
     /// Design: docs/design/platforms/winui/runtime.md#the-window
     private func showWindows() {
         var gone: [WinUIWindow] = []
@@ -157,6 +168,7 @@ final class WinUIRenderer {
             controller.present(element, in: runtime)
         }
         for window in gone { actToolkit.windowWent(window) }
+        acts.windowsOpen(roster.windows.map(\.element))
     }
 
     /// Composes every window's chrome again from what it shows now.

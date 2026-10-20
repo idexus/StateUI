@@ -18,6 +18,17 @@ parses a colour or has to know what one may look like. On a state the host
 carries, a colour lies as four lanes from 0 to 1, which is what a colour
 half way between two others is made of.
 
+## As a toolkit holds it
+
+A toolkit holds a colour as one number, eight bits a channel with alpha
+highest, or as four fractions of full from 0 to 1. The host layer turns
+either into the four channels and back (`ColorComponent`, `Color(argb:)`,
+`Color(fractions:)`, `HostValue.fractions`): a fraction stands at its nearest
+channel, held to the range. The accent a host reports and the colour it
+draws are converted by that one rule, so the same colour stands at the same
+channels whichever toolkit reported it, and a channel taken to a fraction and
+back is the channel it was.
+
 ## Hex is read in the core
 
 A colour is written as hex, `Color("#512BD4")`, as channels, or by name. The

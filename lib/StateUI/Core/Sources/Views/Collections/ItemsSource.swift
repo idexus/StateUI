@@ -61,6 +61,7 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
             for place in 0..<group.count {
                 let id = group.identify(place)
                 let written = grouped ? name + "\u{1F}" + String(describing: id) : String(describing: id)
+                Renderer.shared.texts += 1
                 let identity = unique(written)
                 places[identity] = .item(number, place)
                 identities[id, default: []].append(identity)
@@ -108,6 +109,7 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
 
     /// `identity` standing at `place`.
     private func named(_ identity: String, _ place: Place) -> String {
+        Renderer.shared.texts += 1
         let identity = unique(identity)
         places[identity] = place
         return identity

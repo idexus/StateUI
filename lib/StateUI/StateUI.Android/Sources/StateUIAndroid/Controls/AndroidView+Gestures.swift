@@ -28,6 +28,8 @@ extension AndroidView {
         if listening == .nothing || listening.hearing.contains(.hand) != hearing.contains(.hand) { watchTouches(hearing) }
         listening = told
         if hearing.contains(.drags) { press = DragRecognition(distance: .radius(Self.touchSlop(density: density))) }
+        if hearing.contains(.hand) { handRecognition = HandRecognition(distance: .radius(Self.touchSlop(density: density))) }
+        if countsTaps, hearing.contains(.taps) { taps = Self.doubleTap(density: density) }
         Java.call(
             listener.reference, JavaAPI.setGestures, .object(reference), .float(Float(density)),
             .bool(countsTaps && hearing.contains(.taps)), .bool(hearing.contains(.drags)),
@@ -35,12 +37,13 @@ extension AndroidView {
             .bool(hearing.contains(.rotations)))
     }
 
-    /// What the listener says the view heard, by the kind `StateUIGestures` numbers: a tap and its place in its run,
-    /// a pinch's step and where it is centred in points, the pointer.
+    /// What the listener says the view heard, by the kind `StateUIGestures` numbers: a tap where it landed on the
+    /// screen and when, in `phase`'s milliseconds - its place in its run counted by the host layer (`TapRun`) - a
+    /// pinch's step and where it is centred in points, the pointer.
     func heard(kind: Int32, phase: Int32, x: Double, y: Double, z: Double) {
         let point = Point(x: x, y: y)
         let input: HeardInput? = switch AndroidGestureKind(rawValue: kind) {
-        case .tapped: .tap(run: Int(phase))
+        case .tapped: .tap(run: taps.tapped(at: point, time: .milliseconds(Int(phase))))
         case .pinched: GesturePhase(rawValue: phase).map { phase in
             let size = standingFrame
             let at = PinchStep.share(of: Point(x: y, y: z), width: size.width, height: size.height)
@@ -56,15 +59,28 @@ extension AndroidView {
         if let input { _ = onHeard?(input) }
     }
 
-    /// The hand over a layout the listener tells, by the phase StateUI numbers - where a finger went down, or what
-    /// it moved under the hand since, in points, and as it lets go its speed: the host's entry. Whether the layout
-    /// took it.
+    /// A finger on a layout a hand moves, as the listener tells it at `phase` - down, moved, let go or taken away -
+    /// by its number, where it stands on the screen and in the view, in points, the last lifting at the platform's
+    /// speed: read as one hand by the host layer's rule (`HandRecognition`). Whether the layout has the hand now.
     /// Design: docs/design/platforms/android/controls.md#the-hand-over-a-layout
-    func heardHand(phase: Int32, moved: Point, speed: Point) -> Bool {
-        guard let phase = GesturePhase(rawValue: phase) else { return false }
+    func heardFinger(phase: Int32, finger: Int, at point: Point, inView: Point, speed: Point) -> Bool {
+        guard let phase = AndroidPressPhase(rawValue: phase) else { return false }
 
-        if phase == .began { return onHeard?(.hand(.began, moved: .zero, speed: nil, point: moved)) ?? false }
-        return onHeard?(.hand(phase, moved: moved, speed: phase == .ended ? speed : nil)) ?? false
+        let step = switch phase {
+        case .down: handRecognition.down(finger, at: point, inView: inView)
+        case .move: handRecognition.moved(finger, to: point)
+        case .letGo, .taken: handRecognition.up(finger, letGo: phase == .letGo)
+        }
+        switch step {
+        case .began(let at): _ = onHeard?(.hand(.began, moved: .zero, speed: nil, point: at))
+        case .asks(let travel):
+            handRecognition.answered(taken: onHeard?(.hand(.changed, moved: travel, speed: nil)) ?? false)
+        case .moved(let moved): _ = onHeard?(.hand(.changed, moved: moved, speed: nil))
+        case .ended(let letGo):
+            _ = onHeard?(.hand(letGo ? .ended : .cancelled, moved: .zero, speed: letGo ? speed : nil))
+        case .nothing: break
+        }
+        return handRecognition.isTaken
     }
 
     /// Two fingers over a layout the listener tells, by the phase StateUI numbers, where each stands in points: the
@@ -148,6 +164,18 @@ extension AndroidView {
     }
 
     /// How far a finger moves before it is a drag, as Android measures it, in points at `density`.
+    /// A run of taps as Android measures its double tap: its timeout, and its slop in points.
+    private static func doubleTap(density: Double) -> TapRun {
+        let timeout = Java.callStaticInt(JavaAPI.viewConfiguration, JavaAPI.doubleTapTimeout)
+        let slop = Java.frame {
+            guard let configuration = Java.callStaticObject(
+                JavaAPI.viewConfiguration, JavaAPI.viewConfigurationOf, .object(AndroidRenderer.context))
+            else { return 100.0 }
+            return Double(Java.callInt(configuration, JavaAPI.scaledDoubleTapSlop)) / density
+        }
+        return TapRun(interval: .milliseconds(Int(timeout)), slop: slop)
+    }
+
     private static func touchSlop(density: Double) -> Double {
         Java.frame {
             guard let configuration = Java.callStaticObject(

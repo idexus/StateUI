@@ -149,6 +149,20 @@ final class ConversionTests: XCTestCase {
             "the same line converting the same source is the same derived state")
     }
 
+    /// A CONVERSION'S PLACE IS A NUMBER: its file, line and column and the element building it, spelled nowhere.
+    func testAConversionsPlaceIsSpelledNowhere() {
+        let renders = Renders()
+        let view = Twice(volume: State(wrappedValue: 0.2))
+        renders.render(view.node)
+        let texts = Renderer.shared.texts
+
+        renders.renderFromScratch(view.node)
+
+        XCTAssertEqual(Renderer.shared.texts, texts, "no text built")
+        XCTAssertEqual(PathNumber(file: #fileID, line: 1, column: 2), PathNumber(file: #fileID, line: 1, column: 2))
+        XCTAssertNotEqual(PathNumber(file: #fileID, line: 1, column: 2), PathNumber(file: #fileID, line: 2, column: 1))
+    }
+
     /// Two states make one derived value, followed both ways: a text driven
     /// from two numbers changes when either does.
     func testTwoSourcesMakeOneDerivedValue() throws {

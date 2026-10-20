@@ -59,7 +59,10 @@ final class AndroidActToolkit: ActToolkit {
     }
 
     /// Puts a question to the user in the platform's own dialog; its answer comes back by its ticket.
-    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
+    func show(
+        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let window = AndroidRenderer.window else { return nil }
         let ticket = dialogs.hold(answered)
         Java.frame {
             let context = context
@@ -73,7 +76,7 @@ final class AndroidActToolkit: ActToolkit {
                 Java.callStatic(
                     JavaAPI.dialogs, JavaAPI.confirm, .object(context), .long(ticket),
                     .object(Java.string(question.title ?? "")), .object(Java.string(question.message ?? "")),
-                    .object(Java.string(question.accept)), .object(Java.string(question.cancel ?? "Cancel")))
+                    .object(Java.string(question.accept)), .object(Java.string(question.cancelling)))
             case .chooseAction:
                 Java.callStatic(
                     JavaAPI.dialogs, JavaAPI.chooseAction, .object(context), .long(ticket),
@@ -84,14 +87,14 @@ final class AndroidActToolkit: ActToolkit {
                 Java.callStatic(
                     JavaAPI.dialogs, JavaAPI.prompt, .object(context), .long(ticket),
                     .object(Java.string(question.title ?? "")), .object(Java.string(question.message ?? "")),
-                    .object(Java.string(question.accept)), .object(Java.string(question.cancel ?? "Cancel")),
+                    .object(Java.string(question.accept)), .object(Java.string(question.cancelling)),
                     .object(question.placeholder.flatMap(Java.string)),
                     .int(Int32(question.maximumLength ?? -1)),
                     .int(question.traits.inputType(password: false, multiLine: false)),
                     .object(Java.string(question.words)))
             }
         }
-        return true
+        return window
     }
 
     /// The act under `ticket` was answered: a dialog accepted or not, with the words chosen or typed; or a script's

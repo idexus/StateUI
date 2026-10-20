@@ -70,6 +70,13 @@ final class Differ {
     /// Design: docs/design/core/identity-and-diffing.md#handlers-and-their-ids
     var handlers: [Int: EventRegistration] = [:]
 
+    /// The two phases of each page listening for its disappearing, by their handler ids: the page, and whether the
+    /// phase is its appearing.
+    private var pagePhases: [Int: (page: ElementID, appears: Bool)] = [:]
+
+    /// The pages the host told they appeared and not yet that they disappeared.
+    private var shownPages: Set<ElementID> = []
+
     /// The scene the walk is inside; `OpenScenes.building` follows it.
     var sceneRecord: SceneRecord? {
         didSet { OpenScenes.shared.building = sceneRecord }
@@ -95,7 +102,7 @@ final class Differ {
         seedScope()
 
         // The root keeps whatever key it was given until the author states another.
-        let id = tree.id.map(ElementID.manual) ?? rendered?.id ?? identity(for: tree)
+        let id = tree.identity.map { ElementID.manual(Node.described($0)) } ?? rendered?.id ?? identity(for: tree)
         let previous = rendered?.id == id ? rendered : nil
 
         if let rendered = rendered, previous == nil {
@@ -152,8 +159,10 @@ final class Differ {
         }
     }
 
-    /// One kept element: built again from its placeholder when its reads moved,
-    /// walked for changed descendants when they did not.
+    /// One kept element: built again from its placeholder when its reads moved - from the outermost of its views
+    /// whose own body read what moved, those outside it standing as they were - walked for changed descendants when
+    /// they did not.
+    /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
     func revisit(
         _ rendered: RenderedNode,
         walking: Bool = true
@@ -165,7 +174,8 @@ final class Differ {
                 rendered: rendered,
                 node: placeholder,
                 forced: true,
-                sizesArrive: rendered.sizesArrive)
+                sizesArrive: rendered.sizesArrive,
+                from: Self.start(of: rendered, changed: changed))
         }
 
         // A composed view walked past is written down only as the path to something
@@ -210,6 +220,20 @@ final class Differ {
         handlers[id]
     }
 
+    /// The host told the event under `handlerId`: a page appearing stands shown, one disappearing no longer.
+    /// Design: docs/design/host/pages.md#a-page-that-leaves-the-tree
+    func heard(_ handlerId: Int) {
+        guard let phase = pagePhases[handlerId] else { return }
+        if phase.appears { shownPages.insert(phase.page) } else { shownPages.remove(phase.page) }
+    }
+
+    /// Keeps the two phases of page `id` that tell whether it stands shown, under the ids its `events` hold them by.
+    func keepPhases(of id: ElementID, _ events: [Event: Int]) {
+        guard let appearing = events[.appearing], let disappearing = events[.disappearing] else { return }
+        pagePhases[appearing] = (id, true)
+        pagePhases[disappearing] = (id, false)
+    }
+
     /// The handlers the last walk found - what left first, then the rest - taken so
     /// each runs once.
     func takeFired() -> [Fired] {
@@ -220,8 +244,21 @@ final class Differ {
     }
 
     /// Drops the handlers and engines of an element that left the tree, and of
-    /// everything under it, and books its `.onDestroying`.
+    /// everything under it, and books its `.onDestroying` - a page standing
+    /// shown its `.onDisappearing` first.
     func forget(_ node: RenderedNode) {
+        if shownPages.remove(node.id) != nil, let id = node.events[.disappearing], let registration = handlers[id] {
+            // Heard as a host tells a phase: carrying nothing, whatever the event that left it carried.
+            leaving.append(contentsOf: registration.handlers.map { handler in
+                let run = handler.run
+                return { @MainActor in
+                    EventBuffer.current = []
+                    try await run()
+                }
+            })
+        }
+        for id in node.events.values { pagePhases[id] = nil }
+
         for (_, id) in node.events.sorted(by: { $0.key < $1.key }) {
             handlers.removeValue(forKey: id)?.orphan()
         }
@@ -256,7 +293,7 @@ final class Differ {
 
     /// A new element's key: the author's, or a fresh number.
     func identity(for node: Node) -> ElementID {
-        node.id.map(ElementID.manual) ?? .auto(allocateElementId())
+        node.identity.map { .manual(Node.described($0)) } ?? .auto(allocateElementId())
     }
 
     /// The next element id. Never reused.

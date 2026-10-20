@@ -10,7 +10,16 @@
 /// Design: docs/design/platforms/web/runtime.md#files
 @MainActor
 final class WebFileToolkit: FileToolkit {
-    func show(_ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void) -> Bool {
+    private unowned let renderer: WebRenderer
+
+    init(renderer: WebRenderer) {
+        self.renderer = renderer
+    }
+
+    func show(
+        _ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let window = renderer.shownWindow else { return nil }
         let listener = WebRelay.once {
             guard WebRelay.fileKept else { return answered(.failure(ActFailure(WebRelay.fileWords))) }
             answered(.success(WebRelay.filesChosen.map { ChosenFile(address: String($0.number), name: $0.name) }))
@@ -21,7 +30,7 @@ final class WebFileToolkit: FileToolkit {
         case .save:
             WebRelay.saveFile(dialog.contents, name: dialog.name, kinds: dialog.types, listener)
         }
-        return true
+        return window
     }
 
     func read(_ file: ChosenFile, atMost maximum: Int?, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {

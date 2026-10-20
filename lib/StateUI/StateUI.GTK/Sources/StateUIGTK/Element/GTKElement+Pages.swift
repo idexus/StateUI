@@ -131,20 +131,18 @@ extension GTKElement {
         }
     }
 
-    /// The user chose another tab: the host layer tells the pages and the state, and the chrome follows what the user
-    /// sees now whether or not the application renders again.
+    /// The user chose another tab: the host layer tells the pages and the state, and shows the chrome again.
     private func tabChosen(from previous: Int, to selected: Int) {
         host?.runtime.tabChosen(element, from: previous, to: selected)
-        host?.refreshChrome()
     }
 
     // MARK: - The way back, and the sidebar
 
-    /// The user took the stack's top pages away - the back button, the swipe, the keys: the path is told how long
-    /// it is now.
+    /// The user took the stack's top pages away - the back button, the swipe, the keys: the host layer tells the
+    /// path how long it is now.
     private func userPopped(remaining: Int) {
-        guard type == .navigationStack, let handler = element.handler(.popped) else { return }
-        host?.runtime.dispatch(handler, payload: [.number(Double(remaining - 1))])
+        guard type == .navigationStack else { return }
+        host?.runtime.stackPopped(element, staying: remaining)
     }
 
     /// The user showed or hid a split view's sidebar through a header bar's button.

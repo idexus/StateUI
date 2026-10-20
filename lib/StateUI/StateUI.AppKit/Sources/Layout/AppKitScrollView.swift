@@ -39,9 +39,8 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     }
     private let stackWrapper = AppKitStackView(axis: .vertical)
     private var usesStackWrapper = false
-    /// The offset the tree writes, kept for the first layout where it comes before it (`WrittenScrollOffset`).
-    private var writtenOffset = WrittenScrollOffset()
-    private var lastObservedOffset = NSPoint.zero
+    /// Where the scroller stands as the host knows it, and the offset the tree writes (`ScrollerOffset`).
+    private var scrollerOffset = ScrollerOffset()
     private var gestureScroller: WheelScroller?
 
     /// The user's movement of this scroller, and its rest.
@@ -133,10 +132,8 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         autohidesScrollers = verticalBarVisibility != 1 && horizontalBarVisibility != 1
 
         // Design: docs/design/host/layout.md#an-offset-the-tree-writes
-        if let target = writtenOffset.written(
-            offset.map { Point($0) }, standing: Point(lastObservedOffset), orientation: self.orientation
-        ) {
-            move(to: NSPoint(x: target.x, y: target.y), asUser: false)
+        if let target = scrollerOffset.written(offset.map { Point($0) }, orientation: self.orientation) {
+            move(to: NSPoint(x: target.x, y: target.y))
         }
     }
 
@@ -225,11 +222,11 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         documentSurface.arrange(in: contentSize)
         super.layout()
 
-        if let target = writtenOffset.laidOutNow() {
-            move(to: NSPoint(x: target.x, y: target.y), asUser: false)
+        if let target = scrollerOffset.laidOutNow() {
+            move(to: NSPoint(x: target.x, y: target.y))
         } else if !movement.isMoving, reachable(normalized(contentView.bounds.origin)) != contentView.bounds.origin {
             // Only a scroller the content left off its reach: a move stops a throw and cuts the stretch past an edge.
-            move(to: contentView.bounds.origin, asUser: false)
+            scrollClip(to: reachable(normalized(contentView.bounds.origin)))
         }
     }
 
@@ -285,6 +282,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     }
 
     @objc private func willStartLiveScroll(_ notification: Notification) {
+        scrollerOffset.userTookHold()
         movement.holdBegan()
     }
 
@@ -293,35 +291,31 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         movement.holdEnded(rests: true)
     }
 
+    /// The clip view moved: the user's move, told where it stands first - the report runs the render that writes
+    /// the state back, and that write is told apart from an application's by where the scroller already stands.
     @objc private func clipBoundsChanged(_ notification: Notification) {
-        guard !ProgramWrite.isWriting else { return }
-        let current = offset
-        guard current != lastObservedOffset else { return }
-        // WHERE IT STANDS FIRST, then the report: the report runs the render
-        // that writes the state back, and that write is told apart from an
-        // application's by where the scroller already stands.
-        let previous = lastObservedOffset
-        lastObservedOffset = current
-        movement.userMoved(from: Point(previous), to: Point(current))
+        guard let moved = scrollerOffset.toolkitMoved(to: Point(offset)) else { return }
+        movement.userMoved(from: moved.from, to: moved.to)
     }
 
     /// How many times something other than the user moved the scroller.
     private(set) var programmaticMovesForTesting = 0
 
-    private func move(to requested: NSPoint, asUser: Bool) {
-        if !asUser { programmaticMovesForTesting += 1 }
-        let old = offset
+    /// Moves the scroller to `requested`, kept within what it reaches, as the program's move.
+    private func move(to requested: NSPoint) {
         let target = reachable(normalized(requested))
+        guard scrollerOffset.programMoves(to: Point(target)) else { return }
+        scrollClip(to: target)
+    }
+
+    /// Scrolls the clip view to `target` as the program's write.
+    private func scrollClip(to target: NSPoint) {
+        programmaticMovesForTesting += 1
         ProgramWrite.perform {
             contentView.scroll(to: target)
             reflectScrolledClipView(contentView)
         }
-        let current = offset
-        lastObservedOffset = current
-
-        if asUser {
-            movement.userMoved(from: Point(old), to: Point(current))
-        }
+        scrollerOffset.programLanded(at: Point(offset))
     }
 
     /// Whether the scroller needs the display's frames: it is moving, or it
@@ -373,7 +367,8 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     }
 
     func moveAsUserForTesting(to point: NSPoint) {
-        move(to: point, asUser: true)
+        contentView.scroll(to: reachable(normalized(point)))
+        reflectScrolledClipView(contentView)
     }
 
     func restForTesting() {

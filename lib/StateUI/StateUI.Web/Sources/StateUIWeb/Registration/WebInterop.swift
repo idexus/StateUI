@@ -54,7 +54,7 @@ public final class WebPageElement {
 
     /// Runs `action` whenever the element raises `event`, handed the number its `detail` carries - a custom
     /// element's `CustomEvent`, `new CustomEvent("lamptap", { detail: 2 })`.
-    public func listen(_ event: String, _ action: @escaping @MainActor (Double) -> Void) {
+    public func listen(_ event: String, number action: @escaping @MainActor (Double) -> Void) {
         listen(event) { action(WebRelay.eventDetail) }
     }
 
@@ -250,6 +250,22 @@ public final class WebRegistration<Realized: ElementContract, Made: WebControl> 
         registration.property(member) { hosted, value in apply(hosted.control, value) }
     }
 
+    /// Properties the control takes together, handed over whole whenever any of them changes: each as the type its
+    /// contract declares, and whether it changed - a control that must take one before another, a web view its agent
+    /// before its page, takes them at once. Members of the element's contract or of the tiers it wears; any other is
+    /// left out, and said once.
+    ///
+    ///     web.applies([WebViewContract.userAgent, WebViewContract.source]) { control, values in
+    ///         control.show(values[WebViewContract.source], userAgent: values[WebViewContract.userAgent])
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - members: the properties, written with their contracts.
+    ///   - apply: puts the values on the control.
+    public func applies(_ members: [any ContractMember], _ apply: @escaping (Made, ControlValues<Realized>) -> Void) {
+        registration.applies(members) { hosted, values in apply(hosted.control, ControlValues(values)) }
+    }
+
     /// An event the control raises through its reports - recorded, so the core knows this host reports it.
     public func raises<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
         registration.raises(event)
@@ -307,8 +323,8 @@ final class WebHostedView<Control: WebControl>: WebDOMView {
         super.init(adopting: control.element.node)
     }
 
-    override func detach() {
+    override func release() {
         for listener in control.element.listeners { WebRelay.forget(listener) }
-        super.detach()
+        super.release()
     }
 }

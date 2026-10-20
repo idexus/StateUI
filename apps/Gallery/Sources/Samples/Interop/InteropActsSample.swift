@@ -8,6 +8,7 @@ struct InteropActsSample: SampleContent, ExampleContent {
     // listing: InteropActsSample
     @State private var draft = "Copy me somewhere"
     @State private var status = "nothing asked yet"
+    @State private var tenStars = false
     @Aim(RatingBar.self) private var stars
     // listing: end
 
@@ -78,9 +79,12 @@ struct InteropActsSample: SampleContent, ExampleContent {
                 }
 
             RatingBar()
+                .maximum(tenStars ? 10 : 5)
                 .rating(4)
                 .horizontalAlignment(.center)
                 .aim(stars)
+
+            SwitchRow("Ten stars", $tenStars)
 
             Button("Flash the bar")
                 .onClicked(gate: .ignoreWhileRunning) {
@@ -109,6 +113,12 @@ struct InteropActsSample: SampleContent, ExampleContent {
                 + "another shape than the contract's resume the handler by throwing "
                 + "`StateUIError` with the reason. Prefix the names with the application's "
                 + "own, so they never meet the library's.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("A control taking two values together names them in `applies`, and is handed "
+                + "both whenever either changes: the bar takes its stars with its rating, so a "
+                + "rating always stands within its stars.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

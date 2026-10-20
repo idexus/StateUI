@@ -48,9 +48,9 @@ extension LayoutEngine.Run {
 
     /// The view drawn on top at `point` in the room, by what the run last showed - its place turned as it is drawn,
     /// a view drawn clear passed over - and that place.
-    func view(at point: Point) -> (String, Placement)? {
+    func view(at point: Point) -> (Int, Placement)? {
         let shown = states.shown.wrappedValue.shown
-        let under = slots.enumerated().compactMap { index, slot -> (Int, String, Placement)? in
+        let under = slots.enumerated().compactMap { index, slot -> (Int, Int, Placement)? in
             guard let placement = shown[slot.identity], placement.opacity > 0, Self.covers(placement, point)
             else { return nil }
             return (index, slot.identity, placement)
@@ -98,7 +98,7 @@ extension LayoutEngine.Run {
     /// their way in `travels`: let go, its way back is a change under the layout's motion, setting out at the hand's
     /// speed; dismissed, it flies on, and its item is told once it has left the room. Whether it goes on.
     func showHeld(
-        _ shown: inout [Placement], travels: inout [String: LayoutTravel], poses: [Placement], at now: Double,
+        _ shown: inout [Placement], travels: inout [Int: LayoutTravel], poses: [Placement], at now: Double,
         room: Rect
     ) -> Bool {
         guard var hand = states.item.wrappedValue else { return false }
@@ -156,7 +156,7 @@ extension LayoutEngine.Run {
     }
 
     /// Tells the application the item whose view `identity` shows has been dismissed, after the frame.
-    func dismissed(_ identity: String) {
+    func dismissed(_ identity: Int) {
         guard let dismissal, let slot = slots.first(where: { $0.identity == identity }) else { return }
 
         let (handler, item) = (dismissal.handler, slot.item)

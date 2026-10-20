@@ -203,6 +203,22 @@ public final class AndroidRegistration<Realized: ElementContract, Made: AndroidC
         registration.property(member) { hosted, value in apply(hosted.control, value) }
     }
 
+    /// Properties the control takes together, handed over whole whenever any of them changes: each as the type its
+    /// contract declares, and whether it changed - a control that must take one before another, a web view its agent
+    /// before its page, takes them at once. Members of the element's contract or of the tiers it wears; any other is
+    /// left out, and said once.
+    ///
+    ///     web.applies([WebViewContract.userAgent, WebViewContract.source]) { control, values in
+    ///         control.show(values[WebViewContract.source], userAgent: values[WebViewContract.userAgent])
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - members: the properties, written with their contracts.
+    ///   - apply: puts the values on the control.
+    public func applies(_ members: [any ContractMember], _ apply: @escaping (Made, ControlValues<Realized>) -> Void) {
+        registration.applies(members) { hosted, values in apply(hosted.control, ControlValues(values)) }
+    }
+
     /// An event the control raises through its reports - recorded, so the core knows this host reports it.
     ///
     /// - Parameter event: the member, written with its contract.

@@ -246,6 +246,22 @@ public final class UIKitRegistration<Realized: ElementContract, Made: UIView> {
         registration.property(member, apply)
     }
 
+    /// Properties the view takes together, handed over whole whenever any of them changes: each as the type its
+    /// contract declares, and whether it changed - a view that must take one before another, a web view its agent
+    /// before its page, takes them at once. Members of the element's contract or of the tiers it wears; any other is
+    /// left out, and said once.
+    ///
+    ///     web.applies([WebViewContract.userAgent, WebViewContract.source]) { view, values in
+    ///         view.show(values[WebViewContract.source], userAgent: values[WebViewContract.userAgent])
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - members: the properties, written with their contracts.
+    ///   - apply: puts the values on the view.
+    public func applies(_ members: [any ContractMember], _ apply: @escaping (Made, ControlValues<Realized>) -> Void) {
+        registration.applies(members) { made, values in apply(made, ControlValues(values)) }
+    }
+
     /// An event the view raises through its reports - recorded, so the core
     /// knows this host reports it.
     ///

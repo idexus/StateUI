@@ -70,4 +70,19 @@ final class WebRulesTests: XCTestCase {
         XCTAssertNil(WebDocument.document(at: "data:text/html;charset=utf-8;base64,P*A+"), "no base64")
         XCTAssertNil(WebDocument.document(at: "data:text/html;charset=utf-8;base64,PHA"), "not whole groups of four")
     }
+
+    /// A document written in place with an address of its own takes it as a `<base>` after its doctype: before it,
+    /// a browser reads the document in quirks mode.
+    func testTheBaseStandsAfterTheDoctype() {
+        XCTAssertEqual(
+            WebDocument.document("<!DOCTYPE html><html><body>Hi</body></html>", base: "https://example.com/docs/"),
+            #"<!DOCTYPE html><base href="https://example.com/docs/"><html><body>Hi</body></html>"#)
+        XCTAssertEqual(
+            WebDocument.document("\n  <!doctype html>\n<p>Hi", base: "https://example.com/"),
+            "\n  <!doctype html>" + #"<base href="https://example.com/">"# + "\n<p>Hi")
+        XCTAssertEqual(
+            WebDocument.document("<p>Hi</p>", base: #"https://example.com/?a=1&b="2""#),
+            #"<base href="https://example.com/?a=1&amp;b=&quot;2&quot;"><p>Hi</p>"#, "a document of no doctype")
+        XCTAssertEqual(WebDocument.document("<p>Hi</p>", base: nil), "<p>Hi</p>", "no address of its own")
+    }
 }

@@ -4,6 +4,15 @@
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 
+/// A clock a test winds by hand.
+@MainActor
+final class WoundClock: FrameClock {
+    var time = 0.0
+    var held = false
+    var onFrame: ((Double) -> Void)?
+    var now: () -> Double { { [unowned self] in time } }
+}
+
 /// A clock no display drives.
 @MainActor
 final class StillClock: FrameClock {
@@ -20,8 +29,11 @@ final class NoView: NativeElement {
     func animates(_ property: Prop) -> Bool { false }
     func applied(changed: Set<Prop>, wasDescribed: Bool) {}
     func presentFrame(_ changed: Set<Prop>) {}
-    func arrangeChildren() {}
     func leave() {}
+
+    /// How many times the element's children were arranged.
+    var arranged = 0
+    func arrangeChildren() { arranged += 1 }
 }
 
 extension HostRuntime {

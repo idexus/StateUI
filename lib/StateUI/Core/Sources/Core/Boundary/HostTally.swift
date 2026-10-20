@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What this process's renders came to - the tally a host prints to count leaks.
+/// What this process's renders came to - the tally a host prints to count leaks, and the work a benchmark counts.
 /// Design: docs/design/core/diagnostics.md#the-tally
 @_spi(Host) public struct HostTally: Equatable, Sendable {
     /// How many renders this process made.
@@ -18,4 +18,14 @@
 
     /// How many runs are under way or wait their turn now - a handler's, or a task's through a gate.
     public let runs: Int
+
+    /// How many composed views' bodies the renders built.
+    public let built: Int
+
+    /// How many views the renders walked for their state and inputs.
+    public let walks: Int
+
+    /// How many identities the renders named with a text: a walked part, a statement, a conversion, a layout slot, an
+    /// author's identity described, an ItemsView's entry.
+    public let texts: Int
 }

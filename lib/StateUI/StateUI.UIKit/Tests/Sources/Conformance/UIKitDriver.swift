@@ -4,6 +4,7 @@
 import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 @testable import StateUIUIKit
 @_spi(Host) import StateUIConformance
 
@@ -241,7 +242,7 @@ final class UIKitDriver: HostDriver {
         case (.tap(let count), let map as UIKitMapView):
             // A tap on a map is the map's, and the view's where it hears taps too.
             try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }
-            map.tap(at: CGPoint(x: map.bounds.midX, y: map.bounds.midY))
+            map.clicked(at: CGPoint(x: map.bounds.midX, y: map.bounds.midY))
         case (.activate, _) where element.parent?.type == .itemsView:
             guard let items = (element.parent?.native as? UIKitElement)?.view as? UIKitItemsView,
                   case .manual(let identity) = element.id
@@ -289,7 +290,7 @@ final class UIKitDriver: HostDriver {
             scroll.scroller.contentOffset = CGPoint(x: target.x, y: target.y)
             scroll.scrollViewDidEndDragging(scroll.scroller, willDecelerate: false)
         case (.choose(let place), let picker as any UIKitChoosing): picker.userChose(place)
-        case (.endContent, let web as UIKitWebView):
+        case (.endContent, let web as WebKitView):
             // As WebKit tells it when the page's process dies.
             web.navigationDelegate?.webViewWebContentProcessDidTerminate?(web)
         case (.focus, let view?):
@@ -381,7 +382,7 @@ final class UIKitDriver: HostDriver {
 
     /// What a web view shows, by the address WebKit gives back: a document with no address of its own from the
     /// `data:` address holding it.
-    private static func shown(by web: UIKitWebView) -> WebViewSource? {
+    private static func shown(by web: WebKitView) -> WebViewSource? {
         guard let address = web.url?.absoluteString else { return nil }
         return WebDocument.document(at: address).map { .html($0, baseURL: nil) } ?? .url(address)
     }
@@ -464,8 +465,8 @@ final class UIKitDriver: HostDriver {
             return Point(x: scroll.scroller.contentOffset.x, y: scroll.scroller.contentOffset.y).propValue
         case (.orientation, let scroll as UIKitScrollView): return scroll.orientation.propValue
         case (.source, let image as UIKitImageView): return image.image?.accessibilityIdentifier.map { .string($0) }
-        case (.userAgent, let web as UIKitWebView): return web.customUserAgent.propValue
-        case (.source, let web as UIKitWebView): return Self.shown(by: web)?.propValue
+        case (.userAgent, let web as WebKitView): return web.customUserAgent.propValue
+        case (.source, let web as WebKitView): return Self.shown(by: web)?.propValue
         // Shown: in a window, and neither it nor any view it stands in hidden.
         case (.isVisible, let view?):
             return (view.window != nil && sequence(first: view, next: \.superview).allSatisfy { !$0.isHidden }).propValue

@@ -14,6 +14,7 @@ final class AndroidSliderViewTests: XCTestCase {
             ("testARangeTheTreeChangesKeepsTheThumbsValue", testARangeTheTreeChangesKeepsTheThumbsValue),
             ("testAStateWriteIsNotHeardAsTheUsers", testAStateWriteIsNotHeardAsTheUsers),
             ("testAUsersDragTakesTheJourneyAndIsHeard", testAUsersDragTakesTheJourneyAndIsHeard),
+            ("testAnArrowKeyMovesTheThumbAHundredthOfTheRange", testAnArrowKeyMovesTheThumbAHundredthOfTheRange),
         ]
     }
 
@@ -28,6 +29,25 @@ final class AndroidSliderViewTests: XCTestCase {
             XCTAssertEqual(slider.value, 2.5, accuracy: 1e-9)
         }
     }
+
+    /// An arrow key moves the thumb a hundredth of the range, as on every host (`ValueArithmetic.sliderSteps`).
+    func testAnArrowKeyMovesTheThumbAHundredthOfTheRange() throws {
+        try onMainActor {
+            let level = State(wrappedValue: 5.0)
+            let host = AndroidRenderer.running { VStack { Slider(level.projectedValue).minimum(0).maximum(10) } }
+            let slider = try XCTUnwrap(host.views(AndroidSliderView.self).first)
+
+            let right: Int32 = 22
+            let event = Java.new(TestJava.keyEvent, TestJava.newKeyEvent, .int(0), .int(right))
+            withExtendedLifetime(event) {
+                _ = Java.callBool(slider.reference, Self.onKeyDown, .int(right), .object(event.reference))
+            }
+
+            XCTAssertEqual(slider.value, 5.1, accuracy: 1e-9)
+        }
+    }
+
+    @MainActor private static let onKeyDown = Java.method(JavaAPI.seekBar, "onKeyDown", "(ILandroid/view/KeyEvent;)Z")
 
     /// A new range leaves the thumb's value alone, kept inside the range.
     func testARangeTheTreeChangesKeepsTheThumbsValue() throws {

@@ -5,13 +5,14 @@
 import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 
 /// The UIKit host's runtime: the host layer's (`HostRuntime`) over UIKit's windows - each StateUI window in a
 /// window scene iOS connected - and the core turned after each pass of the main run loop.
 /// Design: docs/design/platforms/uikit/runtime.md
 @MainActor
 final class UIKitRenderer {
-    static var log = HostLog(host: "UIKit")
+    static var log = HostLog(host: "UIKit", output: SystemLog.output(host: "UIKit"))
 
     /// The one runtime of the process, which every scene iOS connects shows a window of.
     static let shared = UIKitRenderer()
@@ -89,9 +90,12 @@ final class UIKitRenderer {
         }
     }
 
-    /// The focus moved: every element following it hears where it is.
+    /// The focus moved: every element following it hears where it is - on iOS a field or an editor holds it, or a
+    /// view in it does.
     @objc func focusMoved() {
-        runtime.tree.root?.uiKit.reportFocus()
+        runtime.tree.root?.reportFocus(in: runtime) { element in
+            (element.native as? UIKitElement)?.view.map(UIKitElement.holdsFocus)
+        }
     }
 
     /// Starts the runtime as the application launches: what the host realizes and what the device is, then a turn
@@ -103,6 +107,7 @@ final class UIKitRenderer {
         runtime.start(
             realizing: UIKitRegistrations.registry.realization, unrealized: UIKitRealization.unrealized,
             register: UIKitRealization.register,
+            complainingTo: UIKitRenderer.log,
             environment: {
                 reportEnvironment()
                 environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
@@ -235,13 +240,7 @@ final class UIKitRenderer {
         runtime.core.setDeviceInfo(HostDeviceInfo(
             formFactor: device.userInterfaceIdiom == .pad ? .tablet : .phone, platform: "iOS", model: device.model,
             manufacturer: "Apple", name: device.name, versionString: device.systemVersion, deviceType: deviceType))
-        let bundle = Bundle.main
-        runtime.core.setApplicationInfo(HostApplicationInfo(
-            name: bundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
-                ?? bundle.object(forInfoDictionaryKey: "CFBundleName") as? String ?? ProcessInfo.processInfo.processName,
-            packageName: bundle.bundleIdentifier ?? "",
-            versionString: bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "",
-            buildString: bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? ""))
+        runtime.core.setApplicationInfo(SystemFacts.application)
     }
 
     /// Shows every StateUI window in a window scene of its own, the first waiting one; a window the tree no longer
@@ -262,6 +261,7 @@ final class UIKitRenderer {
             bringBack(insteadOf: closing, staying: root.windows)
             closing.close()
         })
+        acts.windowsOpen(roster.windows.map(\.element))
         for (element, controller) in roster.windows {
             controller.present(element, in: runtime)
         }
@@ -326,6 +326,11 @@ final class UIKitRenderer {
     /// The window the user is looking at: the key one, else the first.
     var userWindow: UIWindow? {
         roster.windows.first { $0.1.window?.isKeyWindow == true }?.1.window ?? roster.windows.first?.1.window
+    }
+
+    /// The window element whose window is `window`.
+    func element(of window: UIWindow) -> MountedElement? {
+        roster.windows.first { $0.controller.window === window }?.element
     }
 
     /// The root of the user's window, which presents a question, a dialog or a preview over what the window shows.

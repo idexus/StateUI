@@ -33,9 +33,6 @@ final class GTKWebView: GTKControl {
     /// Whether the navigation under way failed, so its finish tells nothing more.
     private var failed = false
 
-    /// A page asked for and not loaded yet: loaded once the element's values are all applied.
-    private var pending: WebViewSource?
-
     init() {
         widget = webkit_web_view_new()!.assumingMemoryBound(to: GtkWidget.self)
         g_object_ref_sink(widget)
@@ -54,21 +51,13 @@ final class GTKWebView: GTKControl {
 
     // MARK: - What the tree gives it
 
-    /// Shows `source` - once the element's other values, its agent among them, are applied; none leaves the page as
-    /// it is, and the page given after it is shown again.
+    /// Shows `source` - the agent it is handed with already the view's (`applies`); none leaves the page as it is,
+    /// and the page given after it is shown again.
     func show(_ source: WebViewSource?) {
         guard source != self.source else { return }
         self.source = source
         guard let source else { return }
-        if pending == nil { GTKWebKitSignals.whenIdle(self) }
-        pending = source
-    }
-
-    /// Loads the page asked for last.
-    func loadPending() {
-        guard let pending else { return }
-        self.pending = nil
-        switch pending {
+        switch source {
         case .url(let address): webkit_web_view_load_uri(webView, address)
         case .html(let document, let baseURL?): webkit_web_view_load_html(webView, document, baseURL)
         case .html(let document, nil): webkit_web_view_load_uri(webView, WebDocument.address(of: document))

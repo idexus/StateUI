@@ -30,13 +30,18 @@
 }
 
 /// A composed view an element was built by: its type, its walk, its state boxes by path, what it was built with,
-/// and the branch its content root stood in.
+/// the branch its content root stood in - and what the clean walk builds it again from: the node that held it, what
+/// its body read and the derived states it made.
+/// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
 typealias BuiltView = (
     type: KeyName,
     walk: ViewWalk,
-    boxes: [(path: String, box: StateBox)],
-    inputs: [(path: String, input: Input)],
-    branch: String?)
+    boxes: [(path: PathNumber, box: StateBox)],
+    inputs: [(path: PathNumber, input: Input)],
+    branch: PathNumber?,
+    placeholder: Node,
+    reads: Set<ObjectIdentifier>,
+    derived: [AnyObject])
 
 /// One element as it stands on the host - a class, so unchanged parts of one
 /// tree are shared into the next.
@@ -56,7 +61,10 @@ final class RenderedNode {
     var events: [Event: Int]
 
     /// The builder path the element was written at (`Node.key`).
-    var key: String?
+    var key: PathNumber?
+
+    /// The value the element was written as (`Node.identity`), a repeat's variant included.
+    var identity: ElementIdentity?
 
     /// The composed views this element was built by, outermost first: each one's
     /// type, its state boxes by path, what it was built with, and the branch its
@@ -142,7 +150,7 @@ final class RenderedNode {
         events: [Event: Int],
         motion: Motion? = nil,
         lanes: MotionLanes = .all,
-        key: String? = nil,
+        key: PathNumber? = nil,
         views: [BuiltView] = [],
         placeholder: Node? = nil,
         view: String? = nil,

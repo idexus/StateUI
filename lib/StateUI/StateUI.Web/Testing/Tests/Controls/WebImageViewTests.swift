@@ -14,7 +14,7 @@ final class WebImageViewTests: XCTestCase {
     func testAFillingPictureReachesPastEachEdge() {
         let layout = WebLayoutView(arrangement: .grid)
         let picture = WebImageView()
-        defer { for view in [layout, picture] { view.detach() } }
+        defer { for view in [layout, picture] { view.release() } }
         picture.apply(picture: nil, aspect: .fill)
         layout.setItems([(picture, { LayoutValues() })])
 
@@ -32,7 +32,7 @@ final class WebImageViewTests: XCTestCase {
     /// away from what the user moves.
     func testAPictureIsNotTheBrowsersToDrag() {
         let picture = WebImageView()
-        defer { picture.detach() }
+        defer { picture.release() }
 
         XCTAssertEqual(WebPage.attribute(of: picture.node, "draggable"), "false")
     }
@@ -42,7 +42,7 @@ final class WebImageViewTests: XCTestCase {
     /// room's rounded corners clipping nothing. A fitted drawing, and a filling bitmap, hold their size.
     func testAFillingDrawingHoldsNoSizeOfItsOwn() {
         let picture = WebImageView()
-        defer { picture.detach() }
+        defer { picture.release() }
 
         picture.apply(picture: .file("card.svg"), aspect: .fill)
         XCTAssertEqual(WebPage.style(of: picture.node, "contain"), "none", "a drawing covering its room")

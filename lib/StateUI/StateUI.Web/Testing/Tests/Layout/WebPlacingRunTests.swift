@@ -22,7 +22,7 @@ final class WebPlacingRunTests: XCTestCase {
     func testTheSameTurnAtANewSizeTurnsAboutItsNewMiddle() {
         let layout = WebLayoutView(arrangement: .layers)
         let card = WebLayoutView(arrangement: .single)
-        defer { for view in [layout, card] { view.detach() } }
+        defer { for view in [layout, card] { view.release() } }
         layout.setItems([(card, { LayoutValues() })])
 
         layout.setPlacement(run(width: 10, height: 10))
@@ -44,7 +44,7 @@ final class WebPlacingRunTests: XCTestCase {
     func testAChildTheRunPlacesNeverReadsItsOwnValues() {
         let layout = WebLayoutView(arrangement: .layers)
         let (placed, beyond) = (WebLayoutView(arrangement: .single), WebLayoutView(arrangement: .single))
-        defer { for view in [layout, placed, beyond] { view.detach() } }
+        defer { for view in [layout, placed, beyond] { view.release() } }
         var reads = [0, 0]
         layout.setPlacement(run(width: 40, height: 40))
 
@@ -57,12 +57,29 @@ final class WebPlacingRunTests: XCTestCase {
         XCTAssertEqual(reads, [0, 1], "the placed child read nothing; the one past the run, once")
     }
 
+    /// EACH CHILD IS DRAWN AT ITS PLACE IN THE RUN'S ORDER: its z-index is where it stands back to front, as the
+    /// run ranks it; a child the run places none of after them.
+    func testEachChildIsDrawnAtItsPlaceInTheRunsOrder() {
+        let layout = WebLayoutView(arrangement: .layers)
+        let children = (0..<4).map { _ in WebLayoutView(arrangement: .single) }
+        defer { for view in [layout] + children { view.release() } }
+        layout.setItems(children.map { child in (child, { LayoutValues() }) })
+
+        layout.setPlacement(HostPlacementRun(placements: [2, 0, 1].map { rank in
+            HostPlacement(
+                bounds: Rect(x: 0, y: 0, width: 10, height: 10), translationX: 0, translationY: 0, rotation: 0,
+                scaleX: 1, scaleY: 1, opacity: 1, zIndex: rank, shade: 0)
+        }))
+
+        XCTAssertEqual(children.map { WebPage.style(of: $0.node, "z-index") }, ["2", "0", "1", "3"])
+    }
+
     /// A RUN'S PLACE IS A MOVE, drawn over the layout's corner on a layer of the card's own: what moves every frame
     /// is composed by the browser, with no layout of the page.
     func testARunsPlaceIsAMoveOnALayerOfItsOwn() {
         let layout = WebLayoutView(arrangement: .layers)
         let card = WebLayoutView(arrangement: .single)
-        defer { for view in [layout, card] { view.detach() } }
+        defer { for view in [layout, card] { view.release() } }
         layout.setItems([(card, { LayoutValues() })])
 
         layout.setPlacement(HostPlacementRun(placements: [
@@ -83,7 +100,7 @@ final class WebPlacingRunTests: XCTestCase {
         let layout = WebLayoutView(arrangement: .layers)
         let card = WebLayoutView(arrangement: .grid)
         let (face, shade) = (WebLayoutView(arrangement: .single), WebLayoutView(arrangement: .single))
-        defer { for view in [layout, card, face, shade] { view.detach() } }
+        defer { for view in [layout, card, face, shade] { view.release() } }
         card.setItems([(face, { LayoutValues() }), (shade, { LayoutValues() })])
         layout.setItems([(card, { LayoutValues() })])
 
@@ -100,7 +117,7 @@ final class WebPlacingRunTests: XCTestCase {
     func testACardTheRunPlacesIsNotBoundByItsRoom() {
         let layout = WebLayoutView(arrangement: .layers)
         let card = WebLayoutView(arrangement: .single)
-        defer { for view in [layout, card] { view.detach() } }
+        defer { for view in [layout, card] { view.release() } }
         layout.setItems([(card, { LayoutValues() })])
         XCTAssertEqual(WebPage.style(of: card.node, "max-height"), "100%", "an unplaced child stays in its room")
 

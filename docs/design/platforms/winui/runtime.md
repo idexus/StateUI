@@ -216,9 +216,11 @@ one before is answered. A choice of actions is a
 button a choice, the dangerous one first, and the pressed caption is the
 answer - the cancelling one too; a dialog dismissed any other way, Escape
 among them, answers that nothing was chosen. A prompt's field takes the
-placeholder, the keyboard its purpose asks for and the most it may hold - as
-WinUI's `MaxLength`, in UTF-16 units, where a field of the tree counts
-characters ([controls](controls.md)).
+placeholder and the keyboard its purpose asks for; the most it may hold is
+counted in characters, as a field of the tree counts them: WinUI's
+`MaxLength` counts UTF-16 units, so the field tells each change of its words
+and the host holds them (`InputWords.held`), whole while an input method
+composes them ([controls](controls.md)).
 
 A dialog needs its window's `XamlRoot`, which a window opened a moment ago -
 a page asking as it is made - does not have until WinUI has loaded it. The
@@ -232,11 +234,12 @@ showing ends in an error does.
 
 A window can go before the user answered what stands over it - closed by
 the tree in the turn its page asked, before WinUI loaded it, or later by the
-tree or the user. The host remembers the window each dialog stands over; as
-the window leaves, the question stands again over the window the user is in
-then (`HostActPerformer.askAgain`) and the old dialog's answer counts for
-nothing. Otherwise its `Loaded` never comes, the queue waits on it, and every
-later question with it.
+tree or the user. Its dialog goes with it, and the host layer answers its
+question as dismissed ([questions for the
+user](../../host/runtime.md#questions-for-the-user)); the host forgets the
+dialog's ticket, so an answer it gives later counts for nothing. Otherwise its
+`Loaded` never comes, the queue waits on it, and every later question with
+it.
 
 ## Files
 

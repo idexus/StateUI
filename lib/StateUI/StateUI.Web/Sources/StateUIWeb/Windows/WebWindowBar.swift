@@ -127,8 +127,8 @@ final class WebWindowBar: WebDOMView {
                 made.append(group)
             }
         }
-        for (key, button) in buttons where kept[key] == nil { button.detach() }
-        for gone in groups { gone.detach() }
+        for (key, button) in buttons where kept[key] == nil { button.release() }
+        for gone in groups { gone.release() }
         buttons = kept
         groups = made
         // The bar ends with the actions behind it, then - a sheet's - the button closing it.
@@ -166,16 +166,16 @@ final class WebWindowBar: WebDOMView {
         glyphs.append(shape)
     }
 
-    override func detach() {
-        for button in buttons.values { button.detach() }
-        for group in groups { group.detach() }
-        for shape in glyphs { shape.detach() }
+    override func release() {
+        for button in buttons.values { button.release() }
+        for group in groups { group.release() }
+        for shape in glyphs { shape.release() }
         let parts = [
             toggle, back, closer, more, name, subtitle, heading, brand, title, leading, trailing, side, start, lead,
         ]
         for part in parts {
-            part.detach()
+            part.release()
         }
-        super.detach()
+        super.release()
     }
 }

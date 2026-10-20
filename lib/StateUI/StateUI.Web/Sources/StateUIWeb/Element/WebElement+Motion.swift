@@ -40,10 +40,6 @@ extension WebElement {
     /// Crosses a change of visibility by the host layer's rule; as a fade out ends, the layout closes over it.
     func crossVisibility() {
         guard let view else { return }
-        element.crossVisibility(view) { [weak self] in
-            guard let layout = self?.layoutParent else { return }
-            (layout.view as? WebLayoutView)?.places.patchArrived()
-            layout.arrangeChildren()
-        }
+        element.crossVisibility(view, closingIn: (layoutParent?.view as? WebLayoutView)?.places)
     }
 }

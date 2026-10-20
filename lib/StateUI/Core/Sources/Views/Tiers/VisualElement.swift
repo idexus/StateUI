@@ -69,10 +69,9 @@ extension VisualElement {
     ///     }
     ///
     /// An `.id()` written on the view wins over the one `ForEach` gives. Any
-    /// `Hashable` is a key - a string, a number, a UUID, the author's own enum
-    /// or struct - named in the patch by `String(describing:)`: two values
-    /// that describe themselves alike, and one written twice, are said; a
-    /// class is keyed by something it holds (`.id(file.path)`).
+    /// `Hashable` is a key - a string, a number, a UUID, the author's own enum,
+    /// struct or class - compared as the value it is; one written twice among
+    /// siblings is said.
     ///
     /// - Parameter value: who this view is - distinct among its siblings and
     ///   the same across renders.

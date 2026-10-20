@@ -36,19 +36,6 @@ extension UIKitElement {
         element.reportScrolled(from: old, to: new, in: host.runtime)
     }
 
-    /// Tells every element in this subtree that follows its focus where the focus now is, where that changed: on
-    /// iOS a field or an editor holds it, or a view in it does.
-    func reportFocus() {
-        if element.handler(.isFocusedChanged) != nil, let view {
-            let focused = Self.holdsFocus(view)
-            if focused != reportedFocus {
-                reportedFocus = focused
-                send(.isFocusedChanged, [.bool(focused)])
-            }
-        }
-        for child in children { child.reportFocus() }
-    }
-
     /// Whether `view`, or a view in it, holds the focus.
     static func holdsFocus(_ view: UIView) -> Bool {
         view.isFirstResponder || view.subviews.contains(where: holdsFocus)

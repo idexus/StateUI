@@ -66,9 +66,18 @@ in the order said.
 
 ## Scrolling to an item
 
-GTK brings the item into view, the shortest way; once it is laid out, the
-scrolled window stands where the anchor says, by the host layer's rule
-([scrolling to an item](../../host/items.md#scrolling-to-an-item)). The item
+An item laid out already glides to where the anchor stands it, unless the
+user asks for less motion, by the host layer's rule
+([scrolling to an item](../../host/items.md#scrolling-to-an-item)):
+libadwaita's timed animation of the scrolled window's adjustment, a quarter
+of a second easing out, which stands the item again as it ends. The
+animation does not read the desktop's setting itself - the rule has read it
+already, and one decision has one owner. A scroll of the user's stops it
+where it stands.
+
+An item further off is not laid out - GTK lays its rows out only as it comes
+to them - so GTK brings it into view at once, the shortest way; once it is
+laid out, the scrolled window stands where the anchor says. The item
 is laid out over the next frames, not in the next idle moment - its cell is
 bound before it has a size - so the host looks for it every 16 ms, on a GLib
 timeout, sixty times at most, and stands it on every frame it is laid out on

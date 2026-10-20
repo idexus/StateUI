@@ -25,8 +25,10 @@ public enum StateUIWebViewGTK {
             web.onProcessGone = { reports.raise(WebViewContract.processTerminated) }
             return web
         }) { web in
-            web.property(WebViewContract.userAgent) { control, agent in control.userAgent = agent }
-            web.property(WebViewContract.source) { control, source in control.show(source) }
+            web.applies([WebViewContract.userAgent, WebViewContract.source]) { control, values in
+                if values.changed(WebViewContract.userAgent) { control.userAgent = values[WebViewContract.userAgent] }
+                if values.changed(WebViewContract.source) { control.show(values[WebViewContract.source]) }
+            }
             web.raises(WebViewContract.navigating)
             web.raises(WebViewContract.navigated)
             web.raises(WebViewContract.canGoBackChanged)

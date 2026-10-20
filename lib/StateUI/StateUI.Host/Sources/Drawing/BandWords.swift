@@ -10,9 +10,8 @@
     /// Whether words on `band` are drawn light: its relative luminance, Rec. 709, below a half. Nil for a value that
     /// is no colour.
     public static func light(on band: HostValue) -> Bool? {
-        guard let color = band.color else { return nil }
-        let luminance = 0.2126 * Double(color.red) + 0.7152 * Double(color.green) + 0.0722 * Double(color.blue)
-        return luminance / 255 < 0.5
+        guard let color = band.fractions else { return nil }
+        return 0.2126 * color.red + 0.7152 * color.green + 0.0722 * color.blue < 0.5
     }
 
     /// The colour of words on `band`: the one the tree writes, `written`, else white on a dark band and black on a

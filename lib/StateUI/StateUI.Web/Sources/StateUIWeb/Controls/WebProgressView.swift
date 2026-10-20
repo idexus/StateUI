@@ -31,8 +31,8 @@ final class WebProgressView: WebDOMView {
         style("--stateui-on", WebCSS.color(tint))
     }
 
-    override func detach() {
-        bar.detach()
-        super.detach()
+    override func release() {
+        bar.release()
+        super.release()
     }
 }

@@ -75,10 +75,10 @@ final class WebSplitView: WebDOMView {
         }
     }
 
-    override func detach() {
-        sidebar.detach()
-        detail.detach()
-        scrim.detach()
-        super.detach()
+    override func release() {
+        sidebar.release()
+        detail.release()
+        scrim.release()
+        super.release()
     }
 }

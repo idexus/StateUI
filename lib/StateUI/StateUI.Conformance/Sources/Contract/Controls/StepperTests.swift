@@ -38,6 +38,22 @@
                 s.expect(try s.held(StepperContract.value, on: stepper), 10, "kept inside its range")
                 s.expect(heard.values, [3], "and nobody heard the program")
             },
+            ConformanceCase("aFractionalStepLandsOnItsDecimals", proves: [
+                Covered(StepperContract.value), Covered(StepperContract.step),
+            ]) { s in
+                let level = State(wrappedValue: 0.2)
+                let heard = Received<Double>()
+                s.start {
+                    Stepper(level.projectedValue).minimum(0).maximum(1).step(0.1)
+                        .onValueChanged { heard.values.append($0) }.id("stepper")
+                }
+                let stepper = try s.element("stepper")
+
+                try s.perform(.step(up: true), on: stepper)
+                s.settle { !heard.values.isEmpty }
+                s.expect(level.wrappedValue, 0.3, "a tenth from 0.2 is 0.3, not what binary arithmetic adds up to")
+                s.expect(heard.values, [0.3])
+            },
             ConformanceCase("typedWordsThatSayNoNumberLeaveTheNumber", proves: [
                 Covered(StepperContract.value), Covered(StepperContract.valueChanged), Covered(StepperContract.maximum),
             ]) { s in

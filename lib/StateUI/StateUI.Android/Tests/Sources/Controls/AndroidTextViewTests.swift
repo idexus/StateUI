@@ -11,6 +11,7 @@ final class AndroidTextViewTests: XCTestCase {
         [
             ("testATextsSpansAreRunsOfItsWords", testATextsSpansAreRunsOfItsWords),
             ("testATextShowsAsManyLinesAsItsBreakAllows", testATextShowsAsManyLinesAsItsBreakAllows),
+            ("testWrappedWordsHeldToSomeLinesEndWithAnEllipsis", testWrappedWordsHeldToSomeLinesEndWithAnEllipsis),
             ("testATextsCaseAndLetterSpacingAreItsOwn", testATextsCaseAndLetterSpacingAreItsOwn),
             ("testABackgroundBrushIsDrawnAcrossTheView", testABackgroundBrushIsDrawnAcrossTheView),
             ("testALabelsWordsStandInTheThemesPrimaryColour", testALabelsWordsStandInTheThemesPrimaryColour),
@@ -60,6 +61,30 @@ final class AndroidTextViewTests: XCTestCase {
             XCTAssertGreaterThan(heights[1], heights[2])
         }
     }
+
+    /// Wrapped words held to some lines end the last with an ellipsis; words free of a limit end with none, and a
+    /// truncated line keeps its own.
+    func testWrappedWordsHeldToSomeLinesEndWithAnEllipsis() {
+        onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    Text("Words held to two lines").maximumLines(2)
+                    Text("Words free of a limit")
+                    Text("Cut at the start").lineBreak(.headTruncation)
+                }
+            }
+            host.layOut()
+
+            let ends = host.views(AndroidTextView.self).map { view in
+                Java.callObject(view.reference, Self.getEllipsize).map { Java.text(Java.callObject($0, Self.name)) }
+            }
+            XCTAssertEqual(ends, ["END", nil, "START"])
+        }
+    }
+
+    @MainActor private static let getEllipsize = Java.method(
+        JavaAPI.textView, "getEllipsize", "()Landroid/text/TextUtils$TruncateAt;")
+    @MainActor private static let name = Java.method(JavaAPI.truncateAt, "name", "()Ljava/lang/String;")
 
     /// Upper case throughout, and letter spacing in points drawn as Android's share of the text size.
     func testATextsCaseAndLetterSpacingAreItsOwn() throws {

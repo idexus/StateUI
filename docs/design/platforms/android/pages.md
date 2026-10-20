@@ -11,7 +11,11 @@ what the tree says and reports what the user does into the same bindings.
 A stack shows its top page under its bar. The pages below are kept by their
 elements and held by no view, so each keeps what it showed - where it was
 scrolled, what was typed - for when the user comes back to it. A push or a
-pop changes which page the stack holds; nothing is built again for it.
+pop changes which page the stack holds; nothing is built again for it. The
+change moves by Android's own transition (`TransitionManager`): a page pushed
+slides in from the end over the one it covers going toward the start, one
+popped back to the other way, as the host layer says the path changed
+([a path that changes](../../host/pages.md#a-path-that-changes)).
 
 ## The bar
 

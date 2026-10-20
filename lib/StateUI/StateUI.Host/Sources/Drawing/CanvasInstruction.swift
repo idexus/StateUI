@@ -23,7 +23,7 @@
     case strokeLine(from: Point, to: Point)
     /// Outlines a rectangle.
     case strokeRectangle(Rect)
-    /// Outlines a rectangle with its corners rounded by the radius.
+    /// Outlines a rectangle with its corners rounded by the radius, read between nothing and half its shorter side.
     case strokeRoundedRectangle(Rect, radius: Double)
     /// Outlines the ellipse a rectangle holds.
     case strokeEllipse(Rect)
@@ -34,7 +34,7 @@
     case strokePath([HostCurveCommand])
     /// Fills a rectangle.
     case fillRectangle(Rect)
-    /// Fills a rectangle with its corners rounded by the radius.
+    /// Fills a rectangle with its corners rounded by the radius, read between nothing and half its shorter side.
     case fillRoundedRectangle(Rect, radius: Double)
     /// Fills the ellipse a rectangle holds.
     case fillEllipse(Rect)
@@ -72,6 +72,9 @@
         func rect() -> Rect? { numbers(4).map { Rect(x: $0[0], y: $0[1], width: $0[2], height: $0[3]) } }
         func flag(_ index: Int) -> Bool? { values.indices.contains(index) ? values[index].bool : nil }
         func curves() -> [HostCurveCommand]? { values.first?.string.flatMap { HostPath(svg: $0)?.arcsAsCubics } }
+        func radius(_ r: Rect, _ n: [Double]) -> Double {
+            BoxArithmetic.fitted(max(0, n[4]), width: abs(r.width), height: abs(r.height))
+        }
 
         switch kind {
         case 0: guard let color = values.first, color.color != nil else { return nil }; self = .fillColor(color)
@@ -84,14 +87,14 @@
             guard let n = numbers(4) else { return nil }
             self = .strokeLine(from: Point(x: n[0], y: n[1]), to: Point(x: n[2], y: n[3]))
         case 7: guard let r = rect() else { return nil }; self = .strokeRectangle(r)
-        case 8: guard let r = rect(), let n = numbers(5) else { return nil }; self = .strokeRoundedRectangle(r, radius: n[4])
+        case 8: guard let r = rect(), let n = numbers(5) else { return nil }; self = .strokeRoundedRectangle(r, radius: radius(r, n))
         case 9: guard let r = rect() else { return nil }; self = .strokeEllipse(r)
         case 10:
             guard let r = rect(), let n = numbers(6), let clockwise = flag(6), let closed = flag(7) else { return nil }
             self = .strokeArc(r, start: n[4], end: n[5], clockwise: clockwise, closed: closed)
         case 11: guard let c = curves() else { return nil }; self = .strokePath(c)
         case 12: guard let r = rect() else { return nil }; self = .fillRectangle(r)
-        case 13: guard let r = rect(), let n = numbers(5) else { return nil }; self = .fillRoundedRectangle(r, radius: n[4])
+        case 13: guard let r = rect(), let n = numbers(5) else { return nil }; self = .fillRoundedRectangle(r, radius: radius(r, n))
         case 14: guard let r = rect() else { return nil }; self = .fillEllipse(r)
         case 15:
             guard let r = rect(), let n = numbers(6), let clockwise = flag(6) else { return nil }

@@ -25,18 +25,11 @@ extension UIKitElement {
             if let scroll = registered as? UIKitScrollView { follow(scroll) }
             return registered
         }
-        guard !Self.showsUnsupported(type) else { return UIKitUnsupportedView(type) }
+        guard !UIKitRegistrations.registry.showsUnsupported(type) else { return UIKitUnsupportedView(type) }
         let single = UIKitSingleChildView()
         // An overlay lets a touch beside what it holds through to the page under it.
         single.passesBeside = type == .overlay
         return single
-    }
-
-    /// Whether the host shows an entry as unsupported: no registration makes it, and it is no page or arrangement of
-    /// pages, no overlay and nothing presented without a view.
-    static func showsUnsupported(_ type: NodeType) -> Bool {
-        !UIKitRegistrations.registry.realizes(type) && !NodeType.viewlessTypes.contains(type)
-            && !NodeType.pageTypes.contains(type) && type != .overlay
     }
 
     func applyProperties(changed: Set<Prop>) {
@@ -78,18 +71,18 @@ extension UIKitElement {
         }
     }
 
-    /// Forgets what this element's layout and every one around it measured, and lays them out again.
+    /// Forgets what this element's layout and every one around it measured, and lays them out again - up to an
+    /// ItemsView's entry, whose cell measures it again (`MountedElement.measuredUpward`).
+    /// Design: docs/design/host/layout.md#measured-once
     func invalidateMeasurements() {
-        var each: UIKitElement? = self
-        while let element = each {
-            // An entry of an ItemsView is measured by its cell; the list's own size never follows its items.
-            if let items = element.parent?.view as? UIKitItemsView {
-                element.view.map { _ in items.remeasure(element.element) }
-                return
-            }
-            (element.view as? UIKitLayoutView)?.forgetMeasurements()
-            element.view?.setNeedsLayout()
-            each = element.parent
+        let walk = element.measuredUpward()
+        for each in walk.layouts {
+            (each.uiKit.view as? UIKitLayoutView)?.forgetMeasurements()
+            each.uiKit.view?.setNeedsLayout()
+        }
+        if let entry = walk.entry {
+            (entry.parent?.uiKit.view as? UIKitItemsView)?.remeasure(entry)
+            return
         }
         view?.window?.rootViewController?.view.setNeedsLayout()
     }
@@ -118,17 +111,15 @@ extension UIView {
         if words.headingLevel > 0 { accessibilityTraits.insert(.header) } else { accessibilityTraits.remove(.header) }
         accessibilityElementsHidden = words.presence == .hiddenWithChildren
             || (words.presence == .hidden && holdingNoChildren)
-        isAccessibilityElement = words.presence.map { $0 == .met } ?? standing
+        isAccessibilityElement = words.isElement(standing: standing)
     }
 }
 
 extension UIColor {
     /// A StateUI colour: four sRGB channels, drawn in sRGB exactly; nil for a value that is no colour.
     convenience init?(stateUI value: HostValue) {
-        guard let color = value.color else { return nil }
-        self.init(
-            red: CGFloat(color.red) / 255, green: CGFloat(color.green) / 255, blue: CGFloat(color.blue) / 255,
-            alpha: CGFloat(color.alpha) / 255)
+        guard let color = value.fractions else { return nil }
+        self.init(red: color.red, green: color.green, blue: color.blue, alpha: color.alpha)
     }
 }
 #endif

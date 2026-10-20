@@ -7,7 +7,11 @@
 /// The widget: made, and given the element's properties.
 extension GTKElement {
     func makeView() -> GTKView? {
-        if type == .itemsView, let host { return GTKItemsView(cells: ItemsCells(element, in: host.runtime)) }
+        if type == .itemsView, let host {
+            return GTKItemsView(cells: ItemsCells(element, in: host.runtime), reducesMotion: { [weak host] in
+                host?.runtime.reducesMotion() ?? false
+            })
+        }
         if element.isDrawnByParent(in: GTKRegistrations.registry) || element.isViewless { return nil }
         if type == .divider { return GTKDividerView(inRow: element.parent?.type == .hStack) }
         if let registered = GTKRegistrations.registry.makeView(
@@ -31,13 +35,6 @@ extension GTKElement {
         case .tabView: return GTKTabView()
         default: return GTKUnsupportedView(type)
         }
-    }
-
-    /// Whether the host shows an entry as unsupported: no registration makes it, and it is no page's, no overlay, no
-    /// part of another view and no structure.
-    static func showsUnsupported(_ type: NodeType) -> Bool {
-        !GTKRegistrations.registry.realizes(type) && !NodeType.viewlessTypes.contains(type)
-            && !NodeType.pageTypes.contains(type) && type != .overlay
     }
 
     /// Puts the changed properties on the widget - a patch's or a frame's, the program's write either way: its
@@ -75,19 +72,13 @@ extension GTKElement {
         }
     }
 
-    /// Forgets the sizes kept by this element's layout and every one above it, and asks GTK to measure again.
+    /// Forgets the sizes kept by this element's layout and every one above it - up to an ItemsView's entry, whose
+    /// cell measures it again (`MountedElement.measuredUpward`) - and asks GTK to measure again.
+    /// Design: docs/design/host/layout.md#measured-once
     func invalidateMeasurements() {
-        var element: GTKElement? = self
-        while let each = element {
-            // An entry of an ItemsView is measured by its cell; the list's own size never follows its items.
-            if let items = each.parent?.view as? GTKItemsView {
-                items.remeasure(each.element)
-                break
-            }
-            (each.view as? GTKLayoutView)?.forgetMeasurements()
-            element = each.parent
-        }
-
+        let walk = element.measuredUpward()
+        for each in walk.layouts { (each.gtk.view as? GTKLayoutView)?.forgetMeasurements() }
+        if let entry = walk.entry { (entry.parent?.gtk.view as? GTKItemsView)?.remeasure(entry) }
         (view ?? parent?.nearestView)?.invalidateMeasure()
     }
 

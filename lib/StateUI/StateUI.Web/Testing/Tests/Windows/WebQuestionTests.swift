@@ -46,6 +46,21 @@ final class WebQuestionTests: XCTestCase {
         XCTAssertEqual(told.map(\.1), ["Paweł"])
     }
 
+    /// A prompt's field holds its bound in characters, as a field of the tree does - however many units each is to
+    /// the browser.
+    func testAPromptsFieldHoldsItsBoundInCharacters() {
+        let prompt = question(.prompt, [
+            .string("Name"), .string("Three at most"), .string("OK"), .string("Cancel"), .nothing, .number(3),
+        ])
+        ask(prompt) { dialog in
+            let parts = WebPage.children(of: dialog)
+            WebPage.enter("😀😀😀😀", into: parts[2])
+            XCTAssertEqual(WebRelay.value(of: parts[2]), "😀😀😀")
+            WebPage.tap(WebPage.children(of: parts[3])[1])
+        }
+        XCTAssertEqual(told.map(\.1), ["😀😀😀"])
+    }
+
     /// Escape cancels a question that can be cancelled, and dismisses an alert.
     func testEscapeCancels() {
         ask(question(.confirm, [.string("Sure?")])) { WebPage.dismiss($0) }

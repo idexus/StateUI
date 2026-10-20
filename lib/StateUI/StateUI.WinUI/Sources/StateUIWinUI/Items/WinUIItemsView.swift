@@ -182,7 +182,8 @@ final class WinUIItemsView: WinUILayoutView {
     /// Brings the item of `identity` where `anchor` says.
     func scroll(to identity: String, anchor: ScrollAnchor) {
         guard let place = cells.identities.firstIndex(of: identity) else { return }
-        stateui_winui_items_scroll_to(list.handle, Int32(place), anchor.rawValue, !reducesMotion())
+        stateui_winui_items_scroll_to(
+            list.handle, Int32(place), anchor.rawValue, ItemsScrollTarget.glides(reducingMotion: reducesMotion()))
     }
 
     /// The list left: WinUI lets its cells go, and they leave with it.

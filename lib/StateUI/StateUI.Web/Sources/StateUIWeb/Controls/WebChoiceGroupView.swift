@@ -41,7 +41,7 @@ final class WebChoiceGroupView: WebDOMView, WebChoosing {
 
     /// Stands an element for each of `shown`, in order, each choosing its value as the user clicks it.
     private func offer(_ shown: [String]) {
-        detachChoices()
+        releaseChoices()
         for (place, words) in shown.enumerated() {
             if segmented {
                 let segment = WebDOMView(tag: "button")
@@ -91,13 +91,13 @@ final class WebChoiceGroupView: WebDOMView, WebChoosing {
         for label in segmented ? [] : choices { label.attribute("aria-disabled", enabled ? nil : "true") }
     }
 
-    private func detachChoices() {
-        for view in inputs + captions + choices { view.detach() }
+    private func releaseChoices() {
+        for view in inputs + captions + choices { view.release() }
         (choices, inputs, captions) = ([], [], [])
     }
 
-    override func detach() {
-        detachChoices()
-        super.detach()
+    override func release() {
+        releaseChoices()
+        super.release()
     }
 }

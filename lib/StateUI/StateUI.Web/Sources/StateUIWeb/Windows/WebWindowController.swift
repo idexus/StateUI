@@ -27,6 +27,10 @@ final class WebWindowController {
     private var holdsHistory = false
     private var leavesHistory = false
 
+    /// The page's own goings back over its entry that windows since closed asked for and the browser has yet to
+    /// tell: the browser's history is the page's, so whichever window hears one next, none is the user's.
+    private static var unclaimedLeaves = 0
+
     /// What the window hears the browser's history move by, until it closes.
     private var historyListener: Int32 = 0
 
@@ -57,6 +61,10 @@ final class WebWindowController {
     private func historyMoved() {
         if leavesHistory {
             leavesHistory = false
+            return
+        }
+        if Self.unclaimedLeaves > 0 {
+            Self.unclaimedLeaves -= 1
             return
         }
         if holdsHistory {
@@ -125,6 +133,7 @@ final class WebWindowController {
         sheets = []
         window.close()
         WebRelay.forget(historyListener)
+        if leavesHistory { Self.unclaimedLeaves += 1 }
     }
 
     /// The user took the top sheet away: the modal stack is told how many remain.

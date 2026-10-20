@@ -5,7 +5,7 @@
 /// it and where the hand is now, in the room; let go, how fast the hand went, per second, whether that dismisses it,
 /// when it set out flying and whether it has left the room.
 struct LayoutItemHand: Equatable {
-    let identity: String
+    let identity: Int
     let taken: Placement
     let from: Point
     var at: Point

@@ -9,8 +9,8 @@ enum DerivationScope {
     private static var stack: [[AnyObject]] = []
 
     /// The key a conversion written at `site` keeps its derived state under: the element being built, then the line.
-    static func key(_ site: String) -> String {
-        (BuildScope.current?.element).map { "\($0)#\(site)" } ?? site
+    static func key(_ site: PathNumber) -> PathNumber {
+        (BuildScope.current?.element).map { site.under(PathNumber($0)) } ?? site
     }
 
     /// Hands a derived state to the element being built; false where none is being built.

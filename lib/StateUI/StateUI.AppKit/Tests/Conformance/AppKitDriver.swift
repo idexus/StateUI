@@ -5,6 +5,7 @@
 import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 @testable import StateUIAppKit
 @_spi(Host) import StateUIConformance
 
@@ -202,7 +203,7 @@ final class AppKitDriver: HostDriver {
         if let map = (element.native as? AppKitElement)?.view as? AppKitMapView, let held = mapHolds(property, map) {
             return held
         }
-        if let web = (element.native as? AppKitElement)?.view as? AppKitWebView, let held = webHolds(property, web) {
+        if let web = (element.native as? AppKitElement)?.view as? WebKitView, let held = webHolds(property, web) {
             return held
         }
         if property == .barTitle || property == .barSubtitle { return try titleAreaHolds(property, element) }

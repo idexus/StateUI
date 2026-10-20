@@ -413,10 +413,10 @@ body {
 .stateui-items[data-layout="grid"] > .stateui-items-content { display: grid; align-content: start; }
 .stateui-items[data-layout="grid"] .stateui-item[data-part] { grid-column: 1 / -1; }
 .stateui-item { flex: none; }
-.stateui-item:empty { min-height: 44px; }
-.stateui-items[data-layout="row"] .stateui-item:empty { min-height: 0; min-width: 44px; }
+.stateui-item:empty { min-height: var(--stateui-item-down); }
+.stateui-items[data-layout="row"] .stateui-item:empty { min-height: 0; min-width: var(--stateui-item-across); }
 .stateui-item[aria-selected] { cursor: pointer; border-radius: 8px; }
-.stateui-item[aria-selected="true"] { background: color-mix(in srgb, var(--stateui-accent) 16%, transparent); }
+.stateui-item[aria-selected="true"] { background: color-mix(in srgb, var(--stateui-accent) var(--stateui-chosen-band), transparent); }
 
 /* A web view: the browser's own frame over the room its layout gives it, the box taking no room of its own. */
 .stateui-frame { position: relative; min-width: 0; min-height: 0; background: white; }
@@ -467,6 +467,7 @@ body {
 /* A covered tab is laid out unseen, so a page sized by its own frame knows it before it shows. */
 .stateui-tab-pages > [data-covered] { visibility: hidden !important; overflow: clip; }
 .stateui-stack > [data-arriving] { animation: stateui-arrive 0.22s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.stateui-stack > [data-returning] { animation: stateui-return 0.22s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
 /* A scroller. */
 .stateui-scroller {
@@ -690,6 +691,7 @@ body {
 @keyframes stateui-fade-in { from { opacity: 0; } }
 @keyframes stateui-turn { to { transform: rotate(1turn); } }
 @keyframes stateui-arrive { from { opacity: 0; transform: translateY(6px); } }
+@keyframes stateui-return { from { opacity: 0; transform: translateY(-6px); } }
 /* What the page tells a screen reader, which nobody sees. */
 .stateui-announcer { position: fixed; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
@@ -699,7 +701,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .stateui-sidebar, .stateui-split, .stateui-bar, .stateui-bar *, .stateui-stack > [data-arriving], .stateui-scrim,
+  .stateui-sidebar, .stateui-split, .stateui-bar, .stateui-bar *, .stateui-stack > [data-arriving],
+  .stateui-stack > [data-returning], .stateui-scrim,
   .stateui-loading, .stateui-loading-bar, .stateui-loading-bar::-webkit-progress-value, progress::-webkit-progress-value,
   .stateui-switch::before, .stateui-sheet, .stateui-sheet::backdrop, .stateui-question, .stateui-menu {
     transition: none !important;

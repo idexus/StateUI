@@ -51,6 +51,9 @@
     /// Whether the element fades out on its way to being hidden, which it still stands shown for.
     public internal(set) var isLeaving = false
 
+    /// Whether this element was last told the focus stands in it.
+    var reportedFocus = false
+
     /// The frame report this element last said, which a report the same says again to nobody.
     var reportedFrame: [Double] = []
 
@@ -84,6 +87,12 @@
 
     /// Whether the last patch changed the element's children - one added, moved, taken away or changed.
     public private(set) var childrenChanged = false
+
+    /// Whether the patch last applied asks the element to arrange its children again: a new arrangement, a child made
+    /// anew or drawn by the element, a page's own values - its title on a tab - a child's place, size or drawing
+    /// order changed; not a change inside a child that stands where it stood.
+    /// Design: docs/design/host/tree.md#a-patch-arranges-what-moved
+    public private(set) var childrenNeedArranging = false
 
     /// The one the host keeps for this element as a child another's view draws, once one was asked for.
     var keptChild: HostChild?
@@ -221,18 +230,36 @@
     private func childrenApplied(_ children: HostChildrenUpdate, tree: MountedTree) {
         switch children {
         case .unchanged:
-            break
+            childrenNeedArranging = false
 
         case .arranged(let childPatches):
             writingOrder = Dictionary(childPatches.enumerated().map { ($1.id, $0) }) { first, _ in first }
             arrange(childPatches, tree: tree)
+            childrenNeedArranging = true
 
         case .changed(let childPatches):
             for childPatch in childPatches {
                 applied(childPatch, tree: tree)
             }
+            childrenNeedArranging = childPatches.contains(where: asksArranging)
         }
     }
+
+    /// Whether `childPatch` asks this element to arrange its children again (`childrenNeedArranging`).
+    private func asksArranging(_ childPatch: HostPatch) -> Bool {
+        let ownValues = !childPatch.properties.isEmpty || !childPatch.clearedProperties.isEmpty
+        if childPatch.replace || childPatch.driven != nil || childPatch.motion != nil
+            || NodeType.pageTypes.contains(childPatch.type) && ownValues {
+            return true
+        }
+        let child = children.first { $0.id == childPatch.id } ?? slots.first { $0.id == childPatch.id }
+        guard let child, child.native.presentsView else { return true }
+        return !Self.arrangingProperties.isDisjoint(with: childPatch.properties.keys)
+            || !Self.arrangingProperties.isDisjoint(with: childPatch.clearedProperties)
+    }
+
+    /// What of a child moves it among its siblings: its place and size, and its drawing order.
+    private static let arrangingProperties = arrangedProperties.union([.zIndex])
 
     /// A child the patch names among those it has, applied - or made again where it is replaced.
     private func applied(_ childPatch: HostPatch, tree: MountedTree) {

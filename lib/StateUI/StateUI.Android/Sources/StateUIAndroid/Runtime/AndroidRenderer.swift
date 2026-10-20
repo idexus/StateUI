@@ -19,6 +19,11 @@ final class AndroidRenderer {
     /// The context every view is made in: the activity.
     static var context: jobject { shared!.context.reference }
 
+    /// The window element the activity shows - a question and a file dialog stand over it - else the tree's root.
+    static var window: MountedElement? {
+        shared?.runtime.tree.root.flatMap { $0.first(type: .window) ?? $0 }
+    }
+
     /// Pixels per point, the display's density.
     static var density: Double { shared?.density ?? 1 }
 
@@ -109,6 +114,14 @@ final class AndroidRenderer {
             Java.call(observer, JavaAPI.addOnScrollChangedListener, .object(listener.reference))
         }
         Java.release(local: observer)
+        followDrawing()
+    }
+
+    /// Follows the drawing of the root's window: before each frame is drawn, what reads a frame says where it stands,
+    /// and what that changes is laid out again in the same pass (`StateUIDrawing`).
+    /// Design: docs/design/host/runtime.md#where-a-view-stands
+    func followDrawing() {
+        Java.callStatic(JavaAPI.drawing, JavaAPI.followDrawing, .object(root.reference))
     }
 
     /// The pages the window presents over its page.
@@ -159,6 +172,7 @@ final class AndroidRenderer {
         runtime.start(
             realizing: AndroidRegistrations.registry.realization, unrealized: AndroidRealization.unmade,
             register: AndroidRealization.register,
+            complainingTo: AndroidRenderer.log,
             environment: { AndroidEnvironment.report(to: runtime.core, activity: context.reference) },
             kept: { if restoringKept { AndroidPersistence.restore(into: runtime.core, context: context.reference) } },
             windows: {

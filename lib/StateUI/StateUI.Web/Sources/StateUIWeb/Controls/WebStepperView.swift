@@ -36,9 +36,9 @@ final class WebStepperView: WebDOMView {
             WebRelay.setText(button.node, sign)
         }
         for (index, part) in [down, field, up].enumerated() { WebRelay.insert(part.node, into: node, at: index) }
-        down.listen("click") { [weak self] in self?.stepped(by: -1) }
-        up.listen("click") { [weak self] in self?.stepped(by: 1) }
-        field.hear(.steps) { [weak self] in self?.stepped(by: WebRelay.eventDetail < 0 ? -1 : 1) }
+        down.listen("click") { [weak self] in self?.stepped(up: false) }
+        up.listen("click") { [weak self] in self?.stepped(up: true) }
+        field.hear(.steps) { [weak self] in self?.stepped(up: WebRelay.eventDetail >= 0) }
         field.listen("change") { [weak self] in self?.typed() }
     }
 
@@ -78,8 +78,8 @@ final class WebStepperView: WebDOMView {
         min(max(number, range.lower), range.upper)
     }
 
-    private func stepped(by steps: Double) {
-        moved(to: within(value + steps * step))
+    private func stepped(up: Bool) {
+        moved(to: ValueArithmetic.step(from: value, up: up, step: step, lower: range.lower, upper: range.upper))
     }
 
     /// The user typed: words wholly a number stand inside the range, anything else gives way to the number before.
@@ -102,8 +102,8 @@ final class WebStepperView: WebDOMView {
         showEnds()
     }
 
-    override func detach() {
-        for part in [down, field, up] { part.detach() }
-        super.detach()
+    override func release() {
+        for part in [down, field, up] { part.release() }
+        super.release()
     }
 }

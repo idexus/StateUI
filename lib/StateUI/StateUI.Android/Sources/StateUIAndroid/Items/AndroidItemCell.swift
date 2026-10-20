@@ -21,18 +21,22 @@ final class AndroidItemCell: AndroidSingleChildView, ItemsHolding {
     /// Whether the cell is as tall as the list, and asks for its width - in a row.
     var across = false
 
-    /// A cell of an item, or of a header or a footer.
+    /// A cell of an item, shown chosen on the theme's accent as the band of a chosen item (`ChosenBand`), or of a
+    /// header or a footer.
     init(item: Bool) {
         super.init(making: { number in
-            Java.new(
-                JavaAPI.itemCell, JavaAPI.newItemCell, .object(AndroidRenderer.context), .long(number), .bool(item))
+            let context = AndroidRenderer.context
+            let accent = UInt32(bitPattern: Java.callStaticInt(JavaAPI.environment, JavaAPI.accent, .object(context)))
+            return Java.new(
+                JavaAPI.itemCell, JavaAPI.newItemCell, .object(context), .long(number), .bool(item),
+                .int(Int32(bitPattern: ChosenBand.argb(over: accent))))
         })
         if item { listen(JavaAPI.setOnClickListener) }
     }
 
     func hold(_ identity: String, _ item: MountedElement?) {
         self.identity = identity
-        guard item !== shown || items.isEmpty != (item == nil) else { return }
+        guard showsAnew(item, viewShowing: !items.isEmpty) else { return }
         shown = item
         setItems(item?.android.layoutItem.map { [$0] } ?? [])
     }
@@ -47,7 +51,8 @@ final class AndroidItemCell: AndroidSingleChildView, ItemsHolding {
     /// view at once, and the recycler would ask for every entry.
     override func contentSize(width: Double?) -> LayoutSize {
         guard shown != nil, !items.isEmpty else {
-            return across ? LayoutSize(width: 44, height: 0) : LayoutSize(width: width ?? 0, height: 44)
+            let extent = ItemsCells.estimatedExtent(across: across)
+            return across ? LayoutSize(width: extent, height: 0) : LayoutSize(width: width ?? 0, height: extent)
         }
         return super.contentSize(width: width)
     }

@@ -60,13 +60,12 @@ extension UIKitElement {
         return chrome
     }
 
-    /// A page's action as the bar takes it.
+    /// A page's action as the bar takes it, read as a menu's entry is (`MenuEntry`).
     private static func action(_ item: MountedElement) -> UIKitBarAction {
-        UIKitBarAction(
-            title: item.value(.text)?.string ?? "", icon: HostPicture(item.value(.icon)),
-            isEnabled: item.isEffectivelyEnabled, isDestructive: item.value(.isDestructive)?.bool == true,
-            identifier: item.value(.accessibilityIdentifier)?.string,
-            perform: { [weak item] in item?.uiKit.choose() }, element: item.uiKit)
+        let entry = MenuEntry.entry(of: item)
+        return UIKitBarAction(
+            title: entry.title, icon: entry.icon, isEnabled: entry.isEnabled, isDestructive: entry.isDestructive,
+            identifier: entry.identifier, perform: { [weak item] in item?.uiKit.choose() }, element: item.uiKit)
     }
 
     /// Writes the bar of every page in this arrangement and every one it holds.
@@ -107,7 +106,7 @@ extension UIKitElement {
             // A page comes in wearing its own bar: UIKit takes the bar's look as the move starts, which a layout in
             // the same turn - a sidebar going - can start before the window's chrome is composed.
             children.forEach { $0.composeChrome() }
-            navigation.setPages(children.compactMap(\.controller), animated: !(host?.reducesMotion() ?? true))
+            navigation.setPages(children.compactMap(\.controller), reducingMotion: host?.reducesMotion() ?? true)
         case .tabView:
             guard let tabs = controller as? UIKitTabBarController else { return }
             tabs.show(
@@ -139,16 +138,14 @@ extension UIKitElement {
         (controller as? UIKitSplitViewController)?.stopSliding()
     }
 
-    /// The user took the stack's top pages away: the stack is told how many stay, as the index of its top.
+    /// The user took the stack's top pages away: the host layer tells the path how long it is now.
     private func userPopped(staying: Int) {
-        guard let handler = element.handler(.popped) else { return }
-        host?.runtime.dispatch(handler, payload: [.number(Double(staying - 1))])
+        host?.runtime.stackPopped(element, staying: staying)
     }
 
-    /// The user chose another tab: the host layer tells the pages and the state; the bars follow what the user sees.
+    /// The user chose another tab: the host layer tells the pages and the state, and shows the chrome again.
     private func tabChosen(from previous: Int, to selected: Int) {
         host?.runtime.tabChosen(element, from: previous, to: selected)
-        composeChrome()
     }
 
     /// The sidebar showed or hid: the host layer tells its page and the state.

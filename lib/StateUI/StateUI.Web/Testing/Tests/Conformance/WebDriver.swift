@@ -29,6 +29,10 @@ final class WebDriver: HostDriver {
                     "the page holds the path placed in its room, its \(member) worked in; its drawing proves it"
             }
         }
+        for field in ["TextField", "SearchField", "TextEditor"] {
+            none["read maximumLength of \(field)"] =
+                "the browser bounds UTF-16 units, not characters, so the host cuts what is typed; typing proves it"
+        }
         return none
     }
 

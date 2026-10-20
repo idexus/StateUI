@@ -54,6 +54,15 @@
         types.flatMap(\.extensions).reduce(into: []) { kept, next in if !kept.contains(next) { kept.append(next) } }
     }
 
+    /// The extension a save's kind is read from: the one its name ends in, in small letters, else its first type's
+    /// first; none where it has neither.
+    public var savedExtension: String? {
+        if let dot = name.lastIndex(of: "."), name.index(after: dot) < name.endIndex {
+            return name[name.index(after: dot)...].lowercased()
+        }
+        return extensions.first
+    }
+
     /// `name` with the first type's first extension added where it ends in none of the types' - unless it is empty.
     /// Design: docs/design/host/runtime.md#files
     public static func name(_ name: String, types: [FileType]) -> String {

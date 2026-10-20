@@ -25,7 +25,10 @@ final class AndroidFileToolkit: FileToolkit {
         dialogs.removeAll()
     }
 
-    func show(_ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void) -> Bool {
+    func show(
+        _ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let window = AndroidRenderer.window else { return nil }
         let ticket = dialogs.hold(answered)
         Java.frame {
             switch dialog.kind {
@@ -37,19 +40,11 @@ final class AndroidFileToolkit: FileToolkit {
             case .save:
                 Java.callStatic(
                     JavaAPI.files, JavaAPI.saveFile, .object(context), .long(ticket),
-                    .object(Java.string(dialog.name)), .object(Self.savedExtension(dialog).flatMap(Java.string)),
+                    .object(Java.string(dialog.name)), .object(dialog.savedExtension.flatMap(Java.string)),
                     .object(Java.bytes(dialog.contents)))
             }
         }
-        return true
-    }
-
-    /// The extension a save's type is read from: its name's, else its first kind's.
-    private static func savedExtension(_ dialog: HostFileDialog) -> String? {
-        if let dot = dialog.name.lastIndex(of: "."), dialog.name.index(after: dot) < dialog.name.endIndex {
-            return String(dialog.name[dialog.name.index(after: dot)...]).lowercased()
-        }
-        return dialog.extensions.first
+        return window
     }
 
     /// The picker under `ticket` closed: the documents chosen, by their addresses and names, or why it failed.

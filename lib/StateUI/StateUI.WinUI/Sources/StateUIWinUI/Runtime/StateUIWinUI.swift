@@ -67,6 +67,10 @@ enum WinUICallbacks {
                 let text = utf8.map { String(cString: $0) } ?? ""
                 MainActor.assumeIsolated { (WinUIView.find(view) as? WinUITextInputView)?.typed(text, composing: composing) }
             },
+            promptTyped: { ticket, utf8, composing in
+                let words = utf8.map { String(cString: $0) } ?? ""
+                MainActor.assumeIsolated { WinUIRenderer.shared?.promptTyped(ticket: ticket, words, composing: composing) }
+            },
             submitted: { view in
                 MainActor.assumeIsolated { (WinUIView.find(view) as? WinUITextInputView)?.onSubmitted?() }
             },
@@ -92,6 +96,11 @@ enum WinUICallbacks {
                 if what == .press {
                     guard let phase = StateUIPressPhase(rawValue: phase) else { return }
                     return MainActor.assumeIsolated { WinUIView.find(view)?.heardPress(phase, at: Point(x: x, y: y)) }
+                }
+                if what == .tap {
+                    return MainActor.assumeIsolated {
+                        WinUIView.find(view)?.heardTap(at: Point(x: x, y: y), time: .milliseconds(Int(phase)))
+                    }
                 }
                 guard let heard = HeardInput(what, phase: phase, x: x, y: y, scale: scale) else { return }
                 MainActor.assumeIsolated { WinUIView.find(view)?.heard(heard) }
@@ -151,6 +160,9 @@ enum WinUICallbacks {
             windowClosed: { window in
                 MainActor.assumeIsolated { WinUIRenderer.shared?.windowClosed(number: window) }
             },
+            windowLaidOut: { _ in
+                MainActor.assumeIsolated { WinUIRenderer.shared?.runtime.frames.reportLaidOut() == true }
+            },
             itemCell: { view, kind, cell in
                 // The relay's own out-parameter, and the panel it takes a reference of.
                 nonisolated(unsafe) let cell = cell
@@ -192,6 +204,13 @@ enum WinUICallbacks {
                     let speed = speedX.isNaN || speedY.isNaN ? nil : Point(x: speedX, y: speedY)
                     return WinUIView.find(view)?.heardHand(phase: phase, moved: Point(x: x, y: y), at: time, speed: speed)
                         == true
+                }
+            },
+            finger: { view, phase, pointer, x, y, inX, inY, time in
+                MainActor.assumeIsolated {
+                    WinUIView.find(view)?.heardFinger(
+                        phase: phase, pointer: Int(pointer), at: Point(x: x, y: y), inView: Point(x: inX, y: inY),
+                        time: time) ?? .left
                 }
             },
             wheel: { view, x, y in

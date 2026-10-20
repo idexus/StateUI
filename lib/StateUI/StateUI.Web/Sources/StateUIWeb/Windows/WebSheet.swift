@@ -41,8 +41,8 @@ final class WebSheet {
     func close() {
         WebRelay.closeModal(dialog.node)
         room.setItems([])
-        bar.detach()
-        room.detach()
-        dialog.detach()
+        bar.release()
+        room.release()
+        dialog.release()
     }
 }

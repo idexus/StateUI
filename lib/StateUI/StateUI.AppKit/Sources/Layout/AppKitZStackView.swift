@@ -92,11 +92,7 @@ final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeas
         for index in 0..<count {
             let placement = placements[index]
             let item = items[index]
-            item.view.frame = NSRect(
-                x: placement.bounds.x,
-                y: placement.bounds.y,
-                width: max(0, placement.bounds.width),
-                height: max(0, placement.bounds.height))
+            item.view.frame = NSRect(placed: placement.place)
             (item.view as? AppKitGridView)?.setShadeOpacity(placement.drawnShade)
             item.drawing?.placement = placement.drawing
             item.drawing?.placedOpacity = placement.drawnOpacity

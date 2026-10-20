@@ -1,43 +1,41 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-#if os(iOS)
-import UIKit
 import MapKit
 @_spi(Host) import StateUI
 
 /// A map's marker as MapKit holds it: its place, its label and subtitle as the marker's title and subtitle, its kind,
 /// and the child it stands for, whose events it raises.
-@MainActor
-final class UIKitMapMarker: NSObject, @MainActor MKAnnotation {
-    let child: ChildElement<MarkerContract>
-    @objc dynamic var coordinate = CLLocationCoordinate2D()
-    @objc dynamic var title: String?
-    @objc dynamic var subtitle: String?
-    private(set) var type = MarkerType.generic
+/// Design: docs/design/platforms/apple/maps.md#a-map
+@_spi(Host) @MainActor
+public final class MapKitMarker: NSObject, @MainActor MKAnnotation {
+    /// The child the marker stands for.
+    public let child: ChildElement<MarkerContract>
 
-    init(_ child: ChildElement<MarkerContract>) {
+    /// Where the marker stands.
+    @objc public dynamic var coordinate = CLLocationCoordinate2D()
+
+    /// The child's label.
+    @objc public dynamic var title: String?
+
+    /// The child's subtitle.
+    @objc public dynamic var subtitle: String?
+
+    /// The child's kind.
+    public private(set) var type = MarkerType.generic
+
+    /// The marker of `child`, its values not yet taken.
+    public init(_ child: ChildElement<MarkerContract>) {
         self.child = child
         super.init()
     }
 
     /// Takes the child's values again.
-    func take() {
+    public func take() {
         let location = child.value(MarkerContract.location) ?? Location(latitude: 0, longitude: 0)
         coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
         title = child.value(MarkerContract.label)
         subtitle = child.value(MarkerContract.subtitle)
         type = child.value(MarkerContract.type) ?? .generic
     }
-
-    /// The marker's colour and symbol for a marker's kind.
-    static func look(of type: MarkerType) -> (tint: UIColor, symbol: String?) {
-        switch type {
-        case .generic: (.systemRed, nil)
-        case .place: (.systemBlue, "building.2.fill")
-        case .saved: (.systemYellow, "star.fill")
-        case .searchResult: (.systemPurple, "magnifyingglass")
-        }
-    }
 }
-#endif

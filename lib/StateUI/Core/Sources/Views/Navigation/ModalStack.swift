@@ -52,7 +52,7 @@ public struct ModalStack: ElementView, Arrangement, BarElement {
 
         for (depth, sheet) in sheets.wrappedValue.enumerated() {
             var page = Node.page(destination(sheet))
-            page.id = Self.identity(depth: depth, sheet: sheet)
+            page.identify(Self.identity(depth: depth, sheet: sheet))
             children.append(page)
         }
 
@@ -73,7 +73,7 @@ public struct ModalStack: ElementView, Arrangement, BarElement {
     private static let rootIdentity = "root"
 
     /// Who a presented page is: its depth and its value together.
-    private static func identity(depth: Int, sheet: some Hashable) -> String {
-        "\(depth)/\(String(describing: sheet))"
+    private static func identity(depth: Int, sheet: some Hashable) -> StackedPage {
+        StackedPage(depth: depth, value: AnyHashable(sheet))
     }
 }

@@ -78,9 +78,16 @@ extension AndroidDriver {
         case (.tap(let count), let view?): Self.tap(view, count: count)
         case (.pan(let offset), let view?): Self.pan(view, by: offset)
         case (.sweep(let offset, let speed), let view?):
-            _ = view.heardHand(phase: GesturePhase.began.rawValue, moved: .zero, speed: .zero)
-            _ = view.heardHand(phase: GesturePhase.changed.rawValue, moved: offset, speed: .zero)
-            _ = view.heardHand(phase: GesturePhase.ended.rawValue, moved: .zero, speed: speed)
+            // One finger as the listener tells it, lifted at `speed`: a sweep shorter than the slop goes past it its
+            // way first, as a finger begins a hand only there, and back.
+            let (down, move, up) = (AndroidPressPhase.down, AndroidPressPhase.move, AndroidPressPhase.letGo)
+            let length = (offset.x * offset.x + offset.y * offset.y).squareRoot()
+            let past = Self.pastTheSlop(offset, length: length, of: view)
+            _ = view.heardFinger(phase: down.rawValue, finger: 0, at: .zero, inView: .zero, speed: .zero)
+            for point in past == offset ? [offset] : [past, offset] {
+                _ = view.heardFinger(phase: move.rawValue, finger: 0, at: point, inView: point, speed: .zero)
+            }
+            _ = view.heardFinger(phase: up.rawValue, finger: 0, at: offset, inView: offset, speed: speed)
         case (.notch(let notches), let view?):
             _ = view.heardNotches(notches)
         case (.pinch(let scale, let point), let view?):
@@ -242,5 +249,12 @@ extension AndroidDriver {
         landing.heardDrag(kind: 2, words: nil)
         landing.heardDrag(kind: 4, words: words)
         source.heardDrag(kind: 1, words: nil)
+    }
+
+    /// `offset`, `length` long, or where it goes past the slop of `view`'s hand its way where it ends short of it.
+    private static func pastTheSlop(_ offset: Point, length: Double, of view: AndroidView) -> Point {
+        guard case .radius(let slop) = view.handRecognition.distance, length > 0, length <= slop else { return offset }
+        let scale = (slop + 1) / length
+        return Point(x: offset.x * scale, y: offset.y * scale)
     }
 }

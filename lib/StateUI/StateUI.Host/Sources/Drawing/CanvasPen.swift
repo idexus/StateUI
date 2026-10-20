@@ -55,7 +55,7 @@
 
     /// Replays `instructions` in order with a pen from its start: each setting taken into it, each state saved told
     /// to `save` and each put back to `restore` - one with none saved does nothing - and every other instruction
-    /// drawn by `draw` with the pen as it stands.
+    /// drawn by `draw` with the pen as it stands; a state left saved is put back as the drawing ends.
     public static func replay(
         _ instructions: [CanvasInstruction], save: () -> Void, restore: () -> Void,
         draw: (CanvasInstruction, CanvasPen) -> Void
@@ -69,5 +69,6 @@
             }
             if pen.savedDepth > depth { save() } else if pen.savedDepth < depth { restore() }
         }
+        for _ in 0..<pen.savedDepth { restore() }
     }
 }

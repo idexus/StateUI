@@ -29,7 +29,7 @@ final class GTKItemCell: GTKSingleChildView, ItemsHolding {
 
     func hold(_ identity: String, _ item: MountedElement?) {
         self.identity = identity
-        guard item !== shown || items.isEmpty != (item == nil) else { return }
+        guard showsAnew(item, viewShowing: !items.isEmpty) else { return }
         shown = item
         setItems(item?.gtk.layoutItem.map { [$0] } ?? [])
     }
@@ -61,7 +61,8 @@ final class GTKItemCell: GTKSingleChildView, ItemsHolding {
     /// view at once, and the list would ask for every entry.
     override func contentSize(width: Double?) -> LayoutSize {
         guard shown != nil, !items.isEmpty else {
-            return across ? LayoutSize(width: 44, height: 0) : LayoutSize(width: width ?? 0, height: 44)
+            let extent = ItemsCells.estimatedExtent(across: across)
+            return across ? LayoutSize(width: extent, height: 0) : LayoutSize(width: width ?? 0, height: extent)
         }
         return super.contentSize(width: width)
     }

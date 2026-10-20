@@ -51,8 +51,8 @@ IconButtonSample.swift 0af5b21d299babec
 IconSample.swift 98f855aecd97b045
 IdentitySample.swift 3161e5c1e7445fbf
 ImageSample.swift b31a1a7de284fb82
-InteropActsSample.swift 73df583bdd4c60b9
-InteropControlSample.swift ff186e989074d277
+InteropActsSample.swift c2f50755cc641b96
+InteropControlSample.swift 8214d6ed8e1f00fa
 InteropEventsSample.swift cfcc0bc84d5ab117
 ItemsViewSample.swift 53d356987267d768
 KeyPressSample.swift 56c3fa94875fbba4
@@ -118,7 +118,7 @@ TapSample.swift ecedf1892e5dde5c
 TaskSleepSample.swift 2b47ce00e9732b16
 TextEditorSample.swift 9cc806f939101a0a
 TextFieldSample.swift 6f222b0aad1c3aa6
-TextSample.swift d988ffd7c7700c30
+TextSample.swift fd1e9a5d171f8c21
 TextSpanSample.swift 2c0155e7602cf784
 TextStyleSample.swift 3dd262f829737d60
 TickerSample.swift ecca16670e47a404

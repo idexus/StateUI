@@ -218,7 +218,8 @@ clamp - a report lands on the source as the round trip makes it.
 
 ```text
   derived state   known to the first source's storage under the element being
-                  built and "file:line:column", and held by that element as it
+                  built and the call's file, line and column - one number
+                  (PathNumber), spelled nowhere - and held by that element as it
                   holds its readings: one state per element and line across
                   renders - the host's tie keeps its number - two views
                   converting one source on one line keep two, and an element

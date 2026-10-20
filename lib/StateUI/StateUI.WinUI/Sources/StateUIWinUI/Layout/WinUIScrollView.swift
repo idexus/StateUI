@@ -20,7 +20,7 @@ final class WinUIScrollView: WinUILayoutView {
     private(set) var orientation = ScrollOrientation.vertical
 
     /// Where the scroller stands, in DIPs, as it last said.
-    private(set) var offset = Point(x: 0, y: 0)
+    var offset: Point { scrollerOffset.standing }
 
     /// The user's movement, and its rest.
     private let movement = ScrollMovement()
@@ -34,12 +34,10 @@ final class WinUIScrollView: WinUILayoutView {
     private let wrapper = WinUIStackView(axis: .vertical)
     private var wraps = false
 
-    /// Where the program moved the scroller, until the scroller says it stands there.
+    /// Where the scroller stands as the host knows it, the program's move on its way, and the offset the tree
+    /// writes (`ScrollerOffset`).
     /// Design: docs/design/platforms/winui/layout.md#the-programs-move
-    private var programTarget: Point?
-
-    /// The offset the tree writes, kept for the first layout where it comes before it.
-    private var writtenOffset = WrittenScrollOffset()
+    private var scrollerOffset = ScrollerOffset()
 
     private var bars = (vertical: ScrollIndicatorVisibility.automatic, horizontal: ScrollIndicatorVisibility.automatic)
 
@@ -97,7 +95,7 @@ final class WinUIScrollView: WinUILayoutView {
         document.padding = padding
         document.orientation = orientation
 
-        if let target = writtenOffset.written(offset, standing: self.offset, orientation: orientation) {
+        if let target = scrollerOffset.written(offset, orientation: orientation) {
             move(to: target)
         }
     }
@@ -121,7 +119,7 @@ final class WinUIScrollView: WinUILayoutView {
     /// Stands WinUI's scroller over the whole of the room, then an offset the tree wrote before there was one.
     override func arrange(in bounds: Rect) {
         scroller.layout(bounds)
-        if let target = writtenOffset.laidOutNow() { move(to: target) }
+        if let target = scrollerOffset.laidOutNow() { move(to: target) }
     }
 
     // MARK: - The user's movement
@@ -129,24 +127,14 @@ final class WinUIScrollView: WinUILayoutView {
     /// The scroller's view changed: the program's move arriving, or the user's, joined to the moves before it until
     /// the display's next frame.
     private func scrolled(to standing: Point) {
-        guard !ProgramWrite.isWriting, standing != offset else { return }
-
-        if let target = programTarget {
-            programTarget = nil
-            if !ScrollArithmetic.differs(target, standing) {
-                offset = standing
-                return
-            }
-        }
-        let previous = offset
-        offset = standing
-        movement.userMoved(from: previous, to: standing)
+        guard let moved = scrollerOffset.toolkitMoved(to: standing) else { return }
+        movement.userMoved(from: moved.from, to: moved.to)
     }
 
     /// The user took hold of the scroller, or let go of it and left it to throw on.
     private func scrollerHeld(_ holding: Bool) {
         if holding {
-            programTarget = nil
+            scrollerOffset.userTookHold()
             movement.holdBegan()
         } else {
             movement.holdEnded(rests: false)
@@ -184,14 +172,8 @@ final class WinUIScrollView: WinUILayoutView {
     /// Moves the scroller to `target`, kept within what it reaches, as the program's move; one already there is
     /// left alone, as the scroller would say nothing of it.
     private func move(to target: Point) {
-        let standing = scroller.standing
-        let kept = ScrollArithmetic.kept(target, reach: standing.reach)
-        guard ScrollArithmetic.differs(kept, standing.offset) else {
-            offset = standing.offset
-            return
-        }
-
-        programTarget = kept
+        let kept = ScrollArithmetic.kept(target, reach: scroller.standing.reach)
+        guard scrollerOffset.programMoves(to: kept) else { return }
         scroller.move(to: kept)
     }
 }

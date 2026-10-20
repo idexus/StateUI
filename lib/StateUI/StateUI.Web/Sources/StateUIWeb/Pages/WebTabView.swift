@@ -54,9 +54,9 @@ final class WebTabView: WebDOMView {
     func show(_ titles: [String], icons: [HostPicture?], requested: Int?) {
         while names.count < titles.count { names.append(name(at: names.count)) }
         while names.count > titles.count {
-            names.removeLast().detach()
-            pictures.removeLast().detach()
-            words.removeLast().detach()
+            names.removeLast().release()
+            pictures.removeLast().release()
+            words.removeLast().release()
         }
         for (index, title) in titles.enumerated() {
             let icon = index < icons.count ? icons[index] : nil
@@ -100,13 +100,13 @@ final class WebTabView: WebDOMView {
         }
     }
 
-    override func detach() {
-        for picture in pictures { picture.detach() }
-        for said in words { said.detach() }
-        for name in names { name.detach() }
-        strip.detach()
-        pages.detach()
+    override func release() {
+        for picture in pictures { picture.release() }
+        for said in words { said.release() }
+        for name in names { name.release() }
+        strip.release()
+        pages.release()
         onSelection = nil
-        super.detach()
+        super.release()
     }
 }

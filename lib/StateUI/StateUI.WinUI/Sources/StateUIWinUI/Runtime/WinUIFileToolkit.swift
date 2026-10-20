@@ -22,8 +22,10 @@ final class WinUIFileToolkit: FileToolkit {
         self.renderer = renderer
     }
 
-    func show(_ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void) -> Bool {
-        guard let window = renderer.userWindow else { return false }
+    func show(
+        _ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let window = renderer.userWindow, let element = renderer.element(of: window) else { return nil }
         let ticket = dialogs.hold(answered)
         let kind: StateUIFileDialogKind = switch dialog.kind {
         case .open: .open
@@ -51,7 +53,7 @@ final class WinUIFileToolkit: FileToolkit {
                 }
             }
         }
-        return true
+        return element
     }
 
     /// The dialog under `ticket` closed: the files chosen, by their paths and names, or why it failed.

@@ -9,13 +9,13 @@ import StateUIFoundation
 /// What a view heard of the user's input, as the relay tells it.
 /// Design: docs/design/platforms/winui/input.md
 extension HeardInput {
-    /// What the relay's callback says - `phase` a tap's place in its run or a gesture's phase, a pinch's `scale`
-    /// since its last step, a rotation's degrees clockwise in its place, a wheel's notches turned with Control in its
-    /// place - nil for a press, which the view's own rule reads (`heardPress`).
+    /// What the relay's callback says - `phase` a gesture's phase, a pinch's `scale` since its last step, a
+    /// rotation's degrees clockwise in its place, a wheel's notches turned with Control in its place - nil for a
+    /// press and a tap, which the view's own rules read (`heardPress`, `heardTap`).
     init?(_ what: StateUIHeard, phase: Int32, x: Double, y: Double, scale: Double) {
         let point = Point(x: x, y: y)
         switch what {
-        case .tap: self = .tap(run: Int(phase))
+        case .tap, .press: return nil
         case .pointerEntered: self = .pointer(.pointerEntered, point)
         case .pointerExited: self = .pointer(.pointerExited, point)
         case .pointerMoved: self = .pointer(.pointerMoved, point)
@@ -29,7 +29,6 @@ extension HeardInput {
             self = .rotation(phase, degrees: scale)
         case .wheelPinch: self = .wheelPinch(scale: pow(WheelPinch.notch, scale), at: point)
         case .wheelScale: self = .wheelPinch(scale: scale, at: point)
-        case .press: return nil
         }
     }
 }

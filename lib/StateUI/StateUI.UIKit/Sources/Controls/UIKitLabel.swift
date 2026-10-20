@@ -33,16 +33,14 @@ struct UIKitLabelWords {
 
     /// Where the words stand across, a line's start and end following `direction`.
     func alignment(in direction: UIUserInterfaceLayoutDirection) -> NSTextAlignment {
-        switch horizontal {
-        case .start: .natural
-        case .center: .center
-        case .end: direction == .rightToLeft ? .left : .right
-        }
+        NSTextAlignment(horizontal, in: direction)
     }
 
-    /// How a line too long for the room breaks, or where it is cut.
+    /// How a line too long for the room breaks, or where it is cut: wrapped words held to some lines end the last
+    /// with an ellipsis (`LineBreak.endsWithEllipsis`), which UIKit draws wrapping at words.
     var lineBreakMode: NSLineBreakMode {
-        switch breaking {
+        if breaking.endsWithEllipsis(maximum: lines) { return .byTruncatingTail }
+        return switch breaking {
         case .noWrap: .byClipping
         case .wordWrap: .byWordWrapping
         case .characterWrap: .byCharWrapping

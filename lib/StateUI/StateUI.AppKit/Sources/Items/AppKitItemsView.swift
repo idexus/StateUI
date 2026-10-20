@@ -293,7 +293,7 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
         glides += 1
         gliding = false
         let clip = scroller.contentView
-        guard reducesMotion() else {
+        guard !ItemsScrollTarget.glides(reducingMotion: reducesMotion()) else {
             guard let target = target(of: indexPath, anchor: anchor) else { return }
             let glide = glides
             gliding = true

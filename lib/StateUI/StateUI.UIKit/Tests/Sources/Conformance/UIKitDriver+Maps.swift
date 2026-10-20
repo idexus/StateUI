@@ -6,6 +6,7 @@ import UIKit
 import MapKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 @testable import StateUIUIKit
 @_spi(Host) import StateUIConformance
 
@@ -35,7 +36,7 @@ extension UIKitDriver {
         case .type:
             let tint = try marker(of: pin, on: map).markerTintColor
             let kinds: [MarkerType] = [.generic, .place, .saved, .searchResult]
-            return kinds.first { UIKitMapMarker.look(of: $0).tint == tint }?.propValue
+            return kinds.first { UIKitMapView.tint(MarkerLook($0).hue) == tint }?.propValue
         default: throw DriverCannot("read \(property.name) of a Marker")
         }
     }
@@ -56,7 +57,7 @@ extension UIKitDriver {
     }
 
     /// The map a marker stands on, and MapKit's annotation for it.
-    private func mapPin(_ element: MountedElement) throws -> (UIKitMapView, UIKitMapMarker) {
+    private func mapPin(_ element: MountedElement) throws -> (UIKitMapView, MapKitMarker) {
         guard let renderer, let map = (element.parent?.native as? UIKitElement)?.view as? UIKitMapView,
               let pin = map.pin(of: ChildElement(element.asChild(in: renderer.runtime)))
         else { throw DriverCannot("find a Marker on its map") }
@@ -64,7 +65,7 @@ extension UIKitDriver {
     }
 
     /// The marker MapKit drew for `pin`.
-    private func marker(of pin: UIKitMapMarker, on map: UIKitMapView) throws -> MKMarkerAnnotationView {
+    private func marker(of pin: MapKitMarker, on map: UIKitMapView) throws -> MKMarkerAnnotationView {
         for _ in 0..<50 {
             guard map.view(for: pin) == nil else { break }
             step()

@@ -35,7 +35,7 @@ final class UIKitItemHolding: ItemsHolding {
     /// Holds the entry of `identity`: its subtree where it is built, and nothing until it is.
     func hold(_ identity: String, _ item: MountedElement?) {
         self.identity = identity
-        guard item !== shown || holder.items.isEmpty != (item == nil) else { return }
+        guard showsAnew(item, viewShowing: !holder.items.isEmpty) else { return }
         shown = item
         holder.setItems(item?.uiKit.layoutItem.map { [$0] } ?? [])
         if item != nil { forget() }
@@ -86,7 +86,7 @@ final class UIKitItemCell: UICollectionViewCell {
     override func updateConfiguration(using state: UICellConfigurationState) {
         var background = UIBackgroundConfiguration.listCell().updated(for: state)
         if state.isSelected || state.isHighlighted {
-            background.backgroundColor = tintColor.withAlphaComponent(0.2)
+            background.backgroundColor = tintColor.withAlphaComponent(ChosenBand.opacity)
         } else if !state.isFocused {
             background.backgroundColor = .clear
         }

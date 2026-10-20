@@ -154,8 +154,25 @@ StateUIControls.add(Cube3DContract.self, create: { _ in WebGLCube3DView() }) { c
 The host places, sizes and shows the element as it does its own, and lets
 go of it with its element. The Gallery's cube - `<gallery-cube3d>`, WebGL 2
 on a canvas of its own - is `apps/Gallery/Platforms/Web/`. An element tells
-a number in its event's `detail` to `listen(_:_:)` handed a `Double`, and
-words to `listen(_:words:)`.
+a number in its event's `detail` to `listen(_:number:)` and words to
+`listen(_:words:)`.
+
+### Properties taken together
+
+A control that must take one property before another - a web view its agent
+before its page - names them with `applies`, and is handed them whole
+whenever any of them changes: each as the type its contract declares, and
+whether it changed (`ControlValues`). Each `property` alone comes in no
+promised order.
+
+```swift quote
+StateUIControls.add(WebViewContract.self, create: { reports -> MyWebView in … }) { web in
+    web.applies([WebViewContract.userAgent, WebViewContract.source]) { control, values in
+        if values.changed(WebViewContract.userAgent) { control.userAgent = values[WebViewContract.userAgent] }
+        if values.changed(WebViewContract.source) { control.show(values[WebViewContract.source]) }
+    }
+}
+```
 
 ### Children a control draws
 

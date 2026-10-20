@@ -3,6 +3,9 @@
 
 @_spi(Host) @testable import StateUI
 import XCTest
+#if canImport(Darwin)
+import Darwin
+#endif
 
 /// What a host's register says of a member: whether a test of it runs, and what the test's verdict says beside
 /// passing - what is missing, or why the host's family never has it.
@@ -150,5 +153,45 @@ final class HostRegisterTests: XCTestCase {
             "Marker is both the application's and never",
             "Map is both unrealized and the application's",
         ])
+    }
+
+    /// A register built from what a runtime realizes of every member of every element of the library, then a
+    /// note on every member, costs little: a host builds one at each start - each process of a test - and asks it
+    /// as it first describes an element.
+    func testARegisterOfTheWholeLibraryIsBuiltInLittleTime() throws {
+        try XCTSkipIf(Self.underThreadSanitizer, """
+            the thread sanitizer pays for every access to memory: the register takes 0.12-0.16s under it against \
+            0.03s without, so the line would measure the sanitizer. The run without it holds the line.
+            """)
+        var members: Set<HostRealizedMember> = []
+        for element in LibraryContracts.elements {
+            for contract in element.worn {
+                for member in contract.members {
+                    members.insert(HostRealizedMember(
+                        element: element.nodeType.name, owner: contract.name, member: member.name))
+                }
+            }
+        }
+        let realization = HostRealization(elements: Set(LibraryContracts.elements.map { $0.nodeType }), members: members)
+        let notes = members.prefix(300).map {
+            HostRecord(owner: $0.element.name, member: $0.member.name, judgement: .partial(missing: "a note"))
+        }
+
+        let started = ContinuousClock.now
+        let register = HostRegister(records: Array(notes))
+            .and(HostDeclaration(realization: realization, shared: [], acts: []))
+        let built = ContinuousClock.now - started
+
+        XCTAssertFalse(register.records.isEmpty)
+        XCTAssertLessThan(built, .milliseconds(100), "built in \(built)")
+    }
+
+    /// Whether the process runs under the thread sanitizer, whose runtime is linked into it.
+    private static var underThreadSanitizer: Bool {
+        #if canImport(Darwin)
+        dlsym(UnsafeMutableRawPointer(bitPattern: -2), "__tsan_init") != nil  // RTLD_DEFAULT, a macro Swift does not see
+        #else
+        false
+        #endif
     }
 }
