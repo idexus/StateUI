@@ -24,7 +24,7 @@ extension WindowSession {
     /// - Throws: `WindowError` for a window no longer open, and `StateUIError` when there is no window to show it.
     public func alert(_ title: String, message: String, accept: String? = nil) async throws {
         let (scene, window) = try address
-        let words = await LibraryWords.inSystemLanguage
+        let words = LibraryWords.inSystemLanguage
         try await stateUICall(ApplicationContract.alert, scene, window, title, message, accept ?? words.ok)
     }
 
@@ -45,7 +45,7 @@ extension WindowSession {
         _ title: String, message: String, accept: String, cancel: String? = nil
     ) async throws -> Bool {
         let (scene, window) = try address
-        let words = await LibraryWords.inSystemLanguage
+        let words = LibraryWords.inSystemLanguage
         return try await stateUICall(
             ApplicationContract.confirm, scene, window, title, message, accept, cancel ?? words.cancel)
     }
@@ -78,7 +78,7 @@ extension WindowSession {
         destructive: Choice? = nil, cancel: String? = nil
     ) async throws -> Choice? {
         let (scene, window) = try address
-        let words = await LibraryWords.inSystemLanguage
+        let words = LibraryWords.inSystemLanguage
         let dangerous = destructive.flatMap { choices.firstIndex(of: $0) }
         let chosen = try await stateUICall(
             ApplicationContract.chooseAction, scene, window, title, choices.map(caption), dangerous,
@@ -117,7 +117,7 @@ extension WindowSession {
         maximumLength: Int? = nil, inputPurpose: InputPurpose = .default
     ) async throws -> String? {
         let (scene, window) = try address
-        let words = await LibraryWords.inSystemLanguage
+        let words = LibraryWords.inSystemLanguage
         return try await stateUICall(
             ApplicationContract.prompt, scene, window, title, message, accept ?? words.ok, cancel ?? words.cancel,
             placeholder, maximumLength, inputPurpose, initialValue)
