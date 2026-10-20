@@ -54,7 +54,18 @@
     /// Where a stepper's one step takes `value`: a whole `step` down or up, stopping at the range's end.
     /// Design: docs/design/host/runtime.md#a-value-in-a-range
     public static func step(from value: Double, up: Bool, step: Double, lower: Double, upper: Double) -> Double {
-        Swift.min(Swift.max(value + (up ? 1 : -1) * Self.step(step), lower), upper)
+        landed(Swift.min(Swift.max(value + (up ? 1 : -1) * Self.step(step), lower), upper), from: value, step: step)
+    }
+
+    /// Where a step from `previous` by `step` lands, as a stepper reports it: `value` at the decimals of the two, where
+    /// it differs from them only by what binary arithmetic adds up to - a number typed with more keeps them.
+    /// Design: docs/design/host/runtime.md#a-value-in-a-range
+    public static func landed(_ value: Double, from previous: Double, step: Double) -> Double {
+        guard value.isFinite else { return value }
+        var scale = 1.0
+        for _ in 0..<decimals(of: [previous, Self.step(step)]) { scale *= 10 }
+        let held = (value * scale).rounded() / scale
+        return abs(held - value) <= 1e-9 * Swift.max(1, abs(value)) ? held : value
     }
 
     /// How far a slider's thumb moves for a key and for a page: a hundredth and a tenth of its range.

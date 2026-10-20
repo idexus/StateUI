@@ -11,11 +11,18 @@ import UIKit
 final class UIKitStepperView: UIStepper {
     var onValueChanged: ((Double) -> Void)?
 
+    /// The value the stepper stood at before the user's step.
+    private var shown = 0.0
+
     init() {
         super.init(frame: .zero)
         addAction(UIAction { [weak self] _ in
             guard let self else { return }
-            onValueChanged?(value)
+            // A step lands on its decimals (`ValueArithmetic.landed`).
+            let landed = ValueArithmetic.landed(value, from: shown, step: stepValue)
+            value = landed
+            shown = landed
+            onValueChanged?(landed)
         }, for: .valueChanged)
     }
 
@@ -29,6 +36,7 @@ final class UIKitStepperView: UIStepper {
         (minimumValue, maximumValue) = ValueArithmetic.range(minimum, maximum)
         stepValue = ValueArithmetic.step(step)
         if let value { self.value = value }
+        shown = self.value
     }
 }
 #endif

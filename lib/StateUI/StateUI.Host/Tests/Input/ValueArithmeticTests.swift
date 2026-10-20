@@ -95,4 +95,15 @@ final class ValueArithmeticTests: XCTestCase {
         XCTAssertEqual(ValueArithmetic.step(from: 0, up: false, step: 2, lower: 0, upper: 10), 0)
         XCTAssertEqual(ValueArithmetic.step(from: 3, up: true, step: 0, lower: 0, upper: 10), 4, "a step that moves")
     }
+
+    /// A step lands on the decimals of its step and of the value it left: what binary arithmetic adds up to is held
+    /// there, and a number typed with more decimals than those keeps them.
+    func testAStepLandsOnItsDecimals() {
+        XCTAssertEqual(ValueArithmetic.step(from: 0.2, up: true, step: 0.1, lower: 0, upper: 1), 0.3)
+        XCTAssertEqual(ValueArithmetic.step(from: 0.7, up: false, step: 0.1, lower: 0, upper: 1), 0.6)
+        XCTAssertEqual(ValueArithmetic.landed(0.2 + 0.1, from: 0.2, step: 0.1), 0.3)
+        XCTAssertEqual(ValueArithmetic.landed(0.25 + 0.1, from: 0.25, step: 0.1), 0.35)
+        XCTAssertEqual(ValueArithmetic.landed(0.123, from: 0.2, step: 0.1), 0.123, "typed, it stands as typed")
+        XCTAssertEqual(ValueArithmetic.landed(7, from: 6, step: 1), 7)
+    }
 }

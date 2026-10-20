@@ -55,7 +55,7 @@ TextSpan 4
 Divider 4
 Canvas 3
 Rectangle 3
-Stepper 4
+Stepper 5
 KeyboardElement 3
 LineHeightElement 2
 TextAlignmentElement 2

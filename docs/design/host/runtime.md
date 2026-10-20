@@ -869,6 +869,10 @@ and a stepper's step moves only away from the range's end it stands at
 (`ValueArithmetic.stepsWay`), its button of that way standing disabled where
 the host draws the buttons itself. Where it does, one step moves a whole step
 from the value and stops at the range's end (`ValueArithmetic.step(from:)`).
+A step lands on the decimals of its step and the value it left
+(`ValueArithmetic.landed`): a tenth from 0.2 is 0.3, not what binary arithmetic
+adds up to, on every host - a native stepper's report is held there too, and a
+number the user typed with more decimals keeps them.
 
 Such a control is written, as its value and its ends apply, by one rule
 (`ElementValues.written`): the tree's value where the tree changed the value

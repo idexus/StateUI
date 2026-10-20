@@ -39,11 +39,13 @@ final class AppKitStepperView: NSStepper {
         shown = doubleValue
     }
 
-    /// A click at an end moves nothing, and nobody hears it.
+    /// A click at an end moves nothing, and nobody hears it; a step lands on its decimals (`ValueArithmetic.landed`).
     @objc private func changed(_ sender: NSStepper) {
-        guard sender.doubleValue != shown else { return }
-        shown = sender.doubleValue
-        onValueChanged?(sender.doubleValue)
+        let landed = ValueArithmetic.landed(sender.doubleValue, from: shown, step: increment)
+        guard landed != shown else { return }
+        sender.doubleValue = landed
+        shown = landed
+        onValueChanged?(landed)
     }
 
     func stepForTesting(to value: Double) {
