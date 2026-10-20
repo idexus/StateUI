@@ -61,7 +61,7 @@ public final class Renderer {
     private(set) var refusedWrites = 0
 
     /// The renders' work - the tally's `built`, `walks` and `texts`: bodies built, views walked for their state and
-    /// inputs, identities named with a text.
+    /// inputs, identities named with a text - an author's identity described included.
     var built = 0
     var walks = 0
     var texts = 0

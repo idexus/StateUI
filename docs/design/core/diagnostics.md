@@ -18,7 +18,8 @@ is in invalidation.md.
   built      how many composed views' bodies the renders built
   walks      how many views the renders walked for their state and inputs
   texts      how many identities the renders named with a text: a walked
-             part, a statement, a conversion, a layout slot
+             part, a statement, a conversion, a layout slot, an author's
+             identity described, an ItemsView's entry
 ```
 
 `empty` is how a write that should have asked for nothing is found; `refused`

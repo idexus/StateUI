@@ -34,7 +34,7 @@ final class ItemsScrollBenchmarks: XCTestCase {
         }
 
         XCTAssertEqual(work, Work(
-            renders: 108, built: 5_495, walks: 5_279, texts: 0, made: 2_916, applied: 3_456, arranged: 0,
+            renders: 108, built: 5_495, walks: 5_279, texts: 108_000, made: 2_916, applied: 3_456, arranged: 0,
             presented: 0, placed: 0, left: 2_856))
     }
 }

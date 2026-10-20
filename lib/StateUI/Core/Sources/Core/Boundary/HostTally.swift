@@ -25,6 +25,7 @@
     /// How many views the renders walked for their state and inputs.
     public let walks: Int
 
-    /// How many identities the renders named with a text: a walked part, a statement, a conversion, a layout slot.
+    /// How many identities the renders named with a text: a walked part, a statement, a conversion, a layout slot, an
+    /// author's identity described, an ItemsView's entry.
     public let texts: Int
 }

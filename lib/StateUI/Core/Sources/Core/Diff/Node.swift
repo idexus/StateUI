@@ -248,6 +248,7 @@ public struct Node {
     mutating func identify(_ value: some Hashable) {
         identity = AnyHashable(value)
         id = String(describing: value)
+        Renderer.shared.texts += 1
     }
 
     /// The aim put on this view with `.aim(_:)`: a box the differ fills with the
