@@ -14,7 +14,7 @@ layout puts it.
 
 The page has no collection of its own that reuses its rows, so every entry
 has a cell - an empty one costs a `<div>`. A cell holds its entry's subtree
-while the browser says it is near the list's view - within the view's whole
+while the browser says it is near the list's view - within half the view's
 size before and after it (`IntersectionObserver`) - and lets it go as it goes
 away; the tree builds the entries within reach of the cells held, and lets
 the others go with its next render ([within
@@ -26,10 +26,15 @@ The browser tells nearness once a frame, every cell it saw in one call, and
 the cells take their entries together ([cells told
 together](../../host/items.md#cells-told-together)). The cells going read
 the room they keep before any of them changes: a read after another cell's
-change makes the browser lay the whole list out for it. A cell is told near
-a frame after it came near, and shows its entry a frame after that, so the
-margin is the lead a fling has: half the view left a fling of 20 000 points
-a second with empty cells in view, the whole view leaves none.
+change makes the browser lay the whole list out for it.
+
+The margin is the lead a fling has: a cell is told near a frame after it
+came near, and shows its entry a frame after that, so a list moving faster
+than about half the margin a frame shows the strip it reveals empty - half
+the view holds a fling of 8 000 points a second. A wider margin holds more
+cells, the reach grows with them, and each render builds that much more: the
+whole view held a fling of 20 000 points a second, and made a frame without
+a JIT a third longer.
 
 The trap: the browser's own skipping of what is off screen
 (`content-visibility: auto`, with a size kept for it) measures nearness
