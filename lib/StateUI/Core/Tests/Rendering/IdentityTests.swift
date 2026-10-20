@@ -128,7 +128,7 @@ final class IdentityTests: XCTestCase {
     func testAMarkerKeepsItsElementByItsId() {
         let renders = Renders()
         func map(_ names: [String]) -> Node {
-            Map().markers { names.map { Marker($0).id($0) } }.node
+            Map().markers { names.map { Marker(at: Location(latitude: 52, longitude: 21)).label($0).id($0) } }.node
         }
 
         let first = renders.render(map(["A", "B"])).children.map(\.id)

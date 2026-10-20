@@ -95,7 +95,7 @@ final class GoogleMapElement: WebControl {
 
     /// `region` as the element reads it: latitude, longitude and radius in meters.
     private static func written(_ region: MapRegion) -> String {
-        "\(region.latitude) \(region.longitude) \(region.radiusMeters)"
+        "\(region.center.latitude) \(region.center.longitude) \(region.radiusMeters)"
     }
 
     /// `words` on one line of a marker's, no tab or line break in them.
@@ -125,8 +125,8 @@ extension GoogleMapElement {
             }
         }
 
-        StateUIActs.add(MapContract.moveToRegion, on: GoogleMapElement.self) { map, latitude, longitude, radius in
-            map.move(to: MapRegion(latitude: latitude, longitude: longitude, radiusMeters: radius))
+        StateUIActs.add(MapContract.moveToRegion, on: GoogleMapElement.self) { map, region in
+            map.move(to: region)
         }
     }
 }

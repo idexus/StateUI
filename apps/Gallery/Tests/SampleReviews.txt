@@ -2,7 +2,7 @@
 # notes were last read against them. SampleReviewTests compares; only after the reading,
 # STATEUI_UPDATE_SAMPLES=1 records.
 ActivityIndicatorSample.swift 097a91a8164620dd
-AimSample.swift c27627f53011bdb6
+AimSample.swift e9a994fc78551bdc
 AnalogClockSample.swift 74d100c4018b73ab
 AnimatedInputSample.swift 3edb37bd77bcc397
 AnimatedPropertySample.swift fef33f29ae910477
@@ -69,7 +69,7 @@ LivingLayoutSample.swift 4e30d1ed421bccd1
 LoadingItemsSample.swift 0475570786822801
 LocaleInfoSample.swift 53a7aa3516ee574a
 LocalizationSample.swift 1636a0f168875c65
-MapSample.swift 7c9ebbdbf83ac5b7
+MapSample.swift 0a52199d9ecebd75
 MaterialsSample.swift 22b1a745307885f8
 MenuBarSample.swift c43adf3ebf7c85ac
 ModalSample.swift 69735010f26dc23b

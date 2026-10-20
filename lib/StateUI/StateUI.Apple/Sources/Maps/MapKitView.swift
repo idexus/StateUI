@@ -41,7 +41,7 @@ open class MapKitView: MKMapView, MKMapViewDelegate {
     /// Shows `region`, sliding to it where `sliding`: the circle its shorter side spans.
     public func show(_ region: MapRegion, sliding: Bool) {
         let side = MapFraming.side(of: region)
-        let center = CLLocationCoordinate2D(latitude: region.latitude, longitude: region.longitude)
+        let center = CLLocationCoordinate2D(latitude: region.center.latitude, longitude: region.center.longitude)
         setRegion(MKCoordinateRegion(center: center, latitudinalMeters: side, longitudinalMeters: side), animated: sliding)
     }
 
@@ -95,7 +95,8 @@ open class MapKitView: MKMapView, MKMapViewDelegate {
         let width = MKMapPoint(x: rect.minX, y: rect.midY).distance(to: MKMapPoint(x: rect.maxX, y: rect.midY))
         let height = MKMapPoint(x: rect.midX, y: rect.minY).distance(to: MKMapPoint(x: rect.midX, y: rect.maxY))
         return MapFraming.region(
-            latitude: centerCoordinate.latitude, longitude: centerCoordinate.longitude, width: width, height: height)
+            center: Location(latitude: centerCoordinate.latitude, longitude: centerCoordinate.longitude),
+            width: width, height: height)
     }
 
     /// The kind of map drawn.

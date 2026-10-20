@@ -47,13 +47,13 @@ struct MapSample: SampleContent, ExampleContent {
                 Button("Old Town")
                     .onClicked(gate: .cancelPrevious) {
                         try await map.moveToRegion(
-                            latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
+                            MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
                     }
 
                 Button("Poland")
                     .onClicked(gate: .cancelPrevious) {
                         try await map.moveToRegion(
-                            latitude: 52.1, longitude: 19.4, radiusMeters: 350_000)
+                            MapRegion(center: Location(latitude: 52.1, longitude: 19.4), radiusMeters: 350_000))
                     }
 
                 // What it DRAWS, cycled so all three can be seen.
@@ -85,7 +85,7 @@ struct MapSample: SampleContent, ExampleContent {
             // written here it is kept until the platform's map has connected,
             // while an act can land an instant too early and be overwritten
             // by the map's own opening view.
-            Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
+            Map(region: MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
                 .aim(map)
                 // What the map draws, and whether the user may move it.
                 .mapType(kind)
@@ -97,13 +97,13 @@ struct MapSample: SampleContent, ExampleContent {
                     // Each place its own marker by its name, so a place put
                     // before the others leaves them themselves.
                     Self.places.map { place in
-                        Marker(place.name)
+                        Marker(at: Location(latitude: place.latitude, longitude: place.longitude))
                             .id(place.name)
+                            .label(place.name)
                             .subtitle(place.address)
                             // What the marker stands for, which is what decides
                             // the icon the platform draws for it.
                             .type(place.type)
-                            .location(latitude: place.latitude, longitude: place.longitude)
                             .onSelected { said = "pin: \(place.name)" }
                             .onDetailsClicked { said = "details: \(place.name)" }
                     }

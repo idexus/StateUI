@@ -9,7 +9,7 @@ that the map shows whole. Whatever the map's proportions, its shorter side
 spans the circle's width, twice the radius, and the longer side shows more
 ground around it (`MapFraming.side(of:)`). A map read back says the same:
 the circle its shorter side holds, from the ground its sides span
-(`MapFraming.region(latitude:longitude:width:height:)`).
+(`MapFraming.region(center:width:height:)`).
 
 ## What a map shows
 

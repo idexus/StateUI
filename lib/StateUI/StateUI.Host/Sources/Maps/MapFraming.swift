@@ -12,9 +12,9 @@
         2 * region.radiusMeters
     }
 
-    /// The region a map shows, centred at `latitude` and `longitude`, its sides spanning `width` and `height`
-    /// meters of ground: the circle its shorter side holds.
-    public static func region(latitude: Double, longitude: Double, width: Double, height: Double) -> MapRegion {
-        MapRegion(latitude: latitude, longitude: longitude, radiusMeters: min(width, height) / 2)
+    /// The region a map shows, centred at `center`, its sides spanning `width` and `height` meters of ground: the
+    /// circle its shorter side holds.
+    public static func region(center: Location, width: Double, height: Double) -> MapRegion {
+        MapRegion(center: center, radiusMeters: min(width, height) / 2)
     }
 }

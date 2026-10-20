@@ -241,12 +241,12 @@ final class ActCallShapeTests: XCTestCase {
         _ = try? await task.value
     }
 
-    /// A map slides on three numbers after the view: latitude, longitude, and
-    /// the radius in METERS.
+    /// A map slides on its region after the view: one run of three numbers - latitude, longitude, and the radius in
+    /// METERS.
     func testMovingAMapCrossesWithItsArgumentsInPlace() async throws {
-        try await check("moveToRegion", [.string("map"), .number(52.2297), .number(21.0122), .number(3000)]) {
+        try await check("moveToRegion", [.string("map"), .numbers([52.2297, 21.0122, 3000])]) {
             try await named("map", Map.self).moveToRegion(
-                latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
+                MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
         }
     }
 

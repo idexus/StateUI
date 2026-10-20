@@ -629,13 +629,13 @@ or on a marker's details:
 ```swift
 @State var said = "tap the map or a marker"
 
-Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
+Map(region: MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
     .mapType(.hybrid)
     .markers {
-        Marker("Wawel Castle")
+        Marker(at: Location(latitude: 50.0540, longitude: 19.9354))
+            .label("Wawel Castle")
             .subtitle("Wawel 5")
             .type(.place)
-            .location(latitude: 50.0540, longitude: 19.9354)
             .onSelected { said = "the castle" }
             .onDetailsClicked { said = "the castle's details" }
     }
@@ -643,7 +643,7 @@ Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
     .height(300)
 ```
 
-Markers drawn from data are each given an id - `places.map { Marker($0.name).id($0.name) }`
+Markers drawn from data are each given an id - `places.map { Marker(at: $0.location).id($0.name) }`
 - so a marker put before them leaves the others themselves, each pin and its
 open callout where it stood; without one a marker is matched by its position.
 
@@ -656,7 +656,9 @@ aim, which slides the map there:
 @Aim(Map.self) var map
 
 Button("Kraków")
-    .onClicked(gate: .cancelPrevious) { try await map.moveToRegion(latitude: 50.06, longitude: 19.94, radiusMeters: 2000) }
+    .onClicked(gate: .cancelPrevious) {
+        try await map.moveToRegion(MapRegion(center: Location(latitude: 50.06, longitude: 19.94), radiusMeters: 2000))
+    }
 ```
 
 `showsUserLocation(true)` draws the user's own position. The platform asks

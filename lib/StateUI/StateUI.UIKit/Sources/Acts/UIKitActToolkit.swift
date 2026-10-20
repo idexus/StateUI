@@ -142,8 +142,11 @@ final class UIKitActToolkit: ActToolkit {
                 core.fail(call, "moveToRegion is an act of a Map", log: { UIKitRenderer.log.error($0) })
                 return true
             }
-            let number = { call.arguments.value($0)?.number ?? 0 }
-            map.show(MapRegion(latitude: number(1), longitude: number(2), radiusMeters: number(3)), sliding: true)
+            guard let region = call.arguments.value(1).flatMap(MapRegion.init(propValue:)) else {
+                core.fail(call, "moveToRegion was given no region", log: { UIKitRenderer.log.error($0) })
+                return true
+            }
+            map.show(region, sliding: true)
             core.reply(call, [])
             return true
         }

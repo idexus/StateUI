@@ -84,7 +84,7 @@ struct AimSample: SampleContent, ExampleContent {
                 + "@State, which the modifier that shows it also animates through its $ "
                 + "binding. A control is @Aim: `.aim(field)` puts the view's address into "
                 + "the aim, and on the aim you call the control's methods - `focus()`, "
-                + "`unfocus()`, a WebView's `goBack()`, a Map's `moveToRegion(latitude:longitude:radiusMeters:)`.")
+                + "`unfocus()`, a WebView's `goBack()`, a Map's `moveToRegion(_:)`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

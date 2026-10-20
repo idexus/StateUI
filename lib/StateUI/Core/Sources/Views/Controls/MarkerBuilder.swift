@@ -3,10 +3,10 @@
 
 /// Collects the markers of a map written as consecutive statements.
 ///
-///     Map(latitude: 52.23, longitude: 21.01, radiusMeters: 2_000).markers {
-///         Marker("Royal Castle").location(latitude: 52.2479, longitude: 21.0155)
+///     Map(region: MapRegion(center: Location(latitude: 52.23, longitude: 21.01), radiusMeters: 2_000)).markers {
+///         Marker(at: Location(latitude: 52.2479, longitude: 21.0155)).label("Royal Castle")
 ///
-///         places.map { Marker($0.name).location(latitude: $0.latitude, longitude: $0.longitude) }
+///         places.map { Marker(at: $0.location).label($0.name) }
 ///     }
 ///
 /// An `if`, an `if/else` and an array of markers work in one, and a plain `for`

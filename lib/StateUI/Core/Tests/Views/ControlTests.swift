@@ -349,23 +349,22 @@ final class ControlTests: XCTestCase {
             // map LOOKS is an act (moveToRegion), checked with the other acts
             // in ActCallShapeTests rather than here.
             ControlCase("Map", source: "Map.swift",
-                Map(latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
+                Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
                     .mapType(.hybrid)
                     .isScrollEnabled(true)
                     .isZoomEnabled(true)
                     .showsTraffic(false)
                     .showsUserLocation(false)
                     .markers {
-                        Marker("Royal Castle")
+                        Marker(at: Location(latitude: 52.2479, longitude: 21.0155))
+                            .label("Royal Castle")
                             .subtitle("Plac Zamkowy 4")
                             .type(.place)
-                            .location(latitude: 52.2479, longitude: 21.0155)
                             .onSelected {}
                             .onDetailsClicked {}
 
-                        Marker("Second")
+                        Marker(at: Location(latitude: 52.2151, longitude: 21.0355))
                             .label("Lazienki Park")
-                            .location(latitude: 52.2151, longitude: 21.0355)
                     }
                     .onMapClicked { _ in }),
 
@@ -1217,7 +1216,8 @@ final class ControlTests: XCTestCase {
 
         seen = []
         let pin = renders.render(
-            Marker("Office")
+            Marker(at: Location(latitude: 52.23, longitude: 21.01))
+                .label("Office")
                 .onSelected { seen.append("first") }
                 .onSelected { seen.append("second") }
                 .node)

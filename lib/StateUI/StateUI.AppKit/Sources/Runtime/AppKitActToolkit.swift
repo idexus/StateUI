@@ -131,8 +131,11 @@ final class AppKitActToolkit: ActToolkit {
                     to: call.arguments.value(1)?.string ?? "",
                     anchor: call.arguments.value(2).flatMap(ScrollAnchor.init(propValue:)) ?? .nearest)
             case (.moveToRegion, let map as MapKitView):
-                let number = { call.arguments.value($0)?.number ?? 0 }
-                map.show(MapRegion(latitude: number(1), longitude: number(2), radiusMeters: number(3)), sliding: true)
+                guard let region = call.arguments.value(1).flatMap(MapRegion.init(propValue:)) else {
+                    core.fail(call, "moveToRegion was given no region", log: { AppKitRenderer.log.error($0) })
+                    return true
+                }
+                map.show(region, sliding: true)
             case (.goBack, let web as WebKitView), (.goForward, let web as WebKitView), (.reload, let web as WebKitView),
                 (.evaluateJavaScript, let web as WebKitView):
                 web.perform(call, through: core)

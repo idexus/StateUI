@@ -152,7 +152,7 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(
             CornerRadius.corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: 4).propValue,
             .numbers([1, 2, 3, 4]))
-        XCTAssertEqual(MapRegion(latitude: 52, longitude: 21, radiusMeters: 1500).propValue, .numbers([52, 21, 1500]))
+        XCTAssertEqual(MapRegion(center: Location(latitude: 52, longitude: 21), radiusMeters: 1500).propValue, .numbers([52, 21, 1500]))
 
         let brush = Brush.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)])
 
@@ -198,7 +198,7 @@ final class ContractTests: XCTestCase {
             CornerRadius.uniform(8), CornerRadius.corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: 4),
             WebViewSource.url("https://example.com"), WebViewSource.html("<p/>", baseURL: nil),
             WebViewSource.html("<p/>", baseURL: "https://example.com"),
-            MapRegion(latitude: 52.25, longitude: 21.01, radiusMeters: 1500),
+            MapRegion(center: Location(latitude: 52.25, longitude: 21.01), radiusMeters: 1500),
             Location(latitude: 52.25, longitude: 21.01),
             CalendarDate(year: 2026, month: 9, day: 15), ClockTime(hour: 9, minute: 30, second: 5),
             ContainerShape.rectangle, ContainerShape.roundedRectangle(12), ContainerShape.ellipse,

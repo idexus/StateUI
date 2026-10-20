@@ -191,8 +191,8 @@ final class ContractRoadsTests: XCTestCase {
             open: #"_ = Text().spans { TextSpan("Hi") }"#),
         Road(
             name: "a view standing among a map's markers",
-            closed: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).markers { Text("Castle") }"#,
-            open: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).markers { Marker("Castle") }"#),
+            closed: #"_ = Map(region: MapRegion(center: Location(latitude: 52, longitude: 21), radiusMeters: 500)).markers { Text("Castle") }"#,
+            open: #"_ = Map(region: MapRegion(center: Location(latitude: 52, longitude: 21), radiusMeters: 500)).markers { Marker(at: Location(latitude: 52, longitude: 21)) }"#),
         Road(
             name: "a view standing on the menu bar",
             closed: #"_ = Text("Notes").menuBar { Text("File") }"#,

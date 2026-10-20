@@ -17,8 +17,8 @@
             ]) { s in
                 s.start {
                     VStack {
-                        Map(latitude: 52.23, longitude: 21.01, radiusMeters: 5_000).markers {
-                            Marker("Home").subtitle("Nowy Świat 1").type(.place).location(latitude: 52.23, longitude: 21.02)
+                        Map(region: MapRegion(center: Location(latitude: 52.23, longitude: 21.01), radiusMeters: 5_000)).markers {
+                            Marker(at: Location(latitude: 52.23, longitude: 21.02)).label("Home").subtitle("Nowy Świat 1").type(.place)
                         }.height(300)
                     }
                 }
@@ -35,8 +35,8 @@
                 let heard = Received<String>()
                 s.start {
                     VStack {
-                        Map(latitude: 52.23, longitude: 21.01, radiusMeters: 5_000).markers {
-                            Marker("Home").location(latitude: 52.23, longitude: 21.02)
+                        Map(region: MapRegion(center: Location(latitude: 52.23, longitude: 21.01), radiusMeters: 5_000)).markers {
+                            Marker(at: Location(latitude: 52.23, longitude: 21.02)).label("Home")
                                 .onSelected { heard.values.append("pin") }
                                 .onDetailsClicked { heard.values.append("details") }
                         }.height(300)
