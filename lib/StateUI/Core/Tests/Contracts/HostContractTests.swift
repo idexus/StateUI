@@ -33,9 +33,7 @@ final class HostContractTests: XCTestCase {
         ] {
             XCTAssertEqual(Self.layer(of: type), .stateUI)
         }
-        for type in [NodeType.checkBox, .radioButton] {
-            XCTAssertEqual(Self.layer(of: type), .adaptive, "a toolkit's own box where it has one")
-        }
+        XCTAssertEqual(Self.layer(of: .checkBox), .adaptive, "a toolkit's own box where it has one")
 
         for property in [
             Prop.columns, .gridColumn, .gridColumnSpan, .gridRow,

@@ -21,7 +21,6 @@ Picker.accessibilityIdentifier: – GTK 4 tells assistive technology no identifi
 Polygon.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 Polyline.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 ProgressBar.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
-RadioButton.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 Rectangle.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 ScrollView.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 SearchField.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.

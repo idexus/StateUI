@@ -29,7 +29,6 @@ Polygon.ignoresInput: ✅
 Polyline.isVisible: ✅
 Polyline.scaleX: ✓ read scaleX of Polyline: the host's own transform, checked against the layer it composed itself
 ProgressBar.pivotY: ✓ read pivotY of ProgressBar: the host's own transform, checked against the layer it composed itself
-RadioButton.isAccessibilityHidden: ✅
 Rectangle.accessibilityLabel: ✅
 ScrollView.ignoresInput: ✅
 ScrollView.layoutDirection: ✅

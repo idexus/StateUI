@@ -24,7 +24,6 @@ Polygon.isEnabled: ✅
 Polygon.translationX: ✓ read translationX of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.rotationX: ✓ read rotationX of Polyline: the host's own transform, checked against the layer it composed itself
 ProgressBar.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
-RadioButton.accessibilityHint: ✅
 Rectangle.style: ✅
 ScrollView.isEnabled: ✅
 ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform, checked against the layer it composed itself

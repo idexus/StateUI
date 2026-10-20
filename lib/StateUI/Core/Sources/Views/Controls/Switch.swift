@@ -11,18 +11,21 @@ extension SwitchProperties {
     }
 }
 
-/// An on/off toggle.
+/// An on/off toggle, and the words it says beside it.
 ///
-///     Switch($soundOn)
+///     Switch($wifi).text("Wi-Fi")
 ///         .tint(.green)
 ///
 /// Given a binding it shows the value and writes every flip back. Given a plain
 /// `Bool` - or nothing plus `.isOn(_:)` - it shows that and reports
 /// nothing, so `.onToggled` is how the flip gets anywhere.
 ///
-/// A `CheckBox` asks the same question in the shape a form uses; a
-/// `RadioButton` is what to reach for once there are more than two answers.
-public struct Switch: ElementView, TintElement, SwitchProperties, FocusElement {
+/// Its words are its own: a tap on them flips it, and a screen reader names
+/// the switch by them. A `CheckBox` asks the same question in the shape a
+/// form uses; a `Picker` presented as radio buttons
+/// (`.presentation(.radio)`) is what to reach for once there are more than two
+/// answers.
+public struct Switch: ElementView, TextualElement, TintElement, SwitchProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 

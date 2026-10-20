@@ -3,7 +3,7 @@
 
 import CStateUIWinUI
 
-/// A CheckBox: a WinUI `CheckBox` with no caption, the box alone.
+/// A CheckBox: a WinUI `CheckBox`, its words beside its box.
 @MainActor
 final class WinUICheckBoxView: WinUIToggleView {
     init() {

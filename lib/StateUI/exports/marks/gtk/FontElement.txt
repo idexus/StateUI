@@ -17,12 +17,6 @@ Picker.fontSize: ✅
 Picker.fontWeight: ✅
 Picker.isFontAutoScalingEnabled: ✅
 Picker.textStyle: ✅
-RadioButton.fontAttributes: ✅
-RadioButton.fontFamily: ✅
-RadioButton.fontSize: ✅
-RadioButton.fontWeight: ✅
-RadioButton.isFontAutoScalingEnabled: ✅
-RadioButton.textStyle: ✅
 SearchField.fontAttributes: ✅
 SearchField.fontFamily: ✅
 SearchField.fontSize: ✅

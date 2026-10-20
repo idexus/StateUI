@@ -26,8 +26,6 @@ Picker.pivotY: ✓ read pivotY of Picker: the host's own transform, checked agai
 Polygon.automationExcludedWithChildren: ✅
 Polyline.accessibilityLabel: ✅
 ProgressBar.ignoresInput: ✅
-RadioButton.isVisible: ✅
-RadioButton.scaleX: ✓ read scaleX of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.rotation: ✓ read rotation of Rectangle: the host's own transform, checked against the layer it composed itself
 ScrollView.automationExcludedWithChildren: ✅
 SearchField.zIndex: ✅

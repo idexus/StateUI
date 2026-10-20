@@ -40,9 +40,8 @@ extension AppKitDriver {
         case (.scroll(let target), let items as AppKitItemsView): items.scrollForTesting(to: target)
         case (.activate, _): try activate(element, view)
         case (.pressKeys(let shortcut), _): try pressKeys(shortcut, on: element, view)
-        case (.toggle, let toggle as AppKitSwitchView): _ = toggle.accessibilityPerformPress()
+        case (.toggle, let toggle as AppKitSwitchView): _ = toggle.control.accessibilityPerformPress()
         case (.toggle, let check as AppKitCheckBoxView): check.performClick(nil)
-        case (.toggle, let radio as AppKitRadioButtonView): radio.performClick(nil)
         case (.toggle, let split as AppKitSplitView): split.toggleForTesting()
         case (.slide(let value), let slider as AppKitSliderView):
             slider.doubleValue = value
@@ -152,12 +151,11 @@ extension AppKitDriver {
         }
     }
 
-    /// A click on a button, a radio button's click, a menu's item chosen, a page's action taken from the toolbar, and
+    /// A click on a button, a menu's item chosen, a page's action taken from the toolbar, and
     /// a view that hears taps pressed as assistive technology presses it.
     private func activate(_ element: MountedElement, _ view: NSView?) throws {
         switch view {
         case let button as AppKitButtonView: button.performClick(nil)
-        case let radio as AppKitRadioButtonView: radio.performClick(nil)
         case let pressed as AppKitHitTestView where pressed.pressAction != nil: _ = pressed.accessibilityPerformPress()
         default:
             if element.type == .menuItem, let item = (element.native as? AppKitElement)?.platformMenuItem,

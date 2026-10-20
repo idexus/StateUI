@@ -37,28 +37,26 @@ Polygon.scaleX: ✅
 Polyline.accessibilityHeading: ✅
 ProgressBar.isEnabled: ✅
 ProgressBar.rotation: ✅
-RadioButton.accessibilityHeading: ✅
-RadioButton.translationY: ✅
-Rectangle.layoutDirection: ✓ read layoutDirection of Rectangle: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-ScrollView.frame: ✅
-ScrollView.scaleX: ✅
-SearchField.accessibilityHint: ✅
-Slider.opacity: ✅
-Slider.pivotY: ✅
-Spacer.accessibilityHeading: ✅
-Spacer.translationY: ✅
-Stepper.layoutDirection: ✅
-Switch.scaleY: ✅
-Switch.style: ✅
+Rectangle.accessibilityHeading: ✅
+Rectangle.translationY: ✅
+ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+SearchField.height: ✅
+SearchField.rotationX: ✓ read rotationX of SearchField: the host's own tip, checked against the projection it laid on the element
+SearchField.width: ✅
+Slider.accessibilityHint: ✅
+Spacer.opacity: ✅
+Spacer.pivotY: ✅
+Stepper.accessibilityHeading: ✅
+Stepper.translationY: ✅
+Switch.layoutDirection: ✅
 Text.accessibilityHint: ✅
-TextEditor.automationExcludedWithChildren: ✅
-TextField.ignoresInput: ✅
-TextField.scale: ✅
-TimePicker.accessibilityHeading: ✅
-VStack.height: ✅
-VStack.rotationX: ✓ read rotationX of VStack: the host's own tip, checked against the projection it laid on the element
-VStack.width: ✅
-WebView.ignoresInput: ✅
-WebView.scale: ✅
-ZStack.accessibilityHeading: ✅
-ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+TextEditor.scaleY: ✅
+TextEditor.style: ✅
+TextField.automationExcludedWithChildren: ✅
+TimePicker.ignoresInput: ✅
+TimePicker.scale: ✅
+VStack.accessibilityHeading: ✅
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+WebView.automationExcludedWithChildren: ✅
+ZStack.ignoresInput: ✅
+ZStack.scale: ✅

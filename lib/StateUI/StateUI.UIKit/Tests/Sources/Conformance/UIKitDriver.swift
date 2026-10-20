@@ -267,8 +267,8 @@ final class UIKitDriver: HostDriver {
             field.sendActions(for: .editingChanged)
         case (.submit, let field as UITextField & UIKitTextInputView): _ = field.delegate?.textFieldShouldReturn?(field)
         case (.toggle, let toggle as UIKitSwitchView):
-            toggle.setOn(!toggle.isOn, animated: false)
-            toggle.sendActions(for: .valueChanged)
+            toggle.control.setOn(!toggle.isOn, animated: false)
+            toggle.control.sendActions(for: .valueChanged)
         case (.toggle, let check as UIKitCheckView): check.sendActions(for: .primaryActionTriggered)
         case (.slide(let value), let slider as UIKitSliderView):
             slider.sendActions(for: .touchDown)
@@ -433,6 +433,7 @@ final class UIKitDriver: HostDriver {
         case (.isOn, let toggle as UIKitSwitchView): return toggle.isOn.propValue
         case (.isOn, let check as UIKitCheckView): return check.isOn.propValue
         case (.text, let check as UIKitCheckView): return (check.configuration?.title ?? "").propValue
+        case (.text, let toggle as UIKitSwitchView): return (toggle.caption.text ?? "").propValue
         case (.value, let slider as UIKitSliderView): return Double(slider.value).propValue
         case (.minimum, let slider as UIKitSliderView): return Double(slider.minimumValue).propValue
         case (.maximum, let slider as UIKitSliderView): return Double(slider.maximumValue).propValue
@@ -445,7 +446,7 @@ final class UIKitDriver: HostDriver {
         case (.tint, let bar as UIKitProgressBarView): return bar.bar.progressTintColor.map { Self.color($0).propValue }
         case (.tint, let spinner as UIKitActivityIndicatorView): return spinner.color.map { Self.color($0).propValue }
         case (.tint, let slider as UIKitSliderView): return slider.minimumTrackTintColor.map { Self.color($0).propValue }
-        case (.tint, let toggle as UIKitSwitchView): return toggle.onTintColor.map { Self.color($0).propValue }
+        case (.tint, let toggle as UIKitSwitchView): return toggle.control.onTintColor.map { Self.color($0).propValue }
         case (.tint, let box as UIKitCheckView): return Self.color(box.tintColor).propValue
         case (.horizontalTextAlignment, let picker as UIKitPickerView):
             let alignments: [(UIControl.ContentHorizontalAlignment, TextAlignment)] = [

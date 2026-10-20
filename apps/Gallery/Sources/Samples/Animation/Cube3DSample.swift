@@ -85,18 +85,11 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Color")
                 .placeholder("Color")
 
-            HStack {
-                Text("Spin")
-                    .fontSize(14)
-                    .verticalAlignment(.center)
-
-                Switch($spinning)
-                    .accessibilityIdentifier("cube3D.spin")
-                    .accessibilityLabel("Spin")
-                    .tint(Palette.accent)
-            }
-            .spacing(12)
-            .horizontalAlignment(.center)
+            Switch($spinning)
+                .text("Spin")
+                .accessibilityIdentifier("cube3D.spin")
+                .tint(Palette.accent)
+                .horizontalAlignment(.center)
         }
         .spacing(12)
     }

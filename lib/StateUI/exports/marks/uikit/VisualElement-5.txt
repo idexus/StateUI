@@ -30,7 +30,6 @@ Polygon.frame: ✅
 Polyline.opacity: ✅
 Polyline.scaleY: ✓ read scaleY of Polyline: the host's own transform, checked against the layer it composed itself
 ProgressBar.rotation: ✓ read rotation of ProgressBar: the host's own transform, checked against the layer it composed itself
-RadioButton.automationExcludedWithChildren: ✅
 Rectangle.accessibilityHint: ✅
 ScrollView.background: ✅
 ScrollView.frame: ✅

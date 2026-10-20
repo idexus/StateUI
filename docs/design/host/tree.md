@@ -96,16 +96,6 @@ animations end; and its native half detaches what it attached outside the
 tree: observers, recognizers, a scroller's hold on the frame clock. Nothing
 keeps a control alive after the tree drops it.
 
-## A radio group
-
-A radio button checked by the user unchecks the others of its choice, and
-each of those reports that it is off. Which they are is the tree's to say,
-the same on every host: the radio buttons of its `groupName` anywhere in its
-window, or, where it names no group, the radio buttons beside it under the
-same parent. A native group of the platform's is not used: it holds only its
-own direct children, while StateUI's may stand anywhere in a window's
-layouts.
-
 ## Drawn over its place
 
 How an element's view is drawn over the place its layout gave it is put
@@ -226,7 +216,7 @@ nor its label says no. A host turns the finished look into its toolkit's
 attributes and nothing more. A label shown with no runs and given none
 writes nothing again: its own words stand already.
 
-An element showing words - a label, a button, a radio button - reads the
+An element showing words - a label, a button - reads the
 text tiers the same way on every host (`TextMembers`): its words in their
 case where the words or the case changed, and the look its font, its
 scaling and its colour give them where one of those did - the members a look

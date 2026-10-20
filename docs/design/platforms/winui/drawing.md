@@ -38,8 +38,7 @@ rectangle, and a panel's own corner radius cuts none of its children.
 A view's background is the ground under its whole frame, painted the way
 WinUI's own templates paint one (`stateui_winui_set_background`): a control's
 `Background` and the theme resources its template draws that ground from -
-a radio button's own (`RadioButtonBackground`) and a check box's, checked or
-not (`CheckBoxBackgroundUnchecked`, `CheckBoxBackgroundChecked`,
+a check box's, checked or not (`CheckBoxBackgroundUnchecked`, `CheckBoxBackgroundChecked`,
 `CheckBoxBackgroundIndeterminate`), the container of a switch or a slider
 (`ToggleSwitchContainerBackground`, `SliderContainerBackground`), the field
 of a text box, a search box or a number box (`TextControlBackground`), of a

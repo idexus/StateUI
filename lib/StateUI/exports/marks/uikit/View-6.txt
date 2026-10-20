@@ -70,9 +70,6 @@ ProgressBar.dragStarting: ✓ dragAndDrop on ProgressBar: the drag and drop inte
 ProgressBar.dragText: ✓ dragAndDrop on ProgressBar: the drag and drop interactions' handlers called, no drag session
 ProgressBar.frameChanged: ✅
 ProgressBar.margin: ✅
-RadioButton.swipeDirection: ✓ pan on RadioButton: the view's listening handed the recognizer's states, no touch sent
-RadioButton.swipeThreshold: ✓ pan on RadioButton: the view's listening handed the recognizer's states, no touch sent
-RadioButton.swiped: ✓ pan on RadioButton: the view's listening handed the recognizer's states, no touch sent
 Rectangle.tapCount: ✓ tap on Rectangle: the view's listening handed the recognizer's states, no touch sent
 Rectangle.tapped: ✓ tap on Rectangle: the view's listening handed the recognizer's states, no touch sent
 ScrollView.area: ✅

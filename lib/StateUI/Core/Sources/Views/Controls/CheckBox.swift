@@ -12,22 +12,19 @@ extension CheckBoxProperties {
     }
 }
 
-/// A box that is ticked or not.
+/// A box that is ticked or not, and the words it says beside it.
 ///
 ///     @State private var agreed = false
 ///     …
-///     HStack {
-///         CheckBox($agreed).tint(.firebrick)
-///         Text("I agree").verticalAlignment(.center)
-///     }
+///     CheckBox($agreed).text("I agree to the terms")
 ///
 /// Given a binding it shows what the binding holds and writes every tick back.
 /// Given a plain `Bool` it only shows: `.onToggled` is then the one way
 /// a tick reaches anywhere.
 ///
-/// No caption of its own - a CheckBox is the box and nothing else. Put a
-/// Text beside it, as above.
-public struct CheckBox: ElementView, TintElement, CheckBoxProperties, FocusElement {
+/// Its words are its own: a tap on them ticks the box, and a screen reader
+/// names the box by them.
+public struct CheckBox: ElementView, TextualElement, TintElement, CheckBoxProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 

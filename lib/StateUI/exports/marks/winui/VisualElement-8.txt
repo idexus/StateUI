@@ -33,32 +33,29 @@ Polygon.width: ✅
 Polyline.accessibilityLabel: ✅
 Polyline.isEnabled: ✅
 ProgressBar.layoutDirection: ✅
-RadioButton.frame: ✅
-RadioButton.scaleX: ✅
-Rectangle.isAccessibilityHidden: ✅
-ScrollView.height: ✅
-ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own tip, checked against the projection it laid on the element
-ScrollView.width: ✅
-SearchField.translationX: ✅
-SearchField.zIndex: ✅
-Slider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Spacer.frame: ✅
-Spacer.scaleX: ✅
-Stepper.isAccessibilityHidden: ✅
-Switch.maximumHeight: ✅
-Switch.maximumWidth: ✅
-Switch.minimumHeight: ✅
-Switch.minimumWidth: ✅
-Switch.rotationY: ✓ read rotationY of Switch: the host's own tip, checked against the projection it laid on the element
+Rectangle.frame: ✅
+Rectangle.scaleX: ✅
+ScrollView.accessibilityHeading: ✅
+SearchField.isVisible: ✅
+SearchField.pivotX: ✅
+Slider.translationX: ✅
+Slider.zIndex: ✅
+Spacer.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Stepper.frame: ✅
+Stepper.scaleX: ✅
+Switch.isAccessibilityHidden: ✅
 Text.translationX: ✅
 Text.zIndex: ✅
-TextEditor.tooltip: ✅
-TextField.isEnabled: ✅
-TextField.rotation: ✅
-TimePicker.accessibilityLabel: ✅
-VStack.isVisible: ✅
-VStack.pivotX: ✅
-WebView.isEnabled: – WinUI's WebView2 is no control: it keeps no enabled state, and its page takes the user's hand whatever the tree says.
-WebView.rotation: ✅
-ZStack.accessibilityLabel: ✅
-ZStack.isEnabled: ✅
+TextEditor.maximumHeight: ✅
+TextEditor.maximumWidth: ✅
+TextEditor.minimumHeight: ✅
+TextEditor.minimumWidth: ✅
+TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own tip, checked against the projection it laid on the element
+TextField.tooltip: ✅
+TimePicker.isEnabled: ✅
+TimePicker.rotation: ✅
+VStack.accessibilityLabel: ✅
+VStack.isEnabled: ✅
+WebView.tooltip: ✅
+ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+ZStack.rotation: ✅

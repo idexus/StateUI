@@ -69,11 +69,6 @@ ProgressBar.area: ✅
 ProgressBar.droppedFileTypes: ✓ dropFiles on ProgressBar: the window's drop routing told the driver's files, no dragging session
 ProgressBar.filesDropped: ✓ dropFiles on ProgressBar: the window's drop routing told the driver's files, no dragging session
 ProgressBar.frameChanged: ✅
-RadioButton.pointerEntered: ✓ hover on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
-RadioButton.pointerExited: ✓ hover on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
-RadioButton.pointerMoved: ✓ hover on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
-RadioButton.pointerPressed: ✓ hover on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
-RadioButton.pointerReleased: ✓ hover on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.frameChanged: ✅
 Rectangle.panYChannel: ✓ pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.frameChanged: ✅

@@ -41,6 +41,9 @@ Capsule
   stroke
 CheckBox
   isOn
+  text
+  textCase
+  textColor
   tint
   toggled()
 DatePicker
@@ -177,19 +180,6 @@ Polyline
 ProgressBar
   progress
   tint
-RadioButton
-  fontAttributes
-  fontFamily
-  fontSize
-  fontWeight
-  isFontAutoScalingEnabled
-  isOn
-  padding
-  text
-  textCase
-  textColor
-  textStyle
-  toggled()
 Rectangle
   contentMode
   cornerRadius
@@ -253,6 +243,9 @@ Stepper
   valueChanged()
 Switch
   isOn
+  text
+  textCase
+  textColor
   toggled()
 Text
   fontAttributes

@@ -28,7 +28,6 @@ Polygon.minimumHeight: ✅
 Polygon.minimumWidth: ✅
 Polyline.scale: ✓ read scale of Polyline: the host's own transform, checked against the layer it composed itself
 ProgressBar.pivotX: ✓ read pivotX of ProgressBar: the host's own transform, checked against the layer it composed itself
-RadioButton.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 Rectangle.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 ScrollView.isEnabled: ✅
 ScrollView.maximumHeight: ✅

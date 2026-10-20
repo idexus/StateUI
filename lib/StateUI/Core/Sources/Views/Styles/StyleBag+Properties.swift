@@ -44,7 +44,6 @@ extension StyleBag: PickerProperties where Target == Picker {}
 extension StyleBag: PolygonProperties where Target == Polygon {}
 extension StyleBag: PolylineProperties where Target == Polyline {}
 extension StyleBag: ProgressBarProperties where Target == ProgressBar {}
-extension StyleBag: RadioButtonProperties where Target == RadioButton {}
 extension StyleBag: RectangleProperties where Target == Rectangle {}
 extension StyleBag: ScrollViewProperties where Target == ScrollView {}
 extension StyleBag: SearchFieldProperties where Target == SearchField {}

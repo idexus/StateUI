@@ -32,7 +32,6 @@ extension DatePicker: StyleTarget {}
 extension TimePicker: StyleTarget {}
 extension Switch: StyleTarget {}
 extension CheckBox: StyleTarget {}
-extension RadioButton: StyleTarget {}
 extension Slider: StyleTarget {}
 extension Stepper: StyleTarget {}
 extension SearchField: StyleTarget {}

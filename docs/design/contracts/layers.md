@@ -9,7 +9,7 @@ work, and the dictionary prints it beside every row.
 | Layer | Who realizes it | Elements |
 | --- | --- | --- |
 | `native` | every base host, with its toolkit's own control | ActivityIndicator, Button, Canvas, DatePicker, Divider, HStack, Image, ItemsView, Picker, ProgressBar, ScrollView, SearchField, Slider, Stepper, Switch, Text, TextEditor, TextField, TimePicker, VStack, WebView, ZStack |
-| `adaptive` | every base host, by its platform's conventions, keeping StateUI's state contract | CheckBox, ModalStack, NavigationStack, Page, RadioButton, SplitView, TabView |
+| `adaptive` | every base host, by its platform's conventions, keeping StateUI's state contract | CheckBox, ModalStack, NavigationStack, Page, SplitView, TabView |
 | `stateUI` | StateUI decides its geometry, its arrangement or its composition - in the core or the shared host layer - and a host draws what was decided | Capsule, Ellipse, Grid, LayoutEngine, Line, Path, Polygon, Polyline, Rectangle, Spacer |
 | `structure` | nobody draws it: it carries structure or protocol data | Application, Scene, Window, the menus, the slots and collections, TextSpan |
 | `provider` | an optional provider: a package, or the application that registers it | Map, Marker, and an application's own elements |

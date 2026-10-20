@@ -171,8 +171,8 @@ final class Catalog {
         SampleGroup(
             route: "basicInput",
             title: "Controls",
-            summary: "Button, Switch, CheckBox, RadioButton, Slider, Stepper and "
-                + "Picker, the spinner and the bar that show work, and what a "
+            summary: "Button, Switch, CheckBox, Slider, Stepper and Picker, "
+                + "the spinner and the bar that show work, and what a "
                 + "control says about itself; text fields are under Text & typing.",
             icon: ImageSource(light: "nav_input.png", dark: "nav_input_dark.png"),
             card: ImageSource("cat_basicinput.png"),
@@ -183,7 +183,6 @@ final class Catalog {
                 Sample(IconButtonSample()),
                 Sample(SwitchSample()),
                 Sample(CheckBoxSample()),
-                Sample(RadioButtonSample()),
                 Sample(SliderSample()),
                 Sample(StepperSample()),
                 Sample(PickerSample()),

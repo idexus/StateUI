@@ -30,7 +30,6 @@ Polygon.accessibilityHint: ✅
 Polyline.frame: ✅
 ProgressBar.opacity: ✅
 ProgressBar.scaleY: ✓ read scaleY of ProgressBar: the host's own transform, checked against the layer it composed itself
-RadioButton.rotation: ✓ read rotation of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
 ScrollView.accessibilityHint: ✅
 SearchField.maximumHeight: ✅

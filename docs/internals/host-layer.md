@@ -139,7 +139,6 @@ A host never:
 - keeps a write flag of its own: `ProgramWrite` is the one mark;
 - times a scroller's rest on a clock of its own, or aims, shortens or corrects
   the toolkit's scrolling;
-- groups radio buttons with the platform's own group: the tree names the peers;
 - computes again what a type of the layer computes;
 - strongly retains a control after its element leaves.
 
@@ -247,7 +246,6 @@ toolkit's calls:
 
 | Member | What it decides | Reason |
 | --- | --- | --- |
-| `radioPeers` | the radio buttons a check takes away: those of its group in its window, else its siblings | [A radio group](../design/host/tree.md#a-radio-group) |
 | `drawingTransform`, `placement` | how a view is moved, turned and scaled over its place, and a placing run's places | [Drawn over its place](../design/host/tree.md#drawn-over-its-place) |
 | `accessibilityWords` | its identifier, label, hint and heading level, and whether assistive technology meets it | [What assistive technology meets](../design/host/tree.md#what-assistive-technology-meets) |
 | `arrangedProperties`, `unmeasuredProperties` | which change arranges the parent again, and which measures nothing | [Measured once](../design/host/layout.md#measured-once) |
@@ -452,10 +450,8 @@ host.
 
 - **`MountedElement.send`**, **`reportUserChange`** and **`reportScrolled`**
   carry what the user does to a control: a value onto the state carrying it,
-  then its event; a radio button checked turns its peers off first, in one
-  user's transaction; what the program writes reports nothing. The host's
-  native callback hands the value on, and turns a peer's control off in its
-  toolkit's terms. ([A user's change](../design/host/runtime.md#a-users-change))
+  then its event, in one user's transaction; what the program writes reports
+  nothing. The host's native callback hands the value on. ([A user's change](../design/host/runtime.md#a-users-change))
 - **`HeardInput`**, **`Hearing`** and **`PinchStep`** are the input a view
   heard, in the contract's terms: a tap in its run, the pointer, a press
   dragged, a pinch's step. The host listens for what

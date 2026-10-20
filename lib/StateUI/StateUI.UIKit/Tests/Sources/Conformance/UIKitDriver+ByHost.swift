@@ -36,7 +36,7 @@ extension UIKitDriver {
         default: break
         }
         switch ability {
-        case "read isOn of CheckBox", "read isOn of RadioButton", "read groupName of RadioButton":
+        case "read isOn of CheckBox":
             return "the host's own flag, not the button's state"
         case "read selectedIndex of Picker", "read options of Picker", "read title of Picker":
             return "the host's own choice, not the menu's"

@@ -68,8 +68,7 @@ once for the user's act and not at all for the program's; an act answers,
 and refuses or cancels as the contract says. Where a property has an effect
 a case can see without reading the control - a frame, a colour StateUI draws,
 what a press reaches - a case of the effect stands beside it. A property no
-toolkit holds - a radio button's set, which StateUI keeps - has its effect
-alone; where one host's toolkit holds a property another leaves to StateUI's
+toolkit holds has its effect alone; where one host's toolkit holds a property another leaves to StateUI's
 arithmetic - a stack's spacing - the second's driver says why it cannot read
 it, and the effect proves it there.
 

@@ -81,8 +81,8 @@ writes update the attached controls through the host-carried path. Read
 `volume` elsewhere only when the tree actually needs its discrete destination.
 
 A binding derived from arbitrary `get` and `set` closures has no StateUI
-storage identity for the host to carry. A switch, check box, radio button,
-picker, date and time pickers, text field, text editor and search field then
+storage identity for the host to carry. A switch, check box, picker, date
+and time pickers, text field, text editor and search field then
 take the described/event path: the getter supplies the property and the
 native report calls the setter. A slider, a stepper and every driven modifier
 refuse it, say so once, and set nothing.
@@ -91,8 +91,7 @@ refuse it, say so once, and set nothing.
 
 Controls with an editable purpose value accept either a value or a binding.
 Examples include `TextField`, `TextEditor`, `SearchField`, `Switch`,
-`CheckBox`, `RadioButton`, `Slider`, `Stepper`, `Picker`, `DatePicker`, and
-`TimePicker`. Every property is one modifier named for it, which takes the
+`CheckBox`, `Slider`, `Stepper`, `Picker`, `DatePicker`, and `TimePicker`. Every property is one modifier named for it, which takes the
 value itself or, where the host can carry the value, a state, `$x`
 ([A property is one modifier](../concepts/why.md#a-property-is-one-modifier-a-value-or-a-state)).
 
@@ -144,8 +143,8 @@ label. A label given both a `text` and runs shows the runs.
 Text properties distinguish their semantic tier; [Text](../controls/Text.md)
 and the tier pages it links list each with its mark per host:
 
-- text-bearing controls - a label, a button, a radio button, the fields, a
-  span - take `textCase`, which draws the words `.uppercase` or `.lowercase`
+- text-bearing controls - a label, a button, a check box, a switch, the
+  fields, a span - take `textCase`, which draws the words `.uppercase` or `.lowercase`
   while the text stays as written; a field turns what is typed into the case
   and reports it so;
 - text-styled controls take `textColor`; a label, a button and a span take
@@ -344,6 +343,7 @@ Choice controls follow the same binding rule:
 
 VStack {
     CheckBox($accepted)
+        .text("I accept the terms")
 
     Slider($level)
         .minimum(0)
@@ -352,6 +352,11 @@ VStack {
     Picker(["Small", "Medium", "Large"], selection: $size)
 }
 ```
+
+A check box and a switch say the words they stand for with `.text`, and the
+words belong to the control: a tap on them turns it, and assistive technology
+calls the control by them. A check box's words stand after its box; a
+switch's stand at its start and the switch at its end, mirrored right to left.
 
 A picker chooses a value, not a place in its list: the state holds one of
 the values - an application's own enum, a model - and each shows by its
@@ -378,9 +383,9 @@ VStack {
 }
 ```
 
-The application owns the selected value. A group name on radio buttons defines
-mutual exclusion in the native control surface; the bindings remain the source
-of application truth. Range bounds are semantic constraints and are not
+The application owns the selected value: one choice of several is a picker,
+offered as radio buttons where `.radio` says so, and the one state holding its
+selection. Range bounds are semantic constraints and are not
 animated presentation values.
 
 ## Activity and progress
@@ -397,6 +402,7 @@ VStack {
         .height(48)
 
     Switch($loading)
+        .text("Working")
 
     ProgressBar(done / 5)
         .height(8)

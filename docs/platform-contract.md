@@ -123,7 +123,6 @@ of its members each meets, and why a cell is empty.
 | [Polygon](controls/Polygon.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Polyline](controls/Polyline.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ProgressBar](controls/ProgressBar.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [RadioButton](controls/RadioButton.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Rectangle](controls/Rectangle.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Scene](controls/Scene.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ScrollView](controls/ScrollView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -228,9 +227,8 @@ contract.
 | `Picker` | `NSPopUpButton` | pop-up `UIButton` menu | `Spinner` | `ComboBox` | `GtkDropDown` | `<select>` |
 | `DatePicker` | `NSDatePicker` | `UIDatePicker` | `TextView` opening a `DatePickerDialog` | `CalendarDatePicker` | `GtkCalendar` in a `GtkMenuButton`'s `GtkPopover` | `<input type=date>` |
 | `TimePicker` | `NSDatePicker` showing hour and minute | `UIDatePicker` in time mode | `TextView` opening a `TimePickerDialog` | `TimePicker` | an hour's and a minute's `GtkSpinButton` in a `GtkMenuButton`'s `GtkPopover` | `<input type=time>` |
-| `Switch` | `NSSwitch` | `UISwitch` | `Switch` | `ToggleSwitch` | `GtkSwitch` | checkbox `<input>` with `role=switch` |
-| `CheckBox` | `NSButton` checkbox | `UIButton` with a box symbol | `CheckBox` | `CheckBox` | `GtkCheckButton` | `<input type=checkbox>` |
-| `RadioButton` | `NSButton` radio | `UIButton` with a circle symbol | `RadioButton` | `RadioButton` | grouped `GtkCheckButton` | `<input type=radio>` |
+| `Switch` | `NSSwitch` beside an `NSTextField` | `UISwitch` beside a `UILabel` | `Switch` | `ToggleSwitch` | `GtkSwitch` beside a `GtkLabel` | checkbox `<input>` with `role=switch` in a `<label>` |
+| `CheckBox` | `NSButton` checkbox | `UIButton` with a box symbol | `CheckBox` | `CheckBox` | `GtkCheckButton` | `<input type=checkbox>` in a `<label>` |
 | `Slider` | `NSSlider` | `UISlider` | `SeekBar` | `Slider` | `GtkScale` | `<input type=range>` |
 | `Stepper` | `NSStepper` | `UIStepper` | custom `LinearLayout` of two `Button`s | `NumberBox` | `GtkSpinButton` | `<input role=spinbutton>` between two `<button>`s |
 | `ProgressBar` | `NSProgressIndicator` bar | `UIProgressView` | horizontal `ProgressBar` | `ProgressBar` | `GtkProgressBar` | `<progress>` |
@@ -258,11 +256,11 @@ These surfaces lack an honest native counterpart on at least one target:
 - The application's name and mark in the bar (`barTitle`, `barIcon`): UIKit, Android Views and GTK 4 give each page a bar of its own that names that page; Web shows no mark in its bar - the browser's tab shows the site's icon.
 - Menus: Android Views has no menu bar, so a menu bar's menus join the bar's overflow; Web has no native menu element.
 - `Grid`: AppKit, UIKit, and GTK 4 have no container with star and auto tracks.
-- `CheckBox` and `RadioButton`: UIKit has neither control.
+- `CheckBox`: UIKit has no check box.
 - `Stepper`: Android Views has no stepper - `NumberPicker` is an integer wheel - so its host sets two buttons side by side.
 - `DatePicker`: GTK 4 has `GtkCalendar` but no date field.
 - `TimePicker`: GTK 4 has no time picker; its host sets a time as GNOME's applications do, with spin buttons.
-- `Switch`: Web has no switch element.
+- `Switch`: Web has no switch element; AppKit's, UIKit's and GTK 4's switch says no words, so their hosts set its words beside it.
 - `ActivityIndicator`: Web has no spinner - an indeterminate `<progress>` draws a bar - so its host draws a ring.
 - `Map` / `Marker`: Android Views, WinUI 3, GTK 4 and Web have no map of the platform's own - Google Play services, Azure Maps and libshumate each need a provider and its key, and the DOM has no map element - so the application registers its own with the host, the pins as the map's children.
 - `ItemsView`: Android Views depends on AndroidX `RecyclerView`; Web has no native virtualized list.
@@ -452,7 +450,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Button](controls/Button.md) | 97 | 54 ✅ · 2 ☑️ · 37 ✓ · 2 – | 52 ✅ · 1 ☑️ · 39 ✓ · 4 – | 70 ✅ · 3 ☑️ · 14 ✓ · 4 – | 83 ✅ · 1 ☑️ · 13 ✓ | 68 ✅ · 2 ☑️ · 26 ✓ · 1 – | 76 ✅ · 1 ☑️ · 20 ✓ |
 | [Canvas](controls/Canvas.md) | 70 | 30 ✅ · 2 ☑️ · 38 ✓ | 29 ✅ · 2 ☑️ · 38 ✓ · 1 – | 56 ✅ · 3 ☑️ · 10 ✓ | 54 ✅ · 15 ✓ | 46 ✅ · 1 ☑️ · 22 ✓ · 1 – | 49 ✅ · 1 ☑️ · 20 ✓ |
 | [Capsule](controls/Capsule.md) | 74 | 37 ✅ · 2 ☑️ · 35 ✓ | 36 ✅ · 2 ☑️ · 35 ✓ · 1 – | 60 ✅ · 3 ☑️ · 10 ✓ | 59 ✅ · 14 ✓ · 1 – | 50 ✅ · 1 ☑️ · 22 ✓ · 1 – | 53 ✅ · 1 ☑️ · 20 ✓ |
-| [CheckBox](controls/CheckBox.md) | 74 | 37 ✅ · 2 ☑️ · 35 ✓ | 30 ✅ · 2 ☑️ · 38 ✓ · 4 – | 55 ✅ · 3 ☑️ · 12 ✓ · 3 – | 60 ✅ · 1 ☑️ · 13 ✓ | 47 ✅ · 1 ☑️ · 25 ✓ · 1 – | 53 ✅ · 1 ☑️ · 20 ✓ |
+| [CheckBox](controls/CheckBox.md) | 77 | 40 ✅ · 2 ☑️ · 35 ✓ | 33 ✅ · 2 ☑️ · 38 ✓ · 4 – | 58 ✅ · 3 ☑️ · 12 ✓ · 3 – | 63 ✅ · 1 ☑️ · 13 ✓ | 50 ✅ · 1 ☑️ · 25 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ |
 | [DatePicker](controls/DatePicker.md) | 86 | 43 ✅ · 2 ☑️ · 36 ✓ · 5 – | 32 ✅ · 1 ☑️ · 37 ✓ · 12 – | 63 ✅ · 3 ☑️ · 15 ✓ · 3 – | 70 ✅ · 3 ☑️ · 13 ✓ | 57 ✅ · 2 ☑️ · 26 ✓ · 1 – | 60 ✅ · 1 ☑️ · 20 ✓ · 4 – |
 | [Divider](controls/Divider.md) | 66 | 29 ✅ · 2 ☑️ · 35 ✓ | 28 ✅ · 2 ☑️ · 35 ✓ · 1 – | 52 ✅ · 3 ☑️ · 10 ✓ | 50 ✅ · 1 ☑️ · 14 ✓ | 42 ✅ · 1 ☑️ · 22 ✓ · 1 – | 45 ✅ · 1 ☑️ · 20 ✓ |
 | [Ellipse](controls/Ellipse.md) | 74 | 37 ✅ · 2 ☑️ · 35 ✓ | 36 ✅ · 2 ☑️ · 35 ✓ · 1 – | 60 ✅ · 3 ☑️ · 10 ✓ | 59 ✅ · 14 ✓ · 1 – | 50 ✅ · 1 ☑️ · 22 ✓ · 1 – | 53 ✅ · 1 ☑️ · 20 ✓ |
@@ -468,14 +466,13 @@ Every control, and every part an application, its windows and its pages are made
 | [Polygon](controls/Polygon.md) | 78 | 41 ✅ · 2 ☑️ · 35 ✓ | 40 ✅ · 2 ☑️ · 35 ✓ · 1 – | 64 ✅ · 3 ☑️ · 10 ✓ | 63 ✅ · 14 ✓ · 1 – | 54 ✅ · 1 ☑️ · 22 ✓ · 1 – | 57 ✅ · 1 ☑️ · 20 ✓ |
 | [Polyline](controls/Polyline.md) | 78 | 41 ✅ · 2 ☑️ · 35 ✓ | 40 ✅ · 2 ☑️ · 35 ✓ · 1 – | 64 ✅ · 3 ☑️ · 10 ✓ | 63 ✅ · 14 ✓ · 1 – | 54 ✅ · 1 ☑️ · 22 ✓ · 1 – | 57 ✅ · 1 ☑️ · 20 ✓ |
 | [ProgressBar](controls/ProgressBar.md) | 68 | 30 ✅ · 2 ☑️ · 35 ✓ · 1 – | 30 ✅ · 2 ☑️ · 35 ✓ · 1 – | 54 ✅ · 3 ☑️ · 10 ✓ | 54 ✅ · 13 ✓ · 1 – | 43 ✅ · 1 ☑️ · 23 ✓ · 1 – | 47 ✅ · 1 ☑️ · 20 ✓ |
-| [RadioButton](controls/RadioButton.md) | 84 | 45 ✅ · 2 ☑️ · 35 ✓ · 1 – | 40 ✅ · 2 ☑️ · 38 ✓ · 4 – | 64 ✅ · 3 ☑️ · 12 ✓ · 3 – | 70 ✅ · 1 ☑️ · 13 ✓ | 57 ✅ · 1 ☑️ · 25 ✓ · 1 – | 63 ✅ · 1 ☑️ · 20 ✓ |
 | [Rectangle](controls/Rectangle.md) | 77 | 40 ✅ · 2 ☑️ · 35 ✓ | 39 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 3 ☑️ · 10 ✓ | 62 ✅ · 14 ✓ · 1 – | 53 ✅ · 1 ☑️ · 22 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ |
 | [ScrollView](controls/ScrollView.md) | 82 | 39 ✅ · 3 ☑️ · 37 ✓ · 3 – | 38 ✅ · 1 ☑️ · 37 ✓ · 4 – | 63 ✅ · 3 ☑️ · 12 ✓ · 3 – | 65 ✅ · 1 ☑️ · 13 ✓ · 3 – | 57 ✅ · 1 ☑️ · 23 ✓ · 1 – | 58 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [SearchField](controls/SearchField.md) | 93 | 50 ✅ · 3 ☑️ · 36 ✓ · 1 – | 53 ✅ · 2 ☑️ · 37 ✓ · 1 – | 75 ✅ · 3 ☑️ · 12 ✓ · 1 – | 74 ✅ · 4 ☑️ · 13 ✓ · 2 – | 65 ✅ · 2 ☑️ · 25 ✓ · 1 – | 72 ✅ · 1 ☑️ · 20 ✓ |
 | [Slider](controls/Slider.md) | 78 | 39 ✅ · 2 ☑️ · 35 ✓ | 33 ✅ · 2 ☑️ · 39 ✓ · 4 – | 59 ✅ · 3 ☑️ · 12 ✓ · 3 – | 62 ✅ · 1 ☑️ · 13 ✓ | 49 ✅ · 1 ☑️ · 25 ✓ · 3 – | 57 ✅ · 20 ✓ · 1 – |
 | [Spacer](controls/Spacer.md) | 66 | 29 ✅ · 2 ☑️ · 35 ✓ | 28 ✅ · 2 ☑️ · 35 ✓ · 1 – | 52 ✅ · 3 ☑️ · 10 ✓ | 50 ✅ · 1 ☑️ · 14 ✓ | 42 ✅ · 1 ☑️ · 22 ✓ · 1 – | 45 ✅ · 1 ☑️ · 20 ✓ |
 | [Stepper](controls/Stepper.md) | 76 | 39 ✅ · 2 ☑️ · 35 ✓ | 33 ✅ · 2 ☑️ · 37 ✓ · 4 – | 57 ✅ · 3 ☑️ · 12 ✓ · 3 – | 61 ✅ · 2 ☑️ · 13 ✓ | 50 ✅ · 1 ☑️ · 24 ✓ · 1 – | 55 ✅ · 1 ☑️ · 20 ✓ |
-| [Switch](controls/Switch.md) | 74 | 36 ✅ · 2 ☑️ · 35 ✓ · 1 – | 31 ✅ · 2 ☑️ · 37 ✓ · 4 – | 54 ✅ · 3 ☑️ · 12 ✓ · 3 – | 60 ✅ · 1 ☑️ · 13 ✓ | 47 ✅ · 1 ☑️ · 24 ✓ · 2 – | 53 ✅ · 1 ☑️ · 20 ✓ |
+| [Switch](controls/Switch.md) | 77 | 39 ✅ · 2 ☑️ · 35 ✓ · 1 – | 34 ✅ · 2 ☑️ · 37 ✓ · 4 – | 57 ✅ · 3 ☑️ · 12 ✓ · 3 – | 63 ✅ · 1 ☑️ · 13 ✓ | 50 ✅ · 1 ☑️ · 24 ✓ · 2 – | 56 ✅ · 1 ☑️ · 20 ✓ |
 | [Text](controls/Text.md) | 84 | 45 ✅ · 2 ☑️ · 35 ✓ · 1 – | 46 ✅ · 1 ☑️ · 35 ✓ · 1 – | 69 ✅ · 3 ☑️ · 10 ✓ | 70 ✅ · 1 ☑️ · 13 ✓ | 59 ✅ · 1 ☑️ · 23 ✓ · 1 – | 63 ✅ · 1 ☑️ · 20 ✓ |
 | [TextEditor](controls/TextEditor.md) | 92 | 53 ✅ · 2 ☑️ · 36 ✓ · 1 – | 52 ✅ · 2 ☑️ · 37 ✓ · 1 – | 74 ✅ · 3 ☑️ · 12 ✓ · 1 – | 78 ✅ · 1 ☑️ · 13 ✓ | 64 ✅ · 2 ☑️ · 25 ✓ · 1 – | 71 ✅ · 1 ☑️ · 20 ✓ |
 | [TextField](controls/TextField.md) | 95 | 51 ✅ · 3 ☑️ · 36 ✓ · 2 – | 55 ✅ · 2 ☑️ · 37 ✓ · 1 – | 76 ✅ · 3 ☑️ · 12 ✓ · 2 – | 78 ✅ · 3 ☑️ · 13 ✓ | 66 ✅ · 2 ☑️ · 25 ✓ · 2 – | 73 ✅ · 1 ☑️ · 20 ✓ |
@@ -483,10 +480,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 76 | 38 ✅ · 1 ☑️ · 35 ✓ | 36 ✅ · 1 ☑️ · 36 ✓ · 1 – | 59 ✅ · 3 ☑️ · 11 ✓ | 60 ✅ · 1 ☑️ · 13 ✓ · 1 – | 51 ✅ · 1 ☑️ · 22 ✓ · 2 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [WebView](controls/WebView.md) | 82 | 44 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 2 ☑️ · 38 ✓ · 1 – | 63 ✅ · 3 ☑️ · 12 ✓ · 3 – | 49 ✅ · 13 ✓ · 19 – | 56 ✅ · 1 ☑️ · 24 ✓ · 1 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [ZStack](controls/ZStack.md) | 75 | 37 ✅ · 1 ☑️ · 35 ✓ | 34 ✅ · 1 ☑️ · 37 ✓ · 1 – | 57 ✅ · 3 ☑️ · 12 ✓ | 59 ✅ · 1 ☑️ · 13 ✓ · 1 – | 49 ✅ · 1 ☑️ · 23 ✓ · 2 – | 53 ✅ · 1 ☑️ · 20 ✓ |
-| ✅ |  | 1378 | 1294 | 2082 | 2122 | 1785 | 1929 |
-| ✓ |  | 1254 | 1291 | 391 | 468 | 800 | 685 |
-| – |  | 26 | 82 | 39 | 41 | 50 | 19 |
-| **Met** | 2757 | **2658** | **2667** | **2512** | **2631** | **2635** | **2633** |
+| ✅ |  | 1339 | 1260 | 2024 | 2058 | 1734 | 1872 |
+| ✓ |  | 1219 | 1253 | 379 | 455 | 775 | 665 |
+| – |  | 25 | 78 | 36 | 41 | 49 | 19 |
+| **Met** | 2679 | **2583** | **2591** | **2439** | **2554** | **2558** | **2556** |
 | 🧩 |  | 0 | 0 | 74 | 74 | 74 | 74 |
 
 ### Application structure
@@ -589,7 +586,6 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Polyline](controls/Polyline.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ProgressBar](controls/ProgressBar.md) | `progress` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) | 3 | 3 ✅ | 2 ✅ · 1 ✓ | 3 ✅ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Scene](controls/Scene.md) | `activated`, `deactivated`, `stopped`, `windowClosed` | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [ScrollView](controls/ScrollView.md) | `horizontalScrollIndicator`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollIndicator` | 7 | 5 ✅ · 2 ✓ | 5 ✅ | 7 ✅ | 7 ✅ | 7 ✅ | 7 ✅ |
@@ -630,9 +626,9 @@ realizes the element and each of its members.
 `Image`, `ItemsView`, `LayoutEngine`, `Line`, `Map`, `Marker`, `Menu`,
 `MenuBar`, `MenuItem`, `MenuSeparator`, `ModalStack`, `NavigationStack`,
 `Overlay`, `Page`, `Path`, `Picker`, `Polygon`, `Polyline`, `ProgressBar`,
-`RadioButton`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`, `Slider`,
-`Spacer`, `SplitView`, `Stepper`, `Switch`, `TabView`, `Text`, `TextEditor`,
-`TextField`, `TextSpan`, `TextSpans`, `TimePicker`, `TitleView`, `ToolbarItem`,
+`Rectangle`, `Scene`, `ScrollView`, `SearchField`, `Slider`, `Spacer`,
+`SplitView`, `Stepper`, `Switch`, `TabView`, `Text`, `TextEditor`, `TextField`,
+`TextSpan`, `TextSpans`, `TimePicker`, `TitleView`, `ToolbarItem`,
 `ToolbarItemGroup`, `VStack`, `WebView`, `Window`, `ZStack`.
 
 ### Properties
@@ -646,7 +642,7 @@ realizes the element and each of its members.
 `droppedFileTypes`, `endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`,
 `flyoutBackground`, `fontAttributes`, `fontFamily`, `fontSize`, `fontWeight`,
 `format`, `frame`, `geometryTransform`, `gridColumn`, `gridColumnSpan`,
-`gridRow`, `gridRowSpan`, `groupName`, `growsWithText`, `handAxis`, `height`,
+`gridRow`, `gridRowSpan`, `growsWithText`, `handAxis`, `height`,
 `hidesWhenInactive`, `horizontalAlignment`, `horizontalScrollIndicator`,
 `horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
 `ignoresInput`, `inputPurpose`, `isAccessibilityHidden`, `isAnimating`,

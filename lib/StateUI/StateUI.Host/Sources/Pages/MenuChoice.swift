@@ -19,7 +19,7 @@
         // One choice of the user's: the turn and the click render together.
         runtime.performUserTransaction {
             if let turned = turnsWhenChosen {
-                reportUserChange(.isOn, .toggled, .bool(turned), in: runtime) { _ in }
+                reportUserChange(.isOn, .toggled, .bool(turned), in: runtime)
             }
             send(.clicked, [], in: runtime)
         }

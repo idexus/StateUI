@@ -25,7 +25,6 @@ Polygon.tooltip: ✅
 Polyline.style: ✅
 ProgressBar.isEnabled: ✅
 ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own transform, checked against the layer it composed itself
-RadioButton.rotationX: ✓ read rotationX of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.layoutDirection: ✅
 ScrollView.tooltip: ✅
 SearchField.ignoresInput: ✅

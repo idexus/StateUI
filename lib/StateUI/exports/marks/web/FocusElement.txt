@@ -14,9 +14,6 @@ ItemsView.unfocus: ✅
 Picker.focus: ✅
 Picker.isFocusedChanged: ✅
 Picker.unfocus: ✅
-RadioButton.focus: ✅
-RadioButton.isFocusedChanged: ✅
-RadioButton.unfocus: ✅
 ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard

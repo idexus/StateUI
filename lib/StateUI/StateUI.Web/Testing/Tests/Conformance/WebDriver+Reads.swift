@@ -35,7 +35,6 @@ extension WebDriver {
             let rightToLeft = try WebBrowser.truth("getComputedStyle(e).direction === 'rtl'", on: e)
             return (rightToLeft ? LayoutDirection.rightToLeft : .leftToRight).propValue
         case (.isOn, is WebSwitchView): return try WebBrowser.truth("e.querySelector('input').checked", on: e).propValue
-        case (.isOn, is WebRadioView): return try WebBrowser.truth("e.querySelector('input').checked", on: e).propValue
         case (.value, is WebSliderView): return try WebBrowser.number("Number(e.value)", on: e)?.propValue
         case (.minimum, is WebSliderView): return try WebBrowser.number("Number(e.min)", on: e)?.propValue
         case (.maximum, is WebSliderView): return try WebBrowser.number("Number(e.max)", on: e)?.propValue
@@ -102,6 +101,7 @@ extension WebDriver {
         }
         if let shape = view as? WebShapeView, let held = try shapeHolds(property, shape) { return held }
         if let input = view as? WebTextInputView, let held = try fieldHolds(property, input) { return held }
+        if let toggle = view as? WebSwitchView, let held = try wordsHolds(property, toggle.caption.node) { return held }
         if let held = try wordsHolds(property, e) { return held }
         if let held = try boxHolds(property, view) { return held }
         return nil

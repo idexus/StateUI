@@ -679,40 +679,6 @@ ProgressBar.swiped: ✅
 ProgressBar.tapCount: ✅
 ProgressBar.tapped: ✅
 ProgressBar.verticalAlignment: ✅
-RadioButton.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-RadioButton.area: ✅
-RadioButton.canDrag: ✓ dragAndDrop on RadioButton: the views' drag listeners' reports told by the driver, no drag started
-RadioButton.dragEnded: ✓ dragAndDrop on RadioButton: the views' drag listeners' reports told by the driver, no drag started
-RadioButton.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-RadioButton.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-RadioButton.dragStarting: ✓ dragAndDrop on RadioButton: the views' drag listeners' reports told by the driver, no drag started
-RadioButton.dragText: ✓ dragAndDrop on RadioButton: the views' drag listeners' reports told by the driver, no drag started
-RadioButton.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-RadioButton.droppedFileTypes: ✓ dropFiles on RadioButton: the view's drag listener's report told the driver's documents, no drag started
-RadioButton.filesDropped: ✓ dropFiles on RadioButton: the view's drag listener's report told the driver's documents, no drag started
-RadioButton.frameChanged: ✅
-RadioButton.gridColumn: ✅
-RadioButton.gridColumnSpan: ✅
-RadioButton.gridRow: ✅
-RadioButton.gridRowSpan: ✅
-RadioButton.horizontalAlignment: ✅
-RadioButton.margin: ✅
-RadioButton.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
-RadioButton.panUpdated: ✅
-RadioButton.panXChannel: ✅
-RadioButton.panYChannel: ✅
-RadioButton.pinchUpdated: ✅
-RadioButton.pointerEntered: ✅
-RadioButton.pointerExited: ✅
-RadioButton.pointerMoved: ✅
-RadioButton.pointerPressed: ✅
-RadioButton.pointerReleased: ✅
-RadioButton.swipeDirection: ✅
-RadioButton.swipeThreshold: ✅
-RadioButton.swiped: ✅
-RadioButton.tapCount: ✅
-RadioButton.tapped: ✅
-RadioButton.verticalAlignment: ✅
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Rectangle.area: ✅
 Rectangle.canDrag: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started

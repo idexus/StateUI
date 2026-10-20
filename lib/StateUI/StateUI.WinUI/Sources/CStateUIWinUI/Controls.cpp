@@ -256,14 +256,6 @@ extern "C" bool stateui_winui_button_accent(StateUIObjectRef handle) {
     }
 }
 
-extern "C" void stateui_winui_set_caption(StateUIObjectRef handle, char const *utf8) {
-    try {
-        as<controls::ContentControl>(handle).Content(winrt::box_value(text(utf8)));
-    } catch (...) {
-        report("setting a caption");
-    }
-}
-
 extern "C" void stateui_winui_button_set_content(
     StateUIObjectRef handle, char const *words, char const *icons, int32_t position, double spacing, int32_t aspect,
     bool wraps, bool trims

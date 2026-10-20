@@ -40,26 +40,14 @@ struct StyleSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
                 .onClicked {}
 
-            HStack {
-                Text("Enabled")
-                    .verticalAlignment(.center)
+            Switch($enabled)
+                .text("Enabled")
+                .accessibilityIdentifier("styles.enabled")
+                .horizontalAlignment(.center)
 
-                Switch($enabled)
-                    .accessibilityIdentifier("styles.enabled")
-                    .accessibilityLabel("Enabled")
-            }
-            .spacing(12)
-            .horizontalAlignment(.center)
-
-            HStack {
-                Text("Platform look")
-                    .verticalAlignment(.center)
-
-                Switch($platformLook)
-                    .accessibilityLabel("Platform look")
-            }
-            .spacing(12)
-            .horizontalAlignment(.center)
+            Switch($platformLook)
+                .text("Platform look")
+                .horizontalAlignment(.center)
 
             SectionTitle("A style for a role")
 

@@ -14,9 +14,6 @@ ItemsView.unfocus: – ItemsView takes no keyboard focus here: it refuses it, an
 Picker.focus: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
 Picker.isFocusedChanged: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
 Picker.unfocus: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
-RadioButton.focus: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
-RadioButton.isFocusedChanged: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
-RadioButton.unfocus: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard

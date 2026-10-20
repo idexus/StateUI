@@ -125,10 +125,10 @@ the view's frame: the browser draws a checkbox over its whole box, so a frame
 larger than the box - a touch target's 44 points - would draw a larger box,
 where every other host draws its own at its size inside the frame. A click
 anywhere in the frame turns it, and assistive technology meets the checkbox
-by the view's name and hint. A RadioButton is a `<label>` holding the browser's radio button and
-its caption, so a click anywhere on it chooses it. Its group is the host
-layer's: the button holds no `name`, so the browser turns no peer off of
-itself, and the peers the host layer turns off are turned off on the page.
+by the view's name and hint. Its words are a `<span>` in the same label, so
+they name it and a click on them turns it: a switch's from its start and the
+switch at its end, a box's after the box, and the label's direction mirrors
+them right to left.
 
 ## Values in a range
 

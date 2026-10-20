@@ -26,7 +26,6 @@ Polygon.opacity: ✅
 Polygon.scaleY: ✓ read scaleY of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.rotation: ✓ read rotation of Polyline: the host's own transform, checked against the layer it composed itself
 ProgressBar.automationExcludedWithChildren: ✅
-RadioButton.accessibilityLabel: ✅
 Rectangle.frame: ✅
 ScrollView.opacity: ✅
 ScrollView.scaleY: ✓ read scaleY of ScrollView: the host's own transform, checked against the layer it composed itself

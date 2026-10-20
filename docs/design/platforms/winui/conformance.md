@@ -8,7 +8,7 @@ of cases, or each part of the largest, in `WinUIConformanceTests`.
 
 A user's act goes through UI Automation where WinUI offers a pattern for it -
 Invoke for a button, a menu's item and a search box's query, Toggle,
-SelectionItem for a radio button, ExpandCollapse for a picker's list, a
+ExpandCollapse for a picker's list, a
 range's value. A picker's choice, a tab, a day, a time and a stepper's words
 are written straight into the control's own selection or value, outside a
 program's write. Any other act goes through the relay's callback that WinUI's

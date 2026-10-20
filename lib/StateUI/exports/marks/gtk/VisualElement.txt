@@ -619,37 +619,6 @@ ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own t
 ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.width: ✅
 ProgressBar.zIndex: ✅
-RadioButton.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
-RadioButton.accessibilityHint: ✅
-RadioButton.accessibilityLabel: ✅
-RadioButton.automationExcludedWithChildren: ✅
-RadioButton.background: ✓ read background of RadioButton: the class of the host's style sheet the widget wears: GTK reads back no background
-RadioButton.frame: ✅
-RadioButton.height: ✅
-RadioButton.ignoresInput: ✅
-RadioButton.isAccessibilityHidden: ✅
-RadioButton.isEnabled: ✅
-RadioButton.isVisible: ✅
-RadioButton.layoutDirection: ✅
-RadioButton.maximumHeight: ✅
-RadioButton.maximumWidth: ✅
-RadioButton.minimumHeight: ✅
-RadioButton.minimumWidth: ✅
-RadioButton.opacity: ✅
-RadioButton.pivotX: ✓ read pivotX of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.pivotY: ✓ read pivotY of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.rotation: ✓ read rotation of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.rotationX: ✓ read rotationX of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.scale: ✓ read scale of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.scaleX: ✓ read scaleX of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.scaleY: ✓ read scaleY of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.style: ✅
-RadioButton.tooltip: ✅
-RadioButton.translationX: ✓ read translationX of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.translationY: ✓ read translationY of RadioButton: the host's own transform: GTK reads back no part of one
-RadioButton.width: ✅
-RadioButton.zIndex: ✅
 Rectangle.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅

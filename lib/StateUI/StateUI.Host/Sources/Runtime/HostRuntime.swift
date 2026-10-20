@@ -230,7 +230,7 @@
             if tabs.indices.contains(previous) { tabs[previous].setPagePresented(false, reason: .appearance) }
             tabs[selected].setPagePresented(true, reason: .appearance)
         }
-        tabbed.reportUserChange(.selectedTab, .selectedTabChanged, .number(Double(selected)), in: self) { _ in }
+        tabbed.reportUserChange(.selectedTab, .selectedTabChanged, .number(Double(selected)), in: self)
         tree.chromeTouched = true
         pump.turnIfWanted()
         if tree.takeChromeTouched() { presenter?.presentRendered(touchedChrome: true) }
@@ -239,7 +239,7 @@
     /// The sidebar of `split` showed or hid on screen: its page hears it, then the state its binding carries.
     public func sidebarShown(_ split: MountedElement, _ shown: Bool) {
         if split.isPagePresented { split.children.first?.setPagePresented(shown, reason: .appearance) }
-        split.reportUserChange(.showsSidebar, .showsSidebarChanged, .bool(shown), in: self) { _ in }
+        split.reportUserChange(.showsSidebar, .showsSidebarChanged, .bool(shown), in: self)
         pump.turnIfWanted()
     }
 

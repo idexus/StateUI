@@ -12,6 +12,7 @@ final class AndroidSwitchViewTests: XCTestCase {
         [
             ("testASwitchShowsWhatTheTreeSays", testASwitchShowsWhatTheTreeSays),
             ("testAUsersTurnReachesTheStateAndTheHandlerOnce", testAUsersTurnReachesTheStateAndTheHandlerOnce),
+            ("testATogglesWordsStandInIt", testATogglesWordsStandInIt),
         ]
     }
 
@@ -54,6 +55,22 @@ final class AndroidSwitchViewTests: XCTestCase {
             XCTAssertEqual(heard.values, [true])
             XCTAssertEqual(host.views(AndroidTextView.self).map(\.text), ["on"])
             XCTAssertTrue(toggle.isOn)
+        }
+    }
+
+    /// A toggle's words are the compound button's own, in their case and colour, so a tap on them turns it.
+    func testATogglesWordsStandInIt() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    Switch(false).text("Wi-Fi")
+                    CheckBox(true).text("agree").textCase(.uppercase).textColor(Color(hex: 0xFF0000))
+                }
+            }
+            XCTAssertEqual(try XCTUnwrap(host.views(AndroidSwitchView.self).first).text, "Wi-Fi")
+            let box = try XCTUnwrap(host.views(AndroidCheckBoxView.self).first)
+            XCTAssertEqual(box.text, "AGREE")
+            XCTAssertEqual(box.writtenTextColor, Color(hex: 0xFF0000).propValue)
         }
     }
 }

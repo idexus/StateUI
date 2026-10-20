@@ -37,33 +37,28 @@ Polygon.rotationY: ✓ read rotationY of Polygon: the host's own tip, checked ag
 Polyline.accessibilityHint: ✅
 ProgressBar.isVisible: ✅
 ProgressBar.pivotX: ✅
-RadioButton.scaleY: ✅
-RadioButton.style: ✅
-Rectangle.automationExcludedWithChildren: ✅
-ScrollView.maximumHeight: ✅
-ScrollView.maximumWidth: ✅
-ScrollView.minimumHeight: ✅
-ScrollView.minimumWidth: ✅
-ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own tip, checked against the projection it laid on the element
-SearchField.accessibilityHeading: ✅
-SearchField.translationY: ✅
-Slider.layoutDirection: ✅
-Spacer.scaleY: ✅
-Spacer.style: ✅
-Stepper.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
-Switch.ignoresInput: ✅
-Switch.scale: ✅
+Rectangle.scaleY: ✅
+Rectangle.style: ✅
+ScrollView.isAccessibilityHidden: ✅
+SearchField.opacity: ✅
+SearchField.pivotY: ✅
+Slider.accessibilityHeading: ✅
+Slider.translationY: ✅
+Spacer.layoutDirection: ✓ read layoutDirection of Spacer: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Stepper.scaleY: ✅
+Stepper.style: ✅
+Switch.automationExcludedWithChildren: ✅
 Text.accessibilityHeading: ✅
 Text.translationY: ✅
-TextEditor.accessibilityHeading: ✅
-TextField.height: ✅
-TextField.rotationX: ✓ read rotationX of TextField: the host's own tip, checked against the projection it laid on the element
-TextField.width: ✅
-TimePicker.accessibilityHint: ✅
-VStack.opacity: ✅
-VStack.pivotY: ✅
-WebView.height: ✅
-WebView.rotationX: ✓ read rotationX of WebView: the host's own tip, checked against the projection it laid on the element
-WebView.width: ✅
-ZStack.accessibilityHint: ✅
-ZStack.isEnabled: ✅
+TextEditor.ignoresInput: ✅
+TextEditor.scale: ✅
+TextField.accessibilityHeading: ✅
+TimePicker.height: ✅
+TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own tip, checked against the projection it laid on the element
+TimePicker.width: ✅
+VStack.accessibilityHint: ✅
+VStack.isEnabled: ✅
+WebView.accessibilityHeading: ✅
+ZStack.height: ✅
+ZStack.rotationX: ✓ read rotationX of ZStack: the host's own tip, checked against the projection it laid on the element
+ZStack.width: ✅

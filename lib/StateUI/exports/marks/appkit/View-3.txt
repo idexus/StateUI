@@ -69,8 +69,6 @@ Polyline.margin: ✅
 ProgressBar.swipeDirection: ✓ pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.swipeThreshold: ✓ pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.swiped: ✓ pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
-RadioButton.tapCount: ✓ tap on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
-RadioButton.tapped: ✓ tap on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.area: ✅
 Rectangle.droppedFileTypes: ✓ dropFiles on Rectangle: the window's drop routing told the driver's files, no dragging session
 Rectangle.filesDropped: ✓ dropFiles on Rectangle: the window's drop routing told the driver's files, no dragging session

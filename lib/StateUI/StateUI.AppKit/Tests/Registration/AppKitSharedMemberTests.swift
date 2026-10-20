@@ -19,8 +19,7 @@ final class AppKitSharedMemberTests: XCTestCase {
         let controls: [(NodeType, [Prop: HostValue], @MainActor (NSView) -> Bool?)] = [
             (.button, [.text: .string("Save")], { ($0 as? NSControl)?.isEnabled }),
             (.checkBox, [:], { ($0 as? NSControl)?.isEnabled }),
-            (.radioButton, [.text: .string("One")], { ($0 as? NSControl)?.isEnabled }),
-            (.switch, [:], { ($0 as? NSControl)?.isEnabled }),
+            (.switch, [:], { ($0 as? AppKitSwitchView)?.control.isEnabled }),
             (.slider, [:], { ($0 as? NSControl)?.isEnabled }),
             (.stepper, [:], { ($0 as? NSControl)?.isEnabled }),
             (.datePicker, [:], { ($0 as? NSControl)?.isEnabled }),
@@ -58,7 +57,6 @@ final class AppKitSharedMemberTests: XCTestCase {
                     .attribute(.font, at: 0, effectiveRange: nil) as? NSFont
             }),
             (.button, [.text: .string("Text")], { ($0 as? NSButton)?.font }),
-            (.radioButton, [.text: .string("Text")], { ($0 as? NSButton)?.font }),
             (.textField, [.text: .string("Text")], { ($0 as? AppKitTextFieldView)?.textField.font }),
             (.textEditor, [.text: .string("Text")], { ($0 as? AppKitTextEditorView)?.textView.font }),
             (.searchField, [.text: .string("Text")], { ($0 as? NSSearchField)?.font }),
@@ -100,7 +98,8 @@ final class AppKitSharedMemberTests: XCTestCase {
                 foreground(($0 as? AppKitTextView)?.attributedStringValue)
             }),
             (.button, [.text: .string("Text")], { foreground(($0 as? NSButton)?.attributedTitle) }),
-            (.radioButton, [.text: .string("Text")], { foreground(($0 as? NSButton)?.attributedTitle) }),
+            (.checkBox, [.text: .string("Text")], { foreground(($0 as? NSButton)?.attributedTitle) }),
+            (.switch, [.text: .string("Text")], { ($0 as? AppKitSwitchView)?.caption.textColor }),
             (.textField, [.text: .string("Text")], { ($0 as? AppKitTextFieldView)?.textField.textColor }),
             (.textEditor, [.text: .string("Text")], { ($0 as? AppKitTextEditorView)?.textView.textColor }),
             (.searchField, [.text: .string("Text")], { ($0 as? NSSearchField)?.textColor }),
@@ -134,7 +133,7 @@ final class AppKitSharedMemberTests: XCTestCase {
         let layered: [NodeType] = [
             .activityIndicator, .button, .canvas, .checkBox, .datePicker,
             .ellipse, .grid, .hStack, .image, .text, .line, .path, .picker, .polygon,
-            .polyline, .progressBar, .radioButton, .rectangle, .scrollView,
+            .polyline, .progressBar, .rectangle, .scrollView,
             .slider, .stepper, .switch, .timePicker, .vStack, .zStack,
         ]
         let layer: (NSView) -> [CGFloat]? = { channels($0.layer?.backgroundColor) }

@@ -39,6 +39,7 @@ extension GTKDriver {
         case let label as GTKTextualView: return labelHolds(property, label.widget.opaque, label.widget)
         case let button as GTKButtonView: return button.captionLabel.flatMap { labelHolds(property, $0, button.widget) }
         case let check as GTKCheckView: return Self.label(in: check.widget).flatMap { labelHolds(property, $0.opaque, $0) }
+        case let toggle as GTKSwitchView: return labelHolds(property, toggle.caption.opaque, toggle.caption)
         case let picker as GTKPickerView: return Self.label(in: picker.widget).flatMap { wordsHolds(property, $0) }
         case let picker as GTKPopoverPickerView: return wordsHolds(property, picker.label)
         case let stepper as GTKStepperView: return stepperHolds(property, stepper)
@@ -353,7 +354,7 @@ extension GTKDriver {
     /// whether it holds what the tree gave; another value, or none, reads as such.
     private func accessibilityHolds(_ property: Prop, _ element: MountedElement, _ view: GTKView?) -> HostValue?? {
         guard let view else { return nil }
-        let accessible = view.widget.opaque
+        let accessible = view.presentedControl.opaque
         let differs = { (message: UnsafeMutablePointer<CChar>?) -> Bool in
             defer { g_free(message) }
             return message != nil

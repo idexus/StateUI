@@ -67,13 +67,9 @@ enum Listings {
                 ActivityIndicator(loading)
                     .height(48)
 
-                HStack {
-                    Text("Working")
-                        .verticalAlignment(.center)
-
-                    Switch($loading)
-                }
-                .horizontalAlignment(.center)
+                Switch($loading)
+                    .text("Working")
+                    .horizontalAlignment(.center)
 
             }
         }
@@ -1411,12 +1407,8 @@ enum Listings {
                 // the closure a flip or a pick builds again.
                 DebugInfoLabel()
 
-                HStack {
-                    Switch($signedIn)
-
-                    Text("Signed in")
-                        .verticalAlignment(.center)
-                }
+                Switch($signedIn)
+                    .text("Signed in")
 
                 // An `if` with no `else`. The TextField below it is child 2 in one
                 // state and child 3 in the other - and it is the same control
@@ -1515,12 +1507,8 @@ enum Listings {
                         .verticalAlignment(.center)
                 }
 
-                HStack {
-                    Switch($platformLook)
-
-                    Text("Platform look")
-                        .verticalAlignment(.center)
-                }
+                Switch($platformLook)
+                    .text("Platform look")
 
                 Text("Last: \(last)")
             }
@@ -1563,12 +1551,8 @@ enum Listings {
                         .onClicked { last = "Save" }
                 }
 
-                HStack {
-                    Switch($platformLook)
-
-                    Text("Platform look")
-                        .verticalAlignment(.center)
-                }
+                Switch($platformLook)
+                    .text("Platform look")
 
                 Text("Last: \(last)")
             }
@@ -1804,12 +1788,8 @@ enum Listings {
                 // The ticks are read here, so every box builds this closure.
                 DebugInfoLabel()
 
-                HStack {
-                    CheckBox($agreed)
-
-                    Text("I have read the terms")
-                        .verticalAlignment(.center)
-                }
+                CheckBox($agreed)
+                    .text("I have read the terms")
 
                 Text(agreed ? "Ticked" : "Not ticked")
 
@@ -1817,14 +1797,10 @@ enum Listings {
 
                 ForEach(Array(["Cheese", "Bacon", "Egg"].enumerated()), id: \.offset) { pair in
                     let (index, name) = pair
-                    return HStack {
-                        CheckBox(extras[index])
-                            .onToggled { ticked in extras[index] = ticked }
-
-                        Text(name)
-                            .verticalAlignment(.center)
-                    }
-                    .id(name)
+                    return CheckBox(extras[index])
+                        .text(name)
+                        .onToggled { ticked in extras[index] = ticked }
+                        .id(name)
                 }
 
                 Text(chosen.isEmpty ? "Nothing extra" : "With \(chosen.joined(separator: ", "))")
@@ -2426,13 +2402,9 @@ enum Listings {
                 Picker(CubeColor.allCases, selection: $color) { "\($0)".titled }
                     .placeholder("Color")
 
-                HStack {
-                    Text("Spin")
-                        .verticalAlignment(.center)
-
-                    Switch($spinning)
-                }
-                .horizontalAlignment(.center)
+                Switch($spinning)
+                    .text("Spin")
+                    .horizontalAlignment(.center)
             }
         }
         """#,
@@ -6829,13 +6801,9 @@ enum Listings {
         }
 
         /// A switch and what it says, told apart for scripts by `id`.
-        private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> HStack {
-            HStack {
-                Switch(value)
-
-                Text(words)
-                    .verticalAlignment(.center)
-            }
+        private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> some View {
+            Switch(value)
+                .text(words)
         }
         """#,
         "MenuPage": #"""
@@ -7937,13 +7905,9 @@ enum Listings {
 
                 // A key whose value is an enum - kept as the word it is spelled
                 // with, so anything else that opens the store can read it.
-                HStack {
-                    Text("Bold shade")
-                        .verticalAlignment(.center)
-
-                    Switch(shade == .bold)
-                        .onToggled { on in shade = on ? .bold : .quiet }
-                }
+                Switch(shade == .bold)
+                    .text("Bold shade")
+                    .onToggled { on in shade = on ? .bold : .quiet }
 
                 Rectangle(shade == .bold ? Palette.accent : Palette.well)
                     .height(48)
@@ -8426,35 +8390,6 @@ enum Listings {
                 }
             }
         }
-        """#,
-        "RadioButtonSample": #"""
-        // Sources/Samples/BasicInput/RadioButtonSample.swift
-        @State private var size = "Medium"
-
-        var body: some View {
-            VStack {
-                // The chosen one is read here, so picking builds this closure.
-                DebugInfoLabel()
-
-                ForEach(sizes) { name in
-                    RadioButton(name)
-                        .groupName("size")
-                        .isOn(size == name)
-                        // Fires on the button that WAS chosen too, with false - so
-                        // the state is written only by the one that won.
-                        .onToggled { chosen in
-                            if chosen {
-                                size = name
-                            }
-                        }
-                        .id(name)
-                }
-
-                Text("Chosen: \(size)")
-            }
-        }
-
-        private var sizes: [String] { ["Small", "Medium", "Large"] }
         """#,
         "RatingBar.flash": #"""
         // Sources/Samples/Interop/RatingBar.swift
@@ -9162,12 +9097,8 @@ enum Listings {
                 Text("A caption the user only reads.")
                     .textStyle(.caption)
 
-                HStack {
-                    Switch($selectable)
-
-                    Text("Selectable")
-                        .verticalAlignment(.center)
-                }
+                Switch($selectable)
+                    .text("Selectable")
             }
         }
         """#,
@@ -9639,13 +9570,9 @@ enum Listings {
 
                 Text(dragging ? "Dragging..." : "At rest")
 
-                HStack {
-                    Text("Sound")
-                        .verticalAlignment(.center)
-
-                    Switch($soundOn)
-                }
-                .horizontalAlignment(.center)
+                Switch($soundOn)
+                    .text("Sound")
+                    .horizontalAlignment(.center)
             }
         }
         """#,
@@ -9730,12 +9657,8 @@ enum Listings {
                     StackCell(text: "Send")
                 }
 
-                HStack {
-                    Switch($spaced)
-
-                    Text("Spacer")
-                        .verticalAlignment(.center)
-                }
+                Switch($spaced)
+                    .text("Spacer")
 
                 SectionTitle("Divider")
 
@@ -9958,21 +9881,13 @@ enum Listings {
                     .horizontalAlignment(.center)
                     .onClicked {}
 
-                HStack {
-                    Text("Enabled")
-                        .verticalAlignment(.center)
+                Switch($enabled)
+                    .text("Enabled")
+                    .horizontalAlignment(.center)
 
-                    Switch($enabled)
-                }
-                .horizontalAlignment(.center)
-
-                HStack {
-                    Text("Platform look")
-                        .verticalAlignment(.center)
-
-                    Switch($platformLook)
-                }
-                .horizontalAlignment(.center)
+                Switch($platformLook)
+                    .text("Platform look")
+                    .horizontalAlignment(.center)
 
                 SectionTitle("A style for a role")
 
@@ -10066,16 +9981,11 @@ enum Listings {
                 // The flag is read here, so every flip builds this closure.
                 DebugInfoLabel()
 
-                HStack {
-                    Text("Sound")
-                        .verticalAlignment(.center)
-
-                    Switch($soundOn)
-                        // Runs beside the binding's write-back, carrying what the
-                        // switch NOW is rather than what this side guessed.
-                        .onToggled { on in said = on ? "thrown on" : "thrown off" }
-                }
-                .horizontalAlignment(.center)
+                Switch($soundOn)
+                    .text("Sound")
+                    // Runs beside the binding's write-back, carrying what the
+                    // switch NOW is rather than what this side guessed.
+                    .onToggled { on in said = on ? "thrown on" : "thrown off" }
 
                 Text(soundOn ? "on" : "off")
 
@@ -10297,13 +10207,9 @@ enum Listings {
                     .isPassword(hidden)
                     .submitLabel(.done)
 
-                HStack {
-                    Text("Hidden")
-                        .verticalAlignment(.center)
-
-                    Switch($hidden)
-                }
-                .horizontalAlignment(.center)
+                Switch($hidden)
+                    .text("Hidden")
+                    .horizontalAlignment(.center)
 
                 // The keyboard the platform brings up, a cap on the length, and
                 // what the return key does when it is pressed.
@@ -10747,13 +10653,9 @@ enum Listings {
         }
 
         /// A switch and what it says, told apart for scripts by `id`.
-        private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> HStack {
-            HStack {
-                Switch(value)
-
-                Text(words)
-                    .verticalAlignment(.center)
-            }
+        private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> some View {
+            Switch(value)
+                .text(words)
         }
         """#,
         "TooltipSample": #"""
@@ -10788,12 +10690,8 @@ enum Listings {
                         .tooltip(detailed ? "The colour the gallery marks things with" : "Accent")
                 }
 
-                HStack {
-                    Switch($detailed)
-
-                    Text("Detailed")
-                        .verticalAlignment(.center)
-                }
+                Switch($detailed)
+                    .text("Detailed")
             }
         }
         """#,
@@ -11101,8 +10999,6 @@ enum Listings {
         // Sources/Samples/Styles/VisualStateSample.swift
         @State private var enabled = true
         @State private var presses = 0
-        @State private var ready = true
-        @State private var busy = false
         @State private var entered = "Normal"
 
         /// How big the button is drawn, and what the state handler moves. DRIVEN:
@@ -11159,31 +11055,14 @@ enum Listings {
                 .spacing(12)
                 .horizontalAlignment(.center)
 
-                HStack {
-                    Text("Enabled")
-                        .fontSize(14)
-                        .verticalAlignment(.center)
-
-                    Switch($enabled)
-                }
-                .spacing(12)
-                .horizontalAlignment(.center)
+                Switch($enabled)
+                    .text("Enabled")
+                    .horizontalAlignment(.center)
 
                 Text("entered \(entered) · pressed \(presses) times")
                     .fontSize(13)
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)
-
-                SectionTitle("States only a RadioButton has")
-
-                // A RadioButton has two states of its own, following isOn.
-                RadioButton("Ready")
-                    .isOn($ready)
-                    .visualState(.checked) { $0.background(Palette.selected) }
-
-                RadioButton("Busy")
-                    .isOn($busy)
-                    .visualState(.checked) { $0.background(Palette.selected) }
             }
             .spacing(12)
         }
@@ -11278,12 +11157,8 @@ enum Listings {
                 TextField(bar.$subtitle)
                     .placeholder("Window subtitle")
 
-                HStack {
-                    Switch(bar.$showsSurprise)
-
-                    Text("Surprise me on every page")
-                        .verticalAlignment(.center)
-                }
+                Switch(bar.$showsSurprise)
+                    .text("Surprise me on every page")
             }
         }
         """#,
@@ -11357,11 +11232,9 @@ enum Listings {
         }
 
         /// A switch and what it says, told apart for scripts by `id`.
-        private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> HStack {
-            HStack {
-                Switch(value)
-                Text(words).verticalAlignment(.center)
-            }
+        private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> some View {
+            Switch(value)
+                .text(words)
         }
 
         /// A notice laid over the window: a line with its own way out, at the top unless it says otherwise.
@@ -11518,10 +11391,8 @@ enum Listings {
 
         /// A native boolean window capability.
         private func option(_ title: String, id: String, value: Binding<Bool>) -> some View {
-            HStack {
-                Switch(value)
-                Text(title).verticalAlignment(.center)
-            }
+            Switch(value)
+                .text(title)
         }
         """#,
         "WorkFromCode": #"""

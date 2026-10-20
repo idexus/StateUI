@@ -27,10 +27,6 @@ Picker.scale: ✓ read scale of Picker: the host's own transform, checked agains
 Polygon.pivotY: ✓ read pivotY of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.isAccessibilityHidden: ✅
 ProgressBar.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-RadioButton.maximumHeight: ✅
-RadioButton.maximumWidth: ✅
-RadioButton.minimumHeight: ✅
-RadioButton.minimumWidth: ✅
 Rectangle.isVisible: ✅
 Rectangle.scaleX: ✓ read scaleX of Rectangle: the host's own transform, checked against the layer it composed itself
 ScrollView.pivotY: ✓ read pivotY of ScrollView: the host's own transform, checked against the layer it composed itself

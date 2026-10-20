@@ -330,8 +330,7 @@ namespace {
     /// ground.
     std::vector<std::wstring> groundResources(IInspectable const &control) {
         std::vector<std::wstring> named;
-        if (control.try_as<controls::RadioButton>()) named = {L"RadioButtonBackground"};
-        else if (control.try_as<controls::CheckBox>())
+        if (control.try_as<controls::CheckBox>())
             named = {L"CheckBoxBackgroundUnchecked", L"CheckBoxBackgroundChecked", L"CheckBoxBackgroundIndeterminate"};
         else if (control.try_as<controls::ToggleSwitch>()) named = {L"ToggleSwitchContainerBackground"};
         else if (control.try_as<controls::Slider>()) named = {L"SliderContainerBackground"};
@@ -382,6 +381,8 @@ extern "C" int32_t stateui_winui_text(StateUIObjectRef handle, char *utf8, int32
             words = password.Password();
         } else if (auto search = object.try_as<controls::AutoSuggestBox>()) {
             words = search.Text();
+        } else if (auto toggle = object.try_as<controls::ToggleSwitch>()) {
+            words = winrt::unbox_value_or<winrt::hstring>(toggle.Header(), L"");
         } else if (auto caption = captionOf(object)) {
             words = caption.Text();
         } else if (auto content = object.try_as<controls::ContentControl>()) {

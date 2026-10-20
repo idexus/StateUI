@@ -36,7 +36,6 @@ final class GTKConformanceTests: XCTestCase {
     func testPolygon() { conform(PolygonTests.self) }
     func testPolyline() { conform(PolylineTests.self) }
     func testProgressBar() { conform(ProgressBarTests.self) }
-    func testRadioButton() { conform(RadioButtonTests.self) }
     func testRectangle() { conform(RectangleTests.self) }
     func testScrollView() { conform(ScrollViewTests.self) }
     func testItemsView() { conform(ItemsViewTests.self) }

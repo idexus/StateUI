@@ -20,7 +20,11 @@ extension AppKitElement {
         guard let defaults = accessibilityDefaults else { return }
 
         target.setAccessibilityIdentifier(string(.accessibilityIdentifier))
-        target.setAccessibilityLabel(string(.accessibilityLabel))
+        if let toggle = view as? AppKitSwitchView {
+            toggle.authoredLabel = string(.accessibilityLabel)
+        } else {
+            target.setAccessibilityLabel(string(.accessibilityLabel))
+        }
         target.setAccessibilityHelp(string(.accessibilityHint))
 
         let excludesChildren = value(.automationExcludedWithChildren)?.bool == true

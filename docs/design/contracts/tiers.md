@@ -45,8 +45,8 @@ Swift protocols behind them refine each other.
 ```text
   View               ActivityIndicator, Button, Canvas, CheckBox,
                      DatePicker, Divider, Image, Text, Map, Picker,
-                     ProgressBar, RadioButton, ScrollView, Slider, Spacer,
-                     Stepper, Switch, TimePicker, WebView, ItemsView
+                     ProgressBar, ScrollView, Slider, Spacer, Stepper,
+                     Switch, TimePicker, WebView, ItemsView
   Layout             Grid, LayoutEngine, ZStack
   Stack              HStack, VStack
   TextInput          SearchField, TextEditor, TextField
@@ -61,8 +61,8 @@ Swift protocols behind them refine each other.
   LineHeightElement  Text
   KeyboardElement    every Layout and every FocusElement
   FocusElement       Button, CheckBox, DatePicker, ItemsView, Picker,
-                     RadioButton, ScrollView, Slider, Stepper, Switch,
-                     TimePicker, WebView, every TextInput
+                     ScrollView, Slider, Stepper, Switch, TimePicker,
+                     WebView, every TextInput
   PageElement        Page, NavigationStack, TabView, SplitView
   BarElement         NavigationStack, TabView, SplitView, ModalStack
   text tiers only    TextSpan
@@ -73,7 +73,7 @@ Swift protocols behind them refine each other.
 
 An element adds the smaller tiers it needs beside its main one: a `Button`
 is a `View` with a caption in a font, padded, bordered, with a picture
-fitted; a `Switch` is a `View` with a tint.
+fitted; a `Switch` is a `View` with a tint and the words it says beside it.
 
 ## Worn once nearest first
 

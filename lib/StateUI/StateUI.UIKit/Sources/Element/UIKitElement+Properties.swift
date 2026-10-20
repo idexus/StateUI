@@ -92,10 +92,11 @@ extension UIKitElement {
     /// What VoiceOver meets of the view, by the host layer's rule - its words and taps as they stand now.
     func applyAccessibility() {
         guard let view else { return }
-        if accessibilityStanding == nil { accessibilityStanding = view.isAccessibilityElement }
-        view.accessibility(
-            element.accessibilityWords, holdingNoChildren: element.children.isEmpty,
-            standing: accessibilityStanding ?? false)
+        let target = (view as? UIKitAccessibilityPresenting)?.presentedControl ?? view
+        if accessibilityStanding == nil { accessibilityStanding = target.isAccessibilityElement }
+        let words = element.accessibilityWords
+        target.accessibility(words, holdingNoChildren: element.children.isEmpty, standing: accessibilityStanding ?? false)
+        (view as? UIKitSwitchView)?.authoredLabel = words.label
     }
 }
 

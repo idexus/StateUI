@@ -3,7 +3,7 @@
 import StateUI
 
 /// An option a user turns on and off, written as the control that means
-/// exactly that: a caption beside a `Switch`.
+/// exactly that: a `Switch` and the words it says beside it.
 ///
 ///     SwitchRow("Runs sideways", $sideways)
 ///
@@ -27,29 +27,10 @@ struct SwitchRow: View {
     }
 
     var body: some View {
-        HStack {
-            Text(text)
-                .fontSize(13)
-                .verticalAlignment(.center)
-
-            Switch(value)
-                // The caption is a Text BESIDE the switch, and no platform
-                // ties the two together on its own: a user who cannot see
-                // the row is handed a switch with no name. The same words say
-                // it, and the handle is worked out from them - Handle.swift.
-                .accessibilityIdentifier(handle("switch", text))
-                .accessibilityLabel(text)
-                .verticalAlignment(.center)
-                // WINDOWS GIVES A SWITCH A MINIMUM WIDTH OF ITS OWN - room for
-                // the On/Off words its template can show - and charges it
-                // whether or not anything is written there: measured at 154
-                // units against the 40 the control draws in. Three options in
-                // a row then want 780 units where they need 450, and a narrow
-                // window loses the last of them. Nothing is taken away
-                // elsewhere: every other platform already measures a switch at
-                // what it draws.
-                .minimumWidth(0)
-        }
-        .spacing(8)
+        Switch(value)
+            .text(text)
+            // The words name the switch; the handle is worked out from them -
+            // Handle.swift.
+            .accessibilityIdentifier(handle("switch", text))
     }
 }

@@ -190,11 +190,3 @@ touch screen, and on Windows and in the browser the user's asking for a
 menu - a finger or a pen held still, the mouse's other button. A button holding
 a menu offers no context menu of its own: on AppKit and WinUI the button's menu
 and the view's are one property.
-
-## Radio groups
-
-A radio button's group is a name - every button in the set writes the same one
-- and the host resolves it within one window without relying on how native
-views are nested. Picking one unchecks the others and reports both changes
-together, which is why a `toggled` handler acts on `true` alone. One state for the
-whole group, rather than one flag per button, holds what is chosen.

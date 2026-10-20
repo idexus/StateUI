@@ -15,8 +15,6 @@ LayoutEngine.keyPressed: ✓ pressKeys on LayoutEngine: the key event no view to
 LayoutEngine.keysTaken: ✓ pressKeys on LayoutEngine: the key event no view took handed to the host as the application's activity hands it
 Picker.keyPressed: ✓ pressKeys on Picker: the key event no view took handed to the host as the application's activity hands it
 Picker.keysTaken: ✓ pressKeys on Picker: the key event no view took handed to the host as the application's activity hands it
-RadioButton.keyPressed: ✓ pressKeys on RadioButton: the key event no view took handed to the host as the application's activity hands it
-RadioButton.keysTaken: ✓ pressKeys on RadioButton: the key event no view took handed to the host as the application's activity hands it
 ScrollView.keyPressed: ✓ pressKeys on ScrollView: the key event no view took handed to the host as the application's activity hands it
 ScrollView.keysTaken: ✓ pressKeys on ScrollView: the key event no view took handed to the host as the application's activity hands it
 SearchField.keyPressed: ✓ pressKeys on SearchField: the key event no view took handed to the host as the application's activity hands it

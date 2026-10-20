@@ -71,7 +71,6 @@ ProgressBar.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' 
 ProgressBar.frameChanged: ✅
 ProgressBar.horizontalAlignment: ✅
 ProgressBar.verticalAlignment: ✅
-RadioButton.pinchUpdated: ✓ pinch on RadioButton: the view's listening handed the recognizer's states, no touch sent
 Rectangle.frameChanged: ✅
 Rectangle.panTouchCount: ✓ pan on Rectangle: the view's listening handed the recognizer's states, no touch sent
 Rectangle.panUpdated: ✓ pan on Rectangle: the view's listening handed the recognizer's states, no touch sent

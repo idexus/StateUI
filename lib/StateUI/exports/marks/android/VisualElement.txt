@@ -619,37 +619,6 @@ ProgressBar.translationX: ✅
 ProgressBar.translationY: ✅
 ProgressBar.width: ✅
 ProgressBar.zIndex: ✅
-RadioButton.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
-RadioButton.accessibilityHint: ✅
-RadioButton.accessibilityLabel: ✅
-RadioButton.automationExcludedWithChildren: ✅
-RadioButton.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
-RadioButton.frame: ✅
-RadioButton.height: ✅
-RadioButton.ignoresInput: not realized
-RadioButton.isAccessibilityHidden: ✅
-RadioButton.isEnabled: ✅
-RadioButton.isVisible: ✅
-RadioButton.layoutDirection: ✅
-RadioButton.maximumHeight: ✅
-RadioButton.maximumWidth: ✅
-RadioButton.minimumHeight: ✅
-RadioButton.minimumWidth: ✅
-RadioButton.opacity: ✅
-RadioButton.pivotX: ✅
-RadioButton.pivotY: ✅
-RadioButton.rotation: ✅
-RadioButton.rotationX: ✅
-RadioButton.rotationY: ✅
-RadioButton.scale: ✅
-RadioButton.scaleX: ✅
-RadioButton.scaleY: ✅
-RadioButton.style: ✅
-RadioButton.tooltip: ✅
-RadioButton.translationX: ✅
-RadioButton.translationY: ✅
-RadioButton.width: ✅
-RadioButton.zIndex: ✅
 Rectangle.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅

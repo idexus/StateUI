@@ -728,9 +728,6 @@ void stateui_winui_button_set_menu(StateUIObjectRef button, int64_t view, int32_
                                    char const *const *icons, bool const *destructive, int32_t const *keys,
                                    int32_t const *modifiers, bool const *givesWay, int32_t count);
 
-/// The words a button or a radio button shows.
-void stateui_winui_set_caption(StateUIObjectRef control, char const *utf8);
-
 /// A button's look: what fills it - the platform's for none, kept `underPointer` and `pressed` of its opacity under
 /// the pointer and pressed - its outline `lineWidth` DIPs wide, and its corners' radius, less than 0 for the
 /// platform's; or, `drawsOval`, an oval `width` by `height` DIPs holding its fill and its outline.
@@ -881,17 +878,18 @@ StateUIObjectRef stateui_winui_progress_ring_make(void);
 void stateui_winui_progress_ring_set_running(StateUIObjectRef ring, bool running);
 bool stateui_winui_progress_ring_running(StateUIObjectRef ring);
 
-/// The controls that are on or off - a switch, a check box with no caption, and a radio button in a group of its
-/// own - each telling its turn through `toggled`.
+/// The controls that are on or off - a switch and a check box - each telling its turn through `toggled`.
 StateUIObjectRef stateui_winui_switch_make(int64_t view);
 StateUIObjectRef stateui_winui_check_box_make(int64_t view);
-StateUIObjectRef stateui_winui_radio_make(int64_t view);
+
+/// The words a switch says over its track or a check box beside its box - none where empty - and their colour,
+/// `argb`, where `has`; the platform's where not.
+void stateui_winui_toggle_set_words(StateUIObjectRef toggle, char const *utf8, bool has, uint32_t argb);
 void stateui_winui_toggle_set_on(StateUIObjectRef toggle, bool on);
 
 bool stateui_winui_toggle_is_on(StateUIObjectRef toggle);
 
-/// Turns a control as UI Automation does, which the user's turn is: a switch or a check box toggled, a radio
-/// button chosen.
+/// Turns a control as UI Automation does, which the user's turn is: a switch or a check box toggled.
 void stateui_winui_toggle_press(StateUIObjectRef toggle);
 
 StateUIObjectRef stateui_winui_slider_make(int64_t view);

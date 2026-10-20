@@ -67,13 +67,6 @@ Polyline.panYChannel: ✓ pan on Polyline: handed to the host's recognizer or ha
 ProgressBar.frameChanged: ✅
 ProgressBar.gridColumnSpan: ✅
 ProgressBar.gridRowSpan: ✅
-RadioButton.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-RadioButton.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-RadioButton.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-RadioButton.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-RadioButton.frameChanged: ✅
-RadioButton.horizontalAlignment: ✅
-RadioButton.verticalAlignment: ✅
 Rectangle.pinchUpdated: ✓ pinch on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.panTouchCount: ✓ pan on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.panUpdated: ✓ pan on ScrollView: handed to the host's recognizer or handler, no NSEvent sent

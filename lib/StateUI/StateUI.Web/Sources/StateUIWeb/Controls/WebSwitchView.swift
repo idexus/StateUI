@@ -5,12 +5,16 @@
 @_spi(Host) import StateUIHost
 
 /// A Switch: the browser's checkbox with the role of a switch, drawn as one; a CheckBox: the checkbox as it is. Each
-/// stands at its own size in the middle of a `<label>` that takes the view's frame, so a click anywhere in the frame
-/// turns it, and says when the user turns it.
+/// stands in a `<label>` that takes the view's frame, so a click anywhere in the frame turns it, and says when the
+/// user turns it: alone, at its own size in the middle; with words, a switch at the end after them, a box at the
+/// start before them.
 /// Design: docs/design/platforms/web/controls.md#toggles
 @MainActor
 final class WebSwitchView: WebDOMView {
     private let box = WebDOMView(tag: "input")
+
+    /// The words it says beside it, which name it.
+    let caption = WebDOMView(tag: "span")
 
     /// The user turned it, to on or off.
     var onToggled: (Bool) -> Void = { _ in }
@@ -24,6 +28,7 @@ final class WebSwitchView: WebDOMView {
             box.attribute("class", "stateui-switch")
         }
         WebRelay.insert(box.node, into: node, at: 0)
+        WebRelay.insert(caption.node, into: node, at: isSwitch ? 0 : 1)
         box.listen("change") { [weak self] in
             guard let self else { return }
             onToggled(WebRelay.flag(of: box.node, "checked"))
@@ -40,6 +45,13 @@ final class WebSwitchView: WebDOMView {
         WebRelay.setFlag(box.node, "checked", on)
     }
 
+    /// The words it says beside it, and their colour; empty words show none.
+    func setWords(_ words: String, color: HostValue?) {
+        WebRelay.setText(caption.node, words)
+        caption.style("color", WebCSS.color(color))
+        attribute("data-words", words.isEmpty ? nil : "")
+    }
+
     override func setEnabled(_ enabled: Bool) {
         box.attribute("disabled", enabled ? nil : "")
         attribute("aria-disabled", enabled ? nil : "true")
@@ -53,6 +65,7 @@ final class WebSwitchView: WebDOMView {
 
     override func release() {
         box.release()
+        caption.release()
         super.release()
     }
 }

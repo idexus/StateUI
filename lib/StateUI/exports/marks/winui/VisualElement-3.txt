@@ -34,30 +34,28 @@ Polygon.background: – A WinUI shape is its figure alone: it paints no ground a
 Polyline.ignoresInput: ✅
 Polyline.scale: ✅
 ProgressBar.tooltip: ✅
-RadioButton.opacity: ✅
-RadioButton.pivotY: ✅
-Rectangle.accessibilityHeading: ✅
-Rectangle.translationY: ✅
-ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-SearchField.height: ✅
-SearchField.rotationX: ✓ read rotationX of SearchField: the host's own tip, checked against the projection it laid on the element
-SearchField.width: ✅
-Slider.accessibilityHint: ✅
-Spacer.opacity: ✅
-Spacer.pivotY: ✅
-Stepper.accessibilityHeading: ✅
-Stepper.translationY: ✅
-Switch.layoutDirection: ✅
+Rectangle.opacity: ✅
+Rectangle.pivotY: ✅
+ScrollView.translationX: ✅
+ScrollView.zIndex: ✅
+SearchField.accessibilityHeading: ✅
+Slider.height: ✅
+Slider.rotationX: ✓ read rotationX of Slider: the host's own tip, checked against the projection it laid on the element
+Slider.width: ✅
+Spacer.accessibilityHint: ✅
+Stepper.opacity: ✅
+Stepper.pivotY: ✅
+Switch.accessibilityHeading: ✅
+Switch.translationY: ✅
 Text.height: ✅
 Text.rotationX: ✓ read rotationX of Text: the host's own tip, checked against the projection it laid on the element
 Text.width: ✅
-TextEditor.scaleY: ✅
-TextEditor.style: ✅
-TextField.automationExcludedWithChildren: ✅
-TimePicker.ignoresInput: ✅
-TimePicker.scale: ✅
-VStack.accessibilityHeading: ✅
-VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-WebView.automationExcludedWithChildren: ✅
-ZStack.ignoresInput: ✅
-ZStack.scale: ✅
+TextEditor.layoutDirection: ✅
+TextField.scaleY: ✅
+TextField.style: ✅
+TimePicker.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
+VStack.ignoresInput: ✅
+VStack.scale: ✅
+WebView.scaleY: ✅
+WebView.style: ✅
+ZStack.automationExcludedWithChildren: ✅

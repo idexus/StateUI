@@ -94,14 +94,14 @@ For the same reason there is no state by a name of the author's own.
 ## Which state a control is in
 
 A control's states come in one order: Disabled, Pressed, PointerOver,
-Focused, On and Checked, Off and Unchecked. The control is in the first of
+Focused, On, Off. The control is in the first of
 its declared states that holds, and in Normal, written or not, where none
 does; that is the state `.onVisualStateChanged` hears. What each follows:
 
 - Disabled: `isEnabled` false.
 - Pressed: a button held down; PointerOver: a pointer over the control;
   Focused: the keyboard in it ([what the user does](#what-the-user-does)).
-- On and Checked, Off and Unchecked: `isOn`, written or bound.
+- On, Off: `isOn`, written or bound.
 
 What the control shows lays the values of every state that holds over its
 own, the first in that order winning a value two set: a disabled switch that

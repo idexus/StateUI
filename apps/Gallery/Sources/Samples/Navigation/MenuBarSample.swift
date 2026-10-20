@@ -63,17 +63,10 @@ struct MenuBarSample: SampleContent, ExampleContent {
     }
 
     /// A switch and what it says, told apart for scripts by `id`.
-    private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> HStack {
-        HStack {
-            Switch(value)
-                .accessibilityIdentifier(id)
-                .accessibilityLabel(words)
-
-            Text(words)
-                .fontSize(14)
-                .verticalAlignment(.center)
-        }
-        .spacing(10)
+    private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> some View {
+        Switch(value)
+            .text(words)
+            .accessibilityIdentifier(id)
     }
     // listing: end
 

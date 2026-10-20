@@ -11,6 +11,11 @@
     public static let members: [any ContractMember] =
         [TextualElementContract.text, TextualElementContract.textCase] + lookMembers + [PaddingElementContract.padding]
 
+    /// What a toggle takes for the words beside it - a check box's, a switch's: the words in their case and their
+    /// colour, in the platform's own font.
+    public static let captionMembers: [any ContractMember] =
+        [TextualElementContract.text, TextualElementContract.textCase, TextColorElementContract.textColor]
+
     /// What the words' look is made of, which `look` reads: the font, whether it follows the user's text size, and
     /// the words' colour.
     public static let lookMembers: [any ContractMember] =
@@ -21,6 +26,19 @@
         FontElementContract.textStyle, FontElementContract.fontSize, FontElementContract.fontWeight,
         FontElementContract.fontAttributes, FontElementContract.fontFamily,
     ]
+
+    /// A toggle's words beside it in their case, whether or not they changed; empty where it says none.
+    public static func caption<Realized>(_ values: ElementValues<Realized>) -> String {
+        let text = values[TextualElementContract.text] ?? ""
+        return values[TextualElementContract.textCase]?.applied(to: text) ?? text
+    }
+
+    /// A toggle's words' look: their colour, in the platform's own font.
+    public static func captionLook<Realized>(_ values: ElementValues<Realized>) -> TextLook {
+        var look = TextLook()
+        look.color = values[TextColorElementContract.textColor]?.propValue
+        return look
+    }
 
     /// The words in their case, where the words or their case changed; nil where neither did.
     public static func words<Realized>(_ values: ElementValues<Realized>) -> String? {

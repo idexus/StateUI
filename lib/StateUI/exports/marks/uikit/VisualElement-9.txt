@@ -26,7 +26,6 @@ Polygon.accessibilityLabel: ✅
 Polyline.ignoresInput: ✅
 ProgressBar.isVisible: ✅
 ProgressBar.scaleX: ✓ read scaleX of ProgressBar: the host's own transform, checked against the layer it composed itself
-RadioButton.pivotY: ✓ read pivotY of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.automationExcludedWithChildren: ✅
 ScrollView.accessibilityLabel: ✅
 SearchField.height: ✅

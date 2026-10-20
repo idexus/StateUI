@@ -252,8 +252,8 @@ final class ContractRoadsTests: XCTestCase {
             closed: #"_ = SearchField("Name").tint(.red)"#,
             open: #"_ = CheckBox(true).tint(.red)"#),
         Road(
-            name: "an outline around a radio button",
-            closed: #"_ = RadioButton("Small").stroke(.gray)"#,
+            name: "an outline around a check box",
+            closed: #"_ = CheckBox(true).text("Small").stroke(.gray)"#,
             open: #"_ = Button("Small").stroke(.gray)"#),
         Road(
             name: "a stack's line in a menu",

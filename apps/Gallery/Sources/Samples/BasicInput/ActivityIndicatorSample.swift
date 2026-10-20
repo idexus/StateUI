@@ -21,18 +21,11 @@ struct ActivityIndicatorSample: SampleContent, ExampleContent {
                 .tint(Palette.accent)
                 .height(48)
 
-            HStack {
-                Text("Working")
-                    .fontSize(14)
-                    .verticalAlignment(.center)
-
-                Switch($loading)
-                    .accessibilityIdentifier("activityIndicator.loading")
-                    .accessibilityLabel("Loading")
-                    .tint(Palette.accent)
-            }
-            .spacing(12)
-            .horizontalAlignment(.center)
+            Switch($loading)
+                .text("Working")
+                .accessibilityIdentifier("activityIndicator.loading")
+                .tint(Palette.accent)
+                .horizontalAlignment(.center)
 
         }
         .spacing(12)

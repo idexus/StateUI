@@ -67,13 +67,6 @@ Polyline.panYChannel: ✓ pan on Polyline: the view's listening handed the recog
 ProgressBar.frameChanged: ✅
 ProgressBar.gridColumnSpan: ✅
 ProgressBar.gridRowSpan: ✅
-RadioButton.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-RadioButton.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-RadioButton.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-RadioButton.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-RadioButton.frameChanged: ✅
-RadioButton.horizontalAlignment: ✅
-RadioButton.verticalAlignment: ✅
 Rectangle.pinchUpdated: ✓ pinch on Rectangle: the view's listening handed the recognizer's states, no touch sent
 ScrollView.panTouchCount: ✓ pan on ScrollView: the view's listening handed the recognizer's states, no touch sent
 ScrollView.panUpdated: ✓ pan on ScrollView: the view's listening handed the recognizer's states, no touch sent

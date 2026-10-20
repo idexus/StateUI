@@ -96,6 +96,11 @@ namespace {
         if (what == "textScales") {
             return flag(text ? text.IsTextScaleFactorEnabled() : control.IsTextScaleFactorEnabled());
         }
+        // A toggle's words take the colour its style reads from the resources the host writes.
+        if (what == "foreground" && object.try_as<controls::ToggleSwitch>())
+            return colour(ownBrush(control.Resources(), L"ToggleSwitchHeaderForeground"));
+        if (what == "foreground" && object.try_as<controls::CheckBox>())
+            return colour(ownBrush(control.Resources(), L"CheckBoxForegroundUnchecked"));
         if (what == "foreground") return colour(text ? text.Foreground() : control.Foreground());
         if (what == "padding") return sides(text ? text.Padding() : control.Padding());
         return std::nullopt;
@@ -403,9 +408,6 @@ namespace {
         if (image) {
             if (what == "stretch") return number(static_cast<int32_t>(image.Stretch()));
             if (what == "source") return narrow(winrt::unbox_value_or<winrt::hstring>(image.Tag(), L""));
-        }
-        if (auto radio = object.try_as<controls::RadioButton>(); radio && what == "groupName") {
-            return narrow(radio.GroupName());
         }
         // The brushes the host wrote into a control's own resources, by their names.
         if (auto bar = object.try_as<controls::MenuBar>(); bar && what == "itemForeground") {

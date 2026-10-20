@@ -90,7 +90,6 @@ enum AndroidRealization {
         .complete(PageContract.navigatingFrom),
         .partial(PickerContract.isOpen,
             missing: "Android closes the list only when the user does: `false` does not close it."),
-        .complete(RadioButtonContract.groupName),
         .complete(SceneContract.activated),
         .complete(SceneContract.deactivated),
         .complete(SceneContract.stopped),

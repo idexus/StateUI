@@ -282,7 +282,7 @@ extension WinUIPickerView {
 }
 
 extension WinUIToggleView {
-    /// Turns the control as UI Automation does: a switch or a check box toggled, a radio button chosen.
+    /// Turns the control as UI Automation does: a switch or a check box toggled.
     func toggle() {
         stateui_winui_toggle_press(handle)
     }

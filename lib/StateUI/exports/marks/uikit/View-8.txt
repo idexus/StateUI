@@ -69,11 +69,6 @@ ProgressBar.area: ✅
 ProgressBar.droppedFileTypes: ✓ dropFiles on ProgressBar: the drop interaction's handler told the driver's files, no drag session
 ProgressBar.filesDropped: ✓ dropFiles on ProgressBar: the drop interaction's handler told the driver's files, no drag session
 ProgressBar.frameChanged: ✅
-RadioButton.pointerEntered: ✓ hover on RadioButton: the view's listening handed the recognizer's states, no touch sent
-RadioButton.pointerExited: ✓ hover on RadioButton: the view's listening handed the recognizer's states, no touch sent
-RadioButton.pointerMoved: ✓ hover on RadioButton: the view's listening handed the recognizer's states, no touch sent
-RadioButton.pointerPressed: ✓ hover on RadioButton: the view's listening handed the recognizer's states, no touch sent
-RadioButton.pointerReleased: ✓ hover on RadioButton: the view's listening handed the recognizer's states, no touch sent
 Rectangle.frameChanged: ✅
 Rectangle.panYChannel: ✓ pan on Rectangle: the view's listening handed the recognizer's states, no touch sent
 ScrollView.frameChanged: ✅

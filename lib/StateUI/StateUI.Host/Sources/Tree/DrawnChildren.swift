@@ -22,7 +22,7 @@ extension MountedElement {
             },
             reporting: { [weak self, weak runtime] property, event, value in
                 guard let runtime else { return }
-                self?.reportUserChange(property, event, value, in: runtime) { _ in }
+                self?.reportUserChange(property, event, value, in: runtime)
             })
         keptChild = child
         return child

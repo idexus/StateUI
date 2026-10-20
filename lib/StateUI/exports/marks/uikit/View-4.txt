@@ -69,9 +69,6 @@ Polyline.frameChanged: ✅
 Polyline.horizontalAlignment: ✅
 Polyline.verticalAlignment: ✅
 ProgressBar.pinchUpdated: ✓ pinch on ProgressBar: the view's listening handed the recognizer's states, no touch sent
-RadioButton.panTouchCount: ✓ pan on RadioButton: the view's listening handed the recognizer's states, no touch sent
-RadioButton.panUpdated: ✓ pan on RadioButton: the view's listening handed the recognizer's states, no touch sent
-RadioButton.panXChannel: ✓ pan on RadioButton: the view's listening handed the recognizer's states, no touch sent
 Rectangle.frameChanged: ✅
 Rectangle.gridColumn: ✅
 Rectangle.gridRow: ✅

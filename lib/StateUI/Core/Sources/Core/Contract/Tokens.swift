@@ -60,7 +60,6 @@ extension NodeType {
     static let polygon = PolygonContract.nodeType
     static let polyline = PolylineContract.nodeType
     static let progressBar = ProgressBarContract.nodeType
-    static let radioButton = RadioButtonContract.nodeType
     static let rectangle = RectangleContract.nodeType
     static let scene = SceneContract.nodeType
     static let scrollView = ScrollViewContract.nodeType
@@ -146,7 +145,6 @@ extension NodeType {
     static let gridColumnSpan = ViewContract.gridColumnSpan.token
     static let gridRow = ViewContract.gridRow.token
     static let gridRowSpan = ViewContract.gridRowSpan.token
-    static let groupName = RadioButtonContract.groupName.token
     static let handAxis = LayoutEngineContract.handAxis.token
     static let magnifies = LayoutEngineContract.magnifies.token
     static let pans = LayoutEngineContract.pans.token

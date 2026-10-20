@@ -55,7 +55,7 @@ paths, the journey's animations and the frame they run on.
 | | | `HandlerDispatch` | host layer |
 | | | each element's native half (`NativeElement`), one realization per control family | toolkit half |
 | C | reactive path 2: a value reaches a native control with no rebuild, and the user's change comes back | `ProgramWrite` | host layer |
-| | | a user's change carried onto its state and its event, a radio set (`MountedElement.reportUserChange`), a scroller's move (`reportScrolled`) | host layer |
+| | | a user's change carried onto its state and its event (`MountedElement.reportUserChange`), a scroller's move (`reportScrolled`) | host layer |
 | | | the native callback that hears the user | toolkit half |
 | J | a journey's animations, run by the host | `Animator`, `Animation`, `AnimationTarget`; the laws are `HostMotionLaw` in the core | host layer |
 | E | the frame engines and animations run on | `DisplayCycle`; the `FrameClock` protocol | host layer |
@@ -206,7 +206,7 @@ The application's handlers run in the order the user caused them, each on the
 interface the last one left. `HandlerDispatch` holds a handler raised while a
 patch applies - the tree is half old, half new until the patch is in - and
 one raised inside the user's transaction, a gesture that changes two things at
-once, such as a radio button turning one off and the next on. Both run in
+once, such as every frame one layout pass moved. Both run in
 their order once the hold is over. A turn asked for inside the transaction,
 by a report that wrote a state, waits for it too: the two halves of one
 gesture render together or not at all.
@@ -236,11 +236,8 @@ The carrying is the host layer's, the same on every host
 (`MountedElement.reportUserChange`): what the program writes reports
 nothing; a value becomes the state's - a journey a carried property's channel
 takes, else a report - and then its event runs, or a turn renders what the
-state changed where no handler listens. A radio button checked takes its
-set's other checks away first, in one user's transaction: each peer turned off
-on its own control as the program, then reporting that it is off. A host's
-native callback hands the value on, and turns a peer's control off in its
-toolkit's terms.
+state changed where no handler listens, in one user's transaction. A host's
+native callback hands the value on.
 
 ## The runtime's parts
 

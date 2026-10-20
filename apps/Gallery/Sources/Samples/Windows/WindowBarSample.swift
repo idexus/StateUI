@@ -36,15 +36,9 @@ struct WindowBarSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Subtitle for the window")
                 .placeholder("Window subtitle")
 
-            HStack {
-                Switch(bar.$showsSurprise)
-                    .accessibilityIdentifier("windowBar.surprise")
-                    .accessibilityLabel("Show an action on every page")
-
-                Text("Surprise me on every page")
-                    .verticalAlignment(.center)
-            }
-            .spacing(8)
+            Switch(bar.$showsSurprise)
+                .text("Surprise me on every page")
+                .accessibilityIdentifier("windowBar.surprise")
         }
         .spacing(12)
     }

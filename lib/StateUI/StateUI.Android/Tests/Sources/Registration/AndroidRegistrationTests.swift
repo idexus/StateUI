@@ -24,7 +24,7 @@ final class AndroidRegistrationTests: XCTestCase {
                     "ActivityIndicator", "Button", "Canvas", "Capsule", "CheckBox", "DatePicker", "Divider", "Ellipse", "Grid",
                     "HStack", "Image", "ItemsView", "LayoutEngine", "Text", "Line", "Path", "Polygon", "Polyline",
                     "Rectangle",
-                    "Picker", "ProgressBar", "RadioButton", "ScrollView", "SearchField", "Slider", "Spacer",
+                    "Picker", "ProgressBar", "ScrollView", "SearchField", "Slider", "Spacer",
                     "Stepper", "Switch", "TextEditor", "TextField", "TimePicker", "VStack", "WebView", "ZStack",
                 ])
             for member in [

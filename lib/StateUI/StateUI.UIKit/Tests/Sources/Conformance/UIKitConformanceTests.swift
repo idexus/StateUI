@@ -32,7 +32,6 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testPolygon() { conform(PolygonTests.self) }
     @MainActor func testPolyline() { conform(PolylineTests.self) }
     @MainActor func testProgressBar() { conform(ProgressBarTests.self) }
-    @MainActor func testRadioButton() { conform(RadioButtonTests.self) }
     @MainActor func testRectangle() { conform(RectangleTests.self) }
     @MainActor func testScrollView() { conform(ScrollViewTests.self) }
     @MainActor func testItemsView() { conform(ItemsViewTests.self) }

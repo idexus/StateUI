@@ -17,12 +17,6 @@ Picker.fontSize: ✅
 Picker.fontWeight: ✅
 Picker.isFontAutoScalingEnabled: ✅
 Picker.textStyle: ✅
-RadioButton.fontAttributes: ✅
-RadioButton.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
-RadioButton.fontSize: ✅
-RadioButton.fontWeight: ✅
-RadioButton.isFontAutoScalingEnabled: ✅
-RadioButton.textStyle: ✅
 SearchField.fontAttributes: ✅
 SearchField.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
 SearchField.fontSize: ✅

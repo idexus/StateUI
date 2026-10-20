@@ -26,7 +26,6 @@
         PolygonTests.self,
         PolylineTests.self,
         ProgressBarTests.self,
-        RadioButtonTests.self,
         RectangleTests.self,
         ScrollViewTests.self,
         ItemsViewTests.self,

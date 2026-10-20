@@ -25,7 +25,6 @@ Polygon.translationY: ✓ read translationY of Polygon: the host's own transform
 Polygon.width: ✅
 Polyline.rotationY: ✓ read rotationY of Polyline: the host's own transform, checked against the layer it composed itself
 ProgressBar.layoutDirection: ✅
-RadioButton.tooltip: ✅
 Rectangle.zIndex: ✅
 ScrollView.height: ✅
 ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform, checked against the layer it composed itself

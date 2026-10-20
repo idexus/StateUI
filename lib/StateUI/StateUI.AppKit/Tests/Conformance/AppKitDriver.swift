@@ -229,7 +229,6 @@ final class AppKitDriver: HostDriver {
         case (.selectionMode, let items as AppKitItemsView): return items.modeForTesting.propValue
         case (.isOn, let toggle as AppKitSwitchView): return (toggle.state == .on).propValue
         case (.isOn, let check as AppKitCheckBoxView): return (check.state == .on).propValue
-        case (.isOn, let radio as AppKitRadioButtonView): return (radio.state == .on).propValue
         case (.value, let slider as AppKitSliderView): return slider.doubleValue.propValue
         case (.minimum, let slider as AppKitSliderView): return slider.minValue.propValue
         case (.maximum, let slider as AppKitSliderView): return slider.maxValue.propValue
@@ -245,7 +244,7 @@ final class AppKitDriver: HostDriver {
         case (.text, let editor as AppKitTextEditorView): return editor.textView.string.propValue
         case (.text, let button as AppKitButtonView): return button.title.propValue
         case (.text, let check as AppKitCheckBoxView): return check.title.propValue
-        case (.text, let radio as AppKitRadioButtonView): return radio.title.propValue
+        case (.text, let toggle as AppKitSwitchView): return toggle.caption.stringValue.propValue
         case (.selectedIndex, let picker as any AppKitChoosing):
             return picker.indexOfSelectedItem >= 0 ? picker.indexOfSelectedItem.propValue : nil
         case (.options, let picker as any AppKitChoosing): return picker.itemTitles.propValue

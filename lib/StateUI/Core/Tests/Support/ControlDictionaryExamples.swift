@@ -50,11 +50,7 @@ extension ControlDictionary {
         (CheckBoxContract.self, #"""
             @State var agreed = false
 
-            HStack {
-                CheckBox($agreed)
-                Text("I agree to the terms")
-            }
-            .spacing(8)
+            CheckBox($agreed).text("I agree to the terms")
             """#),
 
         (ButtonMenuContract.self, #"""
@@ -313,21 +309,6 @@ extension ControlDictionary {
                 .tint(.firebrick)
             """#),
 
-        (RadioButtonContract.self, #"""
-            @State var size = "Medium"
-
-            VStack {
-                ForEach(["Small", "Medium", "Large"]) { option in
-                    RadioButton(option)
-                        .groupName("size")
-                        .isOn(option == size)
-                        .onToggled { checked in
-                            if checked { size = option }
-                        }
-                }
-            }
-            """#),
-
         (RectangleContract.self, #"""
             Rectangle()
                 .fill(.cornflowerBlue)
@@ -437,7 +418,7 @@ extension ControlDictionary {
         (SwitchContract.self, #"""
             @State var soundOn = true
 
-            Switch($soundOn)
+            Switch($soundOn).text("Sound")
                 .tint(.green)
             """#),
 

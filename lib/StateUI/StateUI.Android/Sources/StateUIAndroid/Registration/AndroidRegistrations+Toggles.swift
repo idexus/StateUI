@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 extension AndroidRegistrations {
-    /// A Switch, a CheckBox and a RadioButton: whether it is on, whether it can be turned, and the turn the
-    /// user makes; a radio button's words beside it.
+    /// A Switch and a CheckBox: whether it is on, whether it can be turned, and the turn the user makes; the
+    /// words it says beside it, and their colour.
     static func toggles(_ registry: Registry<AndroidView>) {
         registry.add(SwitchContract.self, create: { reports in
             let toggle = AndroidSwitchView()
@@ -15,6 +15,10 @@ extension AndroidRegistrations {
         }, members: { toggle in
             toggle.property(SwitchContract.isOn) { view, on in view.setOn(on ?? false) }
             toggle.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            toggle.applies(TextMembers.captionMembers) { view, values in
+                view.setText(TextMembers.caption(values))
+                view.setLook(TextMembers.captionLook(values))
+            }
             toggle.raises(SwitchContract.toggled)
         })
         registry.add(CheckBoxContract.self, create: { reports in
@@ -25,17 +29,11 @@ extension AndroidRegistrations {
             box.property(CheckBoxContract.isOn) { view, on in view.setOn(on ?? false) }
             box.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             box.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
+            box.applies(TextMembers.captionMembers) { view, values in
+                view.setText(TextMembers.caption(values))
+                view.setLook(TextMembers.captionLook(values))
+            }
             box.raises(CheckBoxContract.toggled)
-        })
-        registry.add(RadioButtonContract.self, create: { reports in
-            let radio = AndroidRadioButtonView()
-            radio.onToggled = { on in reports.report(RadioButtonContract.isOn, on, as: RadioButtonContract.toggled) }
-            return radio
-        }, members: { radio in
-            radio.applies(TextMembers.members) { view, values in applyText(view, values) }
-            radio.property(RadioButtonContract.isOn) { view, on in view.setOn(on ?? false) }
-            radio.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            radio.raises(RadioButtonContract.toggled)
         })
     }
 }

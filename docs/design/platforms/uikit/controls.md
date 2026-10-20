@@ -7,13 +7,21 @@ them.
 
 A Switch is UIKit's switch; a Slider, a Stepper, a ProgressBar and an
 ActivityIndicator are UIKit's own too, an indicator standing still - shown -
-while its work does not run. UIKit has no check box and no radio button, so
-each is a button of its own showing the system's symbol for a box or a
-circle, ticked or not, before a radio button's caption: a tap turns a box
-either way and a radio button only on, and the host layer takes the tick from
-the rest of its set. A switch's colour is its colour when on, a box's the
-colour of its symbol. What the program writes is only shown - UIKit's controls
-send no event for a value set in code - and what the user does is reported.
+while its work does not run. UIKit has no check box, so a CheckBox is a
+button of its own showing the system's symbol for a box, ticked or not,
+before its words: a tap turns it either way. A switch's colour is its colour
+when on, a box's the colour of its symbol. What the program writes is only
+shown - UIKit's controls send no event for a value set in code - and what the
+user does is reported.
+
+## A switch's words
+
+`UISwitch` has no words, so a switch with words is a view of two: the words
+from its start and the switch at its end, mirrored right to left, the way
+Settings sets a switch in a row. The switch is measured at its own size, the
+words take the rest. The words belong to the switch: a tap on them turns it,
+and VoiceOver meets the switch alone, named by the element's label or else by
+its words, the label beside it left out (`UIKitAccessibilityPresenting`).
 
 ## Pickers
 
@@ -67,7 +75,7 @@ Words follow the user's text size (`isFontAutoScalingEnabled`, on unless
 said) through `UIFontMetrics`: a size the tree gives, or the body's at the
 platform's own text size, is scaled for the view's traits, and a field and
 an editor carry `adjustsFontForContentSizeCategory`. A label builds its words
-again, and a button, a picker and a radio button update their configuration,
+again, and a button, a picker and a check box update their configuration,
 as the user's text size changes. Words that do not scale stand at their size
 whatever the user chooses. A day's and a time's picker draws its words in
 UIKit's own font, which follows the user always - `–` in the matrix.

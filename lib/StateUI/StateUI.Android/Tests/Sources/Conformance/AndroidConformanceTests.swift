@@ -32,7 +32,6 @@ final class AndroidConformanceTests: XCTestCase {
             ("testPolygon", testPolygon),
             ("testPolyline", testPolyline),
             ("testProgressBar", testProgressBar),
-            ("testRadioButton", testRadioButton),
             ("testRectangle", testRectangle),
             ("testScrollView", testScrollView),
             ("testItemsView", testItemsView),
@@ -118,7 +117,6 @@ final class AndroidConformanceTests: XCTestCase {
     func testPolygon() throws { try conform(PolygonTests.self) }
     func testPolyline() throws { try conform(PolylineTests.self) }
     func testProgressBar() throws { try conform(ProgressBarTests.self) }
-    func testRadioButton() throws { try conform(RadioButtonTests.self) }
     func testRectangle() throws { try conform(RectangleTests.self) }
     func testScrollView() throws { try conform(ScrollViewTests.self) }
     func testItemsView() throws { try conform(ItemsViewTests.self) }

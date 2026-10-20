@@ -27,7 +27,6 @@ Picker.translationX: ✓ read translationX of Picker: the host's own transform, 
 Polygon.rotationY: ✓ read rotationY of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.layoutDirection: ✅
 ProgressBar.tooltip: ✅
-RadioButton.style: ✅
 Rectangle.height: ✅
 Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform, checked against the layer it composed itself
 Rectangle.width: ✅

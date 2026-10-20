@@ -22,8 +22,6 @@ Picker.rotationX: ✓ read rotationX of Picker: the host's own transform, checke
 Polygon.layoutDirection: ✅
 Polyline.tooltip: ✅
 ProgressBar.style: ✅
-RadioButton.isEnabled: ✅
-RadioButton.translationX: ✓ read translationX of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own transform, checked against the layer it composed itself
 ScrollView.layoutDirection: ✅
 SearchField.accessibilityLabel: ✅

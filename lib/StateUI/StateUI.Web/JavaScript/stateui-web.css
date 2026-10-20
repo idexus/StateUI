@@ -581,8 +581,11 @@ body {
 .stateui-toggle, .stateui-indicator { display: inline-grid; place-items: center; }
 .stateui-toggle { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .stateui-toggle[aria-disabled] { cursor: default; }
-.stateui-radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; -webkit-user-select: none; }
-.stateui-radio[aria-disabled] { opacity: 0.45; cursor: default; }
+/* A toggle's words beside it: a switch's at its start and the switch at the end, a box's after the box. */
+.stateui-toggle > span:empty { display: none; }
+.stateui-toggle[data-words] { display: inline-flex; align-items: center; gap: 8px; user-select: none; -webkit-user-select: none; }
+.stateui-toggle[data-words] > span { flex: 1; min-width: 0; }
+.stateui-toggle[aria-disabled] > span { opacity: 0.45; }
 /* A picker's segments: a row of buttons in one rounded frame, the one chosen in the accent; its radio buttons, a
    column. */
 .stateui-segments { display: inline-flex; border: 1px solid var(--stateui-line-strong); border-radius: 8px; overflow: hidden; }
@@ -591,6 +594,8 @@ body {
 .stateui-segment[aria-checked="true"] { background: var(--stateui-accent); color: #ffffff; }
 .stateui-segment:disabled { opacity: 0.45; cursor: default; }
 .stateui-radios { display: inline-flex; flex-direction: column; gap: 6px; }
+.stateui-radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; -webkit-user-select: none; }
+.stateui-radio[aria-disabled] { opacity: 0.45; cursor: default; }
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) select {
   appearance: none;
   -webkit-appearance: none;

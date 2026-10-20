@@ -222,7 +222,7 @@ extension WinUIDriver {
             case let text as WinUITextualView: return .string(text.text)
             case let field as WinUITextInputView: return .string(field.text)
             case let button as WinUIButtonView: return .string(button.text)
-            case let radio as WinUIRadioButtonView: return .string(radio.text)
+            case let toggle as WinUIToggleView: return .string(toggle.text)
             default: return nil
             }
         case "textColor": return try Self.color(read(view, "foreground")).map { $0.propValue }

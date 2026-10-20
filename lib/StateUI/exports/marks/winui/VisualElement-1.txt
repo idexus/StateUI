@@ -39,29 +39,27 @@ Polyline.rotationX: ✓ read rotationX of Polyline: the host's own tip, checked 
 Polyline.width: ✅
 ProgressBar.accessibilityLabel: ✅
 ProgressBar.isEnabled: ✅
-RadioButton.layoutDirection: ✅
-Rectangle.scaleY: ✅
-Rectangle.style: ✅
-ScrollView.isAccessibilityHidden: ✅
-SearchField.opacity: ✅
-SearchField.pivotY: ✅
-Slider.accessibilityHeading: ✅
-Slider.translationY: ✅
-Spacer.layoutDirection: ✓ read layoutDirection of Spacer: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Stepper.scaleY: ✅
-Stepper.style: ✅
-Switch.automationExcludedWithChildren: ✅
+Rectangle.layoutDirection: ✓ read layoutDirection of Rectangle: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ScrollView.frame: ✅
+ScrollView.scaleX: ✅
+SearchField.accessibilityHint: ✅
+Slider.opacity: ✅
+Slider.pivotY: ✅
+Spacer.accessibilityHeading: ✅
+Spacer.translationY: ✅
+Stepper.layoutDirection: ✅
+Switch.scaleY: ✅
+Switch.style: ✅
 Text.opacity: ✅
 Text.pivotY: ✅
-TextEditor.ignoresInput: ✅
-TextEditor.scale: ✅
-TextField.accessibilityHeading: ✅
-TimePicker.height: ✅
-TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own tip, checked against the projection it laid on the element
-TimePicker.width: ✅
-VStack.accessibilityHint: ✅
-VStack.isEnabled: ✅
-WebView.accessibilityHeading: ✅
-ZStack.height: ✅
-ZStack.rotationX: ✓ read rotationX of ZStack: the host's own tip, checked against the projection it laid on the element
-ZStack.width: ✅
+TextEditor.automationExcludedWithChildren: ✅
+TextField.ignoresInput: ✅
+TextField.scale: ✅
+TimePicker.accessibilityHeading: ✅
+VStack.height: ✅
+VStack.rotationX: ✓ read rotationX of VStack: the host's own tip, checked against the projection it laid on the element
+VStack.width: ✅
+WebView.ignoresInput: ✅
+WebView.scale: ✅
+ZStack.accessibilityHeading: ✅
+ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.

@@ -35,27 +35,30 @@ Polyline.opacity: ✅
 Polyline.pivotY: ✅
 ProgressBar.translationX: ✅
 ProgressBar.zIndex: ✅
-RadioButton.automationExcludedWithChildren: ✅
-Rectangle.ignoresInput: ✅
-Rectangle.scale: ✅
-ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-ScrollView.tooltip: ✅
-SearchField.layoutDirection: ✅
-Slider.scaleY: ✅
-Slider.style: ✅
-Spacer.automationExcludedWithChildren: ✅
-Stepper.ignoresInput: ✅
-Stepper.scale: ✅
-Switch.accessibilityHeading: ✅
+Rectangle.automationExcludedWithChildren: ✅
+ScrollView.maximumHeight: ✅
+ScrollView.maximumWidth: ✅
+ScrollView.minimumHeight: ✅
+ScrollView.minimumWidth: ✅
+ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own tip, checked against the projection it laid on the element
+SearchField.accessibilityHeading: ✅
+SearchField.translationY: ✅
+Slider.layoutDirection: ✅
+Spacer.scaleY: ✅
+Spacer.style: ✅
+Stepper.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
+Switch.ignoresInput: ✅
+Switch.scale: ✅
 Text.layoutDirection: ✅
-TextEditor.height: ✅
-TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
-TextEditor.width: ✅
-TextField.accessibilityHint: ✅
-TimePicker.opacity: ✅
-TimePicker.pivotY: ✅
-VStack.accessibilityHeading: ✅
-VStack.translationY: ✅
-WebView.accessibilityHint: ✅
-ZStack.opacity: ✅
-ZStack.pivotY: ✅
+TextEditor.accessibilityHeading: ✅
+TextField.height: ✅
+TextField.rotationX: ✓ read rotationX of TextField: the host's own tip, checked against the projection it laid on the element
+TextField.width: ✅
+TimePicker.accessibilityHint: ✅
+VStack.opacity: ✅
+VStack.pivotY: ✅
+WebView.height: ✅
+WebView.rotationX: ✓ read rotationX of WebView: the host's own tip, checked against the projection it laid on the element
+WebView.width: ✅
+ZStack.accessibilityHint: ✅
+ZStack.isEnabled: ✅

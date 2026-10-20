@@ -560,32 +560,6 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(tree.root?.takeCreatedHandlers(), [])
     }
 
-    /// A radio button's peers are its group's in its window, the whole tree where it stands in none, or every radio
-    /// button beside it where it names none.
-    @MainActor
-    func testARadioButtonsPeersAreItsGroupOrItsSiblings() {
-        let (tree, _) = Self.tree()
-        func radio(_ id: String, group: String?) -> HostPatch {
-            var radio = HostPatch(id: .manual(id), type: .radioButton)
-            if let group { radio.properties = [.groupName: .name(group)] }
-            return radio
-        }
-        var left = HostPatch(id: .manual("left"), type: .vStack)
-        left.children = .arranged([radio("s", group: "size"), radio("x", group: nil), radio("y", group: nil)])
-        var right = HostPatch(id: .manual("right"), type: .vStack)
-        right.children = .arranged([radio("m", group: "size"), radio("red", group: "colour")])
-        var root = HostPatch(id: .manual("root"), type: .hStack)
-        root.children = .arranged([left, right])
-        tree.apply(root, complete: true)
-
-        func peers(_ id: String) -> [String] {
-            (tree.root?.first(id: .manual(id))?.radioPeers ?? []).map { "\($0.id)" }
-        }
-        XCTAssertEqual(peers("s"), ["\(ElementID.manual("m"))"])
-        XCTAssertEqual(peers("x"), ["\(ElementID.manual("s"))", "\(ElementID.manual("y"))"], "every radio beside it")
-        XCTAssertEqual(peers("red"), [])
-    }
-
     /// What assistive technology meets of an element is its words and its presence: left out with its children
     /// before hidden, hidden before met, and nothing said where the element says nothing.
     @MainActor

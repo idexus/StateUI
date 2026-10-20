@@ -59,15 +59,9 @@ struct StackLayoutSample: SampleContent, ExampleContent {
             }
             .spacing(8)
 
-            HStack {
-                Switch($spaced)
-                    .accessibilityIdentifier("stackLayout.spaced")
-                    .accessibilityLabel("Spacer")
-
-                Text("Spacer")
-                    .verticalAlignment(.center)
-            }
-            .spacing(12)
+            Switch($spaced)
+                .text("Spacer")
+                .accessibilityIdentifier("stackLayout.spaced")
 
             SectionTitle("Divider")
 

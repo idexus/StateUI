@@ -321,7 +321,7 @@ extension GTKNavigationView {
 extension GTKSwitchView {
     /// Turns the switch as the user's click does.
     func toggle() {
-        gtk_switch_set_active(widget.opaque, isOn ? 0 : 1)
+        gtk_switch_set_active(control.opaque, isOn ? 0 : 1)
     }
 }
 

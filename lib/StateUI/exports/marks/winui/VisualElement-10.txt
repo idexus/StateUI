@@ -32,34 +32,32 @@ Polygon.scale: ✅
 Polyline.tooltip: ✅
 ProgressBar.opacity: ✅
 ProgressBar.pivotY: ✅
-RadioButton.translationX: ✅
-RadioButton.zIndex: ✅
-Rectangle.background: – A WinUI shape is its figure alone: it paints no ground around it.
-ScrollView.ignoresInput: ✅
-ScrollView.scale: ✅
-SearchField.accessibilityLabel: ✅
-Slider.isVisible: ✅
-Slider.pivotX: ✅
-Spacer.translationX: ✅
-Spacer.zIndex: ✅
-Stepper.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Switch.frame: ✅
-Switch.scaleX: ✅
+Rectangle.translationX: ✅
+Rectangle.zIndex: ✅
+ScrollView.automationExcludedWithChildren: ✅
+SearchField.isEnabled: ✅
+SearchField.rotation: ✅
+Slider.accessibilityLabel: ✅
+Spacer.isVisible: ✅
+Spacer.pivotX: ✅
+Stepper.translationX: ✅
+Stepper.zIndex: ✅
+Switch.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 Text.accessibilityLabel: ✅
 Text.isEnabled: ✅
-TextEditor.isAccessibilityHidden: ✅
-TextField.maximumHeight: ✅
-TextField.maximumWidth: ✅
-TextField.minimumHeight: ✅
-TextField.minimumWidth: ✅
-TextField.rotationY: ✓ read rotationY of TextField: the host's own tip, checked against the projection it laid on the element
-TimePicker.tooltip: ✅
-VStack.isEnabled: does not apply - read isEnabled of VStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-VStack.rotation: ✅
-WebView.maximumHeight: ✅
-WebView.maximumWidth: ✅
-WebView.minimumHeight: ✅
-WebView.minimumWidth: ✅
-WebView.rotationY: ✓ read rotationY of WebView: the host's own tip, checked against the projection it laid on the element
-ZStack.layoutDirection: ✅
-ZStack.tooltip: ✅
+TextEditor.frame: ✅
+TextEditor.scaleX: ✅
+TextField.isAccessibilityHidden: ✅
+TimePicker.maximumHeight: ✅
+TimePicker.maximumWidth: ✅
+TimePicker.minimumHeight: ✅
+TimePicker.minimumWidth: ✅
+TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own tip, checked against the projection it laid on the element
+VStack.layoutDirection: ✅
+VStack.tooltip: ✅
+WebView.isAccessibilityHidden: ✅
+ZStack.maximumHeight: ✅
+ZStack.maximumWidth: ✅
+ZStack.minimumHeight: ✅
+ZStack.minimumWidth: ✅
+ZStack.rotationY: ✓ read rotationY of ZStack: the host's own tip, checked against the projection it laid on the element

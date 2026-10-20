@@ -16,7 +16,7 @@ a value as the thing it is, with nothing to parse and nothing to guess.
 ## Text and names
 
 A `Name` is a word an application chose that repeats across a tree and means
-the same thing every time: a font family, a radio group, a kept key. It
+the same thing every time: a font family, a kept key. It
 crosses as `.name`, which a host may match by what it names. A style key is a
 `StyleKey<Control>`, which the core resolves before any host sees it.
 A member holding a `String` crosses as text an author wrote. The member's declared type

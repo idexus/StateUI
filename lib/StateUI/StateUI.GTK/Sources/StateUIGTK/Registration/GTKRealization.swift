@@ -133,7 +133,6 @@ enum GTKRealization {
             reason: "A GNOME drop-down wears no accent: a check in its words' colour marks the choice."),
         .notPlanned(PickerContract.placeholder,
             reason: "GTK's drop-down shows a choice or nothing: it has no words standing for none."),
-        .complete(RadioButtonContract.groupName),
         .complete(SceneContract.activated),
         .complete(SceneContract.deactivated),
         .complete(SceneContract.stopped),

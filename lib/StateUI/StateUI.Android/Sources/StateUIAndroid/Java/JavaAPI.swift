@@ -258,8 +258,6 @@ enum JavaAPI {
     static let getBackgroundTintList = Java.method(
         view, "getBackgroundTintList", "()Landroid/content/res/ColorStateList;")
 
-    static let radioButton = Java.findClass("android/widget/RadioButton")
-    static let newRadioButton = Java.method(radioButton, "<init>", "(Landroid/content/Context;)V")
     static let checkBox = Java.findClass("android/widget/CheckBox")
     static let newCheckBox = Java.method(checkBox, "<init>", "(Landroid/content/Context;)V")
 

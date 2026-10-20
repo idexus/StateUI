@@ -35,30 +35,28 @@ Polygon.pivotX: ✅
 Polyline.scaleY: ✅
 Polyline.style: ✅
 ProgressBar.isAccessibilityHidden: ✅
-RadioButton.height: ✅
-RadioButton.rotationX: ✓ read rotationX of RadioButton: the host's own tip, checked against the projection it laid on the element
-RadioButton.width: ✅
-Rectangle.accessibilityHint: ✅
-ScrollView.isVisible: ✅
-ScrollView.pivotX: ✅
-SearchField.ignoresInput: ✅
-SearchField.scale: ✅
-Slider.accessibilityHeading: ✅
-Spacer.height: ✅
-Spacer.rotationX: ✓ read rotationX of Spacer: the host's own tip, checked against the projection it laid on the element
-Spacer.width: ✅
-Stepper.accessibilityHint: ✅
-Switch.opacity: ✅
-Switch.pivotY: ✅
+Rectangle.height: ✅
+Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own tip, checked against the projection it laid on the element
+Rectangle.width: ✅
+ScrollView.accessibilityLabel: ✅
+ScrollView.isEnabled: ✅
+SearchField.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
+Slider.ignoresInput: ✅
+Slider.scale: ✅
+Spacer.accessibilityHeading: ✅
+Stepper.height: ✅
+Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked against the projection it laid on the element
+Stepper.width: ✅
+Switch.accessibilityHint: ✅
 Text.ignoresInput: ✅
 Text.scale: ✅
-TextEditor.accessibilityHeading: ✅
-TextEditor.translationY: ✅
-TextField.layoutDirection: ✅
-TimePicker.scaleY: ✅
-TimePicker.style: ✅
-VStack.automationExcludedWithChildren: ✅
-VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-WebView.layoutDirection: ✓ read layoutDirection of WebView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-ZStack.scaleY: ✅
-ZStack.style: ✅
+TextEditor.opacity: ✅
+TextEditor.pivotY: ✅
+TextField.accessibilityHeading: ✅
+TextField.translationY: ✅
+TimePicker.layoutDirection: ✅
+VStack.scaleY: ✅
+VStack.style: ✅
+WebView.accessibilityHeading: ✅
+WebView.translationY: ✅
+ZStack.layoutDirection: ✓ read layoutDirection of ZStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned

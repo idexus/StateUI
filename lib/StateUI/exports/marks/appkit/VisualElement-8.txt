@@ -30,7 +30,6 @@ Polyline.maximumWidth: ✅
 Polyline.minimumHeight: ✅
 Polyline.minimumWidth: ✅
 ProgressBar.scale: ✓ read scale of ProgressBar: the host's own transform, checked against the layer it composed itself
-RadioButton.pivotX: ✓ read pivotX of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.isAccessibilityHidden: ✅
 ScrollView.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 SearchField.isEnabled: ✅

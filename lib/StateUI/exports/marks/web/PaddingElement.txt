@@ -3,7 +3,6 @@ Button.padding: ✅
 Grid.padding: ✅
 HStack.padding: ✅
 LayoutEngine.padding: – A layout engine stands its views where its arithmetic says, from its own top left: it takes no padding.
-RadioButton.padding: ✅
 ScrollView.padding: ✅
 Text.padding: ✅
 VStack.padding: ✅

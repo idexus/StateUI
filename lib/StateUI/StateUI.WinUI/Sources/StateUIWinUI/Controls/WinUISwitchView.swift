@@ -3,7 +3,7 @@
 
 import CStateUIWinUI
 
-/// A Switch: a WinUI `ToggleSwitch`.
+/// A Switch: a WinUI `ToggleSwitch`, its words its header.
 @MainActor
 final class WinUISwitchView: WinUIToggleView {
     init() {

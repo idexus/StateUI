@@ -104,13 +104,9 @@ struct WindowSample: SampleContent, ExampleContent {
 
     /// A native boolean window capability.
     private func option(_ title: String, id: String, value: Binding<Bool>) -> some View {
-        HStack {
-            Switch(value)
-                .accessibilityIdentifier(id)
-                .accessibilityLabel(title)
-            Text(title).verticalAlignment(.center)
-        }
-        .spacing(8)
+        Switch(value)
+            .text(title)
+            .accessibilityIdentifier(id)
     }
     // listing: end
 }

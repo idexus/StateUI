@@ -98,7 +98,6 @@ enum UIKitRealization {
         .partial(PickerContract.presentation,
             missing: "UIKit has no radio buttons: `.radio` is a column of its buttons, "
             + "each marked by a filled or an empty circle."),
-        .complete(RadioButtonContract.groupName),
         .complete(SceneContract.activated),
         .complete(SceneContract.deactivated),
         .complete(SceneContract.stopped),

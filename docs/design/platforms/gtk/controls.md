@@ -94,26 +94,23 @@ label apply again, so the runs are laid down whole each time.
 
 ## On or off
 
-A Switch is GTK's `GtkSwitch`, a CheckBox and a RadioButton each a
-`GtkCheckButton`, one view kind in the host: it writes whether the control is
-on and whether it can be turned, and hears the turn the user makes through the
-property GTK notifies, `active`. A check box has no caption, so it is the box
-alone; a radio button's caption is its label, in the look the tree gives its
-words.
+A Switch is GTK's `GtkSwitch` and a CheckBox its `GtkCheckButton`, one view
+kind in the host: it writes whether the control is on and whether it can be
+turned, and hears the turn the user makes through the property GTK notifies,
+`active`, on the control that turns. A check box's words are its button's
+label, beside its box, in the look the tree gives them; with none, it is the
+box alone.
 
-Which of a radio button's set loses its check is the host's. A set is named
-across the window, or is the buttons beside one that names none, and only
-the tree knows who is in it: the button the user checks reports that it is
-on, and the host takes the check off each other button of its set, each
-reporting that it is off, in one transaction. GTK draws a check button as a
-radio only in a group, and a group takes its other members' checks away
-itself - the one that lost would be heard twice - so each radio button stands
-in a group with a partner of its own that is never shown. Joined in GTK's own
-group by their set instead, the buttons fight the tree: a check the tree
-writes back - a constant `isOn(true)` - GTK takes from another button the
-tree says is on, whose check the next render writes back, without end. The
-partner is how GTK draws a radio while the check stays StateUI's; a picker's
-radio buttons stand in one group of their own, as a picker holds one choice.
+## A switch's words
+
+`GtkSwitch` has no label, so a switch with words is a row of two: a label
+from its start and the switch at its end, as GNOME's settings set a switch
+in a row; the row, its label and its switch take the view's direction, so
+right to left mirrors them. The words belong to the switch: a click on them
+activates it, and assistive technology meets the switch alone, named by the
+element's label or else by its words, the label beside it hidden - every
+word for assistive technology goes on the control the view presents
+(`presentedControl`), its heading role too.
 
 ## Nothing the program writes is heard
 

@@ -133,7 +133,6 @@ enum WinUIRealization {
         .complete(PageContract.navigatedFrom),
         .complete(PageContract.navigatedTo),
         .complete(PageContract.navigatingFrom),
-        .complete(RadioButtonContract.groupName),
         .partial(TextAlignmentElementContract.horizontalTextAlignment, on: SearchFieldContract.self,
             missing: "The placeholder stands at the start: "
             + "AutoSuggestBox's text box template aligns only the words typed."),

@@ -28,7 +28,6 @@ Polyline.zIndex: ✅
 ProgressBar.height: ✅
 ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform, checked against the layer it composed itself
 ProgressBar.width: ✅
-RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.pivotX: ✓ read pivotX of Rectangle: the host's own transform, checked against the layer it composed itself
 ScrollView.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 SearchField.frame: ✅

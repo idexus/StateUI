@@ -34,29 +34,27 @@ Polygon.rotation: ✅
 Polyline.accessibilityHeading: ✅
 Polyline.translationY: ✅
 ProgressBar.background: – WinUI's progress bar paints its Background as its track, no ground under its frame.
-RadioButton.ignoresInput: ✅
-RadioButton.scale: ✅
-Rectangle.accessibilityHeading: ✅
-ScrollView.isEnabled: ✅
-ScrollView.rotation: ✅
-SearchField.scaleY: ✅
-SearchField.style: ✅
-Slider.automationExcludedWithChildren: ✅
-Spacer.ignoresInput: ✅
-Spacer.scale: ✅
-Stepper.accessibilityHeading: ✅
-Switch.height: ✅
-Switch.rotationX: ✓ read rotationX of Switch: the host's own tip, checked against the projection it laid on the element
-Switch.width: ✅
+Rectangle.ignoresInput: ✅
+Rectangle.scale: ✅
+ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+ScrollView.tooltip: ✅
+SearchField.layoutDirection: ✅
+Slider.scaleY: ✅
+Slider.style: ✅
+Spacer.automationExcludedWithChildren: ✅
+Stepper.ignoresInput: ✅
+Stepper.scale: ✅
+Switch.accessibilityHeading: ✅
 Text.scaleY: ✅
 Text.style: ✅
-TextEditor.accessibilityHint: ✅
-TextField.opacity: ✅
-TextField.pivotY: ✅
-TimePicker.accessibilityHeading: ✅
-TimePicker.translationY: ✅
-VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-WebView.opacity: ✅
-WebView.pivotY: ✅
-ZStack.accessibilityHeading: ✅
-ZStack.translationY: ✅
+TextEditor.height: ✅
+TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
+TextEditor.width: ✅
+TextField.accessibilityHint: ✅
+TimePicker.opacity: ✅
+TimePicker.pivotY: ✅
+VStack.accessibilityHeading: ✅
+VStack.translationY: ✅
+WebView.accessibilityHint: ✅
+ZStack.opacity: ✅
+ZStack.pivotY: ✅

@@ -81,17 +81,10 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .isPassword(hidden)
                 .submitLabel(.done)
 
-            HStack {
-                Text("Hidden")
-                    .fontSize(14)
-                    .verticalAlignment(.center)
-
-                Switch($hidden)
-                    .accessibilityIdentifier("entry.hidden")
-                    .accessibilityLabel("Password hidden")
-            }
-            .spacing(12)
-            .horizontalAlignment(.center)
+            Switch($hidden)
+                .text("Hidden")
+                .accessibilityIdentifier("entry.hidden")
+                .horizontalAlignment(.center)
 
             // The keyboard the platform brings up, a cap on the length, and
             // what the return key does when it is pressed.

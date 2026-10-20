@@ -6,8 +6,6 @@ struct VisualStateSample: SampleContent, ExampleContent {
     // listing: VisualStateSample
     @State private var enabled = true
     @State private var presses = 0
-    @State private var ready = true
-    @State private var busy = false
     @State private var entered = "Normal"
 
     /// How big the button is drawn, and what the state handler moves. DRIVEN:
@@ -70,33 +68,15 @@ struct VisualStateSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalAlignment(.center)
 
-            HStack {
-                Text("Enabled")
-                    .fontSize(14)
-                    .verticalAlignment(.center)
-
-                Switch($enabled)
-                    .accessibilityIdentifier("visual-states.enabled")
-                    .accessibilityLabel("Enabled")
-            }
-            .spacing(12)
-            .horizontalAlignment(.center)
+            Switch($enabled)
+                .text("Enabled")
+                .accessibilityIdentifier("visual-states.enabled")
+                .horizontalAlignment(.center)
 
             Text("entered \(entered) · pressed \(presses) times")
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
-
-            SectionTitle("States only a RadioButton has")
-
-            // A RadioButton has two states of its own, following isOn.
-            RadioButton("Ready")
-                .isOn($ready)
-                .visualState(.checked) { $0.background(Palette.selected) }
-
-            RadioButton("Busy")
-                .isOn($busy)
-                .visualState(.checked) { $0.background(Palette.selected) }
         }
         .spacing(12)
     }
@@ -104,7 +84,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         Text("Hold each button down: the left crosses to its pressed colour, the right arrives at it. "
-            + "Turn Enabled off for the disabled look, and choose a radio button for the checked one.")
+            + "Turn Enabled off for the disabled look.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

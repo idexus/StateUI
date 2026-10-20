@@ -15,8 +15,6 @@ LayoutEngine.keyPressed: ✓ pressKeys on LayoutEngine: the window's or the main
 LayoutEngine.keysTaken: ✓ pressKeys on LayoutEngine: the window's or the main menu's key command performed, no key pressed
 Picker.keyPressed: ✓ pressKeys on Picker: the window's or the main menu's key command performed, no key pressed
 Picker.keysTaken: ✓ pressKeys on Picker: the window's or the main menu's key command performed, no key pressed
-RadioButton.keyPressed: ✓ pressKeys on RadioButton: the window's or the main menu's key command performed, no key pressed
-RadioButton.keysTaken: ✓ pressKeys on RadioButton: the window's or the main menu's key command performed, no key pressed
 ScrollView.keyPressed: ✓ pressKeys on ScrollView: the window's or the main menu's key command performed, no key pressed
 ScrollView.keysTaken: ✓ pressKeys on ScrollView: the window's or the main menu's key command performed, no key pressed
 SearchField.keyPressed: ✓ pressKeys on SearchField: the window's or the main menu's key command performed, no key pressed

@@ -15,8 +15,6 @@ LayoutEngine.keyPressed: ✅
 LayoutEngine.keysTaken: ✅
 Picker.keyPressed: ✅
 Picker.keysTaken: ✅
-RadioButton.keyPressed: ✅
-RadioButton.keysTaken: ✅
 ScrollView.keyPressed: ✅
 ScrollView.keysTaken: ✅
 SearchField.keyPressed: ✅

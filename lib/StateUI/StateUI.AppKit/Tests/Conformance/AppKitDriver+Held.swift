@@ -111,7 +111,8 @@ extension AppKitDriver {
         // wrapping one, in its control's.
         let label = (view as? AppKitTextView)?.attributedStringValue
         let attributes = label.flatMap { $0.length > 0 ? $0.attributes(at: 0, effectiveRange: nil) : nil }
-        let presented = (view as? AppKitAccessibilityPresenting)?.presentedControl ?? view
+        let presented: NSView = (view as? AppKitSwitchView)?.caption
+            ?? (view as? AppKitAccessibilityPresenting)?.presentedControl ?? view
         let control = presented as? NSControl
         let text = presented as? NSTextView
         guard let font = attributes?[.font] as? NSFont ?? control?.font ?? text?.font else {

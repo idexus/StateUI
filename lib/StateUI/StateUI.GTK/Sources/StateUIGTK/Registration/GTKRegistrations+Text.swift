@@ -34,7 +34,7 @@ extension GTKRegistrations {
         }
     }
 
-    /// Puts the text tiers' members (`TextMembers`) on a label, a button or a radio button: the words in their case,
+    /// Puts the text tiers' members (`TextMembers`) on a label or a button: the words in their case,
     /// the font and the colour, and the room around them.
     static func applyText<Realized: ElementContract>(_ view: any GTKWordsView, _ values: ElementValues<Realized>) {
         if let words = TextMembers.words(values) { view.setText(words) }

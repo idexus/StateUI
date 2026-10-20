@@ -71,7 +71,6 @@ ProgressBar.pointerExited: ✓ hover on ProgressBar: handed to the host's recogn
 ProgressBar.pointerMoved: ✓ hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.pointerPressed: ✓ hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.pointerReleased: ✓ hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
-RadioButton.panYChannel: ✓ pan on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.frameChanged: ✅
 Rectangle.gridColumnSpan: ✅
 Rectangle.gridRowSpan: ✅

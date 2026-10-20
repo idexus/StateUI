@@ -41,24 +41,11 @@ extension MountedElement {
         for child in children { child.reportFocus(in: runtime, holds: holds) }
     }
 
-    /// A value the user changed: onto the state carrying it, then the event with it. A radio button checked takes
-    /// its set's other checks away first - `turnOff` writing each off as the program - each reporting that it is
-    /// off, in one transaction. What the program writes reports nothing.
-    public func reportUserChange(
-        _ property: Prop, _ event: Event, _ value: HostValue, in runtime: HostRuntime,
-        turningOff turnOff: (MountedElement) -> Void
-    ) {
+    /// A value the user changed: onto the state carrying it, then the event with it. What the program writes reports
+    /// nothing.
+    public func reportUserChange(_ property: Prop, _ event: Event, _ value: HostValue, in runtime: HostRuntime) {
         guard !ProgramWrite.isWriting else { return }
-        guard type == .radioButton, property == .isOn, value == .bool(true) else {
-            return carry(property, event, value, in: runtime)
-        }
-        runtime.performUserTransaction {
-            for peer in radioPeers where peer.value(.isOn)?.bool == true {
-                ProgramWrite.perform { turnOff(peer) }
-                peer.carry(.isOn, event, .bool(false), in: runtime)
-            }
-            carry(property, event, value, in: runtime)
-        }
+        carry(property, event, value, in: runtime)
     }
 
     /// The user moved the scroller from `old` to `new`, as the display's frame saw it: onto its state first, then

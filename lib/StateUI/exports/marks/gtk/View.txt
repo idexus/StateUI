@@ -679,40 +679,6 @@ ProgressBar.swiped: ✅
 ProgressBar.tapCount: ✅
 ProgressBar.tapped: ✅
 ProgressBar.verticalAlignment: ✅
-RadioButton.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-RadioButton.area: ✅
-RadioButton.canDrag: ✓ dragAndDrop on RadioButton: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-RadioButton.dragEnded: ✓ dragAndDrop on RadioButton: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-RadioButton.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-RadioButton.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-RadioButton.dragStarting: ✓ dragAndDrop on RadioButton: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-RadioButton.dragText: ✓ dragAndDrop on RadioButton: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-RadioButton.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-RadioButton.droppedFileTypes: ✓ dropFiles on RadioButton: the drop target's signal told the driver's files, no drag GTK began
-RadioButton.filesDropped: ✓ dropFiles on RadioButton: the drop target's signal told the driver's files, no drag GTK began
-RadioButton.frameChanged: ✅
-RadioButton.gridColumn: ✅
-RadioButton.gridColumnSpan: ✅
-RadioButton.gridRow: ✅
-RadioButton.gridRowSpan: ✅
-RadioButton.horizontalAlignment: ✅
-RadioButton.margin: ✅
-RadioButton.panTouchCount: ✅
-RadioButton.panUpdated: ✅
-RadioButton.panXChannel: ✅
-RadioButton.panYChannel: ✅
-RadioButton.pinchUpdated: ✓ pinch on RadioButton: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-RadioButton.pointerEntered: ✅
-RadioButton.pointerExited: ✅
-RadioButton.pointerMoved: ✅
-RadioButton.pointerPressed: ✅
-RadioButton.pointerReleased: ✅
-RadioButton.swipeDirection: ✅
-RadioButton.swipeThreshold: ✅
-RadioButton.swiped: ✅
-RadioButton.tapCount: ✅
-RadioButton.tapped: ✅
-RadioButton.verticalAlignment: ✅
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.area: ✅
 Rectangle.canDrag: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began

@@ -214,7 +214,7 @@ final class GTKDriver: HostDriver {
         switch (act, view) {
         // GTK lets a click reach no button that cannot be chosen.
         case (.activate, let button as GTKButtonView): if gtk_widget_is_sensitive(button.widget) != 0 { button.click() }
-        case (.toggle, let toggle as GTKSwitchView): gtk_switch_set_active(toggle.widget.opaque, toggle.isOn ? 0 : 1)
+        case (.toggle, let toggle as GTKSwitchView): toggle.toggle()
         case (.toggle, let check as GTKCheckView): gtk_widget_activate(check.widget)
         case (.slide(let value), let slider as GTKSliderView): gtk_range_set_value(slider.widget.of(GtkRange.self), value)
         case (.step(let up), let stepper as GTKStepperView):
@@ -280,6 +280,7 @@ final class GTKDriver: HostDriver {
         case (.source, let image as GTKImageView): return image.found ? image.picture?.value : nil
         case (.contentMode, let image as GTKImageView): return image.aspect.propValue
         case (.text, let check as GTKCheckView): return check.text.propValue
+        case (.text, let toggle as GTKSwitchView): return toggle.text.propValue
         case (.showsSidebar, let split as GTKSplitView): return split.showsSidebar.propValue
         case (.sidebarOverlays, let split as GTKSplitView): return split.isCollapsed.propValue
         case (.sidebarBackground, let split as GTKSplitView), (.flyoutBackground, let split as GTKSplitView):

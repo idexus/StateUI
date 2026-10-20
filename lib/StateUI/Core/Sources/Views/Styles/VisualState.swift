@@ -27,8 +27,6 @@ enum VisualStateName {
     static let pressed = KeyName("Pressed")
     static let on = KeyName("On")
     static let off = KeyName("Off")
-    static let checked = KeyName("Checked")
-    static let unchecked = KeyName("Unchecked")
 }
 
 /// The states every view has.
@@ -69,13 +67,4 @@ extension VisualState where Target == Switch {
 extension VisualState where Target == CheckBox {
     /// While `isOn` is true. A CheckBox that is not on is in `.normal`.
     public static var on: Self { Self(VisualStateName.on) }
-}
-
-/// A RadioButton has two, and neither is spelled the CheckBox's way.
-extension VisualState where Target == RadioButton {
-    /// While `isOn` is true.
-    public static var checked: Self { Self(VisualStateName.checked) }
-
-    /// While `isOn` is false.
-    public static var unchecked: Self { Self(VisualStateName.unchecked) }
 }

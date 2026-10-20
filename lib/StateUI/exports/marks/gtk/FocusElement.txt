@@ -14,9 +14,6 @@ ItemsView.unfocus: ✅
 Picker.focus: ✅
 Picker.isFocusedChanged: ✅
 Picker.unfocus: ✅
-RadioButton.focus: ✅
-RadioButton.isFocusedChanged: ✅
-RadioButton.unfocus: ✅
 ScrollView.focus: ✅
 ScrollView.isFocusedChanged: ✅
 ScrollView.unfocus: ✅

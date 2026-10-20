@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import CGTKTesting
 import CStateUIGTK
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
@@ -25,18 +26,37 @@ final class GTKCheckViewTests: XCTestCase {
         }
     }
 
-    /// A radio button is drawn as a radio - GTK draws a check button so only in a group - and a check box as a box.
-    func testARadioButtonIsDrawnAsARadio() {
-        onUIThread {
+    /// A toggle's words stand beside it - a check box's in the button, a switch's at its start and the switch at
+    /// its end, mirrored right to left - and name it; a click on a switch's words turns it.
+    func testATogglesWordsStandBesideIt() throws {
+        try onUIThread {
+            let on = State(wrappedValue: false)
             let host = GTKRenderer.running {
                 VStack {
-                    CheckBox(State(wrappedValue: true).projectedValue)
-                    RadioButton("Only").isOn(true)
+                    Switch(on.projectedValue).text("Wi-Fi").width(300)
+                    CheckBox(true).text("agree").textCase(.uppercase)
                 }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
             }
-            let views = host.views(GTKCheckView.self)
+            let toggle = try XCTUnwrap(host.views(GTKSwitchView.self).first)
+            XCTAssertEqual(try XCTUnwrap(host.views(GTKCheckView.self).first).text, "AGREE")
+            XCTAssertEqual(toggle.text, "Wi-Fi")
+            let named = stateui_test_accessible_property_is_words(
+                UnsafeMutableRawPointer(toggle.control.opaque), Int32(GTK_ACCESSIBLE_PROPERTY_LABEL.rawValue), "Wi-Fi")
+            XCTAssertNil(named, "the switch named by its words")
+            g_free(named)
 
-            XCTAssertEqual(views.map(\.indicator), ["check", "radio"])
+            host.layOut()
+            XCTAssertEqual(toggle.place(of: toggle.caption).minX, 0, "the words from the start")
+            XCTAssertEqual(toggle.place(of: toggle.control).maxX, 300, "the switch at the end")
+            toggle.setDirection(GTK_TEXT_DIR_RTL)
+            host.layOut()
+            XCTAssertEqual(toggle.place(of: toggle.control).minX, 0, "the switch at the end, right to left")
+
+            toggle.clickWords()
+            host.settle { on.wrappedValue }
+            XCTAssertTrue(on.wrappedValue, "a click on the words turns it")
         }
     }
 
@@ -94,9 +114,13 @@ private extension GTKCheckView {
         gtk_widget_activate(widget)
     }
 
-    /// The CSS name of the indicator GTK draws: a box's "check", or "radio".
-    var indicator: String {
-        let first = gtk_widget_get_first_child(widget)
-        return first.flatMap { gtk_widget_get_css_name($0) }.map { String(cString: $0) } ?? ""
+}
+
+private extension GTKSwitchView {
+    /// Where `part` stands in the switch's row.
+    func place(of part: GTKWidget) -> (minX: Double, maxX: Double) {
+        var bounds = graphene_rect_t()
+        _ = gtk_widget_compute_bounds(part, widget, &bounds)
+        return (Double(bounds.origin.x), Double(bounds.origin.x + bounds.size.width))
     }
 }

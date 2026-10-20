@@ -21,13 +21,10 @@ extension UIKitElement {
         element.chosen(in: host.runtime)
     }
 
-    /// A value the user changed in the view, by the host layer's rule (`reportUserChange`): a radio button its
-    /// set's other checks take away shows them taken.
+    /// A value the user changed in the view, by the host layer's rule (`reportUserChange`).
     func report(_ property: Prop, _ event: Event, _ value: HostValue) {
         guard let host else { return }
-        element.reportUserChange(property, event, value, in: host.runtime) { peer in
-            (peer.uiKit.view as? UIKitCheckView)?.setOn(false)
-        }
+        element.reportUserChange(property, event, value, in: host.runtime)
     }
 
     /// The user moved the scroller from `old` to `new`, as the display's frame saw it.

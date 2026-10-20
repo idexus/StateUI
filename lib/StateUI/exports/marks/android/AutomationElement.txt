@@ -21,7 +21,6 @@ Picker.accessibilityIdentifier: ✅
 Polygon.accessibilityIdentifier: ✅
 Polyline.accessibilityIdentifier: ✅
 ProgressBar.accessibilityIdentifier: ✅
-RadioButton.accessibilityIdentifier: ✅
 Rectangle.accessibilityIdentifier: ✅
 ScrollView.accessibilityIdentifier: ✅
 SearchField.accessibilityIdentifier: ✅

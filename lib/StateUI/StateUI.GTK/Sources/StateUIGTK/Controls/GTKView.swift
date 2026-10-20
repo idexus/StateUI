@@ -38,6 +38,9 @@ class GTKView {
     /// The words the view shows of itself, which name it where it is a heading; nil where it shows none.
     var shownWords: String? { nil }
 
+    /// The widget assistive technology meets as the view: its own, or the control a composed view shows.
+    var presentedControl: GTKWidget { widget }
+
     /// The controllers the view listens through, and what hears them; nil while it listens for nothing.
     private(set) var listening: GTKListening?
 

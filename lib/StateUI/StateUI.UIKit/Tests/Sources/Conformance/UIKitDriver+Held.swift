@@ -62,7 +62,9 @@ extension UIKitDriver {
     }
 
     /// A control's words as UIKit draws them: their font's size, bold and italic, family, and their colour.
-    private static func words(_ property: Prop, _ view: UIView) throws -> HostValue? {
+    private static func words(_ property: Prop, _ shown: UIView) throws -> HostValue? {
+        // A switch's words are its label's.
+        let view = (shown as? UIKitSwitchView)?.caption ?? shown
         view.layoutIfNeeded()
         let written = (view as? UILabel)?.attributedText ?? (view as? UIButton)?.titleLabel?.attributedText
             ?? (view as? UITextView)?.attributedText

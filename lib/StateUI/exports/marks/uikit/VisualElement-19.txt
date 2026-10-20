@@ -26,7 +26,6 @@ Picker.scaleX: ✓ read scaleX of Picker: the host's own transform, checked agai
 Polygon.rotation: ✓ read rotation of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.automationExcludedWithChildren: ✅
 ProgressBar.accessibilityLabel: ✅
-RadioButton.ignoresInput: ✅
 Rectangle.opacity: ✅
 Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform, checked against the layer it composed itself
 ScrollView.rotation: ✓ read rotation of ScrollView: the host's own transform, checked against the layer it composed itself

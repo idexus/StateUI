@@ -66,14 +66,8 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
             }
             .spacing(12)
 
-            HStack {
-                Switch($platformLook)
-                    .accessibilityLabel("Platform look")
-
-                Text("Platform look")
-                    .verticalAlignment(.center)
-            }
-            .spacing(12)
+            Switch($platformLook)
+                .text("Platform look")
 
             Text("Last: \(last)")
                 .fontSize(14)

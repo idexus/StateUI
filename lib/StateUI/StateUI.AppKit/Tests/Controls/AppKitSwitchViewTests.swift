@@ -14,12 +14,12 @@ final class AppKitSwitchViewTests: XCTestCase {
         var reports: [Bool] = []
         toggle.onToggled = { reports.append($0) }
 
-        toggle.apply(toggled: true, enabled: true)
-        toggle.apply(toggled: false, enabled: false)
+        toggle.apply(toggled: true, enabled: true, text: "", textColor: nil)
+        toggle.apply(toggled: false, enabled: false, text: "", textColor: nil)
 
         XCTAssertTrue(reports.isEmpty)
         XCTAssertEqual(toggle.state, .off)
-        XCTAssertFalse(toggle.isEnabled)
+        XCTAssertFalse(toggle.control.isEnabled)
     }
 
     @MainActor
@@ -27,7 +27,7 @@ final class AppKitSwitchViewTests: XCTestCase {
         let toggle = AppKitSwitchView()
         var reports: [Bool] = []
         toggle.onToggled = { reports.append($0) }
-        toggle.apply(toggled: false, enabled: true)
+        toggle.apply(toggled: false, enabled: true, text: "", textColor: nil)
 
         toggle.toggleForTesting()
 
@@ -41,13 +41,13 @@ final class AppKitSwitchViewTests: XCTestCase {
         var reports: [Bool] = []
         checkBox.onToggled = { reports.append($0) }
 
-        checkBox.apply(checked: true, enabled: false, tint: .systemPurple)
+        checkBox.apply(checked: true, enabled: false, tint: .systemPurple, text: "", textColor: nil)
         XCTAssertTrue(reports.isEmpty)
         XCTAssertEqual(checkBox.state, .on)
         XCTAssertFalse(checkBox.isEnabled)
         XCTAssertEqual(checkBox.contentTintColor, .systemPurple)
 
-        checkBox.apply(checked: false, enabled: true, tint: nil)
+        checkBox.apply(checked: false, enabled: true, tint: nil, text: "", textColor: nil)
         checkBox.toggleForTesting()
         XCTAssertEqual(reports, [true])
     }

@@ -619,37 +619,6 @@ ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own t
 ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ProgressBar.width: ✅
 ProgressBar.zIndex: ✅
-RadioButton.accessibilityHeading: ✅
-RadioButton.accessibilityHint: ✅
-RadioButton.accessibilityLabel: ✅
-RadioButton.automationExcludedWithChildren: ✅
-RadioButton.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
-RadioButton.frame: ✅
-RadioButton.height: ✅
-RadioButton.ignoresInput: ✅
-RadioButton.isAccessibilityHidden: ✅
-RadioButton.isEnabled: ✅
-RadioButton.isVisible: ✅
-RadioButton.layoutDirection: ✅
-RadioButton.maximumHeight: ✅
-RadioButton.maximumWidth: ✅
-RadioButton.minimumHeight: ✅
-RadioButton.minimumWidth: ✅
-RadioButton.opacity: ✅
-RadioButton.pivotX: ✓ read pivotX of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.pivotY: ✓ read pivotY of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.rotation: ✓ read rotation of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.rotationX: ✓ read rotationX of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.scale: ✓ read scale of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.scaleX: ✓ read scaleX of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.scaleY: ✓ read scaleY of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.style: ✅
-RadioButton.tooltip: ✅
-RadioButton.translationX: ✓ read translationX of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.translationY: ✓ read translationY of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.width: ✅
-RadioButton.zIndex: ✅
 Rectangle.accessibilityHeading: ✅
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅

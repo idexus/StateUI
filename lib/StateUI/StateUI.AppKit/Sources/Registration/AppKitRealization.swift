@@ -108,8 +108,6 @@ enum AppKitRealization {
         .complete(PageContract.navigatingFrom),
         .complete(PageElementContract.title, on: PageContract.self),
         .complete(PickerContract.presentation),
-        .complete(RadioButtonContract.groupName),
-        .complete(PaddingElementContract.padding, on: RadioButtonContract.self),
         .complete(SceneContract.activated),
         .complete(SceneContract.deactivated),
         .complete(SceneContract.stopped),

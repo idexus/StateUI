@@ -9,7 +9,7 @@ struct SwitchSample: SampleContent, ExampleContent {
 
     static let id = "switch"
     static let title = "Switch"
-    static let summary = "An on/off toggle, reported as the value it now has."
+    static let summary = "An on/off toggle with the words it says beside it, reported as the value it now has."
 
     // listing: SwitchSample
     var body: some View {
@@ -17,21 +17,13 @@ struct SwitchSample: SampleContent, ExampleContent {
             // The flag is read here, so every flip builds this closure.
             DebugInfoLabel()
 
-            HStack {
-                Text("Sound")
-                    .fontSize(16)
-                    .verticalAlignment(.center)
-
-                Switch($soundOn)
-                    .accessibilityIdentifier("switch.sound")
-                    .accessibilityLabel("Sound on")
-                    .tint(Palette.accent)
-                    // Runs beside the binding's write-back, carrying what the
-                    // switch NOW is rather than what this side guessed.
-                    .onToggled { on in said = on ? "thrown on" : "thrown off" }
-            }
-            .spacing(12)
-            .horizontalAlignment(.center)
+            Switch($soundOn)
+                .text("Sound")
+                .accessibilityIdentifier("switch.sound")
+                .tint(Palette.accent)
+                // Runs beside the binding's write-back, carrying what the
+                // switch NOW is rather than what this side guessed.
+                .onToggled { on in said = on ? "thrown on" : "thrown off" }
 
             Text(soundOn ? "on" : "off")
                 .fontSize(15)

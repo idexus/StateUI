@@ -69,8 +69,6 @@ Polyline.margin: ✅
 ProgressBar.swipeDirection: ✓ pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.swipeThreshold: ✓ pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.swiped: ✓ pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
-RadioButton.tapCount: ✓ tap on RadioButton: the view's listening handed the recognizer's states, no touch sent
-RadioButton.tapped: ✓ tap on RadioButton: the view's listening handed the recognizer's states, no touch sent
 Rectangle.area: ✅
 Rectangle.droppedFileTypes: ✓ dropFiles on Rectangle: the drop interaction's handler told the driver's files, no drag session
 Rectangle.filesDropped: ✓ dropFiles on Rectangle: the drop interaction's handler told the driver's files, no drag session

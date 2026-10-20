@@ -34,34 +34,30 @@ Polyline.minimumHeight: ✅
 Polyline.minimumWidth: ✅
 Polyline.rotationY: ✓ read rotationY of Polyline: the host's own tip, checked against the projection it laid on the element
 ProgressBar.accessibilityHint: ✅
-RadioButton.isVisible: ✅
-RadioButton.pivotX: ✅
-Rectangle.translationX: ✅
-Rectangle.zIndex: ✅
-ScrollView.automationExcludedWithChildren: ✅
-SearchField.isEnabled: ✅
-SearchField.rotation: ✅
-Slider.accessibilityLabel: ✅
-Spacer.isVisible: ✅
-Spacer.pivotX: ✅
-Stepper.translationX: ✅
-Stepper.zIndex: ✅
-Switch.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Rectangle.isVisible: ✅
+Rectangle.pivotX: ✅
+ScrollView.scaleY: ✅
+ScrollView.style: ✅
+SearchField.tooltip: ✅
+Slider.isEnabled: ✅
+Slider.rotation: ✅
+Spacer.accessibilityLabel: ✅
+Stepper.isVisible: ✅
+Stepper.pivotX: ✅
+Switch.translationX: ✅
+Switch.zIndex: ✅
 Text.isEnabled: does not apply - read isEnabled of Text - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Text.rotation: ✅
-TextEditor.frame: ✅
-TextEditor.scaleX: ✅
-TextField.isAccessibilityHidden: ✅
-TimePicker.maximumHeight: ✅
-TimePicker.maximumWidth: ✅
-TimePicker.minimumHeight: ✅
-TimePicker.minimumWidth: ✅
-TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own tip, checked against the projection it laid on the element
-VStack.layoutDirection: ✅
-VStack.tooltip: ✅
-WebView.isAccessibilityHidden: ✅
-ZStack.maximumHeight: ✅
-ZStack.maximumWidth: ✅
-ZStack.minimumHeight: ✅
-ZStack.minimumWidth: ✅
-ZStack.rotationY: ✓ read rotationY of ZStack: the host's own tip, checked against the projection it laid on the element
+TextEditor.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+TextField.frame: ✅
+TextField.scaleX: ✅
+TimePicker.isAccessibilityHidden: ✅
+VStack.maximumHeight: ✅
+VStack.maximumWidth: ✅
+VStack.minimumHeight: ✅
+VStack.minimumWidth: ✅
+VStack.rotationY: ✓ read rotationY of VStack: the host's own tip, checked against the projection it laid on the element
+WebView.frame: ✅
+WebView.scaleX: ✅
+ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+ZStack.isAccessibilityHidden: ✅

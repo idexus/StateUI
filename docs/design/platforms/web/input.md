@@ -8,7 +8,7 @@ turns the page's events into what the host layer hears (`hear`).
 ## Taps
 
 A tap is the element's `click`, the run of clicks its count. A click on a
-`<label>` beside its control - a radio button's caption - is no tap of its
+`<label>` beside its control - a toggle's words, a radio button's caption - is no tap of its
 own: the browser clicks the control next, and that click is the one tap. An
 element the
 user taps that is no control of the browser's own is a button for assistive

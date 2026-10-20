@@ -37,18 +37,11 @@ struct SliderSample: SampleContent, ExampleContent {
                 .fontSize(13)
                 .horizontalTextAlignment(.center)
 
-            HStack {
-                Text("Sound")
-                    .fontSize(14)
-                    .verticalAlignment(.center)
-
-                Switch($soundOn)
-                    .accessibilityIdentifier("slider.sound")
-                    .accessibilityLabel("Sound on")
-                    .tint(Palette.accent)
-            }
-            .spacing(12)
-            .horizontalAlignment(.center)
+            Switch($soundOn)
+                .text("Sound")
+                .accessibilityIdentifier("slider.sound")
+                .tint(Palette.accent)
+                .horizontalAlignment(.center)
         }
         .spacing(12)
     }

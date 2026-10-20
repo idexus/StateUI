@@ -45,15 +45,9 @@ struct TooltipSample: SampleContent, ExampleContent {
             }
             .spacing(12)
 
-            HStack {
-                Switch($detailed)
-                    .accessibilityIdentifier("tooltip.detailed")
-                    .accessibilityLabel("Detailed")
-
-                Text("Detailed")
-                    .verticalAlignment(.center)
-            }
-            .spacing(12)
+            Switch($detailed)
+                .text("Detailed")
+                .accessibilityIdentifier("tooltip.detailed")
         }
         .spacing(16)
     }

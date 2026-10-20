@@ -70,9 +70,6 @@ ProgressBar.dragStarting: ✓ dragAndDrop on ProgressBar: the drag source and th
 ProgressBar.dragText: ✓ dragAndDrop on ProgressBar: the drag source and the window's drop routing told by the driver, no dragging session
 ProgressBar.frameChanged: ✅
 ProgressBar.margin: ✅
-RadioButton.swipeDirection: ✓ pan on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
-RadioButton.swipeThreshold: ✓ pan on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
-RadioButton.swiped: ✓ pan on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.tapCount: ✓ tap on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.tapped: ✓ tap on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.area: ✅

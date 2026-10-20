@@ -66,10 +66,6 @@ Polyline.swipeThreshold: ✓ pan on Polyline: the view's listening handed the re
 Polyline.swiped: ✓ pan on Polyline: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.tapCount: ✓ tap on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.tapped: ✓ tap on ProgressBar: the view's listening handed the recognizer's states, no touch sent
-RadioButton.area: ✅
-RadioButton.droppedFileTypes: ✓ dropFiles on RadioButton: the drop interaction's handler told the driver's files, no drag session
-RadioButton.filesDropped: ✓ dropFiles on RadioButton: the drop interaction's handler told the driver's files, no drag session
-RadioButton.frameChanged: ✅
 Rectangle.pointerEntered: ✓ hover on Rectangle: the view's listening handed the recognizer's states, no touch sent
 Rectangle.pointerExited: ✓ hover on Rectangle: the view's listening handed the recognizer's states, no touch sent
 Rectangle.pointerMoved: ✓ hover on Rectangle: the view's listening handed the recognizer's states, no touch sent

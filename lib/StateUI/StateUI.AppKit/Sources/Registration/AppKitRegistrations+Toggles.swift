@@ -7,11 +7,8 @@ import AppKit
 @_spi(Host) import StateUIHost
 
 extension AppKitRegistrations {
-    /// A switch, a check box and a radio button: one value the user turns on,
-    /// taken whole with the enabled state - and, for the radio button, the
-    /// caption it draws in the font and case the tree describes. Which of the
-    /// set's other buttons lose their check is the host's, not the view's: a
-    /// set is named across the window, and only the tree knows who is in it.
+    /// A switch and a check box: one value the user turns on, taken whole with the enabled state and the words
+    /// each says beside it, in their case and colour.
     static func toggles(_ registry: Registry<NSView>) {
         registry.add(SwitchContract.self, create: { reports in
             let toggle = AppKitSwitchView()
@@ -20,10 +17,13 @@ extension AppKitRegistrations {
             }
             return toggle
         }, members: { toggle in
-            toggle.applies([SwitchContract.isOn, VisualElementContract.isEnabled]) { view, values in
+            toggle.applies([SwitchContract.isOn, VisualElementContract.isEnabled] + TextMembers.captionMembers) {
+                view, values in
                 view.apply(
                     toggled: values[SwitchContract.isOn] ?? false,
-                    enabled: values[VisualElementContract.isEnabled] ?? true)
+                    enabled: values[VisualElementContract.isEnabled] ?? true,
+                    text: TextMembers.caption(values),
+                    textColor: values[TextColorElementContract.textColor].flatMap { nsColor($0.propValue) })
             }
             toggle.raises(SwitchContract.toggled)
         })
@@ -37,38 +37,15 @@ extension AppKitRegistrations {
         }, members: { box in
             box.applies([
                 CheckBoxContract.isOn, VisualElementContract.isEnabled, TintElementContract.tint,
-            ]) { view, values in
+            ] + TextMembers.captionMembers) { view, values in
                 view.apply(
                     checked: values[CheckBoxContract.isOn] ?? false,
                     enabled: values[VisualElementContract.isEnabled] ?? true,
-                    tint: values[TintElementContract.tint].flatMap { nsColor($0.propValue) })
+                    tint: values[TintElementContract.tint].flatMap { nsColor($0.propValue) },
+                    text: TextMembers.caption(values),
+                    textColor: values[TextColorElementContract.textColor].flatMap { nsColor($0.propValue) })
             }
             box.raises(CheckBoxContract.toggled)
-        })
-
-        registry.add(RadioButtonContract.self, create: { reports in
-            let radio = AppKitRadioButtonView()
-            radio.onSelected = {
-                reports.report(RadioButtonContract.isOn, true, as: RadioButtonContract.toggled)
-            }
-            return radio
-        }, members: { radio in
-            radio.applies([
-                RadioButtonContract.isOn, TextualElementContract.text, TextualElementContract.textCase,
-                FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TextColorElementContract.textColor,
-                VisualElementContract.isEnabled,
-            ]) { view, values in
-                view.apply(
-                    checked: values[RadioButtonContract.isOn] ?? false,
-                    text: (values[TextualElementContract.textCase] ?? .none)
-                        .applied(to: values[TextualElementContract.text] ?? ""),
-                    font: Self.font(values),
-                    textColor: values[TextColorElementContract.textColor]
-                        .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
-                    enabled: values[VisualElementContract.isEnabled] ?? true)
-            }
-            radio.raises(RadioButtonContract.toggled)
         })
     }
 }

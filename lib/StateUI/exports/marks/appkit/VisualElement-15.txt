@@ -25,8 +25,6 @@ Picker.rotation: ✓ read rotation of Picker: the host's own transform, checked 
 Polygon.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
 Polyline.accessibilityHint: ✅
 ProgressBar.frame: ✅
-RadioButton.opacity: ✅
-RadioButton.scaleY: ✓ read scaleY of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own transform, checked against the layer it composed itself
 ScrollView.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
 SearchField.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.

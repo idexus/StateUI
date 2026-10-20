@@ -24,9 +24,6 @@ Picker.rotationY: ✓ read rotationY of Picker: the host's own transform, checke
 Polygon.pivotX: ✓ read pivotX of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 ProgressBar.zIndex: ✅
-RadioButton.height: ✅
-RadioButton.translationY: ✓ read translationY of RadioButton: the host's own transform, checked against the layer it composed itself
-RadioButton.width: ✅
 Rectangle.scale: ✓ read scale of Rectangle: the host's own transform, checked against the layer it composed itself
 ScrollView.pivotX: ✓ read pivotX of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.accessibilityHint: ✅

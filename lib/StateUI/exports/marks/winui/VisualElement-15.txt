@@ -36,28 +36,26 @@ Polygon.isEnabled: ✅
 Polyline.layoutDirection: ✓ read layoutDirection of Polyline: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 ProgressBar.frame: ✅
 ProgressBar.scaleX: ✅
-RadioButton.accessibilityHeading: ✅
-Rectangle.height: ✅
-Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own tip, checked against the projection it laid on the element
-Rectangle.width: ✅
-ScrollView.accessibilityLabel: ✅
+Rectangle.accessibilityHeading: ✅
 ScrollView.isEnabled: ✅
-SearchField.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
-Slider.ignoresInput: ✅
-Slider.scale: ✅
-Spacer.accessibilityHeading: ✅
-Stepper.height: ✅
-Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked against the projection it laid on the element
-Stepper.width: ✅
-Switch.accessibilityHint: ✅
+ScrollView.rotation: ✅
+SearchField.scaleY: ✅
+SearchField.style: ✅
+Slider.automationExcludedWithChildren: ✅
+Spacer.ignoresInput: ✅
+Spacer.scale: ✅
+Stepper.accessibilityHeading: ✅
+Switch.height: ✅
+Switch.rotationX: ✓ read rotationX of Switch: the host's own tip, checked against the projection it laid on the element
+Switch.width: ✅
 Text.automationExcludedWithChildren: ✅
-TextEditor.opacity: ✅
-TextEditor.pivotY: ✅
-TextField.accessibilityHeading: ✅
-TextField.translationY: ✅
-TimePicker.layoutDirection: ✅
-VStack.scaleY: ✅
-VStack.style: ✅
-WebView.accessibilityHeading: ✅
-WebView.translationY: ✅
-ZStack.layoutDirection: ✓ read layoutDirection of ZStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+TextEditor.accessibilityHint: ✅
+TextField.opacity: ✅
+TextField.pivotY: ✅
+TimePicker.accessibilityHeading: ✅
+TimePicker.translationY: ✅
+VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+WebView.opacity: ✅
+WebView.pivotY: ✅
+ZStack.accessibilityHeading: ✅
+ZStack.translationY: ✅

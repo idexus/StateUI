@@ -27,7 +27,6 @@ Picker.width: ✅
 Polygon.scale: ✓ read scale of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.pivotX: ✓ read pivotX of Polyline: the host's own transform, checked against the layer it composed itself
 ProgressBar.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-RadioButton.zIndex: ✅
 Rectangle.isEnabled: ✓ tap on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.maximumHeight: ✅
 Rectangle.maximumWidth: ✅

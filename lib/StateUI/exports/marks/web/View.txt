@@ -679,40 +679,6 @@ ProgressBar.swiped: ✅
 ProgressBar.tapCount: ✅
 ProgressBar.tapped: ✅
 ProgressBar.verticalAlignment: ✅
-RadioButton.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-RadioButton.area: ✅
-RadioButton.canDrag: ✓ dragAndDrop on RadioButton: the DOM's drag events dispatched by the driver, no drag the browser began
-RadioButton.dragEnded: ✓ dragAndDrop on RadioButton: the DOM's drag events dispatched by the driver, no drag the browser began
-RadioButton.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-RadioButton.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-RadioButton.dragStarting: ✓ dragAndDrop on RadioButton: the DOM's drag events dispatched by the driver, no drag the browser began
-RadioButton.dragText: ✓ dragAndDrop on RadioButton: the DOM's drag events dispatched by the driver, no drag the browser began
-RadioButton.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-RadioButton.droppedFileTypes: ✓ dropFiles on RadioButton: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-RadioButton.filesDropped: ✓ dropFiles on RadioButton: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-RadioButton.frameChanged: ✅
-RadioButton.gridColumn: ✅
-RadioButton.gridColumnSpan: ✅
-RadioButton.gridRow: ✅
-RadioButton.gridRowSpan: ✅
-RadioButton.horizontalAlignment: ✅
-RadioButton.margin: ✅
-RadioButton.panTouchCount: ✅
-RadioButton.panUpdated: ✅
-RadioButton.panXChannel: ✅
-RadioButton.panYChannel: ✅
-RadioButton.pinchUpdated: ✅
-RadioButton.pointerEntered: ✅
-RadioButton.pointerExited: ✅
-RadioButton.pointerMoved: ✅
-RadioButton.pointerPressed: ✅
-RadioButton.pointerReleased: ✅
-RadioButton.swipeDirection: ✅
-RadioButton.swipeThreshold: ✅
-RadioButton.swiped: ✅
-RadioButton.tapCount: ✅
-RadioButton.tapped: ✅
-RadioButton.verticalAlignment: ✅
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Rectangle.area: ✅
 Rectangle.canDrag: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began

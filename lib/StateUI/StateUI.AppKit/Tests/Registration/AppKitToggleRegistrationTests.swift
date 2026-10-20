@@ -48,7 +48,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
 
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("toggle")) as? AppKitSwitchView)
         XCTAssertEqual(native.state, .on)
-        XCTAssertFalse(native.isEnabled)
+        XCTAssertFalse(native.control.isEnabled)
 
         var off = HostPatch(id: .manual("toggle"), type: .switch)
         off.properties[.isOn] = .bool(false)
@@ -56,7 +56,55 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         renderer.applyForTesting(changedTree(off))
 
         XCTAssertEqual(native.state, .off)
-        XCTAssertTrue(native.isEnabled)
+        XCTAssertTrue(native.control.isEnabled)
+    }
+
+    /// A switch and a check box say the words the tree gives them, in their case: the check box as its own title;
+    /// the switch's beside it at its start, the switch at its end, naming it for assistive technology and flipping
+    /// it at a click.
+    @MainActor
+    func testATogglesWordsStandBesideIt() throws {
+        let on = State(wrappedValue: false)
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Switch(on.projectedValue).text("Wi-Fi")
+                CheckBox(true).text("agree").textCase(.uppercase)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let toggle = try XCTUnwrap(renderer.nativeViews(AppKitSwitchView.self).first)
+        let box = try XCTUnwrap(renderer.nativeViews(AppKitCheckBoxView.self).first)
+
+        XCTAssertEqual(box.title, "AGREE")
+        XCTAssertEqual(toggle.caption.stringValue, "Wi-Fi")
+        XCTAssertEqual(toggle.control.accessibilityLabel(), "Wi-Fi", "the switch named by its words")
+        toggle.frame = NSRect(x: 0, y: 0, width: 300, height: 30)
+        toggle.layoutSubtreeIfNeeded()
+        XCTAssertEqual(toggle.control.frame.maxX, 300, "the switch at the end")
+        XCTAssertEqual(toggle.caption.frame.minX, 0, "the words from the start")
+
+        toggle.clickWordsForTesting()
+        XCTAssertTrue(on.wrappedValue, "a click on the words flips it")
+    }
+
+    /// A check box's tint is its box's: its words keep the platform's colour, which AppKit's content tint would
+    /// otherwise draw them in.
+    @MainActor
+    func testATintedCheckBoxsWordsKeepThePlatformsColour() throws {
+        let renderer = AppKitRenderer.running {
+            VStack { CheckBox(false).text("WWWWWW").tint(Color(hex: 0xFF0000)) }
+        }
+        defer { renderer.closeForTesting() }
+        let box = try XCTUnwrap(renderer.nativeViews(AppKitCheckBoxView.self).first)
+        box.frame = NSRect(origin: .zero, size: box.fittingSize)
+
+        let drawn = try XCTUnwrap(box.bitmapImageRepForCachingDisplay(in: box.bounds))
+        box.cacheDisplay(in: box.bounds, to: drawn)
+        let red = (0..<drawn.pixelsWide).flatMap { x in (0..<drawn.pixelsHigh).map { (x, $0) } }.filter { x, y in
+            guard let colour = drawn.colorAt(x: x, y: y)?.usingColorSpace(.sRGB) else { return false }
+            return colour.alphaComponent > 0.5 && colour.redComponent > 0.7 && colour.greenComponent < 0.3
+        }
+        XCTAssertEqual(red.count, 0, "the unticked box's words drawn in its tint")
     }
 
     /// A check box takes its value and the tint its tier declares - the colour
@@ -133,69 +181,5 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         XCTAssertEqual(native.state, .off, "the tree describing it again does")
     }
 
-    /// The registry realizes the radio button too - its own value and event,
-    /// and the caption members it draws from the tiers it wears.
-    @MainActor
-    func testTheRegistryRealizesTheRadioButton() {
-        let realization = AppKitRegistrations.registry.realization
-
-        XCTAssertTrue(realization.elements.contains("RadioButton"))
-        XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "RadioButton", owner: "RadioButton", member: "isOn")))
-        XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "RadioButton", owner: "RadioButton", member: "toggled")))
-        XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "RadioButton", owner: "TextualElement", member: "text")))
-        XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "RadioButton", owner: "TextColorElement", member: "textColor")))
-    }
-
-    /// A radio button draws the caption the tree describes, in the case it
-    /// asks for, and wears its check.
-    @MainActor
-    func testARadioButtonShowsItsCaptionAndItsCheck() throws {
-        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
-
-        var large = HostPatch(id: .manual("large"), type: .radioButton)
-        large.properties[.isOn] = .bool(true)
-        large.properties[.text] = .string("Large")
-        large.properties[.textCase] = .enumeration(3)
-        renderer.applyForTesting(tree(large))
-
-        let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("large")) as? AppKitRadioButtonView)
-
-        XCTAssertEqual(native.state, .on)
-        XCTAssertEqual(native.title, "LARGE")
-    }
-
-    /// Picking one button of a set takes the check off the others, wherever in
-    /// the window they stand: the button reports that it is on, and the host
-    /// answers for the set.
-    @MainActor
-    func testPickingOneOfASetClearsTheOthers() throws {
-        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
-
-        var small = HostPatch(id: .manual("small"), type: .radioButton)
-        small.properties[.isOn] = .bool(true)
-        small.properties[.text] = .string("Small")
-        small.properties[.groupName] = .name("size")
-        var large = HostPatch(id: .manual("large"), type: .radioButton)
-        large.properties[.isOn] = .bool(false)
-        large.properties[.text] = .string("Large")
-        large.properties[.groupName] = .name("size")
-        var row = HostPatch(id: .manual("row"), type: .vStack)
-        row.children = .arranged([small, large])
-        renderer.applyForTesting(tree(row))
-
-        let first = try XCTUnwrap(renderer.viewForTesting(id: .manual("small")) as? AppKitRadioButtonView)
-        let second = try XCTUnwrap(renderer.viewForTesting(id: .manual("large")) as? AppKitRadioButtonView)
-
-        second.selectForTesting()
-
-        XCTAssertEqual(second.state, .on)
-        XCTAssertEqual(first.state, .off, "the set's other button lost its check")
-    }
 }
 #endif

@@ -10,9 +10,9 @@ public enum CheckBoxContract: ElementContract {
     /// StateUI's state contract.
     public static let layer: ElementLayer = .adaptive
 
-    /// A check box is a view, tinted.
+    /// A check box is a view, tinted, with the words it says beside its box.
     public static let tiers: [any Contract.Type] = [
-        ViewContract.self, TintElementContract.self, FocusElementContract.self,
+        ViewContract.self, TextualElementContract.self, TintElementContract.self, FocusElementContract.self,
     ]
 
     /// Whether the box is ticked.

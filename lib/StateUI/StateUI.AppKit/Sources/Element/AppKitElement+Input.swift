@@ -14,12 +14,10 @@ extension AppKitElement {
         element.chosen(in: host.runtime)
     }
 
-    /// A value the user changed in the view; a radio button's peers turned off on their own buttons.
+    /// A value the user changed in the view.
     func report(_ property: Prop, _ event: Event, _ value: HostValue) {
         guard let host else { return }
-        element.reportUserChange(property, event, value, in: host.runtime) { peer in
-            (peer.native as? AppKitElement)?.setRadioChecked(false)
-        }
+        element.reportUserChange(property, event, value, in: host.runtime)
     }
 
     /// What a recognizer heard, turned into the element's events by the host layer's rule; whether the element
@@ -46,10 +44,6 @@ extension AppKitElement {
     func send(_ event: Event, _ values: [HostValue]) {
         guard let host else { return }
         element.send(event, values, in: host.runtime)
-    }
-
-    func setRadioChecked(_ checked: Bool) {
-        (view as? AppKitRadioButtonView)?.setCheckedFromGroup(checked)
     }
 
     /// Follows where the view stands while the tree reads it (`MountedElement.readsOwnFrame`): the host layer asks

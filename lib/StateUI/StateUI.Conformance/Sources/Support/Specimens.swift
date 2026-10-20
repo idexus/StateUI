@@ -37,7 +37,6 @@
         case "Polygon": return dressing.dress(Polygon())
         case "Polyline": return dressing.dress(Polyline())
         case "ProgressBar": return dressing.dress(ProgressBar())
-        case "RadioButton": return dressing.dress(RadioButton())
         case "Rectangle": return dressing.dress(Rectangle())
         case "ScrollView": return dressing.dress(ScrollView())
         case "SearchField": return dressing.dress(SearchField())

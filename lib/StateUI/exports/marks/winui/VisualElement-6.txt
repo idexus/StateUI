@@ -35,34 +35,32 @@ Polygon.pivotY: ✅
 Polyline.translationX: ✅
 Polyline.zIndex: ✅
 ProgressBar.automationExcludedWithChildren: ✅
-RadioButton.maximumHeight: ✅
-RadioButton.maximumWidth: ✅
-RadioButton.minimumHeight: ✅
-RadioButton.minimumWidth: ✅
-RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own tip, checked against the projection it laid on the element
-Rectangle.tooltip: ✅
-ScrollView.opacity: ✅
-ScrollView.pivotY: ✅
-SearchField.frame: ✅
-SearchField.scaleX: ✅
-Slider.isAccessibilityHidden: ✅
-Spacer.maximumHeight: ✅
-Spacer.maximumWidth: ✅
-Spacer.minimumHeight: ✅
-Spacer.minimumWidth: ✅
-Spacer.rotationY: ✓ read rotationY of Spacer: the host's own tip, checked against the projection it laid on the element
-Stepper.tooltip: ✅
-Switch.isEnabled: ✅
-Switch.rotation: ✅
+Rectangle.maximumHeight: ✅
+Rectangle.maximumWidth: ✅
+Rectangle.minimumHeight: ✅
+Rectangle.minimumWidth: ✅
+Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own tip, checked against the projection it laid on the element
+ScrollView.accessibilityHint: ✅
+ScrollView.layoutDirection: ✅
+SearchField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Slider.frame: ✅
+Slider.scaleX: ✅
+Spacer.isAccessibilityHidden: ✅
+Stepper.maximumHeight: ✅
+Stepper.maximumWidth: ✅
+Stepper.minimumHeight: ✅
+Stepper.minimumWidth: ✅
+Stepper.rotationY: ✓ read rotationY of Stepper: the host's own tip, checked against the projection it laid on the element
+Switch.tooltip: ✅
 Text.frame: ✅
 Text.scaleX: ✅
-TextEditor.accessibilityLabel: ✅
-TextField.isVisible: ✅
-TextField.pivotX: ✅
-TimePicker.translationX: ✅
-TimePicker.zIndex: ✅
-VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-WebView.isVisible: ✅
-WebView.pivotX: ✅
-ZStack.translationX: ✅
-ZStack.zIndex: ✅
+TextEditor.isEnabled: ✅
+TextEditor.rotation: ✅
+TextField.accessibilityLabel: ✅
+TimePicker.isVisible: ✅
+TimePicker.pivotX: ✅
+VStack.translationX: ✅
+VStack.zIndex: ✅
+WebView.accessibilityLabel: ✅
+ZStack.isVisible: ✅
+ZStack.pivotX: ✅

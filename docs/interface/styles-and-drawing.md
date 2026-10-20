@@ -249,13 +249,12 @@ Style<Button>()
 
 The states offered after the dot are the ones that control enters. Every
 view has normal, disabled and pointer-over; a control taking the focus adds
-focused, a button pressed, a switch on and off, a check box on, a radio
-button checked and unchecked. A
-state the control never enters does not compile.
+focused, a button pressed, a switch on and off, a check box on. A state the
+control never enters does not compile.
 
 StateUI decides which state a control is in, the same way on every platform:
-the first that holds of disabled, pressed, pointer-over, focused, on or
-checked, off or unchecked - and normal when none does. What the control shows
+the first that holds of disabled, pressed, pointer-over, focused, on, off -
+and normal when none does. What the control shows
 is every state that holds at once, the earlier in that order winning a value
 two of them set. A disabled switch that is on is dimmed, and green where its
 host paints a switch's background - GTK paints none, its switch's box being its

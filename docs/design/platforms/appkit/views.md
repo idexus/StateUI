@@ -178,14 +178,15 @@ by it, and its cell sets its words and picture in the rest, its bezel the whole
 button's. Assistive technology asking for the menu of any of them opens it; a
 split button's arrow part, a view inside a button, is not met on its own.
 
-## A radio button's set
+## A switch's words
 
-StateUI owns a radio button's set - its name, across the whole window - and
-turns the others of a set off as one is checked. AppKit keeps sets of its own:
-the radio buttons of one superview sharing one action turn each other off as
-one is clicked, whatever sets StateUI put them in. So the host's radio button
-takes a turn only from StateUI's own writes and from a click on itself, which
-its cell makes; AppKit's turning off of the others is refused.
+A check box's words are its button's title, beside its box, as AppKit draws
+one. `NSSwitch` has no title, so a switch with words is a view of two: the
+words from its start and the switch at its end, mirrored right to left, the
+way System Settings sets a switch in a row. The words belong to the switch: a
+click on them turns it, and assistive technology meets the switch alone,
+named by the element's label or else by its words, the label beside it left
+out (`AppKitAccessibilityPresenting`).
 
 ## A field's placeholder
 

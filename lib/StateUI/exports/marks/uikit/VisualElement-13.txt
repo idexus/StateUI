@@ -30,7 +30,6 @@ ProgressBar.maximumHeight: ✅
 ProgressBar.maximumWidth: ✅
 ProgressBar.minimumHeight: ✅
 ProgressBar.minimumWidth: ✅
-RadioButton.scale: ✓ read scale of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.pivotY: ✓ read pivotY of Rectangle: the host's own transform, checked against the layer it composed itself
 ScrollView.isAccessibilityHidden: ✅
 SearchField.style: ✅

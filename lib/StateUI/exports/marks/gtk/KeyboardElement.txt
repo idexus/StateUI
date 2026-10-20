@@ -15,8 +15,6 @@ LayoutEngine.keyPressed: ✓ pressKeys on LayoutEngine: the shortcut controller'
 LayoutEngine.keysTaken: ✓ pressKeys on LayoutEngine: the shortcut controller's action run, no key event
 Picker.keyPressed: ✓ pressKeys on Picker: the shortcut controller's action run, no key event
 Picker.keysTaken: ✓ pressKeys on Picker: the shortcut controller's action run, no key event
-RadioButton.keyPressed: ✓ pressKeys on RadioButton: the shortcut controller's action run, no key event
-RadioButton.keysTaken: ✓ pressKeys on RadioButton: the shortcut controller's action run, no key event
 ScrollView.keyPressed: ✓ pressKeys on ScrollView: the shortcut controller's action run, no key event
 ScrollView.keysTaken: ✓ pressKeys on ScrollView: the shortcut controller's action run, no key event
 SearchField.keyPressed: ✓ pressKeys on SearchField: the shortcut controller's action run, no key event

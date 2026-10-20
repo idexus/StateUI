@@ -22,10 +22,11 @@ final class WebControlFrameTests: XCTestCase {
         for view in views {
             XCTAssertEqual(WebPage.style(of: view.node, "min-width"), "44px", "the frame lands on the view")
             let drawn = WebPage.children(of: view.node)
-            XCTAssertEqual(drawn.count, 1, "the view holds what the browser draws")
-            guard let control = drawn.first else { continue }
-            for size in ["width", "height", "min-width", "min-height"] {
-                XCTAssertEqual(WebPage.style(of: control, size), "", "the drawn control takes no \(size) of the frame")
+            XCTAssertFalse(drawn.isEmpty, "the view holds what the browser draws")
+            for control in drawn {
+                for size in ["width", "height", "min-width", "min-height"] {
+                    XCTAssertEqual(WebPage.style(of: control, size), "", "the drawn control takes no \(size) of the frame")
+                }
             }
         }
     }

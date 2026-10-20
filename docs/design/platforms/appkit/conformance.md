@@ -6,7 +6,7 @@ target, one test for each family of cases in `AppKitConformanceTests`.
 ## What the driver does
 
 A user's act goes through the path AppKit's own input takes into the host: a
-button's, a check box's and a radio button's `performClick`, a switch's
+button's and a check box's `performClick`, a switch's
 accessibility press, a slider's value and then its action, a stepper's value
 one increment on within its range and then its action - what a click on
 either arrow does - a picker's item chosen, and a field's or an editor's

@@ -200,21 +200,16 @@ final class ControlTests: XCTestCase {
             ControlCase("Switch", source: "Switch.swift",
                 Switch(true)
                     .isOn(true)
+                    .text("Sound")
                     .tint(.green)
                     .onToggled { _ in }),
 
             ControlCase("CheckBox", source: "CheckBox.swift",
                 CheckBox(true)
                     .isOn(true)
-                    .tint(.firebrick)
-                    .onToggled { _ in }),
-
-            ControlCase("RadioButton", source: "RadioButton.swift",
-                RadioButton("Medium")
-                    .text("Medium")
-                    .isOn(true)
-                    .groupName("size")
+                    .text("Agree")
                     .textCase(.uppercase)
+                    .tint(.firebrick)
                     .onToggled { _ in }),
 
             ControlCase("Slider", source: "Slider.swift",
@@ -774,7 +769,7 @@ final class ControlTests: XCTestCase {
         let remaking = Set(LibraryContracts.remaking.map(\.name))
         let allowed: Set<String> = remaking.union([
             // Named rather than valued.
-            "style", "fontFamily", "groupName", "accessibilityIdentifier", "source", "userAgent", "data", "content", "format",
+            "style", "fontFamily", "accessibilityIdentifier", "source", "userAgent", "data", "content", "format",
             // A value the host cannot be handed whole.
             "background", "pageBackground", "fill", "stroke", "icon", "icon",
             "icon", "maximumDate",
@@ -1005,7 +1000,6 @@ final class ControlTests: XCTestCase {
         let volume = State(0.0)
         let due = State(CalendarDate(year: 2026, month: 1, day: 1))
         let ticked = State(false)
-        let chosen = State(false)
         let servings = State(0.0)
         let query = State("")
         let alarm = State(ClockTime(hour: 0, minute: 0))
@@ -1021,7 +1015,6 @@ final class ControlTests: XCTestCase {
             Slider(volume.projectedValue).node,
             DatePicker(due.projectedValue).node,
             CheckBox(ticked.projectedValue).id("checkBox").node,
-            RadioButton("Medium").isOn(chosen.projectedValue).id("radio").node,
             Stepper(servings.projectedValue).id("stepper").node,
             SearchField(query.projectedValue).id("search").node,
             TimePicker(alarm.projectedValue).id("time").node,
@@ -1032,7 +1025,7 @@ final class ControlTests: XCTestCase {
         // same words land on.
         typed(text.number, "Ada")
         typed(text.number, "Notes")
-        // A switch, a box and a radio button are the HOST's own writes onto
+        // A switch and a box are the HOST's own writes onto
         // plain ties, not events.
         moved(toggled.number, to: 1)
         // A slider's and a stepper's report is the HOST's own write onto the
@@ -1041,7 +1034,6 @@ final class ControlTests: XCTestCase {
         // A chosen day and a chosen time are three lanes each, landed the same way.
         moved(due.number, to: [2026, 8, 2], mask: 0b111)
         moved(ticked.number, to: 1)
-        moved(chosen.number, to: 1)
         dragged(servings.number, to: 4)
         typed(query.number, "al")
         moved(alarm.number, to: [9, 30, 0], mask: 0b111)
@@ -1051,28 +1043,9 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(volume.wrappedValue, 12.5)
         XCTAssertEqual(due.wrappedValue, CalendarDate(year: 2026, month: 8, day: 2))
         XCTAssertTrue(ticked.wrappedValue)
-        XCTAssertTrue(chosen.wrappedValue)
         XCTAssertEqual(servings.wrappedValue, 4)
         XCTAssertEqual(query.wrappedValue, "al")
         XCTAssertEqual(alarm.wrappedValue, ClockTime(hour: 9, minute: 30))
-    }
-
-    /// A radio button hears its own CLEARING as well: a change of mind is
-    /// reported from both buttons, and the host lands the false on the state
-    /// the button borrows exactly as it lands the true.
-    func testARadioButtonThatLosesTheGroupWritesBackFalse() {
-        let chosen = State(true)
-
-        let renders = Renders()
-        renders.render(
-            RadioButton("Medium")
-                .isOn(chosen.projectedValue)
-                .groupName("size")
-                .node)
-
-        moved(chosen.number, to: 0)
-
-        XCTAssertFalse(chosen.wrappedValue)
     }
 
     /// A day READS AND WRITES its text form - year, month and day, hyphen-separated,
@@ -1183,7 +1156,7 @@ final class ControlTests: XCTestCase {
 
         let renders = Renders()
         let patch = renders.render(
-            RadioButton("Medium")
+            CheckBox()
                 .onToggled {
                     seen.append($0)
                     stateAsTheHandlerRan.append(chosen.wrappedValue)

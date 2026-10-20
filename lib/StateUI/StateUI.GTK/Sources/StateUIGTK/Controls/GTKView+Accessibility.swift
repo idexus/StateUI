@@ -12,7 +12,7 @@ extension GTKView {
     /// Design: docs/design/platforms/gtk/controls.md#what-assistive-technology-meets
     func setAccessibility(_ words: AccessibilityWords) {
         accessibility = words
-        let accessible = widget.opaque
+        let accessible = presentedControl.opaque
         // GTK names a view by its own words only in its own role: a heading says them as its label.
         let label = words.label ?? (words.headingLevel > 0 ? shownWords : nil)
         for (property, text) in [(GTK_ACCESSIBLE_PROPERTY_LABEL, label),
@@ -39,6 +39,7 @@ extension GTKView {
         } else {
             gtk_accessible_reset_state(accessible, GTK_ACCESSIBLE_STATE_HIDDEN)
         }
+        (self as? GTKSwitchView)?.authoredLabel = words.label
 
         guard words.headingLevel > 0, becomeHeading() else { return }
         var level = GValue()
@@ -55,14 +56,16 @@ extension GTKView {
         setAccessibility(accessibility)
     }
 
-    /// Makes the widget a heading while assistive technology has not met it yet, as GTK allows; whether it is one.
+    /// Makes the widget assistive technology meets a heading while it has not met it yet, as GTK allows; whether it
+    /// is one.
     private func becomeHeading() -> Bool {
-        if gtk_accessible_get_accessible_role(widget.opaque) == GTK_ACCESSIBLE_ROLE_HEADING { return true }
-        guard gtk_widget_get_root(widget) == nil else { return false }
+        let met = presentedControl
+        if gtk_accessible_get_accessible_role(met.opaque) == GTK_ACCESSIBLE_ROLE_HEADING { return true }
+        guard gtk_widget_get_root(met) == nil else { return false }
         var role = GValue()
         g_value_init(&role, gtk_accessible_role_get_type())
         g_value_set_enum(&role, Int32(GTK_ACCESSIBLE_ROLE_HEADING.rawValue))
-        g_object_set_property(widget.of(GObject.self), "accessible-role", &role)
+        g_object_set_property(met.of(GObject.self), "accessible-role", &role)
         g_value_unset(&role)
         return true
     }

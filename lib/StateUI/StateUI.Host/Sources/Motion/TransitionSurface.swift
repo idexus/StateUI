@@ -54,9 +54,6 @@
         case .textField, .textEditor, .searchField:
             return fieldProperties.contains(property)
 
-        case .radioButton:
-            return radioProperties.contains(property)
-
         case .picker:
             return pickerProperties.contains(property)
 
@@ -96,7 +93,7 @@
         .activityIndicator, .button,
         .checkBox, .datePicker, .textEditor, .ellipse, .textField, .canvas,
         .grid, .hStack, .image, .itemsView, .text, .line,
-        .path, .picker, .polygon, .polyline, .progressBar, .radioButton,
+        .path, .picker, .polygon, .polyline, .progressBar,
         .rectangle, .scrollView, .searchField, .slider,
         .stepper, .switch, .timePicker, .vStack, .zStack, .layoutEngine,
     ]
@@ -144,7 +141,6 @@
         .fontSize, .textColor, .placeholderColor,
     ]
 
-    private static let radioProperties: Set<Prop> = [.padding, .fontSize, .textColor]
 
     private static let pickerProperties: Set<Prop> = [.fontSize, .textColor, .tint]
 

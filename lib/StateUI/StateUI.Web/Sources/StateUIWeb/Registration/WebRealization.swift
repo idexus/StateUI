@@ -61,7 +61,6 @@ enum WebRealization {
         .complete(PageContract.showsBackButton),
         .complete(PageContract.showsNavigationBar),
         .complete(PageContract.showsTitle),
-        .complete(RadioButtonContract.groupName),
         .complete(SplitViewContract.showsSidebar),
         .complete(SplitViewContract.showsSidebarChanged),
         .partial(SplitViewContract.sidebarBackground,
