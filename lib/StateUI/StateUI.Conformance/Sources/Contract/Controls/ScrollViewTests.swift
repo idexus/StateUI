@@ -52,18 +52,16 @@
                 s.settle { frames.values.last.map(FrameReport.size)?.first == 3000 }
                 s.expect(frames.values.last.map(FrameReport.size)?.first, 3000, "its own width across")
             },
-            ConformanceCase("anOffsetTheTreeWritesMovesItWithinReachUnheard", proves: [
-                Covered(ScrollViewContract.scrollOffset), Covered(ScrollViewContract.scrollYChanged),
+            ConformanceCase("anOffsetTheTreeWritesMovesItWithinReach", proves: [
+                Covered(ScrollViewContract.scrollOffset),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let offset = State(wrappedValue: Point(0, 0))
-                let heard = Received<Double>()
                 s.start(reducesMotion: true) {
                     VStack {
                         Button("Down").onClicked { offset.wrappedValue = Point(0, 300) }.id("down")
                         Button("Past").onClicked { offset.wrappedValue = Point(0, 5000) }.id("past")
                         ScrollView { Rectangle().fill(.red).height(2000) }
                             .scrollOffset(offset.projectedValue)
-                            .onEvent(ScrollViewContract.scrollYChanged) { heard.values.append($0) }
                             .width(200).height(500).id("scroller")
                     }
                     .horizontalAlignment(.start)
@@ -78,22 +76,17 @@
                 try s.perform(.activate, on: s.element("past"))
                 try s.settle { try s.held(ScrollViewContract.scrollOffset, on: scroller) == Point(0, 1500) }
                 s.expect(try s.held(ScrollViewContract.scrollOffset, on: scroller), Point(0, 1500), "no further than its end")
-                s.turn()
-                s.expect(heard.values, [], "the program's move heard by nobody")
             },
             ConformanceCase("theUsersScrollLandsOnTheFrameAndRestsOnce", proves: [
-                Covered(ScrollViewContract.scrollOffset), Covered(ScrollViewContract.scrollYChanged),
-                Covered(ScrollViewContract.scrollStopped),
+                Covered(ScrollViewContract.scrollOffset), Covered(ScrollViewContract.scrollStopped),
             ]) { s in
                 let clock = TestClock()
                 let offset = State(wrappedValue: Point(0, 0))
-                let heard = Received<Double>()
                 let rests = Received<Int>()
                 s.start(clock: clock) {
                     VStack {
                         ScrollView { Rectangle().fill(.red).height(2000) }
                             .scrollOffset(offset.projectedValue)
-                            .onEvent(ScrollViewContract.scrollYChanged) { heard.values.append($0) }
                             .onScrollStopped { rests.values.append(1) }
                             .width(200).height(500).id("scroller")
                     }
@@ -106,20 +99,19 @@
                 s.turn()
                 s.frames(of: clock, until: 400)
 
-                s.expect(heard.values, [200], "heard once, where it went")
-                s.expect(offset.wrappedValue, Point(0, 200), "and on the state")
+                s.expect(offset.wrappedValue, Point(0, 200), "on the state, where it went")
                 s.expect(rests.values, [1], "at rest once")
             },
-            ConformanceCase("theUsersScrollAcrossIsHeard", proves: [
-                Covered(ScrollViewContract.scrollXChanged), Covered(ScrollViewContract.orientation),
+            ConformanceCase("theUsersScrollAcrossLandsOnTheState", proves: [
+                Covered(ScrollViewContract.scrollOffset), Covered(ScrollViewContract.orientation),
             ]) { s in
                 let clock = TestClock()
-                let heard = Received<Double>()
+                let offset = State(wrappedValue: Point(0, 0))
                 s.start(clock: clock) {
                     VStack {
                         ScrollView { Rectangle().fill(.red).width(3000).height(40) }
                             .orientation(.horizontal)
-                            .onEvent(ScrollViewContract.scrollXChanged) { heard.values.append($0) }
+                            .scrollOffset(offset.projectedValue)
                             .width(200).height(100).id("scroller")
                     }
                     .horizontalAlignment(.start)
@@ -131,7 +123,7 @@
                 s.turn()
                 s.frames(of: clock, until: 400)
 
-                s.expect(heard.values, [300])
+                s.expect(offset.wrappedValue, Point(300, 0))
             },
             Aspects.holds(ScrollViewContract.verticalScrollIndicator, on: "ScrollView", .visible, then: .never),
             Aspects.holds(ScrollViewContract.horizontalScrollIndicator, on: "ScrollView", .visible, then: .never,

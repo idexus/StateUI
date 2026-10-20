@@ -209,8 +209,6 @@ ScrollView
   stroke
   verticalScrollIndicator
   scrollStopped()
-  scrollXChanged()
-  scrollYChanged()
 SearchField
   cursorPosition
   fontAttributes

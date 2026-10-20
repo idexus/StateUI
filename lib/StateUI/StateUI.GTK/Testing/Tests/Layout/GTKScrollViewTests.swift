@@ -61,14 +61,12 @@ final class GTKScrollViewTests: XCTestCase {
     func testAnOffsetTheTreeWritesMovesTheScrollerWithinReach() throws {
         try onUIThread {
             let offset = State(wrappedValue: Point(0, 0))
-            let heard = Received<Double>()
             let host = GTKRenderer.running(reducesMotion: true) {
                 VStack {
                     Button("Down").onClicked { offset.wrappedValue = Point(0, 300) }
                     Button("Past").onClicked { offset.wrappedValue = Point(0, 5000) }
                     ScrollView { Text("tall").height(2000) }
                         .scrollOffset(offset.projectedValue)
-                        .onEvent(ScrollViewContract.scrollYChanged) { y in heard.values.append(y) }
                         .height(500)
                 }
             }
@@ -83,7 +81,6 @@ final class GTKScrollViewTests: XCTestCase {
             buttons[1].click()
             host.settle { scroll.offset == Point(0, 1500) }
             XCTAssertEqual(scroll.offset, Point(0, 1500))
-            XCTAssertEqual(heard.values, [], "the program's move is not heard as the user's")
         }
     }
 
@@ -93,12 +90,10 @@ final class GTKScrollViewTests: XCTestCase {
         try onUIThread {
             let clock = TestClock()
             let offset = State(wrappedValue: Point(0, 0))
-            let heard = Received<Double>()
             let rests = Received<Int>()
             let host = GTKRenderer.running(clock: clock) {
                 ScrollView { Text("tall").height(2000) }
                     .scrollOffset(offset.projectedValue)
-                    .onEvent(ScrollViewContract.scrollYChanged) { y in heard.values.append(y) }
                     .onScrollStopped { rests.values.append(1) }
                     .height(500)
             }
@@ -106,11 +101,10 @@ final class GTKScrollViewTests: XCTestCase {
 
             scroll.scroller.move(to: Point(0, 200))
             host.settle { scroll.offset == Point(0, 200) }
-            XCTAssertEqual(heard.values, [], "said on the display's frame")
+            XCTAssertEqual(offset.projectedValue.journey.value, Point(0, 0), "said on the display's frame")
 
             clock.now = 16
             host.frame()
-            XCTAssertEqual(heard.values, [200])
             XCTAssertEqual(offset.projectedValue.journey.value, Point(0, 200))
 
             clock.now = 100

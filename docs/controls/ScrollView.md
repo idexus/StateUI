@@ -38,13 +38,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (82)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>39 ✅ · 3 ☑️ · 37 ✓ · 3 –</td><td><code>NSScrollView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>38 ✅ · 1 ☑️ · 37 ✓ · 4 –</td><td><code>UIScrollView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>63 ✅ · 3 ☑️ · 12 ✓ · 3 –</td><td><code>ScrollView</code> / <code>HorizontalScrollView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>65 ✅ · 1 ☑️ · 13 ✓ · 3 –</td><td><code>ScrollViewer</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>57 ✅ · 1 ☑️ · 23 ✓ · 1 –</td><td><code>GtkScrolledWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>58 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>overflow: auto</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (80)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>38 ✅ · 3 ☑️ · 36 ✓ · 3 –</td><td><code>NSScrollView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>36 ✅ · 1 ☑️ · 37 ✓ · 4 –</td><td><code>UIScrollView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>61 ✅ · 3 ☑️ · 12 ✓ · 3 –</td><td><code>ScrollView</code> / <code>HorizontalScrollView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>63 ✅ · 1 ☑️ · 13 ✓ · 3 –</td><td><code>ScrollViewer</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>55 ✅ · 1 ☑️ · 23 ✓ · 1 –</td><td><code>GtkScrolledWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>overflow: auto</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/ScrollViewContract.swift`.
@@ -59,9 +59,6 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/ScrollViewContr
 <tbody><tr></tr><tr><td><code>scrollOffset</code></td><td>property</td><td><code>Point</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onScrollStopped</code> (<code>scrollStopped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: scroll on ScrollView: the host's movement moved, not the clip view</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>scrollXChanged</code></td><td>event</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: scroll on ScrollView: the host's movement moved, not the clip view</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>scrollYChanged</code></td><td>event</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>verticalScrollIndicator</code></td><td>property</td><td><code>ScrollIndicatorVisibility</code></td><td>adaptive</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: cannot read verticalScrollIndicator of ScrollView - UIKit shows a scroll indicator only while the user scrolls: always and as UIKit decides show alike</td></tr></tbody>
 </table>

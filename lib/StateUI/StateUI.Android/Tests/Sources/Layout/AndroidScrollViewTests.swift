@@ -97,12 +97,10 @@ final class AndroidScrollViewTests: XCTestCase {
         try onMainActor {
             let clock = TestClock()
             let offset = State(wrappedValue: Point(0, 0))
-            let heard = Received<Double>()
             let rests = Received<Int>()
             let host = AndroidRenderer.running(clock: clock) {
                 ScrollView { Text("tall").height(2000) }
                     .scrollOffset(offset.projectedValue)
-                    .onEvent(ScrollViewContract.scrollYChanged) { y in heard.values.append(y) }
                     .onScrollStopped { rests.values.append(1) }
                     .height(500)
             }
@@ -110,11 +108,10 @@ final class AndroidScrollViewTests: XCTestCase {
             let scroll = try XCTUnwrap(host.views(AndroidScrollView.self).first)
 
             Java.call(scroll.scrollers[0].reference, JavaAPI.scrollTo, .int(0), .int(200))
-            XCTAssertEqual(heard.values, [], "said on the display's frame")
+            XCTAssertEqual(offset.projectedValue.journey.value, Point(0, 0), "said on the display's frame")
 
             clock.now = 16
             host.frame()
-            XCTAssertEqual(heard.values, [100])
             XCTAssertEqual(offset.projectedValue.journey.value, Point(0, 100))
 
             clock.now = 100

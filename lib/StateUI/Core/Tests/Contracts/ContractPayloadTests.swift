@@ -81,8 +81,6 @@ final class ContractPayloadTests: XCTestCase {
         check(SceneContract.stopped)
         check(SceneContract.windowClosed, [.string("2")])
         check(ScrollViewContract.scrollStopped)
-        check(ScrollViewContract.scrollXChanged, [.number(12)])
-        check(ScrollViewContract.scrollYChanged, [.number(340)])
         check(SearchFieldContract.submitted)
         check(SliderContract.released)
         check(SliderContract.pressed)

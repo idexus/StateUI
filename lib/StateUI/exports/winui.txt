@@ -200,8 +200,6 @@ ScrollView
   stroke
   verticalScrollIndicator
   scrollStopped()
-  scrollXChanged()
-  scrollYChanged()
 SearchField
   fontAttributes
   fontFamily

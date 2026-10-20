@@ -467,7 +467,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Polyline](controls/Polyline.md) | 78 | 41 ✅ · 2 ☑️ · 35 ✓ | 40 ✅ · 2 ☑️ · 35 ✓ · 1 – | 64 ✅ · 3 ☑️ · 10 ✓ | 63 ✅ · 14 ✓ · 1 – | 54 ✅ · 1 ☑️ · 22 ✓ · 1 – | 57 ✅ · 1 ☑️ · 20 ✓ |
 | [ProgressBar](controls/ProgressBar.md) | 68 | 30 ✅ · 2 ☑️ · 35 ✓ · 1 – | 30 ✅ · 2 ☑️ · 35 ✓ · 1 – | 54 ✅ · 3 ☑️ · 10 ✓ | 54 ✅ · 13 ✓ · 1 – | 43 ✅ · 1 ☑️ · 23 ✓ · 1 – | 47 ✅ · 1 ☑️ · 20 ✓ |
 | [Rectangle](controls/Rectangle.md) | 77 | 40 ✅ · 2 ☑️ · 35 ✓ | 39 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 3 ☑️ · 10 ✓ | 62 ✅ · 14 ✓ · 1 – | 53 ✅ · 1 ☑️ · 22 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ |
-| [ScrollView](controls/ScrollView.md) | 82 | 39 ✅ · 3 ☑️ · 37 ✓ · 3 – | 38 ✅ · 1 ☑️ · 37 ✓ · 4 – | 63 ✅ · 3 ☑️ · 12 ✓ · 3 – | 65 ✅ · 1 ☑️ · 13 ✓ · 3 – | 57 ✅ · 1 ☑️ · 23 ✓ · 1 – | 58 ✅ · 1 ☑️ · 20 ✓ · 3 – |
+| [ScrollView](controls/ScrollView.md) | 80 | 38 ✅ · 3 ☑️ · 36 ✓ · 3 – | 36 ✅ · 1 ☑️ · 37 ✓ · 4 – | 61 ✅ · 3 ☑️ · 12 ✓ · 3 – | 63 ✅ · 1 ☑️ · 13 ✓ · 3 – | 55 ✅ · 1 ☑️ · 23 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [SearchField](controls/SearchField.md) | 93 | 50 ✅ · 3 ☑️ · 36 ✓ · 1 – | 53 ✅ · 2 ☑️ · 37 ✓ · 1 – | 75 ✅ · 3 ☑️ · 12 ✓ · 1 – | 74 ✅ · 4 ☑️ · 13 ✓ · 2 – | 65 ✅ · 2 ☑️ · 25 ✓ · 1 – | 72 ✅ · 1 ☑️ · 20 ✓ |
 | [Slider](controls/Slider.md) | 78 | 39 ✅ · 2 ☑️ · 35 ✓ | 33 ✅ · 2 ☑️ · 39 ✓ · 4 – | 59 ✅ · 3 ☑️ · 12 ✓ · 3 – | 62 ✅ · 1 ☑️ · 13 ✓ | 49 ✅ · 1 ☑️ · 25 ✓ · 3 – | 57 ✅ · 20 ✓ · 1 – |
 | [Spacer](controls/Spacer.md) | 66 | 29 ✅ · 2 ☑️ · 35 ✓ | 28 ✅ · 2 ☑️ · 35 ✓ · 1 – | 52 ✅ · 3 ☑️ · 10 ✓ | 50 ✅ · 1 ☑️ · 14 ✓ | 42 ✅ · 1 ☑️ · 22 ✓ · 1 – | 45 ✅ · 1 ☑️ · 20 ✓ |
@@ -480,10 +480,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 76 | 38 ✅ · 1 ☑️ · 35 ✓ | 36 ✅ · 1 ☑️ · 36 ✓ · 1 – | 59 ✅ · 3 ☑️ · 11 ✓ | 60 ✅ · 1 ☑️ · 13 ✓ · 1 – | 51 ✅ · 1 ☑️ · 22 ✓ · 2 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [WebView](controls/WebView.md) | 82 | 44 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 2 ☑️ · 38 ✓ · 1 – | 63 ✅ · 3 ☑️ · 12 ✓ · 3 – | 49 ✅ · 13 ✓ · 19 – | 56 ✅ · 1 ☑️ · 24 ✓ · 1 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [ZStack](controls/ZStack.md) | 75 | 37 ✅ · 1 ☑️ · 35 ✓ | 34 ✅ · 1 ☑️ · 37 ✓ · 1 – | 57 ✅ · 3 ☑️ · 12 ✓ | 59 ✅ · 1 ☑️ · 13 ✓ · 1 – | 49 ✅ · 1 ☑️ · 23 ✓ · 2 – | 53 ✅ · 1 ☑️ · 20 ✓ |
-| ✅ |  | 1339 | 1260 | 2024 | 2058 | 1734 | 1872 |
-| ✓ |  | 1219 | 1253 | 379 | 455 | 775 | 665 |
+| ✅ |  | 1338 | 1258 | 2022 | 2056 | 1732 | 1870 |
+| ✓ |  | 1218 | 1253 | 379 | 455 | 775 | 665 |
 | – |  | 25 | 78 | 36 | 41 | 49 | 19 |
-| **Met** | 2679 | **2583** | **2591** | **2439** | **2554** | **2558** | **2556** |
+| **Met** | 2677 | **2581** | **2589** | **2437** | **2552** | **2556** | **2554** |
 | 🧩 |  | 0 | 0 | 74 | 74 | 74 | 74 |
 
 ### Application structure
@@ -588,7 +588,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ProgressBar](controls/ProgressBar.md) | `progress` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Scene](controls/Scene.md) | `activated`, `deactivated`, `stopped`, `windowClosed` | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
-| [ScrollView](controls/ScrollView.md) | `horizontalScrollIndicator`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollIndicator` | 7 | 5 ✅ · 2 ✓ | 5 ✅ | 7 ✅ | 7 ✅ | 7 ✅ | 7 ✅ |
+| [ScrollView](controls/ScrollView.md) | `horizontalScrollIndicator`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `verticalScrollIndicator` | 5 | 4 ✅ · 1 ✓ | 3 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ |
 | [SearchField](controls/SearchField.md) | `submitLabel`, `onSubmitted` (`submitted`) | 2 | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 1 ✅ · 1 ☑️ | 1 ✅ · 1 ☑️ | 2 ✅ |
 | [Slider](controls/Slider.md) | `onReleased` (`released`), `onPressed` (`pressed`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 4 ✅ · 2 ✓ | 6 ✅ | 4 ✅ | 4 ✅ · 2 – | 6 ✅ |
 | [SplitView](controls/SplitView.md) | `showsSidebar`, `showsSidebarChanged`, `sidebarBackground`, `flyoutBackground`, `sidebarOverlays` | 5 | 4 ✅ · 1 – | 4 ✅ · 1 ✓ | 1 ☑️ · 4 ✓ | 3 ✅ · 2 ☑️ | 3 ✅ · 2 ✓ | 3 ✅ · 2 ☑️ |
@@ -682,11 +682,10 @@ realizes the element and each of its members.
 `navigatedTo`, `navigating`, `navigatingFrom`, `opened`, `panUpdated`,
 `pinchMoved`, `pinchUpdated`, `pointerEntered`, `pointerExited`, `pointerMoved`,
 `pointerPressed`, `pointerReleased`, `popped`, `pressed`, `processTerminated`,
-`realizedChanged`, `released`, `resumed`, `scrollStopped`, `scrollXChanged`,
-`scrollYChanged`, `selected`, `selectedIndexChanged`, `selectedItemsChanged`,
-`selectedTabChanged`, `showsSidebarChanged`, `stopped`, `submitted`, `swiped`,
-`tapped`, `textChanged`, `timeChanged`, `toggled`, `valueChanged`,
-`windowClosed`.
+`realizedChanged`, `released`, `resumed`, `scrollStopped`, `selected`,
+`selectedIndexChanged`, `selectedItemsChanged`, `selectedTabChanged`,
+`showsSidebarChanged`, `stopped`, `submitted`, `swiped`, `tapped`,
+`textChanged`, `timeChanged`, `toggled`, `valueChanged`, `windowClosed`.
 
 ### Acts
 

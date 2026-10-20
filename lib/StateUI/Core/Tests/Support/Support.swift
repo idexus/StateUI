@@ -508,7 +508,7 @@ enum SourceTree {
                            after: #"\b(?:setValue|set|write|describe)\(\s*|props\[\s*"#))
     }
 
-    /// Every EVENT a source file subscribes - `addHandler(.scrollYChanged)`,
+    /// Every EVENT a source file subscribes - `addHandler(.scrollStopped)`,
     /// or the member with its contract, `onEvent(ViewContract.tapped, …)` and
     /// `addHandler(ViewContract.tapped.token, …)`, resolved as `propertyKeys`
     /// resolves one.

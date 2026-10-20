@@ -516,8 +516,7 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(
             patch.driven?[.scrollOffset],
             HostStateBinding(state: offset.number, mode: .inOut, kind: .property, laneKind: .number))
-        XCTAssertNil(patch.events?["scrollXChanged"])
-        XCTAssertNil(patch.events?["scrollYChanged"])
+        XCTAssertNil(patch.events, "the offset is carried, and nothing hears it besides")
     }
 
     /// A view whose drag is written into values says both numbers.

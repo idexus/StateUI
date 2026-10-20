@@ -113,8 +113,6 @@ enum AppKitRealization {
         .complete(SceneContract.stopped),
         .complete(SceneContract.windowClosed),
         .complete(ScrollViewContract.scrollStopped),
-        .complete(ScrollViewContract.scrollXChanged),
-        .complete(ScrollViewContract.scrollYChanged),
         .complete(TextSpanContract.background),
         .complete(FontElementContract.fontAttributes, on: TextSpanContract.self),
         .complete(FontElementContract.fontWeight, on: TextSpanContract.self),

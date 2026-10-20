@@ -1,9 +1,7 @@
-# revision 3.1
+# revision 4.1
 ScrollView: ✅
 ScrollView.horizontalScrollIndicator: ✅
 ScrollView.orientation: ✅
 ScrollView.scrollOffset: ✅
 ScrollView.scrollStopped: ✓ scroll on ScrollView: the host's movement moved, not the clip view
-ScrollView.scrollXChanged: ✓ scroll on ScrollView: the host's movement moved, not the clip view
-ScrollView.scrollYChanged: ✅
 ScrollView.verticalScrollIndicator: ✅

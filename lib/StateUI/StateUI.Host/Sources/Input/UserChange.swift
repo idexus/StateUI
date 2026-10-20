@@ -48,18 +48,12 @@ extension MountedElement {
         carry(property, event, value, in: runtime)
     }
 
-    /// The user moved the scroller from `old` to `new`, as the display's frame saw it: onto its state first, then
-    /// the events, as one user's transaction.
+    /// The user moved the scroller from `old` to `new`, as the display's frame saw it: onto its state, as one
+    /// user's transaction.
     public func reportScrolled(from old: Point, to new: Point, in runtime: HostRuntime) {
         runtime.performUserTransaction {
             if old != new, let binding = driven[.scrollOffset] {
                 runtime.take([new.x, new.y], through: binding)
-            }
-            if old.x != new.x, let handler = handler(.scrollXChanged) {
-                runtime.dispatch(handler, payload: [.number(new.x)])
-            }
-            if old.y != new.y, let handler = handler(.scrollYChanged) {
-                runtime.dispatch(handler, payload: [.number(new.y)])
             }
         }
     }

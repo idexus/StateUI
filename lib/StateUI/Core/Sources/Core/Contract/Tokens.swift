@@ -325,8 +325,6 @@ extension NodeType {
     static let released = ButtonContract.released.token
     static let resumed = WindowContract.resumed.token
     static let scrollStopped = ScrollViewContract.scrollStopped.token
-    static let scrollXChanged = ScrollViewContract.scrollXChanged.token
-    static let scrollYChanged = ScrollViewContract.scrollYChanged.token
     static let selectedIndexChanged = PickerContract.selectedIndexChanged.token
     static let stopped = SceneContract.stopped.token
     static let swiped = ViewContract.swiped.token

@@ -89,8 +89,6 @@ extension UIKitRegistrations {
                     shape: values[BorderElementContract.shape]?.propValue,
                     clips: true)
             }
-            scroll.raises(ScrollViewContract.scrollXChanged)
-            scroll.raises(ScrollViewContract.scrollYChanged)
             scroll.raises(ScrollViewContract.scrollStopped)
         }
     }
