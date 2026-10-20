@@ -25,12 +25,8 @@ public final class Ticker {
     /// beat - an interval after its end where it overran a whole one.
     public typealias Tick = @MainActor () async -> Void
 
-    private var storedInterval: Duration
-    private var storedLimit: Int?
-    private var storedRepeating: Bool
+    @State private var storedInterval: Duration
     private var storedTick: Tick?
-    private var count = 0
-    private var running = false
 
     /// Which run the loop belongs to: a loop waking with an old number returns.
     private var run = 0
@@ -38,14 +34,8 @@ public final class Ticker {
     /// How long between ticks; written while running, it applies from the next tick.
     /// A millisecond is the floor.
     public var interval: Duration {
-        get {
-            Renderer.shared.stateRead(self)
-            return storedInterval
-        }
-        set {
-            storedInterval = Ticker.usable(newValue)
-            Renderer.shared.stateChanged(self)
-        }
+        get { storedInterval }
+        set { storedInterval = Ticker.usable(newValue) }
     }
 
     /// How many ticks to run for, or nil to go on until stopped. A countdown is
@@ -53,16 +43,7 @@ public final class Ticker {
     ///
     /// Only meaningful while `isRepeating`, a ticker that does not repeat
     /// having stopped after one tick anyway.
-    public var limit: Int? {
-        get {
-            Renderer.shared.stateRead(self)
-            return storedLimit
-        }
-        set {
-            storedLimit = newValue
-            Renderer.shared.stateChanged(self)
-        }
-    }
+    @State public var limit: Int?
 
     /// Whether it ticks again after each tick, or stops after one.
     ///
@@ -71,16 +52,7 @@ public final class Ticker {
     /// can never overlap itself however long the work takes.
     ///
     /// Written while running, it is read at the next tick, as `interval` is.
-    public var isRepeating: Bool {
-        get {
-            Renderer.shared.stateRead(self)
-            return storedRepeating
-        }
-        set {
-            storedRepeating = newValue
-            Renderer.shared.stateChanged(self)
-        }
-    }
+    @State public var isRepeating: Bool
 
     /// What each tick runs, or nil for a ticker that is only read.
     ///
@@ -105,13 +77,10 @@ public final class Ticker {
 
     /// How many ticks have happened since the last `reset()`.
     ///
-    /// Read it and the interface follows: the tick that writes it asks for a
-    /// render, naming this ticker - so the render rebuilds the views that read
-    /// it and leaves the rest of the tree alone.
-    public var ticks: Int {
-        Renderer.shared.stateRead(self)
-        return count
-    }
+    /// Read it and the interface follows: each property is a state of its own,
+    /// so a tick rebuilds the views that read the count and leaves the rest of
+    /// the tree alone.
+    @State public private(set) var ticks = 0
 
     /// Whether another tick is coming. `start()` and `stop()` are what change
     /// it.
@@ -121,17 +90,11 @@ public final class Ticker {
     /// this before running its closure, which is what lets that closure start
     /// the next round. So a false here means "nothing further is scheduled",
     /// not "the work is over".
-    public var isRunning: Bool {
-        Renderer.shared.stateRead(self)
-        return running
-    }
+    @State public private(set) var isRunning = false
 
     /// Whether it has counted all the way to its `limit`. Always false for a
     /// ticker with no limit.
-    public var isFinished: Bool {
-        Renderer.shared.stateRead(self)
-        return finished
-    }
+    public var isFinished: Bool { finished }
 
     /// A ticker, not started.
     ///
@@ -160,9 +123,9 @@ public final class Ticker {
         limit: Int? = nil,
         onTick: Tick? = nil
     ) {
-        storedInterval = Ticker.usable(interval)
-        storedRepeating = isRepeating
-        storedLimit = limit
+        _storedInterval = State(wrappedValue: Ticker.usable(interval))
+        _isRepeating = State(wrappedValue: isRepeating)
+        _limit = State(wrappedValue: limit)
         storedTick = onTick
     }
 
@@ -170,16 +133,14 @@ public final class Ticker {
     /// the first tick is an interval away, and a ticker at its limit starts over.
     public func start() {
         // Already running: not an error, and nothing to report.
-        guard !running else { return }
+        guard !isRunning else { return }
 
-        if finished { count = 0 }
+        if finished { ticks = 0 }
 
-        running = true
+        isRunning = true
         run += 1
 
         let mine = run
-
-        Renderer.shared.stateChanged(self)
 
         // The loop holds the ticker only through a tick, so a ticker nobody holds ends.
         libraryTask { [weak self] in
@@ -198,18 +159,15 @@ public final class Ticker {
     /// The loop notices when it wakes, so a stop during a sleep costs at most the
     /// rest of that sleep - and nothing ticks after it.
     public func stop() {
-        guard running else { return }
+        guard isRunning else { return }
 
-        running = false
-        Renderer.shared.stateChanged(self)
+        isRunning = false
     }
 
     /// Stops counting and puts the count back to zero.
     public func reset() {
-        running = false
-        count = 0
-
-        Renderer.shared.stateChanged(self)
+        isRunning = false
+        ticks = 0
     }
 
     /// One tick of run `mine`, on the UI thread; answers whether its loop goes on.
@@ -217,21 +175,19 @@ public final class Ticker {
         // A stop and a replaced run both end the loop. The last tick stops the ticker
         // before it runs, so the tick itself can start the next round.
         // Design: docs/design/core/cycle.md#the-ticker
-        guard running, run == mine else { return false }
+        guard isRunning, run == mine else { return false }
 
-        count += 1
+        ticks += 1
 
-        let last = !storedRepeating || finished
-        if last { running = false }
+        let last = !isRepeating || finished
+        if last { isRunning = false }
 
         let tick = storedTick ?? Ticker.nothing
-
-        Renderer.shared.stateChanged(self)
 
         await tick()
 
         // The tick may have stopped the ticker, or started a new run.
-        guard !last, running, run == mine else { return false }
+        guard !last, isRunning, run == mine else { return false }
 
         // A lap longer than a whole interval restarts the deadline from now, so missed
         // laps do not all come due at once.
@@ -241,7 +197,7 @@ public final class Ticker {
     }
 
     /// Whether the count has reached the limit.
-    private var finished: Bool { storedLimit.map { count >= $0 } ?? false }
+    private var finished: Bool { limit.map { ticks >= $0 } ?? false }
 
     /// An interval the loop can sleep for: a millisecond at least.
     private static func usable(_ interval: Duration) -> Duration {

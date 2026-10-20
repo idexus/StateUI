@@ -464,6 +464,30 @@ final class GateTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(ticked.wrappedValue, before + 3, "the ticks' writes were refused as the superseded run's")
     }
 
+    /// A ticker a SUPERSEDED run starts stays still: its count and its running are states, which a superseded run
+    /// writes no more.
+    func testATickerASupersededRunStartsStaysStill() async throws {
+        let latch = Latch()
+        let ticker = Ticker(every: .milliseconds(5))
+        var runs = 0
+        var finished = 0
+        let (renders, id) = button(gate: .cancelPrevious) {
+            runs += 1
+            let me = runs
+            await latch.wait()
+            if me == 1 { ticker.start() }
+            finished += 1
+        }
+
+        renders.fire(id)
+        renders.fire(id)
+        latch.open()
+        try await waitUntil { finished == 2 }
+
+        XCTAssertFalse(ticker.isRunning, "the superseded run's start wrote nothing")
+        XCTAssertEqual(ticker.ticks, 0)
+    }
+
     /// Two handlers of one event keep their own runs, each by its own word.
     func testEachHandlerOfAnEventKeepsItsOwnRuns() async throws {
         let latch = Latch()

@@ -1033,7 +1033,8 @@ final class InvalidationTests: XCTestCase {
             "not knowing what moved must never mean guessing that nothing did")
     }
 
-    func testATickerNamesItselfAndItsReadersFollow() {
+    /// A ticker's property is a state: what it writes is named, and the view reading it follows.
+    func testATickersWriteIsNamedAndItsReadersFollow() {
         let renders = Renders()
         let builds = Builds()
         let ticker = Ticker(every: .seconds(1))
@@ -1044,7 +1045,7 @@ final class InvalidationTests: XCTestCase {
 
             var body: some View {
                 builds.count += 1
-                return ModifiedContent(node: label("\(ticker.ticks)"))
+                return ModifiedContent(node: label("\(ticker.limit ?? 0)"))
             }
         }
 
@@ -1053,12 +1054,12 @@ final class InvalidationTests: XCTestCase {
 
         ticker.limit = 5
 
-        XCTAssertFalse(Renderer.shared.hasUntrackedCause, "a ticker names itself")
+        XCTAssertFalse(Renderer.shared.hasUntrackedCause, "the write names its state")
 
         let patch = renders.revisit(changed: changed)
 
         XCTAssertEqual(builds.count, 2, "the view that read the ticker was built again")
-        XCTAssertTrue(patch.isEmpty, "the text did not change, so nothing was sent")
+        XCTAssertFalse(patch.isEmpty, "the text changed, and was sent")
     }
 
     func testReadsAreReRecordedByEachBuild() {

@@ -263,8 +263,10 @@ that imports Foundation.
                              and sleeping for the interval adds every one up
   one run token              start() retires the previous loop, so returning to
                              a page never leaves two loops counting
-  a tick asks for a render   naming the ticker, so a view reading `ticks`
-                             follows with nothing subscribed
+  each property a state      `ticks`, `isRunning`, `limit`, `isRepeating` and the
+                             interval are `@State`s of the ticker, so a tick
+                             rebuilds the views that read the count and no
+                             other, and a run superseded writes none of them
   one thread                 the count, the running flag and the run change
                              together on the UI thread, and a tick's render is
                              asked there
