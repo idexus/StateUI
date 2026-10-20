@@ -254,3 +254,18 @@ the first test and ends the program.
 A case's host is the page's one runtime, made anew in place of the one before
 it, its frames at the case's test clock where it gives one: a clock wound by
 hand takes no frame of the browser's.
+
+## The module's size
+
+A page downloads the application's module before anything shows, so its size
+is the Web's first cost. A release head links with `--strip-debug`
+(`lib/StateUI.Head`): no DWARF, while the name section stays, so a trap still
+names its functions. A server sends the module compressed; the size that
+counts is the module gzipped.
+
+`.scripts/Web/size-budgets.sh` builds each application's release head and
+holds its module, gzipped at level 9, within the application's budget -
+HelloWorld's and the Gallery's - and CI runs it after the Web tests. A module
+past its budget fails the run: what grew it is found, or the budget is raised
+in the same change, with the reason. One a twentieth or more under its budget
+says so, and the budget comes down with it, so a gain stays won.
