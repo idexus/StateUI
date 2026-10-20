@@ -76,3 +76,25 @@ frame.
 - **Two hundred rows in a new order.** A stack of two hundred composed rows,
   the first put last twenty times. The page is built again and no row; no
   view is made or let go.
+
+## The leak walk
+
+The Gallery's own suite walks every sample over the core and the host layer
+(`LeakWalkTests`): it chooses each group from the menu and, on the group's
+page, opens each sample by a tap on its row, gives it a second of frames, and
+goes back the way the window offers. What stands alive after the way back is
+what stood on the group's page before the visit:
+
+```text
+  elements   the core's rendered elements alive     HostTally.alive
+  runs       runs under way or waiting               HostTally.runs
+  halves     native halves made and not let go       the walk's
+  channels   the host layer's state channels         StateChannels
+```
+
+Its presenter shows the windows by the host layer's own presentation, so a
+page hears its phases as on a host, and answers every act as a host answers
+what it cannot perform - with a failure - since a run awaiting an act no one
+answers stays under way. A tap that opened no page fails the walk too, so a
+count cannot match by visiting nothing. A host's own suite proves its toolkit
+lets go of every view; the walk proves the gallery's pages, states and runs.
