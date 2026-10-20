@@ -103,6 +103,9 @@ final class RenderedNode {
     /// What `.onDestroying` runs as it leaves: its last build's closures.
     var destroying: [EventHandler] = []
 
+    /// What it hears of the application's events, as its last build wrote it (HostEventRelay.swift).
+    var hostEvents: [HostEventListen] = []
+
     /// The runs of what its walks found to run, kept while it is the same element.
     var runs = RunSlots()
 

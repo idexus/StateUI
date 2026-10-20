@@ -196,6 +196,7 @@ extension Node {
             // And its lifetime handlers, in the same order (Lifetime.swift).
             node.created += written.created
             node.destroying += written.destroying
+            node.hostEvents += written.hostEvents
 
             // And its engines, registered against the element its body ends on.
             node.engines += written.engines

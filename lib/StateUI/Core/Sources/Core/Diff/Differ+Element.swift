@@ -496,6 +496,9 @@ extension Differ {
             }
         }
 
+        // The events of the application's it hears, subscribed while it stands.
+        kept.listen(to: node.hostEvents)
+
         // `.onCreated` for an element that was not here.
         // Design: docs/design/core/identity-and-diffing.md#created-and-destroying
         if previous == nil {
@@ -657,8 +660,9 @@ extension Differ {
         // What it says of the page it is the view of.
         result.pageValues = pass.atPageRoot ? pass.pageValues : nil
 
-        // What it runs as it leaves: this build's closures, the newest.
+        // What it runs as it leaves: this build's closures, the newest; and what it hears.
         result.destroying = node.destroying
+        result.hostEvents = node.hostEvents
 
         return (result, pass.patch)
     }
@@ -758,6 +762,7 @@ extension Differ {
             node.watches.count == kept.watches.count,
             node.created.count == kept.created.count,
             node.destroying.count == kept.destroying.count,
+            node.hostEvents.count == kept.hostEvents.count,
             node.environments.count == kept.environments.count,
             node.driven.count == kept.driven.count,
             samePageValues(node.pageValues, kept.pageValues)
@@ -812,9 +817,11 @@ extension Differ {
             }
         }
 
-        // Its `.onDestroying`: its body's last ones, then the parent's, taken fresh.
+        // Its `.onDestroying`: its body's last ones, then the parent's, taken fresh; its events' handlers alike.
         rendered.destroying =
             Array(rendered.destroying.dropLast(node.destroying.count)) + node.destroying
+        rendered.hostEvents = Array(rendered.hostEvents.dropLast(node.hostEvents.count)) + node.hostEvents
+        rendered.runs.listen(to: rendered.hostEvents)
 
         rendered.placeholder = node
 

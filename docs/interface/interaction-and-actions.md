@@ -338,9 +338,9 @@ StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
 
 `HostEvents` represents a provider notification with no tree element. The
 application declares it in its contract with the types of the values it
-carries. `HostEvents.on` answers the subscription, which is kept - dropping it
-is a compiler warning - and cancelled with `cancel()` when its owner leaves,
-since nothing else ends it; a view keeps it in its own state:
+carries. A view hears it with `.onHostEvent`, which belongs to the view: it
+is subscribed as the view is made and cancelled as it leaves, each raise run
+by the handler the last render wrote:
 
 ```swift
 enum NotesContract: ApplicationTier {
@@ -353,28 +353,22 @@ enum NotesContract: ApplicationTier {
 
 struct ImportStatus: View {
     @State private var imported = ""
-    @State private var heard: [HostEventSubscription] = []
 
     var body: some View {
         Text(imported)
-            .onCreated {
-                heard = [
-                    HostEvents.on(NotesContract.importFinished) { location in
-                        imported = location
-                    },
-                ]
-            }
-            .onDestroying {
-                heard.forEach { $0.cancel() }
-                heard = []
+            .onHostEvent(NotesContract.importFinished) { location in
+                imported = location
             }
     }
 }
 ```
 
 A handler that awaits names what a raise does while it runs, as an element's
-event does: `HostEvents.on(NotesContract.importFinished, gate: .waitForPrevious) {
-location in … }`.
+event does: `.onHostEvent(NotesContract.importFinished, gate: .waitForPrevious) {
+location in … }`. Code that no view stands for - an application's model -
+subscribes with `HostEvents.on`, which answers the subscription: it is kept -
+dropping it is a compiler warning - and cancelled with `cancel()` when its
+owner is done, since nothing else ends it.
 
 A raise carrying values of another shape is reported once and reaches no
 handler. An ordinary control or gesture event always belongs on its element

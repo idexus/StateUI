@@ -336,6 +336,10 @@ public struct Node {
     /// What `.onDestroying` runs, in written order.
     var destroying: [EventHandler] = []
 
+    /// The events of the application's `.onHostEvent` hears while the element stands, in written order
+    /// (HostEventRelay.swift).
+    var hostEvents: [HostEventListen] = []
+
     /// The engines this element runs, in written order; the differ registers them
     /// under numbers the element keeps (Engine.swift).
     var engines: [EngineDeclaration] = []

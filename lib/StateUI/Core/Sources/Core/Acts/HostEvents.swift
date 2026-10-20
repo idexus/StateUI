@@ -74,7 +74,7 @@ public enum HostEvents {
 
     /// Subscribes a handler to what the host raises under an event's name, the values
     /// as they crossed; an event the host says it does not raise is said once.
-    private static func subscribe(
+    static func subscribe(
         _ event: EventMember,
         _ handler: ValueHandler<[PropValue]>
     ) -> HostEventSubscription {
@@ -105,11 +105,7 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, Void>,
         _ handler: @escaping @MainActor () throws -> Void
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), ValueHandler(step: { payload in
-            guard MemberValues.carried(payload, by: event.name) != nil else { return }
-
-            try handler()
-        }))
+        subscribe(EventMember(event), heard(event, handler))
     }
 
     /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
@@ -118,11 +114,7 @@ public enum HostEvents {
         gate: some Gate,
         _ handler: @escaping EventHandler
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), ValueHandler(run: { payload in
-            guard MemberValues.carried(payload, by: event.name) != nil else { return }
-
-            try await handler()
-        }, gate: gate))
+        subscribe(EventMember(event), heard(event, gate: gate, handler))
     }
 
     /// Subscribes a handler to an event of the application's that carries one
@@ -141,11 +133,7 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, Value>,
         _ handler: @escaping @MainActor (Value) throws -> Void
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), ValueHandler(step: { payload in
-            guard let value = MemberValues.carried(payload, by: event.name, as: Value.self) else { return }
-
-            try handler(value)
-        }))
+        subscribe(EventMember(event), heard(event, handler))
     }
 
     /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
@@ -154,11 +142,7 @@ public enum HostEvents {
         gate: some Gate,
         _ handler: @escaping ValueEventHandler<Value>
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), ValueHandler(run: { payload in
-            guard let value = MemberValues.carried(payload, by: event.name, as: Value.self) else { return }
-
-            try await handler(value)
-        }, gate: gate))
+        subscribe(EventMember(event), heard(event, gate: gate, handler))
     }
 
     /// Subscribes a handler to an event of the application's that carries two
@@ -176,13 +160,7 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, (First, Second)>,
         _ handler: @escaping @MainActor (First, Second) throws -> Void
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), ValueHandler(step: { payload in
-            guard let (first, second) = MemberValues.carried(
-                payload, by: event.name, as: First.self, Second.self)
-            else { return }
-
-            try handler(first, second)
-        }))
+        subscribe(EventMember(event), heard(event, handler))
     }
 
     /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
@@ -191,13 +169,7 @@ public enum HostEvents {
         gate: some Gate,
         _ handler: @escaping ValueEventHandler<First, Second>
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), ValueHandler(run: { payload in
-            guard let (first, second) = MemberValues.carried(
-                payload, by: event.name, as: First.self, Second.self)
-            else { return }
-
-            try await handler(first, second)
-        }, gate: gate))
+        subscribe(EventMember(event), heard(event, gate: gate, handler))
     }
 
     /// Subscribes a handler to an event of the application's that carries
@@ -214,13 +186,7 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, (First, Second, Third)>,
         _ handler: @escaping @MainActor (First, Second, Third) throws -> Void
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), ValueHandler(step: { payload in
-            guard let (first, second, third) = MemberValues.carried(
-                payload, by: event.name, as: First.self, Second.self, Third.self)
-            else { return }
-
-            try handler(first, second, third)
-        }))
+        subscribe(EventMember(event), heard(event, handler))
     }
 
     /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
@@ -231,13 +197,116 @@ public enum HostEvents {
         gate: some Gate,
         _ handler: @escaping ValueEventHandler<First, Second, Third>
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), ValueHandler(run: { payload in
+        subscribe(EventMember(event), heard(event, gate: gate, handler))
+    }
+
+    // MARK: - What a handler hears
+
+    /// A handler of an event as every listener hears it: the raise's values read as the types its contract
+    /// declares, a raise of another shape reported once and kept from the handler - what `on` subscribes and
+    /// `.onHostEvent` relays.
+    static func heard<Owner: ApplicationTier>(
+        _ event: ElementEvent<Owner, Void>,
+        _ handler: @escaping @MainActor () throws -> Void
+    ) -> ValueHandler<[PropValue]> {
+        ValueHandler(step: { payload in
+            guard MemberValues.carried(payload, by: event.name) != nil else { return }
+
+            try handler()
+        })
+    }
+
+    static func heard<Owner: ApplicationTier>(
+        _ event: ElementEvent<Owner, Void>,
+        gate: some Gate,
+        _ handler: @escaping EventHandler
+    ) -> ValueHandler<[PropValue]> {
+        ValueHandler(run: { payload in
+            guard MemberValues.carried(payload, by: event.name) != nil else { return }
+
+            try await handler()
+        }, gate: gate)
+    }
+
+    static func heard<Owner: ApplicationTier, Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, Value>,
+        _ handler: @escaping @MainActor (Value) throws -> Void
+    ) -> ValueHandler<[PropValue]> {
+        ValueHandler(step: { payload in
+            guard let value = MemberValues.carried(payload, by: event.name, as: Value.self) else { return }
+
+            try handler(value)
+        })
+    }
+
+    static func heard<Owner: ApplicationTier, Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, Value>,
+        gate: some Gate,
+        _ handler: @escaping ValueEventHandler<Value>
+    ) -> ValueHandler<[PropValue]> {
+        ValueHandler(run: { payload in
+            guard let value = MemberValues.carried(payload, by: event.name, as: Value.self) else { return }
+
+            try await handler(value)
+        }, gate: gate)
+    }
+
+    static func heard<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
+        _ event: ElementEvent<Owner, (First, Second)>,
+        _ handler: @escaping @MainActor (First, Second) throws -> Void
+    ) -> ValueHandler<[PropValue]> {
+        ValueHandler(step: { payload in
+            guard let (first, second) = MemberValues.carried(
+                payload, by: event.name, as: First.self, Second.self)
+            else { return }
+
+            try handler(first, second)
+        })
+    }
+
+    static func heard<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
+        _ event: ElementEvent<Owner, (First, Second)>,
+        gate: some Gate,
+        _ handler: @escaping ValueEventHandler<First, Second>
+    ) -> ValueHandler<[PropValue]> {
+        ValueHandler(run: { payload in
+            guard let (first, second) = MemberValues.carried(
+                payload, by: event.name, as: First.self, Second.self)
+            else { return }
+
+            try await handler(first, second)
+        }, gate: gate)
+    }
+
+    static func heard<
+        Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third)>,
+        _ handler: @escaping @MainActor (First, Second, Third) throws -> Void
+    ) -> ValueHandler<[PropValue]> {
+        ValueHandler(step: { payload in
+            guard let (first, second, third) = MemberValues.carried(
+                payload, by: event.name, as: First.self, Second.self, Third.self)
+            else { return }
+
+            try handler(first, second, third)
+        })
+    }
+
+    static func heard<
+        Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third)>,
+        gate: some Gate,
+        _ handler: @escaping ValueEventHandler<First, Second, Third>
+    ) -> ValueHandler<[PropValue]> {
+        ValueHandler(run: { payload in
             guard let (first, second, third) = MemberValues.carried(
                 payload, by: event.name, as: First.self, Second.self, Third.self)
             else { return }
 
             try await handler(first, second, third)
-        }, gate: gate))
+        }, gate: gate)
     }
 
     /// Takes one subscription out - `HostEventSubscription.cancel`'s half.

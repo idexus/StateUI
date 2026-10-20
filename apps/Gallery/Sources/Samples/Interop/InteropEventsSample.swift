@@ -6,7 +6,6 @@ struct InteropEventsSample: SampleContent, ExampleContent {
     // listing: InteropEventsSample
     @State private var battery = "not heard yet"
     @State private var log: [String] = []
-    @State private var heard: [HostEventSubscription] = []
     // listing: end
 
     static let id = InteropHost.key + "Events"
@@ -46,18 +45,10 @@ struct InteropEventsSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
         }
         .spacing(8)
-        .onCreated {
-            heard.forEach { $0.cancel() }
-            heard = [
-                HostEvents.on(GalleryContract.batteryChanged) { level, charging in
-                    battery = "\(Int((level * 100).rounded()))%" + (charging ? ", charging" : "")
-                    log.append("\(log.count + 1). battery: \(battery)")
-                },
-            ]
-        }
-        .onDestroying {
-            heard.forEach { $0.cancel() }
-            heard = []
+        // Heard while the page stands: subscribed as it is made, cancelled as it leaves.
+        .onHostEvent(GalleryContract.batteryChanged) { level, charging in
+            battery = "\(Int((level * 100).rounded()))%" + (charging ? ", charging" : "")
+            log.append("\(log.count + 1). battery: \(battery)")
         }
     }
     // listing: end
@@ -65,18 +56,17 @@ struct InteropEventsSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("The host calls `StateUIEvents.raise(event, values)`, from any thread, "
-                + "when the platform reports something. Every `HostEvents.on` subscription "
-                + "hears it in a job of the UI thread's, like a control's handler: on "
+                + "when the platform reports something. Every `.onHostEvent` - and every "
+                + "`HostEvents.on` subscription - hears it in a job of the UI thread's, like a control's handler: on "
                 + "`MainActor`, free to write `@State`, and to await through a `gate:`. "
                 + "The head declares each event it raises with `StateUIEvents.raises`, so "
                 + "a handler listening for one nothing raises is told so once.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The subscriptions are made in `.onCreated` and cancelled in "
-                + "`.onDestroying`, so the page listens while it is in the tree. A raise "
-                + "nobody hears is an ordinary answer, so the host wires its sources "
-                + "unconditionally.")
+            Text("`.onHostEvent` belongs to the page: it listens while the page is in the "
+                + "tree, and nothing is cancelled by hand. A raise nobody hears is an "
+                + "ordinary answer, so the host wires its sources unconditionally.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -66,6 +66,37 @@ final class HostEventsTests: XCTestCase {
         XCTAssertEqual(heard.lines, [])
     }
 
+    /// A VIEW HEARS AN EVENT WHILE IT STANDS: subscribed as it is made - once, whatever renders follow - each
+    /// raise run by the handler the last render wrote, and heard no more once the view leaves, with nothing to
+    /// cancel by hand.
+    func testAViewHearsAnEventWhileItStands() {
+        let heard = Heard()
+        let renders = Renders()
+        func tree(_ word: String, showing: Bool = true) -> Node {
+            VStack {
+                if showing {
+                    Text("Battery").onHostEvent(TestEvents.batteryChanged) { level, _ in
+                        heard.lines.append("\(word) \(level)")
+                    }
+                }
+            }.node
+        }
+
+        renders.render(tree("first"))
+        renders.render(tree("second"))
+        HostBoundary.raise(TestEvents.batteryChanged, 0.5, false)
+        deliver()
+        XCTAssertEqual(heard.lines, ["second 0.5"], "one subscription, the last render's handler")
+
+        renders.render(tree("third", showing: false))
+        HostBoundary.raise(TestEvents.batteryChanged, 0.25, false)
+        deliver()
+        XCTAssertEqual(heard.lines, ["second 0.5"], "gone with the view")
+        XCTAssertEqual(
+            HostEvents.dispatch(EventMember(TestEvents.batteryChanged), [.number(0.1), .bool(false)]), 0,
+            "and its subscription with it")
+    }
+
     /// One value and none take the same call: what the raise carries is the
     /// member's payload, whatever its count.
     func testARaiseCarriesOneValueOrNone() {

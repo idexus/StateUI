@@ -165,3 +165,16 @@ A subscription to a host event is an owner, and `cancel()` supersedes its
 runs. A control the library composes that hears an author's handler inside its
 own run - `GalleryView`'s position - starts that handler under an owner of its
 own, through the author's gate.
+
+## An element hears the host
+
+`.onHostEvent` is a subscription that belongs to its element. Each one a
+render writes is kept by the element's `RunSlots` at its place among them: the
+first render that writes a place subscribes once (`HostEventRelay`), and each
+later render hands the relay its new handler, so a raise runs with what the
+last render captured, never a closure a build ago. A place that names another
+event is subscribed afresh, one no longer written is cancelled, and the element
+leaving cancels them all as it orphans its runs - so a view hears what the
+host raises exactly while it stands, and nothing is cancelled by hand. The
+handler reads the raise as `HostEvents.on` does: one decoding of the values
+for both (`HostEvents.heard`).

@@ -4808,7 +4808,6 @@ enum Listings {
         // Sources/Samples/Interop/InteropEventsSample.swift
         @State private var battery = "not heard yet"
         @State private var log: [String] = []
-        @State private var heard: [HostEventSubscription] = []
 
         var body: some View {
             VStack {
@@ -4820,18 +4819,10 @@ enum Listings {
                     ? "Plug or unplug the power."
                     : log.suffix(4).joined(separator: "\n"))
             }
-            .onCreated {
-                heard.forEach { $0.cancel() }
-                heard = [
-                    HostEvents.on(GalleryContract.batteryChanged) { level, charging in
-                        battery = "\(Int((level * 100).rounded()))%" + (charging ? ", charging" : "")
-                        log.append("\(log.count + 1). battery: \(battery)")
-                    },
-                ]
-            }
-            .onDestroying {
-                heard.forEach { $0.cancel() }
-                heard = []
+            // Heard while the page stands: subscribed as it is made, cancelled as it leaves.
+            .onHostEvent(GalleryContract.batteryChanged) { level, charging in
+                battery = "\(Int((level * 100).rounded()))%" + (charging ? ", charging" : "")
+                log.append("\(log.count + 1). battery: \(battery)")
             }
         }
         """#,
