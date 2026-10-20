@@ -543,6 +543,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         let path = source.path
         // Closures, not key paths: one written in a generic type is made anew at every call.
         let hands = axes.compactMap { $0.hand }
+        Renderer.shared.texts += items.count
 
         return Run(
             items: items,

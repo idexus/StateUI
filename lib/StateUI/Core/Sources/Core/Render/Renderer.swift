@@ -60,6 +60,12 @@ public final class Renderer {
     /// the tally's `refused`.
     private(set) var refusedWrites = 0
 
+    /// The renders' work - the tally's `built`, `walks` and `texts`: bodies built, views walked for their state and
+    /// inputs, identities named with a text.
+    var built = 0
+    var walks = 0
+    var texts = 0
+
     /// How many rendered nodes are alive - the tally's `alive`.
     private(set) var liveNodes = 0
 

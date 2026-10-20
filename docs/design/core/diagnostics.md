@@ -15,6 +15,10 @@ is in invalidation.md.
              the state (invalidation.md)
   alive      how many rendered elements are alive now
   runs       how many runs are under way or wait their turn now (runs.md)
+  built      how many composed views' bodies the renders built
+  walks      how many views the renders walked for their state and inputs
+  texts      how many identities the renders named with a text: a walked
+             part, a statement, a conversion, a layout slot
 ```
 
 `empty` is how a write that should have asked for nothing is found; `refused`
@@ -28,6 +32,10 @@ looks at its cancellation - holds the number up after the page is gone. A host r
 through `HostBoundary.tally` - a Swift runtime writes it with its own totals
 under `STATEUI_TALLY=1` (host/patches.md): this side has no environment to
 read.
+
+`built`, `walks` and `texts` are the renders' work rather than what stands:
+the host layer's benchmarks count each gesture's share of them
+(host/benchmarks.md), and a tally line leaves them out.
 
 ## The inspector
 

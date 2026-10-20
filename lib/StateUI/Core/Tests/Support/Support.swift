@@ -746,6 +746,7 @@ enum SourceTree {
             ("StateUIGTKTests", repository.appendingPathComponent("lib/StateUI/StateUI.GTK/Testing/Tests")),
             ("StateUIGTKDriver", repository.appendingPathComponent("lib/StateUI/StateUI.GTK/Testing/Sources/StateUIGTKDriver")),
             ("StateUIHostTests", repository.appendingPathComponent("lib/StateUI/StateUI.Host/Tests")),
+            ("StateUIHostBenchmarks", repository.appendingPathComponent("lib/StateUI/StateUI.Host/Benchmarks")),
             ("StateUIConformance", repository.appendingPathComponent("lib/StateUI/StateUI.Conformance/Sources")),
             ("StateUIConformanceTests", repository.appendingPathComponent("lib/StateUI/StateUI.Conformance/Tests")),
         ]

@@ -201,6 +201,7 @@ extension Differ {
 
                 pass.frame = built
                 bodies.append(stateful.viewType.name)
+                Renderer.shared.built += 1
                 pass.entered += 1
 
                 node = ReadScope.collect(into: &pass.reads) {

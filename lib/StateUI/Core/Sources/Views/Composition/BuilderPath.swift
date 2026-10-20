@@ -3,6 +3,7 @@
 
 // Where a builder's statement stood, in front of the paths of what it produced.
 // Design: docs/design/views/builders.md#every-statement-records-where-it-stood
+@MainActor
 enum BuilderPath {
     static func tagged(_ segment: String, _ nodes: [Node]) -> [Node] {
         // Several are numbered under it, so they do not share one path.
@@ -14,6 +15,7 @@ enum BuilderPath {
 
     static func tagged(_ segment: String, _ node: Node) -> Node {
         var node = node
+        Renderer.shared.texts += 1
         node.key = node.key.map { "\(segment).\($0)" } ?? segment
         return node
     }

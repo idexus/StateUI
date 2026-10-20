@@ -32,5 +32,13 @@ let package = Package(
             path: "Tests",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
+        // The work four gestures cost the core and this layer on a clock wound by hand: the counts a gate in every
+        // run, the times a trend read from a release build (docs/design/host/benchmarks.md).
+        .testTarget(
+            name: "StateUIHostBenchmarks",
+            dependencies: ["StateUIHost", .product(name: "StateUI", package: "StateUIRoot")],
+            path: "Benchmarks",
+            swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+        ),
     ]
 )

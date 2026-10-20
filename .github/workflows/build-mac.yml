@@ -1,6 +1,6 @@
 # The core's suites on macOS - the library, the host layer and the conformance
-# runner - and the Gallery's and the starter application's. Each host's own
-# suite runs in a workflow of its own.
+# runner - the host layer's benchmarks built for release, and the Gallery's and
+# the starter application's. Each host's own suite runs in a workflow of its own.
 
 name: Core macOS
 
@@ -56,6 +56,21 @@ jobs:
         run: swift test --sanitize=thread --package-path lib/StateUI/StateUI.Host
       - name: Test StateUI.Conformance
         run: swift test --sanitize=thread --package-path lib/StateUI/StateUI.Conformance
+
+  # The benchmarks built for release: the debug runs above gate their counts, and this run writes each gesture's
+  # times, a trend read across runs (docs/design/host/benchmarks.md).
+  benchmarks:
+    name: Benchmarks
+    runs-on: xcode-27
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Use Xcode 27.0
+        run: sudo xcode-select -s /Applications/Xcode_27.0.app/Contents/Developer
+      - name: Report the toolchain
+        run: swift --version
+      - name: Benchmark StateUI.Host, release
+        run: swift test -c release --package-path lib/StateUI/StateUI.Host --filter StateUIHostBenchmarks
 
   gallery:
     name: Gallery

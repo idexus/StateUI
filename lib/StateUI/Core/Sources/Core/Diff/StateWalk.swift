@@ -19,6 +19,7 @@ func stateParts(
     slots: [EnvironmentSlot],
     inputs: [(path: String, input: Input)]
 ) {
+    Renderer.shared.walks += 1
     var parts = StateParts()
     parts.walk(value, at: "")
     return (parts.boxes, parts.slots, parts.inputs)
@@ -167,6 +168,7 @@ private struct StateParts {
             let parts = parts(value)
             inputs.append((path: path, input: .parts(parts.count)))
             for (label, part) in parts {
+                Renderer.shared.texts += 1
                 walk(part, at: "\(path).\(label)\(Self.learnt(part).stored)")
             }
         case .mirrored, .each:
@@ -199,6 +201,7 @@ private struct StateParts {
 
         // A collection's children have no labels, so their position stands in.
         for (offset, child) in children.enumerated() {
+            Renderer.shared.texts += 1
             walk(child.value, at: "\(path).\(child.label ?? String(offset))\(Self.learnt(child.value).stored)")
         }
     }
