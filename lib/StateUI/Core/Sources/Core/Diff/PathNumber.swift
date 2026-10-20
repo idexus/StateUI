@@ -23,6 +23,11 @@ struct PathNumber: Hashable, Sendable {
         return next
     }
 
+    /// This path written under `step`: what a builder's statement made, the statement around it.
+    func under(_ step: PathNumber) -> PathNumber {
+        step.appending(number)
+    }
+
     private mutating func mix(_ byte: UInt8) {
         number ^= UInt64(byte)
         number &*= 0x0000_0100_0000_01b3

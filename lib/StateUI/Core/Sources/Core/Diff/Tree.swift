@@ -36,7 +36,7 @@ typealias BuiltView = (
     walk: ViewWalk,
     boxes: [(path: PathNumber, box: StateBox)],
     inputs: [(path: PathNumber, input: Input)],
-    branch: String?)
+    branch: PathNumber?)
 
 /// One element as it stands on the host - a class, so unchanged parts of one
 /// tree are shared into the next.
@@ -56,7 +56,7 @@ final class RenderedNode {
     var events: [Event: Int]
 
     /// The builder path the element was written at (`Node.key`).
-    var key: String?
+    var key: PathNumber?
 
     /// The composed views this element was built by, outermost first: each one's
     /// type, its state boxes by path, what it was built with, and the branch its
@@ -142,7 +142,7 @@ final class RenderedNode {
         events: [Event: Int],
         motion: Motion? = nil,
         lanes: MotionLanes = .all,
-        key: String? = nil,
+        key: PathNumber? = nil,
         views: [BuiltView] = [],
         placeholder: Node? = nil,
         view: String? = nil,

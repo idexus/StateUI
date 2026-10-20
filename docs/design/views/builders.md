@@ -54,7 +54,10 @@ that path to the differ.
 
 The differ keys a child by its explicit `.id()` first, then by this path, then
 by its position. The path never crosses to a host; it only decides which
-element a view is.
+element a view is. It is written above as text, and worked as a number
+(`PathNumber`, core/identity-and-diffing.md): each segment's own, and a node's
+path the segment's number taking the path its views wrote under it - built as
+the closure runs, inside out, with no text made.
 
 ## Why position is not identity
 

@@ -114,7 +114,7 @@ extension Differ {
         at index: Int,
         rendered: [RenderedNode],
         byManualId: [String: RenderedNode],
-        byKey: [String: RenderedNode],
+        byKey: [PathNumber: RenderedNode],
         claimed: Set<ElementID>
     ) -> RenderedNode? {
         if let id = node.id {
@@ -161,7 +161,7 @@ extension Differ {
 final class ChildMatching {
     let rendered: [RenderedNode]
     var byManualId: [String: RenderedNode] = [:]
-    var byKey: [String: RenderedNode] = [:]
+    var byKey: [PathNumber: RenderedNode] = [:]
 
     /// Nodes put in by hand, matched by position among themselves.
     let unkeyed: [RenderedNode]

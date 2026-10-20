@@ -265,12 +265,12 @@ public struct Node {
     /// Where this node was written among its siblings - the builder path: which
     /// statement, which branch. Never crosses; the differ matches children by it.
     /// Design: docs/design/core/identity-and-diffing.md#keys
-    var key: String?
+    var key: PathNumber?
 
     /// The branch a composed view's content root was written in - an `if/else`
     /// there - which the placeholder's key covers; part of what the element is.
     /// Design: docs/design/core/identity-and-diffing.md#another-kind-of-view
-    var branch: String?
+    var branch: PathNumber?
 
     /// The element's properties, by token.
     var props: [Prop: PropValue]

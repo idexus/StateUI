@@ -808,7 +808,7 @@ final class ElementPass {
     /// How many times this element has been described, this time included; the builder path, read before any
     /// placeholder is unwrapped; the aim written on it, attached to the key it settled on (Aim.swift).
     let builds: Int
-    let key: String?
+    let key: PathNumber?
     let written: AimBox?
 
     /// The node as written, which a leaf wearing a themed value keeps; and as the steps make it.

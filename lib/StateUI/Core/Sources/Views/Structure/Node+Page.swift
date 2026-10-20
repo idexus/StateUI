@@ -10,8 +10,9 @@ extension Node {
         let content = shown.node
         if content.isArrangement == true { return content }
 
-        let kind = (content.stateful?.viewType.name ?? content.type.name) + (content.id.map { "#\($0)" } ?? "")
-            + (content.key.map { "@\($0)" } ?? "")
+        var kind = PathNumber().appending(content.stateful?.viewType.number ?? content.type.key.number)
+        if let id = content.id { kind = kind.appending(id) }
+        if let key = content.key { kind = kind.appending(key.number) }
 
         return composed(ShownView(content: content), type: pageType) {
             var page = Node(contract: PageContract.self, children: [content])
