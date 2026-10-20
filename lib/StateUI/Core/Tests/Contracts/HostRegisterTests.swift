@@ -151,4 +151,31 @@ final class HostRegisterTests: XCTestCase {
             "Map is both unrealized and the application's",
         ])
     }
+
+    /// A register built from what a runtime realizes of every member of every element of the library, then a
+    /// note on every member, costs little: a host builds one at each start - each process of a test - and asks it
+    /// as it first describes an element.
+    func testARegisterOfTheWholeLibraryIsBuiltInLittleTime() {
+        var members: Set<HostRealizedMember> = []
+        for element in LibraryContracts.elements {
+            for contract in element.worn {
+                for member in contract.members {
+                    members.insert(HostRealizedMember(
+                        element: element.nodeType.name, owner: contract.name, member: member.name))
+                }
+            }
+        }
+        let realization = HostRealization(elements: Set(LibraryContracts.elements.map { $0.nodeType }), members: members)
+        let notes = members.prefix(300).map {
+            HostRecord(owner: $0.element.name, member: $0.member.name, judgement: .partial(missing: "a note"))
+        }
+
+        let started = ContinuousClock.now
+        let register = HostRegister(records: Array(notes))
+            .and(HostDeclaration(realization: realization, shared: [], acts: []))
+        let built = ContinuousClock.now - started
+
+        XCTAssertFalse(register.records.isEmpty)
+        XCTAssertLessThan(built, .milliseconds(100), "built in \(built)")
+    }
 }

@@ -47,9 +47,10 @@
     /// on its owner, or on a tier the owner wears - is dropped from the runtime's records.
     public func and(_ runtime: [HostRecord]) -> HostRegister {
         let written = Set(records.map { "\($0.owner).\($0.member)" })
+        let writtenOn = Dictionary(grouping: records, by: \.member).mapValues { $0.map(\.owner) }
         let realized = runtime.filter { record in
             !written.contains("\(record.owner).\(record.member)")
-                && !records.contains { $0.member == record.member && Self.wears(record.owner, $0.owner) }
+                && !(writtenOn[record.member]?.contains { Self.wears(record.owner, $0) } ?? false)
         }
         return HostRegister(
             records: records + realized, unrealized: unrealized, notPlanned: notPlanned, byApplication: byApplication)
@@ -80,8 +81,7 @@
     /// The contract that declares `member` among what the library's element `element` wears, itself first - what a
     /// record of the register, written in words, is about.
     func declaring(_ member: String, on element: String) -> String? {
-        LibraryContracts.elements.first { $0.nodeType.name == element }?
-            .worn.first { $0.members.contains { $0.name == member } }?.name
+        Self.wornBy[element]?.first { $0.members.contains { $0.name == member } }?.name
     }
 
     /// What the host says of `element` itself: never, with why, where its family never has it; the application's
@@ -152,10 +152,8 @@
 
         var pairs: Set<Pair> = []
         for (pair, elements) in realizedOn {
-            let wearers = Set(realization.elements.map(\.name).filter { element in
-                LibraryContracts.elements.first { $0.nodeType.name == element }?
-                    .worn.contains { $0.name == pair.owner } == true
-            })
+            let wearers = Set(
+                realization.elements.map(\.name).filter { Self.wornNames[$0]?.contains(pair.owner) == true })
             if elements.isSuperset(of: wearers) {
                 pairs.insert(pair)
             } else {
@@ -187,9 +185,16 @@
 
     /// Whether `element` wears `tier`, a contract other than its own.
     public static func wears(_ element: String, _ tier: String) -> Bool {
-        element != tier && LibraryContracts.elements.first { $0.nodeType.name == element }?
-            .worn.contains { $0.name == tier } == true
+        element != tier && wornNames[element]?.contains(tier) == true
     }
+
+    /// The contracts each element of the library wears, itself first, by its name - worked out once, as a contract
+    /// works out what it wears at each asking.
+    private static let wornBy: [String: [any Contract.Type]] = Dictionary(
+        LibraryContracts.elements.map { ($0.nodeType.name, $0.worn) }) { first, _ in first }
+
+    /// The names of the contracts each element of the library wears, itself included.
+    private static let wornNames: [String: Set<String>] = wornBy.mapValues { worn in Set(worn.map { $0.name }) }
 
     /// One owner and one member: a record, before it is one.
     private struct Pair: Hashable {

@@ -157,8 +157,22 @@
         register: @autoclosure @escaping () -> HostRegister? = nil
     ) {
         let library = Set(LibraryContracts.elements.map { $0.nodeType }).subtracting(unrealized.map { $0.nodeType })
-        HostBoundary.setRealization(HostRealization(elements: library.union(registry.elements), members: registry.members))
-        HostBoundary.setRegister(register())
+        let realization = HostRealization(elements: library.union(registry.elements), members: registry.members)
+        HostBoundary.setRealization(realization)
+        if Self.told?.realization != realization { Self.told = (realization, nil) }
+        HostBoundary.setRegister(Self.kept(register))
+    }
+
+    /// The register last built, and the realization it was told with: a host tells the same at every start - a
+    /// test's every case - and building it costs, so it is built once a realization, when first asked.
+    private static var told: (realization: HostRealization, register: HostRegister??)?
+
+    /// The register kept for the realization told, else the one `register` builds, kept.
+    private static func kept(_ register: () -> HostRegister?) -> HostRegister? {
+        if let kept = told?.register { return kept }
+        let built = register()
+        told?.register = .some(built)
+        return built
     }
 
     // MARK: - The application, its scenes and its kept values
