@@ -24,21 +24,22 @@ Picker.rotationY: ✓ read rotationY of Picker: the host's own transform, checke
 Polygon.pivotX: ✓ read pivotX of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 ProgressBar.zIndex: ✅
-Rectangle.scale: ✓ read scale of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.pivotX: ✓ read pivotX of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.accessibilityHint: ✅
-Slider.style: ✅
-Spacer.height: ✅
-Spacer.translationY: ✓ read translationY of Spacer: the host's own transform, checked against the layer it composed itself
-Spacer.width: ✅
-Stepper.scale: ✓ read scale of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.pivotY: ✓ read pivotY of Switch: the host's own transform, checked against the layer it composed itself
+Rectangle.height: ✅
+Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform, checked against the layer it composed itself
+Rectangle.width: ✅
+ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.automationExcludedWithChildren: ✅
+Slider.accessibilityHint: ✅
+Spacer.style: ✅
+Stepper.height: ✅
+Stepper.translationY: ✓ read translationY of Stepper: the host's own transform, checked against the layer it composed itself
+Stepper.width: ✅
+Switch.scale: ✓ read scale of Switch: the host's own transform, checked against the layer it composed itself
 Text.ignoresInput: ✅
-TextEditor.automationExcludedWithChildren: ✅
-TextField.accessibilityHint: ✅
-TimePicker.style: ✅
-VStack.height: ✅
-VStack.translationY: ✓ read translationY of VStack: the host's own transform, checked against the layer it composed itself
-VStack.width: ✅
-WebView.layoutDirection: ✅
-ZStack.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+TextEditor.pivotY: ✓ read pivotY of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.automationExcludedWithChildren: ✅
+TimePicker.accessibilityHint: ✅
+VStack.background: ✅
+VStack.style: ✅
+WebView.rotationX: ✓ read rotationX of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.layoutDirection: ✅

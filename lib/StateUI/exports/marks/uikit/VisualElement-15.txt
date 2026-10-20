@@ -25,21 +25,22 @@ Picker.rotation: ✓ read rotation of Picker: the host's own transform, checked 
 Polygon.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
 Polyline.accessibilityHint: ✅
 ProgressBar.frame: ✅
-Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.background: ✅
-SearchField.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-Slider.ignoresInput: ✅
-Spacer.opacity: ✅
-Spacer.scaleY: ✓ read scaleY of Spacer: the host's own transform, checked against the layer it composed itself
-Stepper.rotationX: ✓ read rotationX of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.layoutDirection: ✅
+Rectangle.opacity: ✅
+Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.rotation: ✓ read rotation of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+Slider.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+Spacer.ignoresInput: ✅
+Stepper.opacity: ✅
+Stepper.scaleY: ✓ read scaleY of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.rotationX: ✓ read rotationX of Switch: the host's own transform, checked against the layer it composed itself
 Text.height: ✅
 Text.translationY: ✓ read translationY of Text: the host's own transform, checked against the layer it composed itself
 Text.width: ✅
-TextEditor.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-TextField.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-TimePicker.ignoresInput: ✅
-VStack.opacity: ✅
-VStack.scaleY: ✓ read scaleY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.automationExcludedWithChildren: ✅
-ZStack.accessibilityHint: ✅
+TextEditor.layoutDirection: ✅
+TextField.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+TimePicker.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+VStack.ignoresInput: ✅
+VStack.isEnabled: ✅
+WebView.pivotY: ✓ read pivotY of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.automationExcludedWithChildren: ✅

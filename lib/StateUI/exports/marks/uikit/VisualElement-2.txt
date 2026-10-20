@@ -25,24 +25,23 @@ Polygon.translationY: ✓ read translationY of Polygon: the host's own transform
 Polygon.width: ✅
 Polyline.rotationY: ✓ read rotationY of Polyline: the host's own transform, checked against the layer it composed itself
 ProgressBar.layoutDirection: ✅
-Rectangle.zIndex: ✅
-ScrollView.height: ✅
-ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform, checked against the layer it composed itself
-ScrollView.width: ✅
-SearchField.rotation: ✓ read rotation of SearchField: the host's own transform, checked against the layer it composed itself
-Slider.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
-Spacer.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-Stepper.zIndex: ✅
-Switch.maximumHeight: ✅
-Switch.maximumWidth: ✅
-Switch.minimumHeight: ✅
-Switch.minimumWidth: ✅
+Rectangle.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+ScrollView.style: ✅
+SearchField.isVisible: ✅
+SearchField.scaleX: ✓ read scaleX of SearchField: the host's own transform, checked against the layer it composed itself
+Slider.rotation: ✓ read rotation of Slider: the host's own transform, checked against the layer it composed itself
+Spacer.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+Stepper.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+Switch.zIndex: ✅
 Text.isAccessibilityHidden: ✅
-TextEditor.isVisible: ✅
-TextEditor.scaleX: ✓ read scaleX of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.rotation: ✓ read rotation of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.background: – UIKit's time picker keeps no background colour: one written reads back as none.
-VStack.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-WebView.isEnabled: ✅
-WebView.translationX: ✓ read translationX of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.rotationY: ✓ read rotationY of ZStack: the host's own transform, checked against the layer it composed itself
+TextEditor.maximumHeight: ✅
+TextEditor.maximumWidth: ✅
+TextEditor.minimumHeight: ✅
+TextEditor.minimumWidth: ✅
+TextField.isVisible: ✅
+TextField.scaleX: ✓ read scaleX of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.rotation: ✓ read rotation of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.background: ✅
+WebView.frame: ✅
+ZStack.isEnabled: ✅
+ZStack.translationX: ✓ read translationX of ZStack: the host's own transform, checked against the layer it composed itself

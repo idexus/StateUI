@@ -473,6 +473,8 @@ final class UIKitDriver: HostDriver {
             return (view.window != nil && sequence(first: view, next: \.superview).allSatisfy { !$0.isHidden }).propValue
         case (.opacity, let view?): return Double(view.alpha).propValue
         case (.isEnabled, let control as UIControl): return control.isEnabled.propValue
+        // A switch stands beside its words: the switch itself takes the input.
+        case (.isEnabled, let toggle as UIKitSwitchView): return toggle.control.isEnabled.propValue
         case (.submitLabel, let field as UITextField):
             let key: SubmitLabel? = switch field.returnKeyType {
             case .go: .go

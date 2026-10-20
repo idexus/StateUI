@@ -11,6 +11,12 @@ import UIKit
 /// font and words' colour, and the colour behind it - each from UIKit itself.
 /// Design: docs/design/platforms/uikit/conformance.md#what-the-driver-reads
 extension UIKitDriver {
+    /// The view VoiceOver meets for `view`: the control a wrapping view presents - a switch beside its words - else
+    /// the view itself.
+    static func met(_ view: UIView) -> UIView {
+        (view as? UIKitAccessibilityPresenting)?.presentedControl ?? view
+    }
+
     static func viewHolds(_ property: Prop, _ view: UIView, _ native: UIKitElement?) throws -> HostValue? {
         switch property {
         case .translationX, .translationY, .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY, .pivotX,
@@ -19,12 +25,12 @@ extension UIKitDriver {
                 throw DriverCannot("read a transform: the view's layer holds another")
             }
             return transform(property, drawn)
-        case .accessibilityLabel: return view.accessibilityLabel.propValue
-        case .accessibilityHint: return view.accessibilityHint.propValue
-        case .accessibilityIdentifier: return view.accessibilityIdentifier.propValue
-        case .isAccessibilityHidden: return (!view.isAccessibilityElement).propValue
+        case .accessibilityLabel: return met(view).accessibilityLabel.propValue
+        case .accessibilityHint: return met(view).accessibilityHint.propValue
+        case .accessibilityIdentifier: return met(view).accessibilityIdentifier.propValue
+        case .isAccessibilityHidden: return (!met(view).isAccessibilityElement).propValue
         case .automationExcludedWithChildren:
-            return (!view.isAccessibilityElement && view.accessibilityElementsHidden).propValue
+            return (!met(view).isAccessibilityElement && met(view).accessibilityElementsHidden).propValue
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "UIKit marks a heading, not its level")
         case .keyboardShortcut:

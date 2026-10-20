@@ -30,21 +30,22 @@ Polygon.frame: ✅
 Polyline.opacity: ✅
 Polyline.scaleY: ✓ read scaleY of Polyline: the host's own transform, checked against the layer it composed itself
 ProgressBar.rotation: ✓ read rotation of ProgressBar: the host's own transform, checked against the layer it composed itself
-Rectangle.accessibilityHint: ✅
-ScrollView.background: ✅
-ScrollView.frame: ✅
-SearchField.scale: ✓ read scale of SearchField: the host's own transform, checked against the layer it composed itself
-Slider.pivotY: ✓ read pivotY of Slider: the host's own transform, checked against the layer it composed itself
-Spacer.automationExcludedWithChildren: ✅
-Stepper.accessibilityHint: ✅
-Switch.style: ✅
+Rectangle.automationExcludedWithChildren: ✅
+ScrollView.accessibilityLabel: ✅
+SearchField.height: ✅
+SearchField.translationY: ✓ read translationY of SearchField: the host's own transform, checked against the layer it composed itself
+SearchField.width: ✅
+Slider.scale: ✓ read scale of Slider: the host's own transform, checked against the layer it composed itself
+Spacer.pivotY: ✓ read pivotY of Spacer: the host's own transform, checked against the layer it composed itself
+Stepper.automationExcludedWithChildren: ✅
+Switch.accessibilityHint: ✅
 Text.layoutDirection: ✅
-TextEditor.height: ✅
-TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform, checked against the layer it composed itself
-TextEditor.width: ✅
-TextField.scale: ✓ read scale of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.pivotY: ✓ read pivotY of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.automationExcludedWithChildren: ✅
-WebView.ignoresInput: ✅
-ZStack.opacity: ✅
-ZStack.scaleY: ✓ read scaleY of ZStack: the host's own transform, checked against the layer it composed itself
+TextEditor.style: ✅
+TextField.height: ✅
+TextField.translationY: ✓ read translationY of TextField: the host's own transform, checked against the layer it composed itself
+TextField.width: ✅
+TimePicker.scale: ✓ read scale of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.pivotY: ✓ read pivotY of VStack: the host's own transform, checked against the layer it composed itself
+WebView.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+ZStack.ignoresInput: ✅
+ZStack.isEnabled: ✅

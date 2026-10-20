@@ -24,20 +24,20 @@ Picker.scaleY: ✓ read scaleY of Picker: the host's own transform, checked agai
 Polygon.rotationX: ✓ read rotationX of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
 ProgressBar.accessibilityHint: ✅
-Rectangle.isEnabled: ✅
-Rectangle.translationX: ✓ read translationX of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.isAccessibilityHidden: ✅
-Slider.accessibilityLabel: ✅
-Spacer.frame: ✅
-Stepper.isEnabled: ✅
-Stepper.translationX: ✓ read translationX of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.rotationY: ✓ read rotationY of Switch: the host's own transform, checked against the layer it composed itself
+Rectangle.frame: ✅
+ScrollView.opacity: ✅
+ScrollView.scaleY: ✓ read scaleY of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.pivotX: ✓ read pivotX of SearchField: the host's own transform, checked against the layer it composed itself
+Slider.isAccessibilityHidden: ✅
+Spacer.accessibilityLabel: ✅
+Stepper.frame: ✅
+Switch.isEnabled: ✅
+Switch.translationX: ✓ read translationX of Switch: the host's own transform, checked against the layer it composed itself
 Text.zIndex: ✅
-TextEditor.pivotX: ✓ read pivotX of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.isAccessibilityHidden: ✅
-TimePicker.accessibilityLabel: ✅
-VStack.frame: ✅
-VStack.layoutDirection: ✅
-WebView.rotation: ✓ read rotation of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.background: ✅
+TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.pivotX: ✓ read pivotX of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.isAccessibilityHidden: ✅
+VStack.accessibilityLabel: ✅
+WebView.isVisible: ✅
+WebView.scaleX: ✓ read scaleX of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.rotation: ✓ read rotation of ZStack: the host's own transform, checked against the layer it composed itself

@@ -147,7 +147,7 @@ extension UIKitDriver {
         guard let view = (element.native as? UIKitElement)?.view else {
             throw DriverCannot("read whether \(element.type.name) is a heading")
         }
-        return view.accessibilityTraits.contains(.header)
+        return Self.met(view).accessibilityTraits.contains(.header)
     }
 
     /// The layout's children by where each one's view stands among its view's subviews - a higher layer's

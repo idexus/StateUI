@@ -28,24 +28,21 @@ Polygon.minimumHeight: ✅
 Polygon.minimumWidth: ✅
 Polyline.scale: ✓ read scale of Polyline: the host's own transform, checked against the layer it composed itself
 ProgressBar.pivotX: ✓ read pivotX of ProgressBar: the host's own transform, checked against the layer it composed itself
-Rectangle.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-ScrollView.isEnabled: ✅
-ScrollView.maximumHeight: ✅
-ScrollView.maximumWidth: ✅
-ScrollView.minimumHeight: ✅
-ScrollView.minimumWidth: ✅
-SearchField.rotationX: ✓ read rotationX of SearchField: the host's own transform, checked against the layer it composed itself
-Slider.layoutDirection: ✅
-Spacer.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-Stepper.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-Switch.ignoresInput: ✅
+Rectangle.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+ScrollView.zIndex: ✅
+SearchField.opacity: ✅
+SearchField.scaleY: ✓ read scaleY of SearchField: the host's own transform, checked against the layer it composed itself
+Slider.rotationX: ✓ read rotationX of Slider: the host's own transform, checked against the layer it composed itself
+Spacer.layoutDirection: ✅
+Stepper.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+Switch.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Text.automationExcludedWithChildren: ✅
-TextEditor.opacity: ✅
-TextEditor.scaleY: ✓ read scaleY of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.rotationX: ✓ read rotationX of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.layoutDirection: ✅
-VStack.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-WebView.height: ✅
-WebView.translationY: ✓ read translationY of WebView: the host's own transform, checked against the layer it composed itself
-WebView.width: ✅
-ZStack.scale: ✓ read scale of ZStack: the host's own transform, checked against the layer it composed itself
+TextEditor.ignoresInput: ✅
+TextField.opacity: ✅
+TextField.scaleY: ✓ read scaleY of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.layoutDirection: ✅
+WebView.style: ✅
+ZStack.height: ✅
+ZStack.translationY: ✓ read translationY of ZStack: the host's own transform, checked against the layer it composed itself
+ZStack.width: ✅

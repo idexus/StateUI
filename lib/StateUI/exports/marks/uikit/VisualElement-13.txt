@@ -30,22 +30,22 @@ ProgressBar.maximumHeight: ✅
 ProgressBar.maximumWidth: ✅
 ProgressBar.minimumHeight: ✅
 ProgressBar.minimumWidth: ✅
-Rectangle.pivotY: ✓ read pivotY of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.isAccessibilityHidden: ✅
-SearchField.style: ✅
-Slider.height: ✅
-Slider.translationY: ✓ read translationY of Slider: the host's own transform, checked against the layer it composed itself
-Slider.width: ✅
-Spacer.scale: ✓ read scale of Spacer: the host's own transform, checked against the layer it composed itself
-Stepper.pivotY: ✓ read pivotY of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.automationExcludedWithChildren: ✅
+Rectangle.scale: ✓ read scale of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.pivotX: ✓ read pivotX of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.accessibilityHint: ✅
+Slider.style: ✅
+Spacer.height: ✅
+Spacer.translationY: ✓ read translationY of Spacer: the host's own transform, checked against the layer it composed itself
+Spacer.width: ✅
+Stepper.scale: ✓ read scale of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.pivotY: ✓ read pivotY of Switch: the host's own transform, checked against the layer it composed itself
 Text.opacity: ✅
 Text.scaleY: ✓ read scaleY of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.accessibilityHint: ✅
-TextField.style: ✅
-TimePicker.height: ✅
-TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform, checked against the layer it composed itself
-TimePicker.width: ✅
-VStack.scale: ✓ read scale of VStack: the host's own transform, checked against the layer it composed itself
-WebView.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-ZStack.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+TextEditor.automationExcludedWithChildren: ✅
+TextField.accessibilityHint: ✅
+TimePicker.style: ✅
+VStack.height: ✅
+VStack.translationY: ✓ read translationY of VStack: the host's own transform, checked against the layer it composed itself
+VStack.width: ✅
+WebView.layoutDirection: ✅
+ZStack.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level

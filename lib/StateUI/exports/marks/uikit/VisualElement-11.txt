@@ -25,20 +25,19 @@ Polygon.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an 
 Polyline.style: ✅
 ProgressBar.isEnabled: ✅
 ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own transform, checked against the layer it composed itself
-Rectangle.layoutDirection: ✅
-ScrollView.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-SearchField.ignoresInput: ✅
-Slider.opacity: ✅
-Slider.scaleY: ✓ read scaleY of Slider: the host's own transform, checked against the layer it composed itself
-Spacer.rotationX: ✓ read rotationX of Spacer: the host's own transform, checked against the layer it composed itself
-Stepper.layoutDirection: ✅
-Switch.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.background: ✅
+SearchField.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+Slider.ignoresInput: ✅
+Spacer.opacity: ✅
+Spacer.scaleY: ✓ read scaleY of Spacer: the host's own transform, checked against the layer it composed itself
+Stepper.rotationX: ✓ read rotationX of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.layoutDirection: ✅
 Text.scale: ✓ read scale of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-TextField.ignoresInput: ✅
-TimePicker.opacity: ✅
-TimePicker.scaleY: ✓ read scaleY of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.rotationX: ✓ read rotationX of VStack: the host's own transform, checked against the layer it composed itself
-WebView.accessibilityHint: ✅
-ZStack.background: ✅
-ZStack.style: ✅
+TextEditor.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+TextField.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+TimePicker.ignoresInput: ✅
+VStack.opacity: ✅
+VStack.scaleY: ✓ read scaleY of VStack: the host's own transform, checked against the layer it composed itself
+WebView.automationExcludedWithChildren: ✅
+ZStack.accessibilityHint: ✅
