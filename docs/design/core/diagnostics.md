@@ -73,9 +73,9 @@ can be, and an author left wondering why the constant they wrote does nothing.
 Each message is said once per process, because a place that complains is often
 a modifier, and a modifier runs on every render: an author who wrote 1.4 where
 a fraction belongs would otherwise be told so as fast as the interface is
-described. It goes to standard output, outside the lock: a terminal on macOS,
-the console on iOS, a shell on Windows and Linux, logcat on Android, whose
-host routes the process's output there. An application that wants them
+described. It goes to the host's log, outside the lock - the platform's own
+log, where its developers read (`host/runtime.md#the-log`) - and to standard
+output where no host has started. An application that wants them
 elsewhere - its own log, a crash reporter - routes them (`Complaints.route`),
 and each comes to it on the thread that complained, outside every handler's
 run: a route posting what it heard to a state is not refused with a run that a

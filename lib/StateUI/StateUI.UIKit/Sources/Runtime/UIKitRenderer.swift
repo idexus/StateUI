@@ -12,7 +12,7 @@ import UIKit
 /// Design: docs/design/platforms/uikit/runtime.md
 @MainActor
 final class UIKitRenderer {
-    static var log = HostLog(host: "UIKit")
+    static var log = HostLog(host: "UIKit", output: SystemLog.output(host: "UIKit"))
 
     /// The one runtime of the process, which every scene iOS connects shows a window of.
     static let shared = UIKitRenderer()
@@ -107,6 +107,7 @@ final class UIKitRenderer {
         runtime.start(
             realizing: UIKitRegistrations.registry.realization, unrealized: UIKitRealization.unrealized,
             register: UIKitRealization.register,
+            complainingTo: UIKitRenderer.log,
             environment: {
                 reportEnvironment()
                 environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })

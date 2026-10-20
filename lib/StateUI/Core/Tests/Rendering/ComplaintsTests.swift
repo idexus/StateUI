@@ -21,6 +21,22 @@ final class ComplaintsTests: XCTestCase {
         XCTAssertEqual(heard.withLock { $0 }, ["ComplaintsTests: routed once"])
     }
 
+    /// A complaint the application routes nowhere goes to the host's log; one it routes goes there alone.
+    func testAComplaintTheApplicationRoutesNowhereGoesToTheHostsLog() {
+        let host = Mutex<[String]>([])
+        let application = Mutex<[String]>([])
+        Complaints.routeByDefault { words in host.withLock { $0.append(words) } }
+        defer { Complaints.routeByDefault(to: nil) }
+
+        complain("ComplaintsTests: to the host's log")
+        Complaints.route { words in application.withLock { $0.append(words) } }
+        complain("ComplaintsTests: to the application")
+        Complaints.route(to: nil)
+
+        XCTAssertEqual(host.withLock { $0 }, ["ComplaintsTests: to the host's log"])
+        XCTAssertEqual(application.withLock { $0 }, ["ComplaintsTests: to the application"])
+    }
+
     /// The things said are held to a number, so complaints naming ever new values cannot grow without end: past it,
     /// that is said once, and nothing more.
     func testWhatIsSaidStopsAtItsCap() {

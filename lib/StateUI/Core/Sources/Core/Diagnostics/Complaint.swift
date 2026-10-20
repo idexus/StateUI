@@ -38,6 +38,7 @@ final class Said: Sendable {
         var order: [String] = []
         var full = false
         var hear: (@Sendable (String) -> Void)?
+        var host: (@Sendable (String) -> Void)?
         var told: (@Sendable () -> Void)?
     }
 
@@ -48,9 +49,14 @@ final class Said: Sendable {
         self.cap = cap
     }
 
-    /// Sends what is said to `hear`, or to the standard output where nil.
+    /// Sends what is said to `hear`, or to the host's log where nil, or to the standard output where neither.
     func route(_ hear: (@Sendable (String) -> Void)?) {
         held.withLock { $0.hear = hear }
+    }
+
+    /// Sends what the application routes nowhere to `host` - the host's log - or to the standard output where nil.
+    func routeByDefault(_ host: (@Sendable (String) -> Void)?) {
+        held.withLock { $0.host = host }
     }
 
     /// Tells `told` whenever something new is said - how an inspector learns of it.
@@ -63,6 +69,7 @@ final class Said: Sendable {
 
     func say(_ message: String) {
         typealias Said = (words: String, hear: (@Sendable (String) -> Void)?, told: (@Sendable () -> Void)?)
+        typealias Hear = @Sendable (String) -> Void
         let said: Said? = held.withLock { held in
             guard !held.said.contains(message) else { return nil }
             let words: String
@@ -76,7 +83,8 @@ final class Said: Sendable {
                 words = "more than \(cap) different complaints were said; the rest are not said"
             }
             held.order.append(words)
-            return (words, held.hear, held.told)
+            let hear: Hear? = held.hear ?? held.host
+            return (words, hear, held.told)
         }
         guard let said else { return }
 
@@ -93,6 +101,13 @@ final class Said: Sendable {
 }
 
 @_spi(Host) extension Complaints {
+    /// Routes every complaint the application routes nowhere to `log` - the host's own - instead of the standard
+    /// output; nil sends them there again.
+    /// Design: docs/design/core/diagnostics.md#complaints
+    public static func routeByDefault(to log: (@Sendable (String) -> Void)?) {
+        Said.shared.routeByDefault(log)
+    }
+
     /// Says `message` once a process, as the library says what an application handed it that it cannot use: what a
     /// host finds wrong with the tree it was given.
     public static func say(_ message: String) {

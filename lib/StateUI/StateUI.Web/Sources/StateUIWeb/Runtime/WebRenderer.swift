@@ -92,6 +92,7 @@ final class WebRenderer {
         runtime.start(
             realizing: WebRegistrations.registry.realization, unrealized: WebRealization.unmade,
             register: WebRealization.register,
+            complainingTo: WebRenderer.log,
             environment: {
                 WebEnvironment.report(to: core, applicationName: applicationName)
                 pageListeners.append(WebEnvironment.watch { [weak self] in

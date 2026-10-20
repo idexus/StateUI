@@ -13,7 +13,7 @@ final class GTKRenderer {
     static var shared: GTKRenderer?
 
     /// What the host says for whoever reads its log: standard error, or wherever a test listens.
-    static var log = HostLog(host: "GTK")
+    static var log = HostLog(host: "GTK", output: GTKLog.write)
 
     let frameClock: GTKFrameClock
 
@@ -134,6 +134,7 @@ final class GTKRenderer {
         runtime.start(
             realizing: GTKRegistrations.registry.realization, unrealized: GTKRealization.unmade,
             register: GTKRealization.register,
+            complainingTo: GTKRenderer.log,
             environment: {
                 GTKEnvironment.report(to: runtime.core, applicationID: applicationID)
                 GTKEnvironment.watch { [weak self] in self?.environmentChanged() }

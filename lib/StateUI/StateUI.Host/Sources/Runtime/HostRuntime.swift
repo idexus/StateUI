@@ -111,9 +111,10 @@
     /// Design: docs/design/host/runtime.md#starting
     public func start(
         realizing realization: HostRealization, unrealized: [any ElementContract.Type],
-        register: @autoclosure @escaping () -> HostRegister? = nil,
+        register: @autoclosure @escaping () -> HostRegister? = nil, complainingTo log: HostLog,
         environment: () -> Void, kept: () -> Void = {}, windows: () -> Void = {}, turns: () -> Void = {}
     ) {
+        log.hearComplaints()
         core.setRealization(realization, unrealized: unrealized, register: register())
         environment()
         kept()

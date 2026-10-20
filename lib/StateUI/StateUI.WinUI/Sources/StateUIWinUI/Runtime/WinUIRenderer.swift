@@ -13,7 +13,7 @@ final class WinUIRenderer {
     static var shared: WinUIRenderer?
 
     /// What the host says for whoever reads its log: standard error, or wherever a test listens.
-    static var log = HostLog(host: "WinUI")
+    static var log = HostLog(host: "WinUI", output: WinUILog.write)
 
     let frameClock: WinUIFrameClock
 
@@ -142,6 +142,7 @@ final class WinUIRenderer {
         runtime.start(
             realizing: WinUIRegistrations.registry.realization, unrealized: WinUIRealization.unmade,
             register: WinUIRealization.register,
+            complainingTo: WinUIRenderer.log,
             environment: { WinUIEnvironment.report(to: runtime.core) },
             kept: { if restoringKept { WinUIPersistence.restore(into: runtime.core) } },
             windows: { scenes.restore(WinUIPersistence.readScenes(), in: runtime) },

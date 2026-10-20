@@ -910,9 +910,13 @@ opened is the user's, and heard.
 
 What a host says for whoever reads its log rather than its screen is one
 line a message, begun by `StateUI` and the host's name (`HostLog`), written
-to standard error, which nothing buffers, so a line stands in the log before
-whatever went wrong next; a platform whose log is its own - Android's - hands
-the lines there.
+where its platform's developers read: Apple's hosts to the system's log and to
+standard error (`SystemLog`), WinUI to the debugger's output and to standard
+error, GTK to GLib's log, Android to logcat, the Web to the browser's console,
+where its standard error goes. Standard error is written as it comes, so a line
+stands before whatever went wrong next. From its start (`HostRuntime.start`) a
+host's log also hears every complaint the application routes nowhere
+(`HostLog.hearComplaints`) - an application's own route stays first.
 
 ## Core link
 

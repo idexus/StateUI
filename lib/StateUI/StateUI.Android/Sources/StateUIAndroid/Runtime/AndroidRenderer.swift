@@ -172,6 +172,7 @@ final class AndroidRenderer {
         runtime.start(
             realizing: AndroidRegistrations.registry.realization, unrealized: AndroidRealization.unmade,
             register: AndroidRealization.register,
+            complainingTo: AndroidRenderer.log,
             environment: { AndroidEnvironment.report(to: runtime.core, activity: context.reference) },
             kept: { if restoringKept { AndroidPersistence.restore(into: runtime.core, context: context.reference) } },
             windows: {

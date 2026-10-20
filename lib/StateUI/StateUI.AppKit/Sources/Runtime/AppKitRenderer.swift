@@ -13,7 +13,7 @@ import QuartzCore
 @MainActor
 final class AppKitRenderer {
     /// What the host says for whoever reads its log: standard error, or wherever a test listens.
-    static var log = HostLog(host: "AppKit")
+    static var log = HostLog(host: "AppKit", output: SystemLog.output(host: "AppKit"))
 
     let resourceDirectory: URL?
     let presentsWindows: Bool
@@ -90,6 +90,7 @@ final class AppKitRenderer {
         runtime.start(
             realizing: AppKitRegistrations.registry.realization, unrealized: AppKitRealization.unrealized,
             register: AppKitRealization.register,
+            complainingTo: AppKitRenderer.log,
             environment: {
                 configureEnvironment()
                 watching()
