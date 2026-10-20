@@ -231,6 +231,27 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(stack()?.children.count, 2, "the root and the first page")
     }
 
+    /// The user taking a stack's shown top page away - the event that took it carrying a depth - hears it disappear
+    /// as it leaves, then that it is destroyed, as one the program takes away does.
+    func testAPageTheUserPopsHearsItDisappears() throws {
+        PhaseLog.said = []
+        stateUIUseApp(PhaseLogApplication())
+        let runtime = HostRuntime.still()
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let stack = { runtime.tree.root?.first(type: .navigationStack) }
+        try XCTUnwrap(stack()).setPagePresented(true, reason: .window)
+        runtime.pump.turn()
+        XCTAssertTrue(PhaseLog.said.contains("Pushed appearing"), "\(PhaseLog.said)")
+
+        PhaseLog.said = []
+        runtime.stackPopped(try XCTUnwrap(stack()), staying: 1)
+        runtime.pump.turn()
+
+        XCTAssertEqual(stack()?.children.count, 1)
+        XCTAssertEqual(Array(PhaseLog.said.prefix(2)), ["Pushed disappearing", "Pushed destroying"], "\(PhaseLog.said)")
+    }
+
     /// What the host was asked to show of the chrome, in turn.
     private final class Presented: HostPresenter {
         var chrome: [Bool] = []
@@ -952,5 +973,31 @@ private struct PoppedPathPage: View {
 
     var body: some View {
         NavigationStack($path) { Text("Root") } destination: { number in Text("Page \(number)") }
+    }
+}
+
+/// What the pages of `PhaseLogApplication` heard, in turn.
+@MainActor
+private enum PhaseLog {
+    static var said: [String] = []
+    static let path = State(wrappedValue: [1])
+}
+
+private struct PhaseLogApplication: Application {
+    var body: some Scene {
+        WindowGroup { PhaseLogPage() }
+    }
+}
+
+private struct PhaseLogPage: View {
+    var body: some View {
+        NavigationStack(PhaseLog.path.projectedValue) {
+            Text("Root").onAppearing { PhaseLog.said.append("Root appearing") }
+        } destination: { _ in
+            Text("Pushed")
+                .onAppearing { PhaseLog.said.append("Pushed appearing") }
+                .onDisappearing { PhaseLog.said.append("Pushed disappearing") }
+                .onDestroying { PhaseLog.said.append("Pushed destroying") }
+        }
     }
 }

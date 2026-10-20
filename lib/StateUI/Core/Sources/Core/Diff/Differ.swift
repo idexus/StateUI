@@ -245,7 +245,14 @@ final class Differ {
     /// shown its `.onDisappearing` first.
     func forget(_ node: RenderedNode) {
         if shownPages.remove(node.id) != nil, let id = node.events[.disappearing], let registration = handlers[id] {
-            leaving.append(contentsOf: registration.handlers.map(\.run))
+            // Heard as a host tells a phase: carrying nothing, whatever the event that left it carried.
+            leaving.append(contentsOf: registration.handlers.map { handler in
+                let run = handler.run
+                return { @MainActor in
+                    EventBuffer.current = []
+                    try await run()
+                }
+            })
         }
         for id in node.events.values { pagePhases[id] = nil }
 
