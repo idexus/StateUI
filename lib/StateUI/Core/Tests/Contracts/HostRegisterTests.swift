@@ -3,6 +3,9 @@
 
 @_spi(Host) @testable import StateUI
 import XCTest
+#if canImport(Darwin)
+import Darwin
+#endif
 
 /// What a host's register says of a member: whether a test of it runs, and what the test's verdict says beside
 /// passing - what is missing, or why the host's family never has it.
@@ -155,7 +158,11 @@ final class HostRegisterTests: XCTestCase {
     /// A register built from what a runtime realizes of every member of every element of the library, then a
     /// note on every member, costs little: a host builds one at each start - each process of a test - and asks it
     /// as it first describes an element.
-    func testARegisterOfTheWholeLibraryIsBuiltInLittleTime() {
+    func testARegisterOfTheWholeLibraryIsBuiltInLittleTime() throws {
+        try XCTSkipIf(Self.underThreadSanitizer, """
+            the thread sanitizer pays for every access to memory: the register takes 0.12-0.16s under it against \
+            0.03s without, so the line would measure the sanitizer. The run without it holds the line.
+            """)
         var members: Set<HostRealizedMember> = []
         for element in LibraryContracts.elements {
             for contract in element.worn {
@@ -177,5 +184,14 @@ final class HostRegisterTests: XCTestCase {
 
         XCTAssertFalse(register.records.isEmpty)
         XCTAssertLessThan(built, .milliseconds(100), "built in \(built)")
+    }
+
+    /// Whether the process runs under the thread sanitizer, whose runtime is linked into it.
+    private static var underThreadSanitizer: Bool {
+        #if canImport(Darwin)
+        dlsym(UnsafeMutableRawPointer(bitPattern: -2), "__tsan_init") != nil  // RTLD_DEFAULT, a macro Swift does not see
+        #else
+        false
+        #endif
     }
 }
