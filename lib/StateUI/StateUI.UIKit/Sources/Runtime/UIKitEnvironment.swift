@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #if os(iOS)
-import Network
 import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 
 /// The theme, the accent, the user's locale, the battery, the network and the display, told to the core as the host
 /// starts - the theme and the accent as the first scene connects, the display as each does - and whenever one
@@ -20,7 +20,7 @@ final class UIKitEnvironment {
     private var reportChange: (() -> Void) -> Void = { $0() }
 
     private var observers: [NSObjectProtocol] = []
-    private var network: NWPathMonitor?
+    private var system: SystemWatch?
     private weak var themeScene: UIWindowScene?
     private var themeWatch: (any UITraitChangeRegistration)?
 
@@ -66,11 +66,6 @@ final class UIKitEnvironment {
 
     private func watch() {
         let center = NotificationCenter.default
-        for name in [NSLocale.currentLocaleDidChangeNotification, .NSSystemTimeZoneDidChange] {
-            observers.append(center.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
-                MainActor.assumeIsolated { self?.changed { $0.reportLocale() } }
-            })
-        }
         for name in [
             UIDevice.batteryLevelDidChangeNotification, UIDevice.batteryStateDidChangeNotification,
             .NSProcessInfoPowerStateDidChange,
@@ -79,13 +74,9 @@ final class UIKitEnvironment {
                 MainActor.assumeIsolated { self?.changed { $0.reportBattery() } }
             })
         }
-
-        let network = NWPathMonitor()
-        network.pathUpdateHandler = { [weak self] path in
-            MainActor.assumeIsolated { self?.changed { $0.report(path) } }
-        }
-        network.start(queue: .main)
-        self.network = network
+        system = SystemWatch(
+            localeChanged: { [weak self] in self?.changed { $0.reportLocale() } },
+            networkChanged: { [weak self] reached in self?.changed { $0.core.setConnectivityInfo(reached) } })
     }
 
     /// Reports a change through the runtime's step for it.
@@ -106,18 +97,9 @@ final class UIKitEnvironment {
         core.setColorScheme(style == .dark ? .dark : .light)
     }
 
+    /// The user's locale as it stands.
     func reportLocale() {
-        let locale = Locale.current
-        let hourCycle = locale.hourCycle
-        core.setLocaleInfo(HostLocaleInfo(
-            language: locale.language.languageCode?.identifier ?? "",
-            region: locale.region?.identifier ?? "",
-            name: locale.identifier(.bcp47),
-            timeZone: TimeZone.current.identifier,
-            uses24HourClock: hourCycle == .zeroToTwentyThree || hourCycle == .oneToTwentyFour,
-            firstDayOfWeek: Weekday(rawValue: Int32(Calendar.current.firstWeekday - 1)) ?? .sunday,
-            isMetric: locale.measurementSystem != .us,
-            layoutDirection: locale.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight))
+        core.setLocaleInfo(SystemFacts.locale)
     }
 
     /// The device's battery; one UIKit knows nothing of - the simulator's - is none.
@@ -148,22 +130,6 @@ final class UIKitEnvironment {
     /// The screen turned, or the scene moved to another.
     func displayMoved(for scene: UIWindowScene) {
         changed { $0.reportDisplay(of: scene) }
-    }
-
-    private func report(_ path: NWPath) {
-        let access: NetworkAccess = switch path.status {
-        case .satisfied: .internet
-        case .unsatisfied: path.availableInterfaces.isEmpty ? .none : .local
-        case .requiresConnection: .none
-        @unknown default: .unknown
-        }
-        let kinds: [(NWInterface.InterfaceType, ConnectionProfile)] = [
-            (.cellular, .cellular), (.wiredEthernet, .ethernet), (.wifi, .wifi),
-        ]
-        core.setConnectivityInfo(HostConnectivityInfo(
-            networkAccess: access,
-            connectionProfiles: kinds.filter { kind in path.availableInterfaces.contains { $0.type == kind.0 } }
-                .map(\.1)))
     }
 }
 #endif

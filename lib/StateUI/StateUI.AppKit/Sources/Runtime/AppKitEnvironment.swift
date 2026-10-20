@@ -4,9 +4,9 @@
 #if os(macOS)
 import AppKit
 import IOKit.ps
-import Network
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 
 /// The user's locale, the battery, the network, the theme and the accent, told to the core as the host starts and
 /// whenever one changes, for as long as the application runs.
@@ -22,7 +22,7 @@ final class AppKitEnvironment {
     private var observers: [NSObjectProtocol] = []
     private var appearanceWatch: NSKeyValueObservation?
     private var powerSource: CFRunLoopSource?
-    private var network: NWPathMonitor?
+    private var system: SystemWatch?
 
     init(core: CoreLink) {
         self.core = core
@@ -33,7 +33,6 @@ final class AppKitEnvironment {
         for observer in observers { NotificationCenter.default.removeObserver(observer) }
         appearanceWatch?.invalidate()
         if let powerSource { CFRunLoopRemoveSource(CFRunLoopGetMain(), powerSource, .defaultMode) }
-        network?.cancel()
     }
 
     var powerSourceForTesting: CFRunLoopSource? { powerSource }
@@ -52,12 +51,6 @@ final class AppKitEnvironment {
     /// Watches the locale, the battery, the network and the theme, each change reported through the runtime's step.
     func watch() {
         let center = NotificationCenter.default
-        let localeChanges: [Notification.Name] = [NSLocale.currentLocaleDidChangeNotification, .NSSystemTimeZoneDidChange]
-        for name in localeChanges {
-            observers.append(center.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
-                MainActor.assumeIsolated { self?.changed { $0.reportLocale() } }
-            })
-        }
         observers.append(center.addObserver(
             forName: .NSProcessInfoPowerStateDidChange, object: nil, queue: .main
         ) { [weak self] _ in
@@ -76,12 +69,9 @@ final class AppKitEnvironment {
             powerSource = source
         }
 
-        let network = NWPathMonitor()
-        network.pathUpdateHandler = { [weak self] path in
-            MainActor.assumeIsolated { self?.changed { $0.report(path) } }
-        }
-        network.start(queue: .main)
-        self.network = network
+        system = SystemWatch(
+            localeChanged: { [weak self] in self?.changed { $0.reportLocale() } },
+            networkChanged: { [weak self] reached in self?.changed { $0.core.setConnectivityInfo(reached) } })
 
         watchTheme()
     }
@@ -128,19 +118,9 @@ final class AppKitEnvironment {
         core.setColorScheme(appearance == .darkAqua ? .dark : .light)
     }
 
+    /// The user's locale as it stands.
     func reportLocale() {
-        let locale = Locale.current
-        let language = locale.language.languageCode?.identifier ?? ""
-        let hourCycle = locale.hourCycle
-        core.setLocaleInfo(HostLocaleInfo(
-            language: language,
-            region: locale.region?.identifier ?? "",
-            name: locale.identifier(.bcp47),
-            timeZone: TimeZone.current.identifier,
-            uses24HourClock: hourCycle == .zeroToTwentyThree || hourCycle == .oneToTwentyFour,
-            firstDayOfWeek: Weekday(rawValue: Int32(Calendar.current.firstWeekday - 1)) ?? .sunday,
-            isMetric: locale.measurementSystem != .us,
-            layoutDirection: locale.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight))
+        core.setLocaleInfo(SystemFacts.locale)
     }
 
     func reportBattery() {
@@ -153,22 +133,6 @@ final class AppKitEnvironment {
             charging: battery?[kIOPSIsChargingKey] as? Bool ?? false,
             onMains: battery.map { $0[kIOPSPowerSourceStateKey] as? String == kIOPSACPowerValue } ?? true,
             full: battery?[kIOPSIsChargedKey] as? Bool ?? false, saving: saving))
-    }
-
-    private func report(_ path: NWPath) {
-        let access: NetworkAccess = switch path.status {
-        case .satisfied: .internet
-        case .unsatisfied: path.availableInterfaces.isEmpty ? .none : .local
-        case .requiresConnection: .none
-        @unknown default: .unknown
-        }
-        let kinds: [(NWInterface.InterfaceType, ConnectionProfile)] = [
-            (.cellular, .cellular), (.wiredEthernet, .ethernet), (.wifi, .wifi),
-        ]
-        core.setConnectivityInfo(HostConnectivityInfo(
-            networkAccess: access,
-            connectionProfiles: kinds.filter { kind in path.availableInterfaces.contains { $0.type == kind.0 } }
-                .map(\.1)))
     }
 
     /// The description of the machine's own battery, nil on a machine with none.

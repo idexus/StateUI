@@ -5,6 +5,7 @@
 import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 
 /// The UIKit host's runtime: the host layer's (`HostRuntime`) over UIKit's windows - each StateUI window in a
 /// window scene iOS connected - and the core turned after each pass of the main run loop.
@@ -238,13 +239,7 @@ final class UIKitRenderer {
         runtime.core.setDeviceInfo(HostDeviceInfo(
             formFactor: device.userInterfaceIdiom == .pad ? .tablet : .phone, platform: "iOS", model: device.model,
             manufacturer: "Apple", name: device.name, versionString: device.systemVersion, deviceType: deviceType))
-        let bundle = Bundle.main
-        runtime.core.setApplicationInfo(HostApplicationInfo(
-            name: bundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
-                ?? bundle.object(forInfoDictionaryKey: "CFBundleName") as? String ?? ProcessInfo.processInfo.processName,
-            packageName: bundle.bundleIdentifier ?? "",
-            versionString: bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "",
-            buildString: bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? ""))
+        runtime.core.setApplicationInfo(SystemFacts.application)
     }
 
     /// Shows every StateUI window in a window scene of its own, the first waiting one; a window the tree no longer
