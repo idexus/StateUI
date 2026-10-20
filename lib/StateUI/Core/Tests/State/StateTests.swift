@@ -744,7 +744,8 @@ extension StateTests {
 
         XCTAssertEqual(readers.count, 2, "the body that printed the state was not built again for the move")
         XCTAssertEqual(fade.get(), 0.2, "and it reads where the value is going")
-        XCTAssertEqual(fade.projectedValue.journey.motion, .eased(.milliseconds(400), .linear), "on the move's own law")
+        XCTAssertEqual(fade.storage.journeyLanes?.motion, .eased(.milliseconds(400), .linear), "on the move's own law")
+        XCTAssertEqual(fade.projectedValue.journey.motion, .inherited, "the value's own standing")
         XCTAssertEqual(fade.projectedValue.journey.value, 1, "the value waits for the host to walk it")
     }
 

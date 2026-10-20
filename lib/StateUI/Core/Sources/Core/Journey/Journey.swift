@@ -122,26 +122,27 @@ public struct Journey<Value: Walked> {
     ///
     /// On the value rather than the view: `.motion(_:)` says how an element animates,
     /// this says how this value does. `.inherited` is the element's own. `.custom` is
-    /// not set here: who animates a value is settled at its declaration.
+    /// not set here: who animates a value is settled at its declaration. A law given to
+    /// `move(to:_:)` is that move's alone and leaves this one standing.
     public var motion: Motion {
-        get { lanes()?.motion ?? storage?.law ?? .inherited }
+        get {
+            _ = lanes()
+            return storage?.law ?? .inherited
+        }
 
         nonmutating set {
             guard HandlerRun.admits("a journey's law"), let storage else { return }
-
-            guard let (_, _, standing) = walking() else {
-                storage.law = newValue
-                return
-            }
-
-            var lanes = standing
-
-            guard newValue.kind != .custom, lanes.motion.kind != .custom else {
+            guard newValue.kind != .custom, storage.law.kind != .custom else {
                 complain("`\(storage.origin ?? "a state")` was given a law after it was declared "
                     + "that would change who walks it. `.custom` is said at the declaration - "
                     + "`@State(motion: .custom)` - and a value declared so keeps it.")
                 return
             }
+
+            storage.law = newValue
+            guard let (_, _, standing) = walking() else { return }
+
+            var lanes = standing
 
             lanes.motion = newValue
             storage.lay([.motion], of: lanes)
@@ -176,8 +177,8 @@ public struct Journey<Value: Walked> {
     ///
     /// Where nothing wears the state yet, or an engine of the application's animates
     /// it (`.custom`), it arrives at once; already there, or where the user asked for
-    /// less motion, it arrives on the host's next frame. A law given here stays on the
-    /// value; without one, the value's own law stands.
+    /// less motion, it arrives on the host's next frame. A law given here is this move's
+    /// alone: the next write that names none travels under the value's own.
     ///
     /// - Parameters:
     ///   - target: where to send it.
@@ -213,13 +214,6 @@ public struct Journey<Value: Walked> {
         // state and it arrives at once.
         // Design: docs/design/core/journeys.md#moving-and-waiting
         if image.ties == 0 || lanes.motion.kind == .custom {
-            // The law given stays on the value here too.
-            if let motion {
-                var lawful = lanes
-                lawful.motion = motion
-                storage.lay([.motion], of: lawful)
-            }
-
             state.wrappedValue = target
             return Arrival(at: true)
         }
@@ -230,7 +224,8 @@ public struct Journey<Value: Walked> {
         travelling.destination = target
         travelling.completion = Double(Renderer.shared.book { arrival.land($0) })
 
-        if let motion { travelling.motion = motion }
+        // A law given is this move's alone; without one the value travels under its own.
+        travelling.motion = motion ?? storage.law
 
         // The waiter forces the destination only where no lane of it changes - a fresh journey even to where it is
         // going; otherwise the lanes it changes are the journey, and the others travel on.

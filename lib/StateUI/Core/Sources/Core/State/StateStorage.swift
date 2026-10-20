@@ -112,8 +112,8 @@ extension State {
         /// Whether the host carries this state.
         var carried: Bool { image != nil }
 
-        /// The law `@State(motion:)` declared, or `.inherited`; read once, when the
-        /// journey image is made.
+        /// The value's own law - `@State(motion:)`, else `.inherited`, as `journey.motion`
+        /// writes it - which a write that names no law travels under.
         var law: Motion = .inherited
 
         /// Whether any build ever read this state - sticky, and what a write consults
@@ -292,10 +292,16 @@ extension State.Storage where Value: Walked {
             let known = Known(start.destination)
 
             hostRead = { Self.journey(on: made).destination }
-            hostWrite = { target in
+            hostWrite = { [weak self] target in
                 var journey = Self.journey(on: made)
 
                 journey.destination = target
+
+                // A move's own law ended with it: a write travels under the value's own.
+                // Design: docs/design/core/journeys.md#moving-and-waiting
+                let own = self?.law ?? journey.motion
+                let lawful: [JourneyPart] = journey.motion == own ? [] : [.motion]
+                journey.motion = own
 
                 // Nobody animates it yet: the value lands where it is sent.
                 // Design: docs/design/core/state.md#a-state-nobody-wears
@@ -303,12 +309,12 @@ extension State.Storage where Value: Walked {
                     journey.value = target
                     journey.velocity = JourneyLanes<Value>.still
                     known.destination = target
-                    Self.lay([.value, .destination, .velocity], of: journey, on: made)
+                    Self.lay([.value, .destination, .velocity] + lawful, of: journey, on: made)
                     return
                 }
 
                 known.destination = target
-                Self.lay([.destination], of: journey, on: made)
+                Self.lay([.destination] + lawful, of: journey, on: made)
             }
             hostSnap = { landed in
                 var journey = Self.journey(on: made)

@@ -73,7 +73,7 @@ MapSample.swift 7c9ebbdbf83ac5b7
 MaterialsSample.swift 22b1a745307885f8
 MenuBarSample.swift c43adf3ebf7c85ac
 ModalSample.swift 69735010f26dc23b
-MotionSample.swift 1d57b2b7bf11c40e
+MotionSample.swift 37f1281ff5fe2455
 MultiWindowSample.swift 12f1c8ba843fad28
 NavigationSample.swift bb0a9a427e1bfa90
 NextFieldSample.swift b365cbd1626b4437

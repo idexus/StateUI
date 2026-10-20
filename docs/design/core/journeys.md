@@ -98,8 +98,12 @@ lanes change, only they are laid: the host sends those lanes on as one run
 under the waiter, and a lane the move leaves alone travels on as it was
 (host/motion.md, a channel lane by lane). The write and the booking land before `move` returns, so moves sent one after
 another and awaited after are in the air together, booked in the order
-written. A given law stays on the value: a plain assignment after
-`move(to: 0, .eased(.milliseconds(2000)))` animates for two seconds too.
+written. A given law is that move's alone: the value keeps its own
+(`@State(motion:)`, `journey.motion`) in its storage, the move lays the law it
+was given on the lanes for its travel, and the next write that names none - an
+assignment, or a move without a law - lays the value's own back with its
+destination, so a plain assignment after `move(to: 0,
+.eased(.milliseconds(2000)))` travels on the value's own law.
 
 A state nothing wears lands at once and answers true: nobody would ever answer a
 waiter booked on it. Under `.custom` the destination is written and the answer

@@ -168,6 +168,32 @@ final class JourneyTests: XCTestCase {
         XCTAssertNotEqual(image.pendingMask & y, 0, "every lane laid again where none changes")
     }
 
+    /// A LAW GIVEN TO A MOVE IS THAT MOVE'S ALONE: the value travels under it, its own law standing, and the next
+    /// write that names no law - an assignment, or a move without one - travels under the value's own again.
+    func testALawGivenToAMoveIsThatMovesAlone() throws {
+        let offset = State(wrappedValue: Point(0, 0), motion: .spring())
+        Renders().render(ScrollView { Text("a") }.scrollOffset(offset.projectedValue).node)
+        let image = try XCTUnwrap(offset.storage.walkedImage())
+        let slow = Motion.eased(.milliseconds(2000))
+        var now = 0.0
+        let crossing = { () -> Motion? in
+            now += 16
+            Renderer.shared.board(of: image).cycle(now: now, reducesMotion: false)
+            return self.law(crossing: image)
+        }
+
+        offset.projectedValue.journey.move(to: Point(0, 5), slow)
+        XCTAssertEqual(crossing(), slow, "the move travels under the law it was given")
+        XCTAssertEqual(offset.projectedValue.journey.motion, .spring(), "the value's own law stands")
+
+        offset.wrappedValue = Point(0, 0)
+        XCTAssertEqual(crossing(), .spring(), "an assignment travels under the value's own")
+
+        offset.projectedValue.journey.move(to: Point(0, 5), slow)
+        offset.projectedValue.journey.move(to: Point(0, 1))
+        XCTAssertEqual(crossing(), .spring(), "and so does a move that names none")
+    }
+
     /// THE LAW RIDES THE VALUE, not the view showing it. `.motion(_:)` on an
     /// element says how everything that element does travels; `@State(motion:)`
     /// says how THIS value travels wherever it is shown, and it survives on the
@@ -186,25 +212,29 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(plain.projectedValue.journey.motion, .eased(.milliseconds(90), .linear), "written later, it is the value's too")
     }
 
-    /// A law given to a move stays on the value even where nothing wears the state yet and the move arrives at once.
-    func testALawGivenToAMoveOfAStateNobodyWearsStays() {
+    /// A law given to a move of a state nobody wears goes with the move, which arrives at once: the value's own law
+    /// stands.
+    func testALawGivenToAMoveOfAStateNobodyWearsGoesWithIt() {
         let fade = State(wrappedValue: 1.0)
-        let law = Motion.eased(.milliseconds(400), .cubicIn)
 
-        let arrival = fade.projectedValue.journey.move(to: 0, law)
+        let arrival = fade.projectedValue.journey.move(to: 0, .eased(.milliseconds(400), .cubicIn))
 
         XCTAssertEqual(arrival.ended, true)
-        XCTAssertEqual(fade.projectedValue.journey.motion, law, "the law it was given is the value's now")
+        XCTAssertEqual(fade.projectedValue.journey.motion, .inherited, "the value's own law")
     }
 
     /// `.none` given to a move is the law that does not move, never "no law given": the value travels under it, not
     /// under its own.
-    func testAMoveGivenNoMotionTravelsUnderNone() {
-        let fade = State(wrappedValue: 1.0, motion: .spring())
+    func testAMoveGivenNoMotionTravelsUnderNone() throws {
+        let offset = State(wrappedValue: Point(0, 0), motion: .spring())
+        Renders().render(ScrollView { Text("a") }.scrollOffset(offset.projectedValue).node)
+        let image = try XCTUnwrap(offset.storage.walkedImage())
 
-        fade.projectedValue.journey.move(to: 0, .none)
+        offset.projectedValue.journey.move(to: Point(0, 5), .none)
+        Renderer.shared.board(of: image).cycle(now: 16, reducesMotion: false)
 
-        XCTAssertEqual(fade.projectedValue.journey.motion, Motion.none, "the law it was given, `.none`")
+        XCTAssertEqual(law(crossing: image), Motion.none, "the law it was given, `.none`")
+        XCTAssertEqual(offset.projectedValue.journey.motion, .spring(), "the value's own standing")
     }
 
     /// THE VALUE'S OWN LAW OVERRIDES THE ELEMENT'S, per property. `.inherited`

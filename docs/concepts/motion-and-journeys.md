@@ -150,8 +150,23 @@ The destination is written as `move` is called, so moves sent one after
 another are in the air together, each awaited apart. An unrelated
 body rebuild does not restart or cancel a journey: the motion channel belongs
 to the state storage and continues from its standing value and velocity. A
-later motion passed to `move` is retained as that value's law, so subsequent
-plain writes use it until `journey.motion` changes again.
+motion passed to `move` is that move's alone: the next plain write, or a move
+that names no motion, travels under the value's own law again.
+
+```swift
+struct Drawer: View {
+    @State(motion: .spring()) private var offset = 0.0
+
+    var body: some View {
+        Button("Open")
+            .onClicked {
+                $offset.journey.move(to: 300, .eased(.milliseconds(2000)))
+                offset = 0   // on the value's own spring, not the two seconds
+            }
+            .translationY($offset)
+    }
+}
+```
 
 For a host-carried state, motion selection is:
 
