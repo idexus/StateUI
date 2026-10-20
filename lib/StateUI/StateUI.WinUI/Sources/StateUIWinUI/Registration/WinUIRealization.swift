@@ -104,7 +104,7 @@ enum WinUIRealization {
             + "where its page paints nothing is its DefaultBackgroundColor, which the backend does not set yet."),
         .unrealized(VisualElementContract.ignoresInput, on: ActivityIndicatorContract.self, why: hitOnlyWherePainted),
         .partial(DatePickerContract.format,
-            missing: "WinUI writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),
+            missing: "WinUI writes the long and the short day in the user's own way, and the medium as the short."),
         .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
             why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),

@@ -23,8 +23,8 @@ public enum DatePickerContract: ElementContract {
     /// A day was chosen.
     public static let dateChanged = ElementEvent<Self, CalendarDate>("dateChanged", layer: .native)
 
-    /// How the day is written in the field, as a format string.
-    public static let format = ElementProperty<Self, String>("format", layer: .native)
+    /// How much of the day is written out in the field, in the user's language.
+    public static let format = ElementProperty<Self, DateStyle>("format", layer: .native)
 
     /// Whether the calendar is showing.
     public static let isOpen = ElementProperty<Self, Bool>("isOpen", layer: .native)

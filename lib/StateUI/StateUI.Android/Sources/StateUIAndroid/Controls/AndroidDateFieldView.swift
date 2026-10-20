@@ -83,6 +83,20 @@ final class AndroidDateFieldView: AndroidTextualView {
         Java.frame { Java.call(reference, JavaAPI.setFieldFormat, .object(Java.string(format ?? ""))) }
     }
 
+    /// How much of the day is written out, as the relay's letter for it; nil for the platform's.
+    func setFormat(_ style: DateStyle?) {
+        setFormat(style.map(Self.letter(of:)))
+    }
+
+    /// The relay's letter for each form of a day: "d" the short, "M" the medium, "D" the long.
+    static func letter(of style: DateStyle) -> String {
+        switch style {
+        case .short: "d"
+        case .medium: "M"
+        case .long: "D"
+        }
+    }
+
     /// Opens the calendar or clock, or closes it; the program's own change is heard by nobody.
     func setOpen(_ open: Bool) {
         guard opening.programAsks(open: open, shown: dialogShows) else { return }

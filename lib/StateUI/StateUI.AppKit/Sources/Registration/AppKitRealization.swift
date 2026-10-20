@@ -216,7 +216,7 @@ enum AppKitRealization {
             DatePickerContract.isOpen, DatePickerContract.opened, DatePickerContract.closed,
             TimePickerContract.isOpen, TimePickerContract.opened, TimePickerContract.closed,
         ]
-        let written = "AppKit's date picker writes its day and time in the user's own way: it takes no pattern."
+        let written = "AppKit's date picker writes its day and time in the user's own way, whatever form is asked."
         return opening.map { member -> HostRecord in .notPlanned(member, reason: opens) } + [
             .notPlanned(DatePickerContract.format, reason: written), .notPlanned(TimePickerContract.format, reason: written),
         ]

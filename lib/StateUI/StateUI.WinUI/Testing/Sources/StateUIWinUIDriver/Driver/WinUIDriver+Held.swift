@@ -367,7 +367,7 @@ extension WinUIDriver {
         case ("minimumDate", let picker as WinUIDatePickerView): return Self.day(try read(picker, "minimumDate"))?.propValue
         case ("maximumDate", let picker as WinUIDatePickerView): return Self.day(try read(picker, "maximumDate"))?.propValue
         case ("format", let picker as WinUIDatePickerView):
-            return .string(try read(picker, "longDate") == "1" ? "D" : "d")
+            return (try read(picker, "longDate") == "1" ? DateStyle.long : .short).propValue
         case ("time", let picker as WinUITimePickerView): return picker.time?.propValue
         case ("source", let image as WinUIImageView): return ImageSource(try read(image, "source")).propValue
         case ("iconPosition", let button as WinUIButtonView):

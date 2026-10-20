@@ -2423,7 +2423,7 @@ enum Listings {
                 DatePicker($due)
                     .minimumDate(CalendarDate(year: 2020, month: 1, day: 1))
                     .maximumDate(CalendarDate(year: 2030, month: 12, day: 31))
-                    .format("D")
+                    .format(.long)
                     .onDateChanged { date in
                         chosen = date.text
                         picks += 1

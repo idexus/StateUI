@@ -216,7 +216,7 @@ final class ContractTests: XCTestCase {
             AccessibilityHeadingLevel(rawValue: 1)!, ScrollIndicatorVisibility(rawValue: 1)!,
             LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,
             FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarItemPlacement(rawValue: 1)!, ToolbarSide.start,
-            SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, ButtonRole.cancel, ActionRole.destructive,
+            SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, ButtonRole.cancel, ActionRole.destructive, DateStyle.medium,
             [Key.escape, "a"], MapType(rawValue: 1)!,
             WebNavigationType(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.changed,
             LayoutInput.Axis.vertical,

@@ -38,7 +38,8 @@ extension GTKDriver {
         case (.date, let dates as GTKDatePickerView): dates.date.propValue
         case (.minimumDate, let dates as GTKDatePickerView): .some(dates.range.earliest?.propValue)
         case (.maximumDate, let dates as GTKDatePickerView): .some(dates.range.latest?.propValue)
-        case (.format, let dates as GTKDatePickerView): (Self.words(of: dates) == Self.shortForm(of: dates) ? "d" : "D").propValue
+        case (.format, let dates as GTKDatePickerView):
+            (Self.words(of: dates) == Self.shortForm(of: dates) ? DateStyle.short : .long).propValue
         case (.time, let times as GTKTimePickerView): times.time.propValue
         default: nil
         }

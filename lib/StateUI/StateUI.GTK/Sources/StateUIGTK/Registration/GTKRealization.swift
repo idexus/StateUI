@@ -100,7 +100,7 @@ enum GTKRealization {
         .complete(LayoutEngineContract.rotates),
         .complete(LayoutEngineContract.pinchMoved),
         .partial(DatePickerContract.format,
-            missing: "GTK writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),
+            missing: "GTK writes the long and the short day in the user's own way, and the medium as the short."),
         .partial(DatePickerContract.maximumDate,
             missing: "GtkCalendar offers every day: one the user picks past the range stands at its end."),
         .partial(DatePickerContract.minimumDate,

@@ -182,7 +182,7 @@ final class ControlTests: XCTestCase {
                     .date(CalendarDate(year: 2026, month: 8, day: 9))
                     .minimumDate(CalendarDate(year: 2026, month: 1, day: 1))
                     .maximumDate(CalendarDate(year: 2026, month: 12, day: 31))
-                    .format("D")
+                    .format(.long)
                     .isOpen(false)
                     .onDateChanged { _ in }
                     .onOpened {}

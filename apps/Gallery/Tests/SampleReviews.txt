@@ -30,7 +30,7 @@ ConnectivitySample.swift b032daec8c0b386f
 ContextMenuSample.swift 639add5daf31314b
 ConverterSample.swift d5ba768dad512071
 Cube3DSample.swift da05c5b4d44ecc04
-DatePickerSample.swift 98ec31b1e84de06c
+DatePickerSample.swift 96e1d0bb2c2f86e8
 DeviceDisplaySample.swift a9241d0b33fff4dc
 DeviceInfoSample.swift cb6c33fedbd844cf
 DialogsSample.swift cba009922c4830ec

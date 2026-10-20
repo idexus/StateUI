@@ -44,7 +44,8 @@ extension AndroidDriver {
             return "the relay's own record of what it handed the system, which a test holds back from launching"
         case "read minimumDate of DatePicker", "read maximumDate of DatePicker":
             return "the bounds the relay hands its calendar as it opens"
-        case "read format of DatePicker", "read format of TimePicker": return "the pattern the relay writes the field in"
+        case "read format of DatePicker": return "the form the relay writes the field in"
+        case "read format of TimePicker": return "the pattern the relay writes the field in"
         default: return nil
         }
     }

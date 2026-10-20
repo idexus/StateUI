@@ -24,7 +24,7 @@ struct DatePickerSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Due date")
                 .minimumDate(CalendarDate(year: 2020, month: 1, day: 1))
                 .maximumDate(CalendarDate(year: 2030, month: 12, day: 31))
-                .format("D")
+                .format(.long)
                 .onDateChanged { date in
                     chosen = date.text
                     picks += 1
@@ -70,7 +70,7 @@ struct DatePickerSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("The text in the field is the host's to write, in the user's locale; "
-                + "`.format(\"D\")` asks for the long form.")
+                + "`.format(.long)` asks for the long form.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

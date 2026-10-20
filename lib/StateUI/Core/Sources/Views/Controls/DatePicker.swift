@@ -35,13 +35,11 @@ extension DatePickerProperties {
         setValue(DatePickerContract.maximumDate, value)
     }
 
-    /// How the date is written in the field, as a format string - "D" for the
-    /// long form, "d" for the short one, "dd MMM yyyy" for a pattern of your
-    /// own.
-    ///
-    /// The host formats it in the user's locale and language.
-    public func format(_ value: String) -> Modified {
-        setValue(DatePickerContract.format, value)
+    /// How much of the day is written out in the field - `.long`
+    /// "September 30, 2026", `.medium` "Sep 30, 2026", `.short` "9/30/26" -
+    /// each in the order and the words of the user's language and region.
+    public func format(_ style: DateStyle) -> Modified {
+        setValue(DatePickerContract.format, style)
     }
 }
 
@@ -51,7 +49,7 @@ extension DatePickerProperties {
 ///     …
 ///     DatePicker($birthday)
 ///         .minimumDate(CalendarDate(year: 1900, month: 1, day: 1))
-///         .format("D")
+///         .format(.long)
 ///
 /// The date is a `CalendarDate`: a year, a month and a day. The picker takes
 /// `.textColor` but has no `.text`, the field showing the formatted date.

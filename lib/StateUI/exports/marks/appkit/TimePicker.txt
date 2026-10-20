@@ -1,7 +1,7 @@
 # revision 4.1
 TimePicker: ✅
 TimePicker.closed: – AppKit's date picker opens no calendar for the program, nor says when the user opens one.
-TimePicker.format: – AppKit's date picker writes its day and time in the user's own way: it takes no pattern.
+TimePicker.format: – AppKit's date picker writes its day and time in the user's own way, whatever form is asked.
 TimePicker.isOpen: – AppKit's date picker opens no calendar for the program, nor says when the user opens one.
 TimePicker.opened: – AppKit's date picker opens no calendar for the program, nor says when the user opens one.
 TimePicker.time: ✅

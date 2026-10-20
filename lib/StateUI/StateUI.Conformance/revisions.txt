@@ -39,7 +39,7 @@ MenuItemElement 5
 FontElement 3
 winui MenuItemElement 2
 winui PageElement 2
-DatePicker 4
+DatePicker 5
 TimePicker 4
 Picker 4
 Image 3
