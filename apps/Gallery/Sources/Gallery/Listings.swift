@@ -2239,7 +2239,7 @@ enum Listings {
                     Text()
                         // The sides as they are shown, whole, and their product - not the product of what
                         // the sliders hold, which would disagree with the sides it names.
-                        .text($width.convert(with: $height) { w, h in
+                        .text(.multi($width, $height).convert { w, h in
                             let (across, down) = (Int(w.rounded()), Int(h.rounded()))
                             return "\(across) × \(down) = \(across * down)"
                         })
@@ -7839,7 +7839,7 @@ enum Listings {
                 // Two states into one conversion: the host works the words out
                 // from where the box HAS GOT TO, on its own frames.
                 Text()
-                    .text($liveX.journey.convert(with: $liveY.journey) { x, y in
+                    .text(.multi($liveX.journey, $liveY.journey).convert { x, y in
                         "Moved \(Int(x.value)), \(Int(y.value))"
                     })
 

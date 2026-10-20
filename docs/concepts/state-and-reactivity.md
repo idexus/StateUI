@@ -288,7 +288,7 @@ Use the consequence you need as the selection rule:
 | Give a child access to the same value | pass `$value` to `@Binding` | determined by what the child does with it |
 | Keep a native property synchronized continuously | hand the whole state to a binding-taking control or modifier | host-cycle update, no body read |
 | Wake arithmetic on a display frame | name the state in `engine(following:)` or `engine(tracking:)` | wake that engine |
-| Turn one or more carried states into another carried value | `convert`, `convert(with:)`, or `multi` | conversion engine, no body read |
+| Turn one or more carried states into another carried value | `convert`, or `multi` for several | conversion engine, no body read |
 | Let a continuous value make an occasional structural decision | `samples` into ordinary state, or an engine that writes only when a threshold changes | rebuild only for sampled or changed decisions |
 
 A state may use both paths. For example, a slider can carry `$volume` while a
@@ -409,7 +409,7 @@ VStack {
 
     Text($volume.convert { "\(Int($0 * 100))%" })
 
-    Text($width.convert(with: $height) { width, height in
+    Text(.multi($width, $height).convert { width, height in
         "\(Int(width)) × \(Int(height))"
     })
 }
@@ -461,8 +461,9 @@ VStack {
 }
 ```
 
-Use `journey.convert(with:)` when the live presentation depends on two moving
-states. One host-carried state is one shared motion channel; use separate
+Use `.multi($a.journey, $b.journey).convert { … }` when the live presentation
+depends on two moving states - `.multi` is the one road for a conversion of
+several sources, states or journeys. One host-carried state is one shared motion channel; use separate
 states when the values need independent animations.
 
 ## Journey and sampled readings

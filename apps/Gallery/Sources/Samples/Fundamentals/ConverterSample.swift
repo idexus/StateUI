@@ -112,7 +112,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                 Text()
                     // The sides as they are shown, whole, and their product - not the product of what
                     // the sliders hold, which would disagree with the sides it names.
-                    .text($width.convert(with: $height) { w, h in
+                    .text(.multi($width, $height).convert { w, h in
                         let (across, down) = (Int(w.rounded()), Int(h.rounded()))
                         return "\(across) × \(down) = \(across * down)"
                     })
@@ -160,9 +160,9 @@ struct ConverterSample: SampleContent, ExampleContent {
 
             Text("Two steppers on one Celsius state, one of them converted to Fahrenheit "
                 + "and back; two sliders worked into one caption with "
-                + "`convert(with:)`; and `.multi($named, $width, $height)` for as many "
-                + "states as you like - two to ten, of any types, the closure taking them "
-                + "in the order they were named. Every count here stays at one, the "
+                + "`.multi($width, $height)`, which takes as many states as you like - two "
+                + "to ten, of any types, the closure taking them in the order they were "
+                + "named, as `.multi($named, $width, $height)` does. Every count here stays at one, the "
                 + "field's included: `TextField($named)` hands the state to the host as a "
                 + "caption does, so what is typed lands on `named` with no render - type "
                 + "in the field and watch the `.multi` caption in the next row follow "

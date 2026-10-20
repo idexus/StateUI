@@ -135,58 +135,6 @@ extension Journey {
     }
 }
 
-extension Journey {
-    /// Two journeys converted into one value - the words for a point, the distance
-    /// between two animated values - settled on every frame either moves.
-    ///
-    ///     Text($liveX.journey.convert(with: $liveY.journey) { x, y in
-    ///         "at \(Int(x.value)), \(Int(y.value))"
-    ///     })
-    ///
-    /// - Parameters:
-    ///   - other: the second journey.
-    ///   - transform: the derived value, from both as they stand.
-    ///   - file: where the conversion is written - which, with the line, is
-    ///     what keeps the derived state one object across renders.
-    ///   - line: the same.
-    ///   - column: the same.
-    /// - Returns: the derived state, to hand on.
-    public func convert<Other: Walked, Out: StateValue>(
-        with other: Journey<Other>,
-        _ transform: @escaping (Journey<Value>, Journey<Other>) -> Out,
-        file: StaticString = #fileID,
-        line: UInt = #line,
-        column: UInt = #column
-    ) -> Binding<Out> {
-        guard let source = storage, let second = other.storage else {
-            complain("`journey.convert(with:)` was handed a part of a state, or a binding "
-                + "made from closures, which the host cannot walk. The value is worked "
-                + "out at build instead, and nothing reports back through it.")
-            return Binding<Out>(get: { transform(self, other) }, set: { _ in })
-        }
-
-        _ = source.walkedImage()
-        _ = second.walkedImage()
-
-        let journey = self
-        let derived = source.derived(Out.self, at: PathNumber(file: file, line: line, column: column)) {
-            transform(journey, other)
-        }
-        let conversion = derived.conversion ?? Conversion()
-
-        conversion.sources = [source, second]
-        conversion.forward = { [weak derived] (asking: Bool) in
-            guard let derived else { return }
-
-            derived.settle(transform(journey, other), asking: asking)
-        }
-        conversion.derived = { [weak derived] in derived }
-        derived.conversion = conversion
-
-        return Binding<Out>(over: derived)
-    }
-}
-
 extension Binding where Value: StateValue {
     /// The conversion this binding is the derived side of, if it is one.
     var conversion: Conversion? { described?.conversion }
@@ -233,50 +181,6 @@ extension Binding where Value: StateValue {
             guard let source, let derived else { return }
 
             derived.settle(transform(source.value), asking: asking)
-        }
-        conversion.derived = { [weak derived] in derived }
-        derived.conversion = conversion
-
-        return Binding<Out>(over: derived)
-    }
-
-    /// Two states converted into one on their way to a control - a sum, a
-    /// ratio, a caption from two numbers - by an engine following both.
-    /// This library's own.
-    ///
-    ///     Text().text($width.convert(with: $height) { w, h in "\(Int(w))×\(Int(h))" })
-    ///
-    /// - Parameters:
-    ///   - other: the second state.
-    ///   - transform: the derived value, from both.
-    ///   - file: where the conversion is written, as for `convert(_:)`.
-    ///   - line: the same.
-    ///   - column: the same.
-    /// - Returns: the derived state, to hand on.
-    public func convert<Other: StateValue, Out: StateValue>(
-        with other: Binding<Other>,
-        _ transform: @escaping (Value, Other) -> Out,
-        file: StaticString = #fileID,
-        line: UInt = #line,
-        column: UInt = #column
-    ) -> Binding<Out> {
-        guard let source = described, let second = other.described else {
-            complain("`convert(with:)` was handed a part of a state, or a binding made "
-                + "from closures, which the host cannot carry. The value is worked out "
-                + "at build instead, and nothing reports back through it.")
-            return Binding<Out>(get: { transform(self.wrappedValue, other.wrappedValue) }, set: { _ in })
-        }
-
-        let derived = source.derived(Out.self, at: PathNumber(file: file, line: line, column: column)) {
-            transform(source.value, second.value)
-        }
-        let conversion = derived.conversion ?? Conversion()
-
-        conversion.sources = [source, second]
-        conversion.forward = { [weak source, weak second, weak derived] asking in
-            guard let source, let second, let derived else { return }
-
-            derived.settle(transform(source.value, second.value), asking: asking)
         }
         conversion.derived = { [weak derived] in derived }
         derived.conversion = conversion

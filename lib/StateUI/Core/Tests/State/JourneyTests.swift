@@ -392,6 +392,26 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(going.wrappedValue, "going to 0", "and moves the state's at once")
     }
 
+    /// TWO JOURNEYS READ AS ONE follow both walks: the words are settled from where each value IS, on every frame
+    /// either moves.
+    func testTwoJourneysReadAsOneFollowBothWalks() {
+        let x = State(wrappedValue: 1.0)
+        let y = State(wrappedValue: 1.0)
+        let renders = Renders()
+
+        let words = Binding<String>.multi(x.projectedValue.journey, y.projectedValue.journey).convert { x, y in
+            "at \(Int(x.value * 100)), \(Int(y.value * 100))"
+        }
+
+        renders.render(VStack { Rectangle().opacity(x.projectedValue); Rectangle().opacity(y.projectedValue) }.node)
+
+        moved(x.number, to: [0.5, 1, 0, 0, 0, 0, 0, 0], mask: 0b1)
+        XCTAssertEqual(words.wrappedValue, "at 50, 100", "the first walk's frame reached the words")
+
+        moved(y.number, to: [0.25, 1, 0, 0, 0, 0, 0, 0], mask: 0b1)
+        XCTAssertEqual(words.wrappedValue, "at 50, 25", "and the second's")
+    }
+
     /// The law lying in a crossing's bytes, read the way the host reads it.
     private func law(crossing image: HostStorage) -> Motion? {
         let bytes = image.crossing()

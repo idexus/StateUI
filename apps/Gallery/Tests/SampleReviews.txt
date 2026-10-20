@@ -28,7 +28,7 @@ ConcurrentAnimationSample.swift 5f47e5692b0a332e
 ConcurrentStateSample.swift 7dd2335765433b1f
 ConnectivitySample.swift b032daec8c0b386f
 ContextMenuSample.swift 639add5daf31314b
-ConverterSample.swift d5ba768dad512071
+ConverterSample.swift 4826e332b502150c
 Cube3DSample.swift da05c5b4d44ecc04
 DatePickerSample.swift 96e1d0bb2c2f86e8
 DeviceDisplaySample.swift a9241d0b33fff4dc
@@ -80,7 +80,7 @@ NextFieldSample.swift b365cbd1626b4437
 OnChangedSample.swift 69ae77869efe3165
 OutlineSample.swift c6873395a506661c
 PacedStateSample.swift 002ae36e7bcd6ea6
-PanSample.swift 72af32582df8741e
+PanSample.swift 714c9706c1d5a6d9
 PersistentStateSample.swift 23d6c3dc60b87ffa
 PickerSample.swift 86c5cbb290e05823
 PinchSample.swift 45b58de2f0cb046d

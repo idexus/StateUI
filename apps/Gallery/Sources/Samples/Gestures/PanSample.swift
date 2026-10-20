@@ -70,7 +70,7 @@ struct PanSample: SampleContent, ExampleContent {
             // Two states into one conversion: the host works the words out
             // from where the box HAS GOT TO, on its own frames.
             Text()
-                .text($liveX.journey.convert(with: $liveY.journey) { x, y in
+                .text(.multi($liveX.journey, $liveY.journey).convert { x, y in
                     "Moved \(Int(x.value)), \(Int(y.value))"
                 })
                 .fontSize(15)

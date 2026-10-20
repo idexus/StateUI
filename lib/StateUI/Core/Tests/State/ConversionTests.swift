@@ -172,7 +172,7 @@ final class ConversionTests: XCTestCase {
 
         let patch = renders.render(
             Text()
-                .text(width.projectedValue.convert(with: height.projectedValue) { "\(Int($0 + $1))" })
+                .text(.multi(width.projectedValue, height.projectedValue).convert { "\(Int($0 + $1))" })
                 .node)
 
         let number = try XCTUnwrap(patch.driven?[.text]?.state)
@@ -314,8 +314,8 @@ final class ConversionTests: XCTestCase {
 
         let patch = renders.render(
             Slider(
-                hours.projectedValue
-                    .convert(with: minutes.projectedValue) { h, m in h * 60 + m }
+                Binding<Double>.multi(hours.projectedValue, minutes.projectedValue)
+                    .convert { h, m in h * 60 + m }
                     .convertBack { total in ((total / 60).rounded(.down), total.truncatingRemainder(dividingBy: 60)) })
             .maximum(600)
             .node)

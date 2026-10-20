@@ -66,6 +66,26 @@ extension Binding where Value: StateValue {
             parts: [a.described, b.described])
     }
 
+    /// 2 journeys read as one on their way to a control - the words for a
+    /// point, the distance between two animated values - settled on every
+    /// frame either moves. This library's own.
+    ///
+    ///     Text(.multi($liveX.journey, $liveY.journey).convert { x, y in
+    ///         "at \(Int(x.value)), \(Int(y.value))"
+    ///     })
+    ///
+    /// - Parameters:
+    ///   - a: journey 1.
+    ///   - b: journey 2.
+    /// - Returns: the journeys, waiting for the arithmetic that makes them one.
+    public static func multi<A: Walked, B: Walked>(
+        _ a: Journey<A>, _ b: Journey<B>
+    ) -> MultiBinding<Value, (Journey<A>, Journey<B>)> {
+        _ = a.storage?.walkedImage()
+        _ = b.storage?.walkedImage()
+        return MultiBinding(values: { (a, b) }, parts: [a.storage, b.storage])
+    }
+
     /// 3 states read as one on their way to a control, in the order they
     /// are named. This library's own.
     ///
