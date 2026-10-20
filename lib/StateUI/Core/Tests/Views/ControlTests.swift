@@ -768,6 +768,8 @@ final class ControlTests: XCTestCase {
     func testEveryValueModifierHasABindingTwin() throws {
         let remaking = Set(LibraryContracts.remaking.map(\.name))
         let allowed: Set<String> = remaking.union([
+            // A button's purpose in its window, said where it is written.
+            "role",
             // Named rather than valued.
             "style", "fontFamily", "accessibilityIdentifier", "source", "userAgent", "data", "content", "format",
             // A value the host cannot be handed whole.
@@ -818,9 +820,9 @@ final class ControlTests: XCTestCase {
             }
         }
 
-        // A menu item is a tier no view wears: its words and its enabling are rebuilt with its menu. The driven
-        // text goes per control, its direction differing (bindings.md, driven text): the tier holds the value form.
-        let tiersNoViewWears = ["Views/Mixins/MenuItemElement.swift"]
+        // A menu item and a bar's item are rebuilt with their menu or bar: no view wears them. The driven text goes
+        // per control, its direction differing (bindings.md, driven text): the tier holds the value form.
+        let tiersNoViewWears = ["Views/Mixins/MenuItemElement.swift", "Views/Menus/ToolbarItem.swift"]
         let perControl = ["Views/Mixins/TextualElement.swift|text:String"]
         let missing = values
             .filter { value in

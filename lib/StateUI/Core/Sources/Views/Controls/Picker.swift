@@ -95,25 +95,25 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
 
     /// The user has opened the list of choices. Opening it with `isOpen(true)`
     /// raises nothing: the application already knows.
-    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(PickerContract.opened, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onOpened(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onOpened(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(PickerContract.opened, gate: gate, handler)
     }
 
     /// The user has closed it - by a choice, a click outside or the platform's
     /// own dismissal.
-    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(PickerContract.closed, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onClosed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onClosed(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(PickerContract.closed, gate: gate, handler)
     }
 }

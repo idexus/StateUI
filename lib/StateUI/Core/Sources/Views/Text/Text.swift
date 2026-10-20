@@ -57,9 +57,9 @@ public struct Text: ElementView, TextualElement, FontElement, TextAlignmentEleme
     /// Words carried from a state, written by the host as it
     /// changes, at no render.
     ///
-    /// - Parameter text: the state the words are read from.
-    public init(_ text: Binding<String>) {
-        self = Text().text(text)
+    /// - Parameter state: the state the words are read from.
+    public init(_ state: Binding<String>) {
+        self = Text().text(state)
     }
 
     /// Text made of runs, each with a look of its own.
@@ -80,7 +80,7 @@ public struct Text: ElementView, TextualElement, FontElement, TextAlignmentEleme
     ///     }
     ///
     /// A Text given both runs and a `text` shows the runs.
-    public func spans(@TextSpanBuilder _ spans: () -> [TextSpan]) -> Self {
+    public func spans(@TextSpanBuilder _ spans: () -> [TextSpan]) -> Modified {
         // The runs it had give way, and nothing else: a menu or a toolbar written on it stays.
         modified {
             $0.children.removeAll { $0.type == TextSpansContract.nodeType }
@@ -114,12 +114,12 @@ public struct TextSpan: ModifiableElement, TextualElement, FontElement, Tracking
 
     /// What is drawn behind this run - a highlight over part of a line; a blur
     /// or glass behind a run shows its colour.
-    public func background(_ value: Material) -> Self {
+    public func background(_ value: Material) -> Modified {
         setValue(TextSpanContract.background, value)
     }
 
     /// What is drawn behind this run, in one colour.
-    public func background(_ value: Color) -> Self {
+    public func background(_ value: Color) -> Modified {
         background(.color(value))
     }
 }

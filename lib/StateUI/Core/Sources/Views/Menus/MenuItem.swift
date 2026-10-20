@@ -19,7 +19,7 @@ public struct MenuItem: Element, MenuItemElement {
 
     /// Whether it stands checked: a mark beside it, for a setting choosing it
     /// turns on and off. One-way: the turn goes nowhere without `.onToggled`.
-    public func isOn(_ value: Bool) -> Self {
+    public func isOn(_ value: Bool) -> Modified {
         setValue(MenuItemContract.isOn, value)
     }
 
@@ -31,7 +31,7 @@ public struct MenuItem: Element, MenuItemElement {
     /// The state is read where the menu is built, so a change builds that
     /// body again: a menu is walked from the tree, never a channel of its own.
     /// Design: docs/design/host/pages.md#a-checked-entry
-    public func isOn(_ state: Binding<Bool>) -> Self {
+    public func isOn(_ state: Binding<Bool>) -> Modified {
         modified {
             $0.props[MenuItemContract.isOn.token] = .bool(state.wrappedValue)
             $0.addHandler(MenuItemContract.toggled.token) {
@@ -42,7 +42,7 @@ public struct MenuItem: Element, MenuItemElement {
 
     /// Fires when the user chooses it checked or not, with the way it turned
     /// to. Runs after a binding's write, and before `.onClicked`.
-    public func onToggled(_ handler: @escaping @MainActor (Bool) throws -> Void) -> Self {
+    public func onToggled(_ handler: @escaping @MainActor (Bool) throws -> Void) -> Modified {
         modified { $0.addHandler(MenuItemContract.toggled, handler) }
     }
 
@@ -50,7 +50,7 @@ public struct MenuItem: Element, MenuItemElement {
     /// when the entries around it come and go; without one it is matched by
     /// position. On the menu bar an entry with the id of an entry in the menu
     /// declared around it stands in that entry's place.
-    public func id(_ value: some Hashable) -> Self {
+    public func id(_ value: some Hashable) -> Modified {
         modified { $0.identify(value) }
     }
 }

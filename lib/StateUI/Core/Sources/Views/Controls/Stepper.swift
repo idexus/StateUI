@@ -67,8 +67,8 @@ public struct Stepper: ElementView, StepperProperties, FocusElement {
     ///
     /// A Stepper draws its number on some platforms and not on others: show
     /// `count` beside it, or a driven text an engine writes, which costs no render.
-    public init(_ value: Binding<Double>) {
-        self = Stepper().value(value)
+    public init(_ state: Binding<Double>) {
+        self = Stepper().value(state)
     }
 
     // Design: docs/design/views/bindings.md#two-way-controls
@@ -77,24 +77,24 @@ public struct Stepper: ElementView, StepperProperties, FocusElement {
     ///     Stepper($count)
     ///     Stepper().value($count)
     ///
-    /// - Parameter value: the state the stepper shows and writes back into,
+    /// - Parameter state: the state the stepper shows and writes back into,
     ///   carried by the host as a journey.
     /// - Returns: the control, wearing and reporting that value.
-    public func value(_ value: Binding<Double>) -> Modified {
-        journey(StepperContract.value.token, by: value)
+    public func value(_ state: Binding<Double>) -> Modified {
+        journey(StepperContract.value.token, by: state)
     }
 
     // MARK: Events
 
     /// Fires on every tap of either button, with the value stepped to. Runs
     /// after a binding's write, if there is one.
-    public func onValueChanged(_ handler: @escaping @MainActor (Double) throws -> Void) -> Self {
+    public func onValueChanged(_ handler: @escaping @MainActor (Double) throws -> Void) -> Modified {
         onEvent(StepperContract.valueChanged, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onValueChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<Double>) -> Self {
+    public func onValueChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<Double>) -> Modified {
         onEvent(StepperContract.valueChanged, gate: gate, handler)
     }
 }

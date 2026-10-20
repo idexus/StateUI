@@ -8,9 +8,9 @@ public protocol FocusElement: KeyboardElement {}
 extension FocusElement {
     /// Whether the platform has given this control the focus, written into the
     /// binding. Read-only: the platform moves the focus.
-    public func isFocused(_ binding: Binding<Bool>) -> Modified {
+    public func isFocused(_ state: Binding<Bool>) -> Modified {
         onEvent(FocusElementContract.isFocusedChanged) { focused in
-            binding.wrappedValue = focused
+            state.wrappedValue = focused
         }
     }
 }

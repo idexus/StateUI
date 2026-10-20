@@ -41,34 +41,34 @@ public struct CheckBox: ElementView, TextualElement, TintElement, CheckBoxProper
     }
 
     /// Two-way: shows what the binding holds, and writes back what is ticked.
-    public init(_ isOn: Binding<Bool>) {
-        self = CheckBox().isOn(isOn)
+    public init(_ state: Binding<Bool>) {
+        self = CheckBox().isOn(state)
     }
 
     // Design: docs/design/views/bindings.md#two-way-controls
     /// Two-way: shows what the state holds and writes back what is ticked,
     /// with no view rebuilt for it.
     ///
-    /// - Parameter value: the state shown, and written back into as the user
+    /// - Parameter state: the state shown, and written back into as the user
     ///   ticks it.
     /// - Returns: the box, wearing and reporting that value.
-    public func isOn(_ value: Binding<Bool>) -> Modified {
-        value.image == nil
-            ? described(CheckBoxContract.isOn.token, value, on: CheckBoxContract.toggled.token)
-            : plain(CheckBoxContract.isOn.token, by: value, mode: .inOut)
+    public func isOn(_ state: Binding<Bool>) -> Modified {
+        state.image == nil
+            ? described(CheckBoxContract.isOn.token, state, on: CheckBoxContract.toggled.token)
+            : plain(CheckBoxContract.isOn.token, by: state, mode: .inOut)
     }
 
     // MARK: Events
 
     /// Fires when it is ticked or unticked, with the new value. Runs after a
     /// binding's write, if there is one.
-    public func onToggled(_ handler: @escaping @MainActor (Bool) throws -> Void) -> Self {
+    public func onToggled(_ handler: @escaping @MainActor (Bool) throws -> Void) -> Modified {
         onEvent(CheckBoxContract.toggled, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onToggled(gate: some Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Self {
+    public func onToggled(gate: some Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Modified {
         onEvent(CheckBoxContract.toggled, gate: gate, handler)
     }
 }

@@ -63,8 +63,8 @@ public struct TimePicker: ElementView, TextColorElement, FontElement, TimePicker
     }
 
     /// Two-way: shows the time and writes back the one that is chosen.
-    public init(_ time: Binding<ClockTime>) {
-        self = TimePicker().time(time)
+    public init(_ state: Binding<ClockTime>) {
+        self = TimePicker().time(state)
     }
 
     // Design: docs/design/views/bindings.md#two-way-controls
@@ -77,49 +77,49 @@ public struct TimePicker: ElementView, TextColorElement, FontElement, TimePicker
     /// chooses, with no view rebuilt for it. A time of more than a day is shown
     /// folded into one day while the state keeps what was written.
     ///
-    /// - Parameter value: the state shown, and written back into when a time
+    /// - Parameter state: the state shown, and written back into when a time
     ///   is chosen.
     /// - Returns: the control, wearing and reporting that time.
-    public func time(_ value: Binding<ClockTime>) -> Modified {
-        value.image == nil
-            ? described(.time, value, on: .timeChanged)
-            : plain(.time, by: value, mode: .inOut)
+    public func time(_ state: Binding<ClockTime>) -> Modified {
+        state.image == nil
+            ? described(.time, state, on: .timeChanged)
+            : plain(.time, by: state, mode: .inOut)
     }
 
     // MARK: Events
 
     /// Fires when a time is chosen, with the new one. Runs after a binding's
     /// write.
-    public func onTimeChanged(_ handler: @escaping @MainActor (ClockTime) throws -> Void) -> Self {
+    public func onTimeChanged(_ handler: @escaping @MainActor (ClockTime) throws -> Void) -> Modified {
         onEvent(TimePickerContract.timeChanged, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onTimeChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
+    public func onTimeChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<ClockTime>) -> Modified {
         onEvent(TimePickerContract.timeChanged, gate: gate, handler)
     }
 
     /// The user has opened the clock face. Opening it with `isOpen(true)` raises
     /// nothing: the application already knows.
-    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(TimePickerContract.opened, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onOpened(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onOpened(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(TimePickerContract.opened, gate: gate, handler)
     }
 
     /// It has closed - by a choice, by a tap outside, or by the platform.
-    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(TimePickerContract.closed, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onClosed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onClosed(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(TimePickerContract.closed, gate: gate, handler)
     }
 }

@@ -43,8 +43,8 @@ public struct Switch: ElementView, TextualElement, TintElement, SwitchProperties
     }
 
     /// Two-way: shows what the binding holds, and writes back what is flipped.
-    public init(_ isOn: Binding<Bool>) {
-        self = Switch().isOn(isOn)
+    public init(_ state: Binding<Bool>) {
+        self = Switch().isOn(state)
     }
 
     // Design: docs/design/views/bindings.md#two-way-controls
@@ -55,26 +55,26 @@ public struct Switch: ElementView, TextualElement, TintElement, SwitchProperties
     ///
     ///     Switch($on)
     ///
-    /// - Parameter value: the state shown, and written back into as the user
+    /// - Parameter state: the state shown, and written back into as the user
     ///   flips it.
     /// - Returns: the switch, wearing and reporting that value.
-    public func isOn(_ value: Binding<Bool>) -> Modified {
-        value.image == nil
-            ? described(SwitchContract.isOn.token, value, on: SwitchContract.toggled.token)
-            : plain(SwitchContract.isOn.token, by: value, mode: .inOut)
+    public func isOn(_ state: Binding<Bool>) -> Modified {
+        state.image == nil
+            ? described(SwitchContract.isOn.token, state, on: SwitchContract.toggled.token)
+            : plain(SwitchContract.isOn.token, by: state, mode: .inOut)
     }
 
     // MARK: Events
 
     /// Fires when it is flipped, with the way it was flipped to. Runs after a
     /// binding's write.
-    public func onToggled(_ handler: @escaping @MainActor (Bool) throws -> Void) -> Self {
+    public func onToggled(_ handler: @escaping @MainActor (Bool) throws -> Void) -> Modified {
         onEvent(SwitchContract.toggled, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onToggled(gate: some Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Self {
+    public func onToggled(gate: some Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Modified {
         onEvent(SwitchContract.toggled, gate: gate, handler)
     }
 }

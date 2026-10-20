@@ -142,11 +142,11 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// Assigning it moves the run. A gallery nobody lends a binding to keeps
     /// the card itself and still settles on one.
     ///
-    /// - Parameter binding: where the middle card is written and read.
+    /// - Parameter state: where the middle card is written and read.
     /// - Returns: the gallery, keeping its card there.
-    public func position(_ binding: Binding<Int>) -> Self {
+    public func position(_ state: Binding<Int>) -> Self {
         var copy = self
-        copy.pin = binding
+        copy.pin = state
         return copy
     }
 

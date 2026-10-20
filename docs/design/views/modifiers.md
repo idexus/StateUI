@@ -22,6 +22,21 @@ among them - do the same thing by hand.
     .contextMenu { … }     copy, children += ContextMenu(...)
 ```
 
+## One shape
+
+A modifier reads alike wherever it is written, in the editor's hint as much
+as in code. A state it borrows is named `state` - `isOn(_ state:)`,
+`Text(_ state:)` - whatever the property it carries, since the binding is
+the thing handed over. A modifier of what carries properties - a control, a
+tier, a style, a run of text - gives back `Modified`, which for a control is
+the control itself and for a composed view a `ModifiedContent`, so a chain
+offers the same modifiers after it as before. What configures itself gives
+back `Self`: a composed view's own settings (a gallery's position, a list's
+selection), a list's `Section`, a scene's declaration, and an entry of a menu
+or a map that wears no tier (`Menu`, `MenuSeparator`, `Marker`).
+`ModifierShapeTests` holds both rules, its list of what configures itself
+saying why for each.
+
 ## Setting a property
 
 A value modifier writes one property through its contract member:

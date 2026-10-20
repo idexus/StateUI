@@ -40,19 +40,19 @@ public struct ToolbarItem: Element, MenuItemElement {
     ///
     /// - Parameter value: distinct among the page's items, and the same value
     ///   across renders.
-    public func id(_ value: some Hashable) -> Self {
+    public func id(_ value: some Hashable) -> Modified {
         var copy = self
         copy.node.identify(value)
         return copy
     }
 
     /// Whether it sits on the bar itself or behind the overflow menu.
-    public func placement(_ value: ToolbarItemPlacement) -> Self { setValue(ToolbarItemContract.placement, value) }
+    public func placement(_ value: ToolbarItemPlacement) -> Modified { setValue(ToolbarItemContract.placement, value) }
 
     /// Whether the item shows its words beside its picture on the bar.
     ///
     /// Without it, an item given an `icon` shows the picture alone, its words
     /// in its tip and to assistive technology; an item with no picture always
     /// shows its words.
-    public func showsText(_ value: Bool) -> Self { setValue(ToolbarItemContract.showsText, value) }
+    public func showsText(_ value: Bool) -> Modified { setValue(ToolbarItemContract.showsText, value) }
 }

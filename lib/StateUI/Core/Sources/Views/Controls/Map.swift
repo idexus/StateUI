@@ -84,7 +84,7 @@ public struct Map: ElementView, MapProperties {
 
     /// The markers on it, replacing whatever markers it held before. A `Marker` is not a
     /// view, and goes here and nowhere else.
-    public func markers(@MarkerBuilder _ content: () -> [Marker]) -> Self {
+    public func markers(@MarkerBuilder _ content: () -> [Marker]) -> Modified {
         var copy = self
 
         // The markers go before the context menu's slot, which stays last.
@@ -100,13 +100,13 @@ public struct Map: ElementView, MapProperties {
     // MARK: Events
 
     /// Fires when the map itself is tapped - not a marker - with where.
-    public func onMapClicked(_ handler: @escaping @MainActor (Location) throws -> Void) -> Self {
+    public func onMapClicked(_ handler: @escaping @MainActor (Location) throws -> Void) -> Modified {
         onEvent(MapContract.mapClicked, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onMapClicked(gate: some Gate, _ handler: @escaping ValueEventHandler<Location>) -> Self {
+    public func onMapClicked(gate: some Gate, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
         onEvent(MapContract.mapClicked, gate: gate, handler)
     }
 }

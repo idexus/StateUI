@@ -110,10 +110,10 @@ extension View {
     /// follow frame by frame. A drag moves the value on from where it stood, so
     /// a second drag carries on where the first left off.
     ///
-    /// - Parameter value: the state the distance is written into.
+    /// - Parameter state: the state the distance is written into.
     /// - Returns: the view, reporting there.
-    public func panX(_ value: Binding<Double>) -> Modified {
-        driven(ViewContract.panXChannel.token, by: value)
+    public func panX(_ state: Binding<Double>) -> Modified {
+        driven(ViewContract.panXChannel.token, by: state)
     }
 
     /// Writes how far the view has been dragged down into a state, with no view
@@ -121,10 +121,10 @@ extension View {
     ///
     ///     Rectangle().fill(.transparent).panY($turn)
     ///
-    /// - Parameter value: the state the distance is written into.
+    /// - Parameter state: the state the distance is written into.
     /// - Returns: the view, reporting there.
-    public func panY(_ value: Binding<Double>) -> Modified {
-        driven(ViewContract.panYChannel.token, by: value)
+    public func panY(_ state: Binding<Double>) -> Modified {
+        driven(ViewContract.panYChannel.token, by: state)
     }
 
     /// Runs as the view is dragged, from the moment it starts until it is let

@@ -72,8 +72,8 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
     }
 
     /// Two-way: shows the date and writes back the one that is chosen.
-    public init(_ date: Binding<CalendarDate>) {
-        self = DatePicker().date(date)
+    public init(_ state: Binding<CalendarDate>) {
+        self = DatePicker().date(state)
     }
 
     // Design: docs/design/views/bindings.md#two-way-controls
@@ -87,49 +87,49 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
     /// `minimumDate`…`maximumDate` is shown clamped while the state keeps the
     /// day written.
     ///
-    /// - Parameter value: the state shown, and written back into when a day is
+    /// - Parameter state: the state shown, and written back into when a day is
     ///   chosen.
     /// - Returns: the control, wearing and reporting that day.
-    public func date(_ value: Binding<CalendarDate>) -> Modified {
-        value.image == nil
-            ? described(.date, value, on: .dateChanged)
-            : plain(.date, by: value, mode: .inOut)
+    public func date(_ state: Binding<CalendarDate>) -> Modified {
+        state.image == nil
+            ? described(.date, state, on: .dateChanged)
+            : plain(.date, by: state, mode: .inOut)
     }
 
     // MARK: Events
 
     /// Fires when a date is chosen. Runs after a binding's write, if there is
     /// one.
-    public func onDateChanged(_ handler: @escaping @MainActor (CalendarDate) throws -> Void) -> Self {
+    public func onDateChanged(_ handler: @escaping @MainActor (CalendarDate) throws -> Void) -> Modified {
         onEvent(DatePickerContract.dateChanged, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onDateChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<CalendarDate>) -> Self {
+    public func onDateChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<CalendarDate>) -> Modified {
         onEvent(DatePickerContract.dateChanged, gate: gate, handler)
     }
 
     /// The user has opened the calendar. Opening it with `isOpen(true)` raises
     /// nothing: the application already knows.
-    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(DatePickerContract.opened, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onOpened(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onOpened(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(DatePickerContract.opened, gate: gate, handler)
     }
 
     /// It has closed - by a choice, by a tap outside, or by the platform.
-    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(DatePickerContract.closed, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onClosed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onClosed(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(DatePickerContract.closed, gate: gate, handler)
     }
 }

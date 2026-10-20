@@ -98,9 +98,9 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     /// A button whose caption is carried from a state, written by the host as
     /// it changes, at no render.
     ///
-    /// - Parameter text: the state the caption is read from.
-    public init(_ text: Binding<String>) {
-        self = Button().text(text)
+    /// - Parameter state: the state the caption is read from.
+    public init(_ state: Binding<String>) {
+        self = Button().text(state)
     }
 
     /// Keys that press the button from the keyboard while its window is in
@@ -109,7 +109,7 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     ///
     ///     Button("Save").keyboardShortcut("s")
     ///     Button("Send").keyboardShortcut(.return, modifiers: [])
-    public func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Self {
+    public func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Modified {
         setValue(ButtonContract.keyboardShortcut, KeyboardShortcut(key, modifiers: modifiers))
     }
 
@@ -120,7 +120,7 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     ///
     ///     Button("Cancel").role(.cancel)
     ///     Button("Save").role(.primary)
-    public func role(_ role: ButtonRole) -> Self {
+    public func role(_ role: ButtonRole) -> Modified {
         setValue(ButtonContract.role, role)
     }
 
@@ -137,7 +137,7 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     ///     Button("Save")
     ///         .onClicked { save() }
     ///         .menu { MenuItem("Save as…").onClicked { saveAs() } }
-    public func menu(_ kind: ButtonMenuKind = .automatic, @MenuBuilder _ entries: () -> [Element]) -> Self {
+    public func menu(_ kind: ButtonMenuKind = .automatic, @MenuBuilder _ entries: () -> [Element]) -> Modified {
         let menu = modified {
             // The button's one menu, after its own children; written again, it stands in for the last.
             // Design: docs/design/views/modifiers.md#slot-children
@@ -154,36 +154,36 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     /// Runs when the button is pressed AND released on it - the ordinary one - all
     /// of it before the click is over. A second `.onClicked` runs beside the first,
     /// like every typed event modifier.
-    public func onClicked(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onClicked(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(ButtonContract.clicked, handler)
     }
 
     /// Runs when the button is clicked, awaiting as it goes; its `gate` says what a
     /// click does while a run is under way.
-    public func onClicked(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onClicked(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ButtonContract.clicked, gate: gate, handler)
     }
 
     /// Runs the moment a press begins, before it ends.
-    public func onPressed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onPressed(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(ButtonContract.pressed, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onPressed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onPressed(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ButtonContract.pressed, gate: gate, handler)
     }
 
     /// Runs when the press ends, wherever the pointer ends up - unlike
     /// `onClicked`, which needs it to end on the button.
-    public func onReleased(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onReleased(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(ButtonContract.released, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onReleased(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onReleased(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ButtonContract.released, gate: gate, handler)
     }
 }

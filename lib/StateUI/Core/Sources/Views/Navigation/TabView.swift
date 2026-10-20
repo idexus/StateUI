@@ -79,15 +79,15 @@ public struct TabView: ElementView, Arrangement, BarElement, AutomationElement {
     /// A value that names no tab selects nothing, and the binding follows the
     /// tab the platform then shows.
     ///
-    /// - Parameter binding: the tab that is showing, of the tabs' own type.
-    public func selection<Tab: Hashable>(_ binding: Binding<Tab>) -> TabView {
+    /// - Parameter state: the tab that is showing, of the tabs' own type.
+    public func selection<Tab: Hashable>(_ state: Binding<Tab>) -> TabView {
         var copy = self
         let ordered = tabs
 
         // The current page as its index among the children, and none where the
-        // binding names no tab: the platform then reports what it shows.
+        // state names no tab: the platform then reports what it shows.
         // Design: docs/design/views/pages.md#tabs-report-an-index
-        if let index = ordered.firstIndex(of: AnyHashable(binding.wrappedValue)) {
+        if let index = ordered.firstIndex(of: AnyHashable(state.wrappedValue)) {
             copy.node.write(TabViewContract.selectedTab, index)
         }
 
@@ -95,12 +95,12 @@ public struct TabView: ElementView, Arrangement, BarElement, AutomationElement {
         copy.node.addHandler(TabViewContract.selectedTabChanged.token) {
             guard let index = EventBuffer.current.value()?.int,
                   index >= 0, index < ordered.count,
-                  // A binding of another type than the tabs names nothing.
+                  // A state of another type than the tabs names nothing.
                   let tab = ordered[index].base as? Tab else { return }
 
-            guard tab != binding.wrappedValue else { return }
+            guard tab != state.wrappedValue else { return }
 
-            binding.wrappedValue = tab
+            state.wrappedValue = tab
         }
 
         return copy

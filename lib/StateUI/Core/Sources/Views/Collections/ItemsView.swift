@@ -139,22 +139,22 @@ extension ItemsView {
 
     /// One item chosen at a time, borrowed two-way: the user's choice is
     /// written here, nil where they let it go, and assigning it chooses.
-    public func selection(_ binding: Binding<ID?>) -> Self {
+    public func selection(_ state: Binding<ID?>) -> Self {
         var copy = self
         copy.choice = Choice(
             mode: .single,
-            chosen: binding.wrappedValue.map { [$0] } ?? [],
-            write: { ids in if ids.first != binding.wrappedValue { binding.wrappedValue = ids.first } })
+            chosen: state.wrappedValue.map { [$0] } ?? [],
+            write: { ids in if ids.first != state.wrappedValue { state.wrappedValue = ids.first } })
         return copy
     }
 
     /// As many items chosen as the user likes, borrowed two-way.
-    public func selection(_ binding: Binding<Set<ID>>) -> Self {
+    public func selection(_ state: Binding<Set<ID>>) -> Self {
         var copy = self
         copy.choice = Choice(
             mode: .multiple,
-            chosen: Array(binding.wrappedValue),
-            write: { ids in if Set(ids) != binding.wrappedValue { binding.wrappedValue = Set(ids) } })
+            chosen: Array(state.wrappedValue),
+            write: { ids in if Set(ids) != state.wrappedValue { state.wrappedValue = Set(ids) } })
         return copy
     }
 

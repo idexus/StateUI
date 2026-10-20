@@ -36,8 +36,8 @@ public struct Ellipse: FilledShape {
 
     /// An ellipse painted with a colour state, `$x`: the host animates the colour to each new value, and no view is
     /// rebuilt for it.
-    public init(_ fill: Binding<Color>) {
+    public init(_ state: Binding<Color>) {
         self.init()
-        self = self.fill(fill)
+        self = self.fill(state)
     }
 }

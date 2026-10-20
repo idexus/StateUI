@@ -93,7 +93,7 @@ extension StyleBag where Context == StyleBase {
     ///
     /// The one it names must be in the same sheet. A key naming nothing is
     /// ignored, and a chain that comes back round to itself stops there.
-    public func basedOn(_ key: StyleKey<Target>) -> Self {
+    public func basedOn(_ key: StyleKey<Target>) -> Modified {
         var copy = self
         copy.basedOn = key.name
         return copy
@@ -128,7 +128,7 @@ extension StyleBag where Context == StyleBase {
     ///         .visualState(.disabled) { $0.textColor(.gray) }
     ///
     /// - Parameter state: the state, changing nothing.
-    public func visualState(_ state: VisualState<Target>) -> Self {
+    public func visualState(_ state: VisualState<Target>) -> Modified {
         var copy = self
         copy.states = written(copy.states, adding: DeclaredState(key: state.key))
         return copy

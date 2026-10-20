@@ -59,8 +59,8 @@ public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
     /// An assignment (`volume = 1`) animates the thumb there under the
     /// element's motion; `$volume.journey` reads where the thumb is, and
     /// `try await $volume.journey.move(to: 1).arrived()` waits for the arrival.
-    public init(_ value: Binding<Double>) {
-        self = Slider().value(value)
+    public init(_ state: Binding<Double>) {
+        self = Slider().value(state)
     }
 
     // Design: docs/design/views/bindings.md#a-finger-takes-a-moving-thumb
@@ -72,48 +72,48 @@ public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
     /// A finger that takes a moving thumb stops its animation where the user
     /// holds it, and an awaiting move resumes with `false`.
     ///
-    /// - Parameter value: the state the thumb shows and writes back into,
+    /// - Parameter state: the state the thumb shows and writes back into,
     ///   carried by the host as a journey.
     /// - Returns: the control, wearing and reporting that value.
-    public func value(_ value: Binding<Double>) -> Modified {
-        journey(SliderContract.value.token, by: value)
+    public func value(_ state: Binding<Double>) -> Modified {
+        journey(SliderContract.value.token, by: state)
     }
 
     // MARK: Events
 
     /// Fires on every step of a drag, with the value dragged to, after a
     /// binding's write. Heavy work belongs in `.onReleased`.
-    public func onValueChanged(_ handler: @escaping @MainActor (Double) throws -> Void) -> Self {
+    public func onValueChanged(_ handler: @escaping @MainActor (Double) throws -> Void) -> Modified {
         onEvent(SliderContract.valueChanged, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onValueChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<Double>) -> Self {
+    public func onValueChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<Double>) -> Modified {
         onEvent(SliderContract.valueChanged, gate: gate, handler)
     }
 
     /// Runs when the thumb is grabbed - the start of a drag whose every step
     /// is an `onValueChanged`.
-    public func onPressed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onPressed(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(SliderContract.pressed, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onPressed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onPressed(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(SliderContract.pressed, gate: gate, handler)
     }
 
     /// Runs when the thumb is let go - where work too heavy for every step of
     /// the drag belongs.
-    public func onReleased(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onReleased(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(SliderContract.released, handler)
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onReleased(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onReleased(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(SliderContract.released, gate: gate, handler)
     }
 }
