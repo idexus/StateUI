@@ -73,7 +73,7 @@
         FilledShapeTests.self,
         CorneredShapeTests.self,
         TextualElementTests.self,
-        TextStyleElementTests.self,
+        TextColorElementTests.self,
         FontElementTests.self,
         TextAlignmentElementTests.self,
         LineHeightElementTests.self,

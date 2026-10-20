@@ -29,7 +29,7 @@
         update(device, \.manufacturer, info.manufacturer)
         update(device, \.name, info.name)
         update(device, \.versionString, info.versionString)
-        update(device, \.deviceType, info.deviceType)
+        update(device, \.isVirtual, info.isVirtual)
     }
 
     /// Replaces the standard main-display report used by application builds.
@@ -332,7 +332,7 @@
         HostRealizations.current = realization
     }
 
-    /// Tells the core what the host judges it realizes, member by member - what `Device.honours` answers from. The
+    /// Tells the core what the host judges it realizes, member by member - what `Device.honors` answers from. The
     /// register is read when first asked, not as it is told: building it costs, and a host tells it at each start.
     ///
     /// - Parameter register: the host's register, its runtime's realization behind its own records.

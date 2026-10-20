@@ -44,13 +44,13 @@ extension WinUIRegistrations {
             // front, and the role's look: the accent style for the main action, a destructive one's words in the
             // theme's critical colour where the tree colours them not.
             button.applies([
-                ButtonContract.keyboardShortcut, ButtonContract.role, TextStyleElementContract.textColor,
+                ButtonContract.keyboardShortcut, ButtonContract.role, TextColorElementContract.textColor,
             ]) { view, values in
                 let role = values[ButtonContract.role]
                 view.setShortcut(KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role))
                 view.setRole(role)
                 view.setCritical(
-                    ButtonRoleLook(role, fills: false, colorsWords: values[TextStyleElementContract.textColor] != nil)
+                    ButtonRoleLook(role, fills: false, colorsWords: values[TextColorElementContract.textColor] != nil)
                         .wordsInCritical)
             }
             button.property(VisualElementContract.isEnabled) { view, enabled in

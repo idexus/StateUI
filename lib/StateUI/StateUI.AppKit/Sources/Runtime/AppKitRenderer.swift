@@ -116,7 +116,7 @@ final class AppKitRenderer {
             manufacturer: "Apple",
             name: Host.current().localizedName ?? "",
             versionString: process.operatingSystemVersionString,
-            deviceType: .physical))
+            isVirtual: false))
 
         if let screen = NSScreen.main {
             let scale = screen.backingScaleFactor

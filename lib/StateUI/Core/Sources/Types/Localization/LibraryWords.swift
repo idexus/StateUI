@@ -47,21 +47,9 @@ struct LibraryWords: LocalizedResources {
 }
 
 /// The languages StateUI says its own words in, each by its tag.
-enum LibraryLanguage: RawRepresentable, CaseIterable, Sendable {
-    case english
-    case polish
-
-    init?(rawValue: String) {
-        guard let language = Self.allCases.first(where: { $0.rawValue == rawValue }) else { return nil }
-        self = language
-    }
-
-    var rawValue: String {
-        switch self {
-        case .english: "en"
-        case .polish: "pl"
-        }
-    }
+enum LibraryLanguage: LocaleTag, CaseIterable {
+    case english = "en"
+    case polish = "pl"
 }
 
 /// StateUI's own languages, and the one it falls back to.

@@ -113,7 +113,7 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testFilledShape() { conform(FilledShapeTests.self) }
     @MainActor func testCorneredShape() { conform(CorneredShapeTests.self) }
     @MainActor func testTextualElement() { conform(TextualElementTests.self) }
-    @MainActor func testTextStyleElement() { conform(TextStyleElementTests.self) }
+    @MainActor func testTextColorElement() { conform(TextColorElementTests.self) }
     @MainActor func testFontElement() { conform(FontElementTests.self) }
     @MainActor func testTextAlignmentElement() { conform(TextAlignmentElementTests.self) }
     @MainActor func testLineHeightElement() { conform(LineHeightElementTests.self) }

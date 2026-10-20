@@ -246,7 +246,7 @@ extension NodeType {
     static let swipeThreshold = ViewContract.swipeThreshold.token
     static let tapCount = ViewContract.tapCount.token
     static let text = TextualElementContract.text.token
-    static let textColor = TextStyleElementContract.textColor.token
+    static let textColor = TextColorElementContract.textColor.token
     static let textDecorations = DecorableTextElementContract.textDecorations.token
     static let textCase = TextualElementContract.textCase.token
     static let time = TimePickerContract.time.token

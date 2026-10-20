@@ -106,7 +106,7 @@ enum AndroidRealization {
         .complete(FontElementContract.isFontAutoScalingEnabled, on: TextSpanContract.self),
         .complete(TextualElementContract.text, on: TextSpanContract.self),
         .complete(TextualElementContract.textCase, on: TextSpanContract.self),
-        .complete(TextStyleElementContract.textColor, on: TextSpanContract.self),
+        .complete(TextColorElementContract.textColor, on: TextSpanContract.self),
         .complete(DecorableTextElementContract.textDecorations, on: TextSpanContract.self),
         .notPlanned(TrackingElementContract.tracking, on: TextSpanContract.self,
             reason: "Android spaces the letters of a whole text: no span spaces a run's own."),

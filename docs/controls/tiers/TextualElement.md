@@ -9,7 +9,7 @@ Button("Continue")
     .textCase(.uppercase)
 ```
 
-Wears: [TextStyleElement](TextStyleElement.md)
+Wears: [TextColorElement](TextColorElement.md)
 
 Worn by: [Button](../Button.md) · [RadioButton](../RadioButton.md) · [SearchField](../SearchField.md) · [Text](../Text.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TextSpan](../TextSpan.md)
 

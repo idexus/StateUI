@@ -56,7 +56,7 @@ extension AppKitRegistrations {
             radio.applies([
                 RadioButtonContract.isOn, TextualElementContract.text, TextualElementContract.textCase,
                 FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TextStyleElementContract.textColor,
+                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TextColorElementContract.textColor,
                 VisualElementContract.isEnabled,
             ]) { view, values in
                 view.apply(
@@ -64,7 +64,7 @@ extension AppKitRegistrations {
                     text: (values[TextualElementContract.textCase] ?? .none)
                         .applied(to: values[TextualElementContract.text] ?? ""),
                     font: Self.font(values),
-                    textColor: values[TextStyleElementContract.textColor]
+                    textColor: values[TextColorElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
                     enabled: values[VisualElementContract.isEnabled] ?? true)
             }

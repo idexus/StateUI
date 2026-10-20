@@ -21,7 +21,7 @@ design notes beside them.
   extension, builds the smallest application, and explains the application
   module, native host, resources, and registration boundary.
 - [Glossary](design/glossary.md) maps StateUI's own words - kept, worn,
-  honours, journey, aim - to the common term for each; keep it open beside
+  honors, journey, aim - to the common term for each; keep it open beside
   the rest.
 
 ## Concepts

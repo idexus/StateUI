@@ -32,7 +32,7 @@ extension HostDeviceInfo {
         guard words.count == 5 else { return nil }
         self.init(
             formFactor: formFactor, platform: platform, model: words[0], manufacturer: words[1], name: words[2],
-            versionString: words[3], deviceType: words[4] == "1" ? .virtual : .physical)
+            versionString: words[3], isVirtual: words[4] == "1")
     }
 }
 

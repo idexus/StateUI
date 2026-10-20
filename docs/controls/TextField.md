@@ -16,7 +16,7 @@ TextField($name)
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextInput](tiers/TextInput.md) · [TextualElement](tiers/TextualElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextInput](tiers/TextInput.md) · [TextualElement](tiers/TextualElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -222,9 +222,9 @@ What every element showing words has: the words, and the case they are drawn in.
 <tbody><tr></tr><tr><td><code>textCase</code></td><td>property</td><td><code>TextCase</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
-## From [TextStyleElement](tiers/TextStyleElement.md)
+## From [TextColorElement](tiers/TextColorElement.md)
 
-How text looks wherever it is drawn: its colour.
+The colour of text, wherever it is drawn.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>

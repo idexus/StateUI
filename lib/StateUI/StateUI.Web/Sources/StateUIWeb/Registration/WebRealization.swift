@@ -84,7 +84,7 @@ enum WebRealization {
         .complete(FontElementContract.isFontAutoScalingEnabled, on: TextSpanContract.self),
         .complete(TextualElementContract.text, on: TextSpanContract.self),
         .complete(TextualElementContract.textCase, on: TextSpanContract.self),
-        .complete(TextStyleElementContract.textColor, on: TextSpanContract.self),
+        .complete(TextColorElementContract.textColor, on: TextSpanContract.self),
         .complete(DecorableTextElementContract.textDecorations, on: TextSpanContract.self),
         .complete(TrackingElementContract.tracking, on: TextSpanContract.self),
         .complete(ToolbarItemContract.placement),

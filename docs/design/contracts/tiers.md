@@ -22,7 +22,7 @@ Swift protocols behind them refine each other.
   |   '-- TextAlignmentElement           where text sits across its element
   '-- MenuItemElement                    an item the user chooses: caption, icon, action, shortcut
 
-  TextStyleElement                       text colour
+  TextColorElement                       text colour
   '-- TextualElement                     the words and their case
   FontElement                            family, size, weight and slant, text-size scaling
   LineHeightElement                      space between lines

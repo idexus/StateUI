@@ -37,10 +37,11 @@ it; a new language fails to compile in every part until each says it. The
 compiler cannot check that a translation is right, that a picture exists or
 that a typeface has a script's glyphs - those are tests.
 
-The catalog's language type is its associated type `Language`, so inside a
-catalog that name is taken: an application enum called `Language` makes
-`Language.english` a reference to the catalog's own type, which the compiler
-reports as a recursion. The handbook names the enum after the application.
+The catalog's language type is its associated type `CatalogLanguage`, a name
+no application's own enum takes: an associated type named `Language` would
+make an application enum called `Language` refer to the catalog's own type
+inside the catalog, which the compiler reports as a recursion. Its raw value
+is a `LocaleTag`, so a language's tag is typed where it is written.
 
 A part falls back whole, never a field at a time: every part on a screen comes
 in one language, so a word and its typeface never come from two variants.

@@ -670,7 +670,7 @@ extension ControlDictionary {
                 .textCase(.uppercase)
             """#),
 
-        (TextStyleElementContract.self, #"""
+        (TextColorElementContract.self, #"""
             Text("Overdue")
                 .textColor(.firebrick)
             """#),

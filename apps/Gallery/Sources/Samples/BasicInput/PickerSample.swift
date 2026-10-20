@@ -41,7 +41,7 @@ struct PickerSample: SampleContent, ExampleContent {
                 .onClosed { showing = false }
 
             // Only where the platform opens a list at the program's asking.
-            if device.honours(PickerContract.isOpen) {
+            if device.honors(PickerContract.isOpen) {
                 Button("Open the list")
                     .onClicked { showing = true }
                     .horizontalAlignment(.center)

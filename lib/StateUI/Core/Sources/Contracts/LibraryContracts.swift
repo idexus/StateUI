@@ -18,7 +18,7 @@
         FilledShapeContract.self,
         CorneredShapeContract.self,
         TextualElementContract.self,
-        TextStyleElementContract.self,
+        TextColorElementContract.self,
         FontElementContract.self,
         TextAlignmentElementContract.self,
         LineHeightElementContract.self,

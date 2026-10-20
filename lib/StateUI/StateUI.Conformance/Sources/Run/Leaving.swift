@@ -50,7 +50,7 @@
         ]
         return on(VisualElementContract.self, visual) + on(ViewContract.self, gestures)
             + on(FontElementContract.self, [Write(FontElementContract.fontSize, 17)])
-            + on(TextStyleElementContract.self, [Write(TextStyleElementContract.textColor, .red)])
+            + on(TextColorElementContract.self, [Write(TextColorElementContract.textColor, .red)])
             + on(TintElementContract.self, [Write(TintElementContract.tint, .red)])
             + on(PaddingElementContract.self, [Write(PaddingElementContract.padding, Insets(4))])
             + on(BorderElementContract.self, border)

@@ -41,7 +41,7 @@ extension PickerProperties {
 /// its description unless the picker is given one. The picker takes
 /// `.textColor` but has no `.text`: the field shows the chosen value's caption,
 /// or the placeholder while nothing is chosen.
-public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentElement, TintElement,
+public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentElement, TintElement,
     PickerProperties, FocusElement {
     /// The node this control describes.
     public var node: Node

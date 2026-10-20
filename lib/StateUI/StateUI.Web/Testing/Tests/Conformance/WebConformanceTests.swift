@@ -79,7 +79,7 @@ final class WebConformanceTests: XCTestCase {
     func testFilledShape() { conform(FilledShapeTests.self) }
     func testCorneredShape() { conform(CorneredShapeTests.self) }
     func testTextualElement() { conform(TextualElementTests.self) }
-    func testTextStyleElement() { conform(TextStyleElementTests.self) }
+    func testTextColorElement() { conform(TextColorElementTests.self) }
     func testFontElement() { conform(FontElementTests.self) }
     func testTextAlignmentElement() { conform(TextAlignmentElementTests.self) }
     func testLineHeightElement() { conform(LineHeightElementTests.self) }

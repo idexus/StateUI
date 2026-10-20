@@ -16,7 +16,7 @@ struct ThemeInForce: Sendable, Equatable {
     }
 
     /// Where none is handed: the light half, the application's first accent.
-    static let standard = ThemeInForce(scheme: .light, accent: AppInfo.standardAccent)
+    static let standard = ThemeInForce(scheme: .light, accent: ApplicationInfo.standardAccent)
 }
 
 /// A value that turns with the theme or the accent: a colour pair, the accent,

@@ -130,9 +130,9 @@ contract:
 | `device.battery` - `Battery` | `chargeLevel`, `state`, `powerSource`, `energySaverStatus` | charge and power state; level is `-1`, enums are `.unknown` until reported |
 | `device.connectivity` - `Connectivity` | `networkAccess`, `connectionProfiles` | reachability and all active connection kinds; `.unknown` and `[]` until reported |
 | `device.display` - `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numeric values are `0` and enums `.unknown` until reported |
-| `device.info` - `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | form factor, open platform name, hardware and system facts; text starts empty and closed values `.unknown` |
+| `device.info` - `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `isVirtual` | form factor, open platform name, hardware and system facts, and whether the device is an emulator, a simulator or a virtual machine; text starts empty, closed values `.unknown` and `isVirtual` nil |
 | `locale` - `LocaleInfo` | `language`, `region`, `name`, `languages`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `layoutDirection` | host-normalized language, region, the user's languages in order (`LocaleTag`), IANA zone, clock and calendar conventions, and the way the language is written; text starts empty, the list empty, the clock starts 12-hour, the week on Sunday, units metric, and the direction left to right |
-| `application.info` - `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, `accentColor` | manifest identity, live requested appearance and the user's accent; text starts empty, theme `.system` and accent `#0A84FF` until reported |
+| `application.info` - `ApplicationInfo` | `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, `accentColor` | manifest identity, live requested appearance and the user's accent; text starts empty, theme `.system` and accent `#0A84FF` until reported |
 | `application.phase` - `ApplicationPhase` | | process-wide visibility state; it starts `.active`, and the host maps lifecycle to `.active`, `.inactive`, or `.background` |
 
 A host may be unable to observe a fact. The documented fallback remains
@@ -160,7 +160,6 @@ The closed vocabulary used by these fields is:
 | `Weekday` | `sunday` through `saturday` |
 | `LayoutDirection` | `inherited`, `leftToRight`, `rightToLeft` |
 | `FormFactor` | `unknown`, `phone`, `tablet`, `desktop`, `tv`, `watch` |
-| `DeviceType` | `unknown`, `physical`, `virtual` |
 | `ColorScheme` | `system`, `light`, `dark` |
 | `ApplicationPhase` | `active`, `inactive`, `background` |
 
@@ -217,7 +216,7 @@ struct SizeChooser: View {
             Picker([1, 2, 3], selection: $size) { "\($0)" }
                 .isOpen(showing)
                 .onClosed { showing = false }
-            if device.honours(PickerContract.isOpen) {
+            if device.honors(PickerContract.isOpen) {
                 Button("Open the list").onClicked { showing = true }
             }
         }

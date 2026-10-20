@@ -196,7 +196,7 @@ it at each start.
 
 ## What a platform honours
 
-`Device.honours` answers an application asking whether the platform it runs
+`Device.honors` answers an application asking whether the platform it runs
 on honours a member - so a view leaves out what asks for one it does not,
 an "Open the list" where no list opens by the program. The answer is the
 host's register (`HostRegister`), handed to the core as the runtime starts:
@@ -205,7 +205,7 @@ registry realizes, the same answer the platform contract shows. Before a host
 hands one, what its registry said it realizes answers. A tier's member the
 register records element by element - realized on a slider, never on a
 switch - is honoured by its tier in part, so the answer to
-`honours(TintElementContract.tint)` is the same before the register comes and
+`honors(TintElementContract.tint)` is the same before the register comes and
 after.
 
 ## Declarations

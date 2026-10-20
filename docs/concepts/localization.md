@@ -81,7 +81,7 @@ public func stateui_app_register() {
 // AppLanguage.swift
 
 /// The languages Files speaks, in its interface and in its documents.
-enum AppLanguage: String, CaseIterable, Sendable {
+enum AppLanguage: LocaleTag, CaseIterable {
     case english = "en"
     case polish = "pl"
 }
@@ -509,7 +509,7 @@ The same formats are on the localization and on a message's context, and
 StateUI writes them itself:
 
 ```swift
-enum ShopLanguage: String, CaseIterable, Sendable {
+enum ShopLanguage: LocaleTag, CaseIterable {
     case english = "en"
     case polish = "pl"
 }

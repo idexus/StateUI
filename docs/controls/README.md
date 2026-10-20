@@ -121,7 +121,7 @@ Members many elements share, declared once.
 - [FilledShape](tiers/FilledShape.md) - A shape enclosing an area its fill paints - every shape but a line.
 - [CorneredShape](tiers/CorneredShape.md) - A shape whose outline turns corners - a rectangle, a polygon, a polyline, a path; neither a line nor an ellipse.
 - [TextualElement](tiers/TextualElement.md) - What every element showing words has: the words, and the case they are drawn in.
-- [TextStyleElement](tiers/TextStyleElement.md) - How text looks wherever it is drawn: its colour.
+- [TextColorElement](tiers/TextColorElement.md) - The colour of text, wherever it is drawn.
 - [FontElement](tiers/FontElement.md) - The font text is drawn in: its step of the platform's type ramp, its family, its size, its weight and slant, and whether it follows the user's text-size setting.
 - [TextAlignmentElement](tiers/TextAlignmentElement.md) - Where text sits across the space its own element was given.
 - [LineHeightElement](tiers/LineHeightElement.md) - How far apart the lines of text are.

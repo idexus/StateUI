@@ -9,7 +9,7 @@ every view the way an object an ancestor provides is, and read by its name.
 
 ```text
   \.device        Device
-                     info          formFactor, platform, model, manufacturer, name, versionString, deviceType
+                     info          formFactor, platform, model, manufacturer, name, versionString, isVirtual
                      display       width, height, density, orientation, rotation, refreshRate
                      battery       chargeLevel, state, powerSource, energySaverStatus
                      connectivity  networkAccess, connectionProfiles

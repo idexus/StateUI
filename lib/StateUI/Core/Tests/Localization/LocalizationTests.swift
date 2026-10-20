@@ -13,7 +13,7 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
-enum TestLanguage: String, CaseIterable, Sendable {
+enum TestLanguage: LocaleTag, CaseIterable {
     case english = "en"
     case polish = "pl"
 }
@@ -52,7 +52,7 @@ struct TestWords: LocalizedResources {
         })
 }
 
-enum Serbian: String, CaseIterable, Sendable {
+enum Serbian: LocaleTag, CaseIterable {
     case cyrillic = "sr-Cyrl"
     case latin = "sr-Latn"
 }

@@ -14,7 +14,7 @@
     /// What the words' look is made of, which `look` reads: the font, whether it follows the user's text size, and
     /// the words' colour.
     public static let lookMembers: [any ContractMember] =
-        fontMembers + [FontElementContract.isFontAutoScalingEnabled, TextStyleElementContract.textColor]
+        fontMembers + [FontElementContract.isFontAutoScalingEnabled, TextColorElementContract.textColor]
 
     /// What the words' font is made of: its style, size, weight, slant and family.
     public static let fontMembers: [any ContractMember] = [
@@ -35,7 +35,7 @@
     public static func look<Realized>(_ values: ElementValues<Realized>) -> TextLook? {
         guard values.changed(FontElementContract.textStyle) || values.changed(FontElementContract.fontWeight)
             || values.changed(FontElementContract.fontSize) || values.changed(FontElementContract.fontAttributes)
-            || values.changed(FontElementContract.fontFamily) || values.changed(TextStyleElementContract.textColor)
+            || values.changed(FontElementContract.fontFamily) || values.changed(TextColorElementContract.textColor)
             || values.changed(FontElementContract.isFontAutoScalingEnabled)
         else { return nil }
         return look(of: values)
@@ -50,7 +50,7 @@
         look.attributes = values[FontElementContract.fontAttributes] ?? .none
         look.attributesGiven = values[FontElementContract.fontAttributes] != nil
         look.family = values[FontElementContract.fontFamily]?.text
-        look.color = values[TextStyleElementContract.textColor]?.propValue
+        look.color = values[TextColorElementContract.textColor]?.propValue
         look.scales = values[FontElementContract.isFontAutoScalingEnabled] ?? true
         return look
     }

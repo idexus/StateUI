@@ -37,7 +37,7 @@ a property and its value meet in the compiler and nothing is spelled twice.
                  maximumLines   ElementProperty<Self, Int>     travels: false
 
   TextContract.worn    Text, View, VisualElement, AutomationElement, TextualElement,
-                        TextStyleElement, FontElement, TextAlignmentElement, ...
+                        TextColorElement, FontElement, TextAlignmentElement, ...
                         each once, in the order met - depth first,
                         in declaration order
 ```

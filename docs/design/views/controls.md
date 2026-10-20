@@ -56,7 +56,7 @@ nothing, since an application that opened it from a button of its own already
 knows. The user can still close it by choosing, tapping away or pressing
 Escape, which `onClosed` reports.
 
-A date picker and a time picker take `textColor` through `TextStyleElement`
+A date picker and a time picker take `textColor` through `TextColorElement`
 but have no `text` and no letter spacing: the field shows the formatted value,
 which a native picker spaces as it does. The
 host does the formatting, where the calendar and the user's locale are, so

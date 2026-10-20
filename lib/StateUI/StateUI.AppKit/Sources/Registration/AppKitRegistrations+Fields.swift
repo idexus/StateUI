@@ -33,7 +33,7 @@ extension AppKitRegistrations {
                     placeholder: values[TextInputContract.placeholder],
                     placeholderColor: values[TextInputContract.placeholderColor]
                         .flatMap { nsColor($0.propValue) },
-                    foregroundColor: values[TextStyleElementContract.textColor]
+                    foregroundColor: values[TextColorElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
                     backgroundColor: paintedColor(values[VisualElementContract.background]?.propValue),
                     font: Self.font(values),
@@ -69,7 +69,7 @@ extension AppKitRegistrations {
                     placeholder: values[TextInputContract.placeholder],
                     placeholderColor: values[TextInputContract.placeholderColor]
                         .flatMap { nsColor($0.propValue) },
-                    foregroundColor: values[TextStyleElementContract.textColor]
+                    foregroundColor: values[TextColorElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
                     backgroundColor: paintedColor(values[VisualElementContract.background]?.propValue),
                     font: Self.font(values),
@@ -105,7 +105,7 @@ extension AppKitRegistrations {
                     placeholder: values[TextInputContract.placeholder],
                     placeholderColor: values[TextInputContract.placeholderColor]
                         .flatMap { nsColor($0.propValue) },
-                    foregroundColor: values[TextStyleElementContract.textColor]
+                    foregroundColor: values[TextColorElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
                     backgroundColor: paintedColor(values[VisualElementContract.background]?.propValue),
                     font: Self.font(values),
@@ -127,7 +127,7 @@ extension AppKitRegistrations {
     private static let fieldMembers: [any ContractMember] = [
         TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
         TextInputContract.placeholderColor,
-        TextStyleElementContract.textColor, VisualElementContract.background,
+        TextColorElementContract.textColor, VisualElementContract.background,
         FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle,
         TextAlignmentElementContract.horizontalTextAlignment, VisualElementContract.isEnabled,
         TextInputContract.isReadOnly, TextInputContract.maximumLength,

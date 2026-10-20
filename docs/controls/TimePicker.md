@@ -13,7 +13,7 @@ TimePicker($alarm)
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -192,9 +192,9 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
-## From [TextStyleElement](tiers/TextStyleElement.md)
+## From [TextColorElement](tiers/TextColorElement.md)
 
-How text looks wherever it is drawn: its colour.
+The colour of text, wherever it is drawn.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>

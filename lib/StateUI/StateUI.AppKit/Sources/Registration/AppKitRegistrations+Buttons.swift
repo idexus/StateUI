@@ -29,7 +29,7 @@ extension AppKitRegistrations {
                 TextualElementContract.text, TextualElementContract.textCase, ButtonContract.icon,
                 ButtonContract.iconPosition,
                 ImageElementContract.contentMode, ButtonContract.lineBreak,
-                TextStyleElementContract.textColor, VisualElementContract.background,
+                TextColorElementContract.textColor, VisualElementContract.background,
                 BorderElementContract.shape, BorderElementContract.stroke,
                 BorderElementContract.lineWidth, VisualElementContract.isEnabled,
                 FontElementContract.fontFamily, FontElementContract.fontSize,
@@ -58,8 +58,8 @@ extension AppKitRegistrations {
                 // A destructive action's words in the system's red where the tree colours them not.
                 let look = ButtonRoleLook(
                     values[ButtonContract.role], fills: background != nil,
-                    colorsWords: values[TextStyleElementContract.textColor] != nil)
-                let textColor: NSColor = values[TextStyleElementContract.textColor]
+                    colorsWords: values[TextColorElementContract.textColor] != nil)
+                let textColor: NSColor = values[TextColorElementContract.textColor]
                     .flatMap { nsColor($0.propValue) } ?? (look.wordsInCritical ? .systemRed : .controlTextColor)
                 let stroke = values[BorderElementContract.stroke]?.propValue
                 let lineWidth = BoxArithmetic.outlineWidth(

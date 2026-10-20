@@ -113,7 +113,7 @@ enum UIKitRealization {
         .complete(FontElementContract.isFontAutoScalingEnabled, on: TextSpanContract.self),
         .complete(TextualElementContract.text, on: TextSpanContract.self),
         .complete(TextualElementContract.textCase, on: TextSpanContract.self),
-        .complete(TextStyleElementContract.textColor, on: TextSpanContract.self),
+        .complete(TextColorElementContract.textColor, on: TextSpanContract.self),
         .complete(DecorableTextElementContract.textDecorations, on: TextSpanContract.self),
         .complete(TrackingElementContract.tracking, on: TextSpanContract.self),
         .complete(SplitViewContract.showsSidebar),
@@ -167,7 +167,7 @@ enum UIKitRealization {
         let pickers: [any ElementContract.Type] = [DatePickerContract.self, TimePickerContract.self]
         let words: [any ContractMember] = [
             FontElementContract.fontAttributes, FontElementContract.fontFamily, FontElementContract.fontSize,
-            FontElementContract.fontWeight, TextStyleElementContract.textColor, FontElementContract.textStyle,
+            FontElementContract.fontWeight, TextColorElementContract.textColor, FontElementContract.textStyle,
         ]
         return pickers.flatMap { picker -> [HostRecord] in
             words.map { member -> HostRecord in

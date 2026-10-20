@@ -298,7 +298,7 @@ claimed for any host.
 - `device.battery`: `chargeLevel`, `state`, `powerSource`, `energySaverStatus`
 - `device.connectivity`: `networkAccess`, `connectionProfiles`
 - `device.display`: `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate`
-- `device.info`: `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType`
+- `device.info`: `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `isVirtual`
 - `locale`: `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `layoutDirection`
 - `application.info`: `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, `accentColor`
 - `application`: `phase`
@@ -546,7 +546,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [FilledShape](controls/tiers/FilledShape.md) | `fill` | 1 |
 | [CorneredShape](controls/tiers/CorneredShape.md) | `lineJoin`, `miterLimit` | 2 |
 | [TextualElement](controls/tiers/TextualElement.md) | `text`, `textCase` | 2 |
-| [TextStyleElement](controls/tiers/TextStyleElement.md) | `textColor` | 1 |
+| [TextColorElement](controls/tiers/TextColorElement.md) | `textColor` | 1 |
 | [FontElement](controls/tiers/FontElement.md) | `fontAttributes`, `fontWeight`, `textStyle`, `isFontAutoScalingEnabled`, `fontFamily`, `fontSize` | 6 |
 | [TextAlignmentElement](controls/tiers/TextAlignmentElement.md) | `horizontalTextAlignment` | 1 |
 | [LineHeightElement](controls/tiers/LineHeightElement.md) | `lineHeight` | 1 |

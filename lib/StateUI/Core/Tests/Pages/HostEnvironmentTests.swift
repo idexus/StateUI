@@ -87,7 +87,7 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.device.info.manufacturer = ""
         StandardEnvironment.device.info.name = ""
         StandardEnvironment.device.info.versionString = ""
-        StandardEnvironment.device.info.deviceType = .unknown
+        StandardEnvironment.device.info.isVirtual = nil
         StandardEnvironment.application.info.name = ""
         StandardEnvironment.application.info.packageName = ""
         StandardEnvironment.application.info.versionString = ""
@@ -284,14 +284,14 @@ final class HostEnvironmentTests: XCTestCase {
 
         HostBoundary.setDeviceInfo(HostDeviceInfo(
             formFactor: .desktop, platform: "macOS", model: "Mac14,9", manufacturer: "Apple",
-            name: "Studio", versionString: "26.0", deviceType: .physical))
+            name: "Studio", versionString: "26.0", isVirtual: false))
         XCTAssertEqual(StandardEnvironment.device.info.formFactor, .desktop)
         XCTAssertEqual(StandardEnvironment.device.info.platform, "macOS")
         XCTAssertEqual(StandardEnvironment.device.info.model, "Mac14,9")
         XCTAssertEqual(StandardEnvironment.device.info.manufacturer, "Apple")
         XCTAssertEqual(StandardEnvironment.device.info.name, "Studio")
         XCTAssertEqual(StandardEnvironment.device.info.versionString, "26.0")
-        XCTAssertEqual(StandardEnvironment.device.info.deviceType, .physical)
+        XCTAssertEqual(StandardEnvironment.device.info.isVirtual, false)
 
         HostBoundary.setApplicationInfo(HostApplicationInfo(
             name: "Gallery", packageName: "com.example.gallery", versionString: "1.2", buildString: "34"))
@@ -314,9 +314,9 @@ final class HostEnvironmentTests: XCTestCase {
         defer { HostBoundary.setRealization(HostRealization()) }
         let device = Device()
 
-        XCTAssertTrue(device.honours(PickerContract.isOpen))
-        XCTAssertFalse(device.honours(PickerContract.placeholder), "a member its host leaves out")
-        XCTAssertFalse(device.honours(PickerContract.opened), "an event its host raises not")
+        XCTAssertTrue(device.honors(PickerContract.isOpen))
+        XCTAssertFalse(device.honors(PickerContract.placeholder), "a member its host leaves out")
+        XCTAssertFalse(device.honors(PickerContract.opened), "an event its host raises not")
     }
 
     /// Where the host hands its register, the register answers - what the platform contract shows: a member the
@@ -335,9 +335,9 @@ final class HostEnvironmentTests: XCTestCase {
         }
         let device = Device()
 
-        XCTAssertFalse(device.honours(VisualElementContract.tooltip), "never on this family")
-        XCTAssertTrue(device.honours(PickerContract.isOpen), "in part")
-        XCTAssertFalse(device.honours(PickerContract.placeholder), "said nowhere")
+        XCTAssertFalse(device.honors(VisualElementContract.tooltip), "never on this family")
+        XCTAssertTrue(device.honors(PickerContract.isOpen), "in part")
+        XCTAssertFalse(device.honors(PickerContract.placeholder), "said nowhere")
     }
 
     /// A tier's member the register records element by element - realized on one wearer, never on another - is
@@ -347,7 +347,7 @@ final class HostEnvironmentTests: XCTestCase {
             elements: ["Slider", "Switch"],
             members: [HostRealizedMember(element: "Slider", owner: "TintElement", member: "tint")]))
         let device = Device()
-        XCTAssertTrue(device.honours(TintElementContract.tint), "before the register")
+        XCTAssertTrue(device.honors(TintElementContract.tint), "before the register")
 
         HostBoundary.setRegister(HostRegister(records: [
             .complete(TintElementContract.tint, on: SliderContract.self),
@@ -358,6 +358,6 @@ final class HostEnvironmentTests: XCTestCase {
             HostBoundary.setRealization(HostRealization())
         }
 
-        XCTAssertTrue(device.honours(TintElementContract.tint), "after it, the same answer")
+        XCTAssertTrue(device.honors(TintElementContract.tint), "after it, the same answer")
     }
 }

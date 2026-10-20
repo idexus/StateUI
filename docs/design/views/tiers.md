@@ -31,7 +31,7 @@ allowed can be written" a compiler rule rather than a convention.
   │       │   └── CorneredShapeProperties              └── ElementView
   │       └── TextInputProperties                          ├── Layout
   └── the mixins, one file each:                           │   └── Stack
-      TextStyleElement  TextualElement  FontElement        ├── Shape
+      TextColorElement  TextualElement  FontElement        ├── Shape
       TextAlignmentElement  PaddingElement                 │   ├── FilledShape
       LineHeightElement  DecorableTextElement              │   └── CorneredShape
       BorderElement  ImageElement  TintElement             └── TextInput
@@ -98,7 +98,7 @@ tree at all - can both wear them; a line's height is a paragraph's, so
 
 There are two text tiers because some controls colour text they do not own. A
 Picker shows the chosen item, and a DatePicker and a TimePicker format a value:
-each carries `textColor` through `TextStyleElement`, and
+each carries `textColor` through `TextColorElement`, and
 only a control that says something of its own wears `TextualElement`, which adds
 the text and its case. Changing the case of a formatted picker value would be
 a different, platform-specific promise, so `textCase` is on `TextualElement`.

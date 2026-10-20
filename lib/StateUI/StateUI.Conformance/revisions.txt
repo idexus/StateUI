@@ -60,7 +60,7 @@ KeyboardElement 3
 LineHeightElement 2
 TextAlignmentElement 2
 Text 4
-TextStyleElement 2
+TextColorElement 2
 TintElement 2
 ContextMenu 3
 winui VisualElement 2

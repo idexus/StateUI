@@ -35,7 +35,7 @@ final class EnvironmentFactsTests: XCTestCase {
         let device = try XCTUnwrap(HostDeviceInfo(
             words: ["Surface", "Microsoft", "desk", "10.0", "1"], formFactor: .desktop, platform: "Windows"))
         XCTAssertEqual(device.manufacturer, "Microsoft")
-        XCTAssertEqual(device.deviceType, .virtual)
+        XCTAssertEqual(device.isVirtual, true)
         XCTAssertNil(HostDeviceInfo(words: [], formFactor: .desktop, platform: "Windows"))
     }
 

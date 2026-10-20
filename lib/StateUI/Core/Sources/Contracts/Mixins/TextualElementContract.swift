@@ -8,7 +8,7 @@ public enum TextualElementContract: Contract {
     public static let name = "TextualElement"
 
     /// Words are drawn in a colour and a spacing.
-    public static let tiers: [any Contract.Type] = [TextStyleElementContract.self]
+    public static let tiers: [any Contract.Type] = [TextColorElementContract.self]
 
     /// The words.
     public static let text = ElementProperty<Self, String>("text", layer: .native)

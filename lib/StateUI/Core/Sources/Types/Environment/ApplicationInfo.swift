@@ -6,7 +6,7 @@
 /// application's `info`: `@Environment(\.application) private var app`, then
 /// `app.info.name`.
 @MainActor
-public final class AppInfo {
+public final class ApplicationInfo {
     /// The application's display name.
     @State public internal(set) var name = ""
 
@@ -29,7 +29,7 @@ public final class AppInfo {
     /// it. A view reading it is built again as it changes.
     ///
     ///     Switch($on).tint(app.info.accentColor)
-    @State public internal(set) var accentColor = AppInfo.standardAccent
+    @State public internal(set) var accentColor = ApplicationInfo.standardAccent
 
     /// The accent before the host says the system's.
     nonisolated static let standardAccent = Color("#0A84FF")
@@ -44,6 +44,6 @@ public final class AppInfo {
         self.versionString = versionString
         self.buildString = buildString
         self.colorScheme = colorScheme
-        self.accentColor = accentColor ?? AppInfo.standardAccent
+        self.accentColor = accentColor ?? ApplicationInfo.standardAccent
     }
 }

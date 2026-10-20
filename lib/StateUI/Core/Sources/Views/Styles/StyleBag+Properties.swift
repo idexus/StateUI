@@ -13,7 +13,7 @@ extension StyleBag: ShapeProperties where Target: Shape {}
 extension StyleBag: FilledShapeProperties where Target: FilledShape {}
 extension StyleBag: CorneredShapeProperties where Target: CorneredShape {}
 extension StyleBag: PaddingElement where Target: PaddingElement {}
-extension StyleBag: TextStyleElement where Target: TextStyleElement {}
+extension StyleBag: TextColorElement where Target: TextColorElement {}
 extension StyleBag: TextualElement where Target: TextualElement {}
 extension StyleBag: FontElement where Target: FontElement {}
 extension StyleBag: TintElement where Target: TintElement {}

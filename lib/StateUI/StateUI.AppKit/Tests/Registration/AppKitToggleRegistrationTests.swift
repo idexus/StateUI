@@ -147,7 +147,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "RadioButton", owner: "TextualElement", member: "text")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "RadioButton", owner: "TextStyleElement", member: "textColor")))
+            HostRealizedMember(element: "RadioButton", owner: "TextColorElement", member: "textColor")))
     }
 
     /// A radio button draws the caption the tree describes, in the case it

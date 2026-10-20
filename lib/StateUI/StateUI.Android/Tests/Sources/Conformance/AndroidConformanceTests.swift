@@ -79,7 +79,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testFilledShape", testFilledShape),
             ("testCorneredShape", testCorneredShape),
             ("testTextualElement", testTextualElement),
-            ("testTextStyleElement", testTextStyleElement),
+            ("testTextColorElement", testTextColorElement),
             ("testFontElement", testFontElement),
             ("testTextAlignmentElement", testTextAlignmentElement),
             ("testLineHeightElement", testLineHeightElement),
@@ -164,7 +164,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testFilledShape() throws { try conform(FilledShapeTests.self) }
     func testCorneredShape() throws { try conform(CorneredShapeTests.self) }
     func testTextualElement() throws { try conform(TextualElementTests.self) }
-    func testTextStyleElement() throws { try conform(TextStyleElementTests.self) }
+    func testTextColorElement() throws { try conform(TextColorElementTests.self) }
     func testFontElement() throws { try conform(FontElementTests.self) }
     func testTextAlignmentElement() throws { try conform(TextAlignmentElementTests.self) }
     func testLineHeightElement() throws { try conform(LineHeightElementTests.self) }

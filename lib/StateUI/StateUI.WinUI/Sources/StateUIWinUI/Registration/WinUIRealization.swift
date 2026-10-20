@@ -153,7 +153,7 @@ enum WinUIRealization {
             reason: "WinUI scales a text's runs with the text: a run has no text scaling of its own."),
         .complete(TextualElementContract.text, on: TextSpanContract.self),
         .complete(TextualElementContract.textCase, on: TextSpanContract.self),
-        .complete(TextStyleElementContract.textColor, on: TextSpanContract.self),
+        .complete(TextColorElementContract.textColor, on: TextSpanContract.self),
         .complete(DecorableTextElementContract.textDecorations, on: TextSpanContract.self),
         .complete(SplitViewContract.showsSidebar),
         .complete(SplitViewContract.showsSidebarChanged),

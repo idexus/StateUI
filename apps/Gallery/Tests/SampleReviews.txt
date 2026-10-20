@@ -32,7 +32,7 @@ ConverterSample.swift d5ba768dad512071
 Cube3DSample.swift 5e114677162c6999
 DatePickerSample.swift 98ec31b1e84de06c
 DeviceDisplaySample.swift a9241d0b33fff4dc
-DeviceInfoSample.swift 8df607e9d6298120
+DeviceInfoSample.swift cb6c33fedbd844cf
 DialogsSample.swift 6dd7731f4e168fa6
 DragAndDropSample.swift 4fbe44109e627724
 DrivenReadingSample.swift a58a0b1d8786607a
@@ -68,7 +68,7 @@ LightTableSample.swift bf1e522f5a0ecf3e
 LivingLayoutSample.swift 68b7f8803fa314b5
 LoadingItemsSample.swift 0475570786822801
 LocaleInfoSample.swift 53a7aa3516ee574a
-LocalizationSample.swift 492796bcf8ec56ce
+LocalizationSample.swift 1636a0f168875c65
 MapSample.swift 7c9ebbdbf83ac5b7
 MaterialsSample.swift 22b1a745307885f8
 MenuBarSample.swift 6da4c4a2a2b1f2b9
@@ -82,9 +82,9 @@ OutlineSample.swift 0ee9520affeef1b6
 PacedStateSample.swift ab53896019e28ea0
 PanSample.swift 8541b96564665c32
 PersistentStateSample.swift ca3aace29146076b
-PickerSample.swift e99db030448ba415
+PickerSample.swift 810272c663d0f13e
 PinchSample.swift fb62d0d14b7b4ced
-PlatformSupportSample.swift 6f5a186c20c71ebc
+PlatformSupportSample.swift 6ddf010bff149e99
 PointerSample.swift 3306b3b76379bc70
 PollSample.swift d8a149d4da3bffd8
 PositionIndicatorSample.swift 8d01bf0d34da3ca4

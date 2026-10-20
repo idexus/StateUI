@@ -94,8 +94,8 @@ final class HostRealizationTests: XCTestCase {
         let said = ContinuousClock.now - started
 
         XCTAssertLessThan(said, .milliseconds(500), "50 starts took \(said)")
-        XCTAssertTrue(HostRealizations.honours(KeyName("member7"), of: KeyName("Owner7")))
-        XCTAssertFalse(HostRealizations.honours(KeyName("member7"), of: KeyName("Owner8")))
+        XCTAssertTrue(HostRealizations.honors(KeyName("member7"), of: KeyName("Owner7")))
+        XCTAssertFalse(HostRealizations.honors(KeyName("member7"), of: KeyName("Owner8")))
         HostBoundary.setRegister(nil)
     }
 

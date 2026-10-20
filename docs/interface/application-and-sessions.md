@@ -51,7 +51,7 @@ scene ([Scenes](#scenes)).
 | Member | Meaning |
 | --- | --- |
 | `phase` | active, inactive, or background |
-| `info` | what the host says the application is, an `AppInfo`: `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, the theme in force, and `accentColor`, the accent the user chose for the system, both kept current as the user switches them ([What the library offers](../concepts/environment.md#what-the-library-offers)) |
+| `info` | what the host says the application is, an `ApplicationInfo`: `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, the theme in force, and `accentColor`, the accent the user chose for the system, both kept current as the user switches them ([What the library offers](../concepts/environment.md#what-the-library-offers)) |
 | `colorScheme` | the theme the application holds: `.system` follows the user, `.light` and `.dark` hold it ([The application's theme](#the-applications-theme)) |
 | `scenes` | the scenes standing, in opening order |
 | `styles` | the application's `StyleSheet` |

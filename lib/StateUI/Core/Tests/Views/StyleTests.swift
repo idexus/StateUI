@@ -441,7 +441,7 @@ final class StyleTests: XCTestCase {
     }
 
     /// The read is what makes the next theme change find this view: a colour
-    /// with two halves asks `AppInfo` which one to use, and that read is
+    /// with two halves asks `ApplicationInfo` which one to use, and that read is
     /// recorded against whichever view is being built - against the THEME
     /// property, so the change that finds it is a write to `colorScheme`
     /// and nothing else the app object says.
@@ -742,7 +742,7 @@ final class StyleTests: XCTestCase {
                 let name = block.prefix { $0 != " " && $0 != ":" && $0 != "{" }
 
                 guard name.hasSuffix("Properties") || name == "PropertyContainer"
-                        || name == "PaddingElement" || name == "TextStyleElement" || name == "TrackingElement"
+                        || name == "PaddingElement" || name == "TextColorElement" || name == "TrackingElement"
                         || name == "TextualElement" || name == "FontElement"
                         || name == "TextAlignmentElement" || name == "BarElement"
                 else { continue }

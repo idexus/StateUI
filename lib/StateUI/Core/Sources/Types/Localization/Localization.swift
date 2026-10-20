@@ -19,16 +19,16 @@
 /// Design: docs/design/types/localization.md#one-object-in-state
 @MainActor
 public final class Localization<Catalog: LocalizationCatalog> {
-    @State private var chosenLanguage: LocaleChoice<Catalog.Language> = .system
+    @State private var chosenLanguage: LocaleChoice<Catalog.CatalogLanguage> = .system
     @State private var chosenFormatLocale: LocaleChoice<LocaleTag>? = nil
     @State private var chosenTimeZone: LocaleChoice<TimeZoneName>? = nil
     private let base: Localization<Catalog>?
-    private var spoken: [Catalog.Language: Spoken] = [:]
+    private var spoken: [Catalog.CatalogLanguage: Spoken] = [:]
 
     /// A localization of `catalog`'s languages; every choice follows the system unless it is given.
     public init(
         _ catalog: Catalog.Type,
-        language: LocaleChoice<Catalog.Language> = .system,
+        language: LocaleChoice<Catalog.CatalogLanguage> = .system,
         formatLocale: LocaleChoice<LocaleTag> = .system,
         timeZone: LocaleChoice<TimeZoneName> = .system
     ) {
@@ -38,13 +38,13 @@ public final class Localization<Catalog: LocalizationCatalog> {
         chosenTimeZone = timeZone
     }
 
-    private init(speaking language: Catalog.Language, over base: Localization<Catalog>) {
+    private init(speaking language: Catalog.CatalogLanguage, over base: Localization<Catalog>) {
         self.base = base
         chosenLanguage = .fixed(language)
     }
 
     /// Which language the resources speak: the system's, or one of the catalog's.
-    public var language: LocaleChoice<Catalog.Language> {
+    public var language: LocaleChoice<Catalog.CatalogLanguage> {
         get { chosenLanguage }
         set { chosenLanguage = newValue }
     }
@@ -65,7 +65,7 @@ public final class Localization<Catalog: LocalizationCatalog> {
 
     /// The language in use: the fixed one, or the first of the user's languages the catalog speaks - its
     /// `defaultLanguage` where none is.
-    public var resolvedLanguage: Catalog.Language {
+    public var resolvedLanguage: Catalog.CatalogLanguage {
         if case .fixed(let language) = language { return language }
         return Self.matching(Self.preferences(of: StandardEnvironment.locale)) ?? Catalog.defaultLanguage
     }
@@ -80,7 +80,7 @@ public final class Localization<Catalog: LocalizationCatalog> {
     /// its formats and zone following this one's.
     ///
     ///     ReportView().environment(localization.speaking(.english))
-    public func speaking(_ language: Catalog.Language) -> Localization<Catalog> {
+    public func speaking(_ language: Catalog.CatalogLanguage) -> Localization<Catalog> {
         if let kept = spoken[language]?.localization { return kept }
 
         let made = Localization(speaking: language, over: self)
@@ -130,7 +130,7 @@ public final class Localization<Catalog: LocalizationCatalog> {
     /// the order follow the formats - the system's region and clock where they are the system's.
     var context: MessageContext {
         let system = StandardEnvironment.locale
-        let speaks = LocaleTag(resolvedLanguage.rawValue)
+        let speaks = resolvedLanguage.rawValue
         let formats: LocaleTag
         var clock: Bool?
         switch formatLocale {
@@ -155,8 +155,8 @@ public final class Localization<Catalog: LocalizationCatalog> {
     /// The first of `wanted` the catalog speaks: the same tag, then the same language in the same script, then
     /// the language alone where the catalog has it bare.
     /// Design: docs/design/types/localization.md#matching-a-language
-    static func matching(_ wanted: [LocaleTag]) -> Catalog.Language? {
-        let offered = Catalog.Language.allCases.map { (language: $0, tag: LocaleTag($0.rawValue)) }
+    static func matching(_ wanted: [LocaleTag]) -> Catalog.CatalogLanguage? {
+        let offered = Catalog.CatalogLanguage.allCases.map { (language: $0, tag: $0.rawValue) }
         for tag in wanted where tag.isValid {
             if let same = offered.first(where: { $0.tag == tag }) { return same.language }
             if let written = offered.first(where: {

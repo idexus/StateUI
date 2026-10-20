@@ -78,7 +78,7 @@ enum HostRealizations {
     /// Whether the host realizes `member` of the contract `owner` - in full or in part - by its register, else by
     /// what it said it realizes.
     /// Design: docs/design/core/contracts.md#what-a-platform-honours
-    static func honours(_ member: KeyName, of owner: KeyName) -> Bool {
+    static func honors(_ member: KeyName, of owner: KeyName) -> Bool {
         honoured.contains(Owned(owner: owner, member: member))
     }
 

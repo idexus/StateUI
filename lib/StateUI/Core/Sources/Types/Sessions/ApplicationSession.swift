@@ -27,7 +27,7 @@ public final class ApplicationSession {
 
     /// What the application is, as the host describes it: its name, identifier, version and build, and the theme
     /// in force - the one `application.colorScheme` holds, else the one the system asks for - updated live.
-    public let info = AppInfo()
+    public let info = ApplicationInfo()
 
     /// The sessions of the scenes standing right now, in the order they
     /// opened - read like any state, so a view that shows them is built again

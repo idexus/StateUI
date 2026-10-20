@@ -2516,7 +2516,8 @@ enum Listings {
 
                 Text("device · \(device.info.manufacturer) \(device.info.model)")
                 Text("system · \(device.info.platform) \(device.info.versionString)")
-                Text("formFactor · \(device.info.formFactor), \(device.info.deviceType)")
+                Text("formFactor · \(device.info.formFactor)")
+                Text("virtual · \(device.info.isVirtual.map { $0 ? "yes" : "no" } ?? "not said")")
                 Text("name · \(device.info.name.isEmpty ? "not said" : device.info.name)")
             }
         }
@@ -6232,7 +6233,7 @@ enum Listings {
 
         // Sources/Samples/Environment/Localization/ReportCatalog.swift
         /// The languages the folder report is written in.
-        enum ReportLanguage: String, CaseIterable, Sendable {
+        enum ReportLanguage: LocaleTag, CaseIterable {
             case english = "en"
             case polish = "pl"
         }
@@ -8003,7 +8004,7 @@ enum Listings {
                     .onClosed { showing = false }
 
                 // Only where the platform opens a list at the program's asking.
-                if device.honours(PickerContract.isOpen) {
+                if device.honors(PickerContract.isOpen) {
                     Button("Open the list")
                         .onClicked { showing = true }
                         .horizontalAlignment(.center)
@@ -8081,10 +8082,10 @@ enum Listings {
 
         var body: some View {
             VStack {
-                supported("Opening a picker's list", device.honours(PickerContract.isOpen))
-                supported("Hearing a picker's list open", device.honours(PickerContract.opened))
-                supported("A tooltip", device.honours(VisualElementContract.tooltip))
-                supported("A picture beside a menu's entry", device.honours(MenuItemElementContract.icon))
+                supported("Opening a picker's list", device.honors(PickerContract.isOpen))
+                supported("Hearing a picker's list open", device.honors(PickerContract.opened))
+                supported("A tooltip", device.honors(VisualElementContract.tooltip))
+                supported("A picture beside a menu's entry", device.honors(MenuItemElementContract.icon))
             }
         }
 

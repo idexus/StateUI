@@ -1,6 +1,6 @@
 import StateUI
 
-/// What the platform the gallery runs on honours, read by name: `device.honours`.
+/// What the platform the gallery runs on honours, read by name: `device.honors`.
 struct PlatformSupportSample: SampleContent, ExampleContent {
     // listing: PlatformSupportSample
     /// The device, by its name: what its platform honours is its host's.
@@ -14,10 +14,10 @@ struct PlatformSupportSample: SampleContent, ExampleContent {
     // listing: PlatformSupportSample
     var body: some View {
         VStack {
-            supported("Opening a picker's list", device.honours(PickerContract.isOpen))
-            supported("Hearing a picker's list open", device.honours(PickerContract.opened))
-            supported("A tooltip", device.honours(VisualElementContract.tooltip))
-            supported("A picture beside a menu's entry", device.honours(MenuItemElementContract.icon))
+            supported("Opening a picker's list", device.honors(PickerContract.isOpen))
+            supported("Hearing a picker's list open", device.honors(PickerContract.opened))
+            supported("A tooltip", device.honors(VisualElementContract.tooltip))
+            supported("A picture beside a menu's entry", device.honors(MenuItemElementContract.icon))
         }
         .spacing(10)
     }

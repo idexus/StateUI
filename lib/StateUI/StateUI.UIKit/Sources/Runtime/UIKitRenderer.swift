@@ -233,13 +233,13 @@ final class UIKitRenderer {
     private func reportEnvironment() {
         let device = UIDevice.current
         #if targetEnvironment(simulator)
-        let deviceType = DeviceType.virtual
+        let isVirtual = true
         #else
-        let deviceType = DeviceType.physical
+        let isVirtual = false
         #endif
         runtime.core.setDeviceInfo(HostDeviceInfo(
             formFactor: device.userInterfaceIdiom == .pad ? .tablet : .phone, platform: "iOS", model: device.model,
-            manufacturer: "Apple", name: device.name, versionString: device.systemVersion, deviceType: deviceType))
+            manufacturer: "Apple", name: device.name, versionString: device.systemVersion, isVirtual: isVirtual))
         runtime.core.setApplicationInfo(SystemFacts.application)
     }
 

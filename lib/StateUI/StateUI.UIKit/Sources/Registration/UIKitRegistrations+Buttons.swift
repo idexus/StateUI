@@ -40,12 +40,12 @@ extension UIKitRegistrations {
             // tint, a destructive one's words in the system's red.
             button.applies([
                 VisualElementContract.background, BorderElementContract.stroke, BorderElementContract.lineWidth,
-                BorderElementContract.shape, ButtonContract.role, TextStyleElementContract.textColor,
+                BorderElementContract.shape, ButtonContract.role, TextColorElementContract.textColor,
             ]) { view, values in
                 let background = HostMaterial(values[VisualElementContract.background]?.propValue).painted
                 let look = ButtonRoleLook(
                     values[ButtonContract.role], fills: background != nil,
-                    colorsWords: values[TextStyleElementContract.textColor] != nil)
+                    colorsWords: values[TextColorElementContract.textColor] != nil)
                 view.setBox(
                     background: background,
                     stroke: values[BorderElementContract.stroke]?.propValue,
