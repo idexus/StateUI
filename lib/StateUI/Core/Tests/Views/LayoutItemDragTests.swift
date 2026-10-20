@@ -25,7 +25,7 @@ final class LayoutItemDragTests: XCTestCase {
 
     /// Three cards: A, and B over it a little to the right; C apart, turned an eighth of a turn.
     private func cards(
-        _ told: Told, _ order: State<[String]>? = nil, dismissing: Bool = false,
+        _ told: Told, _ order: State<[String]>? = nil, dismissing: Bool = false, awaiting: Bool = false,
         motion: Motion = .eased(.milliseconds(160), .linear)
     ) -> Node {
         let names = order?.wrappedValue ?? ["A", "B", "C"]
@@ -42,6 +42,13 @@ final class LayoutItemDragTests: XCTestCase {
         .itemDrag(begins: .held)
         .onItemDragged { told.drags.append($0) }
         .motion(motion)
+        if awaiting {
+            // A dismissal that awaits, past any test's end: another while it runs is ignored.
+            return engine.onItemDismissed(.up, beyond: 50, gate: .ignoreWhileRunning) { name in
+                told.dismissed.append(name)
+                try await Task.sleep(for: .seconds(60))
+            }.node
+        }
         return (dismissing ? engine.onItemDismissed(.up, beyond: 50) { told.dismissed.append($0) } : engine).node
     }
 
@@ -153,6 +160,25 @@ final class LayoutItemDragTests: XCTestCase {
         XCTAssertLessThan(flying, -60, "on its way up")
         XCTAssertLessThanOrEqual(shown(renders, tree)[1].bounds.y, -100, "out of the room")
         XCTAssertEqual(told.dismissed, ["B"], "told once")
+    }
+
+    /// A DISMISSAL THAT AWAITS GOES THROUGH ITS GATE: while the first runs, a second view dismissed under
+    /// `.ignoreWhileRunning` flies out and its item is not told.
+    func testADismissalThatAwaitsGoesThroughItsGate() async {
+        let told = Told()
+        let renders = Renders()
+        func tree() -> Node { cards(told, awaiting: true) }
+        _ = bench.laid(renders, tree)
+
+        for start in [Point(75, 50), Point(25, 50)] {
+            bench.item(renders, tree, .began, at: start)
+            bench.item(renders, tree, .changed, at: Point(start.x, -10))
+            bench.item(renders, tree, .ended, at: Point(start.x, -10))
+            for _ in 0..<40 { bench.cycle() }
+            _ = await settle()
+        }
+
+        XCTAssertEqual(told.dismissed, ["B"], "the second ignored while the first runs")
     }
 
     /// A HELD VIEW WEARS ITS PLACE'S LOOK WHERE THE HAND HOLDS IT: the arithmetic may lift it - larger, turned -

@@ -808,7 +808,10 @@ struct Board: View {
 `.onItemDismissed(.up, beyond: 120) { card in … }` lets a view go for good:
 let go past 120 points up - or thrown far enough that way - it flies on out
 of the room, and the handler runs once it has left, where the application
-removes the item. Short of it, the view goes back.
+removes the item. Short of it, the view goes back. A handler that awaits takes
+a gate, as an event's does - `.onItemDismissed(.up, beyond: 120, gate:
+.ignoreWhileRunning) { card in try await archive(card) }` - and what it runs
+ends with the layout.
 
 A run with no ends comes round: `wraps: true` makes one turn of the range
 bring the layout back where it was - its upper end is its lower one a turn

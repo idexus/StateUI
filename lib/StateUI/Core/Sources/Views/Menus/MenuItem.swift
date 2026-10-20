@@ -46,6 +46,12 @@ public struct MenuItem: Element, MenuItemElement {
         modified { $0.addHandler(MenuItemContract.toggled, handler) }
     }
 
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onToggled(gate: some Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Modified {
+        modified { $0.addHandler(MenuItemContract.toggled, gate: gate, handler) }
+    }
+
     /// Who this entry is among the menu's others, so it stays matched to itself
     /// when the entries around it come and go; without one it is matched by
     /// position. On the menu bar an entry with the id of an entry in the menu

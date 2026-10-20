@@ -66,6 +66,9 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// The layout's own number for each item's identity, which its frames key the views by.
     @State private var numbers = LayoutSlotNumbers()
 
+    /// Who starts the runs of what `onItemDismissed` asked for, ended with the layout.
+    @State private var dismissalRuns = RunOwner()
+
     /// The items, their views and the arithmetic, behind a class so the state walk stops before them.
     /// Design: docs/design/views/composition.md#items-held-behind-a-class
     private let source: Source
@@ -429,7 +432,21 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         _ directions: SwipeDirection, beyond: Double, _ handler: @escaping @MainActor (Items.Element) throws -> Void
     ) -> Self {
         var copy = self
-        copy.dismissal = LayoutDismissal(directions: directions, beyond: beyond, handler: handler)
+        copy.dismissal = LayoutDismissal(directions: directions, beyond: beyond, handler: ValueHandler(step: handler))
+        return copy
+    }
+
+    /// The same, with a handler that awaits - an archive does: its `gate` says what another view dismissed does
+    /// while a run is under way.
+    ///
+    ///     .onItemDismissed(.up, beyond: 120, gate: .cancelPrevious) { card in try await archive(card) }
+    public func onItemDismissed(
+        _ directions: SwipeDirection, beyond: Double, gate: some Gate,
+        _ handler: @escaping ValueEventHandler<Items.Element>
+    ) -> Self {
+        var copy = self
+        copy.dismissal = LayoutDismissal(
+            directions: directions, beyond: beyond, handler: ValueHandler(run: handler, gate: gate))
         return copy
     }
 
@@ -460,6 +477,8 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         .modified { element in
             // The hand is heard on the element itself, over every view, which still answers a tap.
             element.describe(LayoutEngineContract.handAxis, run.ways.count == 1 ? run.ways.first : nil)
+            // What a dismissal asked for ends with the layout.
+            if run.dismissal != nil { element.destroying.append { run.states.dismissals.orphan() } }
             if run.moves {
                 element.addHandler(LayoutEngineContract.handMoved) { phase, moved, speed in
                     run.handMoved(phase, moved: moved, speed: speed)
@@ -570,7 +589,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
             phase: pinned ?? $ownPhase,
             states: States(
                 held: _held, flung: _flung, placements: _placements, room: _room, shown: _shown, from: _from,
-                grip: _grip, item: _item),
+                grip: _grip, item: _item, dismissals: dismissalRuns),
             hands: hands,
             focus: hands.first { $0.way != nil },
             law: law)
@@ -586,6 +605,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         let from: State<Phase?>
         let grip: State<[Int: LayoutGrip]>
         let item: State<LayoutItemHand?>
+        let dismissals: RunOwner
     }
 }
 
@@ -597,6 +617,7 @@ extension LayoutEngine: WalkedView {
         [
             ("_ownPhase", _ownPhase), ("_held", _held), ("_flung", _flung), ("_grip", _grip), ("_item", _item),
             ("_placements", _placements), ("_shown", _shown), ("_from", _from), ("_room", _room), ("_numbers", _numbers),
+            ("_dismissalRuns", _dismissalRuns),
             ("source", source), ("pinned", pinned as Any), ("axes", axes), ("curve", curve as Any),
             ("followed", followed), ("mask", mask as Any), ("tapped", tapped as Any),
             ("itemStart", itemStart as Any), ("dragged", dragged as Any), ("dismissal", dismissal as Any),

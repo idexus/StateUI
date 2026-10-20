@@ -9,7 +9,7 @@
 struct LayoutDismissal<Item> {
     let directions: SwipeDirection
     let beyond: Double
-    let handler: @MainActor (Item) throws -> Void
+    let handler: ValueHandler<Item>
 }
 
 extension LayoutEngine.Run {
@@ -159,9 +159,10 @@ extension LayoutEngine.Run {
     func dismissed(_ identity: Int) {
         guard let dismissal, let slot = slots.first(where: { $0.identity == identity }) else { return }
 
-        let (handler, item) = (dismissal.handler, slot.item)
+        let (handler, item, runs) = (dismissal.handler, slot.item, states.dismissals)
         libraryTask {
-            do { try handler(item) } catch { Renderer.shared.report(error) }
+            handler.gate.runs(for: runs).start(
+                { try await handler.run(item) }, handler.gate.policy, payload: nil, owner: runs)
         }
     }
 }
