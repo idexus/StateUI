@@ -9,7 +9,7 @@ nothing in a host binds anything.
 
 `Color` holds four 8-bit sRGB channels. Every initializer produces them, so
 nothing the API can express is lost, and equality means the colour rather
-than its spelling: `Color("#ff0000")` and `.red` are one value, so two
+than its spelling: `Color(hex: 0xFF0000)` and `.red` are one value, so two
 spellings of one colour are not a change and nothing is sent for them.
 
 A colour crosses as its own kind of value, four channels of a byte. It is
@@ -29,28 +29,34 @@ draws are converted by that one rule, so the same colour stands at the same
 channels whichever toolkit reported it, and a channel taken to a fraction and
 back is the channel it was.
 
-## Hex is read in the core
+## A colour is a number in code, text only in data
 
-A colour is written as hex, `Color("#512BD4")`, as channels, or by name. The
-parser is the core's and reads hex alone: `#RGB`, `#ARGB`, `#RRGGBB` or
-`#AARRGGBB`, with or without the `#`, the alpha first when it is written.
-Three and four digits are the shorthand where each digit stands for both of
-its pair. Leaving the reading to a host would put the definition of a colour
-inside that host's parser, and every other host would have to reproduce it
-exactly or differ in silence.
+A colour in code is a hex number, `Color(hex: 0x512BD4)`, the digits a design
+gives, with how opaque it is apart - `Color(hex: 0x000000, opacity: 0.4)`, as
+`opacity(_:)` lets a colour through - or channels, or a name. A number holds no
+digit that is not hex, so a colour written in code cannot be misspelt the way
+text can; what a number cannot refuse by its type, a seventh digit, stops the
+program with a message, since the alpha is `opacity`.
 
-Text that is not hex stops the program with a message naming it. A colour is
-written as a literal, so it fails the first time the code runs rather than
-drawing something nobody chose, and a colour's name is `Color.red` and its
-kin, which the compiler checks where a string could not. Channels given as
-numbers outside 0 to 255 are held to the range. There is no way back to hex
-text: a colour crosses as bytes wherever it crosses.
+Text is read only where data holds a colour - a theme file, a server's answer -
+by `Color(parsing:)`, which answers nil for what is not one, so the data's own
+fallback stands. The reader is the core's and reads hex alone: `#RGB`, `#ARGB`,
+`#RRGGBB` or `#AARRGGBB`, with or without the `#`, the alpha first when it is
+written. Three and four digits are the shorthand where each digit stands for
+both of its pair. Leaving the reading to a host would put the definition of a
+colour inside that host's parser, and every other host would have to reproduce
+it exactly or differ in silence.
+
+A colour's name is `Color.red` and its kin, which the compiler checks. Channels
+given as numbers outside 0 to 255 are held to the range. There is no way back
+to hex text: a colour crosses as bytes wherever it crosses. Two spellings of
+one colour are equal and hash alike, so a colour is a key and a choice.
 
 ## Named colours
 
 The named colours are the ones that come up in practice, each with its CSS
 name and value - but `transparent`, a white let through to nothing
-(`#00FFFFFF`) where CSS's is black; any other colour is one hex literal away.
+(`Color(hex: 0xFFFFFF, opacity: 0)`) where CSS's is black; any other colour is one hex number away.
 `darkGray` is lighter than `gray`, as its CSS value is.
 
 ## A pair for each theme

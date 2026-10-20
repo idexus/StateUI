@@ -98,8 +98,8 @@ private final class TurnedClock: FrameClock {
 private struct Stage {
     static var held = Stage()
 
-    static let accent = Color(light: Color("#7C3AED"), dark: Color("#A78BFA"))
-    static let brand = Color(light: Color("#EA580C"), dark: Color("#F05037"))
+    static let accent = Color(light: Color(hex: 0x7C3AED), dark: Color(hex: 0xA78BFA))
+    static let brand = Color(light: Color(hex: 0xEA580C), dark: Color(hex: 0xF05037))
 
     @State var fade = 1.0
     @State var wash = Stage.accent

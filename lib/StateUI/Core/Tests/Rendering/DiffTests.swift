@@ -86,7 +86,7 @@ final class DiffTests: XCTestCase {
         let changed = try XCTUnwrap(runs.children.first)
         XCTAssertEqual(runs.children.count, 1, "only the run whose colour moved")
         XCTAssertEqual(changed.type, "TextSpan")
-        XCTAssertEqual(changed.props, ["textColor": Color("#B22222").propValue],
+        XCTAssertEqual(changed.props, ["textColor": Color(hex: 0xB22222).propValue],
                        "the colour alone - not the text it still shows")
     }
 

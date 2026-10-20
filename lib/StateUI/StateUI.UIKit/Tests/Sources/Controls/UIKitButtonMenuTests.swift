@@ -78,9 +78,9 @@ final class UIKitButtonMenuTests: XCTestCase {
         let host = UIKitRenderer.running {
             HStack {
                 Button(icon: .icon(.more)).menu { MenuItem("Mail") }.showsMenuArrow(shows.wrappedValue)
-                    .background(Color("#8E6BF0")).shape(.capsule).padding(horizontal: 16, vertical: 11)
+                    .background(Color(hex: 0x8E6BF0)).shape(.capsule).padding(horizontal: 16, vertical: 11)
                 Button(icon: .icon(.more)).menu { MenuItem("Mail") }.showsMenuArrow(false)
-                    .background(Color("#8E6BF0")).shape(.capsule).padding(horizontal: 16, vertical: 11)
+                    .background(Color(hex: 0x8E6BF0)).shape(.capsule).padding(horizontal: 16, vertical: 11)
                 Switch(shows.projectedValue)
             }
             .horizontalAlignment(.start)

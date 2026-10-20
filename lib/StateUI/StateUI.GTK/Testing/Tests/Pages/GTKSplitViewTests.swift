@@ -120,7 +120,7 @@ final class GTKSplitViewTests: XCTestCase {
             XCTAssertFalse(split.isCollapsed)
             XCTAssertNotEqual(gtk_widget_has_css_class(split.splitWidgetForTesting, "stateui-sidebar-shaded"), 0)
 
-            material.wrappedValue = .color(Color("#512BD4"))
+            material.wrappedValue = .color(Color(hex: 0x512BD4))
             host.settle { gtk_widget_has_css_class(split.splitWidgetForTesting, "stateui-sidebar-clear") != 0 }
             XCTAssertNotEqual(gtk_widget_has_css_class(split.splitWidgetForTesting, "stateui-sidebar-clear"), 0)
         }
@@ -135,8 +135,8 @@ final class GTKSplitViewTests: XCTestCase {
                 } detail: {
                     TitledPage(title: "Detail")
                 }
-                .barBackgroundColor(Color("#FF0000"))
-                .barForegroundColor(Color("#FFFFFF"))
+                .barBackgroundColor(Color(hex: 0xFF0000))
+                .barForegroundColor(Color(hex: 0xFFFFFF))
             }
             let split = try XCTUnwrap(host.views(GTKSplitView.self).first)
             let sidebar = try XCTUnwrap(split.sidebarFrame)

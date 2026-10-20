@@ -923,7 +923,7 @@ final class AppKitMotionTests: XCTestCase {
 
         var initial = HostPatch(id: .manual("line"), type: .line)
         initial.properties[.contentMode] = .enumeration(ContentMode.center.rawValue)
-        initial.properties[.stroke] = Brush.solidColor(Color("#000000")).propValue
+        initial.properties[.stroke] = Brush.solidColor(Color(hex: 0x000000)).propValue
         initial.properties[.dash] = .numbers([1, 1])
         renderer.applyForTesting(initial)
 

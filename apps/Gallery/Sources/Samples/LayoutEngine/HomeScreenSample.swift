@@ -11,7 +11,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
     struct HomeIcon: Hashable {
         let name: String
         let glyph: Icon
-        let colour: String
+        let colour: Color
     }
 
     /// Every icon, board after board: where one stands in the order is where
@@ -31,7 +31,10 @@ struct HomeScreenSample: SampleContent, ExampleContent {
             ("Reader", .info), ("Garden", .home), ("Chat", .mail), ("Agenda", .calendar),
             ("Remote", .settings), ("Shortcuts", .link), ("Albums", .copy), ("Compass", .forward),
         ]
-        let colours = ["#7C3AED", "#2563EB", "#0D9488", "#D97706", "#DB2777", "#4F46E5", "#16A34A", "#DC2626"]
+        let colours: [Color] = [
+            Color(hex: 0x7C3AED), Color(hex: 0x2563EB), Color(hex: 0x0D9488), Color(hex: 0xD97706),
+            Color(hex: 0xDB2777), Color(hex: 0x4F46E5), Color(hex: 0x16A34A), Color(hex: 0xDC2626),
+        ]
         return glyphs.enumerated().map { index, glyph in
             HomeIcon(name: glyph.0, glyph: glyph.1, colour: colours[index % colours.count])
         }
@@ -232,7 +235,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
         var body: some View {
             VStack {
                 ZStack {
-                    Rectangle(Color(icon.colour))
+                    Rectangle(icon.colour)
                         .cornerRadius(14)
 
                     Rectangle(.white)

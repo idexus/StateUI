@@ -67,7 +67,7 @@ final class UIKitSplitViewTests: XCTestCase {
         let host = UIKitRenderer.running(reducesMotion: true) {
             if painted.wrappedValue {
                 SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
-                    .sidebarBackground(.color(Color("#251E4C")))
+                    .sidebarBackground(.color(Color(hex: 0x251E4C)))
             } else {
                 SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
             }

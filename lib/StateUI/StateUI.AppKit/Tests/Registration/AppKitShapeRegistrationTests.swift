@@ -64,7 +64,7 @@ final class AppKitShapeRegistrationTests: XCTestCase {
 
         var ellipse = HostPatch(id: .manual("ellipse"), type: .ellipse)
         ellipse.properties[.fill] = Brush.solidColor(Color(red: 51, green: 102, blue: 153)).propValue
-        ellipse.properties[.stroke] = Brush.solidColor(Color("#000000")).propValue
+        ellipse.properties[.stroke] = Brush.solidColor(Color(hex: 0x000000)).propValue
         ellipse.properties[.lineWidth] = .number(3)
         ellipse.properties[.dash] = .numbers([2, 1])
         renderer.applyForTesting(tree(ellipse))

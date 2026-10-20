@@ -54,8 +54,8 @@ final class UIKitImageViewTests: XCTestCase {
     func testAButtonsIconTakesItsWordsColour() throws {
         let host = UIKitRenderer.running {
             VStack {
-                Button("Share").icon(.icon(.share)).textColor(Color("#FF0000"))
-                Button(icon: .icon(.settings)).textColor(Color("#FF0000"))
+                Button("Share").icon(.icon(.share)).textColor(Color(hex: 0xFF0000))
+                Button(icon: .icon(.settings)).textColor(Color(hex: 0xFF0000))
                 Button("Plain").icon(.icon(.add))
             }
         }

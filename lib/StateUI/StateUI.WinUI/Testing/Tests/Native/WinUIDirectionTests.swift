@@ -49,8 +49,8 @@ final class WinUIDirectionTests: XCTestCase {
     func testARowRightToLeftFillsFromTheRight() throws {
         let colours = try drawnRightToLeft(at: [(90, 10), (70, 10), (10, 10)]) {
             HStack {
-                Rectangle().fill(Color("#FF0000")).width(20).height(20)
-                Rectangle().fill(Color("#0000FF")).width(20).height(20)
+                Rectangle().fill(Color(hex: 0xFF0000)).width(20).height(20)
+                Rectangle().fill(Color(hex: 0x0000FF)).width(20).height(20)
             }
             .spacing(0)
         }
@@ -65,7 +65,7 @@ final class WinUIDirectionTests: XCTestCase {
         XCTAssertEqual(picture, [Self.red, Self.blue], "the picture's red half still at its left")
 
         let figure = try drawnRightToLeft(at: [(95, 15), (65, 15)]) {
-            HStack { Path("M 0 0 L 10 0 L 10 10 Z").fill(Color("#FF0000")).width(40).height(40) }
+            HStack { Path("M 0 0 L 10 0 L 10 10 Z").fill(Color(hex: 0xFF0000)).width(40).height(40) }
         }
         XCTAssertEqual(figure, [Self.red, 0], "the triangle's corner still at its right")
     }

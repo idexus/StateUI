@@ -14,10 +14,10 @@ enum GallerySurface {
     /// page as dark as a list of samples on it (`Palette.shade`).
     var own: Color {
         switch self {
-        case .bar: Color(light: Color("#EFEBFA"), dark: Color("#2E255A"))
-        case .window: Color(light: Color("#F7F5FC"), dark: Color("#2A2154"))
-        case .sidebar: Color(light: Color("#EEEBF6"), dark: Color("#221A43"))
-        case .flyout: Color(light: Color("#F7F5FC"), dark: Color("#221A43"))
+        case .bar: Color(light: Color(hex: 0xEFEBFA), dark: Color(hex: 0x2E255A))
+        case .window: Color(light: Color(hex: 0xF7F5FC), dark: Color(hex: 0x2A2154))
+        case .sidebar: Color(light: Color(hex: 0xEEEBF6), dark: Color(hex: 0x221A43))
+        case .flyout: Color(light: Color(hex: 0xF7F5FC), dark: Color(hex: 0x221A43))
         }
     }
 }

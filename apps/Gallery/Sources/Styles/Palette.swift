@@ -52,55 +52,55 @@ enum Palette {
 
     /// Text a view has to say the colour of again - drawn words, a clock's
     /// hands. Text that says nothing takes the platform's own.
-    static let text = Color(light: Color("#D9000000"), dark: Color("#D9FFFFFF"))
+    static let text = Color(light: Color(hex: 0x000000, opacity: 0.85), dark: Color(hex: 0xFFFFFF, opacity: 0.85))
 
     /// Anything secondary: summaries, captions, the line under a title.
     // listing: Palette.sample
-    static let subtle = Color(light: Color("#8C000000"), dark: Color("#8CFFFFFF"))
+    static let subtle = Color(light: Color(hex: 0x000000, opacity: 0.55), dark: Color(hex: 0xFFFFFF, opacity: 0.55))
     // listing: end
 
     /// Text and drawings that are not available.
     // listing: Palette.sample
-    static let disabled = Color(light: Color("#40000000"), dark: Color("#40FFFFFF"))
+    static let disabled = Color(light: Color(hex: 0x000000, opacity: 0.25), dark: Color(hex: 0xFFFFFF, opacity: 0.25))
     // listing: end
 
     // MARK: Fills
 
     /// A panel set apart from the page: a card, a code block. Let through
     /// enough that a window's blur and its tint carry into the panel.
-    static let raised = Color(light: Color("#80FFFFFF"), dark: Color("#66383838"))
+    static let raised = Color(light: Color(hex: 0xFFFFFF, opacity: 0.5), dark: Color(hex: 0x383838, opacity: 0.4))
 
     /// The edge of a panel: a hairline holding it apart where the page behind
     /// is as light as the panel.
-    static let edge = Color(light: Color("#14000000"), dark: Color("#15FFFFFF"))
+    static let edge = Color(light: Color(hex: 0x000000, opacity: 0.08), dark: Color(hex: 0xFFFFFF, opacity: 0.081))
 
     /// Behind a sample and its code, and a list of samples: the page
     /// darkened a breath, all else let through - in the dark a fifth, as dark
     /// as the sidebar over the window, and an eighth on Windows, whose
     /// acrylic is deeper.
     #if WINUI
-    static let shade = Color(light: Color("#0A000000"), dark: Color("#1F000000"))
+    static let shade = Color(light: Color(hex: 0x000000, opacity: 0.04), dark: Color(hex: 0x000000, opacity: 0.12))
     #else
-    static let shade = Color(light: Color("#0A000000"), dark: Color("#33000000"))
+    static let shade = Color(light: Color(hex: 0x000000, opacity: 0.04), dark: Color(hex: 0x000000, opacity: 0.2))
     #endif
 
     /// The ground words are typed on: what lies behind lit a breath, all else
     /// let through.
-    static let field = Color(light: Color("#0D000000"), dark: Color("#14FFFFFF"))
+    static let field = Color(light: Color(hex: 0x000000, opacity: 0.05), dark: Color(hex: 0xFFFFFF, opacity: 0.08))
 
     /// A region set apart within a panel.
-    static let well = Color(light: Color("#0A000000"), dark: Color("#0AFFFFFF"))
+    static let well = Color(light: Color(hex: 0x000000, opacity: 0.04), dark: Color(hex: 0xFFFFFF, opacity: 0.04))
 
     /// Outlines, dividers, the edge of something drawn.
     // listing: Palette.sample
-    static let outline = Color(light: Color("#1F000000"), dark: Color("#1FFFFFFF"))
+    static let outline = Color(light: Color(hex: 0x000000, opacity: 0.12), dark: Color(hex: 0xFFFFFF, opacity: 0.12))
     // listing: end
 
     /// Behind the thing you are on - the sidebar's current row, a pad held down.
-    static let selected = Color(light: Color("#1A000000"), dark: Color("#1FFFFFFF"))
+    static let selected = Color(light: Color(hex: 0x000000, opacity: 0.1), dark: Color(hex: 0xFFFFFF, opacity: 0.12))
 
     /// Behind the row under the pointer.
-    static let hovered = Color(light: Color("#0A000000"), dark: Color("#0FFFFFFF"))
+    static let hovered = Color(light: Color(hex: 0x000000, opacity: 0.04), dark: Color(hex: 0xFFFFFF, opacity: 0.06))
 
     // MARK: Roles
 
@@ -109,6 +109,6 @@ enum Palette {
     static let danger = Color(light: AppColors.red, dark: AppColors.redLight)
 
     /// What such an action stands on: its red let faintly through.
-    static let dangerWash = Color(light: Color("#1FD92D20"), dark: Color("#33FF8A80"))
+    static let dangerWash = Color(light: Color(hex: 0xD92D20, opacity: 0.12), dark: Color(hex: 0xFF8A80, opacity: 0.2))
     // listing: end
 }

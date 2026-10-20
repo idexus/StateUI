@@ -160,7 +160,7 @@ final class GTKScrollViewTests: XCTestCase {
                 }
                 .padding(10)
                 .shape(.roundedRectangle(20))
-                .stroke(Color("#0000FF"))
+                .stroke(Color(hex: 0x0000FF))
                 .lineWidth(2)
                 .width(100)
                 .height(80)

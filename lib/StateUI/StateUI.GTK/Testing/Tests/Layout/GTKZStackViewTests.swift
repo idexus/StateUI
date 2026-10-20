@@ -170,8 +170,8 @@ final class GTKZStackViewTests: XCTestCase {
                 VStack {
                     ZStack { Rectangle().fill(.red) }
                         .padding(10)
-                        .background(Color("#00FF00"))
-                        .stroke(Color("#0000FF"))
+                        .background(Color(hex: 0x00FF00))
+                        .stroke(Color(hex: 0x0000FF))
                         .lineWidth(2)
                         .shape(.roundedRectangle(20))
                         .clipsContent(true)

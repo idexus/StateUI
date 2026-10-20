@@ -105,7 +105,7 @@ final class GTKTextInputViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     TextField(State(wrappedValue: "").projectedValue).placeholder("Scan")
-                        .placeholderColor(Color("#FF0000")).horizontalTextAlignment(.center).width(300)
+                        .placeholderColor(Color(hex: 0xFF0000)).horizontalTextAlignment(.center).width(300)
                     TextField(State(wrappedValue: "").projectedValue).placeholder("Name").horizontalTextAlignment(.end)
                         .width(300)
                 }
@@ -173,9 +173,9 @@ final class GTKTextInputViewTests: XCTestCase {
         onUIThread {
             let host = GTKRenderer.running {
                 VStack {
-                    TextField("").placeholder("MMM").placeholderColor(Color("#FF0000")).fontSize(40)
+                    TextField("").placeholder("MMM").placeholderColor(Color(hex: 0xFF0000)).fontSize(40)
                         .fontWeight(.bold).width(200)
-                    TextField("MMM").textColor(Color("#0000FF")).fontSize(40).fontWeight(.bold).width(200)
+                    TextField("MMM").textColor(Color(hex: 0x0000FF)).fontSize(40).fontWeight(.bold).width(200)
                     TextField("MMM").width(200)
                 }
                 .horizontalAlignment(.start)

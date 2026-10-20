@@ -89,7 +89,7 @@
         ConformanceCase("VStack.background.followsAMaterialState", proves: [
             Covered(VisualElementContract.background, on: "VStack"),
         ], needs: [Covered(ButtonContract.clicked)]) { s in
-            let (first, second) = (Material.color(Color("#0F766E")), Material.color(Color("#512BD4")))
+            let (first, second) = (Material.color(Color(hex: 0x0F766E)), Material.color(Color(hex: 0x512BD4)))
             let value = State(wrappedValue: first)
             s.start {
                 VStack {

@@ -434,14 +434,14 @@ Text belongs on a surface of its own rather than straight over the desktop.
 
 ```swift quote
 .onCreated {
-    window.background = .blur(.thick.tint(Color("#26512BD4")))
+    window.background = .blur(.thick.tint(Color(hex: 0x512BD4, opacity: 0.15)))
 }
 ```
 
 ```swift quote
 .onCreated {
     // The platform's own window in the light theme, a tinted blur in the dark.
-    window.background = Material(light: nil, dark: .blur(.thick.tint(Color("#26512BD4"))))
+    window.background = Material(light: nil, dark: .blur(.thick.tint(Color(hex: 0x512BD4, opacity: 0.15))))
 }
 ```
 

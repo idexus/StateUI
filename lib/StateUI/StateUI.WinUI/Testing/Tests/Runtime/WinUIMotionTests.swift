@@ -18,7 +18,7 @@ private struct CutPage: View {
             VStack { Text("cut") }
                 .width(40)
                 .height(40)
-                .background(Color("#FF0000"))
+                .background(Color(hex: 0xFF0000))
                 .clipsContent(true)
                 .horizontalAlignment(.start)
                 .translationX(moved ? 50 : 0)

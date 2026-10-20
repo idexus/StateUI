@@ -14,7 +14,7 @@ private struct TintedPage: View {
 
     var body: some View {
         VStack {
-            CheckBox(true).tint(blue ? Color("#0000FF") : Color("#FF0000"))
+            CheckBox(true).tint(blue ? Color(hex: 0x0000FF) : Color(hex: 0xFF0000))
             Button("Blue").onClicked { blue = true }
         }
         .horizontalAlignment(.start)
@@ -31,9 +31,9 @@ final class WinUITintTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
-                    CheckBox(true).tint(Color("#FF0000"))
-                    Switch(true).tint(Color("#FF0000"))
-                    Slider(0.5).tint(Color("#FF0000")).width(200)
+                    CheckBox(true).tint(Color(hex: 0xFF0000))
+                    Switch(true).tint(Color(hex: 0xFF0000))
+                    Slider(0.5).tint(Color(hex: 0xFF0000)).width(200)
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)
@@ -73,7 +73,7 @@ final class WinUITintTests: XCTestCase {
             let tinted = State(wrappedValue: false)
             let host = WinUIRenderer.running {
                 let box = CheckBox(true)
-                return VStack { tinted.wrappedValue ? box.tint(Color("#FF0000")) : box }
+                return VStack { tinted.wrappedValue ? box.tint(Color(hex: 0xFF0000)) : box }
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
             }

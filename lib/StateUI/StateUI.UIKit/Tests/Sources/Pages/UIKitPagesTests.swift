@@ -511,7 +511,7 @@ private struct TitledPage: View {
 /// A page whose background the page itself says, as the Gallery's pages do.
 private struct PaintedPage: View {
     var body: some View {
-        Text("Painted").pageBackground(Color("#F7F5FC"))
+        Text("Painted").pageBackground(Color(hex: 0xF7F5FC))
     }
 }
 
@@ -519,6 +519,6 @@ private struct WindowPaintedPage: View {
     @Environment(\.window) private var window
 
     var body: some View {
-        Text("Plain").onCreated { window.background = .color(Color("#512BD4")) }
+        Text("Plain").onCreated { window.background = .color(Color(hex: 0x512BD4)) }
     }
 }

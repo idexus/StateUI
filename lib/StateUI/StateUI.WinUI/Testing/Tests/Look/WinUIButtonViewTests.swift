@@ -17,8 +17,8 @@ final class WinUIButtonViewTests: XCTestCase {
             let host = WinUIRenderer.running {
                 VStack {
                     Button("Go")
-                        .background(Color("#512BD4"))
-                        .textColor(Color("#FFFFFF"))
+                        .background(Color(hex: 0x512BD4))
+                        .textColor(Color(hex: 0xFFFFFF))
                         .shape(.roundedRectangle(10))
                         .padding(horizontal: 16, vertical: 11)
                         .width(120)
@@ -40,8 +40,8 @@ final class WinUIButtonViewTests: XCTestCase {
             let host = WinUIRenderer.running {
                 VStack {
                     Button("Go")
-                        .background(Color(blue.wrappedValue ? "#0000FF" : "#FF0000"))
-                        .textColor(Color(blue.wrappedValue ? "#00FF00" : "#FFFF00"))
+                        .background(Color(hex: blue.wrappedValue ? 0x0000FF : 0xFF0000))
+                        .textColor(Color(hex: blue.wrappedValue ? 0x00FF00 : 0xFFFF00))
                         .lineWidth(0)
                         .width(120)
                         .height(40)
@@ -68,7 +68,7 @@ final class WinUIButtonViewTests: XCTestCase {
             let host = WinUIRenderer.running {
                 VStack {
                     Button("Delete").role(.destructive).width(120).height(40).horizontalAlignment(.start)
-                    Button("Delete").role(.destructive).textColor(Color("#0000FF"))
+                    Button("Delete").role(.destructive).textColor(Color(hex: 0x0000FF))
                         .width(120).height(40).horizontalAlignment(.start)
                 }
             }

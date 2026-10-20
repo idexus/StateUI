@@ -252,7 +252,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// What to draw over a card to send it into the background, and how far.
     ///
     ///     GalleryView(covers, id: \.name) { face($0) }
-    ///         .shade(Rectangle(Color("#000000")).cornerRadius(14))
+    ///         .shade(Rectangle(Color(hex: 0x000000)).cornerRadius(14))
     ///
     /// A shade darkens a far card without showing the card behind it, as
     /// fading would; the card in front wears none of it. Give the view the
@@ -276,7 +276,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// given, and then a quarter.
     ///
     ///     GalleryView(covers, id: \.name) { face($0) }
-    ///         .shade(Rectangle(Color("#000000")).cornerRadius(14))
+    ///         .shade(Rectangle(Color(hex: 0x000000)).cornerRadius(14))
     ///         .fade(0)
     ///
     /// - Parameter amount: how far a far card fades.

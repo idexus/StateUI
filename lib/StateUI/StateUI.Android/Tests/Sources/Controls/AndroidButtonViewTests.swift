@@ -406,7 +406,7 @@ final class AndroidButtonViewTests: XCTestCase {
     func testAnIconIsDrawnInItsWordsColour() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                Button("Add").icon(.icon(.add)).textColor(Color("#FF0000"))
+                Button("Add").icon(.icon(.add)).textColor(Color(hex: 0xFF0000))
             }
             host.layOut()
 
@@ -424,7 +424,7 @@ final class AndroidButtonViewTests: XCTestCase {
     func testAnIconAloneIsDrawnInTheWordsColour() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                Button(icon: .icon(.settings)).textColor(Color("#FF0000"))
+                Button(icon: .icon(.settings)).textColor(Color(hex: 0xFF0000))
                     .horizontalAlignment(.start).verticalAlignment(.start)
             }
             host.layOut()
@@ -449,7 +449,7 @@ final class AndroidButtonViewTests: XCTestCase {
             let host = AndroidRenderer.running {
                 VStack {
                     Button("Delete").role(.destructive)
-                    Button("Erase").role(.destructive).textColor(Color("#0000FF"))
+                    Button("Erase").role(.destructive).textColor(Color(hex: 0x0000FF))
                     Button("Plain")
                 }
             }

@@ -75,8 +75,8 @@ final class NumberDecodingTests: XCTestCase {
     }
 
     func testAnOpacityThatIsNoNumberLetsNothingThrough() {
-        XCTAssertEqual(Color("#FF0000").opacity(.nan).light.alpha, 0)
-        XCTAssertEqual(Color("#FF0000").opacity(0.5).light.alpha, 128)
+        XCTAssertEqual(Color(hex: 0xFF0000).opacity(.nan).light.alpha, 0)
+        XCTAssertEqual(Color(hex: 0xFF0000).opacity(0.5).light.alpha, 128)
     }
 
     /// One whole number has one rounding, whichever road it came by: a payload's, a value back from the host and a

@@ -106,7 +106,7 @@ final class AndroidTextViewTests: XCTestCase {
             let host = AndroidRenderer.running {
                 Text("")
                     .background(Brush.linearGradient(
-                        [GradientStop(Color("#FF0000"), 0), GradientStop(Color("#0000FF"), 1)],
+                        [GradientStop(Color(hex: 0xFF0000), 0), GradientStop(Color(hex: 0x0000FF), 1)],
                         startPoint: Point(0, 0),
                         endPoint: Point(1, 0)))
                     .width(100)

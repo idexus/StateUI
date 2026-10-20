@@ -74,7 +74,10 @@
             holds(WindowContract.maximumHeight, 900, then: 800) { $0.maximumHeight = $1 },
             holds(WindowContract.isMaximizable, false, then: true) { $0.isMaximizable = $1 },
             holds(WindowContract.isMinimizable, false, then: true) { $0.isMinimizable = $1 },
-            holds(WindowContract.background, .color(Color("#26512BD4")), then: .color(Color("#0F766E"))) {
+            holds(
+                WindowContract.background, .color(Color(hex: 0x512BD4, opacity: 0.15)),
+                then: .color(Color(hex: 0x0F766E))
+            ) {
                 $0.background = $1
             },
             blurred,

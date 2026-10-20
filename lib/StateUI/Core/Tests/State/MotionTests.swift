@@ -56,9 +56,9 @@ final class MotionTests: XCTestCase {
     func testAColourTravels() {
         let renders = Renders()
 
-        renders.render(ZStack { Text("x") }.background(Color("#000000")).id("b").node)
+        renders.render(ZStack { Text("x") }.background(Color(hex: 0x000000)).id("b").node)
         let patch = renders.render(
-            ZStack { Text("x") }.background(Color("#FFFFFF")).id("b").node)
+            ZStack { Text("x") }.background(Color(hex: 0xFFFFFF)).id("b").node)
 
         XCTAssertNotNil(patch.transitions[.background])
     }
@@ -283,7 +283,7 @@ final class MotionTests: XCTestCase {
         func button(_ enabled: Bool, still: Bool) -> Node {
             let base = Button("Save")
                 .isEnabled(enabled)
-                .visualState(.disabled) { $0.background(Color("#CCCCCC")) }
+                .visualState(.disabled) { $0.background(Color(hex: 0xCCCCCC)) }
 
             return (still ? base.motion(.none) : base).id("b").node
         }
@@ -291,7 +291,7 @@ final class MotionTests: XCTestCase {
         let travelling = Renders()
         travelling.render(button(true, still: false))
         let entered = travelling.render(button(false, still: false))
-        XCTAssertEqual(entered.props["background"], Color("#CCCCCC").propValue)
+        XCTAssertEqual(entered.props["background"], Color(hex: 0xCCCCCC).propValue)
         XCTAssertNotNil(entered.transitions["background"], "it crosses as the application's values do")
 
         let still = Renders()
@@ -316,8 +316,8 @@ final class MotionTests: XCTestCase {
                 .node
         }
 
-        renders.render(panel(100, Color("#000000")))
-        let patch = renders.render(panel(300, Color("#FFFFFF")))
+        renders.render(panel(100, Color(hex: 0x000000)))
+        let patch = renders.render(panel(300, Color(hex: 0xFFFFFF)))
 
         XCTAssertEqual(patch.props[.width], .number(300))
         XCTAssertNil(patch.transitions[.width], "the size arrives")
@@ -498,14 +498,14 @@ final class MotionTests: XCTestCase {
             VStack { Text("x") }
                 .background(.linearGradient([
                     GradientStop(from, 0),
-                    GradientStop(Color("#FFFFFF"), 1),
+                    GradientStop(Color(hex: 0xFFFFFF), 1),
                 ]))
                 .id("p")
                 .node
         }
 
-        renders.render(panel(Color("#000000")))
-        let patch = renders.render(panel(Color("#FF0000")))
+        renders.render(panel(Color(hex: 0x000000)))
+        let patch = renders.render(panel(Color(hex: 0xFF0000)))
 
         XCTAssertNotNil(patch.transitions[.background])
     }

@@ -62,9 +62,9 @@ final class GTKButtonViewTests: XCTestCase {
                     Button("Save")
                         .fontSize(20)
                         .fontWeight(.bold)
-                        .textColor(Color("#FFFFFF"))
-                        .background(Color("#0000FF"))
-                        .stroke(Color("#FF0000"))
+                        .textColor(Color(hex: 0xFFFFFF))
+                        .background(Color(hex: 0x0000FF))
+                        .stroke(Color(hex: 0xFF0000))
                         .lineWidth(2)
                         .shape(.roundedRectangle(10))
                         .padding(horizontal: 16, vertical: 11)
@@ -93,10 +93,10 @@ final class GTKButtonViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     Button("Share").menu { MenuItem("Mail") }
-                        .background(Color("#0000FF"))
+                        .background(Color(hex: 0x0000FF))
                         .padding(horizontal: 16, vertical: 11)
                     Button("Save").onClicked {}.menu { MenuItem("Save as") }
-                        .background(Color("#0000FF"))
+                        .background(Color(hex: 0x0000FF))
                         .padding(horizontal: 16, vertical: 11)
                 }
                 .horizontalAlignment(.start)
@@ -128,13 +128,13 @@ final class GTKButtonViewTests: XCTestCase {
                     Button("Go").onClicked {}
                     Button("Share").menu { MenuItem("Mail") }
                     Button("Save").onClicked {}.menu { MenuItem("Save as") }
-                    Button("Go").onClicked {}.background(Color("#0000FF")).lineWidth(0).shape(.roundedRectangle(10))
+                    Button("Go").onClicked {}.background(Color(hex: 0x0000FF)).lineWidth(0).shape(.roundedRectangle(10))
                         .padding(horizontal: 16, vertical: 11)
                     Button("Share").menu { MenuItem("Mail") }
-                        .background(Color("#0000FF")).lineWidth(0).shape(.roundedRectangle(10))
+                        .background(Color(hex: 0x0000FF)).lineWidth(0).shape(.roundedRectangle(10))
                         .padding(horizontal: 16, vertical: 11)
                     Button("Save").onClicked {}.menu { MenuItem("Save as") }
-                        .background(Color("#0000FF")).lineWidth(0).shape(.roundedRectangle(10))
+                        .background(Color(hex: 0x0000FF)).lineWidth(0).shape(.roundedRectangle(10))
                         .padding(horizontal: 16, vertical: 11)
                 }
                 .horizontalAlignment(.start)
@@ -154,7 +154,7 @@ final class GTKButtonViewTests: XCTestCase {
                 VStack {
                     Button("Quiet")
                         .background(Color(red: 0, green: 0, blue: 0, alpha: 0))
-                        .stroke(Color("#FFFFFF"))
+                        .stroke(Color(hex: 0xFFFFFF))
                         .lineWidth(2)
                         .shape(.roundedRectangle(8))
                         .padding(horizontal: 16, vertical: 11)

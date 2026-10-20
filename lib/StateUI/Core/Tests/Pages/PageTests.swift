@@ -94,7 +94,7 @@ private func everyPropertyWindow() -> Node {
     session.maximumHeight = 1200
     session.isMaximizable = false
     session.isMinimizable = true
-    session.background = .blur(.thin.tint(Color("#26512BD4")))
+    session.background = .blur(.thin.tint(Color(hex: 0x512BD4, opacity: 0.15)))
 
     return Node.window(showing: { Node.page(EveryPropertyPage()) }, session: session).built
 }
@@ -501,7 +501,7 @@ final class PageTests: XCTestCase {
         let page = Self.arrived(EveryPropertyPage())
 
         XCTAssertEqual(page.props["title"], .string("Everything"))
-        XCTAssertEqual(page.props["background"], Color("#F5F5F5").propValue)
+        XCTAssertEqual(page.props["background"], Color(hex: 0xF5F5F5).propValue)
         XCTAssertNil(page.props["padding"], "a page keeps no room of its own: its view does")
     }
 
@@ -585,7 +585,7 @@ final class PageTests: XCTestCase {
         let page = Self.arrived(EveryPropertyPage())
 
         XCTAssertEqual(page.props, [
-            "backButtonTitle": .string("Back"), "background": Color("#F5F5F5").propValue,
+            "backButtonTitle": .string("Back"), "background": Color(hex: 0xF5F5F5).propValue,
             "showsBackButton": .bool(false), "showsNavigationBar": .bool(false), "icon": .string("tab.png"),
             "title": .string("Everything"), "showsTitle": .bool(false),
         ])
@@ -614,7 +614,7 @@ final class PageTests: XCTestCase {
         let window = Renders().settled(everyPropertyWindow())
 
         XCTAssertEqual(window.props, [
-            "background": Material.blur(.thin.tint(Color("#26512BD4"))).propValue.resolvingTheme(),
+            "background": Material.blur(.thin.tint(Color(hex: 0x512BD4, opacity: 0.15))).propValue.resolvingTheme(),
             "height": .number(800), "isMaximizable": .bool(false), "isMinimizable": .bool(true),
             "maximumHeight": .number(1200), "maximumWidth": .number(1600),
             "minimumHeight": .number(400), "minimumWidth": .number(600), "title": .string("Everything"),

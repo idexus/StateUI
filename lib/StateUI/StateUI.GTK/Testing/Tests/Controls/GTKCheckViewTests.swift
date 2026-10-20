@@ -45,7 +45,7 @@ final class GTKCheckViewTests: XCTestCase {
     func testASwitchTakesNoBackground() {
         onUIThread {
             let host = GTKRenderer.running {
-                VStack { Switch(true).background(Color("#FF0000")) }
+                VStack { Switch(true).background(Color(hex: 0xFF0000)) }
             }
             let toggle = host.views(GTKSwitchView.self)[0]
             XCTAssertFalse(
@@ -61,9 +61,9 @@ final class GTKCheckViewTests: XCTestCase {
             let ticked = State(wrappedValue: true)
             let host = GTKRenderer.running {
                 VStack {
-                    Switch(true).tint(Color("#FF0000"))
-                    CheckBox(ticked.projectedValue).tint(Color("#FF0000"))
-                    Slider(0.5).tint(Color("#FF0000")).width(200)
+                    Switch(true).tint(Color(hex: 0xFF0000))
+                    CheckBox(ticked.projectedValue).tint(Color(hex: 0xFF0000))
+                    Slider(0.5).tint(Color(hex: 0xFF0000)).width(200)
                     Switch(true)
                 }
                 .horizontalAlignment(.start)

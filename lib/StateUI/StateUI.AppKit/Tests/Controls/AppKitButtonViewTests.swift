@@ -166,7 +166,7 @@ final class AppKitButtonViewTests: XCTestCase {
         stateUIUseApp(OneWindowApplication(page: {
             VStack {
                 Button(icon: ImageSource("test_wide.svg")).contentMode(.fit).width(64).height(64).padding(12)
-                    .background(Color("#FFFFFF")).shape(.roundedRectangle(12))
+                    .background(Color(hex: 0xFFFFFF)).shape(.roundedRectangle(12))
             }
             .horizontalAlignment(.start)
             .verticalAlignment(.start)
@@ -278,7 +278,7 @@ final class AppKitButtonViewTests: XCTestCase {
             button("padded", [
                 .text: .string("Save"),
                 .padding: .numbers([20, 10, 20, 10]),
-                .stroke: Brush.solidColor(Color("#FF0000")).propValue,
+                .stroke: Brush.solidColor(Color(hex: 0xFF0000)).propValue,
                 .lineWidth: .number(2),
                 .shape: ContainerShape.roundedRectangle(6).propValue,
             ]),
@@ -318,7 +318,7 @@ final class AppKitButtonViewTests: XCTestCase {
                     MenuItem("Mail")
                     MenuItem("Message")
                 }
-                .background(Color("#8E6BF0")).textColor(Color("#FFFFFF")).shape(.capsule)
+                .background(Color(hex: 0x8E6BF0)).textColor(Color(hex: 0xFFFFFF)).shape(.capsule)
                 .padding(horizontal: 16, vertical: 8)
             }
         }
@@ -377,9 +377,9 @@ final class AppKitButtonViewTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             VStack {
                 Button("Save").onClicked {}.menu { MenuItem("Save as") }
-                    .background(Color("#8E6BF0")).textColor(Color("#FF0000")).shape(.capsule)
+                    .background(Color(hex: 0x8E6BF0)).textColor(Color(hex: 0xFF0000)).shape(.capsule)
                     .padding(horizontal: 16, vertical: 8)
-                Button("Save").onClicked {}.menu { MenuItem("Save as") }.textColor(Color("#FF0000"))
+                Button("Save").onClicked {}.menu { MenuItem("Save as") }.textColor(Color(hex: 0xFF0000))
             }
         }
         defer { renderer.closeForTesting() }

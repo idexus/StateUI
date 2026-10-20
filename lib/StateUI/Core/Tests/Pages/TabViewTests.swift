@@ -187,11 +187,11 @@ final class TabViewTests: XCTestCase {
         let selection = State<Tab>(.home)
 
         let node = tabs(selection.projectedValue)
-            .barBackgroundColor(Color("#512BD4"))
+            .barBackgroundColor(Color(hex: 0x512BD4))
             .node
             .built
 
-        XCTAssertEqual(node.props["barBackgroundColor"], Color("#512BD4").propValue)
+        XCTAssertEqual(node.props["barBackgroundColor"], Color(hex: 0x512BD4).propValue)
         XCTAssertNil(node.children.first?.built.props["barBackgroundColor"],
                      "the page under the arrangement does not own its bar")
     }
@@ -252,7 +252,7 @@ final class TabViewTests: XCTestCase {
             }
         }
         .selection(selection.projectedValue)
-        .barBackgroundColor(Color("#512BD4"))
+        .barBackgroundColor(Color(hex: 0x512BD4))
         .node
 
         // As the message that brings the tabs carries them - with the caption
@@ -260,7 +260,7 @@ final class TabViewTests: XCTestCase {
         let tabs = Renders().settled(tree)
 
         XCTAssertEqual(tabs.props, [
-            "barBackgroundColor": Color("#512BD4").propValue, "selectedTab": .number(1),
+            "barBackgroundColor": Color(hex: 0x512BD4).propValue, "selectedTab": .number(1),
         ])
         XCTAssertEqual(tabs.eventNames, ["selectedTabChanged"])
         XCTAssertEqual(tabs.arrangement, [.manual("home"), .manual("settings")])

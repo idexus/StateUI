@@ -150,7 +150,7 @@ final class DrivenPatchTests: XCTestCase {
     /// here rather than surprising a device.
     func testEveryDrivenModifierRegistersItsProperty() throws {
         let number = State(wrappedValue: 0.5)
-        let colour = State(wrappedValue: Color("#102030"))
+        let colour = State(wrappedValue: Color(hex: 0x102030))
         let inset = State(wrappedValue: Insets(4))
 
         let card = ZStack {

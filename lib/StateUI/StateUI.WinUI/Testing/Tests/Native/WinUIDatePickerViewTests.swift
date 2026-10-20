@@ -37,7 +37,7 @@ final class WinUIDatePickerViewTests: XCTestCase {
             let host = WinUIRenderer.running {
                 VStack {
                     DatePicker(due.projectedValue)
-                        .background(Color("#FF0000"))
+                        .background(Color(hex: 0xFF0000))
                         .width(200)
                         .height(32)
                         .horizontalAlignment(.start)

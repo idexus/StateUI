@@ -164,7 +164,7 @@ struct HomePage: View {
                         Button("Open on GitHub")
                             .fontSize(13)
                             .textColor(Palette.onBrand)
-                            .background(Color("#33FFFFFF"))
+                            .background(Color(hex: 0xFFFFFF, opacity: 0.2))
                             .stroke(.transparent)
                             .shape(.capsule)
                             .padding(horizontal: 14, vertical: 6)
@@ -209,7 +209,7 @@ struct HomePage: View {
                 // card rather than the card going transparent. It wears the
                 // card's own corners, which is why the view is the
                 // application's to give.
-                .shade(Rectangle(Color("#000000")).cornerRadius(16))
+                .shade(Rectangle(Color(hex: 0x000000)).cornerRadius(16))
                 // WHAT THE ROWS CAN SPARE, worn on the host's own frames. The
                 // state is written by the engine under this grid, so a page
                 // settling through half a dozen passes costs no render at all.
@@ -676,7 +676,7 @@ private struct GroupFace: View {
                         .lineBreak(.tailTruncation)
                         .padding(horizontal: 12, vertical: 10)
                 }
-                .background(Color("#B3000000"))
+                .background(Color(hex: 0x000000, opacity: 0.7))
                 .verticalAlignment(.end)
             }
             // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL

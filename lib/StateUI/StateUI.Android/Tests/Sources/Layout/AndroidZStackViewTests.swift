@@ -162,8 +162,8 @@ final class AndroidZStackViewTests: XCTestCase {
                 VStack {
                     ZStack { Rectangle().fill(.red) }
                         .padding(10)
-                        .background(Color("#00FF00"))
-                        .stroke(Color("#0000FF"))
+                        .background(Color(hex: 0x00FF00))
+                        .stroke(Color(hex: 0x0000FF))
                         .lineWidth(2)
                         .shape(.roundedRectangle(20))
                         .clipsContent(true)
@@ -201,7 +201,7 @@ final class AndroidZStackViewTests: XCTestCase {
         try onMainActor {
             let host = AndroidRenderer.running {
                 ZStack { Rectangle().fill(.red).width(10).height(10) }
-                    .background(Color("#00FF00"))
+                    .background(Color(hex: 0x00FF00))
                     .width(100)
                     .height(80)
                     .horizontalAlignment(.start)

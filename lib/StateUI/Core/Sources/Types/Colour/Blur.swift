@@ -85,6 +85,6 @@ extension Blur.Thickness: HostRepresentable {
     /// What a platform that blurs nothing draws in its place: a colour of the
     /// theme, let through as much as the blur lets.
     var standIn: Color {
-        Color(light: .white, dark: Color("#1C1C1E")).opacity(opacity)
+        Color(light: .white, dark: Color(hex: 0x1C1C1E)).opacity(opacity)
     }
 }

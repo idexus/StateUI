@@ -126,7 +126,7 @@ final class JourneyTests: XCTestCase {
     /// and the host would start over from them - Stop in the Gallery's At the same
     /// time let the wash travel on to where it had been going.
     func testAJourneyWriteLaysOnlyItsPart() throws {
-        let wash = State(wrappedValue: Color("#7C3AED"))
+        let wash = State(wrappedValue: Color(hex: 0x7C3AED))
         Renders().render(Rectangle().background(wash.projectedValue).node)
         let image = try XCTUnwrap(wash.storage.walkedImage())
         let board = Renderer.shared.board(of: image)
@@ -145,7 +145,7 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(image.pendingMask & ~beforeStop, Lanes.mask(of: .stopped), "a stop lays its counter alone")
 
         let beforeMove = image.pendingMask
-        wash.projectedValue.journey.move(to: Color("#EA580C"), .eased(.milliseconds(400)))
+        wash.projectedValue.journey.move(to: Color(hex: 0xEA580C), .eased(.milliseconds(400)))
         let moved = image.pendingMask & ~beforeMove
         XCTAssertEqual(moved & (Lanes.mask(of: .value) | Lanes.mask(of: .velocity)), 0, "a move leaves the value and the speed")
         XCTAssertNotEqual(moved & Lanes.mask(of: .destination), 0, "and lays where it goes")

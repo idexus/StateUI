@@ -9,9 +9,9 @@ import XCTest
 
 @MainActor
 final class VisualStateTests: XCTestCase {
-    private let green = Color("#008000").propValue
-    private let gray = Color("#808080").propValue
-    private let blue = Color("#0000FF").propValue
+    private let green = Color(hex: 0x008000).propValue
+    private let gray = Color(hex: 0x808080).propValue
+    private let blue = Color(hex: 0x0000FF).propValue
 
     override func setUp() async throws {
         Renderer.shared.clearInvalidation()

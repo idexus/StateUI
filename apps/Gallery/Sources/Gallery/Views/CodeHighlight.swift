@@ -33,22 +33,22 @@ enum CodeHighlight {
     /// half as the run is built, so nothing here has to know which theme is on.
     private enum Ink {
         /// `let`, `func`, `if` - the words the language owns.
-        static let keyword = Color(light: Color("#AF00DB"), dark: Color("#C586C0"))
+        static let keyword = Color(light: Color(hex: 0xAF00DB), dark: Color(hex: 0xC586C0))
 
         /// `Text`, `Basket` - anything starting with a capital.
-        static let type = Color(light: Color("#267F99"), dark: Color("#4EC9B0"))
+        static let type = Color(light: Color(hex: 0x267F99), dark: Color(hex: 0x4EC9B0))
 
         /// Everything between quotes, the quotes included.
-        static let string = Color(light: Color("#A31515"), dark: Color("#CE9178"))
+        static let string = Color(light: Color(hex: 0xA31515), dark: Color(hex: 0xCE9178))
 
         /// `// like this`, to the end of the line.
-        static let comment = Color(light: Color("#008000"), dark: Color("#6A9955"))
+        static let comment = Color(light: Color(hex: 0x008000), dark: Color(hex: 0x6A9955))
 
         /// Digits, and what follows them in one word.
-        static let number = Color(light: Color("#098658"), dark: Color("#B5CEA8"))
+        static let number = Color(light: Color(hex: 0x098658), dark: Color(hex: 0xB5CEA8))
 
         /// `@State`, `@Environment` - the `@` and the name together.
-        static let attribute = Color(light: Color("#0000FF"), dark: Color("#569CD6"))
+        static let attribute = Color(light: Color(hex: 0x0000FF), dark: Color(hex: 0x569CD6))
 
         /// Everything else, which is most of it.
         static let plain = Palette.text

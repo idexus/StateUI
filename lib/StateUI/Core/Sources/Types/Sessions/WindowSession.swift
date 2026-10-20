@@ -82,7 +82,7 @@ public final class WindowSession {
     /// or a blur or glass the desktop shows through.
     ///
     ///     window.background = .blur(.regular)
-    ///     window.background = Material(light: nil, dark: .blur(.thick.tint(Color("#26512BD4"))))
+    ///     window.background = Material(light: nil, dark: .blur(.thick.tint(Color(hex: 0x512BD4, opacity: 0.15))))
     ///
     /// A host whose windows cannot show what is behind them draws a blur's
     /// colour in its place. `nil` - and a nil half of a pair - keeps the

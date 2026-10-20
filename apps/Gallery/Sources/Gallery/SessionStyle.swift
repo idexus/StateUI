@@ -64,9 +64,9 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
         case .gallery: return surface.own
         case .system: return system
         case .violet: return AppColors.violet
-        case .teal: return Color("#0F766E")
-        case .coral: return Color("#C2410C")
-        case .graphite: return Color("#374151")
+        case .teal: return Color(hex: 0x0F766E)
+        case .coral: return Color(hex: 0xC2410C)
+        case .graphite: return Color(hex: 0x374151)
         }
     }
 

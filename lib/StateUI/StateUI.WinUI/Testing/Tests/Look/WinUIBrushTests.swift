@@ -48,8 +48,8 @@ final class WinUIBrushTests: XCTestCase {
         onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
-                    Rectangle().fill(Color("#0000FF")).background(Color("#FF0000")).width(40).height(40)
-                    Ellipse().fill(Color("#0000FF")).background(Color("#FF0000")).width(40).height(40)
+                    Rectangle().fill(Color(hex: 0x0000FF)).background(Color(hex: 0xFF0000)).width(40).height(40)
+                    Ellipse().fill(Color(hex: 0x0000FF)).background(Color(hex: 0xFF0000)).width(40).height(40)
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)

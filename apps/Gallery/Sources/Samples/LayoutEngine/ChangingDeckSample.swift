@@ -11,16 +11,20 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
     /// One card: its name, which is its identity, its colour and its icon.
     struct Card: Hashable {
         let name: String
-        let colour: String
+        let colour: Color
         let icon: Icon
     }
 
     /// Every card the deck can hold, dealt in this order.
     static let all = [
-        Card(name: "Mural", colour: "#7C3AED", icon: .star), Card(name: "Nebula", colour: "#2563EB", icon: .heart),
-        Card(name: "Ridge", colour: "#0D9488", icon: .home), Card(name: "Bloom", colour: "#D97706", icon: .calendar),
-        Card(name: "Tide", colour: "#DB2777", icon: .mail), Card(name: "Prism", colour: "#4F46E5", icon: .settings),
-        Card(name: "Grove", colour: "#16A34A", icon: .person), Card(name: "Ember", colour: "#DC2626", icon: .play),
+        Card(name: "Mural", colour: Color(hex: 0x7C3AED), icon: .star),
+        Card(name: "Nebula", colour: Color(hex: 0x2563EB), icon: .heart),
+        Card(name: "Ridge", colour: Color(hex: 0x0D9488), icon: .home),
+        Card(name: "Bloom", colour: Color(hex: 0xD97706), icon: .calendar),
+        Card(name: "Tide", colour: Color(hex: 0xDB2777), icon: .mail),
+        Card(name: "Prism", colour: Color(hex: 0x4F46E5), icon: .settings),
+        Card(name: "Grove", colour: Color(hex: 0x16A34A), icon: .person),
+        Card(name: "Ember", colour: Color(hex: 0xDC2626), icon: .play),
     ]
 
     /// The cards in the deck, in order.
@@ -181,7 +185,7 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
     private func face(_ card: Card, large: Bool) -> some View {
         let disc = large ? 88.0 : 56.0
         return ZStack {
-            Rectangle(Color(card.colour))
+            Rectangle(card.colour)
                 .cornerRadius(20)
 
             VStack {

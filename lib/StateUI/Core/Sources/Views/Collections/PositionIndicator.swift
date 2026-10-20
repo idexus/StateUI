@@ -92,8 +92,8 @@ public struct PositionIndicator: View {
     }
 
     /// A dot's colour and the current one's, on a light and a dark page.
-    static let dotColor = Color(light: Color("#C4C4C4"), dark: Color("#5C5C5C"))
-    static let currentColor = Color(light: Color("#3C3C3C"), dark: Color("#E6E6E6"))
+    static let dotColor = Color(light: Color(hex: 0xC4C4C4), dark: Color(hex: 0x5C5C5C))
+    static let currentColor = Color(light: Color(hex: 0x3C3C3C), dark: Color(hex: 0xE6E6E6))
 
     /// How strongly a mark that is not the current one is drawn.
     static let faded = 0.4

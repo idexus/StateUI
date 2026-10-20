@@ -32,7 +32,7 @@ public final class ApplicationInfo {
     @State public internal(set) var accentColor = ApplicationInfo.standardAccent
 
     /// The accent before the host says the system's.
-    nonisolated static let standardAccent = Color("#0A84FF")
+    nonisolated static let standardAccent = Color(hex: 0x0A84FF)
 
     /// An application as a test or a preview fakes it; what is not said starts as a headless host's does.
     public init(

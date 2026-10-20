@@ -209,7 +209,7 @@ final class AndroidButtonView: AndroidTextualView {
         shape.setFill(look.fill)
         let mask = AndroidShapeDrawable()
         mask.setShape(corners, density: density)
-        mask.setFill(Color("#000000").propValue)
+        mask.setFill(Color(hex: 0x000000).propValue)
         drawn = (shape, mask)
         if let size = placedSize { sized(width: size.width, height: size.height) }
 

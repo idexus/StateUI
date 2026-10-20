@@ -197,8 +197,8 @@ final class GTKPagesTests: XCTestCase {
                 } destination: { _ in
                     TitledPage(title: "Next")
                 }
-                .barBackgroundColor(Color("#FF0000"))
-                .barForegroundColor(Color("#FFFFFF"))
+                .barBackgroundColor(Color(hex: 0xFF0000))
+                .barForegroundColor(Color(hex: 0xFFFFFF))
             }
             let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
             host.layOut()
@@ -415,12 +415,13 @@ final class GTKPagesTests: XCTestCase {
     /// A bar painted with no colour written for its words stands them light on a dark band and dark on a light one.
     func testABarsWordsFollowHowDarkItIs() throws {
         try onUIThread {
-            for (band, words) in [("#000080", Color(red: 255, green: 255, blue: 255)), ("#FFFF00", Color(red: 0, green: 0, blue: 0))] {
+            let bands: [(band: UInt32, words: Color)] = [(0x000080, .white), (0xFFFF00, .black)]
+            for (band, words) in bands {
                 let host = GTKRenderer.running {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         TitledPage(title: "Painted")
                     } destination: { _ in TitledPage(title: "Next") }
-                    .barBackgroundColor(Color(band))
+                    .barBackgroundColor(Color(hex: band))
                 }
                 let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
                 host.layOut()
@@ -429,7 +430,8 @@ final class GTKPagesTests: XCTestCase {
                 gtk_widget_get_color(frame.header, &color)
                 let shade = { (value: Float) in Int((value * 255).rounded()) }
                 XCTAssertEqual(
-                    Color(red: shade(color.red), green: shade(color.green), blue: shade(color.blue)), words, band)
+                    Color(red: shade(color.red), green: shade(color.green), blue: shade(color.blue)), words,
+                    "0x\(String(band, radix: 16))")
             }
         }
     }
@@ -441,8 +443,8 @@ final class GTKPagesTests: XCTestCase {
                 ModalStack(State(wrappedValue: [Int]()).projectedValue) {
                     Text("under a painted bar")
                 } destination: { _ in Text("Sheet") }
-                .barBackgroundColor(Color("#00FF00"))
-                .barForegroundColor(Color("#FFFFFF"))
+                .barBackgroundColor(Color(hex: 0x00FF00))
+                .barForegroundColor(Color(hex: 0xFFFFFF))
             }
             let frame = try XCTUnwrap(host.window?.pageFrame)
             host.settle { gtk_widget_has_css_class(frame.header, "stateui-bar-b00FF00FF-fFFFFFFFF") != 0 }

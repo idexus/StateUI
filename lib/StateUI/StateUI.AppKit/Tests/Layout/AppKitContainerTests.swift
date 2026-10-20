@@ -725,11 +725,12 @@ final class AppKitContainerTests: XCTestCase {
     func testALayoutThatClipsCutsWhatItHoldsToItsShape() throws {
         let renderer = AppKitRenderer.running {
             VStack {
-                ZStack { Rectangle().fill(Color("#FF0000")) }.shape(.roundedRectangle(16)).clipsContent(true)
+                ZStack { Rectangle().fill(Color(hex: 0xFF0000)) }.shape(.roundedRectangle(16)).clipsContent(true)
                     .width(100).height(100)
-                ZStack { Rectangle().fill(Color("#FF0000")) }.shape(.ellipse).clipsContent(true).width(100).height(60)
-                ZStack { Rectangle().fill(Color("#FF0000")) }.clipsContent(true).width(100).height(40)
-                ZStack { Rectangle().fill(Color("#FF0000")) }.shape(.roundedRectangle(16)).width(100).height(40)
+                ZStack { Rectangle().fill(Color(hex: 0xFF0000)) }
+                    .shape(.ellipse).clipsContent(true).width(100).height(60)
+                ZStack { Rectangle().fill(Color(hex: 0xFF0000)) }.clipsContent(true).width(100).height(40)
+                ZStack { Rectangle().fill(Color(hex: 0xFF0000)) }.shape(.roundedRectangle(16)).width(100).height(40)
             }
         }
         defer { renderer.closeForTesting() }
@@ -763,8 +764,8 @@ final class AppKitContainerTests: XCTestCase {
             VStack {
                 ScrollView { Text("code") }
                     .orientation(.horizontal)
-                    .background(Color("#00FF00"))
-                    .stroke(Color("#FF0000"))
+                    .background(Color(hex: 0x00FF00))
+                    .stroke(Color(hex: 0xFF0000))
                     .lineWidth(2)
                     .shape(.roundedRectangle(12))
                     .height(60)
@@ -797,7 +798,7 @@ final class AppKitContainerTests: XCTestCase {
         layout.properties = [
             .padding: .numbers([4, 6, 8, 10]),
             .background: .color(red: 0, green: 0, blue: 255, alpha: 255),
-            .stroke: Brush.solidColor(Color("#FF0000")).propValue,
+            .stroke: Brush.solidColor(Color(hex: 0xFF0000)).propValue,
             .lineWidth: .number(6),
         ]
         layout.children = .arranged([box("inside", [:])])

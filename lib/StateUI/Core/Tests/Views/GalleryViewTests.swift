@@ -438,7 +438,7 @@ final class GalleryViewTests: XCTestCase {
 
         let shaded = settled {
             self.gallery(5)
-                .shade(Rectangle().fill(Color("#000000")).cornerRadius(16))
+                .shade(Rectangle().fill(Color(hex: 0x000000)).cornerRadius(16))
                 .node
         }
 
@@ -487,7 +487,7 @@ final class GalleryViewTests: XCTestCase {
             return (opacity, shade)
         }
 
-        let mask = Rectangle().fill(Color("#000000")).cornerRadius(16)
+        let mask = Rectangle().fill(Color(hex: 0x000000)).cornerRadius(16)
 
         let whole = farCard { $0.shade(mask) }
         let half = farCard { $0.shade(mask, amount: 0.5) }
@@ -512,7 +512,7 @@ final class GalleryViewTests: XCTestCase {
         func shade(of amount: Double) -> Double {
             placements(settled {
                 self.gallery(5)
-                    .shade(Rectangle().fill(Color("#000000")), amount: amount)
+                    .shade(Rectangle().fill(Color(hex: 0x000000)), amount: amount)
                     .node
             }).card(4)?.shade ?? -1
         }

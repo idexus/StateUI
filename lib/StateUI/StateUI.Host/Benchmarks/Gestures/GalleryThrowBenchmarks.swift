@@ -44,7 +44,7 @@ private struct CardsPage: View {
     var body: some View {
         GalleryView((0..<12).map { "Card \($0)" }, id: \.self) { name in
             ZStack {
-                Rectangle(Color("#0D9488"))
+                Rectangle(Color(hex: 0x0D9488))
                     .cornerRadius(16)
                 Text(name)
                     .fontSize(18)

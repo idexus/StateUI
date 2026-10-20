@@ -7,17 +7,17 @@
 
 /// A colour.
 ///
-///     Color("#512BD4")
+///     Color(hex: 0x512BD4)
 ///     Color.cornflowerBlue
 ///     Color(light: .white, dark: .black)
 ///
-/// Written as hex or by name, and as a pair where the two themes want
+/// Written as a hex number or by name, and as a pair where the two themes want
 /// different colours - `Color(light:dark:)` is one value that goes wherever a
 /// colour goes. Held as four 8-bit channels, so two spellings of one colour
-/// are equal.
-public struct Color: Equatable, Sendable, HostRepresentable {
+/// are equal and hash alike.
+public struct Color: Hashable, Sendable, HostRepresentable {
     /// The four sRGB channels of one colour, 0-255 each.
-    struct Rgba: Equatable, Sendable {
+    struct Rgba: Hashable, Sendable {
         let red: UInt8
         let green: UInt8
         let blue: UInt8
@@ -36,7 +36,7 @@ public struct Color: Equatable, Sendable, HostRepresentable {
     let accentHalves: Halves
 
     /// The halves of a colour: the light one, and the dark one of a pair.
-    struct Halves: OptionSet, Equatable, Sendable {
+    struct Halves: OptionSet, Hashable, Sendable {
         let rawValue: UInt8
         static let light = Halves(rawValue: 1)
         static let dark = Halves(rawValue: 2)
@@ -45,22 +45,33 @@ public struct Color: Equatable, Sendable, HostRepresentable {
     /// Whether this is the accent in force, whole - no pair around it.
     var isAccent: Bool { dark == nil && accentHalves.contains(.light) }
 
-    /// A colour from hex: "#RGB", "#ARGB", "#RRGGBB" or "#AARRGGBB", with or
-    /// without the leading `#` - the alpha, when it is written, first.
+    /// A colour from its hex number, the digits a design gives - `0xRRGGBB` - and how opaque it is, from 0,
+    /// invisible, to 1, opaque - the default.
     ///
-    /// Anything that is not hex stops the program with a message naming the
-    /// text, the first time the code runs. A colour's name is `Color.red` and
-    /// its kin.
-    public init(_ hex: String) {
-        guard let parsed = Color.channels(of: hex) else {
-            preconditionFailure(
-                "'\(hex)' is not a colour: write hex - #RGB, #ARGB, #RRGGBB or "
-                    + "#AARRGGBB - or one of Color's named colours")
-        }
+    ///     Color(hex: 0x512BD4)
+    ///     Color(hex: 0x000000, opacity: 0.4)
+    ///
+    /// Six digits: a number past `0xFFFFFF` stops the program with a message, since what is not seen through is
+    /// `opacity`. A colour's name is `Color.red` and its kin.
+    public init(hex: UInt32, opacity: Double = 1) {
+        precondition(
+            hex <= 0xFFFFFF,
+            "0x\(String(hex, radix: 16, uppercase: true)) is not a colour's hex number: write six digits, 0xRRGGBB, "
+                + "and the alpha as opacity:")
+        self.init(Rgba(
+            red: UInt8(hex >> 16 & 0xFF), green: UInt8(hex >> 8 & 0xFF), blue: UInt8(hex & 0xFF),
+            alpha: Color.alpha(of: opacity)))
+    }
 
-        self.light = parsed
-        self.dark = nil
-        self.accentHalves = []
+    /// A colour read from text that data holds - "#RGB", "#ARGB", "#RRGGBB" or "#AARRGGBB", with or without the
+    /// leading `#`, the alpha, when it is written, first - or nil where the text is not one.
+    ///
+    ///     let brand = Color(parsing: theme["brand"] ?? "") ?? .accent
+    ///
+    /// A colour written in code is `Color(hex:)`.
+    public init?(parsing text: String) {
+        guard let parsed = Color.channels(of: text) else { return nil }
+        self.init(parsed)
     }
 
     /// The same color named twice, once for each theme.
@@ -129,12 +140,22 @@ public struct Color: Equatable, Sendable, HostRepresentable {
     ///
     ///     accent.opacity(0.15)   // a light wash of it
     public func opacity(_ fraction: Double) -> Color {
-        let kept = fraction.isNaN || fraction < 0 ? 0 : (fraction > 1 ? 1 : fraction)
+        let kept = Color.fraction(fraction)
         func scaled(_ channels: Rgba) -> Rgba {
             Rgba(red: channels.red, green: channels.green, blue: channels.blue,
                  alpha: UInt8((Double(channels.alpha) * kept).rounded()))
         }
         return Color(scaled(light), dark: dark.map(scaled), accentHalves: accentHalves)
+    }
+
+    /// A share held to 0-1, nothing for what is no number.
+    private static func fraction(_ value: Double) -> Double {
+        value.isNaN || value < 0 ? 0 : (value > 1 ? 1 : value)
+    }
+
+    /// The alpha channel of how opaque a colour is, from 0 to 1.
+    private static func alpha(of opacity: Double) -> UInt8 {
+        UInt8((255 * fraction(opacity)).rounded())
     }
 
     /// Four bytes under the colour kind, both halves as a themed pair, or the
@@ -243,104 +264,104 @@ public struct Color: Equatable, Sendable, HostRepresentable {
 
 extension Color {
     /// Nothing at all, #00FFFFFF.
-    public static let transparent = Color("#00FFFFFF")
+    public static let transparent = Color(hex: 0xFFFFFF, opacity: 0)
 
     /// Black, #000000.
-    public static let black = Color("#000000")
+    public static let black = Color(hex: 0x000000)
 
     /// White, #FFFFFF.
-    public static let white = Color("#FFFFFF")
+    public static let white = Color(hex: 0xFFFFFF)
 
     /// Gray, #808080.
-    public static let gray = Color("#808080")
+    public static let gray = Color(hex: 0x808080)
 
     /// Light gray, #D3D3D3.
-    public static let lightGray = Color("#D3D3D3")
+    public static let lightGray = Color(hex: 0xD3D3D3)
 
     /// Dark gray, #A9A9A9 - lighter than `.gray` despite the CSS name.
-    public static let darkGray = Color("#A9A9A9")
+    public static let darkGray = Color(hex: 0xA9A9A9)
 
     /// Dim gray, #696969.
-    public static let dimGray = Color("#696969")
+    public static let dimGray = Color(hex: 0x696969)
 
     /// Silver, #C0C0C0.
-    public static let silver = Color("#C0C0C0")
+    public static let silver = Color(hex: 0xC0C0C0)
 
     /// White smoke, #F5F5F5.
-    public static let whiteSmoke = Color("#F5F5F5")
+    public static let whiteSmoke = Color(hex: 0xF5F5F5)
 
     /// Red, #FF0000.
-    public static let red = Color("#FF0000")
+    public static let red = Color(hex: 0xFF0000)
 
     /// Firebrick, #B22222.
-    public static let firebrick = Color("#B22222")
+    public static let firebrick = Color(hex: 0xB22222)
 
     /// Tomato, #FF6347.
-    public static let tomato = Color("#FF6347")
+    public static let tomato = Color(hex: 0xFF6347)
 
     /// Orange, #FFA500.
-    public static let orange = Color("#FFA500")
+    public static let orange = Color(hex: 0xFFA500)
 
     /// Gold, #FFD700.
-    public static let gold = Color("#FFD700")
+    public static let gold = Color(hex: 0xFFD700)
 
     /// Yellow, #FFFF00.
-    public static let yellow = Color("#FFFF00")
+    public static let yellow = Color(hex: 0xFFFF00)
 
     /// Green, the dark one: #008000 - `.lime` is #00FF00.
-    public static let green = Color("#008000")
+    public static let green = Color(hex: 0x008000)
 
     /// Lime, #00FF00.
-    public static let lime = Color("#00FF00")
+    public static let lime = Color(hex: 0x00FF00)
 
     /// Forest green, #228B22.
-    public static let forestGreen = Color("#228B22")
+    public static let forestGreen = Color(hex: 0x228B22)
 
     /// Teal, #008080.
-    public static let teal = Color("#008080")
+    public static let teal = Color(hex: 0x008080)
 
     /// Cyan, #00FFFF.
-    public static let cyan = Color("#00FFFF")
+    public static let cyan = Color(hex: 0x00FFFF)
 
     /// Blue, #0000FF.
-    public static let blue = Color("#0000FF")
+    public static let blue = Color(hex: 0x0000FF)
 
     /// Navy, #000080.
-    public static let navy = Color("#000080")
+    public static let navy = Color(hex: 0x000080)
 
     /// Dodger blue, #1E90FF.
-    public static let dodgerBlue = Color("#1E90FF")
+    public static let dodgerBlue = Color(hex: 0x1E90FF)
 
     /// Cornflower blue, #6495ED.
-    public static let cornflowerBlue = Color("#6495ED")
+    public static let cornflowerBlue = Color(hex: 0x6495ED)
 
     /// Steel blue, #4682B4.
-    public static let steelBlue = Color("#4682B4")
+    public static let steelBlue = Color(hex: 0x4682B4)
 
     /// Light blue, #ADD8E6.
-    public static let lightBlue = Color("#ADD8E6")
+    public static let lightBlue = Color(hex: 0xADD8E6)
 
     /// Purple, #800080.
-    public static let purple = Color("#800080")
+    public static let purple = Color(hex: 0x800080)
 
     /// Indigo, #4B0082.
-    public static let indigo = Color("#4B0082")
+    public static let indigo = Color(hex: 0x4B0082)
 
     /// Violet, #EE82EE.
-    public static let violet = Color("#EE82EE")
+    public static let violet = Color(hex: 0xEE82EE)
 
     /// Magenta, #FF00FF.
-    public static let magenta = Color("#FF00FF")
+    public static let magenta = Color(hex: 0xFF00FF)
 
     /// Pink, #FFC0CB.
-    public static let pink = Color("#FFC0CB")
+    public static let pink = Color(hex: 0xFFC0CB)
 
     /// Brown, #A52A2A.
-    public static let brown = Color("#A52A2A")
+    public static let brown = Color(hex: 0xA52A2A)
 
     /// Maroon, #800000.
-    public static let maroon = Color("#800000")
+    public static let maroon = Color(hex: 0x800000)
 
     /// Olive, #808000.
-    public static let olive = Color("#808000")
+    public static let olive = Color(hex: 0x808000)
 }

@@ -32,7 +32,7 @@ final class AppKitEnvironmentTests: XCTestCase {
         let info = StandardEnvironment.application.info
         let before = info.accentColor
         defer { HostBoundary.setAccentColor(before) }
-        HostBoundary.setAccentColor(Color("#00000000"))
+        HostBoundary.setAccentColor(Color(hex: 0x000000, opacity: 0))
 
         AppKitEnvironment(core: CoreLink()).reportAccent()
 

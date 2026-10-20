@@ -1022,15 +1022,15 @@ enum Listings {
 
                     // The panel fills the area it names: the right half of the
                     // room, or 120 by 60 at 16, 16 whatever the room's size.
-                    Rectangle(Color("#1E88E5"))
+                    Rectangle(Color(hex: 0x1E88E5))
                         .area(proportional ? .proportional(0.5, 0, 0.5, 1) : .absolute(16, 16, 120, 60))
 
                     // Its natural size, where its alignments put it.
-                    Badge(text: "start", color: "#E53935")
+                    Badge(text: "start", color: Color(hex: 0xE53935))
                         .horizontalAlignment(.start)
                         .verticalAlignment(.start)
 
-                    Badge(text: "end", color: "#00897B")
+                    Badge(text: "end", color: Color(hex: 0x00897B))
                         .horizontalAlignment(.end)
                         .verticalAlignment(.end)
                 }
@@ -1045,7 +1045,7 @@ enum Listings {
         /// how it is drawn.
         private struct Badge: View {
             let text: String
-            let color: String
+            let color: Color
 
             var body: some View {
                 Text(text)
@@ -1607,16 +1607,20 @@ enum Listings {
         /// One card: its name, which is its identity, its colour and its icon.
         struct Card: Hashable {
             let name: String
-            let colour: String
+            let colour: Color
             let icon: Icon
         }
 
         /// Every card the deck can hold, dealt in this order.
         static let all = [
-            Card(name: "Mural", colour: "#7C3AED", icon: .star), Card(name: "Nebula", colour: "#2563EB", icon: .heart),
-            Card(name: "Ridge", colour: "#0D9488", icon: .home), Card(name: "Bloom", colour: "#D97706", icon: .calendar),
-            Card(name: "Tide", colour: "#DB2777", icon: .mail), Card(name: "Prism", colour: "#4F46E5", icon: .settings),
-            Card(name: "Grove", colour: "#16A34A", icon: .person), Card(name: "Ember", colour: "#DC2626", icon: .play),
+            Card(name: "Mural", colour: Color(hex: 0x7C3AED), icon: .star),
+            Card(name: "Nebula", colour: Color(hex: 0x2563EB), icon: .heart),
+            Card(name: "Ridge", colour: Color(hex: 0x0D9488), icon: .home),
+            Card(name: "Bloom", colour: Color(hex: 0xD97706), icon: .calendar),
+            Card(name: "Tide", colour: Color(hex: 0xDB2777), icon: .mail),
+            Card(name: "Prism", colour: Color(hex: 0x4F46E5), icon: .settings),
+            Card(name: "Grove", colour: Color(hex: 0x16A34A), icon: .person),
+            Card(name: "Ember", colour: Color(hex: 0xDC2626), icon: .play),
         ]
 
         /// The cards in the deck, in order.
@@ -1765,7 +1769,7 @@ enum Listings {
         private func face(_ card: Card, large: Bool) -> some View {
             let disc = large ? 88.0 : 56.0
             return ZStack {
-                Rectangle(Color(card.colour))
+                Rectangle(card.colour)
 
                 VStack {
                     ZStack {
@@ -3424,10 +3428,10 @@ enum Listings {
             /// page as dark as a list of samples on it (`Palette.shade`).
             var own: Color {
                 switch self {
-                case .bar: Color(light: Color("#EFEBFA"), dark: Color("#2E255A"))
-                case .window: Color(light: Color("#F7F5FC"), dark: Color("#2A2154"))
-                case .sidebar: Color(light: Color("#EEEBF6"), dark: Color("#221A43"))
-                case .flyout: Color(light: Color("#F7F5FC"), dark: Color("#221A43"))
+                case .bar: Color(light: Color(hex: 0xEFEBFA), dark: Color(hex: 0x2E255A))
+                case .window: Color(light: Color(hex: 0xF7F5FC), dark: Color(hex: 0x2A2154))
+                case .sidebar: Color(light: Color(hex: 0xEEEBF6), dark: Color(hex: 0x221A43))
+                case .flyout: Color(light: Color(hex: 0xF7F5FC), dark: Color(hex: 0x221A43))
                 }
             }
         }
@@ -3493,9 +3497,9 @@ enum Listings {
                 case .gallery: return surface.own
                 case .system: return system
                 case .violet: return AppColors.violet
-                case .teal: return Color("#0F766E")
-                case .coral: return Color("#C2410C")
-                case .graphite: return Color("#374151")
+                case .teal: return Color(hex: 0x0F766E)
+                case .coral: return Color(hex: 0xC2410C)
+                case .graphite: return Color(hex: 0x374151)
                 }
             }
 
@@ -3871,7 +3875,7 @@ enum Listings {
             // corners, which is why the view is the application's to give.
             // A quarter of the fade is left beside it, unless `.fade(_:)` says
             // otherwise.
-            return run.shade(Rectangle(Color("#000000")).cornerRadius(16))
+            return run.shade(Rectangle(Color(hex: 0x000000)).cornerRadius(16))
         }
 
         /// One card's face - a picture and its name, and nothing at all about where
@@ -4056,17 +4060,17 @@ enum Listings {
                 Grid {
                     // One cell down the whole left side, beside two that stay in
                     // a row each.
-                    GridCell(text: "Column 0, Rows 0 and 1", color: "#E53935")
+                    GridCell(text: "Column 0, Rows 0 and 1", color: Color(hex: 0xE53935))
                         .gridRowSpan(2)
 
-                    GridCell(text: "Column 1, Row 0", color: "#1E88E5")
+                    GridCell(text: "Column 1, Row 0", color: Color(hex: 0x1E88E5))
                         .gridColumn(1)
 
-                    GridCell(text: "Column 1, Row 1", color: "#8E24AA")
+                    GridCell(text: "Column 1, Row 1", color: Color(hex: 0x8E24AA))
                         .gridRow(1)
                         .gridColumn(1)
 
-                    GridCell(text: "Row 2, spanning both columns", color: "#F4511E")
+                    GridCell(text: "Row 2, spanning both columns", color: Color(hex: 0xF4511E))
                         .gridRow(2)
                         .gridColumnSpan(2)
                 }
@@ -4084,7 +4088,7 @@ enum Listings {
         /// `.gridRow`, `.gridColumn` and the spans like any other view.
         private struct GridCell: View {
             let text: String
-            let color: String
+            let color: Color
 
             var body: some View {
                 Text(text)
@@ -4141,7 +4145,7 @@ enum Listings {
         struct HomeIcon: Hashable {
             let name: String
             let glyph: Icon
-            let colour: String
+            let colour: Color
         }
 
         /// Every icon, board after board: where one stands in the order is where
@@ -4161,7 +4165,10 @@ enum Listings {
                 ("Reader", .info), ("Garden", .home), ("Chat", .mail), ("Agenda", .calendar),
                 ("Remote", .settings), ("Shortcuts", .link), ("Albums", .copy), ("Compass", .forward),
             ]
-            let colours = ["#7C3AED", "#2563EB", "#0D9488", "#D97706", "#DB2777", "#4F46E5", "#16A34A", "#DC2626"]
+            let colours: [Color] = [
+                Color(hex: 0x7C3AED), Color(hex: 0x2563EB), Color(hex: 0x0D9488), Color(hex: 0xD97706),
+                Color(hex: 0xDB2777), Color(hex: 0x4F46E5), Color(hex: 0x16A34A), Color(hex: 0xDC2626),
+            ]
             return glyphs.enumerated().map { index, glyph in
                 HomeIcon(name: glyph.0, glyph: glyph.1, colour: colours[index % colours.count])
             }
@@ -4351,7 +4358,7 @@ enum Listings {
             var body: some View {
                 VStack {
                     ZStack {
-                        Rectangle(Color(icon.colour))
+                        Rectangle(icon.colour)
 
                         Rectangle(.white)
                             .opacity(0.3)
@@ -5113,13 +5120,13 @@ enum Listings {
                 // Left alone, the child written last is drawn on top; the higher
                 // zIndex is nearer the front, and nothing moves.
                 ZStack {
-                    Rectangle(Color("#E53935"))
+                    Rectangle(Color(hex: 0xE53935))
                         .width(150)
                         .height(70)
                         .horizontalAlignment(.start)
                         .zIndex(redInFront ? 1 : 0)
 
-                    Rectangle(Color("#1E88E5"))
+                    Rectangle(Color(hex: 0x1E88E5))
                         .width(150)
                         .height(70)
                         .horizontalAlignment(.end)
@@ -5431,7 +5438,7 @@ enum Listings {
             // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
             // over every card, wearing the card's own corners - which is why it is
             // the application's to give and not the library's to draw.
-            .shade(Rectangle(Color("#000000")).cornerRadius(16))
+            .shade(Rectangle(Color(hex: 0x000000)).cornerRadius(16))
             .motion(.eased(.milliseconds(300), .cubicOut))
         }
 
@@ -5571,17 +5578,21 @@ enum Listings {
         /// One card: its name, which is its identity, its colour and its icon.
         struct Card {
             let name: String
-            let colour: String
+            let colour: Color
             let icon: Icon
         }
 
         /// The cards, dealt in this order.
         static let cards = [
-            Card(name: "Mural", colour: "#7C3AED", icon: .star), Card(name: "Nebula", colour: "#2563EB", icon: .heart),
-            Card(name: "Ridge", colour: "#0D9488", icon: .home), Card(name: "Bloom", colour: "#D97706", icon: .calendar),
-            Card(name: "Tide", colour: "#DB2777", icon: .mail), Card(name: "Prism", colour: "#4F46E5", icon: .settings),
-            Card(name: "Grove", colour: "#16A34A", icon: .person), Card(name: "Ember", colour: "#DC2626", icon: .play),
-            Card(name: "Dune", colour: "#CA8A04", icon: .clock),
+            Card(name: "Mural", colour: Color(hex: 0x7C3AED), icon: .star),
+            Card(name: "Nebula", colour: Color(hex: 0x2563EB), icon: .heart),
+            Card(name: "Ridge", colour: Color(hex: 0x0D9488), icon: .home),
+            Card(name: "Bloom", colour: Color(hex: 0xD97706), icon: .calendar),
+            Card(name: "Tide", colour: Color(hex: 0xDB2777), icon: .mail),
+            Card(name: "Prism", colour: Color(hex: 0x4F46E5), icon: .settings),
+            Card(name: "Grove", colour: Color(hex: 0x16A34A), icon: .person),
+            Card(name: "Ember", colour: Color(hex: 0xDC2626), icon: .play),
+            Card(name: "Dune", colour: Color(hex: 0xCA8A04), icon: .clock),
         ]
 
         /// Which layout stands: 0 the ring, 1 the grid, 2 the pile - handed on
@@ -5687,7 +5698,7 @@ enum Listings {
         /// One card's face: its colour, its icon on a disc, and its name.
         private func face(_ card: Card) -> some View {
             ZStack {
-                Rectangle(Color(card.colour))
+                Rectangle(card.colour)
 
                 VStack {
                     ZStack {
@@ -5729,15 +5740,17 @@ enum Listings {
         /// One card: its name, its colour and its icon.
         struct Card {
             let name: String
-            let colour: String
+            let colour: Color
             let icon: Icon
         }
 
         /// The cards, dealt in this order.
         static let cards = [
-            Card(name: "Mural", colour: "#7C3AED", icon: .star), Card(name: "Nebula", colour: "#2563EB", icon: .heart),
-            Card(name: "Ridge", colour: "#0D9488", icon: .home), Card(name: "Bloom", colour: "#D97706", icon: .calendar),
-            Card(name: "Tide", colour: "#DB2777", icon: .mail),
+            Card(name: "Mural", colour: Color(hex: 0x7C3AED), icon: .star),
+            Card(name: "Nebula", colour: Color(hex: 0x2563EB), icon: .heart),
+            Card(name: "Ridge", colour: Color(hex: 0x0D9488), icon: .home),
+            Card(name: "Bloom", colour: Color(hex: 0xD97706), icon: .calendar),
+            Card(name: "Tide", colour: Color(hex: 0xDB2777), icon: .mail),
         ]
 
         /// Where the run stands on both axes - handed on with `$`, never read in
@@ -5811,7 +5824,7 @@ enum Listings {
             let card = Self.cards[index]
 
             return ZStack {
-                Rectangle(Color(card.colour))
+                Rectangle(card.colour)
 
                 VStack {
                     ZStack {
@@ -7765,16 +7778,16 @@ enum Listings {
 
         static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
 
-        static let subtle = Color(light: Color("#8C000000"), dark: Color("#8CFFFFFF"))
+        static let subtle = Color(light: Color(hex: 0x000000, opacity: 0.55), dark: Color(hex: 0xFFFFFF, opacity: 0.55))
 
-        static let disabled = Color(light: Color("#40000000"), dark: Color("#40FFFFFF"))
+        static let disabled = Color(light: Color(hex: 0x000000, opacity: 0.25), dark: Color(hex: 0xFFFFFF, opacity: 0.25))
 
-        static let outline = Color(light: Color("#1F000000"), dark: Color("#1FFFFFFF"))
+        static let outline = Color(light: Color(hex: 0x000000, opacity: 0.12), dark: Color(hex: 0xFFFFFF, opacity: 0.12))
 
         static let danger = Color(light: AppColors.red, dark: AppColors.redLight)
 
         /// What such an action stands on: its red let faintly through.
-        static let dangerWash = Color(light: Color("#1FD92D20"), dark: Color("#33FF8A80"))
+        static let dangerWash = Color(light: Color(hex: 0xD92D20, opacity: 0.12), dark: Color(hex: 0xFF8A80, opacity: 0.2))
         """#,
         "PanSample": #"""
         // Sources/Samples/Gestures/PanSample.swift
@@ -11312,7 +11325,7 @@ enum Listings {
             @Environment(\.window) private var window
 
             var body: some View {
-                Rectangle(Color("#00000000"))
+                Rectangle(Color(hex: 0x000000, opacity: 0))
                     .width(0)
                     .height(0)
                     .ignoresInput(true)

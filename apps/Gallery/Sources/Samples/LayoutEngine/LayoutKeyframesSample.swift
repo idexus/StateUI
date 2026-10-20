@@ -14,17 +14,21 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
     /// One card: its name, which is its identity, its colour and its icon.
     struct Card {
         let name: String
-        let colour: String
+        let colour: Color
         let icon: Icon
     }
 
     /// The cards, dealt in this order.
     static let cards = [
-        Card(name: "Mural", colour: "#7C3AED", icon: .star), Card(name: "Nebula", colour: "#2563EB", icon: .heart),
-        Card(name: "Ridge", colour: "#0D9488", icon: .home), Card(name: "Bloom", colour: "#D97706", icon: .calendar),
-        Card(name: "Tide", colour: "#DB2777", icon: .mail), Card(name: "Prism", colour: "#4F46E5", icon: .settings),
-        Card(name: "Grove", colour: "#16A34A", icon: .person), Card(name: "Ember", colour: "#DC2626", icon: .play),
-        Card(name: "Dune", colour: "#CA8A04", icon: .clock),
+        Card(name: "Mural", colour: Color(hex: 0x7C3AED), icon: .star),
+        Card(name: "Nebula", colour: Color(hex: 0x2563EB), icon: .heart),
+        Card(name: "Ridge", colour: Color(hex: 0x0D9488), icon: .home),
+        Card(name: "Bloom", colour: Color(hex: 0xD97706), icon: .calendar),
+        Card(name: "Tide", colour: Color(hex: 0xDB2777), icon: .mail),
+        Card(name: "Prism", colour: Color(hex: 0x4F46E5), icon: .settings),
+        Card(name: "Grove", colour: Color(hex: 0x16A34A), icon: .person),
+        Card(name: "Ember", colour: Color(hex: 0xDC2626), icon: .play),
+        Card(name: "Dune", colour: Color(hex: 0xCA8A04), icon: .clock),
     ]
 
     /// Which layout stands: 0 the ring, 1 the grid, 2 the pile - handed on
@@ -141,7 +145,7 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
     /// One card's face: its colour, its icon on a disc, and its name.
     private func face(_ card: Card) -> some View {
         ZStack {
-            Rectangle(Color(card.colour))
+            Rectangle(card.colour)
                 .cornerRadius(14)
 
             VStack {

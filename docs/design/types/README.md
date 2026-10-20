@@ -50,7 +50,7 @@ Every value a member holds is `HostRepresentable`: it turns itself into a
 the member its contract declares, and the differ carries it to the host.
 
 ```text
-  an application's value              Color("#512BD4")   Insets(24)
+  an application's value              Color(hex: 0x512BD4)   Insets(24)
                                       .tailTruncation    CalendarDate(year: 2026, month: 8, day: 2)
        |
        |  value.propValue             the type says what it is

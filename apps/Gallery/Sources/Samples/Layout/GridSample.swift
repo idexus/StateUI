@@ -26,17 +26,17 @@ private struct GridPlacement: ExampleContent {
             Grid {
                 // One cell down the whole left side, beside two that stay in
                 // a row each.
-                GridCell(text: "Column 0, Rows 0 and 1", color: "#E53935")
+                GridCell(text: "Column 0, Rows 0 and 1", color: Color(hex: 0xE53935))
                     .gridRowSpan(2)
 
-                GridCell(text: "Column 1, Row 0", color: "#1E88E5")
+                GridCell(text: "Column 1, Row 0", color: Color(hex: 0x1E88E5))
                     .gridColumn(1)
 
-                GridCell(text: "Column 1, Row 1", color: "#8E24AA")
+                GridCell(text: "Column 1, Row 1", color: Color(hex: 0x8E24AA))
                     .gridRow(1)
                     .gridColumn(1)
 
-                GridCell(text: "Row 2, spanning both columns", color: "#F4511E")
+                GridCell(text: "Row 2, spanning both columns", color: Color(hex: 0xF4511E))
                     .gridRow(2)
                     .gridColumnSpan(2)
             }
@@ -83,13 +83,13 @@ private struct GridPlacement: ExampleContent {
 /// `.gridRow`, `.gridColumn` and the spans like any other view.
 private struct GridCell: View {
     let text: String
-    let color: String
+    let color: Color
 
     var body: some View {
         Text(text)
             .fontSize(12)
             .textColor(.white)
-            .background(Color(color))
+            .background(color)
             .padding(8)
             .horizontalTextAlignment(.center)
             .verticalTextAlignment(.center)

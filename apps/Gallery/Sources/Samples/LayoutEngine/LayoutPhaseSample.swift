@@ -23,15 +23,17 @@ struct LayoutPhaseSample: SampleContent, ExampleContent {
     /// One card: its name, its colour and its icon.
     struct Card {
         let name: String
-        let colour: String
+        let colour: Color
         let icon: Icon
     }
 
     /// The cards, dealt in this order.
     static let cards = [
-        Card(name: "Mural", colour: "#7C3AED", icon: .star), Card(name: "Nebula", colour: "#2563EB", icon: .heart),
-        Card(name: "Ridge", colour: "#0D9488", icon: .home), Card(name: "Bloom", colour: "#D97706", icon: .calendar),
-        Card(name: "Tide", colour: "#DB2777", icon: .mail),
+        Card(name: "Mural", colour: Color(hex: 0x7C3AED), icon: .star),
+        Card(name: "Nebula", colour: Color(hex: 0x2563EB), icon: .heart),
+        Card(name: "Ridge", colour: Color(hex: 0x0D9488), icon: .home),
+        Card(name: "Bloom", colour: Color(hex: 0xD97706), icon: .calendar),
+        Card(name: "Tide", colour: Color(hex: 0xDB2777), icon: .mail),
     ]
 
     /// Where the run stands on both axes - handed on with `$`, never read in
@@ -115,7 +117,7 @@ struct LayoutPhaseSample: SampleContent, ExampleContent {
         let card = Self.cards[index]
 
         return ZStack {
-            Rectangle(Color(card.colour))
+            Rectangle(card.colour)
                 .cornerRadius(16)
 
             VStack {

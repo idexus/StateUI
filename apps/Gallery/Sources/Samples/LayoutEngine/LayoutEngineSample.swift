@@ -180,7 +180,7 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
         // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
         // over every card, wearing the card's own corners - which is why it is
         // the application's to give and not the library's to draw.
-        .shade(Rectangle(Color("#000000")).cornerRadius(16))
+        .shade(Rectangle(Color(hex: 0x000000)).cornerRadius(16))
         .motion(.eased(.milliseconds(300), .cubicOut))
     }
 
@@ -223,7 +223,7 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
                 .spacing(1)
                 // A dark strip under the words, so a caption reads over a
                 // picture of any colour.
-                .background(Color("#B3000000"))
+                .background(Color(hex: 0x000000, opacity: 0.7))
                 .verticalAlignment(.end)
             }
             // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL

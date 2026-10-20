@@ -14,7 +14,7 @@ private struct ChangingRunPage: View {
 
     var body: some View {
         VStack {
-            Text().spans { TextSpan("word").textColor(red ? Color("#FF0000") : Color("#0000FF")) }
+            Text().spans { TextSpan("word").textColor(red ? Color(hex: 0xFF0000) : Color(hex: 0x0000FF)) }
             Button("Blue").onClicked { red = false }
         }
     }
@@ -48,7 +48,7 @@ final class GTKTextViewTests: XCTestCase {
                         .fontSize(20)
                         .fontWeight(.bold).fontAttributes(.italic)
                         .fontFamily("monospace")
-                        .textColor(Color("#FF0000"))
+                        .textColor(Color(hex: 0xFF0000))
                         .tracking(2)
                         .lineHeight(1.5)
                         .textDecorations(.underline)
@@ -82,7 +82,7 @@ final class GTKTextViewTests: XCTestCase {
         onUIThread {
             let host = GTKRenderer.running {
                 VStack {
-                    Text("7").background(Color("#FF0000")).verticalTextAlignment(.end).width(60).height(72)
+                    Text("7").background(Color(hex: 0xFF0000)).verticalTextAlignment(.end).width(60).height(72)
                     Text("at the top").height(72)
                 }
                 .horizontalAlignment(.start)
@@ -146,9 +146,9 @@ final class GTKTextViewTests: XCTestCase {
                 VStack {
                     Text()
                         .spans {
-                            TextSpan("let ").textColor(Color("#FF0000"))
+                            TextSpan("let ").textColor(Color(hex: 0xFF0000))
                             TextSpan("x").fontSize(20).fontWeight(.bold).fontAttributes(.italic)
-                            TextSpan(" = 1").textDecorations(.underline).background(Color("#FFFF00"))
+                            TextSpan(" = 1").textDecorations(.underline).background(Color(hex: 0xFFFF00))
                         }
                 }
             }

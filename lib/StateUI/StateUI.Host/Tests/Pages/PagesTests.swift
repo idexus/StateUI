@@ -601,7 +601,7 @@ final class PagesTests: XCTestCase {
     /// A split view's sidebar stands on its flyout's material over the detail and on its own beside it; one it does
     /// not say is empty - the platform's own.
     func testASidebarStandsOnTheMaterialOfItsPlace() throws {
-        let flyout = Material.color(Color("#512BD4")).propValue
+        let flyout = Material.color(Color(hex: 0x512BD4)).propValue
         let runtime = runtime(node("window", .window, children: [
             node("split", .splitView, [.flyoutBackground: flyout], children: [node("menu", .page), node("home", .page)]),
         ])) { _ in }
@@ -614,7 +614,7 @@ final class PagesTests: XCTestCase {
     /// A split view saying a material for its sidebar, in either place, gives the sidebar to the application to
     /// paint; one saying none leaves it the platform's.
     func testASidebarWithAMaterialOfItsOwnIsTheApplicationsToPaint() throws {
-        let beside = Material.color(Color("#251E4C")).propValue
+        let beside = Material.color(Color(hex: 0x251E4C)).propValue
         let runtime = runtime(node("window", .window, children: [
             node("painted", .splitView, [.sidebarBackground: beside], children: [node("a", .page), node("b", .page)]),
             node("own", .splitView, children: [node("c", .page), node("d", .page)]),

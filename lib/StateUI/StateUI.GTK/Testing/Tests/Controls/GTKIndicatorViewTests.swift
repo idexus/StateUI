@@ -14,7 +14,7 @@ final class GTKIndicatorViewTests: XCTestCase {
         onUIThread {
             let host = GTKRenderer.running {
                 VStack {
-                    ProgressBar(0.5).tint(Color("#FF0000")).width(200).height(8)
+                    ProgressBar(0.5).tint(Color(hex: 0xFF0000)).width(200).height(8)
                     ProgressBar(1.5).width(200).height(8)
                 }
                 .horizontalAlignment(.start)

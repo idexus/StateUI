@@ -103,7 +103,7 @@ extension WinUIDriver {
            let thickness = Blur.Thickness.allCases.first(where: { abs(WinUIWindow.acrylic($0).opacity - opacity) < 0.005 }) {
             return Material.blur(Blur(thickness)).propValue
         }
-        return words.count == 1 ? Material.color(Color(String(words[0]))).propValue : nil
+        return words.count == 1 ? Color(parsing: String(words[0])).map { Material.color($0).propValue } : nil
     }
 
     /// The window `element` is, as the host keeps it for the next start.

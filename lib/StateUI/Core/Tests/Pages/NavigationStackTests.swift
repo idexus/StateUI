@@ -166,13 +166,13 @@ final class NavigationStackTests: XCTestCase {
         let path = State<[Route]>([])
 
         let node = stack(path.projectedValue)
-            .barBackgroundColor(Color("#512BD4"))
+            .barBackgroundColor(Color(hex: 0x512BD4))
             .barForegroundColor(.white)
             .node
             .built
 
-        XCTAssertEqual(node.props["barBackgroundColor"], Color("#512BD4").propValue)
-        XCTAssertEqual(node.props["barForegroundColor"], Color("#FFFFFF").propValue)
+        XCTAssertEqual(node.props["barBackgroundColor"], Color(hex: 0x512BD4).propValue)
+        XCTAssertEqual(node.props["barForegroundColor"], Color(hex: 0xFFFFFF).propValue)
         XCTAssertNil(node.children.first?.built.props["barBackgroundColor"],
                      "and not on the page under it")
     }
@@ -226,7 +226,7 @@ final class NavigationStackTests: XCTestCase {
             case .level(let depth): DressedDestination(depth: depth)
             }
         }
-        .barBackgroundColor(Color("#512BD4"))
+        .barBackgroundColor(Color(hex: 0x512BD4))
         .barForegroundColor(.white)
         .node
 
@@ -236,7 +236,7 @@ final class NavigationStackTests: XCTestCase {
         let dressed = ElementID.manual("1/level(2)")
 
         XCTAssertEqual(stack.props, [
-            "barBackgroundColor": Color("#512BD4").propValue, "barForegroundColor": Color.white.propValue,
+            "barBackgroundColor": Color(hex: 0x512BD4).propValue, "barForegroundColor": Color.white.propValue,
         ])
         XCTAssertEqual(stack.eventNames, ["popped"])
         XCTAssertEqual(stack.arrangement, [.manual("root"), .manual("0/detail(\"one\")"), dressed])

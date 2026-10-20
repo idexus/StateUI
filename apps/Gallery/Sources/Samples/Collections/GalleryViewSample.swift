@@ -204,7 +204,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         // corners, which is why the view is the application's to give.
         // A quarter of the fade is left beside it, unless `.fade(_:)` says
         // otherwise.
-        return run.shade(Rectangle(Color("#000000")).cornerRadius(16))
+        return run.shade(Rectangle(Color(hex: 0x000000)).cornerRadius(16))
     }
 
     /// One card's face - a picture and its name, and nothing at all about where
@@ -222,7 +222,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .textColor(Palette.onBrand)
                     .lineBreak(.tailTruncation)
                     .padding(horizontal: 12, vertical: 10)
-                    .background(Color("#B3000000"))
+                    .background(Color(hex: 0x000000, opacity: 0.7))
                     .verticalAlignment(.end)
             }
             .clipsContent(true)
@@ -252,7 +252,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`Shaded` is `.shade(Rectangle(Color(\"#000000\")).cornerRadius(16))`: "
+            Text("`Shaded` is `.shade(Rectangle(Color(hex: 0x000000)).cornerRadius(16))`: "
                 + "the cards away from the middle are DARKENED by a view drawn over them "
                 + "rather than faded, so what is behind a far card stays hidden. "
                 + "`.onItemTapped` is handed the card in the MIDDLE.")

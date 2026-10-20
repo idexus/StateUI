@@ -301,7 +301,7 @@ final class CycleTests: XCTestCase {
         trip(Point(x: 3, y: -4))
         trip(Rect(1, 2, 3, 4))
         trip(Insets(left: 1, top: 2, right: 3, bottom: 4))
-        trip(Color("#8040C0FF"))
+        trip(Color(hex: 0x40C0FF, opacity: 0.5))
         trip("a caption, ż and 漢")
         trip("")
         trip(CalendarDate(year: 2026, month: 8, day: 2))

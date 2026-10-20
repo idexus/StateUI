@@ -130,7 +130,7 @@
         _ write: @escaping @MainActor (SplitView, Binding<Material>) -> SplitView.Modified
     ) -> ConformanceCase {
         ConformanceCase(name, proves: [Covered(member)], needs: [Covered(ButtonContract.clicked)]) { s in
-            let (first, changed) = (Material.color(Color("#0F766E")), Material.color(Color("#512BD4")))
+            let (first, changed) = (Material.color(Color(hex: 0x0F766E)), Material.color(Color(hex: 0x512BD4)))
             let value = State(wrappedValue: first)
             s.start {
                 write(SplitView(State(wrappedValue: true).projectedValue) {
@@ -157,7 +157,7 @@
         _ write: @escaping @MainActor (SplitView, Material) -> SplitView.Modified
     ) -> ConformanceCase {
         ConformanceCase(name, proves: [Covered(member)], needs: [Covered(ButtonContract.clicked)]) { s in
-            let (first, changed) = (Material.color(Color("#0F766E")), Material.color(Color("#512BD4")))
+            let (first, changed) = (Material.color(Color(hex: 0x0F766E)), Material.color(Color(hex: 0x512BD4)))
             let value = State(wrappedValue: first)
             s.start {
                 write(SplitView(State(wrappedValue: true).projectedValue) {

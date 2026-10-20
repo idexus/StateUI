@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A colour, read from hex and written as four bytes.
+// A colour, from a hex number or read from text, and written as four bytes.
 //
-// The parser is StateUI's, so what a colour may be is defined here rather
+// The reader is StateUI's, so what a colour may be is defined here rather
 // than in the host: hex, in four lengths, checked below. A host that read
 // colours for itself would have to reproduce that exactly or differ in
 // silence.
@@ -13,15 +13,32 @@ import XCTest
 
 @MainActor
 final class ColorTests: XCTestCase {
-    // MARK: - Reading hex
+    // MARK: - A hex number
+
+    /// The number's three bytes are red, green and blue, and the colour is opaque.
+    func testAHexNumberIsItsThreeChannels() {
+        XCTAssertEqual(Color(hex: 0x512BD4).propValue, .color(red: 0x51, green: 0x2B, blue: 0xD4, alpha: 255))
+        XCTAssertEqual(Color(hex: 0xFF0000), Color.red)
+    }
+
+    /// How opaque a hex colour is becomes its alpha, held to 0-1 - as `opacity(_:)` holds it.
+    func testOpacityIsTheAlphaOfAHexNumber() {
+        XCTAssertEqual(Color(hex: 0xFF0000, opacity: 0.5).propValue, .color(red: 255, green: 0, blue: 0, alpha: 128))
+        XCTAssertEqual(Color(hex: 0xFF0000, opacity: 0.5), Color.red.opacity(0.5))
+        XCTAssertEqual(Color(hex: 0xFF0000, opacity: 2), Color.red)
+        XCTAssertEqual(Color(hex: 0xFF0000, opacity: -1).propValue, .color(red: 255, green: 0, blue: 0, alpha: 0))
+        XCTAssertEqual(Color(hex: 0xFF0000, opacity: .nan).propValue, .color(red: 255, green: 0, blue: 0, alpha: 0))
+    }
+
+    // MARK: - Reading text
 
     /// The four lengths hex is read in, and the shorthand doubling each digit.
     func testEveryLengthOfHexReadsTheSameColour() {
-        XCTAssertEqual(Color("#F00"), Color("#FF0000"))
-        XCTAssertEqual(Color("#8F00"), Color("#88FF0000"))
-        XCTAssertEqual(Color("#FF0000"), Color("#FFFF0000"), "six digits are opaque")
+        XCTAssertEqual(Color(parsing: "#F00"), Color(parsing: "#FF0000"))
+        XCTAssertEqual(Color(parsing: "#8F00"), Color(parsing: "#88FF0000"))
+        XCTAssertEqual(Color(parsing: "#FF0000"), Color(parsing: "#FFFF0000"), "six digits are opaque")
 
-        XCTAssertEqual(Color("#80FF0000").propValue,
+        XCTAssertEqual(Color(parsing: "#80FF0000")?.propValue,
                        .color(red: 255, green: 0, blue: 0, alpha: 128))
     }
 
@@ -29,40 +46,41 @@ final class ColorTests: XCTestCase {
     /// ARGB means - and it is the channel a wrong reading gets away with
     /// longest, since most colours are opaque.
     func testAlphaIsTheFirstChannelWrittenAndTheLastOneSent() {
-        XCTAssertEqual(Color("#40204060").propValue,
+        XCTAssertEqual(Color(parsing: "#40204060")?.propValue,
                        .color(red: 0x20, green: 0x40, blue: 0x60, alpha: 0x40))
     }
 
     /// Case does not matter, and the `#` may be left off.
     func testHexIsReadInEitherCaseWithOrWithoutTheHash() {
-        XCTAssertEqual(Color("#ff0000"), Color("#FF0000"))
-        XCTAssertEqual(Color("FF0000"), Color("#FF0000"))
+        XCTAssertEqual(Color(parsing: "#ff0000"), Color.red)
+        XCTAssertEqual(Color(parsing: "FF0000"), Color.red)
     }
 
-    /// What is NOT hex answers nothing, which is what the initializer traps
-    /// on - asked through the reader, since a trap cannot be caught.
+    /// What is NOT hex is no colour: the reader answers nil, and the data's own fallback stands.
     func testAnythingThatIsNotHexIsNotAColour() {
-        XCTAssertNil(Color.channels(of: "Red"), "a colour NAME is Color.red, not a string")
-        XCTAssertNil(Color.channels(of: "#12345"))
-        XCTAssertNil(Color.channels(of: "#GGGGGG"))
-        XCTAssertNil(Color.channels(of: ""))
-        XCTAssertNil(Color.channels(of: "#123456789"))
-        XCTAssertNil(Color.channels(of: "rgb(255,0,0)"))
+        XCTAssertNil(Color(parsing: "Red"), "a colour NAME is Color.red, not a string")
+        XCTAssertNil(Color(parsing: "#12345"))
+        XCTAssertNil(Color(parsing: "#GGGGGG"))
+        XCTAssertNil(Color(parsing: ""))
+        XCTAssertNil(Color(parsing: "#123456789"))
+        XCTAssertNil(Color(parsing: "rgb(255,0,0)"))
     }
 
     /// Equality is the COLOUR, not its spelling - which is what stops two ways
     /// of writing one from reading as a change and being sent again.
     func testTwoSpellingsOfOneColourAreOneValue() {
-        XCTAssertEqual(Color("#ff0000"), Color.red)
+        XCTAssertEqual(Color(hex: 0xFF0000), Color.red)
         XCTAssertEqual(Color(red: 255, green: 0, blue: 0), Color.red)
         XCTAssertEqual(Color(red: 255, green: 0, blue: 0, alpha: 255), Color.red)
         XCTAssertNotEqual(Color(red: 255, green: 0, blue: 0, alpha: 128), Color.red)
+        XCTAssertEqual(Set([Color(hex: 0xFF0000), Color(red: 255, green: 0, blue: 0), Color.red]).count, 1,
+                       "and hash alike")
     }
 
     /// A channel outside 0-255 is held to it rather than wrapping - which is
     /// what an Int argument makes possible in the first place.
     func testAChannelOutsideItsRangeIsHeldToIt() {
-        XCTAssertEqual(Color(red: -20, green: 300, blue: 0), Color("#00FF00"))
+        XCTAssertEqual(Color(red: -20, green: 300, blue: 0), Color(hex: 0x00FF00))
     }
 
     // MARK: - What crosses
@@ -91,7 +109,7 @@ final class ColorTests: XCTestCase {
     /// its half as the element holding the drawing is built.
     func testADrawingWritesEachColourAsItsFourChannels() {
         func drawn() -> PropValue? {
-            Canvas { Draw.fillColor(Color(light: Color("#6495ED"), dark: .black)) }
+            Canvas { Draw.fillColor(Color(light: Color(hex: 0x6495ED), dark: .black)) }
                 .node.props[.drawing]?.resolvingTheme()
         }
 
@@ -116,10 +134,12 @@ final class ColorTests: XCTestCase {
     /// A colour let through keeps its channels and scales its alpha, in both
     /// halves of a pair, held to the range a fraction has.
     func testAColourLetThroughScalesItsAlpha() {
-        XCTAssertEqual(Color("#512BD4").opacity(0.15), Color("#26512BD4"))
-        XCTAssertEqual(Color("#80FFFFFF").opacity(0.5), Color("#40FFFFFF"))
-        XCTAssertEqual(Color(light: .white, dark: .black).opacity(0), Color(light: Color("#00FFFFFF"), dark: Color("#00000000")))
-        XCTAssertEqual(Color("#512BD4").opacity(2), Color("#512BD4"))
+        XCTAssertEqual(Color(hex: 0x512BD4).opacity(0.15), Color(hex: 0x512BD4, opacity: 0.15))
+        XCTAssertEqual(Color(hex: 0xFFFFFF, opacity: 0.5).opacity(0.5), Color(hex: 0xFFFFFF, opacity: 0.25))
+        XCTAssertEqual(
+            Color(light: .white, dark: .black).opacity(0),
+            Color(light: Color(hex: 0xFFFFFF, opacity: 0), dark: Color(hex: 0x000000, opacity: 0)))
+        XCTAssertEqual(Color(hex: 0x512BD4).opacity(2), Color(hex: 0x512BD4))
     }
 
     /// A material crosses as itself and comes back so: a colour as the colour - so a colour's channel writes a
@@ -135,7 +155,7 @@ final class ColorTests: XCTestCase {
         XCTAssertEqual(parts[3], Blur.Thickness.thin.standIn.propValue)
         XCTAssertTrue(parts[3].isThemed, "the stand-in follows the theme")
 
-        let glass = Material.glass(.clear.tint(Color("#512BD4")).isInteractive(true))
+        let glass = Material.glass(.clear.tint(Color(hex: 0x512BD4)).isInteractive(true))
         XCTAssertEqual(Material(propValue: glass.propValue), glass)
         let glassParts = try XCTUnwrap(glass.propValue.values)
         XCTAssertEqual(glassParts[4], Blur.Thickness.ultraThin.propValue, "clear glass stands in as the thinnest blur")
@@ -156,13 +176,14 @@ final class ColorTests: XCTestCase {
         let info = StandardEnvironment.application.info
         let before = info.accentColor
         defer { HostBoundary.setAccentColor(before) }
-        HostBoundary.setAccentColor(Color("#FF0A84FF"))
+        HostBoundary.setAccentColor(Color(hex: 0x0A84FF))
 
         XCTAssertEqual(Color.accent.propValue, .systemColor(0, alpha: 255))
         XCTAssertEqual(Color.accent.opacity(0.5).propValue, .systemColor(0, alpha: 128))
         XCTAssertEqual(Color(propValue: .systemColor(0, alpha: 128)), Color.accent.opacity(0.5))
-        XCTAssertEqual(Color.accent.propValue.resolvingTheme(), Color("#FF0A84FF").propValue)
-        XCTAssertEqual(Color.accent.opacity(0.5).propValue.resolvingTheme(), Color("#800A84FF").propValue)
+        XCTAssertEqual(Color.accent.propValue.resolvingTheme(), Color(hex: 0x0A84FF).propValue)
+        XCTAssertEqual(
+            Color.accent.opacity(0.5).propValue.resolvingTheme(), Color(hex: 0x0A84FF, opacity: 0.5).propValue)
     }
 
     /// The accent as one half of a pair is the accent in force in that theme, not black; a pair handed as a half
@@ -171,14 +192,15 @@ final class ColorTests: XCTestCase {
         let info = StandardEnvironment.application.info
         let before = info.accentColor
         defer { HostBoundary.setAccentColor(before) }
-        HostBoundary.setAccentColor(Color("#FFFF0000"))
+        HostBoundary.setAccentColor(Color(hex: 0xFF0000))
 
         let accented = Color(light: .accent, dark: .white)
-        XCTAssertEqual(accented.propValue.resolvingTheme(), Color("#FFFF0000").propValue, "the accent in the light")
+        XCTAssertEqual(accented.propValue.resolvingTheme(), Color(hex: 0xFF0000).propValue, "the accent in the light")
         withTheme(.dark) { XCTAssertEqual(accented.propValue.resolvingTheme(), Color.white.propValue) }
         XCTAssertEqual(Color(propValue: accented.propValue), accented, "and back")
         XCTAssertEqual(
-            accented.opacity(0.5).propValue.resolvingTheme(), Color("#80FF0000").propValue, "let through, still the accent")
+            accented.opacity(0.5).propValue.resolvingTheme(), Color(hex: 0xFF0000, opacity: 0.5).propValue,
+            "let through, still the accent")
 
         let surface = Color(light: .white, dark: .black)
         let nested = Color(light: .gray, dark: surface)
