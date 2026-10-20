@@ -8003,12 +8003,11 @@ enum Listings {
 
                 Picker(Size.allCases, selection: $size) { "\($0)".titled }
                     .placeholder("Size")
-                    // Settable, so a button elsewhere can open the list. The two
-                    // events answer the user and the platform - never this
-                    // side's own write.
-                    .isOpen(showing)
-                    .onOpened { opened += 1; showing = true }
-                    .onClosed { showing = false }
+                    // Both ways, so a button elsewhere can open the list and the
+                    // user's closing writes it back. The event answers the user
+                    // and the platform - never this side's own write.
+                    .isOpen($showing)
+                    .onOpened { opened += 1 }
 
                 // Only where the platform opens a list at the program's asking.
                 if device.honors(PickerContract.isOpen) {

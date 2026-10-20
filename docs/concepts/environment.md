@@ -214,8 +214,7 @@ struct SizeChooser: View {
     var body: some View {
         VStack {
             Picker([1, 2, 3], selection: $size) { "\($0)" }
-                .isOpen(showing)
-                .onClosed { showing = false }
+                .isOpen($showing)
             if device.honors(PickerContract.isOpen) {
                 Button("Open the list").onClicked { showing = true }
             }
