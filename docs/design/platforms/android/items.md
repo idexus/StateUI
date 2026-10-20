@@ -35,6 +35,16 @@ span lookup gives each entry its columns, and an item decoration its room.
 The columns are worked out from the width the list's layout gives it,
 before the recycler lays its cells out in that width.
 
+## Cut at its edges
+
+A StateUI layout draws its children past its edges (`StateUIViewGroup`
+clips none), and Android cuts a view off at its edges only where its parent
+clips its children - so a recycler in a StateUI layout would show the cells
+scrolled half out of it over the views around it. The list cuts them off
+itself: its clip bounds are its own rectangle, set again as its size changes
+- what a platform's own layout would do around it. A scroll view does the
+same through the group it stands in.
+
 ## A cell
 
 A cell is the relay's `StateUIItemCell`, a StateUI layout the recycler

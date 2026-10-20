@@ -95,6 +95,16 @@ final class StateUIItemsView extends RecyclerView {
                 MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
     }
 
+    /**
+     * Cuts its cells off at its own edges, as a list does, where every StateUI layout draws its children past its.
+     * Design: docs/design/platforms/android/items.md#cut-at-its-edges
+     */
+    @Override
+    protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
+        super.onSizeChanged(width, height, oldWidth, oldHeight);
+        setClipBounds(new Rect(0, 0, width, height));
+    }
+
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
