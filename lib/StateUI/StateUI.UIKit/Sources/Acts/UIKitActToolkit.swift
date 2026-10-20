@@ -5,6 +5,7 @@
 import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 
 /// UIKit's part of the acts every host performs (`HostActPerformer`): the clock and the zones, a question as an
 /// alert over what the user's window shows, a word to VoiceOver, the keyboard's focus, a value kept.
@@ -145,21 +146,11 @@ final class UIKitActToolkit: ActToolkit {
             core.reply(call, [])
             return true
         }
-        guard let web = (element.native as? UIKitElement)?.view as? UIKitWebView else {
+        guard let web = (element.native as? UIKitElement)?.view as? WebKitView else {
             core.fail(call, "\(call.act.name) is an act of a web view", log: { UIKitRenderer.log.error($0) })
             return true
         }
-        switch call.act {
-        case .goBack: web.step(.back)
-        case .goForward: web.step(.forward)
-        case .reload: web.step(.reload)
-        default:
-            web.evaluate(call.arguments.value(1)?.string ?? "") { answer in
-                core.reply(call, [answer.propValue])
-            }
-            return true
-        }
-        core.reply(call, [])
+        web.perform(call, through: core)
         return true
     }
 

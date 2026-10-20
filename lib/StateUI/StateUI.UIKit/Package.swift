@@ -12,12 +12,14 @@ let package = Package(
     dependencies: [
         .package(name: "StateUIRoot", path: "../../.."),
         .package(name: "StateUIHost", path: "../StateUI.Host"),
+        .package(name: "StateUIApple", path: "../StateUI.Apple"),
     ],
     targets: [
         .target(
             name: "StateUIUIKit",
             dependencies: [.product(name: "StateUI", package: "StateUIRoot"),
-                .product(name: "StateUIHost", package: "StateUIHost")],
+                .product(name: "StateUIHost", package: "StateUIHost"),
+                .product(name: "StateUIApple", package: "StateUIApple")],
             path: "Sources",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")],
             linkerSettings: [.linkedFramework("UIKit", .when(platforms: [.iOS]))]

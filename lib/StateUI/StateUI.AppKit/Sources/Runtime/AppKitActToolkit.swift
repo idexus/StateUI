@@ -5,6 +5,7 @@
 import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 
 /// AppKit's part of the acts every host performs (`HostActPerformer`): the clock and the zones, a question as an
 /// alert on the window the user is looking at, a word to VoiceOver, the keyboard's focus, a value kept.
@@ -129,13 +130,9 @@ final class AppKitActToolkit: ActToolkit {
             case (.moveToRegion, let map as AppKitMapView):
                 let number = { call.arguments.value($0)?.number ?? 0 }
                 map.show(MapRegion(latitude: number(1), longitude: number(2), radiusMeters: number(3)), sliding: true)
-            case (.goBack, let web as AppKitWebView): web.step(.back)
-            case (.goForward, let web as AppKitWebView): web.step(.forward)
-            case (.reload, let web as AppKitWebView): web.step(.reload)
-            case (.evaluateJavaScript, let web as AppKitWebView):
-                web.evaluate(call.arguments.value(1)?.string ?? "") { answer in
-                    core.reply(call, [answer.propValue])
-                }
+            case (.goBack, let web as WebKitView), (.goForward, let web as WebKitView), (.reload, let web as WebKitView),
+                (.evaluateJavaScript, let web as WebKitView):
+                web.perform(call, through: core)
                 return true
             default:
                 core.fail(call, "\(call.act.name) is an act of \(owner)", log: { AppKitRenderer.log.error($0) })

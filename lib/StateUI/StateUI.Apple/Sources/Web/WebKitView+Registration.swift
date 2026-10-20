@@ -1,16 +1,17 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-#if os(iOS)
-import UIKit
+import WebKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-extension UIKitRegistrations {
-    /// A WebView: the page it shows and what it calls itself, and what the page does.
-    static func web(_ registry: Registry<UIView>) {
+/// A WebView as Apple's hosts register it and answer its acts.
+/// Design: docs/design/platforms/apple/web.md#a-web-view
+extension WebKitView {
+    /// Registers a WebView in `registry`: the page it shows and what it calls itself, and what the page does.
+    public static func register<View: AnyObject>(in registry: Registry<View>) {
         registry.add(WebViewContract.self, create: { reports in
-            let web = UIKitWebView()
+            let web = WebKitView()
             web.onNavigating = { event, address in reports.raise(WebViewContract.navigating, event, address) }
             web.onNavigated = { result, event, address in
                 reports.raise(WebViewContract.navigated, result, event, address)
@@ -34,8 +35,20 @@ extension UIKitRegistrations {
     }
 
     /// The acts a web view answers itself, beside the ones every host performs.
-    static let webActs: [any ContractMember] = [
+    public static let acts: [any ContractMember] = [
         WebViewContract.evaluateJavaScript, WebViewContract.goBack, WebViewContract.goForward, WebViewContract.reload,
     ]
+
+    /// Performs `call`, one of `acts`, answering it through `core`: a step at once, a script with what it evaluated
+    /// to, as text.
+    public func perform(_ call: HostActCall, through core: CoreLink) {
+        switch call.act {
+        case .goBack: step(.back)
+        case .goForward: step(.forward)
+        case .reload: step(.reload)
+        default:
+            return evaluate(call.arguments.value(1)?.string ?? "") { answer in core.reply(call, [answer.propValue]) }
+        }
+        core.reply(call, [])
+    }
 }
-#endif

@@ -5,6 +5,7 @@
 import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 
 /// The elements UIKit realizes, each with its view and the members it takes, and what every view shares.
 @MainActor
@@ -24,7 +25,7 @@ enum UIKitRegistrations {
         canvas(registry)
         layouts(registry)
         scrolling(registry)
-        web(registry)
+        WebKitView.register(in: registry)
         maps(registry)
         shared(registry)
         return registry

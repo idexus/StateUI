@@ -4,6 +4,7 @@
 #if os(iOS)
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 
 /// What this host realizes beyond its registry, whose export says the rest - the UIKit column of the control
 /// dictionary; a member is recorded once a test of this package covers it.
@@ -184,7 +185,7 @@ enum UIKitRealization {
         let registry = UIKitRegistrations.registry
         return HostDeclaration(
             realization: registry.realization, shared: registry.sharedNames,
-            acts: (HostActs.performed + HostActs.files + UIKitRegistrations.webActs + UIKitRegistrations.itemsActs
+            acts: (HostActs.performed + HostActs.files + WebKitView.acts + UIKitRegistrations.itemsActs
                 + [MapContract.moveToRegion]).map(\.name))
     }
 
