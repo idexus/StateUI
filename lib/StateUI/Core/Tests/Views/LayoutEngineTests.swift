@@ -35,8 +35,9 @@ final class LayoutEngineTests: XCTestCase {
         XCTAssertEqual(engine.walkedParts.map(\.label), Mirror(reflecting: engine).children.map { $0.label ?? "" })
     }
 
-    /// A SLOT IS ITS ITEM'S OWN IDENTITY, compared as the value it is: two identities that describe alike - a class
-    /// prints its type's name - are two slots, and naming one spells nothing.
+    /// A SLOT IS ITS ITEM'S OWN IDENTITY, compared as the value it is and numbered by the layout: two identities
+    /// that describe alike - a class prints its type's name - are two slots, an identity keeps its number while it
+    /// stands, a new one takes a number never given, and naming one spells nothing.
     func testASlotIsItsItemsOwnIdentity() {
         let tags = [Tag(1), Tag(2)]
         let engine = LayoutEngine(tags, id: \.self) { _ in Rectangle(.red) } placements: { _, _ in [] }
@@ -45,8 +46,13 @@ final class LayoutEngineTests: XCTestCase {
         let slots = engine.run.slots
 
         XCTAssertEqual(Set(slots.map(\.identity)).count, 2, "two identities, two slots")
-        XCTAssertEqual(slots.map(\.identity), tags.map(AnyHashable.init), "each its item's own")
         XCTAssertEqual(Renderer.shared.texts, texts, "no text built")
+
+        let numbers = LayoutSlotNumbers()
+        let first = numbers.numbered([AnyHashable(Tag(1)), AnyHashable(Tag(2))])
+        XCTAssertEqual(numbers.numbered([AnyHashable(Tag(2)), AnyHashable(Tag(1))]), first.reversed(), "kept, reordered")
+        XCTAssertEqual(numbers.numbered([AnyHashable(Tag(3))]).first.map { first.contains($0) }, false, "never again")
+        XCTAssertNotEqual(numbers.numbered([AnyHashable(Tag(1))]), [first[0]], "let go once gone")
     }
 
     /// An identity whose description says only its type.

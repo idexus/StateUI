@@ -79,6 +79,17 @@ no view, the differ matching them by identity alone. A shade is a built node
 and a tap a closure the item's value is caught in, which nothing compares, so
 a layout given either builds its holders as part of its own description.
 
+## A view is its item's identity
+
+A view's identity is its item's own, the value `id:` names, compared as that
+value: two items that describe alike are two views, and none is spelled. The
+layout numbers each identity as it first appears (`LayoutSlotNumbers`) and
+keeps the number while the identity stands in it, never giving one again; the
+identities are compared once a render, as the numbers are given, and every
+frame keys its views by number - what each was shown at, where it travels,
+the one the hand holds. An identity that leaves and comes back takes a new
+number, as the view it names is new to the run.
+
 ## A change at the current phase
 
 What changes a view's pose otherwise than the phase, the room or a followed
@@ -95,9 +106,7 @@ one thing: the motion times the phase, the arithmetic turns a phase into
 poses, and a shift per identity (`LayoutShift`) turns a pose into what is
 shown.
 
-A view's identity is its item's own, the value `id:` names, compared as that
-value (`AnyHashable`): two items that describe alike are two views, and none
-is spelled. A description is told apart by a number each gets as it is made
+A description is told apart by a number each gets as it is made
 (an object's address would not do: one let go is soon another's). On the first frame of
 a new one, the engine works its arithmetic out where the last frame stood -
 that phase, that room - and compares it identity by identity with the last

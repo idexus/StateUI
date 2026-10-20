@@ -63,6 +63,9 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// The room the layout was given, as the platform reports it.
     @State private var room = Rect.zero
 
+    /// The layout's own number for each item's identity, which its frames key the views by.
+    @State private var numbers = LayoutSlotNumbers()
+
     /// The items, their views and the arithmetic, behind a class so the state walk stops before them.
     /// Design: docs/design/views/composition.md#items-held-behind-a-class
     private let source: Source
@@ -543,11 +546,12 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         let path = source.path
         // Closures, not key paths: one written in a generic type is made anew at every call.
         let hands = axes.compactMap { $0.hand }
+        let identities = numbers.numbered(items.map { AnyHashable($0[keyPath: path]) })
 
         return Run(
             items: items,
-            slots: items.enumerated().map { offset, item in
-                Slot(identity: AnyHashable(item[keyPath: path]), index: offset, item: item)
+            slots: zip(items, identities).enumerated().map { offset, item in
+                Slot(identity: item.1, index: offset, item: item.0)
             },
             make: source.view,
             holder: source.holder,
@@ -592,7 +596,7 @@ extension LayoutEngine: WalkedView {
     var walkedParts: [(label: String, value: Any)] {
         [
             ("_ownPhase", _ownPhase), ("_held", _held), ("_flung", _flung), ("_grip", _grip), ("_item", _item),
-            ("_placements", _placements), ("_shown", _shown), ("_from", _from), ("_room", _room),
+            ("_placements", _placements), ("_shown", _shown), ("_from", _from), ("_room", _room), ("_numbers", _numbers),
             ("source", source), ("pinned", pinned as Any), ("axes", axes), ("curve", curve as Any),
             ("followed", followed), ("mask", mask as Any), ("tapped", tapped as Any),
             ("itemStart", itemStart as Any), ("dragged", dragged as Any), ("dismissal", dismissal as Any),
@@ -676,7 +680,7 @@ struct LayoutShown<Phase: LayoutPhase>: Equatable {
     var phase: Phase?
     var from: Phase?
     var room = Rect.zero
-    var poses: [AnyHashable: Placement] = [:]
-    var shown: [AnyHashable: Placement] = [:]
-    var travels: [AnyHashable: LayoutTravel] = [:]
+    var poses: [Int: Placement] = [:]
+    var shown: [Int: Placement] = [:]
+    var travels: [Int: LayoutTravel] = [:]
 }
