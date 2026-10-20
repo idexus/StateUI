@@ -87,13 +87,13 @@ fault and a panel that slides does not. The plan stays in the renderer: its
 answers become transitions for changed properties and layout motion for the
 children a host arranges.
 
-## Keys are described text
+## Keys are values
 
-`.id(_:)` takes any `Hashable` and stores `String(describing:)` of it, as a
-`ForEach` item, a navigation route, a tab and a modal sheet do, so one value
-means one thing wherever a key is given (builders.md, ForEach keys are text).
-A key is not a property and does not go through `setValue`: it travels as the
-element's identity, and the host finds and keeps the native control by it.
+`.id(_:)` takes any `Hashable` and keeps the value, as a `ForEach` item, a
+navigation route, a tab and a modal sheet do, so one value means one thing
+wherever a key is given (builders.md, ForEach keys are values). A key is not a
+property and does not go through `setValue`: it travels as the element's
+identity, and the host finds and keeps the native control by it.
 
 ## An aim is not a key
 

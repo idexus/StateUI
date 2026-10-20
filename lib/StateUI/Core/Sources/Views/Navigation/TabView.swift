@@ -41,9 +41,8 @@
 /// another array adds or removes tabs, and when the showing tab is removed the
 /// platform picks another and the binding follows.
 ///
-/// Each tab must be a distinct value whose values describe differently
-/// (`String(describing:)`). A page is keyed by its tab alone, so tabs can be
-/// reordered without their pages being rebuilt.
+/// Each tab must be a distinct value. A page is keyed by its tab alone, so tabs
+/// can be reordered without their pages being rebuilt.
 public struct TabView: ElementView, Arrangement, BarElement, AutomationElement {
     /// The node this page describes.
     public var node: Node

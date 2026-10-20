@@ -126,7 +126,6 @@ final class KeyGuardTests: XCTestCase {
 
     private static let keyedByWords: [String: String] = [
         // Identities.
-        "Differ+Children.swift": identity,
         "ItemsSource.swift": identity,
         "ItemsCells.swift": identity, "AppKitItemsView.swift": identity, "WebItemsView.swift": identity,
         "SceneRecord.swift": identity + ", and " + file,

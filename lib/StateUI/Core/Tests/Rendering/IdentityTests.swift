@@ -41,16 +41,21 @@ final class IdentityTests: XCTestCase {
         XCTAssertTrue(hasComplained("share the identity \"7\""))
     }
 
-    /// Two different identities that describe themselves alike - a class prints its type's name - are said, naming
-    /// the cure.
-    func testTwoIdentitiesDescribedAlikeAreSaid() {
+    /// Two different identities that describe themselves alike - a class prints its type's name - are two elements,
+    /// each following its own value through a new order, and nothing is said: an identity is matched as its value.
+    func testTwoIdentitiesDescribedAlikeAreTwoElements() {
         let renders = Renders()
+        func list(_ tickets: [Ticket]) -> Node {
+            VStack { ForEach(tickets, id: \.self) { ticket in Text("\(ticket.number)") } }.node
+        }
+        let (one, two) = (Ticket(1), Ticket(2))
 
-        renders.render(VStack {
-            ForEach([Ticket(1), Ticket(2)], id: \.self) { ticket in Text("\(ticket.number)") }
-        }.node)
+        let first = renders.render(list([one, two])).children.map(\.id)
+        let second = renders.render(list([two, one])).arrangement
 
-        XCTAssertTrue(hasComplained("describe alike"))
+        XCTAssertNotEqual(first[0], first[1], "two elements")
+        XCTAssertEqual(second, [first[1], first[0]], "each followed its own ticket")
+        XCTAssertFalse(hasComplained("Ticket"), "nothing to say")
     }
 
     /// A marker written with an id stays itself when another is put before it: matched by its id, not by its place
@@ -69,16 +74,17 @@ final class IdentityTests: XCTestCase {
     }
 
     /// A menu entry's id is told by its value, as every other identity is: two that describe themselves alike are
-    /// said as such.
+    /// two entries, and nothing is said.
     func testAMenuEntrysIdIsItsValue() {
         let renders = Renders()
 
-        renders.render(Text("Row").contextMenu {
+        let entries = renders.render(Text("Row").contextMenu {
             MenuItem("One").id(MenuChoice(1))
             MenuItem("Two").id(MenuChoice(2))
-        }.node)
+        }.node).subtree.filter { $0.type == .menuItem }.map(\.id)
 
-        XCTAssertTrue(hasComplained("MenuChoice\": a description that says less"))
+        XCTAssertEqual(Set(entries).count, 2, "two entries")
+        XCTAssertFalse(hasComplained("MenuChoice"), "nothing to say")
     }
 
     /// Distinct identities that describe themselves apart say nothing.

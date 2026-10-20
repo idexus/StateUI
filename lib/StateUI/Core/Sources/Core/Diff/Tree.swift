@@ -58,6 +58,9 @@ final class RenderedNode {
     /// The builder path the element was written at (`Node.key`).
     var key: PathNumber?
 
+    /// The value the element was written as (`Node.identity`), a repeat's variant included.
+    var identity: ElementIdentity?
+
     /// The composed views this element was built by, outermost first: each one's
     /// type, its state boxes by path, what it was built with, and the branch its
     /// content root stood in.

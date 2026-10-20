@@ -104,21 +104,15 @@ where views are not what is repeated - menu entries, toolbar items, runs, marker
 an array of them stands for the loop: a menu entry, a toolbar item or a
 marker matched by its `.id()`, a run by its position.
 
-## ForEach keys are text
+## ForEach keys are values
 
 `ForEach` writes each item's identity - the item, or the part `id:` names -
-into the view: the value itself, and its name in the patch,
-`String(describing:)`. A value names an element alike wherever it is given:
-`.id(_:)`, a tab, a menu entry, `ForEach`. One value therefore means one thing
-wherever it is given.
-
-The trap is a type that describes itself with less than it holds. A
-`CustomStringConvertible` printing one field of a compound key gives two values
-one name, and the differ then tells those views apart by where they stand
-rather than by what they are - which is said, as the element keeps the value
-its name came from. A synthesized description of an enum or a struct carries
-every field and is safe. A class prints its type's name for every instance, so
-a class is identified by something it holds.
+into the view as the value itself, and the differ compares it as that value:
+`.id(_:)`, a tab, a menu entry and `ForEach` key alike, so one value means one
+thing wherever it is given. Two values that describe themselves alike - a
+class printing its type's name - are two views; only one value written twice
+among siblings is told apart by where it stands, which is said
+(core/identity-and-diffing.md, Repeated ids).
 
 An author's own `.id()` on the view wins over the item's.
 

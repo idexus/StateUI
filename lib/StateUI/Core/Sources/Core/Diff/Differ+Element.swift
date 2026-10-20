@@ -607,6 +607,7 @@ extension Differ {
             derived: pass.derived,
             children: children
         )
+        result.identity = pass.identity
         result.sizesArrive = pass.sizesArrive
         result.visualInput = pass.visualInput
         result.runs = pass.kept
@@ -809,6 +810,7 @@ final class ElementPass {
     /// placeholder is unwrapped; the aim written on it, attached to the key it settled on (Aim.swift).
     let builds: Int
     let key: PathNumber?
+    let identity: ElementIdentity?
     let written: AimBox?
 
     /// The node as written, which a leaf wearing a themed value keeps; and as the steps make it.
@@ -869,6 +871,7 @@ final class ElementPass {
         self.outerScene = outerScene
         builds = (rendered?.builds ?? 0) + 1
         key = node.key
+        identity = node.identity
         written = node.aim
         authored = node
         self.node = node

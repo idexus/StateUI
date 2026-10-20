@@ -68,13 +68,13 @@ extension View {
         _ side: ToolbarSide = .trailing, id: some Hashable, order: Int = 0,
         @ToolbarBuilder _ items: () -> [ToolbarItem]
     ) -> Modified {
-        toolbarGroup(side, id: String(describing: id), order: order, items())
+        toolbarGroup(side, id: AnyHashable(id), order: order, items())
     }
 
-    private func toolbarGroup(_ side: ToolbarSide, id: String?, order: Int, _ items: [ToolbarItem]) -> Modified {
+    private func toolbarGroup(_ side: ToolbarSide, id: AnyHashable?, order: Int, _ items: [ToolbarItem]) -> Modified {
         modified {
             var group = Node(contract: ToolbarItemGroupContract.self, children: items.map(\.node))
-            group.id = id
+            group.identity = id.map(ElementIdentity.init)
             group.write(ToolbarItemGroupContract.side, side)
             group.write(ToolbarItemGroupContract.order, order)
 

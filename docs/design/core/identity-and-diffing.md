@@ -43,8 +43,16 @@ a page's appended title view, are matched by position among themselves, so a
 conditional beside them does not shift them.
 
 `ElementID` has two cases that are two namespaces: `.auto` is a number the
-differ assigns and `.manual` is the author's text. One is a number and the
-other a string, so they can never collide.
+differ assigns and `.manual` is the author's identity described. One is a
+number and the other a string, so they can never collide.
+
+An identity is matched as the value it is (`ElementIdentity`): the value, and
+its hash worked out once as it is written, so siblings are looked up by a
+number and two values compared only where their numbers meet. Its
+description is made once, as an element is born, for the patch's `.manual`
+key; an element matched by value keeps the key it was born with. Two values
+that describe themselves alike are two elements: the second born with a key
+the first already holds takes a fresh number instead.
 
 ## Another kind of view
 
@@ -130,15 +138,13 @@ closure.
 
 ## Repeated ids
 
-Two siblings written with the same `.id()` cannot both keep the bare id: the
-host matches children by key and one control cannot stand in two places. A
-fresh automatic id every render would rebuild the repeat's control, handlers
-and state each time. The repeat takes a stable variant instead - the id, a NUL
-and its occurrence number - which is the same key every render and can never
-equal an id an author spelled. A repeat is said once: a node keeps the value
-its identity was written from (`Node.identify`), so one value written twice is
-told from two values that only describe themselves alike - a class printing
-its type's name - and the complaint names the cure for each.
+Two siblings written with one value cannot both keep it: the host matches
+children by key and one control cannot stand in two places. A fresh automatic
+id every render would rebuild the repeat's control, handlers and state each
+time. The repeat takes a stable variant instead (`RepeatedIdentity`) - the
+value and its occurrence, described as the id, a NUL and the number - which is
+the same key every render and can never equal a value an author writes. A
+repeat is said once.
 
 ## State survives a rebuild
 

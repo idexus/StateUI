@@ -176,7 +176,7 @@ extension Node {
         /// Builds the subtree and lands what the author wrote on the view onto its root.
         func expand(over written: Node) -> Node {
             var node = build()
-            node.branch = node.branch ?? (node.id == nil ? node.key : nil)
+            node.branch = node.branch ?? (node.identity == nil ? node.key : nil)
             node.props.merge(written.props) { _, wrote in wrote }
 
             // The states driven to it, for the same reason: a registration left on the
@@ -208,7 +208,7 @@ extension Node {
                 node.pageValues = node.pageValues.map { $0.merged(under: wrote) } ?? wrote
             }
 
-            node.id = written.id ?? node.id
+            node.identity = written.identity ?? node.identity
             node.key = written.key ?? node.key
             return node
         }

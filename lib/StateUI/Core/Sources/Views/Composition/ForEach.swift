@@ -46,8 +46,8 @@ public struct ForEach: Views {
     /// sequence's offsets being the usual case:
     /// `ForEach(Array(titles.enumerated()), id: \.offset)`.
     ///
-    /// An identity is named in the patch by `String(describing:)`: two items
-    /// with one identity, or two that describe themselves alike, are said.
+    /// An identity is compared as the value it is: two items with one identity
+    /// are said.
     ///
     /// - Parameter id: which part of an item is its identity - distinct
     ///   across the items, stable while the item means the same row.
@@ -67,10 +67,10 @@ public struct ForEach: Views {
         @ViewBuilder content: (Items.Element) -> Content
     ) {
         // The item's identity, unless the author wrote an `.id()` of their own.
-        // Design: docs/design/views/builders.md#foreach-keys-are-text
+        // Design: docs/design/views/builders.md#foreach-keys-are-values
         nodes = items.map { item in
             var node = content(item).node
-            if node.id == nil { node.identify(identify(item)) }
+            if node.identity == nil { node.identify(identify(item)) }
             return node
         }
     }

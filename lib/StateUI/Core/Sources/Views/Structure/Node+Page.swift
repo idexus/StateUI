@@ -11,7 +11,7 @@ extension Node {
         if content.isArrangement == true { return content }
 
         var kind = PathNumber().appending(content.stateful?.viewType.number ?? content.type.key.number)
-        if let id = content.id { kind = kind.appending(id) }
+        if let identity = content.identity { kind = kind.appending(UInt64(bitPattern: Int64(identity.number))) }
         if let key = content.key { kind = kind.appending(key.number) }
 
         return composed(ShownView(content: content), type: pageType) {

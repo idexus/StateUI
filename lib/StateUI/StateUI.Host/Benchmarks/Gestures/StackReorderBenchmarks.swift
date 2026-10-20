@@ -21,7 +21,7 @@ final class StackReorderBenchmarks: XCTestCase {
         }
 
         XCTAssertEqual(work, Work(
-            renders: 20, built: 40, walks: 0, texts: 4_020, made: 0, applied: 100, arranged: 0, presented: 0,
+            renders: 20, built: 40, walks: 0, texts: 0, made: 0, applied: 100, arranged: 0, presented: 0,
             placed: 0, left: 0))
     }
 }
