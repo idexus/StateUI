@@ -203,6 +203,95 @@ private struct Tabbed: View {
     }
 }
 
+/// How often each of two views stacked on one element built its body, and the inner one's write - a class, so the
+/// views hold it without being walked for state.
+@MainActor
+private final class StackedBuilds {
+    var outer = 0
+    var inner = 0
+    var raise: () -> Void = {}
+}
+
+/// A view whose body is another view, reading nothing of its own.
+private struct Holding: View {
+    let builds: StackedBuilds
+
+    var body: some View {
+        builds.outer += 1
+        return Raising(builds: builds)
+    }
+}
+
+/// A view of its own state, which it reads.
+private struct Raising: View {
+    let builds: StackedBuilds
+    @State private var level = 0
+
+    var body: some View {
+        builds.inner += 1
+        let level = $level
+        builds.raise = { level.wrappedValue += 1 }
+        return Text("\(self.level)")
+    }
+}
+
+/// A view between the outer and the inner, of its own state, which it hands the inner one.
+private struct Middle: View {
+    let builds: StackedBuilds
+    let middleBuilds: StackedBuilds
+    @State private var step = 0
+
+    var body: some View {
+        middleBuilds.outer += 1
+        let step = $step
+        middleBuilds.raise = { step.wrappedValue += 1 }
+        return Raising(builds: builds).id(self.step)
+    }
+}
+
+/// Three views stacked on one element: the outer reading nothing, the middle and the inner each their own.
+private struct Three: View {
+    let builds: StackedBuilds
+    let middleBuilds: StackedBuilds
+    let outerBuilds: StackedBuilds
+
+    var body: some View {
+        outerBuilds.outer += 1
+        return Middle(builds: builds, middleBuilds: middleBuilds)
+    }
+}
+
+/// What an outer view provides to the view its body ends on.
+@MainActor
+private final class Greeting {
+    @State var words = "hello"
+}
+
+/// A view providing a greeting to the inner view its body ends on, reading nothing of it.
+private struct Providing: View {
+    let builds: StackedBuilds
+    let greeting: Greeting
+
+    var body: some View {
+        builds.outer += 1
+        return Greeted(builds: builds).environment(greeting)
+    }
+}
+
+/// A view reading what it was provided, and a state of its own.
+private struct Greeted: View {
+    let builds: StackedBuilds
+    @Environment var greeting: Greeting
+    @State private var level = 0
+
+    var body: some View {
+        builds.inner += 1
+        let level = $level
+        builds.raise = { level.wrappedValue += 1 }
+        return Text("\(greeting.words) \(self.level)")
+    }
+}
+
 @MainActor
 final class InvalidationTests: XCTestCase {
     override func setUp() async throws {
@@ -214,6 +303,52 @@ final class InvalidationTests: XCTestCase {
     private var changed: Set<ObjectIdentifier> { Renderer.shared.pendingChanges }
 
     // MARK: - The clean walk
+
+    /// THE VIEW A BODY ENDS ON IS BUILT FOR ITS OWN STATE ALONE: the two stand on one element, and a write to what
+    /// the inner one read builds the inner body again, never the outer one, which read nothing of it.
+    func testTheViewABodyEndsOnIsBuiltForItsOwnStateAlone() {
+        let renders = Renders()
+        let builds = StackedBuilds()
+        renders.render(Holding(builds: builds).node)
+        XCTAssertEqual([builds.outer, builds.inner], [1, 1])
+
+        builds.raise()
+        let patch = renders.revisit(changed: changed)
+
+        XCTAssertEqual(builds.inner, 2, "the inner body, for what it read")
+        XCTAssertEqual(builds.outer, 1, "and not the outer one, which read nothing of it")
+        XCTAssertEqual(patch.subtree.first { $0.type == .text }?.props[.text], .string("1"))
+    }
+
+    /// OF THREE VIEWS ON ONE ELEMENT, a write builds from the outermost that read it: the middle one's builds it and
+    /// the inner one, never the outer; the inner one's builds it alone.
+    func testOfThreeViewsAWriteBuildsFromTheOutermostThatReadIt() {
+        let renders = Renders()
+        let (inner, middle, outer) = (StackedBuilds(), StackedBuilds(), StackedBuilds())
+        renders.render(Three(builds: inner, middleBuilds: middle, outerBuilds: outer).node)
+
+        inner.raise()
+        _ = renders.revisit(changed: changed)
+        Renderer.shared.clearInvalidation()
+        XCTAssertEqual([outer.outer, middle.outer, inner.inner], [1, 1, 2], "the inner one's state: it alone")
+
+        middle.raise()
+        _ = renders.revisit(changed: changed)
+        XCTAssertEqual([outer.outer, middle.outer], [1, 2], "the middle one's: it and what it holds, never the outer")
+    }
+
+    /// A VIEW BUILT ALONE SEES WHAT THE VIEWS OUTSIDE IT PROVIDED, as it did when they built it.
+    func testAViewBuiltAloneSeesWhatTheViewsOutsideItProvided() {
+        let renders = Renders()
+        let builds = StackedBuilds()
+        renders.render(Providing(builds: builds, greeting: Greeting()).node)
+
+        builds.raise()
+        let patch = renders.revisit(changed: changed)
+
+        XCTAssertEqual([builds.outer, builds.inner], [1, 2])
+        XCTAssertEqual(patch.subtree.first { $0.type == .text }?.props[.text], .string("hello 1"))
+    }
 
     func testAChangedStateRebuildsOnlyTheViewThatReadIt() {
         let renders = Renders()

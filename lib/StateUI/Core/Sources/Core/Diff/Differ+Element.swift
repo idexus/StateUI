@@ -56,11 +56,12 @@ extension Differ {
         rendered: RenderedNode?,
         node: Node,
         forced: Bool = false,
-        sizesArrive: Bool = false
+        sizesArrive: Bool = false,
+        from start: Int = 0
     ) -> (node: RenderedNode, patch: HostPatch) {
         let pass = ElementPass(
             id: id, rendered: rendered, node: node, forced: forced, sizesArrive: sizesArrive,
-            atPageRoot: describesPageRoot, outerScene: sceneRecord)
+            atPageRoot: describesPageRoot, outerScene: sceneRecord, start: start)
         describesPageRoot = false
 
         // What the element entered - the environments provided, the views, its scene, an inspector's frame - is
@@ -108,6 +109,8 @@ extension Differ {
         // resolves; the count is kept for the clean walk.
         pass.pushed = node.environments.count
         scope.append(contentsOf: node.environments)
+
+        if pass.start > 0, let rendered { node = standOutside(pass, rendered, through: pass.start) }
 
         // Unwraps nested placeholders, outermost first, until a real node comes out.
         while true {
@@ -163,7 +166,7 @@ extension Differ {
 
                 pass.views.append((
                     type: stateful.viewType, walk: stateful.walk, boxes: stateful.boxes, inputs: stateful.inputs,
-                    branch: nil))
+                    branch: nil, placeholder: node, reads: [], derived: []))
 
                 // Slots resolve against everything provided so far, before the body builds.
                 stateful.resolve(from: scope)
@@ -177,25 +180,32 @@ extension Differ {
                     if let rendered = rendered, !forced, !describeAll, !stylesMoved, !buildsEveryView,
                         let kept = rendered.views.first,
                         kept.type == stateful.viewType,
-                        rendered.reads.isDisjoint(with: changed),
                         rendered.seen == pass.seen,
                         let wrote = rendered.placeholder,
                         sameWriting(node, as: wrote),
                         Input.same(stateful.inputs, kept.inputs) {
-                        if Inspection.recording {
-                            pass.inspected = Inspection.enter(
-                                stateful.viewType.name, .carried, element: id)
+                        if rendered.reads.isDisjoint(with: changed) {
+                            if Inspection.recording {
+                                pass.inspected = Inspection.enter(
+                                    stateful.viewType.name, .carried, element: id)
+                            }
+
+                            return carry(rendered, written: node)
                         }
 
-                        return carry(rendered, written: node)
+                        // What moved was read by a view inside alone: the walk goes on from it.
+                        let start = Self.start(of: rendered, changed: changed)
+                        if start > 0 {
+                            node = standOutside(pass, rendered, through: start)
+                            continue
+                        }
                     }
-
-                    if Inspection.recording {
-                        pass.inspected = Inspection.enter(
-                            stateful.viewType.name,
-                            .built(reason(stateful, node: node, rendered: rendered, seen: pass.seen)),
-                            element: id)
-                    }
+                }
+                if step == pass.builtFrom, Inspection.recording {
+                    pass.inspected = Inspection.enter(
+                        stateful.viewType.name,
+                        .built(reason(stateful, node: node, rendered: rendered, seen: pass.seen)),
+                        element: id)
                 }
 
                 let built = BuildScope.Frame(
@@ -212,12 +222,18 @@ extension Differ {
                 Renderer.shared.built += 1
                 pass.entered += 1
 
-                node = ReadScope.collect(into: &pass.reads) {
-                    DerivationScope.collect(into: &pass.derived) {
+                var read: Set<ObjectIdentifier> = []
+                var made: [AnyObject] = []
+                node = ReadScope.collect(into: &read) {
+                    DerivationScope.collect(into: &made) {
                         BuildScope.within(built) { stateful.expand(over: node) }
                     }
                 }
+                pass.reads.formUnion(read)
+                pass.derived += made
                 pass.views[step].branch = node.branch
+                pass.views[step].reads = read
+                pass.views[step].derived = made
                 pass.pushed += node.environments.count
                 scope.append(contentsOf: node.environments)
                 continue
@@ -273,6 +289,32 @@ extension Differ {
             return DerivationScope.collect(into: &pass.derived) { BuildScope.within(within, shallow) }
         }
         return nil
+    }
+
+    /// Which of `rendered`'s views a walk for `changed` builds from: the outermost whose own body read what moved; the
+    /// innermost, where none did - the content a container runs, the values it wears.
+    /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
+    static func start(of rendered: RenderedNode, changed: Set<ObjectIdentifier>) -> Int {
+        rendered.views.firstIndex { !$0.reads.isDisjoint(with: changed) } ?? max(rendered.views.count - 1, 0)
+    }
+
+    /// The views of `rendered` outside its view `start` standing as they were built - their state, what they read and
+    /// made, the environments they provided: the node the walk goes on from, the one holding that view.
+    /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
+    private func standOutside(_ pass: ElementPass, _ rendered: RenderedNode, through start: Int) -> Node {
+        pass.views = Array(rendered.views.prefix(start))
+        pass.seen = rendered.seen
+        pass.builtFrom = start
+        for view in pass.views {
+            pass.reads.formUnion(view.reads)
+            pass.derived += view.derived
+            if let record = view.placeholder.stateful?.scene, sceneRecord == nil { sceneRecord = record }
+        }
+        for view in rendered.views[1...start] {
+            pass.pushed += view.placeholder.environments.count
+            scope.append(contentsOf: view.placeholder.environments)
+        }
+        return rendered.views[start].placeholder
     }
 
     /// A page describes the view it shows first, and says what that view says of it; it reads all that view's own
@@ -802,6 +844,11 @@ final class ElementPass {
     let forced: Bool
     let sizesArrive: Bool
 
+    /// The view the walk builds from: 0, the outermost; more, where a clean walk's change reached only views inside -
+    /// and the first it built, which a carry's comparison may move inward.
+    let start: Int
+    var builtFrom: Int
+
     /// Whether this is the view a page shows (PageValues.swift), and the scene the walk was in as it came.
     let atPageRoot: Bool
     let outerScene: SceneRecord?
@@ -861,11 +908,13 @@ final class ElementPass {
 
     init(
         id: ElementID, rendered: RenderedNode?, node: Node, forced: Bool, sizesArrive: Bool, atPageRoot: Bool,
-        outerScene: SceneRecord?
+        outerScene: SceneRecord?, start: Int
     ) {
         self.id = id
         self.rendered = rendered
         self.forced = forced
+        self.start = start
+        builtFrom = start
         self.sizesArrive = sizesArrive
         self.atPageRoot = atPageRoot
         self.outerScene = outerScene

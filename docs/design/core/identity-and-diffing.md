@@ -248,7 +248,14 @@ not sent, its state and handlers untouched - when all of these hold:
 ```
 
 The decision is taken on the outermost view alone; a view made of another is
-one element, and the inner view's inputs are the outer body's business.
+one element, and the inner view's inputs are the outer body's business. Each
+view the element stacks keeps what its own body read: where everything but
+the reads holds and only a view inside read what moved - a page whose body is
+one stateful list, gallery or layout - the views outside it stand as they
+were built, with their state, what they made and the environments they
+provided, and the walk builds from that view, from the node that held it.
+The outer body is built for a state it read, never for one only a view inside
+it read.
 
 ## What a view was built with
 
@@ -300,9 +307,11 @@ read outside StateUI: the walk a `setNeedsRender()` asked for carries no view
 
 `Differ.revisit` walks the tree the host holds with no fresh tree to compare
 against, and builds again exactly the elements whose reads intersect the
-changes. It runs the closure the element's placeholder captured last render,
-which is correct precisely because the walk got there: the parent was left
-alone, so nobody computed newer inputs. A parent that is rebuilt writes fresh
+changes. It runs the closure the placeholder captured last render - the
+placeholder of the outermost view whose own body read what moved, the views
+outside it standing, or of the innermost where only the content it ran or
+the values it wears read it - which is correct precisely because the walk got
+there: the parent was left alone, so nobody computed newer inputs. A parent that is rebuilt writes fresh
 placeholders for its children, and those go through the full `element` path.
 A clean walk moves nothing: a child's place among its siblings is its
 parent's business.
