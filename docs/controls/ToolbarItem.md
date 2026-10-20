@@ -15,7 +15,7 @@ Text("\(count) items")
             .onClicked { count += 1 }
         ToolbarItem("Clear")
             .placement(.overflow)
-            .isDestructive(true)
+            .role(.destructive)
             .onClicked { count = 0 }
     }
 ```
@@ -82,10 +82,10 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 <tr><td colspan="9">AppKit: only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: cannot read a picture's name - Android's item keeps its picture, not its name</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isDestructive</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>keyboardShortcut</code></td><td>property</td><td><code>KeyboardShortcut</code></td><td>native</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: only through the host's own: pressKeys on ToolbarItem: the window's or the main menu's key command performed, no key pressed<br>GTK 4: only through the host's own: pressKeys on ToolbarItem: the shortcut controller's action run, no key event</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>role</code></td><td>property</td><td><code>ActionRole</code></td><td>adaptive</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>

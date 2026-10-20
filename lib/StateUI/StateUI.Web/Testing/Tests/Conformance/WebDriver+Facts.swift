@@ -187,7 +187,9 @@ extension WebDriver {
             case .showsText: return try WebBrowser.truth("!e.querySelector('span').hidden", on: e).propValue
             case .text: return try WebBrowser.evaluate("e.getAttribute('aria-label')", on: e)?.propValue
             case .isEnabled: return try (!WebBrowser.truth("e.disabled", on: e)).propValue
-            case .isDestructive: return try WebBrowser.truth("e.hasAttribute('data-destructive')", on: e).propValue
+            case .role:
+                let destructive = try WebBrowser.truth("e.hasAttribute('data-destructive')", on: e)
+                return (destructive ? ActionRole.destructive : .normal).propValue
             case .accessibilityIdentifier: return .some(try WebBrowser.evaluate("e.dataset.identifier ?? null", on: e)?.propValue)
             case .icon: return .some(try picture("e.querySelector('img')", on: e))
             case .keyboardShortcut: return .some(try shortcut(on: e))

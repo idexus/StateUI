@@ -374,7 +374,7 @@ final class AndroidPagesTests: XCTestCase {
             let host = AndroidRenderer.running {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     TitledPage(title: "Notes", actions: [
-                        ToolbarItem("Delete").placement(.overflow).isDestructive(true)
+                        ToolbarItem("Delete").placement(.overflow).role(.destructive)
                             .onClicked { heard.values.append("delete") },
                         ToolbarItem("Add").icon("test_wide.png").isEnabled(false)
                             .onClicked { heard.values.append("add") },

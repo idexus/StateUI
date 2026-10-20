@@ -50,7 +50,9 @@ extension GTKDriver {
             return gtk_widget_get_tooltip_text(button.widget).map { String(cString: $0).propValue }
         case .isEnabled: return (gtk_widget_get_sensitive(button.widget) != 0).propValue
         case .keyboardShortcut: return element.value(.keyboardShortcut)
-        case .isDestructive: return (gtk_widget_has_css_class(button.widget, "destructive-action") != 0).propValue
+        case .role:
+            let destructive = gtk_widget_has_css_class(button.widget, "destructive-action") != 0
+            return (destructive ? ActionRole.destructive : .normal).propValue
         case .placement: return (inOverflow ? ToolbarItemPlacement.overflow : .bar).propValue
         case .icon:
             // The file its image shows, standing for the name the tree gave where it is one of that name's files.

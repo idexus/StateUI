@@ -1,13 +1,13 @@
-# revision 4.1
+# revision 5.1
 MenuItem.clicked: ✅
 MenuItem.icon: ✅
-MenuItem.isDestructive: ✅
 MenuItem.isEnabled: ✅
 MenuItem.keyboardShortcut: ☑️ UIKit shows a shortcut in the main menu alone, none in a context menu.
+MenuItem.role: ✅
 MenuItem.text: ✅
 ToolbarItem.clicked: ✅
 ToolbarItem.icon: ✅
-ToolbarItem.isDestructive: ✅
 ToolbarItem.isEnabled: ✅
 ToolbarItem.keyboardShortcut: ✓ pressKeys on ToolbarItem: the window's or the main menu's key command performed, no key pressed
+ToolbarItem.role: ✅
 ToolbarItem.text: ✅

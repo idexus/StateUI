@@ -82,7 +82,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 ToolbarItem("Clear")
                     .id("clear")
                     .placement(.overflow)
-                    .isDestructive(true)
+                    .role(.destructive)
                     .isEnabled(saved > 0)
                     .onClicked { saved = 0 }
             }

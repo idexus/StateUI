@@ -51,7 +51,7 @@ extension UIKitDriver {
             case .text: return command.title.propValue
             case .icon: return command.image?.accessibilityIdentifier.map { .string($0) }
             case .isEnabled: return (!command.attributes.contains(.disabled)).propValue
-            case .isDestructive: return command.attributes.contains(.destructive).propValue
+            case .role: return (command.attributes.contains(.destructive) ? ActionRole.destructive : .normal).propValue
             case .isOn: return (command.state == .on).propValue
             case .accessibilityIdentifier: return command.accessibilityIdentifier.map { .string($0) }
             case .keyboardShortcut: return UIKitKeys.shortcut(of: command)?.propValue
@@ -64,7 +64,7 @@ extension UIKitDriver {
             case .text: return action.title.propValue
             case .icon: return action.image?.accessibilityIdentifier.map { .string($0) }
             case .isEnabled: return (!action.attributes.contains(.disabled)).propValue
-            case .isDestructive: return action.attributes.contains(.destructive).propValue
+            case .role: return (action.attributes.contains(.destructive) ? ActionRole.destructive : .normal).propValue
             case .isOn: return (action.state == .on).propValue
             case .accessibilityIdentifier: return action.accessibilityIdentifier.map { .string($0) }
             case .placement: return Self.placement(of: action, under: element)

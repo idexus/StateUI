@@ -400,7 +400,7 @@ final class WinUIPagesTests: XCTestCase {
                 let host = WinUIRenderer.running {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         TitledPage(
-                            title: "Notes", actions: [ToolbarItem("Scan"), ToolbarItem("Delete").isDestructive(true)])
+                            title: "Notes", actions: [ToolbarItem("Scan"), ToolbarItem("Delete").role(.destructive)])
                     } destination: { _ in Text("Pushed") }
                         .barBackgroundColor(background)
                         .barForegroundColor(Color(red: 255, green: 230, blue: 0))

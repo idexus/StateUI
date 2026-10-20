@@ -1000,7 +1000,7 @@ final class AppKitPageTests: XCTestCase {
                 .text: .string(title),
                 .placement: .enumeration(placement),
                 .isEnabled: .bool(enabled),
-                .isDestructive: .bool(destructive),
+                .role: (destructive ? ActionRole.destructive : ActionRole.normal).propValue,
             ]
             if let icon { item.properties[.icon] = .string(icon) }
             return item

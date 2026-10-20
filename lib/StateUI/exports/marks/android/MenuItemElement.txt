@@ -1,13 +1,13 @@
-# revision 4.1
+# revision 5.1
 MenuItem.clicked: ✅
 MenuItem.icon: – Android's menus - a view's context menu, a bar's overflow and its submenus - draw their entries' words alone.
-MenuItem.isDestructive: ✅
 MenuItem.isEnabled: ✅
 MenuItem.keyboardShortcut: ✅
+MenuItem.role: ✅
 MenuItem.text: ✅
 ToolbarItem.clicked: ✅
 ToolbarItem.icon: does not apply - read a picture's name - Android's item keeps its picture, not its name
-ToolbarItem.isDestructive: ✅
 ToolbarItem.isEnabled: ✅
 ToolbarItem.keyboardShortcut: ✅
+ToolbarItem.role: ✅
 ToolbarItem.text: ✅

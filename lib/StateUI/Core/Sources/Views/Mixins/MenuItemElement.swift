@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// What a toolbar item and a menu entry share: `text`,
-/// `icon`, `isDestructive`, `isEnabled` - and `onClicked`, what
+/// `icon`, `role`, `isEnabled` - and `onClicked`, what
 /// choosing one does.
 ///
 /// Written on the item, in any order, before or after its own modifiers:
 ///
 ///     ToolbarItem("Delete")
 ///         .icon("trash.png")
-///         .isDestructive(true)
+///         .role(.destructive)
 ///         .onClicked { delete() }
 public protocol MenuItemElement: AutomationElement {}
 
@@ -24,10 +24,11 @@ extension MenuItemElement {
         setValue(MenuItemElementContract.icon, value)
     }
 
-    /// Whether the platform draws it as a destructive action. The look only: a
+    /// What choosing it does beyond its words: `.destructive` is drawn as an
+    /// action that destroys something, as a button's role is. The look only: a
     /// confirmation is still the handler's to put up.
-    public func isDestructive(_ value: Bool) -> Modified {
-        setValue(MenuItemElementContract.isDestructive, value)
+    public func role(_ role: ActionRole) -> Modified {
+        setValue(MenuItemElementContract.role, role)
     }
 
     /// Whether it responds to selection. A disabled item stays visible, so the

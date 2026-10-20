@@ -315,7 +315,7 @@ VStack { … }
         ToolbarItem("Delete")
             .id("delete")
             .placement(.overflow)
-            .isDestructive(true)
+            .role(.destructive)
             .onClicked(gate: .ignoreWhileRunning) { try await delete() }
     }
 ```
@@ -474,7 +474,7 @@ Text(document.title)
     .contextMenu {
         MenuItem("Duplicate").onClicked { duplicate(document) }
         MenuItem("Delete")
-            .isDestructive(true)
+            .role(.destructive)
             .onClicked { delete(document) }
     }
 ```

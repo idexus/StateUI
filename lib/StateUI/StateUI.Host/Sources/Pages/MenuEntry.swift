@@ -113,7 +113,7 @@
         title = element?.value(.text)?.string ?? ""
         icon = HostPicture(element?.value(.icon))
         isEnabled = element?.isEffectivelyEnabled ?? true
-        isDestructive = element?.value(.isDestructive)?.bool == true
+        isDestructive = element?.value(.role).flatMap(ActionRole.init(propValue:)) == .destructive
         identifier = element?.value(.accessibilityIdentifier)?.string
         isOn = kind == .item ? element?.value(.isOn)?.bool : nil
         keyboardShortcut = kind == .item ? element?.keyboardShortcut : nil

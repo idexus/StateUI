@@ -27,7 +27,7 @@ private struct BarredPage: View {
                 ToolbarItem("Delete")
                     .id("delete")
                     .placement(.overflow)
-                    .isDestructive(true)
+                    .role(.destructive)
             }
             .toolbar(.start, id: "edit", order: 1) {
                 ToolbarItem("Undo").id("undo")
@@ -38,7 +38,7 @@ private struct BarredPage: View {
                         .id("new")
                         .text("New")
                         .icon("nav_media.png")
-                        .isDestructive(false)
+                        .role(.normal)
                         .isEnabled(true)
                         .isOn(false)
                         .onToggled { _ in }

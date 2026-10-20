@@ -2134,7 +2134,7 @@ enum Listings {
 
                                 MenuItem("Remove")
                                     .icon(ImageSource(light: "menu_remove.png", dark: "menu_remove_dark.png"))
-                                    .isDestructive(true)
+                                    .role(.destructive)
                                     .onClicked {
                                         items.remove(at: index)
                                         chosen = "removed \(item)"
@@ -10649,7 +10649,7 @@ enum Listings {
                     ToolbarItem("Clear")
                         .id("clear")
                         .placement(.overflow)
-                        .isDestructive(true)
+                        .role(.destructive)
                         .isEnabled(saved > 0)
                         .onClicked { saved = 0 }
                 }

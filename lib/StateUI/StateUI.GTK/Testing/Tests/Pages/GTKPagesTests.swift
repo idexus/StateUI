@@ -168,8 +168,8 @@ final class GTKPagesTests: XCTestCase {
         try onUIThread {
             let host = GTKRenderer.running {
                 TitledPage(title: "Notes", actions: [
-                    ToolbarItem("Remove").isDestructive(true),
-                    ToolbarItem("Clear").isDestructive(true).placement(.overflow),
+                    ToolbarItem("Remove").role(.destructive),
+                    ToolbarItem("Clear").role(.destructive).placement(.overflow),
                     ToolbarItem("Later").placement(.overflow),
                 ])
             }

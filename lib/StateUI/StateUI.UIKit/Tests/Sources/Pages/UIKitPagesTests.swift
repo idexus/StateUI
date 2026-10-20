@@ -260,7 +260,7 @@ final class UIKitPagesTests: XCTestCase {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Text("Root").toolbar {
                     ToolbarItem("Save").accessibilityIdentifier("save")
-                    ToolbarItem("Delete").isDestructive(true).accessibilityIdentifier("delete")
+                    ToolbarItem("Delete").role(.destructive).accessibilityIdentifier("delete")
                 }
             } destination: { _ in Text("Pushed") }
             .barBackgroundColor(Color(red: 0, green: 0, blue: 128))

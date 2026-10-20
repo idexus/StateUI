@@ -71,7 +71,7 @@ extension ControlDictionary {
                 .contextMenu {
                     MenuItem("Rename").onClicked { title = "Shopping" }
                     MenuItem("Clear")
-                        .isDestructive(true)
+                        .role(.destructive)
                         .onClicked { title = "" }
                 }
             """#),
@@ -212,7 +212,7 @@ extension ControlDictionary {
                     MenuItem("Open")
                     MenuItem("Rename")
                     MenuSeparator()
-                    MenuItem("Delete").isDestructive(true)
+                    MenuItem("Delete").role(.destructive)
                 }
             """#),
 
@@ -484,7 +484,7 @@ extension ControlDictionary {
                         .onClicked { count += 1 }
                     ToolbarItem("Clear")
                         .placement(.overflow)
-                        .isDestructive(true)
+                        .role(.destructive)
                         .onClicked { count = 0 }
                 }
             """#),

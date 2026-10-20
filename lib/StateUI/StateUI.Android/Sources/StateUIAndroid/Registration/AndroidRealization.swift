@@ -45,7 +45,7 @@ enum AndroidRealization {
         .complete(MenuItemElementContract.keyboardShortcut, on: MenuItemContract.self),
         .complete(MenuItemContract.toggled),
         .complete(MenuItemElementContract.clicked),
-        .complete(MenuItemElementContract.isDestructive),
+        .complete(MenuItemElementContract.role),
         .complete(MenuItemElementContract.isEnabled),
         .complete(MenuItemElementContract.text),
         .complete(PageElementContract.icon),

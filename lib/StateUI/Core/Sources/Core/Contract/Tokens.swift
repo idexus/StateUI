@@ -159,7 +159,6 @@ extension NodeType {
     static let isAnimating = ImageContract.isAnimating.token
     static let isOn = CheckBoxContract.isOn.token
     static let clipsContent = LayoutContract.clipsContent.token
-    static let isDestructive = MenuItemElementContract.isDestructive.token
     static let isEnabled = VisualElementContract.isEnabled.token
     static let isMaximizable = WindowContract.isMaximizable.token
     static let isMinimizable = WindowContract.isMinimizable.token

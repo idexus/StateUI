@@ -89,7 +89,7 @@ enum AppKitRealization {
         .complete(MenuBarContract.order),
         .partial(AutomationElementContract.accessibilityIdentifier, on: MenuItemContract.self,
             missing: "Only an entry of a context menu carries it; an entry the page puts in the menu bar does not."),
-        .complete(MenuItemElementContract.isDestructive, on: MenuItemContract.self),
+        .complete(MenuItemElementContract.role, on: MenuItemContract.self),
         .complete(ModalStackContract.popped),
         .complete(AutomationElementContract.accessibilityIdentifier, on: NavigationStackContract.self),
         .complete(NavigationStackContract.popped),

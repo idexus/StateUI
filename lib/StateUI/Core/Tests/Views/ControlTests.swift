@@ -778,7 +778,7 @@ final class ControlTests: XCTestCase {
             "assign", "area",
             // Tiers no view wears.
             "barBackgroundColor", "barForegroundColor", "barIcon", "barSubtitle", "barTitle", "isScrollEnabled",
-            "isZoomEnabled", "showsTraffic", "showsUserLocation", "isDestructive", "title",
+            "isZoomEnabled", "showsTraffic", "showsUserLocation", "title",
             "mapType", "avoidsSafeArea",
         ])
         var values: Set<String> = []

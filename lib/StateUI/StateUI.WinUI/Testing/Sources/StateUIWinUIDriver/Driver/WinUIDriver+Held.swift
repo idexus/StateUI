@@ -500,9 +500,9 @@ extension WinUIDriver {
         switch name {
         case "text": return .string(shown[place].caption)
         case "isEnabled": return shown[place].enabled.propValue
-        case "accessibilityIdentifier", "icon", "isDestructive", "isOn", "keyboardShortcut":
+        case "accessibilityIdentifier", "icon", "role", "isOn", "keyboardShortcut":
             guard kind == .menuItem else { return nil }
-            let what = ["icon": "icon", "isDestructive": "destructive", "isOn": "checked", "keyboardShortcut": "shortcut"][name]
+            let what = ["icon": "icon", "role": "destructive", "isOn": "checked", "keyboardShortcut": "shortcut"][name]
                 ?? "identifier"
             let items = WinUIStrings.read { stateui_winui_menus_items(owner.handle, what, $0, $1) }
                 .split(separator: ";", omittingEmptySubsequences: false).map(String.init)
@@ -510,7 +510,8 @@ extension WinUIDriver {
             guard items.indices.contains(index) else { return nil }
             switch name {
             case "icon": return Self.picture(items[index], named: element)
-            case "isDestructive", "isOn": return (items[index] == "1").propValue
+            case "role": return (items[index] == "1" ? ActionRole.destructive : .normal).propValue
+            case "isOn": return (items[index] == "1").propValue
             case "keyboardShortcut": return Self.shortcut(items[index])
             default: return .string(items[index])
             }
@@ -531,7 +532,7 @@ extension WinUIDriver {
         case "isEnabled": return said.enabled.propValue
         case "placement": return (said.edge == .overflow ? ToolbarItemPlacement.overflow : .bar).propValue
         case "icon": return Self.picture(try action("icon"), named: element)
-        case "isDestructive": return (try action("destructive") == "1").propValue
+        case "role": return (try action("destructive") == "1" ? ActionRole.destructive : .normal).propValue
         case "showsText": return (try action("wordsShown") == "1").propValue
         case "accessibilityIdentifier": return .string(try action("identifier"))
         case "keyboardShortcut": return Self.shortcut(try action("shortcut"))

@@ -28,7 +28,7 @@ How each of them realizes these members is on its own page.
 | --- | --- | --- | --- |
 | `onClicked` (`clicked`) | event |  | native |
 | `icon` | property | `ImageSource` | adaptive |
-| `isDestructive` | property | `Bool` | adaptive |
 | `isEnabled` | property | `Bool` | native |
 | `keyboardShortcut` | property | `KeyboardShortcut` | native |
+| `role` | property | `ActionRole` | adaptive |
 | `text` | property | `String` | native |

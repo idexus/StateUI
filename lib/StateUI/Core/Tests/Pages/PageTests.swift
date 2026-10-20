@@ -37,7 +37,7 @@ private struct EveryPropertyPage: View {
                     .icon(ImageSource("mark.png"))
                     .placement(.overflow)
                     .showsText(true)
-                    .isDestructive(true)
+                    .role(.destructive)
                     .isEnabled(false)
                     .onClicked {}
             }
@@ -46,7 +46,7 @@ private struct EveryPropertyPage: View {
                 Menu("File") {
                     MenuItem("Open")
                         .icon(ImageSource("mark.png"))
-                        .isDestructive(true)
+                        .role(.destructive)
                         .isEnabled(false)
                         .isOn(true)
                         .keyboardShortcut("o")
@@ -597,8 +597,8 @@ final class PageTests: XCTestCase {
         let item = try XCTUnwrap(content.children[1].children.first)
         XCTAssertEqual(item.props, [
             "accessibilityIdentifier": .string("bar.save"), "icon": .string("mark.png"),
-            "isDestructive": .bool(true), "isEnabled": .bool(false),
-            "placement": ToolbarItemPlacement.overflow.propValue,
+            "isEnabled": .bool(false),
+            "placement": ToolbarItemPlacement.overflow.propValue, "role": ActionRole.destructive.propValue,
             "showsText": .bool(true), "text": .string("Save"),
         ])
         XCTAssertEqual(item.eventNames, ["clicked"])

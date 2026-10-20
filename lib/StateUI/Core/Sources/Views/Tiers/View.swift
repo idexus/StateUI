@@ -85,7 +85,7 @@ extension View {
     ///         .contextMenu {
     ///             MenuItem("Rename").onClicked { rename(item) }
     ///             MenuSeparator()
-    ///             MenuItem("Delete").isDestructive(true).onClicked { remove(item) }
+    ///             MenuItem("Delete").role(.destructive).onClicked { remove(item) }
     ///         }
     ///
     /// The same entries a menu bar takes - `MenuItem`, `Menu`

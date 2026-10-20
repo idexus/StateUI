@@ -49,7 +49,7 @@ enum WinUIRealization {
         .complete(MenuItemContract.toggled),
         .complete(MenuItemElementContract.clicked),
         .complete(MenuItemElementContract.icon),
-        .complete(MenuItemElementContract.isDestructive),
+        .complete(MenuItemElementContract.role),
         .complete(MenuItemElementContract.isEnabled),
         .complete(MenuItemElementContract.keyboardShortcut),
         .complete(ButtonContract.menuKind),

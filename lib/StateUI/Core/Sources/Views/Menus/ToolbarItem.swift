@@ -12,7 +12,7 @@
 ///
 ///                     ToolbarItem("Delete")
 ///                         .placement(.overflow)
-///                         .isDestructive(true)
+///                         .role(.destructive)
 ///                         .onClicked { delete() }
 ///                 }
 ///                 .title("Notes")

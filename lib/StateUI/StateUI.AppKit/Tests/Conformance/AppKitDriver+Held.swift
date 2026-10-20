@@ -159,10 +159,11 @@ extension AppKitDriver {
                 return AppKitKeys.shortcut(key: item.keyEquivalent, modifiers: item.keyEquivalentModifierMask)?.propValue
             case .accessibilityIdentifier: return item.accessibilityIdentifier().propValue
             case .icon: return pictureName(item.image)
-            case .isDestructive:
+            case .role:
                 let words = item.attributedTitle
                 let red = words.flatMap { $0.length > 0 ? $0.attribute(.foregroundColor, at: 0, effectiveRange: nil) : nil }
-                return ((red as? NSColor) == .systemRed).propValue
+                let destructive = (red as? NSColor) == .systemRed
+                return (destructive ? ActionRole.destructive : .normal).propValue
             default: break
             }
         }

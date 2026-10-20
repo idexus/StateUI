@@ -28,8 +28,8 @@ final class AndroidMenusTests: XCTestCase {
                         MenuItem("To the top").isEnabled(false).onClicked { heard.values.append("top") }
                     }
                     MenuSeparator()
-                    MenuItem("Remove").isDestructive(true).onClicked { heard.values.append("remove") }
-                    MenuItem("Erase").isDestructive(true).isEnabled(false).onClicked { heard.values.append("erase") }
+                    MenuItem("Remove").role(.destructive).onClicked { heard.values.append("remove") }
+                    MenuItem("Erase").role(.destructive).isEnabled(false).onClicked { heard.values.append("erase") }
                 }
             }
             let label = try XCTUnwrap(host.views(AndroidTextView.self).first)

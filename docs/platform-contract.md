@@ -556,7 +556,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [KeyboardElement](controls/tiers/KeyboardElement.md) | `keyPressed`, `keysTaken` | 2 |
 | [FocusElement](controls/tiers/FocusElement.md) | `isFocusedChanged` | 1 |
 | [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor`, `barForegroundColor`, `barIcon`, `barSubtitle`, `barTitle` | 5 |
-| [MenuItemElement](controls/tiers/MenuItemElement.md) | `onClicked` (`clicked`), `icon`, `isDestructive`, `isEnabled`, `keyboardShortcut`, `text` | 6 |
+| [MenuItemElement](controls/tiers/MenuItemElement.md) | `onClicked` (`clicked`), `icon`, `isEnabled`, `keyboardShortcut`, `role`, `text` | 6 |
 | [PageElement](controls/tiers/PageElement.md) | `icon`, `title` | 2 |
 
 ### Elements
@@ -646,29 +646,28 @@ realizes the element and each of its members.
 `hidesWhenInactive`, `horizontalAlignment`, `horizontalScrollIndicator`,
 `horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
 `ignoresInput`, `inputPurpose`, `isAccessibilityHidden`, `isAnimating`,
-`isDestructive`, `isEnabled`, `isFontAutoScalingEnabled`, `isMaximizable`,
-`isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isReadOnly`,
-`isScrollEnabled`, `isSelectable`, `isSpellCheckEnabled`,
-`isTextPredictionEnabled`, `isVisible`, `isZoomEnabled`, `itemDrag`, `items`,
-`itemsLayout`, `keyboardShortcut`, `keysTaken`, `label`, `layoutDirection`,
-`letsInputThrough`, `lineBreak`, `lineCap`, `lineHeight`, `lineJoin`,
-`lineWidth`, `location`, `magnifies`, `mapType`, `margin`, `maximum`,
-`maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`, `maximumWidth`,
-`menuKind`, `minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`,
-`miterLimit`, `opacity`, `options`, `order`, `orientation`, `padding`, `pans`,
-`panTouchCount`, `panXChannel`, `panYChannel`, `phase`, `pivotX`, `pivotY`,
-`placeholder`, `placeholderColor`, `placement`, `points`, `presentation`,
-`progress`, `region`, `role`, `rotates`, `rotation`, `rotationX`, `rotationY`,
-`rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollOffset`,
-`selectedIndex`, `selectedItems`, `selectedTab`, `selectionLength`,
-`selectionMode`, `shape`, `showsBackButton`, `showsClearButton`,
-`showsMenuArrow`, `showsNavigationBar`, `showsSidebar`, `showsText`,
-`showsTitle`, `showsTraffic`, `showsUserLocation`, `side`, `sidebarBackground`,
-`sidebarOverlays`, `source`, `spacing`, `step`, `stroke`, `style`,
-`submitLabel`, `subtitle`, `swipeDirection`, `swipeThreshold`, `tapCount`,
-`text`, `textCase`, `textColor`, `textDecorations`, `textStyle`, `time`, `tint`,
-`title`, `tooltip`, `tracking`, `translationX`, `translationY`, `type`,
-`userAgent`, `value`, `verticalAlignment`, `verticalScrollIndicator`,
+`isEnabled`, `isFontAutoScalingEnabled`, `isMaximizable`, `isMinimizable`,
+`isOn`, `isOpen`, `isPassword`, `isReadOnly`, `isScrollEnabled`, `isSelectable`,
+`isSpellCheckEnabled`, `isTextPredictionEnabled`, `isVisible`, `isZoomEnabled`,
+`itemDrag`, `items`, `itemsLayout`, `keyboardShortcut`, `keysTaken`, `label`,
+`layoutDirection`, `letsInputThrough`, `lineBreak`, `lineCap`, `lineHeight`,
+`lineJoin`, `lineWidth`, `location`, `magnifies`, `mapType`, `margin`,
+`maximum`, `maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`,
+`maximumWidth`, `menuKind`, `minimum`, `minimumDate`, `minimumHeight`,
+`minimumWidth`, `miterLimit`, `opacity`, `options`, `order`, `orientation`,
+`padding`, `pans`, `panTouchCount`, `panXChannel`, `panYChannel`, `phase`,
+`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `placement`, `points`,
+`presentation`, `progress`, `region`, `role`, `rotates`, `rotation`,
+`rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
+`scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
+`selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
+`showsClearButton`, `showsMenuArrow`, `showsNavigationBar`, `showsSidebar`,
+`showsText`, `showsTitle`, `showsTraffic`, `showsUserLocation`, `side`,
+`sidebarBackground`, `sidebarOverlays`, `source`, `spacing`, `step`, `stroke`,
+`style`, `submitLabel`, `subtitle`, `swipeDirection`, `swipeThreshold`,
+`tapCount`, `text`, `textCase`, `textColor`, `textDecorations`, `textStyle`,
+`time`, `tint`, `title`, `tooltip`, `tracking`, `translationX`, `translationY`,
+`type`, `userAgent`, `value`, `verticalAlignment`, `verticalScrollIndicator`,
 `verticalTextAlignment`, `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`,
 `y`, `y1`, `y2`, `zIndex`.
 

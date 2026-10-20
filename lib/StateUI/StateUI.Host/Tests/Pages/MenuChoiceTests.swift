@@ -71,7 +71,7 @@ final class MenuChoiceTests: XCTestCase {
 
         XCTAssertEqual(tree([:]), plain, "the same entry says the same")
         XCTAssertNotEqual(tree([.isOn: .bool(true)]), plain, "checked")
-        XCTAssertNotEqual(tree([.isDestructive: .bool(true)]), plain, "marked destructive")
+        XCTAssertNotEqual(tree([.role: ActionRole.destructive.propValue]), plain, "marked destructive")
         XCTAssertNotEqual(tree([.icon: .string("save.png")]), plain, "with a picture")
         XCTAssertNotEqual(tree([.text: .string("Keep")]), plain, "in other words")
         _ = tree([:])

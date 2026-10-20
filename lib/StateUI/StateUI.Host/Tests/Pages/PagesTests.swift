@@ -750,7 +750,9 @@ final class PagesTests: XCTestCase {
             node("file", .menu, [.text: .string("File")], children: [
                 node("open", .menuItem, [.text: .string("Open"), .icon: .string("folder")]),
                 node("line", .menuSeparator),
-                node("erase", .menuItem, [.text: .string("Erase"), .isDestructive: .bool(true), .icon: .string("")]),
+                node("erase", .menuItem, [
+                    .text: .string("Erase"), .role: ActionRole.destructive.propValue, .icon: .string(""),
+                ]),
                 node("recent", .menu, [.text: .string("Recent")], children: [
                     node("one", .menuItem, [.text: .string("One"), .isEnabled: .bool(false)]),
                 ]),

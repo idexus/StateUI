@@ -16,9 +16,6 @@ public enum MenuItemElementContract: Contract {
     /// The picture shown with the caption.
     public static let icon = ElementProperty<Self, ImageSource>("icon", layer: .adaptive)
 
-    /// Whether choosing the item destroys something, which the platform marks.
-    public static let isDestructive = ElementProperty<Self, Bool>("isDestructive", layer: .adaptive)
-
     /// Whether the item can be chosen.
     public static let isEnabled = ElementProperty<Self, Bool>("isEnabled", layer: .native)
 
@@ -26,9 +23,13 @@ public enum MenuItemElementContract: Contract {
     /// entry shows them beside its words.
     public static let keyboardShortcut = ElementProperty<Self, KeyboardShortcut>("keyboardShortcut", layer: .native)
 
+    /// What choosing the item does beyond its words: an ordinary action, or one that destroys something, which the
+    /// platform marks.
+    public static let role = ElementProperty<Self, ActionRole>("role", layer: .adaptive)
+
     /// The caption.
     public static let text = ElementProperty<Self, String>("text", layer: .native)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [clicked, icon, isDestructive, isEnabled, keyboardShortcut, text]
+    public static let members: [any ContractMember] = [clicked, icon, isEnabled, keyboardShortcut, role, text]
 }
