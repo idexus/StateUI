@@ -724,39 +724,50 @@ final class MotionTests: XCTestCase {
 
     // ---- The vocabulary itself ---------------------------------------------
 
-    func testTheLawsCarryTheNumbersTheyNeed() {
-        XCTAssertEqual(Motion.eased(.milliseconds(400), .cubicIn).milliseconds, 400)
-        XCTAssertEqual(Motion.eased(.milliseconds(400), .cubicIn).curve, .cubicIn)
-
-        XCTAssertEqual(Motion.spring(response: .milliseconds(260), damping: 0.7).milliseconds, 260)
-        XCTAssertEqual(Motion.spring(response: .milliseconds(260), damping: 0.7).factor, 0.7)
+    /// Each kind carries only its own numbers: an eased motion its length and curve, a spring its response and
+    /// damping, and the three that time nothing - none, the inherited one, an engine's own - none at all, each
+    /// itself.
+    func testEachKindCarriesOnlyItsOwnNumbers() {
+        XCTAssertEqual(Motion.eased(.milliseconds(400), .cubicIn).kind, .eased(milliseconds: 400, curve: .cubicIn))
+        XCTAssertEqual(
+            Motion.spring(response: .milliseconds(260), damping: 0.7).kind, .spring(milliseconds: 260, damping: 0.7))
+        XCTAssertEqual([Motion.none, .inherited, .custom].map(\.kind), [.none, .inherited, .custom])
+        XCTAssertEqual([Motion.none, .inherited, .custom].map(\.milliseconds), [0, 0, 0])
+        XCTAssertEqual([Motion.none, .inherited, .custom, .standard, .spring()].map(\.animates),
+                       [false, false, false, true, true])
     }
 
-    func testALengthIsADurationKeptToTheMillisecond() {
-        XCTAssertEqual(Motion.eased(.seconds(1.25)).length, .milliseconds(1250))
-        XCTAssertEqual(Motion.spring(response: .milliseconds(260)).length, .milliseconds(260))
+    func testALengthIsKeptToTheMillisecond() {
+        XCTAssertEqual(Motion.eased(.seconds(1.25)).milliseconds, 1250)
+        XCTAssertEqual(Motion.spring(response: .milliseconds(260)).milliseconds, 260)
         XCTAssertEqual(Motion.eased(.microseconds(1500)).milliseconds, 2, "to the nearest")
-        XCTAssertEqual(Motion.eased(.milliseconds(-30)).milliseconds, 0, "nothing before none")
         XCTAssertEqual(Asks.every(.seconds(2)).window, 2000)
     }
 
-    func testNoMotionIsNothingAndInheritedResolves() {
-        XCTAssertTrue(Motion.none.isNothing)
-        XCTAssertFalse(Motion.standard.isNothing)
+    /// An eased motion of no time - nought, or less - is no motion: one spelling for it.
+    func testAnEasedMotionOfNoTimeIsNone() {
+        XCTAssertEqual(Motion.eased(.zero, .cubicIn), .none)
+        XCTAssertEqual(Motion.eased(.milliseconds(-30)), .none, "nothing before none")
+        XCTAssertNotEqual(Motion.none, .inherited)
+        XCTAssertNotEqual(Motion.none, .custom)
+    }
 
+    func testInheritedResolves() {
         XCTAssertEqual(Motion.inherited.resolved(against: .standard), .standard)
         XCTAssertEqual(Motion.eased(.milliseconds(50)).resolved(against: .standard), .eased(.milliseconds(50)))
+        XCTAssertEqual(Motion.none.resolved(against: .standard), .none)
     }
 
     /// A spring's damping is bought deliberately and never given away: half a
     /// card's worth of wobble is what a user reads as a mistake.
     func testASpringDoesNotOvershootUnlessItIsAskedTo() {
-        XCTAssertEqual(Motion.spring().factor, 1)
+        XCTAssertEqual(Motion.spring().kind, .spring(milliseconds: 300, damping: 1))
 
         // ASKED TO: damping under one is what overshoot IS, and the floor is
         // 0.05 rather than nought - a spring with no damping at all never
-        // arrives.
-        XCTAssertEqual(Motion.spring(damping: 0.4).factor, 0.4)
-        XCTAssertEqual(Motion.spring(damping: 0).factor, 0.05)
+        // arrives; a damping that is no number is 1.
+        XCTAssertEqual(Motion.spring(damping: 0.4).kind, .spring(milliseconds: 300, damping: 0.4))
+        XCTAssertEqual(Motion.spring(damping: 0).kind, .spring(milliseconds: 300, damping: 0.05))
+        XCTAssertEqual(Motion.spring(damping: .nan).kind, .spring(milliseconds: 300, damping: 1))
     }
 }

@@ -299,7 +299,7 @@ extension State.Storage where Value: Walked {
 
                 // Nobody animates it yet: the value lands where it is sent.
                 // Design: docs/design/core/state.md#a-state-nobody-wears
-                if made.ties == 0, !journey.motion.isCustom {
+                if made.ties == 0, journey.motion.kind != .custom {
                     journey.value = target
                     journey.velocity = JourneyLanes<Value>.still
                     known.destination = target

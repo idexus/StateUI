@@ -77,8 +77,8 @@ extension PlacedView {
 
     /// The timing `motion` resolves to, or nil where nothing animates.
     public func law(of motion: HostLayoutMotion?) -> Motion? {
-        let law = motion.map { $0.motion.isInherited ? applicationMotion : $0.motion } ?? applicationMotion
-        return Self.moves(law) && !reducesMotion() ? law : nil
+        let law = motion.map { $0.motion.kind == .inherited ? applicationMotion : $0.motion } ?? applicationMotion
+        return law.animates && !reducesMotion() ? law : nil
     }
 
     /// Stands `view` at `target`, or on its way there; `stated` are the sides it sizes itself.
@@ -170,12 +170,6 @@ extension PlacedView {
         seats[mount]?.standing = nil
         view.travels(to: nil)
         view.placedFrame = target
-    }
-
-    /// Whether a timing animates anything: neither a snap nor an engine's own.
-    private static func moves(_ motion: Motion) -> Bool {
-        !motion.isInherited && !motion.isCustom && motion.factor.isFinite
-            && !(motion.law == .eased && motion.milliseconds == 0)
     }
 
     private static func isReal(_ rect: Rect) -> Bool {

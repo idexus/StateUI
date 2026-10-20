@@ -452,8 +452,7 @@ extension Differ {
             || plan?.base != nil {
             let mine = node.type == .application
                 ? motion
-                : (plan?.motion(for: .place).map { $0.isInherited ? .inherited : $0 }
-                    ?? .inherited)
+                : (plan?.motion(for: .place) ?? .inherited)
 
             // Inherited until told otherwise; the application says its own once.
             let was: Motion? = node.type == .application
@@ -463,9 +462,9 @@ extension Differ {
             // Which parts of a child's place animate.
             var lanes = MotionLanes.all
 
-            if travel(.place).isNothing { lanes.subtract(.place) }
-            if travel(.width).isNothing { lanes.subtract(.width) }
-            if travel(.height).isNothing { lanes.subtract(.height) }
+            if travel(.place).kind == .none { lanes.subtract(.place) }
+            if travel(.width).kind == .none { lanes.subtract(.width) }
+            if travel(.height).kind == .none { lanes.subtract(.height) }
 
             // A measured layout's children take their sizes at once.
             if node.childSizesArrive { lanes.subtract([.width, .height]) }
@@ -530,7 +529,7 @@ extension Differ {
         // Design: docs/design/core/identity-and-diffing.md#transitions
         let measured = sizesArrive || node.reportsFrame
 
-        if !describeAll, !replace, previous != nil, plan != nil || !travels.isNothing {
+        if !describeAll, !replace, previous != nil, plan != nil || travels.kind != .none {
             for (property, value) in patch.properties
             where value.moves && property.facts.travels
                 && patch.transitions[property] == nil {
@@ -538,7 +537,7 @@ extension Differ {
 
                 let moves = travel(value.kind.union(property.facts.moves))
 
-                if moves.isNothing { continue }
+                if moves.kind == .none { continue }
 
                 patch.transitions[property] = HostTransition(motion: moves)
             }

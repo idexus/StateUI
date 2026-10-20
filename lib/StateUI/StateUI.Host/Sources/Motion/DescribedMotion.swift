@@ -84,11 +84,8 @@
         guard let source,
               let target,
               let motion,
-              !motion.isInherited,
-              !motion.isCustom,
-              motion.factor.isFinite,
+              motion.animates,
               !reducesMotion,
-              !(motion.law == .eased && motion.milliseconds == 0),
               let plan = MotionValuePlan(
                 from: source,
                 destination: target,

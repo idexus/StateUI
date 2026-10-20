@@ -78,19 +78,20 @@ final class MotionLawTests: XCTestCase {
             let named = "\(motion) from \(animation.from)"
             let start = Self.sample(animation, at: 0)
 
-            if motion.isNothing {
+            if !motion.animates {
                 XCTAssertEqual(start, HostMotionSample(value: animation.destination, velocity: [0], rested: true))
                 continue
             }
 
+            let eased = if case .eased = motion.kind { true } else { false }
             for lane in animation.from.indices {
                 XCTAssertEqual(start.value[lane], animation.from[lane], accuracy: 1e-12, named)
-                if animation.velocity[lane] != 0, motion.law == .eased {
+                if animation.velocity[lane] != 0, eased {
                     XCTAssertEqual(start.velocity[lane], animation.velocity[lane], accuracy: 1e-12, named)
                 }
             }
 
-            let landed = Self.sample(animation, at: motion.law == .eased ? Double(motion.milliseconds) : HostMotionLaw.longest)
+            let landed = Self.sample(animation, at: eased ? Double(motion.milliseconds) : HostMotionLaw.longest)
             XCTAssertEqual(
                 landed,
                 HostMotionSample(
@@ -100,7 +101,7 @@ final class MotionLawTests: XCTestCase {
 
             for instant in animation.instants {
                 let sample = Self.sample(animation, at: instant)
-                if motion.law == .eased {
+                if eased {
                     XCTAssertEqual(sample.rested, instant >= Double(motion.milliseconds), "\(named) at \(instant)")
                 }
                 if sample.rested {
@@ -114,8 +115,10 @@ final class MotionLawTests: XCTestCase {
     /// below 1 rings past it before it settles - unless it is too slow to come
     /// round before the longest walk ends it.
     func testASpringRingsOnlyBelowCriticalDamping() {
-        for animation in Self.animations
-        where animation.motion.law == .spring && Double(animation.motion.milliseconds) < HostMotionLaw.longest {
+        for animation in Self.animations {
+            guard case .spring(let response, let damping) = animation.motion.kind,
+                  Double(response) < HostMotionLaw.longest
+            else { continue }
             let passes = stride(from: 0.0, through: HostMotionLaw.longest, by: 5).contains { instant in
                 let sample = Self.sample(animation, at: instant)
                 return animation.from.indices.contains { lane in
@@ -125,7 +128,7 @@ final class MotionLawTests: XCTestCase {
             }
 
             XCTAssertEqual(
-                passes, animation.motion.factor < 1,
+                passes, damping < 1,
                 "\(animation.motion) from \(animation.from) passing its destination")
         }
     }

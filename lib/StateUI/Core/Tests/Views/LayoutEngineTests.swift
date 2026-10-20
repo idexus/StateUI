@@ -358,7 +358,7 @@ final class LayoutEngineTests: XCTestCase {
             bench.hand(renders, tree, .changed, moved: Point(-10, 0))
             bench.hand(renders, tree, .ended, speed: Point(-300, 0))
 
-            XCTAssertEqual(phase.wrappedValue, 3, "3 units a second for a second: 0.1 and 3 on, \(throwing.law)")
+            XCTAssertEqual(phase.wrappedValue, 3, "3 units a second for a second: 0.1 and 3 on, \(throwing.kind)")
         }
     }
 

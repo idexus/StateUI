@@ -562,7 +562,7 @@ final class CarriedStateTests: XCTestCase {
 
         renders.render(Text("x").motion(.spring()).opacity(fade.projectedValue).id("one").node)
 
-        XCTAssertTrue(fade.projectedValue.journey.motion.isInherited)
+        XCTAssertEqual(fade.projectedValue.journey.motion, .inherited)
     }
 
     /// An element given a NEW law answers for a value it was already driving:

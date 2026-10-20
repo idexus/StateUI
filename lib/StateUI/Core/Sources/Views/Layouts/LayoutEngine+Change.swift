@@ -13,7 +13,7 @@ extension LayoutEngine.Run {
         let motion = resolvedLaw
         var memory = states.shown.wrappedValue
         guard memory.description != description || memory.from != from, let last = memory.phase, !reducesMotion,
-              !motion.isNothing
+              motion.kind != .none
         else { return memory }
 
         let room = Rect(0, 0, memory.room.width, memory.room.height)
@@ -37,7 +37,7 @@ extension LayoutEngine.Run {
     ) -> Bool {
         let identities = slots.map { $0.identity }
         let motion = resolvedLaw
-        let still = reducesMotion || motion.isNothing
+        let still = reducesMotion || motion.kind == .none
 
         var shown = poses
         var travels: [Int: LayoutTravel] = [:]

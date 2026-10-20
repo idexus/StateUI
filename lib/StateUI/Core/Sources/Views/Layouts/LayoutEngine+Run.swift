@@ -458,7 +458,7 @@ extension LayoutEngine {
                 || flight <= abs(left) * Double(motion.milliseconds)
             let isThrow = abs(letting.speed) * letting.per >= Self.throwing && left * letting.speed > 0 && onward
 
-            guard abs(left) * letting.per > Self.settled, !motion.isCustom || isThrow else {
+            guard abs(left) * letting.per > Self.settled, motion.kind != .custom || isThrow else {
                 held = nil
                 return
             }
@@ -692,12 +692,28 @@ extension LayoutEngine {
         /// its length over how steeply its curve sets out; a spring, for a third of its response - as far as a
         /// `cubicOut` of that length.
         static func carried(_ speed: Double, by throwing: Motion) -> Double {
-            let length = Double(throwing.isInherited ? 400 : throwing.milliseconds) / 1_000
+            let timing = timing(of: throwing)
+            let length = Double(timing.milliseconds) / 1_000
 
-            switch throwing.law {
-            case .eased: return speed * length / max(HostMotionLaw.slope(throwing.curve, at: 0), 0.1)
-            case .spring: return speed * length / 3
-            }
+            return speed * length / setsOut(timing)
+        }
+
+        /// The law a throw is timed by: its own, the inherited one 400 milliseconds on `cubicOut`.
+        static func timing(of throwing: Motion) -> Motion {
+            throwing.kind == .inherited ? .eased(.milliseconds(400)) : throwing
+        }
+
+        /// How steeply a throw under `timing` sets out: eased, its curve's first slope; a spring, as a `cubicOut`
+        /// of its response does.
+        static func setsOut(_ timing: Motion) -> Double {
+            if case .spring = timing.kind { return 3 }
+            return max(HostMotionLaw.slope(easing(of: timing), at: 0), 0.1)
+        }
+
+        /// The easing a fling under `motion` follows where it is eased: its own, `cubicOut` for a motion with none.
+        static func easing(of motion: Motion) -> Easing {
+            if case .eased(_, let curve) = motion.kind { return curve }
+            return .cubicOut
         }
 
         /// Where `fling` stands `elapsed` milliseconds in, under `throwing`, or nil once it is on its target. Eased,
@@ -707,7 +723,7 @@ extension LayoutEngine {
         static func flown(_ fling: LayoutFling, after elapsed: Double) -> Double? {
             let left = fling.to - fling.from
 
-            guard fling.motion.law == .eased else {
+            if case .spring = fling.motion.kind {
                 let sample = HostMotionLaw.sample(
                     fling.motion, elapsed: elapsed, from: [fling.from], destination: [fling.to],
                     velocity: [fling.speed / 1_000])
@@ -715,16 +731,16 @@ extension LayoutEngine {
             }
 
             let progress = fling.flight > 0 ? max(elapsed, 0) / fling.flight : 1
-            return progress >= 1 ? nil : fling.from + left * HostMotionLaw.ease(fling.motion.curve, at: progress)
+            return progress >= 1 ? nil : fling.from + left * HostMotionLaw.ease(easing(of: fling.motion), at: progress)
         }
 
         /// How long a throw at `speed` units a second takes to go `left` on under `throwing`, in milliseconds: the
         /// length that sets it out at the hand's speed - a spring's as a `cubicOut` of its response would - never
         /// shorter than `shortest`, nor longer than twice the motion's length.
         static func flight(_ left: Double, at speed: Double, by throwing: Motion) -> Double {
-            let length = Double(throwing.isInherited ? 400 : throwing.milliseconds)
-            let setsOut = throwing.law == .eased ? max(HostMotionLaw.slope(throwing.curve, at: 0), 0.1) : 3
-            let setting = speed == 0 ? .infinity : abs(left / speed) * setsOut * 1_000
+            let timing = timing(of: throwing)
+            let length = Double(timing.milliseconds)
+            let setting = speed == 0 ? .infinity : abs(left / speed) * setsOut(timing) * 1_000
 
             return min(max(setting, shortest), max(length * 2, shortest))
         }
@@ -734,9 +750,10 @@ extension LayoutEngine {
         static func approach(_ motion: Motion, over left: Double) -> Motion {
             let length = Duration.milliseconds(Int((abs(left) * Double(motion.milliseconds)).rounded()))
 
-            switch motion.law {
-            case .eased: return .eased(length, motion.curve)
-            case .spring: return .spring(response: length, damping: motion.factor)
+            switch motion.kind {
+            case .eased(_, let curve): return .eased(length, curve)
+            case .spring(_, let damping): return .spring(response: length, damping: damping)
+            case .inherited, .none, .custom: return .none
             }
         }
 

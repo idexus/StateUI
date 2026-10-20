@@ -55,10 +55,14 @@ what makes `move(to:)` without a motion and a plain assignment agree, so the
 two differ only in being awaited. `.none` applies a change at once, and an
 ordinary property that snaps carries no `HostTransition` beside its value.
 
-Both are made of an eased motion of no duration on this side. On a carried
-state they cross as themselves, the first of a law's three lanes naming
-which, and an inherited law is resolved against the element's motion on its
-way out.
+Each is a kind of its own, as `.custom` is: a motion is one of five kinds -
+inherited, none, custom, eased, spring - and only the last two carry numbers,
+an eased one its length and curve, a spring its response and damping. An
+eased motion of no time is `none`, so nothing has two spellings, and a host
+asks a motion whether it animates (`animates`) rather than reading flags
+that could disagree. On a carried state each kind crosses as itself, the
+first of a law's three lanes naming which, and an inherited law is resolved
+against the element's motion on its way out.
 
 ## The standard motion
 

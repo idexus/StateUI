@@ -63,23 +63,25 @@ import StateUIFoundation
             return landed(destination)
         }
 
-        switch motion.law {
-        case .eased:
+        switch motion.kind {
+        case .eased(let milliseconds, let curve):
             return eased(
-                length: Double(motion.milliseconds),
-                curve: motion.curve,
+                length: Double(milliseconds),
+                curve: curve,
                 elapsed: elapsed,
                 from: from,
                 destination: destination,
                 velocity: velocity)
-        case .spring:
+        case .spring(let milliseconds, let damping):
             return spring(
-                response: Double(max(motion.milliseconds, 1)),
-                damping: max(motion.factor, 0.01),
+                response: Double(max(milliseconds, 1)),
+                damping: max(damping, 0.01),
                 elapsed: elapsed,
                 from: from,
                 destination: destination,
                 velocity: velocity)
+        case .inherited, .none, .custom:
+            return landed(destination)
         }
     }
 

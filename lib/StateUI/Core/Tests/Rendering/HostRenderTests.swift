@@ -39,9 +39,7 @@ final class HostRenderTests: XCTestCase {
         XCTAssertTrue(patch.replace)
         XCTAssertEqual(patch.properties[.text], .string("Save"))
         XCTAssertEqual(patch.clearedProperties, [.margin])
-        XCTAssertEqual(patch.motion?.motion.law, .spring)
-        XCTAssertEqual(patch.motion?.motion.milliseconds, 240)
-        XCTAssertEqual(patch.motion?.motion.factor, 0.8)
+        XCTAssertEqual(patch.motion?.motion.kind, .spring(milliseconds: 240, damping: 0.8))
         XCTAssertEqual(patch.motion?.lanes, [.x, .height])
         XCTAssertEqual(patch.transitions[.opacity]?.motion.milliseconds, 120)
 

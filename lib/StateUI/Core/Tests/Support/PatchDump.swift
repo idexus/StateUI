@@ -112,23 +112,20 @@ enum PatchDump {
             said += " holding \(held.joined(separator: "+")) still"
         }
 
-        let motion = placement.motion
-
-        if motion.isInherited {
-            return said + " moves as the application does"
-        }
-
-        switch motion.law {
-        case .spring: return said + " moves on a spring over \(motion.milliseconds)ms"
-        case .eased: return said + (motion.milliseconds == 0 ? " moves at once" : " moves over \(motion.milliseconds)ms \(motion.curve)")
+        switch placement.motion.kind {
+        case .inherited: return said + " moves as the application does"
+        case .spring(let milliseconds, _): return said + " moves on a spring over \(milliseconds)ms"
+        case .eased(let milliseconds, let curve): return said + " moves over \(milliseconds)ms \(curve)"
+        case .none, .custom: return said + " moves at once"
         }
     }
 
     /// How one property travels to the value the line above it states.
     private static func travelling(_ motion: Motion) -> String {
-        switch motion.law {
-        case .spring: "springs over \(motion.milliseconds)ms, damping \(motion.factor)"
-        case .eased: "travels over \(motion.milliseconds)ms \(motion.curve)(\(motion.curve.rawValue))"
+        switch motion.kind {
+        case .spring(let milliseconds, let damping): "springs over \(milliseconds)ms, damping \(damping)"
+        case .eased(let milliseconds, let curve): "travels over \(milliseconds)ms \(curve)(\(curve.rawValue))"
+        case .inherited, .none, .custom: "travels over 0ms \(Easing.cubicOut)(\(Easing.cubicOut.rawValue))"
         }
     }
 

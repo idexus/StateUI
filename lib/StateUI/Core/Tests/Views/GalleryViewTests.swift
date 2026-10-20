@@ -657,7 +657,7 @@ final class GalleryViewTests: XCTestCase {
             hand(renders, tree, .changed, moved: Point(-0.1 * reach, 0))
             hand(renders, tree, .ended, speed: Point(-200, 0))
 
-            XCTAssertEqual(shown.wrappedValue, card, "thrown \(throwing.map { "\($0.law)" } ?? "as a gallery is")")
+            XCTAssertEqual(shown.wrappedValue, card, "thrown \(throwing.map { "\($0.kind)" } ?? "as a gallery is")")
         }
     }
 
