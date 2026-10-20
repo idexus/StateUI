@@ -201,7 +201,7 @@ final class DisplayCycleTests: XCTestCase {
 private struct WornApplication: Application {
     var body: some Scene {
         WindowGroup {
-            LayoutEngine([0]) { _ in Rectangle(.red) } placements: { _, _ in [] }
+            LayoutEngine([0]) { _ in Rectangle().fill(.red) } placements: { _, _ in [] }
         }
     }
 }

@@ -354,11 +354,11 @@ shape but `Line` - takes `fill`, and a shape whose outline turns corners -
 `fill` does not compile. Geometry-specific modifiers such as a rectangle's
 corner radius or line endpoints remain on the matching shape. A `Rectangle`,
 a `Capsule` and an `Ellipse` are drawn for their fill, so they take it first,
-`Rectangle(.cornflowerBlue)` - a colour, a brush or a colour's state;
+`Rectangle().fill(.cornflowerBlue)` - a colour, a brush or a colour's state;
 `.fill` says the same where a style or a later change does.
 
 ```swift
-Rectangle(.linearGradient(
+Rectangle().fill(.linearGradient(
     [GradientStop(.cornflowerBlue, 0), GradientStop(.indigo, 1)],
     startPoint: Point(0, 0),
     endPoint: Point(1, 0)))
@@ -377,7 +377,7 @@ its shorter side at every size, so it stays a pill however wide or tall its
 room - and a circle in a square one.
 
 ```swift
-Capsule(.teal)
+Capsule().fill(.teal)
     .width(120)
     .height(32)
 ```
@@ -393,7 +393,7 @@ struct Level: View {
 
     var body: some View {
         VStack {
-            Rectangle($tint).cornerRadius(6).height(12)
+            Rectangle().fill($tint).cornerRadius(6).height(12)
             Button("Warn").onClicked { tint = .orange }
         }
     }

@@ -26,7 +26,7 @@ extension ImageProperties {
 ///
 /// Artwork that reads on one theme and not the other is drawn twice:
 ///
-///     Image(light: "tab_list.png", dark: "tab_list_dark.png")
+///     Image(ImageSource(light: "tab_list.png", dark: "tab_list_dark.png"))
 ///
 /// and the picture follows the system theme.
 public struct Image: ElementView, ImageElement, ImageProperties {
@@ -43,11 +43,6 @@ public struct Image: ElementView, ImageElement, ImageProperties {
     public init(_ source: ImageSource) {
         node = Node(contract: ImageContract.self)
         node.write(ImageContract.source, source)
-    }
-
-    /// One picture per theme, following the system theme.
-    public init(light: String, dark: String) {
-        self.init(ImageSource(light: light, dark: dark))
     }
 
 }

@@ -86,7 +86,7 @@ final class UIKitFrameReportTests: XCTestCase {
     @MainActor
     func testAPageNarrowedByUIKitPlacesItsLayoutWithinThatPass() throws {
         let host = UIKitRenderer.running {
-            LayoutEngine([0]) { _ in Rectangle(.red) } placements: { room, _ in
+            LayoutEngine([0]) { _ in Rectangle().fill(.red) } placements: { room, _ in
                 [Placement(Rect(room.width / 2 - 10, 0, 20, 20))]
             }
         }

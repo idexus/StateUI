@@ -73,7 +73,7 @@ hands the state channel to the host instead:
 @State var volume = 0.5
 
 Slider($volume)
-Rectangle(.cornflowerBlue).scaleX($volume)
+Rectangle().fill(.cornflowerBlue).scaleX($volume)
 ```
 
 Passing `$volume` does not make the body a reader. Native input and program

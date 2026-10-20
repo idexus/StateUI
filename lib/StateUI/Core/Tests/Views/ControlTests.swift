@@ -323,7 +323,7 @@ final class ControlTests: XCTestCase {
                 .phase(turn.projectedValue)
                 .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .every(1))
                 .following(chosen.projectedValue)
-                .shade(Rectangle(.black))
+                .shade(Rectangle().fill(.black))
                 .motion(.spring(response: .milliseconds(240)))
                 .onItemTapped { _ in }
                 .itemDrag(begins: .held)

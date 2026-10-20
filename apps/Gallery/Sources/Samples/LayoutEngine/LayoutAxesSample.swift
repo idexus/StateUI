@@ -97,7 +97,7 @@ struct LayoutAxesSample: SampleContent, ExampleContent {
                 .fontSize(11)
                 .textColor(Palette.subtle)
         case .frame:
-            Rectangle(Palette.field)
+            Rectangle().fill(Palette.field)
                 .cornerRadius(10)
         case .card(let strip, let index):
             ZStack { Image(ImageSource(Self.pictures[(strip + index) % Self.pictures.count])).contentMode(.fill) }

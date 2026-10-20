@@ -117,12 +117,12 @@ struct LayoutPhaseSample: SampleContent, ExampleContent {
         let card = Self.cards[index]
 
         return ZStack {
-            Rectangle(card.colour)
+            Rectangle().fill(card.colour)
                 .cornerRadius(16)
 
             VStack {
                 ZStack {
-                    Rectangle(.white)
+                    Rectangle().fill(.white)
                         .cornerRadius(28)
                         .opacity(0.3)
 

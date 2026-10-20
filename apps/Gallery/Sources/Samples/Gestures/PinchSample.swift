@@ -27,7 +27,7 @@ struct PinchSample: SampleContent, ExampleContent {
             // moves. Putting both on one view is what stops a pinch after its
             // first report - see the notes.
             ZStack {
-                Rectangle(Palette.accent)
+                Rectangle().fill(Palette.accent)
                     .cornerRadius(10)
                     .width(80)
                     .height(80)

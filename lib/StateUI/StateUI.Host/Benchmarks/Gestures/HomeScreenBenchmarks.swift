@@ -96,9 +96,9 @@ private struct HomeTile: View {
     var body: some View {
         VStack {
             ZStack {
-                Rectangle(Color(hex: 0x2563EB))
+                Rectangle().fill(Color(hex: 0x2563EB))
                     .cornerRadius(14)
-                Rectangle(.white)
+                Rectangle().fill(.white)
                     .cornerRadius(21)
                     .opacity(0.3)
                     .width(42)

@@ -145,12 +145,12 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
     /// One card's face: its colour, its icon on a disc, and its name.
     private func face(_ card: Card) -> some View {
         ZStack {
-            Rectangle(card.colour)
+            Rectangle().fill(card.colour)
                 .cornerRadius(14)
 
             VStack {
                 ZStack {
-                    Rectangle(.white)
+                    Rectangle().fill(.white)
                         .cornerRadius(22)
                         .opacity(0.3)
 

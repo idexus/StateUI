@@ -147,7 +147,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
             // THE DOTS wear the same phase - one state, so one motion: they go
             // with the hand and with every throw, no body read of it.
             LayoutEngine(Array(0..<boards)) { _ in
-                Rectangle(Palette.text)
+                Rectangle().fill(Palette.text)
                     .cornerRadius(4)
             } placements: { room, board in
                 (0..<boards).map { dot($0, of: boards, board, room) }
@@ -235,10 +235,10 @@ struct HomeScreenSample: SampleContent, ExampleContent {
         var body: some View {
             VStack {
                 ZStack {
-                    Rectangle(icon.colour)
+                    Rectangle().fill(icon.colour)
                         .cornerRadius(14)
 
-                    Rectangle(.white)
+                    Rectangle().fill(.white)
                         .cornerRadius(21)
                         .opacity(0.3)
                         .width(42)

@@ -112,7 +112,7 @@ struct Level: View {
     var body: some View {
         VStack {
             Slider($level)
-            Rectangle(.cornflowerBlue).scaleX($level)
+            Rectangle().fill(.cornflowerBlue).scaleX($level)
             Text($level.convert { "\(Int($0 * 100))%" })
         }
     }
@@ -223,7 +223,7 @@ struct ResizingPanel: View {
 
     var body: some View {
         VStack {
-            Rectangle(.cornflowerBlue)
+            Rectangle().fill(.cornflowerBlue)
                 .width(expanded ? 280 : 120)
                 .cornerRadius(expanded ? 28 : 8)
                 .motion(.spring(response: .milliseconds(320)))
@@ -270,7 +270,7 @@ struct FallingDot: View {
 
     var body: some View {
         VStack {
-            Rectangle(.cornflowerBlue)
+            Rectangle().fill(.cornflowerBlue)
                 .translationY($y)
                 .engine(tracking: $y) { cycle in
                     let journey = $y.journey

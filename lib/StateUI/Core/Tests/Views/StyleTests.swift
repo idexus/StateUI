@@ -500,7 +500,7 @@ final class StyleTests: XCTestCase {
     /// names, and the element showing it is built with the one in force - so
     /// one name crosses.
     func testAPictureCanBeDrawnOncePerTheme() {
-        func both() -> Node { Image(light: "nav_home.png", dark: "nav_home_dark.png").node }
+        func both() -> Node { Image(ImageSource(light: "nav_home.png", dark: "nav_home_dark.png")).node }
 
         XCTAssertEqual(
             both().props["source"],

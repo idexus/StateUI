@@ -183,7 +183,7 @@ private struct Described: View {
             ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
                 HStack {
                     ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
-                        Rectangle(Palette.outline)
+                        Rectangle().fill(Palette.outline)
                             .width(7)
                             .height(14)
                             .cornerRadius(2)
@@ -231,7 +231,7 @@ private struct Channelled: View {
             ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
                 HStack {
                     ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
-                        Rectangle(Palette.outline)
+                        Rectangle().fill(Palette.outline)
                             .width(7)
                             .height(14)
                             .cornerRadius(2)

@@ -172,7 +172,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
 
             // A rule is decoration: a stop that would waste the user's time.
-            Rectangle(Palette.outline)
+            Rectangle().fill(Palette.outline)
                 .height(1)
                 .isAccessibilityHidden(true)
         }

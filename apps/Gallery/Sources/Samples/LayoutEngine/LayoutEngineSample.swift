@@ -158,7 +158,7 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
             case .card(let index):
                 face(Self.cards[index])
             case .dot:
-                Rectangle(Palette.text)
+                Rectangle().fill(Palette.text)
                     .cornerRadius(3)
             }
         } placements: { room, phase in
@@ -180,7 +180,7 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
         // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
         // over every card, wearing the card's own corners - which is why it is
         // the application's to give and not the library's to draw.
-        .shade(Rectangle(Color(hex: 0x000000)).cornerRadius(16))
+        .shade(Rectangle().fill(Color(hex: 0x000000)).cornerRadius(16))
         .motion(.eased(.milliseconds(300), .cubicOut))
     }
 

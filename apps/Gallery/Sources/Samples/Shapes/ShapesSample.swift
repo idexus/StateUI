@@ -26,21 +26,21 @@ struct ShapesSample: SampleContent, ExampleContent {
             SectionTitle("Filled")
 
             HStack {
-                Rectangle(Palette.accent)
+                Rectangle().fill(Palette.accent)
                     .width(56)
                     .height(56)
 
-                Rectangle(Palette.accent)
+                Rectangle().fill(Palette.accent)
                     .cornerRadius(14)
                     .width(56)
                     .height(56)
 
-                Rectangle(Palette.accent)
+                Rectangle().fill(Palette.accent)
                     .cornerRadius(topLeft: 22, topRight: 4, bottomLeft: 4, bottomRight: 22)
                     .width(56)
                     .height(56)
 
-                Ellipse(Palette.accent)
+                Ellipse().fill(Palette.accent)
                     .width(56)
                     .height(56)
             }
@@ -49,11 +49,11 @@ struct ShapesSample: SampleContent, ExampleContent {
 
             // A capsule's ends stay round at every size: wide, tall, or square.
             HStack {
-                Capsule(Palette.accent)
+                Capsule().fill(Palette.accent)
                     .width(120)
                     .height(40)
 
-                Capsule(Palette.accent)
+                Capsule().fill(Palette.accent)
                     .width(40)
                     .height(80)
             }
@@ -98,7 +98,7 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .width(56)
                     .height(56)
 
-                Rectangle(Palette.accent)
+                Rectangle().fill(Palette.accent)
                     .cornerRadius(14)
                     .geometryTransform(.skew(20, 0))
                     .width(56)
@@ -190,7 +190,7 @@ struct ShapesSample: SampleContent, ExampleContent {
                 + "stroke draws no outline and one with no fill has no inside - a "
                 + "`Line` has only an outline, as there is nothing to fill. A `Rectangle`, "
                 + "an `Ellipse` and a `Capsule` take their fill first, "
-                + "`Rectangle(Palette.accent)`. A `Rectangle` rounds its corners with "
+                + "`Rectangle().fill(Palette.accent)`. A `Rectangle` rounds its corners with "
                 + "`cornerRadius`: one number for all four, or each corner by name; a "
                 + "`Capsule`'s ends are always half its shorter side.")
                 .fontSize(12)

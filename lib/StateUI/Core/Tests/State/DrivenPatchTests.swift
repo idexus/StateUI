@@ -310,7 +310,7 @@ final class DrivenPatchTests: XCTestCase {
     func testALayoutEngineRegistersOnTheLayoutAlone() throws {
         let page = try page(
             LayoutEngine(["a", "b"]) { Text($0) } placements: { _, _ in [] }
-                .shade(Rectangle(.black))
+                .shade(Rectangle().fill(.black))
                 .node)
         let layout = try XCTUnwrap(page.subtree.first { $0.type == .layoutEngine })
         let ties = layout.driven?.bindings ?? [:]

@@ -10,19 +10,19 @@ struct ImageSample: SampleContent, ExampleContent {
     var body: some View {
         VStack {
             HStack {
-                Image(light: "nav_home.png", dark: "nav_home_dark.png")
+                Image(ImageSource(light: "nav_home.png", dark: "nav_home_dark.png"))
                     .width(48)
                     .height(48)
 
-                Image(light: "nav_layout.png", dark: "nav_layout_dark.png")
+                Image(ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
                     .width(48)
                     .height(48)
 
-                Image(light: "nav_input.png", dark: "nav_input_dark.png")
+                Image(ImageSource(light: "nav_input.png", dark: "nav_input_dark.png"))
                     .width(48)
                     .height(48)
 
-                Image(light: "nav_shell.png", dark: "nav_shell_dark.png")
+                Image(ImageSource(light: "nav_shell.png", dark: "nav_shell_dark.png"))
                     .width(48)
                     .height(48)
             }
@@ -35,7 +35,7 @@ struct ImageSample: SampleContent, ExampleContent {
             // difference between the three is the content mode.
             HStack {
                 VStack {
-                    Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                    Image(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                         .contentMode(.fit)
                         .width(96)
                         .height(60)
@@ -49,7 +49,7 @@ struct ImageSample: SampleContent, ExampleContent {
                 .spacing(4)
 
                 VStack {
-                    Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                    Image(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                         .contentMode(.fill)
                         .width(96)
                         .height(60)
@@ -63,7 +63,7 @@ struct ImageSample: SampleContent, ExampleContent {
                 .spacing(4)
 
                 VStack {
-                    Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                    Image(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                         .contentMode(.stretch)
                         .width(96)
                         .height(60)
@@ -97,7 +97,7 @@ struct ImageSample: SampleContent, ExampleContent {
             .spacing(12)
 
             HStack {
-                Image(light: "nav_gestures.png", dark: "nav_gestures_dark.png")
+                Image(ImageSource(light: "nav_gestures.png", dark: "nav_gestures_dark.png"))
                     .width(32)
                     .height(32)
 

@@ -85,13 +85,13 @@ extension ControlDictionary {
             """#),
 
         (EllipseContract.self, #"""
-            Ellipse(.tomato)
+            Ellipse().fill(.tomato)
                 .width(48)
                 .height(48)
             """#),
 
         (CapsuleContract.self, #"""
-            Capsule(.teal)
+            Capsule().fill(.teal)
                 .width(120)
                 .height(32)
             """#),

@@ -40,7 +40,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                 VStack {
                     HStack {
                         ForEach(Array(bars.enumerated()), id: \.offset) { bar in
-                            Rectangle(Palette.onAccent)
+                            Rectangle().fill(Palette.onAccent)
                                 .translationY(bar.element)
                                 .width(14)
                                 .height(46)

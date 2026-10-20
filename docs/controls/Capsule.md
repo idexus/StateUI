@@ -5,7 +5,7 @@
 A rectangle whose shorter sides round whole, filling the room it is given - a circle when that room is square.
 
 ```swift
-Capsule(.teal)
+Capsule().fill(.teal)
     .width(120)
     .height(32)
 ```

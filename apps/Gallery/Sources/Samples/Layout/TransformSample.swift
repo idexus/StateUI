@@ -147,7 +147,7 @@ struct TransformSample: SampleContent, ExampleContent {
     /// - Parameter colour: which family this square belongs to.
     /// - Returns: the square, ready to be transformed.
     private func box(_ colour: Color) -> Rectangle {
-        Rectangle(colour)
+        Rectangle().fill(colour)
             .width(44)
             .height(44)
     }

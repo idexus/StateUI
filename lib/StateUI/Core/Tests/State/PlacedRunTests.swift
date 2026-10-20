@@ -195,7 +195,7 @@ final class PlacedRunTests: XCTestCase {
 
         let patch = renders.render(
             LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [] }
-                .shade(Rectangle(.black))
+                .shade(Rectangle().fill(.black))
                 .id("run")
                 .node)
 

@@ -68,7 +68,7 @@ final class GTKZStackViewTests: XCTestCase {
             let host = GTKRenderer.running(clock: clock) {
                 VStack {
                     LayoutEngine(["back", "front"]) { name in
-                        Rectangle(name == "back" ? .red : .blue)
+                        Rectangle().fill(name == "back" ? .red : .blue)
                     } placements: { room, phase in
                         phase < 1
                             ? [Placement(room), Placement(room)]
