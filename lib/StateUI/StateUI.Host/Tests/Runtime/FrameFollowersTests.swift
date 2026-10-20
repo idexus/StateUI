@@ -96,6 +96,8 @@ final class FrameFollowersTests: XCTestCase {
 
     /// The elements `names` stand in `runtime`'s tree, in that order - the tree before replaced.
     private static func elements(of runtime: HostRuntime, _ names: [String]) -> [MountedElement] {
+        // What the core waits to render is rendered first, so no turn of the test's own replaces the tree.
+        runtime.pump.turn()
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged(names.map { HostPatch(id: .manual($0), type: .text) })
         runtime.tree.apply(stack, complete: true)
