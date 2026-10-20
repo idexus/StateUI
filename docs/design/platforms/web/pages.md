@@ -88,7 +88,11 @@ the user off the site from one it did not put there. One entry, never one a
 page: a page the application pushes is the
 tree's, and the browser could hand none of them back on its way forward.
 A window hears the history move until it closes, and closing lets that
-listener go on both sides of the relay.
+listener go on both sides of the relay. The browser tells a going back
+after it is asked, so a window closing before the page's own going back
+over its entry is told leaves it to the page: the next window to hear the
+history move takes it as the page's, not the user's - a window opened at
+once after another's way back went is not taken a step back by it.
 
 A window closing takes its sheets away first, the top one first: each is a
 modal dialog of the page's, which would hold every page after it still.
