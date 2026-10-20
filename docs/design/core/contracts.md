@@ -241,3 +241,12 @@ is said once, with the realized names nearest to it - at most three, within a
 quarter of the name's length in single-character edits (at least two). A
 handler listening for an application event the host does not raise is said once
 the same way. Nothing is said while the host has said nothing.
+
+In a Debug build, a member described on an element the host realizes is said
+once where the host's register says it does not realize it there, or never
+will, with the register's reason (`HostRealizations.unhonoured`): a tint
+written on a control a platform draws in the user's accent compiles and does
+nothing, and this is where its author hears why. A member the register says
+nothing of, or realizes in part, goes by. The register is built when first
+asked, and the host layer keeps it while the host tells the same realization
+at each start (`CoreLink.setRealization`).

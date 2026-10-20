@@ -466,6 +466,14 @@ extension Differ {
 
         patch.properties = describeAll ? node.props : changed
 
+        #if DEBUG
+        // A member the host's register says it does not realize on this element is said once.
+        // Design: docs/design/core/contracts.md#unrealized-names
+        for key in patch.properties.keys.sorted() {
+            if let unhonoured = HostRealizations.unhonoured(key.key, on: node.type) { complain(unhonoured) }
+        }
+        #endif
+
         // A property that changed on a continuing element animates to its new value; a
         // measured size arrives at once.
         // Design: docs/design/core/identity-and-diffing.md#transitions
