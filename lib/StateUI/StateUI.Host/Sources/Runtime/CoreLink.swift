@@ -234,11 +234,8 @@
         HostBoundary.connectWindow(kind: kind, value: value, restoring: values)
     }
 
-    /// The keys read from the platform's settings store before the first render.
-    public var persistentKeys: [PersistentKey] { HostBoundary.persistentKeys }
-
-    /// Hydrates the kept values found in the store.
-    public func restorePersistent(_ values: [String: HostValue]) {
-        HostBoundary.restorePersistent(values)
+    /// Gives the core the reader of the platform's store: a kept key's name and kind to its value, nil for none.
+    public func readsKept(_ reader: @escaping @MainActor (_ name: String, _ kind: PersistentKind) -> HostValue?) {
+        HostBoundary.readsKept(reader)
     }
 }

@@ -141,7 +141,7 @@ final class WinUIActToolkit: ActToolkit {
     func keep(_ call: HostActCall) -> Bool {
         switch call.act {
         case .persistValue:
-            WinUIPersistence.keep(call, core: renderer.runtime.core)
+            WinUIPersistence.keep(call)
         case .persistSceneValue:
             let scenes = renderer.scenes
             if scenes.keep(call.arguments), let text = scenes.changed(root: renderer.runtime.tree.root) {

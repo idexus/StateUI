@@ -129,19 +129,12 @@
     /// Design: docs/design/types/environment.md#a-report-that-repeats-itself
     public private(set) static var environmentChanges = 0
 
-    /// The typed keys the host reads before the first application render - the application, made at its first
-    /// need, lists them as it is made.
-    public static var persistentKeys: [PersistentKey] {
-        Renderer.shared.madeApplication()
-        let keys = StandardEnvironment.application.persistentKeys
-        PersistentStore.shared.listed(keys)
-        return keys
-    }
-
-    /// Hydrates values found in the native store before the first render.
-    public static func restorePersistent(_ values: [String: HostValue]) {
-        PersistentStore.shared.hydrate(
-            values.sorted { $0.key < $1.key }.map { (name: $0.key, value: $0.value) })
+    /// Gives the core the reader of the host's store: a kept key's name and kind to the value the store holds under
+    /// it, nil for none. A state kept under a key reads it as it is first made - every key claimed before the reader
+    /// came reads it now - so a value is back at the launch it is first needed in.
+    /// Design: docs/design/core/state.md#kept-state
+    public static func readsKept(_ reader: @escaping @MainActor (_ name: String, _ kind: PersistentKind) -> HostValue?) {
+        PersistentStore.shared.reads(reader)
     }
 
     /// Decodes a complete property-state image for a native motion channel.

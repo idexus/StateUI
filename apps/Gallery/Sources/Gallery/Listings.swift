@@ -3179,7 +3179,7 @@ enum Listings {
         "Gallery.Looks": #"""
         // Sources/Gallery/Looks.swift
         /// What a gallery's bars are.
-        enum BarLook: String, CaseIterable, PersistentValue {
+        enum BarLook: String, CaseIterable {
             /// The platform's own bars, in its material and the user's accent.
             case platform
 
@@ -3205,7 +3205,7 @@ enum Listings {
 
         /// What one surface of the gallery is made of - its window, its sidebar, its
         /// sidebar sliding over the page.
-        enum SurfaceMaterial: String, CaseIterable, PersistentValue {
+        enum SurfaceMaterial: String, CaseIterable {
             /// The platform's own.
             case platform
 
@@ -3286,7 +3286,7 @@ enum Listings {
         /// The look the gallery wears in one theme: its bars, and what its window, its
         /// sidebar and its sidebar sliding over the page are made of. Kept as one line
         /// of words, so a scene keeps a theme's whole look under one key.
-        struct ThemeLook: Equatable, RawRepresentable, PersistentValue {
+        struct ThemeLook: Equatable, RawRepresentable {
             var bars: BarLook
             var barColour: AccentChoice
             var window: SurfaceLook
@@ -3366,7 +3366,7 @@ enum Listings {
         /// the Appearance sample. A scene keeps the CHOICE - the gallery's own is drawn
         /// afresh at every start, as this version of the gallery makes it, never kept
         /// as what it was when the scene was.
-        enum LookChoice: Equatable, RawRepresentable, PersistentValue {
+        enum LookChoice: Equatable, RawRepresentable, Codable {
             /// The look that suits the platform best: `ThemeLook.light` or `.dark`.
             case own
 
@@ -3442,19 +3442,21 @@ enum Listings {
         /// What the galleries' scene KEEPS with itself - handed back with it when the
         /// system restores the application's windows, so the galleries come back in the
         /// font and the colour they were left in.
-        extension SceneKey {
+        extension SceneKey where Value == String {
             /// The font the gallery's preview is set in.
-            static let font = SceneKey("gallery.font", of: String.self)
+            static let font = SceneKey("gallery.font")
+        }
 
+        extension SceneKey where Value == LookChoice {
             /// The look chosen for the light theme and for the dark: the gallery's own,
             /// or one the user composed.
-            static let lightLook = SceneKey("gallery.look.light", of: LookChoice.self)
-            static let darkLook = SceneKey("gallery.look.dark", of: LookChoice.self)
+            static let lightLook = SceneKey("gallery.look.light")
+            static let darkLook = SceneKey("gallery.look.dark")
         }
 
         /// A colour a gallery wears - on its bars, or behind its pages, where its look
         /// asks for one.
-        enum AccentChoice: String, CaseIterable, PersistentValue {
+        enum AccentChoice: String, CaseIterable {
             case gallery
             case system
             case violet
@@ -3567,11 +3569,11 @@ enum Listings {
         // Sources/GalleryApp.swift
         /// The gallery application.
         ///
-        /// An application is what every scene SHARES - its styles, and the settings
-        /// it keeps between launches. The galleries are one scene, its windows as many
-        /// as the user opens: see Gallery/GalleryScene.swift.
+        /// An application is what every scene SHARES - here its styles. The galleries
+        /// are one scene, its windows as many as the user opens: see
+        /// Gallery/GalleryScene.swift.
         struct GalleryApp: Application {
-            /// The application as it runs - where its styles and its kept keys go.
+            /// The application as it runs - where its styles go.
             @Environment(\.application) private var application
 
             /// What every gallery shares, written as the application is made.
@@ -3579,16 +3581,6 @@ enum Listings {
                 // The styles a control of the gallery asks for by name. A colour in a
                 // style follows the theme by itself. See Styles/AppStyles.swift.
                 application.styles = AppStyles.sheet
-
-                // What the gallery keeps under its own keys between launches -
-                // `PersistentStateSample`'s three settings; what its scenes keep comes
-                // back with them. Listed because a settings store is read one key at a
-                // time and offers no list of what it holds, so this is the only way
-                // the host can have the values in memory before the first view asks
-                // for one - which is why it is written HERE, as the application is
-                // made. Each host keeps them in the platform's settings store, or in a
-                // file of its own where the platform offers an application none.
-                application.persistentKeys = [.visits, .who, .shade]
 
                 // On GNOME the gallery opens in the dark theme, the look it wears
                 // best there; the Appearance sample turns it back.
@@ -7880,15 +7872,19 @@ enum Listings {
             case bold
         }
 
-        extension PersistentKey {
+        extension PersistentKey where Value == Int {
             /// How many times the user has pressed the button, ever.
-            static let visits = PersistentKey("dev.stateui.gallery.visits", of: Int.self)
+            static let visits = PersistentKey("dev.stateui.gallery.visits")
+        }
 
+        extension PersistentKey where Value == String {
             /// What the user is called.
-            static let who = PersistentKey("dev.stateui.gallery.who", of: String.self)
+            static let who = PersistentKey("dev.stateui.gallery.who")
+        }
 
+        extension PersistentKey where Value == Shade {
             /// Whether the panel below paints loudly.
-            static let shade = PersistentKey("dev.stateui.gallery.shade", of: Shade.self)
+            static let shade = PersistentKey("dev.stateui.gallery.shade")
         }
 
         @State(persistentKey: .visits) private var visits = 0
@@ -8981,9 +8977,9 @@ enum Listings {
         }
 
         /// What the scratchpads KEEP - handed back with their scene when the system restores the application's windows.
-        extension SceneKey {
+        extension SceneKey where Value == String {
             /// The scratchpads' text.
-            static let scratch = SceneKey("gallery.scratch", of: String.self)
+            static let scratch = SceneKey("gallery.scratch")
         }
 
         /// The scratchpads: a scene of their own beside the galleries, its windows as many as

@@ -272,8 +272,8 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
   *Application.* ([The environment](../design/core/state.md#the-environment);
   [environment](../concepts/environment.md))
 - **`PersistentKey`**, **`PersistentValue`** and **`PersistentKind`** are kept
-  state, hydrated by the host before the first render (`PersistentStore`,
-  internal). *Application.* ([Kept state](../design/core/state.md#kept-state);
+  state, each key read through the host's reader as its first state is made
+  (`PersistentStore`, internal). *Application.* ([Kept state](../design/core/state.md#kept-state);
   [persistent state](../concepts/state-and-reactivity.md#persistent-state))
 - An `@Observable` model held in a `@State` is deprecated, since nothing arms
   its tracking. ([An observable model](../design/core/state.md#an-observable-model))
@@ -579,8 +579,8 @@ the layer, and `placements(from:)` in AppKit's element too
 - **Windows and kept values.** `connectWindow(kind:value:restoring:)` hands
   the core a window the platform made - its first, a new one, or one it kept,
   with its scene's kept values - and answers the scene it opened in;
-  `persistentKeys` and `restorePersistent(_:)` hydrate kept state before the
-  first render.
+  `readsKept(_:)` gives the core the reader of the platform's store, which a
+  kept key reads as its first state is made.
   ([Kept state](../design/core/state.md#kept-state))
 - **Realization.** `setRealization(_:)` says what the host realizes, which
   `realizes(_:)` answers; the registrations stand in

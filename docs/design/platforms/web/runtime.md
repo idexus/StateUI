@@ -155,8 +155,8 @@ again. The on-screen keyboard goes down with the focus of the field holding
 it. The focus goes to an element's view, or the first in it that takes it.
 
 A kept value stands in the browser's storage for the page's site, under the
-application's name, in the host layer's text (`KeptValuesText`): read before
-the first render, written whole as one changes. Where the browser keeps
+application's name, in the host layer's text (`KeptValuesText`): a key read
+as its first state is made, the text written whole as one changes. Where the browser keeps
 nothing - a private window, storage turned off - the value lives as long as
 the page. A scene's kept values stand beside them in the host layer's text of
 the scenes (`SceneKeeper`, `KeptScenes`), written as they change and as the

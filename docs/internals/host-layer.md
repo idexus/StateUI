@@ -89,8 +89,8 @@ and a view by its number (`LiveViews`).
 
 Before the first render, a host hands the core its realization
 (`CoreLink.setRealization`), what it reads of the machine
-([environment and kept values](#environment-and-kept-values)) and the kept
-values its store holds (`persistentKeys`, `restorePersistent`). It follows the
+([environment and kept values](#environment-and-kept-values)) and the reader
+of its store (`CoreLink.readsKept`). It follows the
 language's direction (`MountedTree.followTheLanguagesDirection`), connects its
 first window - one the platform kept, or a new one - through
 `HostRuntime.connectWindow`, and turns the pump once; the doorbell - on Apple

@@ -21,21 +21,23 @@ extension WindowType where Value == Int {
 /// What the galleries' scene KEEPS with itself - handed back with it when the
 /// system restores the application's windows, so the galleries come back in the
 /// font and the colour they were left in.
-extension SceneKey {
+extension SceneKey where Value == String {
     /// The font the gallery's preview is set in.
-    static let font = SceneKey("gallery.font", of: String.self)
+    static let font = SceneKey("gallery.font")
+}
 
+extension SceneKey where Value == LookChoice {
     /// The look chosen for the light theme and for the dark: the gallery's own,
     /// or one the user composed.
-    static let lightLook = SceneKey("gallery.look.light", of: LookChoice.self)
-    static let darkLook = SceneKey("gallery.look.dark", of: LookChoice.self)
+    static let lightLook = SceneKey("gallery.look.light")
+    static let darkLook = SceneKey("gallery.look.dark")
 }
 // listing: end
 
 // listing: Gallery.SessionStyle
 /// A colour a gallery wears - on its bars, or behind its pages, where its look
 /// asks for one.
-enum AccentChoice: String, CaseIterable, PersistentValue {
+enum AccentChoice: String, CaseIterable {
     case gallery
     case system
     case violet

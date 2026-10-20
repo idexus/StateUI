@@ -253,9 +253,9 @@
         return try driven { try driver.logged() }
     }
 
-    /// What the host's store keeps under `key` - of the scene the page is in where `inScene` - as the next launch
-    /// reads it.
-    public func kept(_ key: String, inScene: Bool = false) throws -> HostValue? {
+    /// The words the host's store keeps under `key` - of the scene the page is in where `inScene` - as the next
+    /// launch reads them.
+    public func kept(_ key: String, inScene: Bool = false) throws -> String? {
         note("read what is kept")
         return try driven { try driver.kept(key, inScene: inScene) }
     }

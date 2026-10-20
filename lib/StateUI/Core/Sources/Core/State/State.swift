@@ -177,27 +177,21 @@ extension State where Value: PersistentValue {
     ///
     /// The value written here is what the state holds when the store has nothing
     /// under the name. Reading and writing are what they are on any `@State`:
-    /// nothing is awaited, and a write reaches the store by itself. Two views
-    /// declaring one key share the state. The application lists its keys in
-    /// `persistentKeys`.
+    /// nothing is awaited, the host reads the store as the state is first made,
+    /// and a write reaches the store by itself. Two views declaring one key share
+    /// the state.
     ///
     /// - Parameters:
     ///   - wrappedValue: what the state holds when the store has nothing.
-    ///   - persistentKey: the name it is kept under, and the kind of value it is.
+    ///   - persistentKey: the name it is kept under, of this state's type.
     public convenience init(
         wrappedValue: @autoclosure @escaping () -> Value,
-        persistentKey key: PersistentKey
+        persistentKey key: PersistentKey<Value>
     ) {
         self.init(making: wrappedValue)
 
-        // A key declared for another type is said at once, rather than never saved.
-        precondition(
-            Value.persistentKind == key.kind,
-            "'\(key.name)' was declared to keep a \(key.kind) and is written "
-                + "on a \(Value.self), which is a \(Value.persistentKind)")
-
-        // One claim, one hold: the key's standing storage, or this one adopted; the
-        // stored value lands now or when the host's read arrives.
+        // One claim, one hold: the key's standing storage, or this one adopted; what the store holds lands now or
+        // when the host's reader comes.
         // Design: docs/design/core/state.md#kept-state
         let own = storage
 
@@ -214,29 +208,27 @@ extension State where Value: PersistentValue {
 
         storage.keep = { PersistentStore.shared.record(key, $0.persistentValue) }
     }
+}
 
+extension State where Value: Codable {
     /// State a scene keeps: the same state, under a name, handed back with its scene
     /// when the system restores the application's windows.
     ///
     ///     @State(sceneKey: .section) private var section = 0
     ///
-    /// Each scene has its own value under the name, and a new scene starts from the
-    /// value written here. Declared outside every scene it is an ordinary state. A
-    /// value every scene shares is `persistentKey:` instead.
+    /// Each scene has its own value under the name, written down as text, and a
+    /// new scene starts from the value written here. Declared outside every scene
+    /// it is an ordinary state. A value every scene shares is `persistentKey:`
+    /// instead.
     ///
     /// - Parameters:
     ///   - wrappedValue: what the state holds in a scene that kept nothing.
-    ///   - sceneKey: the name it is kept under, and the kind of value it is.
+    ///   - sceneKey: the name it is kept under, of this state's type.
     public convenience init(
         wrappedValue: @autoclosure @escaping () -> Value,
-        sceneKey key: SceneKey
+        sceneKey key: SceneKey<Value>
     ) {
         self.init(making: wrappedValue)
-
-        precondition(
-            Value.persistentKind == key.kind,
-            "'\(key.name)' was declared to keep a \(key.kind) and is written "
-                + "on a \(Value.self), which is a \(Value.persistentKind)")
 
         // Paired with its scene by the build that finds it there.
         // Design: docs/design/core/state.md#scene-kept-state
@@ -250,21 +242,26 @@ extension State where Value: PersistentValue {
 
     /// Pairs this state with the scene it is built in: the scene's storage for the
     /// key, with what the platform kept landed, and the scene as where it is kept.
-    private func claim(_ key: SceneKey, in record: SceneRecord) {
+    private func claim(_ key: SceneKey<Value>, in record: SceneRecord) {
         let own = storage
 
         if let kept = record.claim(
             key.key,
             orAdopt: own,
             landing: { held in
-                if let value = Value(persisted: held) {
+                if let text = held.string, let value = ValueText.read(Value.self, from: text) {
                     own.value = value
                 }
             }) as? Storage {
             storage = kept
         }
 
-        storage.keep = { [weak record] in record?.record(key.key, $0.persistentValue) }
+        storage.keep = { [weak record] value in
+            guard let text = try? ValueText.write(value) else {
+                return complain("'\(key.name)' holds a value its scene cannot write down: it is not kept")
+            }
+            record?.record(key.key, .string(text))
+        }
     }
 }
 

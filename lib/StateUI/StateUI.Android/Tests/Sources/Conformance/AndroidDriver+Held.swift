@@ -293,15 +293,11 @@ extension AndroidDriver {
     static let testStore = Java.findClass("stateui/android/test/TestStore")
     static let forget = Java.staticMethod(testStore, "forget", "(Landroid/content/Context;)V")
 
-    /// What the host keeps under `key` for the next launch, as it reads it back: a value of the application's from
-    /// the preferences, one of the first scene's from the scenes kept beside them.
-    func kept(_ key: String, inScene: Bool) throws -> HostValue? {
+    /// The words the host keeps under `key` for the next launch: a value of the application's from the
+    /// preferences, one of the first scene's from the scenes kept beside them.
+    func kept(_ key: String, inScene: Bool) throws -> String? {
         let context = TestContext.window.reference
-        if inScene { return AndroidPersistence.readScenes(context: context).scenes.first?.values[key] }
-        guard let word = AndroidPersistence.words([key], context: context).first ?? nil else { return nil }
-        let kinds = [
-            PersistentKey(key, of: String.self), PersistentKey(key, of: Double.self), PersistentKey(key, of: Bool.self),
-        ]
-        return kinds.lazy.compactMap { KeptWord.restored([key: word], for: [$0])[key] }.first
+        if inScene { return AndroidPersistence.readScenes(context: context).scenes.first?.values[key]?.string }
+        return AndroidPersistence.word(key, context: context)
     }
 }

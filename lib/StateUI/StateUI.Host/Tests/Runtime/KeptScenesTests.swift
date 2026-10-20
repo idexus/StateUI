@@ -82,7 +82,7 @@ final class KeptScenesTests: XCTestCase {
         let keeper = SceneKeeper()
         let kept = KeptScenes(scenes: [
             KeptScenes.Scene(
-                values: ["kept.section": .number(2)],
+                values: ["kept.section": .string("2")],
                 windows: [
                     KeptScenes.Window(kind: nil, value: nil), KeptScenes.Window(kind: "kept.note", value: "7"),
                     KeptScenes.Window(kind: "gone", value: nil),
@@ -98,16 +98,16 @@ final class KeptScenesTests: XCTestCase {
         XCTAssertEqual(KeptApplication.sections.first, 2, "the scene's value, read at its first render")
         XCTAssertEqual(KeptScenes(try XCTUnwrap(keeper.changed(root: runtime.tree.root))), KeptScenes(scenes: [
             KeptScenes.Scene(
-                values: ["kept.section": .number(2)],
+                values: ["kept.section": .string("2")],
                 windows: [KeptScenes.Window(kind: nil, value: nil), KeptScenes.Window(kind: "kept.note", value: "7")]),
             KeptScenes.Scene(windows: [KeptScenes.Window(kind: "kept.about", value: nil)]),
         ]))
         XCTAssertNil(keeper.changed(root: runtime.tree.root), "kept already")
 
         let scene = try XCTUnwrap(scenes.first)
-        keeper.keep([.name(SceneValues.key(of: scene)), .name("kept.section"), .number(3)])
+        keeper.keep([.name(SceneValues.key(of: scene)), .name("kept.section"), .string("3")])
         let text = try XCTUnwrap(keeper.changed(root: runtime.tree.root))
-        XCTAssertEqual(KeptScenes(text).scenes.first?.values, ["kept.section": .number(3)])
+        XCTAssertEqual(KeptScenes(text).scenes.first?.values, ["kept.section": .string("3")])
     }
 
     /// With nothing kept, the window launch opens comes as the platform's first, so the next new window is one more;
@@ -149,7 +149,7 @@ private struct KeptScene: Scene {
 }
 
 private struct KeptSectionPage: View {
-    @State(sceneKey: SceneKey("kept.section", of: Int.self)) private var section = 0
+    @State(sceneKey: SceneKey<Int>("kept.section")) private var section = 0
 
     var body: some View {
         KeptApplication.sections.append(section)

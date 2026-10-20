@@ -199,7 +199,7 @@ enum JavaAPI {
 
     static let store = Java.findClass("stateui/android/StateUIStore")
     static let readStore = Java.staticMethod(
-        store, "read", "(Landroid/content/Context;[Ljava/lang/String;)[Ljava/lang/String;")
+        store, "read", "(Landroid/content/Context;Ljava/lang/String;)Ljava/lang/String;")
     static let writeStore = Java.staticMethod(
         store, "write", "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V")
 
@@ -372,6 +372,8 @@ enum JavaAPI {
     static let contextClass = Java.findClass("android/content/Context")
     static let getResources = Java.method(contextClass, "getResources", "()Landroid/content/res/Resources;")
     static let getClassLoader = Java.method(contextClass, "getClassLoader", "()Ljava/lang/ClassLoader;")
+    static let getApplicationContext = Java.method(
+        contextClass, "getApplicationContext", "()Landroid/content/Context;")
     static let resources = Java.findClass("android/content/res/Resources")
     static let getDisplayMetrics = Java.method(resources, "getDisplayMetrics", "()Landroid/util/DisplayMetrics;")
     static let typedValue = Java.findClass("android/util/TypedValue")

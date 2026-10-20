@@ -146,7 +146,7 @@ final class AndroidActToolkit: ActToolkit {
 
     func keep(_ call: HostActCall) -> Bool {
         switch call.act {
-        case .persistValue: AndroidPersistence.keep(call, core: core, context: context)
+        case .persistValue: AndroidPersistence.keep(call, context: context)
         case .persistSceneValue: AndroidRenderer.shared?.keepSceneValue(call)
         default: return false
         }

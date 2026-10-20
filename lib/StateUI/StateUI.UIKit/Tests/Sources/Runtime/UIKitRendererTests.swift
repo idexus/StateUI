@@ -38,7 +38,7 @@ private struct KeptScene: Scene {
 
 private struct KeptNote: View {
     let number: Int
-    @State(sceneKey: SceneKey("uikit.section", of: Int.self)) private var section = 0
+    @State(sceneKey: SceneKey<Int>("uikit.section")) private var section = 0
 
     var body: some View {
         VStack {
@@ -138,7 +138,7 @@ final class UIKitRendererTests: XCTestCase {
     func testASceneIOSKeptComesBackAsTheWindowItKept() throws {
         let scene = try XCTUnwrap(TestScene.scene)
         stateUIUseApp(KeptApplication())
-        let kept = WindowRecord(identifier: "kept", kind: "uikit.kept.note", value: "7", kept: ["uikit.section": .number(2)])
+        let kept = WindowRecord(identifier: "kept", kind: "uikit.kept.note", value: "7", kept: ["uikit.section": .string("2")])
         scene.session.userInfo = [UIKitRenderer.recordKey: kept.text]
         let host = UIKitRenderer(preferences: TestScene.preferences, reducesMotion: { true })
         host.ownsScenes = false
@@ -157,8 +157,8 @@ final class UIKitRendererTests: XCTestCase {
         XCTAssertEqual(Self.record(in: scene)?.value, "7")
 
         host.runtime.pump.dispatch(try XCTUnwrap(element.first(type: .button)?.handler(.clicked)))
-        host.settle { Self.record(in: scene)?.kept == ["uikit.section": .number(3)] }
-        XCTAssertEqual(Self.record(in: scene)?.kept, ["uikit.section": .number(3)])
+        host.settle { Self.record(in: scene)?.kept == ["uikit.section": .string("3")] }
+        XCTAssertEqual(Self.record(in: scene)?.kept, ["uikit.section": .string("3")])
     }
 
     /// A window iOS kept of a kind no scene declares now comes as a new window: iOS connected its scene, and the user

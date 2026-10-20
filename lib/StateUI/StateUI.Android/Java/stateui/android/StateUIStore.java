@@ -14,12 +14,9 @@ final class StateUIStore {
         return context.getSharedPreferences("stateui", Context.MODE_PRIVATE);
     }
 
-    /** The kept words of each name, in order; null where nothing is kept. */
-    static String[] read(Context context, String[] names) {
-        SharedPreferences preferences = preferences(context);
-        String[] values = new String[names.length];
-        for (int index = 0; index < names.length; index++) values[index] = preferences.getString(names[index], null);
-        return values;
+    /** The words kept under `name`; null where nothing is. */
+    static String read(Context context, String name) {
+        return preferences(context).getString(name, null);
     }
 
     /** Keeps `value` under `name`. */

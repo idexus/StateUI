@@ -22,7 +22,7 @@ struct CounterPage: View {
 
 /// A page showing what its scene keeps, which a click changes.
 struct KeptSectionPage: View {
-    @State(sceneKey: SceneKey("android.section", of: Int.self)) private var section = 0
+    @State(sceneKey: SceneKey<Int>("android.section")) private var section = 0
 
     var body: some View {
         VStack {
@@ -153,7 +153,8 @@ final class AndroidRendererTests: XCTestCase {
 
             let pressed = Java.frame {
                 Java.callStaticBool(
-                    AndroidDriver.dialogs, AndroidDriver.answer, .int(0), .int(-1), .object(nil))
+                    AndroidDriver.dialogs, AndroidDriver.answer, .int(AndroidAnswer.accept.rawValue), .int(-1),
+                    .object(nil))
             }
             XCTAssertTrue(pressed)
             // The dialog hands its button's press on in a message of the UI thread's own.
@@ -280,7 +281,7 @@ final class AndroidRendererTests: XCTestCase {
 
             let kept = AndroidPersistence.readScenes(context: TestContext.context.reference)
             XCTAssertEqual(second.views(AndroidTextView.self).map(\.text), ["section 2"])
-            XCTAssertEqual(kept.scenes.map(\.values), [["android.section": .number(2)]])
+            XCTAssertEqual(kept.scenes.map(\.values), [["android.section": .string("2")]])
         }
     }
 

@@ -184,7 +184,7 @@ final class UIThreadTests: XCTestCase {
         stateUIRunJobs()
         Renderer.shared.clearInvalidation()
 
-        let key = PersistentKey("mainThread.kept", of: Double.self)
+        let key = PersistentKey<Double>("mainThread.kept")
         let kept = State(wrappedValue: 1.0, persistentKey: key)
 
         XCTAssertEqual(asked { kept.wrappedValue = 0.5 }, 1, "the write asked for no turn")

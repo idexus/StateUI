@@ -9,7 +9,7 @@ AnimatedPropertySample.swift fef33f29ae910477
 AnimationSample.swift 81f886d98ac6d03f
 AppSwitcherSample.swift 07c52e1b524a8090
 AppThemeSample.swift cf321fd19548d57e
-AppearanceSample.swift 8f4d741ad387b4ef
+AppearanceSample.swift b86b8c4eda4df293
 ApplicationSessionSample.swift f3cdc5e94b7f1122
 BatterySample.swift 361332732b730510
 BindingReaderSample.swift 1239ebd325c706fa
@@ -74,14 +74,14 @@ MaterialsSample.swift 22b1a745307885f8
 MenuBarSample.swift c43adf3ebf7c85ac
 ModalSample.swift 69735010f26dc23b
 MotionSample.swift 1d57b2b7bf11c40e
-MultiWindowSample.swift 99f2eb664c633c23
+MultiWindowSample.swift 12f1c8ba843fad28
 NavigationSample.swift bb0a9a427e1bfa90
 NextFieldSample.swift b365cbd1626b4437
 OnChangedSample.swift 69ae77869efe3165
 OutlineSample.swift 0ee9520affeef1b6
 PacedStateSample.swift ab53896019e28ea0
 PanSample.swift 8541b96564665c32
-PersistentStateSample.swift 9877af3582429c32
+PersistentStateSample.swift ed87b276de6c9c56
 PickerSample.swift 810272c663d0f13e
 PinchSample.swift fb62d0d14b7b4ced
 PlatformSupportSample.swift 6ddf010bff149e99
@@ -94,7 +94,7 @@ ReaderSample.swift 778670ce97ad7532
 RebuildSample.swift 68155193fabdfebd
 RemovingRowSample.swift 3737dc3829abfd1c
 SameInputsSample.swift 11581f61c6c4343c
-ScenesSample.swift 4325dc58daa1c9e7
+ScenesSample.swift 7de692d798318ff8
 ScrollViewSample.swift cf26f19b3729064f
 SearchFieldSample.swift 32903a70f555dea0
 SearchSample.swift 679d1baa31dfcd8b
@@ -109,7 +109,7 @@ StackLayoutSample.swift 36d649ba6717126d
 StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
 StepperSample.swift a1eb96147d1526c6
-StyleSample.swift a76f27c2f8388219
+StyleSample.swift 319e5c4f2f6809ab
 SwipeSample.swift 66a58baed064554c
 SwitchSample.swift ee3ccdaf5a4a3003
 TabsSample.swift 33fc0a1f3dec9bbe

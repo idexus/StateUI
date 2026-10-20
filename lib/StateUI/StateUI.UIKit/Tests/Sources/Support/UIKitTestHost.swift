@@ -47,7 +47,7 @@ extension UIKitRenderer {
         let renderer = UIKitRenderer(
             clock: clock.map { clock in { clock.now } }, preferences: preferences, reducesMotion: { reducesMotion })
         renderer.ownsScenes = false
-        renderer.hydratePersistentState()
+        renderer.readKeptFromPreferences()
         TestScene.scene?.session.userInfo = nil  // no window an earlier test kept
         renderer.connect(TestScene.scene!)
         renderer.layOut()

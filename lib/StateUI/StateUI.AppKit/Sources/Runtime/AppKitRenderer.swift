@@ -95,7 +95,7 @@ final class AppKitRenderer {
                 configureEnvironment()
                 watching()
             },
-            kept: hydratePersistentState,
+            kept: readKeptFromPreferences,
             windows: {
                 if !connectedFirstWindow {
                     runtime.connectWindow()

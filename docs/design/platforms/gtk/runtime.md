@@ -173,9 +173,9 @@ holds the dialog and the launches back in the host, which records them.
 The desktop keeps no store an application can use without a schema
 installed, so the host keeps one of its own: `kept values.txt` in the user's
 state folder, in a folder named by the application's ID, in the host
-layer's text ([kept values](../../host/runtime.md#kept-values)). Every key
-the application lists is read before the first scene connects and handed to
-the core ahead of the first view; a key's new value writes the whole file
+layer's text ([kept values](../../host/runtime.md#kept-values)). A key is
+read from it as its first state is made, through the reader the host gives
+the core as it starts; a key's new value writes the whole file
 again, beside the old one and then in its place, so a failed write leaves
 the old. The desktop restores no windows, so the application's scenes are
 kept beside them, in `kept scenes.txt` ([kept

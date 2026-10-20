@@ -113,7 +113,7 @@ final class KeyGuardTests: XCTestCase {
 
     private static let readingWords: [String: String] = [
         "HostDeclaration.swift": export, "HostRegister.swift": export,
-        "KeptValuesText.swift": store, "KeptWord.swift": store, "Persistence.swift": store,
+        "KeptValuesText.swift": store,
         "SceneRecord.swift": store, "OpenScenes.swift": "a window's kind the platform kept, found among those the "
             + "scenes declare",
     ]
@@ -130,9 +130,9 @@ final class KeyGuardTests: XCTestCase {
         "ItemsCells.swift": identity, "AppKitItemsView.swift": identity, "WebItemsView.swift": identity,
         "SceneRecord.swift": identity + ", and " + file,
         // Files.
-        "HostBoundary.swift": file, "OpenScenes.swift": file, "Persistence.swift": file,
+        "HostBoundary.swift": file, "OpenScenes.swift": file,
         "ValueText+Reading.swift": file, "KeptScenes.swift": file, "KeptValuesText.swift": file,
-        "KeptWord.swift": file, "SceneValues.swift": file, "WindowRecord.swift": file,
+        "SceneValues.swift": file, "WindowRecord.swift": file,
         "AppKitWindowController+Lifecycle.swift": file, "HostRuntime.swift": file + ", and " + register,
         // The register and its exports.
         "HostDeclaration.swift": register, "HostRegister.swift": register, "HostVerdict.swift": register,

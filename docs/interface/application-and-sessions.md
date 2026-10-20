@@ -56,7 +56,6 @@ scene ([Scenes](#scenes)).
 | `scenes` | the scenes standing, in opening order |
 | `styles` | the application's `StyleSheet` |
 | `motion` | default motion law |
-| `persistentKeys` | state keys hydrated before the first description |
 | `openWindow()` | opens one more window of the `WindowGroup` with no name, as *File ▸ New Window* does |
 | `openWindow(_:)`, `openWindow(_:value:)` | opens a window of a kind, in the scene declaring it |
 | `closeWindow(_:)`, `closeWindow(_:value:)` | closes every window of a kind, or the one for a value |
@@ -92,7 +91,6 @@ struct NotesApp: Application {
     init() {
         application.styles = AppStyles.sheet
         application.motion = .spring(response: .milliseconds(300))
-        application.persistentKeys = [.lastDocument]
     }
 
     var body: some Scene { NotesScene() }
@@ -300,10 +298,8 @@ with the scene's windows and hands it back before the restored scene is
 described.
 
 ```swift quote
-extension SceneKey {
-    static let selectedDocument = SceneKey(
-        "com.example.notes.selected-document",
-        of: Int.self)
+extension SceneKey where Value == Int {
+    static let selectedDocument = SceneKey("com.example.notes.selected-document")
 }
 
 final class SelectionModel {
@@ -311,7 +307,8 @@ final class SelectionModel {
 }
 ```
 
-A scene stands once, so its key holds one value, which ends with the scene.
+A scene key keeps any `Codable` value. A scene stands once, so its key holds
+one value, which ends with the scene.
 Process-wide preferences use `@State(persistentKey:)` instead; see
 [State and reactivity](../concepts/state-and-reactivity.md).
 

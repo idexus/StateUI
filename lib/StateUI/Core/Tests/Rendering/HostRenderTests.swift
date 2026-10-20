@@ -167,20 +167,23 @@ final class HostRenderTests: XCTestCase {
         XCTAssertEqual(StandardEnvironment.application.phase, .inactive)
     }
 
-    func testANativeHostReadsTheApplicationsPersistencePlanAndHydratesIt() {
+    /// A native host gives the core the reader of its store, which a state under a key reads - by the key's name and
+    /// its value's kind - as it is first made, or, made before, as the reader comes.
+    func testANativeHostGivesTheReaderOfItsStore() {
         PersistentStore.shared.forgetAll()
-        defer {
-            PersistentStore.shared.forgetAll()
-            StandardEnvironment.application.persistentKeys = []
+        defer { PersistentStore.shared.forgetAll() }
+        let early = State(wrappedValue: "light", persistentKey: PersistentKey<String>("host.theme"))
+
+        HostBoundary.readsKept { name, kind in
+            switch (name, kind) {
+            case ("host.theme", .text): .string("dark")
+            case ("host.count", .integer): .number(4)
+            default: nil
+            }
         }
-        let key = PersistentKey("host.theme", of: String.self)
-        let state = State(wrappedValue: "light", persistentKey: key)
-        StandardEnvironment.application.persistentKeys = [key]
 
-        XCTAssertEqual(HostBoundary.persistentKeys.map(\.name), ["host.theme"])
-
-        HostBoundary.restorePersistent(["host.theme": .string("dark")])
-        XCTAssertEqual(state.get(), "dark")
+        XCTAssertEqual(early.get(), "dark")
+        XCTAssertEqual(State(wrappedValue: 0, persistentKey: PersistentKey<Int>("host.count")).get(), 4)
     }
 
     func testANativeHostDecodesAndEncodesAJourneyWithoutItsLaneLayout() throws {

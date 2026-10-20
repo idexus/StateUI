@@ -146,7 +146,7 @@ final class GTKRenderer {
                 GTKEnvironment.report(to: runtime.core, applicationID: applicationID)
                 GTKEnvironment.watch { [weak self] in self?.environmentChanged() }
             },
-            kept: { GTKKeptValues.restore(into: runtime.core, applicationID: applicationID) },
+            kept: { GTKKeptValues.readKept(into: runtime.core, applicationID: applicationID) },
             windows: { scenes.restore(GTKKeptValues.readScenes(applicationID: applicationID), in: runtime) },
             turns: turns)
     }

@@ -109,7 +109,7 @@ final class GTKActToolkit: ActToolkit {
     func keep(_ call: HostActCall) -> Bool {
         switch call.act {
         case .persistValue:
-            GTKKeptValues.keep(call, core: renderer.runtime.core, applicationID: renderer.applicationID)
+            GTKKeptValues.keep(call, applicationID: renderer.applicationID)
         case .persistSceneValue:
             let scenes = renderer.scenes
             if scenes.keep(call.arguments), let text = scenes.changed(root: renderer.runtime.tree.root) {

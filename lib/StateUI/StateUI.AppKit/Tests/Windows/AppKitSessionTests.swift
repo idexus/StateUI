@@ -401,19 +401,16 @@ final class AppKitSessionTests: XCTestCase {
         defer {
             preferences.removePersistentDomain(forName: suite)
             PersistentStore.shared.forgetAll()
-            StandardEnvironment.application.persistentKeys = []
         }
-        let key = PersistentKey("theme", of: String.self)
-        let state = State(wrappedValue: "light", persistentKey: key)
-        StandardEnvironment.application.persistentKeys = [key]
+        let key = PersistentKey<String>("theme")
         preferences.set("dark", forKey: key.name)
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             preferences: preferences)
 
-        renderer.hydratePersistentState()
-        XCTAssertEqual(state.get(), "dark")
+        renderer.readKeptFromPreferences()
+        XCTAssertEqual(State(wrappedValue: "light", persistentKey: key).get(), "dark")
 
         renderer.savePersistent(HostActCall(
             act: .persistValue,

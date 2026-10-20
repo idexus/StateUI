@@ -6,7 +6,7 @@
 import CStateUIGTK
 
 /// The application's kept values in a file of the host's own - the desktop keeps no store an application can use
-/// without a schema installed: read before the first scene, written whole as each changes.
+/// without a schema installed: a value read as a state under its key is first made, written whole as each changes.
 /// Design: docs/design/platforms/gtk/runtime.md#kept-values
 @MainActor
 enum GTKKeptValues {
@@ -18,19 +18,18 @@ enum GTKKeptValues {
         (folder ?? String(cString: g_get_user_state_dir()) + "/" + applicationID) + "/kept values.txt"
     }
 
-    /// Hands the core every kept value there is, before the first render reads one.
-    static func restore(into core: CoreLink, applicationID: String) {
-        let keys = core.persistentKeys
-        guard !keys.isEmpty else { return }
-        core.restorePersistent(read(file(for: applicationID)).restored(for: keys))
+    /// Gives the core the reader of the application's file.
+    static func readKept(into core: CoreLink, applicationID: String) {
+        let file = file(for: applicationID)
+        core.readsKept { name, kind in read(file).value(named: name, as: kind) }
     }
 
     /// Keeps a key's new value, as the act `persistValue` carries it: the whole file written aside, then moved into
     /// place, so a failed write leaves the old.
-    static func keep(_ call: HostActCall, core: CoreLink, applicationID: String) {
+    static func keep(_ call: HostActCall, applicationID: String) {
         let file = file(for: applicationID)
         var kept = read(file)
-        guard kept.keep(call.arguments, keys: core.persistentKeys) else { return }
+        guard kept.keep(call.arguments) else { return }
 
         if !write(kept, to: file) { GTKRenderer.log.error("the kept values could not be written") }
     }

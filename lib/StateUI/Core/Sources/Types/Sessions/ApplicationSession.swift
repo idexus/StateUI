@@ -79,21 +79,6 @@ public final class ApplicationSession {
     /// `$state.journey.move(to:_:)`.
     @State public var motion: Motion = .standard
 
-    /// Every key the application keeps between launches. Write it in the
-    /// application's `init`: the host reads exactly these keys from the store
-    /// before the first view is built.
-    ///
-    ///     init() {
-    ///         application.persistentKeys = [.lastGroup, .appearance]
-    ///     }
-    ///
-    /// **A key left off this list is never read.** State declared with it
-    /// still saves, so its value arrives one launch late - and the library
-    /// says so once.
-    ///
-    /// Design: docs/design/types/sessions.md#kept-keys-are-declared
-    @State public var persistentKeys: [PersistentKey] = []
-
     /// A fresh instance, for providing a fake to one branch with
     /// `.environment(...)`. It opens scenes as the application's own does.
     public init() {}
@@ -162,6 +147,5 @@ public final class ApplicationSession {
     func forget() {
         styles = nil
         motion = .standard
-        persistentKeys = []
     }
 }

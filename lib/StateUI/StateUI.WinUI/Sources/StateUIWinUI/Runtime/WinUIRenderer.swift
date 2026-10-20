@@ -151,7 +151,7 @@ final class WinUIRenderer {
             register: WinUIRealization.register,
             complainingTo: WinUIRenderer.log,
             environment: { WinUIEnvironment.report(to: runtime.core) },
-            kept: { if restoringKept { WinUIPersistence.restore(into: runtime.core) } },
+            kept: { if restoringKept { WinUIPersistence.readKept(into: runtime.core) } },
             windows: { scenes.restore(WinUIPersistence.readScenes(), in: runtime) },
             turns: turns)
     }

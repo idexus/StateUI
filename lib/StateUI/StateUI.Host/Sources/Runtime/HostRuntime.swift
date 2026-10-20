@@ -106,8 +106,8 @@
     }
 
     /// Starts the runtime in the one order every host keeps: what it realizes, the environment it reports, the
-    /// values the platform kept - read once the device is told, as reading their keys makes the application - the
-    /// language's direction, the windows, then the turns. Each step but the first and the direction is the host's.
+    /// reader of the platform's store (`CoreLink.readsKept`) - before any state reads a kept key - the language's
+    /// direction, the windows, then the turns. Each step but the first and the direction is the host's.
     /// Design: docs/design/host/runtime.md#starting
     public func start(
         realizing realization: HostRealization, unrealized: [any ElementContract.Type],

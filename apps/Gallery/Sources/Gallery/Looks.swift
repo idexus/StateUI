@@ -4,7 +4,7 @@ import StateUI
 
 // listing: Gallery.Looks
 /// What a gallery's bars are.
-enum BarLook: String, CaseIterable, PersistentValue {
+enum BarLook: String, CaseIterable {
     /// The platform's own bars, in its material and the user's accent.
     case platform
 
@@ -30,7 +30,7 @@ enum BarLook: String, CaseIterable, PersistentValue {
 
 /// What one surface of the gallery is made of - its window, its sidebar, its
 /// sidebar sliding over the page.
-enum SurfaceMaterial: String, CaseIterable, PersistentValue {
+enum SurfaceMaterial: String, CaseIterable {
     /// The platform's own.
     case platform
 
@@ -111,7 +111,7 @@ struct SurfaceLook: Equatable {
 /// The look the gallery wears in one theme: its bars, and what its window, its
 /// sidebar and its sidebar sliding over the page are made of. Kept as one line
 /// of words, so a scene keeps a theme's whole look under one key.
-struct ThemeLook: Equatable, RawRepresentable, PersistentValue {
+struct ThemeLook: Equatable, RawRepresentable {
     var bars: BarLook
     var barColour: AccentChoice
     var window: SurfaceLook
@@ -191,7 +191,7 @@ struct ThemeLook: Equatable, RawRepresentable, PersistentValue {
 /// the Appearance sample. A scene keeps the CHOICE - the gallery's own is drawn
 /// afresh at every start, as this version of the gallery makes it, never kept
 /// as what it was when the scene was.
-enum LookChoice: Equatable, RawRepresentable, PersistentValue {
+enum LookChoice: Equatable, RawRepresentable, Codable {
     /// The look that suits the platform best: `ThemeLook.light` or `.dark`.
     case own
 

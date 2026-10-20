@@ -264,9 +264,9 @@ the ticket the call was given.
 Windows keeps no store for an application that is no package, so the host
 keeps one of its own: a file in the user's local data, in a folder named
 after the executable, holding the host layer's text ([kept
-values](../../host/runtime.md#kept-values)). Every key the
-application lists is read before the first scene connects and handed to the
-core ahead of the first view; a key's new value writes the whole file again,
+values](../../host/runtime.md#kept-values)). A key is read from it as its
+first state is made, through the reader the host gives the core as it starts;
+a key's new value writes the whole file again,
 its keys in order, beside the old one first and then in its place, so a
 failed write leaves the old. Windows restores no windows either, so the
 scenes are kept the same way, in a second file beside it, by the host

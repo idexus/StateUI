@@ -112,7 +112,7 @@ final class UIKitRenderer {
                 reportEnvironment()
                 environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
             },
-            kept: hydratePersistentState, turns: startTurns)
+            kept: readKeptFromPreferences, turns: startTurns)
     }
 
     /// Takes a turn after every pass of the main run loop, where the core has work for one.

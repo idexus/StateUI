@@ -143,16 +143,12 @@ extension AppKitDriver {
         return Self.color(band).propValue
     }
 
-    /// What the host keeps under `key`, as the next launch reads it: a value every scene shares from the driver's
-    /// preferences, as its words read back; one of the first scene from its first window's restoration record.
-    func kept(_ key: String, inScene: Bool) throws -> HostValue? {
+    /// The words the host keeps under `key`, as the next launch reads them: a value every scene shares from the
+    /// driver's preferences; one of the first scene from its first window's restoration record.
+    func kept(_ key: String, inScene: Bool) throws -> String? {
         guard let renderer else { throw DriverCannot("read what is kept before a host runs") }
-        if inScene { return renderer.windowsForTesting.first?.restorationRecordForTesting.kept[key] }
-        guard let word = store.string(forKey: key) else { return nil }
-        let kinds = [
-            PersistentKey(key, of: String.self), PersistentKey(key, of: Double.self), PersistentKey(key, of: Bool.self),
-        ]
-        return kinds.lazy.compactMap { KeptWord.restored([key: word], for: [$0])[key] }.first
+        if inScene { return renderer.windowsForTesting.first?.restorationRecordForTesting.kept[key]?.string }
+        return store.string(forKey: key)
     }
 
     /// The question AppKit's alert shows now, as it shows it.

@@ -67,24 +67,6 @@ A view outside every scene or window reads a standard session that does
 nothing: a scene always in front that opens nothing, a window that closes
 nothing. Every scene and window offers its own, nearer.
 
-## Kept keys are declared
-
-`persistentKeys` lists every key the application keeps between launches,
-written in the application's `init`. Reading a `@State` is synchronous, so a
-kept value must be in memory before the first view is built, and a store is
-read key by key, each with the kind of value it holds. The host therefore
-asks for the keys once it has started - after the application registers,
-before the first render - reads exactly those, and hands back what it found
-([render](../core/render.md)).
-
-A key left off the list is never read. State declared with it still saves,
-because a write knows its own key, so its value appears one launch late: the
-symptom is a setting that lags one run behind. So a key a state keeps and the
-list leaves out is said once: when the host reads the list, for a state that
-claimed it before, and as a state claims it after. The list is the one thing
-that cannot be worked out from the views, because the views that would name
-the keys do not exist yet when the store is read.
-
 ## Styles and motion stay in the core
 
 `ApplicationSession.styles` is never sent to a host. A style is resolved in

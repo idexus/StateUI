@@ -302,9 +302,9 @@ not return as a user event.
 
 ## Persistent state
 
-Persistent state is ordinary state with a stable application key. It is
-hydrated before the first description is built and written to the selected
-host store after changes.
+Persistent state is ordinary state with a stable application key. The host's
+store is read as the first state under the key is made, so the kept value is
+there for the state's first description, and every change is written back.
 
 ```swift
 enum Appearance: String, PersistentValue {
@@ -313,22 +313,8 @@ enum Appearance: String, PersistentValue {
     case system
 }
 
-extension PersistentKey {
-    static let appearance = PersistentKey(
-        "com.example.notes.appearance",
-        of: Appearance.self)
-}
-
-struct NotesApp: Application {
-    @Environment(\.application) private var application
-
-    init() {
-        application.persistentKeys = [.appearance]
-    }
-
-    var body: some Scene {
-        WindowGroup { SettingsPage() }
-    }
+extension PersistentKey where Value == Appearance {
+    static let appearance = PersistentKey("com.example.notes.appearance")
 }
 
 struct SettingsPage: View {
@@ -342,11 +328,9 @@ struct SettingsPage: View {
 }
 ```
 
-The declared value is the default when the store has no entry. The application
-must list every key in `ApplicationSession.persistentKeys` during its
-initialization; otherwise the host has no key to hydrate before the first
-build. A write still has its key, so omitting it can look like restoration is
-one launch late; a key a state keeps and the list leaves out is said once.
+The declared value is the default when the store has no entry. Nothing lists
+the keys in advance: a key is typed by the value it keeps, and the store is
+read by its name and that type's kind.
 
 `Bool`, `Int`, `Double`, and `String` conform to `PersistentValue`. An enum
 whose raw value conforms gains the same representation. Larger records belong
@@ -354,8 +338,9 @@ in an application-owned, explicitly versioned model rather than being hidden
 inside an unversioned settings string.
 
 One key names one storage for the application. Separate declarations of the
-same key share the value and invalidate all of its readers. A type mismatch
-between a key and its state is rejected when the state is built.
+same key share the value and invalidate all of its readers. A state of another
+type than its key's does not compile; two keys giving one name to different
+types stop the application when the second is used.
 
 Several writes to one key before the host drains pending work produce one save
 holding the last value. A persistent write is still drained when no body reads
@@ -376,10 +361,8 @@ A `SceneKey` keeps a separate value for each scene session. A restoring host
 returns that value with the scene before the scene's first build:
 
 ```swift
-extension SceneKey {
-    static let selectedSection = SceneKey(
-        "com.example.notes.selectedSection",
-        of: Int.self)
+extension SceneKey where Value == Int {
+    static let selectedSection = SceneKey("com.example.notes.selectedSection")
 }
 
 struct SceneSidebar: View {
@@ -397,8 +380,10 @@ struct SceneSidebar: View {
 }
 ```
 
-Two declarations of one key inside one scene share its storage. The same key
-in another scene names that scene's independent storage. A `sceneKey` state
+A scene keeps any `Codable` value, as its JSON text; a kept text that no
+longer reads as the key's type - the type changed since - leaves the declared
+default. Two declarations of one key inside one scene share its storage. The
+same key in another scene names that scene's independent storage. A `sceneKey` state
 declared outside a scene is ordinary state because there is no scene session to
 claim it. On a host without scene restoration, the state still lasts for the
 open scene but is not promised across launches.

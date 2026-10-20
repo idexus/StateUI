@@ -19,7 +19,6 @@
 ///
 ///         init() {
 ///             application.styles = AppStyles.sheet
-///             application.persistentKeys = [.lastNote]
 ///         }
 ///
 ///         var body: some Scene {
@@ -28,8 +27,8 @@
 ///     }
 ///
 /// Write it in `init`: the application is made at its first need, before the
-/// first view is built, and the kept state's keys are read from it. The standard
-/// environment - the device, the display, the locale - is known there already.
+/// first view is built. The standard environment - the device, the display, the
+/// locale - is known there already.
 @MainActor
 public protocol Application {
     /// The scenes the application is made of.

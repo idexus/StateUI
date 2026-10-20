@@ -246,23 +246,24 @@ for every write. A landed value is not saved: a measurement is not a setting.
 ## Kept state
 
 `@State(persistentKey: .key)` is an ordinary state that is also kept. Reading
-a state is synchronous, so the value has to be in memory before the first view
-is built, and the host hydrates the whole store before the first render. It
-reads a store key by key, each with its kind, so the application lists its keys:
+a state is synchronous, so the value has to be in memory as the state is made.
+A platform's store is read key by key, each with its kind, and a key says both
+- its name, and its value's type - so the store is read by the key itself, the
+moment its first state claims it:
 
 ```text
-  1  the host asks for the keys and the store     HostBoundary.persistentKeys
-  2  it reads exactly those from the store
-  3  it hands back what it found                  HostBoundary.restorePersistent
+  1  the host gives the core its store's reader   HostBoundary.readsKept
+     as it starts, before the first render
+  2  a state claims its key: the reader is asked  PersistentStore.claim
+     by the key's name and kind, synchronously
+  3  what it answers lands in the storage before the state is first read
 ```
 
-A key the store has nothing under is absent, and the state keeps the value
-written beside its declaration - which is where the default can be seen.
-
-A key a state keeps that the application's `persistentKeys` leaves out is said
-once, when the host reads the list or when a state claims the key after it:
-the host never reads that key at launch, so its value would come back one
-launch late.
+A key the store has nothing under reads nil, and the state keeps the value
+written beside its declaration - which is where the default can be seen. A key
+claimed before the reader came - a state made before the host started - is read
+as the reader is given, still ahead of the first view. Nothing lists the keys
+in advance, so no key can be left out of a list.
 
 A write lands in memory at once and marks the key, whoever makes it: the
 program, a control through the state's binding, or the host reporting what the
@@ -277,11 +278,12 @@ render and its save must not wait for the next event.
 
 One key is one piece of state: two views declaring a key share its storage, so
 a write in one rebuilds the readers in the other. The first state to claim a key
-decides the storage. A storage claimed before the host's read arrives - an
-application's own keyed state, made when the host reads `persistentKeys` -
-takes the stored value when `hydrate` runs, still ahead of the first view.
+decides the storage, and only it reads the store.
 
-The key's kind must match the value's type, checked when the state is made. The
+A key is typed by its value - `PersistentKey<Appearance>` - so a state of
+another type than its key's does not compile. Two keys giving one name to
+different types stop the application as the second is claimed: one name in the
+store holds one value. The
 label `persistentKey:` is the argument's own type, lowercased, as `motion:` and
 `sceneKey:` are: there is one kind of state, and the brackets say only what else
 is true of one. The unlabelled position already means the initial value.
@@ -294,7 +296,9 @@ before the walk decides where it stands, so the state is paired with its scene
 by the build that finds it there; one made inside a scene's build - a model a
 scene's state creates - claims at once. Each scene record keeps its own
 storages, restored values and waiting saves, which go out as one act per key
-per take (scenes.md).
+per take (scenes.md). A scene keeps any `Codable` value - `SceneKey<Value>` -
+as its JSON text (`ValueText`), which the host keeps as it is given; a kept
+text that no longer reads as the key's type leaves the declared default.
 
 ## The environment
 

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// State that outlives the process: what is hydrated, what is shared, what is saved.
+// State that outlives the process: what is read, what is shared, what is saved.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -12,20 +12,28 @@ private enum Appearance: String, PersistentValue {
     case dark
 }
 
-extension PersistentKey {
-    fileprivate static let count = PersistentKey("test.count", of: Int.self)
-    fileprivate static let name = PersistentKey("test.name", of: String.self)
-    fileprivate static let loud = PersistentKey("test.loud", of: Bool.self)
-    fileprivate static let level = PersistentKey("test.level", of: Double.self)
-    fileprivate static let appearance = PersistentKey("test.appearance", of: Appearance.self)
-    fileprivate static let late = PersistentKey("test.late", of: Int.self)
+extension PersistentKey where Value == Int {
+    fileprivate static let count = PersistentKey("test.count")
 }
 
-/// A state kept under a key no application lists, made after the host read the list.
-@MainActor
-private struct LateComer {
-    @State(persistentKey: .late) var late = 0
+extension PersistentKey where Value == String {
+    fileprivate static let name = PersistentKey("test.name")
 }
+
+extension PersistentKey where Value == Bool {
+    fileprivate static let loud = PersistentKey("test.loud")
+}
+
+extension PersistentKey where Value == Double {
+    fileprivate static let level = PersistentKey("test.level")
+}
+
+extension PersistentKey where Value == Appearance {
+    fileprivate static let appearance = PersistentKey("test.appearance")
+}
+
+// A key of one type does not compile on a state of another:
+// `@State(persistentKey: .count) var name = ""` - `PersistentKey<Int>` is no `PersistentKey<String>`.
 
 /// Two different views declaring the SAME key - which is the case that has to
 /// come out as one piece of state rather than two.
@@ -47,10 +55,6 @@ private struct Preferences {
     @State(persistentKey: .appearance) var appearance = Appearance.light
 }
 
-private struct KeepingPage: View {
-    var body: some View { Text("kept") }
-}
-
 /// A MODEL that keeps two of its settings - the shape an application's own
 /// settings object has, where the value belongs to the app rather than to any
 /// one view.
@@ -63,21 +67,23 @@ private final class Settings {
     @State var scratch = ""
 }
 
-/// An application that keeps two of its settings, in the platform's own store -
-/// said as it is made, which is when the host asks for them.
-private struct KeepingApp: Application {
-    @Environment(\.application) private var application
+/// What the host's store holds, and what the core asked it, each key's name and kind in turn.
+@MainActor
+private final class Store {
+    var values: [String: PropValue]
+    var asked: [String] = []
 
-    init() {
-        application.persistentKeys = [.count, .name]
+    init(_ values: [String: PropValue]) {
+        self.values = values
     }
 
-    var body: some Scene { WindowGroup { KeepingPage() } }
-}
-
-/// An application that keeps nothing, which is what most of them are.
-private struct PlainApp: Application {
-    var body: some Scene { WindowGroup { KeepingPage() } }
+    /// Gives the core this store's reader, as a host does at its start.
+    func read() {
+        PersistentStore.shared.reads { [self] name, kind in
+            asked.append("\(name) \(kind)")
+            return values[name]
+        }
+    }
 }
 
 @MainActor
@@ -96,22 +102,29 @@ final class PersistenceTests: XCTestCase {
         _ = drainedActs()
     }
 
-    // MARK: - What a key is
+    // MARK: - Coming back
 
-    /// A key's kind comes from the Swift type it was declared with, so
-    /// `of: Int.self` and `var count = 0` are the same word twice.
-    func testAKeyTakesItsKindFromTheTypeItWasDeclaredWith() {
-        XCTAssertEqual(PersistentKey.count.kind, .integer)
-        XCTAssertEqual(PersistentKey.name.kind, .text)
-        XCTAssertEqual(PersistentKey.loud.kind, .boolean)
-        XCTAssertEqual(PersistentKey.level.kind, .number)
+    /// A state under a key reads the host's store as it is first made, by the key's name and the kind of its
+    /// value - an enum's raw value's - once: a second state under the key shares the first's.
+    func testAStateUnderAKeyReadsTheStoreAsItIsMade() {
+        let store = Store(["test.count": .number(7), "test.name": .string("Ada"), "test.appearance": .string("dark")])
+        store.read()
+
+        XCTAssertEqual(Sidebar().count, 7)
+        XCTAssertEqual(Footer().count, 7)
+        let preferences = Preferences()
+        XCTAssertEqual(preferences.name, "Ada")
+        XCTAssertEqual(preferences.appearance, .dark)
+        XCTAssertEqual(store.asked, [
+            "test.count integer", "test.name text", "test.loud boolean", "test.level number", "test.appearance text",
+        ])
     }
 
     /// An enum is kept as the thing it is spelled with, which is what makes
     /// conformance one line and keeps the store readable by anything else that
     /// opens it.
     func testAnEnumIsKeptAsItsRawValue() {
-        XCTAssertEqual(PersistentKey.appearance.kind, .text)
+        XCTAssertEqual(Appearance.persistentKind, .text)
         XCTAssertEqual(Appearance.dark.persistentValue, .string("dark"))
         XCTAssertEqual(Appearance(persisted: .string("light")), .light)
 
@@ -120,27 +133,13 @@ final class PersistenceTests: XCTestCase {
         XCTAssertNil(Appearance(persisted: .string("sepia")))
     }
 
-    // MARK: - Coming back
-
-    /// The value the host read out of the store is what the state holds the
-    /// first time anything looks at it - no load to await, nothing to put back.
-    func testAStateUnderAKeyTakesWhatTheHostHydrated() {
-        PersistentStore.shared.hydrate([
-            (name: "test.count", value: .number(7)),
-            (name: "test.name", value: .string("Ada")),
-        ])
-
-        XCTAssertEqual(Sidebar().count, 7)
-        XCTAssertEqual(Preferences().name, "Ada")
-    }
-
     /// The claim can come FIRST: an application's own keyed state is built as
-    /// the app registers, before the host pushes the store, and the value
-    /// still lands - at `hydrate`, ahead of the first view.
-    func testAKeyClaimedBeforeHydrationStillTakesTheStoredValue() {
+    /// the app registers, before the host gives its reader, and the value
+    /// still lands - as the reader comes, ahead of the first view.
+    func testAKeyClaimedBeforeTheReaderCameReadsItThen() {
         let early = Sidebar()
 
-        PersistentStore.shared.hydrate([(name: "test.count", value: .number(9))])
+        Store(["test.count": .number(9)]).read()
 
         XCTAssertEqual(early.count, 9)
         XCTAssertEqual(Footer().count, 9)
@@ -151,11 +150,8 @@ final class PersistenceTests: XCTestCase {
     /// A model's `@State` is kept exactly as a view's is: the key is the
     /// key, whoever declares it, so an application's settings object works
     /// without a view holding any of it.
-    func testAKeptStateInAModelTakesWhatTheHostHydrated() {
-        PersistentStore.shared.hydrate([
-            (name: "test.count", value: .number(7)),
-            (name: "test.appearance", value: .string("dark")),
-        ])
+    func testAKeptStateInAModelReadsTheStore() {
+        Store(["test.count": .number(7), "test.appearance": .string("dark")]).read()
 
         let settings = Settings()
 
@@ -165,12 +161,12 @@ final class PersistenceTests: XCTestCase {
     }
 
     /// And the claim can come first here too - a settings model is usually
-    /// built as the application registers, which is before the host has
-    /// pushed the store.
-    func testAModelBuiltBeforeHydrationStillTakesTheStoredValue() {
+    /// built as the application registers, which is before the host has given
+    /// its reader.
+    func testAModelBuiltBeforeTheReaderStillTakesTheStoredValue() {
         let early = Settings()
 
-        PersistentStore.shared.hydrate([(name: "test.count", value: .number(9))])
+        Store(["test.count": .number(9)]).read()
 
         XCTAssertEqual(early.count, 9)
     }
@@ -210,7 +206,7 @@ final class PersistenceTests: XCTestCase {
     /// of the application under the same name - is ignored rather than
     /// force-fitted, and the state starts over at its declared value.
     func testAValueTheStoreHeldAsSomethingElseIsIgnored() {
-        PersistentStore.shared.hydrate([(name: "test.count", value: .string("seven"))])
+        Store(["test.count": .string("seven")]).read()
 
         XCTAssertEqual(Sidebar().count, 0)
     }
@@ -316,46 +312,5 @@ final class PersistenceTests: XCTestCase {
         Sidebar().count = 0
 
         XCTAssertEqual(drainedActs().count, 1)
-    }
-
-    // MARK: - What the host is told
-
-    /// The host is told every key with its kind, names in full, before the
-    /// first render - what it reads the platform's settings store with.
-    func testTheHostIsToldEveryKey() {
-        Renderer.shared.setApplication(KeepingApp())
-
-        XCTAssertEqual(HostBoundary.persistentKeys, [.count, .name])
-    }
-
-    /// A key a state keeps and the application does not list is said once the host reads the list: the host never
-    /// reads it at launch, so its value would come back a launch late, in silence.
-    func testAKeyKeptButNotListedIsSaidOnceTheHostReadsTheList() {
-        Renderer.shared.setApplication(KeepingApp())
-        let preferences = Preferences()
-
-        _ = HostBoundary.persistentKeys
-
-        XCTAssertTrue(hasComplained("'test.loud' keeps a state"), "an unlisted key said")
-        XCTAssertFalse(hasComplained("'test.name' keeps a state"), "a listed key says nothing")
-        _ = preferences
-    }
-
-    /// A key claimed after the host read the list is said as it is claimed.
-    func testAKeyClaimedAfterTheListIsReadIsSaidAsItIsClaimed() {
-        Renderer.shared.setApplication(KeepingApp())
-        _ = HostBoundary.persistentKeys
-
-        _ = LateComer()
-
-        XCTAssertTrue(hasComplained("'test.late' keeps a state"))
-    }
-
-    /// An application that keeps nothing names no key, and the host then reads
-    /// no store at all.
-    func testAnApplicationThatKeepsNothingNamesNoKey() {
-        Renderer.shared.setApplication(PlainApp())
-
-        XCTAssertEqual(HostBoundary.persistentKeys, [])
     }
 }

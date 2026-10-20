@@ -108,14 +108,9 @@ extension GTKDriver {
         GTKView.liveCount
     }
 
-    func kept(_ key: String, inScene: Bool) throws -> HostValue? {
-        if inScene { return GTKKeptValues.readScenes(applicationID: "").scenes.first?.values[key] }
-        let kept = GTKKeptValues.read(GTKKeptValues.file(for: ""))
-        let kinds = [
-            PersistentKey(key, of: String.self), PersistentKey(key, of: Double.self), PersistentKey(key, of: Int.self),
-            PersistentKey(key, of: Bool.self),
-        ]
-        return kinds.lazy.compactMap { kept.restored(for: [$0])[key] }.first
+    func kept(_ key: String, inScene: Bool) throws -> String? {
+        if inScene { return GTKKeptValues.readScenes(applicationID: "").scenes.first?.values[key]?.string }
+        return GTKKeptValues.read(GTKKeptValues.file(for: "")).words[key]
     }
 
     /// Performs a window's act: its question answered, or its life as the desktop would tell it - the driver tells

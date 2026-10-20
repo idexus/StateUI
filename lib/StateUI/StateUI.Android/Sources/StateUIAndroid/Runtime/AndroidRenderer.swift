@@ -186,7 +186,7 @@ final class AndroidRenderer {
             register: AndroidRealization.register,
             complainingTo: AndroidRenderer.log,
             environment: { AndroidEnvironment.report(to: runtime.core, activity: context.reference) },
-            kept: { if restoringKept { AndroidPersistence.restore(into: runtime.core, context: context.reference) } },
+            kept: { if restoringKept { AndroidPersistence.readKept(into: runtime.core, context: context.reference) } },
             windows: {
                 if restoringScenes { scenes.restore(AndroidPersistence.readScenes(context: context.reference), in: runtime) }
                 runtime.pump.turn()

@@ -313,7 +313,7 @@ final class ActCallShapeTests: XCTestCase {
     /// take: the key as a NAME, the value as it is, and nobody waiting.
     func testAKeptValueCrossesWithItsArgumentsInPlace() throws {
         drain()
-        PersistentStore.shared.record(PersistentKey("com.example.theme", of: String.self), .string("dusk"))
+        PersistentStore.shared.record(PersistentKey<String>("com.example.theme"), .string("dusk"))
 
         taken(drain(), "persistValue", [.name("com.example.theme"), .string("dusk")], awaited: false)
     }

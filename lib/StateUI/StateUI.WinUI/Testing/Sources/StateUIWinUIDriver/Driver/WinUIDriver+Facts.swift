@@ -116,14 +116,9 @@ extension WinUIDriver {
         WinUIView.liveCount
     }
 
-    func kept(_ key: String, inScene: Bool) throws -> HostValue? {
-        if inScene { return WinUIPersistence.readScenes().scenes.first?.values[key] }
-        let kept = WinUIPersistence.read()
-        let kinds = [
-            PersistentKey(key, of: String.self), PersistentKey(key, of: Double.self), PersistentKey(key, of: Int.self),
-            PersistentKey(key, of: Bool.self),
-        ]
-        return kinds.lazy.compactMap { kept.restored(for: [$0])[key] }.first
+    func kept(_ key: String, inScene: Bool) throws -> String? {
+        if inScene { return WinUIPersistence.readScenes().scenes.first?.values[key]?.string }
+        return WinUIPersistence.read().words[key]
     }
 
     /// The question showing over the window whose content is `content`, as WinUI's dialog holds it; nil for none.

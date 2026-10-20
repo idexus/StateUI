@@ -6,22 +6,20 @@
 import CStateUIWinUI
 
 /// The application's kept values and its scenes, in stores of the host's own - Windows keeps none for an application
-/// that is no package, and restores no windows: read before the first scene, written whole as each changes, as the
-/// host layer's texts (`KeptValuesText`, `KeptScenes`).
+/// that is no package, and restores no windows: a value read as a state under its key is first made, the scenes
+/// before the first; each written whole as it changes, as the host layer's texts (`KeptValuesText`, `KeptScenes`).
 /// Design: docs/design/platforms/winui/runtime.md#kept-values
 @MainActor
 enum WinUIPersistence {
-    /// Hands the core every kept value there is, before the first render reads one.
-    static func restore(into core: CoreLink) {
-        let keys = core.persistentKeys
-        guard !keys.isEmpty else { return }
-        core.restorePersistent(read().restored(for: keys))
+    /// Gives the core the reader of the store.
+    static func readKept(into core: CoreLink) {
+        core.readsKept { name, kind in read().value(named: name, as: kind) }
     }
 
     /// Keeps a key's new value, as the act `persistValue` carries it.
-    static func keep(_ call: HostActCall, core: CoreLink) {
+    static func keep(_ call: HostActCall) {
         var kept = read()
-        guard kept.keep(call.arguments, keys: core.persistentKeys) else { return }
+        guard kept.keep(call.arguments) else { return }
         write(kept)
     }
 

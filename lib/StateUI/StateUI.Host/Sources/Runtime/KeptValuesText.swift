@@ -26,16 +26,16 @@ public struct KeptValuesText: Equatable, Sendable {
         words.keys.sorted().map { "\(Self.escaped($0))\t\(Self.escaped(words[$0]!))\n" }.joined()
     }
 
-    /// The values the core restores for `keys`: each key's words read as its kind, where they read as one.
-    public func restored(for keys: [PersistentKey]) -> [String: HostValue] {
-        KeptWord.restored(words, for: keys)
+    /// The value kept under `name`, read as `kind` (`KeptWord`); nil where none is, or it reads as none.
+    public func value(named name: String, as kind: PersistentKind) -> HostValue? {
+        words[name].flatMap { KeptWord.restored($0, as: kind) }
     }
 
     /// Keeps a key's new value as the act `persistValue` carries it - the key's name, then its value - by the rule
     /// every host keeps a value by (`KeptWord`); whether it was kept.
     @discardableResult
-    public mutating func keep(_ arguments: [HostValue], keys: [PersistentKey]) -> Bool {
-        guard let kept = KeptWord.kept(arguments, keys: keys) else { return false }
+    public mutating func keep(_ arguments: [HostValue]) -> Bool {
+        guard let kept = KeptWord.kept(arguments) else { return false }
 
         words[kept.name] = kept.word
         return true

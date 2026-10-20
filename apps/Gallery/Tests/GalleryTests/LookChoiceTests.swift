@@ -1,3 +1,4 @@
+import Foundation
 import StateUI
 import XCTest
 
@@ -11,8 +12,8 @@ final class LookChoiceTests: XCTestCase {
     func testAnUntouchedLookIsKeptAsTheGallerysOwn() {
         let style = SessionStyle()
 
-        XCTAssertEqual(style.lightChoice.persistentValue, .string("own"))
-        XCTAssertEqual(style.darkChoice.persistentValue, .string("own"))
+        XCTAssertEqual(try kept(style.lightChoice), #""own""#)
+        XCTAssertEqual(try kept(style.darkChoice), #""own""#)
         XCTAssertEqual(style.look(dark: false), .light)
         XCTAssertEqual(style.look(dark: true), .dark)
     }
@@ -36,6 +37,11 @@ final class LookChoiceTests: XCTestCase {
     /// A whole look an older gallery kept is no choice: the gallery starts in its own.
     func testALookAnOlderGalleryKeptIsNoChoice() {
         XCTAssertNil(LookChoice(rawValue: ThemeLook.dark.rawValue))
-        XCTAssertNil(LookChoice(persisted: .string(ThemeLook.light.rawValue)))
+        XCTAssertNil(try? JSONDecoder().decode(LookChoice.self, from: Data(#""\#(ThemeLook.light.rawValue)""#.utf8)))
+    }
+
+    /// The text a scene keeps a choice as.
+    private func kept(_ choice: LookChoice) throws -> String {
+        String(decoding: try JSONEncoder().encode(choice), as: UTF8.self)
     }
 }

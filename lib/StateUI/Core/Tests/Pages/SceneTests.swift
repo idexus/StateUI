@@ -19,8 +19,8 @@ private extension WindowType where Value == Int {
     static let document = WindowType("document")
 }
 
-private extension SceneKey {
-    static let shade = SceneKey("shade", of: String.self)
+private extension SceneKey where Value == String {
+    static let shade = SceneKey("shade")
 }
 
 /// What a scene shares with every window of it.
@@ -592,7 +592,7 @@ final class SceneTests: XCTestCase {
     func testNoApplicationSaysWhatItsSessionHolds() throws {
         // What an application is told through its session.
         let held: [(kind: String, names: [String])] = [
-            ("Application", ["styles", "motion", "persistentKeys"]),
+            ("Application", ["styles", "motion"]),
         ]
 
         var files = [SourceTree.repository.appendingPathComponent("README.md")]
@@ -807,8 +807,8 @@ final class SceneTests: XCTestCase {
     /// A value a scene kept comes back WITH ITS FIRST WINDOW, from the scene's first build; a scene's later
     /// windows find the scene standing.
     func testAValueASceneKeptComesBackWithItsFirstWindow() {
-        HostBoundary.connectWindow(restoring: ["shade": .string("dark")])
-        HostBoundary.connectWindow(kind: "fonts", restoring: ["shade": .string("ignored")])
+        HostBoundary.connectWindow(restoring: ["shade": .string("\"dark\"")])
+        HostBoundary.connectWindow(kind: "fonts", restoring: ["shade": .string("\"ignored\"")])
 
         let patch = Renders().render(tree())
 
@@ -826,7 +826,7 @@ final class SceneTests: XCTestCase {
         let saves = OpenScenes.shared.takeSaves()
 
         XCTAssertEqual(saves.map(\.act), [.persistSceneValue])
-        XCTAssertEqual(saves.first?.arguments, [.name("1"), .name("shade"), .string("dusk")])
+        XCTAssertEqual(saves.first?.arguments, [.name("1"), .name("shade"), .string("\"dusk\"")])
     }
 
     // MARK: - A window and the view it shows

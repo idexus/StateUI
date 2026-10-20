@@ -106,7 +106,7 @@ final class WebRenderer {
                     self?.runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
                 })
             },
-            kept: { WebKeptValues.restore(into: core, application: applicationName) },
+            kept: { WebKeptValues.readKept(into: core, application: applicationName) },
             // The scenes kept when the page was left come back; else the window launch opens.
             windows: { scenes.restore(WebKeptValues.readScenes(applicationName), in: runtime) },
             turns: entryEnded)

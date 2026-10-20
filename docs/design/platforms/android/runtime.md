@@ -193,9 +193,10 @@ nothing of the host's numbering or listeners reaches the application.
 ## Kept values
 
 A kept state's key is in the platform's preferences, as the words its kind
-reads back. Every key the application lists is read before the first scene
-connects, in one call, and handed to the core ahead of the first view; a
-key's new value is written as its save arrives.
+reads back. The host gives the core a reader of them as it starts, through
+the application's context - the reader lasts as long as the process, and an
+activity does not - and a key is read as its first state is made; a key's
+new value is written as its save arrives.
 
 Android restores no windows, so the application's scenes are kept beside the
 values, under a key of the host's own, by the host layer's rule ([kept

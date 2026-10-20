@@ -483,13 +483,13 @@
             ConformanceCase("aValueIsKeptForTheNextLaunch", proves: [
                 Covered(ApplicationContract.persistValue),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let name = State(wrappedValue: "", persistentKey: PersistentKey("conformance.name", of: String.self))
+                let name = State(wrappedValue: "", persistentKey: PersistentKey<String>("conformance.name"))
                 s.start { VStack { Button("Ada").onClicked { name.wrappedValue = "Ada" }.id("write") } }
                 s.expect(try s.kept("conformance.name"), nil, "nothing kept before the case wrote it")
 
                 try s.perform(.activate, on: s.element("write"))
-                try s.settle { try s.kept("conformance.name") == .string("Ada") }
-                s.expect(try s.kept("conformance.name"), .string("Ada"))
+                try s.settle { try s.kept("conformance.name") == "Ada" }
+                s.expect(try s.kept("conformance.name"), "Ada")
             },
             ConformanceCase("aScenesValueIsKeptForItsNextLaunch", proves: [
                 Covered(ApplicationContract.persistSceneValue),
@@ -498,8 +498,8 @@
                 s.expect(try s.kept("conformance.section", inScene: true), nil, "nothing kept before the case wrote it")
 
                 try s.perform(.activate, on: s.element("write"))
-                try s.settle { try s.kept("conformance.section", inScene: true) == .number(2) }
-                s.expect(try s.kept("conformance.section", inScene: true), .number(2))
+                try s.settle { try s.kept("conformance.section", inScene: true) == "2" }
+                s.expect(try s.kept("conformance.section", inScene: true), "2")
             },
             ConformanceCase("aHandlersFailureIsReportedToTheHost", proves: [
                 Covered(ApplicationContract.handlerFailed),
@@ -523,7 +523,7 @@
 /// A page whose scene keeps the section it shows, with the button that shows the second: the state is the page's,
 /// so its scene claims it.
 struct SectionPage: View {
-    @State(sceneKey: SceneKey("conformance.section", of: Int.self)) private var section = 0
+    @State(sceneKey: SceneKey<Int>("conformance.section")) private var section = 0
 
     var body: some View {
         let section = $section

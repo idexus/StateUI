@@ -17,10 +17,9 @@ final class WinUIActsTests: XCTestCase {
             stateui_winui_set_store(folder)
             defer { stateui_winui_set_store("") }
 
-            let keys = [PersistentKey("com.example.name", of: String.self), PersistentKey("com.example.on", of: Bool.self)]
             var kept = KeptValuesText("")
-            kept.keep([.name("com.example.name"), .string("Zażółć\tgęślą\njaźń \\ end")], keys: keys)
-            kept.keep([.name("com.example.on"), .bool(true)], keys: keys)
+            kept.keep([.name("com.example.name"), .string("Zażółć\tgęślą\njaźń \\ end")])
+            kept.keep([.name("com.example.on"), .bool(true)])
             WinUIPersistence.write(kept)
 
             XCTAssertEqual(WinUIPersistence.read(), kept)

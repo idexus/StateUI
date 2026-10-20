@@ -9,9 +9,9 @@ extension WindowType where Value == Void {
 
 // listing: ScratchpadScene
 /// What the scratchpads KEEP - handed back with their scene when the system restores the application's windows.
-extension SceneKey {
+extension SceneKey where Value == String {
     /// The scratchpads' text.
-    static let scratch = SceneKey("gallery.scratch", of: String.self)
+    static let scratch = SceneKey("gallery.scratch")
 }
 // listing: end
 

@@ -121,17 +121,13 @@ extension UIKitDriver {
         return window.traitCollection.userInterfaceStyle == .dark ? .dark : .light
     }
 
-    /// What the host keeps under `key` for the next launch, as it reads it back.
-    func kept(_ key: String, inScene: Bool) throws -> HostValue? {
+    /// The words the host keeps under `key` for the next launch.
+    func kept(_ key: String, inScene: Bool) throws -> String? {
         if inScene {
             let record = TestScene.scene?.session.userInfo?[UIKitRenderer.recordKey] as? String
-            return record.flatMap(WindowRecord.init)?.kept[key]
+            return record.flatMap(WindowRecord.init)?.kept[key]?.string
         }
-        guard let word = TestScene.preferences.string(forKey: key) else { return nil }
-        let kinds = [
-            PersistentKey(key, of: String.self), PersistentKey(key, of: Double.self), PersistentKey(key, of: Bool.self),
-        ]
-        return kinds.lazy.compactMap { KeptWord.restored([key: word], for: [$0])[key] }.first
+        return TestScene.preferences.string(forKey: key)
     }
 
     /// Whether a touch at `point` of the element's view lands on it or on something inside it, as the window's

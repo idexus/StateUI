@@ -147,18 +147,13 @@ extension WebDriver {
         return try words("stateui.announced", on: 0)
     }
 
-    func kept(_ key: String, inScene: Bool) throws -> HostValue? {
+    func kept(_ key: String, inScene: Bool) throws -> String? {
         if inScene {
             let scenes = try WebBrowser.evaluate("localStorage.getItem('StateUI kept scenes: Conformance')", on: 0)
-            return KeptScenes(scenes ?? "").scenes.first?.values[key]
+            return KeptScenes(scenes ?? "").scenes.first?.values[key]?.string
         }
         let words = try WebBrowser.evaluate("localStorage.getItem('StateUI kept values: Conformance')", on: 0) ?? ""
-        let kept = KeptValuesText(words)
-        let kinds = [
-            PersistentKey(key, of: String.self), PersistentKey(key, of: Double.self), PersistentKey(key, of: Int.self),
-            PersistentKey(key, of: Bool.self),
-        ]
-        return kinds.lazy.compactMap { kept.restored(for: [$0])[key] }.first
+        return KeptValuesText(words).words[key]
     }
 
     /// The bar's action of the toolbar item `element` chosen, as the user's click does - one behind the bar chosen
