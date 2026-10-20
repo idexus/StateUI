@@ -17,44 +17,57 @@
 /// so an entry beside an `if`, and each of a list of entries that changes,
 /// wants an id.
 @resultBuilder
+@MainActor
 public enum MenuBuilder {
     /// An entry written as a statement.
-    public static func buildExpression(_ expression: MenuItem) -> [Element] {
-        [expression]
+    public static func buildExpression(_ expression: MenuItem) -> MenuEntries {
+        MenuEntries([expression.node])
     }
 
     /// A menu opening one level down.
-    public static func buildExpression(_ expression: Menu) -> [Element] {
-        [expression]
+    public static func buildExpression(_ expression: Menu) -> MenuEntries {
+        MenuEntries([expression.node])
     }
 
     /// A line between entries.
-    public static func buildExpression(_ expression: MenuSeparator) -> [Element] {
-        [expression]
+    public static func buildExpression(_ expression: MenuSeparator) -> MenuEntries {
+        MenuEntries([expression.node])
     }
 
     /// Several entries, from something that already produced a list.
-    public static func buildExpression(_ expression: [MenuItem]) -> [Element] {
-        expression
+    public static func buildExpression(_ expression: [MenuItem]) -> MenuEntries {
+        MenuEntries(expression.map(\.node))
     }
 
     /// The statements of the closure, in the order they are written.
-    public static func buildBlock(_ components: [Element]...) -> [Element] {
-        components.flatMap { $0 }
+    public static func buildBlock(_ components: MenuEntries...) -> MenuEntries {
+        MenuEntries(components.flatMap(\.nodes))
     }
 
     /// An `if` without an `else`.
-    public static func buildOptional(_ component: [Element]?) -> [Element] {
-        component ?? []
+    public static func buildOptional(_ component: MenuEntries?) -> MenuEntries {
+        component ?? MenuEntries([])
     }
 
     /// The `if` branch of an if/else.
-    public static func buildEither(first component: [Element]) -> [Element] {
+    public static func buildEither(first component: MenuEntries) -> MenuEntries {
         component
     }
 
     /// The `else` branch.
-    public static func buildEither(second component: [Element]) -> [Element] {
+    public static func buildEither(second component: MenuEntries) -> MenuEntries {
         component
+    }
+}
+
+/// The entries a `MenuBuilder` collected, in the order they were written - what a menu, a context menu and a
+/// button's menu hold.
+@MainActor
+public struct MenuEntries {
+    /// The entries' nodes, in order.
+    let nodes: [Node]
+
+    init(_ nodes: [Node]) {
+        self.nodes = nodes
     }
 }

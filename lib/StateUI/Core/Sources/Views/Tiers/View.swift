@@ -95,12 +95,12 @@ extension View {
     /// only way to perform an essential action behind it.
     ///
     /// - Parameter items: the entries, in the order they are shown.
-    public func contextMenu(@MenuBuilder _ items: () -> [Element]) -> Modified {
+    public func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Modified {
         modified {
             // After the view's own children, one; the host finds it by type, and written again it stands in.
             // Design: docs/design/views/modifiers.md#slot-children
             $0.children.removeAll { $0.type == ContextMenuContract.nodeType }
-            $0.children.append(Node(contract: ContextMenuContract.self, children: items().map { $0.node }))
+            $0.children.append(Node(contract: ContextMenuContract.self, children: items().nodes))
         }
     }
 }

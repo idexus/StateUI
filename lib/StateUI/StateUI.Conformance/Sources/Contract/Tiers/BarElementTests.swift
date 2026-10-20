@@ -49,7 +49,7 @@
         let others: [any View] = beside
         let stack = {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                VStack { [Text("Page")] + others }.title("Page")
+                VStack { Beside([Text("Page")] + others) }.title("Page")
             } destination: { _ in Text("Pushed") }
         }
         switch element {

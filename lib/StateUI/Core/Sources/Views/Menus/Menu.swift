@@ -32,8 +32,8 @@ public struct Menu: Element {
     /// - Parameter text: the caption - "File", "Edit", "View" on the bar, or the
     ///   row that opens it inside another menu.
     /// - Parameter items: the entries, in the order they are written.
-    public init(_ text: String, @MenuBuilder items: () -> [Element]) {
-        node = Node(contract: MenuContract.self, children: items().map { $0.node })
+    public init(_ text: String, @MenuBuilder items: () -> MenuEntries) {
+        node = Node(contract: MenuContract.self, children: items().nodes)
         node.write(MenuContract.text, text)
     }
 

@@ -215,7 +215,7 @@ enum Chosen {
         let branch: any View = element == "ToolbarItem"
             ? VStack { Text("Branch") }.toolbar { ToolbarItem("Item").onClicked { heard() }.id("item") }
             : VStack { Text("Row").contextMenu { MenuItem("Item").onClicked { heard() }.id("item") }.id("row") }
-        let page = VStack { [Text("Page"), ModifiedContent(node: branch.node).isEnabled(enabled), beside] as [any View] }
+        let page = VStack { Beside([Text("Page"), ModifiedContent(node: branch.node).isEnabled(enabled), beside]) }
         guard element == "ToolbarItem" else { return ModifiedContent(node: page.node) }
         // An item on a bar stands on a page in a navigation stack.
         let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) { page } destination: { _ in Text("Pushed") }

@@ -97,10 +97,10 @@
         let others: [any View] = beside
         switch element {
         case "TextSpan":
-            return VStack { [Text().spans { dressing.wear(TextSpan("Some words")) }] + others }
+            return VStack { Beside([Text().spans { dressing.wear(TextSpan("Some words")) }] + others) }
         case "MenuItem":
             return VStack {
-                [Text("Row").contextMenu { dressing.wear(MenuItem("Copy")).id(dressing.id) }.id("row")] + others
+                Beside([Text("Row").contextMenu { dressing.wear(MenuItem("Copy")).id(dressing.id) }.id("row")] + others)
             }
         case "ToolbarItem":
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
@@ -108,20 +108,20 @@
             } destination: { _ in Text("Pushed") }
         case "NavigationStack":
             return dressing.wear(NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                VStack { [Text("Root")] + others }
+                VStack { Beside([Text("Root")] + others) }
             } destination: { _ in Text("Pushed") })
         case "SplitView":
             return dressing.wear(SplitView(State(wrappedValue: true).projectedValue) {
                 Text("Sidebar")
-            } detail: { VStack { [Text("Detail")] + others } })
+            } detail: { VStack { Beside([Text("Detail")] + others) } })
         case "ModalStack":
             return dressing.wear(ModalStack(State(wrappedValue: [Int]()).projectedValue) {
-                VStack { [Text("Root")] + others }
+                VStack { Beside([Text("Root")] + others) }
             } destination: { _ in Text("Sheet") })
         case "TabView":
-            return dressing.wear(TabView([0, 1]) { tab in VStack { [Text("Tab \(tab)")] + (tab == 0 ? others : []) } })
+            return dressing.wear(TabView([0, 1]) { tab in VStack { Beside([Text("Tab \(tab)")] + (tab == 0 ? others : [])) } })
         default:
-            return VStack { [view(element, worn)] + others }
+            return VStack { Beside([view(element, worn)] + others) }
         }
     }
 
@@ -156,7 +156,7 @@ public struct WindowSessionPage: View {
 
     public var body: some View {
         let (write, window) = (self.write, self.window)
-        return VStack { [Text("Page")] + beside }
+        return VStack { Beside([Text("Page")] + beside) }
             .onCreated { write(window) }
             .onChanged(key) { write(window) }
     }
@@ -203,10 +203,20 @@ public struct DeclaringPage: View {
     }
 
     public var body: some View {
-        let (items, words) = (self.items, VStack { [Text("Page")] + beside })
+        let (items, words) = (self.items, VStack { Beside([Text("Page")] + beside) })
         let grouped = group.map { words.toolbar(side, id: $0, order: order) { items() } }
             ?? words.toolbar(side, order: order) { items() }
         guard let title else { return grouped }
         return grouped.titleView { ModifiedContent(node: title.node) }
+    }
+}
+
+/// Views written as a list, beside the one a case dresses: what a page places in order, matched by their places.
+@MainActor
+struct Beside: Views {
+    let nodes: [Node]
+
+    init(_ views: [any View]) {
+        nodes = views.map(\.node)
     }
 }

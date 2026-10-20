@@ -120,16 +120,16 @@ enum Presented {
         switch element {
         case "NavigationStack":
             return written.worn(by: NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                VStack { [Text("Root")] + others }
+                VStack { Beside([Text("Root")] + others) }
             } destination: { _ in Text("Pushed") })
         case "SplitView":
             return written.worn(by: SplitView(State(wrappedValue: true).projectedValue) {
                 Text("Sidebar")
-            } detail: { VStack { [Text("Detail")] + others } })
+            } detail: { VStack { Beside([Text("Detail")] + others) } })
         case "TabView":
-            return written.worn(by: TabView([0]) { _ in VStack { [Text("Inner")] + others } })
+            return written.worn(by: TabView([0]) { _ in VStack { Beside([Text("Inner")] + others) } })
         default:
-            let words = VStack { [Text("Page")] + others }
+            let words = VStack { Beside([Text("Page")] + others) }
             if let title = value as? String, member.name == PageElementContract.title.name { return words.title(title) }
             if let icon = value as? ImageSource, member.name == PageElementContract.icon.name { return words.icon(icon) }
             return words

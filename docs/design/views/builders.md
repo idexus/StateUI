@@ -136,9 +136,11 @@ so its views are built only when the differ reaches the container.
 
 ## Menus collect without keys
 
-`MenuBuilder` collects `[Element]`, and its expressions are a menu's entries
+`MenuBuilder` collects `MenuEntries`, and its expressions are a menu's entries
 alone - a `MenuItem`, a `Menu`, a `MenuSeparator`, a list of items - so a view
-in a menu does not compile. `if` and `if/else` work in a menu, and a plain `for`
+in a menu does not compile; what it hands a menu is typed, never a list of
+`any`. A list of views written as an array is no `Views` either: a list of
+views is a `ForEach` over data, or the statements of a builder. `if` and `if/else` work in a menu, and a plain `for`
 does not. It records no path. An entry is matched by its `.id()` and otherwise
 by its position, so an `if` whose entry comes and goes re-matches every entry
 below it against a different one. An entry standing beside a conditional, and

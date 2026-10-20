@@ -137,12 +137,12 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     ///     Button("Save")
     ///         .onClicked { save() }
     ///         .menu { MenuItem("Save as…").onClicked { saveAs() } }
-    public func menu(_ kind: ButtonMenuKind = .automatic, @MenuBuilder _ entries: () -> [Element]) -> Modified {
+    public func menu(_ kind: ButtonMenuKind = .automatic, @MenuBuilder _ entries: () -> MenuEntries) -> Modified {
         let menu = modified {
             // The button's one menu, after its own children; written again, it stands in for the last.
             // Design: docs/design/views/modifiers.md#slot-children
             $0.children.removeAll { $0.type == .buttonMenu }
-            $0.children.append(Node(contract: ButtonMenuContract.self, children: entries().map { $0.node }))
+            $0.children.append(Node(contract: ButtonMenuContract.self, children: entries().nodes))
             // Its kind with it: a menu saying none takes no kind an earlier one said.
             $0.props[ButtonContract.menuKind.token] = nil
         }

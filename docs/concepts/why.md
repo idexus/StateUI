@@ -185,7 +185,10 @@ does not compile, and the core tells a navigation stack, a split view or a tab
 view from other views by its type.
 
 **Deliberately rejected:** `any View` and type-erased wrappers in the public
-API, which would turn those compile errors into failures at run time.
+API, which would turn those compile errors into failures at run time - an
+array of `any View` placed as views among them, and a menu's entries handed
+over as a list of `any`. The one list of `any` that stands is a contract's
+`members`: metadata of members of different types, never a view.
 
 ## A mistake is refused by its type, or said once
 

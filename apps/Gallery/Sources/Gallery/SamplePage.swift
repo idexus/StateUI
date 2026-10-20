@@ -92,7 +92,7 @@ struct SamplePage: View {
 
             // The far side of the example, where it has one: a section per
             // language its host's half is written in.
-            example.hostCode.listings.map { listing -> any View in
+            ForEach(example.hostCode.listings, id: \.language) { listing in
                 Self.section(
                     example.hostCode.heading(of: listing), CodeBlock(listing.code).language(listing.language))
             }
