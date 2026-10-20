@@ -112,8 +112,11 @@ one window of the `WindowGroup` with no name, like any other, and closing it
 closes that window alone.
 
 ```swift quote
-extension WindowType {
+extension WindowType where Value == Void {
     static let inspector = WindowType("notes.inspector")
+}
+
+extension WindowType where Value == Int {
     static let document = WindowType("notes.document")
 }
 
@@ -125,7 +128,7 @@ struct NotesScene: Scene {
             .environment(library)
         Window(.inspector) { InspectorPage() }
             .environment(library)
-        WindowGroup(.document, for: Int.self) { $number in
+        WindowGroup(.document) { $number in
             DocumentPage(number: number)
         }
     }
@@ -138,10 +141,13 @@ A scene declares its windows three ways:
   launch opens, and *File ▸ New Window* makes one more of it;
 - `WindowGroup(.kind) { ... }` makes as many windows of the kind as are
   opened, and `Window(.kind) { ... }` makes one;
-- `WindowGroup(.kind, for: ID.self) { $id in ... }` makes one window per
-  value. The value is `Codable` and `Hashable` so it can identify and restore
-  the window, and the closure receives a `Binding`, so the same window can be
-  retargeted without replacing its session.
+- `WindowGroup(.kind) { $id in ... }` of a kind with a value - a
+  `WindowType<ID>` - makes one window per value. The value is `Codable` and
+  `Hashable` so it can identify and restore the window, and the closure
+  receives a `Binding`, so the same window can be retargeted without replacing
+  its session. A kind with a value opens only with a value of its type,
+  `application.openWindow(.kind, value: id)`, and a kind of no value -
+  `WindowType<Void>` - only without one: the compiler refuses the other.
 
 Every window of a scene shares the scene's `@State`. What belongs to one
 window is the `@State` of the view it shows: two windows of `NotesPage` each
@@ -158,7 +164,7 @@ none of the others - About, the preferences - is a scene of its own:
 ```swift
 import StateUI
 
-extension WindowType {
+extension WindowType where Value == Void {
     static let editor = WindowType("notes.editor")
     static let about = WindowType("notes.about")
 }

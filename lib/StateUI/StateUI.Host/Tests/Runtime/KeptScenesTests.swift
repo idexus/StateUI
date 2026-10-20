@@ -144,7 +144,7 @@ private struct KeptApplication: Application {
 private struct KeptScene: Scene {
     var body: some Scene {
         WindowGroup { KeptSectionPage() }
-        WindowGroup(WindowType("kept.note"), for: Int.self) { number in Text("note \(number.wrappedValue)") }
+        WindowGroup(WindowType<Int>("kept.note")) { number in Text("note \(number.wrappedValue)") }
     }
 }
 

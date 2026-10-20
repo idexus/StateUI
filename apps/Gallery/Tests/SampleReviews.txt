@@ -74,7 +74,7 @@ MaterialsSample.swift 22b1a745307885f8
 MenuBarSample.swift 6da4c4a2a2b1f2b9
 ModalSample.swift 69735010f26dc23b
 MotionSample.swift 1d57b2b7bf11c40e
-MultiWindowSample.swift e20f97c7f68ca4e9
+MultiWindowSample.swift 99f2eb664c633c23
 NavigationSample.swift bb0a9a427e1bfa90
 NextFieldSample.swift b365cbd1626b4437
 OnChangedSample.swift 69ae77869efe3165
@@ -95,7 +95,7 @@ ReaderSample.swift 778670ce97ad7532
 RebuildSample.swift 68155193fabdfebd
 RemovingRowSample.swift 3737dc3829abfd1c
 SameInputsSample.swift 11581f61c6c4343c
-ScenesSample.swift 841c7adf2c09246f
+ScenesSample.swift 4325dc58daa1c9e7
 ScrollViewSample.swift cf26f19b3729064f
 SearchFieldSample.swift 32903a70f555dea0
 SearchSample.swift 38388654add4726f

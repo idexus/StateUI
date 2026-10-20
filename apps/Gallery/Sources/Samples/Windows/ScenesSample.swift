@@ -54,7 +54,7 @@ struct ScenesSample: SampleContent, ExampleContent {
     }
 
     /// Opens a window of the kind `type` names, in the scene declaring it, and says what came of it.
-    private func open(_ type: WindowType, _ caption: String) async {
+    private func open(_ type: WindowType<Void>, _ caption: String) async {
         do {
             try await application.openWindow(type)
             said = "\(caption): opened."

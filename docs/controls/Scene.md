@@ -5,7 +5,7 @@
 One of the application's scenes, standing while a window of it is open: its windows, and the state they share.
 
 ```swift
-extension WindowType {
+extension WindowType where Value == Void {
     static let inspector = WindowType("notes.inspector")
 }
 

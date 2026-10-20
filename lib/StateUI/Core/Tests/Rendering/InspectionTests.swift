@@ -79,7 +79,7 @@ private struct Holding: Application {
     var body: some Scene { WindowGroup { First() } }
 }
 
-private extension WindowType {
+private extension WindowType where Value == Void {
     static let second = WindowType("inspection.second")
 }
 

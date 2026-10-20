@@ -3,13 +3,15 @@ import StateUI
 // listing: Gallery.SessionStyle
 /// The kinds of window the galleries' scene opens beside its gallery windows -
 /// each a window of that scene. See `GalleryScene`.
-extension WindowType {
+extension WindowType where Value == Void {
     /// The window that chooses the gallery's font.
     static let fonts = WindowType("gallery.fonts")
 
     /// The window that chooses the gallery's accent.
     static let colours = WindowType("gallery.colours")
+}
 
+extension WindowType where Value == Int {
     /// A window per swatch number - one kind, a window for each value.
     static let swatch = WindowType("gallery.swatch")
 }

@@ -36,7 +36,7 @@ struct GalleryScene: Scene {
 
         Window(.debugInspector) { DebugInspector() }
 
-        WindowGroup(.swatch, for: Int.self) { number in SwatchPage(number: number) }
+        WindowGroup(.swatch) { number in SwatchPage(number: number) }
     }
 }
 // listing: end

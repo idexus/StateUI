@@ -234,11 +234,12 @@ from its first window to its last. A scene's body declares its windows:
   *File ▸ New Window* make a window of;
 - `WindowGroup(.kind) { ... }` makes as many windows of a kind as are opened,
   and `Window(.kind) { ... }` makes one;
-- `WindowGroup(.kind, for: ID.self) { $id in ... }` makes one window per
+- `WindowGroup(.kind) { $id in ... }`, a kind with a value, makes one window per
   value.
 
-A kind is a `WindowType` the application names in an extension of it:
-`static let editor = WindowType("editor")`. A view reads the application's session with `@Environment(\.application)`,
+A kind is a `WindowType` the application names in an extension of it, for the
+value its windows stand for - `Void` where they stand for none:
+`extension WindowType where Value == Void { static let editor = WindowType("editor") }`. A view reads the application's session with `@Environment(\.application)`,
 and `application.openWindow(.kind)` opens a window of that kind in the scene
 declaring it, opening the scene with it where it is not open.
 

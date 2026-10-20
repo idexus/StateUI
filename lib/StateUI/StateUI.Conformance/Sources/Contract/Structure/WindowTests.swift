@@ -90,7 +90,7 @@
                 guard let note = s.elements(ofType: WindowContract.nodeType).last else { return s.fail("no second window") }
 
                 try s.settle { try s.held(WindowContract.windowValue, on: note) == "7" }
-                s.expect(try s.held(WindowContract.windowType, on: note), NotesApplication.note)
+                s.expect(try s.held(WindowContract.windowType, on: note), Name(NotesApplication.note.name))
                 s.expect(try s.held(WindowContract.windowValue, on: note), "7")
             },
             ConformanceCase("aWindowThePlatformKeepsComesBackForItsValue", proves: [
@@ -218,10 +218,10 @@ struct WindowPhasePage: View {
 /// alone.
 struct NotesApplication: Application {
     /// The kind of a note's window.
-    static let note = WindowType("conformance.note")
+    static let note = WindowType<Int>("conformance.note")
 
     /// The kind of the other scene's window.
-    static let other = WindowType("conformance.other")
+    static let other = WindowType<Void>("conformance.other")
 
     var body: some Scene {
         NotesScene()
@@ -233,7 +233,7 @@ struct NotesApplication: Application {
 struct NotesScene: Scene {
     var body: some Scene {
         WindowGroup { NotesPage() }
-        WindowGroup(NotesApplication.note, for: Int.self) { number in Text("Note \(number.wrappedValue)") }
+        WindowGroup(NotesApplication.note) { number in Text("Note \(number.wrappedValue)") }
             .floatsOnTop(true)
             .hidesWhenInactive(true)
     }

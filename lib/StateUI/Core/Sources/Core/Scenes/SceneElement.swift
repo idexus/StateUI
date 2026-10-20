@@ -46,7 +46,7 @@ struct SceneElement: Element {
 
             // Written either way, so none of them is ever cleared off a window.
             // Design: docs/design/core/scenes.md#opening-windows
-            if let type = opened.type { window.write(WindowContract.windowType, type) }
+            if let type = opened.type { window.write(WindowContract.windowType, Name(type.name)) }
             window.describe(WindowContract.windowValue, opened.text)
             window.write(WindowContract.hidesWhenInactive, declaration.hides)
             window.write(WindowContract.floatsOnTop, declaration.floats)

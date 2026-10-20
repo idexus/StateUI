@@ -9,11 +9,14 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
-private extension WindowType {
+private extension WindowType where Value == Void {
     static let fonts = WindowType("fonts")
     static let note = WindowType("note")
-    static let document = WindowType("document")
     static let about = WindowType("about")
+}
+
+private extension WindowType where Value == Int {
+    static let document = WindowType("document")
 }
 
 private extension SceneKey {
@@ -92,7 +95,7 @@ private struct StudioScene: Scene {
             .environment(palette)
         WindowGroup(.note) { Showing() }
             .environment(palette)
-        WindowGroup(.document, for: Int.self) { $number in Retargeting(number: $number) }
+        WindowGroup(.document) { $number in Retargeting(number: $number) }
             .environment(palette)
     }
 }
@@ -372,23 +375,24 @@ final class SceneTests: XCTestCase {
             ["window 1", "fonts 2", "document 3", "document 4", "note 5", "note 6", "window 7"])
     }
 
-    /// What cannot open is said BY NAME: a kind no scene declares, a value a group is not for, and a window not
-    /// open to close.
+    /// What cannot open is said BY NAME: a kind no scene declares, a kind of a name the scene declares for another
+    /// value, and a window not open to close. A value for a kind of none, or none for a kind of one, does not
+    /// compile at all - `openWindow(.document)` is refused by the type its kind is.
     func testWhatCannotOpenIsSaidByName() async {
         Renders().render(tree())
 
-        let palette = WindowType("palette")
-
-        let undeclared = await refusal { try await self.application.openWindow(palette) }
-        let valueForOne = await refusal { try await self.application.openWindow(.fonts, value: 3) }
-        let noValue = await refusal { try await self.application.openWindow(.document) }
-        let otherType = await refusal { try await self.application.openWindow(.document, value: "x") }
+        let undeclared = await refusal { try await self.application.openWindow(WindowType<Void>("palette")) }
+        let valueForOne = await refusal { try await self.application.openWindow(WindowType<Int>("fonts"), value: 3) }
+        let noValue = await refusal { try await self.application.openWindow(WindowType<Void>("document")) }
+        let otherType = await refusal {
+            try await self.application.openWindow(WindowType<String>("document"), value: "x")
+        }
         let notOpen = await refusal { try await self.application.closeWindow(.fonts) }
 
-        XCTAssertEqual(undeclared, .undeclared(palette))
-        XCTAssertEqual(valueForOne, .wrongValue(.fonts))
-        XCTAssertEqual(noValue, .wrongValue(.document))
-        XCTAssertEqual(otherType, .wrongValue(.document))
+        XCTAssertEqual(undeclared, .undeclared("palette"))
+        XCTAssertEqual(valueForOne, .wrongValue("fonts"))
+        XCTAssertEqual(noValue, .wrongValue("document"))
+        XCTAssertEqual(otherType, .wrongValue("document"))
         XCTAssertEqual(notOpen, .notOpen)
     }
 

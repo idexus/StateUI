@@ -1,7 +1,7 @@
 import StateUI
 
 // listing: ScratchpadScene
-extension WindowType {
+extension WindowType where Value == Void {
     /// A scratchpad window: as many as the user opens.
     static let scratchpad = WindowType("gallery.scratchpad")
 }

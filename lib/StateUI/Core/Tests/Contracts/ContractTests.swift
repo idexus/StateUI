@@ -119,7 +119,6 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(Name("Menlo").propValue, .name("Menlo"))
         XCTAssertEqual(Name(propValue: .name("Menlo")), "Menlo")
         XCTAssertNil(Name(propValue: .string("Menlo")), "prose is not a name")
-        XCTAssertEqual(WindowType("document").propValue, .name("document"))
     }
 
     /// A shape, a grid's lengths, a web view's source and a drawing cross as
@@ -206,7 +205,6 @@ final class ContractTests: XCTestCase {
             ContainerShape.capsule,
             [GridLength.auto, .proportional(2), .fixed(100)] as [GridLength],
             [Draw.fillColor(.gold)] as [DrawCommand],
-            WindowType("document"),
             FontAttributes.italic, FontWeight.semibold, TextStyle.title, PickerPresentation.radio,
             ButtonMenuKind.held,
             TextDecorations(rawValue: 1),

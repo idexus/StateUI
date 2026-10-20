@@ -48,7 +48,7 @@ Window* one more, `openWindow` one of a kind - and ends with its last
       var body: some Scene {
           WindowGroup { MainPage() }.environment(theme)       launch, New Window: one more
           Window(.fonts) { FontsPanel() }.environment(theme)  one
-          WindowGroup(.document, for: UUID.self) { $id in DocumentPage(id: id) }
+          WindowGroup(.document) { $id in DocumentPage(id: id) }
       }
   }
 ```

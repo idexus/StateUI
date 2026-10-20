@@ -49,7 +49,7 @@ final class SceneRecord {
     // MARK: - Its windows
 
     /// Opens a window of `type` - nil for the group with no name - for `value`, written `text`.
-    func open(_ type: WindowType?, value: AnyHashable?, text: String?) {
+    func open(_ type: KeyName?, value: AnyHashable?, text: String?) {
         serial += 1
         windows.append(OpenedWindow(type: type, serial: serial, value: value, text: text))
     }
@@ -64,7 +64,7 @@ final class SceneRecord {
 
     /// Closes the window of `type` for `value` - every window of a group of no value - the scene ending with its
     /// last.
-    func close(_ type: WindowType, value: AnyHashable?) throws {
+    func close(_ type: KeyName, value: AnyHashable?) throws {
         let closing = windows.filter { $0.type == type && $0.value == value }.map(\.key)
         guard !closing.isEmpty else { throw WindowError.notOpen }
 
@@ -167,7 +167,7 @@ final class SceneRecord {
 /// A window a scene has open.
 struct OpenedWindow: Equatable {
     /// Its kind; nil for a window of the group with no name.
-    let type: WindowType?
+    let type: KeyName?
 
     /// Its number in its scene, in opening order - what keeps it the same window when
     /// its value changes.

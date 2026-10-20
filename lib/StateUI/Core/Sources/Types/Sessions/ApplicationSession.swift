@@ -115,12 +115,11 @@ public final class ApplicationSession {
     ///     Button("Inspector").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.inspector) }
     ///
     /// - Throws: `WindowError.alreadyOpen` where its one window is open,
-    ///   `WindowError.undeclared(type)` where no scene declares it,
-    ///   `WindowError.wrongValue(type)` where it opens one per value, and
+    ///   `WindowError.undeclared` where no scene declares it, and
     ///   `WindowError.unsupported` where the platform opens no second window - a
     ///   phone.
-    public func openWindow(_ type: WindowType) async throws {
-        try OpenScenes.shared.open(type)
+    public func openWindow(_ type: WindowType<Void>) async throws {
+        try OpenScenes.shared.open(type.key)
     }
 
     /// Opens the window of `type` for `value` in the scene declaring it, which
@@ -131,20 +130,19 @@ public final class ApplicationSession {
     /// - Throws: `WindowError.alreadyOpen` where a window for that value is
     ///   open, and the rest of `WindowError` where it cannot open.
     public func openWindow<Value: Codable & Hashable>(
-        _ type: WindowType,
+        _ type: WindowType<Value>,
         value: Value
     ) async throws {
-        try OpenScenes.shared.open(type, value: AnyHashable(value), text: try ValueText.write(value), of: Value.self)
+        try OpenScenes.shared.open(type.key, value: AnyHashable(value), text: try ValueText.write(value), of: Value.self)
     }
 
     /// Closes the window of `type` - every window of a `WindowGroup(type)` -
     /// its scene ending with its last window.
     ///
-    /// - Throws: `WindowError.notOpen` where none is open,
-    ///   `WindowError.undeclared(type)` where no scene declares it, and
-    ///   `WindowError.wrongValue(type)` where it opens one per value.
-    public func closeWindow(_ type: WindowType) async throws {
-        try OpenScenes.shared.close(type)
+    /// - Throws: `WindowError.notOpen` where none is open, and
+    ///   `WindowError.undeclared` where no scene declares it.
+    public func closeWindow(_ type: WindowType<Void>) async throws {
+        try OpenScenes.shared.close(type.key)
     }
 
     /// Closes the window of `type` for `value`, its scene ending with its last
@@ -153,10 +151,10 @@ public final class ApplicationSession {
     /// - Throws: `WindowError.notOpen` where no window for that value is open,
     ///   and the rest of `WindowError` where it cannot close.
     public func closeWindow<Value: Codable & Hashable>(
-        _ type: WindowType,
+        _ type: WindowType<Value>,
         value: Value
     ) async throws {
-        try OpenScenes.shared.close(type, value: AnyHashable(value), of: Value.self)
+        try OpenScenes.shared.close(type.key, value: AnyHashable(value), of: Value.self)
     }
 
     /// Forgets what an application wrote - what a registration starts from, so

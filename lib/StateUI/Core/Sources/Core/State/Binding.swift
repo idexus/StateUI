@@ -143,7 +143,7 @@ public struct Binding<Value> {
     /// A binding handed on as it is - which is what lets a closure handed one
     /// name its parameter `$id`, and read the value as `id`:
     ///
-    ///     WindowGroup(.document, for: UUID.self) { $id in DocumentWindow(id: id) }
+    ///     WindowGroup(.document) { $id in DocumentWindow(id: id) }
     ///
     /// - Parameter projectedValue: the binding.
     public init(projectedValue: Binding<Value>) {

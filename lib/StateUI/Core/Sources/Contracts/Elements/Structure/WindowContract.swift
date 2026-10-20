@@ -72,7 +72,7 @@ public enum WindowContract: ElementContract {
     public static let width = ElementProperty<Self, Double>("width", layer: .native, moves: .width)
 
     /// What kind of window it is - the kind a scene declares it under.
-    public static let windowType = ElementProperty<Self, WindowType>(
+    public static let windowType = ElementProperty<Self, Name>(
         "windowType", layer: .structure, cleared: false)
 
     /// The value a window of the kind was opened for, written down with it.

@@ -15,13 +15,12 @@ public enum WindowError: Error, Equatable, Sendable {
     /// reads, or one whose scene has ended.
     case noScene
 
-    /// No scene declares windows of this kind.
-    case undeclared(WindowType)
+    /// No scene declares windows of the kind of this name.
+    case undeclared(Name)
 
-    /// The group is declared for another value: it opens one window and was
-    /// given a value, or opens one per value and was given none, or a value of
-    /// another type.
-    case wrongValue(WindowType)
+    /// The scene declares the kind of this name for another value - two kinds
+    /// share the name, one of them with a value of another type, or none.
+    case wrongValue(Name)
 
     /// The platform opens no second window - a phone, a page in a browser.
     case unsupported

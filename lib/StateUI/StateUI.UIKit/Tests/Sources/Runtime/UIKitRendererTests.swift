@@ -32,7 +32,7 @@ private struct KeptApplication: Application {
 private struct KeptScene: Scene {
     var body: some Scene {
         WindowGroup { Text("launch") }
-        WindowGroup(WindowType("uikit.kept.note"), for: Int.self) { number in KeptNote(number: number.wrappedValue) }
+        WindowGroup(WindowType<Int>("uikit.kept.note")) { number in KeptNote(number: number.wrappedValue) }
     }
 }
 

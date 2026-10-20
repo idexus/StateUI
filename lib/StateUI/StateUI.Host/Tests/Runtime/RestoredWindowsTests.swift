@@ -158,7 +158,7 @@ private struct RestoredApplication: Application {
 private struct RestoredScene: Scene {
     var body: some Scene {
         WindowGroup { RestoredSectionPage() }
-        WindowGroup(WindowType("restored.note"), for: Int.self) { number in Text("note \(number.wrappedValue)") }
+        WindowGroup(WindowType<Int>("restored.note")) { number in Text("note \(number.wrappedValue)") }
         WindowGroup(WindowType("restored.tool")) { Text("tool") }
     }
 }

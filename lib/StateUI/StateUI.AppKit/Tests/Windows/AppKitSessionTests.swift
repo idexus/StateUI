@@ -561,7 +561,7 @@ private final class ClosingWatch {
     }
 }
 
-private extension WindowType {
+private extension WindowType where Value == Void {
     static let appKitTestTool = WindowType("appkit.test.tool")
 }
 
@@ -581,7 +581,7 @@ private struct AppKitSessionApp: Application {
     var body: some Scene { AppKitSessionScene() }
 }
 
-private extension WindowType {
+private extension WindowType where Value == Void {
     static let appKitTestEditor = WindowType("appkit.test.editor")
 }
 

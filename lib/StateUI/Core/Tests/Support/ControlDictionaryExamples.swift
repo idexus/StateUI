@@ -336,7 +336,7 @@ extension ControlDictionary {
             """#),
 
         (SceneContract.self, #"""
-            extension WindowType {
+            extension WindowType where Value == Void {
                 static let inspector = WindowType("notes.inspector")
             }
 

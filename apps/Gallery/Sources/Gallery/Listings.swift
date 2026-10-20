@@ -10,7 +10,7 @@ enum Listings {
     private static let shared: [String: String] = [
         "AboutScene": #"""
         // Sources/Samples/Windows/AboutScene.swift
-        extension WindowType {
+        extension WindowType where Value == Void {
             /// About the gallery: one window for the whole application.
             static let about = WindowType("gallery.about")
         }
@@ -3440,13 +3440,15 @@ enum Listings {
         // Sources/Gallery/SessionStyle.swift
         /// The kinds of window the galleries' scene opens beside its gallery windows -
         /// each a window of that scene. See `GalleryScene`.
-        extension WindowType {
+        extension WindowType where Value == Void {
             /// The window that chooses the gallery's font.
             static let fonts = WindowType("gallery.fonts")
 
             /// The window that chooses the gallery's accent.
             static let colours = WindowType("gallery.colours")
+        }
 
+        extension WindowType where Value == Int {
             /// A window per swatch number - one kind, a window for each value.
             static let swatch = WindowType("gallery.swatch")
         }
@@ -3692,7 +3694,7 @@ enum Listings {
 
                 Window(.debugInspector) { DebugInspector() }
 
-                WindowGroup(.swatch, for: Int.self) { number in SwatchPage(number: number) }
+                WindowGroup(.swatch) { number in SwatchPage(number: number) }
             }
         }
         """#,
@@ -7160,19 +7162,19 @@ enum Listings {
         }
 
         /// The button that opens one of the scene's windows.
-        private func opens(_ caption: String, _ type: WindowType) -> some View {
+        private func opens(_ caption: String, _ type: WindowType<Void>) -> some View {
             Button(caption)
                 .onClicked(gate: .ignoreWhileRunning) { await open(type, caption) }
         }
 
         /// The button that closes it.
-        private func closes(_ caption: String, _ type: WindowType) -> some View {
+        private func closes(_ caption: String, _ type: WindowType<Void>) -> some View {
             Button(caption)
                 .onClicked(gate: .ignoreWhileRunning) { await close(type, caption) }
         }
 
         /// Opens a window of the scene, and says what came of it.
-        private func open(_ type: WindowType, _ caption: String) async {
+        private func open(_ type: WindowType<Void>, _ caption: String) async {
             do {
                 try await application.openWindow(type)
                 said = "\(caption): opened."
@@ -7184,7 +7186,7 @@ enum Listings {
         }
 
         /// Closes one, and says what came of it.
-        private func close(_ type: WindowType, _ caption: String) async {
+        private func close(_ type: WindowType<Void>, _ caption: String) async {
             do {
                 try await application.closeWindow(type)
                 said = "\(caption): closed."
@@ -8965,7 +8967,7 @@ enum Listings {
         }
 
         /// Opens a window of the kind `type` names, in the scene declaring it, and says what came of it.
-        private func open(_ type: WindowType, _ caption: String) async {
+        private func open(_ type: WindowType<Void>, _ caption: String) async {
             do {
                 try await application.openWindow(type)
                 said = "\(caption): opened."
@@ -9023,7 +9025,7 @@ enum Listings {
         """#,
         "ScratchpadScene": #"""
         // Sources/Samples/Windows/ScratchpadScene.swift
-        extension WindowType {
+        extension WindowType where Value == Void {
             /// A scratchpad window: as many as the user opens.
             static let scratchpad = WindowType("gallery.scratchpad")
         }
