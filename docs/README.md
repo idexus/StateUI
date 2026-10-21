@@ -63,6 +63,9 @@ design notes beside them.
 - [Composition and identity](interface/composition-and-identity.md) covers
   composed views, builders, identity, lifetime reactions, frame reports, and
   render diagnostics.
+- [Testing an application](interface/testing.md) shows a page in a test
+  window and uses it as its user does: views found by their identifier or
+  aim, acts, and reads of contract members.
 - [Concurrency](interface/concurrency.md) defines handler isolation on
   `MainActor`, what an awaiting handler does when its event comes again
   (`Gate`, `Gatekeeper`, `Task(gate:)`), a run superseded, posting to state from other threads,

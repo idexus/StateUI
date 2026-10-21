@@ -9,6 +9,7 @@ lib/StateUI/Core/Tests/            core tests and shared test support
 lib/StateUI/Foundation/            StateUIFoundation: the platform's C library and its basics, and their tests
 lib/StateUI/StateUI.Host/          the host layer every host stands on, and its tests
 lib/StateUI/StateUI.Conformance/   the conformance suite every host's tests run
+lib/StateUI/StateUI.Testing/       StateUITesting, what an application's tests show and use its pages through
 lib/StateUI/exports/               what each host's runs declare and prove, the marks
 lib/StateUI/StateUI.AppKit/        independent AppKit host package and tests
 lib/StateUI/StateUI.UIKit/         UIKit host package, its tests an application of their own

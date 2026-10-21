@@ -52,6 +52,9 @@ public final class Aim<Target>: @MainActor CustomStringConvertible {
         get throws { try box.target }
     }
 
+    /// The element the aim is put on; nil where it is on none, or on two.
+    @_spi(Host) public var element: ElementID? { box.element }
+
     /// Performs an act of the aimed element's contract on it - the element
     /// first, then the arguments the contract declares - and answers with the
     /// values it declares.
@@ -167,6 +170,9 @@ final class AimBox: Hashable {
     }
 
     /// What `Aim.description` says.
+    /// The element this is on; nil where on none, or on two.
+    var element: ElementID? { conflicted ? nil : identity }
+
     var label: String {
         if conflicted { return "two views" }
 
