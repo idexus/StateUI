@@ -592,7 +592,7 @@ final class CatalogTests: XCTestCase {
         // Every OTHER sample is everywhere: hiding is the exception, and one
         // hidden by accident would simply vanish from a phone with no test
         // the wiser.
-        let hidden = notOnAPhone.union(["window"])
+        let hidden = notOnAPhone.union(["window", "tooltip"])
 
         for group in catalog.groups {
             for other in group.samples where !hidden.contains(other.id) {
@@ -616,21 +616,25 @@ final class CatalogTests: XCTestCase {
         XCTAssertTrue(try XCTUnwrap(catalog.sample(id: "deviceInfo")).isShown(on: silent), "a sample of no such fact")
     }
 
-    /// The Window sample sizes, places and bounds its window: it is listed where the host sizes a window - not
-    /// where the system or the browser does.
-    func testTheWindowSampleIsListedWhereTheHostSizesAWindow() throws {
-        let sample = try XCTUnwrap(catalog().sample(id: "window"))
+    /// A sample of what a host may not honor is listed where it does: the Window sample where the host sizes a
+    /// window - not where the system or the browser does - and the Tooltip sample where the host shows tooltips.
+    func testASampleOfWhatAHostMayNotHonorIsListedWhereItDoes() throws {
+        let honoring = [
+            "window": HostRealizedMember(element: "Window", owner: "Window", member: "width"),
+            "tooltip": HostRealizedMember(element: "Button", owner: "VisualElement", member: "tooltip"),
+        ]
         defer { HostBoundary.setRealization(HostRealization()) }
 
-        HostBoundary.setRealization(HostRealization())
-        XCTAssertFalse(sample.isShown(on: Self.device(.desktop)), "listed where the host sizes no window")
-        XCTAssertFalse(sample.isShown(on: Self.device(.phone)), "listed on a phone")
+        for (id, member) in honoring.sorted(by: { $0.key < $1.key }) {
+            let sample = try XCTUnwrap(catalog().sample(id: id))
+            HostBoundary.setRealization(HostRealization())
+            XCTAssertFalse(sample.isShown(on: Self.device(.desktop)), "\(id) listed where the host does not honor it")
+            XCTAssertFalse(sample.isShown(on: Self.device(.phone)), "\(id) listed on a phone that does not")
 
-        HostBoundary.setRealization(HostRealization(
-            elements: [WindowContract.nodeType],
-            members: [HostRealizedMember(element: "Window", owner: "Window", member: "width")]))
-        XCTAssertTrue(sample.isShown(on: Self.device(.desktop)), "hidden where the host sizes a window")
-        XCTAssertTrue(sample.isShown(on: Device()), "a headless test sees everything")
+            HostBoundary.setRealization(HostRealization(members: [member]))
+            XCTAssertTrue(sample.isShown(on: Self.device(.desktop)), "\(id) hidden where the host honors it")
+            XCTAssertTrue(sample.isShown(on: Device()), "a headless test sees everything")
+        }
     }
 
     /// A device of `formFactor` whose host reports its display, its network and its battery.

@@ -10,6 +10,9 @@ struct TooltipSample: SampleContent, ExampleContent {
     static let title = "Tooltip"
     static let summary = "Words a view shows while the pointer rests on it."
 
+    /// Listed where the host shows tooltips: an iPhone and an iPad show none.
+    static func shows(_ device: Device) -> Bool { device.honors(VisualElementContract.tooltip) }
+
     // listing: TooltipSample
     var body: some View {
         VStack {
@@ -54,7 +57,7 @@ struct TooltipSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("An iPhone and an iPad show no tooltips; Android shows one after a long press too.")
+        Text("Android shows one after a long press too.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

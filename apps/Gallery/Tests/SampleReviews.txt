@@ -131,7 +131,7 @@ TickerSample.swift ecca16670e47a404
 TimePickerSample.swift dd3594dfb194e764
 ToolbarLayersSample.swift 570c23c8273a1253
 ToolbarSample.swift d53adb074176c8f6
-TooltipSample.swift bf97e37d731e2989
+TooltipSample.swift e0f3c63010c523fb
 TouchThroughSample.swift b93f7ab37cfe4d61
 TransformSample.swift 81070e05f7c25079
 TwoFingersSample.swift 47512444b7046f28
