@@ -226,8 +226,8 @@ extension GTKRendererTests {
 
     /// The accessibility settings reported are the desktop's: its animations, libadwaita's contrast, GNOME's screen
     /// reader and the text scale, as GTK reads them for its own drawing.
-    func testThePageReadsTheDesktopsAccessibilitySettings() throws {
-        try onUIThread {
+    func testThePageReadsTheDesktopsAccessibilitySettings() {
+        onUIThread {
             HostBoundary.setAccessibilityInfo(HostAccessibilityInfo(
                 reducesMotion: !GTKEnvironment.reducesMotion, prefersHigherContrast: true,
                 isScreenReaderOn: !GTKEnvironment.isScreenReaderOn, textScale: 0))
