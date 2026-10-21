@@ -31,6 +31,9 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
     /// Whether another value makes the element anew: a host makes its control by the value.
     let remakes: Bool
 
+    /// The value the library writes itself where an author says nothing; nil where it writes none.
+    let unsaid: PropValue?
+
     /// A property declared in `Owner`.
     ///
     /// - Parameters:
@@ -42,13 +45,17 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
     ///   - moves: which of a view's values it is, where the value cannot say.
     ///   - remakes: whether another value makes the element anew, where a host
     ///     makes another control for it.
+    ///   - unsaid: the value the library writes itself where an author says
+    ///     nothing - for a member no default answers for, which is written
+    ///     always; nil where it writes none.
     public init(
         _ name: String,
         layer: ElementLayer = .provider,
         travels: Bool = true,
         cleared: Bool = true,
         moves: MotionValues = [],
-        remakes: Bool = false
+        remakes: Bool = false,
+        unsaid: Value? = nil
     ) {
         self.name = name
         self.layer = layer
@@ -56,6 +63,7 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
         self.cleared = cleared
         self.moves = moves
         self.remakes = remakes
+        self.unsaid = unsaid?.propValue
         token = Prop(name)
         owner = KeyName(Owner.name)
     }

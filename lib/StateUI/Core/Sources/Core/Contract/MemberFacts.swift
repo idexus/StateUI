@@ -29,6 +29,9 @@ struct MemberFacts: Equatable {
     /// Whether another value makes the element anew.
     var remakes = false
 
+    /// The value the library writes itself where an author says nothing; nil where it writes none.
+    var unsaid: PropValue?
+
     /// What an application's own property says: it travels, it is cleared, no motion, nothing remade.
     static let undeclared = MemberFacts(kind: .property, layer: nil, travels: true, cleared: true, moves: [])
 }
@@ -47,7 +50,9 @@ protocol PropertyMember: DeclaredMember {
 
 extension ElementProperty: PropertyMember {
     var facts: MemberFacts {
-        MemberFacts(kind: .property, layer: layer, travels: travels, cleared: cleared, moves: moves, remakes: remakes)
+        MemberFacts(
+            kind: .property, layer: layer, travels: travels, cleared: cleared, moves: moves, remakes: remakes,
+            unsaid: unsaid)
     }
 
     var valueType: any HostRepresentable.Type { Value.self }

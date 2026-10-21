@@ -67,6 +67,10 @@ layer:
   moves    which group of a view's values it is for `.motion(_:_:)` - a size,
            a place, a transform, spacing, text - where the value cannot say;
            a color says its own group through its value
+  unsaid   the value the library writes itself where an author says nothing,
+           for a member it writes always because no default answers for it -
+           a group's side and order, whether a window floats or hides; none
+           for every other member
 ```
 
 A host still snaps a transition it cannot interpolate; `travels` keeps the
@@ -256,6 +260,7 @@ once where the host's register says it does not realize it there, or never
 will, with the register's reason (`HostRealizations.unhonored`): a tint
 written on a control a platform draws in the user's accent compiles and does
 nothing, and this is where its author hears why. A member the register says
-nothing of, or realizes in part, goes by. The register is built when first
+nothing of, or realizes in part, goes by, and so does a member holding its
+`unsaid` value: the library wrote it, its author having said nothing. The register is built when first
 asked, and the host layer keeps it while the host tells the same realization
 at each start (`CoreLink.setRealization`).

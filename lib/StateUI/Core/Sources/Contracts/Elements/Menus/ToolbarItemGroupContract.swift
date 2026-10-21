@@ -11,11 +11,12 @@ public enum ToolbarItemGroupContract: ElementContract {
     public static let layer: ElementLayer = .structure
 
     /// Where the group stands among the others at its edge: lower earlier in reading order.
-    public static let order = ElementProperty<Self, Int>("order", layer: .stateUI, travels: false, cleared: false)
+    public static let order = ElementProperty<Self, Int>(
+        "order", layer: .stateUI, travels: false, cleared: false, unsaid: 0)
 
     /// The edge of the bar the group stands at.
     public static let side = ElementProperty<Self, ToolbarSide>(
-        "side", layer: .adaptive, travels: false, cleared: false)
+        "side", layer: .adaptive, travels: false, cleared: false, unsaid: .end)
 
     /// The element's own members.
     public static let members: [any ContractMember] = [order, side]

@@ -140,12 +140,47 @@ final class HostRealizationTests: XCTestCase {
         XCTAssertTrue(hasComplained("`Slider.tint` is not realized on this host"))
     }
 
+    /// What the library writes itself where its author says nothing - a group's side, whether a window floats or
+    /// hides - is no description: a host leaving those members unrealized says nothing of them. What the author
+    /// says is said.
+    func testWhatTheAuthorLeftUnsaidIsNeverSaid() {
+        HostBoundary.setRegister(HostRegister(records: [
+            .notPlanned(ToolbarItemGroupContract.side, reason: "the bar has no leading edge."),
+            .notPlanned(WindowContract.floatsOnTop, reason: "no window floats."),
+            .notPlanned(WindowContract.hidesWhenInactive, reason: "no window hides."),
+        ]))
+        defer { HostBoundary.setRegister(nil) }
+        Renderer.shared.setApplication(UnsaidApp())
+        Renderer.shared.clearInvalidation()
+
+        _ = Renderer.shared.renderHost(baseline: 0)
+
+        for member in ["ToolbarItemGroup.side", "Window.floatsOnTop", "Window.hidesWhenInactive"] {
+            XCTAssertFalse(hasComplained("`\(member)`"), "\(member) said, its author having said nothing")
+        }
+
+        Renderer.shared.setApplication(LeadingApp())
+        _ = Renderer.shared.renderHost(baseline: 0)
+
+        XCTAssertTrue(hasComplained("`ToolbarItemGroup.side` is never realized"), "a side the author chose is said")
+    }
+
     // MARK: - Support
 
     /// A host realizing a label and a lamp, and raising one application event.
     private static let realization = HostRealization(
         elements: ["Text", "Test.Lamp"],
         members: [HostRealizedMember(element: "Application", owner: "Test", member: "Test.BatteryChanged")])
+}
+
+/// A window whose page has a toolbar, saying nothing of its side or of the window's behavior.
+private struct UnsaidApp: Application {
+    var body: some Scene { WindowGroup { Text("Parcels").toolbar { ToolbarItem("Reader") } } }
+}
+
+/// The same, its toolbar at the leading edge.
+private struct LeadingApp: Application {
+    var body: some Scene { WindowGroup { Text("Parcels").toolbar(.start) { ToolbarItem("Reader") } } }
 }
 
 /// The application's events these tests name, declared the way an application

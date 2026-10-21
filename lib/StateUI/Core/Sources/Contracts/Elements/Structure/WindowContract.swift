@@ -27,7 +27,7 @@ public enum WindowContract: ElementContract {
 
     /// Whether the window floats above the application's other windows.
     public static let floatsOnTop = ElementProperty<Self, Bool>(
-        "floatsOnTop", layer: .adaptive, cleared: false)
+        "floatsOnTop", layer: .adaptive, cleared: false, unsaid: false)
 
     /// How tall the window is, in device units.
     public static let height = ElementProperty<Self, Double>("height", layer: .native, moves: .height)
@@ -35,7 +35,7 @@ public enum WindowContract: ElementContract {
     /// Whether the window hides while another scene of the application is in
     /// front.
     public static let hidesWhenInactive = ElementProperty<Self, Bool>(
-        "hidesWhenInactive", layer: .adaptive, cleared: false)
+        "hidesWhenInactive", layer: .adaptive, cleared: false, unsaid: false)
 
     /// Whether the user can make the window fill the screen.
     public static let isMaximizable = ElementProperty<Self, Bool>("isMaximizable", layer: .adaptive)
