@@ -242,6 +242,7 @@ extension AppKitElement: PlacedView {
 
     func travels(to destination: Rect?) {
         if NodeType.wordsTypes.contains(type) { wordsRoom = destination }
+        (view as? AppKitTravelingLayout)?.arrangementRoom = destination.map { NSSize(width: $0.width, height: $0.height) }
     }
 }
 

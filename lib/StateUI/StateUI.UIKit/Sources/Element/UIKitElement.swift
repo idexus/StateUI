@@ -165,6 +165,7 @@ extension UIKitElement: PlacedView {
 
     func travels(to destination: Rect?) {
         if NodeType.wordsTypes.contains(type) { wordsRoom = destination }
+        (view as? UIKitLayoutView)?.arrangementRoom = destination.map { CGSize(width: $0.width, height: $0.height) }
     }
 }
 

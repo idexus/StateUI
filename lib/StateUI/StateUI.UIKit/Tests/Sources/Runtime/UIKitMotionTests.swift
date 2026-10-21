@@ -190,6 +190,38 @@ final class UIKitMotionTests: XCTestCase {
         XCTAssertTrue(risen.contains { $0 > 1 && $0 < 39 }, "on its way, not at once: \(risen)")
     }
 
+    /// A label filling a stack whose width travels lays its words out at the width the stack is bound for: the
+    /// stack lays its children out there, its own place traveling around them - the words never break onto a second
+    /// line on the way, as the Popover sample's did as its popover closed.
+    @MainActor
+    func testALabelInAStackThatTravelsKeepsItsWordsOnOneLine() throws {
+        let clock = TestClock()
+        let open = State(wrappedValue: true)
+        let host = UIKitRenderer.running(clock: clock) {
+            VStack {
+                Text(open.wrappedValue ? "The popover shows" : "The popover is closed").fontSize(13).id("said")
+            }
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        defer { host.finish() }
+        let said = try XCTUnwrap(Self.view(of: "said", in: host))
+        let line = said.bounds.height
+
+        open.wrappedValue = false
+        host.runtime.pump.turn()
+        host.layOut()
+        var heights = [said.bounds.height]
+        for now in stride(from: 50, through: 800, by: 50) {
+            clock.now = Double(now)
+            host.frame()
+            host.layOut()
+            heights.append(said.bounds.height)
+        }
+
+        XCTAssertEqual(heights.max() ?? 0, line, accuracy: 0.5, "one line all the way: \(heights)")
+    }
+
     /// The fill the rectangle draws, as red, green and blue.
     @MainActor
     private static func components(of box: UIKitShapeView) -> (red: Double, green: Double, blue: Double)? {

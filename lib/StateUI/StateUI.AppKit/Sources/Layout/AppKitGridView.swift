@@ -66,7 +66,7 @@ final class AppKitGridView: AppKitTravelingLayout, AppKitWidthConstrainedMeasuri
         beginArrangement()
         let places = GridArithmetic.places(
             of: items, rows: rows, columns: columns, rowSpacing: Double(rowSpacing),
-            columnSpacing: Double(columnSpacing), padding: padding, in: bounds.placed,
+            columnSpacing: Double(columnSpacing), padding: padding, in: arrangementBounds.placed,
             direction: direction)
         for (item, place) in zip(items, places) {
             if let place { self.place(item, at: NSRect(placed: place)) }

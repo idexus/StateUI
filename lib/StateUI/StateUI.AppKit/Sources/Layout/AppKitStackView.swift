@@ -64,7 +64,7 @@ final class AppKitStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasur
 
         beginArrangement()
         let places = StackArithmetic.places(
-            of: items, axis: axis, spacing: Double(spacing), padding: padding, in: bounds.placed,
+            of: items, axis: axis, spacing: Double(spacing), padding: padding, in: arrangementBounds.placed,
             direction: direction)
         for (item, place) in zip(items, places) {
             if let place { self.place(item, at: NSRect(placed: place)) }

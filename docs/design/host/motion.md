@@ -140,8 +140,11 @@ arrives. A view that lays out words - a label, a button
 (`NodeType.wordsTypes`) - lays them out at the size it is bound for, its
 place traveling around them: at the widths the place passes through, words
 that fit the destination on one line would break onto two for as long as
-the place travels, and the rows below would jump down and back. Every other
-view stands at each size it passes through.
+the place travels, and the rows below would jump down and back. A layout
+bound for a size lays its children out at that size, its own box traveling
+around them: a label filling it would otherwise break at the widths the
+layout passes through. Every other view stands at each size it passes
+through.
 
 ## Showing and hiding
 

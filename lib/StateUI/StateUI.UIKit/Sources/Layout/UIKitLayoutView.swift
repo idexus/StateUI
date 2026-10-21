@@ -88,11 +88,18 @@ class UIKitLayoutView: UIView, UIKitSteppable {
     /// Stands every child in `bounds`, by this layout's arithmetic.
     func arrange(in bounds: Rect) {}
 
+    /// The size the layout is bound for while its place travels: its children stand there meanwhile, as they will
+    /// once it lands, its own box traveling around them. Design: docs/design/host/motion.md#words-at-their-destination
+    var arrangementRoom: CGSize? {
+        didSet { if arrangementRoom != oldValue { setNeedsLayout() } }
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
         box.paint(on: self)
-        places.begin(width: bounds.width)
-        arrange(in: Rect(x: 0, y: 0, width: bounds.width, height: bounds.height))
+        let room = arrangementRoom ?? bounds.size
+        places.begin(width: room.width)
+        arrange(in: Rect(x: 0, y: 0, width: room.width, height: room.height))
         laidOut?()
     }
 

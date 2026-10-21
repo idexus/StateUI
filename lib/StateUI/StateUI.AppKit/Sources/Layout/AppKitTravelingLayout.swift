@@ -42,9 +42,20 @@ class AppKitTravelingLayout: AppKitHitTestView, AppKitDirectedLayout {
         decoration.draw(in: bounds)
     }
 
+    /// The size the layout is bound for while its place travels: its children stand there meanwhile, as they will
+    /// once it lands, its own box traveling around them. Design: docs/design/host/motion.md#words-at-their-destination
+    var arrangementRoom: NSSize? {
+        didSet { if arrangementRoom != oldValue { needsLayout = true } }
+    }
+
+    /// Where the children are arranged: the room the layout is bound for, else its bounds.
+    var arrangementBounds: NSRect {
+        arrangementRoom.map { NSRect(origin: .zero, size: $0) } ?? bounds
+    }
+
     /// Starts an arrangement, deciding once for every child how it is placed.
     func beginArrangement() {
-        places.begin(width: Double(bounds.width))
+        places.begin(width: Double(arrangementBounds.width))
     }
 
     /// Stands `item` at `frame`, or on its way there; an item no element places arrives at once.

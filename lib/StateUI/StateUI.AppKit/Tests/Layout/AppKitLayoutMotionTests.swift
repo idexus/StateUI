@@ -74,6 +74,49 @@ final class AppKitLayoutMotionTests: XCTestCase {
         XCTAssertEqual(midway, label.frame.width, accuracy: 0.5, "its words at the width it is bound for")
     }
 
+    /// A label filling a stack whose width travels lays its words out at the width the stack is bound for: the
+    /// stack lays its children out there, its own place traveling around them.
+    @MainActor
+    func testALabelInAStackThatTravelsKeepsItsWordsOnOneLine() throws {
+        var now = 0.0
+        let renderer = testRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            clock: { now },
+            reducesMotion: { false })
+        defer { renderer.closeForTesting() }
+
+        func caption(_ text: String) -> HostPatch {
+            var outer = HostPatch(id: .manual("outer"), type: .vStack)
+            outer.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
+            var stack = HostPatch(id: .manual("stack"), type: .vStack)
+            stack.properties = [.horizontalAlignment: .enumeration(Alignment.start.rawValue)]
+            var label = HostPatch(id: .manual("caption"), type: .text)
+            label.properties = [.text: .string(text)]
+            stack.children = .arranged([label])
+            outer.children = .arranged([stack])
+            return outer
+        }
+        renderer.applyForTesting(caption("The popover shows"))
+        let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("outer")))
+        let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("caption")))
+        native.frame = NSRect(x: 0, y: 0, width: 300, height: 200)
+        native.layoutSubtreeIfNeeded()
+        let line = label.frame.height
+
+        renderer.applyForTesting(caption("The popover is closed"))
+        native.layoutSubtreeIfNeeded()
+        var heights = [label.frame.height]
+        for step in 1...4 {
+            now = Double(step) * 50
+            renderer.advanceAnimationsForTesting()
+            native.layoutSubtreeIfNeeded()
+            heights.append(label.frame.height)
+        }
+
+        XCTAssertEqual(heights.max() ?? 0, line, accuracy: 0.5, "one line all the way: \(heights)")
+    }
+
     /// A child a patch moves starts from where it stood, travels on the
     /// layout's law, and lands exactly on its new place.
     @MainActor
