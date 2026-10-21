@@ -87,6 +87,62 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         XCTAssertTrue(on.wrappedValue, "a click on the words flips it")
     }
 
+    /// A switch stands as wide as its words and itself need, its words whole - and again as they grow longer.
+    @MainActor
+    func testASwitchStandsWideEnoughForItsWords() throws {
+        let words = State(wrappedValue: "Wi-Fi")
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Switch(true).text(words.wrappedValue).horizontalAlignment(.start)
+            }
+            .motion(.none)
+        }
+        defer { renderer.closeForTesting() }
+        let toggle = try XCTUnwrap(renderer.nativeViews(AppKitSwitchView.self).first)
+        let layOut = { toggle.window?.contentView?.layoutSubtreeIfNeeded() }
+        layOut()
+        XCTAssertGreaterThanOrEqual(toggle.caption.frame.width, try XCTUnwrap(toggle.caption.cell).cellSize.width - 0.01)
+
+        words.wrappedValue = "Platform look and every word after it"
+        renderer.runtime.pump.turn()
+        layOut()
+
+        XCTAssertGreaterThanOrEqual(
+            toggle.caption.frame.width, try XCTUnwrap(toggle.caption.cell).cellSize.width - 0.01, "the longer words whole")
+    }
+
+    /// A switch whose width travels as its words grow stands its words whole once it lands: its parts stand again
+    /// at every size its place passes through, the last one included.
+    @MainActor
+    func testASwitchsWordsStandWholeOnceItsWidthLands() throws {
+        var now = 0.0
+        let words = State(wrappedValue: "Wi-Fi")
+        stateUIUseApp(OneWindowApplication {
+            VStack {
+                Switch(true).text(words.wrappedValue).horizontalAlignment(.start)
+            }
+            .motion(.eased(.milliseconds(1000), .linear))
+        })
+        let renderer = testRenderer(clock: { now })
+        renderer.startForTesting()
+        defer { renderer.closeForTesting() }
+        let toggle = try XCTUnwrap(renderer.nativeViews(AppKitSwitchView.self).first)
+        let layOut = { toggle.window?.contentView?.layoutSubtreeIfNeeded() }
+        layOut()
+
+        words.wrappedValue = "Platform look and every word after it"
+        renderer.runtime.pump.turn()
+        layOut()
+        for step in 1...6 {
+            now = Double(step) * 250
+            renderer.displayFrameForTesting()
+            layOut()
+        }
+
+        XCTAssertGreaterThanOrEqual(
+            toggle.caption.frame.width, try XCTUnwrap(toggle.caption.cell).cellSize.width - 0.01, "the longer words whole")
+    }
+
     /// A check box's tint is its box's: its words keep the platform's color, which AppKit's content tint would
     /// otherwise draw them in.
     @MainActor

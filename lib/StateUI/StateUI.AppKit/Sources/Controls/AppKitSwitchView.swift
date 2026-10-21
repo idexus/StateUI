@@ -68,15 +68,22 @@ final class AppKitSwitchView: NSView, AppKitAccessibilityPresenting {
     override var intrinsicContentSize: NSSize {
         let toggle = control.intrinsicContentSize
         guard !caption.isHidden else { return toggle }
-        let words = caption.intrinsicContentSize
+        let words = wordsSize
         return NSSize(width: words.width + Self.gap + toggle.width, height: max(words.height, toggle.height))
+    }
+
+    /// The room the words draw in whole: their cell's own size - a label's intrinsic width leaves out the cell's
+    /// insets, and words given only that much end cut short.
+    private var wordsSize: NSSize {
+        let size = caption.cell?.cellSize ?? caption.intrinsicContentSize
+        return NSSize(width: size.width.rounded(.up), height: size.height.rounded(.up))
     }
 
     /// The switch at the end, the words in the rest from the start - the end and the start as the view lays out.
     override func layout() {
         super.layout()
         let toggle = control.intrinsicContentSize
-        let words = caption.intrinsicContentSize
+        let words = wordsSize
         let rightToLeft = userInterfaceLayoutDirection == .rightToLeft
         let room = max(0, bounds.width - toggle.width - Self.gap)
         control.frame = NSRect(
