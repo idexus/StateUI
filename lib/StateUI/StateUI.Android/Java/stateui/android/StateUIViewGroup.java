@@ -106,19 +106,33 @@ class StateUIViewGroup extends ViewGroup {
         return false;
     }
 
-    /** Holds exactly {@code children}, in order, moving only what moved. */
+    /**
+     * Holds exactly {@code children}, in order, moving only what moved. A child moved within stays attached, as
+     * removing it would take the keyboard from it.
+     */
     void setChildren(View[] children) {
         for (int index = getChildCount() - 1; index >= 0; index--) {
             if (!holds(children, getChildAt(index))) removeViewAt(index);
         }
 
+        boolean moved = false;
         for (int index = 0; index < children.length; index++) {
             View child = children[index];
             if (index < getChildCount() && getChildAt(index) == child) continue;
 
             ViewParent parent = child.getParent();
+            if (parent == this) {
+                detachViewFromParent(child);
+                attachViewToParent(child, index, child.getLayoutParams());
+                moved = true;
+                continue;
+            }
             if (parent instanceof ViewGroup) ((ViewGroup) parent).removeView(child);
             addView(child, index);
+        }
+        if (moved) {
+            requestLayout();
+            invalidate();
         }
     }
 

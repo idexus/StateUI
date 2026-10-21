@@ -92,6 +92,6 @@ Polygon 2
 ProgressBar 3
 Spacer 2
 TabView 2
-VStack 2
+VStack 3
 WebView 3
 ZStack 2

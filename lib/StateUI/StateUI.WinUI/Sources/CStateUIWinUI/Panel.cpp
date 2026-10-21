@@ -6,6 +6,7 @@
 // Design: docs/design/platforms/winui/layout.md#a-layout-is-a-panel
 
 #include "Relay.h"
+#include <algorithm>
 
 #include <vector>
 
@@ -118,11 +119,23 @@ extern "C" void stateui_winui_panel_set_children(
     StateUIObjectRef panel, StateUIObjectRef const *children, int32_t count
 ) {
     try {
+        // A child that stays is moved, never taken out, so it keeps the keyboard.
         auto items = borrow<controls::Panel>(panel).Children();
         std::vector<xaml::UIElement> held;
         held.reserve(count);
         for (int32_t index = 0; index < count; ++index) held.push_back(as<xaml::UIElement>(children[index]));
-        items.ReplaceAll(held);
+        for (uint32_t index = items.Size(); index-- > 0;) {
+            if (std::find(held.begin(), held.end(), items.GetAt(index)) == held.end()) items.RemoveAt(index);
+        }
+        for (uint32_t index = 0; index < held.size(); ++index) {
+            if (index < items.Size() && items.GetAt(index) == held[index]) continue;
+            uint32_t standing = 0;
+            if (items.IndexOf(held[index], standing)) {
+                items.Move(standing, index);
+            } else {
+                items.InsertAt(index, held[index]);
+            }
+        }
     } catch (...) {
         report("holding a panel's children");
     }

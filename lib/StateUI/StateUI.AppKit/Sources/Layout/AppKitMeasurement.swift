@@ -111,21 +111,19 @@ extension NSRect {
 
 @MainActor
 extension NSView {
-    /// Makes `wanted` the view's children, in order, over the material or glass its box draws, which stays.
+    /// Makes `wanted` the view's children, in order, over the material or glass its box draws, which stays. A child
+    /// that stays is moved, never removed, so it keeps the keyboard.
     func replaceSubviews(with wanted: [NSView]) {
+        let surfaces = subviews.filter { $0 is any AppKitBoxSurface }
         let children = subviews.filter { !($0 is any AppKitBoxSurface) }
         let alreadyArranged = children.count == wanted.count
             && zip(children, wanted).allSatisfy { $0 === $1 }
         guard !alreadyArranged else { return }
 
-        for child in children {
-            child.removeFromSuperview()
-        }
-
         for child in wanted {
             child.translatesAutoresizingMaskIntoConstraints = true
-            addSubview(child)
         }
+        subviews = surfaces + wanted
     }
 }
 

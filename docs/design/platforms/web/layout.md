@@ -48,6 +48,11 @@ child stood at an index before a move is the trap: the moves before it in the
 same pass shift the elements, and three children turned about - `[a, b, c]`
 to `[c, b, a]` - stand `[c, a, b]`.
 
+The element holding the keyboard is never the one moved: a browser takes the
+keyboard from an element as it leaves its place, and the field would lose it
+to a reorder. What stands between its index and it moves past it instead, in
+order, which leaves the same order.
+
 ## Places that travel
 
 A stack's, a grid's and a ZStack's children travel to their places by the
