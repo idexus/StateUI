@@ -20,6 +20,17 @@ final class PagesTests: XCTestCase {
         return patch
     }
 
+    /// A window's pages are found in the tree's order, a stack's covered pages among them.
+    func testAWindowsPagesAreFoundInTheTreesOrder() throws {
+        let runtime = HostRuntime.still()
+        let stack = node("stack", .navigationStack, children: [
+            node("root", .page, children: [node("words", .text)]), node("pushed", .page),
+        ])
+        runtime.tree.apply(node("window", .window, children: [stack]), complete: true)
+
+        XCTAssertEqual(try XCTUnwrap(runtime.tree.root).pages.map(\.id), [.manual("root"), .manual("pushed")])
+    }
+
     /// A runtime holding `root`, whose phases are written down in the order told.
     private func runtime(_ root: HostPatch, told: @escaping (Int32) -> Void) -> HostRuntime {
         let runtime = HostRuntime.still()

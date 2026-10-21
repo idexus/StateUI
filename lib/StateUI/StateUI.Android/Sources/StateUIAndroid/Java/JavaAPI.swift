@@ -87,6 +87,10 @@ enum JavaAPI {
     static let slide = Java.findClass("android/transition/Slide")
     static let newSlide = Java.method(slide, "<init>", "(I)V")
     static let setVisibilityMode = Java.method(slide, "setMode", "(I)V")
+    static let setTransitionsInterpolator = Java.method(
+        transitionSet, "setInterpolator", "(Landroid/animation/TimeInterpolator;)Landroid/transition/TransitionSet;")
+    static let pathInterpolator = Java.findClass("android/view/animation/PathInterpolator")
+    static let newPathInterpolator = Java.method(pathInterpolator, "<init>", "(FFFF)V")
     static let addOnGlobalLayoutListener = Java.method(
         viewTreeObserver, "addOnGlobalLayoutListener", "(Landroid/view/ViewTreeObserver$OnGlobalLayoutListener;)V")
     static let addOnScrollChangedListener = Java.method(
@@ -212,6 +216,7 @@ enum JavaAPI {
 
     static let focus = Java.staticMethod(views, "focus", "(Landroid/view/View;Z)Z")
     static let groundSidebar = Java.staticMethod(views, "groundSidebar", "(Landroid/view/View;ZZI)V")
+    static let groundPage = Java.staticMethod(views, "groundPage", "(Landroid/view/View;)V")
     static let sheet = Java.staticMethod(
         views, "sheet", "(Landroid/content/Context;Landroid/view/View;)Landroid/widget/FrameLayout;")
     static let rise = Java.staticMethod(views, "rise", "(Landroid/view/ViewGroup;Landroid/view/View;ZJ)V")

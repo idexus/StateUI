@@ -58,8 +58,7 @@ extension AndroidElement {
                 switch property {
                 case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
                 case .isVisible: view.setShown(isShown)
-                // Android blurs nothing behind a view: a blur's or glass's colour stands in, its tint over it.
-                case .background: view.setBackground(HostMaterial(value(.background)).painted)
+                case .background: paintBackground()
                 case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
                 case .tooltip: view.setTooltip(element.string(.tooltip))
                 default: break
@@ -102,5 +101,15 @@ extension AndroidElement {
     /// The view of this element or the nearest one above it.
     var nearestView: AndroidView? {
         view ?? parent?.nearestView
+    }
+
+    /// Paints the view's background: its own - a blur's or glass's colour standing in, its tint over it, as Android
+    /// blurs nothing behind a view; a page painting none stands on the colour its window is painted in.
+    /// Design: docs/design/host/pages.md#a-pages-ground
+    func paintBackground() {
+        guard let view else { return }
+        let own = HostMaterial(value(.background)).painted
+        guard type == .page, own == nil else { return view.setBackground(own) }
+        Java.callStatic(JavaAPI.views, JavaAPI.groundPage, .object(view.reference))
     }
 }

@@ -140,6 +140,16 @@ libadwaita's navigation view, WinUI's entrance of a panel's children,
 Android's transitions, the browser's animations on the page. AppKit changes
 the page without motion, as the Mac's own applications do in a window.
 
+## A page's ground
+
+A page is an opaque surface the size of its room, so a page sliding over
+another - a push, a pop - hides the one under it rather than mixing with it.
+It stands on its own background where it paints one, else on the colour its
+host painted its toolkit's window in - the window's colour, or the
+platform's own ground where the window says none: UIKit's system
+background, Android's theme background. A window whose colour changes stands
+every page in it (`MountedElement.pages`) on the new one.
+
 ## Sheets
 
 A window's sheets follow its modal stack by one rule (`SheetChange`): the

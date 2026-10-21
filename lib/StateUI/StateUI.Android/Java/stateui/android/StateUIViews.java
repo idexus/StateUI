@@ -3,7 +3,9 @@
 
 package stateui.android;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -407,6 +409,27 @@ final class StateUIViews {
         }
         view.setBackground(ground);
         view.setClipToOutline(over);
+    }
+
+    /**
+     * Grounds a page on its window's colour - the one its activity's window is painted in, else the theme's
+     * background - so a page sliding over another hides it.
+     */
+    static void groundPage(View view) {
+        Context context = view.getContext();
+        while (context instanceof ContextWrapper && !(context instanceof Activity)) {
+            context = ((ContextWrapper) context).getBaseContext();
+        }
+        Drawable window = context instanceof Activity
+                ? ((Activity) context).getWindow().getDecorView().getBackground() : null;
+        if (window instanceof ColorDrawable) {
+            view.setBackground(new ColorDrawable(((ColorDrawable) window).getColor()));
+            return;
+        }
+        TypedValue value = new TypedValue();
+        view.getContext().getTheme().resolveAttribute(android.R.attr.colorBackground, value, true);
+        view.setBackground(new ColorDrawable(
+                value.resourceId != 0 ? view.getContext().getColor(value.resourceId) : value.data));
     }
 
     /** The colour a split view's sidebar stands on, as ARGB; Long.MIN_VALUE where it stands on nothing. */

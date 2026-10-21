@@ -474,6 +474,11 @@
         type == .window ? [self] : children.flatMap(\.windows)
     }
 
+    /// The pages in this subtree, in the tree's order, this one first.
+    public var pages: [MountedElement] {
+        (type == .page ? [self] : []) + held.flatMap(\.pages)
+    }
+
     /// The first element with key `sought` in this subtree, this one first.
     public func first(id sought: ElementID) -> MountedElement? {
         if id == sought { return self }

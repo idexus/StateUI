@@ -31,10 +31,16 @@ final class AndroidNavigationView: AndroidLayoutView {
     }
 
     /// Begins Android's transition over the pages' change the next frame lays out: the page arriving slides in from
-    /// one edge, the page leaving out toward the other.
+    /// one edge, the page leaving out toward the other - on one easing, so the arriving page's edge travels on the
+    /// leaving one's and neither page crosses the other.
+    /// Design: docs/design/platforms/android/pages.md#a-navigation-stack
     private func slide(pushed: Bool) {
         let (arriving, leaving) = pushed ? (Self.end, Self.start) : (Self.start, Self.end)
         let transitions = Java.new(JavaAPI.transitionSet, JavaAPI.newTransitionSet)
+        let easing = Java.new(
+            JavaAPI.pathInterpolator, JavaAPI.newPathInterpolator, .float(0.4), .float(0), .float(0.2), .float(1))
+        Java.release(local: Java.callObject(
+            transitions.reference, JavaAPI.setTransitionsInterpolator, .object(easing.reference)))
         for (edge, mode) in [(arriving, Self.appearing), (leaving, Self.disappearing)] {
             let slide = Java.new(JavaAPI.slide, JavaAPI.newSlide, .int(edge))
             Java.call(slide.reference, JavaAPI.setVisibilityMode, .int(mode))

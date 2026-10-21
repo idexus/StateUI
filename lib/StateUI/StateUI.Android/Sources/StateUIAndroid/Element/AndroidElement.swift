@@ -54,6 +54,7 @@ final class AndroidElement: NativeElement {
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
+        if !wasDescribed, type == .page { paintBackground() }
         applyProperties(changed: changed)
         if let view, let host { element.applyDrawnChildren(to: view, through: AndroidRegistrations.registry, in: host.runtime) }
         configureGestures()

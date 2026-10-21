@@ -12,6 +12,8 @@ final class AndroidPagesTests: XCTestCase {
         [
             ("testADrawerStandsAtTheEdgeTheLanguageStartsFrom", testADrawerStandsAtTheEdgeTheLanguageStartsFrom),
             ("testAStackShowsItsTopPageUnderItsBarAndGoesBack", testAStackShowsItsTopPageUnderItsBarAndGoesBack),
+            ("testAPageStandsOnTheThemesGroundWhereTheWindowPaintsNone", testAPageStandsOnTheThemesGroundWhereTheWindowPaintsNone),
+            ("testAPageStandsOnItsWindowsColour", testAPageStandsOnItsWindowsColour),
             ("testTabsOnAStackNameTheBarByTheirOwnTitle", testTabsOnAStackNameTheBarByTheirOwnTitle),
             ("testWordsOnAPaintedBarFollowHowDarkItIs", testWordsOnAPaintedBarFollowHowDarkItIs),
             ("testABarsColourTravelsOnTheDisplaysFrames", testABarsColourTravelsOnTheDisplaysFrames),
@@ -63,6 +65,56 @@ final class AndroidPagesTests: XCTestCase {
             XCTAssertTrue(host.goBack())
             XCTAssertEqual(path.wrappedValue, [])
             XCTAssertEqual(navigation.bar.content.title, "Root")
+        }
+    }
+
+    /// A page stands on an opaque ground - every page of a stack, the one pushed too - so a page sliding over another
+    /// hides it: the theme's where the window paints no colour.
+    func testAPageStandsOnTheThemesGroundWhereTheWindowPaintsNone() throws {
+        try onMainActor {
+            let path = State(wrappedValue: [Int]())
+            let host = AndroidRenderer.running {
+                NavigationStack(path.projectedValue) {
+                    TitledPage(title: "Root")
+                } destination: { number in
+                    TitledPage(title: "Detail \(number)")
+                }
+            }
+            host.layOut()
+            path.wrappedValue.append(1)
+            host.runtime.pump.turn()
+
+            let pages = try XCTUnwrap(host.runtime.tree.root).pages
+            XCTAssertEqual(pages.count, 2)
+            for page in pages {
+                let ground = try XCTUnwrap(PageGround.colour(of: page), "\(page.id) stands on nothing")
+                XCTAssertEqual(ground >> 24, 0xFF, "\(page.id) stands on an opaque ground")
+            }
+        }
+    }
+
+    /// A page that paints no background of its own stands on its window's colour.
+    func testAPageStandsOnItsWindowsColour() throws {
+        try onMainActor {
+            stateUIUseApp(OneWindowApplication {
+                WindowPainted(colour: Color(red: 51, green: 102, blue: 153)) {
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                        TitledPage(title: "Root")
+                    } destination: { number in
+                        TitledPage(title: "Detail \(number)")
+                    }
+                }
+            })
+            let host = AndroidRenderer.start(context: TestContext.window, root: TestJava.root(), density: 2)
+            defer {
+                Java.callStatic(
+                    JavaAPI.environment, JavaAPI.setWindowBackground, .object(TestContext.window.reference), .int(0),
+                    .bool(false))
+            }
+            host.layOut()
+
+            let page = try XCTUnwrap(host.runtime.tree.root?.first(type: .window)?.pages.last)
+            XCTAssertEqual(PageGround.colour(of: page), 0xFF33_6699)
         }
     }
 
@@ -781,5 +833,22 @@ private struct TitledPage: View {
     var body: some View {
         let words = Text(title).toolbar { actions }.title(title)
         return (icon.map { words.icon($0) } ?? words).loggingPhases(log, as: title)
+    }
+}
+
+/// The colour a page's view stands on, as ARGB.
+@MainActor
+private enum PageGround {
+    private static let colorDrawable = Java.findClass("android/graphics/drawable/ColorDrawable")
+    private static let getColor = Java.method(colorDrawable, "getColor", "()I")
+
+    /// The colour `page`'s view is painted in; nil where it paints none, or no one colour.
+    static func colour(of page: MountedElement) -> UInt32? {
+        guard let view = (page.native as? AndroidElement)?.view,
+              let ground = Java.callObject(view.reference, JavaAPI.getBackground)
+        else { return nil }
+        defer { Java.release(local: ground) }
+        guard Java.jni.IsInstanceOf(Java.env, ground, colorDrawable) != 0 else { return nil }
+        return UInt32(truncatingIfNeeded: Java.callInt(ground, getColor))
     }
 }

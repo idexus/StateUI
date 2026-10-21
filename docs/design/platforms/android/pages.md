@@ -15,7 +15,12 @@ pop changes which page the stack holds; nothing is built again for it. The
 change moves by Android's own transition (`TransitionManager`): a page pushed
 slides in from the end over the one it covers going toward the start, one
 popped back to the other way, as the host layer says the path changed
-([a path that changes](../../host/pages.md#a-path-that-changes)).
+([a path that changes](../../host/pages.md#a-path-that-changes)). Both slides
+run on one easing: a `Slide` eases a page arriving and a page leaving each its
+own way, which crosses them; on one, the arriving page's edge travels on the
+leaving one's. Each page stands on its ground
+([a page's ground](../../host/pages.md#a-pages-ground)), so even crossing they
+would not mix.
 
 ## The bar
 
