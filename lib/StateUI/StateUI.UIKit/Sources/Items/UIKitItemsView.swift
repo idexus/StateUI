@@ -11,9 +11,10 @@ import UIKit
 /// builds what a cell holds.
 /// Design: docs/design/platforms/uikit/items.md
 @MainActor
-final class UIKitItemsView: UIView, UICollectionViewDelegate {
+final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing {
     let cells: ItemsCells
     private(set) var collection: UICollectionView
+    private(set) lazy var refresh = UIKitRefresh(collection)
     private var source: UICollectionViewDiffableDataSource<String, String>!
     private var layout = ItemsLayout.list()
     private var mode = SelectionMode.none

@@ -721,6 +721,18 @@ extension ControlDictionary {
                 .isFocused($editing)
             """#),
 
+        (RefreshElementContract.self, #"""
+            @State var refreshing = false
+            @State var rows = ["First"]
+
+            ItemsView(rows) { Text($0) }
+                .isRefreshing($refreshing)
+                .onRefreshRequested {
+                    rows.insert("Fresh", at: 0)
+                    refreshing = false
+                }
+            """#),
+
         (KeyboardElementContract.self, #"""
             @State var row = 0
 

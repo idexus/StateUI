@@ -96,6 +96,8 @@ Image
   source
 ItemsView
   endReachedWithin
+  isRefreshEnabled
+  isRefreshing
   items
   itemsLayout
   selectedItems
@@ -103,6 +105,7 @@ ItemsView
   endReached()
   itemActivated()
   realizedChanged()
+  refreshRequested()
   selectedItemsChanged()
 LayoutEngine
   clipsContent
@@ -194,6 +197,8 @@ Rectangle
   stroke
 ScrollView
   horizontalScrollIndicator
+  isRefreshEnabled
+  isRefreshing
   lineWidth
   orientation
   padding
@@ -201,6 +206,7 @@ ScrollView
   shape
   stroke
   verticalScrollIndicator
+  refreshRequested()
   scrollStopped()
 SearchField
   cursorPosition

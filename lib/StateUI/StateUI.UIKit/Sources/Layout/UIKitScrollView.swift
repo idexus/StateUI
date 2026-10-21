@@ -10,7 +10,7 @@ import UIKit
 /// to it is said on the display's frames, by the host layer's reading of it (`ScrollMovement`).
 /// Design: docs/design/platforms/uikit/layout.md#scrolling
 @MainActor
-final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
+final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefreshing {
     /// Says, on a display frame, where the user moved the scroller from and to.
     var onOffsetChanged: ((Point, Point) -> Void)?
 
@@ -29,6 +29,7 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
     private let movement = ScrollMovement()
 
     let scroller = UIScrollView()
+    private(set) lazy var refresh = UIKitRefresh(scroller)
     private let document = UIKitScrollDocument()
 
     /// Holds the content in a stack where the scroller was given more than one child.

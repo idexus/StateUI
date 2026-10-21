@@ -34,8 +34,15 @@ enum WinUIRealization {
     static let notPlanned: [(any ElementContract.Type, reason: String)] = []
 
     /// Every record, the tiers' first.
+    /// Why a list is not pulled to refresh here.
+    private static let noListPull = "WinUI's RefreshContainer pulls a ScrollViewer, and an ItemsView scrolls in a "
+        + "ScrollView it does not pull."
+
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
+        .notPlanned(RefreshElementContract.isRefreshEnabled, on: ItemsViewContract.self, reason: Self.noListPull),
+        .notPlanned(RefreshElementContract.isRefreshing, on: ItemsViewContract.self, reason: Self.noListPull),
+        .notPlanned(RefreshElementContract.refreshRequested, on: ItemsViewContract.self, reason: Self.noListPull),
         .notPlanned(LayoutContract.avoidsSafeArea, reason: "A Windows desktop window keeps no area of its content "
             + "clear: nothing of the window stands over its content."),
         .notPlanned(VisualElementContract.accessibilityActionPerformed,

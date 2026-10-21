@@ -172,6 +172,8 @@ extension NodeType {
     static let flyoutBackground = SplitViewContract.flyoutBackground.token
     static let sidebarOverlays = SplitViewContract.sidebarOverlays.token
     static let isReadOnly = TextInputContract.isReadOnly.token
+    static let isRefreshEnabled = RefreshElementContract.isRefreshEnabled.token
+    static let isRefreshing = RefreshElementContract.isRefreshing.token
     static let isScrollEnabled = MapContract.isScrollEnabled.token
     static let showsUserLocation = MapContract.showsUserLocation.token
     static let isSpellCheckEnabled = TextInputContract.isSpellCheckEnabled.token
@@ -327,6 +329,7 @@ extension NodeType {
     static let popped = NavigationStackContract.popped.token
     static let pressed = ButtonContract.pressed.token
     static let processTerminated = WebViewContract.processTerminated.token
+    static let refreshRequested = RefreshElementContract.refreshRequested.token
     static let released = ButtonContract.released.token
     static let resumed = WindowContract.resumed.token
     static let scrollStopped = ScrollViewContract.scrollStopped.token

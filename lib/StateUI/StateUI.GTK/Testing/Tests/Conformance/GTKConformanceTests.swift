@@ -93,6 +93,7 @@ final class GTKConformanceTests: XCTestCase {
     func testTintElement() { conform(TintElementTests.self) }
     func testKeyboardElement() { conform(KeyboardElementTests.self) }
     func testFocusElement() { conform(FocusElementTests.self) }
+    func testRefreshElement() { conform(RefreshElementTests.self) }
     func testBarElement() { conform(BarElementTests.self) }
     func testMenuItemElement() { conform(MenuItemElementTests.self) }
     func testPageElement() { conform(PageElementTests.self) }

@@ -86,6 +86,10 @@ extension UIKitRegistrations {
                     clips: true)
             }
             scroll.raises(ScrollViewContract.scrollStopped)
+            scroll.applies(RefreshElementContract.isRefreshEnabled, RefreshElementContract.isRefreshing) { view, values in
+                view.refresh.apply(values)
+            }
+            scroll.raises(RefreshElementContract.refreshRequested)
         }
     }
 

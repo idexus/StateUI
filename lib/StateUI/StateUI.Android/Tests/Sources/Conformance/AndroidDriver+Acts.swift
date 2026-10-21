@@ -78,6 +78,13 @@ extension AndroidDriver {
         case (.enterWords, is AndroidStepperView):
             throw DriverCannot("type words into a Stepper", because: "Android's stepper is two buttons, with no field")
         case (.scroll(let target), let scroll as AndroidScrollView): Self.scroll(scroll, to: target)
+        case (.pullToRefresh, let pulled as any AndroidRefreshing):
+            // The swipe to refresh spins as a pull far enough leaves it, then tells what hears it.
+            guard let swipe = pulled.refresh?.layout.reference, Java.callBool(swipe, JavaAPI.isEnabled) else {
+                throw DriverCannot(act, on: element)
+            }
+            Java.call(swipe, JavaAPI.setRefreshing, .bool(true))
+            Java.call(swipe, JavaAPI.refreshPulled)
         case (.choose(let place), let tabs as AndroidTabView):
             guard Self.tap(tab: place, of: tabs) else { throw DriverCannot(act, on: element) }
         case (.tap(let count), let view?): Self.tap(view, count: count)

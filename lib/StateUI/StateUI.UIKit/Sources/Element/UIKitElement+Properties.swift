@@ -10,6 +10,12 @@ import UIKit
 /// takes here, by the host layer's reading of it.
 extension UIKitElement {
     func makeView() -> UIView? {
+        let view = makeOwnView()
+        (view as? UIKitRefreshing)?.refresh.onPulled = { [weak self] in self?.pulled() ?? false }
+        return view
+    }
+
+    private func makeOwnView() -> UIView? {
         if type == .itemsView, let host {
             return UIKitItemsView(cells: ItemsCells(element, in: host.runtime), reducesMotion: { [weak host] in
                 host?.runtime.reducesMotion() ?? false

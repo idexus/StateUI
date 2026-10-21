@@ -84,6 +84,7 @@
         TintElementTests.self,
         KeyboardElementTests.self,
         FocusElementTests.self,
+        RefreshElementTests.self,
         BarElementTests.self,
         MenuItemElementTests.self,
         PageElementTests.self,

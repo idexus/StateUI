@@ -16,7 +16,7 @@ ItemsView(["Apple", "Banana", "Cherry"]) { fruit in
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md) · [RefreshElement](tiers/RefreshElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -35,13 +35,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (86)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>43 ✅ · 2 ☑️ · 39 ✓ · 1 –</td><td><code>NSCollectionView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>37 ✅ · 2 ☑️ · 41 ✓ · 5 –</td><td><code>UICollectionView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>67 ✅ · 5 ☑️ · 12 ✓</td><td>AndroidX <code>RecyclerView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>66 ✅ · 1 ☑️ · 13 ✓ · 5 –</td><td><code>ItemsView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>54 ✅ · 1 ☑️ · 23 ✓ · 6 –</td><td><code>GtkListView</code> / <code>GtkGridView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>60 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td>ARIA <code>list</code> or <code>listbox</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (89)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>43 ✅ · 2 ☑️ · 39 ✓ · 4 –</td><td><code>NSCollectionView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>40 ✅ · 2 ☑️ · 41 ✓ · 5 –</td><td><code>UICollectionView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>69 ✅ · 5 ☑️ · 13 ✓</td><td>AndroidX <code>RecyclerView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>66 ✅ · 1 ☑️ · 13 ✓ · 8 –</td><td><code>ItemsView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>54 ✅ · 1 ☑️ · 23 ✓ · 9 –</td><td><code>GtkListView</code> / <code>GtkGridView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>60 ✅ · 1 ☑️ · 21 ✓ · 6 –</td><td>ARIA <code>list</code> or <code>listbox</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Collections/ItemsViewContract.swift`.
@@ -231,4 +231,18 @@ An element that takes the keyboard focus itself - a field, a button, a list - an
 <tr><td colspan="9">UIKit: ItemsView takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>unfocus</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: ItemsView takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
+</table>
+
+## From [RefreshElement](tiers/RefreshElement.md)
+
+An element the user pulls to refresh what it shows - a scroller, a list.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>isRefreshEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">–</td></tr>
+<tr><td colspan="9">AppKit: AppKit offers no pull to refresh: a Mac application refreshes by a command - a menu item, a toolbar button, ⌘R.<br>WinUI 3: WinUI's RefreshContainer pulls a ScrollViewer, and an ItemsView scrolls in a ScrollView it does not pull.<br>GTK 4: GTK and libadwaita offer no pull to refresh: a GNOME application refreshes by a command - a header bar button, Ctrl+R.<br>Web: The DOM offers no pull to refresh of a part of a page - a browser's own pull reloads the whole page: a page refreshes by a command.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isRefreshing</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">–</td></tr>
+<tr><td colspan="9">AppKit: AppKit offers no pull to refresh: a Mac application refreshes by a command - a menu item, a toolbar button, ⌘R.<br>WinUI 3: WinUI's RefreshContainer pulls a ScrollViewer, and an ItemsView scrolls in a ScrollView it does not pull.<br>GTK 4: GTK and libadwaita offer no pull to refresh: a GNOME application refreshes by a command - a header bar button, Ctrl+R.<br>Web: The DOM offers no pull to refresh of a part of a page - a browser's own pull reloads the whole page: a page refreshes by a command.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onRefreshRequested</code> (<code>refreshRequested</code>)</td><td>event</td><td></td><td>native</td><td align="center">–</td><td align="center">✅</td><td align="center">✓</td><td align="center">–</td><td align="center">–</td><td align="center">–</td></tr>
+<tr><td colspan="9">AppKit: AppKit offers no pull to refresh: a Mac application refreshes by a command - a menu item, a toolbar button, ⌘R.<br>Android Views: only through the host's own: pullToRefresh on ItemsView: the relay's own pull handed the swipe to refresh, no finger dragged<br>WinUI 3: WinUI's RefreshContainer pulls a ScrollViewer, and an ItemsView scrolls in a ScrollView it does not pull.<br>GTK 4: GTK and libadwaita offer no pull to refresh: a GNOME application refreshes by a command - a header bar button, Ctrl+R.<br>Web: The DOM offers no pull to refresh of a part of a page - a browser's own pull reloads the whole page: a page refreshes by a command.</td></tr></tbody>
 </table>

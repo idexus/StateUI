@@ -8709,6 +8709,49 @@ enum Listings {
             }
         }
         """#,
+        "RefreshingList": #"""
+        // Sources/Samples/Collections/RefreshSample.swift
+        @State private var items = ["Weekly notes", "Old news"]
+        @State private var refreshing = false
+        @State private var fetched = 0
+
+        var body: some View {
+            Grid {
+                HStack {
+                    // Where the platform has no pull, a command refreshes - its spinner showing where it has one.
+                    Button("Refresh")
+                        .isEnabled(!refreshing)
+                        .onClicked(gate: .ignoreWhileRunning) { try await fetch() }
+
+                    Button("Clear")
+                        .onClicked { items = [] }
+
+                    Text(refreshing ? "Refreshing" : items.count == 1 ? "1 item" : "\(items.count) items")
+                        .verticalAlignment(.center)
+                }
+                .gridRow(0)
+
+                ItemsView(items, id: \.self) { item in
+                    Text(item)
+                }
+                // An empty list keeps its pull.
+                .emptyView(Text("Nothing yet").textColor(Palette.subtle))
+                .isRefreshing($refreshing)
+                .onRefreshRequested(gate: .ignoreWhileRunning) { try await fetch() }
+                .gridRow(1)
+            }
+            .rows(.auto, .fill)
+        }
+
+        /// Fetches what is new, the spinner showing until it is in.
+        private func fetch() async throws {
+            refreshing = true
+            defer { refreshing = false }
+            try await Task.sleep(for: .milliseconds(900))
+            fetched += 1
+            items.insert("Fresh \(fetched)", at: 0)
+        }
+        """#,
         "RemovingRowSample": #"""
         // Sources/Samples/Layout/RemovingRowSample.swift
         /// The rows, and which of them have gone.

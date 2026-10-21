@@ -11,9 +11,14 @@ extension MountedElement {
         value(.isEnabled)?.bool != false && parent?.isEffectivelyEnabled != false
     }
 
-    /// `property` as the element's view presents it: its own value - but `isEnabled` false in a disabled branch.
+    /// `property` as the element's view presents it: its own value - but `isEnabled` false in a disabled branch, and
+    /// `isRefreshEnabled` true where the element hears the pull and says nothing of it.
     public func presented(_ property: Prop) -> HostValue? {
-        property == .isEnabled && parent?.isEffectivelyEnabled == false ? .bool(false) : value(property)
+        switch property {
+        case .isEnabled where parent?.isEffectivelyEnabled == false: .bool(false)
+        case .isRefreshEnabled: offeredRefresh
+        default: value(property)
+        }
     }
 
     /// The branch's enablement turned: every element in it presents its `isEnabled` again.

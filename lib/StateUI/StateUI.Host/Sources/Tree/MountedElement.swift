@@ -165,6 +165,7 @@
         tree.tally?.nodes += 1
 
         let previouslyShown = isPagePresented ? shownChildren : []
+        let heardPull = hearsPull
         var changed = Set(patch.clearedProperties)
         changed.formUnion(patch.properties.keys)
         if case .replace(let replacement) = patch.driven {
@@ -209,6 +210,8 @@
         for (property, binding) in driven where binding.mode != .in {
             drivenValues[property] = tree.core.value(for: binding)
         }
+        // What hears the pull changed: the offer its view is given follows (`offeredRefresh`).
+        if hearsPull != heardPull { changed.insert(.isRefreshEnabled) }
 
         if let motion = patch.motion {
             self.motion = motion

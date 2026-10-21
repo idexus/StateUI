@@ -56,7 +56,8 @@ android {
     }
 }
 
-// The recycler an ItemsView stands on.
+// The recycler an ItemsView stands on, and the swipe to refresh a scroller or a list stands in.
 dependencies {
     implementation("androidx.recyclerview:recyclerview:1.4.0")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 }

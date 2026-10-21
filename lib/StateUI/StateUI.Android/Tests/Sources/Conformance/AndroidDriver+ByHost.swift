@@ -27,6 +27,8 @@ extension AndroidDriver {
             return "the relay's result path handed the driver's documents, no picker shown"
         case "answerShare":
             return "the host told the driver's answer, no chooser shown"
+        case "pullToRefresh":
+            return "the relay's own pull handed the swipe to refresh, no finger dragged"
         default: break
         }
         switch ability {

@@ -35,6 +35,9 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
     private var endReached: (within: Int, handler: Handler)?
     private var aimed: Aim<Self>?
 
+    /// What the list wears of the pull to refresh, in the order written.
+    private var pull: [RefreshWorn] = []
+
     /// A list of `items`, each its own identity, each looking as `content` says.
     public init<Items: RandomAccessCollection, Content: View>(
         _ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content
@@ -59,8 +62,12 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
     /// view in its place.
     public var body: some View {
         source.finish(header: headerView, footer: footerView)
-        // The empty view is held as `any View`, so both answers go as nodes.
-        if source.entries.isEmpty, let empty { return ModifiedContent(node: empty.node) }
+        // The empty view is held as `any View`, so both answers go as nodes; it stands in a scroller keeping the pull.
+        if source.entries.isEmpty, let empty {
+            guard !pull.isEmpty else { return ModifiedContent(node: empty.node) }
+            let scroller = ScrollView { ModifiedContent(node: empty.node) }
+            return ModifiedContent(node: RefreshWorn.wear(pull, on: scroller).node)
+        }
 
         let source = self.source
         let reach = self.reach
@@ -114,7 +121,7 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
             element.node.addHandlers(ItemsViewContract.endReached.token, [endReached.handler])
         }
 
-        return ModifiedContent(node: element.node)
+        return ModifiedContent(node: RefreshWorn.wear(pull, on: element).node)
     }
 }
 
@@ -231,7 +238,57 @@ extension ItemsView {
     }
 }
 
+extension ItemsView {
+    /// Runs when the user pulls the list to refresh it; the list offers the pull once it hears it - an empty one
+    /// too, through the scroller its empty view stands in.
+    ///
+    ///     ItemsView(mail) { MailRow($0) }.onRefreshRequested { reload() }
+    public func onRefreshRequested(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+        wearing(.requested(handler))
+    }
+
+    /// The same, with a handler that awaits - a reload does: its `gate` says what a pull does while a run is under
+    /// way. The spinner shows while `isRefreshing` says so.
+    ///
+    ///     @State private var refreshing = false
+    ///
+    ///     ItemsView(mail) { MailRow($0) }
+    ///         .isRefreshing($refreshing)
+    ///         .onRefreshRequested(gate: .ignoreWhileRunning) {
+    ///             defer { refreshing = false }
+    ///             try await inbox.reload()
+    ///         }
+    public func onRefreshRequested(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        wearing(.awaited(gate, handler))
+    }
+
+    /// Whether the refresh is under way, both ways: the user's pull writes true into the state, and the
+    /// application writes false once the items are fresh - or true, to show a refresh it began itself, which runs
+    /// no `onRefreshRequested`. Without it, the spinner a pull shows goes at once.
+    public func isRefreshing(_ state: Binding<Bool>) -> Self {
+        wearing(.refreshing(state))
+    }
+
+    /// Whether the user can pull to refresh - by default wherever the list hears the pull; `false` withholds it
+    /// while the items cannot be refreshed.
+    public func isRefreshEnabled(_ value: Bool) -> Self {
+        wearing(.enabled(value))
+    }
+
+    /// `isRefreshEnabled` from a state, `$x`: the host sets each new value as it stands, and no view is rebuilt
+    /// for it.
+    public func isRefreshEnabled(_ state: Binding<Bool>) -> Self {
+        wearing(.enabledBy(state))
+    }
+
+    private func wearing(_ worn: RefreshWorn) -> Self {
+        var copy = self
+        copy.pull.append(worn)
+        return copy
+    }
+}
+
 /// The platform's collection an ItemsView stands on.
-struct ItemsViewElement: ElementView {
+struct ItemsViewElement: ElementView, RefreshElement {
     var node = Node(contract: ItemsViewContract.self)
 }

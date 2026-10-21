@@ -85,6 +85,9 @@ final class StateUIHost {
     /** A scroller moved. */
     static native void scrolled(long view);
 
+    /** The user pulled a view to refresh it: whether its spinner stays. */
+    static native boolean refreshPulled(long view);
+
     /** A finger took hold of a view, or let go of it. */
     static native void held(long view, boolean holding);
 

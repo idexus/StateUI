@@ -9,9 +9,10 @@ public enum ScrollViewContract: ElementContract {
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native
 
-    /// A scroller is a view, padded around what it holds.
+    /// A scroller is a view, padded around what it holds, pulled to refresh it.
     public static let tiers: [any Contract.Type] = [
         ViewContract.self, PaddingElementContract.self, BorderElementContract.self, FocusElementContract.self,
+        RefreshElementContract.self,
     ]
 
     /// Whether the bar along the bottom is drawn.

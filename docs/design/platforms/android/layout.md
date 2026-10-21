@@ -74,6 +74,20 @@ when the scroller has none yet, by the host layer's rule
 inside the program's write, and is read once it is asked
 ([where a scroller stands](../../host/layout.md#where-a-scroller-stands)).
 
+## The pull to refresh
+
+A scroller and a list pull through AndroidX's swipe to refresh, in the relay's
+`StateUIRefresh` (`AndroidRefresh`). A scroller stands its outermost Android
+scroller in one from the first time it offers the pull, inside its own view
+group; a list stands its recycler in one from the start - the swipe to refresh
+is then the view its parent holds, places, shows and moves (`AndroidView.outermost`),
+and the recycler stays the view that takes the list's own calls and tells
+TalkBack. The swipe to refresh is enabled while the pull is offered. Its
+`OnRefreshListener` is the user's pull, which the host layer reports and
+answers whether the spinner stays; where it does not, the relay ends it at once.
+`setRefreshing` the application's value writes calls no listener. Never empty
+the swipe to refresh whole: it holds its own spinner beside the scroller.
+
 ## Where a view stands
 
 A view whose frame the tree reads - a state its frame drives, or a handler

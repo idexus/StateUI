@@ -90,6 +90,7 @@ final class ControlTests: XCTestCase {
         // the same thing an application holds.
         let followed = State(wrappedValue: 0.0)
         let offset = State(wrappedValue: Point.zero)
+        let refreshing = State(false)
         let hasBack = State(false)
         let hasForward = State(false)
         let chosen = State<String?>(wrappedValue: "two")
@@ -300,7 +301,11 @@ final class ControlTests: XCTestCase {
                 // The offset is ONE POINT - both axes on one state - written
                 // by the host on its own frames and walked by it on a write.
                 .scrollOffset(offset.projectedValue)
-                .onScrollStopped {}),
+                .onScrollStopped {}
+                // The pull: offered, its spinner on a state the pull writes into.
+                .isRefreshEnabled(true)
+                .isRefreshing(refreshing.projectedValue)
+                .onRefreshRequested {}),
 
             // The collection as its view writes it: every entry's identity, the
             // layout, the choice, and what choosing, opening and scrolling to the
@@ -312,6 +317,9 @@ final class ControlTests: XCTestCase {
                     .selection(chosen.projectedValue)
                     .onItemActivated { _ in }
                     .onEndReached(within: 5) {}
+                    .isRefreshEnabled(true)
+                    .isRefreshing(refreshing.projectedValue)
+                    .onRefreshRequested {}
                     .node.built),
 
             // The layout engine as its view writes it: the views, the arithmetic, the

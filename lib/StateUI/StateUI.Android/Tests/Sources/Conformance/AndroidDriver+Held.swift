@@ -41,6 +41,10 @@ extension AndroidDriver {
         case (.minimum, is AndroidStepperView), (.maximum, is AndroidStepperView), (.step, is AndroidStepperView):
             throw DriverCannot(
                 "read a stepper's range", because: "Android's stepper is two buttons, which hold none: an end turns one off")
+        case (.isRefreshEnabled, let pulled as any AndroidRefreshing):
+            return (pulled.refresh.map { Java.callBool($0.layout.reference, JavaAPI.isEnabled) } ?? false).propValue
+        case (.isRefreshing, let pulled as any AndroidRefreshing):
+            return (pulled.refresh.map { Java.callBool($0.layout.reference, JavaAPI.isRefreshing) } ?? false).propValue
         case (.scrollOffset, let scroll as AndroidScrollView):
             var offset = Point(x: 0, y: 0)
             for (scroller, across) in zip(scroll.scrollers, Self.ways(of: scroll)) {

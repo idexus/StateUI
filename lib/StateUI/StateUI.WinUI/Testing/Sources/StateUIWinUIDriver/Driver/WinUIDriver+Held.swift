@@ -384,6 +384,10 @@ extension WinUIDriver {
             let aspect: ContentMode = stretch == 3 ? .fill : stretch == 1 ? .stretch : stretch == 0 ? .center : .fit
             return aspect.propValue
         case ("scrollOffset", let scroll as WinUIScrollView): return scroll.offset.propValue
+        case ("isRefreshEnabled", let scroll as WinUIScrollView):
+            return (scroll.refresh.map { stateui_winui_refresh_holds($0.handle) } ?? false).propValue
+        case ("isRefreshing", let scroll as WinUIScrollView):
+            return (scroll.refresh.map { stateui_winui_refresh_refreshing($0.handle) } ?? false).propValue
         case ("verticalScrollIndicator", let scroll as WinUIScrollView):
             return Self.bar(try read(scroll.scroller, "verticalBar")).propValue
         case ("horizontalScrollIndicator", let scroll as WinUIScrollView):

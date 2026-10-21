@@ -1,0 +1,7 @@
+# revision 1.1
+ItemsView.isRefreshEnabled: – GTK and libadwaita offer no pull to refresh: a GNOME application refreshes by a command - a header bar button, Ctrl+R.
+ItemsView.isRefreshing: – GTK and libadwaita offer no pull to refresh: a GNOME application refreshes by a command - a header bar button, Ctrl+R.
+ItemsView.refreshRequested: – GTK and libadwaita offer no pull to refresh: a GNOME application refreshes by a command - a header bar button, Ctrl+R.
+ScrollView.isRefreshEnabled: – GTK and libadwaita offer no pull to refresh: a GNOME application refreshes by a command - a header bar button, Ctrl+R.
+ScrollView.isRefreshing: – GTK and libadwaita offer no pull to refresh: a GNOME application refreshes by a command - a header bar button, Ctrl+R.
+ScrollView.refreshRequested: – GTK and libadwaita offer no pull to refresh: a GNOME application refreshes by a command - a header bar button, Ctrl+R.

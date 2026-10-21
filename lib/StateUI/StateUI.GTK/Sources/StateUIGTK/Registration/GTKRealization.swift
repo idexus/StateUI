@@ -34,8 +34,15 @@ enum GTKRealization {
     static let notPlanned: [(any ElementContract.Type, reason: String)] = []
 
     /// Every record, the tiers' first.
+    /// Why no element is pulled to refresh here.
+    private static let noPull = "GTK and libadwaita offer no pull to refresh: a GNOME application refreshes by a "
+        + "command - a header bar button, Ctrl+R."
+
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
+        .notPlanned(RefreshElementContract.isRefreshEnabled, reason: Self.noPull),
+        .notPlanned(RefreshElementContract.isRefreshing, reason: Self.noPull),
+        .notPlanned(RefreshElementContract.refreshRequested, reason: Self.noPull),
         .notPlanned(LayoutContract.avoidsSafeArea, reason: "A GNOME window keeps no area of its content clear: its "
             + "header bar stands above the content, over none of it."),
         .notPlanned(AutomationElementContract.accessibilityIdentifier, reason: "GTK 4 tells assistive technology no "

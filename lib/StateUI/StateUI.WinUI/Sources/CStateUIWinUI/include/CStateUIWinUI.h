@@ -353,6 +353,9 @@ typedef struct {
     /// The user holds a view down or lets it go: a scroller taken hold of, a button held by a pointer or a key.
     void (*held)(int64_t view, bool holding);
 
+    /// The user pulled a scroller to refresh it: whether its spinner stays.
+    bool (*refreshPulled)(int64_t view);
+
     /// The user chose an entry by its place: an action of a window's chrome, or its way back (-1), sidebar toggle
     /// (-2) or Escape (-3); a tab; a picker's choice.
     void (*chosen)(int64_t view, int32_t index);
@@ -1031,6 +1034,23 @@ void stateui_winui_scroller_move(StateUIObjectRef scroller, double x, double y);
 
 /// Where the scroller's view stands, then the farthest it reaches across and down, in DIPs: four values.
 void stateui_winui_scroller_offset(StateUIObjectRef scroller, double *offset);
+
+/// A scroller's pull to refresh: WinUI's RefreshContainer, a pull of which is told through `refreshPulled` as the
+/// view numbered `view`'s and held until the refresh ends.
+StateUIObjectRef stateui_winui_refresh_make(int64_t view);
+
+/// Stands `content` - a scroller, or null for none - in the container, and its refresh under way or not: one the
+/// program begins is heard by nobody; ending it ends the user's too.
+void stateui_winui_refresh_set(StateUIObjectRef refresh, StateUIObjectRef content, bool refreshing);
+
+/// Whether the container holds a scroller - the pull offered.
+bool stateui_winui_refresh_holds(StateUIObjectRef refresh);
+
+/// Whether the container's spinner shows a refresh under way.
+bool stateui_winui_refresh_refreshing(StateUIObjectRef refresh);
+
+/// Asks the container for a refresh as a pull does, told through `refreshPulled`.
+void stateui_winui_refresh_request(StateUIObjectRef refresh);
 
 /// An ItemsView: WinUI's ItemsView over the identities the host gives it; the cell of each entry is the host's
 /// (`itemCell`, `itemHeld`, `itemLetGo`), and what stands in view, the user's choice and an item invoked are told.

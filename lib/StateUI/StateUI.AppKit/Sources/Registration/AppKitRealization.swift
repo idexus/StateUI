@@ -19,8 +19,15 @@ enum AppKitRealization {
         + "which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps."
 
     /// Every record, the tiers' first.
+    /// Why no element is pulled to refresh here.
+    private static let noPull = "AppKit offers no pull to refresh: a Mac application refreshes by a command - a "
+        + "menu item, a toolbar button, ⌘R."
+
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
+        .notPlanned(RefreshElementContract.isRefreshEnabled, reason: Self.noPull),
+        .notPlanned(RefreshElementContract.isRefreshing, reason: Self.noPull),
+        .notPlanned(RefreshElementContract.refreshRequested, reason: Self.noPull),
         .complete(BarElementContract.barBackgroundColor),
         .partial(BarElementContract.barForegroundColor,
             missing: "Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color."),

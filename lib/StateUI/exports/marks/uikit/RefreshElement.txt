@@ -1,0 +1,7 @@
+# revision 1.1
+ItemsView.isRefreshEnabled: ✅
+ItemsView.isRefreshing: ✅
+ItemsView.refreshRequested: ✅
+ScrollView.isRefreshEnabled: ✅
+ScrollView.isRefreshing: ✅
+ScrollView.refreshRequested: ✅

@@ -239,6 +239,21 @@ takes, else a report - and then its event runs, or a turn renders what the
 state changed where no handler listens, in one user's transaction. A host's
 native callback hands the value on.
 
+## The pull to refresh
+
+A scroller or a list offers the platform's pull where it hears it - a handler
+of `refreshRequested`, or a state `isRefreshing` the pull writes into - unless
+it says `isRefreshEnabled(false)`: its view is given that offer as
+`isRefreshEnabled` (`MountedElement.presented`), told again whenever what
+hears the pull changes, whatever road the handler came by. The pull is a
+user's change with nothing to carry to the handler
+(`MountedElement.reportRefreshRequested`): `isRefreshing` true onto the state
+carrying it, then `refreshRequested`. The spinner the platform shows as the
+pull ends stays only where something will end it - a state carrying
+`isRefreshing`, or the element describing it - and the host takes it down at
+once where nothing would. A value of `isRefreshing` the application writes
+shows or ends the spinner and reports nothing back.
+
 ## The runtime's parts
 
 `HostRuntime` builds the parts every host holds alike and wires them once: the

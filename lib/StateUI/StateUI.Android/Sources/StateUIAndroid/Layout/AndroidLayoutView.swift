@@ -84,7 +84,7 @@ class AndroidLayoutView: AndroidView {
     func setChildren(_ views: [AndroidView]) {
         guard !Self.same(views, held) else { return }
 
-        let children = Java.array(of: JavaAPI.view, views.map(\.reference))
+        let children = Java.array(of: JavaAPI.view, views.map(\.outermost))
         Java.call(reference, JavaAPI.setChildren, .object(children))
         Java.release(local: children)
         held = views

@@ -30,6 +30,7 @@
         TintElementContract.self,
         KeyboardElementContract.self,
         FocusElementContract.self,
+        RefreshElementContract.self,
         BarElementContract.self,
         MenuItemElementContract.self,
         PageElementContract.self,

@@ -9,7 +9,7 @@ import CStateUIAndroid
 /// or the second inside the first for both - around the document it moves.
 /// Design: docs/design/platforms/android/layout.md#scrolling
 @MainActor
-final class AndroidScrollView: AndroidLayoutView {
+final class AndroidScrollView: AndroidLayoutView, AndroidRefreshing {
     /// Says, on a display frame, where the user moved the scroller from and to, in points.
     var onOffsetChanged: ((Point, Point) -> Void)?
 
@@ -38,6 +38,11 @@ final class AndroidScrollView: AndroidLayoutView {
 
     /// Where the scrollers stand as the host knows it, and the offset the tree writes (`ScrollerOffset`).
     private var scrollerOffset = ScrollerOffset()
+
+    var onRefreshPulled: (() -> Bool)?
+
+    /// The swipe to refresh the scrollers stand in, from the first time the pull is offered.
+    private(set) var refresh: AndroidRefresh?
 
     /// The native scrollers scroll in the element's direction, not the activity's: one right to left starts at its
     /// end, one left to right at its first column. The document and the stack holding several children lay out in it.
@@ -116,15 +121,16 @@ final class AndroidScrollView: AndroidLayoutView {
         document.contentSize(width: width)
     }
 
-    /// Stands Android's scroller over the whole of the room, then an offset the tree wrote before there was one.
+    /// Stands Android's scroller - in its swipe to refresh where it has one - over the whole of the room, then an
+    /// offset the tree wrote before there was one.
     override func arrange(width: Int32, height: Int32) {
-        guard let outer = scrollers.first else { return }
+        guard let outer = refresh?.layout.reference ?? scrollers.first?.reference else { return }
 
         Java.call(
-            outer.reference, JavaAPI.measure,
+            outer, JavaAPI.measure,
             .int(ViewConstants.spec(ViewConstants.exactly, width)),
             .int(ViewConstants.spec(ViewConstants.exactly, height)))
-        Java.call(outer.reference, JavaAPI.layout, .int(0), .int(0), .int(width), .int(height))
+        Java.call(outer, JavaAPI.layout, .int(0), .int(0), .int(width), .int(height))
         if let target = scrollerOffset.laidOutNow() {
             move(to: target)
         }
@@ -166,6 +172,7 @@ final class AndroidScrollView: AndroidLayoutView {
         onOffsetChanged = nil
         onScrollStopped = nil
         onFramesWanted = nil
+        onRefreshPulled = nil
     }
 
     // MARK: - Android's scrollers
@@ -194,8 +201,38 @@ final class AndroidScrollView: AndroidLayoutView {
         scrollerOffset.programLanded(at: standingOffset)
     }
 
+    /// The pull offered, or not, and its spinner showing as the element says: the scrollers stand in a swipe to
+    /// refresh from the first time it is offered.
+    func applyRefresh<Realized>(_ values: ElementValues<Realized>) {
+        if refresh == nil, values[RefreshElementContract.isRefreshEnabled] == true {
+            refresh = AndroidRefresh(number: number)
+            holdOutermost()
+        }
+        refresh?.apply(values)
+    }
+
+    /// Stands the outermost scroller in the view, in the swipe to refresh where it has one.
+    private func holdOutermost() {
+        guard let outer = scrollers.first else { return }
+        if let parent = Java.callObject(outer.reference, JavaAPI.getParent) {
+            Java.call(parent, JavaAPI.removeView, .object(outer.reference))
+            Java.release(local: parent)
+        }
+        guard let swipe = refresh?.layout.reference else {
+            return Java.call(reference, JavaAPI.addView, .object(outer.reference), .int(-1), .int(-1))
+        }
+        Java.call(swipe, JavaAPI.addView, .object(outer.reference), .int(-1), .int(-1))
+        guard let held = Java.callObject(swipe, JavaAPI.getParent) else {
+            return Java.call(reference, JavaAPI.addView, .object(swipe), .int(-1), .int(-1))
+        }
+        Java.release(local: held)
+    }
+
     /// Makes the scrollers the orientation asks for, each listened to, the document in the innermost.
     private func build() {
+        if let swipe = refresh?.layout.reference, let old = scrollers.first {
+            Java.call(swipe, JavaAPI.removeView, .object(old.reference))
+        }
         Java.call(reference, JavaAPI.removeAllViews)
         if let parent = Java.callObject(document.reference, JavaAPI.getParent) {
             Java.call(parent, JavaAPI.removeView, .object(document.reference))
@@ -221,7 +258,7 @@ final class AndroidScrollView: AndroidLayoutView {
             Java.call(outer.reference, JavaAPI.addView, .object(inner.reference), .int(-1), .int(-1))
         }
         Java.call(scrollers.last!.reference, JavaAPI.addView, .object(document.reference), .int(-1), .int(-1))
-        Java.call(reference, JavaAPI.addView, .object(scrollers[0].reference), .int(-1), .int(-1))
+        holdOutermost()
         directScrollers()
         scrollerOffset = ScrollerOffset()
     }

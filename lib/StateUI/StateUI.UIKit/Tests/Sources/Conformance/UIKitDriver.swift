@@ -286,6 +286,11 @@ final class UIKitDriver: HostDriver {
             stepper.sendActions(for: .valueChanged)
         case (.enterWords, is UIKitStepperView):
             throw DriverCannot("type words into a Stepper", because: "iOS's stepper is two buttons, with no field")
+        case (.pullToRefresh, let pulled as any UIKitRefreshing):
+            // A finger pulls past the top far enough: the control spins, and says it was pulled.
+            guard let control = pulled.refresh.scroller?.refreshControl else { throw DriverCannot(act, on: element) }
+            control.beginRefreshing()
+            control.sendActions(for: .valueChanged)
         case (.scroll(let target), let scroll as UIKitScrollView):
             // A finger takes the scroller, moves it there, and lets go without a throw.
             scroll.scrollViewWillBeginDragging(scroll.scroller)
@@ -476,6 +481,10 @@ final class UIKitDriver: HostDriver {
         case (.time, let picker as UIKitTimePickerView): return picker.time.propValue
         case (.minimumDate, let picker as UIKitDatePickerView): return picker.minimumDate.map(UIDatePicker.day(of:))?.propValue
         case (.maximumDate, let picker as UIKitDatePickerView): return picker.maximumDate.map(UIDatePicker.day(of:))?.propValue
+        case (.isRefreshEnabled, let pulled as any UIKitRefreshing):
+            return (pulled.refresh.scroller?.refreshControl != nil).propValue
+        case (.isRefreshing, let pulled as any UIKitRefreshing):
+            return (pulled.refresh.scroller?.refreshControl?.isRefreshing ?? false).propValue
         case (.scrollOffset, let scroll as UIKitScrollView):
             return Point(x: scroll.scroller.contentOffset.x, y: scroll.scroller.contentOffset.y).propValue
         case (.orientation, let scroll as UIKitScrollView): return scroll.orientation.propValue

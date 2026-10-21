@@ -142,3 +142,17 @@ it as the program's
 ([where a scroller stands](../../host/layout.md#where-a-scroller-stands)); a
 target the view already stands at is not moved to at all, as the scroller
 would say nothing of it, and a user's hold forgets the target.
+
+## The pull to refresh
+
+A scroller pulls through WinUI's own `RefreshContainer` (`WinUIRefreshView`),
+which holds its `ScrollViewer` while the pull is offered: the container stands
+over the scroller's room and the scroller in it; with the pull withheld the
+scroller stands in the view again, as a disabled container would disable the
+scroller with it. The container's `RefreshRequested` is the user's pull: the
+relay holds its deferral - the spinner - and the host layer answers whether it
+stays; where it does not, the deferral completes at once. A value of
+`isRefreshing` the application writes asks the container for a refresh, which
+WinUI raises within `RequestRefresh`: the relay holds that one unheard, and
+false completes the deferral held. A list is not pulled: the container reads a
+`ScrollViewer`, and an ItemsView scrolls in a `ScrollView`.

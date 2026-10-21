@@ -68,3 +68,14 @@ and hands them over. The host layer's rule makes over once and no leave
 after a drop. A view taking files takes a session of items that are no plain
 words; each item's file, which UIKit lends only while it hands it over, is
 copied to a folder of the application's own under the name the user knows.
+
+## The pull to refresh
+
+A scroller and a list pull through UIKit's own `UIRefreshControl` on their scroll
+view (`UIKitRefresh`) - a scroller's `UIScrollView`, a list's collection view.
+The control stands on the scroll view while the element offers the pull, and goes
+with it: a scroll view without one shows no pull. Its `valueChanged` is the
+user's pull, which the host layer reports and answers whether the spinner stays;
+where it does not, the control ends at once. A value of `isRefreshing` the
+application writes begins or ends the control, which says nothing back:
+`beginRefreshing` raises no `valueChanged`.

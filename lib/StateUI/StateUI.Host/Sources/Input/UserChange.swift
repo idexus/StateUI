@@ -45,7 +45,7 @@ extension MountedElement {
     /// nothing.
     public func reportUserChange(_ property: Prop, _ event: Event, _ value: HostValue, in runtime: HostRuntime) {
         guard !ProgramWrite.isWriting else { return }
-        carry(property, event, value, in: runtime)
+        carry(property, value, then: event, [value], in: runtime)
     }
 
     /// The user moved the scroller from `old` to `new`, as the display's frame saw it: onto its state, as one
@@ -59,8 +59,10 @@ extension MountedElement {
     }
 
     /// One value onto the state that carries it - a journey the host carries, else a report - then the event with
-    /// it; with no handler, a turn renders what the state changed.
-    private func carry(_ property: Prop, _ event: Event, _ value: HostValue, in runtime: HostRuntime) {
+    /// what it carries; with no handler, a turn renders what the state changed.
+    func carry(
+        _ property: Prop, _ value: HostValue, then event: Event, _ payload: [HostValue], in runtime: HostRuntime
+    ) {
         var reported = false
         if let carried = HostStateValue(carrying: value), let binding = driven[property] {
             if case .lanes(let lanes) = carried, binding.kind == .property {
@@ -71,7 +73,7 @@ extension MountedElement {
         }
 
         if let handler = handler(event) {
-            runtime.dispatch(handler, payload: [value])
+            runtime.dispatch(handler, payload: payload)
         } else if reported {
             runtime.pump.turn()
         }

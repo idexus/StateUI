@@ -23,6 +23,10 @@ extension UIKitRegistrations {
             list.raises(ItemsViewContract.itemActivated)
             list.raises(ItemsViewContract.endReached)
             list.raises(ItemsViewContract.realizedChanged)
+            list.applies(RefreshElementContract.isRefreshEnabled, RefreshElementContract.isRefreshing) { view, values in
+                view.refresh.apply(values)
+            }
+            list.raises(RefreshElementContract.refreshRequested)
         }
     }
 

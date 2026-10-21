@@ -220,6 +220,11 @@ enum JavaNatives {
                 (AndroidView.find(number) as? AndroidScrollView)?.scrolled()
             }
         }
+        let refreshPulled: @convention(c) (Environment, jclass?, jlong) -> jboolean = { _, _, number in
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? any AndroidRefreshing)?.onRefreshPulled?() == true ? 1 : 0
+            }
+        }
         let held: @convention(c) (Environment, jclass?, jlong, jboolean) -> Void = { _, _, number, holding in
             MainActor.assumeIsolated {
                 AndroidView.find(number)?.held(holding != 0)
@@ -416,6 +421,7 @@ enum JavaNatives {
             ("heldWords", "(Ljava/lang/String;IZ)Ljava/lang/String;", unsafeBitCast(heldWords, to: UnsafeMutableRawPointer.self)),
             ("submitted", "(J)V", unsafeBitCast(submitted, to: UnsafeMutableRawPointer.self)),
             ("scrolled", "(J)V", unsafeBitCast(scrolled, to: UnsafeMutableRawPointer.self)),
+            ("refreshPulled", "(J)Z", unsafeBitCast(refreshPulled, to: UnsafeMutableRawPointer.self)),
             ("held", "(JZ)V", unsafeBitCast(held, to: UnsafeMutableRawPointer.self)),
             ("opened", "(J)V", unsafeBitCast(opened, to: UnsafeMutableRawPointer.self)),
             ("closed", "(J)V", unsafeBitCast(closed, to: UnsafeMutableRawPointer.self)),

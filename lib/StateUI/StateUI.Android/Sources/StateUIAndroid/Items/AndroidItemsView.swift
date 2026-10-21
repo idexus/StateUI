@@ -10,7 +10,7 @@ import CStateUIAndroid
 /// TalkBack; StateUI builds what a cell holds and decides what a tap chooses and opens (`ItemsTap`).
 /// Design: docs/design/platforms/android/items.md
 @MainActor
-final class AndroidItemsView: AndroidView {
+final class AndroidItemsView: AndroidView, AndroidRefreshing {
     let cells: ItemsCells
 
     private var layout = ItemsLayout.list()
@@ -25,6 +25,20 @@ final class AndroidItemsView: AndroidView {
 
     /// Whether the motion of a change or of a scroll the tree asks for is left out.
     private let reducesMotion: () -> Bool
+
+    var onRefreshPulled: (() -> Bool)?
+
+    /// The swipe to refresh the recycler stands in, from the first time its parent holds it.
+    private lazy var pull: AndroidRefresh = {
+        let pull = AndroidRefresh(number: number)
+        Java.call(pull.layout.reference, JavaAPI.addView, .object(reference), .int(-1), .int(-1))
+        return pull
+    }()
+
+    var refresh: AndroidRefresh? { pull }
+
+    /// The swipe to refresh, which its parent holds and places.
+    override var outermost: jobject { pull.layout.reference }
 
     /// What the cells show chosen, how many the user may choose, and whether a tap does anything.
     private struct Choice: Equatable {

@@ -82,6 +82,9 @@ enum WinUICallbacks {
             held: { view, holding in
                 MainActor.assumeIsolated { WinUIView.find(view)?.held(holding) }
             },
+            refreshPulled: { view in
+                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUIRefreshView)?.onPulled?() ?? false }
+            },
             chosen: { view, index in
                 MainActor.assumeIsolated { WinUIView.find(view)?.chose(Int(index)) }
             },

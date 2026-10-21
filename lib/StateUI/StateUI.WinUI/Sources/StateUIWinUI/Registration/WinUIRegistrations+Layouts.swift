@@ -76,6 +76,10 @@ extension WinUIRegistrations {
                     clips: values[BorderElementContract.shape] != nil)
             }
             scroll.raises(ScrollViewContract.scrollStopped)
+            scroll.applies(RefreshElementContract.isRefreshEnabled, RefreshElementContract.isRefreshing) { view, values in
+                view.applyRefresh(values)
+            }
+            scroll.raises(RefreshElementContract.refreshRequested)
         }
     }
 

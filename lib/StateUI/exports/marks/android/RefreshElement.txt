@@ -1,0 +1,7 @@
+# revision 1.1
+ItemsView.isRefreshEnabled: ✅
+ItemsView.isRefreshing: ✅
+ItemsView.refreshRequested: ✓ pullToRefresh on ItemsView: the relay's own pull handed the swipe to refresh, no finger dragged
+ScrollView.isRefreshEnabled: ✅
+ScrollView.isRefreshing: ✅
+ScrollView.refreshRequested: ✓ pullToRefresh on ScrollView: the relay's own pull handed the swipe to refresh, no finger dragged

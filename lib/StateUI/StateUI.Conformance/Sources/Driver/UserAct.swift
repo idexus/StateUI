@@ -64,6 +64,8 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     case dropFiles([String])
     /// A scroll view scrolled to an offset.
     case scroll(to: Point)
+    /// A scroller or a list pulled to refresh it, as far as its platform's pull asks.
+    case pullToRefresh
     /// The keyboard moved to the element.
     case focus
     /// The way back taken: a navigation's page, or the top modal page, gone.
@@ -124,6 +126,7 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .dragAndDrop: "dragAndDrop"
         case .dropFiles: "dropFiles"
         case .scroll: "scroll"
+        case .pullToRefresh: "pullToRefresh"
         case .focus: "focus"
         case .goBack: "goBack"
         case .minimize: "minimize"

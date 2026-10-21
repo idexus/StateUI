@@ -58,6 +58,10 @@ class AndroidView {
 
     var reference: jobject { object.reference }
 
+    /// The view its parent holds, places, shows and moves: the view itself, or the one it stands in - a list in its
+    /// pull to refresh.
+    var outermost: jobject { reference }
+
     /// Hands each of `setters` one listener forwarding what the user does to this view, by its number.
     /// Design: docs/design/platforms/android/jni.md#global-references
     func listen(_ setters: jmethodID...) {
@@ -123,12 +127,12 @@ class AndroidView {
     // MARK: - What every view takes
 
     func setShown(_ shown: Bool) {
-        Java.call(reference, JavaAPI.setVisibility, .int(shown ? ViewConstants.visible : ViewConstants.gone))
+        Java.call(outermost, JavaAPI.setVisibility, .int(shown ? ViewConstants.visible : ViewConstants.gone))
     }
 
     /// Whether the view is shown rather than gone.
     var isShown: Bool {
-        Java.callInt(reference, JavaAPI.getVisibility) == ViewConstants.visible
+        Java.callInt(outermost, JavaAPI.getVisibility) == ViewConstants.visible
     }
 
     /// How opaque the view's own property draws it, with a placing layout's opacity over it; written only where
@@ -139,7 +143,7 @@ class AndroidView {
         guard alpha != written.alpha else { return }
 
         written.alpha = alpha
-        Java.call(reference, JavaAPI.setAlpha, .float(alpha))
+        Java.call(outermost, JavaAPI.setAlpha, .float(alpha))
     }
 
     /// How opaque the view's own property draws it.
@@ -180,7 +184,7 @@ class AndroidView {
 
         written.transform = transform
         Java.callStatic(
-            JavaAPI.views, JavaAPI.transformView, .object(reference),
+            JavaAPI.views, JavaAPI.transformView, .object(outermost),
             .float(transform.translationX), .float(transform.translationY), .float(transform.rotation),
             .float(transform.rotationX), .float(transform.rotationY), .float(transform.scaleX), .float(transform.scaleY),
             .float(transform.pivotX ?? .nan), .float(transform.pivotY ?? .nan))
@@ -403,7 +407,7 @@ class AndroidView {
 
     /// Measures the view for the specs given; its size in pixels.
     func measure(width: Int32, height: Int32) -> (width: Int32, height: Int32) {
-        let size = Java.callStaticLong(JavaAPI.views, JavaAPI.measureView, .object(reference), .int(width), .int(height))
+        let size = Java.callStaticLong(JavaAPI.views, JavaAPI.measureView, .object(outermost), .int(width), .int(height))
         return (Int32(truncatingIfNeeded: size >> 32), Int32(truncatingIfNeeded: size))
     }
 
@@ -416,7 +420,7 @@ class AndroidView {
             ?? true
         laidOut = frame
         Java.callStatic(
-            JavaAPI.views, JavaAPI.placeView, .object(reference),
+            JavaAPI.views, JavaAPI.placeView, .object(outermost),
             .int(frame.left), .int(frame.top), .int(frame.right), .int(frame.bottom))
         if resized, pivot != (0.5, 0.5) { applyTransform() }
         if resized {

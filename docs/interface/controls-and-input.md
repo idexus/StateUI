@@ -752,6 +752,39 @@ groups may hold equal items - and each with a `.header` and a `.footer`;
 end - once, until they scroll away or the number of items changes - and
 `.emptyView` stands in the list's place while it has no items.
 
+### Pull to refresh
+
+A list or a scroller the user pulls down for what is new offers the
+platform's own pull and spinner once it hears the pull:
+
+```swift
+struct InboxPage: View {
+    @State private var mail = ["Welcome"]
+    @State private var refreshing = false
+
+    var body: some View {
+        ItemsView(mail, id: \.self) { Text($0).padding(12) }
+            .isRefreshing($refreshing)
+            .onRefreshRequested(gate: .ignoreWhileRunning) {
+                defer { refreshing = false }
+                try await Task.sleep(for: .seconds(1))
+                mail.insert("Fresh", at: 0)
+            }
+    }
+}
+```
+
+`isRefreshing` carries the spinner both ways: the user's pull writes true
+into the state before `onRefreshRequested` runs, and the application writes
+false once what it shows is fresh - or true, to show a refresh it began
+itself, which runs no handler. Without it the spinner a pull shows goes at
+once. `.isRefreshEnabled(false)` withholds the pull while there is nothing to
+refresh. An empty list keeps its pull: its empty view stands in a scroller
+that offers it. The pull is the platform's - UIKit's refresh control,
+Android's swipe to refresh, WinUI's refresh container on a scroller; AppKit,
+GTK and the web offer none, and there a refresh is the application's command,
+a button or a menu item that sets `isRefreshing` itself.
+
 ## Choosing a control
 
 Prefer the smallest accepted native primitive that expresses the behavior.

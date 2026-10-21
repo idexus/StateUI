@@ -102,6 +102,7 @@ extension WinUIElement {
     private func follow(_ scroll: WinUIScrollView) {
         scroll.onOffsetChanged = { [weak self] old, new in self?.scrolled(from: old, to: new) }
         scroll.onScrollStopped = { [weak self] in self?.send(.scrollStopped, []) }
+        scroll.onRefreshPulled = { [weak self] in self?.pulled() ?? false }
         scroll.onFramesWanted = { [weak self, weak scroll] in
             if let scroll { self?.host?.runtime.frames.serve(scroll, order: scroll.number) }
         }

@@ -7,6 +7,12 @@
 /// The native view: made, and given the element's properties.
 extension AndroidElement {
     func makeView() -> AndroidView? {
+        let view = makeOwnView()
+        (view as? any AndroidRefreshing)?.onRefreshPulled = { [weak self] in self?.pulled() ?? false }
+        return view
+    }
+
+    private func makeOwnView() -> AndroidView? {
         if type == .itemsView, let host {
             return AndroidItemsView(cells: ItemsCells(element, in: host.runtime), reducesMotion: { [weak host] in
                 host?.runtime.reducesMotion() ?? false

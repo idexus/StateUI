@@ -212,6 +212,12 @@ final class WinUIDriver: HostDriver {
             view.heard(.rotation(.changed, degrees: degrees))
             view.heard(.rotation(.ended, degrees: 0))
         case (.scroll(let offset), let scroll as WinUIScrollView): scroll.scroller.move(to: offset)
+        case (.pullToRefresh, let scroll as WinUIScrollView):
+            // The container's own request, as a pull far enough makes it.
+            guard let refresh = scroll.refresh, stateui_winui_refresh_holds(refresh.handle) else {
+                throw DriverCannot(act, on: element)
+            }
+            stateui_winui_refresh_request(refresh.handle)
         case (.focus, let view?): _ = stateui_winui_focus(view.handle, true)
         case (.goBack, _) where element.type == .navigationStack: try window().titleBar.chose(-1)
         case (.goBack, _) where element.type == .window: try window().titleBar.chose(-3)

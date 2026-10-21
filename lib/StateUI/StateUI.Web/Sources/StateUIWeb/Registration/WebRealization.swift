@@ -18,8 +18,15 @@ enum WebRealization {
 
     /// What the host's own records say, member by member, before what its registry says: what it realizes through
     /// the host layer's pages and chrome, outside the registry, and what a page never asks of the browser's window.
+    /// Why no element is pulled to refresh here.
+    private static let noPull = "The DOM offers no pull to refresh of a part of a page - a browser's own pull "
+        + "reloads the whole page: a page refreshes by a command."
+
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
+        .notPlanned(RefreshElementContract.isRefreshEnabled, reason: Self.noPull),
+        .notPlanned(RefreshElementContract.isRefreshing, reason: Self.noPull),
+        .notPlanned(RefreshElementContract.refreshRequested, reason: Self.noPull),
         .notPlanned(VisualElementContract.accessibilityActionPerformed,
             reason: "ARIA offers no action of an application's own words."),
         .notPlanned(VisualElementContract.accessibilityActions,
