@@ -371,6 +371,34 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertTrue(StandardEnvironment.application.scenes.isEmpty)
     }
 
+    /// A window the user closes lets go of everything it rendered: the core's elements of it and the host's views.
+    @MainActor
+    func testAWindowTheUserClosesLeavesNothingAlive() throws {
+        stateUIUseApp(AppKitSessionApp())
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        renderer.startForTesting()
+        renderer.runtime.pump.turn()
+        let (nodes, views) = (Renderer.shared.liveNodes, AppKitElement.liveViewCount)
+
+        // Each step in a pool of its own, drained as the run loop drains one an event.
+        autoreleasepool {
+            renderer.openNewWindow()
+            renderer.runtime.pump.turn()
+        }
+        XCTAssertEqual(renderer.windowsForTesting.count, 2)
+        XCTAssertGreaterThan(Renderer.shared.liveNodes, nodes, "the second window rendered")
+        try autoreleasepool {
+            // As its close button does.
+            try XCTUnwrap(renderer.windowsForTesting[1].window).performClose(nil)
+            renderer.runtime.pump.turn()
+        }
+
+        XCTAssertEqual(renderer.windowsForTesting.count, 1)
+        XCTAssertEqual(Renderer.shared.liveNodes, nodes, "the core's elements of the window it closed")
+        XCTAssertEqual(AppKitElement.liveViewCount, views, "the host's views of it")
+    }
+
     /// A scene's session closing it closes every native window of it.
     @MainActor
     func testClosingASceneClosesEveryNativeWindowOfIt() async throws {
