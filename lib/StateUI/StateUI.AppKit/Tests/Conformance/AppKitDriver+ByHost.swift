@@ -30,6 +30,8 @@ extension AppKitDriver {
             return "the drag source and the window's drop routing told by the driver, no dragging session"
         case "dropFiles":
             return "the window's drop routing told the driver's files, no dragging session"
+        case "answerShare":
+            return "the host's picker told the user's answer, no picker shown"
         case "answerFiles":
             return "the host's response called with the driver's files, no panel shown"
         case "goBack":
@@ -53,6 +55,7 @@ extension AppKitDriver {
         case "read what the screen reader said": return "the host's own list of what it announced"
         case "read a question": return "the captions the host keeps, not the alert's buttons"
         case "read a file dialog": return "the host's own panel, held unshown"
+        case "read a share sheet": return "the host's own picker, held unshown"
         case "read what was launched":
             return "the host's own record of what it handed macOS, which a test holds back from launching"
         default: break

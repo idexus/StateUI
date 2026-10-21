@@ -62,6 +62,15 @@ final class GTKActToolkit: ActToolkit {
         gtk_accessible_announce(window.widget.opaque, words, GTK_ACCESSIBLE_ANNOUNCEMENT_PRIORITY_MEDIUM)
     }
 
+    /// GNOME offers an application no share sheet: the act fails with that reason.
+    func share(
+        _ shared: HostShare, over window: MountedElement?, answered: @escaping (Result<Bool, ActFailure>) -> Void
+    ) -> MountedElement? {
+        let element = renderer.window(asked: window).flatMap(renderer.element(of:))
+        answered(.failure(ActFailure("GNOME offers an application no share sheet")))
+        return element
+    }
+
     func writeClipboard(_ words: String) {
         GTKClipboard.write(words)
     }

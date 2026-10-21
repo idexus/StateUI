@@ -9534,6 +9534,33 @@ enum Listings {
             .spacing(12)
         }
         """#,
+        "ShareSample": #"""
+        // Sources/Samples/Navigation/ShareSample.swift
+        @Environment(\.window) private var window
+        @State private var words = "The language I mentioned"
+        @State private var link = "https://www.swift.org"
+        @State private var answer = "nothing shared yet"
+
+        var body: some View {
+            VStack {
+                TextField($words)
+                TextField($link)
+
+                // False is a cancel; a platform with no share sheet throws why.
+                Button("Share")
+                    .onClicked(gate: .ignoreWhileRunning) {
+                        do {
+                            let shared = try await window.share(text: words, link: link)
+                            answer = shared ? "shared" : "cancelled"
+                        } catch {
+                            answer = "\(error)"
+                        }
+                    }
+
+                Text(answer)
+            }
+        }
+        """#,
         "ShortcutSample": #"""
         // Sources/Samples/BasicInput/ShortcutSample.swift
         @State private var saved = 0

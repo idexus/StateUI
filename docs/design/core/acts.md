@@ -215,6 +215,17 @@ was written, so no host strips a dot or a star of its own. A dialog's title,
 its button's caption and its starting folder are not asked for: not every
 platform has them.
 
+## Sharing
+
+What the user shares - words, a link, or both - is offered from a window, as a
+dialog is, and awaited: the platform's share sheet over it, the user choosing
+where it goes. The answer is whether the user shared it, false where they
+cancelled; a platform with no share sheet fails the act with that reason.
+Three overloads take the words, the link or both, so nothing is ever offered
+empty - the compiler refuses a share of nothing. The words and the link cross
+apart, as a platform carrying both - a message and its address - keeps them
+apart; one carrying a single text puts the link on a line after the words.
+
 ## Launching
 
 `application.launch` and `ChosenFile.launch` hand an address or a file to the

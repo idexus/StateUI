@@ -101,6 +101,10 @@
     /// The file dialog the window of `element` shows now; nil where it shows none.
     func fileDialog(over element: MountedElement) throws -> FileDialog?
 
+    /// What the share sheet over the window of `element` offers now - its words, then its link on a line of its
+    /// own; nil where none shows.
+    func shared(over element: MountedElement) throws -> String?
+
     /// What the host handed the system to launch, in order, since the host started: an address as written, a file
     /// by its name.
     func launched() throws -> [String]
@@ -194,6 +198,10 @@ extension HostDriver {
 
     public func fileDialog(over element: MountedElement) throws -> FileDialog? {
         throw DriverCannot("read a file dialog")
+    }
+
+    public func shared(over element: MountedElement) throws -> String? {
+        throw DriverCannot("read a share sheet")
     }
 
     public func launched() throws -> [String] {

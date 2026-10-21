@@ -80,6 +80,11 @@ extension WinUIDriver {
         return words.isEmpty ? [] : words.split(separator: "\u{1F}", omittingEmptySubsequences: false).map(String.init)
     }
 
+    /// What the share sheet the host holds offers: its words, then its link on a line of its own.
+    func shared(over element: MountedElement) throws -> String? {
+        renderer?.actToolkit.sharing?.shared.together
+    }
+
     func fileDialog(over element: MountedElement) throws -> FileDialog? {
         switch stateui_winui_file_dialog() {
         case 0: .open

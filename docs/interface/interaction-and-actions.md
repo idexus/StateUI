@@ -308,6 +308,28 @@ A platform may ask the user before the application reads what another
 application put there - iOS and a browser do. A browser's read throws where
 the user refuses, and a page served over plain http has no clipboard.
 
+## Sharing
+
+A window offers what the user shares to the platform's share sheet:
+`share(text:)`, `share(link:)`, or both together with `share(text:link:)`. The
+call answers whether the user shared it, `false` where they cancelled.
+
+```swift
+struct TalkPage: View {
+    @Environment(\.window) private var window
+    let talk = "https://www.swift.org"
+
+    var body: some View {
+        Button("Share the talk").onClicked(gate: .ignoreWhileRunning) {
+            try await window.share(text: "The talk I mentioned", link: talk)
+        }
+    }
+}
+```
+
+GNOME offers an application no share sheet, and a browser may have none:
+there the call throws with that reason.
+
 ## Host-extension actions
 
 An application reaches its own host code through acts it declares in a tier

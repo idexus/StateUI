@@ -144,6 +144,10 @@ The clipboard is the display's `GdkClipboard`: words are set on it at once,
 and read through GDK's asynchronous read, the act answered once it returns -
 nothing where it holds no words.
 
+## Sharing
+
+GNOME offers an application no share sheet: a share fails with that reason.
+
 ## Questions for the user
 
 A question - an alert, a confirmation, a choice of actions, a prompt - is

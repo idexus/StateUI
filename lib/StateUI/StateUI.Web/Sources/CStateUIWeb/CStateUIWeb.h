@@ -283,6 +283,11 @@ STATEUI_WEB(utc_offset) double stateui_web_utc_offset(
 /// Tells a screen reader the words, through the page's polite live region.
 STATEUI_WEB(announce) void stateui_web_announce(const char *words, int32_t length);
 
+/// Offers the words and the link - a length of -1 for one not given - to the browser's share sheet, `listener` told
+/// once it answers: event 1 and "1" shared or "0" cancelled, or 0 and why not, each read by `file_words`.
+STATEUI_WEB(share) void stateui_web_share(const char *words, int32_t wordsLength, const char *link, int32_t linkLength,
+                                          int32_t listener);
+
 /// Puts the words on the browser's clipboard; `clipboard_read` tells `listener` once the browser answers: event 1
 /// and the words it holds, or 0 and why not, each read by `file_words`.
 STATEUI_WEB(clipboard_write) void stateui_web_clipboard_write(const char *words, int32_t length);

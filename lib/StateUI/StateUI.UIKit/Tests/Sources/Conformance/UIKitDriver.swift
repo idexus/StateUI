@@ -313,6 +313,9 @@ final class UIKitDriver: HostDriver {
             let files = names.map { Self.files.appendingPathComponent($0) }
             for file in files { try Data(file.lastPathComponent.utf8).write(to: file) }
             dragAndDrop.hearForTesting(.filesDropped(files.map(ChosenFile.init)))
+        case (.answerShare(let shared), _):
+            guard let sheet = renderer?.actToolkit.sharing else { throw DriverCannot("answer a share sheet: none shows") }
+            sheet.answerForTesting(shared: shared)
         case (.answerFiles(let names), _):
             guard let dialog = renderer?.fileToolkit.showing, dialog.picker != nil else {
                 throw DriverCannot("answer a file dialog: none shows")

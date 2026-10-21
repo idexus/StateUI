@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 Application: ✅
 Application.alert: ✅
 Application.announce: ✓ read what the screen reader said: the relay's own list of what it handed UI Automation to announce
@@ -17,6 +17,7 @@ Application.prompt: ✅
 Application.readClipboard: ✅
 Application.readFile: ✅
 Application.saveFile: ✅
+Application.share: ✓ read a share sheet: what the host holds of a share sheet a test never shows
 Application.useColorScheme: ✅
 Application.utcOffset: ✅
 Application.writeClipboard: ✅

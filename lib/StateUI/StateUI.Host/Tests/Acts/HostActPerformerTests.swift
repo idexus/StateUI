@@ -20,6 +20,7 @@ private final class Toolkit: ActToolkit {
     var keyboards: [MountedElement?] = []
     var announced: [String] = []
     var clipboard: String?
+    var shares: [(shared: HostShare, answered: (Result<Bool, ActFailure>) -> Void)] = []
     var themes: [ColorScheme] = []
     var focusable: Set<ElementID> = []
     var kept: [Act] = []
@@ -44,6 +45,13 @@ private final class Toolkit: ActToolkit {
     func announce(_ words: String) { announced.append(words) }
     func writeClipboard(_ words: String) { clipboard = words }
     func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void) { answered(.success(clipboard)) }
+    func share(
+        _ shared: HostShare, over window: MountedElement?, answered: @escaping (Result<Bool, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard windowToAsk else { return nil }
+        shares.append((shared, answered))
+        return window ?? self.window
+    }
     func useColorScheme(_ theme: ColorScheme) { themes.append(theme) }
     func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
         keyboards.append(window)
@@ -307,6 +315,31 @@ final class HostActPerformerTests: XCTestCase {
 
         files.shown[1].answered(.failure(ActFailure("the disk is full")))
         XCTAssertEqual(answers.failures[4], "the disk is full")
+    }
+
+    /// A share sheet waits its turn among the questions; its caller hears whether the user shared, and a sheet whose
+    /// window went answers that they did not.
+    func testAShareSheetWaitsItsTurnAndAnswersWhetherShared() throws {
+        let (toolkit, answers) = (Toolkit(), Answers())
+        let acts = performer(toolkit, answers)
+
+        acts.perform(HostActCall(act: .confirm, arguments: HostActCall.usersWindow + [.string("Send?")], completion: 1))
+        acts.perform(HostActCall(
+            act: .share, arguments: HostActCall.usersWindow + [.string("Notes"), .string("https://example.com")],
+            completion: 2))
+        acts.perform(HostActCall(act: .share, arguments: HostActCall.usersWindow + [.nothing, .nothing], completion: 3))
+        XCTAssertTrue(toolkit.shares.isEmpty, "the sheet waits for the question")
+        XCTAssertEqual(answers.failures[3], "the act offers nothing to share")
+
+        toolkit.shown[0].answered(.success(.init(accepted: true)))
+        XCTAssertEqual(toolkit.shares.map(\.shared), [HostShare(text: "Notes", link: "https://example.com")])
+        XCTAssertEqual(toolkit.shares[0].shared.together, "Notes\nhttps://example.com")
+        toolkit.shares[0].answered(.success(true))
+        XCTAssertEqual(answers.replies[2], [.bool(true)])
+
+        acts.perform(HostActCall(act: .share, arguments: HostActCall.usersWindow + [.nothing, .string("https://swift.org")], completion: 4))
+        acts.dismissAll()
+        XCTAssertEqual(answers.replies[4], [.bool(false)], "a sheet whose window went: not shared")
     }
 
     /// A question whose dialog went with its window is asked again in the next: answered there, its caller hears

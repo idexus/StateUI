@@ -427,6 +427,7 @@ ZStack
   readFile()
   saveFile()
   scrollTo()
+  share()
   unfocus()
   useColorScheme()
   utcOffset()

@@ -66,6 +66,8 @@ final class WebDriver: HostDriver {
         "read a file dialog": "the dialog the relay holds on a page a test drives, which the browser never shows",
         "read what was launched": "the relay's own record of what it would open, which a test holds back",
         "answerFiles": "the relay's answer handed the driver's files, no dialog shown",
+        "answerShare": "the relay's answer handed the driver's choice, no share sheet shown",
+        "read a share sheet": "the share sheet the relay holds on a page a test drives, which the browser never shows",
         "dragAndDrop": "the DOM's drag events dispatched by the driver, no drag the browser began",
         "dropFiles": "the DOM's drag events dispatched by the driver with its files, no drag the browser began",
         "sweep": "the hand handed to the host's entry with its speed, no pointer sent",

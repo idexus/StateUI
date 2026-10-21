@@ -510,6 +510,16 @@ enum WebRelay {
         utf8(words) { stateui_web_announce($0, $1) }
     }
 
+    /// Offers `text` and `link` - each where given - to the browser's share sheet, `listener` told once it answers:
+    /// event 1 and "1" shared or "0" cancelled, or 0 and why not, read by `file_words`.
+    static func share(text: String?, link: String?, _ listener: Int32) {
+        utf8(text ?? "") { words, wordsLength in
+            utf8(link ?? "") { address, addressLength in
+                stateui_web_share(words, text == nil ? -1 : wordsLength, address, link == nil ? -1 : addressLength, listener)
+            }
+        }
+    }
+
     /// Puts `words` on the browser's clipboard, where the page may write it.
     static func writeClipboard(_ words: String) {
         utf8(words) { stateui_web_clipboard_write($0, $1) }

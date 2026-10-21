@@ -33,6 +33,7 @@ extension WebDriver {
         if act == .close, element.type == .window { return try running().runtime.ending() }
         if case .answer(let button, let typing) = act { return try answer(button, typing: typing, on: element) }
         if case .answerFiles(let names) = act { return try answerFiles(names, on: element) }
+        if case .answerShare(let shared) = act { return try answerShare(shared, on: element) }
         if case .dragAndDrop(let target, let across) = act { return try dragAndDrop(element, onto: target, across: across) }
         if case .dropFiles(let names) = act { return try dropFiles(names, on: element) }
         if case .pressKeys(let shortcut) = act { return try pressKeys(shortcut) }

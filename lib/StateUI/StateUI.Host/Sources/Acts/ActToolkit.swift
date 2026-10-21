@@ -31,6 +31,13 @@
     /// Tells the screen reader `words`, now.
     func announce(_ words: String)
 
+    /// Offers `shared` to the platform's share sheet over `window` - the window the user is in where nil - and
+    /// calls `answered` with whether the user shared it, or why it could not be offered: the window element it shows
+    /// over, which takes it away when it goes; nil where there is no window to show it over.
+    func share(
+        _ shared: HostShare, over window: MountedElement?, answered: @escaping (Result<Bool, ActFailure>) -> Void
+    ) -> MountedElement?
+
     /// Puts `words` on the system's clipboard, in place of whatever it held.
     func writeClipboard(_ words: String)
 

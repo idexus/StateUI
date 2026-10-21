@@ -103,6 +103,7 @@ SearchSample.swift 679d1baa31dfcd8b
 SelectableTextSample.swift 32194d184067f26d
 SemanticsSample.swift affad888d922e36d
 ShapesSample.swift b8954092be37d204
+ShareSample.swift ca23e3ade29db45a
 ShortcutSample.swift daf4ef581131770c
 SizingSample.swift 1ced92cea7dceeeb
 SliderSample.swift de5c388891de8278

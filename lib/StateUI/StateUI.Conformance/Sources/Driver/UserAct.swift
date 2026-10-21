@@ -84,6 +84,8 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     /// The file dialog the window shows answered by the files of these names in the driver's own folder - a save's
     /// place by one; none cancels it.
     case answerFiles([String])
+    /// The share sheet the window shows answered: shared to a target the user chose, or cancelled.
+    case answerShare(shared: Bool)
     /// A web view's content ended, as the platform ends it when its process goes.
     case endContent
     /// A keyboard shortcut pressed while the element's window is in front.
@@ -131,6 +133,7 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .switchBack: "switchBack"
         case .answer: "answer"
         case .answerFiles: "answerFiles"
+        case .answerShare: "answerShare"
         case .endContent: "endContent"
         case .pressKeys: "pressKeys"
         case .performAccessibilityAction: "performAccessibilityAction"

@@ -355,6 +355,16 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
+    /// The window, then the words and the link - absent ones as nothing, in place.
+    func testWhatIsSharedCrossesWithItsArgumentsInPlace() async throws {
+        try await check("share", Self.usersWindow + [.string("Notes"), .string("https://www.swift.org")]) {
+            _ = try await WindowSession().share(text: "Notes", link: "https://www.swift.org")
+        }
+        try await check("share", Self.usersWindow + [.nothing, .string("https://www.swift.org")]) {
+            _ = try await WindowSession().share(link: "https://www.swift.org")
+        }
+    }
+
     /// A file read or launched crosses as where it stands, then its name; a read then says the most bytes it
     /// takes - nothing for the whole file, none below nought.
     func testAChosenFileCrossesAsWhereItStandsAndItsName() async throws {

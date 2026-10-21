@@ -67,6 +67,7 @@ enum GTKRealization {
             reason: "GTK's accessibility offers no action of an application's own words."),
         .notPlanned(VisualElementContract.accessibilityAdjusted,
             reason: "GTK steps only a range, a role a widget takes as it is made."),
+        .notPlanned(ApplicationContract.share, reason: "GNOME offers an application no share sheet."),
         .notPlanned(VisualElementContract.accessibilityRole,
             reason: "GTK fixes a widget's role as it is made, and a widget is the kind its class says."),
         .notPlanned(VisualElementContract.accessibilityValue,

@@ -25,6 +25,8 @@ extension AndroidDriver {
             return "the view's drag listener's report told the driver's documents, no drag started"
         case "answerFiles":
             return "the relay's result path handed the driver's documents, no picker shown"
+        case "answerShare":
+            return "the host told the driver's answer, no chooser shown"
         default: break
         }
         switch ability {
@@ -39,6 +41,7 @@ extension AndroidDriver {
             return "the colour the split keeps for its sidebar beside the detail, which a phone's room never shows"
         case "read a question": return "what the relay keeps of the dialog it showed"
         case "read what the screen reader said": return "the host's own list of what it handed Android to announce"
+        case "read a share sheet": return "what the host holds of a chooser a test never shows"
         case "read a file dialog": return "the picker the relay holds, which a test never hands the system"
         case "read what was launched":
             return "the relay's own record of what it handed the system, which a test holds back from launching"

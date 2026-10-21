@@ -98,6 +98,7 @@ final class WinUIDriver: HostDriver {
         stateui_winui_hold_launches(true)
         closeFileDialogs()
         let renderer = WinUIRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
+        renderer.actToolkit.holdsShareForTesting = true
         self.renderer = renderer
         return renderer.runtime.tree
     }
@@ -230,6 +231,9 @@ final class WinUIDriver: HostDriver {
             try state(of: element, minimized: false, activated: true)
         case (.answer(let button, let words), _): try answer(button, typing: words)
         case (.answerFiles(let names), _): try answerFiles(names)
+        case (.answerShare(let shared), _):
+            guard renderer?.actToolkit.sharing != nil else { throw DriverCannot("answer a share sheet: none shows") }
+            renderer?.actToolkit.answerShareForTesting(shared: shared)
         case (.dragAndDrop(let target, let across), _): try dragAndDrop(element, onto: target, across: across)
         case (.dropFiles(let names), let view?):
             guard view.offered.takesFiles else { throw DriverCannot(act, on: element) }

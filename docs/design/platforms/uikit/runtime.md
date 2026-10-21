@@ -132,6 +132,12 @@ read back at once. iOS asks the user before an application reads what another
 put there, and a refusal reads none. A conformance run writes to a pasteboard
 of the driver's own name, as the simulator's general one is the Mac's too.
 
+## Sharing
+
+What the user shares is offered in UIKit's activity sheet over what the window
+shows - from its middle on an iPad, a popover with no arrow: the words and the
+link as its items, the answer whether the user completed an activity.
+
 ## Questions for the user
 
 A question is UIKit's alert, presented over what the user's window shows -

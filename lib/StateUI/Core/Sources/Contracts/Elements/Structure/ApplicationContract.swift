@@ -3,8 +3,8 @@
 
 /// The application at the root of a StateUI tree, and what its host does for it
 /// with no control behind it: questions for the user, the files they open and
-/// save, what the system launches, the clock and the time zone, the screen
-/// reader, the clipboard, what is kept.
+/// save, what the system launches and what the user shares, the clock and the
+/// time zone, the screen reader, the clipboard, what is kept.
 public enum ApplicationContract: ElementContract, ApplicationTier {
     /// The node type the contract declares.
     public static let nodeType: NodeType = "Application"
@@ -121,6 +121,13 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// See `WindowSession.saveFile(_:name:types:)`.
     public static let saveFile = ElementAct<Self, (Name, Name, [UInt8], String, [FileType]), ChosenFile?>("saveFile")
 
+    /// Offers words, a link or both to the platform's share sheet over a window -
+    /// the window, the words, the link - answering whether the user shared
+    /// them.
+    ///
+    /// See `WindowSession.share(text:link:)`.
+    public static let share = ElementAct<Self, (Name, Name, String?, String?), Bool>("share")
+
     /// How far a zone is from UTC on a day, in minutes: the zone's identifier,
     /// the local one where there is none, and the day, now where there is
     /// none.
@@ -137,6 +144,6 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     public static let members: [any ContractMember] = [
         alert, announce, chooseAction, confirm, currentTime, currentTimeZone, handlerFailed,
         hideOnScreenKeyboard, launchFile, launchLink, openFiles, persistSceneValue, persistValue, prompt,
-        readClipboard, readFile, saveFile, useColorScheme, utcOffset, writeClipboard,
+        readClipboard, readFile, saveFile, share, useColorScheme, utcOffset, writeClipboard,
     ]
 }

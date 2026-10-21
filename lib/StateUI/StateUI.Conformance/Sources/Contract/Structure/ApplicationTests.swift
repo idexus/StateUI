@@ -379,6 +379,31 @@
                 s.settle { !read.values.isEmpty }
                 s.expect(read.values, ["Copied with StateUI"], "the words written, read back from the platform's clipboard")
             },
+            ConformanceCase("wordsAndALinkAreOfferedToShare", proves: [Covered(ApplicationContract.share)],
+                            needs: [Covered(ButtonContract.clicked)]) { s in
+                let said = Received<Bool>()
+                s.start {
+                    WithSessions { window, _ in
+                        VStack {
+                            Button("Share").onClicked(gate: .ignoreWhileRunning) {
+                                said.values.append(try await window.share(text: "Notes", link: "https://www.swift.org"))
+                            }.id("share")
+                        }
+                    }
+                }
+
+                try s.perform(.activate, on: s.element("share"))
+                try s.settle { try s.shared() != nil }
+                s.expect(try s.shared(), "Notes\nhttps://www.swift.org", "the words and the link offered")
+                try s.perform(.answerShare(shared: true), on: s.element(ofType: WindowContract.nodeType))
+                s.settle { said.values.count == 1 }
+
+                try s.perform(.activate, on: s.element("share"))
+                try s.settle { try s.shared() != nil }
+                try s.perform(.answerShare(shared: false), on: s.element(ofType: WindowContract.nodeType))
+                s.settle { said.values.count == 2 }
+                s.expect(said.values, [true, false], "shared, then cancelled")
+            },
             ConformanceCase("theApplicationShowsInTheThemeItHolds", proves: [
                 Covered(ApplicationContract.useColorScheme),
             ], needs: [Covered(ButtonContract.clicked), Covered(TextualElementContract.text, on: TextContract.self)]) { s in

@@ -441,6 +441,7 @@ ZStack
   reload()
   saveFile()
   scrollTo()
+  share()
   unfocus()
   useColorScheme()
   utcOffset()

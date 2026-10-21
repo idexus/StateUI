@@ -29,6 +29,12 @@ extension WinUIDriver {
         if ability == "read background of Canvas" {
             return "the colour the host's canvas clears its surface to under its drawing, which WinUI keeps as no brush"
         }
+        if ability == "read a share sheet" {
+            return "what the host holds of a share sheet a test never shows"
+        }
+        if Ability(ability).act == "answerShare" {
+            return "the host told the driver's answer, no share sheet shown"
+        }
         if ability == "read what the screen reader said" {
             return "the relay's own list of what it handed UI Automation to announce"
         }

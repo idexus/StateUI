@@ -137,6 +137,9 @@ extension AndroidDriver {
             renderer?.setPhase(.inactive)
             renderer?.setPhase(.background)
             renderer?.destroying()
+        case (.answerShare(let shared), _):
+            guard renderer?.actToolkit.sharing != nil else { throw DriverCannot("answer a share sheet: none shows") }
+            renderer?.actToolkit.answerShareForTesting(shared: shared)
         case (.performAccessibilityAction(let name), let view?):
             // The action TalkBack offers on the view's node, performed as TalkBack performs it.
             _ = TestAccessibility.perform(name, on: view)

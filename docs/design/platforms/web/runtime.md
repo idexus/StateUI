@@ -180,6 +180,13 @@ read through the browser's own permission, the act answered once the browser
 answers - its words, nothing where it holds none, or why it refused. A page
 served over plain http has no clipboard, and its read fails with that reason.
 
+## Sharing
+
+What the user shares is the browser's share sheet, where it has one: the words
+as the shared text and the link as its address. Sent on, it answers shared; a
+user's cancel answers not shared; a browser with none fails the act with that
+reason.
+
 ## Files
 
 A file dialog is the browser's own, waiting its turn among the questions

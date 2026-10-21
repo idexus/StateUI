@@ -159,6 +159,13 @@ The clipboard is the `ClipboardManager`'s primary clip: words are written as
 plain text in place of what it held, and read as the first item's text, none
 where it holds no clip.
 
+## Sharing
+
+What the user shares is Android's chooser: the words, then the link on a line
+of its own, sent as plain text. The chooser tells which target the user picked
+and nothing of a cancel, so the answer comes once the activity is back in
+front: shared where a target was picked, else not.
+
 ## Files
 
 A file dialog is the system's document picker, started for its result over

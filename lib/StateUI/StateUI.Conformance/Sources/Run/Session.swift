@@ -221,6 +221,14 @@
         return try driven { try driver.fileDialog(over: root) }
     }
 
+    /// What the share sheet over the window offers now - its words, then its link on a line of its own; nil where
+    /// none shows.
+    public func shared() throws -> String? {
+        guard let root = tree?.root else { return nil }
+        note("read a share sheet")
+        return try driven { try driver.shared(over: root) }
+    }
+
     /// What the host handed the system to launch, in order: an address as written, a file by its name.
     public func launched() throws -> [String] {
         note("read what was launched")

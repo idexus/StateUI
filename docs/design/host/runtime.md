@@ -737,6 +737,15 @@ a question standing over a window gone would otherwise hold every later
 question behind it, and an answer its dialog gives later counts for
 nothing.
 
+## Sharing
+
+A share sheet waits its turn among the questions and the file dialogs, one at
+a time, over the window it is offered from: answered whether the user shared,
+and answered as not shared where its window went while it waited
+(`HostShare`). A toolkit with no share sheet answers the act's failure at
+once. A host's test holds the sheet unshown and answers it as the user would,
+so its driver proves the words and the link offered, never a sheet's look.
+
 ## Files
 
 A file dialog is read from its act alike on every host (`HostFileDialog`):

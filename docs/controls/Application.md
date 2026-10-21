@@ -2,7 +2,7 @@
 
 # Application
 
-The application at the root of a StateUI tree, and what its host does for it with no control behind it: questions for the user, the files they open and save, what the system launches, the clock and the time zone, the screen reader, the clipboard, what is kept.
+The application at the root of a StateUI tree, and what its host does for it with no control behind it: questions for the user, the files they open and save, what the system launches and what the user shares, the clock and the time zone, the screen reader, the clipboard, what is kept.
 
 ```swift
 struct NotesApp: Application {
@@ -40,13 +40,13 @@ Inherits nothing: every member below is its own.
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (20)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>10 ✅ · 10 ✓</td><td><code>NSApplication</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>10 ✅ · 10 ✓</td><td><code>UIApplication</code> / structure, a <code>UIWindowScene</code> per window</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>9 ✅ · 1 ☑️ · 10 ✓</td><td>structure / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>17 ✅ · 3 ✓</td><td><code>Application</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>14 ✅ · 6 ✓</td><td><code>AdwApplication</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>15 ✅ · 5 ✓</td><td><code>document</code> / structure</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (21)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>10 ✅ · 11 ✓</td><td><code>NSApplication</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>11 ✅ · 10 ✓</td><td><code>UIApplication</code> / structure, a <code>UIWindowScene</code> per window</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>9 ✅ · 1 ☑️ · 11 ✓</td><td>structure / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>17 ✅ · 4 ✓</td><td><code>Application</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>14 ✅ · 6 ✓ · 1 –</td><td><code>AdwApplication</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>15 ✅ · 6 ✓</td><td><code>document</code> / structure</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/ApplicationContract.swift`.
@@ -82,6 +82,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/ApplicationCo
 <tr><td colspan="9">AppKit: only through the host's own: read a file dialog: the host's own panel, held unshown<br>UIKit: only through the host's own: read a file dialog: the host's own record of the picker it presented<br>Android Views: only through the host's own: read a file dialog: the picker the relay holds, which a test never hands the system<br>GTK 4: only through the host's own: read a file dialog: the dialog the host holds, which a test never shows<br>Web: only through the host's own: read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>saveFile</code></td><td>act</td><td><code>(Name, Name, [UInt8], String, [FileType]) -&gt; ChosenFile?</code></td><td></td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: read a file dialog: the host's own panel, held unshown<br>UIKit: only through the host's own: read a file dialog: the host's own record of the picker it presented<br>Android Views: only through the host's own: read a file dialog: the picker the relay holds, which a test never hands the system<br>GTK 4: only through the host's own: read a file dialog: the dialog the host holds, which a test never shows<br>Web: only through the host's own: read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>share</code></td><td>act</td><td><code>(Name, Name, String?, String?) -&gt; Bool</code></td><td></td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">–</td><td align="center">✓</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read a share sheet: the host's own picker, held unshown<br>Android Views: only through the host's own: read a share sheet: what the host holds of a chooser a test never shows<br>WinUI 3: only through the host's own: read a share sheet: what the host holds of a share sheet a test never shows<br>GTK 4: GNOME offers an application no share sheet.<br>Web: only through the host's own: read a share sheet: the share sheet the relay holds on a page a test drives, which the browser never shows</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>useColorScheme</code></td><td>act</td><td><code>(ColorScheme) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: Before Android 12 an application holds no night mode of its own: it shows the system's.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>utcOffset</code></td><td>act</td><td><code>(String?, CalendarDate?) -&gt; Int</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

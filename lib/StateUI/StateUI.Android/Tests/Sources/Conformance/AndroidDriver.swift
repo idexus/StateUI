@@ -93,6 +93,7 @@ final class AndroidDriver: HostDriver {
         AndroidRenderer.shared = renderer
         self.renderer = renderer
         renderer.actToolkit.announcedForTesting = []
+        renderer.actToolkit.holdsShareForTesting = true
         Java.call(window.reference, Self.setContentView, .object(root.reference))
         Java.callStatic(Self.testPixels, Self.paintNothing, .object(window.reference))
         AndroidPersistence.writeScenes("", context: window.reference)  // no scenes an earlier case kept
@@ -192,6 +193,11 @@ final class AndroidDriver: HostDriver {
     /// The night mode the activity's configuration stands in: the application's where it holds one.
     func theme() throws -> ColorScheme {
         Java.callStaticBool(JavaAPI.environment, Self.night, .object(TestContext.window.reference)) ? .dark : .light
+    }
+
+    /// What the chooser the host holds offers: its words, then its link on a line of its own.
+    func shared(over element: MountedElement) throws -> String? {
+        renderer?.actToolkit.sharing?.shared.together
     }
 
     /// What the host handed Android to say to the screen reader, in order.

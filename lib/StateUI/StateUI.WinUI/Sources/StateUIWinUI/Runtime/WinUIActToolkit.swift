@@ -120,6 +120,37 @@ final class WinUIActToolkit: ActToolkit {
         if let content = renderer.userWindow?.content { stateui_winui_announce(content.handle, words) }
     }
 
+    /// What the user is offered to share now, where a test holds the sheet unshown.
+    private(set) var sharing: (shared: HostShare, answered: (Result<Bool, ActFailure>) -> Void)?
+
+    /// Whether a test holds the share sheet unshown and answers it itself (`answerShareForTesting`).
+    var holdsShareForTesting = false
+
+    func share(
+        _ shared: HostShare, over window: MountedElement?, answered: @escaping (Result<Bool, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let shown = renderer.window(asked: window), let element = renderer.element(of: shown) else { return nil }
+        if holdsShareForTesting {
+            sharing = (shared, answered)
+            return element
+        }
+        let waiting = Unmanaged.passRetained(WinUIShareWaiting(answered)).toOpaque()
+        stateui_winui_share(shown.handle, shared.text, shared.link, waiting) { context, shared in
+            let waiting = Unmanaged<WinUIShareWaiting>.fromOpaque(context!).takeRetainedValue()
+            MainActor.assumeIsolated {
+                waiting.answered(shared < 0 ? .failure(ActFailure("Windows offered no share sheet")) : .success(shared == 1))
+            }
+        }
+        return element
+    }
+
+    /// A test's answer for the user: shared, or cancelled.
+    func answerShareForTesting(shared: Bool) {
+        guard let waiting = sharing else { return }
+        sharing = nil
+        waiting.answered(.success(shared))
+    }
+
     func writeClipboard(_ words: String) {
         WinUIClipboard.write(words)
     }
@@ -190,5 +221,14 @@ final class WinUIActToolkit: ActToolkit {
 
     func log(_ message: String) {
         WinUIRenderer.log.error(message)
+    }
+}
+
+/// What waits for the share sheet's answer, carried through the relay's context.
+private final class WinUIShareWaiting {
+    let answered: (Result<Bool, ActFailure>) -> Void
+
+    init(_ answered: @escaping (Result<Bool, ActFailure>) -> Void) {
+        self.answered = answered
     }
 }

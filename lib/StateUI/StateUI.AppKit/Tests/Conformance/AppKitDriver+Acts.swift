@@ -116,6 +116,9 @@ extension AppKitDriver {
             try dragAndDrop(element, onto: target, across: across)
         case (.dropFiles(let names), let view?):
             try dropFiles(names, on: view, element)
+        case (.answerShare(let shared), _):
+            guard let sheet = renderer?.actToolkit.sharing else { throw DriverCannot("answer a share sheet: none shows") }
+            sheet.answerForTesting(shared: shared)
         case (.answerFiles(let names), _):
             guard let dialog = renderer?.fileToolkit.showing else { throw DriverCannot("answer a file dialog: none shows") }
             dialog.chooseForTesting(names.map { Self.files.appendingPathComponent($0) })

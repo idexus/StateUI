@@ -16,8 +16,8 @@
         ApplicationContract.confirm, ApplicationContract.currentTime, ApplicationContract.currentTimeZone,
         ApplicationContract.handlerFailed, ApplicationContract.hideOnScreenKeyboard,
         ApplicationContract.persistSceneValue, ApplicationContract.persistValue, ApplicationContract.prompt,
-        ApplicationContract.readClipboard, ApplicationContract.useColorScheme, ApplicationContract.utcOffset,
-        ApplicationContract.writeClipboard,
+        ApplicationContract.readClipboard, ApplicationContract.share, ApplicationContract.useColorScheme,
+        ApplicationContract.utcOffset, ApplicationContract.writeClipboard,
     ]
 
     /// The acts a host with a `FileToolkit` performs: the files the user opens and saves, read, and what the system

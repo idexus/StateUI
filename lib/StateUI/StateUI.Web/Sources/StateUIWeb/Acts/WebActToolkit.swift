@@ -60,6 +60,20 @@ final class WebActToolkit: ActToolkit {
         WebRelay.announce(words)
     }
 
+    /// The browser's share sheet where it has one: shared where the user sends it on, cancelled where they take it
+    /// away; a browser with none fails the act with that reason.
+    func share(
+        _ shared: HostShare, over window: MountedElement?, answered: @escaping (Result<Bool, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let window = renderer.window(asked: window) else { return nil }
+        let listener = WebRelay.once {
+            let words = WebRelay.fileWords
+            answered(WebRelay.fileKept ? .success(words == "1") : .failure(ActFailure(words)))
+        }
+        WebRelay.share(text: shared.text, link: shared.link, listener)
+        return window
+    }
+
     func writeClipboard(_ words: String) {
         WebRelay.writeClipboard(words)
     }

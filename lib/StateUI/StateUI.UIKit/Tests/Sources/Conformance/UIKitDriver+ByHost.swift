@@ -21,6 +21,8 @@ extension UIKitDriver {
             return "the drag and drop interactions' handlers called, no drag session"
         case "dropFiles":
             return "the drop interaction's handler told the driver's files, no drag session"
+        case "answerShare":
+            return "the host's completion called with the driver's answer, no activity chosen"
         case "answerFiles":
             return "the host's response called with the driver's files, not the picker's choice"
         case "switchAway", "switchBack", "bringToFront", "minimize", "restore", "close":

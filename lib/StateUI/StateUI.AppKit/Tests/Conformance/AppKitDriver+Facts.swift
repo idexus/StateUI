@@ -172,6 +172,11 @@ extension AppKitDriver {
         renderer?.fileToolkit.showing.map { $0.dialog.kind == .save ? .save : .open }
     }
 
+    /// What the sharing picker the host holds offers: its words, then its link on a line of its own.
+    func shared(over element: MountedElement) throws -> String? {
+        renderer?.actToolkit.sharing?.shared.together
+    }
+
     /// What the host handed macOS to launch, in order: an address as written, a file by its name.
     func launched() throws -> [String] {
         (renderer?.fileToolkit.launchedForTesting ?? []).map { target in

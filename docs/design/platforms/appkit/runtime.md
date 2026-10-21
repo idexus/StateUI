@@ -134,6 +134,13 @@ The clipboard is the general pasteboard: words are written in place of what
 it held and read back as its string, at once. A conformance run writes to a
 pasteboard of the driver's own name, so it never writes over the user's.
 
+## Sharing
+
+What the user shares is offered in AppKit's sharing picker, shown from the
+middle of the window's content: the words and the link as the picker's items.
+The answer is the service's: shared where the service the user chose says it
+shared them, not where they chose none or it failed.
+
 ## Questions for the user
 
 A question is AppKit's own alert, a sheet on the window that asked - over the

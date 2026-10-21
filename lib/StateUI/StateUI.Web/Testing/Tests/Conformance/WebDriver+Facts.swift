@@ -112,6 +112,20 @@ extension WebDriver {
 
     /// The file dialog the relay holds answered as the user does, by the driver's files of `names` - none cancels it -
     /// in a turn of the page's own.
+    /// What the share sheet the relay holds offers: its words, then its link on a line of its own.
+    func shared(over element: MountedElement) throws -> String? {
+        let offered = try WebBrowser.evaluate("stateui.share?.offered ?? ''", on: 0) ?? ""
+        return offered.isEmpty ? nil : offered
+    }
+
+    /// Answers the share sheet the relay holds as the user would: shared, or cancelled.
+    func answerShare(_ shared: Bool, on element: MountedElement) throws {
+        let answering = "(s) => !!s && (stateui.share = null, setTimeout(() => s.answer(\(shared)), 0), true)"
+        guard try WebBrowser.truth("(\(answering))(stateui.share)", on: 0) else {
+            throw DriverCannot(.answerShare(shared: shared), on: element)
+        }
+    }
+
     func answerFiles(_ names: [String], on element: MountedElement) throws {
         let chosen = names.map(WebBrowser.quoted).joined(separator: ",")
         let answering = "(d) => !!d && (stateui.fileDialog = null, setTimeout(() => d.answer([\(chosen)]), 0), true)"

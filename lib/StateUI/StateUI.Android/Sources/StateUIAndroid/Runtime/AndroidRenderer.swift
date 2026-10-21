@@ -206,6 +206,7 @@ final class AndroidRenderer {
     /// application, its scene and its window, each rendered before the next.
     /// Design: docs/design/platforms/android/runtime.md#the-activitys-lifecycle
     func setPhase(_ phase: ApplicationPhase) {
+        actToolkit.phaseTurned(phase)
         guard let window = runtime.tree.root?.first(type: .window) else {
             runtime.core.setApplicationPhase(phase)
             return runtime.pump.turn()

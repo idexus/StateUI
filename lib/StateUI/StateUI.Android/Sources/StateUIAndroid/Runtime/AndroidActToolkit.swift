@@ -119,6 +119,47 @@ final class AndroidActToolkit: ActToolkit {
     /// What the host told the screen reader, in order, where a test asked for it with `[]`; nil keeps nothing.
     var announcedForTesting: [String]?
 
+    /// What the user is offered to share now, and whether the activity has left for the chooser since.
+    private(set) var sharing: (shared: HostShare, answered: (Result<Bool, ActFailure>) -> Void, left: Bool)?
+
+    /// Whether a test holds the chooser unshown and answers it itself (`answerShareForTesting`).
+    var holdsShareForTesting = false
+
+    func share(
+        _ shared: HostShare, over window: MountedElement?, answered: @escaping (Result<Bool, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let element = AndroidRenderer.window(asked: window) else { return nil }
+        sharing = (shared, answered, false)
+        if !holdsShareForTesting {
+            Java.frame {
+                Java.callStatic(JavaAPI.share, JavaAPI.shareOffer, .object(context), .object(Java.string(shared.together)))
+            }
+        }
+        return element
+    }
+
+    /// The activity's phase turned: a chooser it left for is over once it comes back - shared where the user picked
+    /// a target, as Android tells nothing of a cancel.
+    /// Design: docs/design/platforms/android/runtime.md#sharing
+    func phaseTurned(_ phase: ApplicationPhase) {
+        guard var waiting = sharing else { return }
+        guard phase == .active else {
+            waiting.left = true
+            sharing = waiting
+            return
+        }
+        guard waiting.left else { return }
+        sharing = nil
+        waiting.answered(.success(Java.callStaticBool(JavaAPI.share, JavaAPI.shareTaken, .object(context))))
+    }
+
+    /// A test's answer for the user: shared, or cancelled.
+    func answerShareForTesting(shared: Bool) {
+        guard let waiting = sharing else { return }
+        sharing = nil
+        waiting.answered(.success(shared))
+    }
+
     func writeClipboard(_ words: String) {
         Java.frame { Java.callStatic(JavaAPI.clipboard, JavaAPI.clipboardWrite, .object(context), .object(Java.string(words))) }
     }

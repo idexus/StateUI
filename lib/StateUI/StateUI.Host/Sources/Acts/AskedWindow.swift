@@ -15,7 +15,7 @@
 
     /// The acts a window asks: a question, a file dialog, the keyboard taken down.
     public static let acts: Set<Act> = [
-        .alert, .confirm, .chooseAction, .prompt, .openFiles, .saveFile, .hideOnScreenKeyboard,
+        .alert, .confirm, .chooseAction, .prompt, .openFiles, .saveFile, .share, .hideOnScreenKeyboard,
     ]
 
     /// The window `call` asks in; nil for an act no window asks.

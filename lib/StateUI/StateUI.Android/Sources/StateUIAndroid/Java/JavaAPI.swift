@@ -177,6 +177,9 @@ enum JavaAPI {
         compoundButton, "getButtonTintList", "()Landroid/content/res/ColorStateList;")
     static let dialogs = Java.findClass("stateui/android/StateUIDialogs")
     static let clipboard = Java.findClass("stateui/android/StateUIClipboard")
+    static let share = Java.findClass("stateui/android/StateUIShare")
+    static let shareOffer = Java.staticMethod(share, "offer", "(Landroid/app/Activity;Ljava/lang/String;)V")
+    static let shareTaken = Java.staticMethod(share, "takeChosen", "(Landroid/app/Activity;)Z")
     static let clipboardWrite = Java.staticMethod(clipboard, "write", "(Landroid/content/Context;Ljava/lang/String;)V")
     static let clipboardRead = Java.staticMethod(clipboard, "read", "(Landroid/content/Context;)Ljava/lang/String;")
     static let alert = Java.staticMethod(

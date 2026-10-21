@@ -212,6 +212,13 @@ The clipboard is Win32's - `OpenClipboard`, `CF_UNICODETEXT` - written and
 read at once from Swift, the words as UTF-16: what every Windows application
 reads and writes.
 
+## Sharing
+
+What the user shares is Windows' own share sheet over the window
+(`DataTransferManager`, reached for a window through its interop): the words
+as text, the link as a web link, handed over as the sheet asks for them; the
+answer is the sheet's, shared or cancelled, told once on the UI thread.
+
 ## Questions for the user
 
 A question - an alert, a confirmation, a choice of actions, a prompt - is

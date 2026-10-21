@@ -1253,6 +1253,12 @@ int32_t stateui_winui_time_zone(char *utf8, int32_t capacity);
 /// for now. Answers false for a zone ICU does not know.
 bool stateui_winui_utc_offset(char const *zone, int32_t year, int32_t month, int32_t day, int32_t *minutes);
 
+/// Offers the words and the link - null for one not given - in Windows' share sheet over `window`; `answered` is
+/// called once, on the UI thread, with `context`: 1 where the user shared, 0 where they cancelled, -1 where the sheet
+/// could not be offered.
+void stateui_winui_share(StateUIObjectRef window, char const *text, char const *link, void *context,
+                         void (*answered)(void *context, int32_t shared));
+
 /// Says `utf8` to a screen reader, from `element`, cutting off what it was saying.
 void stateui_winui_announce(StateUIObjectRef element, char const *utf8);
 

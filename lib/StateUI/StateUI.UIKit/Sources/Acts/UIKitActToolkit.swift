@@ -66,6 +66,23 @@ final class UIKitActToolkit: ActToolkit {
         UIAccessibility.post(notification: .announcement, argument: words)
     }
 
+    /// The share sheet showing now, where one does.
+    private(set) var sharing: UIKitShareSheet?
+
+    func share(
+        _ shared: HostShare, over window: MountedElement?, answered: @escaping (Result<Bool, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let root = renderer.root(asked: window), let window = root.view.window.flatMap(renderer.element(of:))
+        else { return nil }
+        let sheet = UIKitShareSheet(shared)
+        sharing = sheet
+        sheet.offer(in: root) { [weak self] done in
+            self?.sharing = nil
+            answered(done)
+        }
+        return window
+    }
+
     /// The pasteboard the clipboard's acts write and read: the system's general one - a test's own, of its own
     /// name, where it gives one.
     var pasteboard = UIPasteboard.general

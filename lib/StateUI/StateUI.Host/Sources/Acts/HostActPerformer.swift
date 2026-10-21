@@ -31,6 +31,7 @@
     private enum Asked {
         case question(HostQuestion)
         case files(HostFileDialog)
+        case share(HostShare)
     }
 
     /// A performer for the acts called on the host whose toolkit `toolkit` is - `files` its toolkit for files, where
@@ -69,6 +70,9 @@
         case .alert, .confirm, .chooseAction, .prompt:
             guard let question = HostQuestion(call) else { return fail(call, "the act asks nothing") }
             ask(call, .question(question), in: AskedWindow(call))
+        case .share:
+            guard let shared = HostShare(call) else { return fail(call, "the act offers nothing to share") }
+            ask(call, .share(shared), in: AskedWindow(call))
         case .openFiles, .saveFile, .readFile, .launchFile, .launchLink:
             guard let files else { return fail(call, notPerformed(call)) }
             perform(call, files: files)
@@ -129,7 +133,7 @@
         return .some(element)
     }
 
-    /// Puts a question or a file dialog to the user over the window it names - answered as the user dismissing it
+    /// Puts a question, a file dialog or a share sheet to the user over the window it names - answered as the user dismissing it
     /// does where that window closed while it waited; with no window to ask in by its turn it fails, and the next
     /// takes its turn.
     /// Design: docs/design/host/runtime.md#questions-for-the-user
@@ -148,6 +152,8 @@
             }
         case .files(let dialog):
             files?.show(dialog, over: over) { [weak self] chosen in self?.answer(ticket, chosen.map(dialog.answer)) }
+        case .share(let shared):
+            toolkit.share(shared, over: over) { [weak self] done in self?.answer(ticket, done.map { [.bool($0)] }) }
         }
         if let window {
             if showing?.ticket == ticket { askedIn = window }
@@ -200,6 +206,7 @@
         switch asked {
         case .question(let question): deliver(call, .success(question.answer(.dismissed)))
         case .files(let dialog): deliver(call, .success(dialog.answer([])))
+        case .share: deliver(call, .success([.bool(false)]))
         }
     }
 

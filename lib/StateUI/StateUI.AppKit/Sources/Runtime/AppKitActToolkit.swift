@@ -75,6 +75,24 @@ final class AppKitActToolkit: ActToolkit {
             userInfo: [.announcement: words, .priority: NSAccessibilityPriorityLevel.high.rawValue])
     }
 
+    /// The share sheet showing now, where one does.
+    private(set) var sharing: AppKitShareSheet?
+
+    func share(
+        _ shared: HostShare, over window: MountedElement?, answered: @escaping (Result<Bool, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let window = renderer.window(asked: window), let element = renderer.element(of: window),
+              let view = window.contentView
+        else { return nil }
+        let sheet = AppKitShareSheet(shared)
+        sharing = sheet
+        sheet.offer(over: view, presenting: renderer.presentsWindows) { [weak self] done in
+            self?.sharing = nil
+            answered(done)
+        }
+        return element
+    }
+
     /// The pasteboard the clipboard's acts write and read: the system's general one - a test's own, of its own
     /// name, where it gives one.
     var pasteboard = NSPasteboard.general
