@@ -15,7 +15,7 @@ extension GTKRegistrations {
             picker.onClosed = { reports.raise(DatePickerContract.closed) }
             return picker
         }, members: { picker in
-            picker.applies([DatePickerContract.minimumDate, DatePickerContract.maximumDate, DatePickerContract.date]) {
+            picker.applies(DatePickerContract.minimumDate, DatePickerContract.maximumDate, DatePickerContract.date) {
                 view, values in
                 if values.changed(DatePickerContract.minimumDate) || values.changed(DatePickerContract.maximumDate) {
                     view.setRange(earliest: values[DatePickerContract.minimumDate], latest: values[DatePickerContract.maximumDate])

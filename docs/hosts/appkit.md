@@ -192,7 +192,7 @@ promised order.
 
 ```swift quote
 StateUIControls.add(WebViewContract.self, create: { reports -> MyWebView in … }) { web in
-    web.applies([WebViewContract.userAgent, WebViewContract.source]) { view, values in
+    web.applies(WebViewContract.userAgent, WebViewContract.source) { view, values in
         if values.changed(WebViewContract.userAgent) { view.userAgent = values[WebViewContract.userAgent] }
         if values.changed(WebViewContract.source) { view.show(values[WebViewContract.source]) }
     }
@@ -213,7 +213,8 @@ view of its own.
 ```swift quote
 StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
     map.property(MapContract.region) { view, region in … }
-    map.children(MarkerContract.self, members: [MarkerContract.location, MarkerContract.selected]) { view, markers in
+    map.children(MarkerContract.self, properties: MarkerContract.location, events: MarkerContract.selected) {
+        view, markers in
         view.show(markers.map { marker in (marker, marker.value(MarkerContract.location)) })
         // the user taps one: marker.reports.raise(MarkerContract.selected)
     }

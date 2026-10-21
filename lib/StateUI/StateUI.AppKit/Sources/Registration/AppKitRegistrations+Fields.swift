@@ -22,7 +22,7 @@ extension AppKitRegistrations {
             entry.onSubmitted = { reports.raise(TextFieldContract.submitted) }
             return entry
         }, members: { entry in
-            entry.applies(Self.fieldMembers + [TextFieldContract.isPassword]) { view, values in
+            entry.applies(Self.fieldMembers, TextFieldContract.isPassword) { view, values in
                 let words = Self.words(values)
                 view.textCase = values[TextualElementContract.textCase]
 
@@ -58,7 +58,7 @@ extension AppKitRegistrations {
             }
             return editor
         }, members: { editor in
-            editor.applies(Self.fieldMembers + [TextEditorContract.growsWithText]) { view, values in
+            editor.applies(Self.fieldMembers, TextEditorContract.growsWithText) { view, values in
                 let words = Self.words(values)
                 view.textCase = values[TextualElementContract.textCase]
 
@@ -124,16 +124,15 @@ extension AppKitRegistrations {
     }
 
     /// What every field takes, whatever kind of field it is.
-    private static let fieldMembers: [any ContractMember] = [
+    private static let fieldMembers = PropertyList(
         TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
-        TextInputContract.placeholderColor,
-        TextColorElementContract.textColor, VisualElementContract.background,
-        FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle,
+        TextInputContract.placeholderColor, TextColorElementContract.textColor, VisualElementContract.background,
+        FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
+        FontElementContract.fontWeight, FontElementContract.textStyle,
         TextAlignmentElementContract.horizontalTextAlignment, VisualElementContract.isEnabled,
-        TextInputContract.isReadOnly, TextInputContract.maximumLength,
-        TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled, TextInputContract.inputPurpose,
-        TextInputContract.cursorPosition, TextInputContract.selectionLength,
-    ]
+        TextInputContract.isReadOnly, TextInputContract.maximumLength, TextInputContract.isSpellCheckEnabled,
+        TextInputContract.isTextPredictionEnabled, TextInputContract.inputPurpose, TextInputContract.cursorPosition,
+        TextInputContract.selectionLength)
 
     /// The caret moves only where the tree moved it, never because something
     /// else about the field changed.

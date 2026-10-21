@@ -23,13 +23,12 @@ extension AppKitRegistrations {
             picker.onClosed = { reports.raise(PickerContract.closed) }
             return picker
         }, members: { (picker: Registration<PickerContract, NSView>) in
-            picker.applies([
-                PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder,
-                PickerContract.isOpen, FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TextColorElementContract.textColor,
+            picker.applies(
+                PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder, PickerContract.isOpen,
+                FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
+                FontElementContract.fontWeight, FontElementContract.textStyle, TextColorElementContract.textColor,
                 TintElementContract.tint, TextAlignmentElementContract.horizontalTextAlignment,
-                VisualElementContract.isEnabled,
-            ]) { view, values in
+                VisualElementContract.isEnabled) { view, values in
                 (view as! any AppKitChoosing).apply(
                     items: values[PickerContract.options] ?? [],
                     selectedIndex: values[PickerContract.selectedIndex] ?? -1,
@@ -54,12 +53,11 @@ extension AppKitRegistrations {
             picker.onChosen = { day in reports.report(DatePickerContract.date, day, as: DatePickerContract.dateChanged) }
             return picker
         }, members: { picker in
-            picker.applies([
+            picker.applies(
                 DatePickerContract.date, DatePickerContract.minimumDate, DatePickerContract.maximumDate,
-                FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TextColorElementContract.textColor,
-                VisualElementContract.isEnabled,
-            ]) { view, values in
+                FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
+                FontElementContract.fontWeight, FontElementContract.textStyle, TextColorElementContract.textColor,
+                VisualElementContract.isEnabled) { view, values in
                 dress(view, values)
                 view.setRange(earliest: values[DatePickerContract.minimumDate], latest: values[DatePickerContract.maximumDate])
                 if values.changed(DatePickerContract.date) { view.setDate(values[DatePickerContract.date]) }
@@ -72,11 +70,10 @@ extension AppKitRegistrations {
             picker.onChosen = { time in reports.report(TimePickerContract.time, time, as: TimePickerContract.timeChanged) }
             return picker
         }, members: { picker in
-            picker.applies([
+            picker.applies(
                 TimePickerContract.time, FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TextColorElementContract.textColor,
-                VisualElementContract.isEnabled,
-            ]) { view, values in
+                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle,
+                TextColorElementContract.textColor, VisualElementContract.isEnabled) { view, values in
                 dress(view, values)
                 if values.changed(TimePickerContract.time) { view.setTime(values[TimePickerContract.time]) }
             }

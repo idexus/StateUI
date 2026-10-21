@@ -17,23 +17,21 @@ extension WinUIRegistrations {
             return button
         }, members: { button in
             button.applies(TextMembers.members) { view, values in applyText(view, values) }
-            button.applies([TrackingElementContract.tracking, FontElementContract.fontSize]) { view, values in
+            button.applies(TrackingElementContract.tracking, FontElementContract.fontSize) { view, values in
                 view.setLetterSpacing(values[TrackingElementContract.tracking] ?? 0, size: values[FontElementContract.fontSize])
             }
-            button.applies([
-                VisualElementContract.background,
-                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
-            ]) { view, values in
+            button.applies(
+                VisualElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
+                BorderElementContract.lineWidth) { view, values in
                 view.setLook(
                     background: HostMaterial(values[VisualElementContract.background]?.propValue).painted,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
-            button.applies([
+            button.applies(
                 ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
-                ImageElementContract.contentMode,
-            ]) { view, values in
+                ImageElementContract.contentMode) { view, values in
                 view.setIcon(
                     WinUIPictures.lines(HostPicture(values[ButtonContract.icon], dark: false)),
                     position: values[ButtonContract.iconPosition] ?? .start,
@@ -43,9 +41,9 @@ extension WinUIRegistrations {
             // WinUI's own accelerator - the one stated, else the role's - pressing the button while its window is in
             // front, and the role's look: the accent style for the main action, a destructive one's words in the
             // theme's critical colour where the tree colours them not.
-            button.applies([
-                ButtonContract.keyboardShortcut, ButtonContract.role, TextColorElementContract.textColor,
-            ]) { view, values in
+            button.applies(
+                ButtonContract.keyboardShortcut, ButtonContract.role,
+                TextColorElementContract.textColor) { view, values in
                 let role = values[ButtonContract.role]
                 view.setShortcut(KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role))
                 view.setRole(role)

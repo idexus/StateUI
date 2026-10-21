@@ -25,17 +25,14 @@ extension AppKitRegistrations {
             button.onReleased = { reports.raise(ButtonContract.released) }
             return button
         }, members: { button in
-            button.applies([
+            button.applies(
                 TextualElementContract.text, TextualElementContract.textCase, ButtonContract.icon,
-                ButtonContract.iconPosition,
-                ImageElementContract.contentMode, ButtonContract.lineBreak,
-                TextColorElementContract.textColor, VisualElementContract.background,
-                BorderElementContract.shape, BorderElementContract.stroke,
-                BorderElementContract.lineWidth, VisualElementContract.isEnabled,
-                FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TrackingElementContract.tracking,
-                ButtonContract.role,
-            ]) { view, values in
+                ButtonContract.iconPosition, ImageElementContract.contentMode, ButtonContract.lineBreak,
+                TextColorElementContract.textColor, VisualElementContract.background, BorderElementContract.shape,
+                BorderElementContract.stroke, BorderElementContract.lineWidth, VisualElementContract.isEnabled,
+                FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
+                FontElementContract.fontWeight, FontElementContract.textStyle, TrackingElementContract.tracking,
+                ButtonContract.role) { view, values in
                 // Each value is read into a name of its own: twelve arguments
                 // of `flatMap` and `??` in one call is more than the type
                 // checker will take.
@@ -84,7 +81,7 @@ extension AppKitRegistrations {
             }
             // AppKit's own key equivalent - the one stated, else the role's - pressing the button while its window is
             // in front, and the role's marks: the accent for the main action, AppKit's mark for a destructive one.
-            button.applies([ButtonContract.keyboardShortcut, ButtonContract.role]) { control, values in
+            button.applies(ButtonContract.keyboardShortcut, ButtonContract.role) { control, values in
                 let role = values[ButtonContract.role]
                 let shortcut = KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role)
                 control.applyKeys(shortcut, role: role)

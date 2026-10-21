@@ -16,7 +16,8 @@ import XCTest
 /// a failure is the spelling's and never a typo's.
 ///
 /// Compiled as an application compiles - a plain `import StateUI` - with the
-/// compiler and the module the handbook's examples are checked against.
+/// compiler and the module the handbook's examples are checked against; a
+/// road a host takes, as its registrations do, with `@_spi(Host)`.
 @MainActor
 final class ContractRoadsTests: XCTestCase {
     /// A road the API closes, and the road it offers to the same place.
@@ -24,6 +25,7 @@ final class ContractRoadsTests: XCTestCase {
         let name: String
         let closed: String
         let open: String
+        var host = false
     }
 
     /// An application's own control, acts and event - what every listing leans
@@ -267,6 +269,45 @@ final class ContractRoadsTests: XCTestCase {
             name: "a menu's separator in a stack",
             closed: "_ = VStack { MenuSeparator() }",
             open: "_ = VStack { Divider() }"),
+        Road(
+            name: "an event among the properties a view takes together",
+            closed: """
+                final class Lamp {}
+                Registry<Lamp>().add(BeaconContract.self, create: { _ in Lamp() }) { beacon in
+                    beacon.applies(BeaconContract.title, BeaconContract.tapped) { _, _ in }
+                }
+                """,
+            open: """
+                final class Lamp {}
+                Registry<Lamp>().add(BeaconContract.self, create: { _ in Lamp() }) { beacon in
+                    beacon.applies(BeaconContract.title, BeaconContract.level) { _, _ in }
+                }
+                """,
+            host: true),
+        Road(
+            name: "an event in a list of properties",
+            closed: "_ = PropertyList(BeaconContract.title, BeaconContract.tapped)",
+            open: "_ = PropertyList(BeaconContract.title, BeaconContract.level)",
+            host: true),
+        Road(
+            name: "an act among a child's events",
+            closed: """
+                final class Lamp {}
+                Registry<Lamp>().add(BeaconContract.self, create: { _ in Lamp() }) { beacon in
+                    beacon.children(BeaconContract.self, events: NotesContract.export) { _, _ in }
+                }
+                """,
+            open: """
+                final class Lamp {}
+                Registry<Lamp>().add(BeaconContract.self, create: { _ in Lamp() }) { beacon in
+                    beacon.children(BeaconContract.self, events: BeaconContract.tapped) { _, _ in }
+                }
+                """,
+            host: true),
+        Road(
+            name: "a type of an application's own taken as properties",
+            closed: "struct Lamps: AppliedProperties {}",
+            open: "struct Lamps {}"),
     ]
 
     /// Each closed road fails to compile, and the open road beside it compiles.
@@ -283,12 +324,12 @@ final class ContractRoadsTests: XCTestCase {
 
         // Every listing in a file of its own, a road's two side by side.
         let listings = Self.roads.flatMap { road in
-            [(road: road.name, compiles: false, source: road.closed),
-             (road: road.name, compiles: true, source: road.open)]
+            [(road: road.name, compiles: false, source: road.closed, host: road.host),
+             (road: road.name, compiles: true, source: road.open, host: road.host)]
         }
         let files = try listings.enumerated().map { index, listing in
             let file = scratch.appendingPathComponent("road_\(index).swift")
-            try Data(Self.file(around: listing.source).utf8).write(to: file)
+            try Data(Self.file(around: listing.source, host: listing.host).utf8).write(to: file)
             return file
         }
 
@@ -309,13 +350,14 @@ final class ContractRoadsTests: XCTestCase {
         }
     }
 
-    /// A listing as a file an application could hold: the declarations, and
-    /// the listing as the body of a function.
-    private static func file(around listing: String) -> String {
+    /// A listing as a file an application could hold - or a host, which imports the library's host side: the
+    /// declarations, and the listing as the body of a function.
+    private static func file(around listing: String, host: Bool) -> String {
         let body = listing.split(separator: "\n", omittingEmptySubsequences: false)
             .map { $0.isEmpty ? "" : "    \($0)" }
             .joined(separator: "\n")
 
-        return "import StateUI\n\n\(declarations)\n\n@MainActor func road() async throws {\n\(body)\n}\n"
+        let library = host ? "@_spi(Host) import StateUI" : "import StateUI"
+        return "\(library)\n\n\(declarations)\n\n@MainActor func road() async throws {\n\(body)\n}\n"
     }
 }

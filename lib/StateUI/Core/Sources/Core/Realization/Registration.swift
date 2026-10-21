@@ -57,34 +57,33 @@
     }
 
     /// Applies the element's configuration whole, where its view takes
-    /// several members at once - a caption's attributes read its text, its
-    /// font and its colour together. `members` are what it realizes - each a
-    /// property of the contract or of a tier it wears; anything else is left
-    /// out, and said once - and it runs once whenever any of them changes.
+    /// several properties at once - a caption's attributes read its text, its
+    /// font and its colour together. Each is a property of the contract or of
+    /// a tier it wears - any other is left out, and said once - and the view
+    /// is applied once whenever any of them changes.
     ///
-    ///     registration.applies([SwitchContract.isOn, VisualElementContract.isEnabled]) { toggle, values in
+    ///     registration.applies(SwitchContract.isOn, VisualElementContract.isEnabled) { toggle, values in
     ///         toggle.apply(toggled: values[SwitchContract.isOn] ?? false,
     ///                      enabled: values[VisualElementContract.isEnabled] ?? true)
     ///     }
     ///
+    /// A `PropertyList` hosts share stands among the properties as one.
+    ///
     /// - Parameters:
-    ///   - members: the properties it reads, written with their contracts.
+    ///   - properties: the properties it reads, written with their contracts.
     ///   - apply: puts the element's values on the view.
-    public func applies(_ members: [any ContractMember], _ apply: @escaping (Made, ElementValues<Realized>) -> Void) {
+    public func applies<each Applied: AppliedProperties>(
+        _ properties: repeat each Applied,
+        apply: @escaping (Made, ElementValues<Realized>) -> Void
+    ) {
         var keys: Set<Prop> = []
 
-        for member in members {
-            guard let property = member as? any RegisteredProperty else {
-                complain("\(Realized.name) was registered to apply `\(member.name)`, which is no property: "
-                    + "it was left out.")
-                continue
+        for applied in repeat each properties {
+            for property in applied.applied.properties where Self.wears(property.ownerType, for: property.name) {
+                keys.insert(property.key)
+                members.insert(
+                    HostRealizedMember(element: Realized.name, owner: property.ownerType.name, member: property.name))
             }
-
-            guard Self.wears(property.ownerType, for: member.name) else { continue }
-
-            keys.insert(property.key)
-            self.members.insert(
-                HostRealizedMember(element: Realized.name, owner: property.ownerType.name, member: member.name))
         }
 
         wholes.append((keys: keys, apply: apply))
@@ -92,39 +91,46 @@
 
     /// The children of one contract the view draws itself - a map's markers - handed over whole, in the tree's order,
     /// whenever the element's children change: one being added, moved, taken away, or given another value. A child
-    /// registered so has no view of its own. `members` are what the view realizes of each child - a property or an
-    /// event of the child's contract or of a tier it wears; anything else is left out, and said once.
+    /// registered so has no view of its own. `properties` and `events` are what the view realizes of each child -
+    /// members of the child's contract or of a tier it wears; any other is left out, and said once.
     ///
-    ///     registration.children(MarkerContract.self, members: [MarkerContract.label, MarkerContract.selected]) { map, markers in
+    ///     registration.children(MarkerContract.self, properties: MarkerContract.label, events: MarkerContract.selected) {
+    ///         map, markers in
     ///         map.show(markers.map { ($0, $0.value(MarkerContract.label) ?? "") })
     ///     }
     ///
     /// - Parameters:
     ///   - contract: the children's contract.
-    ///   - members: what the view realizes of each child, written with their contracts.
+    ///   - properties: the children's properties the view realizes, written with their contracts.
+    ///   - events: the children's events the view raises, written with their contracts.
     ///   - apply: hands the view every child of the contract.
-    public func children<Child: ElementContract>(
+    public func children<
+        Child: ElementContract, each PropertyOwner: Contract, each Value: HostRepresentable,
+        each EventOwner: Contract, each Payload
+    >(
         _ contract: Child.Type,
-        members: [any ContractMember],
-        _ apply: @escaping (Made, [ChildElement<Child>]) -> Void
+        properties: repeat ElementProperty<each PropertyOwner, each Value>,
+        events: repeat ElementEvent<each EventOwner, each Payload>,
+        apply: @escaping (Made, [ChildElement<Child>]) -> Void
     ) {
-        for member in members {
-            guard let owner = (member as? any OwnedMember)?.ownerType else {
-                complain("\(Realized.name)'s children were registered with `\(member.name)`, which is no property "
-                    + "and no event: it was left out.")
-                continue
-            }
-
-            guard Child.wears(owner) else {
-                complain("\(Realized.name)'s children were registered with `\(owner.name).\(member.name)`, and "
-                    + "\(Child.name) wears no \(owner.name): it was left out.")
-                continue
-            }
-
-            self.members.insert(HostRealizedMember(element: Child.name, owner: owner.name, member: member.name))
+        for property in repeat each properties {
+            realizes(property, of: contract)
+        }
+        for event in repeat each events {
+            realizes(event, of: contract)
         }
 
         childAppliers.append((type: Child.nodeType, apply: { made, children in apply(made, children.map(ChildElement.init)) }))
+    }
+
+    /// A member the view realizes of each child of a contract - one the child wears; any other is said once.
+    private func realizes<Child: ElementContract>(_ member: any OwnedMember, of child: Child.Type) {
+        guard Child.wears(member.ownerType) else {
+            return complain("\(Realized.name)'s children were registered with `\(member.ownerType.name).\(member.name)`, "
+                + "and \(Child.name) wears no \(member.ownerType.name): it was left out.")
+        }
+
+        members.insert(HostRealizedMember(element: Child.name, owner: member.ownerType.name, member: member.name))
     }
 
     /// An event the view raises through its `Reports` - its own, or one a tier

@@ -17,7 +17,7 @@ A host with no map of its own shows the one the application registers with it - 
 ```swift quote
 StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
     map.property(MapContract.region) { control, region in … }
-    map.children(MarkerContract.self, members: [MarkerContract.location, MarkerContract.selected]) { control, pins in
+    map.children(MarkerContract.self, properties: MarkerContract.location, events: MarkerContract.selected) { control, pins in
         // each marker: its typed values, and its own reports to raise selected on it
     }
 }

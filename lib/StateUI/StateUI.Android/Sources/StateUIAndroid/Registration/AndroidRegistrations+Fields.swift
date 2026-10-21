@@ -17,7 +17,7 @@ extension AndroidRegistrations {
             field.onSubmitted = { reports.raise(TextFieldContract.submitted) }
             return field
         }, members: { field in
-            field.applies(inputMembers + [TextFieldContract.isPassword]) { view, values in applyField(view, values) }
+            field.applies(inputMembers, TextFieldContract.isPassword) { view, values in applyField(view, values) }
             field.property(TextFieldContract.submitLabel) { view, key in view.setReturnKey(key) }
             field.raises(TextInputContract.textChanged)
             field.raises(TextFieldContract.submitted)
@@ -51,15 +51,14 @@ extension AndroidRegistrations {
     }
 
     /// What every field takes whole.
-    private static let inputMembers: [any ContractMember] = [
-        TextualElementContract.text, TextualElementContract.textCase,
-    ] + TextMembers.lookMembers + [
-        TextInputContract.placeholder,
-        TextInputContract.placeholderColor, TextAlignmentElementContract.horizontalTextAlignment,
-        TextInputContract.inputPurpose, TextInputContract.isTextPredictionEnabled,
-        TextInputContract.maximumLength, TextInputContract.cursorPosition, TextInputContract.selectionLength,
-        TextInputContract.isReadOnly, VisualElementContract.isEnabled,
-    ]
+    private static let inputMembers = PropertyList(TextualElementContract.text, TextualElementContract.textCase)
+        + TextMembers.lookMembers
+        + PropertyList(
+            TextInputContract.placeholder, TextInputContract.placeholderColor,
+            TextAlignmentElementContract.horizontalTextAlignment, TextInputContract.inputPurpose,
+            TextInputContract.isTextPredictionEnabled, TextInputContract.maximumLength,
+            TextInputContract.cursorPosition, TextInputContract.selectionLength, TextInputContract.isReadOnly,
+            VisualElementContract.isEnabled)
 
     private static func applyField<Realized: ElementContract>(
         _ view: AndroidTextFieldView, _ values: ElementValues<Realized>

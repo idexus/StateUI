@@ -11,14 +11,14 @@ extension UIKitRegistrations {
     /// paints, and whether a touch beside its children goes on to what is under it.
     static func layouts(_ registry: Registry<UIView>) {
         registry.add(VStackContract.self, create: { _ in UIKitStackView(axis: .vertical) }) { stack in
-            stack.applies(stackMembers) { view, values in applyStack(view, values) }
-            stack.applies(boxMembers) { view, values in applyBox(view, values) }
+            stack.applies(LayoutMembers.stackMembers) { view, values in applyStack(view, values) }
+            stack.applies(LayoutMembers.boxMembers) { view, values in applyBox(view, values) }
             stack.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
         registry.add(HStackContract.self, create: { _ in UIKitStackView(axis: .horizontal) }) { stack in
-            stack.applies(stackMembers) { view, values in applyStack(view, values) }
-            stack.applies(boxMembers) { view, values in applyBox(view, values) }
+            stack.applies(LayoutMembers.stackMembers) { view, values in applyStack(view, values) }
+            stack.applies(LayoutMembers.boxMembers) { view, values in applyBox(view, values) }
             stack.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
@@ -28,24 +28,22 @@ extension UIKitRegistrations {
         registry.add(DividerContract.self, create: { _ in UIKitDividerView() })
 
         registry.add(GridContract.self, create: { _ in UIKitGridView() }) { grid in
-            grid.applies([
-                GridContract.rows, GridContract.columns,
-                GridContract.rowSpacing, GridContract.columnSpacing,
-                PaddingElementContract.padding,
-            ]) { view, values in
+            grid.applies(
+                GridContract.rows, GridContract.columns, GridContract.rowSpacing, GridContract.columnSpacing,
+                PaddingElementContract.padding) { view, values in
                 view.rows = values[GridContract.rows] ?? []
                 view.columns = values[GridContract.columns] ?? []
                 view.rowSpacing = values[GridContract.rowSpacing] ?? 0
                 view.columnSpacing = values[GridContract.columnSpacing] ?? 0
                 view.padding = values[PaddingElementContract.padding] ?? Insets(0)
             }
-            grid.applies(boxMembers) { view, values in applyBox(view, values) }
+            grid.applies(LayoutMembers.boxMembers) { view, values in applyBox(view, values) }
             grid.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
         registry.add(ZStackContract.self, create: { _ in UIKitZStackView() }) { layout in
             layout.property(PaddingElementContract.padding) { view, padding in view.padding = padding ?? Insets(0) }
-            layout.applies(boxMembers) { view, values in applyBox(view, values) }
+            layout.applies(LayoutMembers.boxMembers) { view, values in applyBox(view, values) }
             layout.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
@@ -55,7 +53,7 @@ extension UIKitRegistrations {
             layout.engine = true
             return layout
         }) { layout in
-            layout.applies(boxMembers) { view, values in applyBox(view, values) }
+            layout.applies(LayoutMembers.boxMembers) { view, values in applyBox(view, values) }
             layout.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
     }
@@ -65,11 +63,10 @@ extension UIKitRegistrations {
     /// Design: docs/design/platforms/uikit/layout.md#scrolling
     static func scrolling(_ registry: Registry<UIView>) {
         registry.add(ScrollViewContract.self, create: { _ in UIKitScrollView() }) { scroll in
-            scroll.applies([
+            scroll.applies(
                 ScrollViewContract.orientation, ScrollViewContract.verticalScrollIndicator,
                 ScrollViewContract.horizontalScrollIndicator, ScrollViewContract.scrollOffset,
-                PaddingElementContract.padding,
-            ]) { view, values in
+                PaddingElementContract.padding) { view, values in
                 view.apply(
                     orientation: values[ScrollViewContract.orientation] ?? .vertical,
                     padding: values[PaddingElementContract.padding] ?? Insets(0),
@@ -77,10 +74,9 @@ extension UIKitRegistrations {
                     horizontalBar: values[ScrollViewContract.horizontalScrollIndicator] ?? .automatic,
                     offset: values.changed(ScrollViewContract.scrollOffset) ? values[ScrollViewContract.scrollOffset] : nil)
             }
-            scroll.applies([
-                VisualElementContract.background,
-                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
-            ]) { view, values in
+            scroll.applies(
+                VisualElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
+                BorderElementContract.lineWidth) { view, values in
                 // A scroller cuts what it shows to its bounds; a shape cuts it to the shape.
                 view.setBox(
                     background: values[VisualElementContract.background]?.propValue,
@@ -93,12 +89,6 @@ extension UIKitRegistrations {
         }
     }
 
-    /// What every layout takes of its own box: what fills it, its outline, its shape and its cut.
-    private static let boxMembers: [any ContractMember] = [
-        VisualElementContract.background,
-        BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape,
-        LayoutContract.clipsContent,
-    ]
 
     private static func applyBox<Realized: ElementContract>(_ view: UIKitLayoutView, _ values: ElementValues<Realized>) {
         view.setBox(
@@ -109,10 +99,6 @@ extension UIKitRegistrations {
             clips: values[LayoutContract.clipsContent] ?? false)
     }
 
-    /// What both stacks take: the space between their children, and the space inside their own edge.
-    private static let stackMembers: [any ContractMember] = [
-        StackContract.spacing, PaddingElementContract.padding,
-    ]
 
     private static func applyStack<Realized: ElementContract>(_ view: UIKitStackView, _ values: ElementValues<Realized>) {
         view.spacing = values[StackContract.spacing] ?? 0

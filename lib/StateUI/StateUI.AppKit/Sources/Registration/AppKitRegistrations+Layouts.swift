@@ -13,14 +13,14 @@ extension AppKitRegistrations {
     /// one view.
     static func layouts(_ registry: Registry<NSView>) {
         registry.add(VStackContract.self, create: { _ in AppKitStackView(axis: .vertical) }) { stack in
-            stack.applies(Self.stackMembers) { view, values in
+            stack.applies(LayoutMembers.stackMembers) { view, values in
                 view.spacing = CGFloat(values[StackContract.spacing] ?? 0)
                 view.padding = values[PaddingElementContract.padding] ?? Insets(0)
             }
         }
 
         registry.add(HStackContract.self, create: { _ in AppKitStackView(axis: .horizontal) }) { stack in
-            stack.applies(Self.stackMembers) { view, values in
+            stack.applies(LayoutMembers.stackMembers) { view, values in
                 view.spacing = CGFloat(values[StackContract.spacing] ?? 0)
                 view.padding = values[PaddingElementContract.padding] ?? Insets(0)
             }
@@ -34,13 +34,10 @@ extension AppKitRegistrations {
         // The host makes the scroll view; its registration takes the members alone.
         // Design: docs/design/platforms/appkit/registrations.md#the-scroll-view
         registry.add(ScrollViewContract.self, madeByHost: AppKitScrollView.self) { scroll in
-            scroll.applies([
-                ScrollViewContract.orientation,
-                ScrollViewContract.verticalScrollIndicator,
-                ScrollViewContract.horizontalScrollIndicator,
-                ScrollViewContract.scrollOffset,
-                PaddingElementContract.padding,
-            ]) { view, values in
+            scroll.applies(
+                ScrollViewContract.orientation, ScrollViewContract.verticalScrollIndicator,
+                ScrollViewContract.horizontalScrollIndicator, ScrollViewContract.scrollOffset,
+                PaddingElementContract.padding) { view, values in
                 // The offset is written only where the tree moved it.
                 // Design: docs/design/platforms/appkit/input.md#scrolling
                 let offset = values.changed(ScrollViewContract.scrollOffset)
@@ -56,9 +53,9 @@ extension AppKitRegistrations {
                         (values[ScrollViewContract.horizontalScrollIndicator] ?? .automatic).rawValue,
                     offset: offset)
             }
-            scroll.applies([
-                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
-            ]) { view, values in
+            scroll.applies(
+                BorderElementContract.shape, BorderElementContract.stroke,
+                BorderElementContract.lineWidth) { view, values in
                 view.setBox(
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     lineWidth: values[BorderElementContract.lineWidth],
@@ -67,11 +64,9 @@ extension AppKitRegistrations {
         }
 
         registry.add(GridContract.self, create: { _ in AppKitGridView() }) { grid in
-            grid.applies([
-                GridContract.rows, GridContract.columns,
-                GridContract.rowSpacing, GridContract.columnSpacing,
-                PaddingElementContract.padding,
-            ]) { view, values in
+            grid.applies(
+                GridContract.rows, GridContract.columns, GridContract.rowSpacing, GridContract.columnSpacing,
+                PaddingElementContract.padding) { view, values in
                 view.rows = Self.gridLengths(values[GridContract.rows])
                 view.columns = Self.gridLengths(values[GridContract.columns])
                 view.rowSpacing = CGFloat(values[GridContract.rowSpacing] ?? 0)
@@ -81,11 +76,6 @@ extension AppKitRegistrations {
         }
     }
 
-    /// What both stacks take: the space between their children, and the space
-    /// kept inside their own edge.
-    private static let stackMembers: [any ContractMember] = [
-        StackContract.spacing, PaddingElementContract.padding,
-    ]
 
     /// A row or a column is a kind and an amount, and travels as the two of
     /// them - a LIST OF VALUES, as a render transform does.

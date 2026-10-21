@@ -8,24 +8,23 @@
 /// Design: docs/design/host/tree.md#runs-of-words
 @_spi(Host) public enum TextMembers {
     /// What every element showing words takes: the words in their case, their look, and the room around them.
-    public static let members: [any ContractMember] =
-        [TextualElementContract.text, TextualElementContract.textCase] + lookMembers + [PaddingElementContract.padding]
+    public static let members = PropertyList(TextualElementContract.text, TextualElementContract.textCase)
+        + lookMembers + PropertyList(PaddingElementContract.padding)
 
     /// What a toggle takes for the words beside it - a check box's, a switch's: the words in their case and their
     /// colour, in the platform's own font.
-    public static let captionMembers: [any ContractMember] =
-        [TextualElementContract.text, TextualElementContract.textCase, TextColorElementContract.textColor]
+    public static let captionMembers = PropertyList(
+        TextualElementContract.text, TextualElementContract.textCase, TextColorElementContract.textColor)
 
     /// What the words' look is made of, which `look` reads: the font, whether it follows the user's text size, and
     /// the words' colour.
-    public static let lookMembers: [any ContractMember] =
-        fontMembers + [FontElementContract.isFontAutoScalingEnabled, TextColorElementContract.textColor]
+    public static let lookMembers = fontMembers
+        + PropertyList(FontElementContract.isFontAutoScalingEnabled, TextColorElementContract.textColor)
 
     /// What the words' font is made of: its style, size, weight, slant and family.
-    public static let fontMembers: [any ContractMember] = [
+    public static let fontMembers = PropertyList(
         FontElementContract.textStyle, FontElementContract.fontSize, FontElementContract.fontWeight,
-        FontElementContract.fontAttributes, FontElementContract.fontFamily,
-    ]
+        FontElementContract.fontAttributes, FontElementContract.fontFamily)
 
     /// A toggle's words beside it in their case, whether or not they changed; empty where it says none.
     public static func caption<Realized>(_ values: ElementValues<Realized>) -> String {

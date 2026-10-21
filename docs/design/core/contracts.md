@@ -165,13 +165,21 @@ host takes the same machinery.
   ElementValues   what a registration reads: each member typed, whether it
                   is carried in (the host's to write - the control is the
                   source), and whether the patch changed it
-  Registration    property(...), applies([...]), raises(...),
-                  children(Contract, members:) - children the view draws
+  Registration    property(...), applies(...), raises(...),
+                  children(Contract, properties:, events:) - children the view draws
                   itself, a map's markers, handed over whole as ChildElements
   Registry        add, add(madeByHost:), everyElementRealizes/Raises,
                   raises (the application's events), makeView, apply,
                   childTypes, applyChildren, realization
 ```
+
+A view taking several properties at once names them in `applies`, one by one
+or in a `PropertyList` the hosts share, and a list holds properties alone: an
+event or an act among them does not compile. Nor does a type of an
+application's own offered as properties: `AppliedProperties` keeps its one
+requirement on the host's side, and the default it offers every other type is
+unavailable. A child the view draws itself is named the same way, its
+properties apart from its events (`children(_:properties:events:apply:)`).
 
 A member of a contract the element does not wear is refused and said once, at
 registration, at a raise and at a report alike. `apply` puts changed properties registered

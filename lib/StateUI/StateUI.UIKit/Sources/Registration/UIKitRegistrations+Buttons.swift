@@ -30,7 +30,8 @@ extension UIKitRegistrations {
             button.property(TrackingElementContract.tracking) { view, spacing in
                 view.setLook { $0.letterSpacing = spacing ?? 0 }
             }
-            button.applies([ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing]) { view, values in
+            button.applies(
+                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing) { view, values in
                 view.setIcon(
                     HostPicture(values[ButtonContract.icon], dark: false).flatMap(UIKitRenderer.image),
                     position: values[ButtonContract.iconPosition] ?? .start,
@@ -38,10 +39,9 @@ extension UIKitRegistrations {
             }
             // The box, and the role's look where the tree draws nothing of its own: the main action filled in the
             // tint, a destructive one's words in the system's red.
-            button.applies([
+            button.applies(
                 VisualElementContract.background, BorderElementContract.stroke, BorderElementContract.lineWidth,
-                BorderElementContract.shape, ButtonContract.role, TextColorElementContract.textColor,
-            ]) { view, values in
+                BorderElementContract.shape, ButtonContract.role, TextColorElementContract.textColor) { view, values in
                 let background = HostMaterial(values[VisualElementContract.background]?.propValue).painted
                 let look = ButtonRoleLook(
                     values[ButtonContract.role], fills: background != nil,

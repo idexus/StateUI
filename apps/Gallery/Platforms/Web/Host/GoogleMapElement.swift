@@ -117,10 +117,11 @@ extension GoogleMapElement {
             map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
             map.property(MapContract.isScrollEnabled) { control, on in control.set("no-scroll", on == false) }
             map.raises(MapContract.mapClicked)
-            map.children(MarkerContract.self, members: [
-                MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
-                MarkerContract.selected, MarkerContract.detailsClicked,
-            ]) { control, markers in
+            map.children(
+                MarkerContract.self,
+                properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                events: MarkerContract.selected, MarkerContract.detailsClicked
+            ) { control, markers in
                 control.show(markers)
             }
         }

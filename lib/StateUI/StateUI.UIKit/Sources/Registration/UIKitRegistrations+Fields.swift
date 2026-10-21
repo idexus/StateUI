@@ -60,15 +60,15 @@ extension UIKitRegistrations {
 
     /// What every view the user types in takes: its words in their case, their bound and what shows while they are none, whether
     /// and how it takes them, their look and where they stand, and the caret and the selection.
-    private static let inputMembers: [any ContractMember] = [
+    private static let inputMembers = PropertyList(
         TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
-        TextInputContract.maximumLength,
-        VisualElementContract.isEnabled, TextInputContract.isReadOnly, TextInputContract.isSpellCheckEnabled,
-        TextInputContract.isTextPredictionEnabled, TextInputContract.inputPurpose,
-    ] + TextMembers.lookMembers + [
-        TextInputContract.placeholderColor, TextAlignmentElementContract.horizontalTextAlignment,
-        TextInputContract.cursorPosition, TextInputContract.selectionLength,
-    ]
+        TextInputContract.maximumLength, VisualElementContract.isEnabled, TextInputContract.isReadOnly,
+        TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
+        TextInputContract.inputPurpose)
+        + TextMembers.lookMembers
+        + PropertyList(
+            TextInputContract.placeholderColor, TextAlignmentElementContract.horizontalTextAlignment,
+            TextInputContract.cursorPosition, TextInputContract.selectionLength)
 
     private static func applyInput<Realized: ElementContract>(
         _ view: any UIKitTextInputView, _ values: ElementValues<Realized>

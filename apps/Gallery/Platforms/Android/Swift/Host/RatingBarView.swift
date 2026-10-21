@@ -60,7 +60,7 @@ extension RatingBarView {
             return bar
         }) { bar in
             // The stars and the rating come together: a rating stands within the stars, whichever of the two changed.
-            bar.applies([RatingBarContract.maximum, RatingBarContract.rating]) { control, values in
+            bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { control, values in
                 control.show(
                     rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }

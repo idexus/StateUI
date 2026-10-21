@@ -11,26 +11,26 @@ extension UIKitRegistrations {
     /// polyline drawn from their own geometry - each filled, outlined and placed as the shape tier says.
     static func shapes(_ registry: Registry<UIView>) {
         registry.add(RectangleContract.self, create: { _ in UIKitShapeView() }) { shape in
-            shape.applies(corneredShapeMembers + [RectangleContract.cornerRadius]) { view, values in
+            shape.applies(ShapeMembers.corneredMembers, RectangleContract.cornerRadius) { view, values in
                 paint(view, values)
                 view.draw(.rectangle(
                     BoxArithmetic.clockwise(values[RectangleContract.cornerRadius]), transform: transform(values)))
             }
         }
         registry.add(EllipseContract.self, create: { _ in UIKitShapeView() }) { shape in
-            shape.applies(filledShapeMembers) { view, values in
+            shape.applies(ShapeMembers.filledMembers) { view, values in
                 paint(view, values)
                 view.draw(.ellipse(transform: transform(values)))
             }
         }
         registry.add(CapsuleContract.self, create: { _ in UIKitShapeView() }) { shape in
-            shape.applies(filledShapeMembers) { view, values in
+            shape.applies(ShapeMembers.filledMembers) { view, values in
                 paint(view, values)
                 view.draw(.rectangle(BoxArithmetic.clockwise(BoxArithmetic.capsule), transform: transform(values)))
             }
         }
         registry.add(LineContract.self, create: { _ in UIKitShapeView() }) { shape in
-            shape.applies(shapeMembers + [LineContract.x1, LineContract.y1, LineContract.x2, LineContract.y2]) {
+            shape.applies(ShapeMembers.members, LineContract.x1, LineContract.y1, LineContract.x2, LineContract.y2) {
                 view, values in
                 paint(view, values)
                 let from = Point(x: values[LineContract.x1] ?? 0, y: values[LineContract.y1] ?? 0)
@@ -39,13 +39,14 @@ extension UIKitRegistrations {
             }
         }
         registry.add(PathContract.self, create: { _ in UIKitShapeView() }) { shape in
-            shape.applies(corneredShapeMembers + [PathContract.data]) { view, values in
+            shape.applies(ShapeMembers.corneredMembers, PathContract.data) { view, values in
                 paint(view, values)
                 view.draw(authored(HostPath(svg: values[PathContract.data] ?? "")?.arcsAsCubics ?? [], evenOdd: false, values))
             }
         }
         registry.add(PolygonContract.self, create: { _ in UIKitShapeView() }) { shape in
-            shape.applies(corneredShapeMembers + [PolygonContract.points, PolygonContract.fillRule]) { view, values in
+            shape.applies(
+                ShapeMembers.corneredMembers, PolygonContract.points, PolygonContract.fillRule) { view, values in
                 paint(view, values)
                 view.draw(authored(
                     ShapeArithmetic.curves(through: values[PolygonContract.points] ?? [], closed: true),
@@ -53,7 +54,8 @@ extension UIKitRegistrations {
             }
         }
         registry.add(PolylineContract.self, create: { _ in UIKitShapeView() }) { shape in
-            shape.applies(corneredShapeMembers + [PolylineContract.points, PolylineContract.fillRule]) { view, values in
+            shape.applies(
+                ShapeMembers.corneredMembers, PolylineContract.points, PolylineContract.fillRule) { view, values in
                 paint(view, values)
                 view.draw(authored(
                     ShapeArithmetic.curves(through: values[PolylineContract.points] ?? [], closed: false),
@@ -78,21 +80,8 @@ extension UIKitRegistrations {
         })
     }
 
-    /// What every shape takes whole.
-    private static let shapeMembers: [any ContractMember] = [
-        ShapeContract.stroke, ShapeContract.lineWidth,
-        ShapeContract.dash, ShapeContract.dashPhase,
-        ShapeContract.lineCap,
-        ShapeContract.contentMode, ShapeContract.geometryTransform,
-    ]
 
-    /// What a shape enclosing an area wears: its fill besides.
-    private static let filledShapeMembers: [any ContractMember] = shapeMembers + [FilledShapeContract.fill]
 
-    /// What a shape turning corners wears: how they join, and how far a sharp one reaches, besides.
-    private static let corneredShapeMembers: [any ContractMember] = filledShapeMembers + [
-        CorneredShapeContract.lineJoin, CorneredShapeContract.miterLimit,
-    ]
 
     private static func paint<Realized: ElementContract>(_ view: UIKitShapeView, _ values: ElementValues<Realized>) {
         view.paint(

@@ -12,10 +12,9 @@ extension UIKitRegistrations {
     /// cells it holds; and scrolling to an item.
     static func items(_ registry: Registry<UIView>) {
         registry.add(ItemsViewContract.self, madeByHost: UIKitItemsView.self) { list in
-            list.applies([
+            list.applies(
                 ItemsViewContract.items, ItemsViewContract.itemsLayout, ItemsViewContract.selectionMode,
-                ItemsViewContract.selectedItems, ItemsViewContract.endReachedWithin,
-            ]) { view, values in
+                ItemsViewContract.selectedItems, ItemsViewContract.endReachedWithin) { view, values in
                 view.apply(
                     layout: values[ItemsViewContract.itemsLayout] ?? .list(),
                     mode: values[ItemsViewContract.selectionMode] ?? .none)

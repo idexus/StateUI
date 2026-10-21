@@ -10,15 +10,14 @@ extension AndroidRegistrations {
     static func text(_ registry: Registry<AndroidView>) {
         registry.add(TextContract.self, create: { _ in AndroidTextView() }) { label in
             label.applies(TextMembers.members) { view, values in applyText(view, values) }
-            label.applies([TextContract.lineBreak, TextContract.maximumLines]) { view, values in
+            label.applies(TextContract.lineBreak, TextContract.maximumLines) { view, values in
                 view.setLines(
                     breaking: values[TextContract.lineBreak] ?? .wordWrap,
                     maximum: values[TextContract.maximumLines])
             }
-            label.applies([
+            label.applies(
                 TextAlignmentElementContract.horizontalTextAlignment,
-                TextContract.verticalTextAlignment,
-            ]) { view, values in
+                TextContract.verticalTextAlignment) { view, values in
                 view.setAlignment(
                     horizontal: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start,
                     vertical: values[TextContract.verticalTextAlignment] ?? .start)

@@ -380,8 +380,9 @@ final class RegistryTests: XCTestCase {
         let registry = Registry<PlatformView>()
 
         registry.add(LampContract.self, create: { _ in LampView() }) { lamp in
-            lamp.children(BulbContract.self, members: [BulbContract.colour, BulbContract.bulbTapped, LampContract.signal]) {
-                view, bulbs in
+            lamp.children(
+                BulbContract.self, properties: BulbContract.colour, LampContract.signal, events: BulbContract.bulbTapped
+            ) { view, bulbs in
                 view.bulbs = bulbs
                 view.handed += 1
             }
@@ -416,7 +417,7 @@ final class RegistryTests: XCTestCase {
             lamp.property(LampContract.signal) { view, signal in view.signal = signal }
             lamp.property(VisualElementContract.opacity) { view, opacity in view.opacity = opacity }
             lamp.property(TextContract.maximumLines) { _, _ in }
-            lamp.applies([LampContract.caption, LampContract.emphasis]) { view, values in
+            lamp.applies(LampContract.caption, LampContract.emphasis) { view, values in
                 view.caption = (values[LampContract.caption] ?? "")
                     + (values[LampContract.emphasis] == true ? "!" : "")
                 view.captions += 1

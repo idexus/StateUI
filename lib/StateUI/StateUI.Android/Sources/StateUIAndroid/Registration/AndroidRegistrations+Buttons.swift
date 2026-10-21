@@ -16,18 +16,17 @@ extension AndroidRegistrations {
         }, members: { button in
             button.applies(TextMembers.members) { view, values in applyText(view, values) }
             button.property(TrackingElementContract.tracking) { view, spacing in view.setLetterSpacing(spacing ?? 0) }
-            button.applies([
+            button.applies(
                 ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
-                ImageElementContract.contentMode,
-            ]) { view, values in
+                ImageElementContract.contentMode) { view, values in
                 view.setIcon(
                     HostPicture(values[ButtonContract.icon], dark: false),
                     position: values[ButtonContract.iconPosition] ?? .start,
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
             }
-            button.applies([
-                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
-            ]) { view, values in
+            button.applies(
+                BorderElementContract.shape, BorderElementContract.stroke,
+                BorderElementContract.lineWidth) { view, values in
                 view.setOutline(
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     width: values[BorderElementContract.lineWidth],

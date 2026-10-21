@@ -8,7 +8,7 @@ extension GTKRegistrations {
     /// An Image: its picture and how it fills its room.
     static func pictures(_ registry: Registry<GTKView>) {
         registry.add(ImageContract.self, create: { _ in GTKImageView() }) { image in
-            image.applies([ImageContract.source, ImageElementContract.contentMode]) { view, values in
+            image.applies(ImageContract.source, ImageElementContract.contentMode) { view, values in
                 view.apply(
                     picture: HostPicture(values[ImageContract.source], dark: false),
                     aspect: values[ImageElementContract.contentMode] ?? .fit)

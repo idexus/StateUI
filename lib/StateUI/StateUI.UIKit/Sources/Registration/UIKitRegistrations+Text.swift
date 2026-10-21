@@ -24,14 +24,13 @@ extension UIKitRegistrations {
                     view.setPadding(values[PaddingElementContract.padding])
                 }
             }
-            label.applies([TextContract.lineBreak, TextContract.maximumLines]) { view, values in
+            label.applies(TextContract.lineBreak, TextContract.maximumLines) { view, values in
                 (view as! any UIKitLabel).setLines(
                     breaking: values[TextContract.lineBreak] ?? .wordWrap, maximum: values[TextContract.maximumLines])
             }
-            label.applies([
+            label.applies(
                 TextAlignmentElementContract.horizontalTextAlignment,
-                TextContract.verticalTextAlignment,
-            ]) { view, values in
+                TextContract.verticalTextAlignment) { view, values in
                 (view as! any UIKitLabel).setAlignment(
                     horizontal: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start,
                     vertical: values[TextContract.verticalTextAlignment] ?? .start)

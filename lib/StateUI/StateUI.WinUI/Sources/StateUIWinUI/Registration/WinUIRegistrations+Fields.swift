@@ -43,10 +43,9 @@ extension WinUIRegistrations {
                 view.setAlignment(alignment ?? .start)
             }
             search.property(TextInputContract.placeholderColor) { view, color in view.setPlaceholderColor(color?.propValue) }
-            search.applies([
+            search.applies(
                 TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
-                TextInputContract.inputPurpose,
-            ]) { view, values in view.setTraits(InputTraits(values)) }
+                TextInputContract.inputPurpose) { view, values in view.setTraits(InputTraits(values)) }
             search.raises(TextInputContract.textChanged)
             search.raises(SearchFieldContract.submitted)
         })
@@ -58,10 +57,10 @@ extension WinUIRegistrations {
 
     /// What every view the user types in takes: its words and their case, what it shows while they are none, how
     /// many it holds, whether it takes them, and their font and colour.
-    private static let wordMembers: [any ContractMember] = [
+    private static let wordMembers = PropertyList(
         TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
-        TextInputContract.maximumLength, VisualElementContract.isEnabled,
-    ] + TextMembers.lookMembers
+        TextInputContract.maximumLength, VisualElementContract.isEnabled)
+        + TextMembers.lookMembers
 
     private static func applyWords<Realized: ElementContract>(_ view: WinUITextInputView, _ values: ElementValues<Realized>) {
         view.maximumLength = values[TextInputContract.maximumLength].flatMap { $0 > 0 ? $0 : nil }
@@ -79,11 +78,10 @@ extension WinUIRegistrations {
 
     /// What a text box takes beyond: how it takes words, its words across it, its placeholder's colour, and the
     /// caret and the selection.
-    private static let boxMembers: [any ContractMember] = [
+    private static let boxMembers = PropertyList(
         TextInputContract.isReadOnly, TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
         TextInputContract.inputPurpose, TextAlignmentElementContract.horizontalTextAlignment,
-        TextInputContract.placeholderColor, TextInputContract.cursorPosition, TextInputContract.selectionLength,
-    ]
+        TextInputContract.placeholderColor, TextInputContract.cursorPosition, TextInputContract.selectionLength)
 
     private static func applyBox<Realized: ElementContract>(_ view: WinUITextInputView, _ values: ElementValues<Realized>) {
         view.setBehaviour(readOnly: values[TextInputContract.isReadOnly] ?? false, traits: InputTraits(values))

@@ -10,7 +10,7 @@ extension GTKRegistrations {
     static func text(_ registry: Registry<GTKView>) {
         registry.add(TextContract.self, create: { _ in GTKTextView() }) { label in
             label.applies(TextMembers.members) { view, values in applyText(view, values) }
-            label.applies([TextContract.lineBreak, TextContract.maximumLines]) { view, values in
+            label.applies(TextContract.lineBreak, TextContract.maximumLines) { view, values in
                 view.setLines(
                     breaking: values[TextContract.lineBreak] ?? .wordWrap,
                     maximum: values[TextContract.maximumLines])

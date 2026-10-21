@@ -67,8 +67,8 @@ private final class ForeignCartAdapter {
     func follow(_ cart: ForeignCart) {
         withObservationTracking {
             note = cart.note
-        } onChange: {
-            Task { @MainActor [weak self] in self?.follow(cart) }
+        } onChange: { [weak self] in
+            Task { @MainActor in self?.follow(cart) }
         }
     }
 }

@@ -21,7 +21,7 @@ extension WebKitView {
             web.onProcessGone = { reports.raise(WebViewContract.processTerminated) }
             return web
         }, members: { web in
-            web.applies([WebViewContract.userAgent, WebViewContract.source]) { view, values in
+            web.applies(WebViewContract.userAgent, WebViewContract.source) { view, values in
                 view.show(
                     values.changed(WebViewContract.source) ? values[WebViewContract.source] : nil,
                     userAgent: values[WebViewContract.userAgent])

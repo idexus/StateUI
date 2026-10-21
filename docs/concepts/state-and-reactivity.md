@@ -169,8 +169,8 @@ final class PlayerAdapter {
         withObservationTracking {
             title = model.title
             progress = model.progress
-        } onChange: {
-            Task { @MainActor [weak self] in self?.follow(model) } // Observation tracking is one-shot.
+        } onChange: { [weak self] in
+            Task { @MainActor in self?.follow(model) } // Observation tracking is one-shot.
         }
     }
 }

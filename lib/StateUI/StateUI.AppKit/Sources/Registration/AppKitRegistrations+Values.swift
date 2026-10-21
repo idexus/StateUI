@@ -19,10 +19,9 @@ extension AppKitRegistrations {
             slider.onReleased = { reports.raise(SliderContract.released) }
             return slider
         }, members: { slider in
-            slider.applies([
-                SliderContract.value, SliderContract.minimum, SliderContract.maximum,
-                TintElementContract.tint, VisualElementContract.isEnabled,
-            ]) { view, values in
+            slider.applies(
+                SliderContract.value, SliderContract.minimum, SliderContract.maximum, TintElementContract.tint,
+                VisualElementContract.isEnabled) { view, values in
                 view.apply(
                     value: values.written(
                         SliderContract.value, within: [SliderContract.minimum, SliderContract.maximum],
@@ -44,10 +43,9 @@ extension AppKitRegistrations {
             }
             return stepper
         }, members: { stepper in
-            stepper.applies([
-                StepperContract.value, StepperContract.minimum, StepperContract.maximum,
-                StepperContract.step, VisualElementContract.isEnabled,
-            ]) { view, values in
+            stepper.applies(
+                StepperContract.value, StepperContract.minimum, StepperContract.maximum, StepperContract.step,
+                VisualElementContract.isEnabled) { view, values in
                 view.apply(
                     value: values.shownStep(standing: view.doubleValue),
                     minimum: values[StepperContract.minimum] ?? 0,

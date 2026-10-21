@@ -18,7 +18,7 @@ extension AndroidRegistrations {
             picker.onClosed = { reports.raise(PickerContract.closed) }
             return picker
         }, members: { picker in
-            picker.applies([PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder]) {
+            picker.applies(PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder) {
                 view, values in
                 view.setChoices(
                     values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
@@ -27,7 +27,8 @@ extension AndroidRegistrations {
             picker.property(PickerContract.isOpen) { view, open in
                 if open == true { view.openList() }
             }
-            picker.applies(TextMembers.lookMembers + [TextAlignmentElementContract.horizontalTextAlignment]) { view, values in
+            picker.applies(
+                TextMembers.lookMembers, TextAlignmentElementContract.horizontalTextAlignment) { view, values in
                 view.setLook(
                     TextMembers.look(of: values),
                     alignment: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start)

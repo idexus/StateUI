@@ -19,19 +19,18 @@ extension GTKRegistrations {
             button.property(TrackingElementContract.tracking) { view, spacing in
                 view.setLook { $0.letterSpacing = spacing ?? 0 }
             }
-            button.applies([
-                VisualElementContract.background,
-                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
-            ]) { view, values in
+            button.applies(
+                VisualElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
+                BorderElementContract.lineWidth) { view, values in
                 view.setBox(
                     fill: HostMaterial(values[VisualElementContract.background]?.propValue).painted,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
-            button.applies([
-                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing, ImageElementContract.contentMode,
-            ]) { view, values in
+            button.applies(
+                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
+                ImageElementContract.contentMode) { view, values in
                 view.setPicture(
                     HostPicture(values[ButtonContract.icon], dark: false),
                     position: values[ButtonContract.iconPosition] ?? .start,
@@ -40,7 +39,7 @@ extension GTKRegistrations {
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
             // GTK's own shortcut - the one stated, else the role's - and the role's look, libadwaita's classes for the
             // suggested action and a destructive one.
-            button.applies([ButtonContract.keyboardShortcut, ButtonContract.role]) { view, values in
+            button.applies(ButtonContract.keyboardShortcut, ButtonContract.role) { view, values in
                 let role = values[ButtonContract.role]
                 view.setShortcut(KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role))
                 view.setRole(role)

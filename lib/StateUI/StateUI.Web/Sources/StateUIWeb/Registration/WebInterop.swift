@@ -257,15 +257,18 @@ public final class WebRegistration<Realized: ElementContract, Made: WebControl> 
     /// before its page, takes them at once. Members of the element's contract or of the tiers it wears; any other is
     /// left out, and said once.
     ///
-    ///     web.applies([WebViewContract.userAgent, WebViewContract.source]) { control, values in
+    ///     web.applies(WebViewContract.userAgent, WebViewContract.source) { control, values in
     ///         control.show(values[WebViewContract.source], userAgent: values[WebViewContract.userAgent])
     ///     }
     ///
     /// - Parameters:
-    ///   - members: the properties, written with their contracts.
+    ///   - properties: the properties, written with their contracts.
     ///   - apply: puts the values on the control.
-    public func applies(_ members: [any ContractMember], _ apply: @escaping (Made, ControlValues<Realized>) -> Void) {
-        registration.applies(members) { hosted, values in apply(hosted.control, ControlValues(values)) }
+    public func applies<each Owner: Contract, each Value: HostRepresentable>(
+        _ properties: repeat ElementProperty<each Owner, each Value>,
+        apply: @escaping (Made, ControlValues<Realized>) -> Void
+    ) {
+        registration.applies(repeat each properties) { hosted, values in apply(hosted.control, ControlValues(values)) }
     }
 
     /// An event the control raises through its reports - recorded, so the core knows this host reports it.
@@ -275,18 +278,23 @@ public final class WebRegistration<Realized: ElementContract, Made: WebControl> 
 
     /// The children of one contract the control draws itself - a map's markers - handed over whole, in the tree's
     /// order, whenever the element's children change: one added, moved, taken away, or given another value. Such a
-    /// child has no element of its own on the page. `members` are what the control realizes of each child - a
-    /// property or an event of the child's contract or of a tier it wears; anything else is left out, and said once.
+    /// child has no element of its own on the page. `properties` and `events` are what the control realizes of each
+    /// child - members of the child's contract or of a tier it wears; any other is left out, and said once.
     ///
-    ///     map.children(MarkerContract.self, members: [MarkerContract.location, MarkerContract.selected]) { control, markers in
+    ///     map.children(MarkerContract.self, properties: MarkerContract.location, events: MarkerContract.selected) {
+    ///         control, markers in
     ///         control.show(markers)
     ///     }
-    public func children<Child: ElementContract>(
+    public func children<
+        Child: ElementContract, each PropertyOwner: Contract, each Value: HostRepresentable,
+        each EventOwner: Contract, each Payload
+    >(
         _ contract: Child.Type,
-        members: [any ContractMember],
-        _ apply: @escaping (Made, [WebChild<Child>]) -> Void
+        properties: repeat ElementProperty<each PropertyOwner, each Value>,
+        events: repeat ElementEvent<each EventOwner, each Payload>,
+        apply: @escaping (Made, [WebChild<Child>]) -> Void
     ) {
-        registration.children(contract, members: members) { hosted, children in
+        registration.children(contract, properties: repeat each properties, events: repeat each events) { hosted, children in
             apply(hosted.control, children.map(WebChild.init))
         }
     }

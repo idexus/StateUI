@@ -24,12 +24,14 @@ extension UIKitRegistrations {
             picker.onClosed = { reports.raise(PickerContract.closed) }
             return picker
         }, members: { (picker: Registration<PickerContract, UIView>) in
-            picker.applies([PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder]) { view, values in
+            picker.applies(
+                PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder) { view, values in
                 (view as! any UIKitChoosing).setChoices(
                     values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
                     writeChosen: values.changed(PickerContract.selectedIndex), title: values[PickerContract.placeholder])
             }
-            picker.applies(TextMembers.lookMembers + [TextAlignmentElementContract.horizontalTextAlignment]) { view, values in
+            picker.applies(
+                TextMembers.lookMembers, TextAlignmentElementContract.horizontalTextAlignment) { view, values in
                 (view as! any UIKitChoosing).setLook(
                     TextMembers.look(of: values),
                     alignment: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start)
@@ -50,9 +52,9 @@ extension UIKitRegistrations {
             picker.onChosen = { day in reports.report(DatePickerContract.date, day, as: DatePickerContract.dateChanged) }
             return picker
         }, members: { picker in
-            picker.applies([
-                DatePickerContract.date, DatePickerContract.minimumDate, DatePickerContract.maximumDate,
-            ]) { view, values in
+            picker.applies(
+                DatePickerContract.date, DatePickerContract.minimumDate,
+                DatePickerContract.maximumDate) { view, values in
                 view.setRange(earliest: values[DatePickerContract.minimumDate], latest: values[DatePickerContract.maximumDate])
                 if values.changed(DatePickerContract.date) { view.setDay(values[DatePickerContract.date]) }
             }

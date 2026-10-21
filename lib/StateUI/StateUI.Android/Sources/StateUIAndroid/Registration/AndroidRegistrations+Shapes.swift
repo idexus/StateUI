@@ -9,18 +9,19 @@ extension AndroidRegistrations {
     /// polyline drawn from their own geometry - each filled, outlined and placed as the shape tier says.
     static func shapes(_ registry: Registry<AndroidView>) {
         registry.add(RectangleContract.self, create: { _ in AndroidShapeView() }) { shape in
-            shape.applies(corneredShapeMembers + [RectangleContract.cornerRadius]) { view, values in
+            shape.applies(ShapeMembers.corneredMembers, RectangleContract.cornerRadius) { view, values in
                 draw(view, values, .rectangle(values[RectangleContract.cornerRadius]))
             }
         }
         registry.add(EllipseContract.self, create: { _ in AndroidShapeView() }) { shape in
-            shape.applies(filledShapeMembers) { view, values in draw(view, values, .ellipse) }
+            shape.applies(ShapeMembers.filledMembers) { view, values in draw(view, values, .ellipse) }
         }
         registry.add(CapsuleContract.self, create: { _ in AndroidShapeView() }) { shape in
-            shape.applies(filledShapeMembers) { view, values in draw(view, values, .rectangle(BoxArithmetic.capsule)) }
+            shape.applies(
+                ShapeMembers.filledMembers) { view, values in draw(view, values, .rectangle(BoxArithmetic.capsule)) }
         }
         registry.add(LineContract.self, create: { _ in AndroidShapeView() }) { shape in
-            shape.applies(shapeMembers + [LineContract.x1, LineContract.y1, LineContract.x2, LineContract.y2]) {
+            shape.applies(ShapeMembers.members, LineContract.x1, LineContract.y1, LineContract.x2, LineContract.y2) {
                 view, values in
                 draw(view, values, .line(
                     Point(values[LineContract.x1] ?? 0, values[LineContract.y1] ?? 0),
@@ -28,19 +29,21 @@ extension AndroidRegistrations {
             }
         }
         registry.add(PathContract.self, create: { _ in AndroidShapeView() }) { shape in
-            shape.applies(corneredShapeMembers + [PathContract.data]) { view, values in
+            shape.applies(ShapeMembers.corneredMembers, PathContract.data) { view, values in
                 draw(view, values, .path(values[PathContract.data] ?? ""))
             }
         }
         registry.add(PolygonContract.self, create: { _ in AndroidShapeView() }) { shape in
-            shape.applies(corneredShapeMembers + [PolygonContract.points, PolygonContract.fillRule]) { view, values in
+            shape.applies(
+                ShapeMembers.corneredMembers, PolygonContract.points, PolygonContract.fillRule) { view, values in
                 draw(view, values, .points(
                     values[PolygonContract.points] ?? [], closed: true,
                     evenOdd: (values[PolygonContract.fillRule] ?? .evenOdd) == .evenOdd))
             }
         }
         registry.add(PolylineContract.self, create: { _ in AndroidShapeView() }) { shape in
-            shape.applies(corneredShapeMembers + [PolylineContract.points, PolylineContract.fillRule]) { view, values in
+            shape.applies(
+                ShapeMembers.corneredMembers, PolylineContract.points, PolylineContract.fillRule) { view, values in
                 draw(view, values, .points(
                     values[PolylineContract.points] ?? [], closed: false,
                     evenOdd: (values[PolylineContract.fillRule] ?? .evenOdd) == .evenOdd))
@@ -48,21 +51,8 @@ extension AndroidRegistrations {
         }
     }
 
-    /// What every shape takes whole.
-    private static let shapeMembers: [any ContractMember] = [
-        ShapeContract.stroke, ShapeContract.lineWidth,
-        ShapeContract.dash, ShapeContract.dashPhase,
-        ShapeContract.lineCap,
-        ShapeContract.contentMode, ShapeContract.geometryTransform,
-    ]
 
-    /// What a shape enclosing an area wears: its fill besides.
-    private static let filledShapeMembers: [any ContractMember] = shapeMembers + [FilledShapeContract.fill]
 
-    /// What a shape turning corners wears: how they join, and how far a sharp one reaches, besides.
-    private static let corneredShapeMembers: [any ContractMember] = filledShapeMembers + [
-        CorneredShapeContract.lineJoin, CorneredShapeContract.miterLimit,
-    ]
 
     private static func draw<Realized: ElementContract>(
         _ view: AndroidShapeView, _ values: ElementValues<Realized>, _ geometry: AndroidShapeView.Geometry

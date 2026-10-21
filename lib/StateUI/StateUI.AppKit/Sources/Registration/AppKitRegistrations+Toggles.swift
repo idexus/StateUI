@@ -17,7 +17,7 @@ extension AppKitRegistrations {
             }
             return toggle
         }, members: { toggle in
-            toggle.applies([SwitchContract.isOn, VisualElementContract.isEnabled] + TextMembers.captionMembers) {
+            toggle.applies(SwitchContract.isOn, VisualElementContract.isEnabled, TextMembers.captionMembers) {
                 view, values in
                 view.apply(
                     toggled: values[SwitchContract.isOn] ?? false,
@@ -35,9 +35,9 @@ extension AppKitRegistrations {
             }
             return box
         }, members: { box in
-            box.applies([
+            box.applies(
                 CheckBoxContract.isOn, VisualElementContract.isEnabled, TintElementContract.tint,
-            ] + TextMembers.captionMembers) { view, values in
+                TextMembers.captionMembers) { view, values in
                 view.apply(
                     checked: values[CheckBoxContract.isOn] ?? false,
                     enabled: values[VisualElementContract.isEnabled] ?? true,

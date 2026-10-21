@@ -221,7 +221,9 @@ text tiers the same way on every host (`TextMembers`): its words in their
 case where the words or the case changed, and the look its font, its
 scaling and its colour give them where one of those did - the members a look
 is made of named once (`TextMembers.lookMembers`), so a host's own list of a
-field's or a picker's members takes them whole. A break keeps the words on one line unless
+field's or a picker's members takes them whole. A shape's line, fill and
+corners (`ShapeMembers`) and a layout's box and a stack's spacing
+(`LayoutMembers`) are named once the same way. A break keeps the words on one line unless
 it wraps - word and character wrapping do - and wrapped words stand on as
 many lines as the tree allows, any number where it allows none or fewer than
 one (`LineBreak.lines`), the last of a limited number ending with an ellipsis

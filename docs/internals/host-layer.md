@@ -387,6 +387,9 @@ measures only its native views.
   geometry in its room (`placement`), and gives its points as flat commands,
   its stroke's width and its dashes.
   ([A shape's own geometry](../design/host/layout.md#a-shapes-own-geometry))
+- **`LayoutMembers`** is what a layout takes of its own box (`boxMembers`) and
+  what a stack takes for its spacing (`stackMembers`), each a `PropertyList`
+  every host's registration names whole.
 
 Every call that places children - a stack's, a grid's and a ZStack's
 `places`, one child's `place` and a scroller's `arrange` - takes the
@@ -402,6 +405,9 @@ toolkit the children in that order
 `Drawing/` holds how a box, a fill and a picture are read, the same on every
 host that draws them.
 
+- **`ShapeMembers`** is what a shape takes whole: its line (`members`), its
+  fill where it encloses an area (`filledMembers`) and its corners where it
+  turns them (`corneredMembers`), each a `PropertyList`.
 - **`BoxArithmetic`** gives a box's corners clockwise from the top left, each
   rounding no more than half its side; its outline's shape; and its outline's
   width - one where the tree gives a colour and no width, none without a
@@ -428,7 +434,8 @@ host that draws them.
 
 `Text/` holds how an element's words are read, the same on every host.
 
-- **`TextMembers`** is what an element showing words takes of the text tiers:
+- **`TextMembers`** is what an element showing words takes of the text tiers,
+  each list a `PropertyList` (`members`, `captionMembers`, `lookMembers`):
   its words in their case, where the words or the case changed (`words`), and
   the look its font and colour give them, where one of those changed (`look`).
 - **`TextLook`**, **`TextRun`** and **`MountedElement.textRuns`** give a look

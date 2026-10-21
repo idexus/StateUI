@@ -13,7 +13,7 @@ extension WebRegistrations {
             picker.onChosen = { date in reports.report(DatePickerContract.date, date, as: DatePickerContract.dateChanged) }
             return picker
         }, members: { picker in
-            picker.applies([DatePickerContract.minimumDate, DatePickerContract.maximumDate, DatePickerContract.date]) {
+            picker.applies(DatePickerContract.minimumDate, DatePickerContract.maximumDate, DatePickerContract.date) {
                 view, values in
                 if values.changed(DatePickerContract.minimumDate) || values.changed(DatePickerContract.maximumDate) {
                     view.setRange(earliest: values[DatePickerContract.minimumDate], latest: values[DatePickerContract.maximumDate])
