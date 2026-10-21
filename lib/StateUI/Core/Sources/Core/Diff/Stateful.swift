@@ -190,8 +190,13 @@ extension Node {
                 node.addHandlers(name, handlers)
             }
 
-            // Its own watches first, then what was written on it - one order every render.
-            node.watches += written.watches
+            // Its own watches first, then what was written on it - one order every render - each the view's own,
+            // which it watches for across the branches its body shows.
+            node.watches += written.watches.map { watch in
+                var watch = watch
+                watch.writtenOn = viewType
+                return watch
+            }
 
             // And its lifetime handlers, in the same order (Lifetime.swift).
             node.created += written.created

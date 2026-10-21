@@ -482,17 +482,26 @@ extension Differ {
         // `.onChanged` against what this continuing element carried last time; a
         // different count starts over.
         // Design: docs/design/core/identity-and-diffing.md#watching-values
+        var pairs: [(index: Int, old: Any)] = []
         if let previous = previous, previous.watched.count == node.watches.count {
-            for (index, watch) in node.watches.enumerated() {
-                let old = previous.watched[index]
+            pairs = previous.watched.enumerated().map { ($0.offset, $0.element.value) }
+        } else if replace, let rendered {
+            // A watch written on a composed view is the view's, which stands while the element its body shows is
+            // replaced - another branch of its `if/else`: it goes on against what the view watched.
+            for view in Set(node.watches.compactMap(\.writtenOn)) {
+                let fresh = node.watches.indices.filter { node.watches[$0].writtenOn == view }
+                let old = rendered.watched.filter { $0.writtenOn == view }.map(\.value)
+                if fresh.count == old.count { pairs += zip(fresh, old).map { ($0, $1) } }
+            }
+        }
+        for (index, old) in pairs.sorted(by: { $0.index < $1.index }) {
+            let watch = node.watches[index]
 
-                // Nil: the stored value is of another type, and the slot starts over.
-                if watch.matches(old) == false {
-                    let new = watch.value
-                    fired.append(Fired(
-                        run: { try await watch.run(old, new) }, gate: watch.gate,
-                        owner: kept.owner("watch \(index)")))
-                }
+            // Nil: the stored value is of another type, and the slot starts over.
+            if watch.matches(old) == false {
+                let new = watch.value
+                fired.append(Fired(
+                    run: { try await watch.run(old, new) }, gate: watch.gate, owner: kept.owner("watch \(index)")))
             }
         }
 
@@ -645,7 +654,7 @@ extension Differ {
             builds: pass.builds,
             provided: Array(scope.suffix(pass.pushed)),
             seen: pass.seen,
-            watched: node.watches.map { $0.value },
+            watched: node.watches.map { ($0.writtenOn, $0.value) },
             engines: pass.engines,
             driven: pass.driven,
             readings: pass.readings,

@@ -12,6 +12,10 @@ struct OnChangedSample: SampleContent, ExampleContent {
     static let title = "Reacting to change"
     static let summary = "A handler that runs when a value moves - with the old value and the new one."
 
+    var examples: [Example] {
+        [Example(self), Example(ChangesAcrossBranches())]
+    }
+
     // listing: OnChangedSample
     var body: some View {
         VStack {
@@ -72,3 +76,56 @@ struct OnChangedSample: SampleContent, ExampleContent {
         .spacing(8)
     }
 }
+
+/// A watch written on a composed view, which goes on watching whichever branch its body shows.
+private struct ChangesAcrossBranches: ExampleContent {
+    // listing: ChangesAcrossBranches
+    @State private var signedIn = false
+    @State private var changes = 0
+
+    var body: some View {
+        VStack {
+            Switch($signedIn)
+                .text("Signed in")
+                .accessibilityIdentifier("onChanged.signedIn")
+
+            // Written on the view whose body holds the `if/else`: it watches
+            // while that view stands, whichever branch it shows.
+            AccountBadge(signedIn: $signedIn)
+                .horizontalAlignment(.center)
+                .onChanged(signedIn) { changes += 1 }
+
+            Text("Changed \(changes) times")
+                .accessibilityIdentifier("onChanged.changes")
+                .fontSize(13)
+                .textColor(Palette.subtle)
+                .horizontalTextAlignment(.center)
+        }
+        .spacing(12)
+    }
+    // listing: end
+
+    var notes: (any View)? {
+        Text("The watch is written on the view whose body holds the `if/else`, so it goes on watching "
+            + "whichever branch shows; one written inside a branch starts over with it.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
+    }
+}
+
+// listing: ChangesAcrossBranches
+/// One view or another, as the account stands.
+private struct AccountBadge: View {
+    @Binding var signedIn: Bool
+
+    var body: some View {
+        if signedIn {
+            Text("Signed in")
+                .fontWeight(.bold)
+        } else {
+            Button("Sign in")
+                .onClicked { signedIn = true }
+        }
+    }
+}
+// listing: end

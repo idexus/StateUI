@@ -423,6 +423,9 @@ render; nothing about it crosses to the host. Its rules:
                                      never answer for each other
   a different count starts over      a watch under an `if` shifts every slot
   a slot of another type starts over it changed hands
+  a composed view's watch stays      written on the view, it is the view's
+                                     while it stands - its body's root
+                                     replaced by another branch included
   handlers run after the walk        a write mid-walk would be cleared
 ```
 

@@ -185,6 +185,56 @@ final class ChangesTests: XCTestCase {
             "a watch written on a composed view was lost when the placeholder expanded")
     }
 
+    /// A watch written on a composed view keeps watching while the view stands - across the branches its body
+    /// shows: it fires as the value moves with the branch, and not when the branch alone changes.
+    func testAWatchOnAComposedViewKeepsWatchingAcrossItsBranches() {
+        let renders = Renders()
+        let log = Log()
+
+        struct Signed: View {
+            let signedIn: Bool
+            var body: some View {
+                if signedIn { HStack { Text("reader") } } else { VStack { Text("sign in") } }
+            }
+        }
+
+        func tree(_ signedIn: Bool, _ user: Int?) -> Node {
+            VStack { Signed(signedIn: signedIn).onChanged(user) { log.lines.append("user \(user ?? 0)") } }.node
+        }
+
+        renders.render(tree(false, nil))
+        renders.render(tree(true, 7))
+        renders.render(tree(true, 7))
+        renders.render(tree(false, 7))
+        renders.render(tree(false, nil))
+
+        XCTAssertEqual(log.lines, ["user 7", "user 0"], "the value moved twice, once as the branch changed")
+    }
+
+    /// A watch written in a branch is that branch's view's: the other branch's starts over.
+    func testAWatchWrittenInABranchStartsOverWithItsBranch() {
+        let renders = Renders()
+        let log = Log()
+
+        struct Branches: View {
+            let first: Bool
+            let value: Int
+            let log: Log
+            var body: some View {
+                if first {
+                    HStack { Text("a") }.onChanged(value) { log.lines.append("a") }
+                } else {
+                    VStack { Text("b") }.onChanged(value) { log.lines.append("b") }
+                }
+            }
+        }
+
+        renders.render(VStack { Branches(first: true, value: 1, log: log) }.node)
+        renders.render(VStack { Branches(first: false, value: 2, log: log) }.node)
+
+        XCTAssertTrue(log.lines.isEmpty, "a branch's watch fired with what the other branch watched")
+    }
+
     func testAWatchInsideAContentGetterSeesItsOwnStateMove() {
         let renders = Renders()
         let log = Log()

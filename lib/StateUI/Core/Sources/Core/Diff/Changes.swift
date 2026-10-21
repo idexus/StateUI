@@ -24,6 +24,11 @@ struct Watch {
     /// What a change does while a run is under way.
     let gate: any Gate
 
+    /// The composed view it was written on, which it watches for while that view stands - whatever its body shows;
+    /// nil for one written on the element itself.
+    /// Design: docs/design/core/identity-and-diffing.md#watching-values
+    var writtenOn: KeyName?
+
     /// A watch on one value. Written by `.onChanged`, never by hand.
     init<Value: Equatable>(_ value: Value, gate: some Gate, run: @escaping ErasedChangeHandler) {
         self.value = value
@@ -53,6 +58,8 @@ extension ModifiableElement {
     ///
     /// Each `.onChanged` is paired with its predecessor by the order the modifiers
     /// appear in, so one written under an `if` makes the view start watching afresh.
+    /// One written on a composed view watches while that view stands, whichever
+    /// branch of an `if/else` its body shows.
     ///
     /// - Parameters:
     ///   - value: What to watch. Anything `Equatable`.

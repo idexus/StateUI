@@ -1615,6 +1615,41 @@ enum Listings {
             }
         }
         """#,
+        "ChangesAcrossBranches": #"""
+        // Sources/Samples/State/OnChangedSample.swift
+        @State private var signedIn = false
+        @State private var changes = 0
+
+        var body: some View {
+            VStack {
+                Switch($signedIn)
+                    .text("Signed in")
+
+                // Written on the view whose body holds the `if/else`: it watches
+                // while that view stands, whichever branch it shows.
+                AccountBadge(signedIn: $signedIn)
+                    .horizontalAlignment(.center)
+                    .onChanged(signedIn) { changes += 1 }
+
+                Text("Changed \(changes) times")
+            }
+        }
+
+        /// One view or another, as the account stands.
+        private struct AccountBadge: View {
+            @Binding var signedIn: Bool
+
+            var body: some View {
+                if signedIn {
+                    Text("Signed in")
+                        .fontWeight(.bold)
+                } else {
+                    Button("Sign in")
+                        .onClicked { signedIn = true }
+                }
+            }
+        }
+        """#,
         "ChangingDeckSample": #"""
         // Sources/Samples/LayoutEngine/ChangingDeckSample.swift
         /// One card: its name, which is its identity, its color and its icon.

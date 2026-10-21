@@ -241,6 +241,36 @@ requires work. Multiple watchers are paired by modifier order. If their count
 changes, the element starts watching afresh; a watcher whose value type
 changed starts over alone, instead of matching an unrelated slot.
 
+A watcher belongs to the view it is written on. One written in a branch of an
+`if` is that branch's view's and starts afresh as the other branch shows; one
+written on a composed view watches while that view stands, whichever branch
+its body shows. A value watched across a condition is watched on the view
+whose body holds the condition:
+
+```swift
+struct AccountBadge: View {
+    @Binding var signedIn: Bool
+
+    var body: some View {
+        if signedIn {
+            Text("Signed in")
+        } else {
+            Button("Sign in").onClicked { signedIn = true }
+        }
+    }
+}
+
+struct AccountPage: View {
+    @State var signedIn = false
+    @State var changes = 0
+
+    var body: some View {
+        AccountBadge(signedIn: $signedIn)
+            .onChanged(signedIn) { changes += 1 }
+    }
+}
+```
+
 A handler that awaits names what a newer change does while it runs - a search
 cancels the one before it:
 
