@@ -110,6 +110,7 @@ final class WebTextInputView: WebDOMView, WebWordsView {
         case .words: nil
         case .email: "email"
         case .number: "decimal"
+        case .digits: "numeric"
         case .telephone: "tel"
         case .url: "url"
         }
@@ -117,7 +118,17 @@ final class WebTextInputView: WebDOMView, WebWordsView {
         attribute("autocapitalize", traits.capitals == .none ? "off" : traits.capitals == .sentences ? "sentences" : nil)
         attribute("spellcheck", traits.checksSpelling ? "true" : "false")
         attribute("autocorrect", traits.corrects ? "on" : "off")
-        attribute("autocomplete", traits.predicts ? nil : "off")
+        // What the words are names what the browser fills them in with; words of no such kind, unpredicted, take none.
+        let filled: String? = switch traits.content {
+        case .emailAddress: "email"
+        case .telephoneNumber: "tel"
+        case .url: "url"
+        case .username: "username"
+        case .newPassword: "new-password"
+        case .oneTimeCode: "one-time-code"
+        case nil: traits.predicts ? nil : "off"
+        }
+        attribute("autocomplete", filled)
     }
 
     /// What the keyboard's Return key says.

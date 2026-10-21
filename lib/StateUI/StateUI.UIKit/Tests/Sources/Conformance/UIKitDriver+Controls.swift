@@ -32,9 +32,11 @@ extension UIKitDriver {
         case (.placeholderColor, let editor as UIKitTextEditorView):
             return editor.subviews.lazy.compactMap { $0 as? UILabel }.first?.textColor.map { color($0).propValue }
         case (.inputPurpose, let field as UITextField):
-            return purpose(field.keyboardType, spelling: field.spellCheckingType).propValue
+            return purpose(field.keyboardType, spelling: field.spellCheckingType, content: field.textContentType)
+                .propValue
         case (.inputPurpose, let editor as UITextView):
-            return purpose(editor.keyboardType, spelling: editor.spellCheckingType).propValue
+            return purpose(editor.keyboardType, spelling: editor.spellCheckingType, content: editor.textContentType)
+                .propValue
         case (.contentMode, let image as UIImageView):
             let aspects: [UIView.ContentMode: StateUI.ContentMode] = [
                 .scaleAspectFit: .fit, .scaleAspectFill: .fill, .scaleToFill: .stretch, .center: .center,
@@ -155,9 +157,16 @@ extension UIKitDriver {
         }
     }
 
-    /// What the keyboard a field raises says it is for.
-    private static func purpose(_ keyboard: UIKeyboardType, spelling: UITextSpellCheckingType) -> InputPurpose {
-        switch keyboard {
+    /// What a field's words are for, as iOS was told: what it fills them in from where it fills them in, else what
+    /// the keyboard the field raises says.
+    private static func purpose(
+        _ keyboard: UIKeyboardType, spelling: UITextSpellCheckingType, content: UITextContentType?
+    ) -> InputPurpose {
+        let filled: [UITextContentType: InputPurpose] = [
+            .username: .username, .newPassword: .newPassword, .oneTimeCode: .oneTimeCode,
+        ]
+        if let content, let purpose = filled[content] { return purpose }
+        return switch keyboard {
         case .emailAddress: .email
         case .URL: .url
         case .phonePad: .telephone

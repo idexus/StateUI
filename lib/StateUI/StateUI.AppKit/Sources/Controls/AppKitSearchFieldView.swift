@@ -84,6 +84,7 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
         isEditable = !readOnly
         isSelectable = true
         isAutomaticTextCompletionEnabled = traits.predicts
+        contentType = traits.contentType
         alignment = NSTextAlignment(horizontalAlignment, in: userInterfaceLayoutDirection)
 
         // AppKit's bezel draws its own ground over any colour: a field given one stands in the bezel's capsule,

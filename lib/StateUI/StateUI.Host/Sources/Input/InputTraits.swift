@@ -13,12 +13,30 @@
         case words
         /// Letters with the at sign, for an address.
         case email
-        /// Digits.
+        /// Digits, with the decimal point.
         case number
+        /// Digits alone, for a code.
+        case digits
         /// A telephone's keys.
         case telephone
         /// Letters with the slash and the dot, for a web address.
         case url
+    }
+
+    /// What the words are, so the platform fills them in with what it keeps for them.
+    public enum Content: Equatable, Sendable {
+        /// An e-mail address.
+        case emailAddress
+        /// A telephone number.
+        case telephoneNumber
+        /// A web address.
+        case url
+        /// The name a user signs in with - a saved one offered.
+        case username
+        /// A password being made - a strong one offered, and kept.
+        case newPassword
+        /// A code sent to sign in with - the one received offered.
+        case oneTimeCode
     }
 
     /// Where the platform puts letters in capitals as the user types.
@@ -51,6 +69,9 @@
     /// Whether the keyboard offers emoji to hand.
     public var offersEmoji = false
 
+    /// What the words are, which the platform fills them in from; nil where it keeps nothing for them.
+    public var content: Content?
+
     /// The traits of words spell checked and predicted as the tree says, for `purpose`; nil for the default one.
     public init(spellChecked: Bool, predicted: Bool, purpose: InputPurpose?) {
         checksSpelling = spellChecked
@@ -61,10 +82,16 @@
         case .text: capitals = .sentences
         case .plain: (checksSpelling, corrects, predicts, capitals) = (false, false, false, .none)
         case .chat: offersEmoji = true
-        case .email: (keys, capitals) = (.email, .none)
+        case .email: (keys, capitals, content) = (.email, .none, .emailAddress)
         case .numeric: keys = .number
-        case .telephone: keys = .telephone
-        case .url: (keys, capitals) = (.url, .none)
+        case .telephone: (keys, content) = (.telephone, .telephoneNumber)
+        case .url: (keys, capitals, content) = (.url, .none, .url)
+        case .username:
+            (checksSpelling, corrects, predicts, capitals, content) = (false, false, false, .none, .username)
+        case .newPassword:
+            (checksSpelling, corrects, predicts, capitals, content) = (false, false, false, .none, .newPassword)
+        case .oneTimeCode:
+            (keys, checksSpelling, corrects, predicts, content) = (.digits, false, false, false, .oneTimeCode)
         }
     }
 

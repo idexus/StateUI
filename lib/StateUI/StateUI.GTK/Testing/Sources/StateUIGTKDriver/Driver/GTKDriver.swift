@@ -32,6 +32,10 @@ final class GTKDriver: HostDriver {
                 "GTK bounds code points, not characters, so the host cuts what is typed; typing proves it",
             "read format of TimePicker": "GTK's clock holds no format: it writes hours and minutes in the user's own clock",
         ]
+        for field in ["TextField", "SearchField", "TextEditor"] {
+            none["read what the platform fills in of \(field)"] =
+                "GNOME keeps no saved names, passwords or codes to fill a field in from"
+        }
         let shapes = ["Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"]
         let shapePaint = [
             "contentMode", "geometryTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",

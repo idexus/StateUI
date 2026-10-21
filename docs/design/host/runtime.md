@@ -857,9 +857,15 @@ correction goes with it - and the input purpose, which picks the keys a
 screen keyboard offers and where capitals go. Plain words are taken as typed:
 no capitals, no checking, no correction, no prediction - a login, a code a
 user types or a scanner enters. An address takes no capitals; text starts
-its sentences in them; the default leaves the platform its own. Each host
-tells its toolkit these in its own terms - a keyboard type, input flags, the
-text checking a desktop does as the user types.
+its sentences in them; the default leaves the platform its own. What the
+words are - an address, a number, a link, and signing in's three: a name, a
+new password, a one-time code in digits alone - is what the platform fills
+them in from (`InputTraits.content`): a name it keeps, a strong password it
+makes and keeps, a code it received. Each host tells its toolkit these in its
+own terms - a keyboard type and a content type, input flags and autofill
+hints, an `autocomplete` token, the text checking a desktop does as the user
+types. GNOME and WinUI keep nothing to fill a field in from: their fields
+take the keys and the checking alone.
 
 ## A value in a range
 

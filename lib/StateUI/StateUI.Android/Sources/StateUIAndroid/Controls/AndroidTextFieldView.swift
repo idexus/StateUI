@@ -191,9 +191,13 @@ final class AndroidTextFieldView: AndroidTextualView {
     }
 
     /// Gives the field its kind of input - which also gives it the key listener that kind edits with - and takes
-    /// the listener away again where the field is read only.
+    /// the listener away again where the field is read only; and tells autofill what its words are.
     private func applyInputType() {
         Java.call(reference, JavaAPI.setInputType, .int(inputType))
+        let hints = traits.autofillHints
+        Java.frame {
+            Java.call(reference, JavaAPI.setAutofillHints, .object(hints.isEmpty ? nil : Java.strings(hints)))
+        }
         if isReadOnly { Java.call(reference, JavaAPI.setKeyListener, .object(nil)) }
         Java.call(reference, JavaAPI.setShowSoftInputOnFocus, .bool(!isReadOnly))
     }

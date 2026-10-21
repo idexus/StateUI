@@ -52,6 +52,7 @@ extension GTKTextInputView {
         case .words: GTK_INPUT_PURPOSE_FREE_FORM
         case .email: GTK_INPUT_PURPOSE_EMAIL
         case .number: GTK_INPUT_PURPOSE_NUMBER
+        case .digits: GTK_INPUT_PURPOSE_DIGITS
         case .telephone: GTK_INPUT_PURPOSE_PHONE
         case .url: GTK_INPUT_PURPOSE_URL
         }

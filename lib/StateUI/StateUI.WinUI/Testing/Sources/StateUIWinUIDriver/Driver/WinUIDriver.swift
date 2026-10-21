@@ -16,6 +16,9 @@ final class WinUIDriver: HostDriver {
     /// Why a field holds no word for its return key on WinUI.
     static let noReturnWord = "WinUI gives a text box no word for the return key of the keyboard on the screen"
 
+    /// Why a field holds nothing its platform fills it in from on WinUI.
+    static let nothingFilledIn = "WinUI's text box keeps no saved names, passwords or codes to fill it in from"
+
     /// Why a view that is no control holds no `isEnabled` on WinUI.
     static let noEnabledState =
         "WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it"
@@ -24,6 +27,9 @@ final class WinUIDriver: HostDriver {
     let cannot: [String: String] = [:]
     let platformHasNone = [
         "read submitLabel of TextField": WinUIDriver.noReturnWord,
+        "read what the platform fills in of TextField": WinUIDriver.nothingFilledIn,
+        "read what the platform fills in of SearchField": WinUIDriver.nothingFilledIn,
+        "read what the platform fills in of TextEditor": WinUIDriver.nothingFilledIn,
         "read submitLabel of SearchField": WinUIDriver.noReturnWord,
         "read isEnabled of Canvas": WinUIDriver.noEnabledState,
         "read isEnabled of Capsule": WinUIDriver.noEnabledState,

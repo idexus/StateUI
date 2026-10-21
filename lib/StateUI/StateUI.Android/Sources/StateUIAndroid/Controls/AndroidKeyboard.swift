@@ -11,6 +11,8 @@ extension InputTraits {
         switch keys {
         case .number:
             return ViewConstants.numberInput | ViewConstants.decimalNumber | (password ? ViewConstants.hiddenNumber : 0)
+        case .digits:
+            return ViewConstants.numberInput | (password ? ViewConstants.hiddenNumber : 0)
         case .telephone:
             return ViewConstants.phoneInput
         case .words, .email, .url:
@@ -20,6 +22,18 @@ extension InputTraits {
                 | (capitals == .sentences ? ViewConstants.sentenceCapitals : 0)
                 | (corrects && !password ? ViewConstants.autoCorrect : 0)
                 | (predicts ? 0 : ViewConstants.noSuggestions)
+        }
+    }
+
+    /// What Android's autofill is told the words are, which it fills them in from; none for words of no such kind.
+    var autofillHints: [String] {
+        switch content {
+        case .emailAddress: ["emailAddress"]
+        case .telephoneNumber: ["phone"]
+        case .username: ["username"]
+        case .newPassword: ["newPassword"]
+        case .oneTimeCode: ["smsOTPCode"]
+        case .url, nil: []
         }
     }
 }

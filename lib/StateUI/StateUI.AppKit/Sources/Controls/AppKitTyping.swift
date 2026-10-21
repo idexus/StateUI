@@ -14,10 +14,24 @@ extension NSTextView {
         isAutomaticTextReplacementEnabled = traits.corrects
         isAutomaticTextCompletionEnabled = traits.predicts
         inlinePredictionType = traits.predicts ? .default : .no
+        contentType = traits.contentType
     }
 }
 
 extension InputTraits {
+    /// What macOS is told the words are, which it fills them in from; nil for words of no such kind.
+    var contentType: NSTextContentType? {
+        switch content {
+        case .emailAddress: .emailAddress
+        case .telephoneNumber: .telephoneNumber
+        case .url: .URL
+        case .username: .username
+        case .newPassword: .newPassword
+        case .oneTimeCode: .oneTimeCode
+        case nil: nil
+        }
+    }
+
     /// The options the text checking a user's typing runs is given: capitals where the traits say, over the user's
     /// own setting; the platform's own where they leave it.
     func checking(_ options: [NSSpellChecker.OptionKey: Any]) -> [NSSpellChecker.OptionKey: Any] {

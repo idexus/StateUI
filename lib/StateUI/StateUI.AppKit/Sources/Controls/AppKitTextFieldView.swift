@@ -109,6 +109,7 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         textField.isEditable = !readOnly
         textField.isSelectable = true
         textField.isAutomaticTextCompletionEnabled = traits.predicts
+        textField.contentType = traits.contentType
         textField.alignment = NSTextAlignment(horizontalAlignment, in: userInterfaceLayoutDirection)
 
         // AppKit's rounded bezel draws its own ground over any colour: a field given one stands in the bezel's

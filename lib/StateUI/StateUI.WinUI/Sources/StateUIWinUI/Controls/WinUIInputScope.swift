@@ -13,7 +13,7 @@ enum WinUIInputScope: Int32 {
     init(_ traits: InputTraits) {
         switch traits.keys {
         case .email: self = .email
-        case .number: self = .number
+        case .number, .digits: self = .number
         case .telephone: self = .telephone
         case .url: self = .url
         case .words: self = traits.offersEmoji ? .chat : traits.capitals == .sentences ? .text : .default

@@ -5,7 +5,7 @@
 // Design: docs/design/types/vocabularies.md#written-out-and-appended
 
 /// What a text input is for, which picks the on-screen keyboard the platform
-/// offers.
+/// offers and what it fills the input in with.
 public enum InputPurpose: Int32, Sendable {
     /// Whatever the platform offers, with its own correction and capitalization.
     case `default` = 0
@@ -30,6 +30,15 @@ public enum InputPurpose: Int32, Sendable {
 
     /// With / and .com to hand.
     case url = 7
+
+    /// The name a user signs in with: no correction or capitals, and the names the platform keeps offered.
+    case username = 8
+
+    /// A password being made, on a field `isPassword` hides: the platform offers a strong one and keeps it.
+    case newPassword = 9
+
+    /// A code sent to sign in with: digits, and the code the platform received offered.
+    case oneTimeCode = 10
 }
 
 extension InputPurpose: HostRepresentable {}

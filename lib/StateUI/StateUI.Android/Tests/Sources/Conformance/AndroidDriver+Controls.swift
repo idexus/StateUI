@@ -55,6 +55,12 @@ extension AndroidDriver {
         case .isPassword where view is AndroidTextFieldView:
             return number("inputType").map { (Int($0) & 0x80 != 0).propValue }
         case .inputPurpose where view is AndroidTextFieldView:
+            let filled: [String: InputPurpose] = [
+                "username": .username, "newPassword": .newPassword, "smsOTPCode": .oneTimeCode,
+            ]
+            if let hint = read("autofillHints")?.split(separator: ",").lazy.compactMap({ filled[String($0)] }).first {
+                return hint.propValue
+            }
             return number("inputType").map { purpose(of: Int($0)).propValue }
         case .isTextPredictionEnabled where view is AndroidTextFieldView:
             return number("inputType").map { (Int($0) & 0x80000 == 0).propValue }

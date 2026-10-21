@@ -10178,6 +10178,9 @@ enum Listings {
         @State private var email = ""
         @State private var done = 0
         @State private var hidden = true
+        @State private var user = ""
+        @State private var newPassword = ""
+        @State private var signInCode = ""
 
         var body: some View {
             VStack {
@@ -10238,6 +10241,22 @@ enum Listings {
                     .inputPurpose(.email)
                     .maximumLength(20)
                     .onSubmitted { done += 1 }
+
+                // Signing in: what each field holds is what the platform fills
+                // it in with - a name it keeps, a strong password it makes and
+                // keeps, a code it received.
+                TextField($user)
+                    .placeholder("a user name")
+                    .inputPurpose(.username)
+
+                TextField($newPassword)
+                    .placeholder("a new password")
+                    .isPassword(true)
+                    .inputPurpose(.newPassword)
+
+                TextField($signInCode)
+                    .placeholder("a code sent to you")
+                    .inputPurpose(.oneTimeCode)
             }
         }
         """#,

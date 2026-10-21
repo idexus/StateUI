@@ -78,6 +78,9 @@ enum GTKRealization {
             + "hands the keyboard on all the same."),
         .notPlanned(TextFieldContract.showsClearButton,
             reason: "GTK's entry has no button of its own that empties it."),
+        .partial(TextInputContract.inputPurpose,
+            missing: "Filling in: GNOME keeps no saved names, passwords or codes to fill a field in from; a name, a "
+            + "password and a code get their keys and checking all the same."),
         .partial(TextFieldContract.submitLabel,
             missing: "The return key's word: GTK gives an entry no word for the return key of a keyboard on the screen; Next "
             + "hands the keyboard on all the same."),

@@ -1,6 +1,6 @@
-# revision 6.3
+# revision 7.3
 SearchField.cursorPosition: cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet
-SearchField.inputPurpose: ✓ read inputPurpose of SearchField: the traits the host keeps; a Mac shows no keys a purpose picks
+SearchField.inputPurpose: ☑️ A Mac has no keyboard on the screen: a purpose sets capitals, spell checking, correction, prediction and what macOS fills the words in with, no keys.
 SearchField.isReadOnly: ✅
 SearchField.isSpellCheckEnabled: cannot read isSpellCheckEnabled of SearchField - AppKit's driver has no path for it yet
 SearchField.isTextPredictionEnabled: ✅
@@ -10,7 +10,7 @@ SearchField.placeholderColor: ✅
 SearchField.selectionLength: cannot read selectionLength of SearchField - AppKit's driver has no path for it yet
 SearchField.textChanged: ✅
 TextEditor.cursorPosition: ✅
-TextEditor.inputPurpose: ✓ read inputPurpose of TextEditor: the traits the host keeps; a Mac shows no keys a purpose picks
+TextEditor.inputPurpose: ☑️ A Mac has no keyboard on the screen: a purpose sets capitals, spell checking, correction, prediction and what macOS fills the words in with, no keys.
 TextEditor.isReadOnly: ✅
 TextEditor.isSpellCheckEnabled: ✅
 TextEditor.isTextPredictionEnabled: ✅
@@ -20,7 +20,7 @@ TextEditor.placeholderColor: ✅
 TextEditor.selectionLength: ✅
 TextEditor.textChanged: ✅
 TextField.cursorPosition: cannot read cursorPosition of TextField - AppKit's driver has no path for it yet
-TextField.inputPurpose: ✓ read inputPurpose of TextField: the traits the host keeps; a Mac shows no keys a purpose picks
+TextField.inputPurpose: ☑️ A Mac has no keyboard on the screen: a purpose sets capitals, spell checking, correction, prediction and what macOS fills the words in with, no keys.
 TextField.isReadOnly: ✅
 TextField.isSpellCheckEnabled: cannot read isSpellCheckEnabled of TextField - AppKit's driver has no path for it yet
 TextField.isTextPredictionEnabled: ✅

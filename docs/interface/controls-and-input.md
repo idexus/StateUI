@@ -260,7 +260,7 @@ of its own:
 | Modifier | On | Meaning |
 | --- | --- | --- |
 | `placeholder`, `placeholderColor` | every field | what an empty field says, and its colour |
-| `inputPurpose` | every field | what the text is for - `.plain`, `.text`, `.chat`, `.email`, `.numeric`, `.telephone`, `.url` - which picks the keyboard the platform offers |
+| `inputPurpose` | every field | what the text is for - `.plain`, `.text`, `.chat`, `.email`, `.numeric`, `.telephone`, `.url`, and for signing in `.username`, `.newPassword`, `.oneTimeCode` - which picks the keyboard the platform offers and what it fills the field in with |
 | `isReadOnly` | every field | the text can be selected and copied but not changed, which is not the same as disabled |
 | `isSpellCheckEnabled` | every field | whether the platform marks what it takes to be misspelt |
 | `isTextPredictionEnabled` | every field | whether the platform offers the next word |
@@ -309,6 +309,23 @@ VStack {
     TextField($name).placeholder("Name").submitLabel(.next)
     TextField($street).placeholder("Street").submitLabel(.next)
     TextField($city).placeholder("City").submitLabel(.done)
+}
+```
+
+A sign-in form says what each field holds, and the platform fills it in: a
+name it keeps, a strong password it makes and keeps for a new account, a code
+it received by message. GNOME and WinUI keep nothing to fill a field in from;
+there the fields take their keys and checking alone.
+
+```swift
+@State var name = ""
+@State var password = ""
+@State var code = ""
+
+VStack {
+    TextField($name).placeholder("Name").inputPurpose(.username)
+    TextField($password).placeholder("New password").isPassword(true).inputPurpose(.newPassword)
+    TextField($code).placeholder("Code").inputPurpose(.oneTimeCode)
 }
 ```
 

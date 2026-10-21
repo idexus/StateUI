@@ -70,12 +70,21 @@ extension AppKitDriver {
         }
     }
 
+    /// The purpose macOS fills a field in for, as its content type says; nil for one it fills nothing in for.
+    private static func filled(_ content: NSTextContentType?) -> InputPurpose? {
+        let filled: [NSTextContentType: InputPurpose] = [
+            .username: .username, .newPassword: .newPassword, .oneTimeCode: .oneTimeCode,
+        ]
+        return content.flatMap { filled[$0] }
+    }
+
     /// The purpose the host's traits were read from: the keys first, then what the traits leave of the words.
     private static func purpose(of traits: InputTraits) -> InputPurpose {
         switch traits.keys {
         case .email: return .email
         case .url: return .url
         case .number: return .numeric
+        case .digits: return .oneTimeCode
         case .telephone: return .telephone
         case .words:
             if traits.offersEmoji { return .chat }
@@ -101,11 +110,13 @@ extension AppKitDriver {
             case .isTextPredictionEnabled: return text.isAutomaticTextCompletionEnabled.propValue
             case .cursorPosition: return text.selectedRange().location.propValue
             case .selectionLength: return text.selectedRange().length.propValue
-            case .inputPurpose: return purpose(of: editor.traits).propValue
+            case .inputPurpose: return (filled(text.contentType) ?? purpose(of: editor.traits)).propValue
             default: return nil
             }
         }
         if property == .inputPurpose {
+            let field = (view as? AppKitTextFieldView)?.textField ?? view as? AppKitSearchFieldView
+            if let filled = filled(field?.contentType) { return filled.propValue }
             let traits = ((view as? AppKitTextFieldView)?.textField as? AppKitWordsField)?.traits
                 ?? (view as? AppKitSearchFieldView)?.traits
             return traits.map { purpose(of: $0).propValue }

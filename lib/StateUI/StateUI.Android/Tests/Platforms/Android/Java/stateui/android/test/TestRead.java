@@ -33,6 +33,9 @@ public final class TestRead {
                 return bar(view.isHorizontalScrollBarEnabled(), view.isScrollbarFadingEnabled());
             case "scaleType": return view instanceof ImageView ? ((ImageView) view).getScaleType().name() : null;
             case "tint": return tint(view);
+            case "autofillHints":
+                String[] hints = view.getAutofillHints();
+                return hints == null ? "" : String.join(",", hints);
             default: return null;
         }
     }

@@ -13,6 +13,7 @@
         Specimens.wearing(TextInputContract.self).flatMap { element in
             [
                 typed(element), bounded(element), written(element), readOnly(element), closed(element),
+                filled(element),
                 Aspects.holds(TextInputContract.maximumLength, on: element, 10, then: 3),
                 Aspects.holds(TextInputContract.placeholder, on: element, "Name", then: "E-mail"),
                 Aspects.holds(
@@ -28,6 +29,32 @@
                     Write(TextualElementContract.text, "abcdefg"), Write(TextInputContract.cursorPosition, 2),
                 ]),
             ]
+        }
+    }
+
+    /// What a field is for reaches what its platform fills it in from: a name it keeps, a new password, a code it
+    /// received - each as the tree changes it.
+    @MainActor
+    static func filled(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).inputPurpose.reachesWhatThePlatformFillsIn", proves: [
+            Covered(TextInputContract.inputPurpose, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let purpose = State(wrappedValue: InputPurpose.username)
+            s.start {
+                Specimens.page(element, [Write(TextInputContract.inputPurpose, purpose.wrappedValue)], beside: [
+                    Button("Change").onClicked {
+                        purpose.wrappedValue = purpose.wrappedValue == .username ? .newPassword : .oneTimeCode
+                    }.id("change"),
+                ])
+            }
+            let specimen = try s.specimen(element)
+            s.expect(try s.filledIn(specimen), .username, "a name the platform keeps")
+
+            for next in [InputPurpose.newPassword, .oneTimeCode] {
+                try s.perform(.activate, on: s.element("change"))
+                try s.settle { try s.filledIn(specimen) == next }
+                s.expect(try s.filledIn(specimen), next, "what the tree changed it to")
+            }
         }
     }
 

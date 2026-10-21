@@ -140,6 +140,17 @@
         return try driven { try driver.held(property.token, on: element).flatMap { Value(propValue: $0) } }
     }
 
+    /// What `element`'s words are for, as its platform fills them in - a name it keeps, a new password, a code it
+    /// received; on a platform that fills nothing in, a read it holds none of.
+    public func filledIn(_ element: MountedElement) throws -> InputPurpose? {
+        let ability = "read what the platform fills in of \(element.type.name)"
+        if driver.platformHasNone[ability] != nil { throw DriverCannot(ability) }
+        note(ability, element: element.type.name, member: TextInputContract.inputPurpose.name)
+        return try driven {
+            try driver.held(TextInputContract.inputPurpose.token, on: element).flatMap { InputPurpose(propValue: $0) }
+        }
+    }
+
     /// The menu `element` offers as the user meets it (`HostDriver.menu(of:)`).
     public func menu(of element: MountedElement) throws -> String {
         note("read the menu of \(element.type.name)")

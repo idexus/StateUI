@@ -307,6 +307,10 @@ extension WebDriver {
             }
             return label.propValue
         case .inputPurpose:
+            let filled: [String: InputPurpose] = [
+                "username": .username, "new-password": .newPassword, "one-time-code": .oneTimeCode,
+            ]
+            if let purpose = filled[try WebBrowser.evaluate("e.autocomplete", on: e) ?? ""] { return purpose.propValue }
             let mode = try WebBrowser.evaluate("e.inputMode", on: e) ?? ""
             let purpose: InputPurpose = switch mode {
             case "email": .email

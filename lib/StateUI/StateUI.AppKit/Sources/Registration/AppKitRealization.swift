@@ -38,7 +38,8 @@ enum AppKitRealization {
         .partial(VisualElementContract.accessibilityHeading,
             missing: "AppKit marks a heading, not its level: every level is a heading."),
         .partial(TextInputContract.inputPurpose,
-            missing: "A Mac has no keyboard on the screen: a purpose sets capitals, spell checking, correction and prediction, no keys."),
+            missing: "A Mac has no keyboard on the screen: a purpose sets capitals, spell checking, correction, "
+            + "prediction and what macOS fills the words in with, no keys."),
         .partial(VisualElementContract.background,
             missing: "AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in."),
         .partial(ViewContract.panTouchCount,
