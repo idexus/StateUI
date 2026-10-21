@@ -196,7 +196,7 @@ final class AppKitRenderer {
     }
 
     /// The native image for a picture, made once for this renderer: a file of the application's, the SF Symbol for
-    /// an icon, or the bytes decoded at a point a pixel. A symbol is a template, drawn in the colour of what holds it.
+    /// an icon, or the bytes decoded at a point a pixel. A symbol is a template, drawn in the color of what holds it.
     /// Reapplying an unchanged picture hands a native view the image it already shows, so nothing reads the file
     /// again, no measurement is forgotten and a bar or a tab row finds nothing changed.
     func image(_ picture: HostPicture) -> NSImage? {

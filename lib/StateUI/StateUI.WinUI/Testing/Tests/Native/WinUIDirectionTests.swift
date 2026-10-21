@@ -47,14 +47,14 @@ final class WinUIDirectionTests: XCTestCase {
     /// A row right to left fills from the right by the host layer's arithmetic alone: WinUI mirrors none of its
     /// places a second time.
     func testARowRightToLeftFillsFromTheRight() throws {
-        let colours = try drawnRightToLeft(at: [(90, 10), (70, 10), (10, 10)]) {
+        let colors = try drawnRightToLeft(at: [(90, 10), (70, 10), (10, 10)]) {
             HStack {
                 Rectangle().fill(Color(hex: 0xFF0000)).width(20).height(20)
                 Rectangle().fill(Color(hex: 0x0000FF)).width(20).height(20)
             }
             .spacing(0)
         }
-        XCTAssertEqual(colours, [Self.red, Self.blue, 0])
+        XCTAssertEqual(colors, [Self.red, Self.blue, 0])
     }
 
     /// A picture and a figure in a row right to left are drawn as they are, not mirrored.
@@ -85,7 +85,7 @@ final class WinUIDirectionTests: XCTestCase {
         }
     }
 
-    /// The colours at `points` of `content` laid out right to left in a room 100 wide, read off the layout holding it.
+    /// The colors at `points` of `content` laid out right to left in a room 100 wide, read off the layout holding it.
     private func drawnRightToLeft(
         at points: [(Double, Double)], _ content: @escaping @MainActor () -> any View
     ) throws -> [UInt32] {

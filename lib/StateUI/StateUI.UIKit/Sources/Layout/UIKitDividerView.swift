@@ -4,7 +4,7 @@
 #if os(iOS)
 import UIKit
 
-/// A divider in a stack: a hairline in the system's separator colour, one pixel thick both ways - the stack
+/// A divider in a stack: a hairline in the system's separator color, one pixel thick both ways - the stack
 /// stretches it across, its axis keeps it thin.
 /// Design: docs/design/host/layout.md#a-divider-in-a-stack
 @MainActor

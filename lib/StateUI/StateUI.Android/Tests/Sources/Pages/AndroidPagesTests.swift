@@ -13,10 +13,10 @@ final class AndroidPagesTests: XCTestCase {
             ("testADrawerStandsAtTheEdgeTheLanguageStartsFrom", testADrawerStandsAtTheEdgeTheLanguageStartsFrom),
             ("testAStackShowsItsTopPageUnderItsBarAndGoesBack", testAStackShowsItsTopPageUnderItsBarAndGoesBack),
             ("testAPageStandsOnTheThemesGroundWhereTheWindowPaintsNone", testAPageStandsOnTheThemesGroundWhereTheWindowPaintsNone),
-            ("testAPageStandsOnItsWindowsColour", testAPageStandsOnItsWindowsColour),
+            ("testAPageStandsOnItsWindowsColor", testAPageStandsOnItsWindowsColor),
             ("testTabsOnAStackNameTheBarByTheirOwnTitle", testTabsOnAStackNameTheBarByTheirOwnTitle),
             ("testWordsOnAPaintedBarFollowHowDarkItIs", testWordsOnAPaintedBarFollowHowDarkItIs),
-            ("testABarsColourTravelsOnTheDisplaysFrames", testABarsColourTravelsOnTheDisplaysFrames),
+            ("testABarsColorTravelsOnTheDisplaysFrames", testABarsColorTravelsOnTheDisplaysFrames),
             ("testAPushAndAPopAreHeardByThePagesInOrder", testAPushAndAPopAreHeardByThePagesInOrder),
             ("testTheBarOpensTheSidebarAndBackClosesIt", testTheBarOpensTheSidebarAndBackClosesIt),
             ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
@@ -27,7 +27,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testTheRowMarksTheTabShown", testTheRowMarksTheTabShown),
             ("testAPagesToolbarItemsAreTheBarsActions", testAPagesToolbarItemsAreTheBarsActions),
             ("testALeadingGroupStandsFirstAmongTheActions", testALeadingGroupStandsFirstAmongTheActions),
-            ("testTheBarsActionsStandInItsWordsColour", testTheBarsActionsStandInItsWordsColour),
+            ("testTheBarsActionsStandInItsWordsColor", testTheBarsActionsStandInItsWordsColor),
             ("testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle", testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle),
             ("testAStackAndItsPagesSayHowTheBarAndThePageLook", testAStackAndItsPagesSayHowTheBarAndThePageLook),
             ("testTabsOfStacksOnAStackStandUnderOneBar", testTabsOfStacksOnAStackStandUnderOneBar),
@@ -69,7 +69,7 @@ final class AndroidPagesTests: XCTestCase {
     }
 
     /// A page stands on an opaque ground - every page of a stack, the one pushed too - so a page sliding over another
-    /// hides it: the theme's where the window paints no colour.
+    /// hides it: the theme's where the window paints no color.
     func testAPageStandsOnTheThemesGroundWhereTheWindowPaintsNone() throws {
         try onMainActor {
             let path = State(wrappedValue: [Int]())
@@ -87,17 +87,17 @@ final class AndroidPagesTests: XCTestCase {
             let pages = try XCTUnwrap(host.runtime.tree.root).pages
             XCTAssertEqual(pages.count, 2)
             for page in pages {
-                let ground = try XCTUnwrap(PageGround.colour(of: page), "\(page.id) stands on nothing")
+                let ground = try XCTUnwrap(PageGround.color(of: page), "\(page.id) stands on nothing")
                 XCTAssertEqual(ground >> 24, 0xFF, "\(page.id) stands on an opaque ground")
             }
         }
     }
 
-    /// A page that paints no background of its own stands on its window's colour.
-    func testAPageStandsOnItsWindowsColour() throws {
+    /// A page that paints no background of its own stands on its window's color.
+    func testAPageStandsOnItsWindowsColor() throws {
         try onMainActor {
             stateUIUseApp(OneWindowApplication {
-                WindowPainted(colour: Color(red: 51, green: 102, blue: 153)) {
+                WindowPainted(color: Color(red: 51, green: 102, blue: 153)) {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         TitledPage(title: "Root")
                     } destination: { number in
@@ -114,7 +114,7 @@ final class AndroidPagesTests: XCTestCase {
             host.layOut()
 
             let page = try XCTUnwrap(host.runtime.tree.root?.first(type: .window)?.pages.last)
-            XCTAssertEqual(PageGround.colour(of: page), 0xFF33_6699)
+            XCTAssertEqual(PageGround.color(of: page), 0xFF33_6699)
         }
     }
 
@@ -141,7 +141,7 @@ final class AndroidPagesTests: XCTestCase {
     }
 
     /// Words on a bar the tree paints stand light on a dark bar and dark on a light one, where the tree writes no
-    /// colour for them (`BandWords`).
+    /// color for them (`BandWords`).
     func testWordsOnAPaintedBarFollowHowDarkItIs() throws {
         try onMainActor {
             let dark = State(wrappedValue: true)
@@ -162,9 +162,9 @@ final class AndroidPagesTests: XCTestCase {
         }
     }
 
-    /// A bar's colour the tree changes travels on the display's frames, where nothing arranges the stack: the bar
-    /// shows a colour on the way, then lands on the new one.
-    func testABarsColourTravelsOnTheDisplaysFrames() throws {
+    /// A bar's color the tree changes travels on the display's frames, where nothing arranges the stack: the bar
+    /// shows a color on the way, then lands on the new one.
+    func testABarsColorTravelsOnTheDisplaysFrames() throws {
         try onMainActor {
             let first = State(wrappedValue: true)
             let clock = TestClock()
@@ -329,11 +329,11 @@ final class AndroidPagesTests: XCTestCase {
     func testADrawerUnderAClearWindowStandsOnASurfaceOfItsOwn() throws {
         try onMainActor {
             stateUIUseApp(OneWindowApplication {
-                WindowPainted(colour: .transparent) {
+                WindowPainted(color: .transparent) {
                     drawerOverStack(sidebar: TitledPage(title: "Menu", icon: "test_dot.png"))
                 }
             })
-            // In the activity's window, which the window's colour paints; its theme's back comes back after.
+            // In the activity's window, which the window's color paints; its theme's back comes back after.
             let host = AndroidRenderer.start(context: TestContext.window, root: TestJava.root(), density: 2)
             defer {
                 Java.callStatic(
@@ -345,9 +345,9 @@ final class AndroidPagesTests: XCTestCase {
             let drawer = try XCTUnwrap(split.heldViews().last)
             try XCTUnwrap(host.views(AndroidNavigationView.self).first).bar.clicked()
 
-            let colour = Java.callStaticLong(JavaAPI.views, AndroidDriver.sidebarColour, .object(drawer.reference))
-            XCTAssertNotEqual(colour, Int64.min, "the drawer stands on a surface")
-            XCTAssertEqual(UInt32(truncatingIfNeeded: colour) >> 24, 0xFF, "an opaque one, whatever the window is")
+            let color = Java.callStaticLong(JavaAPI.views, AndroidDriver.sidebarColor, .object(drawer.reference))
+            XCTAssertNotEqual(color, Int64.min, "the drawer stands on a surface")
+            XCTAssertEqual(UInt32(truncatingIfNeeded: color) >> 24, 0xFF, "an opaque one, whatever the window is")
         }
     }
 
@@ -417,7 +417,7 @@ final class AndroidPagesTests: XCTestCase {
 
     /// What a page puts on the bar: its actions in their order, the overflow's last in a group of their own, each with its
     /// picture and whether it can be chosen - the picture of one that cannot be dimmed - a destructive one in
-    /// the theme's error colour; choosing one runs its handler, and one that cannot be chosen runs nothing.
+    /// the theme's error color; choosing one runs its handler, and one that cannot be chosen runs nothing.
     func testAPagesToolbarItemsAreTheBarsActions() throws {
         try onMainActor {
             let heard = Received<String>()
@@ -465,9 +465,9 @@ extension AndroidPagesTests {
     }
 
     /// The actions standing on a painted bar take their words from the bar's theme - light on a dark bar, dark on a
-    /// light one - as Android's own bars do; their pictures take the bar's words' colour itself. A bar painted
+    /// light one - as Android's own bars do; their pictures take the bar's words' color itself. A bar painted
     /// again in the other shade is made again in its theme.
-    func testTheBarsActionsStandInItsWordsColour() throws {
+    func testTheBarsActionsStandInItsWordsColor() throws {
         try onMainActor {
             let dark = State(wrappedValue: true)
             let host = AndroidRenderer.running(reducesMotion: true) {
@@ -527,7 +527,7 @@ extension AndroidPagesTests {
         }
     }
 
-    /// The stack colours its bar; a page says whether the bar shows and whether it has a way back, and what
+    /// The stack colors its bar; a page says whether the bar shows and whether it has a way back, and what
     /// its ground is and how far in its content stands.
     func testAStackAndItsPagesSayHowTheBarAndThePageLook() throws {
         try onMainActor {
@@ -543,10 +543,10 @@ extension AndroidPagesTests {
             }
             host.layOut()
             let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
-            XCTAssertEqual(Self.colour(of: navigation.bar), 0xFFFF_0000)
+            XCTAssertEqual(Self.color(of: navigation.bar), 0xFFFF_0000)
             XCTAssertEqual(navigation.bar.content.foreground.flatMap(AndroidView.argb), Int32(bitPattern: 0xFFFF_FFFF))
             let page = try XCTUnwrap(host.views(AndroidSingleChildView.self).first)
-            XCTAssertEqual(Self.colour(of: page), 0xFF00_00FF)
+            XCTAssertEqual(Self.color(of: page), 0xFF00_00FF)
             let words = try XCTUnwrap(host.views(AndroidTextView.self).first)
             XCTAssertEqual(Java.callInt(words.reference, TestJava.getLeft), 16, "8 points in, at two pixels a point")
 
@@ -616,9 +616,9 @@ extension AndroidPagesTests {
         }
     }
 
-    /// The colour a view's background is painted in.
+    /// The color a view's background is painted in.
     @MainActor
-    private static func colour(of view: AndroidView) -> UInt32 {
+    private static func color(of view: AndroidView) -> UInt32 {
         Java.frame {
             Java.callObject(view.reference, TestJava.getBackground).map {
                 UInt32(bitPattern: Java.callInt($0, TestJava.getColor))
@@ -811,15 +811,15 @@ private func drawerOverStack(sidebar: some View) -> some View {
     }
 }
 
-/// `content` in a window painted `colour`.
+/// `content` in a window painted `color`.
 private struct WindowPainted<Content: View>: View {
     @Environment(\.window) private var window
-    let colour: Color
+    let color: Color
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        let (window, colour) = (self.window, self.colour)
-        return content().onCreated { window.background = .color(colour) }
+        let (window, color) = (self.window, self.color)
+        return content().onCreated { window.background = .color(color) }
     }
 }
 
@@ -836,14 +836,14 @@ private struct TitledPage: View {
     }
 }
 
-/// The colour a page's view stands on, as ARGB.
+/// The color a page's view stands on, as ARGB.
 @MainActor
 private enum PageGround {
     private static let colorDrawable = Java.findClass("android/graphics/drawable/ColorDrawable")
     private static let getColor = Java.method(colorDrawable, "getColor", "()I")
 
-    /// The colour `page`'s view is painted in; nil where it paints none, or no one colour.
-    static func colour(of page: MountedElement) -> UInt32? {
+    /// The color `page`'s view is painted in; nil where it paints none, or no one color.
+    static func color(of page: MountedElement) -> UInt32? {
         guard let view = (page.native as? AndroidElement)?.view,
               let ground = Java.callObject(view.reference, JavaAPI.getBackground)
         else { return nil }

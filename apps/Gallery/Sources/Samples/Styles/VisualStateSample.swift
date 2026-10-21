@@ -29,7 +29,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
             SectionTitle("On the control, not in a style")
 
             // TWO OF THEM, SIDE BY SIDE, because the difference is the point:
-            // hold each one down and the left crosses to its pressed colour
+            // hold each one down and the left crosses to its pressed color
             // while the right arrives at it.
             HStack {
                 // Written on the CONTROL rather than in a style. The states after
@@ -43,7 +43,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
                         .background(Palette.outline)
                         .textColor(Palette.disabled)
                     }
-                    // The colour is a setter, which travels under the button's
+                    // The color is a setter, which travels under the button's
                     // own motion. The scale is DRIVEN by `press`: the handler
                     // sends the state there over 90ms, and the button follows it.
                     .onVisualStateChanged { state in
@@ -83,7 +83,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("Hold each button down: the left crosses to its pressed colour, the right arrives at it. "
+        Text("Hold each button down: the left crosses to its pressed color, the right arrives at it. "
             + "Turn Enabled off for the disabled look.")
             .fontSize(12)
             .textColor(Palette.subtle)

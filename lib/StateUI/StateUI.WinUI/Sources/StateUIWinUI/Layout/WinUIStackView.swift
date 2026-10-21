@@ -6,7 +6,7 @@
 
 /// A VStack or an HStack: the host layer's stack arithmetic over the relay's panel.
 @MainActor
-final class WinUIStackView: WinUITravellingLayout {
+final class WinUIStackView: WinUITravelingLayout {
     /// The axis the stack runs along.
     let axis: StackArithmetic.Axis
 

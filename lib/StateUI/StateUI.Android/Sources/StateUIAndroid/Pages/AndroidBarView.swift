@@ -17,7 +17,7 @@ final class AndroidBarView: AndroidView {
         case sidebar(HostPicture?)
     }
 
-    /// What the bar says and shows: its title and the line under it, its colours, its actions, and the page's menus
+    /// What the bar says and shows: its title and the line under it, its colors, its actions, and the page's menus
     /// behind its overflow.
     struct Content: Equatable {
         /// The title; nil where the page shows none, which leaves the bar's place for it empty.
@@ -44,7 +44,7 @@ final class AndroidBarView: AndroidView {
     private(set) weak var titleView: AndroidView?
 
     /// The theme the bar's actions take their words from: Android's overlay for a dark bar - light words - or a
-    /// light one, by the host layer's reading of the bar's colour (`BandWords.light`); the activity's where the tree
+    /// light one, by the host layer's reading of the bar's color (`BandWords.light`); the activity's where the tree
     /// paints no bar.
     /// Design: docs/design/platforms/android/pages.md#the-bar
     enum Words: Int32 {

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What a surface is made of: a colour, a gradient, a blur of what lies behind
+/// What a surface is made of: a color, a gradient, a blur of what lies behind
 /// it, or the platform's glass - the same in both themes, or one for each.
 ///
 ///     Text("Total").background(.tomato)
@@ -11,8 +11,8 @@
 ///
 /// A blur and glass follow the theme as the platform draws them. A platform
 /// with no glass draws the blur as clear as the glass; one that blurs nothing,
-/// a colour of the theme let through as the blur is, the tint over it.
-/// Design: docs/design/types/colour-and-theme.md#a-material
+/// a color of the theme let through as the blur is, the tint over it.
+/// Design: docs/design/types/color-and-theme.md#a-material
 public struct Material: Equatable, Sendable, HostRepresentable {
     /// What the surface is, one kind or a pair.
     indirect enum Kind: Equatable, Sendable {
@@ -29,12 +29,12 @@ public struct Material: Equatable, Sendable, HostRepresentable {
         self.kind = kind
     }
 
-    /// One colour - which a colour with an alpha lets what lies behind through.
+    /// One color - which a color with an alpha lets what lies behind through.
     public static func color(_ color: Color) -> Material {
         Material(.color(color))
     }
 
-    /// A gradient; a brush of one colour is that colour.
+    /// A gradient; a brush of one color is that color.
     public static func gradient(_ brush: Brush) -> Material {
         brush.kind == .solidColor ? .color(brush.stops[0].color) : Material(.gradient(brush))
     }
@@ -66,10 +66,10 @@ public struct Material: Equatable, Sendable, HostRepresentable {
         return .blur(Blur(thickness: glass.fallback, tint: glass.tint))
     }
 
-    /// A colour as itself and a gradient as its brush - so a colour's channel
+    /// A color as itself and a gradient as its brush - so a color's channel
     /// is a material's - a blur and glass as their kind, what the kind takes,
     /// and last what stands in for it; a pair as its two halves.
-    /// Design: docs/design/types/colour-and-theme.md#a-material
+    /// Design: docs/design/types/color-and-theme.md#a-material
     public var propValue: PropValue {
         switch kind {
         case .color(let color): color.propValue

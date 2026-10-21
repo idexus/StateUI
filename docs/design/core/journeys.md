@@ -4,7 +4,7 @@ A state is discrete, and its journey is part of it. Reading `fade` answers the
 destination at once; `$fade.journey` is what happens between two destinations:
 where the value is this frame, how fast it goes, and under what law. A value
 that can have one conforms to `Walked`: a number, a point, a rectangle, insets,
-a colour. Text has no half way, a whole number animated through rounding
+a color. Text has no half way, a whole number animated through rounding
 stutters, and a truth value has two places and no distance, so none of them is
 `Walked`; a placement run already carries a law for the whole run.
 
@@ -113,8 +113,8 @@ is true at once, because the engine alone knows when it is done.
 
 `stop()` raises the stop counter, leaving the value where the animation stood;
 the host ends the animation and answers the waiter false. The waiter's id stays on
-the image, because the host needs it to answer. The colour pair the state kept
-is let go: the value stands at a colour between two, which no pair names, and
+the image, because the host needs it to answer. The color pair the state kept
+is let go: the value stands at a color between two, which no pair names, and
 a render laying the pair again would send the host on to it.
 
 ## Writing the parts
@@ -136,7 +136,7 @@ write. It is synchronous: nothing is booked and nobody waits.
 
 Each write lays the lanes of its own parts and leaves every other lane as it
 lies, bit for bit. A value read back through its type is not always the lanes
-it came from - a colour is eight bits a channel, and the host reports the
+it came from - a color is eight bits a channel, and the host reports the
 frames between them - so a stop or a move laying the whole journey again would
 say the value and its speed moved, and the host would start over from them
 (`JourneyTests.testAJourneyWriteLaysOnlyItsPart`).
@@ -148,7 +148,7 @@ which another hand or the program may be moving: `Journey.snap(_:to:)`, the
 library's own, puts one part of the value - a key path to one of its numbers -
 where it is at once, as `snap(to:)` does the whole. Its lanes of value,
 destination and speed are laid and no other, so the host takes that lane out
-of the run it travelled in and leaves the rest going.
+of the run it traveled in and leaves the rest going.
 
 ## Two reader sets
 
@@ -284,7 +284,7 @@ every animation of its table to where it starts and where it lands.
   spring                            about the distance left, so the three
                                     damping cases are the textbook ones
   still                             0.001 in the value's units and per ms: below
-                                    any display's resolution for a colour
+                                    any display's resolution for a color
                                     channel (0 to 1) or a point
   longest                           a spring is over after 10 s, so no animation
                                     holds a display clock awake for ever

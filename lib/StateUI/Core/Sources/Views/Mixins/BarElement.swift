@@ -24,7 +24,7 @@
 public protocol BarElement: PropertyContainer {}
 
 extension BarElement {
-    /// What the bar is painted, in one flat colour.
+    /// What the bar is painted, in one flat color.
     ///
     ///     NavigationStack($path) {
     ///         HomePage()
@@ -38,9 +38,9 @@ extension BarElement {
         setValue(BarElementContract.barBackgroundColor, value)
     }
 
-    /// The colour of what stands on the bar: the title and the native
+    /// The color of what stands on the bar: the title and the native
     /// navigation and toolbar affordances. Destructive actions keep the
-    /// platform's warning colour.
+    /// platform's warning color.
     public func barForegroundColor(_ value: Color) -> Modified {
         setValue(BarElementContract.barForegroundColor, value)
     }

@@ -2,7 +2,7 @@
 
 # TextSpan
 
-One run of text inside a label, with its own colour, size and weight.
+One run of text inside a label, with its own color, size and weight.
 
 ```swift
 Text()
@@ -65,7 +65,7 @@ What every element showing words has: the words, and the case they are drawn in.
 
 ## From [TextColorElement](tiers/TextColorElement.md)
 
-The colour of text, wherever it is drawn.
+The color of text, wherever it is drawn.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>

@@ -62,7 +62,7 @@ final class AndroidShapeViewTests: XCTestCase {
             host.layOut()
             let arc = try XCTUnwrap(host.views(AndroidShapeView.self).first)
 
-            // Centred, the half circle stands from 10 to 30 pixels down: its top middle is filled, the
+            // Centered, the half circle stands from 10 to 30 pixels down: its top middle is filled, the
             // corner beside it is not.
             XCTAssertEqual(arc.pixels(at: [(20, 12), (2, 12)]), [Self.red, 0])
         }

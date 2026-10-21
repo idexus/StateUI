@@ -25,7 +25,7 @@ final class GTKWindow {
     /// The class painting the window behind its pages; nil for libadwaita's own.
     private var backgroundClass: String?
 
-    /// Paints the window behind its pages in `value`'s colour; libadwaita's own where it is nil.
+    /// Paints the window behind its pages in `value`'s color; libadwaita's own where it is nil.
     func setBackground(_ value: HostValue?) {
         let wanted = GTKBrush(value).firstColor.map(GTKStyleSheet.fill)
         guard wanted != backgroundClass else { return }

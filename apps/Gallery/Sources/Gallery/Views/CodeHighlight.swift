@@ -1,6 +1,6 @@
-// Colouring a listing, in the language it is written in.
+// Coloring a listing, in the language it is written in.
 //
-// A Text has one text colour, so text in six colours is six spans - which is
+// A Text has one text color, so text in six colors is six spans - which is
 // what `Text.spans` is for. This file turns a snippet into those runs.
 //
 // ASCII only, on purpose. Deciding what is a letter with `Character.isLetter`
@@ -11,25 +11,25 @@
 
 import StateUI
 
-/// One run of source that is all the same colour.
+/// One run of source that is all the same color.
 struct CodeRun {
     /// The characters, exactly as they were written - whitespace included, so
     /// joining every run back up gives the snippet.
     let text: String
 
     /// What to draw it in.
-    let colour: Color
+    let color: Color
 }
 
-/// Splits a listing into coloured runs.
+/// Splits a listing into colored runs.
 ///
 /// Deliberately shallow: one pass, no parsing, no notion of scope. It reads
-/// comments, string literals, attributes, keywords, capitalised names and
+/// comments, string literals, attributes, keywords, capitalized names and
 /// numbers, and calls everything else plain. That is enough to make a snippet
 /// scannable and cannot be wrong about code it does not understand - the worst
-/// it does is leave something uncoloured.
+/// it does is leave something uncolored.
 enum CodeHighlight {
-    /// The colours, each right on both themes. `Color(light:dark:)` picks its
+    /// The colors, each right on both themes. `Color(light:dark:)` picks its
     /// half as the run is built, so nothing here has to know which theme is on.
     private enum Ink {
         /// `let`, `func`, `if` - the words the language owns.
@@ -66,14 +66,14 @@ enum CodeHighlight {
         func flush() {
             guard !plain.isEmpty else { return }
 
-            runs.append(CodeRun(text: plain, colour: Ink.plain))
+            runs.append(CodeRun(text: plain, color: Ink.plain))
             plain = ""
         }
 
-        /// Emits one coloured run, after whatever came before it.
-        func emit(_ range: Range<Int>, _ colour: Color) {
+        /// Emits one colored run, after whatever came before it.
+        func emit(_ range: Range<Int>, _ color: Color) {
             flush()
-            runs.append(CodeRun(text: String(characters[range]), colour: colour))
+            runs.append(CodeRun(text: String(characters[range]), color: color))
             index = range.upperBound
         }
 

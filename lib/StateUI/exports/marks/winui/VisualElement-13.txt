@@ -15,11 +15,11 @@ DatePicker.accessibilityHint: ✅
 DatePicker.scaleY: ✅
 Divider.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Ellipse.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Grid.isAccessibilityHidden: ✅
 Grid.isVisible: ✅
 HStack.accessibilityHeading: ✅
-HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Image.tooltip: ✅
 ItemsView.hidesChildrenFromAccessibility: ✅
 ItemsView.opacity: ✅
@@ -44,7 +44,7 @@ ProgressBar.accessibilityActionPerformed: – UI Automation offers no action of 
 ProgressBar.accessibilityActions: – UI Automation offers no action of an application's own words.
 ProgressBar.isEnabled: ✅
 Rectangle.accessibilityHeading: ✅
-ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 ScrollView.isEnabled: ✅
 SearchField.height: ✅
 SearchField.layoutDirection: ✅
@@ -65,7 +65,7 @@ TextField.scale: ✅
 TimePicker.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 TimePicker.translationY: ✅
 VStack.accessibilityHeading: ✅
-VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 WebView.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 ZStack.hidesChildrenFromAccessibility: ✅
 ZStack.opacity: ✅

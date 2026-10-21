@@ -41,7 +41,7 @@ struct GalleryApp: Application {
 
     /// What every gallery shares, written as the application is made.
     init() {
-        // The styles a control of the gallery asks for by name. A colour in a
+        // The styles a control of the gallery asks for by name. A color in a
         // style follows the theme by itself. See Styles/AppStyles.swift.
         application.styles = AppStyles.sheet
 

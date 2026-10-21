@@ -9,11 +9,11 @@
 /// Design: docs/design/platforms/web/layout.md#places-that-travel
 extension WebDOMView: PlacedView {
     var placedFrame: Rect {
-        get { travelling ?? slot ?? Rect(x: 0, y: 0, width: 0, height: 0) }
+        get { traveling ?? slot ?? Rect(x: 0, y: 0, width: 0, height: 0) }
         set {
             let drawn: Rect? = newValue == slot ? nil : newValue
-            guard drawn != travelling else { return }
-            travelling = drawn
+            guard drawn != traveling else { return }
+            traveling = drawn
             placingLayout?.placing?.moved(self)
         }
     }
@@ -21,24 +21,24 @@ extension WebDOMView: PlacedView {
     /// Draws the view where its place stands: moved from its slot, and - but for a view laying out words, which
     /// keeps the size it is bound for - at the size the place passes through.
     func writePlace() {
-        guard let travelling, let slot else {
+        guard let traveling, let slot else {
             clearSizeOverride()
             travelOffset = nil
             return writeTransform()
         }
-        let sized = !(self is WebWordsView) && (travelling.width != slot.width || travelling.height != slot.height)
+        let sized = !(self is WebWordsView) && (traveling.width != slot.width || traveling.height != slot.height)
         if sized {
-            override(width: travelling.width, height: travelling.height, slot: slot)
+            override(width: traveling.width, height: traveling.height, slot: slot)
         } else {
             clearSizeOverride()
         }
-        let width = sized ? travelling.width : slot.width
+        let width = sized ? traveling.width : slot.width
         let fromEnd = isRightToLeft && styled("position") != "absolute"
-        travelOffset = (travelling.x - (fromEnd ? slot.x + slot.width - width : slot.x), travelling.y - slot.y)
-        writeTransform(size: sized ? LayoutSize(width: travelling.width, height: travelling.height) : nil)
+        travelOffset = (traveling.x - (fromEnd ? slot.x + slot.width - width : slot.x), traveling.y - slot.y)
+        writeTransform(size: sized ? LayoutSize(width: traveling.width, height: traveling.height) : nil)
     }
 
-    /// Gives the view its own CSS back where a travelling place wrote over it.
+    /// Gives the view its own CSS back where a traveling place wrote over it.
     func clearSizeOverride() {
         for name in overridden { WebRelay.setStyle(node, name, styled(name)) }
         overridden = []

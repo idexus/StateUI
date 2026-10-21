@@ -96,7 +96,7 @@ final class GTKDriver: HostDriver {
         "read sidebarBackground of SplitView":
             "the class of the host's style sheet the sidebar wears: GTK reads back no background",
         "read flyoutBackground of SplitView":
-            "the colour the split keeps for its sidebar over the detail, which a wide window never shows",
+            "the color the split keeps for its sidebar over the detail, which a wide window never shows",
         "read source of Image": "the file the host's own panel draws: GTK's snapshot holds no picture's name",
         "read icon of Button": "the file the host's own panel draws: GTK's snapshot holds no picture's name",
         "read contentMode of Image": "how the host's own panel fills its room: GTK's snapshot holds no aspect",
@@ -288,7 +288,7 @@ final class GTKDriver: HostDriver {
         case (.showsSidebar, let split as GTKSplitView): return split.showsSidebar.propValue
         case (.sidebarOverlays, let split as GTKSplitView): return split.isCollapsed.propValue
         case (.sidebarBackground, let split as GTKSplitView), (.flyoutBackground, let split as GTKSplitView):
-            // The sidebar's class in the place it stands; the other place's colour as the split keeps it.
+            // The sidebar's class in the place it stands; the other place's color as the split keeps it.
             guard split.isCollapsed == (property == .flyoutBackground) else {
                 return (property == .flyoutBackground ? split.grounds.over : split.grounds.beside)
                     .map { Material.color(Self.color($0)).propValue }
@@ -308,14 +308,14 @@ final class GTKDriver: HostDriver {
         }
     }
 
-    /// The colour GTK draws `widget`'s words and marks in.
+    /// The color GTK draws `widget`'s words and marks in.
     static func color(of widget: GTKWidget) -> Color {
         var color = GdkRGBA()
         gtk_widget_get_color(widget, &color)
         return Self.color(color)
     }
 
-    /// `rgba` as the tree writes a colour.
+    /// `rgba` as the tree writes a color.
     static func color(_ rgba: GdkRGBA) -> Color {
         let channel = { (value: Float) in Int((value * 255).rounded()) }
         return Color(red: channel(rgba.red), green: channel(rgba.green), blue: channel(rgba.blue), alpha: channel(rgba.alpha))

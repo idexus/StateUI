@@ -14,7 +14,7 @@ protocol AppKitBoxSurface: NSView {
     var wash: AppKitBoxWash { get }
 }
 
-/// A box's background laid over its backdrop, which a colour with an alpha tints; hidden while it paints nothing.
+/// A box's background laid over its backdrop, which a color with an alpha tints; hidden while it paints nothing.
 @MainActor
 final class AppKitBoxWash: NSView {
     /// What it paints.
@@ -103,7 +103,7 @@ final class AppKitGlassView: NSGlassEffectView, AppKitBoxSurface {
     private var isInteractive = false
     var isInteractiveForTesting: Bool { isInteractive }
 
-    /// The colour the glass is tinted with, active or not; nil for none.
+    /// The color the glass is tinted with, active or not; nil for none.
     private(set) var tint: NSColor?
 
     override init(frame: NSRect) {

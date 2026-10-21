@@ -58,7 +58,7 @@ final class AndroidSwitchViewTests: XCTestCase {
         }
     }
 
-    /// A toggle's words are the compound button's own, in their case and colour, so a tap on them turns it.
+    /// A toggle's words are the compound button's own, in their case and color, so a tap on them turns it.
     func testATogglesWordsStandInIt() throws {
         try onMainActor {
             let host = AndroidRenderer.running {

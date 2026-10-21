@@ -13,7 +13,7 @@ DatePicker.minimumWidth: ✅
 DatePicker.scaleX: ✓ read scaleX of DatePicker: the host's own transform, checked against the layer it composed itself
 Divider.isEnabled: ✅
 Divider.rotationY: ✓ read rotationY of Divider: the host's own transform, checked against the layer it composed itself
-Ellipse.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+Ellipse.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Grid.accessibilityHint: ✅
 Grid.background: ✅
 HStack.pivotX: ✓ read pivotX of HStack: the host's own transform, checked against the layer it composed itself
@@ -47,6 +47,6 @@ TextField.rotationY: ✓ read rotationY of TextField: the host's own transform, 
 TimePicker.isAccessibilityHidden: ✅
 VStack.accessibilityLabel: ✅
 VStack.layoutDirection: ✅
-WebView.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+WebView.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 ZStack.accessibilityRole: ✅
 ZStack.background: ✅

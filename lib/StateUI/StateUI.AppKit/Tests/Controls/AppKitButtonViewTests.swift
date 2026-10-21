@@ -177,14 +177,14 @@ final class AppKitButtonViewTests: XCTestCase {
         let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
         renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
 
-        // The columns the picture's colour is drawn in.
+        // The columns the picture's color is drawn in.
         let drawn = try XCTUnwrap(button.bitmapImageRepForCachingDisplay(in: button.bounds))
         button.cacheDisplay(in: button.bounds, to: drawn)
         let columns = (0..<drawn.pixelsWide).filter { x in
             (0..<drawn.pixelsHigh).contains { y in
-                guard let colour = drawn.colorAt(x: x, y: y)?.usingColorSpace(.deviceRGB) else { return false }
-                return colour.blueComponent > 0.45 && colour.blueComponent - colour.redComponent > 0.2
-                    && colour.alphaComponent > 0.9
+                guard let color = drawn.colorAt(x: x, y: y)?.usingColorSpace(.deviceRGB) else { return false }
+                return color.blueComponent > 0.45 && color.blueComponent - color.redComponent > 0.2
+                    && color.alphaComponent > 0.9
             }
         }
         let scale = CGFloat(drawn.pixelsWide) / button.bounds.width
@@ -213,8 +213,8 @@ final class AppKitButtonViewTests: XCTestCase {
         XCTAssertEqual(buttons.map(\.bezelStyle), [.flexiblePush, .push])
     }
 
-    /// A destructive action's words stand in the system's red where the tree colours them not, the main action is
-    /// AppKit's accent, and a colour the tree states wins over the role's.
+    /// A destructive action's words stand in the system's red where the tree colors them not, the main action is
+    /// AppKit's accent, and a color the tree states wins over the role's.
     @MainActor
     func testARoleDrawsAsAppKitDrawsIt() throws {
         let renderer = AppKitRenderer.running {
@@ -231,7 +231,7 @@ final class AppKitButtonViewTests: XCTestCase {
 
         XCTAssertEqual(words[0], .systemRed, "a destructive action's words")
         XCTAssertEqual(buttons[1].bezelColor, .controlAccentColor, "the main action's accent")
-        XCTAssertNotEqual(words[2], .systemRed, "the tree's colour wins")
+        XCTAssertNotEqual(words[2], .systemRed, "the tree's color wins")
         XCTAssertEqual(words[3], .controlTextColor)
     }
 
@@ -283,7 +283,7 @@ final class AppKitButtonViewTests: XCTestCase {
                 .shape: ContainerShape.roundedRectangle(6).propValue,
             ]),
             button("stretched", icon(.stretch)),
-            button("centred", icon(.center)),
+            button("centered", icon(.center)),
             button("covering", icon(.fill)),
         ])
         renderer.applyForTesting(tree(stack))
@@ -304,7 +304,7 @@ final class AppKitButtonViewTests: XCTestCase {
             (renderer.viewForTesting(id: .manual(id)) as? NSButton)?.imageScaling
         }
         XCTAssertEqual(scaling("stretched"), .scaleAxesIndependently)
-        XCTAssertEqual(scaling("centred"), .scaleNone)
+        XCTAssertEqual(scaling("centered"), .scaleNone)
         XCTAssertEqual(scaling("covering"), .scaleProportionallyUpOrDown)
     }
 
@@ -394,9 +394,9 @@ final class AppKitButtonViewTests: XCTestCase {
             let scale = CGFloat(drawn.pixelsWide) / button.bounds.width
             let columns = (0..<Int(room * scale)).filter { x in
                 (0..<drawn.pixelsHigh).contains { y in
-                    guard let colour = drawn.colorAt(x: x, y: y)?.usingColorSpace(.sRGB) else { return false }
-                    return colour.alphaComponent > 0.5 && colour.redComponent > 0.7 && colour.greenComponent < 0.3
-                        && colour.blueComponent < 0.3
+                    guard let color = drawn.colorAt(x: x, y: y)?.usingColorSpace(.sRGB) else { return false }
+                    return color.alphaComponent > 0.5 && color.redComponent > 0.7 && color.greenComponent < 0.3
+                        && color.blueComponent < 0.3
                 }
             }
             let first = CGFloat(try XCTUnwrap(columns.first)) / scale
@@ -445,9 +445,9 @@ final class AppKitButtonViewTests: XCTestCase {
         XCTAssertLessThanOrEqual(drawn.height, image.size.height + 0.5, "\(drawn) for \(image.size)")
     }
 
-    /// A button's icon is drawn in its words' colour: the platform's, a destructive role's red, the tree's own.
+    /// A button's icon is drawn in its words' color: the platform's, a destructive role's red, the tree's own.
     @MainActor
-    func testAButtonsIconIsDrawnInItsWordsColour() throws {
+    func testAButtonsIconIsDrawnInItsWordsColor() throws {
         let renderer = AppKitRenderer.running {
             VStack {
                 Button("Share").icon(.icon(.share))
@@ -463,8 +463,8 @@ final class AppKitButtonViewTests: XCTestCase {
         for button in renderer.nativeViews(AppKitButtonView.self) {
             let cell = try XCTUnwrap(button.cell as? NSButtonCell)
             let (image, title) = (cell.imageRect(forBounds: button.bounds), cell.titleRect(forBounds: button.bounds))
-            let icon = try inkColour(of: button, columns: image.minX...image.maxX)
-            let words = try inkColour(of: button, columns: title.minX...title.maxX)
+            let icon = try inkColor(of: button, columns: image.minX...image.maxX)
+            let words = try inkColor(of: button, columns: title.minX...title.maxX)
 
             XCTAssertTrue(sameInk(icon, words), "\(button.title): the icon's \(String(describing: icon)), the words' \(String(describing: words))")
         }

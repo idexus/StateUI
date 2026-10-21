@@ -119,7 +119,7 @@ namespace {
         D2D1::Matrix3x2F transform = D2D1::Matrix3x2F::Identity();
     };
 
-    D2D1_COLOR_F colour(int32_t argb) {
+    D2D1_COLOR_F color(int32_t argb) {
         auto value = static_cast<uint32_t>(argb);
         return D2D1::ColorF(((value >> 16) & 0xFF) / 255.0f, ((value >> 8) & 0xFF) / 255.0f, (value & 0xFF) / 255.0f,
                             (value >> 24) / 255.0f);
@@ -225,8 +225,8 @@ namespace {
         winrt::check_hresult(context->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), brush.put()));
         Pen pen;
         std::vector<Pen> kept;
-        auto paint = [&](D2D1_COLOR_F const &colour) {
-            brush->SetColor(colour);
+        auto paint = [&](D2D1_COLOR_F const &color) {
+            brush->SetColor(color);
             brush->SetOpacity(pen.alpha);
             return brush.get();
         };
@@ -245,9 +245,9 @@ namespace {
 #pragma clang diagnostic push
 #pragma clang diagnostic error "-Wswitch-enum"
             switch (kind) {
-            case StateUIDrawingFillColor: pen.fill = colour(reader.integer()); break;
-            case StateUIDrawingStrokeColor: pen.stroke = colour(reader.integer()); break;
-            case StateUIDrawingTextColor: pen.text = colour(reader.integer()); break;
+            case StateUIDrawingFillColor: pen.fill = color(reader.integer()); break;
+            case StateUIDrawingStrokeColor: pen.stroke = color(reader.integer()); break;
+            case StateUIDrawingTextColor: pen.text = color(reader.integer()); break;
             case StateUIDrawingLineWidth:
                 if ((at = reader.numbers(1))) pen.width = static_cast<float>(std::max(0.0, *at));
                 break;
@@ -374,15 +374,15 @@ namespace {
             invalidate();
         }
 
-        /// The colour the canvas is filled with under its drawing; clear for none.
-        void paintGround(D2D1_COLOR_F colour) {
-            ground = colour;
+        /// The color the canvas is filled with under its drawing; clear for none.
+        void paintGround(D2D1_COLOR_F color) {
+            ground = color;
             stale = true;
             invalidate();
         }
 
-        /// The colour under the drawing, as ARGB; 0 for none.
-        uint32_t groundColour() const {
+        /// The color under the drawing, as ARGB; 0 for none.
+        uint32_t groundColor() const {
             auto channel = [](float value) { return static_cast<uint32_t>(std::lround(value * 255)); };
             return channel(ground.a) << 24 | channel(ground.r) << 16 | channel(ground.g) << 8 | channel(ground.b);
         }
@@ -589,7 +589,7 @@ extern "C" void stateui_winui_canvas_set_ground(StateUIObjectRef handle, uint32_
 
 extern "C" uint32_t stateui_winui_canvas_ground(StateUIObjectRef handle) {
     try {
-        return canvas(handle)->groundColour();
+        return canvas(handle)->groundColor();
     } catch (...) {
         report("reading a canvas's ground");
         return 0;

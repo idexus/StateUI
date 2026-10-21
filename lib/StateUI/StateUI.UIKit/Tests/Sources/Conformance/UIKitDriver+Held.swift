@@ -8,7 +8,7 @@ import UIKit
 @_spi(Host) import StateUIConformance
 
 /// What the UIKit driver reads of every view: its transform as its layer holds it, what VoiceOver meets, a control's
-/// font and words' colour, and the colour behind it - each from UIKit itself.
+/// font and words' color, and the color behind it - each from UIKit itself.
 /// Design: docs/design/platforms/uikit/conformance.md#what-the-driver-reads
 extension UIKitDriver {
     /// The view VoiceOver meets for `view`: the control a wrapping view presents - a switch beside its words - else
@@ -73,7 +73,7 @@ extension UIKitDriver {
         }
     }
 
-    /// A control's words as UIKit draws them: their font's size, bold and italic, family, and their colour.
+    /// A control's words as UIKit draws them: their font's size, bold and italic, family, and their color.
     private static func words(_ property: Prop, _ shown: UIView) throws -> HostValue? {
         // A switch's words are its label's.
         let view = (shown as? UIKitSwitchView)?.caption ?? shown
@@ -130,7 +130,7 @@ extension UIKitDriver {
         return try size() > standing
     }
 
-    /// A colour UIKit holds, in sRGB, as StateUI's.
+    /// A color UIKit holds, in sRGB, as StateUI's.
     static func color(_ native: UIColor) -> Color {
         var (red, green, blue, alpha): (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
         native.resolvedColor(with: UITraitCollection.current).getRed(&red, green: &green, blue: &blue, alpha: &alpha)

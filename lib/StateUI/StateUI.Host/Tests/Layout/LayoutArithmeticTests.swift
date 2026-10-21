@@ -84,9 +84,9 @@ final class LayoutArithmeticTests: XCTestCase {
     /// A vertical stack sets shown children one under another; a hidden one takes no room and no spacing.
     @MainActor
     func testAVerticalStackPlacesItsShownChildrenInOrder() {
-        var centred = Child(width: 20, height: 10)
-        centred.values.horizontal = 1
-        let items = [Child(width: 20, height: 10), Child(width: 20, height: 10, shown: false), centred]
+        var centered = Child(width: 20, height: 10)
+        centered.values.horizontal = 1
+        let items = [Child(width: 20, height: 10), Child(width: 20, height: 10, shown: false), centered]
 
         let size = StackArithmetic.size(of: items, axis: .vertical, spacing: 5, padding: Insets(2), width: nil)
         let places = StackArithmetic.places(
@@ -96,7 +96,7 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(size, LayoutSize(width: 24, height: 29))
         XCTAssertEqual(places[0], Rect(2, 2, 96, 10), "a filling child takes the slot's width")
         XCTAssertNil(places[1])
-        XCTAssertEqual(places[2], Rect(40, 17, 20, 10), "a centred child stands in the middle")
+        XCTAssertEqual(places[2], Rect(40, 17, 20, 10), "a centered child stands in the middle")
     }
 
     // MARK: - Right to left

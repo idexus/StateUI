@@ -7,8 +7,8 @@ import QuartzCore
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// What a layout draws of its own box: its background - a colour or a gradient, or a blur or glass with its tint -
-/// and its outline on its shape, and - where it clips - the cut of what it holds to that shape. A plain colour on a
+/// What a layout draws of its own box: its background - a color or a gradient, or a blur or glass with its tint -
+/// and its outline on its shape, and - where it clips - the cut of what it holds to that shape. A plain color on a
 /// plain box is the layer's own, with nothing drawn.
 /// Design: docs/design/platforms/appkit/views.md#a-layouts-own-box
 @MainActor
@@ -24,12 +24,12 @@ final class AppKitDecoration {
     private(set) var surface: (any AppKitBoxSurface)?
 
     /// Whether the view draws the box: an outline, a shape or a gradient with no blur or glass; otherwise the layer
-    /// paints its colour, or the blur's or glass's surface the box.
+    /// paints its color, or the blur's or glass's surface the box.
     var draws: Bool {
         surface == nil && (lineWidth > 0 && stroke.lineColor != nil || shape != .rectangle || fill.isGradient)
     }
 
-    /// The colour the layer paints where nothing is drawn.
+    /// The color the layer paints where nothing is drawn.
     var layerColor: CGColor? {
         draws || surface != nil ? nil : fill.color?.cgColor
     }

@@ -37,7 +37,7 @@ enum AppKitRegistrations {
     }()
 
     /// The elements whose registration draws their background itself - a field, a button - under
-    /// which no layer paints another: a search field's rounded field takes no fill colour, and a square painted
+    /// which no layer paints another: a search field's rounded field takes no fill color, and a square painted
     /// under it would hide its shape.
     /// Design: docs/design/platforms/appkit/registrations.md#a-background
     static let drawOwnBackground: Set<NodeType> = Set(registry.realization.members

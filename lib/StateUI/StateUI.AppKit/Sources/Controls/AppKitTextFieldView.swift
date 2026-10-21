@@ -36,10 +36,10 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         fatalError("AppKitTextFieldView is created in code")
     }
 
-    /// The colour the field stands on, in a rounded field's shape; nil for AppKit's own bezel.
+    /// The color the field stands on, in a rounded field's shape; nil for AppKit's own bezel.
     private(set) var fill: NSColor?
 
-    /// How far a field standing on a colour sets its words in from its edge, as the rounded bezel does.
+    /// How far a field standing on a color sets its words in from its edge, as the rounded bezel does.
     static let inset = NSSize(width: 6, height: 4)
 
     override var intrinsicContentSize: NSSize {
@@ -112,7 +112,7 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         textField.contentType = traits.contentType
         textField.alignment = NSTextAlignment(horizontalAlignment, in: userInterfaceLayoutDirection)
 
-        // AppKit's rounded bezel draws its own ground over any colour: a field given one stands in the bezel's
+        // AppKit's rounded bezel draws its own ground over any color: a field given one stands in the bezel's
         // shape, filled with it. A border and a bezel exclude each other: the border is said first, so the bezel
         // said after it stands. Design: docs/design/platforms/appkit/registrations.md#a-background
         let colored = backgroundColor.map { $0.alphaComponent > 0 } ?? false

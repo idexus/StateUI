@@ -54,7 +54,7 @@
         }
     }
 
-    /// How wide an outline is drawn: none without a colour to draw it in, else as the tree says - one where it says
+    /// How wide an outline is drawn: none without a color to draw it in, else as the tree says - one where it says
     /// nothing - never below nothing.
     public static func outlineWidth(stroke: HostValue?, width: Double?) -> Double {
         guard stroke != nil else { return 0 }

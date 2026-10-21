@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
   <!-- Two sparkles: the row that opens a sample nobody asked for. -->
-  <!-- One colour and no strokes: the flyout tints these, and a stroke would keep
+  <!-- One color and no strokes: the flyout tints these, and a stroke would keep
        its own. -->
   <g fill="#000000">
     <polygon points="20,2 24.2,15.8 38,20 24.2,24.2 20,38 15.8,24.2 2,20 15.8,15.8"/>

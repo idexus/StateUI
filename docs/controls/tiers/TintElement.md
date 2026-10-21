@@ -2,7 +2,7 @@
 
 # TintElement
 
-A control's one accent colour.
+A control's one accent color.
 
 ```swift
 @State var on = true

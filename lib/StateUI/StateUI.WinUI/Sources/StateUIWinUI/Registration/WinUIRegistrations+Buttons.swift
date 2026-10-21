@@ -40,7 +40,7 @@ extension WinUIRegistrations {
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
             // WinUI's own accelerator - the one stated, else the role's - pressing the button while its window is in
             // front, and the role's look: the accent style for the main action, a destructive one's words in the
-            // theme's critical colour where the tree colours them not.
+            // theme's critical color where the tree colors them not.
             button.applies(
                 ButtonContract.keyboardShortcut, ButtonContract.role,
                 TextColorElementContract.textColor) { view, values in

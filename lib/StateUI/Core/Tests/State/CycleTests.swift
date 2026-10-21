@@ -1004,7 +1004,7 @@ final class CycleTests: XCTestCase {
     /// value from an engine has to read it in its BODY too, and hand it over.
     ///
     /// Measured live before it was written down: a gallery whose shape and
-    /// whose travelling law were read inside its engine alone kept the shape it
+    /// whose traveling law were read inside its engine alone kept the shape it
     /// was last placed in, however many times the user asked for another.
     func testAStateOnlyAnEngineReadsArmsNothing() {
         let ran = Ran()

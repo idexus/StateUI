@@ -162,12 +162,12 @@ extension GTKElement {
     }
 
     /// Stands a split view's sidebar on its materials - GTK blurs nothing inside a window, so a blur stands as its
-    /// colour.
+    /// color.
     func groundSidebar() {
         guard let split = view as? GTKSplitView else { return }
-        let colour = { (over: Bool) in
+        let color = { (over: Bool) in
             self.element.sidebarMaterial(over: over).painted.flatMap { GTKBrush($0).firstColor }
         }
-        split.grounds = (colour(false), colour(true))
+        split.grounds = (color(false), color(true))
     }
 }

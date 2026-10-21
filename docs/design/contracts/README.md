@@ -104,7 +104,7 @@ way and registers them with its hosts.
 
 ## What an element does not wear
 
-A modifier stands on the tier of the elements that can honour it, so the typed
+A modifier stands on the tier of the elements that can honor it, so the typed
 roads offer nothing an element's contract does not wear. The generic roads -
 `setValue`, `onEvent` over any member - cannot be tied to an element's tiers
 by type: Swift has no constraint saying a contract is among those another

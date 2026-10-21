@@ -566,7 +566,7 @@ struct ControlDictionary {
         row(leading + platforms)
     }
 
-    /// The rule under a header: its own columns left, the hosts' centred.
+    /// The rule under a header: its own columns left, the hosts' centered.
     static func rule(leading count: Int) -> String {
         row(Array(repeating: "---", count: count) + platforms.map { _ in ":---:" })
     }

@@ -1,6 +1,6 @@
 # revision 17.2
 ActivityIndicator.accessibilityHeading: ✅
-Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Button.isEnabled: ✅
 Canvas.ignoresInput: ✅
 Canvas.pivotY: ✅
@@ -9,7 +9,7 @@ Capsule.scale: ✅
 CheckBox.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 CheckBox.translationX: ✅
 DatePicker.tooltip: ✅
-Divider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Divider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Divider.isEnabled: does not apply - read isEnabled of Divider - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Ellipse.background: – A WinUI shape is its figure alone: it paints no ground around it.
 Ellipse.isEnabled: does not apply - read isEnabled of Ellipse - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
@@ -51,7 +51,7 @@ SearchField.zIndex: ✅
 Slider.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Slider.translationX: ✅
 Spacer.tooltip: ✅
-Stepper.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Stepper.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Stepper.isEnabled: ✅
 Switch.frame: ✅
 Switch.rotation: ✅

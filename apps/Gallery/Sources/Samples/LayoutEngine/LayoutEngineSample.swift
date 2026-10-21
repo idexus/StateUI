@@ -222,7 +222,7 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
                 .padding(horizontal: phone ? 10 : 12, vertical: phone ? 8 : 10)
                 .spacing(1)
                 // A dark strip under the words, so a caption reads over a
-                // picture of any colour.
+                // picture of any color.
                 .background(Color(hex: 0x000000, opacity: 0.7))
                 .verticalAlignment(.end)
             }

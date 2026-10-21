@@ -15,9 +15,9 @@ final class ShapeArithmeticTests: XCTestCase {
         XCTAssertEqual(ShapeArithmetic.placement(of: square, in: wide, aspect: .fit, transform: nil), [4, 0, 0, 4, 20, 0])
     }
 
-    /// Covering, it grows until it covers the room; stretched, each axis fills on its own; centred, it keeps its
+    /// Covering, it grows until it covers the room; stretched, each axis fills on its own; centered, it keeps its
     /// own size in the middle.
-    func testTheOtherAspectsCoverStretchOrCentre() {
+    func testTheOtherAspectsCoverStretchOrCenter() {
         XCTAssertEqual(ShapeArithmetic.placement(of: square, in: wide, aspect: .fill, transform: nil), [8, 0, 0, 8, 0, -20])
         XCTAssertEqual(ShapeArithmetic.placement(of: square, in: wide, aspect: .stretch, transform: nil), [8, 0, 0, 4, 0, 0])
         XCTAssertEqual(ShapeArithmetic.placement(of: square, in: wide, aspect: .center, transform: nil), [1, 0, 0, 1, 35, 15])

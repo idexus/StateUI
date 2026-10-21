@@ -19,7 +19,7 @@ final class GLESCube3DView: AndroidControl {
         didSet { if cubeSize != oldValue { draw() } }
     }
 
-    /// Which colour it is painted.
+    /// Which color it is painted.
     var color = CubeColor.teal {
         didSet { if color != oldValue { draw() } }
     }
@@ -77,7 +77,7 @@ final class GLESCube3DView: AndroidControl {
     }
     // listing: end
 
-    /// Draws the cube as it stands: turned, scaled and seen in perspective, over the housing's colour.
+    /// Draws the cube as it stands: turned, scaled and seen in perspective, over the housing's color.
     private func draw() {
         drawing?.draw(
             transform: Self.transform(aspect: drawing?.aspect ?? 1, turn: angle, scale: min(max(cubeSize, 0), 1)),
@@ -182,7 +182,7 @@ extension GLESCube3DView {
             #version 300 es
             // listing: Cube3DSample.Android.glsl
             // The vertex shader, compiled for OpenGL ES 3.0: a corner carries its face's brightness in w, and the
-            // colour is the frame's.
+            // color is the frame's.
             layout(location = 0) in vec4 corner;
             uniform mat4 transform;
             uniform vec4 color;
@@ -197,7 +197,7 @@ extension GLESCube3DView {
         private static let fragmentShader = """
             #version 300 es
             // listing: Cube3DSample.Android.glsl
-            // The fragment shader: every point of a face takes the colour its corners were painted.
+            // The fragment shader: every point of a face takes the color its corners were painted.
             precision mediump float;
             in vec4 painted;
             out vec4 fragment;
@@ -250,7 +250,7 @@ extension GLESCube3DView {
             glVertexAttribPointer(0, 4, GLenum(GL_FLOAT), GLboolean(GL_FALSE), 16, nil)
         }
 
-        /// Clears to the housing's colour, draws the cube by `transform` in `color`, and shows the frame.
+        /// Clears to the housing's color, draws the cube by `transform` in `color`, and shows the frame.
         func draw(transform: [Float], color: (Float, Float, Float)) {
             guard program != 0, eglMakeCurrent(display, surface, surface, context) != 0 else { return }
 

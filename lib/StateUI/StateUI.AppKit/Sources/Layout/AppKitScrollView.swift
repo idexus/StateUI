@@ -148,7 +148,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         documentSurface.fittingContentSize(width: availableWidth)
     }
 
-    /// The scroller's own box: its outline in a colour and the shape it cuts what it shows to, on its layer - an
+    /// The scroller's own box: its outline in a color and the shape it cuts what it shows to, on its layer - an
     /// oval's outline a shape over what it shows.
     /// Design: docs/design/platforms/appkit/views.md#a-layouts-own-box
     func setBox(stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
@@ -158,16 +158,16 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         paintBox()
     }
 
-    /// The colour the scroller paints behind what it shows; nil for none.
+    /// The color the scroller paints behind what it shows; nil for none.
     var boxBackground: NSColor? {
         didSet { paintBox() }
     }
 
     private var boxShape = ContainerShape.rectangle
-    private var boxOutline: (colour: CGColor, width: CGFloat)?
+    private var boxOutline: (color: CGColor, width: CGFloat)?
     private var ovalOutline: CAShapeLayer?
 
-    // AppKit repaints a scroller's layer as it displays it, its colour and outline cleared: the box is put back
+    // AppKit repaints a scroller's layer as it displays it, its color and outline cleared: the box is put back
     // each time.
     override func updateLayer() {
         super.updateLayer()
@@ -179,7 +179,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         guard let layer else { return }
         layer.backgroundColor = boxBackground?.cgColor
         let oval = boxShape == .ellipse
-        layer.borderColor = oval ? nil : boxOutline?.colour
+        layer.borderColor = oval ? nil : boxOutline?.color
         layer.borderWidth = oval ? 0 : boxOutline?.width ?? 0
         cutToShape()
     }
@@ -211,7 +211,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         line.frame = layer.bounds
         line.path = CGPath(
             ellipseIn: layer.bounds.insetBy(dx: outline.width / 2, dy: outline.width / 2), transform: nil)
-        line.strokeColor = outline.colour
+        line.strokeColor = outline.color
         line.lineWidth = outline.width
         CATransaction.commit()
     }

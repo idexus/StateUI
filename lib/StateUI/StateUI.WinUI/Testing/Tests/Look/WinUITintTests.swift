@@ -50,7 +50,7 @@ final class WinUITintTests: XCTestCase {
     }
 
     /// A tint changed after the control is drawn is drawn by the brushes that stand in its resources, which take the
-    /// new colour: its theme is not read again, as a tint travelling frame by frame would have it read each frame.
+    /// new color: its theme is not read again, as a tint traveling frame by frame would have it read each frame.
     func testATintChangedLaterIsDrawn() throws {
         try onUIThread {
             let host = WinUIRenderer.running { TintedPage() }

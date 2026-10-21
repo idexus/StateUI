@@ -87,12 +87,12 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
         VStack {
             Text("One state, two readings. `width` is 300 the instant Grow is "
                 + "pressed; `$width.journey.value` is what the bar is actually showing this "
-                + "frame. The grey bar under the caption is the distance between them, "
+                + "frame. The gray bar under the caption is the distance between them, "
                 + "widest at the start and nought on arrival.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Both numbers, and the grey bar's width, are CONVERSIONS of the one "
+            Text("Both numbers, and the gray bar's width, are CONVERSIONS of the one "
                 + "state: `$width.journey.convert { … }` reads `destination` and `value` off it "
                 + "and the host works the answer out on its own frames. Nothing on this "
                 + "page reads `width` in a body, so a 1600ms journey costs no renders at "
@@ -102,7 +102,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("Stop leaves the value where it stands and brings the destination to "
-                + "meet it, so the two readings agree again and the grey bar closes. "
+                + "meet it, so the two readings agree again and the gray bar closes. "
                 + "Press Grow and then Stop half way: the caption's first number "
                 + "becomes the second.")
                 .fontSize(12)

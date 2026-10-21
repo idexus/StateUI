@@ -414,8 +414,8 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(element.insets(Prop("sides")), Insets(0), "none given")
     }
 
-    /// What a frame asks is the host layer's, the same on every host: a colour moved presents the element alone, a
-    /// width moved arranges its parent too, and a bar's colour moved composes the window's chrome again.
+    /// What a frame asks is the host layer's, the same on every host: a color moved presents the element alone, a
+    /// width moved arranges its parent too, and a bar's color moved composes the window's chrome again.
     @MainActor
     func testWhatAFrameAsksFollowsWhatMoved() {
         let (tree, log) = Self.tree(viewless: [])
@@ -428,16 +428,16 @@ final class MountedTreeTests: XCTestCase {
         let (labelMount, barsMount) = (tree.root!.children[0].mount, tree.root!.children[1].mount)
 
         log.arranged.removeAll()
-        let colour = tree.present(states: [:], properties: [labelMount: [.textColor]])
-        XCTAssertEqual(log.arranged, ["label"], "a colour moves the label alone")
-        XCTAssertFalse(colour.windowChrome)
+        let color = tree.present(states: [:], properties: [labelMount: [.textColor]])
+        XCTAssertEqual(log.arranged, ["label"], "a color moves the label alone")
+        XCTAssertFalse(color.windowChrome)
 
         log.arranged.removeAll()
         tree.present(states: [:], properties: [labelMount: [.width]])
         XCTAssertEqual(log.arranged, ["label", "stack"], "a width moves the label's place too")
 
         let bar = tree.present(states: [:], properties: [barsMount: [.barBackgroundColor]])
-        XCTAssertTrue(bar.windowChrome, "a bar's colour is the window's chrome")
+        XCTAssertTrue(bar.windowChrome, "a bar's color is the window's chrome")
     }
 
     /// What of a page the chrome shows - its title, its way back, its bar, the back button's words - moved from a
@@ -625,11 +625,11 @@ final class MountedTreeTests: XCTestCase {
         }
         var root = HostPatch(id: .manual("root"), type: .vStack)
         root.children = .arranged([
-            stack("labelled", [.accessibilityLabel: .string("Card")]),
+            stack("labeled", [.accessibilityLabel: .string("Card")]),
             stack("hinted", [.accessibilityHint: .string("Opens it")]),
             stack("heading", [.accessibilityHeading: .enumeration(1)]),
             stack("tapped", [:], tapped: true),
-            stack("labelled but hidden", [.accessibilityLabel: .string("Card"), .isAccessibilityHidden: .bool(true)]),
+            stack("labeled but hidden", [.accessibilityLabel: .string("Card"), .isAccessibilityHidden: .bool(true)]),
             stack("plain", [:]),
         ])
         tree.apply(root, complete: true)
@@ -638,8 +638,8 @@ final class MountedTreeTests: XCTestCase {
         }
 
         XCTAssertEqual(
-            ["labelled", "hinted", "heading", "tapped"].map(presence), [.met, .met, .met, .met], "each met")
-        XCTAssertEqual(presence("labelled but hidden"), .hidden, "as the author says")
+            ["labeled", "hinted", "heading", "tapped"].map(presence), [.met, .met, .met, .met], "each met")
+        XCTAssertEqual(presence("labeled but hidden"), .hidden, "as the author says")
         XCTAssertNil(presence("plain"), "as its view stands of itself")
     }
 
@@ -708,7 +708,7 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertNil(tree.root?.first(id: .manual("plain"))?.textRuns)
     }
 
-    /// An element's own look is read from its own values: its font, its colour, its letters' spacing, its lines'
+    /// An element's own look is read from its own values: its font, its color, its letters' spacing, its lines'
     /// height and its decorations.
     @MainActor
     func testAnElementsLookIsItsOwnValues() {

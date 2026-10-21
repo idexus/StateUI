@@ -25,7 +25,7 @@ protocol UIKitTextInputView: UIView, UITextInput {
 
     /// Whether the view takes input at all, whether the user can change the words, and what the keyboard is told of
     /// them.
-    func setBehaviour(enabled: Bool, readOnly: Bool, keyboard: UIKitKeyboard)
+    func setBehavior(enabled: Bool, readOnly: Bool, keyboard: UIKitKeyboard)
 
     /// The words' look: the view's own where it says nothing.
     func setLook(_ look: TextLook)
@@ -75,7 +75,7 @@ extension UIKitTextInputView where Self: UITextField {
             string: placeholder, attributes: color.map { [.foregroundColor: $0] } ?? [:])
     }
 
-    func setBehaviour(enabled: Bool, readOnly: Bool, keyboard: UIKitKeyboard) {
+    func setBehavior(enabled: Bool, readOnly: Bool, keyboard: UIKitKeyboard) {
         isEnabled = enabled
         typing.isReadOnly = readOnly
         keyboard.apply(to: self)

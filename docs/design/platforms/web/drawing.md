@@ -2,7 +2,7 @@
 
 A shape is SVG; a box a view paints of its own - a layout's, a button's - is
 CSS. Both take StateUI's brushes as the host layer reads them (`HostBrush`),
-so a colour, a line's gradient and a point's gradient mean the same on every
+so a color, a line's gradient and a point's gradient mean the same on every
 host.
 
 ## A shape
@@ -27,7 +27,7 @@ the tree says it. An outline keeps its width however the path is placed or scale
 host layer measures them (`ShapeArithmetic.dashLengths`). A gradient is an
 SVG gradient of the shape's own, in the page's units over the room and one
 line width around it, so a fraction of the shape means the same in its fill
-and its outline; a colour is the path's own `fill` or `stroke`. The page's
+and its outline; a color is the path's own `fill` or `stroke`. The page's
 units are the path's own user space, which its transform places, so the
 gradient carries that transform undone (`gradientTransform`,
 `WebVector.inverse`) and stays over the room however the path is placed.
@@ -40,7 +40,7 @@ room is the one geometry every host draws a shape's brush over.
 
 A box's fill is its CSS `background`, its outline its `border` inside its
 edge, its shape its `border-radius` - a shape the tree states, square corners
-too, over the look's own; one unsaid leaves the look's. A colour is the colour
+too, over the look's own; one unsaid leaves the look's. A color is the color
 itself; a gradient
 is a CSS gradient written for the box's size in pixels, so the box follows its
 own size with a size observer and writes it again as it changes.
@@ -50,7 +50,7 @@ not take: the angle is the direction from the first point to the second in
 the box's pixels, and each stop is moved onto CSS's gradient line - the line
 through the box's middle long enough to reach its corners - where the stripe
 square to the direction meets it. A point's gradient is a circle around its
-centre, as far as the host layer's reach (`HostBrush.reach`).
+center, as far as the host layer's reach (`HostBrush.reach`).
 
 An outline of a gradient is a transparent border with the box's background in
 two layers: the fill cut to the inside (`padding-box`), the outline's gradient
@@ -64,7 +64,7 @@ application draws carries no frame of the page's.
 A page has no blur and no glass of its own: a box's blur is a
 `backdrop-filter` of what lies behind it - 12, 18, 24, 32 or 40 pixels from
 ultra thin to ultra thick, saturated as the platforms' blurs are - under the
-blur's own colour, the theme's stand-in, with its tint laid over both as a
+blur's own color, the theme's stand-in, with its tint laid over both as a
 second background layer. Glass is drawn as the blur as clear as it is, which
 the register records as missing (☑️). The driver reads the filter back to its
 blur.

@@ -8,23 +8,23 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
     static let summary = "Cards join, leave and change places - each travels from where it was; one pulled up flies out."
 
     // listing: ChangingDeckSample
-    /// One card: its name, which is its identity, its colour and its icon.
+    /// One card: its name, which is its identity, its color and its icon.
     struct Card: Hashable {
         let name: String
-        let colour: Color
+        let color: Color
         let icon: Icon
     }
 
     /// Every card the deck can hold, dealt in this order.
     static let all = [
-        Card(name: "Mural", colour: Color(hex: 0x7C3AED), icon: .star),
-        Card(name: "Nebula", colour: Color(hex: 0x2563EB), icon: .heart),
-        Card(name: "Ridge", colour: Color(hex: 0x0D9488), icon: .home),
-        Card(name: "Bloom", colour: Color(hex: 0xD97706), icon: .calendar),
-        Card(name: "Tide", colour: Color(hex: 0xDB2777), icon: .mail),
-        Card(name: "Prism", colour: Color(hex: 0x4F46E5), icon: .settings),
-        Card(name: "Grove", colour: Color(hex: 0x16A34A), icon: .person),
-        Card(name: "Ember", colour: Color(hex: 0xDC2626), icon: .play),
+        Card(name: "Mural", color: Color(hex: 0x7C3AED), icon: .star),
+        Card(name: "Nebula", color: Color(hex: 0x2563EB), icon: .heart),
+        Card(name: "Ridge", color: Color(hex: 0x0D9488), icon: .home),
+        Card(name: "Bloom", color: Color(hex: 0xD97706), icon: .calendar),
+        Card(name: "Tide", color: Color(hex: 0xDB2777), icon: .mail),
+        Card(name: "Prism", color: Color(hex: 0x4F46E5), icon: .settings),
+        Card(name: "Grove", color: Color(hex: 0x16A34A), icon: .person),
+        Card(name: "Ember", color: Color(hex: 0xDC2626), icon: .play),
     ]
 
     /// The cards in the deck, in order.
@@ -179,13 +179,13 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
             zIndex: leaving && outward ? 200 : Int(100 - behind * 10))
     }
 
-    /// One card's face: its colour, its icon on a light disc and its name -
-    /// the icon in the platform's own colour, which shows on the disc in a
+    /// One card's face: its color, its icon on a light disc and its name -
+    /// the icon in the platform's own color, which shows on the disc in a
     /// light theme and a dark one alike - larger on the pile's larger cards.
     private func face(_ card: Card, large: Bool) -> some View {
         let disc = large ? 88.0 : 56.0
         return ZStack {
-            Rectangle().fill(card.colour)
+            Rectangle().fill(card.color)
                 .cornerRadius(20)
 
             VStack {

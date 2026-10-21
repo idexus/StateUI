@@ -42,7 +42,7 @@ struct MainPage: View {
     let nav: Navigation
 
     /// What the gallery looks like - its bars are the platform's own, or
-    /// painted in the accent the Colours window chooses.
+    /// painted in the accent the Colors window chooses.
     let style: SessionStyle
 
     /// The log of this window's lifecycle - kept by `GalleryWindow`.
@@ -125,7 +125,7 @@ struct MainPage: View {
             .barIcon(Self.mark)
             // listing: end
             // The bars of both panes, as the gallery's look says.
-            .bars(look.bars, in: look.barColour, system: application.info.accentColor)
+            .bars(look.bars, in: look.barColor, system: application.info.accentColor)
             // listing: MainPage.overlays
             // The window's notice, over every page while the gallery says so.
             .overlays {

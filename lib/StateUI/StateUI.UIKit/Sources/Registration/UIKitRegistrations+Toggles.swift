@@ -7,7 +7,7 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 extension UIKitRegistrations {
-    /// A Switch and a CheckBox: whether it is on, whether it can be turned, and the turn the user makes; its colour,
+    /// A Switch and a CheckBox: whether it is on, whether it can be turned, and the turn the user makes; its color,
     /// and the words it says beside it.
     static func toggles(_ registry: Registry<UIView>) {
         registry.add(SwitchContract.self, create: { reports in

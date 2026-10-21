@@ -84,7 +84,7 @@ final class UIKitTextViewTests: XCTestCase {
         let label = UIKitTextView()
         label.setLook { $0.size = 13 }
         label.setText(
-            "Each hand is a box whose bottom sits at the face's centre - its pivot - turned about that point, so "
+            "Each hand is a box whose bottom sits at the face's center - its pivot - turned about that point, so "
                 + "a hand drawn upright points at twelve.")
         window.addSubview(label)
         label.frame = CGRect(x: 20, y: 20, width: 984, height: 31.5)
@@ -115,7 +115,7 @@ final class UIKitTextViewTests: XCTestCase {
         XCTAssertEqual(label.nativeMeasurementCountForTesting, 3, "a narrower room, then new words, are measured")
     }
 
-    /// A label's background fills its whole box, the room around its words included - a colour, and a brush.
+    /// A label's background fills its whole box, the room around its words included - a color, and a brush.
     @MainActor
     func testATextsBackgroundFillsItsBox() {
         let label = UIKitTextView()
@@ -123,12 +123,12 @@ final class UIKitTextViewTests: XCTestCase {
         label.setPadding(Insets(12))
         label.frame = CGRect(x: 0, y: 0, width: 100, height: 60)
         label.setBackground(Color(red: 255, green: 0, blue: 0).propValue)
-        XCTAssertTrue(Self.draws(label, [255, 0, 0], at: CGPoint(x: 3, y: 3)), "a colour, in the padding")
+        XCTAssertTrue(Self.draws(label, [255, 0, 0], at: CGPoint(x: 3, y: 3)), "a color, in the padding")
 
         label.setBackground(Brush.linearGradient([
             GradientStop(Color(red: 0, green: 0, blue: 255), 0), GradientStop(Color(red: 0, green: 0, blue: 255), 1),
         ]).propValue)
-        // Core Animation renders a gradient a shade off its stops' colour into a bitmap.
+        // Core Animation renders a gradient a shade off its stops' color into a bitmap.
         let corner = CGPoint(x: 97, y: 57)
         XCTAssertTrue(Self.draws(label, [0, 0, 255], at: corner, tolerance: 60), "a brush, to its corner")
     }

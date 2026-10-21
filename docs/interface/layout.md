@@ -433,7 +433,7 @@ is drawn and nothing is cut. A dashed outline belongs to a shape: lay a
 `avoidsSafeArea` states, edge by edge, what a layout stands clear of on a
 screen with bars and a notch. A page's content stands clear of them by
 default (`.container`); the page's own layout says `.none` - edge to edge -
-to run under them, so its background colours the status bar's strip:
+to run under them, so its background colors the status bar's strip:
 
 ```swift
 import StateUI

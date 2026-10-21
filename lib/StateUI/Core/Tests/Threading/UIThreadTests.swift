@@ -38,7 +38,7 @@ private struct Shows: View {
 private final class Posts: Sendable {
     let count = Atomic<Int>(0)
 
-    /// Signalled once a turn.
+    /// Signaled once a turn.
     let asked = DispatchSemaphore(value: 0)
 
     func post() {

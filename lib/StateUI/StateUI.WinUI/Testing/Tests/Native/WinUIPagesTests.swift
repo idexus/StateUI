@@ -253,7 +253,7 @@ final class WinUIPagesTests: XCTestCase {
     }
 
     /// Words on a bar the tree paints stand light on a dark bar and dark on a light one, where the tree writes no
-    /// colour for them (`BandWords`) - the title, the way back and the actions alike: the bar stands in the dark theme
+    /// color for them (`BandWords`) - the title, the way back and the actions alike: the bar stands in the dark theme
     /// or the light one, said as a window's theme is (`ColorScheme`).
     func testWordsOnAPaintedBarFollowHowDarkItIs() throws {
         try onUIThread {
@@ -272,13 +272,13 @@ final class WinUIPagesTests: XCTestCase {
             host.settle { ColorScheme(rawValue: stateui_winui_title_bar_theme(bar.handle)) == .light }
             XCTAssertEqual(
                 ColorScheme(rawValue: stateui_winui_title_bar_theme(bar.handle)), .light,
-                "dark on yellow, once the colour travelled")
+                "dark on yellow, once the color traveled")
         }
     }
 
-    /// The menu bar is one of the window's bars: it wears their colour, its menus' words the bars' words - the colour
+    /// The menu bar is one of the window's bars: it wears their color, its menus' words the bars' words - the color
     /// written, else light on a dark bar - and the platform's own again where nothing is declared.
-    func testTheMenuBarWearsTheBarsColours() throws {
+    func testTheMenuBarWearsTheBarsColors() throws {
         try onUIThread {
             let painted = State(wrappedValue: true)
             let (navy, yellow) = (Color(red: 0, green: 0, blue: 128), Color(red: 255, green: 230, blue: 0))
@@ -291,7 +291,7 @@ final class WinUIPagesTests: XCTestCase {
             }
             let window = try XCTUnwrap(host.window)
             host.settle { window.menuBarStands }
-            XCTAssertEqual(Self.words(window.menuBar, "background"), "#FF000080", "the bars' colour")
+            XCTAssertEqual(Self.words(window.menuBar, "background"), "#FF000080", "the bars' color")
             XCTAssertEqual(Self.words(window.menuBar, "itemForeground"), "#FFFFE600", "the bars' words")
             XCTAssertEqual(Self.words(window.menuBar, "theme"), "2", "the dark theme of a dark bar")
 
@@ -408,9 +408,9 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
-    /// The actions on a painted bar stand in its words' colour - the one written, else light on a dark bar and dark
+    /// The actions on a painted bar stand in its words' color - the one written, else light on a dark bar and dark
     /// on a light one - not in the theme's.
-    func testTheBarsActionsStandInItsWordsColour() throws {
+    func testTheBarsActionsStandInItsWordsColor() throws {
         try onUIThread {
             let navy = Color(red: 0, green: 0, blue: 128)
             for (written, words) in [(Color(red: 255, green: 230, blue: 0) as Color?, "#FFFFE600"), (nil, "#FFFFFFFF")] {
@@ -428,9 +428,9 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
-    /// A destructive action stands in the critical colour of its bar's own theme - lighter on a dark bar - whatever
-    /// colour the bar's words take: its words' brush follows the theme, which a brush looked up once would not.
-    func testADestructiveActionStandsInTheCriticalColourOfItsBarsTheme() throws {
+    /// A destructive action stands in the critical color of its bar's own theme - lighter on a dark bar - whatever
+    /// color the bar's words take: its words' brush follows the theme, which a brush looked up once would not.
+    func testADestructiveActionStandsInTheCriticalColorOfItsBarsTheme() throws {
         try onUIThread {
             var reds: [(red: UInt32, green: UInt32, blue: UInt32)] = []
             for background in [Color(red: 0, green: 0, blue: 128), Color(red: 255, green: 255, blue: 224)] {
@@ -445,10 +445,10 @@ final class WinUIPagesTests: XCTestCase {
                 let bar = try XCTUnwrap(host.window).titleBar
                 host.settle { Self.words(bar, "actions") == "|Scan;Delete|" }
                 let words = Self.words(bar, "actionWords").split(separator: ";").map(String.init)
-                XCTAssertEqual(words.first, "#FFFFE600", "an action stands in the bar's words' colour")
+                XCTAssertEqual(words.first, "#FFFFE600", "an action stands in the bar's words' color")
                 let argb = try XCTUnwrap(words.count == 2 ? UInt32(words[1].dropFirst(), radix: 16) : nil)
                 let red = (red: argb >> 16 & 0xFF, green: argb >> 8 & 0xFF, blue: argb & 0xFF)
-                XCTAssertNotEqual(words[1], "#FFFFE600", "the destructive one keeps its own colour")
+                XCTAssertNotEqual(words[1], "#FFFFE600", "the destructive one keeps its own color")
                 XCTAssertTrue(red.red > red.green && red.red > red.blue, "the destructive one is red: \(words[1])")
                 reds.append(red)
             }

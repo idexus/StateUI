@@ -4,11 +4,11 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// The element's part in its layout's motion: its children travelling to their places, fading in as it joins, and a
+/// The element's part in its layout's motion: its children traveling to their places, fading in as it joins, and a
 /// change of visibility crossed - each by the host layer's rule.
 /// Design: docs/design/host/motion.md#layout-motion
 extension WebElement {
-    /// Hands a travelling layout what its children travel under and who reads their places, and tells it a patch
+    /// Hands a traveling layout what its children travel under and who reads their places, and tells it a patch
     /// reached it.
     func configureLayoutMotion() {
         guard let layout = view as? WebLayoutView, layout.travels, let host else { return }

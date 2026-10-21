@@ -8,7 +8,7 @@ import AppKit
 
 /// The native AppKit button behind StateUI's `Button` - a caption, an icon or both - and, holding a menu, the menu it
 /// opens: by its click, an arrow pointing down after its words; by a split button's arrow part; or held, no arrow.
-/// AppKit's own menu buttons take no box or colour of their words, so a button holding a menu is this one too.
+/// AppKit's own menu buttons take no box or color of their words, so a button holding a menu is this one too.
 /// Design: docs/design/platforms/appkit/views.md#a-buttons-menu
 @MainActor
 final class AppKitButtonView: NSButton, AppKitPictureResolving {
@@ -67,14 +67,14 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         fatalError("AppKitButtonView is created in code")
     }
 
-    /// `image` as the button shows it: an icon - a template - in `colour` where its words stand in one of their own,
+    /// `image` as the button shows it: an icon - a template - in `color` where its words stand in one of their own,
     /// which a bordered button's tint leaves in the platform's; any other picture as it is.
     /// Design: docs/design/host/layout.md#an-icon
-    private static func picture(_ image: NSImage?, in colour: NSColor) -> NSImage? {
-        guard let image, image.isTemplate, colour != .controlTextColor else { return image }
+    private static func picture(_ image: NSImage?, in color: NSColor) -> NSImage? {
+        guard let image, image.isTemplate, color != .controlTextColor else { return image }
         return NSImage(size: image.size, flipped: false) { room in
             image.draw(in: room)
-            colour.set()
+            color.set()
             room.fill(using: .sourceAtop)
             return true
         }
@@ -146,7 +146,7 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
     /// The button's own fill, where it is given one, which the user's reach makes fainter.
     private var fill: NSColor?
 
-    /// The button's own outline, its colour and width, where it is given one.
+    /// The button's own outline, its color and width, where it is given one.
     private var outline: (color: NSColor, width: CGFloat)?
 
     /// The share of its opacity the fill keeps: all of it, less under the pointer, less still pressed.

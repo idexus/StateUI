@@ -5,7 +5,7 @@
 ///
 /// A native host uses this representation instead of knowing how StateUI lays
 /// a journey out in numeric state lanes. Values are arrays because the same
-/// channel may carry a number, point, rectangle, insets or colour.
+/// channel may carry a number, point, rectangle, insets or color.
 @_spi(Host) public struct HostJourney: Equatable, Sendable {
     /// Where the value stands on the current frame.
     public let value: [Double]

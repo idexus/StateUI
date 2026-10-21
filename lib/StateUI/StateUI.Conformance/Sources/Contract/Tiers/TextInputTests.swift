@@ -75,10 +75,10 @@
         }
     }
 
-    /// A field the tree closes to input stays closed whatever else of its behaviour the tree writes.
+    /// A field the tree closes to input stays closed whatever else of its behavior the tree writes.
     @MainActor
     static func closed(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aClosedFieldStaysClosedAsItsBehaviourChanges", proves: [
+        ConformanceCase("\(element).aClosedFieldStaysClosedAsItsBehaviorChanges", proves: [
             Covered(TextInputContract.isReadOnly, on: element),
         ], needs: [Covered(VisualElementContract.isEnabled, on: element), Covered(ButtonContract.clicked)]) { s in
             let words = State(wrappedValue: "kept")

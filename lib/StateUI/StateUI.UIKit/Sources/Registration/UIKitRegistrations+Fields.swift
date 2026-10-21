@@ -87,7 +87,7 @@ extension UIKitRegistrations {
             || values.changed(TextInputContract.isSpellCheckEnabled)
             || values.changed(TextInputContract.isTextPredictionEnabled)
             || values.changed(TextInputContract.inputPurpose) {
-            view.setBehaviour(
+            view.setBehavior(
                 enabled: values[VisualElementContract.isEnabled] ?? true,
                 readOnly: values[TextInputContract.isReadOnly] ?? false,
                 keyboard: UIKitKeyboard(InputTraits(values)))

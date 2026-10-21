@@ -19,7 +19,7 @@ final class WebRenderer {
     /// Whether the user asked for less motion: every animation arrives at once.
     private let reducesMotion: () -> Bool
 
-    /// Where the children of the page's travelling layouts stand, read around each call's changes.
+    /// Where the children of the page's traveling layouts stand, read around each call's changes.
     let placements = WebPlacements()
 
     /// The application's name, which the core tells the application.

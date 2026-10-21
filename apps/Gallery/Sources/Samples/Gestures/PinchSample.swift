@@ -74,7 +74,7 @@ struct PinchSample: SampleContent, ExampleContent {
         VStack {
             Text("`scale` is RELATIVE - how much has changed since the LAST report - so "
                 + "a view being pinched multiplies rather than assigns. `scaleOrigin` says "
-                + "where the pinch is centred, as a fraction of the view.")
+                + "where the pinch is centered, as a fraction of the view.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

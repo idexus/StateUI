@@ -109,7 +109,7 @@ class AndroidLayoutView: AndroidView {
         paintBox()
     }
 
-    /// The layout's own box: a plain colour where it has no outline, shape or cut, and a drawable on its shape
+    /// The layout's own box: a plain color where it has no outline, shape or cut, and a drawable on its shape
     /// where it has.
     /// Design: docs/design/platforms/android/drawing.md#a-layouts-own-box
     func setOutline(_ outline: Outline) {

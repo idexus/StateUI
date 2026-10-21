@@ -11,14 +11,14 @@ import XCTest
 
 @MainActor
 final class BrushTests: XCTestCase {
-    /// One colour, and no geometry to speak of.
-    func testASolidBrushIsItsKindAndItsColour() {
+    /// One color, and no geometry to speak of.
+    func testASolidBrushIsItsKindAndItsColor() {
         XCTAssertEqual(
             Brush.solidColor(.tomato).propValue,
             .values([.enumeration(1), Color.tomato.propValue]))
     }
 
-    /// The two points, then the stops - an offset and a colour, over and over.
+    /// The two points, then the stops - an offset and a color, over and over.
     func testALinearGradientCarriesItsPointsThenItsStops() {
         let brush = Brush.linearGradient(
             [GradientStop(.gold, 0), GradientStop(.tomato, 1)],
@@ -59,8 +59,8 @@ final class BrushTests: XCTestCase {
         ]))
     }
 
-    /// The centre and the radius, then the same stops.
-    func testARadialGradientCarriesItsCentreAndRadius() {
+    /// The center and the radius, then the same stops.
+    func testARadialGradientCarriesItsCenterAndRadius() {
         let brush = Brush.radialGradient(
             [GradientStop(.white, 0.25)],
             center: Point(0.3, 0.7),
@@ -73,11 +73,11 @@ final class BrushTests: XCTestCase {
         ]))
     }
 
-    /// A stop written with a themed colour holds its pair like any other, and
+    /// A stop written with a themed color holds its pair like any other, and
     /// the element wearing the brush is built with the half in force - so
     /// what crosses is one gradient, and a theme change builds that element
     /// again.
-    func testAThemedStopPicksItsHalfLikeAnyOtherColour() {
+    func testAThemedStopPicksItsHalfLikeAnyOtherColor() {
         let brush = Brush.solidColor(Color(light: .white, dark: .black)).propValue
 
         XCTAssertEqual(brush, .values([

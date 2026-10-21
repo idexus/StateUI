@@ -14,7 +14,7 @@
     /// Whether the user may minimize the window, where said.
     public var isMinimizable: Bool?
 
-    /// What the window is made of behind its pages - a colour, or a blur or glass the desktop shows through; empty
+    /// What the window is made of behind its pages - a color, or a blur or glass the desktop shows through; empty
     /// for the platform's own window.
     public var background: HostMaterial
 

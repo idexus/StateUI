@@ -120,7 +120,7 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(journey.value, 0)
     }
 
-    /// A WRITE LAYS ONLY ITS PART. A colour read back through its type is eight
+    /// A WRITE LAYS ONLY ITS PART. A color read back through its type is eight
     /// bits a channel, and the host reports lanes between them: a stop or a move
     /// that laid the whole journey again would say the value and the speed moved,
     /// and the host would start over from them - Stop in the Gallery's At the same
@@ -240,7 +240,7 @@ final class JourneyTests: XCTestCase {
     /// THE VALUE'S OWN LAW OVERRIDES THE ELEMENT'S, per property. `.inherited`
     /// is a REQUEST - the crossing answers it with whatever the element
     /// resolved - and anything else is an answer already given, which the
-    /// crossing leaves alone. So a colour driven from one value can travel the
+    /// crossing leaves alone. So a color driven from one value can travel the
     /// application's way while a coordinate driven from another, on the SAME
     /// element, travels its own.
     func testAValuesOwnLawSurvivesTheCrossingAndInheritedDoesNot() {

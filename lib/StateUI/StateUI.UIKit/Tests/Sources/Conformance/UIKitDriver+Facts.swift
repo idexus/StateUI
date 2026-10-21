@@ -7,14 +7,14 @@ import UIKit
 @testable import StateUIUIKit
 @_spi(Host) import StateUIConformance
 
-/// What the UIKit driver reads of the screen: the colour at a point of a view, and whether a touch there reaches it.
+/// What the UIKit driver reads of the screen: the color at a point of a view, and whether a touch there reaches it.
 /// Design: docs/design/platforms/uikit/conformance.md#what-the-driver-reads
 extension UIKitDriver {
-    /// The colour the user sees at `point` of the element's view, as the screen shows it, in sRGB; nil where
+    /// The color the user sees at `point` of the element's view, as the screen shows it, in sRGB; nil where
     /// nothing opaque is drawn there.
     func color(of element: MountedElement, at point: Point) throws -> Color? {
         guard let view = (element.native as? UIKitElement)?.view else {
-            throw DriverCannot("read the colour of \(element.type.name)")
+            throw DriverCannot("read the color of \(element.type.name)")
         }
         renderer?.layOut()
         let size = view.bounds.size

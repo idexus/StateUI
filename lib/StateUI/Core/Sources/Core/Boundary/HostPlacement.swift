@@ -33,7 +33,7 @@
 
 extension HostPlacement {
     /// How the placed child is drawn over its rectangle: moved, turned and
-    /// sized about the rectangle's centre.
+    /// sized about the rectangle's center.
     public var drawing: HostDrawingTransform {
         HostDrawingTransform(
             translationX: translationX,

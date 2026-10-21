@@ -19,7 +19,7 @@ they need, as the host layer's stack does.
 A layout writes each child's place as the child's own CSS: its margin - below
 nothing too, which shifts the child as it does on every host - its
 width and height, their least and most, and its alignment across its slot -
-in a grid's cell along both axes. Start, centre and end are CSS's start,
+in a grid's cell along both axes. Start, center and end are CSS's start,
 center and end; a filling child stretches, unless a stated or a most size
 stops it short of its slot, when it stands in the middle, as the host layer
 places it. The least size a control's look gives it - a button's, a
@@ -51,7 +51,7 @@ to `[c, b, a]` - stand `[c, a, b]`.
 ## Places that travel
 
 A stack's, a grid's and a ZStack's children travel to their places by the
-host layer's layout motion (`TravellingPlaces`, `LayoutMotion`): what the
+host layer's layout motion (`TravelingPlaces`, `LayoutMotion`): what the
 layout says - travel, arrive, fade in as it joins - is the host layer's; the
 browser only lays out. So the places are read around each call from the page.
 Before a change - a patch reaching an element, an element leaving, a view
@@ -122,7 +122,7 @@ A ScrollView is the browser's own scrolling over one document, as tall as its
 content and at least as tall as the view along the ways it scrolls, as wide
 as the view across them: a track of `minmax(max-content, 1fr)`. A track of
 `minmax(100%, max-content)` is the trap - a grid track grows to its maximum
-only into room left over, so content wider than the view stands centred over
+only into room left over, so content wider than the view stands centered over
 both its edges. The view's defaults - down, with its bars - stand from its
 making, as an applier runs only for a member the tree states.
 
@@ -184,6 +184,6 @@ long arithmetic a browser running WebAssembly with no compiler pays for every
 number of every view a run moves each frame; a millionth of a pixel, or of a
 matrix's turn over a thousand pixels, draws nothing apart. An inset's sides are CSS's logical sides: its leading side is the inline
 start, so an element laid out right to left - `dir="rtl"` - turns its margin
-and padding by itself. A colour is `rgb()` in sRGB with its alpha. A box and a
+and padding by itself. A color is `rgb()` in sRGB with its alpha. A box and a
 shape draw a brush's gradient; a view's plain background, a run's and a bar's
-take its first colour.
+take its first color.

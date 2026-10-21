@@ -15,11 +15,11 @@ the same image and nothing changed. A registration is made once for the whole pr
 ask, so the host hands every view it makes, through `AppKitPictureResolving`,
 the means to resolve a name. A name the application has no file for resolves
 to nothing. An icon resolves to its SF Symbol (`Icon.sfSymbol`), a template
-image in the colour of the control holding it, and bytes to the image they
-encode. An image view tints a template in the label colour, as the words
-beside it; left untinted, it draws one in the secondary label colour. A
-bordered button tints a template in the platform's colour alone, so where
-its words stand in one of their own - a role's red, the tree's colour - it
+image in the color of the control holding it, and bytes to the image they
+encode. An image view tints a template in the label color, as the words
+beside it; left untinted, it draws one in the secondary label color. A
+bordered button tints a template in the platform's color alone, so where
+its words stand in one of their own - a role's red, the tree's color - it
 shows a copy of the icon drawn in theirs.
 
 ## Accessibility on the control
@@ -47,12 +47,12 @@ and two required answers to one width are a conflict AppKit reports.
 
 ## A layout's own box
 
-A stack, a grid or a ZStack paints its own box. A plain colour on a plain
-rectangle is its layer's background colour: the view draws nothing and keeps
+A stack, a grid or a ZStack paints its own box. A plain color on a plain
+rectangle is its layer's background color: the view draws nothing and keeps
 no backing store, which is what almost every layout is. An outline, a
 rounded or oval shape, or a gradient makes the view draw instead - the
 background on the shape, the outline inside the bounds, half its width either
-side of the shape's edge, in a colour alone (AppKit's brush strokes no
+side of the shape's edge, in a color alone (AppKit's brush strokes no
 gradient). With `clipsContent` the layer cuts what the layout holds: to its
 bounds, its rounded corners, or an oval mask; without it nothing is cut.
 
@@ -72,10 +72,10 @@ what the glass holds. So glass wears its tint while its window stands key or
 main in the application in front, and in its content (the wash) otherwise,
 following the window's and the application's notices.
 
-A scroller's box is its layer's alone: a colour behind what it shows, a
-colour's outline on a rectangle or a rounded one, and the cut of what it shows
+A scroller's box is its layer's alone: a color behind what it shows, a
+color's outline on a rectangle or a rounded one, and the cut of what it shows
 to its shape, always. AppKit repaints a scroller's layer as it displays it and
-clears its colour and outline, so the scroller puts them back each time it
+clears its color and outline, so the scroller puts them back each time it
 updates its layer. An oval scroller's outline is a shape layer over what it
 shows: under the oval's mask a layer's border would show only as slivers.
 
@@ -83,7 +83,7 @@ shows: under the oval's mask a layer's border would show only as slivers.
 
 A split view's sidebar is AppKit's own sidebar item, on the system's sidebar
 material. The material its split view says for it beside the detail
-(`sidebarBackground`) stands in its pane as a layout's box does - a colour on
+(`sidebarBackground`) stands in its pane as a layout's box does - a color on
 the pane's layer, a blur or glass a view of its own under the page - over
 the system's. A Mac sidebar never slides over the detail: a window too narrow
 for both hides it, so the flyout's material is never shown.
@@ -167,7 +167,7 @@ standing alone.
 ## A button's menu
 
 AppKit's own menu buttons - the pull-down button and the combo button - take
-no box and no colour of their words, so a button holding a menu is the host's
+no box and no color of their words, so a button holding a menu is the host's
 own AppKit button, which wears what the tree says, and its menu an `NSMenu`
 opened under it, at least as wide, as a pull-down opens its:
 
@@ -199,7 +199,7 @@ out (`AppKitAccessibilityPresenting`).
 
 A text field's, a search field's and an editor's placeholder stands where the
 field's own words would: across the field as `horizontalTextAlignment` says,
-a plain placeholder in the field's font. A placeholder in a colour of its own
+a plain placeholder in the field's font. A placeholder in a color of its own
 is attributed text, which takes no alignment from its field as a plain one
 does, so it carries the field's alignment itself. An editor's placeholder is
 a label over the text view, in the editor's font, as wide as the text view's

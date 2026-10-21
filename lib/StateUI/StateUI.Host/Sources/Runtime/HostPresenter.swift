@@ -13,7 +13,7 @@
     func presentRendered(touchedChrome: Bool)
 
     /// Follows a frame's walk outside the tree: the windows' chrome again where `movedChrome` says it moved - a
-    /// bar's colour, a window's frame.
+    /// bar's color, a window's frame.
     func presentFrame(movedChrome: Bool)
 
     /// Performs an act the application called, on the interface its handler changed.

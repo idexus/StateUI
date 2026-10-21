@@ -15,7 +15,7 @@ import UIKit
 /// THE SPLIT IS THE PLATFORM'S: a device UIKit knows no battery of - the
 /// simulator - reports nothing at all, and the sample's own words say so.
 /// What is watched here is the battery, which UIKit reports through the
-/// notification centre once its monitoring is on.
+/// notification center once its monitoring is on.
 @MainActor
 enum GalleryEventSources {
 // listing: end

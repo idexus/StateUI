@@ -8,7 +8,7 @@ import AppKit
 
 /// AppKit's deterministic implementation of StateUI's row-and-column layout.
 @MainActor
-final class AppKitGridView: AppKitTravellingLayout, AppKitWidthConstrainedMeasuring,
+final class AppKitGridView: AppKitTravelingLayout, AppKitWidthConstrainedMeasuring,
     AppKitMeasurementCaching {
     let measurements = MeasurementCache()
     var rows: [GridLength] = [] {

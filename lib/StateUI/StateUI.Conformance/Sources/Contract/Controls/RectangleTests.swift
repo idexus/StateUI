@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// `RectangleContract` on a host: a rectangle fills its room, its corners rounded away as far as the tree says, and a
-/// fill from a state takes each colour the state turns to.
+/// fill from a state takes each color the state turns to.
 @_spi(Host) public enum RectangleTests: ConformanceFamily {
     public static let name = "Rectangle"
 
@@ -42,14 +42,14 @@
                 try s.settle { try s.shows(.red, on: shape, at: Point(1, 1)) }
                 s.expect(try s.color(of: shape, at: Point(1, 1)), shows: .red, "square once the tree says so")
             },
-            ConformanceCase("aFillFromAStateTakesTheColourItTurnsTo", proves: [
+            ConformanceCase("aFillFromAStateTakesTheColorItTurnsTo", proves: [
                 Covered(RectangleContract.self),
             ], needs: [Covered(FilledShapeContract.fill, on: "Rectangle"), Covered(ButtonContract.clicked)]) { s in
-                let colour = State(wrappedValue: Color.red)
+                let color = State(wrappedValue: Color.red)
                 s.start {
                     VStack {
-                        Rectangle().fill(colour.projectedValue).width(100).height(60).id("shape")
-                        Button("Blue").onClicked { colour.wrappedValue = .blue }.id("change")
+                        Rectangle().fill(color.projectedValue).width(100).height(60).id("shape")
+                        Button("Blue").onClicked { color.wrappedValue = .blue }.id("change")
                     }
                     .horizontalAlignment(.start)
                 }
@@ -58,7 +58,7 @@
 
                 try s.perform(.activate, on: s.element("change"))
                 try s.settle { try s.shows(.blue, on: shape, at: Point(50, 30)) }
-                s.expect(try s.color(of: shape, at: Point(50, 30)), shows: .blue, "the colour the state turned to")
+                s.expect(try s.color(of: shape, at: Point(50, 30)), shows: .blue, "the color the state turned to")
             },
         ]
     }

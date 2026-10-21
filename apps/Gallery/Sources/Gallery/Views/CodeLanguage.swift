@@ -1,9 +1,9 @@
 /// The language a listing is written in: what its heading names, and which
 /// words are drawn as its keywords.
 ///
-/// The scanner is shared - comments, strings, annotations, capitalised names
+/// The scanner is shared - comments, strings, annotations, capitalized names
 /// and numbers read alike in all of them - and only the vocabulary differs.
-/// Each vocabulary is what the listings use, plus the neighbours somebody
+/// Each vocabulary is what the listings use, plus the neighbors somebody
 /// would notice missing; a word left out is drawn plain, which is a dull
 /// listing rather than a wrong one.
 enum CodeLanguage: CaseIterable {

@@ -6,7 +6,7 @@
 
 extension AndroidRegistrations {
     /// A Switch and a CheckBox: whether it is on, whether it can be turned, and the turn the user makes; the
-    /// words it says beside it, and their colour.
+    /// words it says beside it, and their color.
     static func toggles(_ registry: Registry<AndroidView>) {
         registry.add(SwitchContract.self, create: { reports in
             let toggle = AndroidSwitchView()

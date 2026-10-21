@@ -145,7 +145,7 @@ let sameTranslucent = Color(red: 91, green: 91, blue: 214, alpha: 128)
 ```
 
 A hex number has six digits, `0xRRGGBB`, and `opacity:` says how opaque the
-colour is, from 0 to 1. A colour that data holds as text - a theme file, a
+color is, from 0 to 1. A color that data holds as text - a theme file, a
 server's answer - is read with `Color(parsing:)`, which takes `#RGB`, `#ARGB`,
 `#RRGGBB` or `#AARRGGBB`, the alpha first when it is written, and answers nil
 for anything else:
@@ -156,7 +156,7 @@ let brand = Color(parsing: "#5B5BD6") ?? .accent
 
 Named colors are static members checked by the compiler.
 `Color(red:green:blue:alpha:)` takes whole-number channels from 0 through 255;
-the alpha is 255, opaque, unless it is given. `opacity(_:)` lets a colour
+the alpha is 255, opaque, unless it is given. `opacity(_:)` lets a color
 through - its alpha scaled, in both halves of a pair:
 
 ```swift
@@ -190,7 +190,7 @@ let marked = Color.accent.opacity(0.7)
 ## Materials
 
 A background is a material: what the surface behind the view's content is
-made of. A colour and a gradient are materials; so is a blur of what lies
+made of. A color and a gradient are materials; so is a blur of what lies
 behind the view, in the platform's own look - from `.ultraThin`, which lets
 the most through, to `.ultraThick` - and so is the platform's glass, regular
 or clear, tinted, answering the user's touch where it is interactive. Every
@@ -206,7 +206,7 @@ let glass = VStack { Text("Saved") }
     .shape(.roundedRectangle(16))
 ```
 
-A blur's tint lies over it, so a colour with an alpha tints the blur. A
+A blur's tint lies over it, so a color with an alpha tints the blur. A
 material may differ by theme - `Material(light:dark:)`, a nil half for no
 background - and one with no pair is the same choice in both themes, the blur
 and glass following the theme as the platform draws them:
@@ -217,12 +217,12 @@ let panel = VStack { Text("Saved") }
 ```
 
 A platform with no glass draws the blur as clear as the glass; one that blurs
-nothing, a colour of the theme let through as the blur is, the tint over it.
+nothing, a color of the theme let through as the blur is, the tint over it.
 A state holding a material is a channel: `.background($material)` -
 `.pageBackground($material)`, a split view's `.sidebarBackground($material)`
 and `.flyoutBackground($material)` alike - shows each material written into
 the state as it stands, and no body is built again for it; a pair in it
-follows the theme. A colour's channel walks the colour instead:
+follows the theme. A color's channel walks the color instead:
 `.background($color)` animates it as the state moves. A window's background
 is a material too (`window.background`, in *Application and sessions*).
 
@@ -308,7 +308,7 @@ style carries no handlers.
 
 ## Flat colors and brushes
 
-`background` takes one colour or a brush, and it is one property whichever
+`background` takes one color or a brush, and it is one property whichever
 it carries. A brush can be solid, linear, or radial:
 
 ```swift
@@ -354,7 +354,7 @@ shape but `Line` - takes `fill`, and a shape whose outline turns corners -
 `fill` does not compile. Geometry-specific modifiers such as a rectangle's
 corner radius or line endpoints remain on the matching shape. A `Rectangle`,
 a `Capsule` and an `Ellipse` are drawn for their fill, so they take it first,
-`Rectangle().fill(.cornflowerBlue)` - a colour, a brush or a colour's state;
+`Rectangle().fill(.cornflowerBlue)` - a color, a brush or a color's state;
 `.fill` says the same where a style or a later change does.
 
 ```swift
@@ -382,9 +382,9 @@ Capsule().fill(.teal)
     .height(32)
 ```
 
-A rectangle is also the plain block of colour - a bar of a chart, a swatch, a
-placeholder. Its fill and outline take a colour's state, `$x`, as other colour
-properties do: the host moves the colour to each new value and no view is
+A rectangle is also the plain block of color - a bar of a chart, a swatch, a
+placeholder. Its fill and outline take a color's state, `$x`, as other color
+properties do: the host moves the color to each new value and no view is
 rebuilt for it.
 
 ```swift

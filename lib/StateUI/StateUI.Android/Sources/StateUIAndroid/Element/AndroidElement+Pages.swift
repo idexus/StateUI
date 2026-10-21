@@ -42,13 +42,13 @@ extension AndroidElement {
     }
 
     /// Stands a split view's sidebar on its materials - Android blurs nothing behind a view, so a blur stands as its
-    /// colour.
+    /// color.
     func groundSidebar() {
         guard let split = view as? AndroidSplitView else { return }
-        let colour = { (over: Bool) in
+        let color = { (over: Bool) in
             self.element.sidebarMaterial(over: over).painted.flatMap { HostBrush($0).firstColor }.flatMap(AndroidView.argb)
         }
-        split.grounds = (colour(false), colour(true))
+        split.grounds = (color(false), color(true))
     }
 
     /// What an arrangement declares of the bars under it.
@@ -66,8 +66,8 @@ extension AndroidElement {
         }
         let colors = element.barColors
         row.background = colors.background
-        // Words on a written colour: white on a dark one, the text's own on a light one (`BandWords`); the chosen
-        // tab's in the colour written for them.
+        // Words on a written color: white on a dark one, the text's own on a light one (`BandWords`); the chosen
+        // tab's in the color written for them.
         if let background = row.background, BandWords.light(on: background) == true {
             row.chosenColor = .color(red: 255, green: 255, blue: 255, alpha: 255)
             row.color = .color(red: 255, green: 255, blue: 255, alpha: 170)
@@ -116,7 +116,7 @@ extension AndroidElement {
     // MARK: - A stack's bar
 
     /// Shows on a stack's bar what its visible page says: the title - the page's the host layer names it by
-    /// (`titledPage`), or the view standing in for it - the line under it and the colours its path declares, the way
+    /// (`titledPage`), or the view standing in for it - the line under it and the colors its path declares, the way
     /// back or to the sidebar, the page's actions in their order, and the menus its path declares behind the overflow.
     /// Design: docs/design/platforms/android/pages.md#the-bar
     func refreshBar() {

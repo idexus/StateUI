@@ -3,7 +3,7 @@ ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.scaleY: ✅
 Button.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 Button.accessibilityActions: – UI Automation offers no action of an application's own words.
-Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Canvas.accessibilityHeading: ✅
 Capsule.height: ✅
 Capsule.layoutDirection: ✓ read layoutDirection of Capsule: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
@@ -18,7 +18,7 @@ Ellipse.accessibilityActionPerformed: – UI Automation offers no action of an a
 Ellipse.accessibilityActions: – UI Automation offers no action of an application's own words.
 Ellipse.isEnabled: ✅
 Grid.accessibilityHeading: ✅
-Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 HStack.layoutDirection: ✅
 HStack.tooltip: ✅
 Image.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
@@ -44,7 +44,7 @@ ProgressBar.translationY: ✅
 Rectangle.tooltip: ✅
 ScrollView.hidesChildrenFromAccessibility: ✅
 ScrollView.opacity: ✅
-SearchField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+SearchField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 SearchField.isEnabled: ✅
 Slider.frame: ✅
 Slider.rotation: ✅
@@ -72,6 +72,6 @@ VStack.layoutDirection: ✅
 VStack.tooltip: ✅
 WebView.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 WebView.accessibilityActions: – UI Automation offers no action of an application's own words.
-ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 ZStack.isAccessibilityHidden: ✅
 ZStack.isVisible: ✅

@@ -36,7 +36,7 @@ final class AndroidZStackViewTests: XCTestCase {
             ("testAZStackHoldsItsChildrenInTheDrawingOrder", testAZStackHoldsItsChildrenInTheDrawingOrder),
             ("testAZStacksPaddingNarrowsItsRoom", testAZStacksPaddingNarrowsItsRoom),
             ("testALayoutPaintsItsBoxAndCutsWhatItHoldsWhereItClips", testALayoutPaintsItsBoxAndCutsWhatItHoldsWhereItClips),
-            ("testALayoutWithAPlainColourKeepsAPlainBackground", testALayoutWithAPlainColourKeepsAPlainBackground),
+            ("testALayoutWithAPlainColorKeepsAPlainBackground", testALayoutWithAPlainColorKeepsAPlainBackground),
         ]
     }
 
@@ -196,8 +196,8 @@ final class AndroidZStackViewTests: XCTestCase {
         }
     }
 
-    /// A layout with a plain colour and no outline, shape or cut keeps a plain background, and clips nothing.
-    func testALayoutWithAPlainColourKeepsAPlainBackground() throws {
+    /// A layout with a plain color and no outline, shape or cut keeps a plain background, and clips nothing.
+    func testALayoutWithAPlainColorKeepsAPlainBackground() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
                 ZStack { Rectangle().fill(.red).width(10).height(10) }

@@ -2,15 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// What an arrangement declares of the bar while it stands on the visible
-/// path: its colours, and the application's name, line and mark in the bar.
+/// path: its colors, and the application's name, line and mark in the bar.
 public enum BarElementContract: Contract {
     /// The tier's name.
     public static let name = "BarElement"
 
-    /// The bar's colour; unwritten, the platform's own material.
+    /// The bar's color; unwritten, the platform's own material.
     public static let barBackgroundColor = ElementProperty<Self, Color>("barBackgroundColor", layer: .adaptive)
 
-    /// The colour of what stands on the bar: the title and the native
+    /// The color of what stands on the bar: the title and the native
     /// affordances.
     public static let barForegroundColor = ElementProperty<Self, Color>("barForegroundColor", layer: .adaptive)
 

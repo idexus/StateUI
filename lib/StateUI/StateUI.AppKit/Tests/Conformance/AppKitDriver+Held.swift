@@ -9,7 +9,7 @@ import AppKit
 @_spi(Host) import StateUIConformance
 
 /// What the AppKit driver reads of every view: its transform as its layer holds it, what assistive technology
-/// meets, a control's font and words' colour, and the colour behind it - each from AppKit itself.
+/// meets, a control's font and words' color, and the color behind it - each from AppKit itself.
 /// Design: docs/design/platforms/appkit/conformance.md#what-the-driver-reads
 extension AppKitDriver {
     static func viewHolds(_ property: Prop, _ view: NSView, _ native: AppKitElement?) throws -> HostValue? {
@@ -43,8 +43,8 @@ extension AppKitDriver {
             return try words(property, view)
         case .background:
             // A layout's blur or glass is a view of its own; a field and an editor fill their own; every other view
-            // is its layer's colour.
-            if let surface = (view as? AppKitTravellingLayout)?.decoration.surface { return material(surface)?.propValue }
+            // is its layer's color.
+            if let surface = (view as? AppKitTravelingLayout)?.decoration.surface { return material(surface)?.propValue }
             let fill: NSColor? = switch view {
             case let field as AppKitTextFieldView: field.fill
             case let editor as AppKitTextEditorView: editor.textView.backgroundColor
@@ -56,14 +56,14 @@ extension AppKitDriver {
         }
     }
 
-    /// What a split view's sidebar pane stands on: its blur or glass, else its layer's colour.
+    /// What a split view's sidebar pane stands on: its blur or glass, else its layer's color.
     static func ground(of split: AppKitSplitView) -> HostValue? {
         if let surface = split.sidebarGroundForTesting.surface { return material(surface)?.propValue }
         return split.sidebarLayerColorForTesting.flatMap { NSColor(cgColor: $0) }.map { Material.color(color($0)).propValue }
     }
 
     /// The material a layout's box shows: its glass - how clear, its tint, whether it answers the user - or its
-    /// blur, by the role standing for its thickness, in the colour laid over it.
+    /// blur, by the role standing for its thickness, in the color laid over it.
     private static func material(_ surface: any AppKitBoxSurface) -> Material? {
         if let glass = surface as? AppKitGlassView {
             var shown: Glass = glass.style == .clear ? .clear : .regular
@@ -109,9 +109,9 @@ extension AppKitDriver {
         }
     }
 
-    /// A control's words as AppKit draws them: their font's size, weight, slant and family, and their colour.
+    /// A control's words as AppKit draws them: their font's size, weight, slant and family, and their color.
     private static func words(_ property: Prop, _ view: NSView) throws -> HostValue? {
-        // A label draws its words in the attributes of its text; a control, in its own font and colour; a view
+        // A label draws its words in the attributes of its text; a control, in its own font and color; a view
         // wrapping one, in its control's.
         let label = (view as? AppKitTextView)?.attributedStringValue
         let attributes = label.flatMap { $0.length > 0 ? $0.attributes(at: 0, effectiveRange: nil) : nil }
@@ -193,7 +193,7 @@ extension AppKitDriver {
         throw DriverCannot(reading: property, of: element)
     }
 
-    /// A colour AppKit holds, in sRGB, as StateUI's.
+    /// A color AppKit holds, in sRGB, as StateUI's.
     static func color(_ native: NSColor) -> Color {
         let rgb = native.usingColorSpace(.sRGB) ?? native
         func channel(_ value: CGFloat) -> Int { Int((value * 255).rounded()) }

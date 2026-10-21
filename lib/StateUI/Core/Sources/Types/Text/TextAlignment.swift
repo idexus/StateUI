@@ -8,12 +8,12 @@
 ///
 /// What `.horizontalTextAlignment` and `.verticalTextAlignment` take. NOT
 /// `.horizontalAlignment`, which moves the whole control inside its layout: a
-/// label centred with this one still occupies the same box.
+/// label centered with this one still occupies the same box.
 public enum TextAlignment: Int32, Sendable {
     /// Against the near edge - the left in a left-to-right language.
     case start = 0
 
-    /// Centred.
+    /// Centered.
     case center = 1
 
     /// Against the far edge.

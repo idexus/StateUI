@@ -49,7 +49,7 @@ final class UIKitMotionTests: XCTestCase {
     /// A rectangle whose fill and width change under a motion stands halfway at half its time, and lands - the
     /// Gallery's Motion sample.
     @MainActor
-    func testAColourAndAWidthTravelHalfwayAndLand() throws {
+    func testAColorAndAWidthTravelHalfwayAndLand() throws {
         let clock = TestClock()
         let wide = State(wrappedValue: false)
         let host = UIKitRenderer.running(clock: clock) {

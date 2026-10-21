@@ -1,15 +1,15 @@
-// The gallery's own colour for each part of its window, made for each platform.
+// The gallery's own color for each part of its window, made for each platform.
 
 import StateUI
 
 // listing: Gallery.Looks
-/// A part of the gallery a colour paints - each has a colour of the gallery's
+/// A part of the gallery a color paints - each has a color of the gallery's
 /// own, made to sit with the platform's look.
 enum GallerySurface {
     case bar, window, sidebar, flyout
 
-    /// The gallery's own colour for this part, in each theme: in the dark,
-    /// the colours its Windows window wears in the gallery's violet acrylic -
+    /// The gallery's own color for this part, in each theme: in the dark,
+    /// the colors its Windows window wears in the gallery's violet acrylic -
     /// the window, the bar a breath lighter, the sidebar and the menu over the
     /// page as dark as a list of samples on it (`Palette.shade`).
     var own: Color {

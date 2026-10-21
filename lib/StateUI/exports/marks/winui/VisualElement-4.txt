@@ -9,7 +9,7 @@ Canvas.scale: ✅
 Capsule.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Capsule.translationY: ✅
 CheckBox.tooltip: ✅
-DatePicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+DatePicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 DatePicker.isEnabled: ✅
 Divider.frame: ✅
 Divider.rotation: ✅
@@ -24,7 +24,7 @@ Image.style: ✅
 ItemsView.accessibilityLabel: ✅
 ItemsView.scaleX: ✅
 LayoutEngine.accessibilityHeading: ✅
-LayoutEngine.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+LayoutEngine.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Line.accessibilityHeading: ✅
 Map.background: 🧩
 Map.isEnabled: 🧩
@@ -44,7 +44,7 @@ ScrollView.scaleY: ✅
 SearchField.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 SearchField.translationX: ✅
 Slider.tooltip: ✅
-Spacer.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Spacer.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Spacer.isEnabled: does not apply - read isEnabled of Spacer - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Stepper.frame: ✅
 Stepper.rotation: ✅

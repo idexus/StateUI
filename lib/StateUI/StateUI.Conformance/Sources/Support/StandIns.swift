@@ -4,11 +4,11 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// What a host that blurs nothing showed, read back as the material it stands for: the blur whose colour of the
-/// theme in force it painted, else the colour itself.
+/// What a host that blurs nothing showed, read back as the material it stands for: the blur whose color of the
+/// theme in force it painted, else the color itself.
 @_spi(Host) public enum StandIns {
-    /// The material a view painting `painted` shows: a blur, where `painted` is the colour a host that blurs nothing
-    /// draws for one, else the colour.
+    /// The material a view painting `painted` shows: a blur, where `painted` is the color a host that blurs nothing
+    /// draws for one, else the color.
     @MainActor public static func material(painted: Color) -> Material {
         let drawn = painted.propValue
         let blur = Blur.Thickness.allCases.first { HostMaterial(Material.blur(Blur($0)).propValue).standIn == drawn }

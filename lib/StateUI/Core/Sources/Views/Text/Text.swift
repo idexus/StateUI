@@ -71,12 +71,12 @@ public struct Text: ElementView, TextualElement, FontElement, TextAlignmentEleme
     ///             TextSpan(" = 0")
     ///         }
     ///
-    /// The one way to colour part of the words: text in two colours is two runs.
+    /// The one way to color part of the words: text in two colors is two runs.
     /// A list of runs goes in whole, each matched by where it sits, since two
     /// tokens may read the same:
     ///
     ///     Text().spans {
-    ///         highlighted(code).map { TextSpan($0.text).textColor($0.colour) }
+    ///         highlighted(code).map { TextSpan($0.text).textColor($0.color) }
     ///     }
     ///
     /// A Text given both runs and a `text` shows the runs.
@@ -89,7 +89,7 @@ public struct Text: ElementView, TextualElement, FontElement, TextAlignmentEleme
     }
 }
 
-/// One run of text inside a Text, with its own colour, size and weight.
+/// One run of text inside a Text, with its own color, size and weight.
 ///
 ///     TextSpan("Sold out")
 ///         .textColor(.firebrick)
@@ -113,12 +113,12 @@ public struct TextSpan: ModifiableElement, TextualElement, FontElement, Tracking
     }
 
     /// What is drawn behind this run - a highlight over part of a line; a blur
-    /// or glass behind a run shows its colour.
+    /// or glass behind a run shows its color.
     public func background(_ value: Material) -> Modified {
         setValue(TextSpanContract.background, value)
     }
 
-    /// What is drawn behind this run, in one colour.
+    /// What is drawn behind this run, in one color.
     public func background(_ value: Color) -> Modified {
         background(.color(value))
     }

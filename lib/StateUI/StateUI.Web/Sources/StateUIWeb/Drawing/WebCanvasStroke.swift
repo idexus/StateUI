@@ -36,7 +36,7 @@ struct WebCanvasStroke {
             draw: { instruction, pen in draw(instruction, pen: pen) })
     }
 
-    /// Draws `instruction` with `pen`: a shape outlined or filled in the pen's colours at its opacity, words in a
+    /// Draws `instruction` with `pen`: a shape outlined or filled in the pen's colors at its opacity, words in a
     /// room, or the drawing moved, turned or scaled from here.
     private mutating func draw(_ instruction: CanvasInstruction, pen: CanvasPen) {
         switch instruction {
@@ -98,7 +98,7 @@ struct WebCanvasStroke {
         }
     }
 
-    /// A colour's red, green and blue from 0 to 255 and its opacity from 0 to 1, at the pen's opacity; nil for none.
+    /// A color's red, green and blue from 0 to 255 and its opacity from 0 to 1, at the pen's opacity; nil for none.
     private static func color(_ value: HostValue, _ pen: CanvasPen) -> [Double]? {
         guard let color = value.color else { return nil }
         return [Double(color.red), Double(color.green), Double(color.blue),

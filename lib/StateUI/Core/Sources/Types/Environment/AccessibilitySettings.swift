@@ -16,7 +16,7 @@ public final class AccessibilitySettings {
     /// change shows at once or cross fades where it would travel.
     @State public internal(set) var reducesMotion = false
 
-    /// Whether the user asked for more contrast: lines drawn stronger, colours further apart.
+    /// Whether the user asked for more contrast: lines drawn stronger, colors further apart.
     @State public internal(set) var prefersHigherContrast = false
 
     /// Whether a screen reader is running - a reason to say in words what a picture shows, never to make the

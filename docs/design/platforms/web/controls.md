@@ -37,7 +37,7 @@ identifier, which a driver finds it by, is `data-identifier`.
 ## Words
 
 A Text is a `<span>` whose words wrap at the width it is given and keep their
-line breaks. A font, a colour and the room around the words are CSS's
+line breaks. A font, a color and the room around the words are CSS's
 `font-size`, `font-weight`, `font-style`, `font-family`, `color` and
 `padding`; what the application leaves unsaid is the page's, and the page's
 font is the system's own.
@@ -55,7 +55,7 @@ text's size.
 
 A Text holding spans shows its runs in place of its own words, each a `<span>`
 of its own look (`MountedElement.textRuns`). A run says only what it says
-itself - its font, its colour, the space between its letters, its lines'
+itself - its font, its color, the space between its letters, its lines'
 height, its decorations, what stands behind it - and takes the rest from the
 text around it, as the page's styles inherit. A span is kept for each run by
 its place: every span's words are written again as the runs change, and of its
@@ -119,7 +119,7 @@ scale 1, set on iOS alone, where the user's fingers still zoom the page.
 ## Toggles
 
 A Switch is the browser's checkbox with the role of a switch, drawn as one -
-a track and a knob, the accent colour while it is on, the application's tint
+a track and a knob, the accent color while it is on, the application's tint
 in its place where it gives one - and a CheckBox the checkbox as it is. Each
 says when the user turns it (`change`), and the tree turns it through its
 `checked`. Each stands at its own size in the middle of a `<label>` that takes
@@ -185,7 +185,7 @@ calendar opening and closing reach no event of the page's, so `isOpen`,
 ## Indicators
 
 A ProgressBar is the browser's `<progress>`, its share of the work done from 0
-to 1, drawn as a thin rounded bar in the accent colour or the application's
+to 1, drawn as a thin rounded bar in the accent color or the application's
 tint across the middle of a box that takes the view's frame - a cell taller
 than the bar leaves the bar thin and the frame the cell's. An ActivityIndicator is a ring turning while work goes on - the browser
 has no spinner of its own - with the role of a busy progress bar; stopped, it
@@ -292,8 +292,8 @@ tree's choice without an event and tells the user's.
 
 A browser ships no icons, so the Web's are StateUI's own: one stroke drawn
 on a 24-point square for each `Icon` (`WebIcons`), worn as a CSS mask over
-the colour of the words around it, so an icon takes a button's or a bar's
-colour and the theme's. Its `<img>` shows a drawing of nothing 24 points
+the color of the words around it, so an icon takes a button's or a bar's
+color and the theme's. Its `<img>` shows a drawing of nothing 24 points
 square, which gives the icon its size. A picture from bytes is a `data:` URL,
 its type read from its own first bytes (`WebPictureData`).
 

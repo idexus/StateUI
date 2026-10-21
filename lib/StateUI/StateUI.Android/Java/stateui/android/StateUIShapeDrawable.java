@@ -56,7 +56,7 @@ final class StateUIShapeDrawable extends Drawable {
     }
 
     /**
-     * The brush: its kind, its stops' colours and offsets, its points in fractions of the shape and a radial
+     * The brush: its kind, its stops' colors and offsets, its points in fractions of the shape and a radial
      * one's reach in pixels.
      */
     void setFill(int kind, int[] stopColors, float[] stopOffsets, float[] geometry) {
@@ -64,7 +64,7 @@ final class StateUIShapeDrawable extends Drawable {
         invalidateSelf();
     }
 
-    /** The outline's colour, and its width in pixels; none at zero. */
+    /** The outline's color, and its width in pixels; none at zero. */
     void setStroke(int color, float width) {
         strokeColor = color;
         strokeWidth = width;

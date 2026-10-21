@@ -81,7 +81,7 @@ extension WinUIRegistrations {
 
 
     private static func applyBox<Realized: ElementContract>(_ view: WinUILayoutView, _ values: ElementValues<Realized>) {
-        // A blur's colour stands in for the box's acrylic, its tint over it.
+        // A blur's color stands in for the box's acrylic, its tint over it.
         view.setBackground(HostMaterial(values[VisualElementContract.background]?.propValue).painted)
         view.setOutline(
             stroke: values[BorderElementContract.stroke]?.propValue,

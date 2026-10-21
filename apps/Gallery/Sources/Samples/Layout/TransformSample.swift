@@ -1,7 +1,7 @@
 import StateUI
 
 // listing: TransformSample
-/// One colour per family, so the three rows read apart at a glance rather than
+/// One color per family, so the three rows read apart at a glance rather than
 /// as one long run of identical squares.
 private enum Family {
     /// The two chains that differ only in the ORDER they are written in.
@@ -91,7 +91,7 @@ struct TransformSample: SampleContent, ExampleContent {
             // The same square and the same factor three times, so the only
             // thing the row shows is which axis each modifier reaches - and a
             // WIDER GAP than the orange row, because a scaled box is drawn
-            // outside its room and would otherwise touch its neighbours.
+            // outside its room and would otherwise touch its neighbors.
             HStack {
                 // Drawing only - the room the layout gave it does not change.
                 piece(box(Family.size).scale(transformed ? 1.6 : 1), "scale")
@@ -114,7 +114,7 @@ struct TransformSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("`.transform(_:)` is one transform in the order it is written, about the "
-                + "view's centre: `.rotate(45).translate(28, 0)` moves the turned box a plain "
+                + "view's center: `.rotate(45).translate(28, 0)` moves the turned box a plain "
                 + "28 to the right, while `.translate(28, 0).rotate(45)` swings that move "
                 + "round with the turn. That is the violet row.")
                 .fontSize(12)
@@ -132,7 +132,7 @@ struct TransformSample: SampleContent, ExampleContent {
                 + "given, and only what is drawn moves. `scale` is both axes at once and "
                 + "`scaleX` and `scaleY` one each; all three multiply the size the layout "
                 + "gave, so 1 is that size and 0.5 half of it. A scaled view overlaps its "
-                + "neighbour without pushing it aside, which is why the amber row is spaced "
+                + "neighbor without pushing it aside, which is why the amber row is spaced "
                 + "wider than the orange one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -144,15 +144,15 @@ struct TransformSample: SampleContent, ExampleContent {
     /// The square every example transforms - sized here, because a transform
     /// is about what is DRAWN and the room each one gets has to be the same.
     ///
-    /// - Parameter colour: which family this square belongs to.
+    /// - Parameter color: which family this square belongs to.
     /// - Returns: the square, ready to be transformed.
-    private func box(_ colour: Color) -> Rectangle {
-        Rectangle().fill(colour)
+    private func box(_ color: Color) -> Rectangle {
+        Rectangle().fill(color)
             .width(44)
             .height(44)
     }
 
-    /// One piece with its caption, so a row reads as labelled examples rather
+    /// One piece with its caption, so a row reads as labeled examples rather
     /// than bare boxes. The gap under the box is what a scaled one grows into.
     private func piece<Shown: View>(_ view: Shown, _ caption: String) -> some View {
         VStack {

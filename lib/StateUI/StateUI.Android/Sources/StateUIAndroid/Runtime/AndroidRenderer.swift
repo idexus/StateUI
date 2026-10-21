@@ -261,7 +261,7 @@ final class AndroidRenderer {
         return Point(x: Double(pixels[0]) / density, y: Double(pixels[1]) / density)
     }
 
-    /// The colour the activity's window was last painted in behind its pages; nil while it keeps its own.
+    /// The color the activity's window was last painted in behind its pages; nil while it keeps its own.
     private var paintedBackground: Int32?
 
     /// Paints the activity's window behind its pages as the window's element says, and gives it the theme's own back

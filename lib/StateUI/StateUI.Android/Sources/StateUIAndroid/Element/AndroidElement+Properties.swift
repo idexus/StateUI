@@ -103,8 +103,8 @@ extension AndroidElement {
         view ?? parent?.nearestView
     }
 
-    /// Paints the view's background: its own - a blur's or glass's colour standing in, its tint over it, as Android
-    /// blurs nothing behind a view; a page painting none stands on the colour its window is painted in.
+    /// Paints the view's background: its own - a blur's or glass's color standing in, its tint over it, as Android
+    /// blurs nothing behind a view; a page painting none stands on the color its window is painted in.
     /// Design: docs/design/host/pages.md#a-pages-ground
     func paintBackground() {
         guard let view else { return }

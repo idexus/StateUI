@@ -146,7 +146,7 @@
             takesTheUsersChoice(as: .segmented),
             offersItsValues(as: .radio),
             takesTheUsersChoice(as: .radio),
-            Aspects.holds(PickerContract.placeholder, on: "Picker", "Size", then: "Colour",
+            Aspects.holds(PickerContract.placeholder, on: "Picker", "Size", then: "Color",
                           with: [Write(PickerContract.options, ["S", "M"])]),
         ]
     }

@@ -159,11 +159,11 @@ with a bar of its own wears what its split view declares, and nothing from
 around the split view. On AppKit and WinUI 3 a tab selector keeps the
 toolkit's selected and unselected appearance; GTK 4 stands its switcher on a
 bar painted as its header bar is, and UIKit, Android Views and Web paint
-their tabs in the bar's colours. An unwritten background retains the native
+their tabs in the bar's colors. An unwritten background retains the native
 material; StateUI does not ask a host to rasterize an arbitrary brush into
 page chrome.
 
-On AppKit a written bar colour paints the bars alone: the band the title bar
+On AppKit a written bar color paints the bars alone: the band the title bar
 and toolbar cover, the window's under a floating sidebar's glass and the
 visible content's - a split view's detail. The window's background is the one
 written for the window; on a translucent window it tints the window's
@@ -171,7 +171,7 @@ material, which shows around the sidebar and under the page. Text on a painted
 band - the page's title, and the application's name and line at the trailing
 edge - is in the declared `barForegroundColor`, else white or black by the
 band's lightness.
-On the system's material both keep the system's colours.
+On the system's material both keep the system's colors.
 
 `ItemsView` is the native virtualized collection. It presents identified
 items as a list, a row or a grid, and StateUI builds an item as the
@@ -210,7 +210,7 @@ contract.
 | `Overlay` | pass-through `NSView` above the page | pass-through `UIView` above the page | top child of a `FrameLayout` | top layer of a root `Grid` | custom `GtkWidget` in the window's `GtkOverlay` | `<div>` layered over the page |
 | `ContextMenu`, `MenuBar`, `Menu`, `MenuItem` | `NSMenu` / `NSMenuItem` | `UIMenu` / `UIAction`; `UIContextMenuInteraction`; `UIMenuBuilder` menu bar | `ContextMenu` / `SubMenu` / `MenuItem`; a menu bar's menus in the `Toolbar` overflow | `MenuFlyout` / `MenuBar` | `GMenu` in a `GtkPopoverMenu`; a menu bar as a `GtkMenuButton` main menu | ARIA `menu` in a `popover`; a menu bar's menus under the bar's More button |
 | `ButtonMenu` | `NSComboButton`, unified or split | `UIButton.menu`, opened by a tap or held | `PopupMenu` at the button, opened by a click or held | `DropDownButton`, `SplitButton` | `GtkMenuButton`, `AdwSplitButton` | `aria-haspopup` button opening an ARIA `menu`, or held for it |
-| `Divider` | an `NSBox` separator | a hairline `UIView` in the separator colour | a `View` in the theme's list divider | a line in `DividerStrokeColorDefaultBrush` | a `GtkSeparator` | `<hr>` |
+| `Divider` | an `NSBox` separator | a hairline `UIView` in the separator color | a `View` in the theme's list divider | a line in `DividerStrokeColorDefaultBrush` | a `GtkSeparator` | `<hr>` |
 | `MenuSeparator` | a separator `NSMenuItem` | a group break in a `UIMenu` | a group divider in a menu | `MenuFlyoutSeparator` | a section break in a `GMenu` | `role=separator` in an ARIA `menu` |
 | `ToolbarItemGroup` / `ToolbarItem` | `NSToolbarItem`; `NSMenuToolbarItem` overflow | `UIBarButtonItemGroup` / `UIBarButtonItem` | `Toolbar` `MenuItem` | `CommandBar` `AppBarButton` in the `TitleBar` | `GtkButton` in an `AdwHeaderBar` | `<button>` in an ARIA `toolbar` |
 | `ZStack` / `LayoutEngine` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid, one shared cell |

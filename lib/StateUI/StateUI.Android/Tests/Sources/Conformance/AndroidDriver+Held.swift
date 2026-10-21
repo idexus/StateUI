@@ -58,7 +58,7 @@ extension AndroidDriver {
             guard split.overlays, let drawer = split.heldViews().last else {
                 throw DriverCannot("read the drawer's surface", because: "the sidebar stands beside the detail")
             }
-            let argb = Java.callStaticLong(JavaAPI.views, Self.sidebarColour, .object(drawer.reference))
+            let argb = Java.callStaticLong(JavaAPI.views, Self.sidebarColor, .object(drawer.reference))
             return argb == Int64.min ? nil : Self.material(argb: argb)
         case (.selectedItems, let items as AndroidItemsView): return .strings(items.selectedForTesting)
         case (.selectionMode, let items as AndroidItemsView):
@@ -98,7 +98,7 @@ extension AndroidDriver {
             return Self.color(UInt32(bitPattern: Java.callInt(text.reference, Self.getCurrentTextColor))).propValue
         case (.background, let view?):
             let held = Java.callStaticLong(Self.testPixels, Self.background, .object(view.reference))
-            guard held >> 32 == 1 else { throw DriverCannot("read a background of no one colour") }
+            guard held >> 32 == 1 else { throw DriverCannot("read a background of no one color") }
             return StandIns.material(painted: Self.color(UInt32(truncatingIfNeeded: held))).propValue
         case (.fontSize, let picker as AndroidPickerView), (.fontAttributes, let picker as AndroidPickerView),
              (.fontWeight, let picker as AndroidPickerView),
@@ -146,7 +146,7 @@ extension AndroidDriver {
                 return FontWeight(nearest: Double(Java.callStaticInt(testText, weight, .object(row)))).propValue
             case .textColor: return color(UInt32(bitPattern: Java.callInt(row, getCurrentTextColor))).propValue
             default:
-                // Gravity's horizontal bits: centre 1, start or left 3, end or right 5.
+                // Gravity's horizontal bits: center 1, start or left 3, end or right 5.
                 guard let gravity = read(row, "gravity").flatMap(Int.init) else { return .some(nil) }
                 return (gravity & 7 == 1 ? TextAlignment.center : gravity & 7 == 5 ? .end : .start).propValue
             }
@@ -210,7 +210,7 @@ extension AndroidDriver {
 
 
     /// The activity's title, as the system's recent tasks show it.
-    /// The plain colour the activity's window shows behind its pages; nil where it shows none.
+    /// The plain color the activity's window shows behind its pages; nil where it shows none.
     static func windowBackground() -> HostValue? {
         let argb = Java.callStaticLong(JavaAPI.environment, readWindowBackground, .object(TestContext.window.reference))
         guard argb != Int64.min else { return nil }
@@ -220,7 +220,7 @@ extension AndroidDriver {
             alpha: Int(packed >> 24 & 255))).propValue
     }
 
-    /// The colour `argb` as a material.
+    /// The color `argb` as a material.
     static func material(argb: Int64) -> HostValue {
         let packed = UInt32(truncatingIfNeeded: argb)
         return Material.color(Color(
@@ -228,7 +228,7 @@ extension AndroidDriver {
             alpha: Int(packed >> 24 & 255))).propValue
     }
 
-    static let sidebarColour = Java.staticMethod(JavaAPI.views, "sidebarColour", "(Landroid/view/View;)J")
+    static let sidebarColor = Java.staticMethod(JavaAPI.views, "sidebarColor", "(Landroid/view/View;)J")
 
     static let readWindowBackground = Java.staticMethod(
         JavaAPI.environment, "windowBackground", "(Landroid/app/Activity;)J")
@@ -281,7 +281,7 @@ extension AndroidDriver {
         }
     }
 
-    /// A colour Android holds as 0xAARRGGBB.
+    /// A color Android holds as 0xAARRGGBB.
     static func color(_ argb: UInt32) -> Color {
         Color(red: Int(argb >> 16 & 0xFF), green: Int(argb >> 8 & 0xFF), blue: Int(argb & 0xFF), alpha: Int(argb >> 24))
     }

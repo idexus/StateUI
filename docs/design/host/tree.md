@@ -113,7 +113,7 @@ run of places and what is drawn over it - a layout engine's run is put by the
 element's presentation, each host setting it on its layers view, so a run
 moving every frame builds no child's layout item again; its opacity, its
 drawing and its transform (`drawnOverProperties`) are read by nothing it
-holds, so a row fading in arranges none of its words, while a text's colour
+holds, so a row fading in arranges none of its words, while a text's color
 reaches its runs, which a host writes as it arranges them; a child whose
 place moved arranges its parent,
 passed up through an element with no view; a window's chrome is composed
@@ -208,7 +208,7 @@ window alike.
 
 A label's spans are runs of its words, put together once
 (`MountedElement.textRuns`): each span's words in its own case, else the
-label's, and its own look - size, weight and slant, colour, what stands
+label's, and its own look - size, weight and slant, color, what stands
 behind it, its lines, whether it follows the user's text size - in the
 contract's terms (`TextLook`). A run's look stands over its label's: where the
 run says nothing, the label's says it, and a run scales only where neither it
@@ -219,7 +219,7 @@ writes nothing again: its own words stand already.
 An element showing words - a label, a button - reads the
 text tiers the same way on every host (`TextMembers`): its words in their
 case where the words or the case changed, and the look its font, its
-scaling and its colour give them where one of those did - the members a look
+scaling and its color give them where one of those did - the members a look
 is made of named once (`TextMembers.lookMembers`), so a host's own list of a
 field's or a picker's members takes them whole. A shape's line, fill and
 corners (`ShapeMembers`) and a layout's box and a stack's spacing
@@ -245,7 +245,7 @@ style's, and with no style the host's own stand. A weight crosses as
 `FontWeight` and is weighed by its number, 400 to 700
 (`FontWeight.number`); a font a toolkit reports reads as the weight nearest
 its number, the lighter of two as near. A label takes a new look's font,
-scaling and colour whole (`TextLook.adopt(fontAndColorOf:)`), keeping its own
+scaling and color whole (`TextLook.adopt(fontAndColorOf:)`), keeping its own
 spacing, lines and decorations.
 
 ## What assistive technology meets

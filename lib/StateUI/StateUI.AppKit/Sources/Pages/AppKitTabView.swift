@@ -144,7 +144,7 @@ final class AppKitTabView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
         tabView.selectedTabViewItem?.view?.frame = tabView.contentRect
     }
 
-    /// One native tab per page, each holding its page in a pane, labelled by
+    /// One native tab per page, each holding its page in a pane, labeled by
     /// the segments.
     private func reconcileTabs() {
         selecting = true

@@ -146,7 +146,7 @@ Nothing the application writes into the state reaches the host; it is the
 platform's report alone.
 
 What the sidebar stands on is the split view's to say, for each of the two
-places, as a `Material` - a colour, a gradient, a blur, glass:
+places, as a `Material` - a color, a gradient, a blur, glass:
 
 ```swift quote
 SplitView($menuOpen, sidebar: {
@@ -163,7 +163,7 @@ through, as a desktop sidebar does; over it the sidebar stands on the
 platform's drawer or overlay surface - never on the window, so a clear window
 never leaves a flyout with nothing under its words. The sidebar page's own
 `.pageBackground` still paints the page on top. A platform that blurs nothing
-inside a window shows a blur as its colour.
+inside a window shows a blur as its color.
 
 ## Modal pages
 
@@ -389,7 +389,7 @@ application's name, the line under the title and its mark are declared the same
 way ([The window's bar](application-and-sessions.md#the-windows-bar)). Native tab
 selectors keep their selected and unselected states, legible over a written
 background. Leaving the background unwritten preserves the platform's
-material. A written colour is
+material. A written color is
 painted where the bars stand and nowhere else - on AppKit the band the title
 bar and toolbar cover, under a floating sidebar's glass too, with the page's
 title in `barForegroundColor` on it - while the toolbar's own items keep the

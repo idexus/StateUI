@@ -20,20 +20,20 @@ on a glass of its own, apart from the next. Each action is a button with
 its picture, its words beside it where it shows them, its name for assistive
 technology and its tooltip. The bar's own buttons - the toggle, the way
 back, a sheet's close, the overflow - are named in the library's words, in
-the user's language (`ChromeWords`). The bar's colours are the arrangement's, written
+the user's language (`ChromeWords`). The bar's colors are the arrangement's, written
 as CSS variables the stylesheet paints it with; without them the bar is the
 page's surface, translucent, blurred and deepened over what lies behind it;
 the room stands in the row below the bar, so nothing scrolls beneath it.
 A clear bar drops the blur: it shows what lies behind it as it is, the same
-colour as the page under it. No line stands under the bar. The same title
+color as the page under it. No line stands under the bar. The same title
 names the browser's tab, beside the site's name ([The tab](#the-tab)).
 
 Beside a sidebar shown, the bar stands in two parts as wide as the split
 view's columns: over the sidebar the application's name and the line under
-it, centred, with the toggle at the sidebar's edge; over the detail
-the rest, its title centred over the detail. With the sidebar hidden, or over
+it, centered, with the toggle at the sidebar's edge; over the detail
+the rest, its title centered over the detail. With the sidebar hidden, or over
 the detail as a drawer, the name stands in the sidebar alone, and the title
-is centred over the whole bar. Without a split view the name leads the bar,
+is centered over the whole bar. Without a split view the name leads the bar,
 and a page's title the same as the name is not said twice. The parts follow
 from the split view's `data-sidebar`, which the bar repeats, and the page's
 width, so no measuring moves them.
@@ -44,19 +44,19 @@ in words, and the browser's tab shows the site's own icon.
 The page is one window: an application's second window has no place of its
 own in it.
 
-## The colour under the window
+## The color under the window
 
-The page under the window wears the window's colour, where the window is one
-opaque colour (`WebWindowController.pageColour`): `--stateui-page` on the
+The page under the window wears the window's color, where the window is one
+opaque color (`WebWindowController.pageColor`): `--stateui-page` on the
 document, which `body` and the loading screen wear before the page's own
 surface. Safari on an iPhone - and a page added to the home screen - takes
-the colour above the page and around its bars ONCE, at the first paint, from
-what stands there then; the window's colour comes with the program after it.
+the color above the page and around its bars ONCE, at the first paint, from
+what stands there then; the window's color comes with the program after it.
 So the relay
-keeps the colour in the viewer's browser (`localStorage`, one an appearance:
-`stateui.page-colour.light` and `.dark`, as the system's stood when it was
+keeps the color in the viewer's browser (`localStorage`, one an appearance:
+`stateui.page-color.light` and `.dark`, as the system's stood when it was
 written), and `index.html` wears it before anything is drawn: from the second
-start the bars are the window's colour; the very first shows the page's own.
+start the bars are the window's color; the very first shows the page's own.
 A translucent window, a blur or the platform's own keeps none - the page
 under it would show through. A per-viewer convenience: nothing depends on it,
 and a browser keeping nothing paints as before.
@@ -192,7 +192,7 @@ variable for each - `--stateui-sidebar-ground` and `-filter` beside the
 detail, `--stateui-flyout-ground` and `-filter` over it - which the style
 sheet reads in that place, so a page turning narrow moves the sidebar to the
 other with no word from the host. A blur is a backdrop filter under its
-colour. None is the page's own: beside the detail the window shows through,
+color. None is the page's own: beside the detail the window shows through,
 a breath darker - lighter in the light theme - as a desktop sidebar lets it
 through; over the detail the page's raised surface, never the window. The
 window's bar, over a sidebar shown beside the page, stands its part over the
@@ -213,9 +213,9 @@ itself (`data-moves`). Where the user asks for less motion nothing moves.
 A tabbed view is a `<section>`: a strip of its tabs over one cell its pages
 share. The strip scrolls across alone, never down - its line drawn inside it,
 so no tab's underline reaches past it for a finger to drag it by. It wears
-the colour of the bars on its path (`barColors`), and no blur under a clear
+the color of the bars on its path (`barColors`), and no blur under a clear
 one - the window bar's own look where nothing is said - so under the window's
-bar it stands as one with it; its words, as the window bar's, are the colour
+bar it stands as one with it; its words, as the window bar's, are the color
 the tree writes, else light on a dark band and dark on a light one
 (`BandWords`). Each tab is a button with the role of a tab - its page's picture, where
 it has one, beside its name - the chosen one selected; the chosen page shows and the others stand beside it covered, kept

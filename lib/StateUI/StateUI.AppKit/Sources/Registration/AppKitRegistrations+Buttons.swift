@@ -52,7 +52,7 @@ extension AppKitRegistrations {
                     .scaleProportionallyDown
                 }
                 let background = paintedColor(values[VisualElementContract.background]?.propValue)
-                // A destructive action's words in the system's red where the tree colours them not.
+                // A destructive action's words in the system's red where the tree colors them not.
                 let look = ButtonRoleLook(
                     values[ButtonContract.role], fills: background != nil,
                     colorsWords: values[TextColorElementContract.textColor] != nil)

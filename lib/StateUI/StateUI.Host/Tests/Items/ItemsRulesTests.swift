@@ -38,8 +38,8 @@ final class ItemsRulesTests: XCTestCase {
         XCTAssertEqual(moved.inserted, [0])
     }
 
-    /// Removals and insertions come as runs of neighbours, in the order they are told.
-    func testChangesComeInRunsOfNeighbours() {
+    /// Removals and insertions come as runs of neighbors, in the order they are told.
+    func testChangesComeInRunsOfNeighbors() {
         let changes = ItemsChanges(from: ["a", "b", "c", "d", "e", "f"], to: ["a", "x", "y", "d", "z"])
         XCTAssertEqual(changes.removed, [5, 4, 2, 1])
         XCTAssertEqual(changes.removedRuns, [4..<6, 1..<3], "last first")
@@ -57,7 +57,7 @@ final class ItemsRulesTests: XCTestCase {
         XCTAssertEqual(taps.map(\.opens), [true, true, false, false])
     }
 
-    /// An item stands at the start, the centre or the end of the room; nearest moves it only where it is not wholly
+    /// An item stands at the start, the center or the end of the room; nearest moves it only where it is not wholly
     /// in view, the shorter way.
     func testAnAnchorPlacesTheItem() {
         XCTAssertEqual(ScrollAnchor.start.place(of: 500, length: 40, in: 300, at: 0), 500)

@@ -13,7 +13,7 @@ extension BarElement where Modified == Self {
         case .tinted:
             return barBackgroundColor(accent.translucentColor(system: system, for: .bar))
                 .barForegroundColor(Palette.text)
-        case .colour:
+        case .color:
             return barBackgroundColor(accent.color(system: system, for: .bar))
                 .barForegroundColor(accent.carriesThemesWords ? Palette.text : Palette.onBrand)
         }

@@ -41,7 +41,7 @@ struct TooltipSample: SampleContent, ExampleContent {
                 Rectangle().fill(Palette.accent)
                     .width(48)
                     .height(48)
-                    .tooltip(detailed ? "The colour the gallery marks things with" : "Accent")
+                    .tooltip(detailed ? "The color the gallery marks things with" : "Accent")
             }
             .spacing(12)
 

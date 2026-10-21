@@ -7,11 +7,11 @@
 /// the same on every such host; a record that does not read whole is left out.
 /// Design: docs/design/types/drawing.md#a-drawing-is-a-list-of-records
 @_spi(Host) public enum CanvasInstruction: Equatable, Sendable {
-    /// The colour fills are drawn in from here.
+    /// The color fills are drawn in from here.
     case fillColor(HostValue)
-    /// The colour outlines are drawn in from here.
+    /// The color outlines are drawn in from here.
     case strokeColor(HostValue)
-    /// The colour text is drawn in from here.
+    /// The color text is drawn in from here.
     case textColor(HostValue)
     /// An outline's width from here.
     case lineWidth(Double)

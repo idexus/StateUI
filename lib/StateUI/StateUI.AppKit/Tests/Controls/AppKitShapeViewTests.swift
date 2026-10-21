@@ -80,7 +80,7 @@ final class AppKitShapeViewTests: XCTestCase {
     }
 
     @MainActor
-    func testAFittedShapeIsCentredWithoutChangingItsProportions() {
+    func testAFittedShapeIsCenteredWithoutChangingItsProportions() {
         let view = AppKitShapeView(kind: .polyline)
         view.apply(
             fill: nil,
@@ -234,7 +234,7 @@ final class AppKitShapeViewTests: XCTestCase {
     }
 
     /// Every shape draws its fill inside its outline and its stroke along it,
-    /// each in its brush's colour. A line holds no area to fill.
+    /// each in its brush's color. A line holds no area to fill.
     @MainActor
     func testEveryShapeDrawsItsFillAndItsStroke() throws {
         for (type, geometry) in Self.shapes {
@@ -354,7 +354,7 @@ final class AppKitShapeViewTests: XCTestCase {
         var count = 0
         for x in 0..<bitmap.pixelsWide {
             for y in 0..<bitmap.pixelsHigh {
-                if let colour = bitmap.colorAt(x: x, y: y), colour.alphaComponent > 0.8, matches(colour) {
+                if let color = bitmap.colorAt(x: x, y: y), color.alphaComponent > 0.8, matches(color) {
                     count += 1
                 }
             }

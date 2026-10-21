@@ -20,7 +20,7 @@ extension MapProperties {
         setValue(MapContract.isZoomEnabled, value)
     }
 
-    /// Whether the roads are coloured by traffic.
+    /// Whether the roads are colored by traffic.
     public func showsTraffic(_ value: Bool) -> Modified {
         setValue(MapContract.showsTraffic, value)
     }
@@ -251,16 +251,16 @@ public struct MapRegion: Equatable, Sendable, HostRepresentable {
     /// The place in the middle.
     public var center: Location
 
-    /// The circle around the centre the map shows whole, its shorter side
+    /// The circle around the center the map shows whole, its shorter side
     /// spanning the circle's width, in meters - a plain number, its unit in
     /// its name.
     public var radiusMeters: Double
 
-    /// A region, by its centre and its radius.
+    /// A region, by its center and its radius.
     ///
     /// - Parameters:
     ///   - center: the place in the middle.
-    ///   - radiusMeters: the circle around the centre the map shows whole, in
+    ///   - radiusMeters: the circle around the center the map shows whole, in
     ///     meters.
     public init(center: Location, radiusMeters: Double) {
         self.center = center

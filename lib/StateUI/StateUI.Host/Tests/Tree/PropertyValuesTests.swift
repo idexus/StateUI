@@ -9,7 +9,7 @@ import XCTest
 /// where an animation of the property starts.
 @MainActor
 final class PropertyValuesTests: XCTestCase {
-    /// A bound state's lanes become the value its property carries: a colour's four lanes each held between 0 and
+    /// A bound state's lanes become the value its property carries: a color's four lanes each held between 0 and
     /// 255, a Boolean true where its lane is not zero, an enumeration at its nearest case, and a number or numbers
     /// as they are.
     func testABoundStatesLanesAreTheValueItsPropertyCarries() throws {

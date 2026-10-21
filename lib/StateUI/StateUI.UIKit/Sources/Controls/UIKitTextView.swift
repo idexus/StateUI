@@ -27,7 +27,7 @@ final class UIKitTextView: UILabel, UIKitLabel, UIKitSteppable {
     /// That room in UIKit's sides, by the direction the label lays out in.
     var padding: UIEdgeInsets { UIEdgeInsets(insets, in: semanticContentAttribute) }
 
-    /// What fills the label's box behind its words: a colour, or a brush; nothing where the tree says none.
+    /// What fills the label's box behind its words: a color, or a brush; nothing where the tree says none.
     private var fill = UIKitBrush()
 
     /// The words' sizes as measured for each width offered; the size measured without one holds in any wider room.
@@ -97,7 +97,7 @@ final class UIKitTextView: UILabel, UIKitLabel, UIKitSteppable {
             width: fitted.width + padding.left + padding.right, height: fitted.height + padding.top + padding.bottom)
     }
 
-    /// What fills the label's box behind its words: a colour as the view's own background, a brush painted before
+    /// What fills the label's box behind its words: a color as the view's own background, a brush painted before
     /// the words - they are the layer's own contents, which any layer added over it would cover.
     func setBackground(_ value: HostValue?) {
         let brush = HostBrush(value)

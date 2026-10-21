@@ -94,7 +94,7 @@ private struct Layers: ExampleContent {
 }
 
 // listing: Areas
-/// One labelled badge, so the sample says what is being positioned rather than
+/// One labeled badge, so the sample says what is being positioned rather than
 /// how it is drawn.
 private struct Badge: View {
     let text: String

@@ -60,7 +60,7 @@ final class DiffTests: XCTestCase {
     /// This is the half of the promise StateUI makes; the host's half is
     /// keeping the collection rather than rebuilding it. A message that repeated
     /// every run on every render would work and would send a whole highlighted
-    /// code block each time one token changed colour.
+    /// code block each time one token changed color.
     func testAChangedRunCarriesThatRunAlone() throws {
         let renders = Renders()
 
@@ -84,10 +84,10 @@ final class DiffTests: XCTestCase {
         XCTAssertFalse(runs.arranged, "the arrangement of the runs did not change")
 
         let changed = try XCTUnwrap(runs.children.first)
-        XCTAssertEqual(runs.children.count, 1, "only the run whose colour moved")
+        XCTAssertEqual(runs.children.count, 1, "only the run whose color moved")
         XCTAssertEqual(changed.type, "TextSpan")
         XCTAssertEqual(changed.props, ["textColor": Color(hex: 0xB22222).propValue],
-                       "the colour alone - not the text it still shows")
+                       "the color alone - not the text it still shows")
     }
 
     /// And a run that leaves is named, so the host can drop that one and keep

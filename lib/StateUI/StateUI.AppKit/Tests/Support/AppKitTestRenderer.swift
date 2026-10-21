@@ -93,7 +93,7 @@ enum TestPictures {
             bitmapDataPlanes: nil, pixelsWide: 2, pixelsHigh: 2, bitsPerSample: 8, samplesPerPixel: 4,
             hasAlpha: true, isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)
         let png = dot?.representation(using: .png, properties: [:]) ?? Data()
-        for name in ["books", "favourite", "home", "mail", "more", "notes", "photo", "picture", "save", "trash"] {
+        for name in ["books", "favorite", "home", "mail", "more", "notes", "photo", "picture", "save", "trash"] {
             try? png.write(to: folder.appendingPathComponent("\(name).png"))
         }
         return folder

@@ -8,8 +8,8 @@ enum HostRealizations {
     static var current = HostRealization() {
         didSet {
             realizedMembers = nil
-            honouredMembers = nil
-            unhonouredSaid = [:]
+            honoredMembers = nil
+            unhonoredSaid = [:]
         }
     }
 
@@ -18,8 +18,8 @@ enum HostRealizations {
     static var registerSource: () -> HostRegister? = { nil } {
         didSet {
             readRegister = nil
-            honouredMembers = nil
-            unhonouredSaid = [:]
+            honoredMembers = nil
+            unhonoredSaid = [:]
         }
     }
 
@@ -50,36 +50,36 @@ enum HostRealizations {
 
     /// The members the host realizes in full or in part by its register - each by its first record, on an element
     /// it does not leave out - else those it said it realizes; worked out when first asked.
-    private static var honouredMembers: Set<Owned>?
-    private static var honoured: Set<Owned> {
-        if let honouredMembers { return honouredMembers }
+    private static var honoredMembers: Set<Owned>?
+    private static var honored: Set<Owned> {
+        if let honoredMembers { return honoredMembers }
         guard let register else { return realized }
 
         var judged: Set<Owned> = []
-        var honoured: Set<Owned> = []
+        var honored: Set<Owned> = []
         for record in register.records {
             let owned = Owned(owner: KeyName(record.owner), member: KeyName(record.member))
-            guard judged.insert(owned).inserted, case .complete? = register.judgement(ofElement: record.owner)
+            guard judged.insert(owned).inserted, case .complete? = register.judgment(ofElement: record.owner)
             else { continue }
-            switch record.judgement {
+            switch record.judgment {
             case .complete, .partial:
-                honoured.insert(owned)
-                // A tier's member recorded on one of its wearers is honoured by the tier too, in part at least.
+                honored.insert(owned)
+                // A tier's member recorded on one of its wearers is honored by the tier too, in part at least.
                 if let tier = register.declaring(record.member, on: record.owner), tier != record.owner {
-                    honoured.insert(Owned(owner: KeyName(tier), member: owned.member))
+                    honored.insert(Owned(owner: KeyName(tier), member: owned.member))
                 }
             case .notPlanned, .unrealized, .byApplication: break
             }
         }
-        honouredMembers = honoured
-        return honoured
+        honoredMembers = honored
+        return honored
     }
 
     /// Whether the host realizes `member` of the contract `owner` - in full or in part - by its register, else by
     /// what it said it realizes.
-    /// Design: docs/design/core/contracts.md#what-a-platform-honours
+    /// Design: docs/design/core/contracts.md#what-a-platform-honors
     static func honors(_ member: KeyName, of owner: KeyName) -> Bool {
-        honoured.contains(Owned(owner: owner, member: member))
+        honored.contains(Owned(owner: owner, member: member))
     }
 
     /// Whether the host said it realizes `member` of the contract `owner`, on any element.
@@ -106,19 +106,19 @@ enum HostRealizations {
     /// realize it there, or never will, with the register's reason - nothing where it realizes it, in part at least,
     /// where the register says nothing of it, and on an element the host realizes none of.
     /// Design: docs/design/core/contracts.md#unrealized-names
-    static func unhonoured(_ member: KeyName, on type: NodeType) -> String? {
+    static func unhonored(_ member: KeyName, on type: NodeType) -> String? {
         let key = "\(type.name).\(member.name)"
-        if let said = unhonouredSaid[key] { return said }
+        if let said = unhonoredSaid[key] { return said }
         var said: String?
-        if let register, case .complete? = register.judgement(ofElement: type.name) {
+        if let register, case .complete? = register.judgment(ofElement: type.name) {
             let tier = register.declaring(member.name, on: type.name)
-            switch register.judgement(of: member.name, on: type.name, from: tier) {
+            switch register.judgment(of: member.name, on: type.name, from: tier) {
             case .unrealized(let why)?: said = "`\(key)` is not realized on this host: \(Self.sentence(why))"
             case .notPlanned(let reason)?: said = "`\(key)` is never realized on this host: \(Self.sentence(reason))"
             default: break
             }
         }
-        unhonouredSaid[key] = .some(said)
+        unhonoredSaid[key] = .some(said)
         return said
     }
 
@@ -127,8 +127,8 @@ enum HostRealizations {
         words.hasSuffix(".") ? words : words + "."
     }
 
-    /// What `unhonoured` said of each element's member, worked out when first asked.
-    private static var unhonouredSaid: [String: String?] = [:]
+    /// What `unhonored` said of each element's member, worked out when first asked.
+    private static var unhonoredSaid: [String: String?] = [:]
 
     /// What to say about an event of the application's a handler listens for:
     /// nothing where the host raises it, or has said nothing at all, and

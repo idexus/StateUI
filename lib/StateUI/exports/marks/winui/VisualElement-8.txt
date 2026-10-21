@@ -6,7 +6,7 @@ Button.scaleX: ✅
 Canvas.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Canvas.translationY: ✅
 Capsule.accessibilityHeading: ✅
-CheckBox.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+CheckBox.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 CheckBox.isEnabled: ✅
 DatePicker.frame: ✅
 DatePicker.rotation: ✅
@@ -46,7 +46,7 @@ Rectangle.translationX: ✅
 ScrollView.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 ScrollView.layoutDirection: ✅
 SearchField.tooltip: ✅
-Slider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Slider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Slider.isEnabled: ✅
 Spacer.frame: ✅
 Spacer.rotation: ✅

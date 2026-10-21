@@ -33,7 +33,7 @@ struct TouchThroughSample: SampleContent, ExampleContent {
                 // the whole of it ignores input, the label included; disabled,
                 // the label still takes a tap and answers none.
                 VStack {
-                    // The child wears its own colour and its own padding, so
+                    // The child wears its own color and its own padding, so
                     // what is the child and what is the empty area around it
                     // can be told apart by eye - and aimed at separately.
                     Text("tap the child")

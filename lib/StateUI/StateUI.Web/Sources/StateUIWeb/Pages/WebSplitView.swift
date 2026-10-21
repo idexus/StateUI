@@ -64,7 +64,7 @@ final class WebSplitView: WebDOMView {
     }
 
     /// Stands the sidebar on what the split view says of each place - beside the detail, and over it - as variables
-    /// the style sheet reads in each: a colour, or a blur's filter under its colour; none for the page's own.
+    /// the style sheet reads in each: a color, or a blur's filter under its color; none for the page's own.
     /// Design: docs/design/host/pages.md#a-sidebars-material
     func ground(beside: HostMaterial, over: HostMaterial) {
         for (place, material) in [("sidebar", beside), ("flyout", over)] {

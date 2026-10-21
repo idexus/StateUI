@@ -123,7 +123,7 @@ A crossing costs a hundred nanoseconds or so, and what it starts in Java
 costs more, so the host crosses as seldom as a frame allows. A view keeps
 what the host last wrote to it - its transform, its opacity, the place it
 was laid out at - and a frame writes only what differs and reads nothing
-back: the place a travelling layout starts from is the one the host wrote.
+back: the place a traveling layout starts from is the one the host wrote.
 What Android asks for in several calls is one: a placement measures the view
 exactly and lays it out, the whole transform with its pivot is set at once,
 and a measurement answers both sizes. A view that only moves keeps its

@@ -7,7 +7,7 @@ Capsule.accessibilityAdjusted: ✅
 CheckBox.frame: ✅
 CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transform, checked against the layer it composed itself
 DatePicker.pivotX: ✓ read pivotX of DatePicker: the host's own transform, checked against the layer it composed itself
-Divider.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+Divider.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Ellipse.accessibilityActionPerformed: ✅
 Ellipse.accessibilityActions: ✅
 Grid.ignoresInput: ✅
@@ -36,14 +36,14 @@ ProgressBar.rotationX: ✓ read rotationX of ProgressBar: the host's own transfo
 Rectangle.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 ScrollView.style: ✅
 ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+SearchField.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Slider.accessibilityRole: ✅
 Spacer.maximumHeight: ✅
 Spacer.maximumWidth: ✅
 Spacer.minimumHeight: ✅
 Spacer.minimumWidth: ✅
 Spacer.scaleX: ✓ read scaleX of Spacer: the host's own transform, checked against the layer it composed itself
-Stepper.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+Stepper.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Switch.accessibilityRole: ✅
 Text.accessibilityLabel: ✅
 TextEditor.maximumHeight: ✅
@@ -51,7 +51,7 @@ TextEditor.maximumWidth: ✅
 TextEditor.minimumHeight: ✅
 TextEditor.minimumWidth: ✅
 TextEditor.scaleX: ✓ read scaleX of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+TextField.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 TimePicker.accessibilityRole: ✅
 VStack.maximumHeight: ✅
 VStack.maximumWidth: ✅

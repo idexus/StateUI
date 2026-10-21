@@ -42,7 +42,7 @@ struct CodeBlock: View {
     /// How large the code is drawn, in points.
     private let size: Double = 13
 
-    /// The code itself, coloured run by run.
+    /// The code itself, colored run by run.
     ///
     /// The label, its spans and the highlight scan are all built inside this
     /// container's closure - which runs when the block is described, and a
@@ -53,14 +53,14 @@ struct CodeBlock: View {
             Text()
                 .spans {
                     // Matched by where each run sits: two runs may be the same
-                    // words in the same colour, and the snippet never changes.
+                    // words in the same color, and the snippet never changes.
                     // The size goes on every run rather than on the Text. A
                     // span carries font properties of its own, and what an
                     // unset one falls back to is the platform's business - one
                     // property per run costs nothing and leaves nothing to it.
                     CodeHighlight.runs(in: code, language: spoken).map { run in
                         TextSpan(run.text)
-                            .textColor(run.colour)
+                            .textColor(run.color)
                             .fontSize(size)
                     }
                 }

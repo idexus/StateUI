@@ -28,8 +28,8 @@ function maps() {
   return api;
 }
 
-/** A marker's colour by its kind. */
-const colours = { generic: "#ea4335", place: "#1a73e8", saved: "#f9ab00", searchResult: "#9334e6" };
+/** A marker's color by its kind. */
+const colors = { generic: "#ea4335", place: "#1a73e8", saved: "#f9ab00", searchResult: "#9334e6" };
 
 /** Meters in a degree of latitude. */
 const meters = 111320;
@@ -121,7 +121,7 @@ class GalleryMap extends HTMLElement {
       }
       marker.position = { lat: Number(lat), lng: Number(lng) };
       marker.title = label;
-      marker.content = new this.PinElement({ background: colours[kind] ?? colours.generic, borderColor: "#ffffff",
+      marker.content = new this.PinElement({ background: colors[kind] ?? colors.generic, borderColor: "#ffffff",
         glyphColor: "#ffffff" }).element;
       Object.assign(marker, { label, subtitle });
     }

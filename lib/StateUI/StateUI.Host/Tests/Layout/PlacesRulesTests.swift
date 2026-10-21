@@ -5,7 +5,7 @@
 @_spi(Host) @testable import StateUIHost
 import XCTest
 
-/// Where things stand as every host places them: a picture in its room, a layout's children travelling to their
+/// Where things stand as every host places them: a picture in its room, a layout's children traveling to their
 /// places, a frame report's numbers, and which changes measure or arrange again.
 @MainActor
 final class PlacesRulesTests: XCTestCase {
@@ -67,7 +67,7 @@ final class PlacesRulesTests: XCTestCase {
         let animator = Animator()
         let motion = LayoutMotion(animator: animator, now: { 0 }, reducesMotion: { false })
         motion.applicationMotion = .spring(response: .milliseconds(240))
-        let places = TravellingPlaces()
+        let places = TravelingPlaces()
         let child = Placed()
         var values = LayoutValues()
         values.width = 10

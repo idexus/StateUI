@@ -94,12 +94,12 @@ and this table maps the two.
 | journey (`$x.journey`) | animated value | a state's value with its destination, speed and timing |
 | animation (`Animation`) | animation | one running animation of one value |
 | animator (`Animator`), advance | animator, advance a frame | the one place a runtime advances every animation |
-| lane | component | one number of an animated value: x of a point, red of a colour |
-| lane kind (`LaneKind`) | component type | what a host reads a carried value's lanes as: numbers, a Boolean, a choice, a colour, a material |
+| lane | component | one number of an animated value: x of a point, red of a color |
+| lane kind (`LaneKind`) | component type | what a host reads a carried value's lanes as: numbers, a Boolean, a choice, a color, a material |
 | land, arrive | finish | an animation reaching its destination |
 | snap | jump | a change applied at once, with no animation |
 | travels, cleared, moves (member facts) | animatable, reset when unset, animation group | what a member's contract says about how its value changes |
-| travel, travelling layout | layout animation | a layout's children animating to their new places |
+| travel, traveling layout | layout animation | a layout's children animating to their new places |
 | state channel | animated state source | the one place a runtime animates a bound state for every control tied to it |
 | described motion | property animation | the animation a patch describes for a property |
 

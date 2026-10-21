@@ -34,7 +34,7 @@ public enum TextInputContract: Contract {
     /// What the field shows while it is empty.
     public static let placeholder = ElementProperty<Self, String>("placeholder", layer: .native)
 
-    /// The placeholder's colour.
+    /// The placeholder's color.
     public static let placeholderColor = ElementProperty<Self, Color>("placeholderColor", layer: .native)
 
     /// How many characters are selected from the caret.

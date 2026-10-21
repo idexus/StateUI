@@ -141,7 +141,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
 
             Text("Awaiting the two long ones at the BOTTOM is what keeps this a loop "
                 + "rather than a pile: a beat is over when the longest thing in it is "
-                + "over, so the next colour never starts over the one before it. Stop is "
+                + "over, so the next color never starts over the one before it. Stop is "
                 + "stop() on each state, and each leaves its value where it stood - "
                 + "which is what the bars then come home from.")
                 .fontSize(12)
@@ -153,7 +153,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
     // listing: ConcurrentAnimationSample
     /// One beat: two long movements spanning it, the bars hopping inside them.
     ///
-    /// - Parameter n: which beat this is, which decides the colour it washes to.
+    /// - Parameter n: which beat this is, which decides the color it washes to.
     /// - Returns: whether everything in it ran to the end. False is what Stop
     ///   produces, through `stop()` on each of the states.
     private func beat(_ n: Int) async throws -> Bool {
@@ -167,7 +167,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
         let breathing = $breath.journey.move(to: 0.25, .eased(.milliseconds(600), .cubicInOut))
 
         // 4 bars x 300ms = the 1200ms the wash takes, so the wave crosses the
-        // stage exactly once per colour. A hop that did not run to the end is
+        // stage exactly once per color. A hop that did not run to the end is
         // Stop, and the bars after it must not start: each would be a fresh
         // movement over the one being stopped.
         var hopped = true

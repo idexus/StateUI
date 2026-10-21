@@ -139,7 +139,7 @@ final class AppKitElement: NSObject, NativeElement {
     /// element closes over it the way a patch moves its children.
     func crossVisibility() {
         guard view != nil else { return }
-        element.crossVisibility(self, closingIn: (view?.superview as? AppKitTravellingLayout)?.places)
+        element.crossVisibility(self, closingIn: (view?.superview as? AppKitTravelingLayout)?.places)
     }
 
     /// Shows, hides and fades the view as the tree says - kept visible and
@@ -193,7 +193,7 @@ final class AppKitElement: NSObject, NativeElement {
     /// Only a patch says so. A frame the display cycle presents arranges the
     /// same children in a room that is moving, and they follow it.
     func configureLayoutMotion() {
-        guard let layout = view as? AppKitTravellingLayout else { return }
+        guard let layout = view as? AppKitTravelingLayout else { return }
         layout.places.layoutMotion = host?.runtime.layoutMotion
         layout.places.motion = motion
         layout.places.framesRead = framesRead

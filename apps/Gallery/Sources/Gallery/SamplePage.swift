@@ -32,7 +32,7 @@ struct SamplePage: View {
                 SampleTabPage(sample: sample, tab: tab, nav: nav)
             }
             .title(sample.title)
-            .bars(look.bars, in: look.barColour, system: system)
+            .bars(look.bars, in: look.barColor, system: system)
         }
     }
 

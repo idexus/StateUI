@@ -149,7 +149,7 @@ final class WebLookTests: XCTestCase {
         XCTAssertTrue(least.allSatisfy { $0 == breakpoint }, "the sidebar beside starts past it: \(widths)")
     }
 
-    /// Words on a band the tree paints and gives no colour for them stand dark on a light band, whatever the page's
+    /// Words on a band the tree paints and gives no color for them stand dark on a light band, whatever the page's
     /// own scheme - the window's bar's and a strip of tabs' alike, as the host layer's rule says.
     func testWordsOnALightBandStandDark() throws {
         let host = WebRenderer.running {

@@ -43,7 +43,7 @@ public final class ApplicationSession {
     ///     application.colorScheme = .dark
     ///
     /// The host shows every window in it, natively, and reports the theme in
-    /// force as `info.colorScheme`, which colour pairs resolve against.
+    /// force as `info.colorScheme`, which color pairs resolve against.
     public var colorScheme: ColorScheme {
         get { heldColorScheme }
         set {
@@ -64,7 +64,7 @@ public final class ApplicationSession {
     ///         }
     ///     }
     ///
-    /// A style resolves into the controls it applies to, and a colour pair in
+    /// A style resolves into the controls it applies to, and a color pair in
     /// it follows the theme. A sheet written again is the next render's.
     @State public var styles: StyleSheet? = nil
 
@@ -72,7 +72,7 @@ public final class ApplicationSession {
     ///
     ///     application.motion = .spring(response: .milliseconds(260))
     ///
-    /// A colour animates to its new colour, a view that grew to its new size.
+    /// A color animates to its new color, a view that grew to its new size.
     /// `.none` turns animation off everywhere, for an application that draws
     /// its own. A view overrides it with `.motion(_:)`, a state with
     /// `@State(motion:)`, and one write with `$state.journey.snap(to:)` or

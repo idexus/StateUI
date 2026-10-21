@@ -83,7 +83,7 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
         if let shown = choice.shown(among: controllers.count), selectedIndex != shown { selectedIndex = shown }
     }
 
-    /// The tab bar's colours: its own where the tree says none.
+    /// The tab bar's colors: its own where the tree says none.
     func showColors(background: HostValue?, foreground: HostValue?) {
         guard background != nil || foreground != nil else {
             (tabBar.standardAppearance, tabBar.scrollEdgeAppearance) = (UITabBarAppearance(), nil)
@@ -94,7 +94,7 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = color
         }
-        // Words on a painted bar: the colour written, else light on a dark bar and dark on a light one.
+        // Words on a painted bar: the color written, else light on a dark bar and dark on a light one.
         // In every layout: stacked, and inline on an iPad and a phone turned.
         if let color = BandWords.color(on: background, written: foreground).flatMap(UIColor.init(stateUI:)) {
             for layout in [

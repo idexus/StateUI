@@ -86,12 +86,12 @@ struct BrushSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`.background` takes one colour or a brush; it is one property, so a "
+            Text("`.background` takes one color or a brush; it is one property, so a "
                 + "view given both draws the one it was given last.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("A stop's colour may be written `Color(light:dark:)`, and it picks its half "
+            Text("A stop's color may be written `Color(light:dark:)`, and it picks its half "
                 + "as the view wearing the gradient is built - the first stop above is "
                 + "the gallery's orange, which is brighter in the dark.")
                 .fontSize(12)

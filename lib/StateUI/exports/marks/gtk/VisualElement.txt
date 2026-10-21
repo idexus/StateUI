@@ -43,7 +43,7 @@ Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
 Button.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Button.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Button.background: ☑️ A brush fills the view with its first colour alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's colour standing in, its tint over it.
+Button.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Button.frame: ✅
 Button.height: ✅
 Button.hidesChildrenFromAccessibility: ✅
@@ -943,7 +943,7 @@ Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
 Switch.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Switch.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Switch.background: – GTK's switch paints its own box as its track: a colour there would recolour the track, not lie under it.
+Switch.background: – GTK's switch paints its own box as its track: a color there would recolor the track, not lie under it.
 Switch.frame: ✅
 Switch.height: ✅
 Switch.hidesChildrenFromAccessibility: ✅

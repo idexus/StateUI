@@ -11,7 +11,7 @@ extension AppKitRegistrations {
     /// native view and one tier - `ShapeContract` carries the stroke, the fill
     /// and the transform, and each element adds only the geometry it is: a
     /// radius, four coordinates, a path's data, a run of points. The box is its
-    /// own thing: two colours and a radius.
+    /// own thing: two colors and a radius.
     static func shapes(_ registry: Registry<NSView>) {
         registry.add(RectangleContract.self, create: { _ in AppKitShapeView(kind: .rectangle) }) { shape in
             shape.applies(ShapeMembers.corneredMembers, RectangleContract.cornerRadius) { view, values in

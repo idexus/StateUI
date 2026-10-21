@@ -3,7 +3,7 @@
   <!-- The app icon on GNOME: the identity gradient and the white mark, laid on
        GNOME's icon grid. A GNOME app icon is a 128 canvas whose square body is
        96 pixels, 16 in from each side, standing on a base 4 pixels deep in its
-       own colours darkened - the depth the desktop's icons stand on. The GTK
+       own colors darkened - the depth the desktop's icons stand on. The GTK
        head's run script installs it as the icon named by the application's ID.
 
        The mark fills 54.17% of the body, the proportion stateui_tile.svg sets, and

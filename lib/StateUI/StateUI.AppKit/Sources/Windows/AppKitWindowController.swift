@@ -228,7 +228,7 @@ final class AppKitWindowController: NSWindowController {
         if presentsWindow, !hiddenByScene { window.makeKeyAndOrderFront(nil) }
     }
 
-    /// What a frame moved of the window, shown again - its frame, its bounds, its traits, its bars' colours, a page's
+    /// What a frame moved of the window, shown again - its frame, its bounds, its traits, its bars' colors, a page's
     /// words on its bar - and nothing a frame cannot move: no window, sheet, menu or restorable state.
     func followFrame(in runtime: HostRuntime) {
         guard let element, let window else { return }

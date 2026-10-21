@@ -29,7 +29,7 @@ Line.rotation: ✅
 Map.accessibilityHeading: 🧩
 Map.scale: 🧩
 Path.accessibilityHeading: ✅
-Picker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Picker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Picker.isEnabled: ✅
 Polygon.frame: ✅
 Polygon.rotation: ✅
@@ -64,4 +64,4 @@ VStack.isEnabled: ✅
 WebView.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 WebView.translationY: ✅
 ZStack.accessibilityHeading: ✅
-ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.

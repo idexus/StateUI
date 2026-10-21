@@ -11,8 +11,8 @@ final class DrawingRulesTests: XCTestCase {
     private let red = Color(red: 255, green: 0, blue: 0).propValue
     private let blue = Color(red: 0, green: 0, blue: 255).propValue
 
-    /// A bare colour is one colour; a gradient's stops stand between 0 and 1, and it runs top to bottom where it
-    /// gives no geometry; its first colour is what a line of one colour draws.
+    /// A bare color is one color; a gradient's stops stand between 0 and 1, and it runs top to bottom where it
+    /// gives no geometry; its first color is what a line of one color draws.
     func testABrushIsReadAsTheTreeSendsIt() {
         XCTAssertEqual(HostBrush(red), .solid(red))
         XCTAssertEqual(HostBrush(nil), .none)
@@ -23,9 +23,9 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(gradient.firstColor, red)
     }
 
-    /// One colour of which nothing shows is clear - a clear bar; one that shows a breath of itself, a gradient
+    /// One color of which nothing shows is clear - a clear bar; one that shows a breath of itself, a gradient
     /// and nothing at all are not.
-    func testAColourNothingOfWhichShowsIsClear() {
+    func testAColorNothingOfWhichShowsIsClear() {
         XCTAssertTrue(HostBrush(Color.transparent.propValue).isClear)
         XCTAssertFalse(HostBrush(Color(red: 0, green: 0, blue: 0, alpha: 5).propValue).isClear)
         XCTAssertFalse(HostBrush(red).isClear)
@@ -35,8 +35,8 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertFalse(fading.isClear)
     }
 
-    /// A material is read as what paints it, the blur behind it, its glass and the colour standing in for the
-    /// blur: a colour is its paint alone, a blur its tint over its thickness, glass the blur as clear as it is.
+    /// A material is read as what paints it, the blur behind it, its glass and the color standing in for the
+    /// blur: a color is its paint alone, a blur its tint over its thickness, glass the blur as clear as it is.
     @MainActor
     func testAMaterialIsReadWithWhatStandsInForIt() throws {
         XCTAssertEqual(HostMaterial(red).paint, red)
@@ -56,7 +56,7 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertNil(clear.paint)
     }
 
-    /// A host that blurs nothing paints the paint laid over the stand-in: a colour with an alpha tints it, an
+    /// A host that blurs nothing paints the paint laid over the stand-in: a color with an alpha tints it, an
     /// opaque one covers it, and no paint leaves the stand-in alone.
     @MainActor
     func testThePaintLiesOverTheStandIn() throws {
@@ -69,7 +69,7 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(
             tinted(.color(red: 255, green: 0, blue: 0, alpha: 128)), .color(red: 255, green: 85, blue: 85, alpha: 192),
             "half red over half white")
-        XCTAssertEqual(HostMaterial(red).painted, red, "a colour paints itself")
+        XCTAssertEqual(HostMaterial(red).painted, red, "a color paints itself")
     }
 
     /// A material read through its member comes encoded again, its pairs with it: the half of the theme in force
@@ -84,17 +84,17 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(night.isEmpty, HostThemes.current != .dark, "a nil half is the platform's own")
     }
 
-    /// A gradient of one stop paints its one colour; of none, nothing - on every host, whatever its toolkit makes of
+    /// A gradient of one stop paints its one color; of none, nothing - on every host, whatever its toolkit makes of
     /// a gradient that short.
-    func testAGradientOfOneStopIsItsColour() {
+    func testAGradientOfOneStopIsItsColor() {
         XCTAssertEqual(HostBrush(.values([.enumeration(2), .numbers([0, 0, 1, 1]), .number(0.5), red])), .solid(red))
         XCTAssertEqual(HostBrush(.values([.enumeration(3), .numbers([]), .number(1), blue])), .solid(blue))
         XCTAssertEqual(HostBrush(.values([.enumeration(2), .numbers([0, 0, 1, 1])])), .none)
     }
 
-    /// A radial gradient runs out from its centre to its radius, in fractions of what it paints, and from the
+    /// A radial gradient runs out from its center to its radius, in fractions of what it paints, and from the
     /// middle to the edge where it gives no geometry.
-    func testARadialGradientIsReadFromItsCentreToItsRadius() {
+    func testARadialGradientIsReadFromItsCenterToItsRadius() {
         let stops = [HostBrush.Stop(offset: 0, color: red), HostBrush.Stop(offset: 1, color: blue)]
         let authored = Brush.radialGradient(
             [GradientStop(Color(red: 255, green: 0, blue: 0), 0), GradientStop(Color(red: 0, green: 0, blue: 255), 1)],
@@ -115,8 +115,8 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(HostBrush.reach(of: 0.25, width: 80, height: 80), 20)
     }
 
-    /// A colour crosses to a relay as one number, alpha highest; what is no colour gives none.
-    func testAColourIsOneARGBNumber() {
+    /// A color crosses to a relay as one number, alpha highest; what is no color gives none.
+    func testAColorIsOneARGBNumber() {
         XCTAssertEqual(Color(red: 0x12, green: 0x34, blue: 0x56, alpha: 0x78).propValue.argb, 0x7812_3456)
         XCTAssertNil(PropValue.number(1).argb)
     }
@@ -157,7 +157,7 @@ final class DrawingRulesTests: XCTestCase {
     }
 
     /// An outline is a rectangle where the tree asks none, a rounded one's radius never below nothing; it is drawn
-    /// one wide where the tree gives a colour and no width, and not at all without a colour.
+    /// one wide where the tree gives a color and no width, and not at all without a color.
     func testAnOutlineIsReadAsTheTreeSendsIt() {
         XCTAssertEqual(BoxArithmetic.outline(nil), .rectangle)
         XCTAssertEqual(BoxArithmetic.outline(.values([.enumeration(1), .number(-3)])), .roundedRectangle(0))
@@ -180,18 +180,18 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(ShapeArithmetic.lineWidth(.infinity), 0)
     }
 
-    /// Words on a dark band are light, on a light band dark; a value that is no colour decides nothing.
+    /// Words on a dark band are light, on a light band dark; a value that is no color decides nothing.
     func testWordsOnABandAreLightOnADarkOne() {
         XCTAssertEqual(BandWords.light(on: .color(red: 0, green: 0, blue: 128, alpha: 255)), true, "navy")
         XCTAssertEqual(BandWords.light(on: .color(red: 255, green: 0, blue: 0, alpha: 255)), true, "red")
         XCTAssertEqual(BandWords.light(on: .color(red: 255, green: 255, blue: 0, alpha: 255)), false, "yellow")
-        XCTAssertEqual(BandWords.light(on: .color(red: 240, green: 240, blue: 240, alpha: 255)), false, "light grey")
+        XCTAssertEqual(BandWords.light(on: .color(red: 240, green: 240, blue: 240, alpha: 255)), false, "light gray")
         XCTAssertNil(BandWords.light(on: .number(1)))
     }
 
-    /// Words on a band take the colour written for them, else white on a dark band and black on a light one; with
-    /// no colour written and no band, the host's own.
-    func testWordsOnABandTakeTheColourWrittenElseTheBands() {
+    /// Words on a band take the color written for them, else white on a dark band and black on a light one; with
+    /// no color written and no band, the host's own.
+    func testWordsOnABandTakeTheColorWrittenElseTheBands() {
         let navy = HostValue.color(red: 0, green: 0, blue: 128, alpha: 255)
         let yellow = HostValue.color(red: 255, green: 230, blue: 0, alpha: 255)
         let red = HostValue.color(red: 255, green: 0, blue: 0, alpha: 255)
@@ -203,7 +203,7 @@ final class DrawingRulesTests: XCTestCase {
     }
 
     /// A view's own move, turn and scale drawn under a placing run's: the move turned and scaled by the run's, the
-    /// turns added and the scales multiplied, about the centre; with no run, the view's own.
+    /// turns added and the scales multiplied, about the center; with no run, the view's own.
     func testAPlacedChildIsDrawnUnderItsRunsTransform() {
         let own = HostDrawingTransform(translationX: 10, rotation: 15, scaleX: 2, scaleY: 2, pivotX: 0, pivotY: 1)
         let run = HostDrawingTransform(translationX: 100, translationY: 50, rotation: 90, scaleX: 3, scaleY: 3)
@@ -215,18 +215,18 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(drawn.scaleX, 6, accuracy: 1e-9)
         XCTAssertEqual(drawn.scaleY, 6, accuracy: 1e-9)
         XCTAssertEqual(drawn.pivotX, 0.5)
-        XCTAssertEqual(drawn.pivotY, 0.5, "about the centre")
+        XCTAssertEqual(drawn.pivotY, 0.5, "about the center")
         XCTAssertEqual(own.under(nil), own)
     }
 
     /// A role draws where the tree draws nothing of its own: the main action fills in the accent, a destructive
-    /// one's words stand in the critical colour, the way out and no role stand plain - and what the tree states wins.
+    /// one's words stand in the critical color, the way out and no role stand plain - and what the tree states wins.
     func testARoleDrawsWhereTheTreeDrawsNothing() {
         XCTAssertEqual(ButtonRoleLook(.primary, fills: false, colorsWords: false).fillsInAccent, true)
         XCTAssertEqual(ButtonRoleLook(.primary, fills: true, colorsWords: false).fillsInAccent, false, "a fill stated")
         XCTAssertEqual(ButtonRoleLook(.destructive, fills: false, colorsWords: false).wordsInCritical, true)
         XCTAssertEqual(
-            ButtonRoleLook(.destructive, fills: false, colorsWords: true).wordsInCritical, false, "a colour stated")
+            ButtonRoleLook(.destructive, fills: false, colorsWords: true).wordsInCritical, false, "a color stated")
         XCTAssertEqual(ButtonRoleLook(.destructive, fills: false, colorsWords: false).fillsInAccent, false)
         for role in [ButtonRole.cancel, nil] {
             let look = ButtonRoleLook(role, fills: false, colorsWords: false)

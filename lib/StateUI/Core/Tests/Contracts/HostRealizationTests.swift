@@ -80,7 +80,7 @@ final class HostRealizationTests: XCTestCase {
     /// A host says what it realizes, and judges it member by member, at every start - a test's every case on a
     /// phone: what the core answers from is worked out when first asked, once, not at each saying.
     func testAHostSayingItsRegisterAtEveryStartCostsNothingUntilAsked() {
-        let records = (0..<2_000).map { HostRecord(owner: "Owner\($0 % 40)", member: "member\($0)", judgement: .complete) }
+        let records = (0..<2_000).map { HostRecord(owner: "Owner\($0 % 40)", member: "member\($0)", judgment: .complete) }
         let register = HostRegister(records: records)
         let realization = HostRealization(
             elements: ["Text"],
@@ -112,15 +112,15 @@ final class HostRealizationTests: XCTestCase {
         defer { HostBoundary.setRegister(nil) }
 
         XCTAssertEqual(
-            HostRealizations.unhonoured(TintElementContract.tint.token.key, on: SliderContract.nodeType),
+            HostRealizations.unhonored(TintElementContract.tint.token.key, on: SliderContract.nodeType),
             "`Slider.tint` is not realized on this host: a range input takes no tint.")
         XCTAssertEqual(
-            HostRealizations.unhonoured(SliderContract.pressed.token.key, on: SliderContract.nodeType),
+            HostRealizations.unhonored(SliderContract.pressed.token.key, on: SliderContract.nodeType),
             "`Slider.pressed` is never realized on this host: a range input says no press.")
-        XCTAssertNil(HostRealizations.unhonoured(SliderContract.value.token.key, on: SliderContract.nodeType))
-        XCTAssertNil(HostRealizations.unhonoured(SliderContract.maximum.token.key, on: SliderContract.nodeType),
+        XCTAssertNil(HostRealizations.unhonored(SliderContract.value.token.key, on: SliderContract.nodeType))
+        XCTAssertNil(HostRealizations.unhonored(SliderContract.maximum.token.key, on: SliderContract.nodeType),
                      "the register says nothing of it")
-        XCTAssertNil(HostRealizations.unhonoured(TintElementContract.tint.token.key, on: ButtonContract.nodeType),
+        XCTAssertNil(HostRealizations.unhonored(TintElementContract.tint.token.key, on: ButtonContract.nodeType),
                      "an element the host does not realize is said once, as an element")
     }
 

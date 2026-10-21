@@ -59,7 +59,7 @@ arguments.
 ## Reading a value back
 
 Every value has `init?(propValue:)`, which answers nil for any shape but its
-own: a rectangle needs exactly four numbers, a colour the colour kind, a day
+own: a rectangle needs exactly four numbers, a color the color kind, a day
 three whole numbers. A whole number is read as the whole number nearest a
 number, as a carried lane is, and a number with none - infinity, not a number,
 one past `Int` - reads as nil.

@@ -72,11 +72,11 @@ final class TrafficLightWidget: GTKControl {
     }
 
     /// Where lamp `index` stands in a widget `width` wide.
-    private func lampCentre(_ index: Int, width: Double) -> (x: Double, y: Double) {
+    private func lampCenter(_ index: Int, width: Double) -> (x: Double, y: Double) {
         (width / 2, Self.padding + Self.lampSide / 2 + Double(index) * (Self.lampSide + Self.spacing))
     }
 
-    /// The housing, the lit lamp at full colour and the others dimmed to embers.
+    /// The housing, the lit lamp at full color and the others dimmed to embers.
     private func draw(_ cairo: OpaquePointer?, width: Double, height: Double) {
         let radius = 18.0
         cairo_new_sub_path(cairo)
@@ -89,8 +89,8 @@ final class TrafficLightWidget: GTKControl {
         cairo_fill(cairo)
 
         for (index, color) in Self.lampColors.enumerated() {
-            let centre = lampCentre(index, width: width)
-            cairo_arc(cairo, centre.x, centre.y, Self.lampSide / 2, 0, Double.pi * 2)
+            let center = lampCenter(index, width: width)
+            cairo_arc(cairo, center.x, center.y, Self.lampSide / 2, 0, Double.pi * 2)
             cairo_set_source_rgba(cairo, color.red, color.green, color.blue, Int32(index) == signal.rawValue ? 1 : 0.18)
             cairo_fill(cairo)
         }
@@ -100,8 +100,8 @@ final class TrafficLightWidget: GTKControl {
     private func clicked(x: Double, y: Double) {
         let width = Double(gtk_widget_get_width(widget))
         for index in Self.lampColors.indices {
-            let centre = lampCentre(index, width: width)
-            if abs(x - centre.x) <= Self.lampSide / 2, abs(y - centre.y) <= Self.lampSide / 2 {
+            let center = lampCenter(index, width: width)
+            if abs(x - center.x) <= Self.lampSide / 2, abs(y - center.y) <= Self.lampSide / 2 {
                 onLampTapped?(index)
                 return
             }

@@ -1,6 +1,6 @@
 # Layout engine
 
-`LayoutEngine` is the centre of a layout's motion: a run of views, the
+`LayoutEngine` is the center of a layout's motion: a run of views, the
 application's arithmetic that places them on the host's frames, the phase the
 arithmetic is worked out from, and the hand that moves the phase. A ring, a
 fan, a wheel of cards, a timeline and a gallery are one layout with different
@@ -111,7 +111,7 @@ A description is told apart by a number each gets as it is made
 a new one, the engine works its arithmetic out where the last frame stood -
 that phase, that room - and compares it identity by identity with the last
 frame's poses: a view whose pose is the same goes on as it was, so a render
-that changes nothing changes no way, and a phase travelling meanwhile is no
+that changes nothing changes no way, and a phase traveling meanwhile is no
 change; a view whose pose differs is shifted from where the last frame
 showed it, a view new to the run from nothing - it fades in. A view leaving
 goes at once, and the others close up. The shift decays to nought under
@@ -181,7 +181,7 @@ carried, so one state is one channel however many axes it has.
 An axis the hand moves is declared whole ([an axis](#an-axis)) and moved
 alone: the arithmetic is handed the phase walked by the host with each axis
 the hand holds where it holds it, a snap passed is named on that axis, and
-another axis travelling under the program goes on beside the hand. A
+another axis traveling under the program goes on beside the hand. A
 `Double` phase's one axis is `\.self`.
 
 The type is inferred from the phase lent, `.phase($orbit)`, which stands in
@@ -258,19 +258,19 @@ hand moves through them:
   without keyframes is asked where it stands.
 - ROUND AND PAST THE ENDS. On an axis that comes round, the phase is taken
   into one turn; the keyframe at the turn's end is the arithmetic's own
-  there, and a curve's neighbours across the seam are the next or the last
+  there, and a curve's neighbors across the seam are the next or the last
   turn's. Past an end, where the hand pulls the run, the end's two keyframes
   give a straight line that goes on, so the views still follow the hand. An
   axis of no length has one keyframe and no line: it is asked where it
   stands, as one with none is.
 - WHAT A BLEND CANNOT KNOW. Between two keyframes a view goes the curve's
   way, not the arithmetic's: an arc becomes a chord (more keyframes, or a
-  cubic), and arithmetic that jumps between neighbouring keyframes - a card
+  cubic), and arithmetic that jumps between neighboring keyframes - a card
   taken modulo round a strip, a `zIndex` flipping behind a ring - is drawn
   sweeping across. A size blended lays the view's content out every frame;
   a scale keeps it. On one axis the layouts are a sequence: from 0 to 2 the
   run passes 1. A switch between two layouts with nothing between them is a
-  state the arithmetic reads, travelling as [a change at the current
+  state the arithmetic reads, traveling as [a change at the current
   phase](#a-change-at-the-current-phase).
 
 ### The curves
@@ -282,13 +282,13 @@ the place. Every curve passes through each keyframe. The library's
 
 - `.linear` - straight, `reach` 0;
 - `.catmullRom` and `.catmullRom(tension:)` - a cubic whose slope at a
-  keyframe is the line through its neighbours, held by `1 - tension`: 0 the
+  keyframe is the line through its neighbors, held by `1 - tension`: 0 the
   plain curve, 1 a stop at each keyframe; it may swing past one;
 - `.monotone` - a cubic whose slope at a keyframe is limited so it never
-  passes its neighbours (Steffen's: local, `reach` 1), so an opacity or a
+  passes its neighbors (Steffen's: local, `reach` 1), so an opacity or a
   size never swings beyond its poses.
 
-At an end of the range the slope is the straight line to the one neighbour.
+At an end of the range the slope is the straight line to the one neighbor.
 A curve reading every keyframe - a natural spline - is not offered: its
 poses could not be worked out lazily.
 
@@ -378,7 +378,7 @@ says `pans` and no `handAxis`, so a host hears the hand every way and the
 host layer claims every first move (host/runtime.md, the hand over a
 layout); a wheel's notches step each axis their way. Let go, every axis the
 hand moves is thrown with its part of the speed and comes to rest its own
-way, the run travelling to all of their rests as one phase.
+way, the run traveling to all of their rests as one phase.
 
 ## A swipe
 

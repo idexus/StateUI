@@ -7,7 +7,7 @@ as the numbers a host reads.
 
 ## Where one view goes
 
-A placement is a rectangle, a transform about the view's centre, an opacity,
+A placement is a rectangle, a transform about the view's center, an opacity,
 a shade and a z-index. Every field but the rectangle defaults to the view as
 it was drawn, so a layout that only positions its views says
 `Placement(rect)`. The type is the author's; the twelve numbers are the
@@ -25,15 +25,15 @@ stays its own: the placement composes with it and never overwrites it.
 
 Every field means the same picture on every platform, and that decides the
 list. A move, a turn in the plane of the screen and a change of size are the
-same arithmetic wherever they are drawn, about the view's own centre. A turn
+same arithmetic wherever they are drawn, about the view's own center. A turn
 out of that plane is not: `rotationX` and `rotationY` are projected through a
 camera each platform chooses for itself, so one run of cards at one angle
 turns away on one platform and tilts and shifts on another. They are not
 fields; a card turned away is a `scaleX` of `cos(angle)`, which is what
 `.turn(_:)` writes and which is exact everywhere.
 
-The pivot is not a field either. A turn and a scale are centred on the view,
-which is what makes them the same everywhere, and moving that centre is
+The pivot is not a field either. A turn and a scale are centered on the view,
+which is what makes them the same everywhere, and moving that center is
 worked out from the view's own size, read when the property is written,
 before this layout has given the view one. A pivot goes on the view in the
 closure that builds it, where it is a constant.
@@ -45,7 +45,7 @@ overlapping cards is the next card rather than the page. A shade darkens what
 is there instead. `shade` is the opacity of a view the application gives the
 layout with `.shade(_:)`, drawn over every placed view; a layout with no
 shade wears none of it, whatever the arithmetic answers. The shade is a view
-rather than a colour because only its author knows the shape it must match:
+rather than a color because only its author knows the shape it must match:
 a card with rounded corners needs a shade with the same corners.
 
 ## Drawing order as ranks

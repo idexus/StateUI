@@ -27,10 +27,10 @@
     /// The space kept around the child, outside it.
     public var margin = Insets(0)
 
-    /// Across its slot: 0 start, 1 centre, 2 end, 3 fill.
+    /// Across its slot: 0 start, 1 center, 2 end, 3 fill.
     public var horizontal: Int32 = 3
 
-    /// Down its slot: 0 start, 1 centre, 2 end, 3 fill.
+    /// Down its slot: 0 start, 1 center, 2 end, 3 fill.
     public var vertical: Int32 = 3
 
     /// The width the child states for itself.

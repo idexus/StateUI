@@ -2,7 +2,7 @@
 
 # TextColorElement
 
-The colour of text, wherever it is drawn.
+The color of text, wherever it is drawn.
 
 ```swift
 Text("Overdue")

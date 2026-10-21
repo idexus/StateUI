@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
 
-/// How words look on any element showing them - a text block or a control: their font, their colour and the room
+/// How words look on any element showing them - a text block or a control: their font, their color and the room
 /// around them.
 /// Design: docs/design/platforms/winui/controls.md#words
 extension WinUIView {
@@ -22,7 +22,7 @@ extension WinUIView {
     }
 
     /// How the words look (`TextMembers.look`): their font, whether it grows with the user's text size, and their
-    /// colour - each the platform's where the look says nothing.
+    /// color - each the platform's where the look says nothing.
     func setLook(_ look: TextLook) {
         setFont(look)
         setTextScales(look.scales)
@@ -47,7 +47,7 @@ extension WinUIView {
         stateui_winui_set_character_spacing(handle, Int32((ems * 1000).rounded()))
     }
 
-    /// The words' colour; nil puts back the platform's.
+    /// The words' color; nil puts back the platform's.
     func setForeground(_ color: HostValue?) {
         let argb = color?.argb
         stateui_winui_set_foreground(handle, argb != nil, argb ?? 0)

@@ -233,7 +233,7 @@ extension GTKRenderer: HostPresenter {
         }
     }
 
-    /// A frame that moves what the chrome shows - a bar's colour, the window's frame - shows the window again.
+    /// A frame that moves what the chrome shows - a bar's color, the window's frame - shows the window again.
     func presentFrame(movedChrome: Bool) {
         if movedChrome { showWindows() }
     }

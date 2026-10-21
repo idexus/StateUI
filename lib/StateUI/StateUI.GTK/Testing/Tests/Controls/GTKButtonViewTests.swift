@@ -53,7 +53,7 @@ final class GTKButtonViewTests: XCTestCase {
         }
     }
 
-    /// A button's caption takes the font and colour the tree gives it, and its box the fill, the outline and the
+    /// A button's caption takes the font and color the tree gives it, and its box the fill, the outline and the
     /// corners, drawn in the fill.
     func testAButtonTakesItsWordsAndItsBox() throws {
         try onUIThread {
@@ -78,7 +78,7 @@ final class GTKButtonViewTests: XCTestCase {
 
             XCTAssertTrue(said.contains(PANGO_ATTR_SIZE.rawValue), "the font's size, in points the text scale applies to")
             XCTAssertTrue(said.contains(PANGO_ATTR_WEIGHT.rawValue), "bold")
-            XCTAssertTrue(said.contains(PANGO_ATTR_FOREGROUND.rawValue), "the words' colour")
+            XCTAssertTrue(said.contains(PANGO_ATTR_FOREGROUND.rawValue), "the words' color")
             XCTAssertNotEqual(gtk_widget_has_css_class(button.widget, "stateui-box-f0000FFFF-sFF0000FF-w2-r10"), 0)
             XCTAssertNotEqual(gtk_widget_has_css_class(button.widget, "stateui-padding-11-16-11-16"), 0)
             let fill = try XCTUnwrap(button.pixels(at: [(8, height / 2)]).first)
@@ -106,13 +106,13 @@ final class GTKButtonViewTests: XCTestCase {
                 let height = button.frame.height
                 // At the edge, then inside the room the padding keeps above the words and below them.
                 let middle = button.frame.width / 2
-                let colours = button.pixels(at: [(3, height / 2), (middle, 13), (middle, height - 13)])
-                let said = "\(button.text): \(colours.map { String($0, radix: 16) })"
-                XCTAssertTrue(near(colours[0], 0xFF00_00FF), said)
+                let colors = button.pixels(at: [(3, height / 2), (middle, 13), (middle, height - 13)])
+                let said = "\(button.text): \(colors.map { String($0, radix: 16) })"
+                XCTAssertTrue(near(colors[0], 0xFF00_00FF), said)
                 // The theme's button would lighten its own part of the face.
-                for colour in colours.dropFirst() {
+                for color in colors.dropFirst() {
                     for shift: UInt32 in [0, 8, 16, 24] {
-                        XCTAssertLessThanOrEqual(abs(Int(colour >> shift & 0xFF) - Int(colours[0] >> shift & 0xFF)), 3, said)
+                        XCTAssertLessThanOrEqual(abs(Int(color >> shift & 0xFF) - Int(colors[0] >> shift & 0xFF)), 3, said)
                     }
                 }
             }
@@ -171,7 +171,7 @@ final class GTKButtonViewTests: XCTestCase {
         }
     }
 
-    /// A wide button's picture stands beside its words in its middle, as a narrow one's does: the two are centred
+    /// A wide button's picture stands beside its words in its middle, as a narrow one's does: the two are centered
     /// together, never laid from its leading edge.
     func testAWideButtonsPictureStandsBesideItsWordsInItsMiddle() throws {
         try onUIThread {

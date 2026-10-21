@@ -244,7 +244,7 @@ final class BuilderTests: XCTestCase {
                      "a view beside the conditional was re-sent")
 
         let box = try? XCTUnwrap(patch(third, forType: "Rectangle"))
-        XCTAssertNotNil(box?.props["fill"], "the branch came back without its colour")
+        XCTAssertNotNil(box?.props["fill"], "the branch came back without its color")
         XCTAssertNotNil(box?.props["cornerRadius"], "the branch came back without its shape")
     }
 

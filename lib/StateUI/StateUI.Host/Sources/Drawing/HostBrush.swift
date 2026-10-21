@@ -3,34 +3,34 @@
 
 @_spi(Host) import StateUI
 
-/// A fill as every host reads what the tree sends: nothing, one colour, or a gradient's stops over a geometry in
-/// fractions of what it paints - its colours as the tree gives them, which a host turns into its toolkit's.
+/// A fill as every host reads what the tree sends: nothing, one color, or a gradient's stops over a geometry in
+/// fractions of what it paints - its colors as the tree gives them, which a host turns into its toolkit's.
 /// Design: docs/design/types/brushes.md#as-a-host-is-handed-it
 @_spi(Host) public enum HostBrush: Equatable, Sendable {
-    /// One stop of a gradient: where it stands, 0 to 1, and its colour.
+    /// One stop of a gradient: where it stands, 0 to 1, and its color.
     public struct Stop: Equatable, Sendable {
         /// Where the stop stands along the gradient, 0 to 1.
         public let offset: Double
 
-        /// Its colour, as the tree gives it.
+        /// Its color, as the tree gives it.
         public let color: HostValue
     }
 
     /// Nothing painted.
     case none
 
-    /// One colour.
+    /// One color.
     case solid(HostValue)
 
-    /// Colours along the line from one point to another.
+    /// Colors along the line from one point to another.
     case linear(from: Point, to: Point, stops: [Stop])
 
-    /// Colours out from a centre to a radius.
+    /// Colors out from a center to a radius.
     case radial(center: Point, radius: Double, stops: [Stop])
 
-    /// The brush the tree's `value` describes: a bare colour is one colour; a gradient's stops stand between 0
+    /// The brush the tree's `value` describes: a bare color is one color; a gradient's stops stand between 0
     /// and 1, its geometry what it gives - top to bottom, or from the middle to the edge, where it gives none; a
-    /// gradient of one stop is its colour, of none nothing.
+    /// gradient of one stop is its color, of none nothing.
     public init(_ value: HostValue?) {
         if let value, value.color != nil {
             self = .solid(value)
@@ -69,14 +69,14 @@
         max(width, height) * radius
     }
 
-    /// Whether the brush is one colour nothing of which shows: a clear bar, which shows what is behind it as it is.
+    /// Whether the brush is one color nothing of which shows: a clear bar, which shows what is behind it as it is.
     /// Design: docs/design/types/brushes.md#as-a-host-is-handed-it
     public var isClear: Bool {
         guard case .solid(let color) = self, let argb = color.argb else { return false }
         return argb >> 24 == 0
     }
 
-    /// The brush's colour, or its first stop's: what a line of one colour draws with it.
+    /// The brush's color, or its first stop's: what a line of one color draws with it.
     public var firstColor: HostValue? {
         switch self {
         case .none: nil

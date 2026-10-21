@@ -66,7 +66,7 @@ public enum ViewContract: Contract {
     public static let horizontalAlignment = ElementProperty<Self, Alignment>(
         "horizontalAlignment", layer: .native)
 
-    /// The space kept outside the view, between it and its neighbours.
+    /// The space kept outside the view, between it and its neighbors.
     public static let margin = ElementProperty<Self, Insets>("margin", layer: .native, moves: .spacing)
 
     /// How many pointers a pan must have.
@@ -87,7 +87,7 @@ public enum ViewContract: Contract {
         "panYChannel", layer: .structure, travels: false)
 
     /// Two fingers moved apart or together: the phase, the scale since the
-    /// last report, and the pinch's centre as a fraction of the view.
+    /// last report, and the pinch's center as a fraction of the view.
     public static let pinchUpdated = ElementEvent<Self, (GesturePhase, Double, Point)>(
         "pinchUpdated", layer: .native)
 

@@ -81,7 +81,7 @@ extension AppKitRegistrations {
         })
     }
 
-    /// A day's or a time's field in the font, colour and state its element gives.
+    /// A day's or a time's field in the font, color and state its element gives.
     private static func dress<Realized: ElementContract>(_ picker: NSDatePicker, _ values: ElementValues<Realized>) {
         picker.font = font(values)
         picker.textColor = values[TextColorElementContract.textColor].flatMap { nsColor($0.propValue) } ?? .controlTextColor

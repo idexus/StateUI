@@ -7,7 +7,7 @@ public enum TextualElementContract: Contract {
     /// The tier's name.
     public static let name = "TextualElement"
 
-    /// Words are drawn in a colour and a spacing.
+    /// Words are drawn in a color and a spacing.
     public static let tiers: [any Contract.Type] = [TextColorElementContract.self]
 
     /// The words.

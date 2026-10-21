@@ -53,7 +53,7 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(patch.transitions[.opacity]?.motion, own)
     }
 
-    func testAColourTravels() {
+    func testAColorTravels() {
         let renders = Renders()
 
         renders.render(ZStack { Text("x") }.background(Color(hex: 0x000000)).id("b").node)
@@ -185,7 +185,7 @@ final class MotionTests: XCTestCase {
         XCTAssertTrue(patch.transitions.isEmpty)
 
         // EVERY ONE OF THEM, not just the one above. What this holds is that
-        // the DIFFER honours the whole list rather than the one property a
+        // the DIFFER honors the whole list rather than the one property a
         // test happened to write: taking the check out of the differ fails
         // here naming `maximumLength`, `gridRowSpan` and `zIndex`.
         //
@@ -213,7 +213,7 @@ final class MotionTests: XCTestCase {
                 "\(property.name) did not change at all, so this proves nothing")
             XCTAssertTrue(
                 moved.transitions.isEmpty,
-                "\(property.name) travelled, and no member that does not travel may")
+                "\(property.name) traveled, and no member that does not travel may")
         }
     }
 
@@ -288,9 +288,9 @@ final class MotionTests: XCTestCase {
             return (still ? base.motion(.none) : base).id("b").node
         }
 
-        let travelling = Renders()
-        travelling.render(button(true, still: false))
-        let entered = travelling.render(button(false, still: false))
+        let traveling = Renders()
+        traveling.render(button(true, still: false))
+        let entered = traveling.render(button(false, still: false))
         XCTAssertEqual(entered.props["background"], Color(hex: 0xCCCCCC).propValue)
         XCTAssertNotNil(entered.transitions["background"], "it crosses as the application's values do")
 
@@ -307,10 +307,10 @@ final class MotionTests: XCTestCase {
     func testAMotionMayNameWhichValuesItIsAbout() {
         let renders = Renders()
 
-        func panel(_ width: Double, _ colour: Color) -> Node {
+        func panel(_ width: Double, _ color: Color) -> Node {
             ZStack { Text("x") }
                 .width(width)
-                .background(colour)
+                .background(color)
                 .motion(.none, .size)
                 .id("p")
                 .node
@@ -321,11 +321,11 @@ final class MotionTests: XCTestCase {
 
         XCTAssertEqual(patch.props[.width], .number(300))
         XCTAssertNil(patch.transitions[.width], "the size arrives")
-        XCTAssertNotNil(patch.transitions[.background], "the colour still travels")
+        XCTAssertNotNil(patch.transitions[.background], "the color still travels")
     }
 
     /// A shape's corners and outline are its shape, not its size: a size held
-    /// still leaves them travelling, and a rule naming the shape holds them.
+    /// still leaves them traveling, and a rule naming the shape holds them.
     func testAShapesCornersAndOutlineAreItsShapeNotItsSize() {
         func panel(_ wide: Bool, still: MotionValues) -> Node {
             Rectangle()
@@ -408,7 +408,7 @@ final class MotionTests: XCTestCase {
     // ---- A size somebody measures arrives ------------------------------------
 
     /// A layout whose frame is watched reports how big its room is, and a size
-    /// worked out from that report is the LAYOUT's answer: travelling through
+    /// worked out from that report is the LAYOUT's answer: traveling through
     /// it would lay the page out at sizes nobody chose, growing from nothing.
     /// So a child's size arrives there, where the same change travels in a
     /// room nobody measures.
@@ -489,7 +489,7 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(patch.lanes, .place)
     }
 
-    /// A gradient is the same picture in different colours, so it crosses -
+    /// A gradient is the same picture in different colors, so it crosses -
     /// which is what keeps a theme change uniform.
     func testAGradientTravels() {
         let renders = Renders()
@@ -521,7 +521,7 @@ final class MotionTests: XCTestCase {
     /// the destination alone, and the host walks the thumb there under the
     /// element's law - which is the one difference between a report and an
     /// assignment, and it is a fact of the lanes rather than of a mark.
-    func testADraggedSliderWritesItsReportBackWithoutTravelling() {
+    func testADraggedSliderWritesItsReportBackWithoutTraveling() {
         let volume = State(wrappedValue: 0.5)
         let renders = Renders()
 
@@ -552,7 +552,7 @@ final class MotionTests: XCTestCase {
     /// A `Stepper` is the other control the host walks for a plain `Double`,
     /// and it answers the same way - so the guard covers both of them rather
     /// than the one that happened to be written first.
-    func testASteppedValueIsWrittenBackWithoutTravelling() {
+    func testASteppedValueIsWrittenBackWithoutTraveling() {
         let servings = State(wrappedValue: 2.0)
         let renders = Renders()
 
@@ -569,7 +569,7 @@ final class MotionTests: XCTestCase {
         XCTAssertTrue(board.dirty().isEmpty, "and nothing was left to travel")
     }
 
-    // ---- One transform, about the view's own centre -------------------------
+    // ---- One transform, about the view's own center -------------------------
 
     /// ONE TRANSFORM, HAPPENING IN THE ORDER IT IS WRITTEN. Each part is done
     /// to what the parts before it made - so a move written BEFORE a turn is

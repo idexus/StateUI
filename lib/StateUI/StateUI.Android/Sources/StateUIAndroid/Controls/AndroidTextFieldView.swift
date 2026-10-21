@@ -153,7 +153,7 @@ final class AndroidTextFieldView: AndroidTextualView {
         Java.release(local: hint)
     }
 
-    /// The placeholder's colour; nil puts back the platform's.
+    /// The placeholder's color; nil puts back the platform's.
     func setPlaceholderColor(_ color: HostValue?) {
         if madeHintColors == nil {
             madeHintColors = JavaObject(Java.callObject(reference, JavaAPI.getHintTextColors)!)

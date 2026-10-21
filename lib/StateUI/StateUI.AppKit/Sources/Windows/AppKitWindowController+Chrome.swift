@@ -16,7 +16,7 @@ extension AppKitWindowController {
 
     /// Lays the chrome the host layer composes from what the window shows in AppKit's: the title, the toolbar's way
     /// back, the page's actions and title view, the application's title area, the sidebar's toggle, the bars'
-    /// colours and the tabs beneath the toolbar.
+    /// colors and the tabs beneath the toolbar.
     /// Design: docs/design/host/pages.md#the-windows-chrome
     func refreshVisiblePageChrome() {
         guard let element, let window else { return }
@@ -140,7 +140,7 @@ extension AppKitWindowController {
         }
     }
 
-    /// What stands on a painted band: the colour written for it, else white on
+    /// What stands on a painted band: the color written for it, else white on
     /// a dark band and black on a light one (`BandWords`).
     /// Design: docs/design/host/layout.md#words-on-a-painted-band
     private static func foreground(on band: HostValue, written: NSColor?) -> NSColor {
@@ -149,20 +149,20 @@ extension AppKitWindowController {
         return light ? .white : .black
     }
 
-    /// A colour written for the bars paints the band the title bar and
+    /// A color written for the bars paints the band the title bar and
     /// toolbar cover - the window's, under a floating sidebar's glass, and the
     /// visible content's, a split view's detail - and the title bar lets it
     /// show. With none written, the band is the system's material.
     ///
     /// The window's background is the one written for the window alone - the
-    /// bars' colour paints the bars - else the system's. Where it is a blur,
-    /// the window keeps no colour: its material, the system's, shows around the
+    /// bars' color paints the bars - else the system's. Where it is a blur,
+    /// the window keeps no color: its material, the system's, shows around the
     /// sidebar and under the page, tinted by the blur's tint.
     private func synchronizeBar(_ window: NSWindow, color: NSColor?, split: AppKitSplitView?) {
         window.titlebarAppearsTransparent = color != nil
         let written = traits?.background.paint.flatMap(nsColor)
         let background = backdrop != nil ? NSColor.clear : (written ?? .windowBackgroundColor)
-        // A background that lets the desktop through - clear, or a colour with an alpha - asks a window that is not opaque.
+        // A background that lets the desktop through - clear, or a color with an alpha - asks a window that is not opaque.
         window.isOpaque = backdrop == nil && background.alphaComponent >= 1
         if window.backgroundColor != background { window.backgroundColor = background }
         content.materialTint = backdrop != nil ? written : nil
@@ -173,7 +173,7 @@ extension AppKitWindowController {
     /// The application's title area, at the trailing edge of the window's
     /// title bar, where it is text rather than a toolbar control. It takes
     /// `foreground` only over a painted band; on the system's material it
-    /// keeps the system's colours, where a written one could vanish.
+    /// keeps the system's colors, where a written one could vanish.
     private func synchronizeTitleAccessory(
         _ window: NSWindow,
         area: WindowChrome.TitleArea?,
@@ -194,7 +194,7 @@ extension AppKitWindowController {
             image: area.icon.flatMap { host?.image($0) },
             foreground: foreground)
         // AppKit gives a trailing accessory the toolbar row's height and
-        // centres it there; only the width is the cluster's own.
+        // centers it there; only the width is the cluster's own.
         let fitting = titleCluster.fittingSize
         if titleAccessory != nil {
             if titleCluster.frame.width != fitting.width {

@@ -102,7 +102,7 @@ extension WinUIDriver {
     }
 
     func color(of element: MountedElement, at point: Point) throws -> Color? {
-        guard let view = (element.native as? WinUIElement)?.view else { throw DriverCannot("read the colour of \(element.type.name)") }
+        guard let view = (element.native as? WinUIElement)?.view else { throw DriverCannot("read the color of \(element.type.name)") }
         // A shape or a picture renders only what it draws, from the first thing drawn; a layout renders whole from
         // its corner, so a point of any other view is read in the layout placing it, where StateUI placed the view.
         renderer?.layOut()

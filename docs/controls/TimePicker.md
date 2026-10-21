@@ -91,7 +91,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tbody><tr></tr><tr><td rowspan="2"><code>accessibilityValue</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">–</td><td align="center">✅</td><td align="center">☑️</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: AppKit's date picker says its own time to assistive technology, over any value given.<br>Android Views: Before Android 11 a view says no value of its own words.<br>WinUI 3: A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.<br>GTK 4: GTK says a value only of a range, a role a widget takes as it is made.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">–</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✓</td><td align="center">☑️</td></tr>
-<tr><td colspan="9">AppKit: AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.<br>UIKit: UIKit's time picker keeps no background colour: one written reads back as none.<br>Android Views: Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.<br>WinUI 3: An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.<br>GTK 4: only through the host's own: read background of TimePicker: the class of the host's style sheet the widget wears: GTK reads back no background<br>Web: A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.</td></tr></tbody>
+<tr><td colspan="9">AppKit: AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.<br>UIKit: UIKit's time picker keeps no background color: one written reads back as none.<br>Android Views: Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.<br>WinUI 3: An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.<br>GTK 4: only through the host's own: read background of TimePicker: the class of the host's style sheet the widget wears: GTK reads back no background<br>Web: A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>frame</code></td><td>property</td><td><code>Rect</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>height</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>hidesChildrenFromAccessibility</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td></tr>
@@ -204,12 +204,12 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 ## From [TextColorElement](tiers/TextColorElement.md)
 
-The colour of text, wherever it is drawn.
+The color of text, wherever it is drawn.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>textColor</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and colour: it takes neither.</td></tr></tbody>
+<tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and color: it takes neither.</td></tr></tbody>
 </table>
 
 ## From [FontElement](tiers/FontElement.md)
@@ -219,17 +219,17 @@ The font text is drawn in: its step of the platform's type ramp, its family, its
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>fontAttributes</code></td><td>property</td><td><code>FontAttributes</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and colour: it takes neither.</td></tr></tbody>
+<tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and color: it takes neither.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>fontWeight</code></td><td>property</td><td><code>FontWeight</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and colour: it takes neither.</td></tr></tbody>
+<tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and color: it takes neither.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>textStyle</code></td><td>property</td><td><code>TextStyle</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and colour: it takes neither.</td></tr></tbody>
+<tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and color: it takes neither.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isFontAutoScalingEnabled</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: macOS gives an application no text size of the user's to follow.<br>UIKit: UIKit's date picker draws its words in its own font, which follows the user's text size always.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>fontFamily</code></td><td>property</td><td><code>Name</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and colour: it takes neither.<br>Android Views: cannot read a family - Android's typeface keeps no family's name</td></tr></tbody>
+<tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and color: it takes neither.<br>Android Views: cannot read a family - Android's typeface keeps no family's name</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>fontSize</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and colour: it takes neither.</td></tr></tbody>
+<tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and color: it takes neither.</td></tr></tbody>
 </table>
 
 ## From [KeyboardElement](tiers/KeyboardElement.md)

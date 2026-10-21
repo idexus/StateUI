@@ -6,7 +6,7 @@
 
 /// A VStack or an HStack: the host layer's stack arithmetic over a panel.
 @MainActor
-final class GTKStackView: GTKTravellingLayout {
+final class GTKStackView: GTKTravelingLayout {
     /// The axis the stack runs along.
     let axis: StackArithmetic.Axis
 

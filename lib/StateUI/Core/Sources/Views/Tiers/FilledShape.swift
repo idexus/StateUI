@@ -13,12 +13,12 @@ extension FilledShapeProperties {
     ///     Ellipse().fill(.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)]))
     public func fill(_ value: Brush) -> Modified { setValue(FilledShapeContract.fill, value) }
 
-    /// The same, in one colour - `.fill(.solidColor(colour))` said shortly.
+    /// The same, in one color - `.fill(.solidColor(color))` said shortly.
     public func fill(_ value: Color) -> Modified { fill(.solidColor(value)) }
 }
 
 extension FilledShape {
-    /// `fill` from a colour state, `$x`: the host animates the colour to each
+    /// `fill` from a color state, `$x`: the host animates the color to each
     /// new value, and no view is rebuilt for it.
     public func fill(_ state: Binding<Color>) -> Modified {
         twin(FilledShapeContract.fill, carrying: state)

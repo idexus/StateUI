@@ -1,7 +1,7 @@
 # revision 2.1
 Button.textColor: ✅
 CheckBox.textColor: ✅
-DatePicker.textColor: – UIKit's date picker draws its words in its own font and colour: it takes neither.
+DatePicker.textColor: – UIKit's date picker draws its words in its own font and color: it takes neither.
 Picker.textColor: ✅
 SearchField.textColor: ✅
 Switch.textColor: ✅
@@ -9,4 +9,4 @@ Text.textColor: ✅
 TextEditor.textColor: ✅
 TextField.textColor: ✅
 TextSpan.textColor: ✅
-TimePicker.textColor: – UIKit's date picker draws its words in its own font and colour: it takes neither.
+TimePicker.textColor: – UIKit's date picker draws its words in its own font and color: it takes neither.

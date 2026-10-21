@@ -50,7 +50,7 @@ ProgressBar.accessibilityLabel: ✅
 ProgressBar.scaleX: ✅
 Rectangle.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Rectangle.translationY: ✅
-ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 ScrollView.tooltip: ✅
 SearchField.accessibilityHeading: ✅
 Slider.height: ✅

@@ -39,7 +39,7 @@ extension AndroidView {
 
     /// What the listener says the view heard, by the kind `StateUIGestures` numbers: a tap where it landed on the
     /// screen and when, in `phase`'s milliseconds - its place in its run counted by the host layer (`TapRun`) - a
-    /// pinch's step and where it is centred in points, the pointer.
+    /// pinch's step and where it is centered in points, the pointer.
     func heard(kind: Int32, phase: Int32, x: Double, y: Double, z: Double) {
         let point = Point(x: x, y: y)
         let input: HeardInput? = switch AndroidGestureKind(rawValue: kind) {

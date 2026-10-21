@@ -9,11 +9,11 @@ import XCTest
 @MainActor
 final class VisibilityCrossingTests: XCTestCase {
     /// A hidden element fades out, standing shown the while; as the fade lands it hides, and the layout placing it
-    /// closes over it, once - its travelling places told the change arrived.
+    /// closes over it, once - its traveling places told the change arrived.
     func testAHiddenElementFadesOutThenHidesAndItsLayoutCloses() throws {
         let (runtime, clock, element) = Self.label(visible: true)
         let view = Faded()
-        let places = TravellingPlaces()
+        let places = TravelingPlaces()
         let closed = { Self.arranged(in: runtime) }
 
         Self.show(false, in: runtime)

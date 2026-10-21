@@ -19,7 +19,7 @@ final class WinUIActivityIndicatorView: WinUIView {
     /// Whether WinUI turns it.
     var isAnimating: Bool { stateui_winui_progress_ring_running(handle) }
 
-    /// None: WinUI paints a progress ring's Background as its track, which a colour there would recolour - its
+    /// None: WinUI paints a progress ring's Background as its track, which a color there would recolor - its
     /// register's `notPlanned`.
     override func setBackground(_ value: HostValue?) {}
 }

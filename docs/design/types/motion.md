@@ -91,7 +91,7 @@ both, which is why `.cubicOut` suits something arriving on screen and
 
 `MotionValues` names groups rather than single properties, because that is
 how a user thinks about what they are watching: where a view sits, how big
-it is, its shape, its colours. A motion written on a view applies to all of
+it is, its shape, its colors. A motion written on a view applies to all of
 them unless it names some. A panel whose content changes shape says
 `.motion(.none, .size)`: its children move to their new places and take
 their new size at once, since a view growing out of nothing is the one
@@ -99,8 +99,8 @@ movement a user reads as a fault. How big a view is and how it is drawn stay
 apart: `.size` is its width and height, `.shape` its corner radius and the
 width of its outline, so a panel's size can arrive while its corners travel.
 
-A colour's group is read off the value rather than from a list of property
-names, so a colour property added later is in the group the day it arrives.
+A color's group is read off the value rather than from a list of property
+names, so a color property added later is in the group the day it arrives.
 Every other property says its group through its member's `moves`; see
 [moves](../contracts/member-facts.md#moves).
 

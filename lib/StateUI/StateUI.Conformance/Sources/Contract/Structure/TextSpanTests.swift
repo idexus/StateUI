@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// `TextSpanContract` on a host: a span is its label's words, run by run, each changing as the tree changes it, behind
-/// the colour the tree gives it.
+/// the color the tree gives it.
 @_spi(Host) public enum TextSpanTests: ConformanceFamily {
     public static let name = "TextSpan"
 

@@ -20,7 +20,7 @@ public struct PinchUpdate: Equatable, Sendable {
     /// is relative, not cumulative.
     public var scale: Double
 
-    /// Where the pinch is centred, as a fraction of the view: (0,0) is the top
+    /// Where the pinch is centered, as a fraction of the view: (0,0) is the top
     /// left and (1,1) the bottom right.
     public var scaleOrigin: Point
 

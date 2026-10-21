@@ -87,10 +87,10 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         XCTAssertTrue(on.wrappedValue, "a click on the words flips it")
     }
 
-    /// A check box's tint is its box's: its words keep the platform's colour, which AppKit's content tint would
+    /// A check box's tint is its box's: its words keep the platform's color, which AppKit's content tint would
     /// otherwise draw them in.
     @MainActor
-    func testATintedCheckBoxsWordsKeepThePlatformsColour() throws {
+    func testATintedCheckBoxsWordsKeepThePlatformsColor() throws {
         let renderer = AppKitRenderer.running {
             VStack { CheckBox(false).text("WWWWWW").tint(Color(hex: 0xFF0000)) }
         }
@@ -101,14 +101,14 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         let drawn = try XCTUnwrap(box.bitmapImageRepForCachingDisplay(in: box.bounds))
         box.cacheDisplay(in: box.bounds, to: drawn)
         let red = (0..<drawn.pixelsWide).flatMap { x in (0..<drawn.pixelsHigh).map { (x, $0) } }.filter { x, y in
-            guard let colour = drawn.colorAt(x: x, y: y)?.usingColorSpace(.sRGB) else { return false }
-            return colour.alphaComponent > 0.5 && colour.redComponent > 0.7 && colour.greenComponent < 0.3
+            guard let color = drawn.colorAt(x: x, y: y)?.usingColorSpace(.sRGB) else { return false }
+            return color.alphaComponent > 0.5 && color.redComponent > 0.7 && color.greenComponent < 0.3
         }
         XCTAssertEqual(red.count, 0, "the unticked box's words drawn in its tint")
     }
 
-    /// A check box takes its value and the tint its tier declares - the colour
-    /// converted where the registration reads it, as a colour and not a
+    /// A check box takes its value and the tint its tier declares - the color
+    /// converted where the registration reads it, as a color and not a
     /// number.
     @MainActor
     func testACheckBoxTakesItsValueAndItsTint() throws {

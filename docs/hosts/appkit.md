@@ -164,7 +164,7 @@ frames; see [Motion and journeys](../concepts/motion-and-journeys.md).
 
 **A registered view draws however it likes, the GPU included.** An `MTKView` is
 an `NSView`, so its registration says no more than any other one: the Gallery's
-`Cube3D`, drawn here with Metal, takes a size, a colour and whether it turns, and the corners, the
+`Cube3D`, drawn here with Metal, takes a size, a color and whether it turns, and the corners, the
 matrix and the frames stay the host's. Two things belong to a view that runs a
 loop of its own. It stops that loop when the tree drops it - the Gallery's
 pauses in `viewDidMoveToWindow`, so nothing turns behind a page the user has

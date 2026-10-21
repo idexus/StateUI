@@ -4,7 +4,7 @@
 // gallery shows wears its violet, and every field lets the panel behind it
 // through. Every other control keeps its platform's own look.
 //
-// Every colour comes through `Palette`, one name per job.
+// Every color comes through `Palette`, one name per job.
 //
 // WHAT IS NOT HERE:
 //
@@ -217,7 +217,7 @@ enum AppStyles {
                 .clipsContent(true)
 
             // A card within it fills nothing: an outline and its corners mark
-            // it, and a card that sets a background of its own - a colour, or
+            // it, and a card that sets a background of its own - a color, or
             // a gradient like the home page's - shows it. What a card holds is
             // cut to its corners: a picture reaches them.
             Style<ZStack>(.card)

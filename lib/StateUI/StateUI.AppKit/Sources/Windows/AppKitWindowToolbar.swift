@@ -30,7 +30,7 @@ struct AppKitToolbarAction {
 /// The window controller composes it from the visible arrangement, and the
 /// toolbar lays it out in one order: the sidebar toggle and the separator
 /// that tracks the sidebar, the way back, the page's title where a painted
-/// band hides the system's, the leading groups of actions, the centre, the
+/// band hides the system's, the leading groups of actions, the center, the
 /// trailing groups and native overflow. A space stands between two groups,
 /// so each keeps a background of its own.
 @MainActor
@@ -103,7 +103,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         var nextSlots: [ObjectIdentifier: AppKitToolbarSlot] = [:]
         /// A layout stands in the toolbar in its slot, and not at all while it holds nothing.
         func standing(_ view: NSView?) -> NSView? {
-            guard let view, view is AppKitTravellingLayout else { return view }
+            guard let view, view is AppKitTravelingLayout else { return view }
             let slot = slots[ObjectIdentifier(view)] ?? AppKitToolbarSlot(holding: view)
             slot.onEmptied = { [weak self] in
                 guard let self, let shown = self.shown else { return }
@@ -318,7 +318,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
 
 /// The application's title area: its mark, name and the line under it,
 /// standing at the trailing edge of the window's title bar in the system's
-/// colours, or in the bar's foreground over a painted band.
+/// colors, or in the bar's foreground over a painted band.
 @MainActor
 final class AppKitTitleAreaView: NSStackView {
     private let iconView = NSImageView()

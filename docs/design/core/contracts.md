@@ -63,10 +63,10 @@ layer:
            losing it replaces the element: a gesture's settings, a list's
            items, where the host puts an item (a toolbar item's order, a
            swipe's side), a choice clearing would move, and a window's kind,
-           value and behaviour, which the host keeps its windows by
+           value and behavior, which the host keeps its windows by
   moves    which group of a view's values it is for `.motion(_:_:)` - a size,
            a place, a transform, spacing, text - where the value cannot say;
-           a colour says its own group through its value
+           a color says its own group through its value
 ```
 
 A host still snaps a transition it cannot interpolate; `travels` keeps the
@@ -194,7 +194,7 @@ on the screen.
 
 A runtime hands over its registry's realization before its first render,
 through `CoreLink.setRealization`, with the library's elements it shows none
-of - its `unrealized` judgement, the same the control dictionary reads, with
+of - its `unrealized` judgment, the same the control dictionary reads, with
 what it leaves to the application and each backend no one registered: every
 other element of the library's is realized, and so is every element and member
 the registry names, the application's own controls and the events its head
@@ -203,17 +203,17 @@ says nothing. With it the host hands its register, which the core reads when
 first asked rather than as it is handed: building one costs, and a host hands
 it at each start.
 
-## What a platform honours
+## What a platform honors
 
 `Device.honors` answers an application asking whether the platform it runs
-on honours a member - so a view leaves out what asks for one it does not,
+on honors a member - so a view leaves out what asks for one it does not,
 an "Open the list" where no list opens by the program. The answer is the
 host's register (`HostRegister`), handed to the core as the runtime starts:
-the host's own judgements - in full, in part, never with why - over what its
+the host's own judgments - in full, in part, never with why - over what its
 registry realizes, the same answer the platform contract shows. Before a host
 hands one, what its registry said it realizes answers. A tier's member the
 register records element by element - realized on a slider, never on a
-switch - is honoured by its tier in part, so the answer to
+switch - is honored by its tier in part, so the answer to
 `honors(TintElementContract.tint)` is the same before the register comes and
 after.
 
@@ -253,7 +253,7 @@ the same way. Nothing is said while the host has said nothing.
 
 In a Debug build, a member described on an element the host realizes is said
 once where the host's register says it does not realize it there, or never
-will, with the register's reason (`HostRealizations.unhonoured`): a tint
+will, with the register's reason (`HostRealizations.unhonored`): a tint
 written on a control a platform draws in the user's accent compiles and does
 nothing, and this is where its author hears why. A member the register says
 nothing of, or realizes in part, goes by. The register is built when first

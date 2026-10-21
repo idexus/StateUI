@@ -33,7 +33,7 @@ extension VisualElementProperties {
     /// How opaque the view is, from 0 to 1.
     public func opacity(_ value: Double) -> Modified { setValue(VisualElementContract.opacity, value) }
 
-    /// What the view's surface is made of, behind what it shows: a colour, a
+    /// What the view's surface is made of, behind what it shows: a color, a
     /// gradient, a blur of what lies behind it, or the platform's glass - cut
     /// to the view's shape.
     ///
@@ -45,7 +45,7 @@ extension VisualElementProperties {
     /// `Material(light:dark:)` follows the theme.
     public func background(_ value: Material) -> Modified { setValue(VisualElementContract.background, value) }
 
-    /// The view's background in one colour; a `Color(light:dark:)` follows the
+    /// The view's background in one color; a `Color(light:dark:)` follows the
     /// theme.
     public func background(_ value: Color) -> Modified { background(.color(value)) }
 
@@ -80,7 +80,7 @@ extension VisualElementProperties {
     public func rotation(_ value: Double) -> Modified { setValue(VisualElementContract.rotation, value) }
 
     /// How this view is moved, turned and sized: one transform about the view's
-    /// own centre, the same picture on every platform.
+    /// own center, the same picture on every platform.
     ///
     ///     Card(item).transform(.rotate(14).scale(0.9).translate(100, 200))
     ///

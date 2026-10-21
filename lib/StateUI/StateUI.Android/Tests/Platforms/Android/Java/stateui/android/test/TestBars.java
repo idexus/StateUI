@@ -37,7 +37,7 @@ public final class TestBars {
         return bar.isShown();
     }
 
-    /** The colour the bar's title is drawn in, as ARGB: its title's own words among its children; 0 for no title. */
+    /** The color the bar's title is drawn in, as ARGB: its title's own words among its children; 0 for no title. */
     public static int foreground(Toolbar bar) {
         CharSequence title = bar.getTitle();
         for (int index = 0; title != null && index < bar.getChildCount(); index++) {
@@ -49,7 +49,7 @@ public final class TestBars {
         return 0;
     }
 
-    /** The colour the bar is painted, as ARGB; 0 where it wears no colour of its own. */
+    /** The color the bar is painted, as ARGB; 0 where it wears no color of its own. */
     public static int background(Toolbar bar) {
         Drawable drawn = bar.getBackground();
         return drawn instanceof ColorDrawable ? ((ColorDrawable) drawn).getColor() : 0;

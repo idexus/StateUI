@@ -52,7 +52,7 @@ final class GTKTextEditorView: GTKView, GTKTextInputView {
     /// The room between the editor's edge and its words: an entry's.
     private static let margin = (across: Int32(9), down: Int32(8))
 
-    /// The class the placeholder wears, which a placeholder colour's rule names.
+    /// The class the placeholder wears, which a placeholder color's rule names.
     static let placeholderClass = "stateui-placeholder"
 
     private var view: UnsafeMutablePointer<GtkTextView> { editor.of() }
@@ -94,7 +94,7 @@ final class GTKTextEditorView: GTKView, GTKTextInputView {
         self.textCase = textCase
     }
 
-    func setBehaviour(readOnly: Bool, hints: GtkInputHints, purpose: GtkInputPurpose) {
+    func setBehavior(readOnly: Bool, hints: GtkInputHints, purpose: GtkInputPurpose) {
         gtk_text_view_set_editable(view, readOnly ? 0 : 1)
         gtk_text_view_set_input_hints(view, hints)
         gtk_text_view_set_input_purpose(view, purpose)

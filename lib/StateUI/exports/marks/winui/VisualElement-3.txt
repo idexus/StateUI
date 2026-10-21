@@ -22,7 +22,7 @@ Image.frame: ✅
 Image.rotation: ✅
 ItemsView.accessibilityHeading: ✅
 ItemsView.scale: ✅
-LayoutEngine.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+LayoutEngine.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 LayoutEngine.tooltip: ✅
 Line.tooltip: ✅
 Map.hidesChildrenFromAccessibility: 🧩

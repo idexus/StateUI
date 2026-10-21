@@ -269,7 +269,7 @@ final class GTKButtonView: GTKView {
         writeWords()
     }
 
-    /// Writes the look and the break on the label the button shows its caption in, and its colour on the icon.
+    /// Writes the look and the break on the label the button shows its caption in, and its color on the icon.
     private func writeWords() {
         picture?.wordsColor = look.color.flatMap(GTKBrush.rgba)
         guard let label = captionLabel else { return }
@@ -284,7 +284,7 @@ final class GTKButtonView: GTKView {
         g_type_check_instance_is_a(widget.of(GTypeInstance.self), gtk_label_get_type()) != 0
     }
 
-    /// The button's box - its fill, its outline's colour and width, and its shape - as a class of the host's style
+    /// The button's box - its fill, its outline's color and width, and its shape - as a class of the host's style
     /// sheet; what is nil stays the platform's.
     /// Design: docs/design/platforms/gtk/controls.md#a-buttons-box
     func setBox(fill: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {

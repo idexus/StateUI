@@ -295,7 +295,7 @@ final class GalleryViewTests: XCTestCase {
     }
 
     /// The card the run is ON stands in the middle of the room, at the size it
-    /// was told, and its neighbours stand out from it.
+    /// was told, and its neighbors stand out from it.
     func testTheChosenCardStandsInTheMiddle() {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(3).node }).patch
@@ -318,7 +318,7 @@ final class GalleryViewTests: XCTestCase {
         assertCard(showing, 1, Rect(200.64, 76, 176, 248))
     }
 
-    /// A FAN leans them out and sinks them, so the neighbour sits LOWER as
+    /// A FAN leans them out and sinks them, so the neighbor sits LOWER as
     /// well as to the side.
     func testAFanLeansTheCardsOutAndSinksThem() {
         let renders = Renders()
@@ -856,7 +856,7 @@ final class GalleryViewTests: XCTestCase {
 
         // THE CARD BEHIND, never the one in front: the front card stands in
         // the middle of the room whatever shape the run is in, and it is where
-        // its NEIGHBOURS go that the three shapes disagree about.
+        // its NEIGHBORS go that the three shapes disagree about.
         guard let row = lined.card(2)?.bounds, let fan = fanned.card(2)?.bounds else {
             return XCTFail("the gallery placed no cards")
         }

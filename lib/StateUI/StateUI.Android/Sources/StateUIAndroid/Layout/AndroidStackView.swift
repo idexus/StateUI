@@ -6,7 +6,7 @@
 
 /// A VStack or an HStack: the host layer's stack arithmetic over a `StateUIViewGroup`.
 @MainActor
-final class AndroidStackView: AndroidTravellingLayout {
+final class AndroidStackView: AndroidTravelingLayout {
     /// The axis the stack runs along.
     let axis: StackArithmetic.Axis
 

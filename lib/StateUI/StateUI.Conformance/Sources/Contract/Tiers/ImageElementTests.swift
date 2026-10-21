@@ -5,10 +5,10 @@
 @_spi(Host) import StateUIHost
 
 /// `ImageElementContract` on a host: an image's picture is placed in its room as its aspect says - fitted whole,
-/// filling it, stretched across it, or centred at its own size - and the aspect the tree changes it to held on every
+/// filling it, stretched across it, or centered at its own size - and the aspect the tree changes it to held on every
 /// element wearing the tier.
 ///
-/// The picture is the suite's test_wide.svg: 40 by 20, of one colour.
+/// The picture is the suite's test_wide.svg: 40 by 20, of one color.
 @_spi(Host) public enum ImageElementTests: ConformanceFamily {
     public static let name = "ImageElement"
 

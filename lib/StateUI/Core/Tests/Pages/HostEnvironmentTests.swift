@@ -315,9 +315,9 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(StandardEnvironment.application.phase, .inactive)
     }
 
-    /// The device says whether the platform honours a member - a property, an event, an act: what its host
+    /// The device says whether the platform honors a member - a property, an event, an act: what its host
     /// realizes, and nothing it leaves out.
-    func testTheDeviceSaysWhatThePlatformHonours() {
+    func testTheDeviceSaysWhatThePlatformHonors() {
         HostBoundary.setRealization(HostRealization(
             elements: ["Picker", "Map"],
             members: [
@@ -335,7 +335,7 @@ final class HostEnvironmentTests: XCTestCase {
     }
 
     /// Where the host hands its register, the register answers - what the platform contract shows: a member the
-    /// host judges its family never has is not honoured, though its runtime registered it.
+    /// host judges its family never has is not honored, though its runtime registered it.
     func testTheDeviceAnswersFromTheHostsRegister() {
         HostBoundary.setRealization(HostRealization(
             elements: ["Picker"],
@@ -356,8 +356,8 @@ final class HostEnvironmentTests: XCTestCase {
     }
 
     /// A tier's member the register records element by element - realized on one wearer, never on another - is
-    /// honoured in part: the device answers as it did before the register came.
-    func testTheDeviceHonoursATierMemberSomeElementsRealize() {
+    /// honored in part: the device answers as it did before the register came.
+    func testTheDeviceHonorsATierMemberSomeElementsRealize() {
         HostBoundary.setRealization(HostRealization(
             elements: ["Slider", "Switch"],
             members: [HostRealizedMember(element: "Slider", owner: "TintElement", member: "tint")]))

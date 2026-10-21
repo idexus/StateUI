@@ -8,7 +8,7 @@ import AppKit
 
 /// A deterministic frame-based stack shared by horizontal and vertical stacks.
 @MainActor
-final class AppKitStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeasuring,
+final class AppKitStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasuring,
     AppKitMeasurementCaching {
     let axis: StackArithmetic.Axis
     let measurements = MeasurementCache()

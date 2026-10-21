@@ -174,7 +174,7 @@ extension WinUIView {
         return (frame.x.rounded(), frame.y.rounded(), frame.width.rounded(), frame.height.rounded())
     }
 
-    /// The colours WinUI draws the element in at `points`, in DIPs of it, as ARGB - premultiplied, so a colour
+    /// The colors WinUI draws the element in at `points`, in DIPs of it, as ARGB - premultiplied, so a color
     /// drawn half opaque reads half as bright.
     func pixels(at points: [(Double, Double)]) -> [UInt32] {
         let flat = points.flatMap { [$0.0, $0.1] }
@@ -200,7 +200,7 @@ extension WinUIView {
         return tip
     }
 
-    /// The transform WinUI holds: translation, rotation, scale and the centre it turns about, in DIPs and degrees.
+    /// The transform WinUI holds: translation, rotation, scale and the center it turns about, in DIPs and degrees.
     var drawnTransform: (translationX: Double, translationY: Double, rotation: Double,
                          scaleX: Double, scaleY: Double, centerX: Double, centerY: Double) {
         var values = [Double](repeating: 0, count: 7)

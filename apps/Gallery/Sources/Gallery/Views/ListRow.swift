@@ -5,7 +5,7 @@ import StateUI
 /// A row of a grouped list: what it leads to, the line under it, and a
 /// chevron saying it goes somewhere.
 ///
-/// A ROW IS A ZSTACK WITH A TAP ON IT, standing with its neighbours in one
+/// A ROW IS A ZSTACK WITH A TAP ON IT, standing with its neighbors in one
 /// rounded group - the "RowGroup" style - with a hairline between each row and
 /// the one before it.
 ///
@@ -89,7 +89,7 @@ struct ListRow: View {
 
                 VStack {
                     // The name in the platform's body and the words' own
-                    // colour, the line under it a caption: each platform's
+                    // color, the line under it a caption: each platform's
                     // own steps, so the name stands as large as the page's
                     // words and clear of the line under it.
                     Text(title)

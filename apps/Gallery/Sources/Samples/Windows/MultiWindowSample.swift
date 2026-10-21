@@ -4,7 +4,7 @@ import StateUI
 /// windows beside them, and the look they share.
 struct MultiWindowSample: SampleContent, ExampleContent {
     // listing: MultiWindowSample
-    /// The look every gallery window wears, which the Fonts and Colours
+    /// The look every gallery window wears, which the Fonts and Colors
     /// windows change.
     let style: SessionStyle
 
@@ -38,14 +38,14 @@ struct MultiWindowSample: SampleContent, ExampleContent {
 
             HStack {
                 opens("Fonts", .fonts)
-                opens("Colours", .colours)
+                opens("Colors", .colors)
             }
             .spacing(10)
             .horizontalAlignment(.center)
 
             HStack {
                 closes("Close fonts", .fonts)
-                closes("Close colours", .colours)
+                closes("Close colors", .colors)
             }
             .spacing(10)
             .horizontalAlignment(.center)
@@ -104,7 +104,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("Fonts and Colours are windows of the galleries' scene: they change the "
+        Text("Fonts and Colors are windows of the galleries' scene: they change the "
             + "look every gallery window wears, and close with the scene. A swatch "
             + "window exists once per value, its number lent to it as a binding. "
             + "Another gallery window has a place of its own and the scene's look.")
@@ -117,7 +117,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     private var preview: some View {
         let line = Text("The quick brown fox jumps over the lazy dog.")
             .fontSize(20)
-            .textColor(style.look(dark: application.info.colorScheme == .dark).barColour.color(system: application.info.accentColor, for: .bar))   // listing: keep
+            .textColor(style.look(dark: application.info.colorScheme == .dark).barColor.color(system: application.info.accentColor, for: .bar))   // listing: keep
             .horizontalTextAlignment(.center)
 
         return style.font.isEmpty ? line : line.fontFamily(style.font)
@@ -174,7 +174,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     /// The button that opens one swatch's window.
     private func swatch(_ number: Int) -> some View {
         Button("Swatch \(number)")
-            .background(SwatchPage.colour(of: number))
+            .background(SwatchPage.color(of: number))
             .textColor(.white)
             .shape(.roundedRectangle(8))
             .accessibilityIdentifier("window.open.swatch.\(number)")

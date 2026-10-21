@@ -106,10 +106,10 @@ enum GTKEnvironment {
         return styles.map { g_object_class_find_property($0, "accent-color") != nil } ?? false
     }
 
-    /// A label of libadwaita's `accent` class, never shown, whose colour is the accent the desktop draws.
+    /// A label of libadwaita's `accent` class, never shown, whose color is the accent the desktop draws.
     private static var accentProbe: UnsafeMutablePointer<GtkWidget>?
 
-    /// The accent the desktop draws in, as libadwaita's `accent` class colours words.
+    /// The accent the desktop draws in, as libadwaita's `accent` class colors words.
     static var accent: Color {
         let probe = accentProbe ?? {
             let label = gtk_label_new(nil)!

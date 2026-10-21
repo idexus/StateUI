@@ -3,8 +3,8 @@
 
 @_spi(Host) import StateUI
 
-/// A colour's channel as a toolkit holds it: a byte, 0-255, or a fraction of full, 0 to 1.
-/// Design: docs/design/types/colour-and-theme.md#as-a-toolkit-holds-it
+/// A color's channel as a toolkit holds it: a byte, 0-255, or a fraction of full, 0 to 1.
+/// Design: docs/design/types/color-and-theme.md#as-a-toolkit-holds-it
 @_spi(Host) public enum ColorComponent {
     /// The fraction of full `channel` is.
     public static func fraction(_ channel: UInt8) -> Double {
@@ -18,7 +18,7 @@
 }
 
 extension PropValue {
-    /// The colour as four fractions of full, as a toolkit draws it; nil for a value that is no colour.
+    /// The color as four fractions of full, as a toolkit draws it; nil for a value that is no color.
     @_spi(Host) public var fractions: (red: Double, green: Double, blue: Double, alpha: Double)? {
         color.map { (ColorComponent.fraction($0.red), ColorComponent.fraction($0.green),
                      ColorComponent.fraction($0.blue), ColorComponent.fraction($0.alpha)) }
@@ -26,13 +26,13 @@ extension PropValue {
 }
 
 extension Color {
-    /// A colour a toolkit reports packed in one number: eight bits a channel, alpha highest.
+    /// A color a toolkit reports packed in one number: eight bits a channel, alpha highest.
     @_spi(Host) public init(argb: UInt32) {
         self.init(red: Int(argb >> 16 & 255), green: Int(argb >> 8 & 255), blue: Int(argb & 255),
                   alpha: Int(argb >> 24))
     }
 
-    /// A colour a toolkit reports as four fractions of full, each at its nearest channel.
+    /// A color a toolkit reports as four fractions of full, each at its nearest channel.
     @_spi(Host) public init(fractions: (red: Double, green: Double, blue: Double, alpha: Double)) {
         self.init(red: Int(ColorComponent.nearest(fractions.red)), green: Int(ColorComponent.nearest(fractions.green)),
                   blue: Int(ColorComponent.nearest(fractions.blue)), alpha: Int(ColorComponent.nearest(fractions.alpha)))

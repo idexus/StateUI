@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 import CStateUIAndroid
 
-/// An `android.widget.TextView` or a subclass: the words, their size, weight and colour.
+/// An `android.widget.TextView` or a subclass: the words, their size, weight and color.
 @MainActor
 class AndroidTextualView: AndroidView {
     private var made: (size: Float, colors: JavaObject)?
@@ -46,7 +46,7 @@ class AndroidTextualView: AndroidView {
     }
 
     /// How the words look (`TextMembers.look`): their style's size and weight on the platform's type scale, under
-    /// the size and weight they give, their slant, family and colour, each the platform's own where the look says
+    /// the size and weight they give, their slant, family and color, each the platform's own where the look says
     /// nothing.
     func setLook(_ look: TextLook) {
         scales = look.scales
@@ -122,7 +122,7 @@ class AndroidTextualView: AndroidView {
         withExtendedLifetime(at) { Java.call(reference, JavaAPI.setEllipsize, .object(at?.reference)) }
     }
 
-    /// The words' colour; nil puts back the platform's (`plainWordColours`).
+    /// The words' color; nil puts back the platform's (`plainWordColors`).
     func setTextColor(_ color: HostValue?) {
         writtenTextColor = color
         if let argb = color.flatMap(Self.argb) {
@@ -131,16 +131,16 @@ class AndroidTextualView: AndroidView {
             Java.call(reference, JavaAPI.setTextColors, .object(colors))
             Java.release(local: colors)
         } else {
-            let plain = plainWordColours
+            let plain = plainWordColors
             withExtendedLifetime(plain) { Java.call(reference, JavaAPI.setTextColors, .object(plain.reference)) }
         }
     }
 
-    /// The colour the tree wrote for the words; nil for none.
+    /// The color the tree wrote for the words; nil for none.
     private(set) var writtenTextColor: HostValue?
 
-    /// The words' colours where none is written: the platform's, as the view was made.
-    var plainWordColours: JavaObject { madeWith.colors }
+    /// The words' colors where none is written: the platform's, as the view was made.
+    var plainWordColors: JavaObject { madeWith.colors }
 
     /// The direction the view lays out in, which says which side its padding's start stands at.
     var direction = LayoutDirection.leftToRight {
@@ -187,7 +187,7 @@ class AndroidTextualView: AndroidView {
         return read
     }
 
-    /// The size and colours the view was made with, read before the first change.
+    /// The size and colors the view was made with, read before the first change.
     private var madeWith: (size: Float, colors: JavaObject) {
         if let kept = made { return kept }
 

@@ -47,7 +47,7 @@ public protocol View: VisualElement, ViewProperties, Views where Modified: View 
 }
 
 extension ViewProperties {
-    /// The space kept outside the view, between it and its neighbours.
+    /// The space kept outside the view, between it and its neighbors.
     /// Padding is the space inside.
     ///
     ///     Text("Total").margin(16)                      // all four sides

@@ -30,7 +30,7 @@ enum GTKStyleSheet {
         return name
     }
 
-    /// The class writing a flat button's words in the theme's colour for destroying something.
+    /// The class writing a flat button's words in the theme's color for destroying something.
     static var destructiveWords: String {
         write("stateui-destructive", "color: @destructive_color;")
         return "stateui-destructive"
@@ -118,7 +118,7 @@ enum GTKStyleSheet {
         return name
     }
 
-    /// The class giving a control its tint: the colour its `accent` - a node or a state of it, as a selector after
+    /// The class giving a control its tint: the color its `accent` - a node or a state of it, as a selector after
     /// the control's own - is filled in; its own words and marks where `accent` is nil.
     static func tint(_ color: GdkRGBA, on accent: String?) -> String {
         guard let accent else {
@@ -140,7 +140,7 @@ enum GTKStyleSheet {
         return name
     }
 
-    /// The class drawing an editor's box as an entry's: faintly filled in its words' colour, its corners rounded,
+    /// The class drawing an editor's box as an entry's: faintly filled in its words' color, its corners rounded,
     /// ringed in the accent while it holds the focus, the text view on it clear.
     static var editor: String {
         let name = "stateui-editor"
@@ -151,7 +151,7 @@ enum GTKStyleSheet {
     }
 
     /// The class of a list or a grid: what stands under it shows behind its rows, and an item chosen is shaded in
-    /// the colour of its words, as GNOME's sidebars shade theirs - no hue of the theme's own over the page. A row and
+    /// the color of its words, as GNOME's sidebars shade theirs - no hue of the theme's own over the page. A row and
     /// a grid's child keep no padding of the theme's: an item stands where StateUI's spacing puts it.
     static var collection: String {
         let name = "stateui-collection"
@@ -164,8 +164,8 @@ enum GTKStyleSheet {
         return name
     }
 
-    /// The class giving typed words their look - the font's size, weight, slant and family and the words' colour -
-    /// and the placeholder its colour, in a field's own text or as an editor's label, or in its `part` - a selector
+    /// The class giving typed words their look - the font's size, weight, slant and family and the words' color -
+    /// and the placeholder its color, in a field's own text or as an editor's label, or in its `part` - a selector
     /// after the widget's own; nil where nothing is given.
     static func words(_ look: TextLook, placeholder: GdkRGBA?, in part: String = "") -> String? {
         var name = "stateui-words"
@@ -225,13 +225,13 @@ enum GTKStyleSheet {
         gtk_css_provider_load_from_string(provider, sheet)
     }
 
-    /// A colour as CSS writes it.
+    /// A color as CSS writes it.
     private static func css(_ color: GdkRGBA) -> String {
         let channels = [color.red, color.green, color.blue].map { String(ColorComponent.nearest(Double($0))) }
         return "rgba(\(channels.joined(separator: ", ")), \(css(Double(min(max(color.alpha, 0), 1)))))"
     }
 
-    /// A colour's channels in hex, red to alpha.
+    /// A color's channels in hex, red to alpha.
     private static func hex(_ color: GdkRGBA) -> String {
         [color.red, color.green, color.blue, color.alpha].map { channel in
             let value = ColorComponent.nearest(Double(channel))

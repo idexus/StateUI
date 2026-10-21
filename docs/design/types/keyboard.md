@@ -53,8 +53,8 @@ keyboard takes the key first where its toolkit gives it one: a focused button
 on Android, GTK, WinUI and the page presses itself on Return, as their
 keyboard's own way through a window does. The look is each toolkit's
 own: AppKit's accent bezel and destructive mark, UIKit's button role, the
-platform's coloured button on Android, WinUI's accent style, libadwaita's
-suggested and destructive classes, and the page's own accent and colour. WinUI
+platform's colored button on Android, WinUI's accent style, libadwaita's
+suggested and destructive classes, and the page's own accent and color. WinUI
 invokes one accelerator for a key and finds the window's own Escape first, so
 its window hands Escape to the host, which presses the way out in sight, else
 takes the top sheet away.

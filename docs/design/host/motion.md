@@ -57,9 +57,9 @@ animation of a property starts from where the running one stands, with its
 speed.
 
 A value moves as numeric lanes and only within one shape: a number, a list of
-numbers of one length, a colour, or a structure whose kind and parts stay the
-same - a gradient moves its geometry, stops and colours, never its kind or
-stop count. A brush property moves only between two colours or two well-formed
+numbers of one length, a color, or a structure whose kind and parts stay the
+same - a gradient moves its geometry, stops and colors, never its kind or
+stop count. A brush property moves only between two colors or two well-formed
 brushes of one shape; anything else snaps. A themed value never moves.
 
 ## What travels
@@ -67,7 +67,7 @@ brushes of one shape; anything else snaps. A themed value never moves.
 A host moves frame by frame only what its views present and whose values
 travel: `TransitionSurface` names them, element type by element type - a
 view's opacity, background, size and transform; a rectangle's corners; a
-label's size and colour of type; a layout's padding and spacing;
+label's size and color of type; a layout's padding and spacing;
 a shape's fill and stroke; a window's place. A host's element answers
 `animates(_:)` from it, and the host layer then walks the value and hands
 it each frame's. Every other pair arrives at once, rather than
@@ -75,7 +75,7 @@ keeping a motion alive that nothing shows: a host that answers no pair
 animates nothing, however the tree asks.
 
 What a moved value asks of the elements around it is the host layer's too
-([one frame](runtime.md#one-frame)): a window's frame and the bar colours
+([one frame](runtime.md#one-frame)): a window's frame and the bar colors
 its visible path declares are the window's chrome, which the host composes
 again on the frames that move them (`WindowChrome.follows`).
 
@@ -94,7 +94,7 @@ child stands on the way. Why an arrangement happens decides everything:
   this case even with a patch: its width is its parent's to say.
 - The first arrangement arrives: the first thing anyone sees is the thing itself.
 
-`TravellingPlaces` decides it once for every child as an arrangement begins;
+`TravelingPlaces` decides it once for every child as an arrangement begins;
 a width that moved by more than half a point is a new width.
 
 A size a child states for itself arrives while its place animates: a stated
@@ -137,7 +137,7 @@ stands, telling nothing more, whatever host showed it.
 A child whose place travels is told where it is bound as it sets out
 (`PlacedView.travels(to:)`), and that it is bound nowhere once it lands or
 arrives. A view that lays out words lays them out at the size it is bound
-for, its place travelling around them: at the widths the place passes
+for, its place traveling around them: at the widths the place passes
 through, words that fit the destination on one line would break onto two
 for as long as the place travels. Every other view stands at each size it
 passes through.

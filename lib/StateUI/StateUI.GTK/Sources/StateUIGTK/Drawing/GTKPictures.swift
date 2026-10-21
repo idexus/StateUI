@@ -19,7 +19,7 @@ enum GTKPictures {
     }
 
     /// An image showing `picture` as an icon `size` logical pixels across, which GTK draws at the display's scale -
-    /// the theme's symbolic one in the colour of the words around it; nil where there is no such picture.
+    /// the theme's symbolic one in the color of the words around it; nil where there is no such picture.
     static func icon(_ picture: HostPicture, size: Int32) -> GTKWidget? {
         let image: GTKWidget?
         switch picture {

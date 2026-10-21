@@ -41,7 +41,7 @@ extension PropertyContainer {
         setValue(property.token, on: state, mode: mode)
     }
 
-    /// The same, for a value the host can animate - a number, a colour, a
+    /// The same, for a value the host can animate - a number, a color, a
     /// thickness, a point. With `kind: .property` the host animates the
     /// property along the state's journey, so `$stars.journey.move(to: 5)`
     /// moves it; any other kind carries the value as it stands.
@@ -233,7 +233,7 @@ extension PropertyContainer {
         plain(property.token, by: state)
     }
 
-    /// A twin whose state carries another type than its member's - a colour into a material, a radius into its
+    /// A twin whose state carries another type than its member's - a color into a material, a radius into its
     /// corners: walked where the member travels and the value can be.
     func twin<Owner: Contract, Member, Value: Walked>(
         _ property: ElementProperty<Owner, Member>,

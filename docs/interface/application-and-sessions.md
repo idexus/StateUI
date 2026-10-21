@@ -375,7 +375,7 @@ sheets, its bar - is the view its `WindowGroup` or `Window` shows.
 | `minimumWidth`, `minimumHeight` | optional lower content-size bounds |
 | `maximumWidth`, `maximumHeight` | optional upper content-size bounds |
 | `isMaximizable`, `isMinimizable` | whether the corresponding native operation is permitted |
-| `background` | what the window is made of behind its pages: a colour, or a blur or glass the desktop shows through, where the platform can show it |
+| `background` | what the window is made of behind its pages: a color, or a blur or glass the desktop shows through, where the platform can show it |
 | `close()` | closes this exact window; its scene ends with its last |
 
 Position and size are four independent optional requests:
@@ -427,11 +427,11 @@ capability.
 
 `background` is what the window is made of behind its pages - around a
 floating sidebar, under a page that paints no background of its own: a
-colour, or a blur the desktop shows through, from `.ultraThin`, which lets the
+color, or a blur the desktop shows through, from `.ultraThin`, which lets the
 most through, to `.ultraThick`, its tint lying over it. On AppKit the window's
 own blur lies under the page, and the margin around a floating sidebar shows
 it; on WinUI the desktop acrylic. It is a desktop semantic: a host whose
-windows cannot show what is behind them paints the blur's colour instead.
+windows cannot show what is behind them paints the blur's color instead.
 Text belongs on a surface of its own rather than straight over the desktop.
 `nil` keeps the platform's own window, and so does a nil half of a pair:
 
@@ -487,7 +487,7 @@ What the page is, the view it shows says by modifier:
 | --- | --- |
 | `.title` | navigation title, and the caption where the page is an item of something else |
 | `.icon` | the page's representative image, commonly a tab icon |
-| `.pageBackground` | what the whole page is made of behind what it shows - a colour, a gradient, a blur or glass - also where the view does not reach |
+| `.pageBackground` | what the whole page is made of behind what it shows - a color, a gradient, a blur or glass - also where the view does not reach |
 | `.showsNavigationBar` | whether a containing navigation stack shows its bar for this page |
 | `.showsTitle` | whether the page shows its title - on its bar, or over its content where the bar names the application; the title names the window and the way back all the same |
 | `.showsBackButton` | whether that bar offers its native back affordance |

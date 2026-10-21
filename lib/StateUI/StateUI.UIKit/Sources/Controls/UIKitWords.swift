@@ -7,7 +7,7 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 extension TextLook {
-    /// The look as UIKit's text attributes in `traits`: the font, the words' colour, what stands behind them, the
+    /// The look as UIKit's text attributes in `traits`: the font, the words' color, what stands behind them, the
     /// space between the letters, a line's height, and the lines under or through them.
     func attributes(color standingColor: UIColor, in traits: UITraitCollection = .current) -> [NSAttributedString.Key: Any] {
         let shown = UIFont.stateUI(self, in: traits)
@@ -28,7 +28,7 @@ extension TextLook {
     }
 
     /// The look as a button's title takes it: its font in the traits the button updates in, the space between its
-    /// letters, and its colour where it says one - the button's own where it says none.
+    /// letters, and its color where it says one - the button's own where it says none.
     func titleTransformer(color standingColor: UIColor) -> UIConfigurationTextAttributesTransformer {
         // The configuration keeps the transformer: it holds the look's values, never the button that holds it.
         let (look, colored) = (self, color != nil)

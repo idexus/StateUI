@@ -168,14 +168,14 @@ class AndroidView {
         let drawn = own.under(placed)
         pivot = (drawn.pivotX, drawn.pivotY)
 
-        // A pivot off the centre is in pixels of the size the view was last placed at; at the centre, Android's own.
+        // A pivot off the center is in pixels of the size the view was last placed at; at the center, Android's own.
         let size = laidOut.map { (Double($0.right - $0.left), Double($0.bottom - $0.top)) } ?? (0, 0)
-        let centred = pivot == (0.5, 0.5)
+        let centered = pivot == (0.5, 0.5)
         let transform = Written.Transform(
             translationX: Float(drawn.translationX * density), translationY: Float(drawn.translationY * density),
             rotation: Float(drawn.rotation), rotationX: Float(drawn.rotationX), rotationY: Float(drawn.rotationY),
             scaleX: Float(drawn.scaleX), scaleY: Float(drawn.scaleY),
-            pivotX: centred ? nil : Float(pivot.x * size.0), pivotY: centred ? nil : Float(pivot.y * size.1))
+            pivotX: centered ? nil : Float(pivot.x * size.0), pivotY: centered ? nil : Float(pivot.y * size.1))
         guard transform != written.transform else { return }
 
         written.transform = transform
@@ -215,7 +215,7 @@ class AndroidView {
         Java.frame { Java.call(reference, JavaAPI.setTooltipText, .object(text.flatMap(Java.string))) }
     }
 
-    /// The view's background: a colour, or a brush drawn over its bounds; nil puts back the platform's.
+    /// The view's background: a color, or a brush drawn over its bounds; nil puts back the platform's.
     func setBackground(_ value: HostValue?) {
         guard let value else { return showBackground(nil) }
 
@@ -229,7 +229,7 @@ class AndroidView {
         backgroundBrush = brush
     }
 
-    /// The brush the view's background draws, fitted to each size the view is placed at; nil for a colour or none.
+    /// The brush the view's background draws, fitted to each size the view is placed at; nil for a color or none.
     private var backgroundBrush: AndroidShapeDrawable?
 
     /// Shows `drawable` behind the view; nil puts back the background it was made with.
@@ -465,7 +465,7 @@ class AndroidView {
         Int32((points * density).rounded())
     }
 
-    /// A colour as Android's packed ARGB, the host layer's number as Java's `int`; nil for a value that is no colour.
+    /// A color as Android's packed ARGB, the host layer's number as Java's `int`; nil for a value that is no color.
     static func argb(_ value: HostValue) -> Int32? {
         value.argb.map { Int32(bitPattern: $0) }
     }

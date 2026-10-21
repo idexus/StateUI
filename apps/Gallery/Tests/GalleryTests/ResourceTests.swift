@@ -6,7 +6,7 @@
 // A style is written once and applies to everything, which is exactly what makes
 // a mistake in one quiet: a target type spelled wrong, or two styles claiming
 // the same key, changes nothing visible until somebody notices the control that
-// never took its colour.
+// never took its color.
 
 import Foundation
 import XCTest
@@ -75,13 +75,13 @@ final class ResourceTests: XCTestCase {
         }
     }
 
-    /// The Gallery's look is a light one and a dark one. A colour written for
+    /// The Gallery's look is a light one and a dark one. A color written for
     /// only one theme is the thing that reads wrong on the other, so every
-    /// colour a style writes but a clear one is written for both.
+    /// color a style writes but a clear one is written for both.
     ///
     /// Asked of the sheet itself: a value written with a half for each theme
     /// is held as the PAIR until the differ builds the element wearing it, so
-    /// a colour standing bare is one written for a single theme.
+    /// a color standing bare is one written for a single theme.
     func testTheStylesAreWrittenForBothThemes() {
         for style in styles {
             for (name, value) in style.props {

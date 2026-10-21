@@ -29,9 +29,9 @@ window is named by ([the window's chrome](../../host/pages.md#the-windows-chrome
 tabs pushed onto a stack by their own title, else by the page beneath. A page
 with a title view shows that view instead, across the room between the
 navigation button and the actions. The bar also carries the line under the
-title and the colours the page's path declares, the nearest of each
+title and the colors the page's path declares, the nearest of each
 ([the bar a path declares](../../host/pages.md#the-bar-a-path-declares)) -
-an arrangement changing one refreshes every bar under it. A colour that
+an arrangement changing one refreshes every bar under it. A color that
 travels, and what a page says of the bar from a state - its title, its way
 back, the bar itself - land on a frame, where nothing arranges the stack:
 where the host layer says the frame moved the window's chrome
@@ -47,13 +47,13 @@ after them. Its navigation button is the way back on a pushed page
 whose back button is not taken away; at the root of a split view's detail,
 where the sidebar slides over it, it is the sidebar page's picture - Android's
 menu glyph where the page has none - and opens the sidebar. The bar's words'
-colour - the one written, or white or black against a written background -
+color - the one written, or white or black against a written background -
 is its title's, its overflow button's, its actions' pictures' and its back
-arrow's or menu glyph's; a sidebar page's own picture keeps its colours.
+arrow's or menu glyph's; a sidebar page's own picture keeps its colors.
 The actions' words follow the bar's theme, as Android's own bars do: the
 toolbar is made in Android's overlay for a dark bar, its action words light,
 or for a light one, their words dark - by the host layer's reading of the
-bar's colour (`BandWords.light`), as a desktop host picks its bar's theme -
+bar's color (`BandWords.light`), as a desktop host picks its bar's theme -
 and in the activity's theme where the tree paints no bar. A view's theme is fixed as it is made, so a bar painted again in the
 other shade is made again. A page without a navigation bar hides it. The bar
 shows only what changed since it last showed.
@@ -74,7 +74,7 @@ never on the window's, which a clear window would leave clear. Where the room
 is wider, the sidebar stands beside the detail while it shows, on the split
 view's sidebar material, else on nothing: the window shows through
 ([a sidebar's material](../../host/pages.md#a-sidebars-material)). Android
-blurs nothing behind a view, so a blur stands as its colour. The
+blurs nothing behind a view, so a blur stands as its color. The
 slide is Android's own animation, so the system's "remove animations" setting takes
 it away. Opening the drawer lays the page out again - the bar changes - and a
 layout leaves a sliding drawer sliding: only a new room, the drawer wider or
@@ -89,8 +89,8 @@ room](../../host/pages.md#a-sidebar-on-the-first-room)).
 ## Tabs
 
 A tabbed view shows the chosen tab's page over a row of tabs along the
-bottom, one for each tab with its picture over its title. On a bar colour
-the tree writes, the words are white where the colour is dark and the
+bottom, one for each tab with its picture over its title. On a bar color
+the tree writes, the words are white where the color is dark and the
 text's own where it is light, the chosen tab full and the others dimmed; the
 chosen one is selected, so TalkBack says which it is. A tab the user chooses shows its page, and is reported into the selection; a
 value the tree writes chooses the tab, by the host layer's rule

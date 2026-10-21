@@ -24,12 +24,12 @@ namespace {
                 static_cast<uint8_t>(argb)};
     }
 
-    /// A brush's first colour; none for no brush.
+    /// A brush's first color; none for no brush.
     uint32_t firstColor(StateUIBrush const &brush) {
         return brush.kind != StateUIBrushKindNone && brush.count > 0 ? brush.colors[0] : 0u;
     }
 
-    /// An oval `width` by `height`, filled in one colour and outlined in another `lineWidth` wide inside its edge,
+    /// An oval `width` by `height`, filled in one color and outlined in another `lineWidth` wide inside its edge,
     /// drawn by the compositor as the brush's surface.
     /// Design: docs/design/platforms/winui/controls.md#an-oval-button
     struct StateUIOval : media::XamlCompositionBrushBaseT<StateUIOval> {

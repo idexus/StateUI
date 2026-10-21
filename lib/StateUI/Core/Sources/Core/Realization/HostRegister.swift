@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What a host realizes of the contracts, member by member: its judgements written by hand, what its runtime says it
+/// What a host realizes of the contracts, member by member: its judgments written by hand, what its runtime says it
 /// realizes, the elements it has none of and those its family never has. It decides whether a test of a member runs
 /// on the host and what the test's verdict says; the mark itself is the test's.
 /// Design: docs/design/contracts/dictionary.md#marks
 @_spi(Host) public struct HostRegister: Sendable {
-    /// Every judgement: the written ones first, then what the runtime realizes.
+    /// Every judgment: the written ones first, then what the runtime realizes.
     public let records: [HostRecord]
 
     /// The elements the host realizes none of.
@@ -63,8 +63,8 @@
 
     /// What the host's records say of `member` on `element`: the element's own record, else the record of the tier
     /// the member comes from; nil where the host does not realize it.
-    public func judgement(of member: String, on element: String, from tier: String?) -> HostRecord.Judgement? {
-        switch judgement(ofElement: element) {
+    public func judgment(of member: String, on element: String, from tier: String?) -> HostRecord.Judgment? {
+        switch judgment(ofElement: element) {
         case nil: return nil
         case .notPlanned(let reason)?: return .notPlanned(reason: reason)
         case .byApplication?: return .byApplication
@@ -73,7 +73,7 @@
 
         let owners = [element] + (Self.viewless.contains { $0.name == element } ? [] : [tier].compactMap { $0 })
         for owner in owners {
-            if let record = records.first(where: { $0.owner == owner && $0.member == member }) { return record.judgement }
+            if let record = records.first(where: { $0.owner == owner && $0.member == member }) { return record.judgment }
         }
         return nil
     }
@@ -86,7 +86,7 @@
 
     /// What the host says of `element` itself: never, with why, where its family never has it; the application's
     /// where the application registers its own; made where it realizes it; nil where it realizes none of it.
-    public func judgement(ofElement element: String) -> HostRecord.Judgement? {
+    public func judgment(ofElement element: String) -> HostRecord.Judgment? {
         if let never = notPlanned.first(where: { $0.key.name == element }) { return .notPlanned(reason: never.value) }
         if byApplication.contains(where: { $0.name == element }) { return .byApplication }
         return unrealized.contains { $0.name == element } ? nil : .complete
@@ -94,7 +94,7 @@
 
     /// Whether the host realizes `member` on `element` - in full or in part - so a test of it runs there.
     public func realizes(_ member: String, on element: String, from tier: String?) -> Bool {
-        switch judgement(of: member, on: element, from: tier) {
+        switch judgment(of: member, on: element, from: tier) {
         case .complete?, .partial?: true
         case .notPlanned?, .unrealized?, .byApplication?, nil: false
         }
@@ -113,7 +113,7 @@
             if !Self.declares(record.member, owner: record.owner) {
                 problems.append("\(named) names what no contract of \(record.owner) declares")
             }
-            switch record.judgement {
+            switch record.judgment {
             case .partial(let missing) where missing.isEmpty: problems.append("\(named) is partial and says nothing is missing")
             case .notPlanned(let reason) where reason.isEmpty: problems.append("\(named) is never and says no reason")
             case .unrealized(let why) where why.isEmpty: problems.append("\(named) is unrealized and says no reason")
@@ -166,7 +166,7 @@
 
         return pairs
             .sorted { ($0.owner, $0.member) < ($1.owner, $1.member) }
-            .map { HostRecord(owner: $0.owner, member: $0.member, judgement: .complete) }
+            .map { HostRecord(owner: $0.owner, member: $0.member, judgment: .complete) }
     }
 
     /// The records of what a runtime realizes of the elements backends register - `contracts` - each on the element
@@ -176,7 +176,7 @@
     ) -> [HostRecord] {
         let elements = Set(contracts.map { $0.nodeType })
         let realized = realization.members.filter { elements.contains($0.element) }
-            .map { HostRecord(owner: $0.element.name, member: $0.member.name, judgement: .complete) }
+            .map { HostRecord(owner: $0.element.name, member: $0.member.name, judgment: .complete) }
         let acts = contracts.flatMap { contract in
             contract.members.filter { performed.contains($0.name) }.map { HostRecord.complete($0, on: contract) }
         }

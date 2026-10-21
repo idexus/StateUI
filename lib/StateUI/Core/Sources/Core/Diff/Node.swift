@@ -42,7 +42,7 @@ public enum PropValue: Equatable, Sendable {
     /// Bytes as they stand - a file's contents read or written.
     case bytes([UInt8])
 
-    /// A colour: four sRGB channels from 0 to 255, alpha included (Color.swift).
+    /// A color: four sRGB channels from 0 to 255, alpha included (Color.swift).
     case color(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8)
 
     /// A list of values of any kind, for a value whose parts differ in shape - a
@@ -54,10 +54,10 @@ public enum PropValue: Equatable, Sendable {
     /// Design: docs/design/core/identity-and-diffing.md#themes
     indirect case themed(light: PropValue, dark: PropValue)
 
-    /// A colour of the system's - 0, the accent in force - let through to
+    /// A color of the system's - 0, the accent in force - let through to
     /// `alpha`, resolved by the differ as the element is built. Never handed to
     /// a host.
-    /// Design: docs/design/types/colour-and-theme.md#the-accent-in-force
+    /// Design: docs/design/types/color-and-theme.md#the-accent-in-force
     case systemColor(Int32, alpha: UInt8)
 
     /// Whether this value has components a host may animate; a host snaps any pair
@@ -69,7 +69,7 @@ public enum PropValue: Equatable, Sendable {
         }
     }
 
-    /// Which kind of value this is where the value itself says: a colour.
+    /// Which kind of value this is where the value itself says: a color.
     var kind: MotionValues {
         switch self {
         case .color, .values: .color
@@ -77,7 +77,7 @@ public enum PropValue: Equatable, Sendable {
         }
     }
 
-    /// Whether this value has a half for each theme, or a colour of the system's, anywhere in it.
+    /// Whether this value has a half for each theme, or a color of the system's, anywhere in it.
     var isThemed: Bool {
         switch self {
         case .themed, .systemColor: true
@@ -164,7 +164,7 @@ public enum PropValue: Equatable, Sendable {
         return nil
     }
 
-    /// The four channels, when this value is a colour - nil for any other
+    /// The four channels, when this value is a color - nil for any other
     /// kind, so nothing mistakes a number for one.
     public var color: (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8)? {
         if case .color(let red, let green, let blue, let alpha) = self {

@@ -3,10 +3,10 @@
 
 @_spi(Host) import StateUI
 
-/// A colour a screen shows where StateUI draws. It answers whether it shows a colour, within the few steps an edge's
-/// smoothing takes from a colour drawn whole, and is never compared with one whole: that may never match, and a
+/// A color a screen shows where StateUI draws. It answers whether it shows a color, within the few steps an edge's
+/// smoothing takes from a color drawn whole, and is never compared with one whole: that may never match, and a
 /// `settle` waiting on it runs out without a word.
-/// Design: docs/design/host/conformance.md#a-colour-drawn
+/// Design: docs/design/host/conformance.md#a-color-drawn
 public struct ShownColor: Equatable, Sendable, CustomStringConvertible {
     private let color: Color
 

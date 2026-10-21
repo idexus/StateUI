@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // How words look, on a text block or on any control showing them: their font,
-// their colour and the room around them; and a label's lines, alignment,
+// their color and the room around them; and a label's lines, alignment,
 // spacing and decorations.
 // Design: docs/design/platforms/winui/controls.md#words
 
@@ -23,7 +23,7 @@ namespace {
                 static_cast<uint8_t>(argb)};
     }
 
-    /// A solid brush's colour as 0xAARRGGBB; 0 for any other.
+    /// A solid brush's color as 0xAARRGGBB; 0 for any other.
     double argb(media::Brush const &brush) {
         auto solid = brush.try_as<media::SolidColorBrush>();
         if (!solid) return 0;
@@ -123,7 +123,7 @@ extern "C" void stateui_winui_set_foreground(StateUIObjectRef handle, bool has, 
             [&](controls::Control const &control) {
                 if (has) control.Foreground(brush);
                 else control.ClearValue(controls::Control::ForegroundProperty());
-                // A button's template draws its words in its own colour under the pointer and pressed; a split
+                // A button's template draws its words in its own color under the pointer and pressed; a split
                 // button's reads keys of its own.
                 auto split = control.try_as<controls::SplitButton>() != nullptr;
                 if (!control.try_as<controls::Button>() && !split) return;
@@ -134,7 +134,7 @@ extern "C" void stateui_winui_set_foreground(StateUIObjectRef handle, bool has, 
                 writeResources(control, brushes);
             });
     } catch (...) {
-        report("colouring words");
+        report("coloring words");
     }
 }
 
@@ -221,7 +221,7 @@ extern "C" void stateui_winui_text_set_runs(StateUIObjectRef handle, StateUIWord
             piece.CharacterSpacing(run.spacing);
             inlines.Append(piece);
 
-            // A run's background is a highlighter over its part of the words; its own colour stays on them.
+            // A run's background is a highlighter over its part of the words; its own color stays on them.
             auto length = static_cast<int32_t>(words.size());
             if (run.hasBackground && length > 0) {
                 documents::TextHighlighter highlighter;

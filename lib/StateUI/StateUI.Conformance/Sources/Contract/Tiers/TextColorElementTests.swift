@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `TextColorElementContract` on a host: words stand in the colour the tree gives them, and the one it changes them
+/// `TextColorElementContract` on a host: words stand in the color the tree gives them, and the one it changes them
 /// to - on every element wearing the tier.
 @_spi(Host) public enum TextColorElementTests: ConformanceFamily {
     public static let name = "TextColorElement"

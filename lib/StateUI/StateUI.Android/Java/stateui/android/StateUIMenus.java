@@ -54,7 +54,7 @@ final class StateUIMenus {
      * Adds the entries to `menu`: a submenu's entries follow it up to its END, and a separator starts a new
      * group, a line drawn between groups. `pictures` may be null; the picture of an item that cannot be chosen
      * is dimmed as the theme dims what is disabled, which Android does not do for a menu's picture. A bar's
-     * actions standing on it take `bar`, the bar's words' colour, for their pictures; 0 leaves them as drawn.
+     * actions standing on it take `bar`, the bar's words' color, for their pictures; 0 leaves them as drawn.
      */
     static void fill(Context context, Menu menu, long view, int[] entries, String[] texts, Bitmap[] pictures, int bar) {
         int error = errorColor(context);
@@ -138,14 +138,14 @@ final class StateUIMenus {
     }
 
     /**
-     * The entry's words, in the theme's error colour where it is destructive and can be chosen: one that cannot
-     * keeps the platform's disabled colour, which a colour of its own would hide.
+     * The entry's words, in the theme's error color where it is destructive and can be chosen: one that cannot
+     * keeps the platform's disabled color, which a color of its own would hide.
      */
     private static CharSequence words(String text, int entry, int error) {
         if ((entry & DESTRUCTIVE) == 0 || (entry & DISABLED) != 0) return text;
-        SpannableString coloured = new SpannableString(text);
-        coloured.setSpan(new ForegroundColorSpan(error), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return coloured;
+        SpannableString colored = new SpannableString(text);
+        colored.setSpan(new ForegroundColorSpan(error), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return colored;
     }
 
     /** A line between groups, where Android draws one - from Android 9. */
@@ -153,7 +153,7 @@ final class StateUIMenus {
         if (Build.VERSION.SDK_INT >= 28) menu.setGroupDividerEnabled(true);
     }
 
-    /** The theme's colour for what cannot be undone. */
+    /** The theme's color for what cannot be undone. */
     private static int errorColor(Context context) {
         TypedArray attributes = context.obtainStyledAttributes(new int[] { android.R.attr.colorError });
         int color = attributes.getColor(0, 0xFFB3261E);

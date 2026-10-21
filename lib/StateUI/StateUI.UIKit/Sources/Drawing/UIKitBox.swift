@@ -6,7 +6,7 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A layout's box: its background within its outline - a colour or a gradient, or a blur or glass with its tint - the
+/// A layout's box: its background within its outline - a color or a gradient, or a blur or glass with its tint - the
 /// outline's stroke inside its edge, all behind the children - by their depth, whatever their order - and the cut
 /// of what the layout shows to the outline, each made only while there is something to paint. Over a blur or glass
 /// the stroke is the effect's.

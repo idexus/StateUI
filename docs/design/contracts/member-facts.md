@@ -38,7 +38,7 @@ StateUI knows are meaningless out of the patch.
                            whether a toolbar item shows its text, a menu bar's order
 ```
 
-`testAPlaceOrACountNeverTravels` holds that the differ honours every member
+`testAPlaceOrACountNeverTravels` holds that the differ honors every member
 that says so; which members say it is the contracts' own word. A property
 that should animate never says it.
 
@@ -82,7 +82,7 @@ value and read in the body (`testNoRemakingMemberHasABindingTwin`).
 
 `moves` names the group of values a property is in, for `.motion(_:_:)`,
 where its value alone cannot say: opacity, a size, a place, a transform,
-spacing or text. A colour says its own group through its value, so no colour member
+spacing or text. A color says its own group through its value, so no color member
 names one. A width or a height that a measured layout works out arrives at
 once rather than animating: carried through a motion, it would lay the page
 out at sizes nobody chose.

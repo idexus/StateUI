@@ -213,8 +213,8 @@ final class GTKPagesTests: XCTestCase {
     }
 
     /// A destructive action is libadwaita's destructive button on the header bar; in the overflow's flat menu its
-    /// words take the theme's destructive colour, not the white that button writes on its red fill.
-    func testADestructiveActionWearsTheThemesDestructiveColour() throws {
+    /// words take the theme's destructive color, not the white that button writes on its red fill.
+    func testADestructiveActionWearsTheThemesDestructiveColor() throws {
         try onUIThread {
             let host = GTKRenderer.running {
                 TitledPage(title: "Notes", actions: [
@@ -238,8 +238,8 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
-    /// A stack's bar colours paint the header bar of every page on it, and what stands on the bar.
-    func testAStacksBarColoursPaintItsPagesHeaderBars() throws {
+    /// A stack's bar colors paint the header bar of every page on it, and what stands on the bar.
+    func testAStacksBarColorsPaintItsPagesHeaderBars() throws {
         try onUIThread {
             let host = GTKRenderer.running {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
@@ -462,7 +462,7 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
-    /// A bar painted with no colour written for its words stands them light on a dark band and dark on a light one.
+    /// A bar painted with no color written for its words stands them light on a dark band and dark on a light one.
     func testABarsWordsFollowHowDarkItIs() throws {
         try onUIThread {
             let bands: [(band: UInt32, words: Color)] = [(0x000080, .white), (0xFFFF00, .black)]
@@ -486,8 +486,8 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
-    /// A header bar takes the colours the window's page declares around the page it shows.
-    func testAHeaderBarTakesTheColoursItsPathDeclares() throws {
+    /// A header bar takes the colors the window's page declares around the page it shows.
+    func testAHeaderBarTakesTheColorsItsPathDeclares() throws {
         try onUIThread {
             let host = GTKRenderer.running {
                 ModalStack(State(wrappedValue: [Int]()).projectedValue) {

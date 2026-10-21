@@ -13,28 +13,28 @@ struct Cube3DSample: SampleContent, ExampleContent {
     #if APPKIT
     static let id = "appKitMetal"
     static let title = "A Metal view"
-    static let summary = "A cube drawn on the GPU by the host, sized and coloured from StateUI."
+    static let summary = "A cube drawn on the GPU by the host, sized and colored from StateUI."
 
     #elseif UIKIT
     static let id = "uiKitMetal"
     static let title = "A Metal view"
-    static let summary = "A cube drawn on the GPU by the host, sized and coloured from StateUI."
+    static let summary = "A cube drawn on the GPU by the host, sized and colored from StateUI."
     #elseif GTK
     static let id = "gtkOpenGL"
     static let title = "An OpenGL view"
-    static let summary = "A cube drawn by OpenGL 3.3 in the host, sized and coloured from StateUI."
+    static let summary = "A cube drawn by OpenGL 3.3 in the host, sized and colored from StateUI."
     #elseif WINUI
     static let id = "winUIDirect3D"
     static let title = "A Direct3D view"
-    static let summary = "A cube drawn by Direct3D 11.1 in the host, sized and coloured from StateUI."
+    static let summary = "A cube drawn by Direct3D 11.1 in the host, sized and colored from StateUI."
     #elseif WEB
     static let id = "webWebGL"
     static let title = "A WebGL view"
-    static let summary = "A cube drawn by WebGL 2 in the page, sized and coloured from StateUI."
+    static let summary = "A cube drawn by WebGL 2 in the page, sized and colored from StateUI."
     #else
     static let id = "androidOpenGLES"
     static let title = "An OpenGL ES view"
-    static let summary = "A cube drawn by OpenGL ES 3.0 in the host, sized and coloured from StateUI."
+    static let summary = "A cube drawn by OpenGL ES 3.0 in the host, sized and colored from StateUI."
     #endif
 
     static let codeHeading = "In StateUI"
@@ -147,7 +147,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 + "here reads `size`, so a drag builds this example not once - the cube "
                 + "grows and the number counts up on the host's own frames. The spin is "
                 + "handed over too, a flag the host sets as it stands, so a flip builds "
-                + "nothing either; the colour is a plain value, described again on the "
+                + "nothing either; the color is a plain value, described again on the "
                 + "one build a pick costs.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -159,7 +159,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("Turning the spin off stops the host's render loop rather than hiding "
-                + "it: the cube holds the angle it had, and a changed size or colour "
+                + "it: the cube holds the angle it had, and a changed size or color "
                 + "still draws the one frame it needs. " + Self.stopsWith)
                 .fontSize(12)
                 .textColor(Palette.subtle)

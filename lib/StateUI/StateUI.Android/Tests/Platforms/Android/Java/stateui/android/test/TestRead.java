@@ -68,7 +68,7 @@ public final class TestRead {
         return !enabled ? "never" : fades ? "default" : "always";
     }
 
-    /** The colour a control's own part is tinted: a check's box, a bar's progress, a spinner's ring, a picker's arrow. */
+    /** The color a control's own part is tinted: a check's box, a bar's progress, a spinner's ring, a picker's arrow. */
     private static String tint(View view) {
         ColorStateList tint = null;
         if (view instanceof CompoundButton) tint = ((CompoundButton) view).getButtonTintList();

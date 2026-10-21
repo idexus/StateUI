@@ -134,10 +134,10 @@ other hosts keep it touchable until it has faded. A view described for the
 first time is simply shown or not, since nothing anybody saw is changing, and
 `.motion(.none)` makes the property a plain flag again.
 
-## One transform about the centre
+## One transform about the center
 
 `.transform(_:)` writes `translationX`, `translationY`, `rotation`, `scaleX` and
-`scaleY` from one `ViewTransform`, about the view's own centre, so those five
+`scaleY` from one `ViewTransform`, about the view's own center, so those five
 are its to say. The parts apply in the order written, each to what the parts
 before it made: a move written before a turn is swung round by it, one written
 after is not. `geometryTransform` on a shape is the other transform: it

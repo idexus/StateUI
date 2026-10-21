@@ -98,7 +98,7 @@ final class WinUIWindowController {
     }
 
     /// Lays the chrome the host layer composes from what the window shows in WinUI's: the title or the title area, the
-    /// way back, the page's actions, the title view, the colours, the menus, the sidebar's toggle, a sheet's buttons
+    /// way back, the page's actions, the title view, the colors, the menus, the sidebar's toggle, a sheet's buttons
     /// and the tabs.
     /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
     func refreshChrome(in runtime: HostRuntime) {

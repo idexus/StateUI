@@ -97,7 +97,7 @@ extension AppKitElement {
         applyVisibility()
         if let scroll = view as? AppKitScrollView {
             scroll.boxBackground = paintedColor(value(.background))
-        } else if !(view is AppKitTravellingLayout), !AppKitRegistrations.drawOwnBackground.contains(type) {
+        } else if !(view is AppKitTravelingLayout), !AppKitRegistrations.drawOwnBackground.contains(type) {
             let background = paintedColor(value(.background))
             view.wantsLayer = true
             view.layer?.backgroundColor = background?.cgColor
@@ -124,7 +124,7 @@ extension AppKitElement {
             layers.padding = element.insets(.padding)
         }
 
-        if let layout = view as? AppKitTravellingLayout {
+        if let layout = view as? AppKitTravelingLayout {
             layout.decoration.apply(
                 background: value(.background), stroke: value(.stroke),
                 lineWidth: value(.lineWidth)?.number, shape: value(.shape),

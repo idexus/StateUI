@@ -79,7 +79,7 @@ final class GTKActToolkit: ActToolkit {
         GTKClipboard.read { answered(.success($0)) }
     }
 
-    /// Shows the application in `theme`: libadwaita's colour scheme, the system's own for the system's.
+    /// Shows the application in `theme`: libadwaita's color scheme, the system's own for the system's.
     func useColorScheme(_ theme: ColorScheme) {
         let scheme: AdwColorScheme = switch theme {
         case .light: ADW_COLOR_SCHEME_FORCE_LIGHT

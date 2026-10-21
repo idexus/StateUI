@@ -57,7 +57,7 @@
     /// Where the platform puts letters in capitals as the user types.
     public var capitals = Capitals.platform
 
-    /// Whether misspelt words are marked.
+    /// Whether misspelled words are marked.
     public var checksSpelling: Bool
 
     /// Whether the platform corrects and replaces words as they are typed.

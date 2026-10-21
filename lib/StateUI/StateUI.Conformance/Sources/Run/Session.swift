@@ -235,27 +235,27 @@
         return try driven { try driver.launched() }
     }
 
-    /// The colour `element` shows at `point` of its own, where StateUI draws it; nil where it shows nothing.
+    /// The color `element` shows at `point` of its own, where StateUI draws it; nil where it shows nothing.
     public func color(of element: MountedElement, at point: Point) throws -> ShownColor? {
-        note("read the colour of \(element.type.name)", element: element.type.name)
+        note("read the color of \(element.type.name)", element: element.type.name)
         return try driven { try driver.color(of: element, at: point).map(ShownColor.init) }
     }
 
-    /// Whether `element` shows `color` at `point` of its own, as a screen shows a colour StateUI draws.
-    /// Design: docs/design/host/conformance.md#a-colour-drawn
+    /// Whether `element` shows `color` at `point` of its own, as a screen shows a color StateUI draws.
+    /// Design: docs/design/host/conformance.md#a-color-drawn
     public func shows(_ color: Color, on element: MountedElement, at point: Point) throws -> Bool {
         Self.shows(try self.color(of: element, at: point), color)
     }
 
-    /// The colours `element` shows at each of `points` of its own, read at once; nil where it shows nothing.
-    /// Design: docs/design/host/conformance.md#a-colour-drawn
+    /// The colors `element` shows at each of `points` of its own, read at once; nil where it shows nothing.
+    /// Design: docs/design/host/conformance.md#a-color-drawn
     public func colors(of element: MountedElement, at points: [Point]) throws -> [ShownColor?] {
-        note("read the colour of \(element.type.name)", element: element.type.name)
+        note("read the color of \(element.type.name)", element: element.type.name)
         return try driven { try driver.colors(of: element, at: points).map { $0.map(ShownColor.init) } }
     }
 
     /// Whether `element` shows `color` at each of `points` of its own, read at once.
-    /// Design: docs/design/host/conformance.md#a-colour-drawn
+    /// Design: docs/design/host/conformance.md#a-color-drawn
     public func shows(_ color: Color, on element: MountedElement, at points: [Point]) throws -> [Bool] {
         try colors(of: element, at: points).map { Self.shows($0, color) }
     }
@@ -381,7 +381,7 @@
             + (message.isEmpty ? "" : " - \(message)"), file: file, line: line)
     }
 
-    /// Expects `actual` to show `expected`, as a screen shows a colour StateUI draws.
+    /// Expects `actual` to show `expected`, as a screen shows a color StateUI draws.
     public func expect(
         _ actual: ShownColor?, shows expected: Color, _ message: String = "", file: StaticString = #filePath,
         line: UInt = #line
@@ -391,7 +391,7 @@
             + (message.isEmpty ? "" : " - \(message)"), file: file, line: line)
     }
 
-    /// Whether `actual` shows `expected`; nothing shown shows no colour.
+    /// Whether `actual` shows `expected`; nothing shown shows no color.
     static func shows(_ actual: ShownColor?, _ expected: Color) -> Bool {
         actual?.shows(expected) ?? false
     }

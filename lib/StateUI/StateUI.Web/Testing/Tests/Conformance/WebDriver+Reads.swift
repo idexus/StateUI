@@ -150,7 +150,7 @@ extension WebDriver {
             .propValue
     }
 
-    /// The colour the window's bar is painted with by its variable `variable`; nil for the page's own.
+    /// The color the window's bar is painted with by its variable `variable`; nil for the page's own.
     private func barColor(_ variable: String) throws -> HostValue? {
         guard let bar = renderer?.roster.controllers.first?.window.bar else { throw DriverCannot("find the window's bar") }
         let painted = "getComputedStyle(e).getPropertyValue('\(variable)').trim() || null"
@@ -327,7 +327,7 @@ extension WebDriver {
             return purpose.propValue
         case .growsWithText: return try WebBrowser.truth("e.hasAttribute('data-grows')", on: e).propValue
         case .placeholderColor:
-            // The browser resolves no style of `::placeholder`: the colour is the variable the page paints it with.
+            // The browser resolves no style of `::placeholder`: the color is the variable the page paints it with.
             let painted = "((s) => s.getPropertyValue('--stateui-placeholder').trim() || s.getPropertyValue('--stateui-muted').trim())"
             return .some(try color("\(painted)(getComputedStyle(e))", on: e)?.propValue)
         default: return nil
@@ -336,7 +336,7 @@ extension WebDriver {
 
     // MARK: - Shapes
 
-    /// How a shape's path is painted, as its attributes say: its brushes' colours, its outline's width, ends,
+    /// How a shape's path is painted, as its attributes say: its brushes' colors, its outline's width, ends,
     /// joins and dashes - the dashes measured in its width, as StateUI measures them.
     private func shapeHolds(_ property: Prop, _ shape: WebShapeView) throws -> HostValue?? {
         let path = "e.querySelector('path')"
@@ -402,7 +402,7 @@ extension WebDriver {
         case .clipsContent: return try WebBrowser.truth("\(style).overflow === 'hidden'", on: e).propValue
         case .letsInputThrough: return try WebBrowser.truth("e.hasAttribute('data-lets-through')", on: e).propValue
         case .background:
-            // A page has no glass: the filter's blur says the blur drawn; else the box's colour.
+            // A page has no glass: the filter's blur says the blur drawn; else the box's color.
             let blur = try WebBrowser.number(
                 "parseFloat((\(style).backdropFilter.match(/blur\\(([\\d.]+)px\\)/) || [])[1]) || 0", on: e) ?? 0
             if let thickness = Blur.Thickness.allCases.first(where: { WebBox.blur($0) == blur }) {
@@ -488,7 +488,7 @@ extension WebDriver {
         return .some(mode?.propValue)
     }
 
-    /// `script`'s colour on `e`; nil for none - and, `unlessClear`, for one wholly clear.
+    /// `script`'s color on `e`; nil for none - and, `unlessClear`, for one wholly clear.
     func color(_ script: String, on e: Int32, unlessClear: Bool = false) throws -> Color? {
         let channels = try numbers("stateui.channels(\(script))", on: e, separator: ",")
         guard channels.count == 4, !(unlessClear && channels[3] == 0) else { return nil }

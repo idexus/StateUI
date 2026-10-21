@@ -31,14 +31,14 @@ namespace {
     // First what a cube draws with: its paints, its shaders, and its device, corners and swap chain - made once, and
     // sized again with the panel by standChain. Then the drawing itself, and the frames it follows.
 // listing: end
-    /// The colours a cube is painted: teal, amber, violet.
+    /// The colors a cube is painted: teal, amber, violet.
     constexpr float paints[3][3] = {{0.161f, 0.722f, 0.678f}, {0.961f, 0.710f, 0.275f}, {0.580f, 0.443f, 0.929f}};
 
-    /// The shaders: each corner carries its face's brightness in w, and the colour is the frame's.
+    /// The shaders: each corner carries its face's brightness in w, and the color is the frame's.
     constexpr char shaders[] = R"(
         // listing: Cube3DSample.WinUI.hlsl
         // Compiled by D3DCompile as the cube's device is made: `vertex` as vs_5_0, `pixel` as ps_5_0. A corner
-        // carries its face's brightness in w; the colour is the frame's.
+        // carries its face's brightness in w; the color is the frame's.
         cbuffer Frame : register(b0) { float4x4 transform; float4 color; };
         struct Corner { float4 at : POSITION; };
         struct Painted { float4 position : SV_POSITION; float4 color : COLOR; };
@@ -252,7 +252,7 @@ namespace {
     }
 
     // listing: Cube3DSample.WinUI.cpp
-    /// Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
+    /// Clears to the housing's color and draws the cube: turned, scaled and seen in perspective.
     void draw(Cube &cube) {
         auto panel = cube.panel.get();
         if (!panel || panel.ActualWidth() < 1 || panel.ActualHeight() < 1) return;

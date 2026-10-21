@@ -17,7 +17,7 @@
     public let byApplication: [Covered]
 
     /// What the register says of each member the case covers, where the host realizes it.
-    public let realized: [Covered: HostRecord.Judgement]
+    public let realized: [Covered: HostRecord.Judgment]
 
     /// Whether the case runs: every member it proves realized, in full or in part, and everything it needs.
     public var runs: Bool {
@@ -30,18 +30,18 @@
         var notPlanned: [Covered: String] = [:]
         var notRealized: [Covered] = []
         var byApplication: [Covered] = []
-        var realized: [Covered: HostRecord.Judgement] = [:]
+        var realized: [Covered: HostRecord.Judgment] = [:]
         var gaps: [Covered] = []
         for covered in proves {
-            switch covered.judgement(in: register) {
+            switch covered.judgment(in: register) {
             case .notPlanned(let reason)?: notPlanned[covered] = reason
             case .byApplication?: byApplication.append(covered)
             case .unrealized?, nil: notRealized.append(covered)
-            case let judgement?: realized[covered] = judgement
+            case let judgment?: realized[covered] = judgment
             }
         }
         for need in needs where !proves.contains(need) {
-            switch need.judgement(in: register) {
+            switch need.judgment(in: register) {
             case .notPlanned?, .unrealized?, .byApplication?, nil: gaps.append(need)
             default: break
             }
@@ -80,9 +80,9 @@
     /// What a passing case proved: ✅ each member realized in full, ☑️ with what is missing each realized in part -
     /// and ✓ each it reached only through the host's own entry or record, `byHost`.
     func proofs(byHost: [Session.ByHost] = []) -> [HostVerdict] {
-        realized.map { covered, judgement in
+        realized.map { covered, judgment in
             if let own = byHost.first(where: { $0.bears(on: covered) }) { return covered.verdict(.byHost(own.why)) }
-            if case .partial(let missing) = judgement { return covered.verdict(.partial(missing: missing)) }
+            if case .partial(let missing) = judgment { return covered.verdict(.partial(missing: missing)) }
             return covered.verdict(.proven)
         }
     }

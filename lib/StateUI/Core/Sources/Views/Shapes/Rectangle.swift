@@ -7,7 +7,7 @@
 ///         .cornerRadius(8)
 ///         .height(60)
 ///
-/// The plainest thing a host draws: a block of colour, a bar of a chart, a
+/// The plainest thing a host draws: a block of color, a bar of a chart, a
 /// placeholder, a line one point thick. Being a shape, it takes a brush, an
 /// outline and everything else the shape tier declares.
 ///

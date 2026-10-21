@@ -13,7 +13,7 @@ final class WinUIMenuBarView: WinUIView {
     /// The menus the bar shows, as they were last written.
     private(set) var shown = WinUIMenu()
 
-    /// The bars' colours the bar was last painted in; nil before the first.
+    /// The bars' colors the bar was last painted in; nil before the first.
     private var painted: (background: HostValue?, foreground: HostValue?)?
 
     init() {
@@ -29,7 +29,7 @@ final class WinUIMenuBarView: WinUIView {
         menu.relayed { stateui_winui_menu_bar_set(handle, number, $0, $1, $2, $3, $4, $5, $6, $7, $8, $9) }
     }
 
-    /// Paints the bar as one of the window's bars: in the bars' colour, its menus' words in theirs - the colour
+    /// Paints the bar as one of the window's bars: in the bars' color, its menus' words in theirs - the color
     /// written, else light on a dark bar and dark on a light one (`BandWords`).
     func paint(background: HostValue?, foreground: HostValue?) {
         guard painted.map({ $0 != background || $1 != foreground }) ?? true else { return }
@@ -38,7 +38,7 @@ final class WinUIMenuBarView: WinUIView {
         let fill = background?.argb
         let words = BandWords.color(on: background, written: foreground)?.argb
         let theme: ColorScheme = background.flatMap(BandWords.light(on:)).map { $0 ? .dark : .light } ?? .system
-        stateui_winui_menu_bar_set_colours(handle, fill != nil, fill ?? 0, words != nil, words ?? 0, theme.rawValue)
+        stateui_winui_menu_bar_set_colors(handle, fill != nil, fill ?? 0, words != nil, words ?? 0, theme.rawValue)
     }
 
     override func detach() {

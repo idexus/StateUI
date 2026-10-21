@@ -152,7 +152,7 @@ is a thin layer of its toolkit's calls.
 
 **Deliberately rejected:** a serialized wire between the core and a host, a
 host written in its platform's own language, and a rule kept in one host that
-another decides too. One copy of a rule is one behaviour on every platform, and
+another decides too. One copy of a rule is one behavior on every platform, and
 every host's suite proves it through the same conformance cases.
 
 ## Navigation and presentation are state
@@ -353,7 +353,7 @@ public API keeps to these rules:
   name, the renderer, the lists of properties the hosts share - stands behind
   `@_spi(Host)`: an application meets what it writes, and the library exports
   no C function.
-- **Typed values.** A value's type says what it is: a colour is
+- **Typed values.** A value's type says what it is: a color is
   `Color(hex: 0x512BD4)`, and text read as one is `Color(parsing:)`, which may
   fail; insets name their edges `start` and `end`, which follow the reading
   direction; a button's purpose is an `ActionRole`. No string, number or flag
@@ -374,4 +374,4 @@ public API keeps to these rules:
 convenience overload that reaches a member a second way, and a public
 declaration only a host uses. Each doubles what a reader learns and what every
 host must prove, and an API with two roads to one place has no one place where
-its behaviour is decided.
+its behavior is decided.

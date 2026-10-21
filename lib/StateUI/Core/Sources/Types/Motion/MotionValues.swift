@@ -28,7 +28,7 @@ public struct MotionValues: OptionSet, Sendable {
     /// How see-through the view is: `.opacity`.
     public static let opacity = MotionValues(rawValue: 1 << 0)
 
-    /// Every colour it wears - a background, a text colour, a track, a thumb -
+    /// Every color it wears - a background, a text color, a track, a thumb -
     /// known from the value itself.
     public static let color = MotionValues(rawValue: 1 << 1)
 

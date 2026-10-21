@@ -78,7 +78,7 @@ public enum Icon: Int32, Sendable, CaseIterable {
     /// Copies: two sheets.
     case copy = 21
 
-    /// A favourite: a star.
+    /// A favorite: a star.
     case star = 22
 
     /// Liked: a heart.

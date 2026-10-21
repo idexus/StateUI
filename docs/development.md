@@ -140,7 +140,7 @@ Treat one control, property, event, or host action as one vertical change:
    owner when the documents are rendered. What a registry cannot know stays
    written by hand, in the host's `<Host>Realization` - `AppKitRealization`,
    `UIKitRealization`, `AndroidRealization`, `WinUIRealization`,
-   `GTKRealization`, `WebRealization` - every judgement: a partial record
+   `GTKRealization`, `WebRealization` - every judgment: a partial record
    saying what is missing, what a host realizes none of, what it leaves to the
    application or to a backend, and what it presents with no view of its own.
    Where the change alters what a family's cases prove, raise the family's
@@ -456,7 +456,7 @@ The core's suite also guards the project itself, in
 - `ReleaseTests` - every place that names the release names the one
   `lib/StateUI.VSCode/package.json` states ([Distribution
   boundary](#distribution-boundary));
-- `LicenceTests` - every source under `lib/` starts with the two SPDX lines;
+- `LicenseTests` - every source under `lib/` starts with the two SPDX lines;
 - `DocumentationTests` - every public declaration of the library has its
   `///`;
 - `HeldByNumberTests` - every number a host hands out is the process's one

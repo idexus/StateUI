@@ -9,7 +9,7 @@
 ///     Text("Total").margin(start: 0, top: 8, end: 0, bottom: 16)
 ///
 /// `.padding` keeps it INSIDE the control, between its edge and its content;
-/// `.margin` keeps it OUTSIDE, between the control and its neighbours. A
+/// `.margin` keeps it OUTSIDE, between the control and its neighbors. A
 /// number written where one of these is wanted becomes the same value on all
 /// four sides.
 public struct Insets: Equatable, Sendable, HostRepresentable {

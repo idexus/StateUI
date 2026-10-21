@@ -21,7 +21,7 @@ only moved there.
 
 The arithmetic works in points; the views in pixels. The host converts at the
 display's density, rounding each edge of a rectangle rather than its size, so
-neighbours meet without a gap. A text's size is in scaled pixels, so the
+neighbors meet without a gap. A text's size is in scaled pixels, so the
 user's font scale applies to it as it does to every application's text.
 
 ## Measured once

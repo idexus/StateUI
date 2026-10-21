@@ -25,7 +25,7 @@ LayoutEngine.accessibilityHeading: ☑️ UIKit marks a heading, not its level: 
 LayoutEngine.layoutDirection: ✅
 Line.layoutDirection: ✅
 Map.accessibilityRole: ✅
-Path.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+Path.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Picker.accessibilityHint: ✅
 Polygon.height: ✅
 Polygon.scale: ✓ read scale of Polygon: the host's own transform, checked against the layer it composed itself
@@ -40,14 +40,14 @@ SearchField.maximumWidth: ✅
 SearchField.minimumHeight: ✅
 SearchField.minimumWidth: ✅
 SearchField.scaleX: ✓ read scaleX of SearchField: the host's own transform, checked against the layer it composed itself
-Slider.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+Slider.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Spacer.accessibilityRole: ✅
 Stepper.maximumHeight: ✅
 Stepper.maximumWidth: ✅
 Stepper.minimumHeight: ✅
 Stepper.minimumWidth: ✅
 Stepper.scaleX: ✓ read scaleX of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+Switch.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Text.isAccessibilityHidden: ✅
 TextEditor.accessibilityRole: ✅
 TextField.maximumHeight: ✅
@@ -55,7 +55,7 @@ TextField.maximumWidth: ✅
 TextField.minimumHeight: ✅
 TextField.minimumWidth: ✅
 TextField.scaleX: ✓ read scaleX of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.background: – UIKit's time picker keeps no background colour: one written reads back as none.
+TimePicker.background: – UIKit's time picker keeps no background color: one written reads back as none.
 VStack.accessibilityRole: ✅
 VStack.background: ✅
 WebView.pivotX: ✓ read pivotX of WebView: the host's own transform, checked against the layer it composed itself

@@ -25,7 +25,7 @@ final class RegistryTests: XCTestCase {
         var caption = ""
         var captions = 0
         var tapped: ((Int) -> Void)?
-        var dialled: ((Int) -> Void)?
+        var dialed: ((Int) -> Void)?
         var tuned: ((Double) -> Void)?
         var strayed: ((Double) -> Void)?
         var settled: (() -> Void)?
@@ -149,7 +149,7 @@ final class RegistryTests: XCTestCase {
         let told = Told()
         let view = try XCTUnwrap(Self.view(of: LampContract.nodeType, in: registry, told: told) as? LampView)
 
-        view.dialled?(3)
+        view.dialed?(3)
 
         XCTAssertEqual(told.values, ["signal signalChanged \(3.propValue)"])
         XCTAssertTrue(told.events.isEmpty, "a reported value raises its event through the report")
@@ -340,7 +340,7 @@ final class RegistryTests: XCTestCase {
         XCTAssertEqual(registry.childTypes(of: PlainContract.nodeType), [])
         XCTAssertTrue(realization.elements.contains(BulbContract.nodeType))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: BulbContract.name, owner: BulbContract.name, member: "colour")))
+            HostRealizedMember(element: BulbContract.name, owner: BulbContract.name, member: "color")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: BulbContract.name, owner: BulbContract.name, member: "bulbTapped")))
         XCTAssertFalse(realization.members.contains { $0.element == BulbContract.nodeType && $0.member.name == "signal" })
@@ -353,11 +353,11 @@ final class RegistryTests: XCTestCase {
         let view = try Self.lamp(registry)
         let told = Told()
         let red = HostChild(
-            reading: { $0 == BulbContract.colour.token ? .string("red") : nil },
+            reading: { $0 == BulbContract.color.token ? .string("red") : nil },
             sending: { event, _ in told.events.append("red \(event.name)") },
             reporting: { _, _, _ in })
         let blue = HostChild(
-            reading: { $0 == BulbContract.colour.token ? .string("blue") : nil },
+            reading: { $0 == BulbContract.color.token ? .string("blue") : nil },
             sending: { event, _ in told.events.append("blue \(event.name)") },
             reporting: { _, _, _ in })
 
@@ -366,7 +366,7 @@ final class RegistryTests: XCTestCase {
         view.bulbs[1].reports.raise(BulbContract.bulbTapped)
         registry.applyChildren(to: view, of: LampContract.nodeType) { $0 == BulbContract.nodeType ? [blue] : [] }
 
-        XCTAssertEqual(first.map { $0.value(BulbContract.colour) }, ["red", "blue"])
+        XCTAssertEqual(first.map { $0.value(BulbContract.color) }, ["red", "blue"])
         XCTAssertEqual(told.events, ["blue bulbTapped"])
         XCTAssertEqual(view.bulbs, [first[1]], "the same child is the same element")
         XCTAssertEqual(view.handed, 2)
@@ -381,7 +381,7 @@ final class RegistryTests: XCTestCase {
 
         registry.add(LampContract.self, create: { _ in LampView() }) { lamp in
             lamp.children(
-                BulbContract.self, properties: BulbContract.colour, LampContract.signal, events: BulbContract.bulbTapped
+                BulbContract.self, properties: BulbContract.color, LampContract.signal, events: BulbContract.bulbTapped
             ) { view, bulbs in
                 view.bulbs = bulbs
                 view.handed += 1
@@ -401,7 +401,7 @@ final class RegistryTests: XCTestCase {
         registry.add(LampContract.self, create: { reports in
             let lamp = LampView()
             lamp.tapped = { index in reports.raise(LampContract.lampTapped, index) }
-            lamp.dialled = { signal in
+            lamp.dialed = { signal in
                 reports.report(LampContract.signal, signal, as: LampContract.signalChanged)
             }
             lamp.tuned = { level in
@@ -498,10 +498,10 @@ private enum LampContract: ElementContract {
 private enum BulbContract: ElementContract {
     static let nodeType: NodeType = "Test.Bulb"
 
-    static let colour = ElementProperty<Self, String>("colour")
+    static let color = ElementProperty<Self, String>("color")
     static let bulbTapped = ElementEvent<Self, Void>("bulbTapped")
 
-    static let members: [any ContractMember] = [colour, bulbTapped]
+    static let members: [any ContractMember] = [color, bulbTapped]
 }
 
 /// An element wearing no tier.

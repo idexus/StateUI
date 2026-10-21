@@ -98,7 +98,7 @@ final class AndroidShapeDrawable {
         Java.release(local: radii)
     }
 
-    /// What fills the shape: a colour, or a brush as it crosses; nil for nothing.
+    /// What fills the shape: a color, or a brush as it crosses; nil for nothing.
     func setFill(_ value: HostValue?) {
         fill = value
         tellFill()
@@ -116,7 +116,7 @@ final class AndroidShapeDrawable {
         Java.release(local: colors)
     }
 
-    /// A brush as the Java side takes it, from the host layer's reading of it: its kind, then a colour and an offset
+    /// A brush as the Java side takes it, from the host layer's reading of it: its kind, then a color and an offset
     /// for each stop, and its geometry - points in fractions of the shape, a radial gradient's reach in pixels over
     /// `size` (`HostBrush.reach`), none before the size is known.
     /// Design: docs/design/types/brushes.md#as-a-host-is-handed-it
@@ -144,8 +144,8 @@ final class AndroidShapeDrawable {
         }
     }
 
-    /// The outline: the brush's colour, `width` points wide as the host layer reads it - one where none is said,
-    /// none without a colour - at `density`.
+    /// The outline: the brush's color, `width` points wide as the host layer reads it - one where none is said,
+    /// none without a color - at `density`.
     func setStroke(_ value: HostValue?, width: Double?, density: Double) {
         let argb = HostBrush(value).firstColor.flatMap(AndroidView.argb)
         lineWidth = argb == nil ? 0 : BoxArithmetic.outlineWidth(stroke: value, width: width) * density

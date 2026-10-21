@@ -65,7 +65,7 @@ Switch.accessibilityRole: – A WinUI control is its own kind to assistive techn
 Switch.translationX: ✅
 Text.tooltip: ✅
 TextEditor.tooltip: ✅
-TextField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+TextField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 TextField.isEnabled: ✅
 TimePicker.frame: ✅
 TimePicker.rotation: ✅

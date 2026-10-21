@@ -23,7 +23,7 @@ enum AppKitRealization {
         // MARK: Tiers - a member every wearer realizes alike
         .complete(BarElementContract.barBackgroundColor),
         .partial(BarElementContract.barForegroundColor,
-            missing: "Only the title takes it, over a band painted in a bar colour; the toolbar's items keep the system's colour."),
+            missing: "Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color."),
         .complete(BarElementContract.barIcon),
         .complete(BarElementContract.barSubtitle),
         .complete(BarElementContract.barTitle),
@@ -45,7 +45,7 @@ enum AppKitRealization {
             missing: "A Mac has no keyboard on the screen: a purpose sets capitals, spell checking, correction, "
             + "prediction and what macOS fills the words in with, no keys."),
         .partial(VisualElementContract.background,
-            missing: "AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in."),
+            missing: "AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in."),
         .partial(ViewContract.panTouchCount,
             missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
         .complete(VisualElementContract.layoutDirection),
@@ -208,7 +208,7 @@ enum AppKitRealization {
         .complete(BorderElementContract.lineWidth, on: ZStackContract.self),
         .complete(BorderElementContract.stroke, on: ZStackContract.self),
         .partial(BorderElementContract.stroke, on: ScrollViewContract.self,
-            missing: "AppKit outlines a scroller in one colour: a gradient draws none."),
+            missing: "AppKit outlines a scroller in one color: a gradient draws none."),
         .complete(AutomationElementContract.accessibilityIdentifier, on: ZStackContract.self),
         .complete(VisualElementContract.ignoresInput, on: ZStackContract.self),
         .complete(PaddingElementContract.padding, on: ZStackContract.self),
@@ -227,15 +227,15 @@ enum AppKitRealization {
         .complete(LayoutEngineContract.rotates),
         .complete(LayoutEngineContract.pinchMoved),
         .complete(LayoutEngineContract.itemMoved),
-        .notPlanned(TintElementContract.tint, on: ActivityIndicatorContract.self, reason: accentColoured),
-        .notPlanned(TintElementContract.tint, on: ProgressBarContract.self, reason: accentColoured),
-        .notPlanned(TintElementContract.tint, on: SwitchContract.self, reason: accentColoured),
+        .notPlanned(TintElementContract.tint, on: ActivityIndicatorContract.self, reason: accentColored),
+        .notPlanned(TintElementContract.tint, on: ProgressBarContract.self, reason: accentColored),
+        .notPlanned(TintElementContract.tint, on: SwitchContract.self, reason: accentColored),
         .notPlanned(ButtonContract.iconSpacing,
             reason: "AppKit's button stands its picture at its own gap from the words: it takes no other."),
     ] + dayPickers + HostRecord.layoutEngine
 
-    /// Why a progress indicator and a switch take no colour of their own.
-    private static let accentColoured = "AppKit draws it in the accent colour the user chooses: it takes none of its own."
+    /// Why a progress indicator and a switch take no color of their own.
+    private static let accentColored = "AppKit draws it in the accent color the user chooses: it takes none of its own."
 
     /// What a day's and a time's picker holds none of.
     private static let dayPickers: [HostRecord] = {

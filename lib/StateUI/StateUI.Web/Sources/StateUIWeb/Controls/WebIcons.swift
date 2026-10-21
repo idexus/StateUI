@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// The Web's icons: a browser ships none, so StateUI draws its own - one stroke on a 24-point square for each
-/// `Icon`, worn as a mask over the colour of the words around it.
+/// `Icon`, worn as a mask over the color of the words around it.
 /// Design: docs/design/platforms/web/controls.md#icons
 enum WebIcons {
     /// The icon's drawing as an SVG document, black on nothing - a mask takes its shape alone.

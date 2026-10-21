@@ -98,7 +98,7 @@ final class AppKitSplitView: AppKitHitTestView {
         detailSurface.needsLayout = true
     }
 
-    /// Paints the part of the detail the window's bars cover in the colour
+    /// Paints the part of the detail the window's bars cover in the color
     /// written for them, or leaves it to the system's material.
     func setDetailBarColor(_ color: NSColor?) {
         detailSurface.barColor = color

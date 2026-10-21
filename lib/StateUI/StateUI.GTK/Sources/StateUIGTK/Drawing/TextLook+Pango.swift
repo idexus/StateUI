@@ -8,10 +8,10 @@ import CStateUIGTK
 /// A look as the Pango attributes GTK draws words with.
 /// Design: docs/design/platforms/gtk/controls.md#words
 extension TextLook {
-    /// The words' colour as GTK draws it; nil for GTK's own.
+    /// The words' color as GTK draws it; nil for GTK's own.
     var rgbaColor: GdkRGBA? { color.flatMap(GTKBrush.rgba) }
 
-    /// What stands behind the words as GTK draws it: a brush's first colour; nil for nothing.
+    /// What stands behind the words as GTK draws it: a brush's first color; nil for nothing.
     var rgbaBackground: GdkRGBA? { GTKBrush(background).firstColor }
 
     /// Puts the look on the words from byte `start` to byte `end` of `list`. A size stands in typographic points,
@@ -59,7 +59,7 @@ extension TextLook {
         size * 72 / 96
     }
 
-    /// A colour's channels as Pango takes them, each 0 to 65535.
+    /// A color's channels as Pango takes them, each 0 to 65535.
     private static func channels(_ color: GdkRGBA) -> (UInt16, UInt16, UInt16, UInt16) {
         func channel(_ value: Float) -> UInt16 { UInt16((min(max(value, 0), 1) * 65535).rounded()) }
         return (channel(color.red), channel(color.green), channel(color.blue), channel(color.alpha))

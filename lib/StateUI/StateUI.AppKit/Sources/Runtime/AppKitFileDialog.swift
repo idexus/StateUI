@@ -86,7 +86,7 @@ final class AppKitFileDialog: NSObject, NSOpenSavePanelDelegate {
 
     @concurrent private static func write(_ contents: [UInt8], to url: URL) async -> Result<Void, ActFailure> {
         do {
-            // In place: a sandbox lets the application write the file the user chose, not a neighbour to swap in.
+            // In place: a sandbox lets the application write the file the user chose, not a neighbor to swap in.
             try Data(contents).write(to: url)
             return .success(())
         } catch {

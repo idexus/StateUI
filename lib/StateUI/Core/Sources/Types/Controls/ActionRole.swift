@@ -9,7 +9,7 @@ public enum ActionRole: Int32, Sendable, HostRepresentable {
     /// An ordinary action.
     case normal = 0
 
-    /// An action that destroys something: drawn in the platform's colour for one, where it has one. The look only:
+    /// An action that destroys something: drawn in the platform's color for one, where it has one. The look only:
     /// a confirmation is still the handler's to put up.
     case destructive = 1
 }

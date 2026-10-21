@@ -1,7 +1,7 @@
 # revision 6.1
 Window: ✅
 Window.activated: ✅
-Window.background: ☑️ A page draws its window opaque: a blur or glass shows its colour.
+Window.background: ☑️ A page draws its window opaque: a blur or glass shows its color.
 Window.created: ✅
 Window.deactivated: ✓ switchAway on Window: the notice the browser gives as the user goes elsewhere, told by the driver: a page moves no window
 Window.destroying: ✓ close on Window: the notice the browser gives as it leaves the page, told by the driver: a page closes no tab

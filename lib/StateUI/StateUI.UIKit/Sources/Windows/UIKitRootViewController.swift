@@ -171,7 +171,7 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
         if !moving { letPassingGo() }
     }
 
-    /// The first thing passing, over the top sheet - centred where it stands as a popover with no anchor of its own.
+    /// The first thing passing, over the top sheet - centered where it stands as a popover with no anchor of its own.
     private func presentPassing() {
         guard appeared, !moving, standing == nil, waiting == nil, !passing.isEmpty else { return }
         let next = passing.removeFirst()

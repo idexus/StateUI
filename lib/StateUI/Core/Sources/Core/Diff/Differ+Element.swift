@@ -523,7 +523,7 @@ extension Differ {
         // A member the host's register says it does not realize on this element is said once.
         // Design: docs/design/core/contracts.md#unrealized-names
         for key in patch.properties.keys.sorted() {
-            if let unhonoured = HostRealizations.unhonoured(key.key, on: node.type) { complain(unhonoured) }
+            if let unhonored = HostRealizations.unhonored(key.key, on: node.type) { complain(unhonored) }
         }
         #endif
 

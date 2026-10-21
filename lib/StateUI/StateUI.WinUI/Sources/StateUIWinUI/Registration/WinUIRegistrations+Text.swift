@@ -33,7 +33,7 @@ extension WinUIRegistrations {
     }
 
     /// Puts the text tiers' members (`TextMembers`) on a label, a button or a radio button: the words in their case,
-    /// the font and the colour, and the room around them.
+    /// the font and the color, and the room around them.
     static func applyText<Realized: ElementContract>(_ view: WinUIView, _ values: ElementValues<Realized>) {
         if let words = TextMembers.words(values) { (view as? WinUIWordsView)?.setText(words) }
         if let look = TextMembers.look(values) {

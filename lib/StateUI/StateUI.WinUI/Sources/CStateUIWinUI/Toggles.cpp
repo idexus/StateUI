@@ -67,7 +67,7 @@ extern "C" void stateui_winui_toggle_set_words(StateUIObjectRef handle, char con
                                static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)}))
                          : media::Brush{nullptr};
         auto control = as<controls::Control>(handle);
-        // The colour goes where the control's style reads its words' colour, in every state that keeps them.
+        // The color goes where the control's style reads its words' color, in every state that keeps them.
         std::vector<std::pair<std::wstring, media::Brush>> brushes;
         if (auto toggle = control.try_as<controls::ToggleSwitch>()) {
             toggle.Header(shown);

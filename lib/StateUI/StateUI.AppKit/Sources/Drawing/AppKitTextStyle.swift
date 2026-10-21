@@ -67,7 +67,7 @@ extension NSFont {
     }
 }
 
-/// Words' attributes from how the host layer says they look (`TextLook`), drawn in `font`: their colour, else
+/// Words' attributes from how the host layer says they look (`TextLook`), drawn in `font`: their color, else
 /// `fallbackColor`, what stands behind them, the space between the letters, the lines' height and decorations.
 /// Design: docs/design/host/tree.md#runs-of-words
 @MainActor

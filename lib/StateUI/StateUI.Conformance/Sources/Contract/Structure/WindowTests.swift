@@ -152,7 +152,7 @@
     }
 
     /// The window is made of the blur its session writes and then of the one the tree changes it to - or of the
-    /// colour a host whose windows show nothing behind them paints for each.
+    /// color a host whose windows show nothing behind them paints for each.
     @MainActor
     static var blurred: ConformanceCase {
         ConformanceCase("Window.background.showsABlurOrWhatStandsInForIt", proves: [

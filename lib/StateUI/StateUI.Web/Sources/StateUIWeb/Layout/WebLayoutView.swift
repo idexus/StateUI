@@ -35,11 +35,11 @@ class WebLayoutView: WebDOMView {
     private var valuesRead: [LayoutValues?] = []
 
     /// Each child's mounted element, by number, and how it fades in as it joins: what its place travels by.
-    private var travellers: [(mount: UInt64, fadeIn: ((Motion) -> Void)?)] = []
+    private var travelers: [(mount: UInt64, fadeIn: ((Motion) -> Void)?)] = []
 
     /// Where the children travel to their places, and who reads their places on the page; nil while they stand at
     /// once wherever the browser lays them out.
-    let places = TravellingPlaces()
+    let places = TravelingPlaces()
     weak var placing: WebPlacements?
 
     /// A grid's tracks as the element defines them.
@@ -131,7 +131,7 @@ class WebLayoutView: WebDOMView {
     /// Design: docs/design/platforms/web/layout.md#children-in-order
     func setItems(
         _ items: [(view: WebDOMView, values: () -> LayoutValues)],
-        travellers: [(mount: UInt64, fadeIn: ((Motion) -> Void)?)] = []
+        travelers: [(mount: UInt64, fadeIn: ((Motion) -> Void)?)] = []
     ) {
         let views = items.map(\.view)
         if views.count != children.count || !zip(views, children).allSatisfy({ $0 === $1 }) {
@@ -146,7 +146,7 @@ class WebLayoutView: WebDOMView {
         children = views
         readValues = items.map(\.values)
         valuesRead = Array(repeating: nil, count: items.count)
-        self.travellers = travellers
+        self.travelers = travelers
         for view in views { view.placingLayout = self }
         if arrangement == .grid { writeTracks() }
         placeAll()
@@ -163,8 +163,8 @@ class WebLayoutView: WebDOMView {
 
     /// Stands the child at `index` at `slot`, where the browser laid it out, or on its way there.
     func place(_ child: WebDOMView, at index: Int, slot: Rect) {
-        let traveller = index < travellers.count ? travellers[index] : (mount: 0, fadeIn: nil)
-        places.place(child, mount: traveller.mount, at: slot, values: values(at: index), fadeIn: traveller.fadeIn)
+        let traveler = index < travelers.count ? travelers[index] : (mount: 0, fadeIn: nil)
+        places.place(child, mount: traveler.mount, at: slot, values: values(at: index), fadeIn: traveler.fadeIn)
     }
 
     private func placeAll() {

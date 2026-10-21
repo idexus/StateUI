@@ -51,13 +51,13 @@ every render, and written on the header bar of each page shown:
   sees in its detail, pressed in while the sidebar shows;
 - for a tabbed view, its switcher beneath the bar, under the chosen tab's
   page's chrome;
-- the bar's colours: a page's header bar is painted in the colours its path
+- the bar's colors: a page's header bar is painted in the colors its path
   declares, the nearest arrangement's (`barColors`), and what stands on it -
   the title, the way back, the toggles and the switcher's captions - in its
   foreground, else light on a dark band and dark on a light one ([words on
   a painted band](../../host/layout.md#words-on-a-painted-band)), as a class
   of the host's style sheet ([a widget's own
-  box](drawing.md#a-widgets-own-box)); a bar no arrangement colours keeps
+  box](drawing.md#a-widgets-own-box)); a bar no arrangement colors keeps
   the platform's.
 
 The page the user sees names the window, for the desktop's switcher and dock;
@@ -116,7 +116,7 @@ material it lets the window through shaded a breath (`alpha(@shade_color,
 is clear, so the material lies on the window; the class is the split's, over
 its `.sidebar-pane` node. Over the detail the pane stays libadwaita's own -
 never the window. GTK blurs nothing inside a window, so a blur stands as its
-colour.
+color.
 
 ## Tabs
 

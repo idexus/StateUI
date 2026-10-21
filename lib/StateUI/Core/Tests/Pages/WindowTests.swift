@@ -65,7 +65,7 @@ final class WindowTests: XCTestCase {
         XCTAssertEqual(node.props["y"], .number(100))
     }
 
-    /// The bar's title area and colours are values an arrangement declares on itself - no child of the window and
+    /// The bar's title area and colors are values an arrangement declares on itself - no child of the window and
     /// nothing in its session.
     func testAnArrangementDeclaresItsBarAsValues() {
         let node = SplitView(State(wrappedValue: true).projectedValue) {

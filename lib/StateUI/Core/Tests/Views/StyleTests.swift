@@ -268,12 +268,12 @@ final class StyleTests: XCTestCase {
         XCTAssertTrue(renders.render(tree, styles: sheet()).isEmpty)
     }
 
-    // MARK: - Colours that follow the theme
+    // MARK: - Colors that follow the theme
 
-    /// A colour with a dark half is written as BOTH - the style holds the
+    /// A color with a dark half is written as BOTH - the style holds the
     /// pair - and the element wearing it is built with the half the theme
     /// says. One sheet, made once, serves both themes.
-    func testAColourWithADarkHalfIsWrittenAsBothAndBuiltAsOne() {
+    func testAColorWithADarkHalfIsWrittenAsBothAndBuiltAsOne() {
         let themed = Color(light: .white, dark: Color(hex: 0x1F1F1F))
         let sheet = StyleSheet { Style<Text>().textColor(themed) }
 
@@ -296,9 +296,9 @@ final class StyleTests: XCTestCase {
     }
 
     /// It is a Color, so it goes wherever a Color goes - and the half in force
-    /// is picked as the element wearing it is built, which is why one colour
+    /// is picked as the element wearing it is built, which is why one color
     /// arrives.
-    func testAThemedColourCanBeWrittenOnAControlToo() {
+    func testAThemedColorCanBeWrittenOnAControlToo() {
         let themed = Color(light: .black, dark: .white)
 
         XCTAssertEqual(
@@ -320,7 +320,7 @@ final class StyleTests: XCTestCase {
     /// A pair written OUTSIDE every build - here in the test itself, the way a
     /// handler writes one into a session - follows the theme all the same:
     /// the element wearing it is the theme's reader, whoever wrote it.
-    func testAThemedColourWrittenOutsideEveryBuildFollowsTheTheme() {
+    func testAThemedColorWrittenOutsideEveryBuildFollowsTheTheme() {
         let app = StandardEnvironment.application.info
         let was = app.colorScheme
         defer { app.colorScheme = was }
@@ -364,9 +364,9 @@ final class StyleTests: XCTestCase {
             "and the label was built again from what it wrote")
     }
 
-    /// A colour PAIR in a state the host carries crosses as the half in force,
+    /// A color PAIR in a state the host carries crosses as the half in force,
     /// and reading the state answers the pair that was written.
-    func testAColourPairTheHostCarriesCrossesAsTheHalfInForce() {
+    func testAColorPairTheHostCarriesCrossesAsTheHalfInForce() {
         withTheme(.dark) {
             let tint = State(Color(light: .black, dark: .white))
             _ = tint.projectedValue.journeyImage
@@ -379,7 +379,7 @@ final class StyleTests: XCTestCase {
     /// And it follows the theme: the element handing the state on is the
     /// theme's reader, so a theme change builds it again and the host is sent
     /// to the other half - the way a pair written on a node crosses.
-    func testAColourPairTheHostCarriesFollowsTheTheme() {
+    func testAColorPairTheHostCarriesFollowsTheTheme() {
         let app = StandardEnvironment.application.info
         let was = app.colorScheme
         defer { app.colorScheme = was }
@@ -400,7 +400,7 @@ final class StyleTests: XCTestCase {
             "the element handing the state on read the theme, and laid the other half")
     }
 
-    /// A box whose colour the host carries from a state it is handed.
+    /// A box whose color the host carries from a state it is handed.
     private struct Tinted: View {
         let tint: Binding<Color>
 
@@ -428,9 +428,9 @@ final class StyleTests: XCTestCase {
         }
     }
 
-    /// And a style's colour becomes the CONTROL's, resolved on the way - so
+    /// And a style's color becomes the CONTROL's, resolved on the way - so
     /// no host binds or resolves a theme.
-    func testAStylesThemedColourArrivesOnTheControlResolved() {
+    func testAStylesThemedColorArrivesOnTheControlResolved() {
         let sheet = StyleSheet {
             Style<Text>().textColor(Color(light: .black, dark: .white))
         }
@@ -440,12 +440,12 @@ final class StyleTests: XCTestCase {
             Color.black.propValue)
     }
 
-    /// The read is what makes the next theme change find this view: a colour
+    /// The read is what makes the next theme change find this view: a color
     /// with two halves asks `ApplicationInfo` which one to use, and that read is
     /// recorded against whichever view is being built - against the THEME
     /// property, so the change that finds it is a write to `colorScheme`
     /// and nothing else the app object says.
-    func testWritingAThemedColourRecordsAReadOfTheTheme() {
+    func testWritingAThemedColorRecordsAReadOfTheTheme() {
         let app = StandardEnvironment.application.info
         let was = app.colorScheme
         defer { app.colorScheme = was }
@@ -454,7 +454,7 @@ final class StyleTests: XCTestCase {
         // Built by the differ, inside the view's own read scope - a node the
         // test builds eagerly as an argument is read by nobody. In a block of
         // its own, so this reader is gone before the second half asks whether
-        // a plain colour left any.
+        // a plain color left any.
         do {
             let renders = Renders()
             let first = renders.render(stack([Themed().node], id: "root"))
@@ -465,21 +465,21 @@ final class StyleTests: XCTestCase {
             let flipped = renders.revisit(changed: Renderer.shared.pendingChanges)
 
             XCTAssertEqual(flipped.child(.auto(1))?.props["textColor"], Color.white.propValue,
-                           "a themed colour depends on the theme, and the theme found it")
+                           "a themed color depends on the theme, and the theme found it")
         }
 
-        // A colour with one half asks nothing: with only that label live, the
+        // A color with one half asks nothing: with only that label live, the
         // theme's write has no reader and the renderer refuses it.
         let plain = Renders()
         plain.render(stack([Plain().node], id: "root"))
         Renderer.shared.clearInvalidation()
         app.colorScheme = .light
 
-        XCTAssertFalse(Renderer.shared.needsRender, "a colour with one half asks nothing")
+        XCTAssertFalse(Renderer.shared.needsRender, "a color with one half asks nothing")
         _ = plain
     }
 
-    /// A label whose colour has two halves, built where the differ can see
+    /// A label whose color has two halves, built where the differ can see
     /// the read.
     private struct Themed: View {
         var body: some View {
@@ -496,7 +496,7 @@ final class StyleTests: XCTestCase {
 
     // MARK: - Pictures that follow the theme
 
-    /// The same story a themed colour tells: the picture is written as both
+    /// The same story a themed color tells: the picture is written as both
     /// names, and the element showing it is built with the one in force - so
     /// one name crosses.
     func testAPictureCanBeDrawnOncePerTheme() {
@@ -820,7 +820,7 @@ final class StyleTests: XCTestCase {
         let ink = Color(hex: 0x212121).propValue
 
         // The headline's style, based on the body's - and standing in place of
-        // the default label's, whose colour it does not take.
+        // the default label's, whose color it does not take.
         XCTAssertEqual(stack.at(.auto(4))?.props, [
             "text": .string("Welcome"), "fontSize": .number(32),
             "fontWeight": FontWeight.bold.propValue,

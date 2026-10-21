@@ -99,7 +99,7 @@ nothing of - the simulator's - is none, full, on mains; Low Power Mode is the
 battery saver. The network is reachable when its path is satisfied, local
 when interfaces stand but no route leads out; each interface available to
 the path - Wi-Fi, wired, cellular - is a connection profile. The accessibility
-settings are UIKit's - Reduce Motion, darker colours for more contrast,
+settings are UIKit's - Reduce Motion, darker colors for more contrast,
 VoiceOver - and the scale of words the size the user chose draws the body's
 17 points at; each is told again as UIKit announces its change.
 

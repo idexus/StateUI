@@ -296,7 +296,7 @@ final class StateUIEnvironment {
         return timeZone.getOffset(noon.getTimeInMillis()) / 60000;
     }
 
-    /** The theme's accent, as ARGB: from Android 12 the colour the system draws from the wallpaper. */
+    /** The theme's accent, as ARGB: from Android 12 the color the system draws from the wallpaper. */
     static int accent(Context context) {
         TypedValue value = new TypedValue();
         if (!context.getTheme().resolveAttribute(android.R.attr.colorAccent, value, true)) return 0xFF0A84FF;
@@ -345,7 +345,7 @@ final class StateUIEnvironment {
         else activity.getWindow().setBackgroundDrawable(null);
     }
 
-    /** The plain colour the activity's window shows behind its pages, as ARGB; Long.MIN_VALUE where it shows none. */
+    /** The plain color the activity's window shows behind its pages, as ARGB; Long.MIN_VALUE where it shows none. */
     static long windowBackground(Activity activity) {
         Drawable drawable = activity.getWindow().getDecorView().getBackground();
         return drawable instanceof ColorDrawable ? ((ColorDrawable) drawable).getColor() & 0xFFFFFFFFL : Long.MIN_VALUE;

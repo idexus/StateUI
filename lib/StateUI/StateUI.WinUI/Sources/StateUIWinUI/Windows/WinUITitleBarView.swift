@@ -29,7 +29,7 @@ final class WinUITitleBarView: WinUIView {
         self.chrome = chrome
 
         let background = chrome.background?.argb
-        // Words on a bar the tree paints - its title and its actions: the colour written, else light on a dark one
+        // Words on a bar the tree paints - its title and its actions: the color written, else light on a dark one
         // and dark on a light one (`BandWords`).
         let foreground = BandWords.color(on: chrome.background, written: chrome.foreground)?.argb
         // The bar's own theme: dark for light words on a dark bar.

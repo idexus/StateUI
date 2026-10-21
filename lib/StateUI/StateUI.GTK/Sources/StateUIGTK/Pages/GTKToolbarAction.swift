@@ -18,7 +18,7 @@ struct GTKToolbarAction {
     var showsTitle = false
     let isEnabled: Bool
 
-    /// Whether the action destroys something: libadwaita's `destructive-action` colours its button.
+    /// Whether the action destroys something: libadwaita's `destructive-action` colors its button.
     let isDestructive: Bool
 
     /// The action of `item` as its bar's button shows it, read as a menu's entry is (`MenuEntry`).

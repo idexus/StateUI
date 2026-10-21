@@ -22,7 +22,7 @@ final class HomeScreenSampleTests: XCTestCase {
     }
 
     /// AN ICON IS DRAWN WITHIN ITS OWN CELL, however large the room makes it: a press is taken by the icon drawn
-    /// under it, and a neighbour drawn over the cell would take it instead.
+    /// under it, and a neighbor drawn over the cell would take it instead.
     @MainActor
     func testAnIconIsDrawnWithinItsOwnCell() {
         for room in [Rect(0, 0, 390, 700), Rect(0, 0, 1400, 1000), Rect(0, 0, 600, 300)] {

@@ -27,7 +27,7 @@ extension WinUIDriver {
             return "the accent WinUI holds for the main action, and the host's own record of the roles it draws no look for"
         }
         if ability == "read background of Canvas" {
-            return "the colour the host's canvas clears its surface to under its drawing, which WinUI keeps as no brush"
+            return "the color the host's canvas clears its surface to under its drawing, which WinUI keeps as no brush"
         }
         if ability == "read a share sheet" {
             return "what the host holds of a share sheet a test never shows"

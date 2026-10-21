@@ -89,7 +89,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
     }
 
     private func cell(
-        _ text: String, _ colour: Color, at column: Int, faded: Bool = false
+        _ text: String, _ color: Color, at column: Int, faded: Bool = false
     ) -> some View {
         ZStack {
             Text(text)
@@ -99,7 +99,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 .verticalAlignment(.center)
         }
         .style(.card)
-        .background(colour)
+        .background(color)
         .opacity(faded ? 0.55 : 1)
         .lineWidth(0)
         .gridColumn(column)

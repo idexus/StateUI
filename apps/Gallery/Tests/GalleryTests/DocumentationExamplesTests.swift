@@ -204,7 +204,7 @@ final class DocumentationExamplesTests: XCTestCase {
         // The gallery's own module, for the listings that show the gallery's
         // code - its palette, its sample protocol. Testable, because the
         // gallery's types are internal, as an application's are; the guide's
-        // own listings use the library's colours and never the gallery's.
+        // own listings use the library's colors and never the gallery's.
         let imports = (["import StateUI", "@testable import GalleryUI"] + lifted).joined(separator: "\n") + "\n"
         if example.fileScope {
             return "\(imports)\n\(stripped)\n"

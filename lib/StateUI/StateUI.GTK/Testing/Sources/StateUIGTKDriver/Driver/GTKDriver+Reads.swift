@@ -192,7 +192,7 @@ extension GTKDriver {
 
     // MARK: - Words
 
-    /// The words' colour and font GTK's style gives `widget`.
+    /// The words' color and font GTK's style gives `widget`.
     private func wordsHolds(_ property: Prop, _ widget: GTKWidget) -> HostValue?? {
         guard let description = pango_context_get_font_description(gtk_widget_get_pango_context(widget)) else {
             return nil
@@ -451,7 +451,7 @@ private struct PangoRun {
         attribute.withMemoryRebound(to: PangoAttrInt.self, capacity: 1) { $0.pointee.value }
     }
 
-    /// A colour and its alpha, each 0 to 65535 in Pango, as the tree writes a colour.
+    /// A color and its alpha, each 0 to 65535 in Pango, as the tree writes a color.
     private func color(_ type: PangoAttrType, _ alphaType: PangoAttrType) -> Color? {
         guard let attribute = first(type) else { return nil }
         let color = attribute.withMemoryRebound(to: PangoAttrColor.self, capacity: 1) { $0.pointee.color }

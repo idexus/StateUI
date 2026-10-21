@@ -66,7 +66,7 @@ final class StateUIPicker extends Spinner implements StateUIChoosing, AdapterVie
 
     /**
      * The words' size in points - 0 for the theme's - and their unit, `TypedValue`'s scaled pixels where the user's
-     * font scale applies to them and its density-independent ones where not; their colour - 0 for the theme's -
+     * font scale applies to them and its density-independent ones where not; their color - 0 for the theme's -
      * their face, and where they stand.
      */
     @Override
@@ -116,7 +116,7 @@ final class StateUIPicker extends Spinner implements StateUIChoosing, AdapterVie
 
     /** The title, then the options, all of one kind of row as a spinner asks. */
     private final class Rows extends BaseAdapter {
-        /** A row's words' colours and an open list's row height, as the theme made them. */
+        /** A row's words' colors and an open list's row height, as the theme made them. */
         private ColorStateList madeColors;
 
         /** The theme's size of a row of each layout, in scaled points, read from the first one made. */

@@ -110,14 +110,14 @@ func typeKey(of type: Any.Type) -> KeyName {
 
 /// A view the walk reads by the parts it names, with no mirror: a library view standing once an item of a layout,
 /// generic over what it holds - a mirror of a generic type works its fields' types out at every reading.
-/// Design: docs/design/core/identity-and-diffing.md#a-type-learnt-once
+/// Design: docs/design/core/identity-and-diffing.md#a-type-learned-once
 @MainActor
 protocol WalkedView {
     /// Its stored parts, each under the label a mirror would give it.
     var walkedParts: [(label: String, value: Any)] { get }
 }
 
-/// What one walk has found, and what every walk has learnt of the types it met.
+/// What one walk has found, and what every walk has learned of the types it met.
 @MainActor
 private struct StateParts {
     var boxes: [(path: PathNumber, box: StateBox)] = []
@@ -126,7 +126,7 @@ private struct StateParts {
     var names: [PathNumber: String] = [:]
 
     /// What a value of a type is to the walk, decided by the first value of it met.
-    /// Design: docs/design/core/identity-and-diffing.md#a-type-learnt-once
+    /// Design: docs/design/core/identity-and-diffing.md#a-type-learned-once
     enum Kind {
         case aim, box, slot, borrowed, node
         case value((Any) -> any Equatable)
@@ -140,19 +140,19 @@ private struct StateParts {
 
     /// What a type met is to the walk, and the step a stored view of it adds to a path - its name in brackets, and
     /// that as a number.
-    struct Learnt {
+    struct Learned {
         var kind: Kind
         let stored: String
         let storedNumber: UInt64?
     }
 
     /// What every type met is.
-    static var kinds: [ObjectIdentifier: Learnt] = [:]
+    static var kinds: [ObjectIdentifier: Learned] = [:]
     static var names: [ObjectIdentifier: KeyName] = [:]
 
     /// Adds what `value`, at `path`, holds - each part's name spelled under `name` where one is asked.
     mutating func walk(_ value: Any, at path: PathNumber, named name: String?, declared: Bool = false) {
-        var kind = Self.learnt(value).kind
+        var kind = Self.learned(value).kind
         if case .each = kind { kind = Self.kind(of: value) }
         if let name { names[path] = name }
 
@@ -200,7 +200,7 @@ private struct StateParts {
     /// Walks `part`, the stored property `label` - or the element at `offset` of a collection - of the value at
     /// `path`: a step on by its label, and by the type of a view stored there.
     private mutating func walk(_ part: Any, label: String?, offset: Int?, under path: PathNumber, named name: String?) {
-        let stored = Self.learnt(part)
+        let stored = Self.learned(part)
         var next = label.map(path.appending) ?? path.appending(UInt64(offset ?? 0))
         if let number = stored.storedNumber { next = next.appending(number) }
 
@@ -240,8 +240,8 @@ private struct StateParts {
         }
     }
 
-    /// What `value`'s type is to the walk, learnt from it where no value of its type was met before.
-    private static func learnt(_ value: Any) -> Learnt {
+    /// What `value`'s type is to the walk, learned from it where no value of its type was met before.
+    private static func learned(_ value: Any) -> Learned {
         let type = ObjectIdentifier(Swift.type(of: value))
         if let known = kinds[type] { return known }
 
@@ -253,14 +253,14 @@ private struct StateParts {
         let key = !held && value is Element ? typeKey(of: Swift.type(of: value)) : nil
         var kind = held ? Kind.each : kind(of: value)
         if case .value = kind, ownsState(value) { kind = .mirrored }
-        let learnt = Learnt(kind: kind, stored: key.map { "(\($0.name))" } ?? "", storedNumber: key?.number)
-        kinds[type] = learnt
-        return learnt
+        let learned = Learned(kind: kind, stored: key.map { "(\($0.name))" } ?? "", storedNumber: key?.number)
+        kinds[type] = learned
+        return learned
     }
 
     /// Whether `value` holds a state, a binding, an environment value or an aim of its own: its author's equality
     /// cannot pair them with its predecessor's, so a type of it is read part by part, however it compares.
-    /// Design: docs/design/core/identity-and-diffing.md#a-type-learnt-once
+    /// Design: docs/design/core/identity-and-diffing.md#a-type-learned-once
     private static func ownsState(_ value: Any) -> Bool {
         Mirror(reflecting: value).children.contains { part in
             part.value is StateBox || part.value is EnvironmentSlot || part.value is BorrowedState

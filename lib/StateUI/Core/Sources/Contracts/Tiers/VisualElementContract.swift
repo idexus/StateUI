@@ -48,7 +48,7 @@ public enum VisualElementContract: Contract {
     public static let hidesChildrenFromAccessibility = ElementProperty<Self, Bool>(
         "hidesChildrenFromAccessibility", layer: .native)
 
-    /// What the element's surface is made of: a colour, a gradient, a blur of
+    /// What the element's surface is made of: a color, a gradient, a blur of
     /// what lies behind it, or the platform's glass.
     public static let background = ElementProperty<Self, Material>(
         "background", layer: .adaptive)

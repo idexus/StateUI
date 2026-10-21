@@ -7,7 +7,7 @@ import AppKit
 @_spi(Host) import StateUIHost
 
 /// One pane of a split view. Its page keeps out of the part the window's title
-/// bar and toolbar cover, and a colour written for the bars paints that part;
+/// bar and toolbar cover, and a color written for the bars paints that part;
 /// a sidebar's pane stands on the material its split view says, else on the
 /// system's sidebar.
 ///
@@ -15,12 +15,12 @@ import AppKit
 /// a change inside the page is laid out by the page.
 @MainActor
 final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
-    /// The colour the window's bars are written in, painted over `barBand`.
+    /// The color the window's bars are written in, painted over `barBand`.
     var barColor: NSColor? {
         didSet { if barColor != oldValue { needsDisplay = true } }
     }
 
-    /// What the pane stands on - a colour, a gradient, a blur or glass - drawn as a layout draws its box.
+    /// What the pane stands on - a color, a gradient, a blur or glass - drawn as a layout draws its box.
     let ground = AppKitDecoration()
 
     /// Stands the pane on `background`, the split view's material; nil leaves the system's own.

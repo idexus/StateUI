@@ -15,7 +15,7 @@ extension ShapeProperties {
     ///     Line().x2(56).y2(0)
     ///         .geometryTransform(.rotate(15).scaleX(1.2))
     ///
-    /// `.transform(_:)` instead moves what was drawn, about the view's centre.
+    /// `.transform(_:)` instead moves what was drawn, about the view's center.
     public func geometryTransform(_ value: ViewTransform) -> Modified {
         setValue(ShapeContract.geometryTransform, value)
     }
@@ -23,7 +23,7 @@ extension ShapeProperties {
     /// What the outline is painted with.
     public func stroke(_ value: Brush) -> Modified { setValue(ShapeContract.stroke, value) }
 
-    /// The same, in one colour.
+    /// The same, in one color.
     public func stroke(_ value: Color) -> Modified { stroke(.solidColor(value)) }
 
     /// How thick the outline is, in device units - 1 unless said. A thickness
@@ -60,7 +60,7 @@ extension ShapeProperties {
 }
 
 extension Shape {
-    /// `stroke` from a colour state, `$x`: the host animates the colour to
+    /// `stroke` from a color state, `$x`: the host animates the color to
     /// each new value, and no view is rebuilt for it.
     public func stroke(_ state: Binding<Color>) -> Modified {
         twin(ShapeContract.stroke, carrying: state)

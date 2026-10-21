@@ -44,7 +44,7 @@ final class AndroidItemsViewTests: XCTestCase {
         }
     }
 
-    /// The colour the window shows at `point` of the view's pixels, as ARGB (`TestPixels.colors`).
+    /// The color the window shows at `point` of the view's pixels, as ARGB (`TestPixels.colors`).
     @MainActor
     private static func color(of view: AndroidView, at point: (x: Int32, y: Int32)) -> UInt32 {
         Java.frame {

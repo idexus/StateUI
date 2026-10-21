@@ -150,17 +150,17 @@ final class DrivenPatchTests: XCTestCase {
     /// here rather than surprising a device.
     func testEveryDrivenModifierRegistersItsProperty() throws {
         let number = State(wrappedValue: 0.5)
-        let colour = State(wrappedValue: Color(hex: 0x102030))
+        let color = State(wrappedValue: Color(hex: 0x102030))
         let inset = State(wrappedValue: Insets(4))
 
         let card = ZStack {
             Text("words")
                 .fontSize(number.projectedValue)
-                .textColor(colour.projectedValue)
+                .textColor(color.projectedValue)
                 .tracking(number.projectedValue)
         }
         .opacity(number.projectedValue)
-        .background(colour.projectedValue)
+        .background(color.projectedValue)
         .width(number.projectedValue)
         .height(number.projectedValue)
         .minimumWidth(number.projectedValue)
@@ -191,14 +191,14 @@ final class DrivenPatchTests: XCTestCase {
         let button = Button("press")
             .lineWidth(number.projectedValue)
 
-        let entry = TextField("").placeholderColor(colour.projectedValue)
+        let entry = TextField("").placeholderColor(color.projectedValue)
 
         // And the one modifier that is a control's own rather than a tier's.
-        let box = Rectangle().fill(colour.projectedValue)
+        let box = Rectangle().fill(color.projectedValue)
 
         let page = try page(VStack { card; shape; button; entry; box }.spacing(number.projectedValue).node)
 
-        // The number is state 1, the colour 2 and the insets 3, in the walk.
+        // The number is state 1, the color 2 and the insets 3, in the walk.
         XCTAssertEqual(ties(page, .auto(3)), tied(["spacing"], to: 1, .inOut, .property, .number))
         XCTAssertEqual(
             ties(page, .auto(3), .auto(4)),
@@ -394,7 +394,7 @@ final class DrivenPatchTests: XCTestCase {
             walked.count, 20, "the scan found too few walked modifiers to be reading the right thing")
 
         // What the host has a blend for, and the whole of it - a number, a
-        // colour, a thickness, and a POINT, which is the scroller's offset:
+        // color, a thickness, and a POINT, which is the scroller's offset:
         // two lanes the host carries by the scroller's own key rather than by
         // a property's type, the platform declaring no settable property for
         // it.
@@ -416,7 +416,7 @@ final class DrivenPatchTests: XCTestCase {
         }
     }
 
-    /// What the host has a blend for, and the whole of it - a number, a colour, a thickness, and a point.
+    /// What the host has a blend for, and the whole of it - a number, a color, a thickness, and a point.
     private static let walkedTypes: Set<String> = ["Double", "Color", "Insets", "Point"]
 
     /// A VALUE MODIFIER'S TWIN IS DECIDED BY ITS CONTRACT. Every twin goes through `twin(_:by:)` or

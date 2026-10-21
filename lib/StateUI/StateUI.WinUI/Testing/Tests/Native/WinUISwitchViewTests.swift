@@ -27,7 +27,7 @@ final class WinUISwitchViewTests: XCTestCase {
     }
 
     /// A toggle says its words as WinUI's own control does - a switch's header, a check box's words beside its box -
-    /// in their case and colour.
+    /// in their case and color.
     func testATogglesWordsAreItsOwn() throws {
         try onUIThread {
             let host = WinUIRenderer.running {

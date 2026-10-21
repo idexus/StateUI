@@ -56,7 +56,7 @@ extension WinUIRegistrations {
     }
 
     /// What every view the user types in takes: its words and their case, what it shows while they are none, how
-    /// many it holds, whether it takes them, and their font and colour.
+    /// many it holds, whether it takes them, and their font and color.
     private static let wordMembers = PropertyList(
         TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
         TextInputContract.maximumLength, VisualElementContract.isEnabled)
@@ -76,7 +76,7 @@ extension WinUIRegistrations {
         if let look = TextMembers.look(values) { view.setLook(look) }
     }
 
-    /// What a text box takes beyond: how it takes words, its words across it, its placeholder's colour, and the
+    /// What a text box takes beyond: how it takes words, its words across it, its placeholder's color, and the
     /// caret and the selection.
     private static let boxMembers = PropertyList(
         TextInputContract.isReadOnly, TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
@@ -84,7 +84,7 @@ extension WinUIRegistrations {
         TextInputContract.placeholderColor, TextInputContract.cursorPosition, TextInputContract.selectionLength)
 
     private static func applyBox<Realized: ElementContract>(_ view: WinUITextInputView, _ values: ElementValues<Realized>) {
-        view.setBehaviour(readOnly: values[TextInputContract.isReadOnly] ?? false, traits: InputTraits(values))
+        view.setBehavior(readOnly: values[TextInputContract.isReadOnly] ?? false, traits: InputTraits(values))
         view.setLook(
             alignment: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start,
             placeholderColor: values[TextInputContract.placeholderColor]?.propValue)

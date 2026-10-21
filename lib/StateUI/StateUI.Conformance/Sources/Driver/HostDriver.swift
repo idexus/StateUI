@@ -109,11 +109,11 @@
     /// by its name.
     func launched() throws -> [String]
 
-    /// The colour `element` shows at `point`, in its own coordinates; nil where it shows nothing there. Asked only of
+    /// The color `element` shows at `point`, in its own coordinates; nil where it shows nothing there. Asked only of
     /// what StateUI draws itself - a canvas, a shape, a box's fill - never of a native control's look.
     func color(of element: MountedElement, at point: Point) throws -> Color?
 
-    /// The colours `element` shows at each of `points`, in its own coordinates, read at once - a host reading its
+    /// The colors `element` shows at each of `points`, in its own coordinates, read at once - a host reading its
     /// window a frame at a time reads them all from one; nil where it shows nothing.
     func colors(of element: MountedElement, at points: [Point]) throws -> [Color?]
 
@@ -209,7 +209,7 @@ extension HostDriver {
     }
 
     public func color(of element: MountedElement, at point: Point) throws -> Color? {
-        throw DriverCannot("read the colour of \(element.type.name)")
+        throw DriverCannot("read the color of \(element.type.name)")
     }
 
     public func colors(of element: MountedElement, at points: [Point]) throws -> [Color?] {

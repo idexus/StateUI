@@ -7,14 +7,14 @@ import CStateUIGTK
 @testable import StateUIGTK
 @_spi(Host) import StateUIConformance
 
-/// What the GTK driver reads of what StateUI draws, and does on a canvas as its user does: the colour a view shows at
+/// What the GTK driver reads of what StateUI draws, and does on a canvas as its user does: the color a view shows at
 /// a point, as GTK renders it, and a press, its drag and its release through the canvas's own gesture.
-/// Design: docs/design/host/conformance.md#a-colour-drawn
+/// Design: docs/design/host/conformance.md#a-color-drawn
 extension GTKDriver {
-    /// The colour `element` shows at `point`, in its own coordinates, as GTK renders it; nil where it shows nothing.
+    /// The color `element` shows at `point`, in its own coordinates, as GTK renders it; nil where it shows nothing.
     func color(of element: MountedElement, at point: Point) throws -> Color? {
         guard let view = (element.native as? GTKElement)?.view else {
-            throw DriverCannot("read the colour of \(element.type.name)")
+            throw DriverCannot("read the color of \(element.type.name)")
         }
         renderer?.layOut()
         guard let pixel = view.pixels(at: [(point.x, point.y)]).first, pixel >> 24 != 0 else { return nil }

@@ -68,10 +68,10 @@ final class NumberDecodingTests: XCTestCase {
         XCTAssertEqual(Placement(carried: .lanes(lanes))?.zIndex, 0)
     }
 
-    func testAColourChannelThatIsNoNumberIsNought() {
-        let colour = Color(carried: .lanes([.nan, 0.5, 1, 1]))
-        XCTAssertEqual(colour?.light.red, 0)
-        XCTAssertEqual(colour?.light.blue, 255)
+    func testAColorChannelThatIsNoNumberIsNought() {
+        let color = Color(carried: .lanes([.nan, 0.5, 1, 1]))
+        XCTAssertEqual(color?.light.red, 0)
+        XCTAssertEqual(color?.light.blue, 255)
     }
 
     func testAnOpacityThatIsNoNumberLetsNothingThrough() {

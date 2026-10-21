@@ -124,24 +124,24 @@ backdrop of the relay's own over WinUI's `DesktopAcrylicController`, since
 WinUI's ready one holds neither a kind nor an opacity: the two thinnest
 blurs are the thin kind, the rest the base one, and its luminosity hides as
 much of the desktop as the blur's thickness does
-(`Blur.Thickness.opacity`, the share it hides - the stand-in colour's own
+(`Blur.Thickness.opacity`, the share it hides - the stand-in color's own
 opacity), and its tint grows from none on the thinnest blur to nine tenths
 on the thickest: the luminosity alone - from 0.45 to 0.95 - barely tells the
 five apart, an ultra-thick window still showing the desktop through. Its
-colour - tint, and the fallback an inactive window shows - is the blur's
-stand-in colour, the theme's: a controller given any one value keeps none of
-the theme's own, so every colour is written, and the theme turning gives the
+color - tint, and the fallback an inactive window shows - is the blur's
+stand-in color, the theme's: a controller given any one value keeps none of
+the theme's own, so every color is written, and the theme turning gives the
 window its traits again. XAML's default configuration has
 the acrylic follow the window's activation. The backdrop is made
-again only where it turns. A tint colours the acrylic itself - its colour is
+again only where it turns. A tint colors the acrylic itself - its color is
 the tint laid over the theme's, which the acrylic's tint then carries as far
 as the thickness says - and lies over it on the window's root as well, as
-the colour a window is painted does. Glass is the acrylic at its fallback
+the color a window is painted does. Glass is the acrylic at its fallback
 thickness: WinUI has no glass.
 
 A background the application writes shows behind the detail as it does
 beside the sidebar and under the bars: the card a split view's detail stands
-on - WinUI's layer fill, which turns a written colour grey - is clear
+on - WinUI's layer fill, which turns a written color gray - is clear
 (`NavigationViewContentBackground`, written into the window root's
 resources, which every such card in the window reads on its way up),
 and its edge - the line under the bar and beside the sidebar - is the
@@ -175,7 +175,7 @@ locale, the battery and the network; and the screen once there is a window,
 at the system's scale, which a window on a second screen may not share, and
 turned as Windows says (`dmDisplayOrientation`, quarters of the picture's
 turn clockwise, the host layer's rotation). The theme is the one Windows
-paints its controls in, so a colour written for light and dark reads as
+paints its controls in, so a color written for light and dark reads as
 WinUI's own text beside it. Windows says when the theme, the power, the
 network or a screen's area changes - a tablet turned among them; the relay
 posts each change to the UI thread, and the host tells the core again,

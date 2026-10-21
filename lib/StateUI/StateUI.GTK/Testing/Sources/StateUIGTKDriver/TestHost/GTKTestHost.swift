@@ -258,14 +258,14 @@ extension GTKView {
 }
 
 extension GTKView {
-    /// The colours GTK draws the widget in at `points`, in its own coordinates, as premultiplied ARGB.
+    /// The colors GTK draws the widget in at `points`, in its own coordinates, as premultiplied ARGB.
     func pixels(at points: [(Double, Double)]) -> [UInt32] {
         GTKTestHost.pixels(of: widget, at: points)
     }
 }
 
 extension GTKTestHost {
-    /// The colours GTK draws `widget` in at `points`, in its own coordinates, as premultiplied ARGB: the widget
+    /// The colors GTK draws `widget` in at `points`, in its own coordinates, as premultiplied ARGB: the widget
     /// drawn afresh from its parent, as a frame's paint draws it, and rendered by its window's renderer.
     static func pixels(of widget: GTKWidget, at points: [(Double, Double)]) -> [UInt32] {
         // The widget's whole box, its CSS padding and border included, which its width and height leave out.
@@ -300,7 +300,7 @@ extension GTKTestHost {
     }
 }
 
-/// Whether two ARGB colours differ by at most `tolerance` in each channel - GTK rounds an opacity to 256 steps.
+/// Whether two ARGB colors differ by at most `tolerance` in each channel - GTK rounds an opacity to 256 steps.
 func near(_ a: UInt32, _ b: UInt32, within tolerance: Int = 2) -> Bool {
     (0..<4).allSatisfy { shift in
         abs(Int((a >> (shift * 8)) & 0xFF) - Int((b >> (shift * 8)) & 0xFF)) <= tolerance

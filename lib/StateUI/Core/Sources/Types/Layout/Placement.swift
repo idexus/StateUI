@@ -22,7 +22,7 @@ public struct Placement: LaneValue {
     /// Where the view goes, in device units from the layout's own top left.
     public var bounds: Rect
 
-    /// How it is moved, turned and sized from there, about its own centre.
+    /// How it is moved, turned and sized from there, about its own center.
     public var transform: ViewTransform
 
     /// How opaque, from 0 to 1.
@@ -56,7 +56,7 @@ public struct Placement: LaneValue {
     ///   - bounds: where the view goes, in device units from the layout's own
     ///     top left.
     ///   - transform: how it is moved, turned and sized from there, about its
-    ///     own centre. As it was drawn, unless it says otherwise.
+    ///     own center. As it was drawn, unless it says otherwise.
     ///   - opacity: how opaque, from 0 to 1.
     ///   - shade: how dark, from 0 to 1 - the opacity of the view the layout
     ///     was given by `.shade(_:)`. Nothing at all without one.

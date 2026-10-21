@@ -14,7 +14,7 @@ interface StateUIChoosing {
     void setChoices(String[] options, String title, int chosen, boolean writesChoice);
 
     /**
-     * The words' size in points - 0 for the theme's - and their unit, their colour - 0 for the theme's - their face,
+     * The words' size in points - 0 for the theme's - and their unit, their color - 0 for the theme's - their face,
      * and where they stand.
      */
     void setLook(float size, int unit, int color, Typeface face, int alignment);

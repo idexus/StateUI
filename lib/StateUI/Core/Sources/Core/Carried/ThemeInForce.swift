@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
+// Design: docs/design/core/state.md#themed-colors-on-a-carried-state
 
-/// The theme a value is laid for the host in: the colour scheme and the accent.
+/// The theme a value is laid for the host in: the color scheme and the accent.
 struct ThemeInForce: Sendable, Equatable {
     var scheme: ColorScheme
     var accent: Color
@@ -19,7 +19,7 @@ struct ThemeInForce: Sendable, Equatable {
     static let standard = ThemeInForce(scheme: .light, accent: ApplicationInfo.standardAccent)
 }
 
-/// A value that turns with the theme or the accent: a colour pair, the accent,
+/// A value that turns with the theme or the accent: a color pair, the accent,
 /// what holds one.
 protocol ThemeWearing {
     var wearsTheTheme: Bool { get }

@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// An element no registration makes yet: its name, in the page's colour for errors, where it belongs.
+/// An element no registration makes yet: its name, in the page's color for errors, where it belongs.
 @MainActor
 final class WebUnsupportedView: WebDOMView {
     init(_ type: NodeType) {

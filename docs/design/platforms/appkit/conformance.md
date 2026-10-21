@@ -57,14 +57,14 @@ in `Tests/Resources/Images`; the driver's host reads its resources there.
 
 A member's value is read from the control AppKit holds - a switch's state, a
 slider's range, a field's words, a view's alpha, a control's font and its
-words' colour, the tint a checkbox, a picker or a slider shows, what its
-accessibility object tells assistive technology, the colour its layer paints
+words' color, the tint a checkbox, a picker or a slider shows, what its
+accessibility object tells assistive technology, the color its layer paints
 behind it, a menu entry's NSMenuItem and a toolbar item's NSToolbarItem -
 never from what the host last wrote. A run of a text's words is the label's
 attributes over the letters the host layer's runs place it at (`RunPlace`). A
 view's transform is the drawing's where the view's layer holds that drawing
-now, and unread, with why, where AppKit holds another. A colour is read from
-the view displayed into a context of sRGB, which StateUI's colours are: a
+now, and unread, with why, where AppKit holds another. A color is read from
+the view displayed into a context of sRGB, which StateUI's colors are: a
 bitmap in the screen's own space holds the screen's numbers. A heading's level
 stays unread, with why: AppKit marks a heading, not its level. What the driver
 cannot read or do yet it says with why, and the case stays empty in AppKit's

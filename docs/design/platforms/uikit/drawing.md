@@ -5,7 +5,7 @@ layout's box, a shape, and a child a ZStack's run places.
 
 ## Drawn over its place
 
-A view is placed by its bounds and its centre, which hold under any
+A view is placed by its bounds and its center, which hold under any
 transform, never by its frame. How it is drawn over its place is one matrix
 on its layer: the element's own move, turn and scale, then a placing
 layout's (`UIKitViewDrawing`), both as the host layer computes them about the
@@ -14,14 +14,14 @@ its opacity is its own times the one it is placed with.
 
 ## A layout's box
 
-A layout paints its own box behind its children: the fill - a colour, or a
+A layout paints its own box behind its children: the fill - a color, or a
 linear or radial gradient over the box in fractions of its size - inside the
 outline, then the outline's stroke inside its edge, so the stroke never
 spills over the place the layout was given. Each is a layer of its own, made
 only while there is something to paint and kept behind the children by its
 depth, whatever order the children's layers stand in. The outline is a
 rectangle, a rectangle with rounded corners, or an ellipse; a stroke is drawn
-in one colour, a gradient's first stop.
+in one color, a gradient's first stop.
 
 A layout that clips cuts what it holds to its outline - its bounds for a
 rectangle, a mask for any other - and a touch outside the cut reaches none of
@@ -49,7 +49,7 @@ half their outline in from its edges, so the stroke never spills over it; a
 line, a path, a polygon and a polyline draw their own geometry, placed in the
 room by the host layer's rule. Every one is then moved by its own transform.
 The fill and the stroke are each a layer the shape's path cuts out of its
-brush - a colour, or a gradient over the room - the stroke with its dashes,
+brush - a color, or a gradient over the room - the stroke with its dashes,
 ends, joins and miter limit, its dashes and gaps in stroke widths. A shape
 asks for no room of its own.
 

@@ -34,7 +34,7 @@ final class LayoutAxisTests: XCTestCase {
 
     private let bench = LayoutBench()
 
-    /// A layout of one view over `table`, travelling under `motion`, its axes as `declared` says.
+    /// A layout of one view over `table`, traveling under `motion`, its axes as `declared` says.
     private func tree(
         _ table: State<Table>, _ handed: Handed, motion: Motion = .eased(.milliseconds(160), .linear),
         _ declared: @escaping (LayoutEngine<[Int], Int, Table>) -> LayoutEngine<[Int], Int, Table>

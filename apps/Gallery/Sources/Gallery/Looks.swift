@@ -11,11 +11,11 @@ enum BarLook: String, CaseIterable {
     /// Bars that paint nothing: what stands behind them shows.
     case clear
 
-    /// The gallery's colour let through over the platform's material.
+    /// The gallery's color let through over the platform's material.
     case tinted
 
-    /// The gallery's colour.
-    case colour
+    /// The gallery's color.
+    case color
 
     /// What the Appearance sample calls it.
     var name: String {
@@ -23,7 +23,7 @@ enum BarLook: String, CaseIterable {
         case .platform: return "The platform's own"
         case .clear: return "Clear"
         case .tinted: return "Tinted"
-        case .colour: return "Colour"
+        case .color: return "Color"
         }
     }
 }
@@ -40,17 +40,17 @@ enum SurfaceMaterial: String, CaseIterable {
     /// A blur: what stands behind shows through, blurred.
     case blur
 
-    /// A blur in a light tint of the gallery's colour.
+    /// A blur in a light tint of the gallery's color.
     case tintedBlur
 
     /// The platform's glass: what stands behind bent and lit through it.
     case glass
 
-    /// The platform's glass in a tint of the gallery's colour.
+    /// The platform's glass in a tint of the gallery's color.
     case tintedGlass
 
-    /// The gallery's colour.
-    case colour
+    /// The gallery's color.
+    case color
 
     /// What the Appearance sample calls it.
     var name: String {
@@ -61,7 +61,7 @@ enum SurfaceMaterial: String, CaseIterable {
         case .tintedBlur: return "Blur, tinted"
         case .glass: return "Glass"
         case .tintedGlass: return "Glass, tinted"
-        case .colour: return "Colour"
+        case .color: return "Color"
         }
     }
 
@@ -70,40 +70,40 @@ enum SurfaceMaterial: String, CaseIterable {
         self == .blur || self == .tintedBlur
     }
 
-    /// Whether the surface shows a colour.
-    var showsColour: Bool {
-        self == .tintedBlur || self == .tintedGlass || self == .colour
+    /// Whether the surface shows a color.
+    var showsColor: Bool {
+        self == .tintedBlur || self == .tintedGlass || self == .color
     }
 }
 
-/// One surface's look: what it is made of, in which colour, how thick a blur.
+/// One surface's look: what it is made of, in which color, how thick a blur.
 struct SurfaceLook: Equatable {
     var material: SurfaceMaterial
-    var colour: AccentChoice
+    var color: AccentChoice
     var blur: Blur
 
     /// The blurs offered, thinnest first.
     static let blurs: [Blur] = [.ultraThin, .thin, .regular, .thick, .ultraThick]
 
-    /// The platform's own surface - the gallery's own colour, or a thick
+    /// The platform's own surface - the gallery's own color, or a thick
     /// blur, once one is chosen.
-    static let platform = SurfaceLook(material: .platform, colour: .gallery, blur: .thick)
+    static let platform = SurfaceLook(material: .platform, color: .gallery, blur: .thick)
 
-    /// The gallery's own colour for the part it paints.
-    static let galleryOwn = SurfaceLook(material: .colour, colour: .gallery, blur: .thick)
+    /// The gallery's own color for the part it paints.
+    static let galleryOwn = SurfaceLook(material: .color, color: .gallery, blur: .thick)
 
     /// The material `surface` is: its blur where it is one, tinted in its
-    /// colour - the system's accent being `system` - where it is tinted, the
-    /// colour where it is one; nil for the platform's own.
+    /// color - the system's accent being `system` - where it is tinted, the
+    /// color where it is one; nil for the platform's own.
     func material(system: Color, for surface: GallerySurface) -> Material? {
         switch material {
         case .platform: return nil
         case .clear: return .color(.transparent)
         case .blur: return .blur(blur)
-        case .tintedBlur: return .blur(blur.tint(colour.tint(system: system, for: surface)))
+        case .tintedBlur: return .blur(blur.tint(color.tint(system: system, for: surface)))
         case .glass: return .glass(.regular)
-        case .tintedGlass: return .glass(.regular.tint(colour.tint(system: system, for: surface)))
-        case .colour: return .color(colour.color(system: system, for: surface))
+        case .tintedGlass: return .glass(.regular.tint(color.tint(system: system, for: surface)))
+        case .color: return .color(color.color(system: system, for: surface))
         }
     }
 }
@@ -113,13 +113,13 @@ struct SurfaceLook: Equatable {
 /// of words, so a scene keeps a theme's whole look under one key.
 struct ThemeLook: Equatable, RawRepresentable {
     var bars: BarLook
-    var barColour: AccentChoice
+    var barColor: AccentChoice
     var window: SurfaceLook
     var sidebar: SurfaceLook
     var flyout: SurfaceLook
 
-    init(bars: BarLook, barColour: AccentChoice, window: SurfaceLook, sidebar: SurfaceLook, flyout: SurfaceLook) {
-        (self.bars, self.barColour, self.window, self.sidebar, self.flyout) = (bars, barColour, window, sidebar, flyout)
+    init(bars: BarLook, barColor: AccentChoice, window: SurfaceLook, sidebar: SurfaceLook, flyout: SurfaceLook) {
+        (self.bars, self.barColor, self.window, self.sidebar, self.flyout) = (bars, barColor, window, sidebar, flyout)
     }
 
     /// The light theme's look the gallery opens in: clear bars, and the
@@ -127,45 +127,45 @@ struct ThemeLook: Equatable, RawRepresentable {
     /// platform's glass.
     static var light: ThemeLook {
         #if APPKIT
-        let sidebar = SurfaceLook(material: .glass, colour: .gallery, blur: .thick)
+        let sidebar = SurfaceLook(material: .glass, color: .gallery, blur: .thick)
         #else
         let sidebar = SurfaceLook.platform
         #endif
-        return ThemeLook(bars: .clear, barColour: .gallery, window: .platform, sidebar: sidebar, flyout: .platform)
+        return ThemeLook(bars: .clear, barColor: .gallery, window: .platform, sidebar: sidebar, flyout: .platform)
     }
 
     /// The dark theme's look the gallery opens in: on Windows a window of the
     /// desktop blurred in the gallery's violet, its sidebar letting it
     /// through, and over the page the page blurred in the same violet; on
-    /// the Mac a thick blur of the desktop in the gallery's own colour, made
+    /// the Mac a thick blur of the desktop in the gallery's own color, made
     /// from that window, its sidebar the platform's glass in it; on the iPad
-    /// and the iPhone those colours, the sidebar the same glass beside the
+    /// and the iPhone those colors, the sidebar the same glass beside the
     /// page and over it; on the Web, GNOME and Android - which blur nothing
-    /// behind a window - those colours, whole.
+    /// behind a window - those colors, whole.
     static var dark: ThemeLook {
         #if WINUI
-        let violet = SurfaceLook(material: .tintedBlur, colour: .violet, blur: .thick)
+        let violet = SurfaceLook(material: .tintedBlur, color: .violet, blur: .thick)
         return ThemeLook(
-            bars: .platform, barColour: .violet, window: violet, sidebar: .platform, flyout: violet)
+            bars: .platform, barColor: .violet, window: violet, sidebar: .platform, flyout: violet)
         #elseif APPKIT
-        let glass = SurfaceLook(material: .tintedGlass, colour: .gallery, blur: .thick)
+        let glass = SurfaceLook(material: .tintedGlass, color: .gallery, blur: .thick)
         return ThemeLook(
-            bars: .clear, barColour: .gallery,
-            window: SurfaceLook(material: .tintedBlur, colour: .gallery, blur: .thick), sidebar: glass, flyout: glass)
+            bars: .clear, barColor: .gallery,
+            window: SurfaceLook(material: .tintedBlur, color: .gallery, blur: .thick), sidebar: glass, flyout: glass)
         #elseif UIKIT
-        let glass = SurfaceLook(material: .tintedGlass, colour: .gallery, blur: .thick)
-        return ThemeLook(bars: .clear, barColour: .gallery, window: .galleryOwn, sidebar: glass, flyout: glass)
+        let glass = SurfaceLook(material: .tintedGlass, color: .gallery, blur: .thick)
+        return ThemeLook(bars: .clear, barColor: .gallery, window: .galleryOwn, sidebar: glass, flyout: glass)
         #else
         return ThemeLook(
-            bars: .clear, barColour: .gallery, window: .galleryOwn, sidebar: .galleryOwn, flyout: .galleryOwn)
+            bars: .clear, barColor: .gallery, window: .galleryOwn, sidebar: .galleryOwn, flyout: .galleryOwn)
         #endif
     }
 
-    /// The look as words: the bars and their colour, then each surface's
-    /// material, colour and blur.
+    /// The look as words: the bars and their color, then each surface's
+    /// material, color and blur.
     var rawValue: String {
-        ([bars.rawValue, barColour.rawValue] + [window, sidebar, flyout].flatMap { surface in
-            [surface.material.rawValue, surface.colour.rawValue,
+        ([bars.rawValue, barColor.rawValue] + [window, sidebar, flyout].flatMap { surface in
+            [surface.material.rawValue, surface.color.rawValue,
              String(SurfaceLook.blurs.firstIndex(of: surface.blur) ?? 0)]
         }).joined(separator: " ")
     }
@@ -174,16 +174,16 @@ struct ThemeLook: Equatable, RawRepresentable {
     init?(rawValue: String) {
         let words = rawValue.split(separator: " ").map(String.init)
         guard words.count == 11, let bars = BarLook(rawValue: words[0]),
-              let barColour = AccentChoice(rawValue: words[1])
+              let barColor = AccentChoice(rawValue: words[1])
         else { return nil }
         var surfaces: [SurfaceLook] = []
         for at in stride(from: 2, to: 11, by: 3) {
-            guard let material = SurfaceMaterial(rawValue: words[at]), let colour = AccentChoice(rawValue: words[at + 1]),
+            guard let material = SurfaceMaterial(rawValue: words[at]), let color = AccentChoice(rawValue: words[at + 1]),
                   let blur = Int(words[at + 2]), SurfaceLook.blurs.indices.contains(blur)
             else { return nil }
-            surfaces.append(SurfaceLook(material: material, colour: colour, blur: SurfaceLook.blurs[blur]))
+            surfaces.append(SurfaceLook(material: material, color: color, blur: SurfaceLook.blurs[blur]))
         }
-        self.init(bars: bars, barColour: barColour, window: surfaces[0], sidebar: surfaces[1], flyout: surfaces[2])
+        self.init(bars: bars, barColor: barColor, window: surfaces[0], sidebar: surfaces[1], flyout: surfaces[2])
     }
 }
 

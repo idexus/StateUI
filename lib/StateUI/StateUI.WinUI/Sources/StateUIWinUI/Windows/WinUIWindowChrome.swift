@@ -6,7 +6,7 @@
 
 /// What a window's chrome shows, composed from the visible arrangement: the title or the title area its path declares,
 /// the way back and the sidebar's toggle, the groups of actions at each edge and in overflow, its title view, the bar's
-/// colours, the page's menus beneath, a sheet's way back and going, Escape - the way out in sight pressed - and a key
+/// colors, the page's menus beneath, a sheet's way back and going, Escape - the way out in sight pressed - and a key
 /// a view takes.
 /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
 @MainActor

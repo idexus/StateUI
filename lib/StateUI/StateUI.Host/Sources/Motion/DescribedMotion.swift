@@ -313,7 +313,7 @@ private struct MotionValuePlan {
         }
     }
 
-    /// Whether a brush property holds a colour or a well-formed brush.
+    /// Whether a brush property holds a color or a well-formed brush.
     private static func isPaint(_ value: HostValue) -> Bool {
         value.color != nil || isValidBrush(value)
     }

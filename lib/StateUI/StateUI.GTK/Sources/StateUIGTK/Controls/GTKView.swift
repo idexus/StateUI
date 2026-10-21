@@ -57,7 +57,7 @@ class GTKView {
     private var padding: Insets?
     private var paddingClass: String?
 
-    /// The colour the view's accent is drawn in, as the host last wrote it, and its class; nil for the platform's.
+    /// The color the view's accent is drawn in, as the host last wrote it, and its class; nil for the platform's.
     private(set) var tint: GdkRGBA?
     private var tintClass: String?
 
@@ -111,7 +111,7 @@ class GTKView {
         connectNotify(UnsafeMutableRawPointer(widget), property, number: number, handler)
     }
 
-    /// What fills the view's box, under its whole frame: a colour, or a brush's first colour; nil for nothing.
+    /// What fills the view's box, under its whole frame: a color, or a brush's first color; nil for nothing.
     /// Design: docs/design/platforms/gtk/drawing.md#a-views-background
     func setBackground(_ value: HostValue?) {
         swapClass(&fillClass, to: GTKBrush(value).firstColor.map(GTKStyleSheet.fill))

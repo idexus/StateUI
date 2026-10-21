@@ -5,7 +5,7 @@
 /// Design: docs/design/contracts/dictionary.md#marks
 @_spi(Host) public struct HostRecord: Hashable, Sendable {
     /// What a record says of its member.
-    public enum Judgement: Hashable, Sendable {
+    public enum Judgment: Hashable, Sendable {
         /// Realized in full.
         case complete
         /// Realized in part; what is missing.
@@ -26,18 +26,18 @@
     public let member: String
 
     /// What the record says of it.
-    public let judgement: Judgement
+    public let judgment: Judgment
 
-    /// `member` of `owner`, judged as `judgement` says: a record the register derives from what a runtime realizes.
-    init(owner: String, member: String, judgement: Judgement) {
+    /// `member` of `owner`, judged as `judgment` says: a record the register derives from what a runtime realizes.
+    init(owner: String, member: String, judgment: Judgment) {
         self.owner = owner
         self.member = member
-        self.judgement = judgement
+        self.judgment = judgment
     }
 
     /// `member`, realized in full: on every element wearing its contract, or on `element` alone.
     public static func complete<Member: ContractMember>(_ member: Member, on element: (any Contract.Type)? = nil) -> HostRecord {
-        HostRecord(owner: (element ?? Member.Owner.self).name, member: member.name, judgement: .complete)
+        HostRecord(owner: (element ?? Member.Owner.self).name, member: member.name, judgment: .complete)
     }
 
     /// `member`, realized in part - on every element wearing its contract, or on `element` alone: `missing` says what
@@ -45,7 +45,7 @@
     public static func partial<Member: ContractMember>(
         _ member: Member, on element: (any Contract.Type)? = nil, missing: String
     ) -> HostRecord {
-        HostRecord(owner: (element ?? Member.Owner.self).name, member: member.name, judgement: .partial(missing: missing))
+        HostRecord(owner: (element ?? Member.Owner.self).name, member: member.name, judgment: .partial(missing: missing))
     }
 
     /// `member`, not planned for the host's family - on every element wearing its contract, or on `element` alone:
@@ -53,13 +53,13 @@
     public static func notPlanned<Member: ContractMember>(
         _ member: Member, on element: (any Contract.Type)? = nil, reason: String
     ) -> HostRecord {
-        HostRecord(owner: (element ?? Member.Owner.self).name, member: member.name, judgement: .notPlanned(reason: reason))
+        HostRecord(owner: (element ?? Member.Owner.self).name, member: member.name, judgment: .notPlanned(reason: reason))
     }
 
     /// `member`, not realized on `element` though a tier's record reaches it: `why` says why.
     public static func unrealized<Member: ContractMember>(
         _ member: Member, on element: any ElementContract.Type, why: String
     ) -> HostRecord {
-        HostRecord(owner: element.name, member: member.name, judgement: .unrealized(why: why))
+        HostRecord(owner: element.name, member: member.name, judgment: .unrealized(why: why))
     }
 }

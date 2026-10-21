@@ -20,7 +20,7 @@ final class AndroidPickerView: AndroidView {
     /// What the picker does when its list closes.
     var onClosed: (() -> Void)?
 
-    /// The arrow's colour the picker was made with.
+    /// The arrow's color the picker was made with.
     private var madeTint: JavaObject??
 
     /// Who opened or closed the list - only the user's are heard - and whether it shows.
@@ -78,7 +78,7 @@ final class AndroidPickerView: AndroidView {
         Java.call(reference, JavaAPI.openList)
     }
 
-    /// The arrow's colour; nil puts back the platform's.
+    /// The arrow's color; nil puts back the platform's.
     func setTint(_ color: HostValue?) {
         guard presentation == .menu else { return }
         if madeTint == nil {

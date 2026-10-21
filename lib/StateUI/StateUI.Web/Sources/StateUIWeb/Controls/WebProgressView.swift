@@ -25,7 +25,7 @@ final class WebProgressView: WebDOMView {
         WebRelay.setNumber(bar.node, "value", ValueArithmetic.share(progress))
     }
 
-    /// The colour of the work done; nil for the page's accent.
+    /// The color of the work done; nil for the page's accent.
     func setTint(_ tint: HostValue?) {
         style("accent-color", WebCSS.color(tint))
         style("--stateui-on", WebCSS.color(tint))

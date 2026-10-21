@@ -465,7 +465,7 @@ final class ModelStateTests: XCTestCase {
                       "the handler wrote a property of the model, which is a render")
 
         // A fresh view, as every render makes one - and a fresh `Cart()` with
-        // it, which the box throws away in favour of the one it is holding.
+        // it, which the box throws away in favor of the one it is holding.
         let second = renders.render(CartPage().node, changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(second.props["text"], .string("Items: 1"),

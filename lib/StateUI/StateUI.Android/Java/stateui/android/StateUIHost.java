@@ -126,7 +126,7 @@ final class StateUIHost {
 
     /**
      * What the user did to a view, as `StateUIGestures` numbers its kind: a tap and its place in its run; a pinch's
-     * phase, its scale since the last and where it is centred; the pointer entering, moving, pressing, releasing or
+     * phase, its scale since the last and where it is centered; the pointer entering, moving, pressing, releasing or
      * leaving, and where - all in points.
      */
     static native void gestured(long view, int kind, int phase, float x, float y, float z);

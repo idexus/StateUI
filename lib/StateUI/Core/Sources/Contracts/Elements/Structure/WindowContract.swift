@@ -18,7 +18,7 @@ public enum WindowContract: ElementContract {
     /// The window is showing behind another.
     public static let deactivated = ElementEvent<Self, Void>("deactivated", layer: .adaptive)
 
-    /// What the window is made of behind its pages: a colour, or a blur or
+    /// What the window is made of behind its pages: a color, or a blur or
     /// glass the desktop shows through.
     public static let background = ElementProperty<Self, Material>("background", layer: .adaptive)
 

@@ -47,9 +47,9 @@ final class WebTabViewTests: XCTestCase {
         }
     }
 
-    /// The strip wears the colour of the bars on its path, with no blur under a clear one, and the bar's own look
+    /// The strip wears the color of the bars on its path, with no blur under a clear one, and the bar's own look
     /// where nothing is said.
-    func testTheStripWearsTheBarsColour() {
+    func testTheStripWearsTheBarsColor() {
         let tabs = WebTabView()
         defer { tabs.release() }
 

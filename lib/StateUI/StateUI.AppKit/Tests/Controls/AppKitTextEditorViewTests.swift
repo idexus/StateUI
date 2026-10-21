@@ -11,7 +11,7 @@ import XCTest
 
 @MainActor
 final class AppKitTextEditorViewTests: XCTestCase {
-    /// An editor's placeholder stands across it where the words would: centred where they are.
+    /// An editor's placeholder stands across it where the words would: centered where they are.
     @MainActor
     func testThePlaceholderStandsAsTheWordsWould() throws {
         let editor = AppKitTextEditorView()
@@ -24,7 +24,7 @@ final class AppKitTextEditorViewTests: XCTestCase {
         editor.layoutSubtreeIfNeeded()
 
         let ink = try XCTUnwrap(try inkBounds(of: editor, where: isRed), "the placeholder is drawn")
-        XCTAssertGreaterThan(ink.minX, 90, "centred, not at the leading edge")
+        XCTAssertGreaterThan(ink.minX, 90, "centered, not at the leading edge")
     }
 
     @MainActor

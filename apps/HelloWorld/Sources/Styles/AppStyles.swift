@@ -12,7 +12,7 @@ enum AppStyles {
     /// into the controls it applies to.
     static var sheet: StyleSheet {
         StyleSheet {
-            // Both colours carry both themes, so the app follows the system
+            // Both colors carry both themes, so the app follows the system
             // with nothing else to write.
             Style<Text>()
                 .textColor(Color(light: .black, dark: .white))

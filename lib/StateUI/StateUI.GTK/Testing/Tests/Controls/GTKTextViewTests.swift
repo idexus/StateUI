@@ -8,7 +8,7 @@ import CStateUIGTK
 @testable import StateUIGTKDriver
 import XCTest
 
-/// A word whose colour a button changes.
+/// A word whose color a button changes.
 private struct ChangingRunPage: View {
     @State private var red = true
 
@@ -38,9 +38,9 @@ private struct SpannedPage: View {
 
 @MainActor
 final class GTKTextViewTests: XCTestCase {
-    /// A label's words take the font, the colour, the spacing, the lines and the alignment the tree gives them - its
+    /// A label's words take the font, the color, the spacing, the lines and the alignment the tree gives them - its
     /// size in typographic points the desktop's text scale applies to, in pixels where the words do not scale.
-    func testATextTakesItsFontColourLinesAndAlignment() throws {
+    func testATextTakesItsFontColorLinesAndAlignment() throws {
         try onUIThread {
             let host = GTKRenderer.running {
                 VStack {
@@ -158,7 +158,7 @@ final class GTKTextViewTests: XCTestCase {
         }
     }
 
-    /// A label's spans are its words, run by run, each in its own colour, size, weight, slant, lines and background.
+    /// A label's spans are its words, run by run, each in its own color, size, weight, slant, lines and background.
     func testATextsSpansAreItsWordsRunByRun() throws {
         try onUIThread {
             let host = GTKRenderer.running {
@@ -184,7 +184,7 @@ final class GTKTextViewTests: XCTestCase {
         }
     }
 
-    /// A span that changes changes its run, its colour travelling there.
+    /// A span that changes changes its run, its color traveling there.
     func testASpanThatChangesChangesItsRun() throws {
         try onUIThread {
             let host = GTKRenderer.running { ChangingRunPage() }
@@ -232,7 +232,7 @@ private extension GTKTextView {
         return said.sorted()
     }
 
-    /// What each of the label's Pango attributes says, by its type: a number, a family, a colour's channels.
+    /// What each of the label's Pango attributes says, by its type: a number, a family, a color's channels.
     var attributes: [UInt32: String] {
         guard let list = gtk_label_get_attributes(widget.opaque) else { return [:] }
         var said: [UInt32: String] = [:]

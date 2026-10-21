@@ -14,7 +14,7 @@ final class AndroidCheckBoxView: AndroidToggleView {
         super.init { _ in Java.new(JavaAPI.checkBox, JavaAPI.newCheckBox, .object(AndroidRenderer.context)) }
     }
 
-    /// The box's colour; nil puts back the platform's.
+    /// The box's color; nil puts back the platform's.
     func setTint(_ color: HostValue?) {
         if madeTint == nil {
             madeTint = .some(Java.callObject(reference, JavaAPI.getButtonTintList).map(JavaObject.init))

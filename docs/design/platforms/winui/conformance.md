@@ -39,7 +39,7 @@ the driver's scroll of a list is done once the view stands where it was
 asked, as far as the list reaches. A list asked to move before its first
 frames are composed stays where it is.
 
-## A colour at a point
+## A color at a point
 
 A bitmap WinUI renders of an element that is no panel - a shape, a picture -
 holds what the element draws from the first thing drawn, not its room from
@@ -68,7 +68,7 @@ in their last suite.
 
 A member's value is read from the control WinUI holds, never from what the
 host last wrote: through the relay's general reader, `stateui_winui_read`, by
-the native property's name - a font, a colour, a padding, a border, a field's
+the native property's name - a font, a color, a padding, a border, a field's
 placeholder and bound, a path's paint, a layout's box, a range, a date, a scroll
 bar, the chrome's title, way back and actions, a row's tabs - and the relay's
 readers of words, toggles, values, choices and dates. What WinUI keeps

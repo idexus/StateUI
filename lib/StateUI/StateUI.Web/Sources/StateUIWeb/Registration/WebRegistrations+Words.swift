@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 extension WebRegistrations {
-    /// A Text and a Button: their words in their case, their font and colour and the room around them; a text's
+    /// A Text and a Button: their words in their case, their font and color and the room around them; a text's
     /// lines, alignment, spacing and decorations; a button's picture, its lines, its spacing, its box, whether it
     /// takes a click, the press, its release and the click.
     static func words(_ registry: Registry<WebDOMView>) {

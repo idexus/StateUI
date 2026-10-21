@@ -687,10 +687,10 @@ final class AppKitContainerTests: XCTestCase {
             NSRect(x: 20, y: 25, width: 30, height: 40))
     }
 
-    /// A layout paints its own box: a plain colour is its layer's, with nothing drawn, and a gradient is drawn
+    /// A layout paints its own box: a plain color is its layer's, with nothing drawn, and a gradient is drawn
     /// across it from its first stop to its last.
     @MainActor
-    func testALayoutPaintsItsColourAndGradientBackgrounds() throws {
+    func testALayoutPaintsItsColorAndGradientBackgrounds() throws {
         let renderer = AppKitRenderer.running {
             VStack {
                 ZStack().background(.red)
@@ -706,7 +706,7 @@ final class AppKitContainerTests: XCTestCase {
         guard boxes.count == 2 else { return }
         for box in boxes { box.frame = NSRect(x: 0, y: 0, width: 40, height: 20) }
 
-        XCTAssertFalse(boxes[0].decoration.draws, "a plain colour is drawn by no one")
+        XCTAssertFalse(boxes[0].decoration.draws, "a plain color is drawn by no one")
         let red = try XCTUnwrap(boxes[0].layer?.backgroundColor.flatMap(NSColor.init(cgColor:)))
         XCTAssertGreaterThan(red.redComponent, 0.9)
         XCTAssertLessThan(red.blueComponent, 0.1)
@@ -756,7 +756,7 @@ final class AppKitContainerTests: XCTestCase {
         XCTAssertTrue(boxes[3].decoration.draws, "its rounded shape is drawn all the same")
     }
 
-    /// A scroller paints its background and outlines itself in its stroke's colour on its shape, cutting what it
+    /// A scroller paints its background and outlines itself in its stroke's color on its shape, cutting what it
     /// shows to that shape - and keeps all of it through AppKit's own repaint of a scroller's layer.
     @MainActor
     func testAScrollerOutlinesItselfAndCutsWhatItShowsToItsShape() throws {
@@ -791,7 +791,7 @@ final class AppKitContainerTests: XCTestCase {
     }
 
     /// A layout keeps its padding between its outline and what it holds, and strokes its outline in its stroke's
-    /// colour, as wide as its stroke width.
+    /// color, as wide as its stroke width.
     @MainActor
     func testALayoutPadsWhatItHoldsAndStrokesItsOutline() throws {
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
@@ -812,7 +812,7 @@ final class AppKitContainerTests: XCTestCase {
         let drawn = try bitmap(of: try XCTUnwrap(renderer.viewForTesting(id: .manual("layout"))))
         let outline = try XCTUnwrap(drawn.colorAt(x: 2, y: 30))
         let within = try XCTUnwrap(drawn.colorAt(x: 10, y: 30))
-        XCTAssertGreaterThan(outline.redComponent, 0.9, "the stroke's colour at the edge")
+        XCTAssertGreaterThan(outline.redComponent, 0.9, "the stroke's color at the edge")
         XCTAssertLessThan(outline.blueComponent, 0.1)
         XCTAssertGreaterThan(within.blueComponent, 0.9, "the background beyond the stroke's width")
         XCTAssertLessThan(within.redComponent, 0.1)

@@ -14,7 +14,7 @@ struct HelloWorldApp: Application {
     @Environment(\.application) private var application
 
     /// The application's styles - see Styles/AppStyles.swift - written
-    /// as the application is made. A colour in one follows the theme by
+    /// as the application is made. A color in one follows the theme by
     /// itself.
     init() {
         application.styles = AppStyles.sheet

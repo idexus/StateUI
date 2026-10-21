@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// What `TextField`, `TextEditor` and `SearchField` share: the placeholder
-/// and its colour, the keyboard, the caret and selection, the length cap and
+/// and its color, the keyboard, the caret and selection, the length cap and
 /// read-only.
 public protocol TextInputProperties: ViewProperties {}
 
@@ -42,7 +42,7 @@ extension TextInputProperties {
         setValue(TextInputContract.selectionLength, value)
     }
 
-    /// Whether the platform underlines what it thinks is misspelt.
+    /// Whether the platform underlines what it thinks is misspelled.
     ///
     /// Worth turning off for anything that is not prose - a code, a name, a
     /// serial number.
@@ -63,7 +63,7 @@ extension TextInputProperties {
         setValue(TextInputContract.placeholder, value)
     }
 
-    /// The placeholder's colour.
+    /// The placeholder's color.
     public func placeholderColor(_ value: Color) -> Modified {
         setValue(TextInputContract.placeholderColor, value)
     }

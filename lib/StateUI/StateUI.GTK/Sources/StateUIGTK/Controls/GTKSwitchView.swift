@@ -52,7 +52,7 @@ final class GTKSwitchView: GTKToggleView {
     /// The track while the switch is on.
     override var accent: String? { " > switch:checked" }
 
-    /// None: GTK paints a switch's box as its track, which a colour there would recolour - its register's
+    /// None: GTK paints a switch's box as its track, which a color there would recolor - its register's
     /// `notPlanned`.
     override func setBackground(_ value: HostValue?) {}
 

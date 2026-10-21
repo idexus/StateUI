@@ -49,7 +49,7 @@ enum WinUIRealization {
         .notPlanned(VisualElementContract.accessibilityValue,
             reason: "A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another."),
         .partial(VisualElementContract.background,
-            missing: "An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it."),
+            missing: "An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it."),
         .complete(BarElementContract.barBackgroundColor),
         .complete(BarElementContract.barForegroundColor),
         .complete(BarElementContract.barIcon),
@@ -97,7 +97,7 @@ enum WinUIRealization {
             reason: "WinUI's progress ring paints its Background as its "
             + "track, no ground under its frame."),
         .partial(VisualElementContract.background, on: CanvasContract.self,
-            missing: "A brush fills the canvas with its first colour alone."),
+            missing: "A brush fills the canvas with its first color alone."),
         .partial(VisualElementContract.hidesChildrenFromAccessibility, on: ActivityIndicatorContract.self,
             missing: Self.partsStayMet),
         .partial(VisualElementContract.hidesChildrenFromAccessibility, on: DatePickerContract.self,

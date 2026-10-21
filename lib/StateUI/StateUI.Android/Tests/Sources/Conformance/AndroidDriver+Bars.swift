@@ -9,7 +9,7 @@ import CStateUIAndroid
 @_spi(Host) import StateUIConformance
 
 /// What the Android driver reads of the bar an arrangement declares: Android's toolbar over the page it shows - the
-/// line under its title, the colour it is painted and the colour its title is drawn in.
+/// line under its title, the color it is painted and the color its title is drawn in.
 extension AndroidDriver {
     /// `property` of the bar the page `element` shows stands under; nil where no stack gives that page a bar.
     static func barHolds(_ property: Prop, of element: MountedElement) -> HostValue? {

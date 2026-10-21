@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A change of a layout's description at the current phase, travelling from where each view was shown.
+// A change of a layout's description at the current phase, traveling from where each view was shown.
 // Design: docs/design/views/layout-engine.md#a-change-at-the-current-phase
 
 extension LayoutEngine.Run {

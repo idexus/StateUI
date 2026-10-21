@@ -8,7 +8,7 @@ import UIKit
 @_spi(Host) import StateUIConformance
 
 /// What the UIKit driver reads of a run of a text's words: the part of its label's words the run stands over
-/// (`RunPlace`), and the attributes UIKit draws there - the label's own font and colour where the run has none.
+/// (`RunPlace`), and the attributes UIKit draws there - the label's own font and color where the run has none.
 /// Design: docs/design/platforms/uikit/conformance.md#what-the-driver-reads
 extension UIKitDriver {
     func spanHolds(_ property: Prop, on span: MountedElement) throws -> HostValue? {

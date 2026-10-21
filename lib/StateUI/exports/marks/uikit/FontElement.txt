@@ -5,12 +5,12 @@ Button.fontSize: ✅
 Button.fontWeight: ✅
 Button.isFontAutoScalingEnabled: ✅
 Button.textStyle: ✅
-DatePicker.fontAttributes: – UIKit's date picker draws its words in its own font and colour: it takes neither.
-DatePicker.fontFamily: – UIKit's date picker draws its words in its own font and colour: it takes neither.
-DatePicker.fontSize: – UIKit's date picker draws its words in its own font and colour: it takes neither.
-DatePicker.fontWeight: – UIKit's date picker draws its words in its own font and colour: it takes neither.
+DatePicker.fontAttributes: – UIKit's date picker draws its words in its own font and color: it takes neither.
+DatePicker.fontFamily: – UIKit's date picker draws its words in its own font and color: it takes neither.
+DatePicker.fontSize: – UIKit's date picker draws its words in its own font and color: it takes neither.
+DatePicker.fontWeight: – UIKit's date picker draws its words in its own font and color: it takes neither.
 DatePicker.isFontAutoScalingEnabled: – UIKit's date picker draws its words in its own font, which follows the user's text size always.
-DatePicker.textStyle: – UIKit's date picker draws its words in its own font and colour: it takes neither.
+DatePicker.textStyle: – UIKit's date picker draws its words in its own font and color: it takes neither.
 Picker.fontAttributes: ✅
 Picker.fontFamily: ✅
 Picker.fontSize: ✅
@@ -47,9 +47,9 @@ TextSpan.fontSize: ✅
 TextSpan.fontWeight: ✅
 TextSpan.isFontAutoScalingEnabled: ✅
 TextSpan.textStyle: ✅
-TimePicker.fontAttributes: – UIKit's date picker draws its words in its own font and colour: it takes neither.
-TimePicker.fontFamily: – UIKit's date picker draws its words in its own font and colour: it takes neither.
-TimePicker.fontSize: – UIKit's date picker draws its words in its own font and colour: it takes neither.
-TimePicker.fontWeight: – UIKit's date picker draws its words in its own font and colour: it takes neither.
+TimePicker.fontAttributes: – UIKit's date picker draws its words in its own font and color: it takes neither.
+TimePicker.fontFamily: – UIKit's date picker draws its words in its own font and color: it takes neither.
+TimePicker.fontSize: – UIKit's date picker draws its words in its own font and color: it takes neither.
+TimePicker.fontWeight: – UIKit's date picker draws its words in its own font and color: it takes neither.
 TimePicker.isFontAutoScalingEnabled: – UIKit's date picker draws its words in its own font, which follows the user's text size always.
-TimePicker.textStyle: – UIKit's date picker draws its words in its own font and colour: it takes neither.
+TimePicker.textStyle: – UIKit's date picker draws its words in its own font and color: it takes neither.

@@ -4,7 +4,7 @@ How a map shows a region and its markers alike on every host that draws one.
 
 ## A region
 
-A region is a centre and a radius in meters: the circle around the centre
+A region is a center and a radius in meters: the circle around the center
 that the map shows whole. Whatever the map's proportions, its shorter side
 spans the circle's width, twice the radius, and the longer side shows more
 ground around it (`MapFraming.side(of:)`). A map read back says the same:
@@ -16,7 +16,7 @@ the circle its shorter side holds, from the ground its sides span
 A map's engine fits the region it is given to its view and measures ground
 in its own projection, so the region read back is near the one given, never
 equal to it: MapKit's radius comes back up to half a percent short, its
-centre exact. A case compares a region within a meter of the centre and a
+center exact. A case compares a region within a meter of the center and a
 percent of the radius.
 
 ## A marker's look
@@ -24,9 +24,9 @@ percent of the radius.
 A marker of a kind wears one hue and one symbol on every host drawing it
 (`MarkerLook`): a plain one red with no symbol, a place blue with a
 building, one the user saved yellow with a star, a search result purple with
-a magnifying glass. The host draws the hue as its platform's own colour of
+a magnifying glass. The host draws the hue as its platform's own color of
 that name, so a marker follows the platform's palette and its dark theme,
-and it reads a marker's kind back by that colour.
+and it reads a marker's kind back by that color.
 
 ## A tap on the map
 

@@ -44,7 +44,7 @@ public final class TestMenus {
     /**
      * The menu's entries: each item's words, a submenu's entries in brackets after its own, ", " within a
      * group and " | " between groups; " (off)" where it cannot be chosen, " (red)" where its words are in the
-     * theme's error colour, " (picture)" where it has one - " (dimmed picture)" where it is drawn translucent.
+     * theme's error color, " (picture)" where it has one - " (dimmed picture)" where it is drawn translucent.
      */
     public static String describe(Context context, Menu menu) {
         TypedArray attributes = context.obtainStyledAttributes(new int[] { android.R.attr.colorError });
@@ -58,7 +58,7 @@ public final class TestMenus {
             CharSequence title = item.getTitle();
             words.append(title);
             if (!item.isEnabled()) words.append(" (off)");
-            if (colour(title) == error) words.append(" (red)");
+            if (color(title) == error) words.append(" (red)");
             if (item.getIcon() != null) {
                 words.append(item.getIcon().getAlpha() < 255 ? " (dimmed picture)" : " (picture)");
             }
@@ -94,7 +94,7 @@ public final class TestMenus {
 
     /**
      * What the item of `id` holds, a line each: its words, then 1 or 0 for whether it can be chosen, whether its
-     * words are in the theme's error colour, whether it has a picture and whether it stands checked, then the
+     * words are in the theme's error color, whether it has a picture and whether it stands checked, then the
      * character of the shortcut it shows - 0 for none - and the modifiers held with it; null where the menu holds
      * no such item.
      */
@@ -108,7 +108,7 @@ public final class TestMenus {
         boolean letter = item.getAlphabeticShortcut() != 0;
         char key = letter ? item.getAlphabeticShortcut() : item.getNumericShortcut();
         int modifiers = letter ? item.getAlphabeticModifiers() : item.getNumericModifiers();
-        return title + "\n" + (item.isEnabled() ? 1 : 0) + "\n" + (colour(title) == error ? 1 : 0)
+        return title + "\n" + (item.isEnabled() ? 1 : 0) + "\n" + (color(title) == error ? 1 : 0)
                 + "\n" + (item.getIcon() != null ? 1 : 0) + "\n" + (item.isChecked() ? 1 : 0)
                 + "\n" + (int) key + "\n" + (key == 0 ? 0 : modifiers);
     }
@@ -128,7 +128,7 @@ public final class TestMenus {
 
     /**
      * The actions standing on `bar`, as it lays them out: each one's words and whether they are drawn "light" or
-     * "dark", or "picture" and the colour at the middle of its picture as drawn - ARGB in hexadecimal - ", "
+     * "dark", or "picture" and the color at the middle of its picture as drawn - ARGB in hexadecimal - ", "
      * between them.
      */
     public static String onBar(ViewGroup bar) {
@@ -142,8 +142,8 @@ public final class TestMenus {
                 Drawable picture = action.getCompoundDrawables()[0];
                 if (words.length() > 0) words.append(", ");
                 if (action.getText().length() > 0) {
-                    int colour = action.getCurrentTextColor();
-                    double luminance = 0.2126 * Color.red(colour) + 0.7152 * Color.green(colour) + 0.0722 * Color.blue(colour);
+                    int color = action.getCurrentTextColor();
+                    double luminance = 0.2126 * Color.red(color) + 0.7152 * Color.green(color) + 0.0722 * Color.blue(color);
                     words.append(action.getText()).append(luminance / 255 < 0.5 ? " dark" : " light");
                 } else if (picture != null) {
                     words.append("picture #").append(Integer.toHexString(middle(picture)));
@@ -184,7 +184,7 @@ public final class TestMenus {
         return lines.toString();
     }
 
-    /** The colour `picture` draws at its middle. */
+    /** The color `picture` draws at its middle. */
     private static int middle(Drawable picture) {
         int width = Math.max(1, picture.getIntrinsicWidth());
         int height = Math.max(1, picture.getIntrinsicHeight());
@@ -196,7 +196,7 @@ public final class TestMenus {
         return drawn.getPixel(width / 2, height / 2);
     }
 
-    private static int colour(CharSequence words) {
+    private static int color(CharSequence words) {
         if (!(words instanceof Spanned)) return 0;
         ForegroundColorSpan[] spans = ((Spanned) words).getSpans(0, words.length(), ForegroundColorSpan.class);
         return spans.length == 0 ? 0 : spans[0].getForegroundColor();

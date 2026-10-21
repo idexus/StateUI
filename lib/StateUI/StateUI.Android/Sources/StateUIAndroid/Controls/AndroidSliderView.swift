@@ -54,7 +54,7 @@ final class AndroidSliderView: AndroidView {
         }
     }
 
-    /// The colour of the track's filled part and the thumb; nil puts back the platform's.
+    /// The color of the track's filled part and the thumb; nil puts back the platform's.
     func setTint(_ color: HostValue?) {
         let made = madeTints ?? (
             Java.callObject(reference, JavaAPI.getProgressTintList).map(JavaObject.init),

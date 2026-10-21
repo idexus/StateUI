@@ -6,14 +6,14 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A fill UIKit paints: the host layer's reading of it (`HostBrush`), its colours in sRGB, as the layer that paints
+/// A fill UIKit paints: the host layer's reading of it (`HostBrush`), its colors in sRGB, as the layer that paints
 /// it.
 /// Design: docs/design/types/brushes.md#as-a-host-is-handed-it
 struct UIKitBrush: Equatable {
     /// What the tree's value describes.
     let brush: HostBrush
 
-    /// The brush the tree's `value` describes: a colour, a gradient, or nothing.
+    /// The brush the tree's `value` describes: a color, a gradient, or nothing.
     init(_ value: HostValue? = nil) {
         brush = HostBrush(value)
     }
@@ -23,7 +23,7 @@ struct UIKitBrush: Equatable {
         brush == .none
     }
 
-    /// The colour a line draws with: its colour, or its first stop's.
+    /// The color a line draws with: its color, or its first stop's.
     var lineColor: UIColor? {
         brush.firstColor.flatMap(UIColor.init(stateUI:))
     }

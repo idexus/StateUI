@@ -79,7 +79,7 @@ relay reads for the host out of one event or more - Return that commits no
 input method's words, the keyboard coming into an element or leaving it, a
 popover taken down, a key for a shortcut - crosses as a number of a Swift
 enum (`WebHearing`), as every closed vocabulary the two share does: a
-canvas's operations, a pointer's kind, a frame's step, a colour scheme. The
+canvas's operations, a pointer's kind, a frame's step, a color scheme. The
 relay holds each as an object whose names and numbers mirror its enum's
 cases, marked `// Swift: <Enum>`, and switches over those names, never over a
 bare number; `RelayVocabularyTests` holds both. What only Swift knows, it

@@ -15,7 +15,7 @@ public enum MapContract: ElementContract {
     /// Whether a drag pans it.
     public static let isScrollEnabled = ElementProperty<Self, Bool>("isScrollEnabled", layer: .native)
 
-    /// Whether the roads are coloured by traffic.
+    /// Whether the roads are colored by traffic.
     public static let showsTraffic = ElementProperty<Self, Bool>("showsTraffic", layer: .provider)
 
     /// Whether a pinch zooms it.

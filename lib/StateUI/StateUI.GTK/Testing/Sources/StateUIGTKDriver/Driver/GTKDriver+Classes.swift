@@ -8,7 +8,7 @@ import CStateUIGTK
 @_spi(Host) import StateUIConformance
 
 /// What the host's own record of a view says, where GTK reads nothing back: the classes of the host's style sheet a
-/// widget wears - its padding, its box, its fill, its placeholder's colour - its transform, a window's place among
+/// widget wears - its padding, its box, its fill, its placeholder's color - its transform, a window's place among
 /// the scenes kept - each ✓.
 /// Design: docs/design/host/conformance.md#the-driver
 extension GTKDriver {
@@ -32,7 +32,7 @@ extension GTKDriver {
             let (start, end) = rightToLeft ? (sides[1], sides[3]) : (sides[3], sides[1])
             return Insets(start: start, top: sides[0], end: end, bottom: sides[2]).propValue
         case (.background, let layout as GTKLayoutView):
-            // A colour stands in for a blur: the blur whose colour the layout's box paints; nil reads its pixels.
+            // A color stands in for a blur: the blur whose color the layout's box paints; nil reads its pixels.
             let painted = layout.box.fill
             guard let thickness = Blur.Thickness.allCases.first(where: { thickness in
                 HostMaterial(Material.blur(Blur(thickness)).propValue).standIn.map { GTKBrush($0) } == painted
@@ -57,7 +57,7 @@ extension GTKDriver {
         }
     }
 
-    /// What a button's box class says of `property`: its fill, its outline's colour and width, and its corners.
+    /// What a button's box class says of `property`: its fill, its outline's color and width, and its corners.
     private static func box(_ property: Prop, of name: String) -> HostValue? {
         let parts = name.split(separator: "-")
         let part = { (letter: Character) in parts.first { $0.first == letter }.map { String($0.dropFirst()) } }
@@ -96,7 +96,7 @@ extension GTKDriver {
     }
 
     /// The classes GTK holds on `widget`.
-    /// The colour `widget`'s own fill class paints it; nil where it wears none.
+    /// The color `widget`'s own fill class paints it; nil where it wears none.
     static func fill(of widget: GTKWidget) -> Color? {
         classes(of: widget).first { $0.hasPrefix("stateui-fill-") }
             .flatMap { color(String($0.dropFirst("stateui-fill-".count))) }
@@ -119,7 +119,7 @@ extension GTKDriver {
         Double(text.replacing("_", with: "."))
     }
 
-    /// A colour as a class writes it: red, green, blue and alpha, two hexadecimal digits each.
+    /// A color as a class writes it: red, green, blue and alpha, two hexadecimal digits each.
     private static func color(_ hex: String) -> Color? {
         let digits = Array(hex.prefix(8))
         guard digits.count == 8 else { return nil }

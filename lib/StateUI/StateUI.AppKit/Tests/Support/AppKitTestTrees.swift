@@ -140,7 +140,7 @@ func firstInkColumn(of view: NSView) throws -> Int {
 }
 
 /// Where `view` puts ink that `holds` says is its own, drawn WITH everything under it, in points from its top
-/// left; nil where it draws none - where a placeholder's glyphs landed, told apart by their colour.
+/// left; nil where it draws none - where a placeholder's glyphs landed, told apart by their color.
 @MainActor
 func inkBounds(of view: NSView, where holds: (NSColor) -> Bool) throws -> NSRect? {
     let bitmap = try XCTUnwrap(view.bitmapImageRepForCachingDisplay(in: view.bounds))
@@ -186,10 +186,10 @@ func firstInkRow(of view: NSView) throws -> Int {
     return bitmap.pixelsHigh
 }
 
-/// The colour of the most opaque pixel `view` and what it holds draw between `columns` points from its left - the
-/// colour its ink stands in; nil where it draws none there.
+/// The color of the most opaque pixel `view` and what it holds draw between `columns` points from its left - the
+/// color its ink stands in; nil where it draws none there.
 @MainActor
-func inkColour(of view: NSView, columns: ClosedRange<CGFloat>? = nil) throws -> NSColor? {
+func inkColor(of view: NSView, columns: ClosedRange<CGFloat>? = nil) throws -> NSColor? {
     let bitmap = try XCTUnwrap(view.bitmapImageRepForCachingDisplay(in: view.bounds))
     view.cacheDisplay(in: view.bounds, to: bitmap)
     let scale = CGFloat(bitmap.pixelsWide) / max(view.bounds.width, 1)
@@ -206,7 +206,7 @@ func inkColour(of view: NSView, columns: ClosedRange<CGFloat>? = nil) throws -> 
     return ink
 }
 
-/// Whether two colours of ink are one: their channels and opacity within a few hundredths.
+/// Whether two colors of ink are one: their channels and opacity within a few hundredths.
 func sameInk(_ one: NSColor?, _ other: NSColor?) -> Bool {
     guard let one, let other else { return false }
     return abs(one.redComponent - other.redComponent) < 0.08 && abs(one.greenComponent - other.greenComponent) < 0.08

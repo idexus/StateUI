@@ -3,7 +3,7 @@ ActivityIndicator.accessibilityActionPerformed: ✅
 ActivityIndicator.accessibilityActions: ✅
 Button.ignoresInput: ✅
 Button.scaleY: ✓ read scaleY of Button: the host's own transform, checked against the layer it composed itself
-Canvas.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+Canvas.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Capsule.accessibilityRole: ✅
 CheckBox.height: ✅
 CheckBox.scale: ✓ read scale of CheckBox: the host's own transform, checked against the layer it composed itself

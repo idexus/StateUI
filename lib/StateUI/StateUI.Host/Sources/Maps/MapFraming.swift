@@ -3,7 +3,7 @@
 
 @_spi(Host) import StateUI
 
-/// How a map frames a region alike on every host: the radius is the circle around the centre that the map shows
+/// How a map frames a region alike on every host: the radius is the circle around the center that the map shows
 /// whole, so the shorter side of what it shows spans the circle's width.
 /// Design: docs/design/host/maps.md#a-region
 @_spi(Host) public enum MapFraming {
@@ -12,7 +12,7 @@
         2 * region.radiusMeters
     }
 
-    /// The region a map shows, centred at `center`, its sides spanning `width` and `height` meters of ground: the
+    /// The region a map shows, centered at `center`, its sides spanning `width` and `height` meters of ground: the
     /// circle its shorter side holds.
     public static func region(center: Location, width: Double, height: Double) -> MapRegion {
         MapRegion(center: center, radiusMeters: min(width, height) / 2)

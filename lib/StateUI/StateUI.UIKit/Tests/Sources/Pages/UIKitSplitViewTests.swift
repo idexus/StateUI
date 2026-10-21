@@ -58,7 +58,7 @@ final class UIKitSplitViewTests: XCTestCase {
         XCTAssertEqual(chrome(split.children.dropFirst().first), "")
     }
 
-    /// A sidebar the application paints stands apart from the detail by a line of UIKit's separator colour down its
+    /// A sidebar the application paints stands apart from the detail by a line of UIKit's separator color down its
     /// edge, and on UIKit's sidebar material all the same - under which the detail's column slides with the sidebar
     /// as it shows and hides; UIKit's plain column parts them by its own line, and its detail jumps to its width.
     @MainActor
@@ -87,7 +87,7 @@ final class UIKitSplitViewTests: XCTestCase {
     }
 
     /// A blur or glass under the sidebar is UIKit's own effect under what the sidebar page shows - beside the
-    /// detail and over it alike - never a colour standing in for it.
+    /// detail and over it alike - never a color standing in for it.
     @MainActor
     func testASidebarOnGlassStandsOnUIKitsEffect() throws {
         let host = UIKitRenderer.running(reducesMotion: true) {

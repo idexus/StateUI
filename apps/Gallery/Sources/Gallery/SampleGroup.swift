@@ -30,7 +30,7 @@ struct SampleGroup {
     let icon: ImageSource
 
     /// The group's CARD - the picture the home page's gallery turns through,
-    /// one per group and each in its own colour. A file in Resources/Images,
+    /// one per group and each in its own color. A file in Resources/Images,
     /// by its `.png` name.
     let card: ImageSource
 

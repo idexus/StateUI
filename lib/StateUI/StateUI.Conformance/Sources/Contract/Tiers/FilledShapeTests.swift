@@ -20,10 +20,10 @@
         }
     }
 
-    /// A shape is filled in its colour inside its figure, and in the colour the tree changes it to.
+    /// A shape is filled in its color inside its figure, and in the color the tree changes it to.
     @MainActor
     static func filled(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).isFilledInItsColour", proves: [
+        ConformanceCase("\(element).isFilledInItsColor", proves: [
             Covered(FilledShapeContract.fill, on: element),
         ], needs: [Covered(ButtonContract.clicked)]) { s in
             let blue = State(wrappedValue: false)
@@ -40,7 +40,7 @@
 
             try s.perform(.activate, on: s.element("change"))
             try s.settle { try s.shows(.blue, on: shape, at: inside) }
-            s.expect(try s.color(of: shape, at: inside), shows: .blue, "the colour the tree changed it to")
+            s.expect(try s.color(of: shape, at: inside), shows: .blue, "the color the tree changed it to")
         }
     }
 }

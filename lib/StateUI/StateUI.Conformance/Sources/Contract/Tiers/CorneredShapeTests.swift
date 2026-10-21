@@ -6,7 +6,7 @@
 
 /// `CorneredShapeContract` on a host: a shape's corners are joined as the tree says, a mitre cut across past its
 /// limit, read off what the host draws; each case made for every shape wearing the tier.
-/// Design: docs/design/host/conformance.md#a-drawing-read-by-its-colours
+/// Design: docs/design/host/conformance.md#a-drawing-read-by-its-colors
 @_spi(Host) public enum CorneredShapeTests: ConformanceFamily {
     public static let name = "CorneredShape"
 

@@ -63,21 +63,21 @@ final class WinUICanvasViewTests: XCTestCase {
     private static let red: UInt32 = 0xFFFF_0000
     private static let blue: UInt32 = 0xFF00_00FF
 
-    /// The instructions run in order: a colour holds until the next, and a later shape paints over an earlier one.
+    /// The instructions run in order: a color holds until the next, and a later shape paints over an earlier one.
     func testInstructionsRunInOrder() throws {
-        let colours = try drawn(width: 100, height: 40, at: [(10, 20), (60, 20), (95, 20)]) {
+        let colors = try drawn(width: 100, height: 40, at: [(10, 20), (60, 20), (95, 20)]) {
             Draw.fillColor(Color(hex: 0xFF0000))
             Draw.fillRectangle(x: 0, y: 0, width: 80, height: 40)
             Draw.fillColor(Color(hex: 0x0000FF))
             Draw.fillRectangle(x: 50, y: 0, width: 20, height: 40)
         }
-        XCTAssertEqual(colours, [Self.red, Self.blue, 0])
+        XCTAssertEqual(colors, [Self.red, Self.blue, 0])
     }
 
-    /// A transform moves what is drawn after it, and restoreState puts back what saveState kept: the colour and
+    /// A transform moves what is drawn after it, and restoreState puts back what saveState kept: the color and
     /// the transform alike.
-    func testRestoreStatePutsBackTheColourAndTheTransform() throws {
-        let colours = try drawn(width: 100, height: 20, at: [(5, 10), (45, 10), (85, 10), (25, 10)]) {
+    func testRestoreStatePutsBackTheColorAndTheTransform() throws {
+        let colors = try drawn(width: 100, height: 20, at: [(5, 10), (45, 10), (85, 10), (25, 10)]) {
             Draw.fillColor(Color(hex: 0xFF0000))
             Draw.saveState()
             Draw.translateBy(x: 40, y: 0)
@@ -87,16 +87,16 @@ final class WinUICanvasViewTests: XCTestCase {
             Draw.fillRectangle(x: 0, y: 0, width: 10, height: 20)
             Draw.fillRectangle(x: 80, y: 0, width: 10, height: 20)
         }
-        XCTAssertEqual(colours, [Self.red, Self.blue, Self.red, 0])
+        XCTAssertEqual(colors, [Self.red, Self.blue, Self.red, 0])
     }
 
     /// A drawing reaching past the canvas is cut at its edge: nothing beside the canvas is painted.
     func testADrawingIsCutAtTheCanvasEdge() throws {
-        let colours = try drawn(width: 40, height: 40, at: [(20, 20), (60, 20), (20, 60)]) {
+        let colors = try drawn(width: 40, height: 40, at: [(20, 20), (60, 20), (20, 60)]) {
             Draw.fillColor(Color(hex: 0xFF0000))
             Draw.fillRectangle(x: -50, y: -50, width: 200, height: 200)
         }
-        XCTAssertEqual(colours, [Self.red, 0, 0])
+        XCTAssertEqual(colors, [Self.red, 0, 0])
     }
 
     /// A wedge is filled from the middle of its oval, from its start round to its end the way it turns.
@@ -197,7 +197,7 @@ final class WinUICanvasViewTests: XCTestCase {
         }
     }
 
-    /// The colours at `points` of a canvas `width` by `height` showing `drawing`, standing at the corner of a
+    /// The colors at `points` of a canvas `width` by `height` showing `drawing`, standing at the corner of a
     /// stack larger than it, once the drawing paints one of them.
     private func drawn(
         width: Double, height: Double, at points: [(Double, Double)],

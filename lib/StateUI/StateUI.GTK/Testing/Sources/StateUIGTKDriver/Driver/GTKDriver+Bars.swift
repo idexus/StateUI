@@ -8,7 +8,7 @@ import CStateUIGTK
 @_spi(Host) import StateUIConformance
 
 /// What the GTK driver reads of a page's header bar, and does on it: the groups of actions at each edge and the
-/// overflow, an action chosen and what its button shows, the bar's colours and the line under its title - each from
+/// overflow, an action chosen and what its button shows, the bar's colors and the line under its title - each from
 /// the header bar GTK shows.
 /// Design: docs/design/host/conformance.md#the-driver
 extension GTKDriver {
@@ -76,7 +76,7 @@ extension GTKDriver {
         }
     }
 
-    /// What the header bar of the page `element` shows: its colour, the colour of what stands on it, and the line
+    /// What the header bar of the page `element` shows: its color, the color of what stands on it, and the line
     /// under its title.
     func barHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
         guard let page = element.type == .page ? element : element.visiblePage else {

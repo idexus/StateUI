@@ -61,7 +61,7 @@ private struct Counter: View {
 }
 
 /// A view owning a state, compared by its author's own equality.
-private struct LabelledCounter: View, @MainActor Equatable {
+private struct LabeledCounter: View, @MainActor Equatable {
     @State var count = 0
     let label: String
 
@@ -165,7 +165,7 @@ final class StateWalkTests: XCTestCase {
     /// AN EQUATABLE VIEW OWNING A STATE IS LOOKED INTO: its author's equality cannot pair its state with its
     /// predecessor's, so the walk reads it part by part; one holding no state is compared whole.
     func testAnEquatableViewOwningAStateIsLookedInto() {
-        let view = LabelledCounter(label: "Taps")
+        let view = LabeledCounter(label: "Taps")
         let parts = stateParts(in: view)
 
         XCTAssertEqual(parts.boxes.count, 1)

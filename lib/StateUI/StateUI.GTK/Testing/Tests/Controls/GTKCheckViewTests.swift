@@ -60,8 +60,8 @@ final class GTKCheckViewTests: XCTestCase {
         }
     }
 
-    /// A switch takes no background, as its register says: GTK paints its box as its track, which a colour there
-    /// would recolour.
+    /// A switch takes no background, as its register says: GTK paints its box as its track, which a color there
+    /// would recolor.
     func testASwitchTakesNoBackground() {
         onUIThread {
             let host = GTKRenderer.running {

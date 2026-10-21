@@ -103,7 +103,7 @@ class GTKTextFieldView: GTKView, GTKTextInputView {
         gtk_text_set_visibility(words, hidden ? 0 : 1)
     }
 
-    func setBehaviour(readOnly: Bool, hints: GtkInputHints, purpose: GtkInputPurpose) {
+    func setBehavior(readOnly: Bool, hints: GtkInputHints, purpose: GtkInputPurpose) {
         gtk_editable_set_editable(editable, readOnly ? 0 : 1)
         gtk_text_set_input_hints(words, hints)
         gtk_text_set_input_purpose(words, purpose)

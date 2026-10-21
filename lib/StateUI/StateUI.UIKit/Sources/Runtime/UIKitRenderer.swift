@@ -369,7 +369,7 @@ final class UIKitRenderer {
     }
 
     /// The native image for a picture, made once: a file the application ships, the SF Symbol for an icon - a
-    /// template, drawn in the colour of what holds it - or the bytes decoded at a point a pixel. Each is named by its
+    /// template, drawn in the color of what holds it - or the bytes decoded at a point a pixel. Each is named by its
     /// identity.
     static func image(_ picture: HostPicture) -> UIImage? {
         let key = UIKitPictureKey(picture, height: nil)

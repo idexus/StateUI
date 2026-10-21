@@ -43,7 +43,7 @@ own least and most size and by the slot. Without one, a filling child takes
 the slot and any other takes its natural size, never more than the slot.
 Where the least size is larger than the most, the least wins, so
 contradictory bounds cannot leave a child with no answer. A child placed at
-its start sits at the slot's start; at its end, at the end; centred, or
+its start sits at the slot's start; at its end, at the end; centered, or
 filling but stopped short by a stated or a most size, in the middle.
 
 The layout owns the margin both ways: it takes the margin out of the width it
@@ -65,7 +65,7 @@ ItemsView's entry stops at its cell, which measures it again
 the change is measured again. Which change is which is one list on every
 native host (`MountedElement.arrangedProperties`,
 `unmeasuredProperties`): a property a parent reads into its child's place
-arranges the parent again, and one that is only drawn - an opacity, a colour,
+arranges the parent again, and one that is only drawn - an opacity, a color,
 a toggle's state, a transform, what assistive technology meets - measures
 nothing.
 
@@ -137,7 +137,7 @@ as the toolkit draws one. A line between a menu's entries is a
 (`NodeType.viewlessTypes`), so it never gets a view.
 
 Each host draws the line its toolkit offers: AppKit's separator box, a hairline
-in UIKit's separator colour, the Android theme's list divider, WinUI's divider
+in UIKit's separator color, the Android theme's list divider, WinUI's divider
 stroke, GTK's separator - turned to run down a row - and the document's rule
 on the Web. A hairline is one pixel, a third of a point on a dense screen, so
 a test reads its thickness unrounded.
@@ -208,7 +208,7 @@ its own properties say, and a toolkit keeping one translation, rotation and
 scale for a view takes the two composed, the same on every host
 (`HostDrawingTransform.under`): the turns add, the scales multiply, and the
 child's own move is turned and scaled by the run's before the run's is
-added, all about the child's centre. That is exact while a run's scales are
+added, all about the child's center. That is exact while a run's scales are
 the same on both axes, which is what a run draws.
 
 ## Drawing order
@@ -266,13 +266,13 @@ host, never a capsule, though a toolkit's control rounds only corners; a
 past any room - in a display's pixels too - which the rectangle's own drawing
 fits to half its shorter side, so its ends round whole at every size without
 a host asking its size; and the
-outline is drawn one wide where the tree gives it a colour and no width, and
-not at all without a colour. A fill is read as the tree
-sends it (`HostBrush`): a bare colour is one colour, a gradient's stops stand
+outline is drawn one wide where the tree gives it a color and no width, and
+not at all without a color. A fill is read as the tree
+sends it (`HostBrush`): a bare color is one color, a gradient's stops stand
 between 0 and 1, a gradient given no geometry runs top to bottom, or from
-the middle to the edge, and a gradient of one stop is its colour, of none
+the middle to the edge, and a gradient of one stop is its color, of none
 nothing - whatever a toolkit makes of one that short. A line drawn in one
-colour takes the brush's first.
+color takes the brush's first.
 A fill a host draws for a control itself - a button's background, an accent -
 keeps nine tenths of its opacity under the pointer and eight tenths pressed
 (`PressedFill`), as the platforms' own controls fade theirs.
@@ -282,9 +282,9 @@ keeps nine tenths of its opacity under the pointer and eight tenths pressed
 A button's role draws as each platform draws it where the tree draws nothing
 of its own (`ButtonRoleLook`): the main action filled in the platform's
 accent, an action that destroys something with its words in the platform's
-colour for one - the red its alerts and menus give such an action - and the
+color for one - the red its alerts and menus give such an action - and the
 way out, like a button of no role, as the platform's plain one. A fill or a
-colour of words the tree states, by a style or on the button, wins: a role's
+color of words the tree states, by a style or on the button, wins: a role's
 look is the platform's, and an application drawing its own buttons draws
 their roles too (`Style<Button>(role:)`).
 
@@ -306,11 +306,11 @@ whole room.
 
 ## Words on a painted band
 
-Words on a band the tree paints - a bar, a row of tabs - take the colour the
+Words on a band the tree paints - a bar, a row of tabs - take the color the
 tree writes for them; where it writes none, a band is dark where its relative
 luminance, by Rec. 709's weights, is below a half, and its words are white on
 a dark band, black on a light one (`BandWords.color`). Every host decides it alike, whatever
-its toolkit's own idea of a dark colour.
+its toolkit's own idea of a dark color.
 
 ## A picture
 
@@ -339,8 +339,8 @@ drawn as its platform draws its own: an SF Symbol on AppKit and UIKit
 (`Icon.sfSymbol`, which both share), Material Symbols on Android - its own
 applications' icons, which the host brings, as Android ships none - a glyph
 of Segoe Fluent Icons on WinUI, the theme's symbolic icon on GTK, and on the
-Web a drawing of StateUI's own. An icon takes the colour of what it stands in:
-standing alone, the platform's primary words colour, as a label beside it;
+Web a drawing of StateUI's own. An icon takes the color of what it stands in:
+standing alone, the platform's primary words color, as a label beside it;
 in a button, its words' - the platform's, its role's, the tree's own; in a
 bar, the bar's. Where nothing gives it room, it stands at the platform's
 own icon size. Bytes are a picture encoded whole - a
@@ -351,7 +351,7 @@ PNG, a JPEG - read where they are given, at one pixel a point.
 A line, a path, a polygon and a polyline draw a geometry of their own
 numbers, which every host places in the room the shape's layout gives it by
 one rule (`ShapeArithmetic`): scaled by the shape's aspect - to fit keeping
-its proportions, to cover, each axis on its own, or not at all - and centred;
+its proportions, to cover, each axis on its own, or not at all - and centered;
 then moved by the shape's own transform, as a transform moves a view after
 its layout, so a translation shows under every aspect. A geometry flat along
 one axis, a straight line, fits by the axis it has.

@@ -70,7 +70,7 @@ nothing. Every scene and window offers its own, nearer.
 ## Styles and motion stay in the core
 
 `ApplicationSession.styles` is never sent to a host. A style is resolved in
-the core into the controls it applies to, a colour pair in it picked for the
+the core into the controls it applies to, a color pair in it picked for the
 theme as each control builds, so a sheet written once serves both themes, and
 a sheet written again is the next render's. What reaches the host of a motion
 is the resolved law beside each property that animates, and the

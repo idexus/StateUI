@@ -7,7 +7,7 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 /// A StateUI layout: its children's views placed by the host layer's arithmetic, each on its way to its place where
-/// the layout moves (`TravellingPlaces`), its measurements kept until something in it changes.
+/// the layout moves (`TravelingPlaces`), its measurements kept until something in it changes.
 @MainActor
 class UIKitLayoutView: UIView, UIKitSteppable {
     /// What a reader's step performs, while the element says it is adjustable.
@@ -20,7 +20,7 @@ class UIKitLayoutView: UIView, UIKitSteppable {
     let measurements = MeasurementCache()
 
     /// How the children travel to their places, by the host layer's rule.
-    let places = TravellingPlaces()
+    let places = TravelingPlaces()
 
     private(set) var items: [UIKitLayoutItem] = []
 

@@ -23,7 +23,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
     // listing: SemanticsSample
     /// Said once, and both written onto the button and printed under it - so
     /// what the sample shows cannot drift from what the platform was handed.
-    private static let says = "Add to favourites"
+    private static let says = "Add to favorites"
 
     private static let hint = "Puts this item on your list"
 

@@ -443,10 +443,10 @@ enum WebRelay {
         }
     }
 
-    /// The page wears `colour` under its window, and keeps it for its next start, under the system's light or dark;
+    /// The page wears `color` under its window, and keeps it for its next start, under the system's light or dark;
     /// nil wears and keeps none.
-    static func keepPageColour(_ colour: String?) {
-        utf8(colour ?? "") { stateui_web_keep_page_colour($0, $1) }
+    static func keepPageColor(_ color: String?) {
+        utf8(color ?? "") { stateui_web_keep_page_color($0, $1) }
     }
 
     static func setTitle(_ title: String) {
@@ -472,7 +472,7 @@ enum WebRelay {
     /// The accent the browser draws its own controls in, as ARGB.
     static var accentColor: UInt32 { UInt32(bitPattern: stateui_web_accent_color()) }
 
-    /// Shows the page in `theme`: the root's colour scheme, which the browser's controls and the host's colours
+    /// Shows the page in `theme`: the root's color scheme, which the browser's controls and the host's colors
     /// follow; none for the system's.
     static func useColorScheme(_ theme: ColorScheme) {
         stateui_web_use_color_scheme(theme.rawValue)

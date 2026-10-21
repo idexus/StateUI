@@ -39,11 +39,11 @@ public final class TestText {
         return face == null ? 400 : face.getWeight();
     }
 
-    /** The colour the theme draws primary words in, as ARGB. */
+    /** The color the theme draws primary words in, as ARGB. */
     public static int primaryWords(Context context) {
         TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.textColorPrimary});
-        int colour = theme.getColor(0, 0);
+        int color = theme.getColor(0, 0);
         theme.recycle();
-        return colour;
+        return color;
     }
 }

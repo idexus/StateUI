@@ -26,7 +26,7 @@ final class WebLayoutViewTests: XCTestCase {
     }
 
     /// A margin below nothing shifts the child as a margin does on every host - the clock's marks stand left of
-    /// and above the centre by such margins; a padding is never below nothing.
+    /// and above the center by such margins; a padding is never below nothing.
     func testAMarginBelowNothingShiftsTheChild() {
         let layout = WebLayoutView(arrangement: .grid)
         let mark = WebTextView()

@@ -50,7 +50,7 @@ final class UIKitImageView: UIImageView, UIKitSteppable {
         let dark = traitCollection.userInterfaceStyle == .dark
         let picture = HostPicture(source, dark: dark)
         image = picture.flatMap(UIKitRenderer.image)
-        // An icon is drawn in the colour of the words around it, not the accent.
+        // An icon is drawn in the color of the words around it, not the accent.
         if case .icon = picture { tintColor = .label } else { tintColor = nil }
         invalidateIntrinsicContentSize()
     }

@@ -13,7 +13,7 @@ final class AndroidGestureTests: XCTestCase {
             ("testTapsAreCountedToTheCountAsked", testTapsAreCountedToTheCountAsked),
             ("testAPanSaysHowFarItHasComeAndMovesItsState", testAPanSaysHowFarItHasComeAndMovesItsState),
             ("testASwipePastItsThresholdSaysItsDirection", testASwipePastItsThresholdSaysItsDirection),
-            ("testAPinchSaysItsScaleAndWhereItIsCentred", testAPinchSaysItsScaleAndWhereItIsCentred),
+            ("testAPinchSaysItsScaleAndWhereItIsCentered", testAPinchSaysItsScaleAndWhereItIsCentered),
             ("testAPinchIsNoTapAndACancelledOneIsCancelled", testAPinchIsNoTapAndACancelledOneIsCancelled),
             ("testThePointerPressesMovesReleasesAndHovers", testThePointerPressesMovesReleasesAndHovers),
             ("testAPressOnAViewInFrontIsNotHeardBehindIt", testAPressOnAViewInFrontIsNotHeardBehindIt),
@@ -87,8 +87,8 @@ final class AndroidGestureTests: XCTestCase {
     }
 
     /// Two fingers spreading from 600 to 900 pixels apart in steps of 75: the pinch begins once Android tells
-    /// it apart - at the first step, 675 - changes from there to 900 and ends, centred where the fingers are.
-    func testAPinchSaysItsScaleAndWhereItIsCentred() throws {
+    /// it apart - at the first step, 675 - changes from there to 900 and ends, centered where the fingers are.
+    func testAPinchSaysItsScaleAndWhereItIsCentered() throws {
         try onMainActor {
             let phases = Received<String>()
             let scales = Received<Double>()

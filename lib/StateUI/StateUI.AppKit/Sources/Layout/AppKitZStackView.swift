@@ -8,7 +8,7 @@ import AppKit
 
 /// A ZStack: its children one over another, each in its area, or where an engine's placement run puts it.
 @MainActor
-final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeasuring,
+final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasuring,
     AppKitMeasurementCaching {
     let measurements = MeasurementCache()
     var placement: HostPlacementRun? {

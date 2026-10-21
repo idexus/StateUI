@@ -72,7 +72,7 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     private boolean pinched;
     private boolean cancelling;
 
-    /** Where the pinch under way was last centred, in points of the view: where it ends. */
+    /** Where the pinch under way was last centered, in points of the view: where it ends. */
     private float pinchX;
     private float pinchY;
 
@@ -323,8 +323,8 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     }
 
     /**
-     * A pinch's phase, its scale since the last report, and where it is centred in points of the view. It ends
-     * where it was last centred: as a finger lifts, Android centres it on the finger left.
+     * A pinch's phase, its scale since the last report, and where it is centered in points of the view. It ends
+     * where it was last centered: as a finger lifts, Android centers it on the finger left.
      */
     private void pinched(int phase, float factor, ScaleGestureDetector detector) {
         pinchX = detector.getFocusX() / density;

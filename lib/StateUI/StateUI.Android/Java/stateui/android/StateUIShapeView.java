@@ -84,7 +84,7 @@ final class StateUIShapeView extends View {
     }
 
     /**
-     * The brush: its kind, its stops' colours and offsets, its points in fractions of the view and a radial
+     * The brush: its kind, its stops' colors and offsets, its points in fractions of the view and a radial
      * one's reach in pixels.
      */
     void setFill(int kind, int[] stopColors, float[] stopOffsets, float[] geometry) {
@@ -93,7 +93,7 @@ final class StateUIShapeView extends View {
     }
 
     /**
-     * The outline: its colour, its width in pixels - none at zero - its dashes and their offset in pixels,
+     * The outline: its color, its width in pixels - none at zero - its dashes and their offset in pixels,
      * its caps and joins as StateUI numbers them, and the miter limit.
      */
     void setStroke(int color, float width, float[] dashes, float dashOffset, int cap, int join, float miterLimit) {

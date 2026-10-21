@@ -10,7 +10,7 @@
 ///             TextSpan(name).textColor(.steelBlue)
 ///         }
 ///
-///         tokens.map { TextSpan($0.text).textColor($0.colour) }
+///         tokens.map { TextSpan($0.text).textColor($0.color) }
 ///     }
 ///
 /// An `if`, an `if/else` and an array of runs work in one, and a plain `for`

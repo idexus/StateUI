@@ -1,21 +1,21 @@
 # revision 4.1
 ModalStack.barBackgroundColor: ✅
-ModalStack.barForegroundColor: ☑️ Only the title takes it, over a band painted in a bar colour; the toolbar's items keep the system's colour.
+ModalStack.barForegroundColor: ☑️ Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color.
 ModalStack.barIcon: ✅
 ModalStack.barSubtitle: ✅
 ModalStack.barTitle: ✅
 NavigationStack.barBackgroundColor: ✅
-NavigationStack.barForegroundColor: ☑️ Only the title takes it, over a band painted in a bar colour; the toolbar's items keep the system's colour.
+NavigationStack.barForegroundColor: ☑️ Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color.
 NavigationStack.barIcon: ✅
 NavigationStack.barSubtitle: ✅
 NavigationStack.barTitle: ✅
 SplitView.barBackgroundColor: ✅
-SplitView.barForegroundColor: ☑️ Only the title takes it, over a band painted in a bar colour; the toolbar's items keep the system's colour.
+SplitView.barForegroundColor: ☑️ Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color.
 SplitView.barIcon: ✅
 SplitView.barSubtitle: ✅
 SplitView.barTitle: ✅
 TabView.barBackgroundColor: ✅
-TabView.barForegroundColor: ☑️ Only the title takes it, over a band painted in a bar colour; the toolbar's items keep the system's colour.
+TabView.barForegroundColor: ☑️ Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color.
 TabView.barIcon: ✅
 TabView.barSubtitle: ✅
 TabView.barTitle: ✅

@@ -59,7 +59,7 @@ lib/StateUI/Core/Sources/
     Shapes/ Collections/
     Styles/ Inspector/              styles and visual states, the inspector
   Types/         the values an application passes, and how each crosses
-    Geometry/ Layout/ Colour/ Drawing/ Text/ Time/ Keyboard/ Localization/
+    Geometry/ Layout/ Color/ Drawing/ Text/ Time/ Keyboard/ Localization/
     Motion/ Gestures/ Environment/ Sessions/ Controls/ Collections/ Files/
   Contracts/     the library's contracts, and LibraryContracts
     Elements/    one contract per node type, in its view's topic folder
@@ -202,7 +202,7 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
 | --- | --- | --- |
 | `Geometry/` | `Point`, `Rect`, `Insets`, `CornerRadius`, `ViewTransform` | [runs of numbers](../design/types/values.md#runs-of-numbers), [transforms](../design/types/transforms.md) |
 | `Layout/` | `Alignment`, `Area`, `GridLength`, `LayoutDirection`, `SafeArea`, `SafeAreaEdges`, `Placement`, `PlacedRun`, `LayoutInput` | [placement](../design/types/placement.md), [layout engine](../design/views/layout-engine.md) |
-| `Colour/` | `Color`, `GradientStop`, `Brush`, `Material`, `Blur`, `Glass` | [colour and theme](../design/types/colour-and-theme.md), [brushes](../design/types/brushes.md); [styles and drawing](../interface/styles-and-drawing.md) |
+| `Color/` | `Color`, `GradientStop`, `Brush`, `Material`, `Blur`, `Glass` | [color and theme](../design/types/color-and-theme.md), [brushes](../design/types/brushes.md); [styles and drawing](../interface/styles-and-drawing.md) |
 | `Drawing/` | `ImageSource`, `ContainerShape`, `ContentMode`, the strokes, `Draw`, `DrawCommand`, `DrawingBuilder` | [drawing on a canvas](../design/types/drawing.md) |
 | `Text/` | `Name`, `FontAttributes`, `LineBreak`, `TextAlignment`, `TextCase`, `TextDecorations`, `InputPurpose`, `SubmitLabel`, `AccessibilityHeadingLevel` | [text and names](../design/types/values.md#text-and-names), [closed vocabularies](../design/types/vocabularies.md) |
 | `Time/` | `CalendarDate`, `ClockTime`, `TimeZoneInfo`, `Weekday` | [dates and time](../design/types/dates-and-time.md) |
@@ -588,7 +588,7 @@ the layer, and `placements(from:)` in AppKit's element too
 - **Drawing.** `HostPath` is a path's SVG text parsed once for every host -
   with `HostCurveCommand` for a toolkit with no arc - `HostDrawingTransform`
   and `HostMatrix` how a view is drawn over its place, and `PropValue.argb` a
-  colour as one number for a relay.
+  color as one number for a relay.
   ([canvas and path](../design/views/controls.md#canvas-and-path))
 - **Diagnostics.** `tally` is a `HostTally`; `inspecting`,
   `takeInspectionLog()` and `inspected(generation:scenes:apply:nodes:made:)`
@@ -617,7 +617,7 @@ never against a stored copy
 | `Contracts/` | the contracts and the library's list, closed vocabularies, payloads, the whole contract against every name the library uses, the registry, declarations, realizations, the register and its verdicts, and the rendered dictionary (`ControlDictionaryTests`) |
 | `Pages/` | scenes, windows, pages and their bars, the navigation stack, tabs, the split view, the modal stack, the environment a host writes, a window's value as text (`ValueTextTests`) |
 | `Acts/` | act calls and their shape, aims, host events |
-| `Views/` | controls, styles and visual states, colours and brushes, gestures, the frame reader, the gallery view, the position indicator (`PositionIndicatorTests`), the items view (`ItemsViewTests`), context menus, drawing transforms |
+| `Views/` | controls, styles and visual states, colors and brushes, gestures, the frame reader, the gallery view, the position indicator (`PositionIndicatorTests`), the items view (`ItemsViewTests`), context menus, drawing transforms |
 | `Threading/` | the UI thread's executor and the doorbell, the jobs kept for later (`TimetableTests`), posts, the gates a handler or a task passes through and what a superseded run changes, acts sent from child tasks, no promise the compiler cannot check, every async function on its caller's executor, and the library's four rules: no Foundation, no `DispatchQueue.main` but the one drain, no `Timer` or `RunLoop`, no `strdup` |
 | `Project/` | the guards below |
 | `Support/` | what the tests share: a differ to talk to, a patch printed readably, the dictionary's rendering, the applications' sources as files |
@@ -626,7 +626,7 @@ never against a stored copy
   resolves every `Design:` reference and holds the golden rule of comments;
   `DocumentationTests` refuses an undocumented public declaration;
   `DocumentLinksTests` follows every document's links; `WebPageTests` holds
-  the page a Web head lays out; `LicenceTests` holds the SPDX lines;
+  the page a Web head lays out; `LicenseTests` holds the SPDX lines;
   `NativeProjectTests` keeps each host a sibling package named only under its
   condition, and a library that exports no C function;
   `RuntimeArchitectureTests` reads the layer's and every host's sources

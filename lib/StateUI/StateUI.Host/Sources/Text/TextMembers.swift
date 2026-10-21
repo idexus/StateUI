@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 
 /// What an element showing words takes of the text tiers, read the same on every host: the words in their case,
-/// and the look its font and colour give them.
+/// and the look its font and color give them.
 /// Design: docs/design/host/tree.md#runs-of-words
 @_spi(Host) public enum TextMembers {
     /// What every element showing words takes: the words in their case, their look, and the room around them.
@@ -12,12 +12,12 @@
         + lookMembers + PropertyList(PaddingElementContract.padding)
 
     /// What a toggle takes for the words beside it - a check box's, a switch's: the words in their case and their
-    /// colour, in the platform's own font.
+    /// color, in the platform's own font.
     public static let captionMembers = PropertyList(
         TextualElementContract.text, TextualElementContract.textCase, TextColorElementContract.textColor)
 
     /// What the words' look is made of, which `look` reads: the font, whether it follows the user's text size, and
-    /// the words' colour.
+    /// the words' color.
     public static let lookMembers = fontMembers
         + PropertyList(FontElementContract.isFontAutoScalingEnabled, TextColorElementContract.textColor)
 
@@ -32,7 +32,7 @@
         return values[TextualElementContract.textCase]?.applied(to: text) ?? text
     }
 
-    /// A toggle's words' look: their colour, in the platform's own font.
+    /// A toggle's words' look: their color, in the platform's own font.
     public static func captionLook<Realized>(_ values: ElementValues<Realized>) -> TextLook {
         var look = TextLook()
         look.color = values[TextColorElementContract.textColor]?.propValue
@@ -48,7 +48,7 @@
         return values[TextualElementContract.textCase]?.applied(to: text) ?? text
     }
 
-    /// The look the font, its scaling and the colour give the words, where one of them changed; nil where none did.
+    /// The look the font, its scaling and the color give the words, where one of them changed; nil where none did.
     public static func look<Realized>(_ values: ElementValues<Realized>) -> TextLook? {
         guard values.changed(FontElementContract.textStyle) || values.changed(FontElementContract.fontWeight)
             || values.changed(FontElementContract.fontSize) || values.changed(FontElementContract.fontAttributes)
@@ -58,7 +58,7 @@
         return look(of: values)
     }
 
-    /// The look the font and the colour give the words, whether or not they changed.
+    /// The look the font and the color give the words, whether or not they changed.
     public static func look<Realized>(of values: ElementValues<Realized>) -> TextLook {
         var look = TextLook()
         look.style = values[FontElementContract.textStyle]

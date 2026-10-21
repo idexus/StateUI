@@ -69,7 +69,7 @@ Text.translationX: ✅
 TextEditor.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 TextEditor.translationX: ✅
 TextField.tooltip: ✅
-TimePicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+TimePicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 TimePicker.isEnabled: ✅
 VStack.frame: ✅
 VStack.rotation: ✅

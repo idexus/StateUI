@@ -45,8 +45,8 @@ class WinUITextInputView: WinUIView {
     }
 
     /// How the words are taken: read only, and with `traits` - spell checked, predicted, and the keyboard's scope.
-    func setBehaviour(readOnly: Bool, traits: InputTraits) {
-        stateui_winui_field_set_behaviour(
+    func setBehavior(readOnly: Bool, traits: InputTraits) {
+        stateui_winui_field_set_behavior(
             handle, readOnly, traits.checksSpelling, traits.predicts, WinUIInputScope(traits).rawValue)
     }
 
@@ -55,7 +55,7 @@ class WinUITextInputView: WinUIView {
         stateui_winui_field_set_casing(handle, textCase.rawValue)
     }
 
-    /// The words across the view, and the placeholder's colour; nil for the platform's.
+    /// The words across the view, and the placeholder's color; nil for the platform's.
     func setLook(alignment: TextAlignment, placeholderColor: HostValue?) {
         let argb = placeholderColor?.argb
         stateui_winui_field_set_look(handle, alignment.rawValue, argb ?? 0, argb != nil)

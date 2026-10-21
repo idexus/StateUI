@@ -133,7 +133,7 @@ matched by where it sits:
 
 ```swift quote
 Text().spans {
-    tokens.map { TextSpan($0.text).textColor($0.colour) }
+    tokens.map { TextSpan($0.text).textColor($0.color) }
 }
 ```
 
@@ -259,10 +259,10 @@ of its own:
 
 | Modifier | On | Meaning |
 | --- | --- | --- |
-| `placeholder`, `placeholderColor` | every field | what an empty field says, and its colour |
+| `placeholder`, `placeholderColor` | every field | what an empty field says, and its color |
 | `inputPurpose` | every field | what the text is for - `.plain`, `.text`, `.chat`, `.email`, `.numeric`, `.telephone`, `.url`, and for signing in `.username`, `.newPassword`, `.oneTimeCode` - which picks the keyboard the platform offers and what it fills the field in with |
 | `isReadOnly` | every field | the text can be selected and copied but not changed, which is not the same as disabled |
-| `isSpellCheckEnabled` | every field | whether the platform marks what it takes to be misspelt |
+| `isSpellCheckEnabled` | every field | whether the platform marks what it takes to be misspelled |
 | `isTextPredictionEnabled` | every field | whether the platform offers the next word |
 | `isPassword` | `TextField` | what is typed hides behind the platform's secure-entry marks |
 | `submitLabel` | `TextField`, `SearchField` | the return key's caption - `.done`, `.go`, `.next`, `.search`, `.send`; what the key does is `.onSubmitted`, whatever it says, and `.next` hands the keyboard on to the next field |
@@ -475,7 +475,7 @@ platform image type.
 
 An icon is chosen by its meaning from a closed set, `Icon`, and each host draws
 it as its platform draws its own - an SF Symbol, a Material Symbol on Android,
-a Segoe Fluent Icons glyph, the GTK theme's symbolic icon - in the colour of
+a Segoe Fluent Icons glyph, the GTK theme's symbolic icon - in the color of
 what holds it, at the platform's icon size where nothing gives it room. Bytes
 are a picture encoded whole - a PNG or a JPEG the application downloaded or
 made - shown at one pixel a point:
@@ -638,7 +638,7 @@ provider and the key that map needs ([Children a control
 draws](../hosts/gtk.md#children-a-control-draws), on each host's page); the
 platform matrix marks it 🧩 there.
 
-A map opens on the region its initializer gives: a centre and a radius in
+A map opens on the region its initializer gives: a center and a radius in
 meters, the circle the map shows whole whatever its proportions. Its markers are
 its children, and a tap is heard where it fell - on the map itself, on a marker,
 or on a marker's details:

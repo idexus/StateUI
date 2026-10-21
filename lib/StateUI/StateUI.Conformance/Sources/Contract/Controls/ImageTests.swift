@@ -33,7 +33,7 @@
                 // A host may draw the pixels a frame after it has read their size.
                 let image = try s.element("image")
                 try s.settle { try s.color(of: image, at: Point(2, 1)) != nil }
-                s.expect(try s.color(of: image, at: Point(2, 1)), shows: Color(red: 255, green: 0, blue: 0), "the bytes' colour")
+                s.expect(try s.color(of: image, at: Point(2, 1)), shows: Color(red: 255, green: 0, blue: 0), "the bytes' color")
             },
             ConformanceCase("anIconOfThePlatformsIsDrawn", proves: [
                 Covered(ImageContract.source),

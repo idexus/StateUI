@@ -15,7 +15,7 @@ struct UIKitLayoutItem: LayoutChild {
 
     var isShown = true
 
-    /// The mounted element the view is, which a travelling place follows.
+    /// The mounted element the view is, which a traveling place follows.
     var mount: UInt64 = 0
 
     /// The element that stands the view where it is placed; nil where the layout sets its frame itself.

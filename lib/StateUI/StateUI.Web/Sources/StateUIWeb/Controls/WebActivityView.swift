@@ -27,7 +27,7 @@ final class WebActivityView: WebDOMView {
         attribute("aria-busy", running ? "true" : "false")
     }
 
-    /// The ring's colour; nil for the page's accent.
+    /// The ring's color; nil for the page's accent.
     func setTint(_ tint: HostValue?) {
         style("--stateui-on", WebCSS.color(tint))
     }

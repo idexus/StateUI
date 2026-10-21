@@ -87,7 +87,7 @@ extension GTKRegistrations {
 
 
     private static func applyBox<Realized: ElementContract>(_ view: GTKLayoutView, _ values: ElementValues<Realized>) {
-        // GTK blurs nothing behind a widget: the material's colour stands in, under the fill.
+        // GTK blurs nothing behind a widget: the material's color stands in, under the fill.
         view.setBackground(HostMaterial(values[VisualElementContract.background]?.propValue).painted)
         view.setOutline(
             stroke: values[BorderElementContract.stroke]?.propValue,

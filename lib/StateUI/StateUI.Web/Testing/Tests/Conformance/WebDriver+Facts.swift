@@ -7,7 +7,7 @@
 @testable import StateUIWeb
 
 /// The facts the Web driver reads besides a member - the keyboard's focus, what a press reaches, the drawing order,
-/// where a view stands, the colour shown, the question and the file dialog showing, what was launched, the theme,
+/// where a view stands, the color shown, the question and the file dialog showing, what was launched, the theme,
 /// what assistive technology was told, what is kept, the bar - and the bar's actions chosen, a question answered and
 /// files chosen, as the user does.
 /// Design: docs/design/host/conformance.md#the-driver
@@ -52,11 +52,11 @@ extension WebDriver {
         return view.frame(laidOut: laid) ?? laid
     }
 
-    /// The colour the window shows at `point` of `element`, where it differs from what shows there without the
+    /// The color the window shows at `point` of `element`, where it differs from what shows there without the
     /// element: the page's own picture, a pixel of it read with the element and again with it unseen - which lays
     /// nothing out anew.
     func color(of element: MountedElement, at point: Point) throws -> Color? {
-        guard let view = (element.native as? WebElement)?.view else { throw DriverCannot("read the colour of \(element.type.name)") }
+        guard let view = (element.native as? WebElement)?.view else { throw DriverCannot("read the color of \(element.type.name)") }
         let box = try box(of: view.node)
         // The point of the view's frame, which a picture filling its room reaches past.
         let at = Point(x: box.x + view.reach + point.x, y: box.y + view.reach + point.y)
@@ -67,7 +67,7 @@ extension WebDriver {
         return shown == behind ? nil : shown
     }
 
-    /// The colour of the window's picture at `point` in it.
+    /// The color of the window's picture at `point` in it.
     private func pixel(_ point: Point) throws -> Color {
         let channels = (WebBrowser.ask([("pixel", .points([point]))]) ?? "").split(separator: ",").compactMap { Int($0) }
         guard channels.count == 4 else { throw DriverCannot("read the window's picture") }
@@ -144,7 +144,7 @@ extension WebDriver {
         try? WebBrowser.run("stateui.files = new Map(); stateui.fileDialog = null; stateui.launched = []")
     }
 
-    /// The colour scheme the page's root stands in: the one it holds, else the system's.
+    /// The color scheme the page's root stands in: the one it holds, else the system's.
     func theme() throws -> ColorScheme {
         let held = try WebBrowser.evaluate("getComputedStyle(document.documentElement).colorScheme", on: 0) ?? ""
         if held == "dark" { return .dark }

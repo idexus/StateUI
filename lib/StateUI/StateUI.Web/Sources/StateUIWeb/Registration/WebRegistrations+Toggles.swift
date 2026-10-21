@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 extension WebRegistrations {
-    /// A Switch and a CheckBox: whether it is on, whether it can be turned, its colour, and the turn the user makes;
-    /// the words it says beside it and their colour.
+    /// A Switch and a CheckBox: whether it is on, whether it can be turned, its color, and the turn the user makes;
+    /// the words it says beside it and their color.
     static func toggles(_ registry: Registry<WebDOMView>) {
         registry.add(SwitchContract.self, create: { reports in
             let toggle = WebSwitchView(switch: true)

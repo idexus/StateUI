@@ -72,7 +72,7 @@ extension GTKRegistrations {
         }
         if values.changed(TextInputContract.isReadOnly) || InputTraits.changed(values) != nil {
             let (hints, purpose) = GTKTextFieldView.input(InputTraits(values))
-            view.setBehaviour(readOnly: values[TextInputContract.isReadOnly] ?? false, hints: hints, purpose: purpose)
+            view.setBehavior(readOnly: values[TextInputContract.isReadOnly] ?? false, hints: hints, purpose: purpose)
         }
         if TextMembers.look(values) != nil || values.changed(TextInputContract.placeholderColor) {
             view.setWordsClass(GTKStyleSheet.words(

@@ -21,12 +21,12 @@ final class AndroidButtonViewTests: XCTestCase {
             ("testADisabledLookDimsAsTheThemesControlsDo", testADisabledLookDimsAsTheThemesControlsDo),
             ("testAFingerDownAndUpArePressedAndReleased", testAFingerDownAndUpArePressedAndReleased),
             ("testAFamilyChangesTheTypeface", testAFamilyChangesTheTypeface),
-            ("testAnIconIsDrawnInItsWordsColour", testAnIconIsDrawnInItsWordsColour),
-            ("testAnIconAloneIsDrawnInTheWordsColour", testAnIconAloneIsDrawnInTheWordsColour),
+            ("testAnIconIsDrawnInItsWordsColor", testAnIconIsDrawnInItsWordsColor),
+            ("testAnIconAloneIsDrawnInTheWordsColor", testAnIconAloneIsDrawnInTheWordsColor),
             ("testAMenusArrowStandsAfterTheWords", testAMenusArrowStandsAfterTheWords),
             ("testASplitButtonsArrowIsNotItsClick", testASplitButtonsArrowIsNotItsClick),
             ("testWhatAButtonShowsStandsInTheMiddleBesideItsArrow", testWhatAButtonShowsStandsInTheMiddleBesideItsArrow),
-            ("testADestructiveButtonsWordsStandInTheThemesErrorColour", testADestructiveButtonsWordsStandInTheThemesErrorColour),
+            ("testADestructiveButtonsWordsStandInTheThemesErrorColor", testADestructiveButtonsWordsStandInTheThemesErrorColor),
         ]
     }
 
@@ -127,7 +127,7 @@ final class AndroidButtonViewTests: XCTestCase {
     }
 
     /// A look the page shows through casts no shadow: the theme lifts a button, and the shadow of a shape seen
-    /// through its fill reads as a grey fill. Only an opaque fill keeps the theme's shadow.
+    /// through its fill reads as a gray fill. Only an opaque fill keeps the theme's shadow.
     func testALookThePageShowsThroughCastsNoShadow() {
         onMainActor {
             let host = AndroidRenderer.running {
@@ -402,8 +402,8 @@ final class AndroidButtonViewTests: XCTestCase {
         )
     }
 
-    /// An icon beside a button's words is drawn in their colour.
-    func testAnIconIsDrawnInItsWordsColour() throws {
+    /// An icon beside a button's words is drawn in their color.
+    func testAnIconIsDrawnInItsWordsColor() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
                 Button("Add").icon(.icon(.add)).textColor(Color(hex: 0xFF0000))
@@ -420,8 +420,8 @@ final class AndroidButtonViewTests: XCTestCase {
     }
 
     /// An icon standing alone in a button with no words gives the button its size - the icon's own inside the
-    /// padding - and is drawn in the colour its words would take.
-    func testAnIconAloneIsDrawnInTheWordsColour() throws {
+    /// padding - and is drawn in the color its words would take.
+    func testAnIconAloneIsDrawnInTheWordsColor() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
                 Button(icon: .icon(.settings)).textColor(Color(hex: 0xFF0000))
@@ -442,9 +442,9 @@ final class AndroidButtonViewTests: XCTestCase {
         }
     }
 
-    /// A destructive action's words stand in the theme's colour for an error where the tree colours them not; a
-    /// colour the tree states wins.
-    func testADestructiveButtonsWordsStandInTheThemesErrorColour() throws {
+    /// A destructive action's words stand in the theme's color for an error where the tree colors them not; a
+    /// color the tree states wins.
+    func testADestructiveButtonsWordsStandInTheThemesErrorColor() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
@@ -466,8 +466,8 @@ final class AndroidButtonViewTests: XCTestCase {
                     Java.callObject(button.reference, JavaAPI.getTextColors).map { Java.callInt($0, TestJava.getDefaultColor) }
                 }
             }
-            XCTAssertEqual(words[0], error, "the theme's error colour")
-            XCTAssertEqual(words[1].map { UInt32(bitPattern: $0) & 0xFF_FFFF }, 0x00_00FF, "the tree's colour wins")
+            XCTAssertEqual(words[0], error, "the theme's error color")
+            XCTAssertEqual(words[1].map { UInt32(bitPattern: $0) & 0xFF_FFFF }, 0x00_00FF, "the tree's color wins")
             XCTAssertNotEqual(words[2], error)
         }
     }

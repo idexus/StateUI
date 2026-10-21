@@ -47,7 +47,7 @@ enum UIKitRealization {
         .partial(VisualElementContract.accessibilityHeading,
             missing: "UIKit marks a heading, not its level: every level is a heading."),
         .partial(VisualElementContract.background,
-            missing: "UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in."),
+            missing: "UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in."),
         .complete(VisualElementContract.ignoresInput),
         .complete(VisualElementContract.layoutDirection),
         .complete(VisualElementContract.style),
@@ -73,13 +73,13 @@ enum UIKitRealization {
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: WebViewContract.self, reason: Self.ownSteps),
         .complete(VisualElementContract.background, on: ButtonContract.self),
         .notPlanned(VisualElementContract.background, on: DatePickerContract.self,
-            reason: "UIKit's date picker keeps no background colour: one written reads back as none."),
+            reason: "UIKit's date picker keeps no background color: one written reads back as none."),
         .complete(VisualElementContract.background, on: GridContract.self),
         .complete(VisualElementContract.background, on: HStackContract.self),
         .complete(VisualElementContract.background, on: ScrollViewContract.self),
         .complete(VisualElementContract.background, on: TextContract.self),
         .notPlanned(VisualElementContract.background, on: TimePickerContract.self,
-            reason: "UIKit's time picker keeps no background colour: one written reads back as none."),
+            reason: "UIKit's time picker keeps no background color: one written reads back as none."),
         .complete(VisualElementContract.background, on: VStackContract.self),
         .complete(VisualElementContract.background, on: ZStackContract.self),
         .complete(VisualElementContract.background, on: LayoutEngineContract.self),
@@ -167,7 +167,7 @@ enum UIKitRealization {
         .notPlanned(WindowContract.isMinimizable,
             reason: "Any iPadOS window may be put away: UIKit keeps none from it."),
         .partial(WindowContract.background,
-            missing: "iPadOS draws an application's window opaque: a blur or glass shows its colour."),
+            missing: "iPadOS draws an application's window opaque: a blur or glass shows its color."),
         .complete(WindowContract.resumed),
         .complete(WindowContract.stopped),
         .complete(WindowContract.title),
@@ -193,7 +193,7 @@ enum UIKitRealization {
         return pickers.flatMap { picker -> [HostRecord] in
             words.map { member -> HostRecord in
                 .notPlanned(member, on: picker,
-                    reason: "UIKit's date picker draws its words in its own font and colour: it takes neither.")
+                    reason: "UIKit's date picker draws its words in its own font and color: it takes neither.")
             } + [
                 .notPlanned(FontElementContract.isFontAutoScalingEnabled, on: picker,
                     reason: "UIKit's date picker draws its words in its own font, which follows the user's text size always."),

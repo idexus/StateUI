@@ -5,7 +5,7 @@
 @_spi(Host) @testable import StateUIHost
 import XCTest
 
-/// A layout's children travelling to their places: what a patch said travels, what the room or a read frame gave
+/// A layout's children traveling to their places: what a patch said travels, what the room or a read frame gave
 /// arrives, and a child on its way bends, keeps its way, or stops as it leaves.
 @MainActor
 final class LayoutMotionTests: XCTestCase {
@@ -30,7 +30,7 @@ final class LayoutMotionTests: XCTestCase {
 
     /// A child whose place travels is told where it is bound as it sets out - a view laying out words lays them out
     /// at that size, never at the widths it passes through - and bound nowhere once it lands or merely arrives.
-    func testATravellingChildIsToldWhereItIsBound() {
+    func testATravelingChildIsToldWhereItIsBound() {
         let layout = HandWoundLayout()
         let words = Placed()
         let narrow = Rect(x: 0, y: 0, width: 94, height: 21)
@@ -237,7 +237,7 @@ private final class Placed: PlacedView {
 @MainActor
 private final class HandWoundLayout {
     let animator = Animator()
-    let places = TravellingPlaces()
+    let places = TravelingPlaces()
     private(set) var motion: LayoutMotion!
     var reducesMotion = false
 

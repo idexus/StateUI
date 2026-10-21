@@ -14,7 +14,7 @@ final class AndroidTextViewTests: XCTestCase {
             ("testWrappedWordsHeldToSomeLinesEndWithAnEllipsis", testWrappedWordsHeldToSomeLinesEndWithAnEllipsis),
             ("testATextsCaseAndLetterSpacingAreItsOwn", testATextsCaseAndLetterSpacingAreItsOwn),
             ("testABackgroundBrushIsDrawnAcrossTheView", testABackgroundBrushIsDrawnAcrossTheView),
-            ("testALabelsWordsStandInTheThemesPrimaryColour", testALabelsWordsStandInTheThemesPrimaryColour),
+            ("testALabelsWordsStandInTheThemesPrimaryColor", testALabelsWordsStandInTheThemesPrimaryColor),
             ("testAPaddingsStartStandsWhereTheDirectionStarts", testAPaddingsStartStandsWhereTheDirectionStarts),
         ]
     }
@@ -129,7 +129,7 @@ final class AndroidTextViewTests: XCTestCase {
         }
     }
 
-    /// A gradient runs across the whole view, from its first colour at the start point to its last at the end.
+    /// A gradient runs across the whole view, from its first color at the start point to its last at the end.
     func testABackgroundBrushIsDrawnAcrossTheView() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
@@ -154,8 +154,8 @@ final class AndroidTextViewTests: XCTestCase {
         }
     }
 
-    /// A label whose colour the tree states not stands in the theme's primary words colour.
-    func testALabelsWordsStandInTheThemesPrimaryColour() throws {
+    /// A label whose color the tree states not stands in the theme's primary words color.
+    func testALabelsWordsStandInTheThemesPrimaryColor() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
                 Text("Words").horizontalAlignment(.start).verticalAlignment(.start)

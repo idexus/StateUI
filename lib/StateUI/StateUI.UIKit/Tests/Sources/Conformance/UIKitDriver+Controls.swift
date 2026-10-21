@@ -46,7 +46,7 @@ extension UIKitDriver {
         }
     }
 
-    /// A layout's box: what clips it, the colour its fill layer paints and the outline its stroke layer draws.
+    /// A layout's box: what clips it, the color its fill layer paints and the outline its stroke layer draws.
     private static func boxHolds(_ property: Prop, _ layout: UIKitLayoutView) -> HostValue? {
         let layers = layout.layer.sublayers ?? []
         let outline = layers.first { $0.zPosition == -1 } as? CAShapeLayer
@@ -74,7 +74,7 @@ extension UIKitDriver {
         return .glass(given.isInteractive(glass.isInteractive))
     }
 
-    /// A shape's paint: the colour over its fill and its outline, and how its outline's mask draws the line.
+    /// A shape's paint: the color over its fill and its outline, and how its outline's mask draws the line.
     private static func shapeHolds(_ property: Prop, _ shape: UIKitShapeView) throws -> HostValue? {
         let painted = shape.layer.sublayers ?? []
         let fill = painted.first { ($0.mask as? CAShapeLayer)?.fillColor != nil }

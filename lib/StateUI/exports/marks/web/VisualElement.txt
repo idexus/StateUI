@@ -7,7 +7,7 @@ ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.accessibilityRole: ✅
 ActivityIndicator.accessibilityValue: ✅
-ActivityIndicator.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+ActivityIndicator.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 ActivityIndicator.frame: ✅
 ActivityIndicator.height: ✅
 ActivityIndicator.hidesChildrenFromAccessibility: ✅
@@ -43,7 +43,7 @@ Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
 Button.accessibilityRole: ✅
 Button.accessibilityValue: ✅
-Button.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Button.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Button.frame: ✅
 Button.height: ✅
 Button.hidesChildrenFromAccessibility: ✅
@@ -79,7 +79,7 @@ Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
 Canvas.accessibilityRole: ✅
 Canvas.accessibilityValue: ✅
-Canvas.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Canvas.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Canvas.frame: ✅
 Canvas.height: ✅
 Canvas.hidesChildrenFromAccessibility: ✅
@@ -115,7 +115,7 @@ Capsule.accessibilityHint: ✅
 Capsule.accessibilityLabel: ✅
 Capsule.accessibilityRole: ✅
 Capsule.accessibilityValue: ✅
-Capsule.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Capsule.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Capsule.frame: ✅
 Capsule.height: ✅
 Capsule.hidesChildrenFromAccessibility: ✅
@@ -151,7 +151,7 @@ CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
 CheckBox.accessibilityRole: ✅
 CheckBox.accessibilityValue: ✅
-CheckBox.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+CheckBox.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 CheckBox.frame: ✅
 CheckBox.height: ✅
 CheckBox.hidesChildrenFromAccessibility: ✅
@@ -187,7 +187,7 @@ DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
 DatePicker.accessibilityRole: ✅
 DatePicker.accessibilityValue: ✅
-DatePicker.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+DatePicker.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 DatePicker.frame: ✅
 DatePicker.height: ✅
 DatePicker.hidesChildrenFromAccessibility: ✅
@@ -223,7 +223,7 @@ Divider.accessibilityHint: ✅
 Divider.accessibilityLabel: ✅
 Divider.accessibilityRole: ✅
 Divider.accessibilityValue: ✅
-Divider.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Divider.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Divider.frame: ✅
 Divider.height: ✅
 Divider.hidesChildrenFromAccessibility: ✅
@@ -259,7 +259,7 @@ Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
 Ellipse.accessibilityRole: ✅
 Ellipse.accessibilityValue: ✅
-Ellipse.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Ellipse.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Ellipse.frame: ✅
 Ellipse.height: ✅
 Ellipse.hidesChildrenFromAccessibility: ✅
@@ -295,7 +295,7 @@ Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
 Grid.accessibilityRole: ✅
 Grid.accessibilityValue: ✅
-Grid.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
+Grid.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
 Grid.frame: ✅
 Grid.height: ✅
 Grid.hidesChildrenFromAccessibility: ✅
@@ -331,7 +331,7 @@ HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
 HStack.accessibilityRole: ✅
 HStack.accessibilityValue: ✅
-HStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
+HStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
 HStack.frame: ✅
 HStack.height: ✅
 HStack.hidesChildrenFromAccessibility: ✅
@@ -367,7 +367,7 @@ Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
 Image.accessibilityRole: ✅
 Image.accessibilityValue: ✅
-Image.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Image.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Image.frame: ✅
 Image.height: ✅
 Image.hidesChildrenFromAccessibility: ✅
@@ -403,7 +403,7 @@ ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
 ItemsView.accessibilityRole: ✅
 ItemsView.accessibilityValue: ✅
-ItemsView.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+ItemsView.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 ItemsView.frame: ✅
 ItemsView.height: ✅
 ItemsView.hidesChildrenFromAccessibility: ✅
@@ -439,7 +439,7 @@ LayoutEngine.accessibilityHint: ✅
 LayoutEngine.accessibilityLabel: ✅
 LayoutEngine.accessibilityRole: ✅
 LayoutEngine.accessibilityValue: ✅
-LayoutEngine.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
+LayoutEngine.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
 LayoutEngine.frame: ✅
 LayoutEngine.height: ✅
 LayoutEngine.hidesChildrenFromAccessibility: ✅
@@ -475,7 +475,7 @@ Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
 Line.accessibilityRole: ✅
 Line.accessibilityValue: ✅
-Line.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Line.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Line.frame: ✅
 Line.height: ✅
 Line.hidesChildrenFromAccessibility: ✅
@@ -547,7 +547,7 @@ Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
 Path.accessibilityRole: ✅
 Path.accessibilityValue: ✅
-Path.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Path.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Path.frame: ✅
 Path.height: ✅
 Path.hidesChildrenFromAccessibility: ✅
@@ -583,7 +583,7 @@ Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
 Picker.accessibilityRole: ✅
 Picker.accessibilityValue: ✅
-Picker.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Picker.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Picker.frame: ✅
 Picker.height: ✅
 Picker.hidesChildrenFromAccessibility: ✅
@@ -619,7 +619,7 @@ Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
 Polygon.accessibilityRole: ✅
 Polygon.accessibilityValue: ✅
-Polygon.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Polygon.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Polygon.frame: ✅
 Polygon.height: ✅
 Polygon.hidesChildrenFromAccessibility: ✅
@@ -655,7 +655,7 @@ Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
 Polyline.accessibilityRole: ✅
 Polyline.accessibilityValue: ✅
-Polyline.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Polyline.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Polyline.frame: ✅
 Polyline.height: ✅
 Polyline.hidesChildrenFromAccessibility: ✅
@@ -691,7 +691,7 @@ ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
 ProgressBar.accessibilityRole: ✅
 ProgressBar.accessibilityValue: ✅
-ProgressBar.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+ProgressBar.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 ProgressBar.frame: ✅
 ProgressBar.height: ✅
 ProgressBar.hidesChildrenFromAccessibility: ✅
@@ -727,7 +727,7 @@ Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
 Rectangle.accessibilityRole: ✅
 Rectangle.accessibilityValue: ✅
-Rectangle.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Rectangle.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Rectangle.frame: ✅
 Rectangle.height: ✅
 Rectangle.hidesChildrenFromAccessibility: ✅
@@ -763,7 +763,7 @@ ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
 ScrollView.accessibilityRole: ✅
 ScrollView.accessibilityValue: ✅
-ScrollView.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+ScrollView.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 ScrollView.frame: ✅
 ScrollView.height: ✅
 ScrollView.hidesChildrenFromAccessibility: ✅
@@ -799,7 +799,7 @@ SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
 SearchField.accessibilityRole: ✅
 SearchField.accessibilityValue: ✅
-SearchField.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+SearchField.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 SearchField.frame: ✅
 SearchField.height: ✅
 SearchField.hidesChildrenFromAccessibility: ✅
@@ -871,7 +871,7 @@ Spacer.accessibilityHint: ✅
 Spacer.accessibilityLabel: ✅
 Spacer.accessibilityRole: ✅
 Spacer.accessibilityValue: ✅
-Spacer.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Spacer.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Spacer.frame: ✅
 Spacer.height: ✅
 Spacer.hidesChildrenFromAccessibility: ✅
@@ -907,7 +907,7 @@ Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
 Stepper.accessibilityRole: ✅
 Stepper.accessibilityValue: ✅
-Stepper.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Stepper.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Stepper.frame: ✅
 Stepper.height: ✅
 Stepper.hidesChildrenFromAccessibility: ✅
@@ -943,7 +943,7 @@ Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
 Switch.accessibilityRole: ✅
 Switch.accessibilityValue: ✅
-Switch.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Switch.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Switch.frame: ✅
 Switch.height: ✅
 Switch.hidesChildrenFromAccessibility: ✅
@@ -979,7 +979,7 @@ Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
 Text.accessibilityRole: ✅
 Text.accessibilityValue: ✅
-Text.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Text.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Text.frame: ✅
 Text.height: ✅
 Text.hidesChildrenFromAccessibility: ✅
@@ -1015,7 +1015,7 @@ TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
 TextEditor.accessibilityRole: ✅
 TextEditor.accessibilityValue: ✅
-TextEditor.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+TextEditor.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 TextEditor.frame: ✅
 TextEditor.height: ✅
 TextEditor.hidesChildrenFromAccessibility: ✅
@@ -1051,7 +1051,7 @@ TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
 TextField.accessibilityRole: ✅
 TextField.accessibilityValue: ✅
-TextField.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+TextField.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 TextField.frame: ✅
 TextField.height: ✅
 TextField.hidesChildrenFromAccessibility: ✅
@@ -1087,7 +1087,7 @@ TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
 TimePicker.accessibilityRole: ✅
 TimePicker.accessibilityValue: ✅
-TimePicker.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+TimePicker.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 TimePicker.frame: ✅
 TimePicker.height: ✅
 TimePicker.hidesChildrenFromAccessibility: ✅
@@ -1123,7 +1123,7 @@ VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
 VStack.accessibilityRole: ✅
 VStack.accessibilityValue: ✅
-VStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
+VStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
 VStack.frame: ✅
 VStack.height: ✅
 VStack.hidesChildrenFromAccessibility: ✅
@@ -1159,7 +1159,7 @@ WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
 WebView.accessibilityRole: ✅
 WebView.accessibilityValue: ✅
-WebView.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+WebView.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 WebView.frame: ✅
 WebView.height: ✅
 WebView.hidesChildrenFromAccessibility: ✅
@@ -1195,7 +1195,7 @@ ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
 ZStack.accessibilityRole: ✅
 ZStack.accessibilityValue: ✅
-ZStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
+ZStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
 ZStack.frame: ✅
 ZStack.height: ✅
 ZStack.hidesChildrenFromAccessibility: ✅

@@ -37,7 +37,7 @@ extension WebElement {
         return true
     }
 
-    /// Paints a tabbed view's strip in the colours of the bar on its path, as they stand now.
+    /// Paints a tabbed view's strip in the colors of the bar on its path, as they stand now.
     /// Design: docs/design/host/pages.md#the-bar-a-path-declares
     func showBarColors() {
         (view as? WebTabView)?.showColors(background: element.barColors.background, foreground: element.barColors.foreground)

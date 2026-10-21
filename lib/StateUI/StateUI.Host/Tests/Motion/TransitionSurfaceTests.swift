@@ -9,7 +9,7 @@ import XCTest
 @MainActor
 final class TransitionSurfaceTests: XCTestCase {
     /// A rectangle's fill, size and corners travel, as a view's opacity, a page's background, a line's transform, a
-    /// window's place and an arrangement's bar colours do; a turn about a flat view's axis, a stepper's value, a map's
+    /// window's place and an arrangement's bar colors do; a turn about a flat view's axis, a stepper's value, a map's
     /// opacity and a property no host knows arrive at once.
     func testTheSurfaceIsClosedAroundWhatAViewPresents() {
         for property: Prop in [.fill, .width, .height, .cornerRadius] {

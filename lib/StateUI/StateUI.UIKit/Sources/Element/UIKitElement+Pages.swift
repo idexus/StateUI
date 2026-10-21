@@ -32,7 +32,7 @@ extension UIKitElement {
 
     // MARK: - The bar
 
-    /// What a page's bar shows: its title or title view, the line under it and the colours its path declares, its
+    /// What a page's bar shows: its title or title view, the line under it and the colors its path declares, its
     /// actions as the host layer orders them, and whether the bar shows and offers the way back. A tabbed view's: its chosen tab's page's, titled as the host
     /// layer names it (`titledPage`) - tabs on a stack by their own title, else by the page beneath.
     /// Design: docs/design/platforms/uikit/pages.md#the-bar
@@ -77,7 +77,7 @@ extension UIKitElement {
             if let controller { chrome.show(on: controller.navigationItem, buttons: &barButtonsSaid) }
             let tabs = controller as? UIKitTabBarController
             tabs?.showsTheStacksBar = element.showsTheStacksBar
-            // A tab bar wears the colours of the bar on its path, which a theme or a state moves on an element above.
+            // A tab bar wears the colors of the bar on its path, which a theme or a state moves on an element above.
             // Design: docs/design/host/pages.md#the-bar-a-path-declares
             tabs?.showColors(background: element.barColors.background, foreground: element.barColors.foreground)
             children.forEach { $0.composeChrome() }

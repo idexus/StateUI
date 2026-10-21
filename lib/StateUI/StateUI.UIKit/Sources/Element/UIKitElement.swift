@@ -134,7 +134,7 @@ final class UIKitElement: NativeElement {
 }
 
 extension UIKitElement: PlacedView {
-    /// Where the view stands in its parent, in points; set, it stands there by its bounds and its centre, which
+    /// Where the view stands in its parent, in points; set, it stands there by its bounds and its center, which
     /// hold under any transform, and its drawing is composed for its size again - a label at the size its place
     /// travels to, its words standing there meanwhile.
     var placedFrame: Rect {

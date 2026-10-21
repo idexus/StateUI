@@ -17,9 +17,9 @@ inside `ProgramWrite` and told nobody. An item is opened by a double-click
 or by Return on the chosen item, as on a Mac. A chosen item is drawn on a
 rounded band of the platform's accent at a fifth of its strength, over the
 page, as every host's list shows the user's choice; an item at rest draws
-nothing, and the page shows through. The selected content colour is the
+nothing, and the page shows through. The selected content color is the
 accent at full strength, which stands as a block against a page of another
-colour.
+color.
 
 ## The layout
 

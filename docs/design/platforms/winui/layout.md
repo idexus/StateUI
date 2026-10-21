@@ -35,7 +35,7 @@ and measure its whole subtree again.
 A child's `Arrange` written outside its parent's arrangement does nothing, so
 a view keeps the place it was last given and writes it according to when it
 comes. Inside a pass - the host counts the arrangements under way - the place
-is arranged at once. Between passes, as a display frame moves a travelling
+is arranged at once. Between passes, as a display frame moves a traveling
 child, the view asks the layout that placed it to arrange again
 (`InvalidateArrange`); WinUI runs that arrangement before it draws the frame,
 and the layout's arrangement gives the child the place it keeps.

@@ -80,9 +80,9 @@ public struct Covered: Hashable, Sendable, CustomStringConvertible {
     }
 
     /// What `register` says of it: nil where the host does not realize it.
-    func judgement(in register: HostRegister) -> HostRecord.Judgement? {
-        guard let member else { return register.judgement(ofElement: element) }
-        return register.judgement(of: member, on: element, from: tier)
+    func judgment(in register: HostRegister) -> HostRecord.Judgment? {
+        guard let member else { return register.judgment(ofElement: element) }
+        return register.judgment(of: member, on: element, from: tier)
     }
 
     /// The verdict `mark` of it.

@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 
 /// What a page gives the chrome it stands under, the same on every host - a window's one chrome, or a header bar of
-/// its own: its actions, its title view, its menus, and its bar's colours and title area.
+/// its own: its actions, its title view, its menus, and its bar's colors and title area.
 /// Design: docs/design/host/pages.md#the-windows-chrome
 extension MountedElement {
     /// This page's actions for its chrome: the groups declared on its path, composed; none where the page hides
@@ -31,7 +31,7 @@ extension MountedElement {
         HostPicture(value(.icon)) == nil || value(.showsText)?.bool == true
     }
 
-    /// The colours this element's bar is painted in, and what stands on it in: each the nearest declared on its path,
+    /// The colors this element's bar is painted in, and what stands on it in: each the nearest declared on its path,
     /// itself included.
     /// Design: docs/design/host/pages.md#the-bar-a-path-declares
     public var barColors: (background: HostValue?, foreground: HostValue?) {
@@ -39,8 +39,8 @@ extension MountedElement {
     }
 
     /// The tabbed views this arrangement of pages shows, itself first where it is one, through its pages and the
-    /// arrangements in them: each wears the colours of the bar on its path, so a window's chrome shown again paints
-    /// them again - a theme or a state moving those colours reaches no tabbed view any other way.
+    /// arrangements in them: each wears the colors of the bar on its path, so a window's chrome shown again paints
+    /// them again - a theme or a state moving those colors reaches no tabbed view any other way.
     /// Design: docs/design/host/pages.md#the-bar-a-path-declares
     public var tabViewsShown: [MountedElement] {
         var shown: [MountedElement] = type == .tabView ? [self] : []

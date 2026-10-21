@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The platform's glass: what lies behind bent and lit through it - regular,
-/// or clear, which lets more through - tinted where a colour is given, and
+/// or clear, which lets more through - tinted where a color is given, and
 /// answering the user's touch where it is interactive.
 ///
 ///     VStack { … }.background(.glass(.regular))
@@ -10,7 +10,7 @@
 ///
 /// A platform with no glass draws a blur in its place, as clear as the glass
 /// is.
-/// Design: docs/design/types/colour-and-theme.md#glass
+/// Design: docs/design/types/color-and-theme.md#glass
 public struct Glass: Equatable, Sendable {
     /// How much the glass lets through.
     public enum Clarity: Int32, Sendable {
@@ -24,7 +24,7 @@ public struct Glass: Equatable, Sendable {
     /// How much the glass lets through.
     public let clarity: Clarity
 
-    /// The colour the glass is tinted with; nil for none.
+    /// The color the glass is tinted with; nil for none.
     public let tint: Color?
 
     /// Whether the glass answers the user's touch and pointer, as a control's

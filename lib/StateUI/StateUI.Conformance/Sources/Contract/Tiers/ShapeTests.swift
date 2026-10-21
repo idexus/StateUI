@@ -27,10 +27,10 @@
         }
     }
 
-    /// A shape's outline is drawn in its colour, as wide as the tree says.
+    /// A shape's outline is drawn in its color, as wide as the tree says.
     @MainActor
     static func outlined(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).isOutlinedInItsColourAndWidth", proves: [
+        ConformanceCase("\(element).isOutlinedInItsColorAndWidth", proves: [
             Covered(ShapeContract.stroke, on: element), Covered(ShapeContract.lineWidth, on: element),
         ]) { s in
             s.start {

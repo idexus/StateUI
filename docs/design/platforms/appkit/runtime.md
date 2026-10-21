@@ -26,7 +26,7 @@ pages is the window's content under one unified toolbar ([the window's
 chrome](../../host/pages.md#the-windows-chrome)), the pages its modal stack
 presents are sheets, and the page the user sees and the window made are told
 before the window first comes to the front. A new window with no place asked
-stands centred, each after the first a step down and to the right.
+stands centered, each after the first a step down and to the right.
 
 ## A window's frame
 
@@ -47,9 +47,9 @@ stands in the Windows menu.
 
 A window with a maximum takes no full screen: AppKit would stand it at its
 maximum in the middle of the screen, the toolbar alone across the top in the
-system's colour. Its zoom button grows it to the maximum instead, the way a
+system's color. Its zoom button grows it to the maximum instead, the way a
 bounded window maximizes on every desktop; with the maximum cleared, the
-window's own full-screen behaviour is back.
+window's own full-screen behavior is back.
 
 ## The application's phase
 
@@ -161,7 +161,7 @@ offers each kind once, by its first extension, under its caption in the
 panel's menu of kinds where there are two or more, and suggests the act's
 name - an empty name leaves the panel's name field empty. A save's contents
 are written beside the UI thread where the user said, in place, as a sandbox
-lets an application write the file the user chose and not a neighbour swapped
+lets an application write the file the user chose and not a neighbor swapped
 in; the file is answered once they stand written, or the act fails with the
 system's reason. A chosen file's address is its path; the sandbox keeps it
 the application's while it runs. A file is read beside the UI thread too.

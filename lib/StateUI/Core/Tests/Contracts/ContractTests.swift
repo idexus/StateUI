@@ -160,7 +160,7 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(Material.gradient(brush).propValue, brush.propValue)
         XCTAssertEqual(Material(propValue: Color.tomato.propValue), .color(.tomato))
         XCTAssertEqual(Material(propValue: brush.propValue), .gradient(brush))
-        XCTAssertEqual(Brush(propValue: Color.tomato.propValue), .solidColor(.tomato), "a colour state's fill")
+        XCTAssertEqual(Brush(propValue: Color.tomato.propValue), .solidColor(.tomato), "a color state's fill")
 
         XCTAssertEqual(SafeAreaEdges.uniform(.none).propValue, .enumeration(0))
         XCTAssertEqual(

@@ -118,7 +118,7 @@ final class PagesTests: XCTestCase {
     }
 
     /// Every tabbed view an arrangement of pages shows - through its pages and the arrangements in them, a sheet's
-    /// own - is what the chrome paints the bars' colours on again; none in a page's content.
+    /// own - is what the chrome paints the bars' colors on again; none in a page's content.
     func testTheTabbedViewsAnArrangementShowsAreFoundThroughItsPages() throws {
         let tabs = { (id: String) in self.node(id, .tabView, children: [self.node("\(id).page", .page)]) }
         let runtime = runtime(node("window", .window, children: [
@@ -395,7 +395,7 @@ final class PagesTests: XCTestCase {
     }
 
     /// The chrome takes the visible path's actions, the overflow apart, the way back's words from the page beneath,
-    /// the page's title view, and the stack's colour.
+    /// the page's title view, and the stack's color.
     func testTheChromeIsComposedFromWhatTheWindowShows() throws {
         let item = { (id: String, overflow: Bool) in
             self.node(id, .toolbarItem, [

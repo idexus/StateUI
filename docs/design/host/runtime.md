@@ -121,7 +121,7 @@ of the elements around it is decided once, for every host
 parent arranges again where a value that places it moved, or where it shows
 no view of its own and is drawn by its parent's; and the window's chrome is
 composed again where it shows what moved (`WindowChrome.follows`): a window's
-frame, an arrangement's bar colours, and a page's title, bar, way back and
+frame, an arrangement's bar colors, and a page's title, bar, way back and
 back button's words said from a state, which no render follows.
 
 ## One turn
@@ -620,7 +620,7 @@ whatever moves once more.
 
 An application may hold a theme of its own (`application.colorScheme`), and
 its act shows every window in it with the toolkit's own call. The theme the
-core resolves colour pairs against is then the theme in force, the same on
+core resolves color pairs against is then the theme in force, the same on
 every host (`HostThemes`): the application's while it holds one, the
 system's while it follows the system. A host reports the system's theme as
 its toolkit tells it, and the host layer passes on the theme in force - so a
@@ -902,7 +902,7 @@ Such a control is written, as its value and its ends apply, by one rule
 or an end, else the value the control shows, so a hand on the thumb or the
 buttons is never argued with. A range that moves takes the tree's value
 again: the control stood clamped at the old range's end - a state's value
-outside it, or one travelling to the value written with the range - and a
+outside it, or one traveling to the value written with the range - and a
 range widened over that value shows it rather than the end it stood at.
 
 A stepper shows its steps alone (`ElementValues.shownStep`,

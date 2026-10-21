@@ -99,7 +99,7 @@
             pushedFollows(PageContract.backButtonTitle, "Notes", then: "All notes") { $0.backButtonTitle($1) },
             pushedFollows(PageContract.showsNavigationBar, false, then: true) { $0.showsNavigationBar($1) },
             pushedFollows(PageContract.showsTitle, false, then: true) { $0.title("Notes").showsTitle($1) },
-            pushedFollowsColour(PageContract.background, .red, then: .blue) { $0.pageBackground($1) },
+            pushedFollowsColor(PageContract.background, .red, then: .blue) { $0.pageBackground($1) },
             followsAMaterial,
         ]
     }
@@ -148,10 +148,10 @@
         }
     }
 
-    /// `member` of a page pushed over the root holds the colour of the state its view says it from, and follows the
-    /// state as it is written, no view built again - a colour's channel writing a material.
+    /// `member` of a page pushed over the root holds the color of the state its view says it from, and follows the
+    /// state as it is written, no view built again - a color's channel writing a material.
     @MainActor
-    static func pushedFollowsColour(
+    static func pushedFollowsColor(
         _ member: ElementProperty<PageContract, Material>, _ first: Color, then second: Color,
         _ say: @escaping @MainActor (VStack, Binding<Color>) -> VStack
     ) -> ConformanceCase {

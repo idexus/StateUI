@@ -3,7 +3,7 @@ ActivityIndicator.accessibilityActionPerformed: – UI Automation offers no acti
 ActivityIndicator.accessibilityActions: – UI Automation offers no action of an application's own words.
 ActivityIndicator.isEnabled: ✅
 Button.accessibilityHeading: ✅
-Canvas.background: ✓ read background of Canvas: the colour the host's canvas clears its surface to under its drawing, which WinUI keeps as no brush
+Canvas.background: ✓ read background of Canvas: the color the host's canvas clears its surface to under its drawing, which WinUI keeps as no brush
 Canvas.isEnabled: does not apply - read isEnabled of Canvas - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Capsule.frame: ✅
 Capsule.rotation: ✅
@@ -13,7 +13,7 @@ DatePicker.accessibilityValue: – A WinUI control says its own value to assisti
 DatePicker.translationY: ✅
 Divider.accessibilityHeading: ✅
 Ellipse.accessibilityHeading: ✅
-Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Grid.isEnabled: does not apply - read isEnabled of Grid - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 HStack.hidesChildrenFromAccessibility: ✅
 HStack.opacity: ✅
@@ -62,7 +62,7 @@ TextEditor.style: ✅
 TextField.accessibilityHint: ✅
 TextField.scaleY: ✅
 TimePicker.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 VStack.hidesChildrenFromAccessibility: ✅
 VStack.opacity: ✅
 WebView.accessibilityHeading: ✅

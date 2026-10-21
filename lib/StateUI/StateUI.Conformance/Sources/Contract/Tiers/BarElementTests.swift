@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `BarElementContract` on a host: the bar an arrangement declares holds the colours, the application's name, line
+/// `BarElementContract` on a host: the bar an arrangement declares holds the colors, the application's name, line
 /// and mark the tree gives it, and those the tree changes them to - on every element wearing the tier.
 @_spi(Host) public enum BarElementTests: ConformanceFamily {
     public static let name = "BarElement"
@@ -35,7 +35,7 @@
 
     /// A page where `element` wears `worn` around a bar every host draws - a split view's detail, a tabbed view's
     /// first tab and a modal stack's root are a stack of one page - `beside` the page's words, its title standing on
-    /// the bar in the bar's colours.
+    /// the bar in the bar's colors.
     @MainActor
     static func declaring(_ element: String, _ worn: [any Worn], beside: [any View]) -> ModifiedContent {
         // Chosen by name, so held as `any View` and handed on as its node.

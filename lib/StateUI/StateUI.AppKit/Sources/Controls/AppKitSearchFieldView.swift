@@ -21,7 +21,7 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
     private var cursorPosition: Int?
     private var selectionLength: Int?
 
-    /// The colour the field stands on, in the search field's capsule; nil for AppKit's own bezel.
+    /// The color the field stands on, in the search field's capsule; nil for AppKit's own bezel.
     private(set) var fill: NSColor?
 
     override class var cellClass: AnyClass? {
@@ -87,7 +87,7 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
         contentType = traits.contentType
         alignment = NSTextAlignment(horizontalAlignment, in: userInterfaceLayoutDirection)
 
-        // AppKit's bezel draws its own ground over any colour: a field given one stands in the bezel's capsule,
+        // AppKit's bezel draws its own ground over any color: a field given one stands in the bezel's capsule,
         // filled with it, its words and buttons set in as the bezel sets them.
         // Design: docs/design/platforms/appkit/registrations.md#a-background
         let colored = backgroundColor.map { $0.alphaComponent > 0 } ?? false
@@ -214,11 +214,11 @@ final class AppKitSearchFieldCell: NSSearchFieldCell {
     static let inset = NSSize(width: 0, height: 4)
 
     override func searchButtonRect(forBounds rect: NSRect) -> NSRect {
-        centred(super.searchButtonRect(forBounds: rect), in: rect)
+        centered(super.searchButtonRect(forBounds: rect), in: rect)
     }
 
     override func cancelButtonRect(forBounds rect: NSRect) -> NSRect {
-        centred(super.cancelButtonRect(forBounds: rect), in: rect)
+        centered(super.cancelButtonRect(forBounds: rect), in: rect)
     }
 
     override func searchTextRect(forBounds rect: NSRect) -> NSRect {
@@ -245,7 +245,7 @@ final class AppKitSearchFieldCell: NSSearchFieldCell {
     }
 
     /// `part` moved across the middle of `rect`'s height, where the field stands boxed.
-    private func centred(_ part: NSRect, in rect: NSRect) -> NSRect {
+    private func centered(_ part: NSRect, in rect: NSRect) -> NSRect {
         guard isBoxed else { return part }
         var moved = part
         moved.origin.y = rect.minY + ((rect.height - part.height) / 2).rounded()

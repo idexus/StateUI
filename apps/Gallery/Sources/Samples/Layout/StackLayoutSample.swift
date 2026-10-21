@@ -95,7 +95,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
 }
 
 // listing: StackLayoutSample
-/// One block of colour with a word in it, so an arrangement is visible.
+/// One block of color with a word in it, so an arrangement is visible.
 private struct StackCell: View {
     let text: String
 

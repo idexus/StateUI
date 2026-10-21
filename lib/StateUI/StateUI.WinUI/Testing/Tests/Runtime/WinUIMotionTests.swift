@@ -33,7 +33,7 @@ private struct CutPage: View {
 final class WinUIMotionTests: XCTestCase {
     /// A rectangle whose fill and width change under a motion stands halfway at half its time, and lands - the
     /// Gallery's Motion sample: what travels is the host layer's list.
-    func testAColourAndAWidthTravelHalfwayAndLand() throws {
+    func testAColorAndAWidthTravelHalfwayAndLand() throws {
         try onUIThread {
             let clock = TestClock()
             let wide = State(wrappedValue: false)

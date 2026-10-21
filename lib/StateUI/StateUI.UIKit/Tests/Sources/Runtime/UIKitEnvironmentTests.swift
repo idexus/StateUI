@@ -183,7 +183,7 @@ final class UIKitEnvironmentTests: XCTestCase {
         XCTAssertTrue((0...1).contains(battery.chargeLevel))
     }
 
-    /// The accessibility settings reported are the device's own: less motion, darker colours and VoiceOver as UIKit
+    /// The accessibility settings reported are the device's own: less motion, darker colors and VoiceOver as UIKit
     /// says them, and the scale of words the size the user chose draws - 1 at the size iOS starts at.
     @MainActor
     func testTheAccessibilitySettingsReportedAreTheDevices() {

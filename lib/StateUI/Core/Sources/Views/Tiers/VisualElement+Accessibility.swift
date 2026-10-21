@@ -9,7 +9,7 @@ extension VisualElementProperties {
     ///
     ///     Button(icon: "bin.png").accessibilityLabel("Delete")
     ///
-    /// For a control whose meaning is carried by a picture, a colour or where
+    /// For a control whose meaning is carried by a picture, a color or where
     /// it sits. On a control that shows its own words it replaces them.
     public func accessibilityLabel(_ value: String) -> Modified { setValue(VisualElementContract.accessibilityLabel, value) }
 

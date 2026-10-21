@@ -70,7 +70,7 @@ protocol UIKitLabel: UIView {
     /// The direction the view lays out in turned: its padding's start stands at the other side.
     func directionTurned()
 
-    /// What fills the view's box behind its words: a colour, or a brush; nothing where the tree says none.
+    /// What fills the view's box behind its words: a color, or a brush; nothing where the tree says none.
     func setBackground(_ value: HostValue?)
 }
 

@@ -8,7 +8,7 @@ struct LightTableSample: SampleContent, ExampleContent {
     static let summary = "Photos on a light table - pan, pinch and turn them, all at once."
 
     // listing: LightTableSample
-    /// THE PHASE: which photo the table is centred on, across and down, how
+    /// THE PHASE: which photo the table is centered on, across and down, how
     /// near it stands, and how far the photos are turned - a turn a unit.
     struct Table: LayoutPhase {
         var x = 1.0
@@ -98,7 +98,7 @@ struct LightTableSample: SampleContent, ExampleContent {
     }
 
     /// Where the photo at `index` lies: its square of the table, a photo's
-    /// width and a gap apart, the photo the table is centred on in the middle
+    /// width and a gap apart, the photo the table is centered on in the middle
     /// of the room - all as near as the table stands, the whole table in the
     /// room at its farthest - turned in its place.
     private func place(_ index: Int, _ table: Table, _ room: Rect) -> Placement {

@@ -7,11 +7,11 @@ struct HomeScreenSample: SampleContent, ExampleContent {
     static let summary = "Boards of icons as many as the room fits - a swipe turns one; a held icon moves the others."
 
     // listing: HomeScreenSample
-    /// One icon: its name, which is its identity, its glyph and its colour.
+    /// One icon: its name, which is its identity, its glyph and its color.
     struct HomeIcon: Hashable {
         let name: String
         let glyph: Icon
-        let colour: Color
+        let color: Color
     }
 
     /// Every icon, board after board: where one stands in the order is where
@@ -26,17 +26,17 @@ struct HomeScreenSample: SampleContent, ExampleContent {
             ("Sync", .refresh), ("Tasks", .checkmark), ("Menu", .menu), ("More", .more),
             ("Map", .forward), ("News", .add), ("Books", .back), ("Weather", .up),
             ("Trash", .delete), ("Inbox", .down), ("Focus", .close), ("Budget", .remove),
-            ("Friends", .person), ("Journal", .edit), ("Timer", .clock), ("Favourites", .star),
+            ("Friends", .person), ("Journal", .edit), ("Timer", .clock), ("Favorites", .star),
             ("Fitness", .heart), ("Videos", .play), ("Wallet", .lock), ("Backup", .upload),
             ("Reader", .info), ("Garden", .home), ("Chat", .mail), ("Agenda", .calendar),
             ("Remote", .settings), ("Shortcuts", .link), ("Albums", .copy), ("Compass", .forward),
         ]
-        let colours: [Color] = [
+        let colors: [Color] = [
             Color(hex: 0x7C3AED), Color(hex: 0x2563EB), Color(hex: 0x0D9488), Color(hex: 0xD97706),
             Color(hex: 0xDB2777), Color(hex: 0x4F46E5), Color(hex: 0x16A34A), Color(hex: 0xDC2626),
         ]
         return glyphs.enumerated().map { index, glyph in
-            HomeIcon(name: glyph.0, glyph: glyph.1, colour: colours[index % colours.count])
+            HomeIcon(name: glyph.0, glyph: glyph.1, color: colors[index % colors.count])
         }
     }()
 
@@ -224,8 +224,8 @@ struct HomeScreenSample: SampleContent, ExampleContent {
             opacity: 0.25 + 0.75 * max(1 - abs(board - Double(page)), 0))
     }
 
-    /// One icon: its glyph on a light disc on a rounded square of its colour -
-    /// the glyph in the platform's own colour, which shows on the disc in a
+    /// One icon: its glyph on a light disc on a rounded square of its color -
+    /// the glyph in the platform's own color, which shows on the disc in a
     /// light theme and a dark one alike - and its name under it; larger while
     /// the hand holds it.
     struct HomeTile: View {
@@ -235,7 +235,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
         var body: some View {
             VStack {
                 ZStack {
-                    Rectangle().fill(icon.colour)
+                    Rectangle().fill(icon.color)
                         .cornerRadius(14)
 
                     Rectangle().fill(.white)

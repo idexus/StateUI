@@ -1,6 +1,6 @@
-// The few colours the gallery says for itself.
+// The few colors the gallery says for itself.
 //
-// A colour written as a pair - `Color(light:dark:)` - follows the theme: the
+// A color written as a pair - `Color(light:dark:)` - follows the theme: the
 // half the system is asking for is picked as the view wearing it is built, and
 // a change of theme builds exactly the views wearing one again. So nothing here
 // has to know which theme is on, and neither does anything using it - which is
@@ -8,7 +8,7 @@
 //
 // The gallery stands in each platform's own look: its pages, bars, sidebar and
 // controls are the platform's. What it says for itself is its identity - the
-// gradient and the mark - the colours its samples draw with, and neutrals of
+// gradient and the mark - the colors its samples draw with, and neutrals of
 // no hue of their own: black let through in the light, white in the dark, so
 // they darken or lighten whatever the platform draws behind them.
 
@@ -18,13 +18,13 @@ import StateUI
 enum Palette {
     // MARK: Identity
 
-    /// The colour a sample marks something with: the gallery's violet, a light
+    /// The color a sample marks something with: the gallery's violet, a light
     /// lavender in the dark as the glass's own edge is, deep in the light.
     // listing: Palette.sample
     static let accent = Color(light: AppColors.violet, dark: AppColors.violetLight)
     // listing: end
 
-    /// Swift's orange - a sample's second colour beside the accent, the
+    /// Swift's orange - a sample's second color beside the accent, the
     /// identity's warm half.
     static let brand = Color(light: AppColors.swiftOrangeDeep, dark: AppColors.swiftOrange)
 
@@ -50,7 +50,7 @@ enum Palette {
 
     // MARK: Text
 
-    /// Text a view has to say the colour of again - drawn words, a clock's
+    /// Text a view has to say the color of again - drawn words, a clock's
     /// hands. Text that says nothing takes the platform's own.
     static let text = Color(light: Color(hex: 0x000000, opacity: 0.85), dark: Color(hex: 0xFFFFFF, opacity: 0.85))
 

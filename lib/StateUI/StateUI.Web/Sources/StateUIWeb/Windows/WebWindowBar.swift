@@ -83,7 +83,7 @@ final class WebWindowBar: WebDOMView {
         WebRelay.insert(subtitle.node, into: heading.node, at: 1)
     }
 
-    /// Shows `chrome`: its parts where it has them, its actions in their groups, its colours; `sidebar` says whether
+    /// Shows `chrome`: its parts where it has them, its actions in their groups, its colors; `sidebar` says whether
     /// the split view the toggle serves shows its sidebar, nil where there is none.
     func show(_ chrome: WindowChrome, title shown: String, sidebar: Bool?, split: WebSplitView? = nil) {
         attribute("data-sidebar", sidebar.map { $0 ? "shown" : "hidden" })
@@ -104,9 +104,9 @@ final class WebWindowBar: WebDOMView {
         showTitle(chrome.showsTitle ? shown : "", or: view, repeating: area?.title)
 
         style("--stateui-bar-background", WebCSS.fill(chrome.background))
-        // A clear bar shows what is behind it as it is: no blur, no deeper colour under it.
+        // A clear bar shows what is behind it as it is: no blur, no deeper color under it.
         style("--stateui-bar-filter", HostBrush(chrome.background).isClear ? "none" : nil)
-        // Words the tree gives no colour stand light on a dark band and dark on a light one.
+        // Words the tree gives no color stand light on a dark band and dark on a light one.
         style("--stateui-bar-foreground", WebCSS.color(BandWords.color(on: chrome.background, written: chrome.foreground)))
 
         var kept: [ObjectIdentifier: WebBarButton] = [:]

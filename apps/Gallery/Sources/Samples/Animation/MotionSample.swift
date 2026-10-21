@@ -56,7 +56,7 @@ struct MotionSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Size").onClicked { wide.toggle() }
-                Button("Colour").onClicked { warm.toggle() }
+                Button("Color").onClicked { warm.toggle() }
                 Button(Self.laws[law]).onClicked { law = (law + 1) % Self.laws.count }
             }
             .spacing(8)
@@ -85,7 +85,7 @@ struct MotionSample: SampleContent, ExampleContent {
         .spacing(10)
     }
 
-    /// One panel, either travelling at the chosen law or arriving at once.
+    /// One panel, either traveling at the chosen law or arriving at once.
     private func panel(travels: Bool) -> some View {
         // `.motion` is per view: the chosen law, or `.none` to arrive at once.
         Rectangle().fill(warm ? Palette.accent : Palette.brand)
@@ -112,7 +112,7 @@ struct MotionSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("Press Size or Colour. The first panel travels, the second "
+            Text("Press Size or Color. The first panel travels, the second "
                 + "arrives immediately, and the third holds only its size still.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

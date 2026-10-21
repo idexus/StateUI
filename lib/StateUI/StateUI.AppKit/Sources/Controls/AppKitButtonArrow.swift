@@ -60,7 +60,7 @@ struct AppKitButtonArrow {
             width: 1, height: max(0, bounds.height - 2 * inset))
     }
 
-    /// Draws the arrow in the words' colour, and its line fainter.
+    /// Draws the arrow in the words' color, and its line fainter.
     func tint(_ color: NSColor) {
         (view as? NSImageView)?.contentTintColor = color
         (view as? NSButton)?.contentTintColor = color

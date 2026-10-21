@@ -79,7 +79,7 @@ private struct GridPlacement: ExampleContent {
 }
 
 // listing: GridPlacement
-/// One coloured cell, composed rather than built inline - and placed with
+/// One colored cell, composed rather than built inline - and placed with
 /// `.gridRow`, `.gridColumn` and the spans like any other view.
 private struct GridCell: View {
     let text: String

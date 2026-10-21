@@ -129,7 +129,7 @@ final class UIKitButtonView: UIButton {
     }
 
     /// Stands the words in the system's red, as UIKit marks an action that destroys something, or in the
-    /// configuration's own colour.
+    /// configuration's own color.
     func setCriticalWords(_ critical: Bool) {
         let words: UIColor? = critical ? .systemRed : nil
         if configuration?.baseForegroundColor != words { configuration?.baseForegroundColor = words }
@@ -243,7 +243,7 @@ final class UIKitButtonView: UIButton {
 
     private func showLook() {
         configuration?.titleTextAttributesTransformer = look.titleTransformer(color: tintColor)
-        // An icon is drawn in the words' colour where the tree writes one, with words or alone; so is the arrow.
+        // An icon is drawn in the words' color where the tree writes one, with words or alone; so is the arrow.
         let words = look.color.flatMap(UIColor.init(stateUI:))
         configuration?.imageColorTransformer = words.map { color in UIConfigurationColorTransformer { _ in color } }
         guard let arrow else { return }

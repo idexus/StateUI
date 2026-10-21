@@ -3,11 +3,11 @@
 
 @_spi(Host) import StateUI
 
-/// A material as every host reads what the tree sends: what paints the surface - a colour or a gradient, or the tint
-/// over a blur or glass - the blur behind it, the platform's glass, and the colour a host that blurs nothing draws in
+/// A material as every host reads what the tree sends: what paints the surface - a color or a gradient, or the tint
+/// over a blur or glass - the blur behind it, the platform's glass, and the color a host that blurs nothing draws in
 /// the blur's place; each host draws the first its toolkit has. A pair still in the value - a registration reading
 /// the member as its type encodes it again - is the half of the theme in force.
-/// Design: docs/design/types/colour-and-theme.md#a-material
+/// Design: docs/design/types/color-and-theme.md#a-material
 @_spi(Host) public struct HostMaterial: Equatable, Sendable {
     /// The platform's glass, as the tree asks for it.
     public struct Glass: Equatable, Sendable {
@@ -18,7 +18,7 @@
         public let isInteractive: Bool
     }
 
-    /// What paints the surface: its colour or gradient, or the tint over its blur or glass; nil for none.
+    /// What paints the surface: its color or gradient, or the tint over its blur or glass; nil for none.
     public let paint: HostValue?
 
     /// The blur behind the surface - a blur's own, or the one a host with no glass draws for it; nil for none.
@@ -27,7 +27,7 @@
     /// The glass, where the material is glass.
     public let glass: Glass?
 
-    /// The colour a host that blurs nothing draws for the blur; nil where there is no blur.
+    /// The color a host that blurs nothing draws for the blur; nil where there is no blur.
     public let standIn: HostValue?
 
     /// The material the tree's `value` describes - nothing at all for no value.
@@ -55,8 +55,8 @@
         paint == nil && blur == nil
     }
 
-    /// What a host that blurs nothing paints: the paint laid over the stand-in - a colour, or each of a gradient's
-    /// colours - the stand-in alone where nothing paints it, the paint alone where there is no blur; nil for none.
+    /// What a host that blurs nothing paints: the paint laid over the stand-in - a color, or each of a gradient's
+    /// colors - the stand-in alone where nothing paints it, the paint alone where there is no blur; nil for none.
     public var painted: HostValue? {
         guard let standIn else { return paint }
         guard let paint else { return standIn }
@@ -65,7 +65,7 @@
         return .values(parts.map { $0.color != nil ? Self.over($0, standIn) : $0 })
     }
 
-    /// `top` laid over `bottom`, as a colour with an alpha lies over another: what shows through it is tinted by
+    /// `top` laid over `bottom`, as a color with an alpha lies over another: what shows through it is tinted by
     /// it in its share.
     static func over(_ top: HostValue, _ bottom: HostValue) -> HostValue {
         guard case .color(let r, let g, let b, let a) = top, case .color(let br, let bg, let bb, let ba) = bottom

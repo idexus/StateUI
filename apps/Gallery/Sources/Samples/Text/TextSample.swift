@@ -15,7 +15,7 @@ struct TextSample: SampleContent, ExampleContent {
                 .fontSize(16)
                 .fontWeight(.bold)
 
-            Text("Italic, and coloured")
+            Text("Italic, and colored")
                 .fontSize(16)
                 .fontAttributes(.italic)
                 .textColor(Palette.accent)
@@ -24,7 +24,7 @@ struct TextSample: SampleContent, ExampleContent {
                 .fontSize(16)
                 .textDecorations([.underline, .strikethrough])
 
-            Text("Centred, with room around it")
+            Text("Centered, with room around it")
                 .fontSize(16)
                 .horizontalTextAlignment(.center)
                 .padding(8)

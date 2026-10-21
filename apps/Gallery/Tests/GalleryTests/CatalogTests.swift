@@ -161,7 +161,7 @@ private func verticalScrollers(in node: Node) -> Int {
 
 /// Everything a tree SAYS, node by node - one string, or the runs one spells.
 ///
-/// A `CodeBlock` colours its snippet with spans under one formatted label, so
+/// A `CodeBlock` colors its snippet with spans under one formatted label, so
 /// the visible text is what those runs spell together.
 @MainActor
 private func shownTexts(in node: Node) -> [String] {
@@ -1143,14 +1143,14 @@ final class CatalogTests: XCTestCase {
 
     /// The galleries are a SCENE: gallery windows, as many as are opened - what
     /// launch and *File ▸ New Window* open - and beside them the Fonts and
-    /// Colours windows and the inspector, one of each, and a swatch window per
+    /// Colors windows and the inspector, one of each, and a swatch window per
     /// number.
     func testTheGalleriesAreASceneWithTheirToolsBeside() {
         let windows = GalleryScene().declaredWindows.declared
 
-        let (fonts, colours, inspector) = (WindowType.fonts.key, WindowType.colours.key, WindowType.debugInspector.key)
-        XCTAssertEqual(windows.map(\.type), [nil, fonts, colours, inspector, WindowType.swatch.key])
-        XCTAssertEqual(windows.filter(\.single).compactMap(\.type), [fonts, colours, inspector])
+        let (fonts, colors, inspector) = (WindowType.fonts.key, WindowType.colors.key, WindowType.debugInspector.key)
+        XCTAssertEqual(windows.map(\.type), [nil, fonts, colors, inspector, WindowType.swatch.key])
+        XCTAssertEqual(windows.filter(\.single).compactMap(\.type), [fonts, colors, inspector])
         XCTAssertEqual(windows.filter { $0.valueType != nil }.compactMap(\.type), [WindowType.swatch.key])
         XCTAssertEqual(windows.first?.page(nil, nil).stateful?.viewType.name, String(reflecting: GalleryWindow.self))
     }
@@ -1638,7 +1638,7 @@ final class CatalogTests: XCTestCase {
 
             /// What a node says, whether that is one string or a set of runs.
             ///
-            /// A `CodeBlock` colours its snippet with spans under one formatted
+            /// A `CodeBlock` colors its snippet with spans under one formatted
             /// label, so the visible text is what those runs spell together.
             func shownText(_ node: Node) -> String? {
                 func text(_ node: Node) -> String? {
@@ -1663,7 +1663,7 @@ final class CatalogTests: XCTestCase {
                     caught.append(contentsOf: handled)
 
                     // The code is the one thing that DOES scroll. It is drawn as
-                    // coloured runs rather than one string, so the runs are put
+                    // colored runs rather than one string, so the runs are put
                     // back together to recognize it.
                     codeScrolls = codeScrolls || sample.examples.contains { $0.code == shownText(node) }
                 }

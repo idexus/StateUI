@@ -9,7 +9,7 @@ value and reports the user's change back ([patches](../../host/patches.md)).
 
 A label's words are a `GtkLabel`'s, and how they look is one list of Pango
 attributes written whole whenever any of it changes: the font's size in
-logical pixels, its weight, slant and family, the colour, the space between
+logical pixels, its weight, slant and family, the color, the space between
 the letters, a line's height as a multiple of the font's own, and the lines
 under or through the words - each GTK's own where the tree says nothing.
 
@@ -24,9 +24,9 @@ stands them in its middle or at its bottom - GTK's own is the middle.
 
 A label's padding is room inside its own box, around its words
 ([a widget's own box](drawing.md#a-widgets-own-box)), and its background a
-class filling that box in its colour - a brush's first colour. A button's caption is
+class filling that box in its color - a brush's first color. A button's caption is
 the `GtkLabel` the button shows it in, and takes the same look, font and
-colour, and the button its padding.
+color, and the button its padding.
 
 ## The user's text size
 
@@ -61,7 +61,7 @@ button standing inside the class's box. A split button wears the box whole,
 its two buttons bare but for a shade under the pointer and a deeper one
 pressed - each rounded at its outer corners alone, by the direction of the
 words - and the line between them, which the theme leaves to the gap
-between two filled buttons, drawn in the colour of its words. The padding
+between two filled buttons, drawn in the color of its words. The padding
 goes to the buttons, which hold the words.
 
 ## A button's picture
@@ -86,7 +86,7 @@ still clicks.
 ## Runs of words
 
 A label's spans are its words, run by run: the label's text is their words
-joined, and each run's look - its colour, size, weight, slant, lines and
+joined, and each run's look - its color, size, weight, slant, lines and
 background - covers its own bytes of it, the label's look where the run says
 nothing. The runs stand in place of the label's own words; a label whose
 spans are taken away shows its own words again. A span that changes has its
@@ -183,11 +183,11 @@ the program put stands over the field's first focus, written again once GTK
 has selected - and once that focus has passed or the user has changed the
 words, GNOME's own way stands.
 
-A field's font and colour are a class of the display-wide sheet
+A field's font and color are a class of the display-wide sheet
 ([a widget's own box](drawing.md#a-widgets-own-box)) rather than Pango
 attributes, since an editor's text view takes none: the class sets the font
-and the colour, which the placeholder takes too. GTK dims a placeholder with
-opacity; a placeholder colour is drawn in full.
+and the color, which the placeholder takes too. GTK dims a placeholder with
+opacity; a placeholder color is drawn in full.
 
 ## An editor
 
@@ -236,8 +236,8 @@ and the user's choice is reported onto the state it is carried in. GTK gives a
 drop-down no placeholder and tells no one its list opened or closed, so the
 placeholder and the list's opening and closing are not planned. The words of
 the chosen one - on the drop-down's `button` node - take the tree's font and
-colour; the list keeps the theme's. A GNOME drop-down wears no accent: a
-check in its words' colour marks the choice, so a picker takes no tint.
+color; the list keeps the theme's. A GNOME drop-down wears no accent: a
+check in its words' color marks the choice, so a picker takes no tint.
 
 ## A day and a time
 
@@ -270,13 +270,13 @@ turning while its work runs and drawing nothing while it does not.
 
 ## A control's accent
 
-A control's tint is its one accent colour, where GNOME's theme draws its
+A control's tint is its one accent color, where GNOME's theme draws its
 accent: a switch's track while it is on, a ticked box, a slider's track up to
 its thumb, a progress bar's done part and a spinner. Each is a node GTK
 documents for the control, so the tint is a class of the display-wide sheet
 ([a widget's own box](drawing.md#a-widgets-own-box)) filling that node -
 `switch:checked`, `check:checked`, `trough > highlight`, `trough > progress` -
-and the spinner's colour; the
+and the spinner's color; the
 theme's light under the pointer and pressed lies over it as over its own
 accent.
 
@@ -353,5 +353,5 @@ buttons is a column of its check buttons, which a group draws as radio
 buttons (`GTKChoiceGroupView`). Each set is one group, so GTK keeps one
 active; a button turned on tells the choice, and the program's writes are
 dropped as every program write is. The words' class stands on the box, and
-GTK's CSS hands the font and colour on to the buttons.
+GTK's CSS hands the font and color on to the buttons.
 

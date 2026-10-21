@@ -34,7 +34,7 @@
 
 /* The words stand at the sizes the page gives them: a phone's browser enlarges none it finds in a wide block. */
 html, body { margin: 0; height: 100%; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-/* The page wears its window's colour under it where the window is one opaque colour (--stateui-page). */
+/* The page wears its window's color under it where the window is one opaque color (--stateui-page). */
 body {
   background: var(--stateui-page, var(--stateui-surface));
   color: var(--stateui-text);
@@ -96,7 +96,7 @@ body {
 .stateui-room { grid-row: 2; grid-column: 1; display: grid; min-height: 0; min-width: 0; position: relative; }
 .stateui-overlays { grid-row: 2; grid-column: 1; z-index: 20; min-height: 0; min-width: 0; }
 
-/* The bar: what leads it, the page's title centred, the trailing actions. */
+/* The bar: what leads it, the page's title centered, the trailing actions. */
 .stateui-bar {
   position: relative;
   z-index: 10;
@@ -131,7 +131,7 @@ body {
 
 /* With a split view, five columns whose widths move with its sidebar: the part over the sidebar - the toggle alone
    while the sidebar is hidden - what leads the detail, the title, the trailing actions, and a last part as wide as
-   the first while the sidebar is hidden and none beside it shown, so the title stands centred over the detail
+   the first while the sidebar is hidden and none beside it shown, so the title stands centered over the detail
    beside a sidebar shown and over the whole bar else. */
 .stateui-bar[data-sidebar] {
   grid-template-columns: var(--stateui-bar-side) minmax(0, 1fr) auto minmax(0, 1fr) var(--stateui-bar-side);
@@ -442,7 +442,7 @@ body {
   touch-action: pan-x;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
-  /* The strip wears the bars' colour on its path, the window bar's look where none is said. */
+  /* The strip wears the bars' color on its path, the window bar's look where none is said. */
   background: var(--stateui-bar-background, color-mix(in srgb, var(--stateui-surface) 82%, transparent));
   backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
   -webkit-backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
@@ -492,7 +492,7 @@ body {
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
-/* A button's role: the main action in the accent, a destructive one in the colour a question's has. */
+/* A button's role: the main action in the accent, a destructive one in the color a question's has. */
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-button[data-role="primary"] {
   background: var(--stateui-accent); border-color: transparent; color: white;
 }

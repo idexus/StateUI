@@ -17,7 +17,7 @@ final class AndroidMenusTests: XCTestCase {
 
     /// A view with a context menu takes a long press; the menu is written as the user asks for it - an item, a
     /// submenu with an item that cannot be chosen, a line, a destructive item, and one that cannot be chosen
-    /// shown as such rather than in the error colour - and an item chosen runs.
+    /// shown as such rather than in the error color - and an item chosen runs.
     func testAContextMenuIsWrittenAsTheUserAsksAndItsItemsRun() throws {
         try onMainActor {
             let heard = Received<String>()
@@ -78,7 +78,7 @@ enum TestMenus {
     private static let barActions = Java.staticMethod(owner, "onBar", "(Landroid/view/ViewGroup;)Ljava/lang/String;")
 
     /// The actions standing on `bar` as it lays them out: each one's words and whether they are drawn "light" or
-    /// "dark", or "picture" and the colour it is drawn in, as ARGB in hexadecimal.
+    /// "dark", or "picture" and the color it is drawn in, as ARGB in hexadecimal.
     static func onBar(_ bar: AndroidView) -> String {
         Java.frame { Java.callStaticObject(owner, barActions, .object(bar.reference)).map { Java.text($0) } ?? "" }
     }

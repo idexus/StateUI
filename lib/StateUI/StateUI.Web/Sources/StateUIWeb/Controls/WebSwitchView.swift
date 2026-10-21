@@ -45,7 +45,7 @@ final class WebSwitchView: WebDOMView {
         WebRelay.setFlag(box.node, "checked", on)
     }
 
-    /// The words it says beside it, and their colour; empty words show none.
+    /// The words it says beside it, and their color; empty words show none.
     func setWords(_ words: String, color: HostValue?) {
         WebRelay.setText(caption.node, words)
         caption.style("color", WebCSS.color(color))
@@ -57,7 +57,7 @@ final class WebSwitchView: WebDOMView {
         attribute("aria-disabled", enabled ? nil : "true")
     }
 
-    /// The colour it shows when on; nil for the page's accent.
+    /// The color it shows when on; nil for the page's accent.
     func setTint(_ tint: HostValue?) {
         style("accent-color", WebCSS.color(tint))
         style("--stateui-on", WebCSS.color(tint))

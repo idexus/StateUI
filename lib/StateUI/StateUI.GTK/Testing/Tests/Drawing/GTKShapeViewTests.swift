@@ -14,27 +14,27 @@ final class GTKShapeViewTests: XCTestCase {
 
     /// A rectangle fills its room, its corners rounded away.
     func testARectangleFillsItsRoomItsCornersRounded() throws {
-        let colours = try drawn(width: 100, height: 60, at: [(50, 30), (50, 1), (1, 1)]) {
+        let colors = try drawn(width: 100, height: 60, at: [(50, 30), (50, 1), (1, 1)]) {
             Rectangle().fill(Color(hex: 0xFF0000)).cornerRadius(20).width(100).height(60)
         }
-        XCTAssertEqual(colours, [Self.red, Self.red, 0])
+        XCTAssertEqual(colors, [Self.red, Self.red, 0])
     }
 
     /// A corner wider than half the shorter side is held to it (`BoxArithmetic.fitted`): a long room's ends are
     /// rounded whole, a capsule, never an oval.
     func testACornerIsHeldToHalfTheShorterSide() throws {
-        let colours = try drawn(width: 100, height: 20, at: [(1, 1), (12, 2), (50, 10)]) {
+        let colors = try drawn(width: 100, height: 20, at: [(1, 1), (12, 2), (50, 10)]) {
             Rectangle().fill(Color(hex: 0xFF0000)).cornerRadius(50).width(100).height(20)
         }
-        XCTAssertEqual(colours, [0, Self.red, Self.red], "beyond the round corner; within the end an oval would leave empty")
+        XCTAssertEqual(colors, [0, Self.red, Self.red], "beyond the round corner; within the end an oval would leave empty")
     }
 
     /// An ellipse fills its room, and nothing beyond its curve.
     func testAnEllipseFillsItsRoom() throws {
-        let colours = try drawn(width: 100, height: 60, at: [(50, 30), (5, 30), (3, 3)]) {
+        let colors = try drawn(width: 100, height: 60, at: [(50, 30), (5, 30), (3, 3)]) {
             Ellipse().fill(Color(hex: 0xFF0000)).width(100).height(60)
         }
-        XCTAssertEqual(colours, [Self.red, Self.red, 0])
+        XCTAssertEqual(colors, [Self.red, Self.red, 0])
     }
 
     /// A path of its own is placed by its aspect: fitted, a triangle keeps its shape; stretched, it covers a wide
@@ -67,22 +67,22 @@ final class GTKShapeViewTests: XCTestCase {
 
     /// A gradient runs across the shape it fills.
     func testAGradientRunsAcrossTheShape() throws {
-        let colours = try drawn(width: 100, height: 20, at: [(1, 10), (99, 10)]) {
+        let colors = try drawn(width: 100, height: 20, at: [(1, 10), (99, 10)]) {
             Rectangle().fill(.linearGradient(
                 [GradientStop(Color(hex: 0xFF0000), 0), GradientStop(Color(hex: 0x0000FF), 1)],
                 startPoint: Point(0, 0), endPoint: Point(1, 0))).width(100).height(20)
         }
-        XCTAssertGreaterThan(colours[0] >> 16 & 0xFF, 0xE0, "red at the start")
-        XCTAssertGreaterThan(colours[1] & 0xFF, 0xE0, "blue at the end")
+        XCTAssertGreaterThan(colors[0] >> 16 & 0xFF, 0xE0, "red at the start")
+        XCTAssertGreaterThan(colors[1] & 0xFF, 0xE0, "blue at the end")
     }
 
     /// A geometry that fills its room at its own size - placed where it stands, its placement the identity - is
     /// drawn.
     func testAGeometryAtItsOwnSizeIsDrawn() throws {
-        let colours = try drawn(width: 56, height: 56, at: [(28, 40), (5, 5)]) {
+        let colors = try drawn(width: 56, height: 56, at: [(28, 40), (5, 5)]) {
             Path("M 28,0 L 56,56 L 0,56 Z").fill(Color(hex: 0xFF0000)).width(56).height(56)
         }
-        XCTAssertEqual(colours, [Self.red, 0])
+        XCTAssertEqual(colors, [Self.red, 0])
     }
 
     /// Dashes and gaps are outline widths, and an offset of half the pattern puts dashes where the gaps were.
@@ -100,7 +100,7 @@ final class GTKShapeViewTests: XCTestCase {
         XCTAssertEqual(shifted, [0, Self.red], "half a pattern on")
     }
 
-    /// The colours at `points` of `shape`, sized `width` by `height`, read from the layout holding it.
+    /// The colors at `points` of `shape`, sized `width` by `height`, read from the layout holding it.
     private func drawn(
         width: Double, height: Double, at points: [(Double, Double)], _ shape: @escaping @MainActor () -> any View
     ) throws -> [UInt32] {

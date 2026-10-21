@@ -75,9 +75,9 @@ namespace {
         return actions;
     }
 
-    /// The actions on the bar stand in its words' colour where the tree gives one, "more" and the lines between
-    /// groups among them; a destructive one keeps the theme's critical colour, and one behind "more" the menu's
-    /// colours, on the menu's own background.
+    /// The actions on the bar stand in its words' color where the tree gives one, "more" and the lines between
+    /// groups among them; a destructive one keeps the theme's critical color, and one behind "more" the menu's
+    /// colors, on the menu's own background.
     void paintActions(controls::TitleBar const &bar) {
         bool given = bar.ReadLocalValue(controls::Control::ForegroundProperty()) != xaml::DependencyProperty::UnsetValue();
         auto paint = [&](controls::Control const &control) {
@@ -383,7 +383,7 @@ extern "C" void stateui_winui_split_set_pane_grounds(
             switch (kind) {
             case StateUIGroundOwn:
                 return nullptr;
-            case StateUIGroundColour:
+            case StateUIGroundColor:
                 return media::SolidColorBrush(color(argb));
             case StateUIGroundAcrylic: {
                 media::AcrylicBrush acrylic;
@@ -410,7 +410,7 @@ extern "C" void stateui_winui_split_set_pane_grounds(
     }
 }
 
-extern "C" void stateui_winui_menu_bar_set_colours(
+extern "C" void stateui_winui_menu_bar_set_colors(
     StateUIObjectRef handle, bool hasBackground, uint32_t background, bool hasForeground, uint32_t foreground, int32_t theme
 ) {
     try {

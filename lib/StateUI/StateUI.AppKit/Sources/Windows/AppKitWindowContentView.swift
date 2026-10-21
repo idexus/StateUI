@@ -65,7 +65,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     }
 
     /// The material the desktop shows through the window in: it lies under the page and the bars' band,
-    /// wherever they leave it uncovered or paint a colour it shows through; nil for an opaque window.
+    /// wherever they leave it uncovered or paint a color it shows through; nil for an opaque window.
     var backdrop: Blur.Thickness? {
         didSet {
             guard backdrop != oldValue else { return }
@@ -88,7 +88,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     var materialForTesting: NSVisualEffectView? { material }
 
     /// The window's background over its material, where the desktop shows
-    /// through the window: a colour with an alpha tints the material and lets
+    /// through the window: a color with an alpha tints the material and lets
     /// it show. Nil leaves the material the system's.
     var materialTint: NSColor? {
         didSet { if materialTint != oldValue { needsLayout = true } }
@@ -96,7 +96,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
 
     var materialTintForTesting: NSView? { material?.wash }
 
-    /// The colour the window's bars are written in, painted over `barBand`.
+    /// The color the window's bars are written in, painted over `barBand`.
     /// Nil leaves the title bar and toolbar the system's material.
     var barColor: NSColor? {
         didSet { if barColor != oldValue { needsLayout = true } }

@@ -165,7 +165,7 @@ extension UIView {
 }
 
 extension UIColor {
-    /// A StateUI colour: four sRGB channels, drawn in sRGB exactly; nil for a value that is no colour.
+    /// A StateUI color: four sRGB channels, drawn in sRGB exactly; nil for a value that is no color.
     convenience init?(stateUI value: HostValue) {
         guard let color = value.fractions else { return nil }
         self.init(red: color.red, green: color.green, blue: color.blue, alpha: color.alpha)

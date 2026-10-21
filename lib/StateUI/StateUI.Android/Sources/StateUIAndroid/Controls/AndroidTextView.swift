@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 import CStateUIAndroid
 
-/// A Text: a `TextView` - its words, or runs of them each in its own colour, size and weight.
+/// A Text: a `TextView` - its words, or runs of them each in its own color, size and weight.
 /// Design: docs/design/platforms/android/controls.md#a-labels-words
 @MainActor
 final class AndroidTextView: AndroidTextualView {
@@ -20,7 +20,7 @@ final class AndroidTextView: AndroidTextualView {
 
     override var wordsRoom: Rect? { bound }
 
-    /// A `TextView` in the theme's primary words colour, which its own text appearance leaves secondary.
+    /// A `TextView` in the theme's primary words color, which its own text appearance leaves secondary.
     /// Design: docs/design/platforms/android/controls.md#a-labels-words
     init() {
         super.init { _ in
@@ -55,7 +55,7 @@ final class AndroidTextView: AndroidTextualView {
         setLetterSpacing(letterSpacing)
     }
 
-    /// The Java spans that make a run differ from the label: its colour, size, family, weight, background and
+    /// The Java spans that make a run differ from the label: its color, size, family, weight, background and
     /// lines. Android spaces the letters of a whole text alone. A run's size stands in pixels where it follows the
     /// user's font scale and in density-independent points where not - the label's size where the run says none
     /// and the label scales while the run does not.

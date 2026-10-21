@@ -59,7 +59,7 @@ extension Icon {
 }
 
 /// The icons the host brings where a theme holds none of its own - a heart, which Adwaita no longer draws - as GNOME's
-/// applications bring theirs: each a symbolic SVG, filled in the colour GTK draws it in.
+/// applications bring theirs: each a symbolic SVG, filled in the color GTK draws it in.
 /// Design: docs/design/platforms/gtk/drawing.md#icons
 @MainActor
 enum GTKOwnIcons {

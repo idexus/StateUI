@@ -2,7 +2,7 @@
 
 Every element StateUI declares - each control, and each part an application, its windows and its pages are made of - member by member, with what each target host's tests proved of it.
 
-A page is its element's contract rendered: the members it declares itself, then one section per tier it wears, each linking that tier's page. Every member shows its kind - a property, an event or an act - its value, the layer that realizes it, and a mark for each platform, because a host realizes the same inherited member differently on different elements: a background is a layer colour on a label and a drawn fill on an outlined layout.
+A page is its element's contract rendered: the members it declares itself, then one section per tier it wears, each linking that tier's page. Every member shows its kind - a property, an event or an act - its value, the layer that realizes it, and a mark for each platform, because a host realizes the same inherited member differently on different elements: a background is a layer color on a label and a drawn fill on an outlined layout.
 
 <!-- legend:begin -->
 | Mark | Meaning |
@@ -120,7 +120,7 @@ Members many elements share, declared once.
 - [FilledShape](tiers/FilledShape.md) - A shape enclosing an area its fill paints - every shape but a line.
 - [CorneredShape](tiers/CorneredShape.md) - A shape whose outline turns corners - a rectangle, a polygon, a polyline, a path; neither a line nor an ellipse.
 - [TextualElement](tiers/TextualElement.md) - What every element showing words has: the words, and the case they are drawn in.
-- [TextColorElement](tiers/TextColorElement.md) - The colour of text, wherever it is drawn.
+- [TextColorElement](tiers/TextColorElement.md) - The color of text, wherever it is drawn.
 - [FontElement](tiers/FontElement.md) - The font text is drawn in: its step of the platform's type ramp, its family, its size, its weight and slant, and whether it follows the user's text-size setting.
 - [TextAlignmentElement](tiers/TextAlignmentElement.md) - Where text sits across the space its own element was given.
 - [LineHeightElement](tiers/LineHeightElement.md) - How far apart the lines of text are.
@@ -129,10 +129,10 @@ Members many elements share, declared once.
 - [PaddingElement](tiers/PaddingElement.md) - The space kept inside an element, around what it holds.
 - [BorderElement](tiers/BorderElement.md) - What an element draws of its own box: the shape its background, its outline and its cut follow, and the outline.
 - [ImageElement](tiers/ImageElement.md) - How a picture fills the room it was given.
-- [TintElement](tiers/TintElement.md) - A control's one accent colour.
+- [TintElement](tiers/TintElement.md) - A control's one accent color.
 - [KeyboardElement](tiers/KeyboardElement.md) - An element that can hold the keyboard - a control taking the focus, or a layout holding the view that does - and so hear the keys it takes.
 - [FocusElement](tiers/FocusElement.md) - An element that takes the keyboard focus itself - a field, a button, a list - and so holds the keyboard.
-- [BarElement](tiers/BarElement.md) - What an arrangement declares of the bar while it stands on the visible path: its colours, and the application's name, line and mark in the bar.
+- [BarElement](tiers/BarElement.md) - What an arrangement declares of the bar while it stands on the visible path: its colors, and the application's name, line and mark in the bar.
 - [MenuItemElement](tiers/MenuItemElement.md) - What every item a user chooses from has - a menu's entry, a toolbar's item: a caption, a picture, and something to run.
 - [PageElement](tiers/PageElement.md) - What a page shows about itself where another container presents it as an item - a title and a picture.
 <!-- tiers:end -->

@@ -16,7 +16,7 @@ final class WebGLCube3DView: WebControl {
         didSet { if cubeSize != oldValue { element.setAttribute("size", String(cubeSize)) } }
     }
 
-    /// Which colour it is painted, as the element reads it: the vocabulary's member number.
+    /// Which color it is painted, as the element reads it: the vocabulary's member number.
     var color = CubeColor.teal {
         didSet { if color != oldValue { element.setAttribute("color", String(color.rawValue)) } }
     }

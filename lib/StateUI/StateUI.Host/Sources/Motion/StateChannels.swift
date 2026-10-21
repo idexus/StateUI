@@ -177,7 +177,7 @@
 /// What a channel says after a change: itself, what the core hears, and the waiters answered.
 private typealias StateChannelEmit = (StateChannel, HostJourneyUpdate?, [JourneyCompletion]) -> Void
 
-/// One state's channel: its animated value, travelling in runs - the lanes one write sent on together, each an
+/// One state's channel: its animated value, traveling in runs - the lanes one write sent on together, each an
 /// animation of its own - so a write of some lanes leaves the other lanes' travel and their waiter as they were.
 /// Design: docs/design/host/motion.md#a-channel-lane-by-lane
 @MainActor
@@ -195,7 +195,7 @@ private final class StateChannel {
     private var runs: [Int: Run] = [:]
     private var numbered = 0
 
-    /// Lanes travelling together, and the waiter their arrival answers.
+    /// Lanes traveling together, and the waiter their arrival answers.
     private struct Run {
         var lanes: [Int]
         var completion: Int?

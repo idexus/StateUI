@@ -12,14 +12,14 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 /**
  * A cell of an ItemsView: a StateUI layout holding one entry. An item's cell shows a touch as the platform's rows do,
- * and the user's choice on a band of the accent colour; assistive technology hears it chosen - checked where many
+ * and the user's choice on a band of the accent color; assistive technology hears it chosen - checked where many
  * may be.
  */
 final class StateUIItemCell extends StateUIViewGroup {
     /** Whether many items may be chosen: a chosen item is then checked rather than selected. */
     private boolean many;
 
-    /** A cell of an item - `band` the colour it shows chosen in, as ARGB - or of a header or a footer. */
+    /** A cell of an item - `band` the color it shows chosen in, as ARGB - or of a header or a footer. */
     StateUIItemCell(Context context, long view, boolean item, int band) {
         super(context, view);
         if (!item) return;

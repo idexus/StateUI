@@ -30,14 +30,14 @@ A page's bar is its navigation item: its title - or the view standing in for
 it - its actions as the host layer composes them along the page's path, each
 group a `UIBarButtonItemGroup` of its own, so each keeps its own shared
 background, the leading ones beside the way back, those beyond the bar in a
-menu behind its last button, whether it offers the way back, and its colours
+menu behind its last button, whether it offers the way back, and its colors
 where the tree gives them. The view standing in for the title is fitted to
 what it holds as it comes, and a layout again at every render; a control -
 a search field - keeps the width the bar gives it, since a fit to its words
 at every render would cut it as the user types and the bar would widen it
 again. An action that destroys something is marked destructive in the menu
 and tinted red on the bar. A clear bar is UIKit's transparent bar: nothing
-under it and no line - an opaque bar of a clear colour would draw its line
+under it and no line - an opaque bar of a clear color would draw its line
 under nothing. A tabbed view's bar is its chosen tab's page's, but for its
 title: the page the window is named by ([the window's
 chrome](../../host/pages.md#the-windows-chrome)) - tabs pushed onto a stack
@@ -54,7 +54,7 @@ UIKit's own tab icon size, each as wide as its shape makes it
 lower, both stand 18 points tall (`landscapeImagePhone`). The picture keeps
 its pixels and is drawn smaller: at its file's size it stands far taller
 than the system's own pictures beside it. An icon is its SF Symbol
-(`Icon.sfSymbol`), a template image the bar colours as it does its own.
+(`Icon.sfSymbol`), a template image the bar colors as it does its own.
 
 ## A page's background
 
@@ -70,7 +70,7 @@ on the split view's material for its place instead ([a sidebar's
 material](../../host/pages.md#a-sidebars-material)) - over the detail, the
 system's background when the split view says none, never the window's - and
 the split view has its pages paint again as its room or its materials
-change. A blur or glass behind a window shows its colour
+change. A blur or glass behind a window shows its color
 (`HostMaterial.painted`): iPadOS draws an application's window opaque.
 
 ## A navigation stack
@@ -115,7 +115,7 @@ bars inside stand as a phone's.
 
 A sidebar the application paints ([a sidebar's
 material](../../host/pages.md#a-sidebars-material)) stands apart from the
-detail by a line of UIKit's separator colour, one point down its column's
+detail by a line of UIKit's separator color, one point down its column's
 edge, the host's own: it stands on UIKit's sidebar material like the
 platform's own sidebar, which UIKit parts by no line. UIKit's plain column
 (`primaryBackgroundStyle` `.none`) would part them by its own, but the detail
@@ -123,7 +123,7 @@ of a plain column takes its new width at once as the sidebar shows or hides,
 where under the sidebar material it slides with it. A blur or glass for the sidebar's
 place is UIKit's own effect under what the sidebar page shows - a blur's tint
 washed over it, glass tinted in itself - beside the detail and over it alike;
-a colour is the page's own background.
+a color is the page's own background.
 
 Whether the sidebar shows is the display mode the host prefers: over or beside
 the detail while the tree asks for it, the detail alone while not. The tree's
@@ -180,7 +180,7 @@ UIKit presents one thing over a controller at a time: a question asked in the
 turn a sheet is asked for would be dropped, or would stop every sheet after it.
 So the window's root presents everything (`UIKitRootViewController.pass`):
 what passes waits until no sheet moves, then stands over the top sheet -
-centred, where it stands as a popover with nothing to point at - and the
+centered, where it stands as a popover with nothing to point at - and the
 sheets asked for while it stands wait until it has gone. It goes with its
 answer (`passed`): UIKit's own dismissal is let finish, else the root
 dismisses it, and then what waited comes - the sheets first, then the next

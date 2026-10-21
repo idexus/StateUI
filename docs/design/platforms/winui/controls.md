@@ -8,7 +8,7 @@ value and reports the user's change back ([patches](../../host/patches.md)).
 ## Words
 
 How words look is one road for every element showing them, a `TextBlock` or a
-control: the font - its size, weight, slant and family - the colour, and the
+control: the font - its size, weight, slant and family - the color, and the
 room around them, each the platform's where the tree says nothing. A label
 adds its lines, its alignment across itself and down itself, the space
 between its letters and its lines, the lines under or through its words, and
@@ -41,7 +41,7 @@ its own in WinUI: it scales with its text, `–` in the matrix.
 ## A button
 
 A button's words are a `TextBlock` of its content, which takes the button's
-font and colour, and the room between its letters the button holds - a
+font and color, and the room between its letters the button holds - a
 `TextBlock` spaces its own letters, whatever its control says: wrapped or cut
 short at their end as the tree's break says,
 and on one line where it says nothing, as WinUI's own buttons stand. With a
@@ -61,21 +61,21 @@ filling the room inside the padding as its aspect says - fitted, covering it,
 stretched across it, or at its own size in the middle. Only the words
 changing writes them again in their place.
 
-A button drawn in the application's colours keeps them under the pointer and
+A button drawn in the application's colors keeps them under the pointer and
 pressed: its fill is drawn a little fainter each time, as WinUI's own buttons
 are, its words and outline as they are - WinUI's template otherwise draws
-those states in the platform's colours. They are written as a control's
+those states in the platform's colors. They are written as a control's
 accent is ([a control's accent](#a-controls-accent)): its template reads
-them as it is applied, so a colour that comes or goes has its theme read
-again, and a button whose style leaves - the colours, the outline, the room -
+them as it is applied, so a color that comes or goes has its theme read
+again, and a button whose style leaves - the colors, the outline, the room -
 stands as one that never wore it. The room the tree says nothing of is the
 template's own padding, not none.
 
 A role draws where the tree draws nothing of its own ([a button's
 role](../../host/layout.md#a-buttons-role)): the main action wears WinUI's
 `AccentButtonStyle`, and a destructive one's words the theme's critical
-colour, as a destructive entry's ([a destructive entry](pages.md#a-destructive-entry)):
-brushes in a merged dictionary of the button's, which a colour the tree
+color, as a destructive entry's ([a destructive entry](pages.md#a-destructive-entry)):
+brushes in a merged dictionary of the button's, which a color the tree
 writes into its own resources stands over.
 
 ## A button's menu
@@ -99,20 +99,20 @@ An oval button's background is a brush of the host's, a
 the button's size, filled and outlined inside its edge, the button's own
 border none. It is written where the button's look is, in the lightweight
 resources under the pointer and pressed too, its fill fainter there, and
-again at each size the button takes. Its fill is one colour - a gradient's
+again at each size the button takes. Its fill is one color - a gradient's
 first.
 
 ## Runs of words
 
 A label's spans are its words, run by run: each a `Run` among the text
-block's inlines, taking the colour, size, weight, slant, lines and family its
+block's inlines, taking the color, size, weight, slant, lines and family its
 span says and the label's own where it says nothing. The space between a
 run's letters is WinUI's thousandths of an em of the run's own size - its
 span's spacing, else its label's, so a larger run keeps the label's points
 ([runs of words](../../host/tree.md#runs-of-words)); a line's height is the whole
 text block's, and a span's own is not realized. A run's background is a
 `TextHighlighter` over its part of the words - a text block has no background
-per run - keeping the run's colour on them. The runs stand in place of the
+per run - keeping the run's color on them. The runs stand in place of the
 label's own words; a label whose spans are taken away shows its own words
 again. A span that changes has its label apply again, so the runs are laid
 down whole each time.
@@ -136,7 +136,7 @@ its header, over its track, which WinUI names it by; WinUI's "On" and "Off"
 beside the track are left empty, and the room its style keeps for them with
 them. A check box's words are its content, beside its box, which names it;
 with none it takes no room for them: the box alone, where WinUI's style would
-reserve the width of words. The words' colour goes where the control's style
+reserve the width of words. The words' color goes where the control's style
 reads it - `ToggleSwitchHeaderForeground`, and a check box's
 `CheckBoxForeground` in each state - as lightweight styling.
 
@@ -148,23 +148,23 @@ again so its template takes them.
 
 ## A control's accent
 
-A control's tint is its one accent colour, where WinUI draws the system's
+A control's tint is its one accent color, where WinUI draws the system's
 accent: a ticked box, a switch's track while it is on, a slider's thumb and
 the track up to it, a progress bar and a spinner. A progress bar and a spinner
 draw with their foreground, which the tint is. The other templates take their
 brushes from resources named
 for the control - `CheckBoxCheckBackgroundFillChecked`, `ToggleSwitchFillOn`,
 `SliderTrackValueFill` and their kin - so the tint is written into the
-control's own resources under those names, the colour itself and fainter
+control's own resources under those names, the color itself and fainter
 under the pointer and pressed, by the host layer's shares ([a
 box](../../host/layout.md#a-box)), as WinUI's accent brushes are - WinUI's
 lightweight styling, the same road a toggle's background and a search box's
-placeholder colour take.
+placeholder color take.
 
-A new colour takes the brushes standing under those names in place, and what
-they paint follows it: a tint travelling frame by frame changes colours, not
+A new color takes the brushes standing under those names in place, and what
+they paint follows it: a tint traveling frame by frame changes colors, not
 templates. A template reads a resource that comes or goes only as its theme is
-read, so a first colour after the control is drawn, and one taken away, have
+read, so a first color after the control is drawn, and one taken away, have
 the control read its theme again at once - its theme set to the other and
 back, the one road WinUI's public surface offers; no tint takes the names
 away, and the system's accent returns. A control's own resources are found by
@@ -175,7 +175,7 @@ is every control's.
 ## A picker
 
 A Picker is WinUI's `ComboBox`: its choices, the one chosen, its title as the
-placeholder it shows while none is, its words' font and colour, and its
+placeholder it shows while none is, its words' font and color, and its
 choices standing across it - the one shown and each in the list alike, the
 list's through a style for its items. The chosen one is written only where the
 tree changed it or the choices changed, so the user's choice is never argued
@@ -306,7 +306,7 @@ predicting the next word, WinUI's defaults both on and plain words neither,
 and the text box's input scope, which picks the on-screen keyboard: its keys
 by the purpose, `Text` where sentences start in capitals, `Chat` where emoji
 are offered. A question's field takes the same. The words stand across the
-box as their alignment says, the placeholder takes its colour, and the caret
+box as their alignment says, the placeholder takes its color, and the caret
 and the selection are put where the tree put them, in the characters WinUI
 counts, only where the tree changed them.
 
@@ -315,7 +315,7 @@ holds takes the box's style, which carries whether it is read only, the case
 typing takes, the words typed across it, and how typing is checked, predicted
 and keyed. Its caret and selection stay that text box's: the box offers none
 of its own, so the register records them as not planned. The template reads the
-placeholder's colour from theme resources, which the box's own resources name
+placeholder's color from theme resources, which the box's own resources name
 again - at rest, under the pointer, focused and disabled - as a control's
 accent is ([a control's accent](#a-controls-accent)). It stands the
 placeholder at the start whatever the text box says, so the register records
@@ -342,8 +342,8 @@ writes the new one every value it holds, as it does a control just made.
 
 A `PasswordBox` reports its words from `PasswordChanging`, raised inside the
 write as a text box's `TextChanging` is, and its Enter submits. It takes the
-placeholder, its colour through the theme resources its template reads, the
-font and the words' colour, and the input scope - digits for a numeric
+placeholder, its color through the theme resources its template reads, the
+font and the words' color, and the input scope - digits for a numeric
 purpose, a password's otherwise, the only two it takes. It has no read-only
 state, alignment, case, caret or selection, and no spell checking or
 prediction: a password field keeps none of them, which the register records
@@ -395,7 +395,7 @@ WinUI draws an SVG into pixels and takes those pixels for DIPs. The host has
 it drawn at the size it shows at in its room, in its own proportions, at the
 display's scale - again only for more pixels, so a size in motion does not
 draw it every frame - and WinUI's `Stretch` fits it, fills with it, or
-centres it. A centred SVG gives the image its declared size, in the middle
+centers it. A centered SVG gives the image its declared size, in the middle
 of the room. A stretched picture keeps no proportions and is drawn at its
 room's size: WinUI fits an SVG into its pixels in the SVG's own proportions,
 leaving bands, so the relay reads a copy of it that has given them up - and
@@ -421,7 +421,7 @@ A picture crosses to the relay as lines: the files a name stands for, an
 icon as `glyph:` and its code point in Segoe Fluent Icons
 (`Icon.fluentGlyph`), or bytes as `bytes:` and their base64
 (`WinUIPictures`). An icon is a `FontIcon` - a `FontIconSource` on a title
-bar - drawn in the theme's font for symbols and coloured by what holds it,
+bar - drawn in the theme's font for symbols and colored by what holds it,
 as WinUI's own icons are.
 
 An Image stands its picture in a border: an `Image` for a file or bytes, or

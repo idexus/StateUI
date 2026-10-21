@@ -83,9 +83,9 @@ extension State {
         /// hook.
         var noted: ((Value) -> Void)?
 
-        /// The value wearing the theme last written into a carried state - a colour
+        /// The value wearing the theme last written into a carried state - a color
         /// pair, the accent, a material holding either; the image holds its half in force.
-        /// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
+        /// Design: docs/design/core/state.md#themed-colors-on-a-carried-state
         @usableFromInline var themed: Value?
 
         /// Whether a value turns with the theme or the accent (`ThemeWearing`).
@@ -384,7 +384,7 @@ extension State.Storage where Value: Walked {
     /// Tells the storage a destination sent by another road than a write, so the host
     /// writing it back on landing asks for nothing - and keeps the pair it wears, as a
     /// write does, or lets go of the one it kept.
-    /// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
+    /// Design: docs/design/core/state.md#themed-colors-on-a-carried-state
     func noteDestination(_ destination: Value) {
         themed = Self.wearsTheTheme(destination) ? destination : nil
         noted?(destination)
@@ -402,7 +402,7 @@ extension State.Storage where Value: Walked {
     }
 
     /// Lets go of the pair a stopped value no longer stands for.
-    /// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
+    /// Design: docs/design/core/state.md#themed-colors-on-a-carried-state
     func stoppedWhereItStands() {
         themed = nil
     }
@@ -428,7 +428,7 @@ extension State.Storage where Value: Walked {
     }
 
     /// Writes `parts` of the journey, each in the theme in force, over the lanes as they
-    /// lie: a value read back through its type - a colour's eight bits a channel - is not
+    /// lie: a value read back through its type - a color's eight bits a channel - is not
     /// always the lanes it was read from, and a lane rewritten so reads as moved.
     /// Design: docs/design/core/journeys.md#writing-the-parts
     private static func lay(
@@ -529,7 +529,7 @@ extension State.Storage where Value: StateValue {
 
     /// Lays the half in force of a value wearing the theme and makes the element being built the
     /// theme's reader.
-    /// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
+    /// Design: docs/design/core/state.md#themed-colors-on-a-carried-state
     func wearThemedPair() {
         guard let themed, let hostRead, let hostWrite else { return }
 

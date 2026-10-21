@@ -2,7 +2,7 @@
 
 # BarElement
 
-What an arrangement declares of the bar while it stands on the visible path: its colours, and the application's name, line and mark in the bar.
+What an arrangement declares of the bar while it stands on the visible path: its colors, and the application's name, line and mark in the bar.
 
 ```swift
 struct MainPage: View {

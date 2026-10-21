@@ -173,7 +173,7 @@ reshaped rather than refused, because the host has no picture of it yet.
 ## What a host reads lanes as
 
 A value that lies as numbers is a `LaneValue`, and its type says what a host
-reads its lanes as: numbers, a Boolean, a choice, a colour or a material
+reads its lanes as: numbers, a Boolean, a choice, a color or a material
 (`LaneKind`). A registration takes the kind from the value it is handed and
 the patch carries it beside the state's door, so a value said from a state
 reaches the control as the same value said directly - `.isOn($x)` a Boolean,
@@ -209,32 +209,32 @@ at the destination as well, standing still, so a view described later shows it
 from its first frame, and a move arrives at once. `.custom` is the exception:
 its animator is an engine on this side.
 
-## Themed colours on a carried state
+## Themed colors on a carried state
 
-A colour pair (`Color(light:dark:)`) - or any value wearing the theme, a
+A color pair (`Color(light:dark:)`) - or any value wearing the theme, a
 material holding one - written into a carried state keeps the
 pair on the storage, and the image holds the half in force: lanes are one
-colour. The state lays the value in the theme in force (`ThemeInForce`),
+color. The state lays the value in the theme in force (`ThemeInForce`),
 handed to the value rather than read by it, so a value's conversion depends
 on nothing but its arguments; a value's own `carried` is its lanes in the
 standard theme - the light half, the application's first accent. Every driven modifier that hands the state on reads the theme as it
 does, which makes that element the theme's reader; a theme change builds it
-again, and the host animates the colour to the other half. A movement sent to
-a pair keeps that pair, as a write does; one sent to a single colour lets it
+again, and the host animates the color to the other half. A movement sent to
+a pair keeps that pair, as a write does; one sent to a single color lets it
 go, and so do a stop and the host moving the value somewhere else.
 
 ## A material on a carried state
 
 A `Material` lies as lanes of its own width (`LaneKind.material`): its kind -
-none, a colour, a gradient, a blur, glass - then what that kind is made of,
-every colour four lanes in the theme it is laid in. A pair lies as its half in force, a
-half that is none as nothing; a blur and glass lay the stand-in colour of the
+none, a color, a gradient, a blur, glass - then what that kind is made of,
+every color four lanes in the theme it is laid in. A pair lies as its half in force, a
+half that is none as nothing; a blur and glass lay the stand-in color of the
 theme in force too, so a theme turning changes the bytes and the host shows
-the other half. A material, a colour pair and the accent are each a value
+the other half. A material, a color pair and the accent are each a value
 wearing the theme (`ThemeWearing`): the storage keeps it whole and the
-element handing it on reads the theme, as for a colour pair above. A material
+element handing it on reads the theme, as for a color pair above. A material
 is shown as it stands, never walked: `.background($material)` is a plain
-channel, while `.background($colour)` stays a journey the host animates.
+channel, while `.background($color)` stays a journey the host animates.
 
 ## A write that lands
 
@@ -286,7 +286,7 @@ different types stop the application as the second is claimed: one name in the
 store holds one value. The
 label `persistentKey:` is the argument's own type, lowercased, as `motion:` and
 `sceneKey:` are: there is one kind of state, and the brackets say only what else
-is true of one. The unlabelled position already means the initial value.
+is true of one. The unlabeled position already means the initial value.
 
 ## Scene-kept state
 

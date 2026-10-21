@@ -10,7 +10,7 @@ import AppKit
 /// It begins each arrangement with `beginArrangement()` and hands every child's place to `place(_:at:)`.
 /// Design: docs/design/host/motion.md#layout-motion
 @MainActor
-class AppKitTravellingLayout: AppKitHitTestView, AppKitDirectedLayout {
+class AppKitTravelingLayout: AppKitHitTestView, AppKitDirectedLayout {
     /// The direction the children are laid out in; a turn lays them out again.
     var direction = LayoutDirection.leftToRight {
         didSet { if direction != oldValue { needsLayout = true } }
@@ -20,14 +20,14 @@ class AppKitTravellingLayout: AppKitHitTestView, AppKitDirectedLayout {
     let decoration = AppKitDecoration()
 
     /// How the children travel to their places, by the host layer's rule.
-    let places = TravellingPlaces()
+    let places = TravelingPlaces()
 
     override func layout() {
         super.layout()
         decoration.clip(self)
     }
 
-    /// A plain box is its layer's colour, with no backing store; only a drawn one draws.
+    /// A plain box is its layer's color, with no backing store; only a drawn one draws.
     override var wantsUpdateLayer: Bool { !decoration.draws }
 
     override func updateLayer() {

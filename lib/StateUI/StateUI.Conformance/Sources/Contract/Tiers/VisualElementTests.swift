@@ -61,7 +61,7 @@
     static let boxes: Set<String> = ["Grid", "HStack", "LayoutEngine", "VStack", "ZStack"]
 
     /// A box's background is the blur the tree gives it and then the glass it changes it to - or what stands in for
-    /// the glass, the blur as clear as it is, whose colour a host that blurs nothing paints.
+    /// the glass, the blur as clear as it is, whose color a host that blurs nothing paints.
     @MainActor
     static func blurredOrGlass(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).background.showsABlurOrGlassOrWhatStandsInForIt", proves: [

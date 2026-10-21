@@ -136,9 +136,9 @@ final class AppKitAccessibilityTests: XCTestCase {
         ]
         var described = HostPatch(id: .manual("described"), type: .button)
         described.properties = [
-            .icon: .string("favourite.png"),
+            .icon: .string("favorite.png"),
             .accessibilityIdentifier: .string("semantics.described"),
-            .accessibilityLabel: .string("Add to favourites"),
+            .accessibilityLabel: .string("Add to favorites"),
         ]
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([captioned, described])
@@ -150,9 +150,9 @@ final class AppKitAccessibilityTests: XCTestCase {
         let stackView = try XCTUnwrap(renderer.viewForTesting(id: .manual("stack")))
         let save = try XCTUnwrap(presented("save", under: stackView))
         XCTAssertEqual(save.role, .button)
-        let favourite = try XCTUnwrap(presented("semantics.described", under: stackView))
-        XCTAssertEqual(favourite.role, .button)
-        XCTAssertEqual(favourite.label, "Add to favourites")
+        let favorite = try XCTUnwrap(presented("semantics.described", under: stackView))
+        XCTAssertEqual(favorite.role, .button)
+        XCTAssertEqual(favorite.label, "Add to favorites")
     }
 
     @MainActor

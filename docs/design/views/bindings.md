@@ -13,7 +13,7 @@ What the host does with a carried state follows from the value and the
 member it is for:
 
 ```text
-  journey   a number, a colour, a thickness,     the host animates the property there under the
+  journey   a number, a color, a thickness,     the host animates the property there under the
             an inset, a point, for a member      element's motion; $x.journey is the animation,
             that travels
                                                  and .motion(.none) lands it at once. Reading the

@@ -134,8 +134,8 @@ final class AppKitCheckBoxView: NSButton {
         fatalError("AppKitCheckBoxView is created in code")
     }
 
-    /// The box, and the words it says beside it - in the colour the tree gives them, else the platform's: a tint
-    /// colours the box alone, where AppKit's content tint would draw the words in it too.
+    /// The box, and the words it says beside it - in the color the tree gives them, else the platform's: a tint
+    /// colors the box alone, where AppKit's content tint would draw the words in it too.
     func apply(checked: Bool, enabled: Bool, tint: NSColor?, text: String, textColor: NSColor?) {
         ProgramWrite.perform {
             state = checked ? .on : .off

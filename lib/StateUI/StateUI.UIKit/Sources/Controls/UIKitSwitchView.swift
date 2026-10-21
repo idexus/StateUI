@@ -69,7 +69,7 @@ final class UIKitSwitchView: UIView, UIKitAccessibilityPresenting {
         caption.isEnabled = enabled
     }
 
-    /// The words beside it, in the colour the tree gives them, else the platform's.
+    /// The words beside it, in the color the tree gives them, else the platform's.
     func setCaption(_ text: String, color: UIColor?) {
         caption.text = text
         caption.textColor = color ?? .label

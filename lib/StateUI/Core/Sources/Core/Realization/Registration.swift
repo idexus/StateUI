@@ -58,7 +58,7 @@
 
     /// Applies the element's configuration whole, where its view takes
     /// several properties at once - a caption's attributes read its text, its
-    /// font and its colour together. Each is a property of the contract or of
+    /// font and its color together. Each is a property of the contract or of
     /// a tier it wears - any other is left out, and said once - and the view
     /// is applied once whenever any of them changes.
     ///

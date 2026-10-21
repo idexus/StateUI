@@ -22,7 +22,7 @@ Swift protocols behind them refine each other.
   |   '-- TextAlignmentElement           where text sits across its element
   '-- MenuItemElement                    an item the user chooses: caption, icon, action, shortcut
 
-  TextColorElement                       text colour
+  TextColorElement                       text color
   '-- TextualElement                     the words and their case
   FontElement                            family, size, weight and slant, text-size scaling
   LineHeightElement                      space between lines
@@ -30,11 +30,11 @@ Swift protocols behind them refine each other.
   DecorableTextElement                   underline and strikethrough
   BorderElement                          the shape of an element's own box, and its outline
   ImageElement                           how a picture fills its room
-  TintElement                            a control's one accent colour
+  TintElement                            a control's one accent color
   KeyboardElement                        keys taken while it holds the keyboard
   '-- FocusElement                       the keyboard put on it and taken off
   PageElement                            a title and an icon
-  BarElement                             an arrangement's bar: colours, title area
+  BarElement                             an arrangement's bar: colors, title area
 
   Each tier on the second list wears nothing above it: a text run wears the text tiers, and no name automation
   finds it by.

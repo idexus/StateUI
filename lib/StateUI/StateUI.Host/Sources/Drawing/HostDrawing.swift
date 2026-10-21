@@ -8,7 +8,7 @@
 /// works out an arc of its own.
 /// Design: docs/design/types/drawing.md#three-lists-for-a-relay
 @_spi(Host) public struct HostDrawing: Equatable, Sendable {
-    /// Each instruction's kind, as `DrawCommand` numbers it, then its whole numbers: a colour as ARGB, words' edge
+    /// Each instruction's kind, as `DrawCommand` numbers it, then its whole numbers: a color as ARGB, words' edge
     /// across their box (`TextEdge`) and their alignment down it as its member's number, a text's index in
     /// `strings`, a path's count of curves.
     public private(set) var ints: [Int32] = []
@@ -40,9 +40,9 @@
 
     private mutating func append(_ instruction: CanvasInstruction) {
         switch instruction {
-        case .fillColor(let color): colour(Kind.fillColor, color)
-        case .strokeColor(let color): colour(Kind.strokeColor, color)
-        case .textColor(let color): colour(Kind.textColor, color)
+        case .fillColor(let color): self.color(Kind.fillColor, color)
+        case .strokeColor(let color): self.color(Kind.strokeColor, color)
+        case .textColor(let color): self.color(Kind.textColor, color)
         case .lineWidth(let width): record(Kind.lineWidth, [width])
         case .fontSize(let size): record(Kind.fontSize, [size])
         case .opacity(let alpha): record(Kind.opacity, [alpha])
@@ -81,7 +81,7 @@
         numbers += values
     }
 
-    private mutating func colour(_ kind: Kind, _ color: HostValue) {
+    private mutating func color(_ kind: Kind, _ color: HostValue) {
         guard let argb = color.argb else { return }
         ints += [kind.rawValue, Int32(bitPattern: argb)]
     }

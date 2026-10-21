@@ -180,7 +180,7 @@ newcomer its predecessor's state.
 The walk stops at a `Binding` (the storage is its lender's), at an aim the view
 was handed (its parent's), at a `Node` (built interface), at an `Equatable`
 value that owns no state (compared whole - one that does is read part by
-part, [below](#a-type-learnt-once)) and at any class (a reference keeps
+part, [below](#a-type-learned-once)) and at any class (a reference keeps
 itself alive).
 
 ### A path is a number
@@ -196,7 +196,7 @@ state whose storage has no name yet - its first build, not its rebuilds - and
 an inspector for the reason a view was built. A state's name is the path
 tidied (`BuildScope.readable`): `._count` is `count`.
 
-### A type learnt once
+### A type learned once
 
 What a value is to the walk - a box, a slot, a binding, a node, a value
 compared whole, an object, or parts a mirror opens - is a matter of its type,
@@ -216,7 +216,7 @@ on the optional's part (`.header.some(StateUI.Text)`), never on the optional
 itself, whose value says what it holds: the paths stand the same whatever
 value of a type the process met first. A type that is `Equatable` is compared
 whole unless a value of it holds a state, a binding, an environment value or
-an aim of its own (`ownsState`, learnt with its kind): its author's equality
+an aim of its own (`ownsState`, learned with its kind): its author's equality
 cannot pair those with a predecessor's, so such a view is read part by part
 however it compares, and an author's `Equatable` only speeds up a view that
 owns none.
@@ -462,7 +462,7 @@ whenever it changed, an emptied set included: an element that stops tying a
 property has to say so. A registration names the state rather than its number,
 which is issued later; it carries the conversion the state is the derived side
 of, if it is one, which the differ arms engines for on the element wearing it,
-and which of the view's values it is - the property's group, plus a colour's.
+and which of the view's values it is - the property's group, plus a color's.
 
 What `.inherited` means for a driven value can be answered only here: the host
 knows what the application says, while an element's motion plan answers per

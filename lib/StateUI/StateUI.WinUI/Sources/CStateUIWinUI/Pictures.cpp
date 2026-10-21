@@ -440,11 +440,11 @@ extern "C" bool stateui_winui_image_set(
     size[0] = size[1] = 0;
     try {
         auto frame = borrow<controls::Border>(handle);
-        // StateUI's ContentMode: fit, fill, stretch, centre - at the picture's own size, in the middle of the room.
-        auto centred = aspect == 3;
+        // StateUI's ContentMode: fit, fill, stretch, center - at the picture's own size, in the middle of the room.
+        auto centered = aspect == 3;
         auto stretch = aspect == 1 ? xaml::Media::Stretch::UniformToFill
                      : aspect == 2 ? xaml::Media::Stretch::Fill
-                     : centred ? xaml::Media::Stretch::None : xaml::Media::Stretch::Uniform;
+                     : centered ? xaml::Media::Stretch::None : xaml::Media::Stretch::Uniform;
         std::string listed;
         for (int32_t index = 0; index < count; ++index) listed += std::string(names[index] ? names[index] : "") + "\n";
         auto picture = asked(listed.c_str());
@@ -470,8 +470,8 @@ extern "C" bool stateui_winui_image_set(
             frame.Child(image);
         }
         image.Stretch(stretch);
-        image.HorizontalAlignment(centred ? xaml::HorizontalAlignment::Center : xaml::HorizontalAlignment::Stretch);
-        image.VerticalAlignment(centred ? xaml::VerticalAlignment::Center : xaml::VerticalAlignment::Stretch);
+        image.HorizontalAlignment(centered ? xaml::HorizontalAlignment::Center : xaml::HorizontalAlignment::Stretch);
+        image.VerticalAlignment(centered ? xaml::VerticalAlignment::Center : xaml::VerticalAlignment::Stretch);
         image.ClearValue(xaml::FrameworkElement::WidthProperty());
         image.ClearValue(xaml::FrameworkElement::HeightProperty());
 
@@ -501,8 +501,8 @@ extern "C" bool stateui_winui_image_set(
         auto own = declared(text);
         size[0] = own.Width;
         size[1] = own.Height;
-        // WinUI takes an SVG's pixels for DIPs: centred, it is drawn at its own size by the image's.
-        if (centred && own.Width > 0) {
+        // WinUI takes an SVG's pixels for DIPs: centered, it is drawn at its own size by the image's.
+        if (centered && own.Width > 0) {
             image.Stretch(xaml::Media::Stretch::Uniform);
             image.Width(own.Width);
             image.Height(own.Height);

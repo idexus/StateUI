@@ -7,7 +7,7 @@
 /// A ZStack: its children one over another, each in its area, or where an engine's placement run puts it.
 /// Design: docs/design/platforms/android/drawing.md#a-placed-child
 @MainActor
-final class AndroidZStackView: AndroidTravellingLayout {
+final class AndroidZStackView: AndroidTravelingLayout {
     /// The placement a state drives, one per child; nil while each child stands in its own area.
     var placement: HostPlacementRun? {
         didSet {

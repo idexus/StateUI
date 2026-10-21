@@ -1,6 +1,6 @@
 import StateUI
 
-/// A colour, a size, a padding and a font size, each read off a state the host
+/// A color, a size, a padding and a font size, each read off a state the host
 /// moves on its own frames.
 struct AnimatedPropertySample: SampleContent, ExampleContent {
     // listing: AnimatedPropertySample
@@ -15,7 +15,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
 
     static let id = "animatedProperty"
     static let title = "Animated properties"
-    static let summary = "A colour, a size and a padding carried to a new value by the host."
+    static let summary = "A color, a size and a padding carried to a new value by the host."
 
     // listing: AnimatedPropertySample
     var body: some View {
@@ -43,12 +43,12 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
             .shape(.roundedRectangle(12))
 
             HStack {
-                button("Colour") {
+                button("Color") {
                     try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(.milliseconds(500))).arrived()
 
                     // The caption sits on the violet field inside the panel
                     // rather than on the panel itself, so what it goes to is
-                    // white, the colour that reads on that field.
+                    // white, the color that reads on that field.
                     try await $captionColor.journey.move(to: AppColors.white, .eased(.milliseconds(500))).arrived()
                 }
 
@@ -74,7 +74,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
 
                 button("Back") {
                     // EVERYTHING THE OTHER BUTTONS LEAVE CHANGED - the height
-                    // and the two colours. The padding and the text size send
+                    // and the two colors. The padding and the text size send
                     // themselves back, so there is nothing here for them; and
                     // `wide` is put right with the height, or the next press
                     // of Size would ask for the value it already has.
@@ -95,7 +95,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("Each button moves a bound property on host frames. The build "
-                + "counter stays still while colour, size, padding and text move.")
+                + "counter stays still while color, size, padding and text move.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

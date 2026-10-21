@@ -3,11 +3,11 @@
 
 @_spi(Host) import StateUI
 
-/// One layout's children travelling to their places, the same on every host: as an arrangement begins, it decides
+/// One layout's children traveling to their places, the same on every host: as an arrangement begins, it decides
 /// once for every child whether the places a patch or a new width gave them animate, and each child then stands at
 /// its place or on its way there.
 /// Design: docs/design/host/motion.md#layout-motion
-@_spi(Host) @MainActor public final class TravellingPlaces {
+@_spi(Host) @MainActor public final class TravelingPlaces {
     /// Where the children's places animate; nil places them at once.
     public weak var layoutMotion: LayoutMotion?
 

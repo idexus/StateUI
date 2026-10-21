@@ -27,10 +27,10 @@ enum AndroidRealization {
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
         .partial(VisualElementContract.background,
-            missing: "Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it."),
+            missing: "Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it."),
         .complete(BarElementContract.barBackgroundColor),
         .partial(BarElementContract.barForegroundColor,
-            missing: "The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the colour itself - on a tab row, the chosen tab's words."),
+            missing: "The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the color itself - on a tab row, the chosen tab's words."),
         .notPlanned(BarElementContract.barIcon,
             reason: "An Android bar is its stack's own: it shows its page's title, and no application's mark."),
         .complete(BarElementContract.barSubtitle),
@@ -40,7 +40,7 @@ enum AndroidRealization {
         .complete(ButtonContract.menuKind),
         .complete(ButtonContract.showsMenuArrow),
         .partial(ButtonContract.role,
-            missing: "Android draws no look for the way out or a destructive action, only the main action's coloured button."),
+            missing: "Android draws no look for the way out or a destructive action, only the main action's colored button."),
         .complete(MenuItemContract.isOn),
         .complete(MenuItemElementContract.keyboardShortcut, on: MenuItemContract.self),
         .complete(MenuItemContract.toggled),
@@ -148,7 +148,7 @@ enum AndroidRealization {
         .notPlanned(WindowContract.isMinimizable,
             reason: "Any Android window may be put away: an activity keeps none from it."),
         .partial(WindowContract.background,
-            missing: "An activity is opaque by the theme it starts in: a blur or glass shows its colour."),
+            missing: "An activity is opaque by the theme it starts in: a blur or glass shows its color."),
         .complete(LayoutEngineContract.handAxis),
         .complete(LayoutEngineContract.handMoved),
         .complete(LayoutEngineContract.handStepped),
@@ -161,7 +161,7 @@ enum AndroidRealization {
     ] + windowRoom + HostRecord.layoutEngine
 
     /// What Android leaves out of a blur.
-    private static let blursNothing = "Android blurs nothing behind a view: a blur or glass shows its colour."
+    private static let blursNothing = "Android blurs nothing behind a view: a blur or glass shows its color."
 
     /// The window's place and size, which Android gives an activity itself.
     private static let windowRoom: [HostRecord] = {

@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 
 /// The one chrome a window composes from what it shows, the same on every host: its title, the way back, and what its
-/// visible path declares - the actions, what stands in the title's place, the title area, the bars' colours, the
+/// visible path declares - the actions, what stands in the title's place, the title area, the bars' colors, the
 /// menus - with the sidebar's toggle: elements and values a host turns into its toolkit's chrome.
 /// Design: docs/design/host/pages.md#the-windows-chrome
 @_spi(Host) @MainActor public struct WindowChrome {
@@ -28,10 +28,10 @@
     /// What the application says of itself in the bar, declared on the visible page's path; nil for none.
     public var titleArea: TitleArea?
 
-    /// The bars' colour: the nearest declared on the visible page's path.
+    /// The bars' color: the nearest declared on the visible page's path.
     public var background: HostValue?
 
-    /// The colour of what stands on the bars: the nearest declared on the visible page's path.
+    /// The color of what stands on the bars: the nearest declared on the visible page's path.
     public var foreground: HostValue?
 
     /// The menus the visible page's path declares, composed.
@@ -76,7 +76,7 @@
     }
 
     /// Whether the chrome shows what an element of `type` moves on a frame in `changed`: a window's frame, an
-    /// arrangement's bar colours, a page's words on its bar - the chrome is composed again as they move.
+    /// arrangement's bar colors, a page's words on its bar - the chrome is composed again as they move.
     public static func follows(_ type: NodeType, changed: Set<Prop>) -> Bool {
         followed.contains(type) || type == .page && !changed.isDisjoint(with: pageValues)
     }

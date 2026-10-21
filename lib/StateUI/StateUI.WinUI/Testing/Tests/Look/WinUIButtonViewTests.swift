@@ -10,7 +10,7 @@ import StateUIConformance
 import XCTest
 
 final class WinUIButtonViewTests: XCTestCase {
-    /// A button styled by the application wears its fill, its words' colour and its rounded corners; the corner
+    /// A button styled by the application wears its fill, its words' color and its rounded corners; the corner
     /// outside the rounding shows nothing of it.
     func testAButtonWearsItsFillWordsAndCorners() throws {
         try onUIThread {
@@ -32,9 +32,9 @@ final class WinUIButtonViewTests: XCTestCase {
         }
     }
 
-    /// A fill and words' colour the tree changes after the button is drawn stand under the pointer too, the fill a
+    /// A fill and words' color the tree changes after the button is drawn stand under the pointer too, the fill a
     /// little fainter: the template takes those states' brushes from the button's own resources as they are now.
-    func testAColourChangedLaterStandsUnderThePointer() throws {
+    func testAColorChangedLaterStandsUnderThePointer() throws {
         try onUIThread {
             let blue = State(wrappedValue: false)
             let host = WinUIRenderer.running {
@@ -61,9 +61,9 @@ final class WinUIButtonViewTests: XCTestCase {
         }
     }
 
-    /// A destructive action's words stand in the theme's critical colour where the tree colours them not; a colour
+    /// A destructive action's words stand in the theme's critical color where the tree colors them not; a color
     /// the tree states wins.
-    func testADestructiveButtonsWordsStandInTheCriticalColour() {
+    func testADestructiveButtonsWordsStandInTheCriticalColor() {
         onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
@@ -81,9 +81,9 @@ final class WinUIButtonViewTests: XCTestCase {
                 }
             }
             host.settle { reddish(buttons[0]) }
-            XCTAssertTrue(reddish(buttons[0]), "its words in the critical colour")
+            XCTAssertTrue(reddish(buttons[0]), "its words in the critical color")
             XCTAssertTrue(buttons[0].isCritical)
-            XCTAssertFalse(reddish(buttons[1]), "the tree's colour wins")
+            XCTAssertFalse(reddish(buttons[1]), "the tree's color wins")
         }
     }
 

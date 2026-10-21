@@ -11,7 +11,7 @@ import XCTest
 @MainActor
 final class AppKitPageTests: XCTestCase {
     /// The top page names the window, and the way back is the system's
-    /// navigational toolbar item, labelled by the page it returns to.
+    /// navigational toolbar item, labeled by the page it returns to.
     @MainActor
     func testTheWindowToolbarCarriesTheTopPageAndTheWayBack() throws {
         let renderer = testRenderer(
@@ -74,7 +74,7 @@ final class AppKitPageTests: XCTestCase {
 
     /// The window's chrome is the system's: a unified toolbar over full-size
     /// content, the page in the safe area under it, and the native window
-    /// background. With no bar colour written, AppKit keeps its toolbar's own
+    /// background. With no bar color written, AppKit keeps its toolbar's own
     /// material.
     @MainActor
     func testANavigationStackStandsUnderTheWindowsNativeToolbar() throws {
@@ -103,12 +103,12 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertNil((content as? AppKitWindowContentView)?.barColor)
     }
 
-    /// A written bar colour paints the band the title bar and toolbar cover
+    /// A written bar color paints the band the title bar and toolbar cover
     /// above the page, and the title bar lets it show. The window wears it as
-    /// its background too, and a colour taken away gives the material and the
+    /// its background too, and a color taken away gives the material and the
     /// window's own background back.
     @MainActor
-    func testAWrittenBarColourPaintsTheBandAboveThePage() throws {
+    func testAWrittenBarColorPaintsTheBandAboveThePage() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -129,7 +129,7 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertGreaterThan(content.barBand.height, 0)
         XCTAssertEqual(content.barBand, NSRect(
             x: 0, y: 0, width: content.bounds.width, height: content.safeAreaRect.minY))
-        XCTAssertEqual(window.backgroundColor, .windowBackgroundColor, "the bars' colour paints the bars alone")
+        XCTAssertEqual(window.backgroundColor, .windowBackgroundColor, "the bars' color paints the bars alone")
 
         // On the band the page's title is the bar's: white on a dark band
         // when no foreground is written. The window keeps its name.
@@ -153,7 +153,7 @@ final class AppKitPageTests: XCTestCase {
     /// On the band a navigation stack paints, the page's title stands in the
     /// foreground the stack writes for its bars.
     @MainActor
-    func testAWrittenBarForegroundColoursThePagesTitleOnTheBand() throws {
+    func testAWrittenBarForegroundColorsThePagesTitleOnTheBand() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -172,11 +172,11 @@ final class AppKitPageTests: XCTestCase {
             srgbRed: 51 / 255, green: 179 / 255, blue: 230 / 255, alpha: 1))
     }
 
-    /// In a split view the bars' colour paints the window's band, under the
+    /// In a split view the bars' color paints the window's band, under the
     /// sidebar's glass, and the detail's, which the pane under the bars
     /// paints; the sidebar keeps its own glass.
     @MainActor
-    func testAWrittenBarColourPaintsTheBandsUnderTheSplitView() throws {
+    func testAWrittenBarColorPaintsTheBandsUnderTheSplitView() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -203,11 +203,11 @@ final class AppKitPageTests: XCTestCase {
             srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1), "the window's band, under the sidebar")
     }
 
-    /// A written bar colour paints the bars alone: the window around a
-    /// floating sidebar keeps the system's background, with the colour written
+    /// A written bar color paints the bars alone: the window around a
+    /// floating sidebar keeps the system's background, with the color written
     /// and once it goes.
     @MainActor
-    func testAWrittenBarColourLeavesTheWindowsBackground() throws {
+    func testAWrittenBarColorLeavesTheWindowsBackground() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -232,7 +232,7 @@ final class AppKitPageTests: XCTestCase {
 
         let plain = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         XCTAssertEqual(plain.backgroundColor, .windowBackgroundColor,
-                       "with no colour written the window is the system's")
+                       "with no color written the window is the system's")
     }
 
     /// A window asked to be translucent lets the desktop show through it: it
@@ -263,13 +263,13 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertNil(content.materialForTesting)
     }
 
-    /// On a translucent window a colour written for the bars paints the bars
+    /// On a translucent window a color written for the bars paints the bars
     /// alone: the window's band, under the floating sidebar's glass, and the
     /// detail's - over the material, which stays the system's; the window keeps
     /// no background, so the desktop shows around the sidebar. An opaque window
     /// keeps the system's background.
     @MainActor
-    func testATranslucentWindowsBarColourPaintsTheBarsAlone() throws {
+    func testATranslucentWindowsBarColorPaintsTheBarsAlone() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -287,10 +287,10 @@ final class AppKitPageTests: XCTestCase {
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         let split = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
-        let colour = NSColor(srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1)
+        let color = NSColor(srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1)
         XCTAssertEqual(window.backgroundColor, .clear, "the material shows around the sidebar")
-        XCTAssertEqual(split.detailBarColorForTesting, colour, "the detail's bar wears the colour")
-        XCTAssertEqual(content.barColor, colour, "the window's band stands under the sidebar's glass")
+        XCTAssertEqual(split.detailBarColorForTesting, color, "the detail's bar wears the color")
+        XCTAssertEqual(content.barColor, color, "the window's band stands under the sidebar's glass")
         XCTAssertNil(split.sidebarBarColorForTesting, "the sidebar's glass shows the band beneath it")
         XCTAssertNotNil(content.materialForTesting)
         content.layoutSubtreeIfNeeded()
@@ -303,9 +303,9 @@ final class AppKitPageTests: XCTestCase {
             menu: page("menu", title: "Menu"),
             detail: stack), translucent: false))
         XCTAssertEqual(window.backgroundColor, .windowBackgroundColor)
-        XCTAssertEqual(split.detailBarColorForTesting, colour)
+        XCTAssertEqual(split.detailBarColorForTesting, color)
         XCTAssertNil(split.sidebarBarColorForTesting, "the sidebar's glass shows the band behind it")
-        XCTAssertEqual(content.barColor, colour)
+        XCTAssertEqual(content.barColor, color)
         XCTAssertNil(content.materialForTesting)
     }
 
@@ -369,7 +369,7 @@ final class AppKitPageTests: XCTestCase {
             detail: stack), translucent: false, background: tint))
         XCTAssertEqual(window.backgroundColor, NSColor(srgbRed: 81 / 255, green: 43 / 255, blue: 212 / 255,
                                                        alpha: 38 / 255), "the window's own background")
-        XCTAssertFalse(window.isOpaque, "the desktop shows through the colour's alpha")
+        XCTAssertFalse(window.isOpaque, "the desktop shows through the color's alpha")
         XCTAssertNil(content.materialForTesting)
     }
 
@@ -754,7 +754,7 @@ final class AppKitPageTests: XCTestCase {
     }
 
     /// A page holds what it shows across all of it and paints its
-    /// background colour behind it.
+    /// background color behind it.
     @MainActor
     func testAPagesContentFillsItAndItsBackgroundReachesItsView() throws {
         let renderer = testRenderer(

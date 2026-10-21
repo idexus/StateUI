@@ -219,20 +219,20 @@ public struct Journey<Value: Walked> {
         }
 
         let arrival = Arrival()
-        var travelling = lanes
+        var traveling = lanes
 
-        travelling.destination = target
-        travelling.completion = Double(Renderer.shared.book { arrival.land($0) })
+        traveling.destination = target
+        traveling.completion = Double(Renderer.shared.book { arrival.land($0) })
 
         // A law given is this move's alone; without one the value travels under its own.
-        travelling.motion = motion ?? storage.law
+        traveling.motion = motion ?? storage.law
 
         // The waiter forces the destination only where no lane of it changes - a fresh journey even to where it is
         // going; otherwise the lanes it changes are the journey, and the others travel on.
         // Design: docs/design/core/journeys.md#moving-and-waiting
         let fresh = lanes.destination == target ? JourneyLanes<Value>.mask(of: .destination) : 0
         storage.lay(
-            [.destination, .completion, .motion], of: travelling,
+            [.destination, .completion, .motion], of: traveling,
             forcing: fresh | JourneyLanes<Value>.mask(of: .completion))
 
         storage.moved(to: target)

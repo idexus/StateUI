@@ -122,7 +122,7 @@
         }
     }
 
-    /// The sidebar stands on the material `member` says from a state handed on as `$x` - the colour the state holds,
+    /// The sidebar stands on the material `member` says from a state handed on as `$x` - the color the state holds,
     /// then the one written into it: a material's channel.
     @MainActor
     private static func follows(
@@ -149,7 +149,7 @@
         }
     }
 
-    /// The sidebar stands on the material `member` says - the colour it starts with, then the one the tree changes
+    /// The sidebar stands on the material `member` says - the color it starts with, then the one the tree changes
     /// it to.
     @MainActor
     private static func standsOn(

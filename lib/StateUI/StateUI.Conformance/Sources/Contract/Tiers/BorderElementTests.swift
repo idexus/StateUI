@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `BorderElementContract` on a host: an element stands in the shape the tree gives it, outlined in its colour and
+/// `BorderElementContract` on a host: an element stands in the shape the tree gives it, outlined in its color and
 /// width, and changes as the tree changes them - on every element wearing the tier.
 @_spi(Host) public enum BorderElementTests: ConformanceFamily {
     public static let name = "BorderElement"

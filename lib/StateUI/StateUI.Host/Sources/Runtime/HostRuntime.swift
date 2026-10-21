@@ -24,7 +24,7 @@
     /// The animations the tree describes: a property's transition.
     public let describedMotion: DescribedMotion
 
-    /// A layout's children travelling to their new places.
+    /// A layout's children traveling to their new places.
     public let layoutMotion: LayoutMotion
 
     /// Split views' sidebars sliding in and out, where a host slides them itself.

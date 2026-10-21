@@ -60,8 +60,8 @@ extension WinUIDriver {
             return name == "windowType" ? kept.kind.map { .name($0) } : kept.value.map { .string($0) }
         }
         if name == "background" {
-            // The desktop acrylic WinUI shows, at the thickness its kind and opacity are, its colour the tint; else
-            // the window's colour.
+            // The desktop acrylic WinUI shows, at the thickness its kind and opacity are, its color the tint; else
+            // the window's color.
             var (thin, opacity): (Bool, Float) = (false, 0)
             let acrylic = stateui_winui_window_acrylic(window.handle, &thin, &opacity)
             var argb: UInt32 = 0
@@ -95,7 +95,7 @@ extension WinUIDriver {
         return place < 8 ? .number(values[place].rounded()) : .bool(values[place] == 1)
     }
 
-    /// A pane's ground as the relay reads it: a colour, or an acrylic - the blur its luminosity stands for; nil for
+    /// A pane's ground as the relay reads it: a color, or an acrylic - the blur its luminosity stands for; nil for
     /// WinUI's own.
     private static func ground(_ read: String) -> HostValue? {
         let words = read.split(separator: " ")
@@ -153,9 +153,9 @@ extension WinUIDriver {
     /// holds met - but the parts a control's template draws, where the register records them staying.
     private func excluded(_ view: WinUIView, _ element: MountedElement) -> HostValue? {
         let facts = view.automationFacts
-        let judgement = WinUIRealization.register.judgement(
+        let judgment = WinUIRealization.register.judgment(
             of: "hidesChildrenFromAccessibility", on: element.type.name, from: "VisualElement")
-        let partsStay = if case .partial? = judgement { true } else { false }
+        let partsStay = if case .partial? = judgment { true } else { false }
         return (!facts.isControl && !facts.isContent && (facts.children == 0 || partsStay)).propValue
     }
 
@@ -262,7 +262,7 @@ extension WinUIDriver {
             return (across == 0 ? TextAlignment.center : across == 2 ? .end : .start).propValue
         case "isSelectable" where view is WinUITextView: return (try read(view, "selectable") == "1").propValue
         case "verticalTextAlignment" where view is WinUITextView:
-            // WinUI's VerticalAlignment: top 0, centre 1, bottom 2, stretched 3 - the words at its top.
+            // WinUI's VerticalAlignment: top 0, center 1, bottom 2, stretched 3 - the words at its top.
             let down = Int(try read(view, "verticalAlignment")) ?? 3
             return (down == 1 ? TextAlignment.center : down == 2 ? .end : .start).propValue
         case "padding" where !(view is WinUILayoutView): return try Self.insets(read(view, "padding"))?.propValue
@@ -274,7 +274,7 @@ extension WinUIDriver {
     private func boxHolds(_ name: String, _ view: WinUIView) throws -> HostValue? {
         if view is WinUILayoutView {
             switch name {
-            // A colour stands in for a blur: the blur whose colour the box paints, else the colour.
+            // A color stands in for a blur: the blur whose color the box paints, else the color.
             case "background": return try Self.color(read(view, "box.fill")).map { StandIns.material(painted: $0).propValue }
             case "stroke": return try Self.color(read(view, "box.stroke")).map { Brush.solidColor($0).propValue }
             case "lineWidth": return Double(try read(view, "box.strokeThickness"))?.propValue
@@ -626,13 +626,13 @@ extension WinUIDriver {
 
     // MARK: - Words as WinUI's reader writes them
 
-    /// A colour the reader writes as #AARRGGBB; nil for none.
+    /// A color the reader writes as #AARRGGBB; nil for none.
     static func color(_ words: String) -> Color? {
         guard words.hasPrefix("#"), let argb = UInt32(words.dropFirst(), radix: 16) else { return nil }
         return color(argb)
     }
 
-    /// A colour held as 0xAARRGGBB.
+    /// A color held as 0xAARRGGBB.
     static func color(_ argb: UInt32) -> Color {
         Color(red: Int(argb >> 16 & 0xFF), green: Int(argb >> 8 & 0xFF), blue: Int(argb & 0xFF), alpha: Int(argb >> 24))
     }

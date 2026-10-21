@@ -38,12 +38,12 @@ free to renumber its enumeration would otherwise make every report read as a
 different member, silently. A member a host has no case for arrives as
 `.unknown` where the vocabulary has one.
 
-## A colour stroke is a solid brush
+## A color stroke is a solid brush
 
 `stroke(_ value: Color)` is written over the brush form, on a layout as on a
 shape, so a layout's outline and a shape's put the same value in the patch for
-the same colour. A bare
-colour written out instead would make one property arrive in two shapes and
+the same color. A bare
+color written out instead would make one property arrive in two shapes and
 leave the host carrying a branch to tell them apart.
 
 ## Opening a picker
@@ -132,8 +132,8 @@ same on every host.
 
 ## Text runs
 
-A `TextSpan` is one run of text inside a Text, with its own colour, size and
-weight; text in two colours is two runs. It is named `TextSpan` rather than
+A `TextSpan` is one run of text inside a Text, with its own color, size and
+weight; text in two colors is two runs. It is named `TextSpan` rather than
 `Span` because the standard library's `Span<Element>` is in scope in every file
 without an import: an application writing `Span("…")` would get "no exact
 matches in call to initializer", and a plain `[Span]` "reference to generic

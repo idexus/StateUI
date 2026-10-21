@@ -36,7 +36,7 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
     /// The pages a slide stood apart from the sidebar, cleared as it rests.
     private let slidPages = NSHashTable<UIKitPageController>.weakObjects()
 
-    /// Whether the application paints the sidebar: a line of UIKit's separator colour then parts it from the detail
+    /// Whether the application paints the sidebar: a line of UIKit's separator color then parts it from the detail
     /// (`separator`). It stands on UIKit's sidebar material all the same, under which the detail's column slides
     /// with the sidebar; on UIKit's plain column, which parts them by its own line, the detail jumps to its width.
     /// Design: docs/design/platforms/uikit/pages.md#a-split-view
@@ -47,7 +47,7 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
         }
     }
 
-    /// The line down a painted sidebar's edge beside the detail, one point of UIKit's separator colour.
+    /// The line down a painted sidebar's edge beside the detail, one point of UIKit's separator color.
     let separator: UIView = {
         let line = UIView()
         line.backgroundColor = .opaqueSeparator

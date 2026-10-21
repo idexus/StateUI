@@ -5,14 +5,14 @@ import Foundation
 import XCTest
 
 @MainActor
-final class LicenceTests: XCTestCase {
+final class LicenseTests: XCTestCase {
     /// Every Swift, Java, Gradle script, TypeScript, JavaScript (`.js`, `.mjs`),
     /// C and C++ source under `lib/` starts with the two SPDX lines.
     ///
     /// Outside the rule: `Package.swift`, whose first line must be the tools
     /// version, and what a build writes - `node_modules` and `out` among it,
     /// which the editor extension's tools install and compile into.
-    func testEverySourceUnderLibCarriesTheLicenceHeader() throws {
+    func testEverySourceUnderLibCarriesTheLicenseHeader() throws {
         let lib = SourceTree.repository.appendingPathComponent("lib")
         let generated: Set<String> = ["bin", "obj", "build", "node_modules", "out"]
         let entered = { (path: String) -> Bool in

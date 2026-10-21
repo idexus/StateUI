@@ -4,14 +4,14 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// StateUI's values as CSS writes them: lengths in pixels, colours in sRGB, an inset's sides by their logical names -
+/// StateUI's values as CSS writes them: lengths in pixels, colors in sRGB, an inset's sides by their logical names -
 /// its leading side is the inline start, so a layout right to left turns them by itself.
 /// Design: docs/design/platforms/web/layout.md#values-in-css
 enum WebCSS {
     /// The height of the page's lines of words, in sizes of their font: the style sheet's body stands at the same.
     static let lineHeight = 1.4
 
-    /// A number as CSS reads it: whole as it is, any other to a millionth with no nought trailing - spelt by whole
+    /// A number as CSS reads it: whole as it is, any other to a millionth with no nought trailing - spelled by whole
     /// numbers, as a double's shortest spelling costs a browser running WebAssembly with no compiler much.
     /// Design: docs/design/platforms/web/layout.md#values-in-css
     static func number(_ value: Double) -> String {
@@ -121,7 +121,7 @@ enum WebCSS {
         }
     }
 
-    /// A look's font and colour as CSS - what it leaves unsaid none, so the words take it from around them: its
+    /// A look's font and color as CSS - what it leaves unsaid none, so the words take it from around them: its
     /// style's size and weight from the Web's type ramp, under the size and weight it gives. A size stands in rems,
     /// which the browser's text size scales, where the words scale, and in pixels where not - the page's own size
     /// held fixed where the look gives none.
@@ -164,14 +164,14 @@ enum WebCSS {
                 ("text-decoration-line", lines.isEmpty ? nil : lines.joined(separator: " "))]
     }
 
-    /// A colour as CSS's `rgb()`; nil for a value that is none.
+    /// A color as CSS's `rgb()`; nil for a value that is none.
     static func color(_ value: HostValue?) -> String? {
         guard let channels = value?.color else { return nil }
         let alpha = number((ColorComponent.fraction(channels.alpha) * 1000).rounded() / 1000)
         return "rgb(\(channels.red) \(channels.green) \(channels.blue) / \(alpha))"
     }
 
-    /// What fills a box: a colour, or a brush's first colour.
+    /// What fills a box: a color, or a brush's first color.
     static func fill(_ value: HostValue?) -> String? {
         switch HostBrush(value) {
         case .none: nil

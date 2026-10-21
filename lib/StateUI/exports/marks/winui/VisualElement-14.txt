@@ -14,11 +14,11 @@ Divider.tooltip: ✅
 Ellipse.tooltip: ✅
 Grid.hidesChildrenFromAccessibility: ✅
 Grid.opacity: ✅
-HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 HStack.isAccessibilityHidden: ✅
 HStack.isVisible: ✅
 Image.accessibilityHeading: ✅
-ItemsView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+ItemsView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 ItemsView.isEnabled: ✅
 LayoutEngine.accessibilityHeading: ✅
 LayoutEngine.scale: ✅
@@ -50,7 +50,7 @@ Slider.zIndex: ✅
 Spacer.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Spacer.translationX: ✅
 Stepper.tooltip: ✅
-Switch.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Switch.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Switch.isEnabled: ✅
 Text.frame: ✅
 Text.rotation: ✅
@@ -60,9 +60,9 @@ TextField.accessibilityLabel: ✅
 TextField.scaleX: ✅
 TimePicker.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 TimePicker.accessibilityActions: – UI Automation offers no action of an application's own words.
-VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 VStack.isAccessibilityHidden: ✅
 VStack.isVisible: ✅
 WebView.tooltip: ✅
-ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it

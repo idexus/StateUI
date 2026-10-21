@@ -51,7 +51,7 @@ public struct PositionIndicator: View {
         marks = Marks(items.map { content($0).node })
     }
 
-    /// The marks in a row, centred in the room the row is given.
+    /// The marks in a row, centered in the room the row is given.
     public var body: some View {
         let shown = Self.shown(
             count: marks?.nodes.count ?? count.current, position: position.current,
@@ -66,7 +66,7 @@ public struct PositionIndicator: View {
         .horizontalAlignment(.center)
     }
 
-    /// The mark at `place`: the item's own, or a dot in the colour its being
+    /// The mark at `place`: the item's own, or a dot in the color its being
     /// current or not gives it.
     private func mark(at place: Int, current: Bool) -> Mark {
         if let marks {
@@ -91,7 +91,7 @@ public struct PositionIndicator: View {
         return first..<(first + most)
     }
 
-    /// A dot's colour and the current one's, on a light and a dark page.
+    /// A dot's color and the current one's, on a light and a dark page.
     static let dotColor = Color(light: Color(hex: 0xC4C4C4), dark: Color(hex: 0x5C5C5C))
     static let currentColor = Color(light: Color(hex: 0x3C3C3C), dark: Color(hex: 0xE6E6E6))
 
@@ -114,7 +114,7 @@ extension PositionIndicator {
         with { $0.position = .value(value) }
     }
 
-    /// The colour of a dot that is not the current one.
+    /// The color of a dot that is not the current one.
     public func indicatorColor(_ value: Color) -> Self {
         with { $0.indicatorColor = .value(value) }
     }
@@ -160,7 +160,7 @@ extension PositionIndicator {
     }
 
     /// `indicatorColor` from a state, `$x`: the row is built again as it
-    /// changes, and the dots travel to the new colour.
+    /// changes, and the dots travel to the new color.
     public func indicatorColor(_ state: Binding<Color>) -> Self {
         with { $0.indicatorColor = .state(state) }
     }
@@ -183,7 +183,7 @@ extension PositionIndicator {
     }
 
     /// `currentIndicatorColor` from a state, `$x`: the row is built again as
-    /// it changes, and the current dot travels to the new colour.
+    /// it changes, and the current dot travels to the new color.
     public func currentIndicatorColor(_ state: Binding<Color>) -> Self {
         with { $0.currentIndicatorColor = .state(state) }
     }

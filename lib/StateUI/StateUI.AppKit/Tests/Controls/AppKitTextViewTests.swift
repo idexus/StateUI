@@ -73,11 +73,11 @@ final class AppKitTextViewTests: XCTestCase {
 
         XCTAssertGreaterThan(
             ink[1], ink[0] + 40,
-            "centred words start well right of words at the start "
+            "centered words start well right of words at the start "
                 + "(\(ink[1]) against \(ink[0]))")
         XCTAssertGreaterThan(
             ink[2], ink[1] + 40,
-            "words at the end start well right of centred words "
+            "words at the end start well right of centered words "
                 + "(\(ink[2]) against \(ink[1]))")
     }
 
@@ -189,11 +189,11 @@ final class AppKitTextViewTests: XCTestCase {
 
         XCTAssertGreaterThan(
             ink[1], ink[0] + 10,
-            "centred words sit below words at the start "
+            "centered words sit below words at the start "
                 + "(\(ink[1]) against \(ink[0]))")
         XCTAssertGreaterThan(
             ink[2], ink[1] + 10,
-            "words at the end sit below centred words "
+            "words at the end sit below centered words "
                 + "(\(ink[2]) against \(ink[1]))")
     }
 

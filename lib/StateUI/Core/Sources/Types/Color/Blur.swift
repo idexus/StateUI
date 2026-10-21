@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// A blur of what lies behind a surface, in the platform's own look: how thick
-/// it is - the thinnest lets the most through - and a colour laid over it.
+/// it is - the thinnest lets the most through - and a color laid over it.
 ///
 ///     VStack { … }.background(.blur(.thin))
 ///     VStack { … }.background(.blur(.thick.tint(.indigo.opacity(0.15))))
 ///
-/// A platform that blurs nothing draws a colour of the theme in its place, let
+/// A platform that blurs nothing draws a color of the theme in its place, let
 /// through as the blur is, the tint over it.
-/// Design: docs/design/types/colour-and-theme.md#a-blur
+/// Design: docs/design/types/color-and-theme.md#a-blur
 public struct Blur: Equatable, Sendable {
     // A closed vocabulary, numbered by StateUI: append a case, never insert one.
     // Design: docs/design/types/vocabularies.md#written-out-and-appended
@@ -35,7 +35,7 @@ public struct Blur: Equatable, Sendable {
     /// How thick the blur is.
     public let thickness: Thickness
 
-    /// The colour laid over the blur; nil for none.
+    /// The color laid over the blur; nil for none.
     public let tint: Color?
 
     /// A blur of `thickness`, untinted - the one a host reads back.
@@ -63,7 +63,7 @@ public struct Blur: Equatable, Sendable {
     /// The thickest blur: what lies behind shows faintly.
     public static let ultraThick = Blur(thickness: .ultraThick, tint: nil)
 
-    /// This blur with `color` laid over it - a colour with an alpha tints it.
+    /// This blur with `color` laid over it - a color with an alpha tints it.
     public func tint(_ color: Color) -> Blur {
         Blur(thickness: thickness, tint: color)
     }
@@ -82,7 +82,7 @@ extension Blur.Thickness: HostRepresentable {
         }
     }
 
-    /// What a platform that blurs nothing draws in its place: a colour of the
+    /// What a platform that blurs nothing draws in its place: a color of the
     /// theme, let through as much as the blur lets.
     var standIn: Color {
         Color(light: .white, dark: Color(hex: 0x1C1C1E)).opacity(opacity)

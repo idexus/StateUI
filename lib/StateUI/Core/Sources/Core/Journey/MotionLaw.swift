@@ -29,7 +29,7 @@ import StateUIFoundation
 @_spi(Host) public enum HostMotionLaw {
     /// How near its destination and how slow a lane is when it counts as arrived: in
     /// the value's own units, and per millisecond for the speed. A thousandth of a
-    /// colour channel or of a point is below any display's resolution.
+    /// color channel or of a point is below any display's resolution.
     public static let still = 0.001
 
     /// The longest a spring animates, in milliseconds. A spring has no stated end;

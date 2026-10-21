@@ -224,12 +224,12 @@ final class AppKitLabel: NSTextField {
         if let laidOut, laidOut.width == bounds.width, laidOut.text.isEqual(to: text) { return }
         laidOut = (text, bounds.width)
         room.size = NSSize(width: bounds.width, height: .greatestFiniteMagnitude)
-        let coloured = NSMutableAttributedString(attributedString: text)
-        let whole = NSRange(location: 0, length: coloured.length)
-        coloured.enumerateAttribute(.foregroundColor, in: whole) { value, range, _ in
-            if value == nil { coloured.addAttribute(.foregroundColor, value: textColor ?? .labelColor, range: range) }
+        let colored = NSMutableAttributedString(attributedString: text)
+        let whole = NSRange(location: 0, length: colored.length)
+        colored.enumerateAttribute(.foregroundColor, in: whole) { value, range, _ in
+            if value == nil { colored.addAttribute(.foregroundColor, value: textColor ?? .labelColor, range: range) }
         }
-        words.setAttributedString(coloured)
+        words.setAttributedString(colored)
         layoutsForTesting += 1
     }
 }

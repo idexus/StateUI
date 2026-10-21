@@ -28,7 +28,7 @@ protocol GTKTextInputView: GTKView {
     func setTextCase(_ textCase: TextCase?)
 
     /// Whether the user can change the words, and what the input method is told of them.
-    func setBehaviour(readOnly: Bool, hints: GtkInputHints, purpose: GtkInputPurpose)
+    func setBehavior(readOnly: Bool, hints: GtkInputHints, purpose: GtkInputPurpose)
 
     /// The words across the view.
     func setAlignment(_ alignment: TextAlignment)

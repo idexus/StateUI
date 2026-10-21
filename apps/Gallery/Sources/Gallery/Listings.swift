@@ -164,7 +164,7 @@ enum Listings {
         // Sources/Samples/Animation/AnalogClockSample.swift
         @State private var ticking = false
 
-        /// Whether the first reading of this visit has SET the clock. Travelling
+        /// Whether the first reading of this visit has SET the clock. Traveling
         /// there from where the hands stand - noon, on the first visit - would
         /// sweep them round in a blur.
         @State private var started = false
@@ -187,9 +187,9 @@ enum Listings {
         @State private var hAngle = 0.0
 
         /// Where each mark sits and how it is shaped: a bar on the quarters, a
-        /// dot on the other hours, at radius 94 from the centre. Written out
+        /// dot on the other hours, at radius 94 from the center. Written out
         /// because they are layout, not drawing - each is a small box pushed off
-        /// centre by margins, with no rotation anywhere.
+        /// center by margins, with no rotation anywhere.
         static let marks: [(x: Double, y: Double, wide: Double, tall: Double)] = [
             (0, -94, 4, 14), (47, -81.4, 5, 5), (81.4, -47, 5, 5),
             (94, 0, 14, 4), (81.4, 47, 5, 5), (47, 81.4, 5, 5),
@@ -212,8 +212,8 @@ enum Listings {
                     .verticalAlignment(.center)
 
                 // The marks are laid out, not rotated: a quarter gets a bar,
-                // the other hours a dot, each pushed off centre by margins -
-                // margin(2x, 2y, 0, 0) shifts a centred view by (x, y).
+                // the other hours a dot, each pushed off center by margins -
+                // margin(2x, 2y, 0, 0) shifts a centered view by (x, y).
                 ForEach(Array(Self.marks.enumerated()), id: \.offset) { pair in
                     let (x, y, wide, tall) = pair.element
                     return Rectangle().fill(Palette.outline)
@@ -306,8 +306,8 @@ enum Listings {
             }
         }
 
-        /// One hand: bottom at the face's centre, rotating about that bottom.
-        /// The bottom margin equals the length, so centring the margin box puts
+        /// One hand: bottom at the face's center, rotating about that bottom.
+        /// The bottom margin equals the length, so centering the margin box puts
         /// the hand's foot exactly on the middle - plain layout, no transforms.
         /// `.rotation(angle)` DRIVES the rotation from the state handed in, which
         /// is what makes a movement on that state turn this hand - on the host's
@@ -467,12 +467,12 @@ enum Listings {
                 .stroke(.transparent)
 
                 HStack {
-                    button("Colour") {
+                    button("Color") {
                         try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(.milliseconds(500))).arrived()
 
                         // The caption sits on the violet field inside the panel
                         // rather than on the panel itself, so what it goes to is
-                        // white, the colour that reads on that field.
+                        // white, the color that reads on that field.
                         try await $captionColor.journey.move(to: AppColors.white, .eased(.milliseconds(500))).arrived()
                     }
 
@@ -497,7 +497,7 @@ enum Listings {
 
                     button("Back") {
                         // EVERYTHING THE OTHER BUTTONS LEAVE CHANGED - the height
-                        // and the two colours. The padding and the text size send
+                        // and the two colors. The padding and the text size send
                         // themselves back, so there is nothing here for them; and
                         // `wide` is put right with the height, or the next press
                         // of Size would ask for the value it already has.
@@ -846,8 +846,8 @@ enum Listings {
                 Text("\(app.info.colorScheme)")
                     .fontWeight(.bold)
 
-                // LOGIC on the theme - a different WORD, not a colour.
-                // A colour that differs by theme is Color(light:dark:),
+                // LOGIC on the theme - a different WORD, not a color.
+                // A color that differs by theme is Color(light:dark:),
                 // which follows by itself.
                 Text(app.info.colorScheme == .dark
                     ? "lights off - a view can choose calmer artwork"
@@ -940,10 +940,10 @@ enum Listings {
 
                     Text("The bars")
                     Picker(bars, selection: Binding(get: { look.bars }, set: { style[keyPath: key].bars = $0 })) { $0.name }
-                    Picker(accents, selection: Binding(get: { look.barColour }, set: { style[keyPath: key].barColour = $0 })) {
+                    Picker(accents, selection: Binding(get: { look.barColor }, set: { style[keyPath: key].barColor = $0 })) {
                         $0.name
                     }
-                        .isEnabled(look.bars == .tinted || look.bars == .colour)
+                        .isEnabled(look.bars == .tinted || look.bars == .color)
 
                     SurfacePickers(title: "The window", label: "Window", theme: name, surface: surface(\.window))
                     SurfacePickers(title: "The sidebar", label: "Sidebar", theme: name, surface: surface(\.sidebar))
@@ -952,7 +952,7 @@ enum Listings {
             }
         }
 
-        /// One surface's choices: what it is made of, in which colour, and how thick
+        /// One surface's choices: what it is made of, in which color, and how thick
         /// a blur.
         private struct SurfacePickers: View {
             let title: String
@@ -973,10 +973,10 @@ enum Listings {
                     Picker(materials, selection: Binding(get: { look.material }, set: { surface.wrappedValue.material = $0 })) {
                         $0.name
                     }
-                    Picker(accents, selection: Binding(get: { look.colour }, set: { surface.wrappedValue.colour = $0 })) {
+                    Picker(accents, selection: Binding(get: { look.color }, set: { surface.wrappedValue.color = $0 })) {
                         $0.name
                     }
-                        .isEnabled(look.material.showsColour)
+                        .isEnabled(look.material.showsColor)
                     Picker(blurs, selection: Binding(get: { look.blur }, set: { surface.wrappedValue.blur = $0 })) { blur in
                         ["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"][blurs.firstIndex(of: blur) ?? 0]
                     }
@@ -1063,7 +1063,7 @@ enum Listings {
             }
         }
 
-        /// One labelled badge, so the sample says what is being positioned rather than
+        /// One labeled badge, so the sample says what is being positioned rather than
         /// how it is drawn.
         private struct Badge: View {
             let text: String
@@ -1250,8 +1250,8 @@ enum Listings {
         /// there under the label's law.
         @State private var size = 18.0   // a number: the host walks it
 
-        /// A colour the host walks the same way.
-        @State private var tint = Palette.accent   // a colour: the same
+        /// A color the host walks the same way.
+        @State private var tint = Palette.accent   // a color: the same
 
         /// Which of the two tints is worn - read by handlers alone.
         @State private var warm = true   // which tint: read by a handler alone
@@ -1289,7 +1289,7 @@ enum Listings {
                 }
                 .horizontalAlignment(.center)
 
-                row("2 · a colour the host walks - textColor($tint)") {
+                row("2 · a color the host walks - textColor($tint)") {
                     Text("Tinted words")
                     DebugInfoLabel()   // stays at one
                 }
@@ -1614,23 +1614,23 @@ enum Listings {
         """#,
         "ChangingDeckSample": #"""
         // Sources/Samples/LayoutEngine/ChangingDeckSample.swift
-        /// One card: its name, which is its identity, its colour and its icon.
+        /// One card: its name, which is its identity, its color and its icon.
         struct Card: Hashable {
             let name: String
-            let colour: Color
+            let color: Color
             let icon: Icon
         }
 
         /// Every card the deck can hold, dealt in this order.
         static let all = [
-            Card(name: "Mural", colour: Color(hex: 0x7C3AED), icon: .star),
-            Card(name: "Nebula", colour: Color(hex: 0x2563EB), icon: .heart),
-            Card(name: "Ridge", colour: Color(hex: 0x0D9488), icon: .home),
-            Card(name: "Bloom", colour: Color(hex: 0xD97706), icon: .calendar),
-            Card(name: "Tide", colour: Color(hex: 0xDB2777), icon: .mail),
-            Card(name: "Prism", colour: Color(hex: 0x4F46E5), icon: .settings),
-            Card(name: "Grove", colour: Color(hex: 0x16A34A), icon: .person),
-            Card(name: "Ember", colour: Color(hex: 0xDC2626), icon: .play),
+            Card(name: "Mural", color: Color(hex: 0x7C3AED), icon: .star),
+            Card(name: "Nebula", color: Color(hex: 0x2563EB), icon: .heart),
+            Card(name: "Ridge", color: Color(hex: 0x0D9488), icon: .home),
+            Card(name: "Bloom", color: Color(hex: 0xD97706), icon: .calendar),
+            Card(name: "Tide", color: Color(hex: 0xDB2777), icon: .mail),
+            Card(name: "Prism", color: Color(hex: 0x4F46E5), icon: .settings),
+            Card(name: "Grove", color: Color(hex: 0x16A34A), icon: .person),
+            Card(name: "Ember", color: Color(hex: 0xDC2626), icon: .play),
         ]
 
         /// The cards in the deck, in order.
@@ -1773,13 +1773,13 @@ enum Listings {
                 zIndex: leaving && outward ? 200 : Int(100 - behind * 10))
         }
 
-        /// One card's face: its colour, its icon on a light disc and its name -
-        /// the icon in the platform's own colour, which shows on the disc in a
+        /// One card's face: its color, its icon on a light disc and its name -
+        /// the icon in the platform's own color, which shows on the disc in a
         /// light theme and a dark one alike - larger on the pile's larger cards.
         private func face(_ card: Card, large: Bool) -> some View {
             let disc = large ? 88.0 : 56.0
             return ZStack {
-                Rectangle().fill(card.colour)
+                Rectangle().fill(card.color)
 
                 VStack {
                     ZStack {
@@ -2003,7 +2003,7 @@ enum Listings {
 
         /// One beat: two long movements spanning it, the bars hopping inside them.
         ///
-        /// - Parameter n: which beat this is, which decides the colour it washes to.
+        /// - Parameter n: which beat this is, which decides the color it washes to.
         /// - Returns: whether everything in it ran to the end. False is what Stop
         ///   produces, through `stop()` on each of the states.
         private func beat(_ n: Int) async throws -> Bool {
@@ -2017,7 +2017,7 @@ enum Listings {
             let breathing = $breath.journey.move(to: 0.25, .eased(.milliseconds(600), .cubicInOut))
 
             // 4 bars x 300ms = the 1200ms the wash takes, so the wave crosses the
-            // stage exactly once per colour. A hop that did not run to the end is
+            // stage exactly once per color. A hop that did not run to the end is
             // Stop, and the bars after it must not start: each would be a fresh
             // movement over the one being stopped.
             var hopped = true
@@ -2339,7 +2339,7 @@ enum Listings {
         """#,
         "Cube3D": #"""
         // Sources/Samples/Interop/Cube3D.swift
-        /// What colour the cube is painted.
+        /// What color the cube is painted.
         ///
         /// A closed vocabulary, so it crosses as its member's number, and the host's
         /// registration is handed it back as a `CubeColor` rather than as that number.
@@ -2365,7 +2365,7 @@ enum Listings {
             /// it is a cube that grows.
             public static let size = ElementProperty<Self, Double>("size")
 
-            /// Which colour the cube is painted. A vocabulary has no half way, so a
+            /// Which color the cube is painted. A vocabulary has no half way, so a
             /// change does not travel.
             public static let color = ElementProperty<Self, CubeColor>("color", travels: false)
 
@@ -2384,7 +2384,7 @@ enum Listings {
         public struct Cube3D: ElementView {
             public var node = Node(contract: Cube3DContract.self)
 
-            /// A cube at whatever size, colour and motion its modifiers say.
+            /// A cube at whatever size, color and motion its modifiers say.
             public init() {}
 
             /// How long the cube's edge is, as a share of the room the view is given,
@@ -2413,7 +2413,7 @@ enum Listings {
                 setValue(Cube3DContract.size, on: state, mode: .inOut, kind: .property)
             }
 
-            /// Which colour the cube is painted.
+            /// Which color the cube is painted.
             public func color(_ value: CubeColor) -> Self {
                 setValue(Cube3DContract.color, value)
             }
@@ -2765,7 +2765,7 @@ enum Listings {
         /// Where the marker sits - the value the HOST carries.
         @State private var offset = 0.0
 
-        /// The rail's colour, which the HOST carries with no engine at all.
+        /// The rail's color, which the HOST carries with no engine at all.
         @State private var tint = Palette.outline
 
         /// How far the marker may travel - the rail's width less its own.
@@ -3240,11 +3240,11 @@ enum Listings {
             /// Bars that paint nothing: what stands behind them shows.
             case clear
 
-            /// The gallery's colour let through over the platform's material.
+            /// The gallery's color let through over the platform's material.
             case tinted
 
-            /// The gallery's colour.
-            case colour
+            /// The gallery's color.
+            case color
 
             /// What the Appearance sample calls it.
             var name: String {
@@ -3252,7 +3252,7 @@ enum Listings {
                 case .platform: return "The platform's own"
                 case .clear: return "Clear"
                 case .tinted: return "Tinted"
-                case .colour: return "Colour"
+                case .color: return "Color"
                 }
             }
         }
@@ -3269,17 +3269,17 @@ enum Listings {
             /// A blur: what stands behind shows through, blurred.
             case blur
 
-            /// A blur in a light tint of the gallery's colour.
+            /// A blur in a light tint of the gallery's color.
             case tintedBlur
 
             /// The platform's glass: what stands behind bent and lit through it.
             case glass
 
-            /// The platform's glass in a tint of the gallery's colour.
+            /// The platform's glass in a tint of the gallery's color.
             case tintedGlass
 
-            /// The gallery's colour.
-            case colour
+            /// The gallery's color.
+            case color
 
             /// What the Appearance sample calls it.
             var name: String {
@@ -3290,7 +3290,7 @@ enum Listings {
                 case .tintedBlur: return "Blur, tinted"
                 case .glass: return "Glass"
                 case .tintedGlass: return "Glass, tinted"
-                case .colour: return "Colour"
+                case .color: return "Color"
                 }
             }
 
@@ -3299,40 +3299,40 @@ enum Listings {
                 self == .blur || self == .tintedBlur
             }
 
-            /// Whether the surface shows a colour.
-            var showsColour: Bool {
-                self == .tintedBlur || self == .tintedGlass || self == .colour
+            /// Whether the surface shows a color.
+            var showsColor: Bool {
+                self == .tintedBlur || self == .tintedGlass || self == .color
             }
         }
 
-        /// One surface's look: what it is made of, in which colour, how thick a blur.
+        /// One surface's look: what it is made of, in which color, how thick a blur.
         struct SurfaceLook: Equatable {
             var material: SurfaceMaterial
-            var colour: AccentChoice
+            var color: AccentChoice
             var blur: Blur
 
             /// The blurs offered, thinnest first.
             static let blurs: [Blur] = [.ultraThin, .thin, .regular, .thick, .ultraThick]
 
-            /// The platform's own surface - the gallery's own colour, or a thick
+            /// The platform's own surface - the gallery's own color, or a thick
             /// blur, once one is chosen.
-            static let platform = SurfaceLook(material: .platform, colour: .gallery, blur: .thick)
+            static let platform = SurfaceLook(material: .platform, color: .gallery, blur: .thick)
 
-            /// The gallery's own colour for the part it paints.
-            static let galleryOwn = SurfaceLook(material: .colour, colour: .gallery, blur: .thick)
+            /// The gallery's own color for the part it paints.
+            static let galleryOwn = SurfaceLook(material: .color, color: .gallery, blur: .thick)
 
             /// The material `surface` is: its blur where it is one, tinted in its
-            /// colour - the system's accent being `system` - where it is tinted, the
-            /// colour where it is one; nil for the platform's own.
+            /// color - the system's accent being `system` - where it is tinted, the
+            /// color where it is one; nil for the platform's own.
             func material(system: Color, for surface: GallerySurface) -> Material? {
                 switch material {
                 case .platform: return nil
                 case .clear: return .color(.transparent)
                 case .blur: return .blur(blur)
-                case .tintedBlur: return .blur(blur.tint(colour.tint(system: system, for: surface)))
+                case .tintedBlur: return .blur(blur.tint(color.tint(system: system, for: surface)))
                 case .glass: return .glass(.regular)
-                case .tintedGlass: return .glass(.regular.tint(colour.tint(system: system, for: surface)))
-                case .colour: return .color(colour.color(system: system, for: surface))
+                case .tintedGlass: return .glass(.regular.tint(color.tint(system: system, for: surface)))
+                case .color: return .color(color.color(system: system, for: surface))
                 }
             }
         }
@@ -3342,13 +3342,13 @@ enum Listings {
         /// of words, so a scene keeps a theme's whole look under one key.
         struct ThemeLook: Equatable, RawRepresentable {
             var bars: BarLook
-            var barColour: AccentChoice
+            var barColor: AccentChoice
             var window: SurfaceLook
             var sidebar: SurfaceLook
             var flyout: SurfaceLook
 
-            init(bars: BarLook, barColour: AccentChoice, window: SurfaceLook, sidebar: SurfaceLook, flyout: SurfaceLook) {
-                (self.bars, self.barColour, self.window, self.sidebar, self.flyout) = (bars, barColour, window, sidebar, flyout)
+            init(bars: BarLook, barColor: AccentChoice, window: SurfaceLook, sidebar: SurfaceLook, flyout: SurfaceLook) {
+                (self.bars, self.barColor, self.window, self.sidebar, self.flyout) = (bars, barColor, window, sidebar, flyout)
             }
 
             /// The light theme's look the gallery opens in: clear bars, and the
@@ -3356,45 +3356,45 @@ enum Listings {
             /// platform's glass.
             static var light: ThemeLook {
                 #if APPKIT
-                let sidebar = SurfaceLook(material: .glass, colour: .gallery, blur: .thick)
+                let sidebar = SurfaceLook(material: .glass, color: .gallery, blur: .thick)
                 #else
                 let sidebar = SurfaceLook.platform
                 #endif
-                return ThemeLook(bars: .clear, barColour: .gallery, window: .platform, sidebar: sidebar, flyout: .platform)
+                return ThemeLook(bars: .clear, barColor: .gallery, window: .platform, sidebar: sidebar, flyout: .platform)
             }
 
             /// The dark theme's look the gallery opens in: on Windows a window of the
             /// desktop blurred in the gallery's violet, its sidebar letting it
             /// through, and over the page the page blurred in the same violet; on
-            /// the Mac a thick blur of the desktop in the gallery's own colour, made
+            /// the Mac a thick blur of the desktop in the gallery's own color, made
             /// from that window, its sidebar the platform's glass in it; on the iPad
-            /// and the iPhone those colours, the sidebar the same glass beside the
+            /// and the iPhone those colors, the sidebar the same glass beside the
             /// page and over it; on the Web, GNOME and Android - which blur nothing
-            /// behind a window - those colours, whole.
+            /// behind a window - those colors, whole.
             static var dark: ThemeLook {
                 #if WINUI
-                let violet = SurfaceLook(material: .tintedBlur, colour: .violet, blur: .thick)
+                let violet = SurfaceLook(material: .tintedBlur, color: .violet, blur: .thick)
                 return ThemeLook(
-                    bars: .platform, barColour: .violet, window: violet, sidebar: .platform, flyout: violet)
+                    bars: .platform, barColor: .violet, window: violet, sidebar: .platform, flyout: violet)
                 #elseif APPKIT
-                let glass = SurfaceLook(material: .tintedGlass, colour: .gallery, blur: .thick)
+                let glass = SurfaceLook(material: .tintedGlass, color: .gallery, blur: .thick)
                 return ThemeLook(
-                    bars: .clear, barColour: .gallery,
-                    window: SurfaceLook(material: .tintedBlur, colour: .gallery, blur: .thick), sidebar: glass, flyout: glass)
+                    bars: .clear, barColor: .gallery,
+                    window: SurfaceLook(material: .tintedBlur, color: .gallery, blur: .thick), sidebar: glass, flyout: glass)
                 #elseif UIKIT
-                let glass = SurfaceLook(material: .tintedGlass, colour: .gallery, blur: .thick)
-                return ThemeLook(bars: .clear, barColour: .gallery, window: .galleryOwn, sidebar: glass, flyout: glass)
+                let glass = SurfaceLook(material: .tintedGlass, color: .gallery, blur: .thick)
+                return ThemeLook(bars: .clear, barColor: .gallery, window: .galleryOwn, sidebar: glass, flyout: glass)
                 #else
                 return ThemeLook(
-                    bars: .clear, barColour: .gallery, window: .galleryOwn, sidebar: .galleryOwn, flyout: .galleryOwn)
+                    bars: .clear, barColor: .gallery, window: .galleryOwn, sidebar: .galleryOwn, flyout: .galleryOwn)
                 #endif
             }
 
-            /// The look as words: the bars and their colour, then each surface's
-            /// material, colour and blur.
+            /// The look as words: the bars and their color, then each surface's
+            /// material, color and blur.
             var rawValue: String {
-                ([bars.rawValue, barColour.rawValue] + [window, sidebar, flyout].flatMap { surface in
-                    [surface.material.rawValue, surface.colour.rawValue,
+                ([bars.rawValue, barColor.rawValue] + [window, sidebar, flyout].flatMap { surface in
+                    [surface.material.rawValue, surface.color.rawValue,
                      String(SurfaceLook.blurs.firstIndex(of: surface.blur) ?? 0)]
                 }).joined(separator: " ")
             }
@@ -3403,16 +3403,16 @@ enum Listings {
             init?(rawValue: String) {
                 let words = rawValue.split(separator: " ").map(String.init)
                 guard words.count == 11, let bars = BarLook(rawValue: words[0]),
-                      let barColour = AccentChoice(rawValue: words[1])
+                      let barColor = AccentChoice(rawValue: words[1])
                 else { return nil }
                 var surfaces: [SurfaceLook] = []
                 for at in stride(from: 2, to: 11, by: 3) {
-                    guard let material = SurfaceMaterial(rawValue: words[at]), let colour = AccentChoice(rawValue: words[at + 1]),
+                    guard let material = SurfaceMaterial(rawValue: words[at]), let color = AccentChoice(rawValue: words[at + 1]),
                           let blur = Int(words[at + 2]), SurfaceLook.blurs.indices.contains(blur)
                     else { return nil }
-                    surfaces.append(SurfaceLook(material: material, colour: colour, blur: SurfaceLook.blurs[blur]))
+                    surfaces.append(SurfaceLook(material: material, color: color, blur: SurfaceLook.blurs[blur]))
                 }
-                self.init(bars: bars, barColour: barColour, window: surfaces[0], sidebar: surfaces[1], flyout: surfaces[2])
+                self.init(bars: bars, barColor: barColor, window: surfaces[0], sidebar: surfaces[1], flyout: surfaces[2])
             }
         }
 
@@ -3456,14 +3456,14 @@ enum Listings {
             }
         }
 
-        // Sources/Styles/GalleryColours.swift
-        /// A part of the gallery a colour paints - each has a colour of the gallery's
+        // Sources/Styles/GalleryColors.swift
+        /// A part of the gallery a color paints - each has a color of the gallery's
         /// own, made to sit with the platform's look.
         enum GallerySurface {
             case bar, window, sidebar, flyout
 
-            /// The gallery's own colour for this part, in each theme: in the dark,
-            /// the colours its Windows window wears in the gallery's violet acrylic -
+            /// The gallery's own color for this part, in each theme: in the dark,
+            /// the colors its Windows window wears in the gallery's violet acrylic -
             /// the window, the bar a breath lighter, the sidebar and the menu over the
             /// page as dark as a list of samples on it (`Palette.shade`).
             var own: Color {
@@ -3485,7 +3485,7 @@ enum Listings {
             static let fonts = WindowType("gallery.fonts")
 
             /// The window that chooses the gallery's accent.
-            static let colours = WindowType("gallery.colours")
+            static let colors = WindowType("gallery.colors")
         }
 
         extension WindowType where Value == Int {
@@ -3495,7 +3495,7 @@ enum Listings {
 
         /// What the galleries' scene KEEPS with itself - handed back with it when the
         /// system restores the application's windows, so the galleries come back in the
-        /// font and the colour they were left in.
+        /// font and the color they were left in.
         extension SceneKey where Value == String {
             /// The font the gallery's preview is set in.
             static let font = SceneKey("gallery.font")
@@ -3508,7 +3508,7 @@ enum Listings {
             static let darkLook = SceneKey("gallery.look.dark")
         }
 
-        /// A colour a gallery wears - on its bars, or behind its pages, where its look
+        /// A color a gallery wears - on its bars, or behind its pages, where its look
         /// asks for one.
         enum AccentChoice: String, CaseIterable {
             case gallery
@@ -3518,10 +3518,10 @@ enum Listings {
             case coral
             case graphite
 
-            /// The gallery's own colours, without the system's accent.
+            /// The gallery's own colors, without the system's accent.
             static let own: [AccentChoice] = [.violet, .teal, .coral, .graphite]
 
-            /// What the Colours window calls it.
+            /// What the Colors window calls it.
             var name: String {
                 switch self {
                 case .gallery: return "The gallery's own"
@@ -3533,7 +3533,7 @@ enum Listings {
                 }
             }
 
-            /// The colour on `surface`, the system's accent being `system` - one in
+            /// The color on `surface`, the system's accent being `system` - one in
             /// both themes but the gallery's own, which is made for each part and
             /// theme.
             func color(system: Color, for surface: GallerySurface) -> Color {
@@ -3547,25 +3547,25 @@ enum Listings {
                 }
             }
 
-            /// Whether words on the colour are the theme's own rather than white: the
-            /// gallery's own colours are as light as the theme.
+            /// Whether words on the color are the theme's own rather than white: the
+            /// gallery's own colors are as light as the theme.
             var carriesThemesWords: Bool { self == .gallery }
 
-            /// The colour with three fifths let through - a bar tinted over the
+            /// The color with three fifths let through - a bar tinted over the
             /// platform's material.
             func translucentColor(system: Color, for surface: GallerySurface) -> Color {
                 color(system: system, for: surface).opacity(0.4)
             }
 
-            /// The colour laid over a blur - a seventh of an accent, the blur showing
-            /// through it; most of the gallery's own, whose blur is its colour.
+            /// The color laid over a blur - a seventh of an accent, the blur showing
+            /// through it; most of the gallery's own, whose blur is its color.
             func tint(system: Color, for surface: GallerySurface) -> Color {
                 color(system: system, for: surface).opacity(self == .gallery ? Self.ownTint : 0.15)
             }
 
-            /// How much of the gallery's own colour lies over a blur or glass: more on
-            /// the iPad and the iPhone, whose glass is greyer, so that their sidebar
-            /// wears the Mac's colour.
+            /// How much of the gallery's own color lies over a blur or glass: more on
+            /// the iPad and the iPhone, whose glass is grayer, so that their sidebar
+            /// wears the Mac's color.
             private static var ownTint: Double {
                 #if UIKIT
                 0.85
@@ -3579,7 +3579,7 @@ enum Listings {
         /// aside for another scene, floating on top.
         ///
         /// Held by the galleries' scene and handed to its gallery windows and to its
-        /// Fonts and Colours windows, so the Fonts and Colours windows change every
+        /// Fonts and Colors windows, so the Fonts and Colors windows change every
         /// gallery window at once, with nothing passed between them.
         @MainActor
         final class SessionStyle {
@@ -3610,11 +3610,11 @@ enum Listings {
                 dark ? darkLook : lightLook
             }
 
-            /// Whether the Fonts and Colours windows hide while another scene is the
+            /// Whether the Fonts and Colors windows hide while another scene is the
             /// one in front.
             @State var hidesTools = false
 
-            /// Whether the Fonts and Colours windows float above the application's
+            /// Whether the Fonts and Colors windows float above the application's
             /// other windows rather than going under them.
             @State var floatsTools = false
         }
@@ -3632,7 +3632,7 @@ enum Listings {
 
             /// What every gallery shares, written as the application is made.
             init() {
-                // The styles a control of the gallery asks for by name. A colour in a
+                // The styles a control of the gallery asks for by name. A color in a
                 // style follows the theme by itself. See Styles/AppStyles.swift.
                 application.styles = AppStyles.sheet
 
@@ -3692,9 +3692,9 @@ enum Listings {
         /// the windows they open beside them, all sharing what the scene holds.
         ///
         /// What the scene holds is the gallery's LOOK (`SessionStyle` - the font and
-        /// the accent its Fonts and Colours windows choose), handed to the gallery
-        /// windows and to the Fonts and Colours windows: nothing is passed between the
-        /// Colours window and the bars it paints.
+        /// the accent its Fonts and Colors windows choose), handed to the gallery
+        /// windows and to the Fonts and Colors windows: nothing is passed between the
+        /// Colors window and the bars it paints.
         /// What one gallery window is doing - where it is, its bar, its log, its
         /// catalog - is that window's own: see Gallery/GalleryWindow.swift.
         struct GalleryScene: Scene {
@@ -3703,7 +3703,7 @@ enum Listings {
             @State private var style = SessionStyle()
 
             /// The scene's windows: the gallery windows, which launch and *File ▸ New
-            /// Window* open; its Fonts and Colours windows, which read the scene's
+            /// Window* open; its Fonts and Colors windows, which read the scene's
             /// look and may step aside while another scene is in front or float above
             /// the application's other windows; its inspector; and a swatch per number.
             var body: some Scene {
@@ -3716,7 +3716,7 @@ enum Listings {
                     .floatsOnTop(style.floatsTools)
                     .environment(style)
 
-                Window(.colours) { ColoursPage() }
+                Window(.colors) { ColorsPage() }
                     .hidesWhenInactive(style.hidesTools)
                     .floatsOnTop(style.floatsTools)
                     .environment(style)
@@ -3936,7 +3936,7 @@ enum Listings {
         /// section, what is pushed and presented, whether the menu is open), what its
         /// bar says (`WindowBarState`), what it has said about its life (`WindowLog`)
         /// and the catalog of samples it shows. What it looks like is its scene's,
-        /// handed to it: every gallery window wears the one look the Fonts and Colours
+        /// handed to it: every gallery window wears the one look the Fonts and Colors
         /// windows choose.
         ///
         /// Each sample owns its own `@State`, declared on the sample itself - and since
@@ -4115,7 +4115,7 @@ enum Listings {
             }
         }
 
-        /// One coloured cell, composed rather than built inline - and placed with
+        /// One colored cell, composed rather than built inline - and placed with
         /// `.gridRow`, `.gridColumn` and the spans like any other view.
         private struct GridCell: View {
             let text: String
@@ -4172,11 +4172,11 @@ enum Listings {
         """#,
         "HomeScreenSample": #"""
         // Sources/Samples/LayoutEngine/HomeScreenSample.swift
-        /// One icon: its name, which is its identity, its glyph and its colour.
+        /// One icon: its name, which is its identity, its glyph and its color.
         struct HomeIcon: Hashable {
             let name: String
             let glyph: Icon
-            let colour: Color
+            let color: Color
         }
 
         /// Every icon, board after board: where one stands in the order is where
@@ -4191,17 +4191,17 @@ enum Listings {
                 ("Sync", .refresh), ("Tasks", .checkmark), ("Menu", .menu), ("More", .more),
                 ("Map", .forward), ("News", .add), ("Books", .back), ("Weather", .up),
                 ("Trash", .delete), ("Inbox", .down), ("Focus", .close), ("Budget", .remove),
-                ("Friends", .person), ("Journal", .edit), ("Timer", .clock), ("Favourites", .star),
+                ("Friends", .person), ("Journal", .edit), ("Timer", .clock), ("Favorites", .star),
                 ("Fitness", .heart), ("Videos", .play), ("Wallet", .lock), ("Backup", .upload),
                 ("Reader", .info), ("Garden", .home), ("Chat", .mail), ("Agenda", .calendar),
                 ("Remote", .settings), ("Shortcuts", .link), ("Albums", .copy), ("Compass", .forward),
             ]
-            let colours: [Color] = [
+            let colors: [Color] = [
                 Color(hex: 0x7C3AED), Color(hex: 0x2563EB), Color(hex: 0x0D9488), Color(hex: 0xD97706),
                 Color(hex: 0xDB2777), Color(hex: 0x4F46E5), Color(hex: 0x16A34A), Color(hex: 0xDC2626),
             ]
             return glyphs.enumerated().map { index, glyph in
-                HomeIcon(name: glyph.0, glyph: glyph.1, colour: colours[index % colours.count])
+                HomeIcon(name: glyph.0, glyph: glyph.1, color: colors[index % colors.count])
             }
         }()
 
@@ -4378,8 +4378,8 @@ enum Listings {
                 opacity: 0.25 + 0.75 * max(1 - abs(board - Double(page)), 0))
         }
 
-        /// One icon: its glyph on a light disc on a rounded square of its colour -
-        /// the glyph in the platform's own colour, which shows on the disc in a
+        /// One icon: its glyph on a light disc on a rounded square of its color -
+        /// the glyph in the platform's own color, which shows on the disc in a
         /// light theme and a dark one alike - and its name under it; larger while
         /// the hand holds it.
         struct HomeTile: View {
@@ -4389,7 +4389,7 @@ enum Listings {
             var body: some View {
                 VStack {
                     ZStack {
-                        Rectangle().fill(icon.colour)
+                        Rectangle().fill(icon.color)
 
                         Rectangle().fill(.white)
                             .opacity(0.3)
@@ -4586,7 +4586,7 @@ enum Listings {
                 .columns(.fill(count: 4))
                 .rows(.auto(count: 8))
 
-                SectionTitle("In the button's colour")
+                SectionTitle("In the button's color")
 
                 HStack {
                     Button("Share")
@@ -5493,7 +5493,7 @@ enum Listings {
                         }
                     }
                     // A dark strip under the words, so a caption reads over a
-                    // picture of any colour.
+                    // picture of any color.
                     .verticalAlignment(.end)
                 }
                 // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL
@@ -5594,24 +5594,24 @@ enum Listings {
         // Sources/Samples/LayoutEngine/LayoutKeyframesSample.swift
         import StateUIFoundation
 
-        /// One card: its name, which is its identity, its colour and its icon.
+        /// One card: its name, which is its identity, its color and its icon.
         struct Card {
             let name: String
-            let colour: Color
+            let color: Color
             let icon: Icon
         }
 
         /// The cards, dealt in this order.
         static let cards = [
-            Card(name: "Mural", colour: Color(hex: 0x7C3AED), icon: .star),
-            Card(name: "Nebula", colour: Color(hex: 0x2563EB), icon: .heart),
-            Card(name: "Ridge", colour: Color(hex: 0x0D9488), icon: .home),
-            Card(name: "Bloom", colour: Color(hex: 0xD97706), icon: .calendar),
-            Card(name: "Tide", colour: Color(hex: 0xDB2777), icon: .mail),
-            Card(name: "Prism", colour: Color(hex: 0x4F46E5), icon: .settings),
-            Card(name: "Grove", colour: Color(hex: 0x16A34A), icon: .person),
-            Card(name: "Ember", colour: Color(hex: 0xDC2626), icon: .play),
-            Card(name: "Dune", colour: Color(hex: 0xCA8A04), icon: .clock),
+            Card(name: "Mural", color: Color(hex: 0x7C3AED), icon: .star),
+            Card(name: "Nebula", color: Color(hex: 0x2563EB), icon: .heart),
+            Card(name: "Ridge", color: Color(hex: 0x0D9488), icon: .home),
+            Card(name: "Bloom", color: Color(hex: 0xD97706), icon: .calendar),
+            Card(name: "Tide", color: Color(hex: 0xDB2777), icon: .mail),
+            Card(name: "Prism", color: Color(hex: 0x4F46E5), icon: .settings),
+            Card(name: "Grove", color: Color(hex: 0x16A34A), icon: .person),
+            Card(name: "Ember", color: Color(hex: 0xDC2626), icon: .play),
+            Card(name: "Dune", color: Color(hex: 0xCA8A04), icon: .clock),
         ]
 
         /// Which layout stands: 0 the ring, 1 the grid, 2 the pile - handed on
@@ -5659,7 +5659,7 @@ enum Listings {
             .axis(
                 \.self, input: .scroll(.horizontal, pointsPerUnit: 260), range: 0...2, keyframes: .every(1),
                 snaps: .every(1))
-            // BETWEEN THEM each card goes straight, or by a curve its neighbours
+            // BETWEEN THEM each card goes straight, or by a curve its neighbors
             // shape.
             .interpolation(smooth ? LayoutCurve.catmullRom : .linear)
             .motion(.eased(.milliseconds(700), .cubicInOut))
@@ -5714,10 +5714,10 @@ enum Listings {
             }
         }
 
-        /// One card's face: its colour, its icon on a disc, and its name.
+        /// One card's face: its color, its icon on a disc, and its name.
         private func face(_ card: Card) -> some View {
             ZStack {
-                Rectangle().fill(card.colour)
+                Rectangle().fill(card.color)
 
                 VStack {
                     ZStack {
@@ -5756,20 +5756,20 @@ enum Listings {
             static var axes: [WritableKeyPath<Deal, Double>] { [\.turn, \.spread] }
         }
 
-        /// One card: its name, its colour and its icon.
+        /// One card: its name, its color and its icon.
         struct Card {
             let name: String
-            let colour: Color
+            let color: Color
             let icon: Icon
         }
 
         /// The cards, dealt in this order.
         static let cards = [
-            Card(name: "Mural", colour: Color(hex: 0x7C3AED), icon: .star),
-            Card(name: "Nebula", colour: Color(hex: 0x2563EB), icon: .heart),
-            Card(name: "Ridge", colour: Color(hex: 0x0D9488), icon: .home),
-            Card(name: "Bloom", colour: Color(hex: 0xD97706), icon: .calendar),
-            Card(name: "Tide", colour: Color(hex: 0xDB2777), icon: .mail),
+            Card(name: "Mural", color: Color(hex: 0x7C3AED), icon: .star),
+            Card(name: "Nebula", color: Color(hex: 0x2563EB), icon: .heart),
+            Card(name: "Ridge", color: Color(hex: 0x0D9488), icon: .home),
+            Card(name: "Bloom", color: Color(hex: 0xD97706), icon: .calendar),
+            Card(name: "Tide", color: Color(hex: 0xDB2777), icon: .mail),
         ]
 
         /// Where the run stands on both axes - handed on with `$`, never read in
@@ -5838,12 +5838,12 @@ enum Listings {
                 zIndex: 100 - Int(min(abs(step), 9) * 10))
         }
 
-        /// One card's face: its colour, its icon on a disc, and its name.
+        /// One card's face: its color, its icon on a disc, and its name.
         private func face(_ index: Int) -> some View {
             let card = Self.cards[index]
 
             return ZStack {
-                Rectangle().fill(card.colour)
+                Rectangle().fill(card.color)
 
                 VStack {
                     ZStack {
@@ -5972,7 +5972,7 @@ enum Listings {
         """#,
         "LightTableSample": #"""
         // Sources/Samples/LayoutEngine/LightTableSample.swift
-        /// THE PHASE: which photo the table is centred on, across and down, how
+        /// THE PHASE: which photo the table is centered on, across and down, how
         /// near it stands, and how far the photos are turned - a turn a unit.
         struct Table: LayoutPhase {
             var x = 1.0
@@ -6051,7 +6051,7 @@ enum Listings {
         }
 
         /// Where the photo at `index` lies: its square of the table, a photo's
-        /// width and a gap apart, the photo the table is centred on in the middle
+        /// width and a gap apart, the photo the table is centered on in the middle
         /// of the room - all as near as the table stands, the whole table in the
         /// room at its farthest - turned in its place.
         private func place(_ index: Int, _ table: Table, _ room: Rect) -> Placement {
@@ -6139,7 +6139,7 @@ enum Listings {
         }
 
         private func cell(
-            _ text: String, _ colour: Color, at column: Int, faded: Bool = false
+            _ text: String, _ color: Color, at column: Int, faded: Bool = false
         ) -> some View {
             ZStack {
                 Text(text)
@@ -6714,7 +6714,7 @@ enum Listings {
         /// Which of the blurs the blurred panel wears.
         @State private var thickness = Blur.regular
 
-        /// Whether the blur wears the gallery's colour as a tint.
+        /// Whether the blur wears the gallery's color as a tint.
         @State private var tinted = false
 
         /// Whether the glass is the clearer kind.
@@ -6723,7 +6723,7 @@ enum Listings {
         /// Whether the glass answers the touch and the pointer.
         @State private var interactive = false
 
-        /// The colour the last panel walks to and back - a colour's channel.
+        /// The color the last panel walks to and back - a color's channel.
         @State private var wash = Palette.accent
 
         /// The blurs on offer, thinnest first.
@@ -6739,7 +6739,7 @@ enum Listings {
 
             return VStack {
                 ZStack {
-                    // Stripes of colour behind the panels: what each lets through shows on them.
+                    // Stripes of color behind the panels: what each lets through shows on them.
                     Grid {
                         Rectangle().fill(.tomato).gridColumn(0)
                         Rectangle().fill(.gold).gridColumn(1)
@@ -6750,15 +6750,15 @@ enum Listings {
                     .columns(.fill, .fill, .fill, .fill, .fill)
 
                     Grid {
-                        panel("Colour", .color(Palette.accent)).gridRow(0).gridColumn(0)
+                        panel("Color", .color(Palette.accent)).gridRow(0).gridColumn(0)
                         panel("Gradient", .gradient(Palette.identity)).gridRow(0).gridColumn(1)
                         panel("Blur", .blur(blur)).gridRow(1).gridColumn(0)
                         panel("Glass", .glass(glass)).gridRow(1).gridColumn(1)
                         // A blur in the dark theme, and nearly white in the light one.
                         panel("Light and dark", Material(light: .color(Color.white.opacity(0.85)), dark: .blur(.regular)))
                             .gridRow(2).gridColumn(0)
-                        // A colour's channel: the host walks the colour, and no view is built again.
-                        words("A colour's channel")
+                        // A color's channel: the host walks the color, and no view is built again.
+                        words("A color's channel")
                             .height(76)
                             .gridRow(2).gridColumn(1)
                     }
@@ -6772,7 +6772,7 @@ enum Listings {
                 SwitchRow("Tinted blur", $tinted)
                 SwitchRow("Clear glass", $clear)
                 SwitchRow("Glass answers the touch", $interactive)
-                Button("Change the colour")
+                Button("Change the color")
                     .horizontalAlignment(.center)
                     .onClicked { wash = wash == Palette.accent ? Palette.brand : Palette.accent }
             }
@@ -7081,7 +7081,7 @@ enum Listings {
 
                 HStack {
                     Button("Size").onClicked { wide.toggle() }
-                    Button("Colour").onClicked { warm.toggle() }
+                    Button("Color").onClicked { warm.toggle() }
                     Button(Self.laws[law]).onClicked { law = (law + 1) % Self.laws.count }
                 }
 
@@ -7104,7 +7104,7 @@ enum Listings {
             }
         }
 
-        /// One panel, either travelling at the chosen law or arriving at once.
+        /// One panel, either traveling at the chosen law or arriving at once.
         private func panel(travels: Bool) -> some View {
             // `.motion` is per view: the chosen law, or `.none` to arrive at once.
             Rectangle().fill(warm ? Palette.accent : Palette.brand)
@@ -7128,7 +7128,7 @@ enum Listings {
         """#,
         "MultiWindowSample": #"""
         // Sources/Samples/Windows/MultiWindowSample.swift
-        /// The look every gallery window wears, which the Fonts and Colours
+        /// The look every gallery window wears, which the Fonts and Colors
         /// windows change.
         let style: SessionStyle
 
@@ -7151,13 +7151,13 @@ enum Listings {
 
                 HStack {
                     opens("Fonts", .fonts)
-                    opens("Colours", .colours)
+                    opens("Colors", .colors)
                 }
                 .horizontalAlignment(.center)
 
                 HStack {
                     closes("Close fonts", .fonts)
-                    closes("Close colours", .colours)
+                    closes("Close colors", .colors)
                 }
                 .horizontalAlignment(.center)
 
@@ -7202,7 +7202,7 @@ enum Listings {
         /// A line in the scene's font and accent - what its two windows change.
         private var preview: some View {
             let line = Text("The quick brown fox jumps over the lazy dog.")
-                .textColor(style.look(dark: application.info.colorScheme == .dark).barColour.color(system: application.info.accentColor, for: .bar))
+                .textColor(style.look(dark: application.info.colorScheme == .dark).barColor.color(system: application.info.accentColor, for: .bar))
 
             return style.font.isEmpty ? line : line.fontFamily(style.font)
         }
@@ -8137,7 +8137,7 @@ enum Listings {
         """#,
         "PlatformSupportSample": #"""
         // Sources/Samples/Environment/PlatformSupportSample.swift
-        /// The device, by its name: what its platform honours is its host's.
+        /// The device, by its name: what its platform honors is its host's.
         @Environment(\.device) var device
 
         var body: some View {
@@ -8149,14 +8149,14 @@ enum Listings {
             }
         }
 
-        /// One member, and whether this platform honours it.
-        private func supported(_ words: String, _ honoured: Bool) -> some View {
+        /// One member, and whether this platform honors it.
+        private func supported(_ words: String, _ honored: Bool) -> some View {
             HStack {
                 Text(words)
 
                 Spacer()
 
-                Text(honoured ? "honoured" : "not here")
+                Text(honored ? "honored" : "not here")
             }
         }
         """#,
@@ -9200,7 +9200,7 @@ enum Listings {
 
         /// Said once, and both written onto the button and printed under it - so
         /// what the sample shows cannot drift from what the platform was handed.
-        private static let says = "Add to favourites"
+        private static let says = "Add to favorites"
 
         private static let hint = "Puts this item on your list"
 
@@ -9811,7 +9811,7 @@ enum Listings {
             }
         }
 
-        /// One block of colour with a word in it, so an arrangement is visible.
+        /// One block of color with a word in it, so an arrangement is visible.
         private struct StackCell: View {
             let text: String
 
@@ -10042,13 +10042,13 @@ enum Listings {
                 SectionTitle("A style written from another")
 
                 // The same words twice. "Quote" states the shape; "QuoteLoud" is
-                // `.basedOn(.quote)` plus one colour - so everything that matches
+                // `.basedOn(.quote)` plus one color - so everything that matches
                 // below is inherited, and the one thing that differs is the one
                 // thing it declares.
-                Text("The same eleven words, and one of these declares a colour.")
+                Text("The same eleven words, and one of these declares a color.")
                     .style(.quote)
 
-                Text("The same eleven words, and one of these declares a colour.")
+                Text("The same eleven words, and one of these declares a color.")
                     .style(.quoteLoud)
             }
         }
@@ -10384,7 +10384,7 @@ enum Listings {
                     .fontSize(16)
                     .fontWeight(.bold)
 
-                Text("Italic, and coloured")
+                Text("Italic, and colored")
                     .fontSize(16)
                     .fontAttributes(.italic)
                     .textColor(Palette.accent)
@@ -10393,7 +10393,7 @@ enum Listings {
                     .fontSize(16)
                     .textDecorations([.underline, .strikethrough])
 
-                Text("Centred, with room around it")
+                Text("Centered, with room around it")
                     .fontSize(16)
                     .horizontalTextAlignment(.center)
                     .padding(8)
@@ -10452,7 +10452,7 @@ enum Listings {
         // Sources/Samples/Text/TextSpanSample.swift
         @State private var highlighted = 1
 
-        /// The line one word of which is coloured - the word the button moves.
+        /// The line one word of which is colored - the word the button moves.
         private let words = ["A", "Text", "has", "one", "TextColor"]
 
         var body: some View {
@@ -10461,7 +10461,7 @@ enum Listings {
                 // closure.
                 DebugInfoLabel()
 
-                // Three colours in one line, which is what runs are FOR: a label
+                // Three colors in one line, which is what runs are FOR: a label
                 // has one `textColor`, so this is the only way.
                 Text()
                     .spans {
@@ -10839,7 +10839,7 @@ enum Listings {
                     Rectangle().fill(Palette.accent)
                         .width(48)
                         .height(48)
-                        .tooltip(detailed ? "The colour the gallery marks things with" : "Accent")
+                        .tooltip(detailed ? "The color the gallery marks things with" : "Accent")
                 }
 
                 Switch($detailed)
@@ -10870,7 +10870,7 @@ enum Listings {
                     // the whole of it ignores input, the label included; disabled,
                     // the label still takes a tap and answers none.
                     VStack {
-                        // The child wears its own colour and its own padding, so
+                        // The child wears its own color and its own padding, so
                         // what is the child and what is the empty area around it
                         // can be told apart by eye - and aimed at separately.
                         Text("tap the child")
@@ -10952,7 +10952,7 @@ enum Listings {
         """#,
         "TransformSample": #"""
         // Sources/Samples/Layout/TransformSample.swift
-        /// One colour per family, so the three rows read apart at a glance rather than
+        /// One color per family, so the three rows read apart at a glance rather than
         /// as one long run of identical squares.
         private enum Family {
             /// The two chains that differ only in the ORDER they are written in.
@@ -11028,7 +11028,7 @@ enum Listings {
                 // The same square and the same factor three times, so the only
                 // thing the row shows is which axis each modifier reaches - and a
                 // WIDER GAP than the orange row, because a scaled box is drawn
-                // outside its room and would otherwise touch its neighbours.
+                // outside its room and would otherwise touch its neighbors.
                 HStack {
                     // Drawing only - the room the layout gave it does not change.
                     piece(box(Family.size).scale(transformed ? 1.6 : 1), "scale")
@@ -11042,15 +11042,15 @@ enum Listings {
         /// The square every example transforms - sized here, because a transform
         /// is about what is DRAWN and the room each one gets has to be the same.
         ///
-        /// - Parameter colour: which family this square belongs to.
+        /// - Parameter color: which family this square belongs to.
         /// - Returns: the square, ready to be transformed.
-        private func box(_ colour: Color) -> Rectangle {
-            Rectangle().fill(colour)
+        private func box(_ color: Color) -> Rectangle {
+            Rectangle().fill(color)
                 .width(44)
                 .height(44)
         }
 
-        /// One piece with its caption, so a row reads as labelled examples rather
+        /// One piece with its caption, so a row reads as labeled examples rather
         /// than bare boxes. The gap under the box is what a scaled one grows into.
         private func piece<Shown: View>(_ view: Shown, _ caption: String) -> some View {
             VStack {
@@ -11168,7 +11168,7 @@ enum Listings {
                 SectionTitle("On the control, not in a style")
 
                 // TWO OF THEM, SIDE BY SIDE, because the difference is the point:
-                // hold each one down and the left crosses to its pressed colour
+                // hold each one down and the left crosses to its pressed color
                 // while the right arrives at it.
                 HStack {
                     // Written on the CONTROL rather than in a style. The states after
@@ -11182,7 +11182,7 @@ enum Listings {
                             .background(Palette.outline)
                             .textColor(Palette.disabled)
                         }
-                        // The colour is a setter, which travels under the button's
+                        // The color is a setter, which travels under the button's
                         // own motion. The scale is DRIVEN by `press`: the handler
                         // sends the state there over 90ms, and the button follows it.
                         .onVisualStateChanged { state in
@@ -11604,7 +11604,7 @@ extension Listings {
         "Cube3DSample.Android.glsl": #"""
         // Platforms/Android/Swift/Host/GLESCube3DView.swift
         // The vertex shader, compiled for OpenGL ES 3.0: a corner carries its face's brightness in w, and the
-        // colour is the frame's.
+        // color is the frame's.
         layout(location = 0) in vec4 corner;
         uniform mat4 transform;
         uniform vec4 color;
@@ -11614,7 +11614,7 @@ extension Listings {
             painted = vec4(color.rgb * corner.w, color.a);
         }
 
-        // The fragment shader: every point of a face takes the colour its corners were painted.
+        // The fragment shader: every point of a face takes the color its corners were painted.
         precision mediump float;
         in vec4 painted;
         out vec4 fragment;
@@ -11752,7 +11752,7 @@ extension Listings {
                 didSet { if cubeSize != oldValue { draw() } }
             }
 
-            /// Which colour it is painted.
+            /// Which color it is painted.
             var color = CubeColor.teal {
                 didSet { if color != oldValue { draw() } }
             }
@@ -11878,7 +11878,7 @@ extension Listings {
                 didSet { if cubeSize != oldValue { drawIfStill() } }
             }
 
-            /// Which colour the cube is painted, as the member number the Swift side
+            /// Which color the cube is painted, as the member number the Swift side
             /// sends: teal 0, amber 1, violet 2. Anything else is teal.
             var color: Int32 = 0 {
                 didSet { if color != oldValue { drawIfStill() } }
@@ -11903,7 +11903,7 @@ extension Listings {
             ]
 
             /// The eight corners as six faces, each face two triangles. `xyz` is the
-            /// corner and `w` is how brightly that face takes the colour - which is
+            /// corner and `w` is how brightly that face takes the color - which is
             /// what makes a solid read as a solid.
             private static let corners: [SIMD4<Float>] = {
                 let faces: [(SIMD3<Float>, SIMD3<Float>, SIMD3<Float>, SIMD3<Float>, Float)] = [
@@ -11990,14 +11990,14 @@ extension Listings {
             }
 
             /// One frame: the angle the clock has reached, the cube at the size and
-            /// colour it was given.
+            /// color it was given.
             override func draw(_ dirtyRect: NSRect) {
                 let now = CACurrentMediaTime()
                 let elapsed = now - lastTime
                 lastTime = now
 
                 // Only a turning cube moves with the clock. Stopped, the frame drawn
-                // for a changed size or colour finds the angle where it was left.
+                // for a changed size or color finds the angle where it was left.
                 if isSpinning {
                     angle += elapsed
                 }
@@ -12038,7 +12038,7 @@ extension Listings {
                     * Self.scaling(scale)
             }
 
-            /// The colour a member number names, opaque - teal for a number naming
+            /// The color a member number names, opaque - teal for a number naming
             /// none, so a value from outside the vocabulary paints rather than
             /// vanishes.
             private static func paint(_ color: Int32) -> SIMD4<Float> {
@@ -12055,7 +12055,7 @@ extension Listings {
             }
 
             /// Draws the one frame a stopped cube needs to show a changed size or
-            /// colour. A turning one is already drawing.
+            /// color. A turning one is already drawing.
             private func drawIfStill() {
                 guard isPaused, window != nil else { return }
 
@@ -12098,7 +12098,7 @@ extension Listings {
         "Cube3DSample.GTK.glsl": #"""
         // Platforms/GTK/Host/OpenGLCube3DWidget.swift
         // GLSL 3.30 core, compiled from source as the area is realized. A corner carries the brightness of its face
-        // in w; the colour comes with each frame.
+        // in w; the color comes with each frame.
         layout(location = 0) in vec4 corner;
         uniform mat4 transform;
         uniform vec4 color;
@@ -12128,7 +12128,7 @@ extension Listings {
                 didSet { if cubeSize != oldValue { gtk_gl_area_queue_render(area) } }
             }
 
-            /// Which colour it is painted.
+            /// Which color it is painted.
             var color = CubeColor.teal {
                 didSet { if color != oldValue { gtk_gl_area_queue_render(area) } }
             }
@@ -12191,7 +12191,7 @@ extension Listings {
                 }
             }
 
-            /// Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
+            /// Clears to the housing's color and draws the cube: turned, scaled and seen in perspective.
             private func render() -> gboolean {
                 epoxy_glClearColor(0.102, 0.090, 0.145, 1)
                 epoxy_glClear(GLbitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
@@ -12277,7 +12277,7 @@ extension Listings {
                 didSet { if cubeSize != oldValue { drawIfStill() } }
             }
 
-            /// Which colour the cube is painted, as the member number the Swift side
+            /// Which color the cube is painted, as the member number the Swift side
             /// sends: teal 0, amber 1, violet 2. Anything else is teal.
             var color: Int32 = 0 {
                 didSet { if color != oldValue { drawIfStill() } }
@@ -12337,14 +12337,14 @@ extension Listings {
             }
 
             /// One frame: the angle the clock has reached, the cube at the size and
-            /// colour it was given.
+            /// color it was given.
             override func draw(_ rect: CGRect) {
                 let now = CACurrentMediaTime()
                 let elapsed = now - lastTime
                 lastTime = now
 
                 // Only a turning cube moves with the clock. Stopped, the frame drawn
-                // for a changed size or colour finds the angle where it was left.
+                // for a changed size or color finds the angle where it was left.
                 if isSpinning {
                     angle += elapsed
                 }
@@ -12537,7 +12537,7 @@ extension Listings {
             }
           }
 
-          // Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
+          // Clears to the housing's color and draws the cube: turned, scaled and seen in perspective.
           draw() {
             const gl = this.gl;
             if (!gl) return;
@@ -12572,7 +12572,7 @@ extension Listings {
                 didSet { if cubeSize != oldValue { element.setAttribute("size", String(cubeSize)) } }
             }
 
-            /// Which colour it is painted, as the element reads it: the vocabulary's member number.
+            /// Which color it is painted, as the element reads it: the vocabulary's member number.
             var color = CubeColor.teal {
                 didSet { if color != oldValue { element.setAttribute("color", String(color.rawValue)) } }
             }
@@ -12611,7 +12611,7 @@ extension Listings {
             // First what a cube draws with: its paints, its shaders, and its device, corners and swap chain - made once, and
             // sized again with the panel by standChain. Then the drawing itself, and the frames it follows.
 
-                /// Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
+                /// Clears to the housing's color and draws the cube: turned, scaled and seen in perspective.
                 void draw(Cube &cube) {
                     auto panel = cube.panel.get();
                     if (!panel || panel.ActualWidth() < 1 || panel.ActualHeight() < 1) return;
@@ -12727,7 +12727,7 @@ extension Listings {
         "Cube3DSample.WinUI.hlsl": #"""
         // Platforms/WinUI/Relay/Cube3D.cpp
         // Compiled by D3DCompile as the cube's device is made: `vertex` as vs_5_0, `pixel` as ps_5_0. A corner
-        // carries its face's brightness in w; the colour is the frame's.
+        // carries its face's brightness in w; the color is the frame's.
         cbuffer Frame : register(b0) { float4x4 transform; float4 color; };
         struct Corner { float4 at : POSITION; };
         struct Painted { float4 position : SV_POSITION; float4 color : COLOR; };
@@ -12754,7 +12754,7 @@ extension Listings {
                 didSet { if cubeSize != oldValue { tell() } }
             }
 
-            /// Which colour it is painted.
+            /// Which color it is painted.
             var color = CubeColor.teal {
                 didSet { if color != oldValue { tell() } }
             }
@@ -13268,7 +13268,7 @@ extension Listings {
                 canvas.drawRoundRect(housing, 18 * density, 18 * density, paint);
                 for (int lamp = 0; lamp < 3; lamp++) {
                     paint.setColor(lamp == signal ? LAMPS[lamp] : (LAMPS[lamp] & 0x00FFFFFF) | 0x2E000000);
-                    canvas.drawCircle(getWidth() / 2f, centre(lamp), LAMP / 2 * density, paint);
+                    canvas.drawCircle(getWidth() / 2f, center(lamp), LAMP / 2 * density, paint);
                 }
             }
 
@@ -13277,7 +13277,7 @@ extension Listings {
             public boolean onTouchEvent(MotionEvent event) {
                 if (event.getActionMasked() == MotionEvent.ACTION_UP) {
                     for (int lamp = 0; lamp < 3; lamp++) {
-                        if (Math.abs(event.getY() - centre(lamp)) <= LAMP / 2 * density) {
+                        if (Math.abs(event.getY() - center(lamp)) <= LAMP / 2 * density) {
                             GalleryNatives.lampTapped(control, lamp);
                             break;
                         }
@@ -13286,7 +13286,7 @@ extension Listings {
                 return true;
             }
 
-            private float centre(int lamp) {
+            private float center(int lamp) {
                 return (PADDING + LAMP / 2 + lamp * (LAMP + SPACING)) * density;
             }
         }
@@ -13491,13 +13491,13 @@ extension Listings {
                 }
             }
 
-            /// The lit lamp at full colour, the others dimmed to embers.
+            /// The lit lamp at full color, the others dimmed to embers.
             private func repaint() {
                 for (index, lamp) in lamps.enumerated() {
-                    let colour = Self.lampColors[index]
+                    let color = Self.lampColors[index]
                     lamp.layer?.backgroundColor = Int32(index) == signal
-                        ? colour.cgColor
-                        : colour.withAlphaComponent(0.18).cgColor
+                        ? color.cgColor
+                        : color.withAlphaComponent(0.18).cgColor
                 }
             }
         }
@@ -13673,11 +13673,11 @@ extension Listings {
                     height: Self.padding * 2 + Self.lampSide * 3 + Self.spacing * 2)
             }
 
-            /// The lit lamp at full colour, the others dimmed to embers.
+            /// The lit lamp at full color, the others dimmed to embers.
             private func repaint() {
                 for (index, lamp) in lamps.enumerated() {
-                    let colour = Self.lampColors[index]
-                    lamp.backgroundColor = Int32(index) == signal ? colour : colour.withAlphaComponent(0.18)
+                    let color = Self.lampColors[index]
+                    lamp.backgroundColor = Int32(index) == signal ? color : color.withAlphaComponent(0.18)
                 }
             }
 
@@ -14148,7 +14148,7 @@ extension Listings {
         /// THE SPLIT IS THE PLATFORM'S: a device UIKit knows no battery of - the
         /// simulator - reports nothing at all, and the sample's own words say so.
         /// What is watched here is the battery, which UIKit reports through the
-        /// notification centre once its monitoring is on.
+        /// notification center once its monitoring is on.
         @MainActor
         enum GalleryEventSources {
 

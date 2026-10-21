@@ -1,6 +1,6 @@
-# Colour and theme
+# Color and theme
 
-A colour is held as what it is, four channels, and a colour or a picture that
+A color is held as what it is, four channels, and a color or a picture that
 differs between the light and dark themes is one value with a half for each.
 The half in force is picked in the core, where an element is built, and
 nothing in a host binds anything.
@@ -8,60 +8,60 @@ nothing in a host binds anything.
 ## Four channels
 
 `Color` holds four 8-bit sRGB channels. Every initializer produces them, so
-nothing the API can express is lost, and equality means the colour rather
+nothing the API can express is lost, and equality means the color rather
 than its spelling: `Color(hex: 0xFF0000)` and `.red` are one value, so two
-spellings of one colour are not a change and nothing is sent for them.
+spellings of one color are not a change and nothing is sent for them.
 
-A colour crosses as its own kind of value, four channels of a byte. It is
+A color crosses as its own kind of value, four channels of a byte. It is
 the value a tree carries most of and the cheapest to say exactly, and no host
-parses a colour or has to know what one may look like. On a state the host
-carries, a colour lies as four lanes from 0 to 1, which is what a colour
+parses a color or has to know what one may look like. On a state the host
+carries, a color lies as four lanes from 0 to 1, which is what a color
 half way between two others is made of.
 
 ## As a toolkit holds it
 
-A toolkit holds a colour as one number, eight bits a channel with alpha
+A toolkit holds a color as one number, eight bits a channel with alpha
 highest, or as four fractions of full from 0 to 1. The host layer turns
 either into the four channels and back (`ColorComponent`, `Color(argb:)`,
 `Color(fractions:)`, `HostValue.fractions`): a fraction stands at its nearest
-channel, held to the range. The accent a host reports and the colour it
-draws are converted by that one rule, so the same colour stands at the same
+channel, held to the range. The accent a host reports and the color it
+draws are converted by that one rule, so the same color stands at the same
 channels whichever toolkit reported it, and a channel taken to a fraction and
 back is the channel it was.
 
-## A colour is a number in code, text only in data
+## A color is a number in code, text only in data
 
-A colour in code is a hex number, `Color(hex: 0x512BD4)`, the digits a design
+A color in code is a hex number, `Color(hex: 0x512BD4)`, the digits a design
 gives, with how opaque it is apart - `Color(hex: 0x000000, opacity: 0.4)`, as
-`opacity(_:)` lets a colour through - or channels, or a name. A number holds no
-digit that is not hex, so a colour written in code cannot be misspelt the way
+`opacity(_:)` lets a color through - or channels, or a name. A number holds no
+digit that is not hex, so a color written in code cannot be misspelled the way
 text can; what a number cannot refuse by its type, a seventh digit, stops the
 program with a message, since the alpha is `opacity`.
 
-Text is read only where data holds a colour - a theme file, a server's answer -
+Text is read only where data holds a color - a theme file, a server's answer -
 by `Color(parsing:)`, which answers nil for what is not one, so the data's own
 fallback stands. The reader is the core's and reads hex alone: `#RGB`, `#ARGB`,
 `#RRGGBB` or `#AARRGGBB`, with or without the `#`, the alpha first when it is
 written. Three and four digits are the shorthand where each digit stands for
 both of its pair. Leaving the reading to a host would put the definition of a
-colour inside that host's parser, and every other host would have to reproduce
+color inside that host's parser, and every other host would have to reproduce
 it exactly or differ in silence.
 
-A colour's name is `Color.red` and its kin, which the compiler checks. Channels
+A color's name is `Color.red` and its kin, which the compiler checks. Channels
 given as numbers outside 0 to 255 are held to the range. There is no way back
-to hex text: a colour crosses as bytes wherever it crosses. Two spellings of
-one colour are equal and hash alike, so a colour is a key and a choice.
+to hex text: a color crosses as bytes wherever it crosses. Two spellings of
+one color are equal and hash alike, so a color is a key and a choice.
 
-## Named colours
+## Named colors
 
-The named colours are the ones that come up in practice, each with its CSS
+The named colors are the ones that come up in practice, each with its CSS
 name and value - but `transparent`, a white let through to nothing
-(`Color(hex: 0xFFFFFF, opacity: 0)`) where CSS's is black; any other colour is one hex number away.
+(`Color(hex: 0xFFFFFF, opacity: 0)`) where CSS's is black; any other color is one hex number away.
 `darkGray` is lighter than `gray`, as its CSS value is.
 
 ## A pair for each theme
 
-`Color(light:dark:)` is one value that goes wherever a colour goes. It
+`Color(light:dark:)` is one value that goes wherever a color goes. It
 travels as both halves, `PropValue.themed`, until the differ builds the
 element wearing it. The differ then picks the half the application's
 `info.colorScheme` says and records that read against the element.
@@ -99,33 +99,33 @@ A pair written into a state the host carries crosses as the half in force,
 read without recording anything: laying a value is no reason to build
 anything. The state keeps the pair, and the element handing that state on
 reads the theme, so a theme change builds that element again and the host
-animates the colour to the other half, as it would a pair written on a node.
+animates the color to the other half, as it would a pair written on a node.
 
 ## Pictures for each theme
 
 A picture may be two pictures: black artwork that reads well on a white page
 disappears on a dark one. `ImageSource(light:dark:)` names two files and
-crosses as a themed pair of file names, picked by the differ as a colour
+crosses as a themed pair of file names, picked by the differ as a color
 pair is, so one name reaches the host and the element showing it builds
 again when the theme changes. A tint would not do: it paints a picture in
-one colour, while a second file keeps artwork of any colours as it was drawn.
+one color, while a second file keeps artwork of any colors as it was drawn.
 
 ## A material
 
 `Material` is what a surface is made of, and every background takes one - a
-view's, a page's, a run of words', a window's: a colour, a gradient, a blur
+view's, a page's, a run of words', a window's: a color, a gradient, a blur
 of what lies behind it, or the platform's glass, each kind with only its own
 modifiers so the type decides what applies. A constructor per kind keeps one
-spelling: a brush of one colour is that colour, a pair of colours is the
-colour pair.
+spelling: a brush of one color is that color, a pair of colors is the
+color pair.
 
-It crosses as the colour itself for a colour and as its brush for a
-gradient, so a colour's channel - `.background($color)`, which the host walks
-- writes a material as it is: the channel stays the colour's, and a test
+It crosses as the color itself for a color and as its brush for a
+gradient, so a color's channel - `.background($color)`, which the host walks
+- writes a material as it is: the channel stays the color's, and a test
 holds the two encodings equal. A blur and glass cross as their kind (4 and 5,
 after the brush's three), what the kind takes, and last what stands in for
 them, decided once in the core: glass carries the blur as clear as the glass
-is, a blur the colour of the theme let through as the blur is, which the
+is, a blur the color of the theme let through as the blur is, which the
 differ resolves as any pair. A tint lies over a blur; glass takes the
 platform's own tint.
 
@@ -136,12 +136,12 @@ element, which so reads the theme. A material with no pair is the same choice
 in both themes; a blur and glass still follow the theme as the platform draws
 them.
 
-The host layer reads it (`HostMaterial`): the paint - the colour, the
+The host layer reads it (`HostMaterial`): the paint - the color, the
 gradient, or the tint over a blur or glass - the blur behind, the glass, and
 the stand-in, taking a pair a typed member encoded again as the half of the
 theme in force (`HostThemes.current`). Each host draws the first its toolkit
-has - glass, the blur, the colour - and one that blurs nothing paints the
-paint laid over the stand-in as a colour with an alpha lies over another
+has - glass, the blur, the color - and one that blurs nothing paints the
+paint laid over the stand-in as a color with an alpha lies over another
 (`painted`). A view's background is cut to its shape; a window's lies under
 everything it draws, the desktop showing through it where the host can show
 it.
@@ -161,7 +161,7 @@ rises.
 
 ## The accent in force
 
-`Color.accent` crosses as the system's colour, its alpha with it, and the
+`Color.accent` crosses as the system's color, its alpha with it, and the
 differ resolves it as the element is built from `info.accentColor` - which
 the host reports - so the element is the accent's reader, as a pair's is the
 theme's. A host never meets it. On a carried state it crosses as the accent in

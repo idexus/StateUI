@@ -8,7 +8,7 @@ import AppKit
 
 extension AppKitRegistrations {
     /// A switch and a check box: one value the user turns on, taken whole with the enabled state and the words
-    /// each says beside it, in their case and colour.
+    /// each says beside it, in their case and color.
     static func toggles(_ registry: Registry<NSView>) {
         registry.add(SwitchContract.self, create: { reports in
             let toggle = AppKitSwitchView()

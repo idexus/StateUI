@@ -147,13 +147,13 @@ is its own and starts a new line.
 
 ## The background a view is made with
 
-A button, a field, a switch and a slider draw their own background. A colour
-the tree describes replaces it, and a colour the tree takes away gives back
+A button, a field, a switch and a slider draw their own background. A color
+the tree describes replaces it, and a color the tree takes away gives back
 the background the view was made with, read before the first change.
 
 A background brings its own padding - the room a button's drawing leaves
 around its words - and Android takes the view's padding from each new one. A
-padding the tree describes is put back over it, so a button with a colour and
+padding the tree describes is put back over it, so a button with a color and
 a padding keeps its room; one whose padding is taken away gives back the
 padding it was made with.
 
@@ -175,12 +175,12 @@ behind it.
 
 ## A label's words
 
-A label's words stand in the theme's primary words colour
-(`textColorPrimary`) where the tree colours them not, as Android's own body
-text; a `TextView` made bare reads its text appearance, whose colour is the
+A label's words stand in the theme's primary words color
+(`textColorPrimary`) where the tree colors them not, as Android's own body
+text; a `TextView` made bare reads its text appearance, whose color is the
 secondary one. A label's words are one text, or the runs its spans describe as the host
 layer reads them (`textRuns`), laid down as one spanned text: each run in its
-own colour, size, family, weight, background and decorations where it has
+own color, size, family, weight, background and decorations where it has
 its own.
 A run's size is in points the user's font scale applies to, as the label's
 is. The label's letter spacing is in points and Android counts it in the
@@ -213,7 +213,7 @@ then the author's, `minimumWidth` and `minimumHeight`, as on every host. The
 stepper's buttons keep a square of 48 points, the room a finger needs, as
 the stepper's own choice.
 
-Android draws a button's icon at the edge of its padding and centres the words
+Android draws a button's icon at the edge of its padding and centers the words
 in what is left, so a button laid out wider than its words would stand them
 apart. Where it is placed, the host adds to each side of the padding what the
 icon, the gap and the words leave (`ButtonArithmetic.sideRoom`,
@@ -225,18 +225,18 @@ and measures the button as if that room were not there.
 A button says nothing of its look and keeps its theme's: a background with
 its own pressed ripple. A fill, an outline or corners make it one shape -
 the host's shape drawable - under Android's pressed ripple in the theme's
-highlight colour, kept within the same shape, so a drawn button still
+highlight color, kept within the same shape, so a drawn button still
 answers a finger as the platform's do. The shape dims while the button is
-disabled, to the theme's `disabledAlpha`, and so do words in a colour the
-tree gave, as the theme's own colours do. The theme lifts a button, and its
+disabled, to the theme's `disabledAlpha`, and so do words in a color the
+tree gave, as the theme's own colors do. The theme lifts a button, and its
 shadow falls under the whole outline: a shape the page shows through - a
 see-through fill, an outline alone - says its outline is clear, as Android's
-own drawables do, so no grey shadow shows inside it.
+own drawables do, so no gray shadow shows inside it.
 
 A role draws where the tree draws nothing of its own ([a button's
 role](../../host/layout.md#a-buttons-role)): the main action wears the
-platform's coloured button - `Widget.DeviceDefault.Button.Colored`, its
-background and its words' colours - and a destructive one's words the
+platform's colored button - `Widget.DeviceDefault.Button.Colored`, its
+background and its words' colors - and a destructive one's words the
 theme's `colorError`.
 
 An icon beside words is a compound drawable at the picture's own size,
@@ -252,7 +252,7 @@ sent again only when the room changes.
 Android's Views draw no menu button and no split button, so a button holding a
 menu is Android's own button, its menu a `PopupMenu` at the button, written as
 it opens. Where its click opens the menu, an arrow pointing down - Material's
-`expand_more` - stands after its words, in their colours, and the button keeps
+`expand_more` - stands after its words, in their colors, and the button keeps
 room for it beyond its padding, so its words never run under it. A split
 button's arrow stands at its right edge in a part of its own, set off by a
 line: where the finger went down on it, the click opens the menu rather than
@@ -264,7 +264,7 @@ button's foreground, which an icon standing alone shares.
 
 A picker is Android's dropdown spinner. A spinner always shows one of its
 rows, and StateUI's choice may be none, so the first row is the title: the
-closed field shows it, in the theme's hint colour, while nothing is chosen,
+closed field shows it, in the theme's hint color, while nothing is chosen,
 and the open list leaves it out; a choice is the row after its index. Android
 tells a spinner's selection as it next measures or lays the spinner out -
 the row it started on, then the program's - when the program's write is long
@@ -378,7 +378,7 @@ view that listens for a drag or a pinch keeps its touch from a scroller around
 it, so a drag that starts on it is its own. A pinch is Android's own: it
 starts once Android tells it apart, takes the press away and calls off the
 view's own click - a touch that pinched is no tap, however still the finger it
-ends with - scales from there, and ends where it was last centred, cancelled
+ends with - scales from there, and ends where it was last centered, cancelled
 where the touch was. A view with no handling of its own is
 given the whole touch; a control keeps its own.
 

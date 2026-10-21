@@ -17,12 +17,12 @@
     /// Whether nothing changes.
     public var isEmpty: Bool { removed.isEmpty && inserted.isEmpty }
 
-    /// The removals as runs of neighbours, last first: each run is removed in one.
+    /// The removals as runs of neighbors, last first: each run is removed in one.
     public var removedRuns: [Range<Int>] {
         Self.runs(of: removed.reversed()).reversed()
     }
 
-    /// The insertions as runs of neighbours, first first: each run is inserted in one.
+    /// The insertions as runs of neighbors, first first: each run is inserted in one.
     public var insertedRuns: [Range<Int>] {
         Self.runs(of: inserted)
     }
@@ -43,7 +43,7 @@
         inserted = new.indices.filter { !stayingNew.contains($0) }
     }
 
-    /// Rising `positions` as runs of neighbours, in order.
+    /// Rising `positions` as runs of neighbors, in order.
     private static func runs(of positions: some Sequence<Int>) -> [Range<Int>] {
         var runs: [Range<Int>] = []
         for position in positions {

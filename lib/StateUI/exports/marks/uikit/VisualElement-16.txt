@@ -9,7 +9,7 @@ CheckBox.maximumWidth: ✅
 CheckBox.minimumHeight: ✅
 CheckBox.minimumWidth: ✅
 CheckBox.scaleX: ✓ read scaleX of CheckBox: the host's own transform, checked against the layer it composed itself
-DatePicker.background: – UIKit's date picker keeps no background colour: one written reads back as none.
+DatePicker.background: – UIKit's date picker keeps no background color: one written reads back as none.
 Divider.isAccessibilityHidden: ✅
 Ellipse.accessibilityRole: ✅
 Grid.height: ✅

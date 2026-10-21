@@ -6,7 +6,7 @@ import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A native image surface with the same four scaling choices on every host: fitted, stretched and centred by the
+/// A native image surface with the same four scaling choices on every host: fitted, stretched and centered by the
 /// native view's own scaling, and covering the room where the host layer places it (`PictureArithmetic.place`),
 /// which no scaling of AppKit's does.
 /// Design: docs/design/host/layout.md#a-picture
@@ -26,7 +26,7 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
         wantsLayer = true
         layer?.masksToBounds = true
         imageView.imageAlignment = .alignCenter
-        // An icon, a template, stands in the words' colour; any other picture draws its own.
+        // An icon, a template, stands in the words' color; any other picture draws its own.
         imageView.contentTintColor = .labelColor
         addSubview(imageView)
     }

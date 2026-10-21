@@ -49,7 +49,7 @@ final class DocumentationTests: XCTestCase {
 
             \(undocumented.joined(separator: "\n"))
 
-            Write a `///` above each - what it does, the way its neighbours do.
+            Write a `///` above each - what it does, the way its neighbors do.
             That comment is what an author sees while typing, and it is the
             only place this library explains itself.
             """)
@@ -72,7 +72,7 @@ final class DocumentationTests: XCTestCase {
         // Matching `"public func "` as a substring meant `public static func`,
         // `public final class` and `nonisolated(nonsending) public func` were
         // not declarations at all as far as this test was concerned - 186 of
-        // them, including every named colour, every `Draw` factory, every
+        // them, including every named color, every `Draw` factory, every
         // `move(to:)` and all three arranged-list initializers. They are all
         // documented today, which is the only reason this was a latent hole
         // rather than a live one.
@@ -145,7 +145,7 @@ final class DocumentationTests: XCTestCase {
             \(undocumented.joined(separator: "\n"))
 
             A bare list of names cannot tell an author which case they want. \
-            Write a `///` above each, the way its neighbours have one.
+            Write a `///` above each, the way its neighbors have one.
             """)
     }
 

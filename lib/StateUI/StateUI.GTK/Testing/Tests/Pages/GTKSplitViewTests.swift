@@ -126,8 +126,8 @@ final class GTKSplitViewTests: XCTestCase {
         }
     }
 
-    /// A split view's bar colours paint both panes' header bars, the sidebar's as the detail's.
-    func testBothPanesHeaderBarsWearTheSplitViewsColours() throws {
+    /// A split view's bar colors paint both panes' header bars, the sidebar's as the detail's.
+    func testBothPanesHeaderBarsWearTheSplitViewsColors() throws {
         try onUIThread {
             let host = GTKRenderer.running {
                 SplitView(State(wrappedValue: true).projectedValue) {

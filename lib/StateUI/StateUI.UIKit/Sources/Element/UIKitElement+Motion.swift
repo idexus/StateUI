@@ -6,7 +6,7 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// The element's part in its layout's motion: its children travelling to their places, fading in as it joins, and
+/// The element's part in its layout's motion: its children traveling to their places, fading in as it joins, and
 /// a change of visibility crossed - each by the host layer's rule.
 /// Design: docs/design/platforms/uikit/motion.md
 extension UIKitElement {

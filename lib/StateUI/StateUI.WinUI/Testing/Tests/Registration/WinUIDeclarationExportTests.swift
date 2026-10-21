@@ -79,9 +79,9 @@ final class WinUIDeclarationExportTests: XCTestCase {
             "swiped", "tapCount", "tapped",
         ]
         for gesture in gestures {
-            let judgement = register.judgement(of: gesture, on: "WebView", from: "View")
-            if case .notPlanned? = judgement { continue }
-            XCTFail("WebView.\(gesture) is judged \(String(describing: judgement))")
+            let judgment = register.judgment(of: gesture, on: "WebView", from: "View")
+            if case .notPlanned? = judgment { continue }
+            XCTFail("WebView.\(gesture) is judged \(String(describing: judgment))")
         }
     }
 }

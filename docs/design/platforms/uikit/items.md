@@ -54,8 +54,8 @@ layout gives it - a height, or a row of a grid that fills.
 A cell at rest is clear, and the page shows through the list as it does on
 every host. The user's choice and a touch lay the platform's accent - the
 cell's tint - over the page at a fifth of its strength; the focus keeps the
-list cell's look. The list cell's own colours are the system background at
-rest and a grey when chosen, which a page of another colour shows as
+list cell's look. The list cell's own colors are the system background at
+rest and a gray when chosen, which a page of another color shows as
 blocks.
 
 ## One cell an entry

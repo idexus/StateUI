@@ -297,7 +297,7 @@ class WinUIView {
         return Rect(x: frame[0], y: frame[1], width: frame[2], height: frame[3])
     }
 
-    /// The control's one accent colour; nil for the platform's.
+    /// The control's one accent color; nil for the platform's.
     /// Design: docs/design/platforms/winui/controls.md#a-controls-accent
     func setTint(_ tint: HostValue?) {
         let argb = tint?.argb

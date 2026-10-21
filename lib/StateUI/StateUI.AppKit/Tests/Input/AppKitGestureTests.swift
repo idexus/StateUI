@@ -31,11 +31,11 @@ final class AppKitGestureTests: XCTestCase {
             native.gestureRecognizers.compactMap { $0 as? AppKitPointerRecognizer }.isEmpty)
     }
 
-    /// A pan asked of one pointer is recognised and reaches its handler. A
-    /// pan asked of two leaves the view no pan recogniser: AppKit recognises a
-    /// one-pointer drag only, so it cannot honour that count.
+    /// A pan asked of one pointer is recognized and reaches its handler. A
+    /// pan asked of two leaves the view no pan recognizer: AppKit recognizes a
+    /// one-pointer drag only, so it cannot honor that count.
     @MainActor
-    func testOnlyAOnePointerPanIsRecognised() throws {
+    func testOnlyAOnePointerPanIsRecognized() throws {
         let totals = Received<Double>()
         let renderer = AppKitRenderer.running {
             VStack {

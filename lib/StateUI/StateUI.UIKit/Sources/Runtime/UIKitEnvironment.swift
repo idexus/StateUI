@@ -112,7 +112,7 @@ final class UIKitEnvironment {
         core.setLocaleInfo(SystemFacts.locale)
     }
 
-    /// The user's accessibility settings: less motion, darker colours for more contrast, VoiceOver, and the scale of
+    /// The user's accessibility settings: less motion, darker colors for more contrast, VoiceOver, and the scale of
     /// words as the size the user chose draws the body's 17 points.
     func reportAccessibility() {
         let chosen = UITraitCollection(preferredContentSizeCategory: UIApplication.shared.preferredContentSizeCategory)

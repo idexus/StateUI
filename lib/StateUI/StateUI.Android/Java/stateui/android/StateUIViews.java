@@ -72,7 +72,7 @@ final class StateUIViews {
                 .withEndAction(() -> view.setVisibility(visibility)).start();
     }
 
-    /** Moves, turns and scales the view about its pivot, in pixels; a pivot of NaN is its centre. */
+    /** Moves, turns and scales the view about its pivot, in pixels; a pivot of NaN is its center. */
     static void transform(View view, float translationX, float translationY, float rotation,
             float rotationX, float rotationY, float scaleX, float scaleY, float pivotX, float pivotY) {
         view.setTranslationX(translationX);
@@ -91,7 +91,7 @@ final class StateUIViews {
     }
 
     /**
-     * `look` under the platform's pressed ripple, in its theme's colour, kept within `mask`'s shape; the look
+     * `look` under the platform's pressed ripple, in its theme's color, kept within `mask`'s shape; the look
      * dims while its view is disabled, as the theme's controls dim.
      */
     static Drawable pressable(Context context, StateUIShapeDrawable look, Drawable mask) {
@@ -103,9 +103,9 @@ final class StateUIViews {
                 highlight != null ? highlight : ColorStateList.valueOf(0x33000000), look, mask);
     }
 
-    /** Words in `color`, dimmed while their view is disabled, as the theme's own colours are. */
-    /** The background of the platform's coloured button, which a window's main action wears. */
-    static Drawable colouredBackground(Context context) {
+    /** Words in `color`, dimmed while their view is disabled, as the theme's own colors are. */
+    /** The background of the platform's colored button, which a window's main action wears. */
+    static Drawable coloredBackground(Context context) {
         TypedArray style = context.obtainStyledAttributes(
                 null, new int[] {android.R.attr.background}, 0, android.R.style.Widget_DeviceDefault_Button_Colored);
         Drawable background = style.getDrawable(0);
@@ -113,25 +113,25 @@ final class StateUIViews {
         return background;
     }
 
-    /** The theme's colours for an error, which mark an action that destroys something. */
+    /** The theme's colors for an error, which mark an action that destroys something. */
     static ColorStateList errorWords(Context context) {
-        return themeColours(context, android.R.attr.colorError);
+        return themeColors(context, android.R.attr.colorError);
     }
 
-    /** The theme's colours for primary words: a label's where the tree colours it not. */
+    /** The theme's colors for primary words: a label's where the tree colors it not. */
     static ColorStateList primaryWords(Context context) {
-        return themeColours(context, android.R.attr.textColorPrimary);
+        return themeColors(context, android.R.attr.textColorPrimary);
     }
 
-    private static ColorStateList themeColours(Context context, int attribute) {
+    private static ColorStateList themeColors(Context context, int attribute) {
         TypedArray theme = context.obtainStyledAttributes(new int[] {attribute});
-        ColorStateList colours = theme.getColorStateList(0);
+        ColorStateList colors = theme.getColorStateList(0);
         theme.recycle();
-        return colours;
+        return colors;
     }
 
-    /** The words' colours of the platform's coloured button: its style's own, else its text appearance's. */
-    static ColorStateList colouredWords(Context context) {
+    /** The words' colors of the platform's colored button: its style's own, else its text appearance's. */
+    static ColorStateList coloredWords(Context context) {
         // Attributes in ascending order, as obtainStyledAttributes reads them.
         TypedArray style = context.obtainStyledAttributes(
                 null, new int[] {android.R.attr.textAppearance, android.R.attr.textColor}, 0,
@@ -234,19 +234,19 @@ final class StateUIViews {
         return glyph;
     }
 
-    /** A picture standing alone: an icon - a mask, `isMask` - in the theme's primary words colour, as a label's. */
+    /** A picture standing alone: an icon - a mask, `isMask` - in the theme's primary words color, as a label's. */
     static BitmapDrawable picture(Context context, Bitmap picture) {
         return drawn(context, picture, android.R.attr.textColorPrimary);
     }
 
-    /** A picture to draw: an icon in the theme's colour `attribute` names, any other as it is. */
+    /** A picture to draw: an icon in the theme's color `attribute` names, any other as it is. */
     private static BitmapDrawable drawn(Context context, Bitmap picture, int attribute) {
         BitmapDrawable drawable = new BitmapDrawable(context.getResources(), picture);
-        if (isMask(picture)) drawable.setTintList(themeColours(context, attribute));
+        if (isMask(picture)) drawable.setTintList(themeColors(context, attribute));
         return drawable;
     }
 
-    /** Whether `picture` is an icon: only how opaque each pixel is, drawn in the colour of what shows it. */
+    /** Whether `picture` is an icon: only how opaque each pixel is, drawn in the color of what shows it. */
     static boolean isMask(Bitmap picture) {
         return picture.getConfig() == Bitmap.Config.ALPHA_8;
     }
@@ -307,7 +307,7 @@ final class StateUIViews {
      * away, or the platform's gap for -1, at its own size; with no words, alone in the middle of the view
      * at `width` by `height` pixels, `room` pixels kept on its right. A null picture takes it away. A button
      * holding a menu shows the drawable `arrow` names `side` pixels square, `arrowRight` pixels from its right
-     * edge, in its words' colours: a mark after its words (`splits` false), or a split button's arrow, a line
+     * edge, in its words' colors: a mark after its words (`splits` false), or a split button's arrow, a line
      * `lineHeight` pixels high `lineRight` pixels from that edge setting it apart. A null `arrow` shows none.
      */
     static void setIcon(TextView view, Bitmap picture, int position, int gap, int width, int height, int room,
@@ -394,14 +394,14 @@ final class StateUIViews {
             view.setClipToOutline(false);
             return;
         }
-        int colour = argb;
+        int color = argb;
         if (!painted) {
             TypedValue value = new TypedValue();
             view.getContext().getTheme().resolveAttribute(android.R.attr.colorBackgroundFloating, value, true);
-            colour = value.resourceId != 0 ? view.getContext().getColor(value.resourceId) : value.data;
+            color = value.resourceId != 0 ? view.getContext().getColor(value.resourceId) : value.data;
         }
         GradientDrawable ground = new GradientDrawable();
-        ground.setColor(colour);
+        ground.setColor(color);
         if (over) {
             float r = 16 * view.getResources().getDisplayMetrics().density;
             boolean rtl = view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
@@ -412,7 +412,7 @@ final class StateUIViews {
     }
 
     /**
-     * Grounds a page on its window's colour - the one its activity's window is painted in, else the theme's
+     * Grounds a page on its window's color - the one its activity's window is painted in, else the theme's
      * background - so a page sliding over another hides it.
      */
     static void groundPage(View view) {
@@ -432,12 +432,12 @@ final class StateUIViews {
                 value.resourceId != 0 ? view.getContext().getColor(value.resourceId) : value.data));
     }
 
-    /** The colour a split view's sidebar stands on, as ARGB; Long.MIN_VALUE where it stands on nothing. */
-    static long sidebarColour(View view) {
+    /** The color a split view's sidebar stands on, as ARGB; Long.MIN_VALUE where it stands on nothing. */
+    static long sidebarColor(View view) {
         Drawable ground = view.getBackground();
         if (!(ground instanceof GradientDrawable)) return Long.MIN_VALUE;
-        ColorStateList colour = ((GradientDrawable) ground).getColor();
-        return colour != null ? colour.getDefaultColor() & 0xFFFFFFFFL : Long.MIN_VALUE;
+        ColorStateList color = ((GradientDrawable) ground).getColor();
+        return color != null ? color.getDefaultColor() & 0xFFFFFFFFL : Long.MIN_VALUE;
     }
 
     /** A holder for a page presented over the window's page: filling it, on the theme's window background. */

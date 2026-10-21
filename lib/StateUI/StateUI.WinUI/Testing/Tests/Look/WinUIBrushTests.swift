@@ -42,7 +42,7 @@ final class WinUIBrushTests: XCTestCase {
         }
     }
 
-    /// A figure paints no ground of its own and takes none: a rectangle stays its colour under a background, and an
+    /// A figure paints no ground of its own and takes none: a rectangle stays its color under a background, and an
     /// ellipse's corner, outside its oval, stays clear.
     func testAFigureTakesNoBackground() {
         onUIThread {
@@ -58,7 +58,7 @@ final class WinUIBrushTests: XCTestCase {
             XCTAssertEqual(figures.count, 2)
             guard figures.count == 2 else { return }
             let (box, oval) = (figures[0], figures[1])
-            XCTAssertEqual(box.pixels(at: [(20, 20)]), [blue], "the rectangle's own colour")
+            XCTAssertEqual(box.pixels(at: [(20, 20)]), [blue], "the rectangle's own color")
             XCTAssertEqual(oval.pixels(at: [(1, 1), (20, 20)]), [0, blue], "clear outside the oval")
         }
     }

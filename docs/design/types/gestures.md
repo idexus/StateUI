@@ -53,5 +53,5 @@ not feed its own answer back into the next report.
 
 A pinch's scale is how much the fingers moved since the last report, not
 since the pinch began, so a handler multiplies what it holds rather than
-assigning. The origin is where the pinch is centred, as a fraction of the
+assigning. The origin is where the pinch is centered, as a fraction of the
 view.

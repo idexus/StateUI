@@ -19,7 +19,7 @@ every view the way an object an ancestor provides is, and read by its name.
                                   isMetric, layoutDirection
   \.application   ApplicationSession
                      info          name, packageName, versionString, buildString, colorScheme, accentColor
-                     phase, scenes, and what the application writes: colour scheme, styles, motion, kept keys
+                     phase, scenes, and what the application writes: color scheme, styles, motion, kept keys
   \.scene, \.window   the sessions a view stands in
 ```
 

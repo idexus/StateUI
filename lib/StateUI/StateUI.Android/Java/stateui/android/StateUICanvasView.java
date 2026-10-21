@@ -18,7 +18,7 @@ import java.util.ArrayDeque;
 
 /**
  * A canvas: StateUI's drawing instructions replayed in the order they were written, inside the view's own
- * bounds, in points. The Swift host sends the whole drawing in one call - each instruction's kind and colours,
+ * bounds, in points. The Swift host sends the whole drawing in one call - each instruction's kind and colors,
  * a text's alignments and index and a path's count of curves as ints, its numbers as floats, its text as
  * strings, an arc as the curves it runs along - and a finger's press, drag and release come back in points.
  */

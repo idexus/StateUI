@@ -8,7 +8,7 @@
      The opening is the INTERSECTION, removed with fill-rule="evenodd": an area
      covered by exactly one plate is filled, an area covered by both is not. So
      whatever is behind the mark shows through the middle, which is why this file
-     is one colour and no strokes - it is drawn in white on the identity
+     is one color and no strokes - it is drawn in white on the identity
      gradient, and the gradient is what shows through.
 
      Two opposite corners of the opening are rounded and two are square, because

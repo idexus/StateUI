@@ -132,7 +132,7 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
         self.selectionLength = selectionLength
 
         textView.textColor = foregroundColor
-        // A colour with an alpha lets what lies behind the editor through.
+        // A color with an alpha lets what lies behind the editor through.
         textView.backgroundColor = backgroundColor ?? .textBackgroundColor
         textView.drawsBackground = true
         scrollView.drawsBackground = backgroundColor == nil

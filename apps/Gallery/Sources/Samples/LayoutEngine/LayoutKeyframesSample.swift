@@ -11,24 +11,24 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
     static let summary = "A ring, a grid and a pile of the same cards - the hand moves each card from one to the next."
 
     // listing: LayoutKeyframesSample
-    /// One card: its name, which is its identity, its colour and its icon.
+    /// One card: its name, which is its identity, its color and its icon.
     struct Card {
         let name: String
-        let colour: Color
+        let color: Color
         let icon: Icon
     }
 
     /// The cards, dealt in this order.
     static let cards = [
-        Card(name: "Mural", colour: Color(hex: 0x7C3AED), icon: .star),
-        Card(name: "Nebula", colour: Color(hex: 0x2563EB), icon: .heart),
-        Card(name: "Ridge", colour: Color(hex: 0x0D9488), icon: .home),
-        Card(name: "Bloom", colour: Color(hex: 0xD97706), icon: .calendar),
-        Card(name: "Tide", colour: Color(hex: 0xDB2777), icon: .mail),
-        Card(name: "Prism", colour: Color(hex: 0x4F46E5), icon: .settings),
-        Card(name: "Grove", colour: Color(hex: 0x16A34A), icon: .person),
-        Card(name: "Ember", colour: Color(hex: 0xDC2626), icon: .play),
-        Card(name: "Dune", colour: Color(hex: 0xCA8A04), icon: .clock),
+        Card(name: "Mural", color: Color(hex: 0x7C3AED), icon: .star),
+        Card(name: "Nebula", color: Color(hex: 0x2563EB), icon: .heart),
+        Card(name: "Ridge", color: Color(hex: 0x0D9488), icon: .home),
+        Card(name: "Bloom", color: Color(hex: 0xD97706), icon: .calendar),
+        Card(name: "Tide", color: Color(hex: 0xDB2777), icon: .mail),
+        Card(name: "Prism", color: Color(hex: 0x4F46E5), icon: .settings),
+        Card(name: "Grove", color: Color(hex: 0x16A34A), icon: .person),
+        Card(name: "Ember", color: Color(hex: 0xDC2626), icon: .play),
+        Card(name: "Dune", color: Color(hex: 0xCA8A04), icon: .clock),
     ]
 
     /// Which layout stands: 0 the ring, 1 the grid, 2 the pile - handed on
@@ -87,7 +87,7 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
         .axis(
             \.self, input: .scroll(.horizontal, pointsPerUnit: 260), range: 0...2, keyframes: .every(1),
             snaps: .every(1))
-        // BETWEEN THEM each card goes straight, or by a curve its neighbours
+        // BETWEEN THEM each card goes straight, or by a curve its neighbors
         // shape.
         .interpolation(smooth ? LayoutCurve.catmullRom : .linear)
         .motion(.eased(.milliseconds(700), .cubicInOut))
@@ -142,10 +142,10 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
         }
     }
 
-    /// One card's face: its colour, its icon on a disc, and its name.
+    /// One card's face: its color, its icon on a disc, and its name.
     private func face(_ card: Card) -> some View {
         ZStack {
-            Rectangle().fill(card.colour)
+            Rectangle().fill(card.color)
                 .cornerRadius(14)
 
             VStack {

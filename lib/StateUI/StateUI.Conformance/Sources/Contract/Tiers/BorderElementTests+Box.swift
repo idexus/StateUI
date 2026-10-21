@@ -4,9 +4,9 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A layout's and a button's box read off its colours on every host: its fill, its outline in its colour and width,
+/// A layout's and a button's box read off its colors on every host: its fill, its outline in its color and width,
 /// and the shape the outline follows. A button's own face may stand inside an outline, a layout's nothing.
-/// Design: docs/design/host/conformance.md#a-drawing-read-by-its-colours
+/// Design: docs/design/host/conformance.md#a-drawing-read-by-its-colors
 extension BorderElementTests {
     /// The layouts, whose box StateUI draws, and a button.
     static let drawnBoxes: Set<String> = ["Button", "Grid", "HStack", "LayoutEngine", "ScrollView", "VStack", "ZStack"]

@@ -66,7 +66,7 @@ final class WebTextInputView: WebDOMView, WebWordsView {
     /// The words shown while there are none, which a field's natural width counts too.
     private var placeholder = ""
 
-    /// The colour of the words shown while there are none; nil for the page's.
+    /// The color of the words shown while there are none; nil for the page's.
     func setPlaceholderColor(_ color: HostValue?) {
         style("--stateui-placeholder", WebCSS.color(color))
     }

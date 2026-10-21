@@ -109,7 +109,7 @@ final class GTKPageFrame {
         self.chrome = chrome
     }
 
-    /// Paints the header bar and what stands on it - in the colour written, else light on a dark band and dark on a
+    /// Paints the header bar and what stands on it - in the color written, else light on a dark band and dark on a
     /// light one (`BandWords`) - as a class of the host's style sheet; nil keeps the platform's.
     private func paintBar(background: HostValue?, foreground: HostValue?) {
         let painted = GTKStyleSheet.bar(
@@ -262,7 +262,7 @@ extension GTKPageFrame {
 
 extension GTKButtonView {
     /// A button performing `action`: on the header bar its picture as an icon - its title beside it where it says
-    /// so - else its title; in the overflow's menu its title, flat; coloured where it destroys something.
+    /// so - else its title; in the overflow's menu its title, flat; colored where it destroys something.
     /// Design: docs/design/platforms/gtk/pages.md#the-chrome
     static func action(_ action: GTKToolbarAction, inMenu: Bool = false) -> GTKButtonView {
         let button = GTKButtonView()

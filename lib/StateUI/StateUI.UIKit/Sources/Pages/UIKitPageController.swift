@@ -15,7 +15,7 @@ final class UIKitPageController: UIViewController {
     /// The page's element, which stands its view.
     private weak var page: UIKitElement?
 
-    /// The blur or glass a sidebar page stands on, under what it shows; nil while it stands on a colour.
+    /// The blur or glass a sidebar page stands on, under what it shows; nil while it stands on a color.
     private var ground: (view: UIKitBackdropView, material: HostMaterial)?
 
     init(page: UIKitElement) {
@@ -76,7 +76,7 @@ final class UIKitPageController: UIViewController {
         return (split.sidebarMaterial(over: controller.overlays), controller.overlays)
     }
 
-    /// The colour a sidebar page stands on: its material's, else over the detail the system's background, never the
+    /// The color a sidebar page stands on: its material's, else over the detail the system's background, never the
     /// window's; nil beside the detail where the split view says nothing.
     private static func ground(of sidebar: (material: HostMaterial, over: Bool)) -> UIColor? {
         sidebar.material.painted.flatMap { HostBrush($0).firstColor }.flatMap(UIColor.init(stateUI:))

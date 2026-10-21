@@ -193,8 +193,8 @@ final class WinUISplitView: WinUILayoutView {
     }
 }
 
-/// A ground of WinUI's split pane, as the relay takes it: WinUI's own, a colour, or the in-app acrylic - a blur at its
-/// thickness, in its colour, the tint over the theme's.
+/// A ground of WinUI's split pane, as the relay takes it: WinUI's own, a color, or the in-app acrylic - a blur at its
+/// thickness, in its color, the tint over the theme's.
 /// Design: docs/design/platforms/winui/pages.md#a-split-view
 struct PaneGround: Equatable {
     var kind: StateUIGround = .own
@@ -202,13 +202,13 @@ struct PaneGround: Equatable {
     var opacity: Float = 0
     var tintOpacity: Float = 0
 
-    /// The ground `material` is, the sidebar page's `page` colour standing in for none.
+    /// The ground `material` is, the sidebar page's `page` color standing in for none.
     @MainActor init(_ material: HostMaterial, page: UInt32?) {
-        if let thickness = material.blur, let colour = material.painted.flatMap({ HostBrush($0).firstColor })?.argb {
+        if let thickness = material.blur, let color = material.painted.flatMap({ HostBrush($0).firstColor })?.argb {
             let acrylic = WinUIWindow.acrylic(thickness)
-            (kind, argb, opacity, tintOpacity) = (.acrylic, colour, acrylic.opacity, acrylic.tintOpacity)
-        } else if let colour = material.paint.flatMap({ HostBrush($0).firstColor })?.argb ?? page {
-            (kind, argb) = (.colour, colour)
+            (kind, argb, opacity, tintOpacity) = (.acrylic, color, acrylic.opacity, acrylic.tintOpacity)
+        } else if let color = material.paint.flatMap({ HostBrush($0).firstColor })?.argb ?? page {
+            (kind, argb) = (.color, color)
         }
     }
 }

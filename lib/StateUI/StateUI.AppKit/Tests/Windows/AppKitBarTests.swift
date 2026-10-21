@@ -8,7 +8,7 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
-/// The bar an arrangement declares, in AppKit's window chrome: the application's title area and the bar's colours.
+/// The bar an arrangement declares, in AppKit's window chrome: the application's title area and the bar's colors.
 @MainActor
 final class AppKitBarTests: XCTestCase {
     /// A window whose pages say no title is named by the application, as the system names it in the Window menu,
@@ -23,11 +23,11 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertEqual(window.title, renderer.runtime.core.applicationName)
     }
 
-    /// The title area is text at the trailing edge of the window's title bar, in the system's colours rather than a
+    /// The title area is text at the trailing edge of the window's title bar, in the system's colors rather than a
     /// toolbar control's glass, while the visible page names the window. A foreground with no background declared
-    /// keeps the system's colours: on the toolbar's material it could vanish.
+    /// keeps the system's colors: on the toolbar's material it could vanish.
     @MainActor
-    func testTheTitleAreaStandsAtTheTrailingEdgeInSystemColours() throws {
+    func testTheTitleAreaStandsAtTheTrailingEdgeInSystemColors() throws {
         let renderer = testRenderer(resourceDirectory: TestPictures.directory, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
@@ -75,10 +75,10 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertNil((window.contentView as? AppKitWindowContentView)?.barColor)
     }
 
-    /// A declared bar colour paints the band the title bar and toolbar cover and the window's background, and the
+    /// A declared bar color paints the band the title bar and toolbar cover and the window's background, and the
     /// title area takes the declared foreground there.
     @MainActor
-    func testADeclaredBarColourPaintsTheBandAndColoursTheTitleArea() throws {
+    func testADeclaredBarColorPaintsTheBandAndColorsTheTitleArea() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
@@ -91,7 +91,7 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertEqual(content.barColor, NSColor(srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
         XCTAssertEqual(controller.titleClusterForTesting.titleColorForTesting, NSColor(
             srgbRed: 246 / 255, green: 244 / 255, blue: 1, alpha: 1))
-        XCTAssertEqual(window.backgroundColor, .windowBackgroundColor, "the bars' colour paints the bars alone")
+        XCTAssertEqual(window.backgroundColor, .windowBackgroundColor, "the bars' color paints the bars alone")
     }
 
     /// The title area follows what the arrangement declares, in the same toolbar and accessory.
@@ -187,7 +187,7 @@ private extension AppKitBarTests {
         return application(window)
     }
 
-    /// What an arrangement declares of the bar: the application's name, line and mark, and the colours given.
+    /// What an arrangement declares of the bar: the application's name, line and mark, and the colors given.
     func bar(
         title: String = "Notes",
         subtitle: String = "Personal",

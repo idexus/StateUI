@@ -20,20 +20,20 @@ struct LayoutPhaseSample: SampleContent, ExampleContent {
         static var axes: [WritableKeyPath<Deal, Double>] { [\.turn, \.spread] }
     }
 
-    /// One card: its name, its colour and its icon.
+    /// One card: its name, its color and its icon.
     struct Card {
         let name: String
-        let colour: Color
+        let color: Color
         let icon: Icon
     }
 
     /// The cards, dealt in this order.
     static let cards = [
-        Card(name: "Mural", colour: Color(hex: 0x7C3AED), icon: .star),
-        Card(name: "Nebula", colour: Color(hex: 0x2563EB), icon: .heart),
-        Card(name: "Ridge", colour: Color(hex: 0x0D9488), icon: .home),
-        Card(name: "Bloom", colour: Color(hex: 0xD97706), icon: .calendar),
-        Card(name: "Tide", colour: Color(hex: 0xDB2777), icon: .mail),
+        Card(name: "Mural", color: Color(hex: 0x7C3AED), icon: .star),
+        Card(name: "Nebula", color: Color(hex: 0x2563EB), icon: .heart),
+        Card(name: "Ridge", color: Color(hex: 0x0D9488), icon: .home),
+        Card(name: "Bloom", color: Color(hex: 0xD97706), icon: .calendar),
+        Card(name: "Tide", color: Color(hex: 0xDB2777), icon: .mail),
     ]
 
     /// Where the run stands on both axes - handed on with `$`, never read in
@@ -112,12 +112,12 @@ struct LayoutPhaseSample: SampleContent, ExampleContent {
             zIndex: 100 - Int(min(abs(step), 9) * 10))
     }
 
-    /// One card's face: its colour, its icon on a disc, and its name.
+    /// One card's face: its color, its icon on a disc, and its name.
     private func face(_ index: Int) -> some View {
         let card = Self.cards[index]
 
         return ZStack {
-            Rectangle().fill(card.colour)
+            Rectangle().fill(card.color)
                 .cornerRadius(16)
 
             VStack {

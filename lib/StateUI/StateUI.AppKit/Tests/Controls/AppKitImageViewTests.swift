@@ -11,7 +11,7 @@ import XCTest
 @MainActor
 final class AppKitImageViewTests: XCTestCase {
     @MainActor
-    func testFillCoversAndCentresWithoutDistortingTheImage() {
+    func testFillCoversAndCentersWithoutDistortingTheImage() {
         let view = AppKitImageView()
         view.frame = NSRect(x: 0, y: 0, width: 120, height: 60)
         view.apply(
@@ -194,8 +194,8 @@ final class AppKitImageViewTests: XCTestCase {
         return result == KERN_SUCCESS ? Int(info.phys_footprint) : 0
     }
 
-    /// An icon standing alone is drawn in the words' colour, as the label beside it is.
-    func testAnIconIsDrawnInTheWordsColour() throws {
+    /// An icon standing alone is drawn in the words' color, as the label beside it is.
+    func testAnIconIsDrawnInTheWordsColor() throws {
         let renderer = AppKitRenderer.running {
             HStack {
                 Image(.icon(.share)).width(24).height(24)
@@ -206,8 +206,8 @@ final class AppKitImageViewTests: XCTestCase {
         }
         defer { renderer.closeForTesting() }
         renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
-        let icon = try inkColour(of: XCTUnwrap(renderer.nativeViews(AppKitImageView.self).first))
-        let words = try inkColour(of: XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first))
+        let icon = try inkColor(of: XCTUnwrap(renderer.nativeViews(AppKitImageView.self).first))
+        let words = try inkColor(of: XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first))
 
         XCTAssertTrue(sameInk(icon, words), "the icon's \(String(describing: icon)), the words' \(String(describing: words))")
     }

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A brush and its three kinds: one colour, a gradient along a line, and a
+// A brush and its three kinds: one color, a gradient along a line, and a
 // gradient out from a point, each crossing as its typed parts.
 // Design: docs/design/types/brushes.md#as-a-host-is-handed-it
 
@@ -13,7 +13,7 @@
 ///         GradientStop(.indigo, 1),
 ///     ], startPoint: Point(0, 0), endPoint: Point(1, 1)))
 ///
-/// A brush is where a gradient goes: `.background` takes one colour or one of
+/// A brush is where a gradient goes: `.background` takes one color or one of
 /// these.
 public struct Brush: Equatable, Sendable, HostRepresentable {
     /// Which of the three brushes this is, as the number that crosses; the
@@ -27,11 +27,11 @@ public struct Brush: Equatable, Sendable, HostRepresentable {
 
     let kind: Kind
 
-    /// Nothing for a solid colour, the start and end points of a linear
-    /// gradient, the centre and radius of a radial one.
+    /// Nothing for a solid color, the start and end points of a linear
+    /// gradient, the center and radius of a radial one.
     let geometry: [Double]
 
-    /// The colours; one for a solid brush, whose offset does not cross.
+    /// The colors; one for a solid brush, whose offset does not cross.
     let stops: [GradientStop]
 
     private init(_ kind: Kind, geometry: [Double] = [], stops: [GradientStop]) {
@@ -40,9 +40,9 @@ public struct Brush: Equatable, Sendable, HostRepresentable {
         self.stops = stops
     }
 
-    /// One colour, everywhere.
+    /// One color, everywhere.
     ///
-    /// A colour said as a brush, for a property that takes only a brush.
+    /// A color said as a brush, for a property that takes only a brush.
     public static func solidColor(_ color: Color) -> Brush {
         Brush(.solidColor, stops: [GradientStop(color, 0)])
     }
@@ -60,7 +60,7 @@ public struct Brush: Equatable, Sendable, HostRepresentable {
     /// gradient straight down.
     ///
     /// - Parameters:
-    ///   - stops: the colours, and how far along each one sits.
+    ///   - stops: the colors, and how far along each one sits.
     ///   - startPoint: where the gradient begins.
     ///   - endPoint: where it ends.
     public static func linearGradient(
@@ -81,11 +81,11 @@ public struct Brush: Equatable, Sendable, HostRepresentable {
     ///         GradientStop(.steelBlue, 1),
     ///     ], center: Point(0.3, 0.3), radius: 0.8)
     ///
-    /// The centre is a fraction of the thing being painted and the radius a
+    /// The center is a fraction of the thing being painted and the radius a
     /// fraction of its size.
     ///
     /// - Parameters:
-    ///   - stops: the colours, from the centre outwards.
+    ///   - stops: the colors, from the center outwards.
     ///   - center: where the gradient starts from.
     ///   - radius: how far out it reaches.
     public static func radialGradient(
@@ -113,10 +113,10 @@ public struct Brush: Equatable, Sendable, HostRepresentable {
     }
 
     /// A brush back: its kind, then what that kind is made of, or a bare
-    /// colour as its one colour - nil for anything else.
+    /// color as its one color - nil for anything else.
     /// - Parameter propValue: what the host sent.
     public init?(propValue: PropValue) {
-        // A colour's state crosses as the colour itself: its one colour.
+        // A color's state crosses as the color itself: its one color.
         if let color = Color(propValue: propValue) {
             self = .solidColor(color)
             return

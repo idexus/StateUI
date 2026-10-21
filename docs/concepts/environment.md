@@ -200,9 +200,9 @@ room a view is given - `.onFrameChanged` and `GeometryReader`
 screen itself, handling zero density before the first host report. Use `app.info.colorScheme` only when logic itself branches on the
 theme; themed colors resolve through the style and color system directly.
 
-### What the platform honours
+### What the platform honors
 
-A platform may leave a member out where its toolkit cannot honour it - a
+A platform may leave a member out where its toolkit cannot honor it - a
 picker's list opened by the program, a tooltip on a phone. Writing such a
 member changes nothing, so a view asks first and leaves out what asks for it:
 
@@ -224,9 +224,9 @@ struct SizeChooser: View {
 }
 ```
 
-The answer is the host's own judgement, the one the
+The answer is the host's own judgment, the one the
 [platform contract](../platform-contract.md) shows: in full or in part is
-honoured, never or not realized is not. A property, an event and an act are
+honored, never or not realized is not. A property, an event and an act are
 asked alike - `device.honors(MapContract.moveToRegion)`.
 
 `device.connectivity.networkAccess == .internet` means ordinary internet access.

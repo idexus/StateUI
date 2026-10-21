@@ -8,8 +8,8 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
-/// A StateUI colour is four sRGB channels, so AppKit draws it in sRGB with
-/// exactly those channels. Any other colour space shifts every mid tone.
+/// A StateUI color is four sRGB channels, so AppKit draws it in sRGB with
+/// exactly those channels. Any other color space shifts every mid tone.
 @MainActor
 final class AppKitColorTests: XCTestCase {
     @MainActor

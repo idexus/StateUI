@@ -36,9 +36,9 @@ for - a tab chosen, the sidebar shown:
   ([pictures](controls.md#pictures)) - shows its words at the picture's
   right where it `showsText`, the command bar's own place for them, and
   otherwise the picture alone, its words naming it to Narrator and in its
-  tip (`MountedElement.showsActionWords`); a destructive one stands in the theme's critical colour
+  tip (`MountedElement.showsActionWords`); a destructive one stands in the theme's critical color
   ([a destructive entry](#a-destructive-entry));
-- the page's title view stands at the chrome's centre, where an application
+- the page's title view stands at the chrome's center, where an application
   puts its search;
 - the title area the path declares - the application's name, the line under
   it and its mark ([the bar a path declares](../../host/pages.md#the-bar-a-path-declares))
@@ -46,15 +46,15 @@ for - a tab chosen, the sidebar shown:
   itself on its title bar, while the visible page's title still names the
   window to the system - the taskbar, Alt+Tab; its picture is read from the
   application's pictures by its address; and
-  the bars' colours paint the chrome: its title and the actions on it, a
+  the bars' colors paint the chrome: its title and the actions on it, a
   destructive one excepted, stand
-  in the colour written for what stands on the bars, else white on a dark
+  in the color written for what stands on the bars, else white on a dark
   band and black on a light one ([words on a painted
   band](../../host/layout.md#words-on-a-painted-band)); the chrome takes the
   dark theme on a dark band and the light one on a light band, for its
   buttons and a pointer over an action; an action behind "more" keeps the
-  menu's colours on the menu's background, and the window's own caption
-  buttons keep Windows' colours;
+  menu's colors on the menu's background, and the window's own caption
+  buttons keep Windows' colors;
 - the visible page's menus stand on a menu bar beneath the chrome
   ([menus](#menus)).
 
@@ -154,8 +154,8 @@ a pane over the detail it runs along the top alone.
 
 The pane stands on a ground of its own for each place ([a sidebar's
 material](../../host/pages.md#a-sidebars-material)), its `PaneBackground`:
-the split view's material for that place - a colour, or a blur as WinUI's
-in-app acrylic in its colour, its luminosity and tint by its thickness as the
+the split view's material for that place - a color, or a blur as WinUI's
+in-app acrylic in its color, its luminosity and tint by its thickness as the
 window's acrylic ([a window's backdrop](runtime.md#a-windows-backdrop)) -
 else the sidebar page's background, else the brush WinUI's theme gives a
 navigation pane there (`NavigationViewExpandedPaneBackground` beside,
@@ -263,7 +263,7 @@ entry that cannot be chosen is shown dimmed. An item with a picture shows it
 before its words, as the item's `ImageIcon` - the first of the files its name
 stands for that the application's pictures hold ([pictures](controls.md#pictures)) -
 and WinUI keeps every item's words in line beside it; a destructive item's
-words stand in the theme's critical colour ([a destructive
+words stand in the theme's critical color ([a destructive
 entry](#a-destructive-entry)). The host hands the relay the menu flat - an
 item, a separator, a submenu opening and closing, each with its caption, an
 item with its picture and its mark - and hears a choice by the item's place
@@ -273,9 +273,9 @@ gives the view its menu again, and so does the view's own reach turning - a
 branch disabled or enabled around it - as its entries are in reach with it; a
 menu with no entries is none.
 
-The window's menu bar is one of its bars: it wears the bars' colour as the
+The window's menu bar is one of its bars: it wears the bars' color as the
 title bar does, its `Background` and the theme of its words - light on a dark
-bar - and its menus' words take the bars' colour through
+bar - and its menus' words take the bars' color through
 `MenuBarItemForeground`, the brush their template reads, written into the
 bar's own resources. Where nothing is declared it keeps the platform's own.
 
@@ -300,20 +300,20 @@ bar's accelerator acts only where no field holds the keyboard, never twice.
 ## A destructive entry
 
 A menu's item or a bar's action whose choice destroys something says so in
-the theme's critical colour, the one Windows gives an error. Its words'
+the theme's critical color, the one Windows gives an error. Its words'
 brushes - at rest, under the pointer and pressed - are named again in the
 entry's own resources, as lightweight styling names them
 (`MenuFlyoutItemForeground`, `AppBarButtonForeground` and their states); one
-out of reach keeps the theme's dimmed words. Each brush takes its colour
+out of reach keeps the theme's dimmed words. Each brush takes its color
 from the theme resource `SystemFillColorCritical`, in a theme dictionary for
 the light theme and one for the dark, so it follows the entry's own theme: a
 bar the tree paints dark stands its destructive action in the dark theme's
 lighter red. A brush looked up from code, or an alias of the theme's brush,
-keeps the colour of the application's theme at the moment it is written.
+keeps the color of the application's theme at the moment it is written.
 The entry is marked before it stands, so its template reads the brushes as
 it first draws.
 
-The bar's words' colour paints every action on the bar but a destructive
+The bar's words' color paints every action on the bar but a destructive
 one. Whether an entry is marked is read from its own theme dictionaries,
 walked: `HasKey` and `Lookup` look on into the application's theme
 ([a control's accent](controls.md#a-controls-accent)).

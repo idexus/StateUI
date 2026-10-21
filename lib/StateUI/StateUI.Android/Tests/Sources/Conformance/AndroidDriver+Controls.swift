@@ -28,11 +28,11 @@ extension AndroidDriver {
             default: return (read("scrollsAcross") == "1" ? LineBreak.noWrap : .wordWrap).propValue
             }
         case .horizontalTextAlignment:
-            // Gravity's horizontal bits: centre 1, start or left 3, end or right 5.
+            // Gravity's horizontal bits: center 1, start or left 3, end or right 5.
             guard let gravity = number("gravity").map(Int.init) else { return nil }
             return (gravity & 7 == 1 ? TextAlignment.center : gravity & 7 == 5 ? .end : .start).propValue
         case .verticalTextAlignment:
-            // Gravity's vertical bits: centre 0x10, top 0x30, bottom 0x50.
+            // Gravity's vertical bits: center 0x10, top 0x30, bottom 0x50.
             guard let gravity = number("gravity").map(Int.init) else { return nil }
             return (gravity & 0x70 == 0x10 ? TextAlignment.center : gravity & 0x70 == 0x50 ? .end : .start).propValue
         case .tracking:

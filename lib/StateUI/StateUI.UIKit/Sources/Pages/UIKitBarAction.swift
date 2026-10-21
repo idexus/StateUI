@@ -57,7 +57,7 @@ struct UIKitBarAction {
         return item
     }
 
-    /// The colour its button stands in: red where it destroys something, else `tint`.
+    /// The color its button stands in: red where it destroys something, else `tint`.
     func tint(_ tint: UIColor?) -> UIColor? {
         isDestructive ? .systemRed : tint
     }

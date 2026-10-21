@@ -94,7 +94,7 @@ final class WebShapeView: WebDOMView {
         path.attribute("stroke", outlined ? brush(stroke, "stroke", over: painted, undoing: undone) : "none")
     }
 
-    /// A brush as SVG paints it over `painted`: a colour, or a gradient of its own, its geometry in that room.
+    /// A brush as SVG paints it over `painted`: a color, or a gradient of its own, its geometry in that room.
     private func brush(_ value: HostValue?, _ role: String, over painted: Rect, undoing placed: String?) -> String {
         guard let gradient = WebVector.gradient(HostBrush(value), over: painted, id: "stateui-\(serial)-\(role)") else {
             return WebCSS.color(HostBrush(value).firstColor) ?? "none"

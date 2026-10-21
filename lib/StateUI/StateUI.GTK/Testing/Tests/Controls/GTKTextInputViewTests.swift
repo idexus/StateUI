@@ -99,7 +99,7 @@ final class GTKTextInputViewTests: XCTestCase {
         }
     }
 
-    /// A field's placeholder, coloured or not, stands across the field where its words do.
+    /// A field's placeholder, colored or not, stands across the field where its words do.
     func testAPlaceholderStandsWhereTheWordsDo() {
         onUIThread {
             let host = GTKRenderer.running {
@@ -117,7 +117,7 @@ final class GTKTextInputViewTests: XCTestCase {
                     GTKTestHost.holds($0, gtk_label_get_type()) && gtk_widget_get_mapped($0) != 0
                 }.map { gtk_label_get_xalign($0.opaque) }
             }
-            XCTAssertEqual(placed, [0.5, 1], "the centred field's, the end-aligned field's")
+            XCTAssertEqual(placed, [0.5, 1], "the centered field's, the end-aligned field's")
         }
     }
 
@@ -137,7 +137,7 @@ final class GTKTextInputViewTests: XCTestCase {
         }
     }
 
-    /// A field takes words as the tree says: read only, unchecked, unpredicted, for an address, centred, hidden,
+    /// A field takes words as the tree says: read only, unchecked, unpredicted, for an address, centered, hidden,
     /// and its caret and selection where they were put; GTK's own where the tree says nothing.
     func testAFieldTakesWordsAsTheTreeSays() {
         onUIThread {
@@ -168,8 +168,8 @@ final class GTKTextInputViewTests: XCTestCase {
         }
     }
 
-    /// Typed words take their font and colour, and the placeholder its own colour in full, where GTK dims it.
-    func testTypedWordsTakeTheirFontAndColour() {
+    /// Typed words take their font and color, and the placeholder its own color in full, where GTK dims it.
+    func testTypedWordsTakeTheirFontAndColor() {
         onUIThread {
             let host = GTKRenderer.running {
                 VStack {
@@ -252,7 +252,7 @@ private extension GTKTextFieldView {
 }
 
 private extension GTKView {
-    /// Whether GTK draws the colour `argb` anywhere on the widget, looked for every two pixels.
+    /// Whether GTK draws the color `argb` anywhere on the widget, looked for every two pixels.
     func shows(_ argb: UInt32) -> Bool {
         let size = frame
         let points = stride(from: 0.0, to: size.width, by: 2).flatMap { x in

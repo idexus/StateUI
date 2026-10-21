@@ -5,11 +5,11 @@
 @_spi(Host) import StateUIHost
 import WASILibc
 
-/// A brush as CSS paints a box `size` across: a colour, or a gradient whose points are fractions of the box and
+/// A brush as CSS paints a box `size` across: a color, or a gradient whose points are fractions of the box and
 /// whose stripes stand square to it in pixels - a radial one a circle as far as the host layer's reach.
 /// Design: docs/design/platforms/web/drawing.md#a-brush-on-a-box
 enum WebBrush {
-    /// The brush as a CSS image, a colour as one too, so it can stand in a layer of a background; nil for none.
+    /// The brush as a CSS image, a color as one too, so it can stand in a layer of a background; nil for none.
     static func image(_ value: HostValue?, size: LayoutSize) -> String? {
         switch HostBrush(value) {
         case .none:

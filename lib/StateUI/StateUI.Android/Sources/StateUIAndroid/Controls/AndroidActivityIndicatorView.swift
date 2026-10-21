@@ -37,7 +37,7 @@ final class AndroidActivityIndicatorView: AndroidView {
         Java.call(reference, JavaAPI.setVisibility, .int(visibility))
     }
 
-    /// The indicator's colour; nil puts back the platform's.
+    /// The indicator's color; nil puts back the platform's.
     func setTint(_ color: HostValue?) {
         if madeTint == nil {
             madeTint = .some(Java.callObject(reference, JavaAPI.getIndeterminateTintList).map(JavaObject.init))

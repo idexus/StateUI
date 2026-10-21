@@ -47,8 +47,8 @@ namespace stateui {
     /// WinUI's own brush for a brush as the host hands it; null for none.
     xaml::Media::Brush brush(StateUIBrush const &brush);
 
-    /// A brush painting an oval `width` by `height`: `fill`'s first colour keeping `share` of its opacity inside,
-    /// `stroke`'s first colour `lineWidth` wide inside its edge.
+    /// A brush painting an oval `width` by `height`: `fill`'s first color keeping `share` of its opacity inside,
+    /// `stroke`'s first color `lineWidth` wide inside its edge.
     xaml::Media::Brush oval(StateUIBrush const &fill, StateUIBrush const &stroke, double lineWidth, double share,
                             double width, double height);
 
@@ -69,7 +69,7 @@ namespace stateui {
     bool holdsFocus(xaml::UIElement const &element);
 
     /// Writes `brushes` into the control's own resources under the names its template reads - lightweight styling;
-    /// a null brush takes its name away. A solid brush standing there takes the new colour in place, which what it
+    /// a null brush takes its name away. A solid brush standing there takes the new color in place, which what it
     /// paints follows; one that comes, goes or is of another kind has the control's theme read again, as its template
     /// takes such a resource only then.
     /// Design: docs/design/platforms/winui/controls.md#a-controls-accent
@@ -133,7 +133,7 @@ namespace stateui {
     std::wstring iconFile(controls::IconElement const &icon);
 
     /// Marks an entry whose choice destroys something: its words' brushes `names` - at rest, under the pointer and
-    /// pressed - take the theme's critical colour, light or dark as the entry's own theme is. Written before the
+    /// pressed - take the theme's critical color, light or dark as the entry's own theme is. Written before the
     /// entry stands, as its template reads them then.
     /// Design: docs/design/platforms/winui/pages.md#a-destructive-entry
     void markDestructive(xaml::FrameworkElement const &entry, std::vector<std::wstring> const &names);

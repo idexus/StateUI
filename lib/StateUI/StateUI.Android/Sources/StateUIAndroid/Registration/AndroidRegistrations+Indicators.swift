@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 extension AndroidRegistrations {
-    /// Progress and activity: one value each, a colour, and no event.
+    /// Progress and activity: one value each, a color, and no event.
     static func indicators(_ registry: Registry<AndroidView>) {
         registry.add(ProgressBarContract.self, create: { _ in AndroidProgressBarView() }) { bar in
             bar.property(ProgressBarContract.progress) { view, progress in view.setProgress(progress ?? 0) }

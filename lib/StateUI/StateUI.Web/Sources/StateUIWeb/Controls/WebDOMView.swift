@@ -48,7 +48,7 @@ class WebDOMView {
     }
 
     /// Where the view is drawn while its place travels; nil at its slot.
-    var travelling: Rect?
+    var traveling: Rect?
 
     /// The place a layout's run last stood the view at; nil while no run places it.
     var placedByRun: HostPlacement?
@@ -188,7 +188,7 @@ class WebDOMView {
         styles[name]
     }
 
-    /// What the element is drawn over, under its whole box: a colour, or a brush's first colour; nil for the
+    /// What the element is drawn over, under its whole box: a color, or a brush's first color; nil for the
     /// browser's own. A field's box is its field, the picture the page's look draws in it kept.
     /// Design: docs/design/platforms/web/look.md#a-views-background
     func setBackground(_ value: HostValue?) {
@@ -205,7 +205,7 @@ class WebDOMView {
         style("opacity", opacity >= 1 ? nil : WebCSS.number(max(0, opacity)))
     }
 
-    /// Whether the view takes input; a form control greys itself.
+    /// Whether the view takes input; a form control grays itself.
     func setEnabled(_ enabled: Bool) {
         attribute("aria-disabled", enabled ? nil : "true")
     }

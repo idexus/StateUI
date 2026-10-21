@@ -1,7 +1,7 @@
 # revision 17.1
 ActivityIndicator.ignoresInput: ✅
 ActivityIndicator.scaleY: ✓ read scaleY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
-Button.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+Button.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Canvas.accessibilityHint: ✅
 Capsule.height: ✅
 Capsule.scale: ✓ read scale of Capsule: the host's own transform, checked against the layer it composed itself

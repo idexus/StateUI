@@ -102,7 +102,7 @@ final class GTKCanvasView: GTKPanelView {
         }
     }
 
-    /// `value` drawn at the pen's opacity; nil for no colour.
+    /// `value` drawn at the pen's opacity; nil for no color.
     private static func color(_ value: HostValue, _ pen: CanvasPen) -> GdkRGBA? {
         guard var color = GTKBrush.rgba(value) else { return nil }
         color.alpha *= Float(pen.alpha)

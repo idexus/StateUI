@@ -6,7 +6,7 @@
 
 /// A Grid: the host layer's grid arithmetic over a panel.
 @MainActor
-final class GTKGridView: GTKTravellingLayout {
+final class GTKGridView: GTKTravelingLayout {
     var rows: [GridLength] = [] {
         didSet { if rows != oldValue { invalidateMeasurements() } }
     }

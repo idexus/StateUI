@@ -115,17 +115,17 @@ extension HostPath {
         let numerator = max(0, rx * rx * ry * ry - rx * rx * turnedY * turnedY - ry * ry * turnedX * turnedX)
         let denominator = rx * rx * turnedY * turnedY + ry * ry * turnedX * turnedX
         let coefficient = denominator > 0 ? (largeArc == sweep ? -1 : 1) * (numerator / denominator).squareRoot() : 0
-        let centreX = coefficient * rx * turnedY / ry
-        let centreY = coefficient * -ry * turnedX / rx
-        let centre = Point(
-            cosine * centreX - sine * centreY + (start.x + end.x) / 2,
-            sine * centreX + cosine * centreY + (start.y + end.y) / 2)
+        let centerX = coefficient * rx * turnedY / ry
+        let centerY = coefficient * -ry * turnedX / rx
+        let center = Point(
+            cosine * centerX - sine * centerY + (start.x + end.x) / 2,
+            sine * centerX + cosine * centerY + (start.y + end.y) / 2)
 
         func turn(_ fromX: Double, _ fromY: Double, _ toX: Double, _ toY: Double) -> Double {
             atan2(fromX * toY - fromY * toX, fromX * toX + fromY * toY)
         }
-        let first = ((turnedX - centreX) / rx, (turnedY - centreY) / ry)
-        let last = ((-turnedX - centreX) / rx, (-turnedY - centreY) / ry)
+        let first = ((turnedX - centerX) / rx, (turnedY - centerY) / ry)
+        let last = ((-turnedX - centerX) / rx, (-turnedY - centerY) / ry)
         var from = turn(1, 0, first.0, first.1)
         var delta = turn(first.0, first.1, last.0, last.1)
         if !sweep, delta > 0 { delta -= 2 * .pi }
@@ -133,8 +133,8 @@ extension HostPath {
 
         func point(_ at: Double) -> Point {
             Point(
-                centre.x + rx * cos(at) * cosine - ry * sin(at) * sine,
-                centre.y + rx * cos(at) * sine + ry * sin(at) * cosine)
+                center.x + rx * cos(at) * cosine - ry * sin(at) * sine,
+                center.y + rx * cos(at) * sine + ry * sin(at) * cosine)
         }
         func slope(_ at: Double) -> Point {
             Point(-rx * sin(at) * cosine - ry * cos(at) * sine, -rx * sin(at) * sine + ry * cos(at) * cosine)

@@ -130,7 +130,7 @@ struct HomePage: View {
         // ONE GRID RATHER THAN A BRANCH PER SHAPE. An `if` in a builder is a
         // branch KEY, so a page that crossed the threshold would destroy the
         // run of cards and build it again; a row whose view is not visible
-        // collapses to nothing, and the pair - centred in the star row - then
+        // collapses to nothing, and the pair - centered in the star row - then
         // stands in the middle of the page by itself.
         return Grid {
             VStack {
@@ -255,7 +255,7 @@ struct HomePage: View {
             .verticalAlignment(.center)
             .gridRow(1)
 
-            // WHAT THIS IS, at the FOOT of the page and centred: the cards are
+            // WHAT THIS IS, at the FOOT of the page and centered: the cards are
             // what a user came for, and these two lines are what they read
             // once they have found it. They go completely when the cards' cell
             // runs short - an auto row keeps its height whatever is left, and

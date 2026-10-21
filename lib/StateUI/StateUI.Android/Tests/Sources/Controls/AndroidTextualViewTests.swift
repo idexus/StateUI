@@ -43,7 +43,7 @@ final class AndroidTextualViewTests: XCTestCase {
         }
     }
 
-    /// A colour behind a button takes the padding its own background brought; the tree's padding stays.
+    /// A color behind a button takes the padding its own background brought; the tree's padding stays.
     func testPaddingIsTheRoomAroundTheWordsWhateverTheBackground() throws {
         try onMainActor {
             let host = AndroidRenderer.running {

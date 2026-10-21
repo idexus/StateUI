@@ -24,7 +24,7 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   property it names whenever one of them changes, each as its contract's type and whether it changed
   (`ControlValues`) - a web view its agent before its page.
 - A member the running host does not realize is said once in Debug, with the reason its register gives:
-  "Switch.tint is never realized on this host: AppKit draws it in the accent colour the user chooses".
+  "Switch.tint is never realized on this host: AppKit draws it in the accent color the user chooses".
 - A host writes its lines, and every complaint the application routes nowhere, where its platform's developers
   read: Apple's system log, WinUI's debugger output, GLib's log, logcat, the browser's console.
 
@@ -88,7 +88,7 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - **For host and backend authors (`@_spi(Host)`):** a host's register is written with the contracts' members -
   `.complete(SwitchContract.isOn)`, `.notPlanned(VisualElementContract.background, on: SliderContract.self,
   reason: ...)` - and names elements by their contracts (`byApplication: [MapContract.self]`), as does
-  `HostRuntime.start(unrealized:)`; a misspelt name no longer compiles.
+  `HostRuntime.start(unrealized:)`; a misspelled name no longer compiles.
 
 ### New
 

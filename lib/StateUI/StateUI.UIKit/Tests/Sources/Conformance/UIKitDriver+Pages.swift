@@ -111,7 +111,7 @@ extension UIKitDriver {
     }
 
     /// What the bar an arrangement declares stands on: a tabbed view's tab bar, else the bar of the page it shows -
-    /// its colour, the colour of its title, and the line under the title.
+    /// its color, the color of its title, and the line under the title.
     private static func barHolds(_ property: Prop, of element: MountedElement) -> HostValue? {
         if let tabs = (element.native as? UIKitElement)?.controller as? UITabBarController {
             let appearance = tabs.tabBar.standardAppearance

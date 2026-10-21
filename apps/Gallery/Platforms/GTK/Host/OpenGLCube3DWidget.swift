@@ -22,7 +22,7 @@ final class OpenGLCube3DWidget: GTKControl {
         didSet { if cubeSize != oldValue { gtk_gl_area_queue_render(area) } }
     }
 
-    /// Which colour it is painted.
+    /// Which color it is painted.
     var color = CubeColor.teal {
         didSet { if color != oldValue { gtk_gl_area_queue_render(area) } }
     }
@@ -54,7 +54,7 @@ final class OpenGLCube3DWidget: GTKControl {
         #version 330 core
         // listing: Cube3DSample.GTK.glsl
         // GLSL 3.30 core, compiled from source as the area is realized. A corner carries the brightness of its face
-        // in w; the colour comes with each frame.
+        // in w; the color comes with each frame.
         layout(location = 0) in vec4 corner;
         uniform mat4 transform;
         uniform vec4 color;
@@ -204,7 +204,7 @@ final class OpenGLCube3DWidget: GTKControl {
     }
 
     // listing: Cube3DSample.GTK.swift
-    /// Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
+    /// Clears to the housing's color and draws the cube: turned, scaled and seen in perspective.
     private func render() -> gboolean {
         epoxy_glClearColor(0.102, 0.090, 0.145, 1)
         epoxy_glClear(GLbitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The inspector's colours, measures, words and the one kind of button it has.
+/// The inspector's colors, measures, words and the one kind of button it has.
 @MainActor
 enum Look {
     static let ground = Color(light: Color(hex: 0xF7F6FB), dark: Color(hex: 0x1C1A24))

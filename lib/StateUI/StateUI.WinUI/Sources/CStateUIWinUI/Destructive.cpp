@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // An entry whose choice destroys something - a menu's item, a bar's action -
-// says so in the theme's critical colour: its words' brushes, named in its
-// own resources for the light theme and the dark, each drawn in the colour
+// says so in the theme's critical color: its words' brushes, named in its
+// own resources for the light theme and the dark, each drawn in the color
 // that theme gives `SystemFillColorCritical`.
 // Design: docs/design/platforms/winui/pages.md#a-destructive-entry
 

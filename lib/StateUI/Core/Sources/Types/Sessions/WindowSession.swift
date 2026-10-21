@@ -78,14 +78,14 @@ public final class WindowSession {
     @State public var isMinimizable: Bool? = nil
 
     /// What the window is made of behind its pages - around a floating
-    /// sidebar, under a page that paints no background of its own: a colour,
+    /// sidebar, under a page that paints no background of its own: a color,
     /// or a blur or glass the desktop shows through.
     ///
     ///     window.background = .blur(.regular)
     ///     window.background = Material(light: nil, dark: .blur(.thick.tint(Color(hex: 0x512BD4, opacity: 0.15))))
     ///
     /// A host whose windows cannot show what is behind them draws a blur's
-    /// colour in its place. `nil` - and a nil half of a pair - keeps the
+    /// color in its place. `nil` - and a nil half of a pair - keeps the
     /// platform's own window.
     @State public var background: Material? = nil
     /// The key the tree knows the window by in its scene.

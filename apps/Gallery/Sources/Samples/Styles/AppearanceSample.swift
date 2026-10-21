@@ -1,7 +1,7 @@
 import StateUI
 
 /// The look the gallery wears, all of it in one place: its bars, what its
-/// window and its sidebar are made of, each in a colour of its own, and its
+/// window and its sidebar are made of, each in a color of its own, and its
 /// theme.
 struct AppearanceSample: SampleContent, ExampleContent {
     // listing: AppearanceSample
@@ -73,7 +73,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
                 + "the one this version of the gallery draws on this platform, at every start. "
                 + "\"The platform's own\" leaves a choice "
                 + "unwritten: each platform draws its own, in the user's accent, material "
-                + "and theme. A colour paints the bars alone; what the window shows behind "
+                + "and theme. A color paints the bars alone; what the window shows behind "
                 + "the pages is its background. The sidebar stands on one material beside "
                 + "the page and on another as it slides over it - a phone's drawer.")
                 .fontSize(12)
@@ -136,12 +136,12 @@ private struct LookColumn: View {
             Picker(bars, selection: Binding(get: { look.bars }, set: { style[keyPath: key].bars = $0 })) { $0.name }
                 .accessibilityIdentifier("appearance.\(name).bars")
                 .accessibilityLabel("Bars, \(name)")
-            Picker(accents, selection: Binding(get: { look.barColour }, set: { style[keyPath: key].barColour = $0 })) {
+            Picker(accents, selection: Binding(get: { look.barColor }, set: { style[keyPath: key].barColor = $0 })) {
                 $0.name
             }
-                .accessibilityIdentifier("appearance.\(name).barColour")
-                .accessibilityLabel("Bars' colour, \(name)")
-                .isEnabled(look.bars == .tinted || look.bars == .colour)
+                .accessibilityIdentifier("appearance.\(name).barColor")
+                .accessibilityLabel("Bars' color, \(name)")
+                .isEnabled(look.bars == .tinted || look.bars == .color)
 
             SurfacePickers(title: "The window", label: "Window", theme: name, surface: surface(\.window))
             SurfacePickers(title: "The sidebar", label: "Sidebar", theme: name, surface: surface(\.sidebar))
@@ -151,7 +151,7 @@ private struct LookColumn: View {
     }
 }
 
-/// One surface's choices: what it is made of, in which colour, and how thick
+/// One surface's choices: what it is made of, in which color, and how thick
 /// a blur.
 private struct SurfacePickers: View {
     let title: String
@@ -176,12 +176,12 @@ private struct SurfacePickers: View {
             }
                 .accessibilityIdentifier(id)
                 .accessibilityLabel("\(label), \(theme)")
-            Picker(accents, selection: Binding(get: { look.colour }, set: { surface.wrappedValue.colour = $0 })) {
+            Picker(accents, selection: Binding(get: { look.color }, set: { surface.wrappedValue.color = $0 })) {
                 $0.name
             }
-                .accessibilityIdentifier("\(id)Colour")
-                .accessibilityLabel("\(label)'s colour, \(theme)")
-                .isEnabled(look.material.showsColour)
+                .accessibilityIdentifier("\(id)Color")
+                .accessibilityLabel("\(label)'s color, \(theme)")
+                .isEnabled(look.material.showsColor)
             Picker(blurs, selection: Binding(get: { look.blur }, set: { surface.wrappedValue.blur = $0 })) { blur in
                 ["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"][blurs.firstIndex(of: blur) ?? 0]
             }

@@ -235,7 +235,7 @@ final class CarriedStateTests: XCTestCase {
 
     /// A twin over a member that travels is walked as a journey, whatever the member: a grid's spacings and a label's
     /// line height glide from a state as their described values do.
-    func testATwinOverATravellingMemberIsAJourney() {
+    func testATwinOverATravelingMemberIsAJourney() {
         let rows = State(wrappedValue: 8.0)
         let columns = State(wrappedValue: 4.0)
         let line = State(wrappedValue: 20.0)
@@ -580,10 +580,10 @@ final class CarriedStateTests: XCTestCase {
             .eased(.milliseconds(700), .cubicIn))
     }
 
-    /// A rule naming COLOURS answers a driven colour, which the property alone
+    /// A rule naming COLORS answers a driven color, which the property alone
     /// cannot say - `background` is in no group, and what puts it in one
     /// is the value it carries.
-    func testARuleNamingColoursAnswersADrivenColour() {
+    func testARuleNamingColorsAnswersADrivenColor() {
         let tint = State(wrappedValue: Color(hex: 0x102030))
         let renders = Renders()
 

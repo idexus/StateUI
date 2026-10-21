@@ -112,7 +112,7 @@ final class LayoutSwipeTests: XCTestCase {
         XCTAssertEqual(phase.wrappedValue, 1, "at rest, the next burst swipes on, one target")
     }
 
-    /// A PAGE IS THE ROOM'S LENGTH: pages are swiped a page a hand, the hand travelling the room's width for one -
+    /// A PAGE IS THE ROOM'S LENGTH: pages are swiped a page a hand, the hand traveling the room's width for one -
     /// a board is a screen however the room turns.
     func testAPageIsTheRoomsLength() {
         let phase = State(wrappedValue: 0.0)

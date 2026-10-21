@@ -8,7 +8,7 @@ extension WindowType where Value == Void {
     static let fonts = WindowType("gallery.fonts")
 
     /// The window that chooses the gallery's accent.
-    static let colours = WindowType("gallery.colours")
+    static let colors = WindowType("gallery.colors")
 }
 
 extension WindowType where Value == Int {
@@ -20,7 +20,7 @@ extension WindowType where Value == Int {
 // listing: Gallery.SessionStyle
 /// What the galleries' scene KEEPS with itself - handed back with it when the
 /// system restores the application's windows, so the galleries come back in the
-/// font and the colour they were left in.
+/// font and the color they were left in.
 extension SceneKey where Value == String {
     /// The font the gallery's preview is set in.
     static let font = SceneKey("gallery.font")
@@ -35,7 +35,7 @@ extension SceneKey where Value == LookChoice {
 // listing: end
 
 // listing: Gallery.SessionStyle
-/// A colour a gallery wears - on its bars, or behind its pages, where its look
+/// A color a gallery wears - on its bars, or behind its pages, where its look
 /// asks for one.
 enum AccentChoice: String, CaseIterable {
     case gallery
@@ -45,10 +45,10 @@ enum AccentChoice: String, CaseIterable {
     case coral
     case graphite
 
-    /// The gallery's own colours, without the system's accent.
+    /// The gallery's own colors, without the system's accent.
     static let own: [AccentChoice] = [.violet, .teal, .coral, .graphite]
 
-    /// What the Colours window calls it.
+    /// What the Colors window calls it.
     var name: String {
         switch self {
         case .gallery: return "The gallery's own"
@@ -60,7 +60,7 @@ enum AccentChoice: String, CaseIterable {
         }
     }
 
-    /// The colour on `surface`, the system's accent being `system` - one in
+    /// The color on `surface`, the system's accent being `system` - one in
     /// both themes but the gallery's own, which is made for each part and
     /// theme.
     func color(system: Color, for surface: GallerySurface) -> Color {
@@ -74,25 +74,25 @@ enum AccentChoice: String, CaseIterable {
         }
     }
 
-    /// Whether words on the colour are the theme's own rather than white: the
-    /// gallery's own colours are as light as the theme.
+    /// Whether words on the color are the theme's own rather than white: the
+    /// gallery's own colors are as light as the theme.
     var carriesThemesWords: Bool { self == .gallery }
 
-    /// The colour with three fifths let through - a bar tinted over the
+    /// The color with three fifths let through - a bar tinted over the
     /// platform's material.
     func translucentColor(system: Color, for surface: GallerySurface) -> Color {
         color(system: system, for: surface).opacity(0.4)
     }
 
-    /// The colour laid over a blur - a seventh of an accent, the blur showing
-    /// through it; most of the gallery's own, whose blur is its colour.
+    /// The color laid over a blur - a seventh of an accent, the blur showing
+    /// through it; most of the gallery's own, whose blur is its color.
     func tint(system: Color, for surface: GallerySurface) -> Color {
         color(system: system, for: surface).opacity(self == .gallery ? Self.ownTint : 0.15)
     }
 
-    /// How much of the gallery's own colour lies over a blur or glass: more on
-    /// the iPad and the iPhone, whose glass is greyer, so that their sidebar
-    /// wears the Mac's colour.
+    /// How much of the gallery's own color lies over a blur or glass: more on
+    /// the iPad and the iPhone, whose glass is grayer, so that their sidebar
+    /// wears the Mac's color.
     private static var ownTint: Double {
         #if UIKIT
         0.85
@@ -108,7 +108,7 @@ enum AccentChoice: String, CaseIterable {
 /// aside for another scene, floating on top.
 ///
 /// Held by the galleries' scene and handed to its gallery windows and to its
-/// Fonts and Colours windows, so the Fonts and Colours windows change every
+/// Fonts and Colors windows, so the Fonts and Colors windows change every
 /// gallery window at once, with nothing passed between them.
 @MainActor
 final class SessionStyle {
@@ -139,11 +139,11 @@ final class SessionStyle {
         dark ? darkLook : lightLook
     }
 
-    /// Whether the Fonts and Colours windows hide while another scene is the
+    /// Whether the Fonts and Colors windows hide while another scene is the
     /// one in front.
     @State var hidesTools = false
 
-    /// Whether the Fonts and Colours windows float above the application's
+    /// Whether the Fonts and Colors windows float above the application's
     /// other windows rather than going under them.
     @State var floatsTools = false
 }

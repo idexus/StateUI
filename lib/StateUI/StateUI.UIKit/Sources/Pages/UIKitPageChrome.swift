@@ -7,7 +7,7 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 /// What a page's bar shows: its title or the view standing in for it, the line under the title, its groups of actions
-/// at either edge and those in its overflow menu, whether it shows and offers the way back, and its colours.
+/// at either edge and those in its overflow menu, whether it shows and offers the way back, and its colors.
 /// Design: docs/design/platforms/uikit/pages.md#the-bar
 @MainActor
 struct UIKitPageChrome {
@@ -32,7 +32,7 @@ struct UIKitPageChrome {
     }
 
     /// Puts it on `item`, the bar a navigation controller shows for the page - its buttons made again only where
-    /// they say something else than `standing` says, else recoloured; `standing` then says what they say.
+    /// they say something else than `standing` says, else recolored; `standing` then says what they say.
     func show(on item: UINavigationItem, buttons standing: inout [[UIKitBarAction.Said]]?) {
         item.title = title
         if item.subtitle != subtitle { item.subtitle = subtitle }
@@ -53,7 +53,7 @@ struct UIKitPageChrome {
         // Each group its own background; the leading ones beside the way back.
         // Design: docs/design/platforms/uikit/pages.md#the-bar
         item.leftItemsSupplementBackButton = true
-        // Words on a painted bar: the colour written, else light on a dark bar and dark on a light one.
+        // Words on a painted bar: the color written, else light on a dark bar and dark on a light one.
         let painted = barBackground != nil || barForeground != nil
         let words = painted ? BandWords.color(on: barBackground, written: barForeground) : nil
         let foreground = words.flatMap(UIColor.init(stateUI:))

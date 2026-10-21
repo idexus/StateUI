@@ -13,7 +13,7 @@ LayoutEngine.shape: ◐ cannot read shape of LayoutEngine - AppKit's driver has 
 LayoutEngine.stroke: ◐ cannot read stroke of LayoutEngine - AppKit's driver has no path for it yet
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
-ScrollView.stroke: ☑️ AppKit outlines a scroller in one colour: a gradient draws none.
+ScrollView.stroke: ☑️ AppKit outlines a scroller in one color: a gradient draws none.
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅

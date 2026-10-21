@@ -211,7 +211,7 @@ extern "C" void stateui_winui_button_set_accent(StateUIObjectRef handle, bool ac
 
 extern "C" void stateui_winui_button_set_critical(StateUIObjectRef handle, bool critical) {
     try {
-        // The theme's critical colour under the button's words, as a destructive entry's: a colour the tree writes
+        // The theme's critical color under the button's words, as a destructive entry's: a color the tree writes
         // in the button's own resources stands over it.
         auto button = as<controls::Control>(handle);
         std::wstring name = button.try_as<controls::SplitButton>() ? L"SplitButtonForeground" : L"ButtonForeground";
@@ -288,7 +288,7 @@ extern "C" void stateui_winui_button_set_content(
             return;
         }
         // Alone, the picture fills the room inside the padding as StateUI's ContentMode says: fit, fill, stretch,
-        // centre. Beside words it stands at its own size, smaller where the button is.
+        // center. Beside words it stands at its own size, smaller where the button is.
         controls::Viewbox box;
         box.Child(picture);
         if (alone) {

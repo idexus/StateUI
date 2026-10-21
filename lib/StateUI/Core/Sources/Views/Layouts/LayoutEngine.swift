@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The centre of a layout's motion: the views, the arithmetic that places them on the host's frames, the phase it is
+// The center of a layout's motion: the views, the arithmetic that places them on the host's frames, the phase it is
 // worked out from, and the hand that moves the phase.
 // Design: docs/design/views/layout-engine.md
 
@@ -10,7 +10,7 @@
 ///     @State private var turn = 0.0
 ///
 ///     LayoutEngine(planets, id: \.name) { planet in
-///         Ellipse().fill(planet.colour)
+///         Ellipse().fill(planet.color)
 ///     } placements: { room, phase in
 ///         planets.indices.map { index in
 ///             let angle = (Double(index) - phase) / Double(planets.count) * 2 * .pi
@@ -363,7 +363,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     ///     .motion(.spring(response: .milliseconds(240)))
     ///
     /// - Parameter motion: the law; the element's, the application's or the library's unless said.
-    /// - Returns: the layout, travelling that way.
+    /// - Returns: the layout, traveling that way.
     public func motion(_ motion: Motion) -> Self {
         var copy = self
         copy.law = motion

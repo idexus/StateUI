@@ -56,7 +56,7 @@ extension VisualElement {
     /// A view that comes back with the same key keeps its control, and only the
     /// properties that changed are written to it. Give one to anything whose
     /// position can change, so inserting, removing or reordering moves the
-    /// existing controls instead of rewriting each into its neighbour:
+    /// existing controls instead of rewriting each into its neighbor:
     ///
     ///     VStack {
     ///         ForEach(items, id: \.id) { item in

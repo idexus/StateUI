@@ -17,7 +17,7 @@ final class AndroidViewTests: XCTestCase {
         onMainActor { _ = AndroidRenderer.running { VStack {} } }
     }
 
-    /// A button, a field, a switch draw their own background; a colour taken away gives it back.
+    /// A button, a field, a switch draw their own background; a color taken away gives it back.
     func testAClearedBackgroundPutsBackTheOneTheViewWasMadeWith() {
         onMainActor {
             let field = AndroidTextFieldView()

@@ -14,8 +14,8 @@ final class WebCanvasStrokeTests: XCTestCase {
         WebCanvasStroke(instructions)
     }
 
-    /// A rectangle filled in the pen's colour at the pen's opacity: its path, then the fill.
-    func testAFillTakesThePensColourAtItsOpacity() {
+    /// A rectangle filled in the pen's color at the pen's opacity: its path, then the fill.
+    func testAFillTakesThePensColorAtItsOpacity() {
         let drawn = stroke([
             .fillColor(.color(red: 255, green: 0, blue: 0, alpha: 255)), .opacity(0.5),
             .fillRectangle(Rect(x: 0, y: 0, width: 10, height: 20)),
@@ -31,7 +31,7 @@ final class WebCanvasStrokeTests: XCTestCase {
     }
 
     /// Words go by their place among the drawing's words, with their room, their size and the height of their lines,
-    /// their colour, the edge they stand at and its point across, and their alignment down.
+    /// their color, the edge they stand at and its point across, and their alignment down.
     func testWordsAreWrittenByTheirPlace() {
         let drawn = stroke([
             .fontSize(20), .text("42", in: Rect(x: 1, y: 2, width: 30, height: 14), horizontal: .center, vertical: .start),

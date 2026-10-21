@@ -84,7 +84,7 @@ extension AppKitDriver {
         case .isMaximizable: return (window.standardWindowButton(.zoomButton)?.isEnabled ?? false).propValue
         case .isMinimizable: return window.styleMask.contains(.miniaturizable).propValue
         case .background:
-            // A blur the desktop shows through, in the colour laid over it; else the window's own colour.
+            // A blur the desktop shows through, in the color laid over it; else the window's own color.
             let content = window.contentView as? AppKitWindowContentView
             if let role = content?.materialForTesting?.material, let thickness = AppKitMaterialView.thickness(role) {
                 let blur = Blur(thickness)
@@ -108,8 +108,8 @@ extension AppKitDriver {
         return words.isEmpty ? nil : words.propValue
     }
 
-    /// The colour the bar's words of the window `element` stands in are drawn in: its painted title's, which a band
-    /// painted in a bar colour shows; nil on the system's material, where the system draws the title.
+    /// The color the bar's words of the window `element` stands in are drawn in: its painted title's, which a band
+    /// painted in a bar color shows; nil on the system's material, where the system draws the title.
     func barWordsColor(_ element: MountedElement) throws -> HostValue? {
         let controller = try controller(of: element)
         guard controller.bandTitle.window != nil else { return nil }
@@ -134,8 +134,8 @@ extension AppKitDriver {
         return names.first { renderer?.image(named: $0) === picture }.map { .string($0) }
     }
 
-    /// The colour the bar of the window `element` stands in is painted: the band the title bar lets show only while
-    /// a colour is painted; nil on the system's material.
+    /// The color the bar of the window `element` stands in is painted: the band the title bar lets show only while
+    /// a color is painted; nil on the system's material.
     func barHolds(_ element: MountedElement) throws -> HostValue? {
         guard let window = try controller(of: element).window, window.titlebarAppearsTransparent,
               let band = (window.contentView as? AppKitWindowContentView)?.barColor
@@ -193,16 +193,16 @@ extension AppKitDriver {
         AppKitElement.liveViewCount
     }
 
-    /// The colour the view draws at `point` of its own, as AppKit displays it into a bitmap; nil where it draws
+    /// The color the view draws at `point` of its own, as AppKit displays it into a bitmap; nil where it draws
     /// nothing there.
     func color(of element: MountedElement, at point: Point) throws -> Color? {
         guard let view = (element.native as? AppKitElement)?.view else {
-            throw DriverCannot("read the colour of \(element.type.name)")
+            throw DriverCannot("read the color of \(element.type.name)")
         }
         view.window?.contentView?.layoutSubtreeIfNeeded()
         let size = view.bounds.size
         let (width, height) = (Int(size.width.rounded(.up)), Int(size.height.rounded(.up)))
-        // The view displayed into a context of its points in sRGB, which StateUI's colours are: AppKit converts
+        // The view displayed into a context of its points in sRGB, which StateUI's colors are: AppKit converts
         // what it draws into it.
         guard point.x >= 0, point.y >= 0, point.x < size.width, point.y < size.height, width > 0, height > 0,
               let space = CGColorSpace(name: CGColorSpace.sRGB),

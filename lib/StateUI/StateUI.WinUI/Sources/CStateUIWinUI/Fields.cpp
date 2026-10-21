@@ -46,7 +46,7 @@ namespace {
         }));
     }
 
-    /// The words across a text box for StateUI's `TextAlignment`: centred, at the end, or at the start.
+    /// The words across a text box for StateUI's `TextAlignment`: centered, at the end, or at the start.
     xaml::TextAlignment across(int32_t alignment) {
         switch (static_cast<StateUITextAlignment>(alignment)) {
         case StateUITextAlignmentStart: return xaml::TextAlignment::Left;
@@ -62,7 +62,7 @@ namespace {
             static_cast<uint8_t>(argb)});
     }
 
-    /// The theme resources a text box's template reads its placeholder's colour from - at rest, under the pointer,
+    /// The theme resources a text box's template reads its placeholder's color from - at rest, under the pointer,
     /// focused and disabled.
     constexpr wchar_t const *placeholderResources[] = {
         L"TextControlPlaceholderForeground", L"TextControlPlaceholderForegroundPointerOver",
@@ -203,7 +203,7 @@ extern "C" void stateui_winui_field_set_placeholder(StateUIObjectRef handle, cha
     }
 }
 
-extern "C" void stateui_winui_field_set_behaviour(
+extern "C" void stateui_winui_field_set_behavior(
     StateUIObjectRef handle, bool readOnly, bool spellChecked, bool predicted, int32_t scope
 ) {
     try {
@@ -256,19 +256,19 @@ extern "C" void stateui_winui_search_set_box(
 
 extern "C" void stateui_winui_search_set_placeholder_color(StateUIObjectRef handle, uint32_t argb, bool colored) {
     try {
-        // The template reads its placeholder's colour from the theme resources, which the box's own name again.
+        // The template reads its placeholder's color from the theme resources, which the box's own name again.
         std::vector<std::pair<std::wstring, xaml::Media::Brush>> brushes;
         for (auto name : placeholderResources)
             brushes.emplace_back(name, colored ? brush(argb) : xaml::Media::Brush{nullptr});
         writeResources(borrow<controls::AutoSuggestBox>(handle), brushes);
     } catch (...) {
-        report("colouring a search box's placeholder");
+        report("coloring a search box's placeholder");
     }
 }
 
 extern "C" void stateui_winui_field_set_look(StateUIObjectRef handle, int32_t alignment, uint32_t placeholderArgb, bool placeholderColored) {
     try {
-        // A password box has no alignment of its own, and colours its placeholder from the theme resources its
+        // A password box has no alignment of its own, and colors its placeholder from the theme resources its
         // template reads.
         if (auto password = as<IInspectable>(handle).try_as<controls::PasswordBox>()) {
             std::vector<std::pair<std::wstring, xaml::Media::Brush>> brushes;

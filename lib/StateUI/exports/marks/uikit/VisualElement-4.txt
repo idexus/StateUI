@@ -30,7 +30,7 @@ Path.pivotX: ✓ read pivotX of Path: the host's own transform, checked against 
 Picker.accessibilityValue: ✅
 Polygon.ignoresInput: ✅
 Polygon.scaleY: ✓ read scaleY of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+Polyline.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 ProgressBar.accessibilityHint: ✅
 Rectangle.isEnabled: ✅
 Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own transform, checked against the layer it composed itself

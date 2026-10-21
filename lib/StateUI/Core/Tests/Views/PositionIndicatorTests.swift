@@ -26,7 +26,7 @@ final class PositionIndicatorTests: XCTestCase {
         nodes(.rectangle, in: Renders().render(VStack { view }.node))
     }
 
-    /// As many dots as the count, each the size it is given, the current one in its own colour.
+    /// As many dots as the count, each the size it is given, the current one in its own color.
     func testTheCountIsTheDotsTheCurrentOneMarked() {
         let row = dots(PositionIndicator().count(5).position(2).indicatorColor(.gray).currentIndicatorColor(.red)
             .indicatorSize(10))

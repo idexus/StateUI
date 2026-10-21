@@ -32,7 +32,7 @@ final class WebTabView: WebDOMView {
         WebRelay.insert(pages.node, into: node, at: 1)
     }
 
-    /// Paints the strip as the bars on its path are painted - their colour, their words' (a tab under the pointer
+    /// Paints the strip as the bars on its path are painted - their color, their words' (a tab under the pointer
     /// in the page's), and no blur under a clear one - so it stands as one with the window's bar; the bar's own look
     /// where nothing is said.
     /// Design: docs/design/platforms/web/pages.md#tabs

@@ -82,7 +82,7 @@ host names in one line each: `everyElementTakesItsPlace`,
 
 Where the toolkit speaks another language, a relay stands beneath the host -
 Java through JNI, C++ behind a C ABI. It receives native pointers, never
-ownership; the layer hands it a colour as one ARGB number (`PropValue.argb`)
+ownership; the layer hands it a color as one ARGB number (`PropValue.argb`)
 and a view by its number (`LiveViews`).
 
 ### Starting
@@ -331,7 +331,7 @@ toolkit's calls:
 - **`WindowChrome`**, **`chromeActions`** and **`barColors`** compose a
   window's one chrome from what it shows: its title, the way back, the visible
   page's actions, the title's place and what stands beside it, the bars'
-  colours, the menu bar and the sidebar's toggle. The host lays these out in
+  colors, the menu bar and the sidebar's toggle. The host lays these out in
   its toolkit's chrome.
   ([The window's chrome](../design/host/pages.md#the-windows-chrome))
 
@@ -410,11 +410,11 @@ host that draws them.
   turns them (`corneredMembers`), each a `PropertyList`.
 - **`BoxArithmetic`** gives a box's corners clockwise from the top left, each
   rounding no more than half its side; its outline's shape; and its outline's
-  width - one where the tree gives a colour and no width, none without a
-  colour. ([A box](../design/host/layout.md#a-box))
-- **`HostBrush`** reads a fill as the tree sends it: nothing, one colour, or a
+  width - one where the tree gives a color and no width, none without a
+  color. ([A box](../design/host/layout.md#a-box))
+- **`HostBrush`** reads a fill as the tree sends it: nothing, one color, or a
   gradient's stops between 0 and 1 over its geometry; `firstColor` is what a
-  line of one colour draws with. The host turns its colours into its
+  line of one color draws with. The host turns its colors into its
   toolkit's.
   ([As a host is handed it](../design/types/brushes.md#as-a-host-is-handed-it))
 - **`PressedFill`** keeps nine tenths of a control's own fill under the
@@ -437,7 +437,7 @@ host that draws them.
 - **`TextMembers`** is what an element showing words takes of the text tiers,
   each list a `PropertyList` (`members`, `captionMembers`, `lookMembers`):
   its words in their case, where the words or the case changed (`words`), and
-  the look its font and colour give them, where one of those changed (`look`).
+  the look its font and color give them, where one of those changed (`look`).
 - **`TextLook`**, **`TextRun`** and **`MountedElement.textRuns`** give a look
   in the contract's terms and a label's spans as runs of words, each run's
   look standing over its label's. `letterSpacing(inEmsOf:)` hands a toolkit
@@ -518,10 +518,10 @@ host.
   closes over it, one shown again mid-fade comes back from where it stands.
   The host hands the view (`FadingView`) and what closes its layout.
   ([Showing and hiding](../design/host/motion.md#showing-and-hiding))
-- **`LayoutMotion`**, **`TravellingPlaces`** and **`PlacedView`** move a
+- **`LayoutMotion`**, **`TravelingPlaces`** and **`PlacedView`** move a
   layout's children to their places: what a patch changed travels, a room that
   moves is followed exactly, and the first arrangement arrives. A host's layout
-  holds one `TravellingPlaces`, begins each arrangement with its width
+  holds one `TravelingPlaces`, begins each arrangement with its width
   (`begin`) and stands each child through it (`place`).
   ([Layout motion](../design/host/motion.md#layout-motion))
 

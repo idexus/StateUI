@@ -1,7 +1,7 @@
 # Values an application passes
 
 `lib/StateUI/Core/Sources/Types` holds the values an application hands to StateUI:
-colours, insets, rectangles, brushes, motion, transforms, placements, dates
+colors, insets, rectangles, brushes, motion, transforms, placements, dates
 and times, gestures, the closed vocabularies, and the objects that carry what
 the host knows. Each value says how it crosses to a host and how it comes
 back, so no host parses or guesses anything. These notes give the reasons;
@@ -9,7 +9,7 @@ the declarations' own documentation says how to use them.
 
 The sources stand in a folder per topic: `Geometry` points, rectangles,
 insets and transforms; `Layout` alignment, grid lengths, safe areas and
-placements; `Colour` colours, gradients, brushes and backgrounds; `Drawing`
+placements; `Color` colors, gradients, brushes and backgrounds; `Drawing`
 pictures, shapes, strokes and the canvas; `Text` names and the text and
 keyboard vocabularies; `Time` days, times of day and zones; `Motion` the
 timing laws and their groups; `Gestures` what a gesture reports;
@@ -26,9 +26,9 @@ language.
   a number StateUI owns.
 - [How a value crosses](values.md) - which kind of `PropValue` each value
   becomes, and how it is read back.
-- [Colour and theme](colour-and-theme.md) - four channels, and a half for
+- [Color and theme](color-and-theme.md) - four channels, and a half for
   each theme picked as an element builds.
-- [Brushes](brushes.md) - a colour or a gradient, as typed parts.
+- [Brushes](brushes.md) - a color or a gradient, as typed parts.
 - [Drawing on a canvas](drawing.md) - a drawing as a list of records.
 - [Motion](motion.md) - the timing laws, the groups of values, a view's plan.
 - [Transforms](transforms.md) - one transform, worked out in the core.

@@ -536,8 +536,8 @@ struct Rename: View {
 `.primary` is the window's main action: filled in the platform's accent and
 pressed by Return. `.cancel` is the way out, pressed by Escape, and stands as
 the platform's plain button. `.destructive` marks an action that destroys
-something: its words stand in the platform's colour for one - the red its
-alerts and menus give such an action. A fill or a colour of words the button
+something: its words stand in the platform's color for one - the red its
+alerts and menus give such an action. A fill or a color of words the button
 is given, by a style or itself, takes the place of its role's, and
 `Style<Button>(role:)` styles a role in an application's own look. A
 shortcut the button states takes the place of its role's key. Return belongs

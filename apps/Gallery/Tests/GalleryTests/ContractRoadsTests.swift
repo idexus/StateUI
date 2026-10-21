@@ -9,7 +9,7 @@ import XCTest
 /// A member is reached through its contract, never by a token and a list of
 /// values; a view stands where a view stands, never among a text's runs or a
 /// map's markers; a scene is made of windows, and an application of scenes; a
-/// modifier is offered only where it can be honoured. Each closed road is written here
+/// modifier is offered only where it can be honored. Each closed road is written here
 /// the way an application would write it, and must NOT compile against the
 /// library's public module; the open road beside it must. The pair is what makes
 /// the refusal mean something: the two listings differ in that one spelling, so

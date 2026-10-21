@@ -65,7 +65,7 @@
         ]
     }
 
-    /// Whether a map showing `shown` shows `asked`: within about a meter of its centre and a percent of its radius,
+    /// Whether a map showing `shown` shows `asked`: within about a meter of its center and a percent of its radius,
     /// as a map's engine fits a region to its view.
     /// Design: docs/design/host/maps.md#what-a-map-shows
     static func shows(_ shown: MapRegion?, _ asked: MapRegion) -> Bool {

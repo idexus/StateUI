@@ -53,8 +53,8 @@ final class AndroidDriver: HostDriver {
             none["read \(member) of Button"] =
                 "StateUI draws a button's box in a drawable of its own, which holds none of its \(member); its drawing proves it"
         }
-        none["read a background of no one colour"] =
-            "StateUI draws the box in a drawable of its own, which holds no one colour; its drawing proves it"
+        none["read a background of no one color"] =
+            "StateUI draws the box in a drawable of its own, which holds no one color; its drawing proves it"
         for stack in ["HStack", "VStack"] {
             none["read spacing of \(stack)"] =
                 "Android's view group places its children where StateUI's layout says; their frames prove it"
@@ -210,16 +210,16 @@ final class AndroidDriver: HostDriver {
         Java.frame { Java.texts(Java.callStaticObject(Self.files, Self.launchedForTesting)) }
     }
 
-    /// The colour the window shows at `point` of the view, as the user sees it; nil where the view draws nothing there.
+    /// The color the window shows at `point` of the view, as the user sees it; nil where the view draws nothing there.
     func color(of element: MountedElement, at point: Point) throws -> Color? {
         try colors(of: element, at: [point])[0]
     }
 
-    /// The colours the window shows at each of `points` of the view, read from one copy of it
+    /// The colors the window shows at each of `points` of the view, read from one copy of it
     /// (`TestPixels.colors`); nil where the view draws nothing.
     func colors(of element: MountedElement, at points: [Point]) throws -> [Color?] {
         guard let view = (element.native as? AndroidElement)?.view else {
-            throw DriverCannot("read the colour of \(element.type.name)")
+            throw DriverCannot("read the color of \(element.type.name)")
         }
         let argbs: [Int32] = Java.frame {
             let pixels = points.flatMap { [Int32($0.x * 2), Int32($0.y * 2)] }
@@ -228,7 +228,7 @@ final class AndroidDriver: HostDriver {
             else { return [] }
             return Java.intsOf(shown)
         }
-        guard argbs.count == points.count else { throw DriverCannot("read the colours of \(element.type.name)") }
+        guard argbs.count == points.count else { throw DriverCannot("read the colors of \(element.type.name)") }
         return argbs.map { argb in
             let argb = UInt32(bitPattern: argb)
             return argb >> 24 > 0x80 ? Self.color(argb | 0xFF00_0000) : nil

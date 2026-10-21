@@ -26,11 +26,11 @@ final class DisplayCycleTests: XCTestCase {
         let presenter = CountingPresenter()
         cycle.presenter = presenter
 
-        let travelling = HostJourney(
+        let traveling = HostJourney(
             value: [0], destination: [100], velocity: [0], motion: .eased(.milliseconds(400)), completion: nil, stopped: 0)
         _ = channels.presentedValue(
             for: HostStateBinding(state: 9, mode: .out, kind: .property, laneKind: .number),
-            from: HostBoundary.value(of: travelling),
+            from: HostBoundary.value(of: traveling),
             now: 0,
             reducesMotion: false)
         described.receive(
@@ -206,7 +206,7 @@ private struct WornApplication: Application {
     }
 }
 
-/// A slider travelling where two buttons send its state.
+/// A slider traveling where two buttons send its state.
 private struct TravelApplication: Application {
     var body: some Scene {
         WindowGroup { TravelPage() }
@@ -225,7 +225,7 @@ private struct TravelPage: View {
     }
 }
 
-/// A slider travelling where a button sends its state, in a stack whose frame the page reads.
+/// A slider traveling where a button sends its state, in a stack whose frame the page reads.
 private struct ReadTravelApplication: Application {
     var body: some Scene {
         WindowGroup { ReadTravelPage() }

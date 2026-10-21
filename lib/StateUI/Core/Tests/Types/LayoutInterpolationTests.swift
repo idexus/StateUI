@@ -50,9 +50,9 @@ final class LayoutInterpolationTests: XCTestCase {
         }
     }
 
-    /// THE CATMULL-ROM CURVE IS SHAPED BY THE NEIGHBOURS: through 0, 10 and 40 it starts slower than the straight
+    /// THE CATMULL-ROM CURVE IS SHAPED BY THE NEIGHBORS: through 0, 10 and 40 it starts slower than the straight
     /// line; held at a tension of 1 it slows to a stop at each keyframe.
-    func testTheCatmullRomCurveIsShapedByTheNeighbours() {
+    func testTheCatmullRomCurveIsShapedByTheNeighbors() {
         let values = [0.0, 10, 40, 90]
         XCTAssertEqual(value(.linear, at: 0.5, values), 5, accuracy: 1e-12)
         XCTAssertEqual(value(.catmullRom, at: 0.5, values), 3.75, accuracy: 1e-12)

@@ -9,7 +9,7 @@ operation, in order, which the host replays against its toolkit's own canvas.
 
 A record is a list of typed values: the operation first, as the number both
 sides spell, then its arguments as the things they are. A number crosses as
-a number, a flag as a bool, a colour as its four bytes, an alignment as its
+a number, a flag as a bool, a color as its four bytes, an alignment as its
 member's number, and text only where an author wrote some. The drawing is
 the list of those records, so it crosses as one `.values` holding one
 `.values` per instruction.
@@ -40,7 +40,7 @@ A host whose canvas stands beneath a relay - Java through JNI, C++ behind a
 C ABI - takes the whole drawing in one crossing, however many instructions it
 holds, as `HostDrawing` lays it out in three flat lists:
 
-- `ints`: each instruction's kind, then its whole numbers - a colour as ARGB,
+- `ints`: each instruction's kind, then its whole numbers - a color as ARGB,
   an alignment as its member's number, a text's index in `strings`, a path's
   count of curves;
 - `numbers`: each instruction's numbers in order, a path's curves among them,
@@ -76,7 +76,7 @@ every such host (`CanvasInstruction`), keeps what they set by one pen
 
 The instructions run in the order they are written, and a setting holds
 until the next of its kind: a `fillColor` paints every fill after it until
-another `fillColor`. `saveState` remembers the colours, sizes and transforms
+another `fillColor`. `saveState` remembers the colors, sizes and transforms
 in force and `restoreState` puts them back, which is what keeps one rotated
 shape from turning the rest of the drawing. A state still saved as the
 drawing ends is put back then (`CanvasPen.replay`), so the platform's own
@@ -111,7 +111,7 @@ down the box as the rule says.
 
 ## Themes in a drawing
 
-A colour written `Color(light:dark:)` goes into its record as both halves.
+A color written `Color(light:dark:)` goes into its record as both halves.
 The differ picks the half in force as it builds the canvas, which builds
 again when the theme in force changes; see
-[a pair for each theme](colour-and-theme.md#a-pair-for-each-theme).
+[a pair for each theme](color-and-theme.md#a-pair-for-each-theme).

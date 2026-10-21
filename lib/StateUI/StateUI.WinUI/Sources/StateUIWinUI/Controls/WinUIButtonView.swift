@@ -20,12 +20,12 @@ final class WinUIButtonView: WinUIView {
         stateui_winui_button_set_accent(handle, role == .primary)
     }
 
-    /// Stands the words in the theme's critical colour, as WinUI marks a destructive entry, or in the button's own.
+    /// Stands the words in the theme's critical color, as WinUI marks a destructive entry, or in the button's own.
     func setCritical(_ critical: Bool) {
         stateui_winui_button_set_critical(handle, critical)
     }
 
-    /// Whether the words stand in the theme's critical colour.
+    /// Whether the words stand in the theme's critical color.
     var isCritical: Bool { stateui_winui_button_critical(handle) }
 
     override var takesDirection: Bool { true }

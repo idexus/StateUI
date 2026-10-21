@@ -140,7 +140,7 @@ enum AndroidPictures {
         }
     }
 
-    /// `icon` drawn from its drawable at Android's icon size, as a mask the view showing it colours.
+    /// `icon` drawn from its drawable at Android's icon size, as a mask the view showing it colors.
     /// Design: docs/design/platforms/android/drawing.md#icons
     private static func drawn(_ icon: Icon) -> JavaObject? {
         Java.frame {

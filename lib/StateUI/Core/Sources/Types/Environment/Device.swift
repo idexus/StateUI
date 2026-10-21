@@ -41,7 +41,7 @@ public final class Device {
 }
 
 extension Device {
-    /// Whether the platform the application runs on honours `member` - its host realizes it. Where it does not,
+    /// Whether the platform the application runs on honors `member` - its host realizes it. Where it does not,
     /// writing the member changes nothing, so a view may leave out what asks for it; the platform contract says why.
     ///
     ///     if device.honors(PickerContract.isOpen) {

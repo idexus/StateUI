@@ -9,8 +9,8 @@ A Switch is UIKit's switch; a Slider, a Stepper, a ProgressBar and an
 ActivityIndicator are UIKit's own too, an indicator standing still - shown -
 while its work does not run. UIKit has no check box, so a CheckBox is a
 button of its own showing the system's symbol for a box, ticked or not,
-before its words: a tap turns it either way. A switch's colour is its colour
-when on, a box's the colour of its symbol. What the program writes is only
+before its words: a tap turns it either way. A switch's color is its color
+when on, a box's the color of its symbol. What the program writes is only
 shown - UIKit's controls send no event for a value set in code - and what the
 user does is reported.
 
@@ -28,15 +28,15 @@ its words, the label beside it left out (`UIKitAccessibilityPresenting`).
 A Picker is UIKit's pop-up button: its menu holds the choices, the chosen one
 ticked and its caption on the button, and the picker's title stands there
 while nothing is chosen, which UIKit's own selection-changing button cannot
-say, so the host keeps the tick itself. Its caption takes the font and colour
-the tree gives it, as a button's title does, and its tint colours the arrow
+say, so the host keeps the tick itself. Its caption takes the font and color
+the tree gives it, as a button's title does, and its tint colors the arrow
 beside it alone. A menu cannot be opened from code, so a picker's `isOpen` is
 left unrealized; its opening and closing are heard.
 
 A DatePicker and a TimePicker are UIKit's date picker, compact. A day of the
 calendar and a time of the clock belong to no zone, so the picker counts and
 shows them in the Gregorian calendar at UTC: the day the user picks is the day
-the tree reads. It draws its words in its own font and colour.
+the tree reads. It draws its words in its own font and color.
 
 ## A field and its words
 
@@ -54,12 +54,12 @@ scrolling them.
 ## A label's words
 
 A Text is UIKit's label showing its words - or its spans' runs, each its
-own look over the label's - as attributed text: the font, the colour, what
+own look over the label's - as attributed text: the font, the color, what
 stands behind the words, the space between the letters, a line's height and
 the lines under or through them. Its padding is room it keeps around the
 words, as it measures them and as it draws them, standing them down its room
 as the tree says, which UIKit's label does not do of itself. Its background -
-a colour or a brush - fills its whole box, that room included, painted
+a color or a brush - fills its whole box, that room included, painted
 before the words: they are the label's own drawing, which a layer laid over
 it would cover.
 
@@ -83,7 +83,7 @@ UIKit's own font, which follows the user always - `–` in the matrix.
 ## A button
 
 A Button is UIKit's button, its configuration what the tree says: its words
-and their look, an icon beside them, the box behind them - its colour, its
+and their look, an icon beside them, the box behind them - its color, its
 outline and its shape - an oval a face of the button's own, the
 configuration's background view, which its corners cannot draw - and the room
 inside it. Its corners are rounded as it is laid out, by the host layer's
@@ -109,7 +109,7 @@ down, which says a choice of values, as a picker's. UIKit draws no split button,
 so a split button keeps its tap and holds an arrow of its own: a `UIButton`
 with a chevron at its trailing edge, the whole height, set off by a line,
 opening the menu with a tap; the button keeps room for it inside its padding,
-so its words never run under the arrow, which takes the words' colour.
+so its words never run under the arrow, which takes the words' color.
 
 ## Accessibility
 

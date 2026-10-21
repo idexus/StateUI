@@ -511,10 +511,10 @@ enum JavaAPI {
             + "[Ljava/lang/String;ZZI)V")
     static let textColors = Java.staticMethod(
         views, "textColors", "(Landroid/content/Context;I)Landroid/content/res/ColorStateList;")
-    static let colouredBackground = Java.staticMethod(
-        views, "colouredBackground", "(Landroid/content/Context;)Landroid/graphics/drawable/Drawable;")
-    static let colouredWords = Java.staticMethod(
-        views, "colouredWords", "(Landroid/content/Context;)Landroid/content/res/ColorStateList;")
+    static let coloredBackground = Java.staticMethod(
+        views, "coloredBackground", "(Landroid/content/Context;)Landroid/graphics/drawable/Drawable;")
+    static let coloredWords = Java.staticMethod(
+        views, "coloredWords", "(Landroid/content/Context;)Landroid/content/res/ColorStateList;")
     static let errorWords = Java.staticMethod(
         views, "errorWords", "(Landroid/content/Context;)Landroid/content/res/ColorStateList;")
     static let primaryWords = Java.staticMethod(

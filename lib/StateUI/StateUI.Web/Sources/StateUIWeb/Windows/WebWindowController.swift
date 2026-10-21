@@ -82,7 +82,7 @@ final class WebWindowController {
         let changes = presentation.show(element, in: runtime.lifecycle)
         if let traits = changes.traits {
             window.frame.setBackground(traits.background.painted)
-            WebRelay.keepPageColour(Self.pageColour(traits.background))
+            WebRelay.keepPageColor(Self.pageColor(traits.background))
         }
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.web.view) }
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.web.view)) }
@@ -95,15 +95,15 @@ final class WebWindowController {
         (presentation.arrangement?.web.view as? WebSplitView)?.adapt()
     }
 
-    /// The colour the page wears under the window, and keeps for its next start: the window's own where it is one
-    /// opaque colour - what Safari takes above the page and around its bars, once, at the first paint - and none
+    /// The color the page wears under the window, and keeps for its next start: the window's own where it is one
+    /// opaque color - what Safari takes above the page and around its bars, once, at the first paint - and none
     /// where it is translucent, a blur or the platform's own.
-    /// Design: docs/design/platforms/web/pages.md#the-colour-under-the-window
-    static func pageColour(_ background: HostMaterial) -> String? {
-        guard background.blur == nil, background.glass == nil, case .solid(let colour) = HostBrush(background.paint),
-              colour.color?.alpha == 255
+    /// Design: docs/design/platforms/web/pages.md#the-color-under-the-window
+    static func pageColor(_ background: HostMaterial) -> String? {
+        guard background.blur == nil, background.glass == nil, case .solid(let color) = HostBrush(background.paint),
+              color.color?.alpha == 255
         else { return nil }
-        return WebCSS.color(colour)
+        return WebCSS.color(color)
     }
 
     /// Keeps a sheet for each page presented, in its order, by the host layer's rule (`SheetChange`): a sheet gone
@@ -143,7 +143,7 @@ final class WebWindowController {
     }
 
     /// Writes the window's chrome on its bar and each sheet's on the sheet's - their tabbed views' strips in their
-    /// bars' colours - and names the tab after the page the user sees and the site.
+    /// bars' colors - and names the tab after the page the user sees and the site.
     /// Design: docs/design/platforms/web/pages.md#the-windows-bar
     func refreshChrome() {
         guard let element else { return }

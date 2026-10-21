@@ -56,7 +56,7 @@ enum PatchDump {
         }
 
         for key in patch.transitions.keys.sorted() {
-            out += indent + "  \(key.name) \(travelling(patch.transitions[key]!.motion))\n"
+            out += indent + "  \(key.name) \(traveling(patch.transitions[key]!.motion))\n"
         }
 
         if case .replace(let driven)? = patch.driven {
@@ -121,7 +121,7 @@ enum PatchDump {
     }
 
     /// How one property travels to the value the line above it states.
-    private static func travelling(_ motion: Motion) -> String {
+    private static func traveling(_ motion: Motion) -> String {
         switch motion.kind {
         case .spring(let milliseconds, let damping): "springs over \(milliseconds)ms, damping \(damping)"
         case .eased(let milliseconds, let curve): "travels over \(milliseconds)ms \(curve)(\(curve.rawValue))"
@@ -296,7 +296,7 @@ enum PatchDump {
         return named.joined(separator: "|")
     }
 
-    /// One channel as two uppercase hex digits, so a colour reads the way it
+    /// One channel as two uppercase hex digits, so a color reads the way it
     /// was written, alpha first.
     private static func hex2(_ value: UInt8) -> String {
         let digits = Array("0123456789ABCDEF")

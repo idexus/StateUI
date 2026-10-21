@@ -30,12 +30,12 @@ extension View {
         pageSays { $0.setValue(PageContract.background, value) }
     }
 
-    /// The page's background in one colour.
+    /// The page's background in one color.
     public func pageBackground(_ value: Color) -> Modified {
         pageBackground(.color(value))
     }
 
-    /// The page's background from a state, `$x`: the host animates its colour to each new value.
+    /// The page's background from a state, `$x`: the host animates its color to each new value.
     public func pageBackground(_ state: Binding<Color>) -> Modified {
         pageSays { $0.twin(PageContract.background, carrying: state) }
     }

@@ -22,7 +22,7 @@ import StateUI
 enum GallerySection: Hashable {
     /// What the gallery opens with, and the ROOT of the main stack - a group is
     /// pushed on top of it rather than replacing it, because choosing a group
-    /// promises a page on the stack and a back button then honours that move.
+    /// promises a page on the stack and a back button then honors that move.
     case home
 
     /// The page the menu lists only when it is told to - see `SplitViewSample`.
@@ -335,7 +335,7 @@ final class Navigation {
 extension Navigation {
     /// Opens a sample nobody asked for - the menu's last row and the title
     /// bar's chip both call it. Flattened, so every sample is as likely as
-    /// every other - picking a group first would favour whatever is in the
+    /// every other - picking a group first would favor whatever is in the
     /// shortest one - and drawn from what `formFactor` shows, so a phone is never
     /// surprised with a page about desktop chrome.
     ///

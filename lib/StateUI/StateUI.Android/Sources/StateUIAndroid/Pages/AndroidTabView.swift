@@ -15,7 +15,7 @@ final class AndroidTabView: AndroidLayoutView {
         var picture: HostPicture?
     }
 
-    /// The row's tabs and colours, as the tree says them.
+    /// The row's tabs and colors, as the tree says them.
     struct Row: Equatable {
         var tabs: [Tab] = []
         var background: HostValue?

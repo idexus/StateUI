@@ -47,7 +47,7 @@ the size kept for it: a thousand rows stood in 863 points.
 A tap on a cell, but for one on a control inside it, is the list's
 (`ItemsTap`): it opens the item, or chooses it as the list chooses. A list
 that chooses is a listbox, each item an option, the chosen ones selected
-and tinted in the accent colour
+and tinted in the accent color
 ([the chosen band](../../host/items.md#the-chosen-band)).
 
 ## Scrolling to an item

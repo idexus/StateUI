@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 extension WinUIRegistrations {
-    /// A Switch and a CheckBox: whether it is on, whether it can be turned, and the turn the user makes; its colour,
-    /// and the words it says and their colour.
+    /// A Switch and a CheckBox: whether it is on, whether it can be turned, and the turn the user makes; its color,
+    /// and the words it says and their color.
     static func toggles(_ registry: Registry<WinUIView>) {
         registry.add(SwitchContract.self, create: { reports in
             let toggle = WinUISwitchView()

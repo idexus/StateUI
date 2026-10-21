@@ -70,7 +70,7 @@ final class GTKMotionTests: XCTestCase {
                 host.frame()
             }
 
-            XCTAssertLessThanOrEqual(GTKStyleSheet.ruleCount, rules + 1, "a rule for each colour on its way")
+            XCTAssertLessThanOrEqual(GTKStyleSheet.ruleCount, rules + 1, "a rule for each color on its way")
             XCTAssertFalse(GTKTransitionSurface.presents(.background, on: .image))
             XCTAssertFalse(GTKTransitionSurface.presents(.tint, on: .checkBox))
             XCTAssertTrue(GTKTransitionSurface.presents(.background, on: .vStack), "a layout draws its own box")
@@ -187,9 +187,9 @@ final class GTKMotionTests: XCTestCase {
         }
     }
 
-    /// A view moved, turned or scaled draws its own colour wherever GSK renders it - the cairo renderer, without GL,
+    /// A view moved, turned or scaled draws its own color wherever GSK renders it - the cairo renderer, without GL,
     /// draws a transform of no known kind as hot pink.
-    func testAMovedViewDrawsItsOwnColour() throws {
+    func testAMovedViewDrawsItsOwnColor() throws {
         try onUIThread {
             let host = GTKRenderer.running {
                 VStack {

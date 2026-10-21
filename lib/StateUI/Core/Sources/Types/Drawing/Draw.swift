@@ -21,17 +21,17 @@
 public enum Draw {
     // MARK: - What the canvas draws with
 
-    /// The colour the `fill…` instructions paint with.
+    /// The color the `fill…` instructions paint with.
     public static func fillColor(_ value: Color) -> DrawCommand {
         DrawCommand(.fillColor, [value.propValue])
     }
 
-    /// The colour the `stroke…` instructions outline with.
+    /// The color the `stroke…` instructions outline with.
     public static func strokeColor(_ value: Color) -> DrawCommand {
         DrawCommand(.strokeColor, [value.propValue])
     }
 
-    /// The colour `Draw.text` writes in.
+    /// The color `Draw.text` writes in.
     public static func textColor(_ value: Color) -> DrawCommand {
         DrawCommand(.textColor, [value.propValue])
     }
@@ -269,7 +269,7 @@ public enum Draw {
         DrawCommand(.scale, [.number(x), .number(y)])
     }
 
-    /// Remembers the colours, sizes and transforms in force, for a later
+    /// Remembers the colors, sizes and transforms in force, for a later
     /// `restoreState` to put back.
     ///
     ///     Draw.saveState()

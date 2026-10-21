@@ -10,7 +10,7 @@ import XCTest
 @MainActor
 final class TextRulesTests: XCTestCase {
     /// The words are given in their case where the words or the case changed, and the look where the font or the
-    /// colour did; nothing where nothing of them changed - though the whole look is there to read.
+    /// color did; nothing where nothing of them changed - though the whole look is there to read.
     func testAnElementsWordsAndLookAreReadWhereTheyChanged() throws {
         let held: [Prop: HostValue] = [
             .text: .string("Save"), .textCase: TextCase.uppercase.propValue, .fontSize: .number(17),
@@ -66,8 +66,8 @@ final class TextRulesTests: XCTestCase {
         XCTAssertEqual(TextLook().over(look).weight, .semibold, "a run given no weight takes its label's")
     }
 
-    /// A label takes a new look's font, scaling and colour and keeps its own spacing, lines and decorations.
-    func testALabelTakesAFontAndAColourKeepingItsLines() {
+    /// A label takes a new look's font, scaling and color and keeps its own spacing, lines and decorations.
+    func testALabelTakesAFontAndAColorKeepingItsLines() {
         var shown = TextLook()
         shown.letterSpacing = 2
         shown.lineHeight = 1.5

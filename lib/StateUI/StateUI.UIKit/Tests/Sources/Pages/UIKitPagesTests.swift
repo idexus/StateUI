@@ -253,7 +253,7 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertTrue(bar.leftItemsSupplementBackButton, "the leading group beside the way back")
     }
 
-    /// On a painted bar an action wears the bar's words' colour, and one that destroys something stays red.
+    /// On a painted bar an action wears the bar's words' color, and one that destroys something stays red.
     @MainActor
     func testADestructiveActionStaysRedOnAPaintedBar() throws {
         let host = UIKitRenderer.running(reducesMotion: true) {
@@ -277,8 +277,8 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(white, 1, accuracy: 0.01, "the other in the bar's words, light on navy")
     }
 
-    /// A bar whose actions say what they said keeps its buttons as the page's title or the bar's colour moves - a
-    /// letter typed in a field on the bar, a frame of a colour travelling - recoloured, never made again.
+    /// A bar whose actions say what they said keeps its buttons as the page's title or the bar's color moves - a
+    /// letter typed in a field on the bar, a frame of a color traveling - recolored, never made again.
     @MainActor
     func testABarKeepsItsButtonsWhileItsActionsSayTheSame() throws {
         let title = State(wrappedValue: "One")
@@ -303,12 +303,12 @@ final class UIKitPagesTests: XCTestCase {
         dark.wrappedValue = false
         var white: CGFloat = 1
         host.settle { save.tintColor?.getWhite(&white, alpha: nil) == true && white < 0.5 }
-        XCTAssertTrue(item()?.trailingItemGroups.first?.barButtonItems.first === save, "kept as the colour moved")
-        XCTAssertLessThan(white, 0.5, "and recoloured, dark on yellow")
+        XCTAssertTrue(item()?.trailingItemGroups.first?.barButtonItems.first === save, "kept as the color moved")
+        XCTAssertLessThan(white, 0.5, "and recolored, dark on yellow")
     }
 
     /// Words on a bar the tree paints stand light on a dark bar and dark on a light one, where the tree writes no
-    /// colour for them (`BandWords`).
+    /// color for them (`BandWords`).
     @MainActor
     func testWordsOnAPaintedBarFollowHowDarkItIs() throws {
         let dark = State(wrappedValue: true)
@@ -356,7 +356,7 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(tab.wrappedValue, 6)
     }
 
-    /// A tab bar wears the words' colour of the bar on its path as it changes - written on the stack it stands in, so
+    /// A tab bar wears the words' color of the bar on its path as it changes - written on the stack it stands in, so
     /// the tabbed view itself changes nothing - in every layout it lays its tabs in.
     @MainActor
     func testATabBarFollowsTheBarsWordsOnItsPath() throws {
@@ -483,7 +483,7 @@ final class UIKitPagesTests: XCTestCase {
         host.settle { controller.view.backgroundColor != .systemBackground }
         var (red, green, blue): (CGFloat, CGFloat, CGFloat) = (0, 0, 0)
         controller.view.backgroundColor?.getRed(&red, green: &green, blue: &blue, alpha: nil)
-        XCTAssertEqual([red, green, blue].map { Int(($0 * 255).rounded()) }, [81, 43, 212], "the window's colour")
+        XCTAssertEqual([red, green, blue].map { Int(($0 * 255).rounded()) }, [81, 43, 212], "the window's color")
     }
 
     /// The first tabbed view in `element`'s tree.

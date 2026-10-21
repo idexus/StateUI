@@ -6,7 +6,7 @@ import StateUIFoundation
 
 extension HostDrawingTransform {
     /// This transform drawn under `placed`, the transform of the layout placing the view: its move turned and scaled
-    /// by the layout's, the turns added and the scales multiplied, about the view's centre - itself where no layout
+    /// by the layout's, the turns added and the scales multiplied, about the view's center - itself where no layout
     /// places it with one.
     /// Design: docs/design/host/layout.md#a-placed-child
     public func under(_ placed: HostDrawingTransform?) -> HostDrawingTransform {
