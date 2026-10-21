@@ -52,9 +52,9 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             ZStack().style(.card)
-                .background(Palette.raised)
-                .stroke(Palette.outline)
-                .lineWidth(2)
+                .background(Palette.accentWash)
+                .stroke(Palette.accent)
+                .lineWidth(3)
                 .shape(.roundedRectangle(110))
                 .width(220)
                 .height(220)
@@ -66,7 +66,9 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             // margin(2x, 2y, 0, 0) shifts a centered view by (x, y).
             ForEach(Array(Self.marks.enumerated()), id: \.offset) { pair in
                 let (x, y, wide, tall) = pair.element
-                return Rectangle().fill(Palette.outline)
+                return Rectangle().fill(Palette.accent)
+                    .cornerRadius(min(wide, tall) / 2)
+                    .opacity(wide == tall ? 0.5 : 1)
                     .width(wide)
                     .height(tall)
                     .margin(start: 2 * x, top: 2 * y, end: 0, bottom: 0)
@@ -76,10 +78,10 @@ struct AnalogClockSample: SampleContent, ExampleContent {
 
             hand($hAngle, length: 56, width: 6, color: Palette.text)
             hand($mAngle, length: 84, width: 4, color: Palette.text)
-            hand($sAngle, length: 96, width: 2, color: Palette.accent)
+            hand($sAngle, length: 96, width: 2, color: Palette.brand)
 
             ZStack().style(.card)
-                .background(Palette.accent)
+                .background(Palette.brand)
                 .stroke(.transparent)
                 .shape(.roundedRectangle(6))
                 .width(12)

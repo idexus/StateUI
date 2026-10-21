@@ -206,8 +206,8 @@ enum Listings {
                 DebugInfoLabel()
 
                 ZStack().style(.card)
-                    .stroke(Palette.outline)
-                    .lineWidth(2)
+                    .stroke(Palette.accent)
+                    .lineWidth(3)
                     .width(220)
                     .height(220)
                     .horizontalAlignment(.center)
@@ -218,7 +218,8 @@ enum Listings {
                 // margin(2x, 2y, 0, 0) shifts a centered view by (x, y).
                 ForEach(Array(Self.marks.enumerated()), id: \.offset) { pair in
                     let (x, y, wide, tall) = pair.element
-                    return Rectangle().fill(Palette.outline)
+                    return Rectangle().fill(Palette.accent)
+                        .opacity(wide == tall ? 0.5 : 1)
                         .width(wide)
                         .height(tall)
                         .horizontalAlignment(.center)
@@ -227,7 +228,7 @@ enum Listings {
 
                 hand($hAngle, length: 56, width: 6, color: Palette.text)
                 hand($mAngle, length: 84, width: 4, color: Palette.text)
-                hand($sAngle, length: 96, width: 2, color: Palette.accent)
+                hand($sAngle, length: 96, width: 2, color: Palette.brand)
 
                 ZStack().style(.card)
                     .stroke(.transparent)

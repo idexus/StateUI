@@ -4,7 +4,7 @@
 AccessibilitySettingsSample.swift fa38044121b2ffbd
 ActivityIndicatorSample.swift 097a91a8164620dd
 AimSample.swift 571f9842156877ea
-AnalogClockSample.swift 0654d1d035d2acfa
+AnalogClockSample.swift cb6a416a953694dd
 AnimatedInputSample.swift 3edb37bd77bcc397
 AnimatedPropertySample.swift 267246566166351d
 AnimationSample.swift 81f886d98ac6d03f
@@ -116,7 +116,7 @@ StackLayoutSample.swift 8b0abf1c364f7ac8
 StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
 StepperSample.swift a1eb96147d1526c6
-StyleSample.swift c7e2eb04ddd162e1
+StyleSample.swift a57bc7051bc35542
 SwipeSample.swift 66a58baed064554c
 SwitchSample.swift ee3ccdaf5a4a3003
 TabsSample.swift b7e47aef40a90131

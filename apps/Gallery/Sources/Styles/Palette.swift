@@ -34,6 +34,9 @@ enum Palette {
     static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
     // listing: end
 
+    /// What a view marked with the accent stands on: its violet let faintly through.
+    static let accentWash = Color(light: Color(hex: 0x512BD4, opacity: 0.08), dark: Color(hex: 0xA78BFA, opacity: 0.14))
+
     /// Text that reads on `brand` and on the gradient: white in both.
     static let onBrand = AppColors.white
 
