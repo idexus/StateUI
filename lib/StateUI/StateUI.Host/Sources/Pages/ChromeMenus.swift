@@ -42,6 +42,20 @@
         }
     }
 
+    /// The menus, a menu joining `StandardMenu.edit` headed by the Edit menu's own entries - for a host whose
+    /// platform keeps no Edit menu of its own: undoing, the clipboard and the selection of the field holding the
+    /// keyboard, in `words`, Redo's shortcut as `redo`; the application's entries stand after them as a section.
+    /// Design: docs/design/host/pages.md#the-edit-menu
+    public func editing(_ words: EditWords, redo: KeyboardShortcut) -> ChromeMenus {
+        var edited = self
+        edited.menus = menus.map { menu in
+            guard menu.standard == .edit, let head = menu.element else { return menu }
+            let own = EditCommand.menu.map { $0.map { MenuEntry($0, words: words, redo: redo) } ?? .separator }
+            return MenuEntry(menu: head, entries: own + (menu.entries.isEmpty ? [] : [.separator] + menu.entries))
+        }
+        return edited
+    }
+
     /// Each member's entries as its section: an entry of an id declared further in stands in the place of the
     /// outermost of that id, which the others leave; an entry of no id stands in its own.
     private static func standing(_ members: [Placed]) -> [[MenuEntry]] {

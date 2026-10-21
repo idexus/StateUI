@@ -302,6 +302,43 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// WinUI keeps no Edit menu of its own: one a page joins holds the field's undoing, clipboard and selection
+    /// before the page's own entries, and they act on the words the user typed into though the menu took the focus.
+    func testTheEditMenuActsOnTheWordsTypedInto() throws {
+        try onUIThread {
+            let words = State(wrappedValue: "hello")
+            let host = WinUIRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    VStack {
+                        TextField(words.projectedValue)
+                        Button("Other")
+                    }
+                    .menuBar { Menu("Edit") { MenuItem("Find") }.id(StandardMenu.edit) }
+                } destination: { _ in Text("Pushed") }
+            }
+            let window = try XCTUnwrap(host.window)
+            host.settle { window.menuBarStands }
+            let field = try XCTUnwrap(host.views(WinUITextFieldView.self).first)
+            XCTAssertTrue(stateui_winui_focus(field.handle, true), "the field holds the focus")
+            host.settle { WinUIEditing.typed === field }
+            XCTAssertTrue(WinUIEditing.typed === field, "the field typed into is kept")
+            let other = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+            XCTAssertTrue(stateui_winui_focus(other.handle, true), "the focus leaves it, as a menu takes it")
+
+            // The Edit menu's entries in their order, the page's Find after them: Undo is 0, Cut 2, Paste 4, All 6.
+            window.menuBar.menuChosen(6)
+            window.menuBar.menuChosen(2)
+            host.settle { words.wrappedValue.isEmpty }
+            XCTAssertEqual(words.wrappedValue, "", "the words cut")
+            window.menuBar.menuChosen(4)
+            host.settle { words.wrappedValue == "hello" }
+            XCTAssertEqual(words.wrappedValue, "hello", "the clipboard's words pasted back")
+            window.menuBar.menuChosen(0)
+            host.settle { words.wrappedValue.isEmpty }
+            XCTAssertEqual(words.wrappedValue, "", "the paste undone")
+        }
+    }
+
     /// The pane holding a sidebar wears the sidebar page's background, so no room WinUI keeps around the page in it
     /// shows the window's backdrop.
     func testTheSidebarsPaneWearsItsPagesBackground() throws {

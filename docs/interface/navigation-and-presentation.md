@@ -452,7 +452,11 @@ The platform's own menus are joined by identity, never by caption:
 entries into AppKit's File menu and UIKit's `.file` menu after the platform's
 own, whatever the menu is called, so "Plik" joins it too. On WinUI it is an
 ordinary menu of the application's; on GTK, a submenu of the header bar's main
-menu. Android keeps no menu bar: a page's menus stand behind its stack's
+menu. An Edit menu holds the platform's own entries on every host that shows
+it: AppKit's and iPadOS's Edit menu, and on WinUI, GTK and the Web the same
+entries StateUI keeps - Undo, Redo, Cut, Copy, Paste, Delete and Select All,
+in the system's language, acting on the field the user typed into though the
+menu took the focus - with the page's entries after them. Android keeps no menu bar: a page's menus stand behind its stack's
 bar's overflow, each a submenu after the actions. An iPhone shows no menu
 bar. `Menu` holds only `MenuItem`, `Menu` and `MenuSeparator`, and a menu bar
 only `Menu`: anything else does not compile.

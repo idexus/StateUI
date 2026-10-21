@@ -133,8 +133,11 @@ final class WebWindowBar: WebDOMView {
         groups = made
         // The bar ends with the actions behind it, then - a sheet's - the button closing it.
         behind = chrome.actions.overflow.map(MenuEntry.entry(of:))
-        if !behind.isEmpty, !chrome.menus.menus.isEmpty { behind.append(.separator) }
-        behind += chrome.menus.menus
+        // A page keeps no Edit menu of its own: one the page joins holds the field's undoing, clipboard and selection.
+        let menus = chrome.menus
+            .editing(CoreLink().editWords, redo: KeyboardShortcut("z", modifiers: [.primary, .shift]))
+        if !behind.isEmpty, !menus.menus.isEmpty { behind.append(.separator) }
+        behind += menus.menus
         more.setShown(!behind.isEmpty)
         WebRelay.insert(more.node, into: trailing.node, at: ending.count)
         WebRelay.insert(closer.node, into: trailing.node, at: ending.count + 1)

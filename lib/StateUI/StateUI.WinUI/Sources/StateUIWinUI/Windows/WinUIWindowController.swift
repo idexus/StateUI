@@ -126,7 +126,9 @@ final class WinUIWindowController {
         chrome.overflow = composed.actions.overflow.map(Self.action)
         chrome.background = composed.background
         chrome.foreground = composed.foreground
-        chrome.menuBar = WinUIMenu(menus: composed.menus.menus)
+        // WinUI keeps no Edit menu of its own: one the page joins holds the field's undoing, clipboard and selection.
+        chrome.menuBar = WinUIMenu(
+            menus: composed.menus.editing(CoreLink().editWords, redo: KeyboardShortcut("y")).menus)
         chrome.takeKey = { [weak self, weak element] pressed in
             guard let self, let element else { return false }
             let holder = KeyPresses.holder(under: element) { held in

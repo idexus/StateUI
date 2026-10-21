@@ -956,6 +956,10 @@ void stateui_winui_field_set_look(StateUIObjectRef field, int32_t alignment, uin
 /// Puts the caret `start` characters in and selects `length` from it, both kept inside the words.
 void stateui_winui_field_select(StateUIObjectRef field, int32_t start, int32_t length);
 
+/// Does an Edit menu's own entry to the field - undo 0, redo 1, cut 2, copy 3, paste 4, delete 5, select all 6 - which
+/// takes the focus back; a password box only pastes and selects all.
+void stateui_winui_field_edit(StateUIObjectRef field, int32_t command);
+
 /// What a test reads of a field, an editor or a search box's text box: read only, spell checked, predicting, its input scope's first name
 /// (-1 for none), its words' alignment, its selection's start and length, whether its placeholder is coloured,
 /// whether Enter starts a new line - nine values.

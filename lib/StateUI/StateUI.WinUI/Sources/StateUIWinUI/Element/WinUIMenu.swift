@@ -20,6 +20,8 @@ struct WinUIMenu {
     private(set) var destructive: [Bool] = []
     /// Each entry's shortcut; nil for none.
     private(set) var shortcuts: [KeyboardShortcut?] = []
+    /// Whether each entry's shortcut gives way to a field holding the keyboard, which then takes the key itself.
+    private(set) var givingWay: [Bool] = []
     private(set) var actions: [() -> Void] = []
 
     /// The entries `container` holds, as the host layer walks them; none for no container.
@@ -54,12 +56,11 @@ struct WinUIMenu {
                   [Int32], [Int32], [Bool], Int32) -> Void
     ) {
         let spelled = shortcuts.map { $0.flatMap(WinUIKeys.spelled) ?? (key: 0, modifiers: 0) }
-        let givesWay = shortcuts.map { $0.map(KeyboardShortcuts.givesWayToTyping) ?? false }
         WinUIStrings.withCStrings(titles) { titles in
             WinUIStrings.withCStrings(identifiers) { identifiers in
                 WinUIStrings.withCStrings(icons.map(WinUIStrings.lines)) { icons in
                     write(kinds, titles, enabled, identifiers, icons, destructive, spelled.map(\.key),
-                          spelled.map(\.modifiers), givesWay, Int32(kinds.count))
+                          spelled.map(\.modifiers), givingWay, Int32(kinds.count))
                 }
             }
         }
@@ -70,10 +71,15 @@ struct WinUIMenu {
         for entry in entries {
             switch entry.kind {
             case .item:
+                // The Edit menu's own entry: its keys are the field's own, which a field holding the keyboard takes.
                 append(entry.isOn.map { $0 ? .itemOn : .itemOff } ?? .item, entry.title, entry.isEnabled, entry.identifier,
                        icon: WinUIPictures.lines(entry.icon), destructive: entry.isDestructive,
-                       shortcut: entry.keyboardShortcut)
-                actions.append { [weak element = entry.element] in element?.winUI.choose() }
+                       shortcut: entry.keyboardShortcut, givesWay: entry.edit != nil)
+                if let command = entry.edit {
+                    actions.append { WinUIEditing.perform(command) }
+                } else {
+                    actions.append { [weak element = entry.element] in element?.winUI.choose() }
+                }
             case .separator:
                 append(.separator, "", true, nil)
             case .submenu:
@@ -86,7 +92,7 @@ struct WinUIMenu {
 
     private mutating func append(
         _ kind: StateUIMenuEntry, _ title: String, _ isEnabled: Bool, _ identifier: String?, icon: [String] = [],
-        destructive isDestructive: Bool = false, shortcut: KeyboardShortcut? = nil
+        destructive isDestructive: Bool = false, shortcut: KeyboardShortcut? = nil, givesWay: Bool = false
     ) {
         kinds.append(kind.rawValue)
         titles.append(title)
@@ -95,5 +101,6 @@ struct WinUIMenu {
         icons.append(icon)
         destructive.append(isDestructive)
         shortcuts.append(shortcut)
+        givingWay.append(givesWay || shortcut.map(KeyboardShortcuts.givesWayToTyping) == true)
     }
 }

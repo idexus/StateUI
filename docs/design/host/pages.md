@@ -305,6 +305,20 @@ it, whether choosing it destroys something and its identifier; a menu bar
 holds only its menus. A host builds its toolkit's menu
 from the walk, and an item's element hears it chosen.
 
+## The Edit menu
+
+A menu joining `StandardMenu.edit` keeps the platform's own entries before
+the application's. AppKit and UIKit keep an Edit menu of their own and join
+it there; a host whose platform keeps none - WinUI, GTK, the Web - takes the
+entries from the host layer (`ChromeMenus.editing`): Undo and Redo, Cut,
+Copy, Paste and Delete, Select All, sections apart, in the library's words in
+the system's language (`EditWords`) and with the field's own keys beside them
+- the field takes those keys itself, so the menu only shows them. Each entry
+is an `EditCommand` the host does with its toolkit's own act on the field the
+user last typed into in the window: the menu takes the focus as it opens, so
+a host keeps that field as the focus leaves it and hands the focus back as
+the entry acts. A window with no such field does nothing.
+
 ## A checked entry
 
 An item may stand checked or not (`MenuItemContract.isOn`), which each host

@@ -164,6 +164,18 @@ overflow's menu whichever changed last - GNOME's
 `open-menu-symbolic` button - each a submenu holding its entries, joined by
 the host layer's rule. A page that declares none shows no main menu.
 
+## The Edit menu
+
+GNOME keeps no Edit menu of its own, so a menu joining `StandardMenu.edit`
+holds the host layer's entries (`ChromeMenus.editing`), Redo's keys GNOME's
+Ctrl+Shift+Z. Each is the text widget's own action - `text.undo`,
+`text.redo`, `clipboard.cut`, `clipboard.copy`, `clipboard.paste`,
+`selection.delete`, `selection.select-all` - which a `GtkText` and a
+`GtkTextView` both answer (`GTKEditing`). The main menu's popover takes the
+focus as it opens, so the window keeps the widget the user last typed into
+(`notify::focus-widget`, under a weak pointer GTK clears as the widget goes)
+and hands the focus back to it before the action runs.
+
 ## Sheets
 
 A page a window's modal stack presents is a sheet: libadwaita's `AdwDialog`

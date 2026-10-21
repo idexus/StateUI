@@ -301,6 +301,33 @@ extern "C" void stateui_winui_field_select(StateUIObjectRef handle, int32_t star
     }
 }
 
+extern "C" void stateui_winui_field_edit(StateUIObjectRef handle, int32_t command) {
+    try {
+        if (auto password = as<IInspectable>(handle).try_as<controls::PasswordBox>()) {
+            password.Focus(xaml::FocusState::Programmatic);
+            // A password box gives none of its words away: no undo, cut or copy.
+            if (command == 4) password.PasteFromClipboard();
+            if (command == 6) password.SelectAll();
+            return;
+        }
+        auto box = boxOf(handle);
+        if (!box) return;
+        box.Focus(xaml::FocusState::Programmatic);
+        switch (command) {
+        case 0: box.Undo(); break;
+        case 1: box.Redo(); break;
+        case 2: box.CutSelectionToClipboard(); break;
+        case 3: box.CopySelectionToClipboard(); break;
+        case 4: box.PasteFromClipboard(); break;
+        case 5: box.SelectedText(L""); break;
+        case 6: box.SelectAll(); break;
+        default: break;
+        }
+    } catch (...) {
+        report("doing an Edit menu's entry to a field");
+    }
+}
+
 extern "C" void stateui_winui_field_facts(StateUIObjectRef handle, int32_t *facts) {
     try {
         auto field = boxOf(handle);

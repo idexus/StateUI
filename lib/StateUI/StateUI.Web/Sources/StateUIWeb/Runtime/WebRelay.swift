@@ -516,6 +516,12 @@ enum WebRelay {
     /// Puts the focus on `element` or the first in it that takes it; whether it holds it.
     static func focus(_ element: Int32) -> Bool { stateui_web_focus(element) != 0 }
 
+    /// Does an Edit menu's own entry to the field the user last typed into, which takes the focus back.
+    /// Design: docs/design/platforms/web/pages.md#the-edit-menu
+    static func edit(_ command: EditCommand) {
+        stateui_web_edit(Int32(EditCommand.allCases.firstIndex(of: command) ?? 0))
+    }
+
     static func unfocus(_ element: Int32) {
         stateui_web_unfocus(element)
     }

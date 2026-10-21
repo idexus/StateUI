@@ -112,6 +112,56 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// GNOME keeps no Edit menu of its own: one a page joins holds the field's undoing, clipboard and selection, and
+    /// they act on the words the user typed into, though the menu takes the focus as it opens.
+    func testTheEditMenuActsOnTheWordsTypedInto() throws {
+        try onUIThread {
+            let words = State(wrappedValue: "hello")
+            let host = GTKRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    VStack {
+                        TextField(words.projectedValue)
+                        Button("Other")
+                    }
+                    .menuBar { Menu("Edit") { MenuItem("Find") }.id(StandardMenu.edit) }
+                    .title("Notes")
+                } destination: { _ in
+                    Text("Note")
+                }
+            }
+            let field = try XCTUnwrap(host.views(GTKTextFieldView.self).first)
+            gtk_widget_grab_focus(field.widget)
+            host.settle { false }
+            gtk_widget_grab_focus(host.views(GTKButtonView.self)[0].widget)
+            host.settle { false }
+            XCTAssertNotNil(host.window?.typed, "the window keeps the words typed into")
+            let main = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last?.mainMenu)
+            @MainActor func choose(_ command: EditCommand) throws {
+                let named = main.menu.edits[command]
+                let name = try XCTUnwrap(named, "the Edit menu holds \(command)")
+                XCTAssertNotEqual(
+                    gtk_widget_activate_action_variant(main.button, main.menu.group + "." + name, nil), 0,
+                    "the menu's action \(name) runs")
+            }
+
+            XCTAssertEqual(Set(main.menu.edits.values).count, EditCommand.allCases.count, "each entry its own action")
+            XCTAssertEqual(main.menu.items.count, 1, "the application's Find, apart from them")
+            XCTAssertNil(main.menu.items.keys.first { main.menu.edits.values.contains($0) })
+
+            gtk_editable_select_region(field.widget.opaque, 0, 0)
+            try choose(.selectAll)
+            try choose(.cut)
+            host.settle { words.wrappedValue.isEmpty }
+            XCTAssertEqual(words.wrappedValue, "", "the words cut")
+            try choose(.paste)
+            host.settle { words.wrappedValue == "hello" }
+            XCTAssertEqual(words.wrappedValue, "hello", "the clipboard's words pasted back")
+            try choose(.undo)
+            host.settle { words.wrappedValue.isEmpty }
+            XCTAssertEqual(words.wrappedValue, "", "the paste undone")
+        }
+    }
+
     /// The overflow's menu stands before the main menu at the bar's end, whichever of them changed last.
     func testTheOverflowStandsBeforeTheMainMenu() throws {
         try onUIThread {

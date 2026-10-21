@@ -282,6 +282,10 @@ STATEUI_WEB(announce) void stateui_web_announce(const char *words, int32_t lengt
 /// Takes the focus off the field holding it, whose on-screen keyboard goes with it; whether one held it.
 STATEUI_WEB(blur_field) int32_t stateui_web_blur_field(void);
 
+/// Does an Edit menu's own entry - undo 0, redo 1, cut 2, copy 3, paste 4, delete 5, select all 6 - to the field the
+/// user last typed into, which takes the focus back.
+STATEUI_WEB(edit) void stateui_web_edit(int32_t command);
+
 /// Puts the focus on the element, or the first in it that takes it; whether the element or one in it holds it.
 STATEUI_WEB(focus) int32_t stateui_web_focus(int32_t element);
 

@@ -13,6 +13,9 @@ struct LibraryWords: LocalizedResources {
     /// What a window's chrome says of its own controls: back, the sidebar, close and more.
     let chrome: ChromeWords
 
+    /// What an Edit menu says of the entries a host keeps in it.
+    let edit: EditWords
+
     static func resources(for language: LibraryLanguage) -> LibraryWords {
         switch language {
         case .english: .english
@@ -44,6 +47,31 @@ struct LibraryWords: LocalizedResources {
 
     /// The menu at a bar's end holding the page's menus, where a desktop shows no menu bar.
     public let mainMenu: String
+}
+
+/// What an Edit menu says of the entries a host keeps in it where its platform keeps no Edit menu of its own: the
+/// field holding the keyboard undone, redone, cut, copied, pasted into, its selection deleted or the whole selected.
+@_spi(Host) public struct EditWords: Equatable, Sendable {
+    /// Undo.
+    public let undo: String
+
+    /// Redo.
+    public let redo: String
+
+    /// Cut.
+    public let cut: String
+
+    /// Copy.
+    public let copy: String
+
+    /// Paste.
+    public let paste: String
+
+    /// Delete.
+    public let delete: String
+
+    /// Select All.
+    public let selectAll: String
 }
 
 /// The languages StateUI says its own words in, each by its tag.

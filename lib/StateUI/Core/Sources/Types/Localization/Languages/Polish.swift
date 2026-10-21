@@ -32,7 +32,10 @@ extension LibraryWords {
     static let polish = LibraryWords(
         ok: "OK", cancel: "Anuluj",
         chrome: ChromeWords(
-            back: "Wstecz", sidebar: "Pasek boczny", close: "Zamknij", more: "Więcej", mainMenu: "Menu główne"))
+            back: "Wstecz", sidebar: "Pasek boczny", close: "Zamknij", more: "Więcej", mainMenu: "Menu główne"),
+        edit: EditWords(
+            undo: "Cofnij", redo: "Ponów", cut: "Wytnij", copy: "Kopiuj", paste: "Wklej", delete: "Usuń",
+            selectAll: "Zaznacz wszystko"))
 }
 
 extension RegionConventions {

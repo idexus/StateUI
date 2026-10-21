@@ -60,7 +60,9 @@ extension GTKElement {
         chrome.leading = actions.start.map { $0.map(GTKToolbarAction.init) }
         chrome.trailing = actions.end.map { $0.map(GTKToolbarAction.init) }
         chrome.overflow = actions.overflow.map(GTKToolbarAction.init)
-        chrome.mainMenu = element.chromeMenus.menus
+        // GNOME keeps no Edit menu of its own: one the page joins holds the field's undoing, clipboard and selection.
+        chrome.mainMenu = element.chromeMenus
+            .editing(CoreLink().editWords, redo: KeyboardShortcut("z", modifiers: [.primary, .shift])).menus
         return chrome
     }
 

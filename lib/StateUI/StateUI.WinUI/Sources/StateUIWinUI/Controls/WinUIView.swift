@@ -65,6 +65,7 @@ class WinUIView {
         // A control's style aligns it inside its place; a StateUI layout decides the place, so it fills it.
         // Design: docs/design/platforms/winui/layout.md#a-place-filled
         stateui_winui_fill_place(handle)
+        if keepsTyping { stateui_winui_hear_focus(handle, number, true) }
     }
 
     isolated deinit {
@@ -77,7 +78,7 @@ class WinUIView {
     /// Design: docs/design/platforms/winui/controls.md#a-password
     func replaceNative(with replacement: StateUIObjectRef) {
         if !hearing.isEmpty { stateui_winui_hear(handle, number, 0) }
-        if onFocusChanged != nil { stateui_winui_hear_focus(handle, number, false) }
+        if hearsFocus { stateui_winui_hear_focus(handle, number, false) }
         stateui_winui_replace(handle, replacement)
         stateui_winui_release(handle)
         handle = replacement
@@ -85,7 +86,7 @@ class WinUIView {
 
         stateui_winui_fill_place(handle)
         if !hearing.isEmpty { stateui_winui_hear(handle, number, hearing.rawValue) }
-        if onFocusChanged != nil { stateui_winui_hear_focus(handle, number, true) }
+        if hearsFocus { stateui_winui_hear_focus(handle, number, true) }
         stateui_winui_set_shown(handle, isShown)
         stateui_winui_set_opacity(handle, writtenOpacity)
         stateui_winui_set_z_index(handle, writtenZIndex)
@@ -347,14 +348,23 @@ class WinUIView {
     /// What the view does when the keyboard comes into it or leaves; nil hears nothing.
     private var onFocusChanged: ((Bool) -> Void)?
 
+    /// Whether the view hears the keyboard come into it whatever the tree hears: a field, the last of which the user
+    /// typed into an Edit menu's own entries act on (`WinUIEditing`).
+    var keepsTyping: Bool { false }
+
+    /// Whether the relay tells the view of the keyboard coming and going.
+    private var hearsFocus: Bool { onFocusChanged != nil || keepsTyping }
+
     /// Hears the keyboard come into the view and leave it, while `action` is set.
     func setFocusChanged(_ action: ((Bool) -> Void)?) {
-        if (action != nil) != (onFocusChanged != nil) { stateui_winui_hear_focus(handle, number, action != nil) }
+        let heard = hearsFocus
         onFocusChanged = action
+        if hearsFocus != heard { stateui_winui_hear_focus(handle, number, hearsFocus) }
     }
 
     /// The keyboard came into the view or left it.
     func focusChanged(_ focused: Bool) {
+        if focused, keepsTyping { WinUIEditing.typed = self }
         onFocusChanged?(focused)
     }
 

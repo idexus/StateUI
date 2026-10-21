@@ -64,8 +64,40 @@ final class GTKWindow {
         hearItsLife()
     }
 
+    /// The widget the user last typed into in the window - a text or a text view - which an Edit menu's own entries act
+    /// on, since its popover takes the focus; GTK clears it as the widget goes.
+    private let typing: UnsafeMutablePointer<gpointer?> = {
+        let slot = UnsafeMutablePointer<gpointer?>.allocate(capacity: 1)
+        slot.initialize(to: nil)
+        return slot
+    }()
+
+    /// The widget the user last typed into in the window; nil where none stands now.
+    var typed: GTKWidget? {
+        typing.pointee?.assumingMemoryBound(to: GtkWidget.self)
+    }
+
+    /// Keeps the widget the window's focus moved to, where the user types into it.
+    func noteTyping() {
+        guard let focus = gtk_root_get_focus(widget.opaque), GTKKeys.types(into: focus),
+              UnsafeMutableRawPointer(focus) != typing.pointee
+        else { return }
+        forgetTyping()
+        typing.pointee = UnsafeMutableRawPointer(focus)
+        g_object_add_weak_pointer(focus.of(GObject.self), typing)
+    }
+
+    /// Lets go of the widget kept, which then clears no slot as it goes.
+    private func forgetTyping() {
+        guard let held = typing.pointee else { return }
+        g_object_remove_weak_pointer(held.assumingMemoryBound(to: GObject.self), typing)
+        typing.pointee = nil
+    }
+
     /// A window let go of tells nobody it went: its handlers leave before GTK destroys it.
     isolated deinit {
+        forgetTyping()
+        typing.deallocate()
         let data = UnsafeMutableRawPointer(bitPattern: Int(number))
         g_signal_handlers_disconnect_matched(UnsafeMutableRawPointer(widget), STATEUI_SIGNAL_MATCH_DATA, 0, 0, nil, nil, data)
         if let surface = gtk_native_get_surface(widget.opaque) {
@@ -87,6 +119,11 @@ final class GTKWindow {
         }
         connectNotify(window, "is-active", number: number) { _, _, data in
             MainActor.assumeIsolated { GTKRenderer.shared?.windowStateChanged(number: viewNumber(data)) }
+        }
+        connectNotify(window, "focus-widget", number: number) { _, _, data in
+            MainActor.assumeIsolated {
+                GTKRenderer.shared?.windows.first { $0.window.number == viewNumber(data) }?.window.noteTyping()
+            }
         }
         connectSignal(window, "realize", number: number) { window, data in
             guard let native = window, let surface = gtk_native_get_surface(OpaquePointer(native)) else { return }

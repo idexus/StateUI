@@ -221,6 +221,9 @@
     /// What a window's chrome says of its own controls, in the system's language.
     public var chromeWords: ChromeWords { HostBoundary.chromeWords }
 
+    /// What an Edit menu says of the entries a host keeps in it, in the system's language.
+    public var editWords: EditWords { HostBoundary.editWords }
+
     /// Reports the application's lifecycle phase.
     public func setApplicationPhase(_ phase: ApplicationPhase) {
         HostBoundary.setApplicationPhase(phase)

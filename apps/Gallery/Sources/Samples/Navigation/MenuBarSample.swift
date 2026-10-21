@@ -12,6 +12,9 @@ struct MenuBarSample: SampleContent, ExampleContent {
 
     /// Whether this page adds a menu of its own.
     @State private var ownMenu = false
+
+    /// Words to edit through the Edit menu's own entries.
+    @State private var note = "Edit me"
     // listing: end
 
     static let id = "menuBar"
@@ -34,6 +37,14 @@ struct MenuBarSample: SampleContent, ExampleContent {
 
             switchRow($pageSaves, "This page saves", id: "menubar.pageSaves")
             switchRow($ownMenu, "A menu of its own", id: "menubar.ownMenu")
+
+            Text("Select words here, then Cut, Copy, Paste or Undo from Edit.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            TextField($note)
+                .accessibilityIdentifier("menubar.note")
+                .accessibilityLabel("Words to edit")
         }
         .spacing(12)
         // File, joined by its identity with the platform's own where it has
@@ -51,6 +62,15 @@ struct MenuBarSample: SampleContent, ExampleContent {
                     .onClicked { exported += 1 }
             }
             .id(StandardMenu.file)
+
+            // Edit holds the platform's own entries, acting on the field the
+            // user typed into; Clear stands after them, this page's own.
+            Menu("Edit") {
+                MenuItem("Clear")
+                    .id("clear")
+                    .onClicked { note = "" }
+            }
+            .id(StandardMenu.edit)
 
             if ownMenu {
                 Menu("Sample") {
@@ -82,6 +102,13 @@ struct MenuBarSample: SampleContent, ExampleContent {
                 + "Help. File is joined by `.id(StandardMenu.file)`, never by its caption. Android "
                 + "puts the menus behind the bar's overflow, GNOME in the bar's main menu; an "
                 + "iPhone shows none.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Edit, joined by `.id(StandardMenu.edit)`, holds the platform's own Undo, Redo, Cut, "
+                + "Copy, Paste, Delete and Select All before this page's Clear - on the Mac and the iPad "
+                + "the system's own, on Windows, GNOME and the Web the same entries StateUI keeps. They "
+                + "act on the field you typed into, though opening the menu took the focus.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

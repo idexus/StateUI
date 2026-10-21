@@ -283,6 +283,20 @@ A stack with a menu is hit across its bounds, as a listening one is
 ([listening](input.md#listening)): a right click anywhere across it opens the
 menu, not only on its children.
 
+## The Edit menu
+
+WinUI keeps no Edit menu of its own, so a menu joining `StandardMenu.edit`
+holds the host layer's entries (`ChromeMenus.editing`), Redo's keys
+Windows' Ctrl+Y. Each is the text box's own act through the relay
+(`stateui_winui_field_edit`): `Undo`, `Redo`, `CutSelectionToClipboard`,
+`CopySelectionToClipboard`, `PasteFromClipboard`, the selection emptied,
+`SelectAll` - a password box gives none of its words away, so it only pastes
+and selects all. A menu takes the focus as it opens, so every field hears the
+focus whatever the tree hears and the last one the user typed into is kept
+(`WinUIEditing`), handed the focus back as the entry acts. The entries' keys
+give way to a field holding the keyboard, which takes them itself: the menu
+bar's accelerator acts only where no field holds the keyboard, never twice.
+
 ## A destructive entry
 
 A menu's item or a bar's action whose choice destroys something says so in

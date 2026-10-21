@@ -134,6 +134,18 @@ still meaning no farther from where it pressed than a finger goes before
 its press is a drag (`WebPress.finger`), so steps each too short to count
 still add up; its entries are read as they stand then.
 
+## The Edit menu
+
+A page keeps no Edit menu of its own, so a menu joining `StandardMenu.edit`
+behind the bar's More holds the host layer's entries (`ChromeMenus.editing`).
+The page keeps the field the user last typed into (`focusin` on an input, a
+text area or editable words), since the menu takes the focus, and each entry
+hands it back and does its act there (`stateui_web_edit`): undo, redo, cut,
+copy and delete through the document's own commands - a cut and a copy want
+the user's click, which choosing the entry is - select all through the
+field's own, and paste through the clipboard's API, which the browser opens
+only where the user allowed it.
+
 ## Sheets
 
 A page a modal stack presents stands on a sheet: the browser's own modal

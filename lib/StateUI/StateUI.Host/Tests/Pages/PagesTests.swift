@@ -868,6 +868,29 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(menus.map(\.standard), [.file, nil])
     }
 
+    /// Where a host keeps the Edit menu's own entries, a menu joining `StandardMenu.edit` is headed by them - undoing,
+    /// the clipboard and the selection, in the library's words with the field's own keys beside them - and the
+    /// application's entries stand after them; another menu is as the path composes it.
+    func testAnEditMenuIsHeadedByItsOwnEntriesWhereAHostKeepsThem() throws {
+        let runtime = runtime(node("page", .page, children: [menuBar("bar", [
+            menu(StandardMenu.edit.description, "Edit", [menuItem("find", "Find")]),
+            menu("file", "File", [menuItem("open", "Open")]),
+        ])])) { _ in }
+        let words = EditWords(
+            undo: "Undo", redo: "Redo", cut: "Cut", copy: "Copy", paste: "Paste", delete: "Delete", selectAll: "All")
+        let redo = KeyboardShortcut("z", modifiers: [.primary, .shift])
+
+        let menus = try XCTUnwrap(runtime.tree.root).chromeMenus.editing(words, redo: redo).menus
+
+        XCTAssertEqual(said(menus), "Edit[Undo;Redo;-;Cut;Copy;Paste;Delete;-;All;-;Find] File[Open]")
+        let own = menus[0].entries.compactMap(\.edit)
+        XCTAssertEqual(own, [.undo, .redo, .cut, .copy, .paste, .delete, .selectAll])
+        XCTAssertEqual(menus[0].entries.compactMap(\.keyboardShortcut)[0...1], [KeyboardShortcut("z"), redo])
+        XCTAssertNil(menus[0].entries.last?.edit, "the application's entry")
+        XCTAssertEqual(said(try XCTUnwrap(runtime.tree.root).chromeMenus.menus), "Edit[Find] File[Open]",
+                       "a host keeping its own Edit menu composes it alone")
+    }
+
     /// An arrangement's children are its pages: what it declares - its actions, its menus, its title view - is
     /// never its top page, and a search still finds it.
     func testAnArrangementsDeclarationsAreNotItsPages() throws {

@@ -12,6 +12,8 @@ import CStateUIWinUI
 class WinUITextInputView: WinUIView {
     override var takesDirection: Bool { true }
 
+    override var keepsTyping: Bool { true }
+
     /// What the view does when the user changes its words, handed all of them.
     var onTextChanged: ((String) -> Void)?
 
@@ -83,5 +85,8 @@ class WinUITextInputView: WinUIView {
         super.detach()
         onTextChanged = nil
         onSubmitted = nil
+        // Gone from the tree, the field is typed into no more.
+        stateui_winui_hear_focus(handle, number, false)
+        if WinUIEditing.typed === self { WinUIEditing.typed = nil }
     }
 }

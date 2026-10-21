@@ -6761,6 +6761,9 @@ enum Listings {
         /// Whether this page adds a menu of its own.
         @State private var ownMenu = false
 
+        /// Words to edit through the Edit menu's own entries.
+        @State private var note = "Edit me"
+
         var body: some View {
             VStack {
                 // The counts are read here, so every entry that acts builds
@@ -6773,6 +6776,10 @@ enum Listings {
 
                 switchRow($pageSaves, "This page saves", id: "menubar.pageSaves")
                 switchRow($ownMenu, "A menu of its own", id: "menubar.ownMenu")
+
+                Text("Select words here, then Cut, Copy, Paste or Undo from Edit.")
+
+                TextField($note)
             }
             // File, joined by its identity with the platform's own where it has
             // one: this page's entries are a section of their own.
@@ -6789,6 +6796,15 @@ enum Listings {
                         .onClicked { exported += 1 }
                 }
                 .id(StandardMenu.file)
+
+                // Edit holds the platform's own entries, acting on the field the
+                // user typed into; Clear stands after them, this page's own.
+                Menu("Edit") {
+                    MenuItem("Clear")
+                        .id("clear")
+                        .onClicked { note = "" }
+                }
+                .id(StandardMenu.edit)
 
                 if ownMenu {
                     Menu("Sample") {

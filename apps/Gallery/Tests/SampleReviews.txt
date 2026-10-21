@@ -71,7 +71,7 @@ LocaleInfoSample.swift 53a7aa3516ee574a
 LocalizationSample.swift 1636a0f168875c65
 MapSample.swift 0a52199d9ecebd75
 MaterialsSample.swift 627cb47bde052fd0
-MenuBarSample.swift c43adf3ebf7c85ac
+MenuBarSample.swift feaefec006cc6607
 ModalSample.swift 64cc31225a4f4be6
 MotionSample.swift e2c7fe6d8c5af82b
 MultiWindowSample.swift 12f1c8ba843fad28
