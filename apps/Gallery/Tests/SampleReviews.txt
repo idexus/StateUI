@@ -3,7 +3,7 @@
 # STATEUI_UPDATE_SAMPLES=1 records.
 AccessibilitySettingsSample.swift fa38044121b2ffbd
 ActivityIndicatorSample.swift 097a91a8164620dd
-AimSample.swift e9a994fc78551bdc
+AimSample.swift 571f9842156877ea
 AnalogClockSample.swift 0654d1d035d2acfa
 AnimatedInputSample.swift 3edb37bd77bcc397
 AnimatedPropertySample.swift 267246566166351d

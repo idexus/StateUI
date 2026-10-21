@@ -148,13 +148,15 @@ enum Listings {
                             try await note.focus()
                             says = "focused \(note)"
                         }
-
-                    Button("Let go")
-                        .onClicked(gate: .ignoreWhileRunning) {
-                            try await field.unfocus()
-                            says = "let go of \(field)"
-                        }
                 }
+
+                // Each aim reaches its own field: letting go of both is two acts.
+                Button("Let go")
+                    .onClicked(gate: .ignoreWhileRunning) {
+                        try await field.unfocus()
+                        try await note.unfocus()
+                        says = "let go of \(field) and \(note)"
+                    }
 
                 Text(says)
             }
