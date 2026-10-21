@@ -504,10 +504,12 @@ final class ControlTests: XCTestCase {
                         .isFontAutoScalingEnabled(false)
                         .horizontalTextAlignment(.center)
                         // What the view says about itself: a handle for a
-                        // driver, and three things a screen reader says.
+                        // driver, and what a screen reader says and does.
                         .accessibilityIdentifier("tiers")
                         .accessibilityLabel("The shared tier")
                         .accessibilityHint("Everything every view can be told")
+                        .accessibilityRole(.adjustable)
+                        .accessibilityValue("3 of 5")
                         .tooltip("Every view can say what it does")
                         .accessibilityHeading(.h2)
                         .isAccessibilityHidden(false)

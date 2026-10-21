@@ -43,6 +43,8 @@ final class ContractPayloadTests: XCTestCase {
         check(ViewContract.pointerReleased, [])
         check(ViewContract.swiped, [.enumeration(1)])
         check(KeyboardElementContract.keyPressed, [Key.escape.propValue, KeyModifiers.shift.propValue])
+        check(VisualElementContract.accessibilityActionPerformed, [.string("Clear")])
+        check(VisualElementContract.accessibilityAdjusted, [AccessibilityAdjustment.decrement.propValue])
         check(ViewContract.tapped)
         check(TextInputContract.textChanged, [.string("typed")])
         check(MenuItemElementContract.clicked)

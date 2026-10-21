@@ -73,7 +73,8 @@ final class WebEditMenuTests: XCTestCase {
 
     /// Steps the page until `done`, a few seconds at most.
     private func settle(_ host: WebRenderer, until done: () -> Bool) {
-        for _ in 0..<100 where !done() {
+        for _ in 0..<100 {
+            guard !done() else { break }
             host.step()
             WebBrowser.pause()
         }
