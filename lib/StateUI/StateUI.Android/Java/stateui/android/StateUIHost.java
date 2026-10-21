@@ -118,6 +118,9 @@ final class StateUIHost {
     /** The document read under `ticket`: its bytes, or why they could not be read. */
     static native void fileRead(long ticket, byte[] bytes, String failure);
 
+    /** A request was answered - its status, its headers as names and values in turn, its body - or failed, why. */
+    static native void requestAnswered(long ticket, int status, String[] headers, byte[] body, String failure);
+
     /** A drag between views told the view: `StateUIDrags`'s kind, and the words a drop carried. */
     static native void dragHeard(long view, int kind, String words);
 

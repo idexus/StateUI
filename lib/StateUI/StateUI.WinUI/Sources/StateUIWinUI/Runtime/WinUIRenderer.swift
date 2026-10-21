@@ -36,9 +36,13 @@ final class WinUIRenderer {
     /// WinUI's part of the files the user opens and saves, and of what Windows launches.
     private(set) lazy var fileToolkit = WinUIFileToolkit(renderer: self)
 
+    /// WinUI's part of the requests the application sends.
+    private(set) lazy var network = WinUINetwork()
+
     /// What performs the acts the application calls, and answers them, by the host layer's rules.
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree })
+        toolkit: actToolkit, files: fileToolkit, network: network, answers: runtime.core,
+        tree: { [unowned self] in runtime.tree })
 
     /// The windows the tree holds, each with its controller, in the tree's order.
     private let roster = WindowRoster<WinUIWindowController>()

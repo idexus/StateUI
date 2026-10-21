@@ -214,6 +214,12 @@
         return try driven { try driver.theme() }
     }
 
+    /// The address of the driver's HTTP server (`HostDriver.served()`).
+    public func served() throws -> String {
+        note("serve a request")
+        return try driven { try driver.served() }
+    }
+
     /// The file dialog the window shows now; nil where it shows none.
     public func fileDialog() throws -> FileDialog? {
         guard let root = tree?.root else { return nil }

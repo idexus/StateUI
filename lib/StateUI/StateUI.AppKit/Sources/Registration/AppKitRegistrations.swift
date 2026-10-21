@@ -46,10 +46,10 @@ enum AppKitRegistrations {
         .map(\.element))
 
     /// The acts this host performs, whichever element each is aimed at: every host's (`HostActs.performed`), the files
-    /// (`HostActs.files`) and its own elements' acts. The host layer's performer
+    /// (`HostActs.files`), the requests (`HostActs.network`) and its own elements' acts. The host layer's performer
     /// (`HostActPerformer`) answers exactly these and the application's own; every other act it refuses by name.
     static let acts: [any ContractMember] =
-        HostActs.performed + HostActs.files + [ItemsViewContract.scrollTo, MapContract.moveToRegion]
+        HostActs.performed + HostActs.files + HostActs.network + [ItemsViewContract.scrollTo, MapContract.moveToRegion]
         + WebKitView.acts
 
     /// The six components a render transform travels as - a LIST OF VALUES, not

@@ -50,9 +50,9 @@ enum GTKRegistrations {
         registry.everyElementRaises(FocusElementContract.isFocusedChanged)
     }
 
-    /// The acts this host performs: every host's (`HostActs.performed`), the files (`HostActs.files`) and a list
-    /// scrolled to an item.
+    /// The acts this host performs: every host's (`HostActs.performed`), the files (`HostActs.files`), the requests
+    /// (`HostActs.network`) and a list scrolled to an item.
     static let acts: [any ContractMember] =
-        HostActs.performed + HostActs.files + [ItemsViewContract.scrollTo]
+        HostActs.performed + HostActs.files + HostActs.network + [ItemsViewContract.scrollTo]
 
 }

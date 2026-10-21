@@ -98,6 +98,11 @@
     /// The theme the platform shows the application in now: light or dark.
     func theme() throws -> ColorScheme
 
+    /// The address of an HTTP server the driver stands up on this machine, no scheme left out: it answers every
+    /// request with the status 201, the header `X-Method` naming the request's method, `X-Asked` saying what the
+    /// request's own `X-Asked` said, and the request's body.
+    func served() throws -> String
+
     /// The file dialog the window of `element` shows now; nil where it shows none.
     func fileDialog(over element: MountedElement) throws -> FileDialog?
 
@@ -194,6 +199,11 @@ extension HostDriver {
 
     public func theme() throws -> ColorScheme {
         throw DriverCannot("read the theme the application shows in")
+    }
+
+    public func served() throws -> String {
+        guard let server = LoopbackServer.shared else { throw DriverCannot("serve a request") }
+        return server.address
     }
 
     public func fileDialog(over element: MountedElement) throws -> FileDialog? {

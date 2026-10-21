@@ -27,6 +27,9 @@
         ApplicationContract.launchFile, ApplicationContract.launchLink,
     ]
 
+    /// The acts a host with a `NetworkToolkit` performs: the requests the application sends.
+    public static let network: [any ContractMember] = [ApplicationContract.sendRequest]
+
     /// The answer to `currentTime`: the hour, the minute, the second and the millisecond of the local time.
     public static func currentTime(hour: Int, minute: Int, second: Int, millisecond: Int) -> [HostValue] {
         [[Double(hour), Double(minute), Double(second), Double(millisecond)].propValue]

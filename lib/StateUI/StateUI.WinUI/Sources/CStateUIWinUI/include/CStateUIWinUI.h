@@ -382,6 +382,11 @@ typedef struct {
     /// The file read under `ticket`: its `length` bytes; or why it could not be read, in UTF-8, null where it was.
     void (*fileRead)(int64_t ticket, uint8_t const *bytes, int64_t length, char const *failure);
 
+    /// The request sent under `ticket` was answered: its status, its headers' names and values in turn a unit
+    /// separator apart, in UTF-8, and its `length` bytes; or why no answer came, in UTF-8, null where one did.
+    void (*requestAnswered)(int64_t ticket, int32_t status, char const *headers, uint8_t const *body, int64_t length,
+                            char const *failure);
+
     /// What was launched under `ticket`: whether an application took it.
     void (*launchAnswered)(int64_t ticket, bool taken);
 
@@ -1329,6 +1334,12 @@ void stateui_winui_show_file_dialog(StateUIObjectRef window, int64_t ticket, Sta
 /// Reads the file at `path`, in UTF-8, beside the UI thread - whole for a `maximum` below nought, else its first
 /// `maximum` bytes, read no further; its bytes come back through `fileRead`, under `ticket`, on the UI thread.
 void stateui_winui_read_file(int64_t ticket, char const *path, int64_t maximum);
+
+/// Sends a request with Windows' own HTTP client - its address, its method and its headers' names and values in
+/// turn a unit separator apart, in UTF-8, and its `length` bytes; the answer comes back through `requestAnswered`,
+/// under `ticket`, on the UI thread.
+void stateui_winui_send_request(
+    int64_t ticket, char const *address, char const *method, char const *headers, uint8_t const *body, int64_t length);
 
 /// Hands the file at the path `target`, or the address `target`, to Windows to open in the application it gives it;
 /// whether one took it comes back through `launchAnswered`, under `ticket`, on the UI thread.

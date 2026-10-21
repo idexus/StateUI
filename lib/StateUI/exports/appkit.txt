@@ -401,6 +401,7 @@ WebView
   reload()
   saveFile()
   scrollTo()
+  sendRequest()
   share()
   unfocus()
   useColorScheme()

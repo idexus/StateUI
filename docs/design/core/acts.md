@@ -233,6 +233,19 @@ system, which opens it in the application it gives it. The answer is
 whether one took it - false where nothing opens that scheme or kind - and
 not that it opened: the application starts on its own.
 
+## Requests
+
+`application.send` asks a server through the platform's own networking - the
+system's certificates, proxy and network rules hold, and the platform keeps
+the cookies a server sets - and answers what the server said. Any status is
+an answer: a 404 is the server's word, not a failure, and what throws is no
+answer at all. The request crosses as its address, its method's name, its
+headers as names and values in turn, sorted by name, and its body as bytes;
+the answer comes back as its status, its headers the same way and its body.
+What every host does alike - the header names in lowercase, a header said
+twice joined with a comma, an address with no scheme refused but where a
+page stands to read it against - is the host layer's (`HostRequest`).
+
 ## Announcements
 
 `application.announce` is an act for the same reason every act is one: it is

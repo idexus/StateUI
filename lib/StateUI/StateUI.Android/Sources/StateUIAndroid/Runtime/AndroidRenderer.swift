@@ -141,8 +141,10 @@ final class AndroidRenderer {
     /// Design: docs/design/platforms/android/runtime.md#acts
     private static let actToolkit = AndroidActToolkit(core: CoreLink())
     private static let files = AndroidFileToolkit()
+    private static let network = AndroidNetwork()
     private static let acts = HostActPerformer(
-        toolkit: actToolkit, files: files, answers: CoreLink(), tree: { AndroidRenderer.shared?.runtime.tree })
+        toolkit: actToolkit, files: files, network: network, answers: CoreLink(),
+        tree: { AndroidRenderer.shared?.runtime.tree })
     var actToolkit: AndroidActToolkit { Self.actToolkit }
     var fileToolkit: AndroidFileToolkit { Self.files }
     private var acts: HostActPerformer { Self.acts }
@@ -170,6 +172,11 @@ final class AndroidRenderer {
     /// The document read under `ticket`: its caller resumes with its bytes.
     func fileRead(ticket: Int64, bytes: [UInt8], failure: String?) {
         fileToolkit.read(ticket: ticket, bytes: bytes, failure: failure)
+    }
+
+    /// The request under `ticket` was answered, or failed: its caller resumes.
+    func requestAnswered(ticket: Int64, status: Int, headers: [String], body: [UInt8], failure: String?) {
+        Self.network.answered(ticket: ticket, status: status, headers: headers, body: body, failure: failure)
     }
 
     /// What was launched under `ticket` was taken, or not: its caller resumes.

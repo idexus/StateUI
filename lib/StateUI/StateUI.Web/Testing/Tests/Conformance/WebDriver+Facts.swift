@@ -152,6 +152,12 @@ extension WebDriver {
         return try WebBrowser.truth("matchMedia('(prefers-color-scheme: dark)').matches", on: 0) ? .dark : .light
     }
 
+    /// The request cases' server: the page's own, which `run-in-browser.mjs` answers under this address - a page
+    /// stands, so the address names no scheme.
+    func served() throws -> String {
+        "/stateui-served"
+    }
+
     /// What assistive technology was told, a few frames given for the page's live region to say it.
     func announced() throws -> [String] {
         for _ in 0..<10 {

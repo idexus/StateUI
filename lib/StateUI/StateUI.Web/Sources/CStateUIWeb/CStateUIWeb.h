@@ -256,6 +256,19 @@ STATEUI_WEB(read_file) void stateui_web_read_file(int32_t file, int32_t maximum,
 /// What a file's act answered last, read by `copy_read`: its length.
 STATEUI_WEB(file_words) int32_t stateui_web_file_words(void);
 
+/// Sends a request with the browser's `fetch` - the headers as names and values a unit separator apart - against the
+/// page's address: `listener` hears event 1 and the status, the headers and the body read by `request_words` and
+/// `request_body`, or 0 and why, read by `request_words`.
+STATEUI_WEB(send_request) void stateui_web_send_request(
+    const char *address, int32_t addressLength, const char *method, int32_t methodLength, const char *headers,
+    int32_t headersLength, const uint8_t *body, int32_t bodyLength, int32_t listener);
+
+/// The answered request's headers, or why none came, read by `copy_read`: its length.
+STATEUI_WEB(request_words) int32_t stateui_web_request_words(void);
+
+/// The answered request's body, read by `copy_read`: its length.
+STATEUI_WEB(request_body) int32_t stateui_web_request_body(void);
+
 /// Opens the file, or the address, in a window of its own; `listener` hears event 1 where the browser opened one.
 STATEUI_WEB(launch_file) void stateui_web_launch_file(int32_t file, int32_t listener);
 STATEUI_WEB(launch_address) void stateui_web_launch_address(const char *address, int32_t length, int32_t listener);

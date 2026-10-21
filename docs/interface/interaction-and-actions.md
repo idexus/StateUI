@@ -330,6 +330,45 @@ struct TalkPage: View {
 GNOME offers an application no share sheet, and a browser may have none:
 there the call throws with that reason.
 
+## Requests to a server
+
+`application.send` sends an `HTTPRequest` through the platform's own
+networking - its certificates, proxy and network rules hold - and answers
+the server's `HTTPResponse`: its `status`, its `headers` by name and its
+`body`, `text` reading the body as UTF-8.
+
+```swift
+struct WeatherPage: View {
+    @Environment(\.application) private var application
+    @State private var said = "Ask for the weather"
+
+    var body: some View {
+        VStack {
+            Button("Weather").onClicked(gate: .cancelPrevious) {
+                let response = try await application.send(HTTPRequest(
+                    "https://api.open-meteo.com/v1/forecast?latitude=50.06&longitude=19.94&current=temperature_2m"))
+                said = response.status == 200 ? response.text : "The server answered \(response.status)"
+            }
+            Text(said)
+        }
+    }
+}
+```
+
+Any status is an answer - a 404 is the server's word; what throws is no
+answer at all: no connection, no server, an address the platform cannot
+read. A request carries a method, headers and a body
+(`HTTPRequest(address, method: .post, headers:, body:)`), and a header's
+name is read in any case (`response.header("Content-Type")`). The platform
+keeps the cookies a server sets, as a browser does, so a session a server
+opens holds for the requests after it.
+
+An address names its scheme. On the Web an address with none stands on the
+page's own, and the browser's rules for another site's answers hold. An
+Android application declares
+`<uses-permission android:name="android.permission.INTERNET" />` in its
+manifest, and a plain `http:` address there needs its leave too.
+
 ## Host-extension actions
 
 An application reaches its own host code through acts it declares in a tier

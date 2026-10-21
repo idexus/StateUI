@@ -427,6 +427,7 @@ ZStack
   readFile()
   saveFile()
   scrollTo()
+  sendRequest()
   share()
   unfocus()
   useColorScheme()

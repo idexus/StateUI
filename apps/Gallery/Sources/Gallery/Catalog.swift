@@ -431,7 +431,7 @@ final class Catalog {
             route: "environment",
             title: "Environment",
             summary: "What the host knows - the device, the screen, the locale, the "
-                + "network and the battery - the application's session, an object "
+                + "network and a request through it, and the battery - the application's session, an object "
                 + "of your own provided above and resolved below by type, and a document "
                 + "in its own language; the theme is under Styles, the scene's and the "
                 + "window's sessions under Scene.",
@@ -444,6 +444,7 @@ final class Catalog {
                 Sample(LocaleInfoSample()),
                 Sample(LocalizationSample()),
                 Sample(ConnectivitySample()),
+                Sample(HTTPRequestSample()),
                 Sample(BatterySample()),
                 Sample(AccessibilitySettingsSample()),
                 Sample(PlatformSupportSample()),

@@ -184,9 +184,9 @@ enum WebRealization {
         ]
     }()
 
-    /// The acts this host performs: every host's (`HostActs.performed`), the files (`HostActs.files`), a list
-    /// scrolled to an item, and a web view's steps and scripts.
-    static let acts: [any ContractMember] = HostActs.performed + HostActs.files + [
+    /// The acts this host performs: every host's (`HostActs.performed`), the files (`HostActs.files`), the requests
+    /// (`HostActs.network`), a list scrolled to an item, and a web view's steps and scripts.
+    static let acts: [any ContractMember] = HostActs.performed + HostActs.files + HostActs.network + [
         ItemsViewContract.scrollTo, WebViewContract.goBack, WebViewContract.goForward, WebViewContract.reload,
         WebViewContract.evaluateJavaScript,
     ]

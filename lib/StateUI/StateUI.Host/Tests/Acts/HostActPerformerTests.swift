@@ -89,6 +89,18 @@ private final class Answers: ActAnswering {
     }
 }
 
+/// A platform's networking the tests answer for: what was sent, and what the server says.
+private final class Network: NetworkToolkit {
+    var readsRelativeAddresses = false
+    var sent: [HostRequest] = []
+    var answer: Result<HostResponse, ActFailure> = .success(HostResponse(status: 200, headers: [], body: []))
+
+    func send(_ request: HostRequest, answered: @escaping (Result<HostResponse, ActFailure>) -> Void) {
+        sent.append(request)
+        answered(answer)
+    }
+}
+
 /// The acts every host performs, answered the same on each: the toolkit does its part, the performer the rest.
 @MainActor
 final class HostActPerformerTests: XCTestCase {
@@ -110,6 +122,54 @@ final class HostActPerformerTests: XCTestCase {
 
     /// The window the tests' toolkits ask in, unless a test says another.
     static var window: MountedElement { windows.first }
+
+    /// A request reaches the platform as the application sent it, and the server's answer comes back as every host
+    /// answers it: its status, the headers' names in lowercase - one said twice joined, sorted by name - and its body.
+    /// A status is an answer; no answer at all fails the call with the platform's reason.
+    func testARequestIsSentAndItsAnswerComesBackAlike() {
+        let (network, answers) = (Network(), Answers())
+        let acts = HostActPerformer(toolkit: Toolkit(), network: network, answers: answers, tree: { nil })
+        network.answer = .success(HostResponse(status: 404, headers: [
+            HostHeader(name: "Set-Cookie", value: "a=1"), HostHeader(name: "Content-Type", value: "text/plain"),
+            HostHeader(name: "set-cookie", value: "b=2"),
+        ], body: Array("Not here".utf8)))
+
+        acts.perform(HostActCall(act: .sendRequest, arguments: [
+            .string("https://example.com/parcels"), .name("post"), .strings(["Accept", "json"]), .bytes([1, 2]),
+        ], completion: 1))
+        network.answer = .failure(ActFailure("the server could not be found"))
+        acts.perform(HostActCall(act: .sendRequest, arguments: [
+            .string("https://nowhere.example"), .name("GET"), .strings([]), .bytes([]),
+        ], completion: 2))
+
+        XCTAssertEqual(network.sent.first, HostRequest(
+            address: "https://example.com/parcels", method: "POST", headers: [HostHeader(name: "Accept", value: "json")],
+            body: [1, 2]))
+        XCTAssertEqual(answers.replies[1], [
+            .number(404), .strings(["content-type", "text/plain", "set-cookie", "a=1, b=2"]), .bytes(Array("Not here".utf8)),
+        ])
+        XCTAssertEqual(answers.failures[2], "the server could not be found")
+    }
+
+    /// An address with no scheme is read against a page, where one stands - the Web's; elsewhere it fails before
+    /// anything is sent. A host with no networking says it performs no requests.
+    func testAnAddressWithNoSchemeIsSentOnlyWhereAPageReadsIt() {
+        let (network, answers) = (Network(), Answers())
+        let acts = HostActPerformer(toolkit: Toolkit(), network: network, answers: answers, tree: { nil })
+        let relative: [HostValue] = [.string("/api/parcels"), .name("GET"), .strings([]), .bytes([])]
+
+        acts.perform(HostActCall(act: .sendRequest, arguments: relative, completion: 1))
+        network.readsRelativeAddresses = true
+        acts.perform(HostActCall(act: .sendRequest, arguments: relative, completion: 2))
+        performer(Toolkit(), answers).perform(HostActCall(act: .sendRequest, arguments: relative, completion: 3))
+
+        XCTAssertEqual(
+            answers.failures[1], "the address '/api/parcels' names no scheme, and no page stands to read it against")
+        XCTAssertEqual(network.sent.map(\.address), ["/api/parcels"], "sent where a page reads it")
+        XCTAssertEqual(answers.failures[3]?.contains("does not perform the act 'sendRequest'"), true)
+        XCTAssertFalse(HostRequest(address: "parcels/42").namesItsScheme)
+        XCTAssertTrue(HostRequest(address: "http://localhost:8080").namesItsScheme)
+    }
 
     /// The time and the zones are the toolkit's, answered as every host answers them; a zone nobody knows fails
     /// with the reason.

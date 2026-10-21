@@ -280,6 +280,15 @@ enum JavaNatives {
                     ticket: ticket, bytes: Java.bytesOf(bytes), failure: failure.map { Java.text($0) })
             }
         }
+        let requestAnswered: @convention(c) (Environment, jclass?, jlong, jint, jobjectArray?, jbyteArray?, jstring?) -> Void = {
+            _, _, ticket, status, headers, body, failure in
+            nonisolated(unsafe) let (headers, body, failure) = (headers, body, failure)
+            MainActor.assumeIsolated {
+                AndroidRenderer.shared?.requestAnswered(
+                    ticket: ticket, status: Int(status), headers: Java.texts(headers), body: Java.bytesOf(body),
+                    failure: failure.map { Java.text($0) })
+            }
+        }
         let dragHeard: @convention(c) (Environment, jclass?, jlong, jint, jstring?) -> Void = { _, _, number, kind, words in
             nonisolated(unsafe) let words = words
             MainActor.assumeIsolated { AndroidView.find(number)?.heardDrag(kind: kind, words: words.map { Java.text($0) }) }
@@ -433,6 +442,8 @@ enum JavaNatives {
             ("filesChosen", "(J[Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)V",
              unsafeBitCast(filesChosen, to: UnsafeMutableRawPointer.self)),
             ("fileRead", "(J[BLjava/lang/String;)V", unsafeBitCast(fileRead, to: UnsafeMutableRawPointer.self)),
+            ("requestAnswered", "(JI[Ljava/lang/String;[BLjava/lang/String;)V",
+             unsafeBitCast(requestAnswered, to: UnsafeMutableRawPointer.self)),
             ("launched", "(JZ)V", unsafeBitCast(launched, to: UnsafeMutableRawPointer.self)),
             ("dragHeard", "(JILjava/lang/String;)V", unsafeBitCast(dragHeard, to: UnsafeMutableRawPointer.self)),
             ("filesDragged", "(J[Ljava/lang/String;[Ljava/lang/String;)V",

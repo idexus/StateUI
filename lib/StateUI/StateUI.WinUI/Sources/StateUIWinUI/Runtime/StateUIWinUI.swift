@@ -128,6 +128,15 @@ enum WinUICallbacks {
                 let why = failure.map { String(cString: $0) }
                 MainActor.assumeIsolated { WinUIRenderer.shared?.fileToolkit.read(ticket: ticket, bytes: read, failure: why) }
             },
+            requestAnswered: { ticket, status, headers, body, length, failure in
+                let said = headers.map { String(cString: $0) } ?? ""
+                let read = body.map { Array(UnsafeBufferPointer(start: $0, count: Int(length))) } ?? []
+                let why = failure.map { String(cString: $0) }
+                MainActor.assumeIsolated {
+                    WinUIRenderer.shared?.network.answered(
+                        ticket: ticket, status: Int(status), headers: said, body: read, failure: why)
+                }
+            },
             launchAnswered: { ticket, taken in
                 MainActor.assumeIsolated { WinUIRenderer.shared?.fileToolkit.launched(ticket: ticket, taken: taken) }
             },

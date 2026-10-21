@@ -376,5 +376,6 @@ extension NodeType {
     static let launchLink = ApplicationContract.launchLink.token
     static let readClipboard = ApplicationContract.readClipboard.token
     static let share = ApplicationContract.share.token
+    static let sendRequest = ApplicationContract.sendRequest.token
     static let writeClipboard = ApplicationContract.writeClipboard.token
 }

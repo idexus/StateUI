@@ -121,6 +121,14 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// See `WindowSession.saveFile(_:name:types:)`.
     public static let saveFile = ElementAct<Self, (Name, Name, [UInt8], String, [FileType]), ChosenFile?>("saveFile")
 
+    /// Sends a request through the platform's own networking - the address, the
+    /// method, the headers as names and values in turn, the body - answering the
+    /// status, the headers the same way, their names in lowercase, and the body.
+    ///
+    /// See `ApplicationSession.send(_:)`.
+    public static let sendRequest = ElementAct<Self, (String, Name, [String], [UInt8]), (Int, [String], [UInt8])>(
+        "sendRequest")
+
     /// Offers words, a link or both to the platform's share sheet over a window -
     /// the window, the words, the link - answering whether the user shared
     /// them.
@@ -144,6 +152,6 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     public static let members: [any ContractMember] = [
         alert, announce, chooseAction, confirm, currentTime, currentTimeZone, handlerFailed,
         hideOnScreenKeyboard, launchFile, launchLink, openFiles, persistSceneValue, persistValue, prompt,
-        readClipboard, readFile, saveFile, share, useColorScheme, utcOffset, writeClipboard,
+        readClipboard, readFile, saveFile, sendRequest, share, useColorScheme, utcOffset, writeClipboard,
     ]
 }

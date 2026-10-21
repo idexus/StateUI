@@ -38,7 +38,7 @@ final class WebRenderer {
     /// The Web's part of the acts and of the files, and what performs them and answers them by the host layer's rules.
     private(set) lazy var actToolkit = WebActToolkit(renderer: self)
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: WebFileToolkit(renderer: self), answers: runtime.core,
+        toolkit: actToolkit, files: WebFileToolkit(renderer: self), network: WebNetwork(), answers: runtime.core,
         tree: { [unowned self] in runtime.tree })
 
     /// Whether the call ending reports what it laid out: a call the browser makes inside it reports nothing.

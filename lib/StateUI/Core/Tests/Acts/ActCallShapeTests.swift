@@ -376,6 +376,37 @@ final class ActCallShapeTests: XCTestCase {
         try await check("launchFile", [crossed]) { _ = try await file.launch() }
     }
 
+    /// A request crosses as its address, its method's name, its headers as names and values in turn - sorted by
+    /// name, so the same request crosses the same way every time - and its body as bytes.
+    func testARequestCrossesWithItsArgumentsInPlace() async throws {
+        let request = HTTPRequest(
+            "https://example.com/parcels", method: .post, headers: ["X-Kept": "2", "Accept": "json"], body: [1, 2])
+        try await check("sendRequest", [
+            .string("https://example.com/parcels"), .name("POST"), .strings(["Accept", "json", "X-Kept", "2"]),
+            .bytes([1, 2]),
+        ]) { _ = try await StandardEnvironment.application.send(request) }
+    }
+
+    /// The server's answer comes back as its status, its headers - by name in any case, one said twice holding both
+    /// values - and its body.
+    func testAServersAnswerComesBackAsItWasSaid() async throws {
+        drain()
+        let task = Self.begin { try await StandardEnvironment.application.send(HTTPRequest("https://example.com")) }
+        let call = try XCTUnwrap(drain().first?.completion)
+
+        HostBoundary.reply(call, with: [
+            .number(404), .strings(["content-type", "text/plain", "set-cookie", "a=1", "set-cookie", "b=2"]),
+            .bytes(Array("Not here".utf8)),
+        ])
+        await settle()
+        let response = try await task.value
+
+        XCTAssertEqual(response.status, 404, "a status is an answer")
+        XCTAssertEqual(response.header("Content-Type"), "text/plain")
+        XCTAssertEqual(response.header("set-cookie"), "a=1, b=2")
+        XCTAssertEqual(response.text, "Not here")
+    }
+
     /// An address launched crosses as written.
     func testALinkCrossesAsWritten() async throws {
         try await check("launchLink", [.string("https://www.swift.org")]) {

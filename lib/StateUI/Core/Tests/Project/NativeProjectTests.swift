@@ -499,10 +499,10 @@ final class NativeProjectTests: XCTestCase {
         }
     }
 
-    /// The GTK 4 host is a Swift package beside the others, Swift alone over GTK's C API: its C module is
-    /// the system's headers and nothing else - a module map and one header that includes libadwaita's and GLib's
-    /// watch of a file descriptor, and names GLib's flags, each under a name of the host's - and its scripts stand
-    /// under `.scripts/GTK`.
+    /// The GTK 4 host is a Swift package beside the others, Swift alone over GTK's C API: its C modules are
+    /// the system's headers and nothing else - each a module map and one header: one including libadwaita's and
+    /// GLib's watch of a file descriptor, and naming GLib's flags, each under a name of the host's, the other
+    /// libsoup's - and its scripts stand under `.scripts/GTK`.
     func testTheGTKHostIsSwiftAloneOverGTKsCAPI() throws {
         let repository = SourceTree.repository
         let host = "lib/StateUI/StateUI.GTK"
@@ -525,6 +525,15 @@ final class NativeProjectTests: XCTestCase {
         XCTAssertEqual(
             code.dropFirst(includes.count).filter { (try? flag.wholeMatch(in: String($0))) == nil }, [],
             "the header declares something of its own")
+
+        let soup = "\(host)/Sources/CStateUISoup"
+        let soupFiles = try SourceTree.files(under: repository.appendingPathComponent(soup), entering: { _ in true })
+        XCTAssertEqual(soupFiles.sorted(), ["CStateUISoup.h", "module.modulemap"], "libsoup's module holds more")
+        let soupHeader = try String(
+            contentsOf: repository.appendingPathComponent("\(soup)/CStateUISoup.h"), encoding: .utf8)
+        XCTAssertEqual(
+            soupHeader.split(separator: "\n").filter { !$0.hasPrefix("//") && !$0.isEmpty }, ["#include <libsoup/soup.h>"],
+            "libsoup's headers alone")
     }
 
     /// Every GTK HEAD is an executable its application declares exactly when a

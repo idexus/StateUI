@@ -149,5 +149,8 @@ final class KeyGuardTests: XCTestCase {
         "WebImageView.swift": toolkit + ": the DOM's attributes",
         "AppKitWindowToolbar.swift": "the words a back button says, in the language the system speaks",
         "WebFileToolkit.swift": toolkit + ": the schemes of an address the browser opens",
+        // HTTP's.
+        "HTTPRequest.swift": "HTTP's header names", "HTTPResponse.swift": "HTTP's header names",
+        "NetworkToolkit.swift": "HTTP's header names",
     ]
 }

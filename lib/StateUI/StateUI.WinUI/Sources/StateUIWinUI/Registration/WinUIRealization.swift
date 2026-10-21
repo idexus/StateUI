@@ -265,7 +265,7 @@ enum WinUIRealization {
         let registry = WinUIRegistrations.registry
         return HostDeclaration(
             realization: registry.realization, shared: registry.sharedNames,
-            acts: (HostActs.performed + HostActs.files + [ItemsViewContract.scrollTo]).map(\.name))
+            acts: (HostActs.performed + HostActs.files + HostActs.network + [ItemsViewContract.scrollTo]).map(\.name))
     }
 
     /// Why a control left out with its children is left out alone: WinUI has no property that leaves out a

@@ -14,6 +14,7 @@
 @_spi(Host) @MainActor public final class HostActPerformer {
     private let toolkit: any ActToolkit
     private let files: (any FileToolkit)?
+    private let network: (any NetworkToolkit)?
     private let answers: any ActAnswering
     private let tree: () -> MountedTree?
 
@@ -34,15 +35,16 @@
         case share(HostShare)
     }
 
-    /// A performer for the acts called on the host whose toolkit `toolkit` is - `files` its toolkit for files, where
-    /// it has one - its answers through `answers`, its aimed acts found in `tree`. A caller an answer resumes runs
-    /// in a job of its own, which asks for its turn.
+    /// A performer for the acts called on the host whose toolkit `toolkit` is - `files` its toolkit for files and
+    /// `network` for requests, where it has them - its answers through `answers`, its aimed acts found in `tree`. A
+    /// caller an answer resumes runs in a job of its own, which asks for its turn.
     public init(
-        toolkit: any ActToolkit, files: (any FileToolkit)? = nil, answers: any ActAnswering = CoreLink(),
-        tree: @escaping () -> MountedTree?
+        toolkit: any ActToolkit, files: (any FileToolkit)? = nil, network: (any NetworkToolkit)? = nil,
+        answers: any ActAnswering = CoreLink(), tree: @escaping () -> MountedTree?
     ) {
         self.toolkit = toolkit
         self.files = files
+        self.network = network
         self.answers = answers
         self.tree = tree
     }
@@ -76,6 +78,8 @@
         case .openFiles, .saveFile, .readFile, .launchFile, .launchLink:
             guard let files else { return fail(call, notPerformed(call)) }
             perform(call, files: files)
+        case .sendRequest:
+            send(call)
         case .announce:
             toolkit.announce(call.arguments.first?.string ?? "")
             reply(call, [])
@@ -252,6 +256,20 @@
         default:
             files.launch(address: call.arguments.value(0)?.string ?? "", answered: launched)
         }
+    }
+
+    // MARK: - Requests
+
+    /// Sends the request the act names through the toolkit for requests; an address with no scheme only where the
+    /// platform reads it against a page.
+    /// Design: docs/design/core/acts.md#requests
+    private func send(_ call: HostActCall) {
+        guard let network else { return fail(call, notPerformed(call)) }
+        guard let request = HostRequest(call) else { return fail(call, "the act names no address") }
+        guard request.namesItsScheme || network.readsRelativeAddresses else {
+            return fail(call, "the address '\(request.address)' names no scheme, and no page stands to read it against")
+        }
+        network.send(request) { [weak self] answered in self?.deliver(call, answered.map(\.answer)) }
     }
 
     // MARK: - The focus

@@ -208,8 +208,8 @@ enum UIKitRealization {
         let registry = UIKitRegistrations.registry
         return HostDeclaration(
             realization: registry.realization, shared: registry.sharedNames,
-            acts: (HostActs.performed + HostActs.files + WebKitView.acts + UIKitRegistrations.itemsActs
-                + [MapContract.moveToRegion]).map(\.name))
+            acts: (HostActs.performed + HostActs.files + HostActs.network + WebKitView.acts
+                + UIKitRegistrations.itemsActs + [MapContract.moveToRegion]).map(\.name))
     }
 
     /// What UIKit realizes, member by member: these records before what its registry says.

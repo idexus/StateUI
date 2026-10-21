@@ -1,0 +1,4 @@
+module CStateUISoup [system] {
+    header "CStateUISoup.h"
+    export *
+}

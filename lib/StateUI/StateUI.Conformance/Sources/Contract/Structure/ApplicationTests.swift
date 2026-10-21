@@ -316,6 +316,31 @@
                 s.expect(said.values, ["opened 0", "saved nothing"])
                 s.expect(try s.fileDialog(), nil, "and the dialog is gone")
             },
+            ConformanceCase("aRequestIsAnsweredAsTheServerSaidIt", proves: [
+                Covered(ApplicationContract.sendRequest),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let address = try s.served()
+                let said = Received<String>()
+                s.start {
+                    WithSessions { _, application in
+                        VStack {
+                            Button("Send").onClicked(gate: .ignoreWhileRunning) {
+                                let response = try await application.send(HTTPRequest(
+                                    address + "/parcels", method: .post, headers: ["X-Asked": "kept"],
+                                    body: Array("Kept words".utf8)))
+                                said.values.append([
+                                    String(response.status), response.header("X-Method") ?? "-",
+                                    response.header("x-asked") ?? "-", response.text,
+                                ].joined(separator: " "))
+                            }.id("send")
+                        }
+                    }
+                }
+
+                try s.perform(.activate, on: s.element("send"))
+                s.settle { !said.values.isEmpty }
+                s.expect(said.values, ["201 POST kept Kept words"], "the status, the headers both ways and the body")
+            },
             ConformanceCase("anAddressAndAFileAreLaunched", proves: [
                 Covered(ApplicationContract.launchLink), Covered(ApplicationContract.launchFile),
             ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile)]) { s in
