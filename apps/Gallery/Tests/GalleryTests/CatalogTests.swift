@@ -592,7 +592,7 @@ final class CatalogTests: XCTestCase {
         // Every OTHER sample is everywhere: hiding is the exception, and one
         // hidden by accident would simply vanish from a phone with no test
         // the wiser.
-        let hidden = notOnAPhone
+        let hidden = notOnAPhone.union(["window"])
 
         for group in catalog.groups {
             for other in group.samples where !hidden.contains(other.id) {
@@ -614,6 +614,23 @@ final class CatalogTests: XCTestCase {
             XCTAssertFalse(sample.isShown(on: silent), "\(id) is listed where the host says nothing of it")
         }
         XCTAssertTrue(try XCTUnwrap(catalog.sample(id: "deviceInfo")).isShown(on: silent), "a sample of no such fact")
+    }
+
+    /// The Window sample sizes, places and bounds its window: it is listed where the host sizes a window - not
+    /// where the system or the browser does.
+    func testTheWindowSampleIsListedWhereTheHostSizesAWindow() throws {
+        let sample = try XCTUnwrap(catalog().sample(id: "window"))
+        defer { HostBoundary.setRealization(HostRealization()) }
+
+        HostBoundary.setRealization(HostRealization())
+        XCTAssertFalse(sample.isShown(on: Self.device(.desktop)), "listed where the host sizes no window")
+        XCTAssertFalse(sample.isShown(on: Self.device(.phone)), "listed on a phone")
+
+        HostBoundary.setRealization(HostRealization(
+            elements: [WindowContract.nodeType],
+            members: [HostRealizedMember(element: "Window", owner: "Window", member: "width")]))
+        XCTAssertTrue(sample.isShown(on: Self.device(.desktop)), "hidden where the host sizes a window")
+        XCTAssertTrue(sample.isShown(on: Device()), "a headless test sees everything")
     }
 
     /// A device of `formFactor` whose host reports its display, its network and its battery.
