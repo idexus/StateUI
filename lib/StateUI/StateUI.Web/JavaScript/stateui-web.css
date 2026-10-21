@@ -728,7 +728,8 @@ body {
   .stateui-sidebar, .stateui-split, .stateui-bar, .stateui-bar *, .stateui-stack > [data-arriving],
   .stateui-stack > [data-returning], .stateui-scrim,
   .stateui-loading, .stateui-loading-bar, .stateui-loading-bar::-webkit-progress-value, progress::-webkit-progress-value,
-  .stateui-switch::before, .stateui-sheet, .stateui-sheet::backdrop, .stateui-question, .stateui-menu {
+  .stateui-switch::before, .stateui-sheet, .stateui-sheet::backdrop, .stateui-question, .stateui-menu,
+  .stateui-popover {
     transition: none !important;
     animation: none !important;
   }
