@@ -57,6 +57,14 @@
     /// Places the element's children again.
     func arrangeChildren()
 
+    /// The element's size may change outside a patch - a child faded out and its layout closes over it: this
+    /// layout and every one around it forget what they measured and lay out again.
+    func invalidateMeasurements()
+
+    /// Hands the element's layout what its children travel under, and tells it a change reached it: its next
+    /// arrangement moves them as a patch's does.
+    func configureLayoutMotion()
+
     /// The direction the element lays out in, `MountedElement.layoutDirection`, was given or turned: the toolkit's
     /// view takes it.
     func directionChanged()

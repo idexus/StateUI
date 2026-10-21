@@ -156,3 +156,10 @@ short, does it hide and its layout close over it; shown again mid-fade, it
 comes back from the opacity it stands at; shown from nothing, it fades in.
 Where nothing moves - no motion, or the user asked for less - nothing
 crosses, and the view simply shows or hides.
+
+Its layout closing over it is the change hiding it at once would be, though
+no patch carries it: every layout from its own up to the page travels to its
+new places (`configureLayoutMotion`) and measures again
+(`invalidateMeasurements`). A layout that closed alone, its own size cached
+by the layouts around it, left what stands below it where it stood - a gap
+that stayed until another change, and then a jump.

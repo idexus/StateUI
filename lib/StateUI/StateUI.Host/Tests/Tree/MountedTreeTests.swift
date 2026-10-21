@@ -964,6 +964,8 @@ private final class RecordingNative: NativeElement {
         log.presentedWriting.append(ProgramWrite.isWriting)
     }
     func arrangeChildren() { log.arranged.append(name) }
+    func invalidateMeasurements() {}
+    func configureLayoutMotion() {}
     func directionChanged() { log.turned.append(name) }
     func leave() { log.left.append(name) }
 }
@@ -981,6 +983,8 @@ private final class ReadingNative: NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) { _ = element.resolvedValue(.value) }
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
+    func invalidateMeasurements() {}
+    func configureLayoutMotion() {}
     func directionChanged() {}
     func leave() {}
 }

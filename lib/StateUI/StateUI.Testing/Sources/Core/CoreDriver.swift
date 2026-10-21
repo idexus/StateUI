@@ -110,5 +110,7 @@ private final class CoreView: NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) {}
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
+    func invalidateMeasurements() {}
+    func configureLayoutMotion() {}
     func leave() {}
 }

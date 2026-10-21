@@ -29,6 +29,9 @@ final class VisibilityCrossingTests: XCTestCase {
         clock.time = 200
         runtime.displayCycle.frame(now: 200)
         XCTAssertEqual(closed(), 1)
+        let layout = try XCTUnwrap(runtime.tree.root?.native as? NoView)
+        XCTAssertEqual(layout.measuredAgain, 1, "the layouts around it measure again")
+        XCTAssertGreaterThan(layout.travels, 0, "and travel to their new places, as a patch's change has them")
         XCTAssertTrue(places.patched, "the change arrives where the layout travels")
         XCTAssertFalse(view.isShown, "hidden once the fade landed")
         XCTAssertFalse(element.standsShown)

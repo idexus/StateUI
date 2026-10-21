@@ -6,6 +6,9 @@
 
 /// Children placed: each child's view in its layout, with its place written as CSS.
 extension WebElement {
+    /// The browser measures a layout again itself: the host keeps no measurement to forget.
+    func invalidateMeasurements() {}
+
     /// Hands a text its runs, a collection its changed entries and a page structure its pages; else a layout its
     /// children's views in order, each with what its place reads.
     func arrangeChildren() {

@@ -80,7 +80,12 @@ extension MountedElement {
         view.setShown(standsShown)
         view.setOpacity(value(.opacity)?.number ?? 1)
         places?.patchArrived()
-        layoutParent?.native.arrangeChildren()
+        // Closing over it is the change hiding it at once would be: every layout around it travels to its new
+        // places and measures again. Design: docs/design/host/motion.md#showing-and-hiding
+        guard let parent = layoutParent else { return }
+        for layout in parent.measuredUpward().layouts { layout.native.configureLayoutMotion() }
+        parent.native.invalidateMeasurements()
+        parent.native.arrangeChildren()
     }
 
     /// The element whose layout places this one: the nearest above it with a view.

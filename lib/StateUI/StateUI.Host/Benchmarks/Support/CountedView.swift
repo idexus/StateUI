@@ -47,6 +47,10 @@ final class CountedView: NativeElement, FrameReporter {
         cells?.childrenChanged()
     }
 
+    func invalidateMeasurements() {}
+
+    func configureLayoutMotion() {}
+
     func directionChanged() {}
 
     func leave() {

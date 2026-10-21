@@ -140,6 +140,8 @@ private final class WalkedHalf: NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) {}
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
+    func invalidateMeasurements() {}
+    func configureLayoutMotion() {}
     func directionChanged() {}
 
     func leave() {

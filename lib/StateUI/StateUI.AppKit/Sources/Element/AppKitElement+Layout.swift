@@ -18,6 +18,10 @@ extension AppKitElement {
         if view is AppKitTextView { arrangeChildren() }
     }
 
+    func invalidateMeasurements() {
+        view?.invalidateMeasurements()
+    }
+
     func arrangeChildren() {
         guard let view else { return }
         if let items = view as? AppKitItemsView { return items.childrenChanged() }

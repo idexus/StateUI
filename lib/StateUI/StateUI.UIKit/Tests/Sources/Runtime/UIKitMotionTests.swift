@@ -138,3 +138,40 @@ final class UIKitMotionTests: XCTestCase {
         return host.runtime.tree.root.flatMap(find).flatMap { ($0.native as? UIKitElement)?.view }
     }
 }
+    /// A row hidden fades where it stands, then its stack closes over it - and every layout around the stack follows
+    /// the stack's new size: the view below the stack comes up as far as the row was tall.
+    @MainActor
+    func testARowFadedOutClosesEveryLayoutAroundIt() throws {
+        let clock = TestClock()
+        let shown = State(wrappedValue: true)
+        let host = UIKitRenderer.running(clock: clock) {
+            VStack {
+                VStack {
+                    Rectangle().fill(Color(red: 255, green: 0, blue: 0)).height(40).isVisible(shown.wrappedValue)
+                    Rectangle().fill(Color(red: 0, green: 255, blue: 0)).height(40)
+                }
+                .spacing(0)
+                Rectangle().fill(Color(red: 0, green: 0, blue: 255)).height(40).id("below")
+            }
+            .spacing(0)
+            .motion(.eased(.milliseconds(1000), .linear))
+        }
+        defer { host.finish() }
+        let below = try XCTUnwrap(Self.view(of: "below", in: host))
+        let start = below.frame.minY
+
+        shown.wrappedValue = false
+        host.runtime.pump.turn()
+        host.layOut()
+        var risen: [Double] = []
+        for now in stride(from: 250, through: 4000, by: 250) {
+            clock.now = Double(now)
+            host.frame()
+            host.layOut()
+            risen.append(start - below.frame.minY)
+        }
+
+        XCTAssertEqual(risen.last ?? 0, 40, accuracy: 1, "the view below the stack came up as the row went")
+        XCTAssertTrue(risen.contains { $0 > 1 && $0 < 39 }, "on its way, not at once: \(risen)")
+    }
+

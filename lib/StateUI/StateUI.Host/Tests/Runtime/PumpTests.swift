@@ -370,5 +370,7 @@ private final class HeldNative: NativeElement {
     }
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
+    func invalidateMeasurements() {}
+    func configureLayoutMotion() {}
     func leave() {}
 }

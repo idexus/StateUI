@@ -114,6 +114,8 @@ private final class Drawing: NativeElement {
     }
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
+    func invalidateMeasurements() {}
+    func configureLayoutMotion() {}
     func leave() {}
 }
 
