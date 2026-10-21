@@ -33,6 +33,9 @@ extension AndroidElement {
         case .page, .overlay:
             return AndroidSingleChildView()
 
+        case .popover:
+            return AndroidPopoverView()
+
         case .navigationStack:
             return AndroidNavigationView(reducesMotion: { [weak host] in host?.runtime.reducesMotion() ?? false })
 

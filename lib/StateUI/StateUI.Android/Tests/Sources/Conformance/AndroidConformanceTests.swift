@@ -48,6 +48,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testZStack", testZStack),
             ("testApplication", testApplication),
             ("testContextMenu", testContextMenu),
+            ("testPopover", testPopover),
             ("testButtonMenu", testButtonMenu),
             ("testMenu", testMenu),
             ("testMenuBar", testMenuBar),
@@ -133,6 +134,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testZStack() throws { try conform(ZStackTests.self) }
     func testApplication() throws { try conform(ApplicationTests.self) }
     func testContextMenu() throws { try conform(ContextMenuTests.self) }
+    func testPopover() throws { try conform(PopoverTests.self) }
     func testButtonMenu() throws { try conform(ButtonMenuTests.self) }
     func testMenu() throws { try conform(MenuTests.self) }
     func testMenuBar() throws { try conform(MenuBarTests.self) }

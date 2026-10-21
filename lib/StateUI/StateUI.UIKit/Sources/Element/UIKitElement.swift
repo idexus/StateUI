@@ -29,6 +29,9 @@ final class UIKitElement: NativeElement {
     /// What UIKit asks for the view's context menu, while it has one.
     var contextMenu: UIKitContextMenu?
 
+    /// The popover this element is, while it has been shown.
+    var shownPopover: UIKitPopover?
+
     /// Whether VoiceOver meets the view of itself, read before the tree says anything of it.
     var accessibilityStanding: Bool?
     /// The view's own kind among its traits, read before the element first says one.
@@ -112,11 +115,13 @@ final class UIKitElement: NativeElement {
         configureLayoutMotion()
         arrangeChildren()
         arrangePages(changed: changed)
+        configurePopover()
         host?.runtime.frames.follow(self, of: element, reads: readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
+        if changed.contains(.isShown) { configurePopover() }
         if !changed.isDisjoint(with: MountedElement.sidebarMaterials), let split = controller as? UIKitSplitViewController {
             split.paintsSidebar = element.paintsSidebar
             split.showPageBackgrounds()
@@ -128,6 +133,8 @@ final class UIKitElement: NativeElement {
         listening = nil
         dragAndDrop?.detach()
         dragAndDrop = nil
+        shownPopover?.close()
+        shownPopover = nil
         releasePages()
     }
 

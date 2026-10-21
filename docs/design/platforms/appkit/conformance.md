@@ -38,6 +38,14 @@ they stood, as the system puts them. The driver's hosts
 keep their values in preferences of their own, which a case's first launch
 finds empty.
 
+## A popover
+
+A popover shows only by a window on the screen, so where the host presents
+no window it holds the popover's view unshown, in a panel of its own no one
+sees, as it holds the test's windows: the driver reads the host's own
+`isShown`, and closes it as AppKit's transient popover closes on a click
+beside it, through the host's own entry.
+
 ## Parts
 
 A family runs as one test, and the longest - a visual element's, a view's, a

@@ -21,6 +21,8 @@ extension UIKitDriver {
             return "the drag and drop interactions' handlers called, no drag session"
         case "dropFiles":
             return "the drop interaction's handler told the driver's files, no drag session"
+        case "close" where taken.element == "Popover":
+            return "the popover taken away and its delegate told, no tap beside it"
         case "answerShare":
             return "the host's completion called with the driver's answer, no activity chosen"
         case "answerFiles":

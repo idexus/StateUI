@@ -221,6 +221,10 @@ final class WinUIDriver: HostDriver {
         case (.focus, let view?): _ = stateui_winui_focus(view.handle, true)
         case (.goBack, _) where element.type == .navigationStack: try window().titleBar.chose(-1)
         case (.goBack, _) where element.type == .window: try window().titleBar.chose(-3)
+        case (.close, let popover as WinUIPopoverView):
+            // As a click beside it: the flyout hidden while it is wanted, which tells its closing.
+            guard let flyout = popover.flyout else { throw DriverCannot(act, on: element) }
+            stateui_winui_popover_hide(flyout)
         case (.close, _) where element.type == .window: stateui_winui_window_close(try window(of: element).handle)
         case (.minimize, _) where element.type == .window: try state(of: element, minimized: true, activated: false)
         case (.restore, _) where element.type == .window: try state(of: element, minimized: false, activated: true)

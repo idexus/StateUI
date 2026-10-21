@@ -431,8 +431,8 @@ private final class UIKitPictureKey: NSObject {
 
 extension UIKitRenderer: HostPresenter {
     func presentRendered(touchedChrome: Bool) {
-        guard touchedChrome else { return tellStandingPhases() }
-        synchronizeWindows()
+        if touchedChrome { synchronizeWindows() } else { tellStandingPhases() }
+        for popover in runtime.tree.takeWaitingPopovers() { popover.uiKit.configurePopover() }
     }
 
     func presentFrame(movedChrome: Bool) {

@@ -66,11 +66,13 @@ final class AndroidElement: NativeElement {
         arrangePages(changed: changed)
         configureContextMenu()
         configureButtonMenu()
+        configurePopover()
         host?.runtime.frames.follow(self, of: element, reads: readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
+        if changed.contains(.isShown) { configurePopover() }
         if !changed.isDisjoint(with: MountedElement.sidebarMaterials) { groundSidebar() }
     }
 

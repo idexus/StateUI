@@ -195,6 +195,15 @@ closes the dialog first, as libadwaita closes it, and stays: the user's close
 answers the question "no" or takes the sheet away, and the next closes the
 window. A window the tree closes goes at once, its dialogs with it.
 
+## A popover
+
+A view's popover is a `GtkPopover` holding the popover's panel, a child of
+the anchor's widget, popped up on it - its arrow and its closing on a click
+beside it or Escape GTK's own. The host keeps whether it wants it shown:
+`closed` while it does is the user's. As the element leaves, the popover
+lets go of the panel and comes off the anchor's widget - the anchor leaves
+first, but its widget stands until its view goes.
+
 ## The window's overlays
 
 What a window lays over everything it shows - the overlays the pages on its

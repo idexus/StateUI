@@ -26,6 +26,7 @@ extension WebElement {
 
         switch type {
         case .page: return WebLayoutView(tag: "section", arrangement: .single)
+        case .popover: return WebPopoverView()
         case .navigationStack:
             let stack = WebNavigationView()
             // A page arriving moves on the browser's own animation, which nothing else tells has ended.

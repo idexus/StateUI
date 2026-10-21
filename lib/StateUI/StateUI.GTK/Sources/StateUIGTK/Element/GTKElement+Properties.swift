@@ -26,6 +26,7 @@ extension GTKElement {
 
         switch type {
         case .page: return GTKSingleChildView()
+        case .popover: return GTKPopoverView()
         case .overlay:
             let overlay = GTKSingleChildView()
             overlay.passesBeside = true

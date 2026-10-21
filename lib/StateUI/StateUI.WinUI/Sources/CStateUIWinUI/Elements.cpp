@@ -281,10 +281,15 @@ extern "C" bool stateui_winui_is_shown(StateUIObjectRef handle) {
         auto root = element.XamlRoot();
         if (!root) return false;
         auto content = root.Content();
+        auto popups = xaml::Media::VisualTreeHelper::GetOpenPopupsForXamlRoot(root);
         for (xaml::DependencyObject at = element; at; at = xaml::Media::VisualTreeHelper::GetParent(at)) {
             if (auto each = at.try_as<xaml::UIElement>(); each && each.Visibility() != xaml::Visibility::Visible)
                 return false;
             if (at == content) return true;
+            // What an open popup over the window holds - a flyout's content - shows with it.
+            for (auto const &popup : popups) {
+                if (popup.Child() == at) return true;
+            }
         }
         return false;
     } catch (...) {

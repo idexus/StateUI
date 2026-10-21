@@ -140,6 +140,10 @@ extension AndroidDriver {
             renderer?.setPhase(.inactive)
             renderer?.setPhase(.background)
         case (.restore, _) where element.type == .window: renderer?.setPhase(.active)
+        case (.close, let popover as AndroidPopoverView):
+            // As a touch beside it: Android's popup window dismissed, which tells its listener.
+            guard let window = popover.window else { throw DriverCannot(act, on: element) }
+            Java.call(window.reference, JavaAPI.dismissPopover)
         case (.close, _) where element.type == .window:
             renderer?.setPhase(.inactive)
             renderer?.setPhase(.background)

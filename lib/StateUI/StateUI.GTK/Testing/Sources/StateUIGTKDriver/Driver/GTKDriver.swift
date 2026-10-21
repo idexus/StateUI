@@ -93,6 +93,7 @@ final class GTKDriver: HostDriver {
 
     private static let byHostReasons = [
         "read keyboardShortcut of ToolbarItem": "the host's own record: a header bar's button shows no shortcut",
+        "close on Popover": "the popover popped down as a click beside it pops it down, no click sent",
         "read sidebarBackground of SplitView":
             "the class of the host's style sheet the sidebar wears: GTK reads back no background",
         "read flyoutBackground of SplitView":
@@ -199,6 +200,11 @@ final class GTKDriver: HostDriver {
         if act == .activate, element.type == .toolbarItem { return try chooseAction(element) }
         if act == .activate, element.type == .menuItem { return try chooseMenuItem(element) }
         if act == .close, element.type == .window { return try close(element) }
+        if act == .close, let popover = (element.native as? GTKElement)?.view as? GTKPopoverView {
+            // As a click beside it: the popover popped down while it is wanted, which tells its closing.
+            guard let shown = popover.popover else { throw DriverCannot(act, on: element) }
+            return gtk_popover_popdown(shown.of(GtkPopover.self))
+        }
         if case .answer = act, try windowAct(act, on: element) { return }
         if element.type == .window, try windowAct(act, on: element) { return }
         if try backendPerforms(act, on: element) { return }
@@ -259,6 +265,7 @@ final class GTKDriver: HostDriver {
         if let value = reads(property, on: element, view: view) { return value }
         switch (property, view) {
         case (.isOn, let toggle as GTKToggleView): return toggle.isOn.propValue
+        case (.isShown, let popover as GTKPopoverView): return popover.popoverShows.propValue
         case (.value, let slider as GTKSliderView): return slider.value.propValue
         case (.minimum, let slider as GTKSliderView):
             return gtk_adjustment_get_lower(gtk_range_get_adjustment(slider.widget.of(GtkRange.self))).propValue

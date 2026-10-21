@@ -281,6 +281,25 @@ body {
 .stateui-menu > [role="menuitemcheckbox"][aria-checked="true"]::before { content: "✓"; }
 .stateui-menu > [role="separator"] { height: 1px; margin: 5px 6px; background: var(--stateui-line); }
 
+/* A popover: the document's own, under its anchor over everything, a card on the page's raised surface; its
+   layout's grid shows only while it is open. */
+.stateui-popover {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  padding: 0;
+  max-width: calc(100vw - 16px);
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
+  border: 1px solid var(--stateui-line);
+  border-radius: 12px;
+  background: var(--stateui-surface);
+  color: var(--stateui-text);
+  box-shadow: var(--stateui-raised-shadow);
+}
+.stateui-popover:not(:popover-open) { display: none !important; }
+.stateui-popover:popover-open { animation: stateui-fade-in 0.12s ease; }
+
 /* A sheet: the browser's modal dialog, a card in the middle over a shade, from the bottom where the page is narrow;
    its bar the page's chrome, the page under it. */
 .stateui-sheet {

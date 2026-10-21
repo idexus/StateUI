@@ -8,11 +8,11 @@
 /// Design: docs/design/host/tree.md#what-every-element-realizes
 extension Registry {
     /// Whether a host shows an element of `type` as unsupported: no registration of this registry makes it, and it
-    /// is no page nor an arrangement of pages, no overlay, and nothing presented with no view of its own.
+    /// is no page nor an arrangement of pages, no overlay nor popover, and nothing presented with no view of its own.
     /// Design: docs/design/host/tree.md#what-every-element-realizes
     public func showsUnsupported(_ type: NodeType) -> Bool {
         !realizes(type) && !NodeType.viewlessTypes.contains(type) && !NodeType.pageTypes.contains(type)
-            && type != .overlay
+            && type != .overlay && type != .popover
     }
 
     /// A view's place in its layout, by the layout arithmetic: its stated sizes and bounds, its margin, its

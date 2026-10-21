@@ -13,6 +13,8 @@ extension AndroidDriver {
             return "the listener's report of the hand handed to the host, no touch sent"
         case "notch":
             return "the listener's report of a wheel's notches handed to the host, no scroll sent"
+        case "close" where Ability(ability).element == "Popover":
+            return "the popup window dismissed as a touch beside it dismisses it, no touch sent"
         case "switchAway", "switchBack", "bringToFront", "minimize", "restore", "close":
             if Ability(ability).element == "Window" { return "the host told the activity's phase, no activity moved" }
         case "pressKeys":

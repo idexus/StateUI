@@ -1,0 +1,4 @@
+# revision 1.1
+Popover: ✅
+Popover.isShown: ✅
+Popover.isShownChanged: ✓ close on Popover: the popover taken away and its delegate told, no tap beside it

@@ -139,6 +139,9 @@
     private struct Held {
         weak var element: MountedElement?
     }
+
+    /// The popovers their hosts could not show for want of their window, by mount.
+    private var waitingPopovers: [UInt64: Held] = [:]
     private var patchTime: Double?
     private(set) var languageDirection: LayoutDirection?
     private var patchReducesMotion: Bool?
@@ -205,6 +208,19 @@
         if let root { KeyboardShortcuts.complainOfRepeats(in: root, after: patch) }
     }
 
+    /// `popover` waits for its window, which its host makes once the render stands.
+    func wait(_ popover: MountedElement) {
+        waitingPopovers[popover.mount] = Held(element: popover)
+    }
+
+    /// The popovers waiting for their window, in the order they were made, forgotten as they are taken: a host
+    /// tries each again once its windows stand after a render.
+    /// Design: docs/design/host/pages.md#a-popover
+    public func takeWaitingPopovers() -> [MountedElement] {
+        defer { waitingPopovers = [:] }
+        return waitingPopovers.sorted { $0.key < $1.key }.compactMap(\.value.element)
+    }
+
     /// Whether the patches applied since the last take changed what the windows' chrome is made of; forgotten as
     /// it is taken.
     public func takeChromeTouched() -> Bool {
@@ -252,6 +268,7 @@
     /// `element` leaves, with the states it presented: no frame finds it again.
     func unmounted(_ element: MountedElement, presenting states: [Int32]) {
         byMount[element.mount] = nil
+        waitingPopovers[element.mount] = nil
         presents(element, [], before: states)
         left(element.mount)
     }

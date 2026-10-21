@@ -252,7 +252,7 @@ class AndroidView {
     /// The user opened the view's list, calendar or clock.
     func opened() {}
 
-    /// The view's list, calendar or clock closed.
+    /// The view's list, calendar, clock or popover closed.
     func closed() {}
 
     /// What assistive technology meets of the view: the name a test finds it by, the words read for it and the

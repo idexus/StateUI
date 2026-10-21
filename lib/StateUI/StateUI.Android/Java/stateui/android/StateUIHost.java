@@ -94,7 +94,7 @@ final class StateUIHost {
     /** The user opened a view's list, calendar or clock. */
     static native void opened(long view);
 
-    /** A view's list, calendar or clock closed. */
+    /** A view's list, calendar, clock or popover closed. */
     static native void closed(long view);
 
     /** The user chose a day - year, month, day - or a time - hour, minute, 0 - in a date or time field. */

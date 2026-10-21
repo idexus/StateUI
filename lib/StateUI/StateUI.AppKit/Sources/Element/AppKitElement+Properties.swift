@@ -32,7 +32,7 @@ extension AppKitElement {
         case .application, .scene, .window:
             return nil
 
-        case .page:
+        case .page, .popover:
             let page = AppKitSingleChildView()
             page.translatesAutoresizingMaskIntoConstraints = true
             return page

@@ -427,6 +427,13 @@ enum JavaAPI {
     static let itemCell = Java.findClass("stateui/android/StateUIItemCell")
     static let newItemCell = Java.method(itemCell, "<init>", "(Landroid/content/Context;JZI)V")
 
+    static let popover = Java.findClass("stateui/android/StateUIPopover")
+    static let newPopover = Java.method(popover, "<init>", "(Landroid/view/View;J)V")
+    static let showPopover = Java.method(popover, "show", "(Landroid/view/View;)V")
+    static let closePopover = Java.method(popover, "close", "()V")
+    static let dismissPopover = Java.method(popover, "dismiss", "()V")
+    static let isPopoverShowing = Java.method(popover, "isShowing", "()Z")
+
     static let refresh = Java.findClass("stateui/android/StateUIRefresh")
     static let newRefresh = Java.method(refresh, "<init>", "(Landroid/content/Context;J)V")
     static let setRefreshing = Java.method(refresh, "setRefreshing", "(Z)V")

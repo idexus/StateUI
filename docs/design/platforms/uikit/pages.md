@@ -186,6 +186,15 @@ answer (`passed`): UIKit's own dismissal is let finish, else the root
 dismisses it, and then what waited comes - the sheets first, then the next
 thing passing.
 
+## A popover
+
+A view's popover is a controller presented in UIKit's popover style from
+its anchor's view, sized to what it holds - on a phone UIKit adapts it to a
+sheet. It passes over what the window shows like everything else that
+passes ([what passes over the sheets](#what-passes-over-the-sheets)), so it
+waits for a sheet in motion. A tap beside it or a swipe reaches its
+delegate, which tells the host.
+
 ## Menus
 
 A menu is UIKit's, built from the host layer's walk of its entries: an

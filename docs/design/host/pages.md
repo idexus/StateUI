@@ -255,6 +255,27 @@ it, a tab chosen away - takes its overlays with it; nothing is restored,
 because nothing was overwritten. A modal stack standing as the window's page
 is shown as its root under its sheets.
 
+## A popover
+
+A view's popover is a slot of its own (`.popover`): its parent never lays it
+out, and its host shows it in the platform's popover by the parent's view
+while `isShown` is true, taking it away when it turns false - AppKit's
+`NSPopover`, UIKit's popover presentation (a sheet on a phone), Android's
+`PopupWindow`, WinUI's `Flyout`, GTK's `GtkPopover`, the browser's popover.
+What it holds is a tree laid out on its own and sized by its content.
+The platform taking it away while the tree asks for it is the user's
+dismissal - false onto the state, then `isShownChanged`; taken away while the
+tree no longer asks, it is the application's own write coming back, heard by
+nobody (`MountedElement.reportDismissed`).
+
+A popover shows only by an anchor standing in a window. One the tree shows
+from the start, or in a page coming, may ask before that window is made: a
+host whose windows are made once the render stands - AppKit, UIKit - lets it
+wait (`waitForItsWindow`) and tries again after the render
+(`MountedTree.takeWaitingPopovers`), each waiting popover once a render, so
+one whose anchor stands nowhere costs nothing. Android, WinUI and GTK wait
+for the anchor themselves - attached, loaded, mapped.
+
 ## The window's chrome
 
 A window composes one chrome from what it shows (`WindowChrome`): the title

@@ -56,6 +56,8 @@ final class AppKitElement: NSObject, NativeElement {
     /// Whether the element offered a screen reader actions, which then stand in place of its view's own.
     var accessibilityActionsSaid = false
     var platformMenuItem: NSMenuItem?
+    /// The popover this element is, while it has been shown.
+    var shownPopover: AppKitPopover?
 
     init(_ element: MountedElement, host: AppKitRenderer) {
         self.element = element
@@ -127,6 +129,7 @@ final class AppKitElement: NSObject, NativeElement {
         configureGestures()
         configureLayoutMotion()
         arrangeChildren()
+        configurePopover()
         configureFrameObservation()
     }
 
@@ -160,6 +163,8 @@ final class AppKitElement: NSObject, NativeElement {
     }
 
     func releaseNativeAttachments() {
+        shownPopover?.close()
+        shownPopover = nil
         if observesFrame {
             NotificationCenter.default.removeObserver(
                 self, name: NSView.frameDidChangeNotification, object: nil)
@@ -214,6 +219,7 @@ final class AppKitElement: NSObject, NativeElement {
     /// Presents one display frame of this element's own changed properties.
     func presentFrame(_ properties: Set<Prop>) {
         applyProperties(changed: properties)
+        if properties.contains(.isShown) { configurePopover() }
     }
 
 }

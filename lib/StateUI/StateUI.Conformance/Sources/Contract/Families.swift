@@ -42,6 +42,7 @@
         ZStackTests.self,
         ApplicationTests.self,
         ContextMenuTests.self,
+        PopoverTests.self,
         ButtonMenuTests.self,
         MenuTests.self,
         MenuBarTests.self,

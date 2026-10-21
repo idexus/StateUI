@@ -234,6 +234,16 @@ as a move. Escape takes the top sheet away, and so does the window's way back
 while a sheet shows, once the sheet's own stack has no page to go back to;
 the stack is told how many sheets remain.
 
+## A popover
+
+A view's popover is the relay's `StateUIPopover`: WinUI's `Flyout`,
+derived to keep whether the program wants it shown - a flyout is no
+`FrameworkElement` and has no `Tag` to keep it in. It holds the popover's
+panel and shows at its anchor (`ShowAt`) once the anchor is loaded: one not
+loaded has no root to show over. `Closed` while the program wants it shown
+is the user's - a click beside it, Escape - told through `presented`; the
+program's own `Hide` is heard by nobody.
+
 ## The window's overlays
 
 What a window lays over everything it shows - the overlays the pages on its

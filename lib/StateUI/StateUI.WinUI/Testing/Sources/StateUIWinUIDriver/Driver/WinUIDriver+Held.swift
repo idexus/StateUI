@@ -34,6 +34,9 @@ extension WinUIDriver {
             throw cannot
         case .page, .navigationStack, .splitView, .tabView, .modalStack:
             if let held = try pageHolds(property.name, element, view) { return held }
+        case .popover where property.name == "isShown":
+            guard let popover = view as? WinUIPopoverView else { throw cannot }
+            return popover.flyoutShows.propValue
         case .button where property.name == "icon":
             guard let view else { throw cannot }
             return Self.picture(try read(view, "icon"), named: element)

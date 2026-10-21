@@ -263,6 +263,7 @@ final class AppKitPictureKey: NSObject {
 extension AppKitRenderer: HostPresenter {
     func presentRendered(touchedChrome: Bool) {
         if touchedChrome { synchronizeWindows() }
+        for popover in runtime.tree.takeWaitingPopovers() { popover.appKit.configurePopover() }
     }
 
     func presentFrame(movedChrome: Bool) {

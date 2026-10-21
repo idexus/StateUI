@@ -794,7 +794,7 @@ enum SourceTree {
         "TextSpans", "TextSpan",
         "ToolbarItemGroup", "ToolbarItem", "TitleView", "MenuBar", "Menu", "Overlay",
         "MenuItem", "MenuSeparator", "ButtonMenu",
-        "ContextMenu",
+        "ContextMenu", "Popover",
         "Marker",
     ]
 

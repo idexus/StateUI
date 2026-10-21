@@ -1,0 +1,4 @@
+# revision 1.1
+Popover: ✅
+Popover.isShown: ✅
+Popover.isShownChanged: ✓ close on Popover: the popup window dismissed as a touch beside it dismisses it, no touch sent

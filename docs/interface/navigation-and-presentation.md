@@ -220,6 +220,36 @@ the binding. The stack is the window's page, so its sheets stand over
 everything the window shows; closing the window tears down every page it
 presents.
 
+## Popovers
+
+A view shows what `.popover(isShown:)` describes in the platform's popover,
+by the view, while the state holds true:
+
+```swift
+struct FiltersButton: View {
+    @State private var filtering = false
+    @State private var unreadOnly = false
+
+    var body: some View {
+        Button("Filters")
+            .onClicked { filtering = true }
+            .popover(isShown: $filtering) {
+                VStack {
+                    Switch($unreadOnly).text("Unread only")
+                    Button("Done").onClicked { filtering = false }
+                }
+                .spacing(12)
+                .padding(16)
+            }
+    }
+}
+```
+
+Writing false takes it away. The user takes it away too - a tap or a click
+beside it, Escape, the way back - and that writes false to the state, so
+the state always says whether the popover shows. Its content sizes it. A
+phone shows it as a sheet, as its platform shows every popover.
+
 ## Over every page
 
 A view declares what it lays over the window with `.overlays { }`, built

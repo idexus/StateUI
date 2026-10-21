@@ -48,6 +48,7 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testZStack() { conform(ZStackTests.self) }
     @MainActor func testApplication() { conform(ApplicationTests.self) }
     @MainActor func testContextMenu() { conform(ContextMenuTests.self) }
+    @MainActor func testPopover() { conform(PopoverTests.self) }
     @MainActor func testButtonMenu() { conform(ButtonMenuTests.self) }
     @MainActor func testMenu() { conform(MenuTests.self) }
     @MainActor func testMenuBar() { conform(MenuBarTests.self) }

@@ -32,6 +32,8 @@ extension AppKitDriver {
             return "the window's drop routing told the driver's files, no dragging session"
         case "answerShare":
             return "the host's picker told the user's answer, no picker shown"
+        case "close" where element == "Popover":
+            return "the host's own close of a popover held unshown, as a test shows no window"
         case "answerFiles":
             return "the host's response called with the driver's files, no panel shown"
         case "goBack":
@@ -56,6 +58,7 @@ extension AppKitDriver {
         case "read a question": return "the captions the host keeps, not the alert's buttons"
         case "read a file dialog": return "the host's own panel, held unshown"
         case "read a share sheet": return "the host's own picker, held unshown"
+        case "read isShown of Popover": return "the host's own popover, held unshown where a test shows no window"
         case "read what was launched":
             return "the host's own record of what it handed macOS, which a test holds back from launching"
         default: break

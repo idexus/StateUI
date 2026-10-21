@@ -54,6 +54,7 @@ extension NodeType {
     static let navigationStack = NavigationStackContract.nodeType
     static let titleView = TitleViewContract.nodeType
     static let overlay = OverlayContract.nodeType
+    static let popover = PopoverContract.nodeType
     static let path = PathContract.nodeType
     static let picker = PickerContract.nodeType
     static let marker = MarkerContract.nodeType
@@ -172,6 +173,7 @@ extension NodeType {
     static let flyoutBackground = SplitViewContract.flyoutBackground.token
     static let sidebarOverlays = SplitViewContract.sidebarOverlays.token
     static let isReadOnly = TextInputContract.isReadOnly.token
+    static let isShown = PopoverContract.isShown.token
     static let isRefreshEnabled = RefreshElementContract.isRefreshEnabled.token
     static let isRefreshing = RefreshElementContract.isRefreshing.token
     static let isScrollEnabled = MapContract.isScrollEnabled.token
@@ -308,6 +310,7 @@ extension NodeType {
     static let handMoved = LayoutEngineContract.handMoved.token
     static let handStepped = LayoutEngineContract.handStepped.token
     static let isFocusedChanged = FocusElementContract.isFocusedChanged.token
+    static let isShownChanged = PopoverContract.isShownChanged.token
     static let itemMoved = LayoutEngineContract.itemMoved.token
     static let pinchMoved = LayoutEngineContract.pinchMoved.token
     static let keyPressed = KeyboardElementContract.keyPressed.token

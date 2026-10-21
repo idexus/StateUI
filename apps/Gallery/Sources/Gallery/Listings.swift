@@ -6425,6 +6425,29 @@ enum Listings {
             .rows(.auto, .fill, .auto)
         }
         """#,
+        "MailFilters": #"""
+        // Sources/Samples/Navigation/PopoverSample.swift
+        @State private var filtering = false
+        @State private var unreadOnly = false
+        @State private var flaggedOnly = false
+
+        var body: some View {
+            VStack {
+                Button("Filters")
+                    .onClicked { filtering = true }
+                    .popover(isShown: $filtering) {
+                        VStack {
+                            Switch($unreadOnly).text("Unread only")
+                            Switch($flaggedOnly).text("Flagged only")
+                            Button("Done").onClicked { filtering = false }
+                        }
+                    }
+
+                Text(filtering ? "The popover shows" : "The popover is closed")
+            }
+            .horizontalAlignment(.start)
+        }
+        """#,
         "MailList": #"""
         // Sources/Samples/Collections/ItemActionsSample.swift
         @State private var mail = ["Lunch on Friday?", "Your order shipped", "Weekly notes", "Old news"]

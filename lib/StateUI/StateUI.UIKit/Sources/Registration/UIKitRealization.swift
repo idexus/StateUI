@@ -71,6 +71,8 @@ enum UIKitRealization {
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: TextFieldContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: TimePickerContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: WebViewContract.self, reason: Self.ownSteps),
+        .complete(PopoverContract.isShown),
+        .complete(PopoverContract.isShownChanged),
         .complete(VisualElementContract.background, on: ButtonContract.self),
         .notPlanned(VisualElementContract.background, on: DatePickerContract.self,
             reason: "UIKit's date picker keeps no background color: one written reads back as none."),

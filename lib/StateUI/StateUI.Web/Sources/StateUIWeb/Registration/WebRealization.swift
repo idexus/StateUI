@@ -8,9 +8,9 @@
 /// unsupported - and, member by member, what its records say: the Web column of the control dictionary.
 /// Design: docs/design/contracts/dictionary.md#marks
 enum WebRealization {
-    /// The elements the host makes itself, outside the registry: the pages, the arrangements they stand in, and
-    /// what a window lays over them.
-    static let madeByHost: Set<NodeType> = [.page, .navigationStack, .splitView, .tabView, .overlay]
+    /// The elements the host makes itself, outside the registry: the pages, the arrangements they stand in, what a
+    /// window lays over them, and a view's popover.
+    static let madeByHost: Set<NodeType> = [.page, .navigationStack, .splitView, .tabView, .overlay, .popover]
 
     /// The entries this host leaves to the application, which registers its own control for each: the browser has
     /// no map of its own, and a map needs a provider and its key.
@@ -74,6 +74,8 @@ enum WebRealization {
         .complete(PageContract.showsBackButton),
         .complete(PageContract.showsNavigationBar),
         .complete(PageContract.showsTitle),
+        .complete(PopoverContract.isShown),
+        .complete(PopoverContract.isShownChanged),
         .complete(SplitViewContract.showsSidebar),
         .complete(SplitViewContract.showsSidebarChanged),
         .partial(SplitViewContract.sidebarBackground,

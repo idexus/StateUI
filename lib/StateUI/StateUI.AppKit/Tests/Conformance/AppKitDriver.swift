@@ -198,6 +198,9 @@ final class AppKitDriver: HostDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         layOutWindows()
         if element.type == .window { return try windowHolds(property, element) }
+        if element.type == .popover, property == .isShown {
+            return ((element.native as? AppKitElement)?.shownPopover?.isShown ?? false).propValue
+        }
         if element.type == .menuItem || element.type == .toolbarItem { return try itemHolds(property, element) }
         if element.type == .marker { return try markerHolds(property, element) }
         if element.type == .textSpan { return try spanHolds(property, on: element) }

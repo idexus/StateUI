@@ -136,6 +136,17 @@ stack is shown again, so the host holds each presented page, and the shown
 arrangement, by its mounted element, which owns its Android half: the page is
 still whole as it goes down, and is let go with its holder.
 
+## A popover
+
+A view's popover is the relay's `StateUIPopover`: Android's `PopupWindow`,
+made with the theme's popup style - its background, its elevation, its
+animations - holding the popover's view at the size the view measures,
+below its anchor, above it where there is no room below. It takes the
+focus, so a touch beside it and Back take it away. The program's own
+closing is told apart; a dismissal it did not ask for reaches the host as
+the view's `closed`. An anchor not yet in a window shows its popover once
+it is attached.
+
 ## The window's overlays
 
 What a window lays over everything it shows - the overlays the pages on its

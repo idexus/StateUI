@@ -62,6 +62,9 @@ extension WebDriver {
             try type(words, into: e, part: "input")
             press("Enter")
         case (.type(let words), is WebTextInputView): try type(words, into: e)
+        case (.close, is WebPopoverView):
+            // Escape, which takes the popover over everything down as the browser's own.
+            press("Escape")
         case (.submit, is WebTextInputView):
             try WebBrowser.run("e.focus()", on: e)
             press("Enter")

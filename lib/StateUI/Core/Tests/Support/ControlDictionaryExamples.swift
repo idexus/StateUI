@@ -64,6 +64,16 @@ extension ControlDictionary {
             }
             """#),
 
+        (PopoverContract.self, #"""
+            @State var filtering = false
+
+            Button("Filters")
+                .onClicked { filtering = true }
+                .popover(isShown: $filtering) {
+                    Text("Unread only").padding(12)
+                }
+            """#),
+
         (ContextMenuContract.self, #"""
             @State var title = "Groceries"
 

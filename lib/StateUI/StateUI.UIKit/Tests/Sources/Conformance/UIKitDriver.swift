@@ -340,6 +340,12 @@ final class UIKitDriver: HostDriver {
                 renderer?.window(other, movedTo: .inactive)
             }
             renderer?.window(element, movedTo: .active)
+        case (.close, _) where element.type == .popover:
+            // As a tap beside it: UIKit takes the popover away, then tells its delegate.
+            guard let popover = (element.native as? UIKitElement)?.shownPopover,
+                  let presentation = popover.controller.presentationController
+            else { throw DriverCannot(act, on: element) }
+            popover.controller.dismiss(animated: false) { popover.presentationControllerDidDismiss(presentation) }
         case (.close, _) where element.type == .window:
             // As the user swipes a window's scene away: it leaves the front, goes behind, then closes.
             renderer?.window(element, movedTo: .inactive)
@@ -417,6 +423,10 @@ final class UIKitDriver: HostDriver {
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if element.type == .window { return try windowHolds(property, element) }
+        if element.type == .popover, property == .isShown {
+            let controller = (element.native as? UIKitElement)?.shownPopover?.controller
+            return (controller?.presentingViewController != nil && controller?.isBeingDismissed == false).propValue
+        }
         if element.type == .marker { return try markerHolds(property, element) }
         if element.type == .textSpan { return try spanHolds(property, on: element) }
         if let map = (element.native as? UIKitElement)?.view as? UIKitMapView, let held = mapHolds(property, map) {

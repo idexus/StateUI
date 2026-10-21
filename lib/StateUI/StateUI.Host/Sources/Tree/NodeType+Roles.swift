@@ -21,7 +21,7 @@
 
     /// What is declared on an element to furnish the chrome or the window rather than stand in its room.
     public static let slotTypes: Set<NodeType> = [
-        .toolbarItemGroup, .titleView, .menuBar, .contextMenu, .buttonMenu, .overlay,
+        .toolbarItemGroup, .titleView, .menuBar, .contextMenu, .buttonMenu, .overlay, .popover,
     ]
 }
 

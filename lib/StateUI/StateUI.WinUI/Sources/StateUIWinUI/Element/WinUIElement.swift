@@ -67,11 +67,13 @@ final class WinUIElement: NativeElement {
         // Its menu's entries are in reach with the view.
         if changed.contains(.isEnabled), hadContextMenu { contextMenuChanged = true }
         refreshContextMenu()
+        configurePopover()
         host?.runtime.frames.follow(self, of: element, reads: view != nil && readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
+        if changed.contains(.isShown) { configurePopover() }
         if !changed.isDisjoint(with: MountedElement.sidebarMaterials), let split = view as? WinUISplitView {
             split.grounds = (element.sidebarMaterial(over: false), element.sidebarMaterial(over: true))
         }

@@ -108,6 +108,16 @@ overlay and the layout in it take no touch of their own
 through gives that back to its children only where a child does not let
 them through itself.
 
+## A popover
+
+A view's popover is the document's own (`popover="auto"`): the popover
+element's layout itself, at the start of the body, placed under its anchor
+and kept in the window by the relay's `show_popover`. A click beside it or
+Escape takes it down - the browser's light dismissal - which the host hears
+from `toggle` and tells as the user's while it wants the popover shown. The
+layout's grid is written on the element itself, so its look hides it while
+it is closed with `display: none !important`.
+
 ## Menus
 
 A menu is the host layer's walk of its entries (`MenuEntry`) as a popover

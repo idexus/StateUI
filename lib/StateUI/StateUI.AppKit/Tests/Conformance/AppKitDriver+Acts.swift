@@ -150,6 +150,12 @@ extension AppKitDriver {
             tell(NSWindow.didDeminiaturizeNotification, window)
             comeToTheFront(window)
         case (.close, _) where element.type == .window: try window(of: element).close()
+        case (.close, _) where element.type == .popover:
+            // The user closing it as a click beside it does, through the popover's own close.
+            guard let popover = (element.native as? AppKitElement)?.shownPopover else {
+                throw DriverCannot(act, on: element)
+            }
+            popover.closeAsTheUser()
         case (.performAccessibilityAction(let name), let view?):
             // The action VoiceOver offers on what it meets of the view, run as VoiceOver runs it.
             let target = native?.accessibilityTarget(of: view)

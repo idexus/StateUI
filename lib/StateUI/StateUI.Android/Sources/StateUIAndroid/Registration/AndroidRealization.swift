@@ -89,6 +89,8 @@ enum AndroidRealization {
         .complete(PageContract.showsBackButton),
         .complete(PageContract.showsNavigationBar),
         .complete(PageContract.showsTitle),
+        .complete(PopoverContract.isShown),
+        .complete(PopoverContract.isShownChanged),
         .complete(PageContract.navigatedFrom),
         .complete(PageContract.navigatedTo),
         .complete(PageContract.navigatingFrom),

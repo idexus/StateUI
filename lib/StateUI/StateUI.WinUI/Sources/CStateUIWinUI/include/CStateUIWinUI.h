@@ -623,7 +623,8 @@ void stateui_winui_transform(StateUIObjectRef element, double *values);
 /// The element's Opacity as WinUI holds it.
 double stateui_winui_opacity(StateUIObjectRef element);
 
-/// Whether the element shows: it and everything around it visible, up to the content of the window it stands in.
+/// Whether the element shows: it and everything around it visible, up to the content of the window it stands in, or
+/// of an open popup over it.
 bool stateui_winui_is_shown(StateUIObjectRef element);
 
 /// A control's IsEnabled as WinUI holds it; true for an element that is no control.
@@ -1034,6 +1035,22 @@ void stateui_winui_scroller_move(StateUIObjectRef scroller, double x, double y);
 
 /// Where the scroller's view stands, then the farthest it reaches across and down, in DIPs: four values.
 void stateui_winui_scroller_offset(StateUIObjectRef scroller, double *offset);
+
+/// A view's popover: WinUI's Flyout holding `content`, a closing of WinUI's accord - a click beside it, Escape -
+/// told through `presented` as the view numbered `view`'s.
+StateUIObjectRef stateui_winui_popover_make(int64_t view, StateUIObjectRef content);
+
+/// Shows the popover by `anchor`, once the anchor is loaded.
+void stateui_winui_popover_show(StateUIObjectRef popover, StateUIObjectRef anchor);
+
+/// Takes the popover away as the program asks: nobody hears it.
+void stateui_winui_popover_close(StateUIObjectRef popover);
+
+/// Whether the popover shows.
+bool stateui_winui_popover_is_open(StateUIObjectRef popover);
+
+/// Hides the popover as a click beside it does, told through `presented`.
+void stateui_winui_popover_hide(StateUIObjectRef popover);
 
 /// A scroller's pull to refresh: WinUI's RefreshContainer, a pull of which is told through `refreshPulled` as the
 /// view numbered `view`'s and held until the refresh ends.

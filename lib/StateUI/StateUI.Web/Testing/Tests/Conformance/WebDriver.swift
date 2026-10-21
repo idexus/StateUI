@@ -59,7 +59,7 @@ final class WebDriver: HostDriver {
         "switchBack": "the notice the browser gives as the user comes back, told by the driver: a page moves no window",
         "minimize": "the notice the browser gives as the page's tab hides, told by the driver: a page hides no tab",
         "restore": "the notice the browser gives as the page's tab shows, told by the driver: a page shows no tab",
-        "close": "the notice the browser gives as it leaves the page, told by the driver: a page closes no tab",
+        "close on Window": "the notice the browser gives as it leaves the page, told by the driver: a page closes no tab",
         "read selectedItems of ItemsView": "the identities the host chose: the page marks a cell chosen, not which item it shows",
         "read windowType of Window": "the scenes the host keeps for the next start",
         "read windowValue of Window": "the scenes the host keeps for the next start",

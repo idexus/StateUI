@@ -61,11 +61,13 @@ final class GTKElement: NativeElement {
         arrangePages(changed: changed)
         offerContextMenu()
         offerButtonMenu()
+        configurePopover()
         host?.runtime.frames.follow(self, of: element, reads: view != nil && readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
+        if changed.contains(.isShown) { configurePopover() }
         if !changed.isDisjoint(with: MountedElement.sidebarMaterials) { groundSidebar() }
     }
 
