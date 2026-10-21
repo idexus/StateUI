@@ -9,7 +9,14 @@ import UIKit
 /// A StateUI layout: its children's views placed by the host layer's arithmetic, each on its way to its place where
 /// the layout moves (`TravellingPlaces`), its measurements kept until something in it changes.
 @MainActor
-class UIKitLayoutView: UIView {
+class UIKitLayoutView: UIView, UIKitSteppable {
+    /// What a reader's step performs, while the element says it is adjustable.
+    var stepAction: ((AccessibilityAdjustment) -> Void)?
+
+    override func accessibilityIncrement() { stepAction?(.increment) }
+
+    override func accessibilityDecrement() { stepAction?(.decrement) }
+
     let measurements = MeasurementCache()
 
     /// How the children travel to their places, by the host layer's rule.

@@ -9223,7 +9223,8 @@ enum Listings {
                 SectionTitle("One thing made of parts")
 
                 // Five stars drawn, one rating heard: a screen reader meets the row
-                // as one adjustable thing holding its value, not as five pictures.
+                // as one adjustable thing holding its value, not as five pictures,
+                // steps it with a swipe up or down, and offers Clear as an action.
                 HStack {
                     ForEach(1...5) { star in
                         Text(star <= rating ? "★" : "☆")
@@ -9233,6 +9234,10 @@ enum Listings {
                 .horizontalAlignment(.center)
                 .accessibilityRole(.adjustable)
                 .accessibilityValue("\(rating) of 5")
+                .onAccessibilityAdjusted { step in
+                    rating = min(5, max(0, rating + (step == .increment ? 1 : -1)))
+                }
+                .accessibilityAction("Clear") { rating = 0 }
 
                 Text("A user hears: Rating, \(rating) of 5")
 

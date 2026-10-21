@@ -88,6 +88,10 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     case endContent
     /// A keyboard shortcut pressed while the element's window is in front.
     case pressKeys(KeyboardShortcut)
+    /// One of the element's actions performed, by its words, as a screen reader performs it.
+    case performAccessibilityAction(String)
+    /// The element stepped up or down as a screen reader steps it.
+    case adjust(AccessibilityAdjustment)
 
     /// The act's name, as a driver says what it cannot do.
     public var description: String {
@@ -129,6 +133,8 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .answerFiles: "answerFiles"
         case .endContent: "endContent"
         case .pressKeys: "pressKeys"
+        case .performAccessibilityAction: "performAccessibilityAction"
+        case .adjust: "adjust"
         }
     }
 }

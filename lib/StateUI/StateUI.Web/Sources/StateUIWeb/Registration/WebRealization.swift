@@ -20,6 +20,12 @@ enum WebRealization {
     /// the host layer's pages and chrome, outside the registry, and what a page never asks of the browser's window.
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
+        .notPlanned(VisualElementContract.accessibilityActionPerformed,
+            reason: "ARIA offers no action of an application's own words."),
+        .notPlanned(VisualElementContract.accessibilityActions,
+            reason: "ARIA offers no action of an application's own words."),
+        .notPlanned(VisualElementContract.accessibilityAdjusted,
+            reason: "A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own."),
         .complete(BarElementContract.barBackgroundColor),
         .complete(BarElementContract.barForegroundColor),
         .notPlanned(BarElementContract.barIcon,

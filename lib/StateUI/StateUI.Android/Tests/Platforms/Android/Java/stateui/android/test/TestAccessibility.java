@@ -28,6 +28,24 @@ public final class TestAccessibility {
         return word == null ? null : word.toString();
     }
 
+    /** Performs the action of the view's node named `label`, as TalkBack does: whether the view took it. */
+    public static boolean perform(View view, String label) {
+        for (AccessibilityNodeInfo.AccessibilityAction action : view.createAccessibilityNodeInfo().getActionList()) {
+            CharSequence named = action.getLabel();
+            if (named != null && label.contentEquals(named)) return view.performAccessibilityAction(action.getId(), null);
+        }
+        return false;
+    }
+
+    /** Steps the view up or down as TalkBack steps a slider, where its node offers the step: whether it took it. */
+    public static boolean step(View view, boolean up) {
+        AccessibilityNodeInfo.AccessibilityAction wanted = up
+                ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_FORWARD
+                : AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_BACKWARD;
+        if (!view.createAccessibilityNodeInfo().getActionList().contains(wanted)) return false;
+        return view.performAccessibilityAction(wanted.getId(), null);
+    }
+
     /**
      * What TalkBack and a test find of the view: "id", "label" and "hint" and their words, "heading", and "met",
      * "hidden" or "hidden with children" - separated by ", ", none said as nothing. A view in no window makes

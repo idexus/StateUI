@@ -350,7 +350,10 @@ TalkBack says a node's kind by its class, so a kind is the class of the
 widget TalkBack names it by - a button `Button`, a toggle `ToggleButton`,
 something adjustable `SeekBar`, an image `ImageView`, words `TextView`;
 Android names no class for a link, which is said as its view is. A value is
-the view's state description, which Android has from 11. A view the element says nothing of is as
+the view's state description, which Android has from 11. Its actions are
+actions of the node, numbered from a base no action of Android's uses, and a
+view that says it is adjustable offers a slider's scrolls forward and back,
+which TalkBack's swipes perform as its steps. A view the element says nothing of is as
 it is of itself: a text is met, a layout as Android decides, so its own
 presence is read once, before the element first says. Android marks a
 heading but not its level.

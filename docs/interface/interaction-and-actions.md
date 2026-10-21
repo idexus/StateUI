@@ -625,12 +625,21 @@ struct Rating: View {
         .accessibilityLabel("Rating")
         .accessibilityRole(.adjustable)
         .accessibilityValue("\(stars) of 5")
+        .onAccessibilityAdjusted { step in
+            stars = min(5, max(0, stars + (step == .increment ? 1 : -1)))
+        }
+        .accessibilityAction("Clear") { stars = 0 }
     }
 }
 ```
 
+A screen reader steps an adjustable view up and down, which
+`onAccessibilityAdjusted` hears, and offers the view's actions by their words;
+an action is what a user who sees the screen reaches by a gesture or a menu.
+
 A control is its own kind and says its own value already, so the pair belongs
-on a layout. The kinds are those every platform's screen reader names alike:
+on a layout. VoiceOver and TalkBack offer the actions and the steps; the
+platform matrix says where the other readers do. The kinds are those every platform's screen reader names alike:
 `.button`, `.toggle`, `.adjustable`, `.link`, `.image` and `.text`.
 
 `accessibilityIdentifier` is an external stable identifier for UI automation. It is not

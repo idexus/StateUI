@@ -376,6 +376,15 @@ final class UIKitDriver: HostDriver {
         case (.pickTime(let time), let picker as UIKitTimePickerView):
             picker.setTime(time)
             picker.sendActions(for: .valueChanged)
+        case (.performAccessibilityAction(let name), let view?):
+            // The action VoiceOver offers on what it meets of the view, run as VoiceOver runs it.
+            if let action = Self.met(view).accessibilityCustomActions?.first(where: { $0.name == name }) {
+                _ = action.actionHandler?(action)
+            }
+        case (.adjust(let step), let view?):
+            // VoiceOver's swipe up or down: the step of what it meets.
+            let met = Self.met(view)
+            if step == .increment { met.accessibilityIncrement() } else { met.accessibilityDecrement() }
         default: throw DriverCannot(act, on: element)
         }
     }

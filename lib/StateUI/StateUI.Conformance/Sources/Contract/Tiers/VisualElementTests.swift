@@ -22,6 +22,7 @@
                 Aspects.holds(VisualElementContract.accessibilityHint, on: element, "Saves the form", then: "Saves it all"),
                 Aspects.holds(VisualElementContract.accessibilityRole, on: element, .button, then: .adjustable),
                 Aspects.holds(VisualElementContract.accessibilityValue, on: element, "3 of 5", then: "4 of 5"),
+                readerActed(element), readerStepped(element),
                 Aspects.holds(VisualElementContract.tooltip, on: element, "Saves the draft", then: "Saves every draft"),
                 Aspects.holds(VisualElementContract.accessibilityHeading, on: element, .h2, then: .h3),
                 Aspects.holds(VisualElementContract.isAccessibilityHidden, on: element, false, then: true, with: named),
@@ -106,6 +107,55 @@
             try s.perform(.activate, on: s.element("change"))
             try s.settle { try s.held(VisualElementContract.background, on: specimen) == second }
             s.expect(try s.held(VisualElementContract.background, on: specimen), second, "the material written into it")
+        }
+    }
+
+    /// A screen reader performs the element's actions by their words, each reaching the element as the one it is.
+    @MainActor
+    static func readerActed(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).performsAScreenReadersActions", proves: [
+            Covered(VisualElementContract.accessibilityActionPerformed, on: element),
+            Covered(VisualElementContract.accessibilityActions, on: element),
+        ]) { s in
+            let performed = Received<String>()
+            s.start {
+                Specimens.view(element, [
+                    Write(VisualElementContract.accessibilityActions, ["Archive", "Delete"]),
+                    Hear(VisualElementContract.accessibilityActionPerformed) { performed.values.append($0) },
+                ])
+            }
+            let view = try s.element("specimen")
+
+            try s.perform(.performAccessibilityAction("Delete"), on: view)
+            s.settle { performed.values == ["Delete"] }
+            s.expect(performed.values, ["Delete"], "the action performed")
+            try s.perform(.performAccessibilityAction("Archive"), on: view)
+            s.settle { performed.values == ["Delete", "Archive"] }
+            s.expect(performed.values, ["Delete", "Archive"], "the other")
+        }
+    }
+
+    /// A screen reader steps the element up and down where it says it is adjustable.
+    @MainActor
+    static func readerStepped(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).isSteppedByAScreenReader", proves: [
+            Covered(VisualElementContract.accessibilityAdjusted, on: element),
+        ], needs: [Covered(VisualElementContract.accessibilityRole, on: element)]) { s in
+            let stepped = Received<AccessibilityAdjustment>()
+            s.start {
+                Specimens.view(element, [
+                    Write(VisualElementContract.accessibilityRole, .adjustable),
+                    Hear(VisualElementContract.accessibilityAdjusted) { stepped.values.append($0) },
+                ])
+            }
+            let view = try s.element("specimen")
+
+            try s.perform(.adjust(.increment), on: view)
+            s.settle { stepped.values == [.increment] }
+            s.expect(stepped.values, [.increment], "a step up")
+            try s.perform(.adjust(.decrement), on: view)
+            s.settle { stepped.values == [.increment, .decrement] }
+            s.expect(stepped.values, [.increment, .decrement], "and a step down")
         }
     }
 

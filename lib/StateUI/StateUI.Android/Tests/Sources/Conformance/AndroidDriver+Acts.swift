@@ -137,6 +137,11 @@ extension AndroidDriver {
             renderer?.setPhase(.inactive)
             renderer?.setPhase(.background)
             renderer?.destroying()
+        case (.performAccessibilityAction(let name), let view?):
+            // The action TalkBack offers on the view's node, performed as TalkBack performs it.
+            _ = TestAccessibility.perform(name, on: view)
+        case (.adjust(let step), let view?):
+            _ = TestAccessibility.step(up: step == .increment, on: view)
         default: throw DriverCannot(act, on: element)
         }
     }

@@ -31,7 +31,10 @@ VoiceOver meets the control, not on the view around it. A kind the element
 says is an accessibility role - a button, a check box for a toggle, a slider
 for something adjustable, a link, an image, static text - and a value its
 accessibility value; a slider and a date's or a time's picker say their own
-value over any given.
+value over any given. Its actions are custom actions, and a view StateUI draws
+that says it is adjustable takes VoiceOver's increment and decrement; AppKit's
+own view - a control, a box, a scroller, a map, a page - steps as its own kind
+does, or not at all.
 
 ## A stated size
 

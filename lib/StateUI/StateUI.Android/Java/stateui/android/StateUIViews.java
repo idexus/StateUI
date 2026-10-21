@@ -16,6 +16,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -150,30 +151,45 @@ final class StateUIViews {
     }
 
     /**
-     * What assistive technology meets of `view`: the name a test finds it by, the words read for it and the
-     * hint after them, the class its kind is said by and the value said after them - none leaves the view's
-     * own - whether it is a heading, and whether it is met at all.
+     * What assistive technology meets of `view`, StateUI's view `number`: the name a test finds it by, the words
+     * read for it and the hint after them, the class its kind is said by and the value said after them - none
+     * leaves the view's own - the actions a reader offers on it and whether a reader steps it, whether it is a
+     * heading, and whether it is met at all.
      */
-    static void setAccessibility(View view, String identifier, String label, String hint, String kind, String value,
-                                 boolean heading, int importance) {
+    static void setAccessibility(View view, long number, String identifier, String label, String hint, String kind,
+                                 String value, String[] actions, boolean adjustable, boolean heading, int importance) {
         view.setContentDescription(label);
         view.setImportantForAccessibility(importance);
         if (Build.VERSION.SDK_INT >= 28) view.setAccessibilityHeading(heading);
         if (Build.VERSION.SDK_INT >= 30) view.setStateDescription(value);
-        boolean words = identifier != null || hint != null || kind != null;
-        view.setAccessibilityDelegate(words ? new Words(identifier, hint, kind) : null);
+        boolean words = identifier != null || hint != null || kind != null || actions.length > 0 || adjustable;
+        view.setAccessibilityDelegate(words ? new Words(number, identifier, hint, kind, actions, adjustable) : null);
     }
 
-    /** The words a view's accessibility node carries beyond the view's own: its name, its hint and its kind. */
+    /** The first id of a reader's actions on a view, one after another in their order: no id of Android's own. */
+    // Swift: none
+    private static final int ACTIONS = 0x5A7E0000;
+
+    /**
+     * The words a view's accessibility node carries beyond the view's own - its name, its hint and its kind - and
+     * what a reader does to it: its actions, and its steps where it is adjustable, which TalkBack takes as a
+     * slider's scrolls.
+     */
     private static final class Words extends View.AccessibilityDelegate {
+        private final long number;
         private final String identifier;
         private final String hint;
         private final String kind;
+        private final String[] actions;
+        private final boolean adjustable;
 
-        Words(String identifier, String hint, String kind) {
+        Words(long number, String identifier, String hint, String kind, String[] actions, boolean adjustable) {
+            this.number = number;
             this.identifier = identifier;
             this.hint = hint;
             this.kind = kind;
+            this.actions = actions;
+            this.adjustable = adjustable;
         }
 
         @Override
@@ -182,6 +198,26 @@ final class StateUIViews {
             if (identifier != null) info.setViewIdResourceName(identifier);
             if (hint != null) info.setHintText(hint);
             if (kind != null) info.setClassName(kind);
+            for (int place = 0; place < actions.length; place++) {
+                info.addAction(new AccessibilityNodeInfo.AccessibilityAction(ACTIONS + place, actions[place]));
+            }
+            if (adjustable) {
+                info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_FORWARD);
+                info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_BACKWARD);
+            }
+        }
+
+        @Override
+        public boolean performAccessibilityAction(View host, int action, Bundle arguments) {
+            int place = action - ACTIONS;
+            if (place >= 0 && place < actions.length) return StateUIHost.accessibilityActed(number, actions[place]);
+            if (adjustable && action == AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) {
+                return StateUIHost.accessibilityStepped(number, true);
+            }
+            if (adjustable && action == AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) {
+                return StateUIHost.accessibilityStepped(number, false);
+            }
+            return super.performAccessibilityAction(host, action, arguments);
         }
     }
 

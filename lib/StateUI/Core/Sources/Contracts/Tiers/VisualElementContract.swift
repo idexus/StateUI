@@ -11,6 +11,18 @@ public enum VisualElementContract: Contract {
     /// Every drawn element is found by automation.
     public static let tiers: [any Contract.Type] = [AutomationElementContract.self]
 
+    /// A screen reader performed one of the element's actions (`accessibilityActions`), named by its words.
+    public static let accessibilityActionPerformed = ElementEvent<Self, String>(
+        "accessibilityActionPerformed", layer: .native)
+
+    /// The words of the actions a screen reader offers on the element, in the order it offers them.
+    public static let accessibilityActions = ElementProperty<Self, [String]>(
+        "accessibilityActions", layer: .structure, travels: false)
+
+    /// A screen reader stepped the element up or down.
+    public static let accessibilityAdjusted = ElementEvent<Self, AccessibilityAdjustment>(
+        "accessibilityAdjusted", layer: .native)
+
     /// How deep a heading the element is, for a user moving by headings.
     public static let accessibilityHeading = ElementProperty<Self, AccessibilityHeadingLevel>(
         "accessibilityHeading", layer: .native)
@@ -140,6 +152,7 @@ public enum VisualElementContract: Contract {
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [
+        accessibilityActionPerformed, accessibilityActions, accessibilityAdjusted,
         accessibilityHeading, accessibilityHint, accessibilityLabel, accessibilityRole, accessibilityValue,
         background, frame, height, hidesChildrenFromAccessibility, ignoresInput,
         isAccessibilityHidden, isEnabled, isVisible, layoutDirection,

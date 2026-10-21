@@ -24,6 +24,9 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
+| `accessibilityActionPerformed` | event | `String` | native |
+| `accessibilityActions` | property | `[String]` | structure |
+| `onAccessibilityAdjusted` (`accessibilityAdjusted`) | event | `AccessibilityAdjustment` | native |
 | `accessibilityHeading` | property | `AccessibilityHeadingLevel` | native |
 | `accessibilityHint` | property | `String` | native |
 | `accessibilityLabel` | property | `String` | native |

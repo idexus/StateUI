@@ -1,4 +1,7 @@
-# revision 16.1
+# revision 17.1
+ActivityIndicator.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+ActivityIndicator.accessibilityActions: – ARIA offers no action of an application's own words.
+ActivityIndicator.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 ActivityIndicator.accessibilityHeading: ✅
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -32,6 +35,9 @@ ActivityIndicator.translationX: ✓ read translationX of ActivityIndicator: the 
 ActivityIndicator.translationY: ✓ read translationY of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ActivityIndicator.width: ✅
 ActivityIndicator.zIndex: ✅
+Button.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Button.accessibilityActions: – ARIA offers no action of an application's own words.
+Button.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Button.accessibilityHeading: ✅
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
@@ -65,6 +71,9 @@ Button.translationX: ✓ read translationX of Button: the host's own transform: 
 Button.translationY: ✓ read translationY of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Button.width: ✅
 Button.zIndex: ✅
+Canvas.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Canvas.accessibilityActions: – ARIA offers no action of an application's own words.
+Canvas.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Canvas.accessibilityHeading: ✅
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
@@ -98,6 +107,9 @@ Canvas.translationX: ✓ read translationX of Canvas: the host's own transform: 
 Canvas.translationY: ✓ read translationY of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Canvas.width: ✅
 Canvas.zIndex: ✅
+Capsule.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Capsule.accessibilityActions: – ARIA offers no action of an application's own words.
+Capsule.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Capsule.accessibilityHeading: ✅
 Capsule.accessibilityHint: ✅
 Capsule.accessibilityLabel: ✅
@@ -131,6 +143,9 @@ Capsule.translationX: ✓ read translationX of Capsule: the host's own transform
 Capsule.translationY: ✓ read translationY of Capsule: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Capsule.width: ✅
 Capsule.zIndex: ✅
+CheckBox.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+CheckBox.accessibilityActions: – ARIA offers no action of an application's own words.
+CheckBox.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 CheckBox.accessibilityHeading: ✅
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
@@ -164,6 +179,9 @@ CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transfo
 CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 CheckBox.width: ✅
 CheckBox.zIndex: ✅
+DatePicker.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+DatePicker.accessibilityActions: – ARIA offers no action of an application's own words.
+DatePicker.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 DatePicker.accessibilityHeading: ✅
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
@@ -197,6 +215,9 @@ DatePicker.translationX: ✓ read translationX of DatePicker: the host's own tra
 DatePicker.translationY: ✓ read translationY of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 DatePicker.width: ✅
 DatePicker.zIndex: ✅
+Divider.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Divider.accessibilityActions: – ARIA offers no action of an application's own words.
+Divider.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Divider.accessibilityHeading: ✅
 Divider.accessibilityHint: ✅
 Divider.accessibilityLabel: ✅
@@ -230,6 +251,9 @@ Divider.translationX: ✓ read translationX of Divider: the host's own transform
 Divider.translationY: ✓ read translationY of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Divider.width: ✅
 Divider.zIndex: ✅
+Ellipse.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Ellipse.accessibilityActions: – ARIA offers no action of an application's own words.
+Ellipse.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Ellipse.accessibilityHeading: ✅
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
@@ -263,6 +287,9 @@ Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform
 Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Ellipse.width: ✅
 Ellipse.zIndex: ✅
+Grid.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Grid.accessibilityActions: – ARIA offers no action of an application's own words.
+Grid.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Grid.accessibilityHeading: ✅
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
@@ -296,6 +323,9 @@ Grid.translationX: ✓ read translationX of Grid: the host's own transform: the 
 Grid.translationY: ✓ read translationY of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Grid.width: ✅
 Grid.zIndex: ✅
+HStack.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+HStack.accessibilityActions: – ARIA offers no action of an application's own words.
+HStack.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 HStack.accessibilityHeading: ✅
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
@@ -329,6 +359,9 @@ HStack.translationX: ✓ read translationX of HStack: the host's own transform: 
 HStack.translationY: ✓ read translationY of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 HStack.width: ✅
 HStack.zIndex: ✅
+Image.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Image.accessibilityActions: – ARIA offers no action of an application's own words.
+Image.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Image.accessibilityHeading: ✅
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
@@ -362,6 +395,9 @@ Image.translationX: ✓ read translationX of Image: the host's own transform: th
 Image.translationY: ✓ read translationY of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Image.width: ✅
 Image.zIndex: ✅
+ItemsView.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+ItemsView.accessibilityActions: – ARIA offers no action of an application's own words.
+ItemsView.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 ItemsView.accessibilityHeading: ✅
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
@@ -395,6 +431,9 @@ ItemsView.translationX: ✓ read translationX of ItemsView: the host's own trans
 ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.width: ✅
 ItemsView.zIndex: ✅
+LayoutEngine.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+LayoutEngine.accessibilityActions: – ARIA offers no action of an application's own words.
+LayoutEngine.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 LayoutEngine.accessibilityHeading: ✅
 LayoutEngine.accessibilityHint: ✅
 LayoutEngine.accessibilityLabel: ✅
@@ -428,6 +467,9 @@ LayoutEngine.translationX: ✓ read translationX of LayoutEngine: the host's own
 LayoutEngine.translationY: ✓ read translationY of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 LayoutEngine.width: ✅
 LayoutEngine.zIndex: ✅
+Line.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Line.accessibilityActions: – ARIA offers no action of an application's own words.
+Line.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Line.accessibilityHeading: ✅
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
@@ -461,6 +503,9 @@ Line.translationX: ✓ read translationX of Line: the host's own transform: the 
 Line.translationY: ✓ read translationY of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Line.width: ✅
 Line.zIndex: ✅
+Map.accessibilityActionPerformed: 🧩
+Map.accessibilityActions: 🧩
+Map.accessibilityAdjusted: 🧩
 Map.accessibilityHeading: 🧩
 Map.accessibilityHint: 🧩
 Map.accessibilityLabel: 🧩
@@ -494,6 +539,9 @@ Map.translationX: 🧩
 Map.translationY: 🧩
 Map.width: 🧩
 Map.zIndex: 🧩
+Path.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Path.accessibilityActions: – ARIA offers no action of an application's own words.
+Path.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Path.accessibilityHeading: ✅
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
@@ -527,6 +575,9 @@ Path.translationX: ✓ read translationX of Path: the host's own transform: the 
 Path.translationY: ✓ read translationY of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Path.width: ✅
 Path.zIndex: ✅
+Picker.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Picker.accessibilityActions: – ARIA offers no action of an application's own words.
+Picker.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Picker.accessibilityHeading: ✅
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
@@ -560,6 +611,9 @@ Picker.translationX: ✓ read translationX of Picker: the host's own transform: 
 Picker.translationY: ✓ read translationY of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Picker.width: ✅
 Picker.zIndex: ✅
+Polygon.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Polygon.accessibilityActions: – ARIA offers no action of an application's own words.
+Polygon.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Polygon.accessibilityHeading: ✅
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
@@ -593,6 +647,9 @@ Polygon.translationX: ✓ read translationX of Polygon: the host's own transform
 Polygon.translationY: ✓ read translationY of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polygon.width: ✅
 Polygon.zIndex: ✅
+Polyline.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Polyline.accessibilityActions: – ARIA offers no action of an application's own words.
+Polyline.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Polyline.accessibilityHeading: ✅
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
@@ -626,6 +683,9 @@ Polyline.translationX: ✓ read translationX of Polyline: the host's own transfo
 Polyline.translationY: ✓ read translationY of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polyline.width: ✅
 Polyline.zIndex: ✅
+ProgressBar.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+ProgressBar.accessibilityActions: – ARIA offers no action of an application's own words.
+ProgressBar.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 ProgressBar.accessibilityHeading: ✅
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
@@ -659,6 +719,9 @@ ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own t
 ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ProgressBar.width: ✅
 ProgressBar.zIndex: ✅
+Rectangle.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Rectangle.accessibilityActions: – ARIA offers no action of an application's own words.
+Rectangle.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Rectangle.accessibilityHeading: ✅
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
@@ -692,6 +755,9 @@ Rectangle.translationX: ✓ read translationX of Rectangle: the host's own trans
 Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.width: ✅
 Rectangle.zIndex: ✅
+ScrollView.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+ScrollView.accessibilityActions: – ARIA offers no action of an application's own words.
+ScrollView.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 ScrollView.accessibilityHeading: ✅
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
@@ -725,6 +791,9 @@ ScrollView.translationX: ✓ read translationX of ScrollView: the host's own tra
 ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ScrollView.width: ✅
 ScrollView.zIndex: ✅
+SearchField.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+SearchField.accessibilityActions: – ARIA offers no action of an application's own words.
+SearchField.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 SearchField.accessibilityHeading: ✅
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
@@ -758,6 +827,9 @@ SearchField.translationX: ✓ read translationX of SearchField: the host's own t
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 SearchField.width: ✅
 SearchField.zIndex: ✅
+Slider.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Slider.accessibilityActions: – ARIA offers no action of an application's own words.
+Slider.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Slider.accessibilityHeading: ✅
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
@@ -791,6 +863,9 @@ Slider.translationX: ✓ read translationX of Slider: the host's own transform: 
 Slider.translationY: ✓ read translationY of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Slider.width: ✅
 Slider.zIndex: ✅
+Spacer.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Spacer.accessibilityActions: – ARIA offers no action of an application's own words.
+Spacer.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Spacer.accessibilityHeading: ✅
 Spacer.accessibilityHint: ✅
 Spacer.accessibilityLabel: ✅
@@ -824,6 +899,9 @@ Spacer.translationX: ✓ read translationX of Spacer: the host's own transform: 
 Spacer.translationY: ✓ read translationY of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Spacer.width: ✅
 Spacer.zIndex: ✅
+Stepper.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Stepper.accessibilityActions: – ARIA offers no action of an application's own words.
+Stepper.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Stepper.accessibilityHeading: ✅
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
@@ -857,6 +935,9 @@ Stepper.translationX: ✓ read translationX of Stepper: the host's own transform
 Stepper.translationY: ✓ read translationY of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Stepper.width: ✅
 Stepper.zIndex: ✅
+Switch.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Switch.accessibilityActions: – ARIA offers no action of an application's own words.
+Switch.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Switch.accessibilityHeading: ✅
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
@@ -890,6 +971,9 @@ Switch.translationX: ✓ read translationX of Switch: the host's own transform: 
 Switch.translationY: ✓ read translationY of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Switch.width: ✅
 Switch.zIndex: ✅
+Text.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Text.accessibilityActions: – ARIA offers no action of an application's own words.
+Text.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Text.accessibilityHeading: ✅
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
@@ -923,6 +1007,9 @@ Text.translationX: ✓ read translationX of Text: the host's own transform: the 
 Text.translationY: ✓ read translationY of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Text.width: ✅
 Text.zIndex: ✅
+TextEditor.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+TextEditor.accessibilityActions: – ARIA offers no action of an application's own words.
+TextEditor.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 TextEditor.accessibilityHeading: ✅
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
@@ -956,6 +1043,9 @@ TextEditor.translationX: ✓ read translationX of TextEditor: the host's own tra
 TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextEditor.width: ✅
 TextEditor.zIndex: ✅
+TextField.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+TextField.accessibilityActions: – ARIA offers no action of an application's own words.
+TextField.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 TextField.accessibilityHeading: ✅
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
@@ -989,6 +1079,9 @@ TextField.translationX: ✓ read translationX of TextField: the host's own trans
 TextField.translationY: ✓ read translationY of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextField.width: ✅
 TextField.zIndex: ✅
+TimePicker.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+TimePicker.accessibilityActions: – ARIA offers no action of an application's own words.
+TimePicker.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 TimePicker.accessibilityHeading: ✅
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
@@ -1022,6 +1115,9 @@ TimePicker.translationX: ✓ read translationX of TimePicker: the host's own tra
 TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TimePicker.width: ✅
 TimePicker.zIndex: ✅
+VStack.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+VStack.accessibilityActions: – ARIA offers no action of an application's own words.
+VStack.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 VStack.accessibilityHeading: ✅
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
@@ -1055,6 +1151,9 @@ VStack.translationX: ✓ read translationX of VStack: the host's own transform: 
 VStack.translationY: ✓ read translationY of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 VStack.width: ✅
 VStack.zIndex: ✅
+WebView.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+WebView.accessibilityActions: – ARIA offers no action of an application's own words.
+WebView.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 WebView.accessibilityHeading: ✅
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
@@ -1088,6 +1187,9 @@ WebView.translationX: ✓ read translationX of WebView: the host's own transform
 WebView.translationY: ✓ read translationY of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 WebView.width: ✅
 WebView.zIndex: ✅
+ZStack.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+ZStack.accessibilityActions: – ARIA offers no action of an application's own words.
+ZStack.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 ZStack.accessibilityHeading: ✅
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅

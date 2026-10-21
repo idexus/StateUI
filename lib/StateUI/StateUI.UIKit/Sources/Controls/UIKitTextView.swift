@@ -10,7 +10,14 @@ import UIKit
 /// look as attributes, standing across and down its room within its padding as the tree says.
 /// Design: docs/design/platforms/uikit/controls.md#a-labels-words
 @MainActor
-final class UIKitTextView: UILabel, UIKitLabel {
+final class UIKitTextView: UILabel, UIKitLabel, UIKitSteppable {
+    /// What a reader's step performs, while the element says it is adjustable.
+    var stepAction: ((AccessibilityAdjustment) -> Void)?
+
+    override func accessibilityIncrement() { stepAction?(.increment) }
+
+    override func accessibilityDecrement() { stepAction?(.decrement) }
+
     var shown = UIKitLabelWords()
 
     /// The room between the label's edge and its words.

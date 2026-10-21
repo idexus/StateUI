@@ -252,10 +252,12 @@ class AndroidView {
     func closed() {}
 
     /// What assistive technology meets of the view: the name a test finds it by, the words read for it and the
-    /// hint after them, its kind and its value - none leaves the view's own - whether it is a heading, and whether
-    /// it, or it and its children, are met at all: none, as the view is of itself.
+    /// hint after them, its kind and its value - none leaves the view's own - the actions a reader offers on it and
+    /// its steps where it is adjustable, told to `heard`, whether it is a heading, and whether it, or it and its
+    /// children, are met at all: none, as the view is of itself.
     /// Design: docs/design/platforms/android/controls.md#what-assistive-technology-meets
-    func setAccessibility(_ words: AccessibilityWords) {
+    func setAccessibility(_ words: AccessibilityWords, heard: @escaping (HeardInput) -> Bool) {
+        readerHeard = heard
         let own = ownPresence ?? Java.callInt(reference, JavaAPI.getImportantForAccessibility)
         ownPresence = own
         // Android numbers a view's presence: met 1, hidden 2, hidden with everything in it 4.
@@ -267,13 +269,17 @@ class AndroidView {
         }
         Java.frame {
             Java.callStatic(
-                JavaAPI.views, JavaAPI.setAccessibility, .object(reference),
+                JavaAPI.views, JavaAPI.setAccessibility, .object(reference), .long(number),
                 .object(words.identifier.flatMap(Java.string)), .object(words.label.flatMap(Java.string)),
                 .object(words.hint.flatMap(Java.string)),
                 .object(words.role.flatMap(Self.accessibilityClass).flatMap(Java.string)),
-                .object(words.value.flatMap(Java.string)), .bool(words.headingLevel > 0), .int(presence))
+                .object(words.value.flatMap(Java.string)), .object(Java.strings(words.actions)),
+                .bool(words.role == .adjustable), .bool(words.headingLevel > 0), .int(presence))
         }
     }
+
+    /// What a screen reader did to the view, told to its element; whether it took it.
+    private(set) var readerHeard: ((HeardInput) -> Bool)?
 
     /// The class TalkBack says a kind by; nil for a link, which Android names no class for.
     /// Design: docs/design/platforms/android/controls.md#what-assistive-technology-meets

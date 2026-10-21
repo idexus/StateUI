@@ -65,6 +65,15 @@ extension Registry {
         everyElementRealizes(VisualElementContract.hidesChildrenFromAccessibility)
     }
 
+    /// The actions a screen reader offers on a view, and its steps of one that is adjustable, told to the element by
+    /// the host layer's rule (`MountedElement.hear`).
+    /// Design: docs/design/views/modifiers.md#a-readers-actions
+    public func everyElementTakesAccessibilityActions() {
+        everyElementRealizes(VisualElementContract.accessibilityActions)
+        everyElementRaises(VisualElementContract.accessibilityActionPerformed)
+        everyElementRaises(VisualElementContract.accessibilityAdjusted)
+    }
+
     /// The words a view shows while the pointer rests on it, which a toolkit showing tooltips holds on any view.
     /// Design: docs/design/views/modifiers.md#a-tooltip
     public func everyElementShowsItsTooltip() {

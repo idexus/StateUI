@@ -23,6 +23,17 @@ class AppKitHitTestView: NSView {
         return true
     }
 
+    /// What a screen reader's step up or down performs, while the element says it is adjustable.
+    var stepAction: ((AccessibilityAdjustment) -> Bool)?
+
+    override func accessibilityPerformIncrement() -> Bool {
+        stepAction?(.increment) ?? false
+    }
+
+    override func accessibilityPerformDecrement() -> Bool {
+        stepAction?(.decrement) ?? false
+    }
+
     /// An element that answers a tap takes the first click into an inactive window.
     /// Design: docs/design/platforms/appkit/input.md#the-first-click
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool {

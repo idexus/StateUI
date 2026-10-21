@@ -147,6 +147,13 @@ extension AppKitDriver {
             tell(NSWindow.didDeminiaturizeNotification, window)
             comeToTheFront(window)
         case (.close, _) where element.type == .window: try window(of: element).close()
+        case (.performAccessibilityAction(let name), let view?):
+            // The action VoiceOver offers on what it meets of the view, run as VoiceOver runs it.
+            let target = native?.accessibilityTarget(of: view)
+            _ = target?.accessibilityCustomActions()?.first { $0.name == name }?.handler?()
+        case (.adjust(let step), let view?):
+            guard let target = native?.accessibilityTarget(of: view) else { throw DriverCannot(act, on: element) }
+            _ = step == .increment ? target.accessibilityPerformIncrement() : target.accessibilityPerformDecrement()
         default: throw DriverCannot(act, on: element)
         }
     }

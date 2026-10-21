@@ -93,6 +93,20 @@ enum JavaNatives {
         let longClicked: @convention(c) (Environment, jclass?, jlong) -> jboolean = { _, _, number in
             MainActor.assumeIsolated { AndroidView.find(number)?.longClicked() == true ? 1 : 0 }
         }
+        let accessibilityActed: @convention(c) (Environment, jclass?, jlong, jstring?) -> jboolean = {
+            _, _, number, action in
+            nonisolated(unsafe) let action = action
+            return MainActor.assumeIsolated {
+                guard let heard = AndroidView.find(number)?.readerHeard else { return 0 }
+                return heard(.accessibilityAction(Java.text(action))) ? 1 : 0
+            }
+        }
+        let accessibilityStepped: @convention(c) (Environment, jclass?, jlong, jboolean) -> jboolean = { _, _, number, up in
+            MainActor.assumeIsolated {
+                guard let heard = AndroidView.find(number)?.readerHeard else { return 0 }
+                return heard(.accessibilityAdjustment(up != 0 ? .increment : .decrement)) ? 1 : 0
+            }
+        }
         let menuChose: @convention(c) (Environment, jclass?, jlong, jint) -> Void = { _, _, number, item in
             MainActor.assumeIsolated {
                 AndroidView.find(number)?.menuChose(Int(item))
@@ -379,6 +393,8 @@ enum JavaNatives {
             ("frame", "(J)V", unsafeBitCast(frame, to: UnsafeMutableRawPointer.self)),
             ("clicked", "(J)V", unsafeBitCast(clicked, to: UnsafeMutableRawPointer.self)),
             ("longClicked", "(J)Z", unsafeBitCast(longClicked, to: UnsafeMutableRawPointer.self)),
+            ("accessibilityActed", "(JLjava/lang/String;)Z", unsafeBitCast(accessibilityActed, to: UnsafeMutableRawPointer.self)),
+            ("accessibilityStepped", "(JZ)Z", unsafeBitCast(accessibilityStepped, to: UnsafeMutableRawPointer.self)),
             ("menuChose", "(JI)V", unsafeBitCast(menuChose, to: UnsafeMutableRawPointer.self)),
             ("keyPressed", "(III)Z", unsafeBitCast(keyPressed, to: UnsafeMutableRawPointer.self)),
             ("keyTaken", "(ZIII)Z", unsafeBitCast(keyTaken, to: UnsafeMutableRawPointer.self)),

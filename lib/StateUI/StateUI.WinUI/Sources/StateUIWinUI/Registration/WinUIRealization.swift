@@ -38,6 +38,12 @@ enum WinUIRealization {
         // MARK: Tiers - a member every wearer realizes alike
         .notPlanned(LayoutContract.avoidsSafeArea, reason: "A Windows desktop window keeps no area of its content "
             + "clear: nothing of the window stands over its content."),
+        .notPlanned(VisualElementContract.accessibilityActionPerformed,
+            reason: "UI Automation offers no action of an application's own words."),
+        .notPlanned(VisualElementContract.accessibilityActions,
+            reason: "UI Automation offers no action of an application's own words."),
+        .notPlanned(VisualElementContract.accessibilityAdjusted,
+            reason: "UI Automation steps a range by its numbers, which a view made of parts does not say."),
         .notPlanned(VisualElementContract.accessibilityRole,
             reason: "A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another."),
         .notPlanned(VisualElementContract.accessibilityValue,

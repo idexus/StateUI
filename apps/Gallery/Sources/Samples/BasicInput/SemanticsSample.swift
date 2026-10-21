@@ -114,7 +114,8 @@ struct SemanticsSample: SampleContent, ExampleContent {
             SectionTitle("One thing made of parts")
 
             // Five stars drawn, one rating heard: a screen reader meets the row
-            // as one adjustable thing holding its value, not as five pictures.
+            // as one adjustable thing holding its value, not as five pictures,
+            // steps it with a swipe up or down, and offers Clear as an action.
             HStack {
                 ForEach(1...5) { star in
                     Text(star <= rating ? "★" : "☆")
@@ -129,6 +130,10 @@ struct SemanticsSample: SampleContent, ExampleContent {
             .accessibilityLabel("Rating")
             .accessibilityRole(.adjustable)
             .accessibilityValue("\(rating) of 5")
+            .onAccessibilityAdjusted { step in
+                rating = min(5, max(0, rating + (step == .increment ? 1 : -1)))
+            }
+            .accessibilityAction("Clear") { rating = 0 }
 
             Text("A user hears: Rating, \(rating) of 5")
                 .fontSize(12)
@@ -234,7 +239,8 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 + "`.accessibilityLabel` and `.accessibilityHint` are what a screen reader "
                 + "SAYS: the first names the control, the second says what using it does. "
                 + "`.accessibilityRole` and `.accessibilityValue` say what a view made of "
-                + "parts is and holds: the stars are one adjustable rating, not five pictures. "
+                + "parts is and holds: the stars are one adjustable rating, not five pictures, "
+                + "which a reader steps (`.onAccessibilityAdjusted`) and clears (`.accessibilityAction`). "
                 + "`.accessibilityHeading` marks a view as a heading, which is how a "
                 + "user moves through a long page. `.accessibilityIdentifier` is a handle nobody "
                 + "hears - it is what a UI test, a script or an agent driving the "

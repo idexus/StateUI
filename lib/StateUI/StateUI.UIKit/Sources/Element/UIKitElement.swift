@@ -37,6 +37,8 @@ final class UIKitElement: NativeElement {
     var accessibilityKindSaid = false
     /// Whether the element said a value for assistive technology, which then stands over its view's own.
     var accessibilityValueSaid = false
+    /// Whether the element offered a screen reader actions, which then stand in place of its view's own.
+    var accessibilityActionsSaid = false
 
     /// What the buttons on a page's bar say, which the bar keeps them for.
     var barButtonsSaid: [[UIKitBarAction.Said]]?

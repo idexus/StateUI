@@ -190,6 +190,23 @@ something adjustable, a link, an image and words. A platform whose control is
 fixed to its own kind says a kind only on a layout StateUI draws, and the
 matrix marks the rest `–`.
 
+## A reader's actions
+
+What a user who sees the screen does by a gesture, a swipe or a menu, a
+screen-reader user reaches as the view's actions: `accessibilityAction("Delete")`
+offers one by its words, and the reader runs its handler. A view made of parts
+that says it is adjustable is stepped up and down by the reader - a swipe on a
+phone, the reader's keys on a desktop - and `onAccessibilityAdjusted` hears
+which way; the kind is what offers the steps, so the pair go together.
+
+An action is words and a handler, the same as a context menu's entry: the
+application offers the same thing in both places, never a second meaning in
+one. A name stands once on a view, since the reader shows the user the names
+and nothing else. The actions and the steps stand where a platform's screen
+reader offers its own - VoiceOver and TalkBack; a platform whose reader offers
+no action of an application's words is `–` in the matrix, and a view there
+offers the same through a control or a menu the user reaches.
+
 ## A tooltip
 
 `tooltip` is words for a sighted user with a pointer: what a view does, shown

@@ -37,6 +37,12 @@ final class StateUIHost {
     /** A view was held down long: whether the view took the long press. */
     static native boolean longClicked(long view);
 
+    /** A screen reader performed one of a view's actions, by its words: whether the view took it. */
+    static native boolean accessibilityActed(long view, String action);
+
+    /** A screen reader stepped a view up or down: whether the view took the step. */
+    static native boolean accessibilityStepped(long view, boolean up);
+
     /** A tab was chosen, by its place among the tabs. */
     static native void tabSelected(long view, int tab);
 

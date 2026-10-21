@@ -66,7 +66,12 @@ extension AndroidElement {
                 }
             }
             if !own.isDisjoint(with: MountedElement.transformProperties) { view.setTransform(element.drawingTransform) }
-            if !own.isDisjoint(with: MountedElement.accessibilityProperties) { view.setAccessibility(element.accessibilityWords) }
+            if !own.isDisjoint(with: MountedElement.accessibilityProperties) {
+                view.setAccessibility(element.accessibilityWords) { [weak self] heard in
+                    guard let self, let host else { return false }
+                    return element.hear(heard, in: host.runtime)
+                }
+            }
             if let layers = view as? AndroidZStackView { layers.placement = element.placement }
         }
 

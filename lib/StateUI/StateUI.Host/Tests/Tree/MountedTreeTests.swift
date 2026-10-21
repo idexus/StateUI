@@ -561,11 +561,13 @@ final class MountedTreeTests: XCTestCase {
     }
 
     /// Every word assistive technology meets of an element is realized on every element: a host meeting assistive
-    /// technology says them all, so no case of one is left unrun.
+    /// technology and taking a reader's actions says them all, so no case of one is left unrun.
     func testEveryWordForAssistiveTechnologyIsRealized() {
         let registry = Registry<AnyObject>()
         registry.everyElementMeetsAssistiveTechnology()
-        XCTAssertEqual(Set(registry.sharedNames), Set(MountedElement.accessibilityProperties.map(\.name)))
+        registry.everyElementTakesAccessibilityActions()
+        let unrealized = Set(MountedElement.accessibilityProperties.map(\.name)).subtracting(registry.sharedNames)
+        XCTAssertEqual(unrealized, [])
     }
 
     /// What assistive technology meets of an element is its words and its presence: left out with its children

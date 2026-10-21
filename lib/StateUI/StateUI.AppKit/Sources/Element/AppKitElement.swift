@@ -53,6 +53,8 @@ final class AppKitElement: NSObject, NativeElement {
     var accessibilityChildrenSuppressed = false
     /// Whether the element said a value for assistive technology, which then stands over its view's own.
     var accessibilityValueSaid = false
+    /// Whether the element offered a screen reader actions, which then stand in place of its view's own.
+    var accessibilityActionsSaid = false
     var platformMenuItem: NSMenuItem?
 
     init(_ element: MountedElement, host: AppKitRenderer) {

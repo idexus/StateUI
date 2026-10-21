@@ -11,7 +11,14 @@ import UIKit
 /// heard as it goes down, moves and lifts.
 /// Design: docs/design/platforms/uikit/drawing.md#a-canvas
 @MainActor
-final class UIKitCanvasView: UIView {
+final class UIKitCanvasView: UIView, UIKitSteppable {
+    /// What a reader's step performs, while the element says it is adjustable.
+    var stepAction: ((AccessibilityAdjustment) -> Void)?
+
+    override func accessibilityIncrement() { stepAction?(.increment) }
+
+    override func accessibilityDecrement() { stepAction?(.decrement) }
+
     var onPressed: ((CGPoint) -> Void)?
     var onDragged: ((CGPoint) -> Void)?
     var onReleased: ((CGPoint) -> Void)?

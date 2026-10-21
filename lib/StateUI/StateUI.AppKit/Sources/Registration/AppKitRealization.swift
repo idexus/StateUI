@@ -14,6 +14,10 @@ enum AppKitRealization {
     /// The entries the Mac will not have; none.
     static let notPlanned: [(any ElementContract.Type, reason: String)] = []
 
+    /// Why a reader's steps reach no element AppKit shows through a view of its own.
+    static let ownSteps = "VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - "
+        + "which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps."
+
     /// Every record, the tiers' first.
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
@@ -52,6 +56,25 @@ enum AppKitRealization {
             reason: "macOS gives an application no text size of the user's to follow."),
 
         // MARK: Entries - a control's or a part's own, and where it differs from its tier
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: ActivityIndicatorContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: ButtonContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: CheckBoxContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: DatePickerContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: DividerContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: ItemsViewContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: MapContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: PickerContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: ProgressBarContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: ScrollViewContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: SearchFieldContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: SliderContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: SpacerContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: StepperContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: SwitchContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: TextEditorContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: TextFieldContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: TimePickerContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: WebViewContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityValue, on: SliderContract.self,
             reason: "AppKit's slider says its own number to assistive technology, over any value given."),
         .notPlanned(VisualElementContract.accessibilityValue, on: DatePickerContract.self,

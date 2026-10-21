@@ -1,4 +1,7 @@
-# revision 16.1
+# revision 17.1
+ActivityIndicator.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+ActivityIndicator.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+ActivityIndicator.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 ActivityIndicator.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -32,6 +35,9 @@ ActivityIndicator.translationX: ✓ read translationX of ActivityIndicator: the 
 ActivityIndicator.translationY: ✓ read translationY of ActivityIndicator: the host's own transform: GTK reads back no part of one
 ActivityIndicator.width: ✅
 ActivityIndicator.zIndex: ✅
+Button.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Button.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Button.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Button.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
@@ -65,6 +71,9 @@ Button.translationX: ✓ read translationX of Button: the host's own transform: 
 Button.translationY: ✓ read translationY of Button: the host's own transform: GTK reads back no part of one
 Button.width: ✅
 Button.zIndex: ✅
+Canvas.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Canvas.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Canvas.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Canvas.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
@@ -98,6 +107,9 @@ Canvas.translationX: ✓ read translationX of Canvas: the host's own transform: 
 Canvas.translationY: ✓ read translationY of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.width: ✅
 Canvas.zIndex: ✅
+Capsule.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Capsule.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Capsule.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Capsule.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Capsule.accessibilityHint: ✅
 Capsule.accessibilityLabel: ✅
@@ -131,6 +143,9 @@ Capsule.translationX: ✓ read translationX of Capsule: the host's own transform
 Capsule.translationY: ✓ read translationY of Capsule: the host's own transform: GTK reads back no part of one
 Capsule.width: ✅
 Capsule.zIndex: ✅
+CheckBox.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+CheckBox.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+CheckBox.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 CheckBox.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
@@ -164,6 +179,9 @@ CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transfo
 CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.width: ✅
 CheckBox.zIndex: ✅
+DatePicker.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+DatePicker.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+DatePicker.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 DatePicker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
@@ -197,6 +215,9 @@ DatePicker.translationX: ✓ read translationX of DatePicker: the host's own tra
 DatePicker.translationY: ✓ read translationY of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.width: ✅
 DatePicker.zIndex: ✅
+Divider.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Divider.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Divider.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Divider.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Divider.accessibilityHint: ✅
 Divider.accessibilityLabel: ✅
@@ -230,6 +251,9 @@ Divider.translationX: ✓ read translationX of Divider: the host's own transform
 Divider.translationY: ✓ read translationY of Divider: the host's own transform: GTK reads back no part of one
 Divider.width: ✅
 Divider.zIndex: ✅
+Ellipse.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Ellipse.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Ellipse.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Ellipse.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
@@ -263,6 +287,9 @@ Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform
 Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.width: ✅
 Ellipse.zIndex: ✅
+Grid.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Grid.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Grid.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Grid.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
@@ -296,6 +323,9 @@ Grid.translationX: ✓ read translationX of Grid: the host's own transform: GTK 
 Grid.translationY: ✓ read translationY of Grid: the host's own transform: GTK reads back no part of one
 Grid.width: ✅
 Grid.zIndex: ✅
+HStack.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+HStack.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+HStack.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 HStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
@@ -329,6 +359,9 @@ HStack.translationX: ✓ read translationX of HStack: the host's own transform: 
 HStack.translationY: ✓ read translationY of HStack: the host's own transform: GTK reads back no part of one
 HStack.width: ✅
 HStack.zIndex: ✅
+Image.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Image.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Image.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Image.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
@@ -362,6 +395,9 @@ Image.translationX: ✓ read translationX of Image: the host's own transform: GT
 Image.translationY: ✓ read translationY of Image: the host's own transform: GTK reads back no part of one
 Image.width: ✅
 Image.zIndex: ✅
+ItemsView.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+ItemsView.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+ItemsView.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 ItemsView.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
@@ -395,6 +431,9 @@ ItemsView.translationX: ✓ read translationX of ItemsView: the host's own trans
 ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.width: ✅
 ItemsView.zIndex: ✅
+LayoutEngine.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+LayoutEngine.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+LayoutEngine.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 LayoutEngine.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 LayoutEngine.accessibilityHint: ✅
 LayoutEngine.accessibilityLabel: ✅
@@ -428,6 +467,9 @@ LayoutEngine.translationX: ✓ read translationX of LayoutEngine: the host's own
 LayoutEngine.translationY: ✓ read translationY of LayoutEngine: the host's own transform: GTK reads back no part of one
 LayoutEngine.width: ✅
 LayoutEngine.zIndex: ✅
+Line.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Line.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Line.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Line.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
@@ -461,6 +503,9 @@ Line.translationX: ✓ read translationX of Line: the host's own transform: GTK 
 Line.translationY: ✓ read translationY of Line: the host's own transform: GTK reads back no part of one
 Line.width: ✅
 Line.zIndex: ✅
+Map.accessibilityActionPerformed: 🧩
+Map.accessibilityActions: 🧩
+Map.accessibilityAdjusted: 🧩
 Map.accessibilityHeading: 🧩
 Map.accessibilityHint: 🧩
 Map.accessibilityLabel: 🧩
@@ -494,6 +539,9 @@ Map.translationX: 🧩
 Map.translationY: 🧩
 Map.width: 🧩
 Map.zIndex: 🧩
+Path.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Path.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Path.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Path.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
@@ -527,6 +575,9 @@ Path.translationX: ✓ read translationX of Path: the host's own transform: GTK 
 Path.translationY: ✓ read translationY of Path: the host's own transform: GTK reads back no part of one
 Path.width: ✅
 Path.zIndex: ✅
+Picker.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Picker.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Picker.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Picker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
@@ -560,6 +611,9 @@ Picker.translationX: ✓ read translationX of Picker: the host's own transform: 
 Picker.translationY: ✓ read translationY of Picker: the host's own transform: GTK reads back no part of one
 Picker.width: ✅
 Picker.zIndex: ✅
+Polygon.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Polygon.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Polygon.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Polygon.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
@@ -593,6 +647,9 @@ Polygon.translationX: ✓ read translationX of Polygon: the host's own transform
 Polygon.translationY: ✓ read translationY of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.width: ✅
 Polygon.zIndex: ✅
+Polyline.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Polyline.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Polyline.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Polyline.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
@@ -626,6 +683,9 @@ Polyline.translationX: ✓ read translationX of Polyline: the host's own transfo
 Polyline.translationY: ✓ read translationY of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.width: ✅
 Polyline.zIndex: ✅
+ProgressBar.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+ProgressBar.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+ProgressBar.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 ProgressBar.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
@@ -659,6 +719,9 @@ ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own t
 ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.width: ✅
 ProgressBar.zIndex: ✅
+Rectangle.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Rectangle.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Rectangle.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Rectangle.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
@@ -692,6 +755,9 @@ Rectangle.translationX: ✓ read translationX of Rectangle: the host's own trans
 Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.width: ✅
 Rectangle.zIndex: ✅
+ScrollView.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+ScrollView.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+ScrollView.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 ScrollView.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
@@ -725,6 +791,9 @@ ScrollView.translationX: ✓ read translationX of ScrollView: the host's own tra
 ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.width: ✅
 ScrollView.zIndex: ✅
+SearchField.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+SearchField.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+SearchField.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 SearchField.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
@@ -758,6 +827,9 @@ SearchField.translationX: ✓ read translationX of SearchField: the host's own t
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.width: ✅
 SearchField.zIndex: ✅
+Slider.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Slider.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Slider.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Slider.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
@@ -791,6 +863,9 @@ Slider.translationX: ✓ read translationX of Slider: the host's own transform: 
 Slider.translationY: ✓ read translationY of Slider: the host's own transform: GTK reads back no part of one
 Slider.width: ✅
 Slider.zIndex: ✅
+Spacer.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Spacer.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Spacer.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Spacer.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Spacer.accessibilityHint: ✅
 Spacer.accessibilityLabel: ✅
@@ -824,6 +899,9 @@ Spacer.translationX: ✓ read translationX of Spacer: the host's own transform: 
 Spacer.translationY: ✓ read translationY of Spacer: the host's own transform: GTK reads back no part of one
 Spacer.width: ✅
 Spacer.zIndex: ✅
+Stepper.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Stepper.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Stepper.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Stepper.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
@@ -857,6 +935,9 @@ Stepper.translationX: ✓ read translationX of Stepper: the host's own transform
 Stepper.translationY: ✓ read translationY of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.width: ✅
 Stepper.zIndex: ✅
+Switch.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Switch.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Switch.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Switch.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
@@ -890,6 +971,9 @@ Switch.translationX: ✓ read translationX of Switch: the host's own transform: 
 Switch.translationY: ✓ read translationY of Switch: the host's own transform: GTK reads back no part of one
 Switch.width: ✅
 Switch.zIndex: ✅
+Text.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Text.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Text.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Text.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
@@ -923,6 +1007,9 @@ Text.translationX: ✓ read translationX of Text: the host's own transform: GTK 
 Text.translationY: ✓ read translationY of Text: the host's own transform: GTK reads back no part of one
 Text.width: ✅
 Text.zIndex: ✅
+TextEditor.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+TextEditor.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+TextEditor.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 TextEditor.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
@@ -956,6 +1043,9 @@ TextEditor.translationX: ✓ read translationX of TextEditor: the host's own tra
 TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.width: ✅
 TextEditor.zIndex: ✅
+TextField.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+TextField.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+TextField.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 TextField.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
@@ -989,6 +1079,9 @@ TextField.translationX: ✓ read translationX of TextField: the host's own trans
 TextField.translationY: ✓ read translationY of TextField: the host's own transform: GTK reads back no part of one
 TextField.width: ✅
 TextField.zIndex: ✅
+TimePicker.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+TimePicker.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+TimePicker.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 TimePicker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
@@ -1022,6 +1115,9 @@ TimePicker.translationX: ✓ read translationX of TimePicker: the host's own tra
 TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.width: ✅
 TimePicker.zIndex: ✅
+VStack.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+VStack.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+VStack.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 VStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
@@ -1055,6 +1151,9 @@ VStack.translationX: ✓ read translationX of VStack: the host's own transform: 
 VStack.translationY: ✓ read translationY of VStack: the host's own transform: GTK reads back no part of one
 VStack.width: ✅
 VStack.zIndex: ✅
+WebView.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+WebView.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+WebView.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 WebView.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
@@ -1088,6 +1187,9 @@ WebView.translationX: ✓ read translationX of WebView: the host's own transform
 WebView.translationY: ✓ read translationY of WebView: the host's own transform: GTK reads back no part of one
 WebView.width: ✅
 WebView.zIndex: ✅
+ZStack.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+ZStack.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+ZStack.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 ZStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅

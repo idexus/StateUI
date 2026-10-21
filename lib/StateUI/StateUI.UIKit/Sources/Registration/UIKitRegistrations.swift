@@ -38,6 +38,7 @@ enum UIKitRegistrations {
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(VisualElementContract.isEnabled)
         registry.everyElementMeetsAssistiveTechnology()
+        registry.everyElementTakesAccessibilityActions()
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
         registry.everyElementHearsTheUser()

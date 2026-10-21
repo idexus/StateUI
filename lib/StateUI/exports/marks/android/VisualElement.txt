@@ -1,4 +1,7 @@
-# revision 16.1
+# revision 17.1
+ActivityIndicator.accessibilityActionPerformed: ✅
+ActivityIndicator.accessibilityActions: ✅
+ActivityIndicator.accessibilityAdjusted: ✅
 ActivityIndicator.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -32,6 +35,9 @@ ActivityIndicator.translationX: ✅
 ActivityIndicator.translationY: ✅
 ActivityIndicator.width: ✅
 ActivityIndicator.zIndex: ✅
+Button.accessibilityActionPerformed: ✅
+Button.accessibilityActions: ✅
+Button.accessibilityAdjusted: ✅
 Button.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
@@ -65,6 +71,9 @@ Button.translationX: ✅
 Button.translationY: ✅
 Button.width: ✅
 Button.zIndex: – Android draws a raised button over the flat views beside it whatever their depth: its elevation is the native button's own.
+Canvas.accessibilityActionPerformed: ✅
+Canvas.accessibilityActions: ✅
+Canvas.accessibilityAdjusted: ✅
 Canvas.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
@@ -98,6 +107,9 @@ Canvas.translationX: ✅
 Canvas.translationY: ✅
 Canvas.width: ✅
 Canvas.zIndex: ✅
+Capsule.accessibilityActionPerformed: ✅
+Capsule.accessibilityActions: ✅
+Capsule.accessibilityAdjusted: ✅
 Capsule.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Capsule.accessibilityHint: ✅
 Capsule.accessibilityLabel: ✅
@@ -131,6 +143,9 @@ Capsule.translationX: ✅
 Capsule.translationY: ✅
 Capsule.width: ✅
 Capsule.zIndex: ✅
+CheckBox.accessibilityActionPerformed: ✅
+CheckBox.accessibilityActions: ✅
+CheckBox.accessibilityAdjusted: ✅
 CheckBox.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
@@ -164,6 +179,9 @@ CheckBox.translationX: ✅
 CheckBox.translationY: ✅
 CheckBox.width: ✅
 CheckBox.zIndex: ✅
+DatePicker.accessibilityActionPerformed: ✅
+DatePicker.accessibilityActions: ✅
+DatePicker.accessibilityAdjusted: ✅
 DatePicker.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
@@ -197,6 +215,9 @@ DatePicker.translationX: ✅
 DatePicker.translationY: ✅
 DatePicker.width: ✅
 DatePicker.zIndex: ✅
+Divider.accessibilityActionPerformed: ✅
+Divider.accessibilityActions: ✅
+Divider.accessibilityAdjusted: ✅
 Divider.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Divider.accessibilityHint: ✅
 Divider.accessibilityLabel: ✅
@@ -230,6 +251,9 @@ Divider.translationX: ✅
 Divider.translationY: ✅
 Divider.width: ✅
 Divider.zIndex: ✅
+Ellipse.accessibilityActionPerformed: ✅
+Ellipse.accessibilityActions: ✅
+Ellipse.accessibilityAdjusted: ✅
 Ellipse.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
@@ -263,6 +287,9 @@ Ellipse.translationX: ✅
 Ellipse.translationY: ✅
 Ellipse.width: ✅
 Ellipse.zIndex: ✅
+Grid.accessibilityActionPerformed: ✅
+Grid.accessibilityActions: ✅
+Grid.accessibilityAdjusted: ✅
 Grid.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
@@ -296,6 +323,9 @@ Grid.translationX: ✅
 Grid.translationY: ✅
 Grid.width: ✅
 Grid.zIndex: ✅
+HStack.accessibilityActionPerformed: ✅
+HStack.accessibilityActions: ✅
+HStack.accessibilityAdjusted: ✅
 HStack.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
@@ -329,6 +359,9 @@ HStack.translationX: ✅
 HStack.translationY: ✅
 HStack.width: ✅
 HStack.zIndex: ✅
+Image.accessibilityActionPerformed: ✅
+Image.accessibilityActions: ✅
+Image.accessibilityAdjusted: ✅
 Image.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
@@ -362,6 +395,9 @@ Image.translationX: ✅
 Image.translationY: ✅
 Image.width: ✅
 Image.zIndex: ✅
+ItemsView.accessibilityActionPerformed: ✅
+ItemsView.accessibilityActions: ✅
+ItemsView.accessibilityAdjusted: ✅
 ItemsView.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
@@ -395,6 +431,9 @@ ItemsView.translationX: ✅
 ItemsView.translationY: ✅
 ItemsView.width: ✅
 ItemsView.zIndex: ✅
+LayoutEngine.accessibilityActionPerformed: ✅
+LayoutEngine.accessibilityActions: ✅
+LayoutEngine.accessibilityAdjusted: ✅
 LayoutEngine.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 LayoutEngine.accessibilityHint: ✅
 LayoutEngine.accessibilityLabel: ✅
@@ -428,6 +467,9 @@ LayoutEngine.translationX: ✅
 LayoutEngine.translationY: ✅
 LayoutEngine.width: ✅
 LayoutEngine.zIndex: ✅
+Line.accessibilityActionPerformed: ✅
+Line.accessibilityActions: ✅
+Line.accessibilityAdjusted: ✅
 Line.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
@@ -461,6 +503,9 @@ Line.translationX: ✅
 Line.translationY: ✅
 Line.width: ✅
 Line.zIndex: ✅
+Map.accessibilityActionPerformed: 🧩
+Map.accessibilityActions: 🧩
+Map.accessibilityAdjusted: 🧩
 Map.accessibilityHeading: 🧩
 Map.accessibilityHint: 🧩
 Map.accessibilityLabel: 🧩
@@ -494,6 +539,9 @@ Map.translationX: 🧩
 Map.translationY: 🧩
 Map.width: 🧩
 Map.zIndex: 🧩
+Path.accessibilityActionPerformed: ✅
+Path.accessibilityActions: ✅
+Path.accessibilityAdjusted: ✅
 Path.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
@@ -527,6 +575,9 @@ Path.translationX: ✅
 Path.translationY: ✅
 Path.width: ✅
 Path.zIndex: ✅
+Picker.accessibilityActionPerformed: ✅
+Picker.accessibilityActions: ✅
+Picker.accessibilityAdjusted: ✅
 Picker.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
@@ -560,6 +611,9 @@ Picker.translationX: ✅
 Picker.translationY: ✅
 Picker.width: ✅
 Picker.zIndex: ✅
+Polygon.accessibilityActionPerformed: ✅
+Polygon.accessibilityActions: ✅
+Polygon.accessibilityAdjusted: ✅
 Polygon.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
@@ -593,6 +647,9 @@ Polygon.translationX: ✅
 Polygon.translationY: ✅
 Polygon.width: ✅
 Polygon.zIndex: ✅
+Polyline.accessibilityActionPerformed: ✅
+Polyline.accessibilityActions: ✅
+Polyline.accessibilityAdjusted: ✅
 Polyline.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
@@ -626,6 +683,9 @@ Polyline.translationX: ✅
 Polyline.translationY: ✅
 Polyline.width: ✅
 Polyline.zIndex: ✅
+ProgressBar.accessibilityActionPerformed: ✅
+ProgressBar.accessibilityActions: ✅
+ProgressBar.accessibilityAdjusted: ✅
 ProgressBar.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
@@ -659,6 +719,9 @@ ProgressBar.translationX: ✅
 ProgressBar.translationY: ✅
 ProgressBar.width: ✅
 ProgressBar.zIndex: ✅
+Rectangle.accessibilityActionPerformed: ✅
+Rectangle.accessibilityActions: ✅
+Rectangle.accessibilityAdjusted: ✅
 Rectangle.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
@@ -692,6 +755,9 @@ Rectangle.translationX: ✅
 Rectangle.translationY: ✅
 Rectangle.width: ✅
 Rectangle.zIndex: ✅
+ScrollView.accessibilityActionPerformed: ✅
+ScrollView.accessibilityActions: ✅
+ScrollView.accessibilityAdjusted: ✅
 ScrollView.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
@@ -725,6 +791,9 @@ ScrollView.translationX: ✅
 ScrollView.translationY: ✅
 ScrollView.width: ✅
 ScrollView.zIndex: ✅
+SearchField.accessibilityActionPerformed: ✅
+SearchField.accessibilityActions: ✅
+SearchField.accessibilityAdjusted: ✅
 SearchField.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
@@ -758,6 +827,9 @@ SearchField.translationX: ✅
 SearchField.translationY: ✅
 SearchField.width: ✅
 SearchField.zIndex: ✅
+Slider.accessibilityActionPerformed: ✅
+Slider.accessibilityActions: ✅
+Slider.accessibilityAdjusted: ✅
 Slider.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
@@ -791,6 +863,9 @@ Slider.translationX: ✅
 Slider.translationY: ✅
 Slider.width: ✅
 Slider.zIndex: ✅
+Spacer.accessibilityActionPerformed: ✅
+Spacer.accessibilityActions: ✅
+Spacer.accessibilityAdjusted: ✅
 Spacer.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Spacer.accessibilityHint: ✅
 Spacer.accessibilityLabel: ✅
@@ -824,6 +899,9 @@ Spacer.translationX: ✅
 Spacer.translationY: ✅
 Spacer.width: ✅
 Spacer.zIndex: ✅
+Stepper.accessibilityActionPerformed: ✅
+Stepper.accessibilityActions: ✅
+Stepper.accessibilityAdjusted: ✅
 Stepper.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
@@ -857,6 +935,9 @@ Stepper.translationX: ✅
 Stepper.translationY: ✅
 Stepper.width: ✅
 Stepper.zIndex: ✅
+Switch.accessibilityActionPerformed: ✅
+Switch.accessibilityActions: ✅
+Switch.accessibilityAdjusted: ✅
 Switch.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
@@ -890,6 +971,9 @@ Switch.translationX: ✅
 Switch.translationY: ✅
 Switch.width: ✅
 Switch.zIndex: ✅
+Text.accessibilityActionPerformed: ✅
+Text.accessibilityActions: ✅
+Text.accessibilityAdjusted: ✅
 Text.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
@@ -923,6 +1007,9 @@ Text.translationX: ✅
 Text.translationY: ✅
 Text.width: ✅
 Text.zIndex: ✅
+TextEditor.accessibilityActionPerformed: ✅
+TextEditor.accessibilityActions: ✅
+TextEditor.accessibilityAdjusted: ✅
 TextEditor.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
@@ -956,6 +1043,9 @@ TextEditor.translationX: ✅
 TextEditor.translationY: ✅
 TextEditor.width: ✅
 TextEditor.zIndex: ✅
+TextField.accessibilityActionPerformed: ✅
+TextField.accessibilityActions: ✅
+TextField.accessibilityAdjusted: ✅
 TextField.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
@@ -989,6 +1079,9 @@ TextField.translationX: ✅
 TextField.translationY: ✅
 TextField.width: ✅
 TextField.zIndex: ✅
+TimePicker.accessibilityActionPerformed: ✅
+TimePicker.accessibilityActions: ✅
+TimePicker.accessibilityAdjusted: ✅
 TimePicker.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
@@ -1022,6 +1115,9 @@ TimePicker.translationX: ✅
 TimePicker.translationY: ✅
 TimePicker.width: ✅
 TimePicker.zIndex: ✅
+VStack.accessibilityActionPerformed: ✅
+VStack.accessibilityActions: ✅
+VStack.accessibilityAdjusted: ✅
 VStack.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
@@ -1055,6 +1151,9 @@ VStack.translationX: ✅
 VStack.translationY: ✅
 VStack.width: ✅
 VStack.zIndex: ✅
+WebView.accessibilityActionPerformed: ✅
+WebView.accessibilityActions: ✅
+WebView.accessibilityAdjusted: ✅
 WebView.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
@@ -1088,6 +1187,9 @@ WebView.translationX: ✅
 WebView.translationY: ✅
 WebView.width: ✅
 WebView.zIndex: ✅
+ZStack.accessibilityActionPerformed: ✅
+ZStack.accessibilityActions: ✅
+ZStack.accessibilityAdjusted: ✅
 ZStack.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅

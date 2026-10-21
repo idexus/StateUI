@@ -10,7 +10,14 @@ import UIKit
 /// by their brushes - a gradient through a layer the shape cuts out.
 /// Design: docs/design/platforms/uikit/drawing.md#the-shapes
 @MainActor
-final class UIKitShapeView: UIView {
+final class UIKitShapeView: UIView, UIKitSteppable {
+    /// What a reader's step performs, while the element says it is adjustable.
+    var stepAction: ((AccessibilityAdjustment) -> Void)?
+
+    override func accessibilityIncrement() { stepAction?(.increment) }
+
+    override func accessibilityDecrement() { stepAction?(.decrement) }
+
     /// What the shape draws: a rectangle, its corners clockwise from the top left, or an ellipse, filling its room;
     /// or a geometry of its own, placed by its aspect - each moved by its transform.
     enum Geometry: Equatable {

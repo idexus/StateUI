@@ -251,14 +251,18 @@ spacing, lines and decorations.
 ## What assistive technology meets
 
 What an element says for assistive technology is put together once, the same
-on every host: its identifier, its label, its hint, its kind, its value, its
-level as a heading, and whether it is met at all - left out with everything in it where it says
+on every host: its identifier, its label, its hint, its kind, its value, the
+actions it offers, its level as a heading, and whether it is met at all - left out with everything in it where it says
 so, else left out itself where it is hidden, its children still met, else met
 where it says it is not hidden - or, saying nothing of it, where it says words
-of its own, a label standing for all it holds, a hint, a kind, a value or a
-heading, or answers a tap - and as its view is of itself otherwise. A host puts those words on its
+of its own, a label standing for all it holds, a hint, a kind, a value, an
+action or a heading, or answers a tap - and as its view is of itself otherwise. A host puts those words on its
 view in its platform's terms, and puts them again whenever any of them
 changes; one the tree stops saying anything of stands as its view is again.
+What a screen reader does to an element is input like a tap, heard by the
+same rule (`MountedElement.hear`): an action it performs reaches the element
+only where the element offers one of those words, a step only where it hears
+steps, and neither reaches a disabled branch.
 Whether a view is an element to assistive technology is one rule
 (`AccessibilityWords.isElement(standing:)`): as its presence says, else as
 the view stood of itself before any word reached it - never as the last word

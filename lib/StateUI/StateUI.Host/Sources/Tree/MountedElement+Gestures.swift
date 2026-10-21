@@ -93,6 +93,14 @@ extension MountedElement {
             dropTarget.dropped()
             let taken = dragAndDrop.taken(files)
             if !taken.isEmpty { send(.filesDropped, [taken.propValue], in: runtime) }
+        case .accessibilityAction(let name):
+            guard accessibilityWords.actions.contains(name) else { return false }
+
+            send(.accessibilityActionPerformed, [.string(name)], in: runtime)
+        case .accessibilityAdjustment(let step):
+            guard handler(.accessibilityAdjusted) != nil else { return false }
+
+            send(.accessibilityAdjusted, [step.propValue], in: runtime)
         }
         return true
     }

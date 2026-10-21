@@ -79,6 +79,7 @@ extension NodeType {
 }
 
 @_spi(Host) public extension Prop {
+    static let accessibilityActions = VisualElementContract.accessibilityActions.token
     static let accessibilityHeading = VisualElementContract.accessibilityHeading.token
     static let accessibilityHint = VisualElementContract.accessibilityHint.token
     static let tooltip = VisualElementContract.tooltip.token
@@ -273,6 +274,8 @@ extension NodeType {
 }
 
 @_spi(Host) public extension Event {
+    static let accessibilityActionPerformed = VisualElementContract.accessibilityActionPerformed.token
+    static let accessibilityAdjusted = VisualElementContract.accessibilityAdjusted.token
     static let activated = SceneContract.activated.token
     static let appearing = PageContract.appearing.token
     static let canGoBackChanged = WebViewContract.canGoBackChanged.token

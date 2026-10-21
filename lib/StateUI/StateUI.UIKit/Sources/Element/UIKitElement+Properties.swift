@@ -110,6 +110,26 @@ extension UIKitElement {
         accessibilityKindSaid = words.role != nil
         if words.value != nil || accessibilityValueSaid { target.accessibilityValue = words.value }
         accessibilityValueSaid = words.value != nil
+        applyReaderActions(words, to: target)
+    }
+
+    /// The actions VoiceOver offers on the view, and its steps of a view StateUI draws that says it is adjustable -
+    /// each heard by the host layer's rule.
+    /// Design: docs/design/platforms/uikit/controls.md#accessibility
+    private func applyReaderActions(_ words: AccessibilityWords, to target: UIView) {
+        let heard: (HeardInput) -> Bool = { [weak self] heard in
+            guard let self, let host else { return false }
+            return element.hear(heard, in: host.runtime)
+        }
+        if !words.actions.isEmpty || accessibilityActionsSaid {
+            target.accessibilityCustomActions = words.actions.isEmpty ? nil : words.actions.map { name in
+                UIAccessibilityCustomAction(name: name) { _ in heard(.accessibilityAction(name)) }
+            }
+        }
+        accessibilityActionsSaid = !words.actions.isEmpty
+        (target as? UIKitSteppable)?.stepAction = words.role == .adjustable
+            ? { step in _ = heard(.accessibilityAdjustment(step)) }
+            : nil
     }
 
     /// The traits saying what kind of thing a view is.

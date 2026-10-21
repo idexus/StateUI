@@ -346,6 +346,7 @@ ZStack
   shape
   stroke
 (every element)
+  accessibilityActions
   accessibilityHeading
   accessibilityHint
   accessibilityIdentifier
@@ -396,6 +397,8 @@ ZStack
   verticalAlignment
   width
   zIndex
+  accessibilityActionPerformed()
+  accessibilityAdjusted()
   dragEnded()
   dragLeave()
   dragOver()

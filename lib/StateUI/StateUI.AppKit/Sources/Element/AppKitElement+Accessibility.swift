@@ -56,6 +56,22 @@ extension AppKitElement {
         } else {
             target.setAccessibilityRole(defaults.role)
         }
+        applyReaderActions(words, to: target, of: view)
+    }
+
+    /// The actions VoiceOver offers on the view, and its steps of a view that says it is adjustable - each heard by
+    /// the host layer's rule.
+    /// Design: docs/design/platforms/appkit/views.md#accessibility-on-the-control
+    private func applyReaderActions(_ words: AccessibilityWords, to target: NSAccessibilityProtocol, of view: NSView) {
+        if !words.actions.isEmpty || accessibilityActionsSaid {
+            target.setAccessibilityCustomActions(words.actions.isEmpty ? nil : words.actions.map { name in
+                NSAccessibilityCustomAction(name: name) { [weak self] in self?.hear(.accessibilityAction(name)) ?? false }
+            })
+        }
+        accessibilityActionsSaid = !words.actions.isEmpty
+        (view as? AppKitHitTestView)?.stepAction = words.role == .adjustable
+            ? { [weak self] step in self?.hear(.accessibilityAdjustment(step)) ?? false }
+            : nil
     }
 
     /// AppKit's role for a kind the element says it is.

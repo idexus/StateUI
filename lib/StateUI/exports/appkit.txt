@@ -304,6 +304,7 @@ WebView
   navigating()
   processTerminated()
 (every element)
+  accessibilityActions
   accessibilityHeading
   accessibilityHint
   accessibilityIdentifier
@@ -355,6 +356,8 @@ WebView
   verticalAlignment
   width
   zIndex
+  accessibilityActionPerformed()
+  accessibilityAdjusted()
   dragEnded()
   dragLeave()
   dragOver()

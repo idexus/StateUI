@@ -59,6 +59,12 @@
 
     /// Files the user dragged from the system were let go over the view - every one of them, of whatever kind.
     case filesDropped([ChosenFile])
+
+    /// A screen reader performed one of the view's actions, named by its words.
+    case accessibilityAction(String)
+
+    /// A screen reader stepped the view up or down.
+    case accessibilityAdjustment(AccessibilityAdjustment)
 }
 
 /// What a view listens for of the user's input.
