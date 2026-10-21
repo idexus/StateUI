@@ -58,12 +58,13 @@ struct TouchThroughSample: SampleContent, ExampleContent {
                 SwitchRow("Children too", $childrenToo)
 
                 SwitchRow("Disabled", $disabled)
-
-                Button("Reset")
-                    .onClicked { below = 0; child = 0 }
             }
-            .spacing(7)
+            .spacing(16)
             .horizontalAlignment(.center)
+
+            Button("Reset")
+                .onClicked { below = 0; child = 0 }
+                .horizontalAlignment(.center)
         }
         .spacing(12)
     }

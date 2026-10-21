@@ -188,9 +188,6 @@ private struct GroupedList: ExampleContent {
             SwitchRow("Counts", $counts)
                 .gridRow(0)
 
-            DebugInfoLabel()
-                .gridRow(0)
-
             // A group per shelf, named so two shelves may hold the same item.
             ItemsView(groups: Self.shelves.map { (shelf: Shelf) -> Section<String> in
                 let group = Section(shelf.items) { item in
@@ -214,8 +211,12 @@ private struct GroupedList: ExampleContent {
                     : group
             })
             .gridRow(1)
+
+            DebugInfoLabel()
+                .gridRow(2)
+                .horizontalAlignment(.end)
         }
-        .rows(.auto, .fill)
+        .rows(.auto, .fill, .auto)
         .rowSpacing(10)
     }
     // listing: end

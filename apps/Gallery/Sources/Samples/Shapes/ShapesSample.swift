@@ -62,56 +62,64 @@ struct ShapesSample: SampleContent, ExampleContent {
 
             SectionTitle("Stroked")
 
-            HStack {
-                Line()
-                    .x1(0).y1(0)
-                    .x2(56).y2(56)
-                    .stroke(Palette.accent)
-                    .lineWidth(4)
-                    .lineCap(.round)
-                    .width(56)
-                    .height(56)
+            // Two rows of three: six shapes side by side stand wider than a phone.
+            VStack {
+                HStack {
+                    Line()
+                        .x1(0).y1(0)
+                        .x2(56).y2(56)
+                        .stroke(Palette.accent)
+                        .lineWidth(4)
+                        .lineCap(.round)
+                        .width(56)
+                        .height(56)
 
-                Line()
-                    .x1(0).y1(28)
-                    .x2(56).y2(28)
-                    .stroke(Palette.accent)
-                    .lineWidth(4)
-                    .dash([3, 2])
-                    .width(56)
-                    .height(56)
+                    Line()
+                        .x1(0).y1(28)
+                        .x2(56).y2(28)
+                        .stroke(Palette.accent)
+                        .lineWidth(4)
+                        .dash([3, 2])
+                        .width(56)
+                        .height(56)
 
-                // The one shape that is whatever you can write down: SVG path
-                // syntax, normalized by StateUI for every native host.
-                Path("M 28,0 L 56,56 L 0,56 Z")
-                    .fill(Palette.accent)
-                    .width(56)
-                    .height(56)
+                    Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
+                        .stroke(Palette.accent)
+                        .lineWidth(4)
+                        .lineJoin(.round)
+                        .width(56)
+                        .height(56)
+                }
+                .spacing(28)
 
-                // A transform on the GEOMETRY - the same ViewTransform
-                // every view takes, drawn whole: a lean draws here, and the
-                // stroke follows the shape it makes. On any shape, not only
-                // a Path.
-                Path("M 28,0 L 56,56 L 0,56 Z")
-                    .fill(Palette.accent)
-                    .geometryTransform(.skew(20, 0))
-                    .width(56)
-                    .height(56)
+                // The leaning shapes stand farther apart: a lean draws past the room it is given.
+                HStack {
+                    // The one shape that is whatever you can write down: SVG path
+                    // syntax, normalized by StateUI for every native host.
+                    Path("M 28,0 L 56,56 L 0,56 Z")
+                        .fill(Palette.accent)
+                        .width(56)
+                        .height(56)
 
-                Rectangle().fill(Palette.accent)
-                    .cornerRadius(14)
-                    .geometryTransform(.skew(20, 0))
-                    .width(56)
-                    .height(56)
+                    // A transform on the GEOMETRY - the same ViewTransform
+                    // every view takes, drawn whole: a lean draws here, and the
+                    // stroke follows the shape it makes. On any shape, not only
+                    // a Path.
+                    Path("M 28,0 L 56,56 L 0,56 Z")
+                        .fill(Palette.accent)
+                        .geometryTransform(.skew(20, 0))
+                        .width(56)
+                        .height(56)
 
-                Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
-                    .stroke(Palette.accent)
-                    .lineWidth(4)
-                    .lineJoin(.round)
-                    .width(56)
-                    .height(56)
+                    Rectangle().fill(Palette.accent)
+                        .cornerRadius(14)
+                        .geometryTransform(.skew(20, 0))
+                        .width(56)
+                        .height(56)
+                }
+                .spacing(28)
             }
-            .spacing(12)
+            .spacing(16)
             .horizontalAlignment(.center)
 
             SectionTitle("Where the dashes start")
