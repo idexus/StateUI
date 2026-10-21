@@ -18,8 +18,45 @@ private struct ChoosingPage: View {
     }
 }
 
+/// Mail whose items offer their actions in a context menu, each action written into `done`.
+private struct MailPage: View {
+    @State private var done: [String] = []
+
+    var body: some View {
+        VStack {
+            Text(done.joined(separator: " ")).id("done")
+            ItemsView(["mail"]) { item in
+                Text(item).padding(12).contextMenu {
+                    MenuItem("Archive").onClicked { done.append("archived") }
+                    MenuSeparator()
+                    MenuItem("Delete").role(.destructive).onClicked { done.append("deleted") }
+                }
+            }
+            .width(300).height(400)
+        }
+    }
+}
+
 @MainActor
 final class UIKitItemsViewTests: XCTestCase {
+    /// A list item's context menu stands as its swipe actions too - its items in order, a destructive one UIKit's
+    /// destructive style - and an action swiped to runs the item's handler.
+    @MainActor
+    func testAnItemsContextMenuStandsAsItsSwipeActions() throws {
+        let host = UIKitRenderer.running { MailPage() }
+        defer { host.finish() }
+        let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
+        host.settle { items.collection.visibleCells.count == 1 }
+
+        let swipe = try XCTUnwrap(items.swipeActionsForTesting("mail"), "the item swipes to its actions")
+        XCTAssertEqual(swipe.actions.map(\.title), ["Archive", "Delete"])
+        XCTAssertEqual(swipe.actions.map(\.style), [.normal, .destructive])
+        swipe.actions[1].handler(swipe.actions[1], items.collection) { _ in }
+        host.settle { host.views(UIKitTextView.self).first?.text == "deleted" }
+
+        XCTAssertEqual(host.views(UIKitTextView.self).first?.text, "deleted", "the action ran its handler")
+    }
+
     /// A cell at rest shows the page through it, as every host's list does; a chosen one shows the user's choice in
     /// the platform's accent, UIKit's tint, laid over the page.
     @MainActor

@@ -91,6 +91,10 @@ extension View {
     /// The same entries a menu bar takes - `MenuItem`, `Menu`
     /// and `MenuSeparator` - attached to a view instead of to a page.
     ///
+    /// On an item of an `ItemsView` it is the item's actions: a platform that
+    /// swipes a list's items - UIKit - offers its items as the item's swipe
+    /// actions too.
+    ///
     /// The menu stays hidden until the user asks for it, so do not put the
     /// only way to perform an essential action behind it.
     ///

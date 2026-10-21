@@ -220,6 +220,14 @@
         element?.children.first { $0.id == .manual(identity) }
     }
 
+    /// The actions on `identity`'s item as a list offers them to a swipe: the items of the context menu standing on
+    /// it that can be chosen, in order - a line and a submenu left out, as a swipe shows neither.
+    /// Design: docs/design/host/items.md#an-items-actions
+    public func actions(of identity: String) -> [MenuEntry] {
+        guard let menu = item(identity)?.children.first(where: { $0.type == .contextMenu }) else { return [] }
+        return MenuEntry.entries(of: menu).filter { $0.kind == .item && $0.isEnabled }
+    }
+
     /// The user chose `chosen` - every item chosen now - told in the order they show; what the program selects is
     /// not the user's.
     public func userChose(_ chosen: some Sequence<String>) {

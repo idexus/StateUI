@@ -167,3 +167,13 @@ scroll; a scroll that glides stands its item again as it stops.
 Whether a scroll to an item glides is one rule,
 `ItemsScrollTarget.glides(reducingMotion:)`: it glides unless the user asks
 for less motion, and stands there at once when they do.
+
+## An item's actions
+
+An item's actions are its context menu (`.contextMenu` on the item's view):
+declared once, offered where the platform offers an item's actions. Every
+host offers the menu as it offers any view's; a list whose platform swipes an
+item - UIKit's - offers the menu's items the user can choose as the item's
+swipe actions too, in order, a destructive one marked
+(`ItemsCells.actions(of:)`). A line and a submenu stand in the menu alone: a
+swipe shows neither.

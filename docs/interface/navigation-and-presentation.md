@@ -502,6 +502,11 @@ struct Page: View {
 `.onToggled` hears each turn with the way it turned to. An item that says
 neither way shows no check and is only clicked.
 
+On an item of an `ItemsView` the context menu is the item's actions, declared
+once: a platform that swipes a list's items - UIKit - offers its items the
+user can choose as the item's swipe actions too, a destructive one in its
+destructive style; every platform offers the menu itself.
+
 Menu and toolbar structures are reconciled by identity like other ordered
 children. A platform without that surface may omit its presentation; never put
 the only route to an essential action behind a context menu. Consult

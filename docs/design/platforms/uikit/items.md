@@ -36,6 +36,16 @@ stay, so the layout is invalidated then - and only then: an invalidation
 drops every size the layout measured, and the items a change moves would
 travel towards places estimated, then jump to the places measured.
 
+## An item's actions
+
+A list lays its items out as UIKit's own list (`UICollectionLayoutListConfiguration`,
+plain, without separators, on the page's background), so its cells - UIKit's
+list cells - swipe: the trailing swipe shows the item's actions, the items of
+its context menu the user can choose (`ItemsCells.actions(of:)`), a
+destructive one UIKit's destructive style, each running the menu item's
+handler. The context menu itself stays the item's long press. A row or a grid
+lays out on a composed layout of its own and offers the menu alone.
+
 ## A cell
 
 A cell holds its entry's subtree in a single-child view, placed by the layer's

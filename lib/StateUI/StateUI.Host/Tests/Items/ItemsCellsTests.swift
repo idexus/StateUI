@@ -59,6 +59,29 @@ private final class Cell: ItemsHolding {
     }
 }
 
+/// A list whose mail item offers its actions in a context menu, and whose other item offers none.
+private struct ActionsApplication: Application {
+    var body: some Scene { WindowGroup { ActionsPage() } }
+}
+
+private struct ActionsPage: View {
+    var body: some View {
+        ItemsView(["mail", "plain"]) { item in
+            if item == "mail" {
+                Text(item).contextMenu {
+                    MenuItem("Archive").onClicked {}
+                    MenuSeparator()
+                    Menu("Move") { MenuItem("Inbox").onClicked {} }
+                    MenuItem("Flag").isEnabled(false).onClicked {}
+                    MenuItem("Delete").role(.destructive).onClicked {}
+                }
+            } else {
+                Text(item)
+            }
+        }
+    }
+}
+
 /// A platform's collection over the real core: what it holds is built at once, what it lets go leaves, and what the
 /// user does reaches the page in the list's order.
 @MainActor
@@ -277,6 +300,24 @@ final class ItemsCellsTests: XCTestCase {
 
         XCTAssertNil(cells.holding(of: "7"))
         XCTAssertNil(cell.identity, "the cell let the entry go")
+    }
+
+    /// An item's actions as a swipe shows them are its context menu's items the user can choose, in order - a line,
+    /// a submenu and an item turned off left out, a destructive one marked; an item with no menu offers none.
+    func testAnItemsActionsAreTheItemsOfItsContextMenuASwipeShows() throws {
+        stateUIUseApp(ActionsApplication())
+        let runtime = HostRuntime.still()
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let cells = ItemsCells(try XCTUnwrap(runtime.tree.root?.first(type: .itemsView)), in: runtime)
+        cells.takeEntries()
+        cells.hold("mail", in: Cell())
+        cells.hold("plain", in: Cell())
+
+        let actions = cells.actions(of: "mail")
+        XCTAssertEqual(actions.map(\.title), ["Archive", "Delete"])
+        XCTAssertEqual(actions.map(\.isDestructive), [false, true])
+        XCTAssertEqual(cells.actions(of: "plain").count, 0)
     }
 
     func testOnlyTheCellHoldingAnEntryLetsItGo() {

@@ -20,8 +20,12 @@ enum UIKitItemsLayout {
     private static let estimateDown = ItemsCells.estimatedExtent(across: false)
     private static let estimateAcross = ItemsCells.estimatedExtent(across: true)
 
-    /// The layout `layout` says, over the entries `entries` answers as UIKit asks.
-    static func make(_ layout: ItemsLayout, entries: @escaping () -> ItemsEntries) -> UICollectionViewCompositionalLayout {
+    /// The layout `layout` says, over the entries `entries` answers as UIKit asks; a list's item swipes to the actions
+    /// `swipe` answers for it.
+    static func make(
+        _ layout: ItemsLayout, entries: @escaping () -> ItemsEntries,
+        swipe: @escaping (IndexPath) -> UISwipeActionsConfiguration?
+    ) -> UICollectionViewCompositionalLayout {
         let across = layout.isAcross
         let configuration = UICollectionViewCompositionalLayoutConfiguration()
         configuration.scrollDirection = across ? .horizontal : .vertical
@@ -33,7 +37,7 @@ enum UIKitItemsLayout {
         return UICollectionViewCompositionalLayout(sectionProvider: { index, environment in
             let sections = entries().sections
             guard sections.indices.contains(index) else { return nil }
-            let section = Self.section(layout, width: environment.container.effectiveContentSize.width)
+            let section = Self.section(layout, in: environment, swipe: swipe)
             section.boundarySupplementaryItems =
                 (sections[index].header == nil ? [] : [supplement(header, across: across, before: true)])
                 + (sections[index].footer == nil ? [] : [supplement(footer, across: across, before: false)])
@@ -41,13 +45,20 @@ enum UIKitItemsLayout {
         }, configuration: configuration)
     }
 
-    /// One group's items as the layout lays them.
-    private static func section(_ layout: ItemsLayout, width: CGFloat) -> NSCollectionLayoutSection {
+    /// One group's items as the layout lays them - a list's as UIKit's own list, which swipes an item to its actions.
+    /// Design: docs/design/platforms/uikit/items.md#an-items-actions
+    private static func section(
+        _ layout: ItemsLayout, in environment: any NSCollectionLayoutEnvironment,
+        swipe: @escaping (IndexPath) -> UISwipeActionsConfiguration?
+    ) -> NSCollectionLayoutSection {
+        let width = environment.container.effectiveContentSize.width
         switch layout {
         case .list(let spacing):
-            let size = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(estimateDown))
-            let group = NSCollectionLayoutGroup.vertical(layoutSize: size, subitems: [NSCollectionLayoutItem(layoutSize: size)])
-            let section = NSCollectionLayoutSection(group: group)
+            var list = UICollectionLayoutListConfiguration(appearance: .plain)
+            list.showsSeparators = false
+            list.backgroundColor = .clear
+            list.trailingSwipeActionsConfigurationProvider = swipe
+            let section = NSCollectionLayoutSection.list(using: list, layoutEnvironment: environment)
             section.interGroupSpacing = spacing
             return section
         case .row(let spacing):

@@ -76,7 +76,7 @@ final class UIKitItemHolding: ItemsHolding {
 /// accent over the page, and at rest the page through it.
 /// Design: docs/design/platforms/uikit/items.md#a-cell
 @MainActor
-final class UIKitItemCell: UICollectionViewCell {
+final class UIKitItemCell: UICollectionViewListCell {
     private(set) lazy var holding = UIKitItemHolding(in: contentView, of: self)
 
     override init(frame: CGRect) {

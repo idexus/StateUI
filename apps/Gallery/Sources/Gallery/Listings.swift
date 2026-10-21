@@ -6425,6 +6425,32 @@ enum Listings {
             .rows(.auto, .fill, .auto)
         }
         """#,
+        "MailList": #"""
+        // Sources/Samples/Collections/ItemActionsSample.swift
+        @State private var mail = ["Lunch on Friday?", "Your order shipped", "Weekly notes", "Old news"]
+        @State private var archived = 0
+
+        var body: some View {
+            Grid {
+                Text("\(archived) archived")
+                    .gridRow(0)
+
+                ItemsView(mail, id: \.self) { message in
+                    Text(message)
+                        // The item's actions, written once: a swipe where the platform swipes a list's items.
+                        .contextMenu {
+                            MenuItem("Archive").onClicked {
+                                mail.removeAll { $0 == message }
+                                archived += 1
+                            }
+                            MenuItem("Delete").role(.destructive).onClicked { mail.removeAll { $0 == message } }
+                        }
+                }
+                .gridRow(1)
+            }
+            .rows(.auto, .fill)
+        }
+        """#,
         "MainPage.bar": #"""
         // Sources/Gallery/MainPage.swift
         // The gallery's own actions, declared once around every page: a page's

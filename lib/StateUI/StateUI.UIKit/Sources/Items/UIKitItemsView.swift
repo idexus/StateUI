@@ -36,7 +36,7 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing {
         collection.backgroundColor = .clear
         collection.allowsSelection = false
         collection.delegate = self
-        collection.setCollectionViewLayout(UIKitItemsLayout.make(layout) { [cells] in cells.entries }, animated: false)
+        collection.setCollectionViewLayout(madeLayout(layout), animated: false)
         addSubview(collection)
         source = makeSource()
     }
@@ -66,7 +66,7 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing {
         if layout != self.layout || framed != self.framed {
             self.layout = layout
             self.framed = framed
-            collection.setCollectionViewLayout(UIKitItemsLayout.make(layout) { [cells] in cells.entries }, animated: false)
+            collection.setCollectionViewLayout(madeLayout(layout), animated: false)
         }
         if let changes {
             applyEntries(changes)
@@ -301,6 +301,33 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing {
     // MARK: - For the tests
 
     /// The items UIKit holds selected, in the order they show.
+    /// The layout `layout` says, over the cells' entries, a list's item swiping to its actions.
+    private func madeLayout(_ layout: ItemsLayout) -> UICollectionViewCompositionalLayout {
+        UIKitItemsLayout.make(
+            layout, entries: { [cells] in cells.entries }, swipe: { [weak self] in self?.swipeActions(at: $0) })
+    }
+
+    /// The item's actions at `indexPath` as its swipe shows them: its context menu's (`ItemsCells.actions`); nil for
+    /// none.
+    private func swipeActions(at indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard let identity = source.itemIdentifier(for: indexPath) else { return nil }
+        let actions = cells.actions(of: identity).map { entry in
+            let action = UIContextualAction(style: entry.isDestructive ? .destructive : .normal, title: entry.title) {
+                [weak element = entry.element] _, _, done in
+                element?.uiKit.choose()
+                done(true)
+            }
+            action.image = entry.icon.flatMap(UIKitRenderer.image)
+            return action
+        }
+        return actions.isEmpty ? nil : UISwipeActionsConfiguration(actions: actions)
+    }
+
+    /// The swipe actions of `identity`'s item, as the list's swipe asks for them.
+    func swipeActionsForTesting(_ identity: String) -> UISwipeActionsConfiguration? {
+        source.indexPath(for: identity).flatMap(swipeActions(at:))
+    }
+
     var selectedForTesting: [String] {
         let chosen = Set((collection.indexPathsForSelectedItems ?? []).compactMap { source.itemIdentifier(for: $0) })
         return cells.identities.filter(chosen.contains)

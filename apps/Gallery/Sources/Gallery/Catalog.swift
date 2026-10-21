@@ -325,6 +325,7 @@ final class Catalog {
                 Sample(ChoosingItemsSample()),
                 Sample(LoadingItemsSample()),
                 Sample(RefreshSample()),
+                Sample(ItemActionsSample()),
                 Sample(GalleryViewSample()),
                 Sample(PositionIndicatorSample()),
             ])
