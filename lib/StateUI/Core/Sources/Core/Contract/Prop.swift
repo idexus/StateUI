@@ -14,7 +14,7 @@ public struct Prop: Hashable, Comparable, Sendable, CustomStringConvertible {
     @_spi(Host) public let key: KeyName
 
     /// A property key from its name - what a member's token is made from.
-    public init(_ name: String) {
+    @_spi(Host) public init(_ name: String) {
         key = KeyName(name)
     }
 

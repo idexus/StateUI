@@ -305,6 +305,18 @@ final class ContractRoadsTests: XCTestCase {
                 """,
             host: true),
         Road(
+            name: "a property's key made from its name",
+            closed: #"_ = Prop("fontSize")"#,
+            open: "_ = FontElementContract.fontSize"),
+        Road(
+            name: "an event's key made from its name",
+            closed: #"_ = Event("tapped")"#,
+            open: "_ = BeaconContract.tapped"),
+        Road(
+            name: "an act's key made from its name",
+            closed: #"_ = Act("Notes.Export")"#,
+            open: "_ = NotesContract.export"),
+        Road(
             name: "a type of an application's own taken as properties",
             closed: "struct Lamps: AppliedProperties {}",
             open: "struct Lamps {}"),

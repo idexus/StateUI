@@ -102,7 +102,8 @@ name and its number - with the library's entries as static members. A token is
 a key and only a key; a host reads it by its name. That is what makes the
 library's tokens and an application's the same thing.
 
-Nobody writes a token by hand. A member's token is made from its name, and each
+Nobody writes a token by hand. A member's token is made from its name - a
+token's `init(_ name:)` is the host's alone, behind `@_spi(Host)` - and each
 name is spelled once, where a contract declares its member; the library's
 tokens (`Tokens.swift`, for the hosts, behind `@_spi(Host)`) are
 made from the members, and a guard names any source that spells a name out
