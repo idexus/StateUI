@@ -14,8 +14,9 @@ enum WinUIDoorbell {
         CoreLink().postTurns(with: { stateui_winui_post_turn() })
     }
 
-    /// A turn the relay posted: the work a layout pass left, then the turn.
+    /// A turn the relay posted: what libdispatch's main queue holds, the work a layout pass left, then the turn.
     @MainActor static func turn() {
+        WinUIMainQueue.drain()
         guard let runtime = WinUIRenderer.shared?.runtime else { return }
         runtime.afterLayout.passEnded()
         runtime.pump.turn()

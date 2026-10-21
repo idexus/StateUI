@@ -500,8 +500,9 @@ final class NativeProjectTests: XCTestCase {
     }
 
     /// The GTK 4 host is a Swift package beside the others, Swift alone over GTK's C API: its C module is
-    /// the system's headers and nothing else - a module map and one header that includes libadwaita's and names
-    /// GLib's flags, each under a name of the host's - and its scripts stand under `.scripts/GTK`.
+    /// the system's headers and nothing else - a module map and one header that includes libadwaita's and GLib's
+    /// watch of a file descriptor, and names GLib's flags, each under a name of the host's - and its scripts stand
+    /// under `.scripts/GTK`.
     func testTheGTKHostIsSwiftAloneOverGTKsCAPI() throws {
         let repository = SourceTree.repository
         let host = "lib/StateUI/StateUI.GTK"
@@ -517,11 +518,12 @@ final class NativeProjectTests: XCTestCase {
 
         let header = try String(contentsOf: repository.appendingPathComponent("\(module)/CStateUIGTK.h"), encoding: .utf8)
         let code = header.split(separator: "\n").filter { !$0.hasPrefix("//") && !$0.isEmpty }
-        XCTAssertEqual(code.first, "#include <adwaita.h>")
+        let includes = code.prefix { $0.hasPrefix("#include") }
+        XCTAssertEqual(includes, ["#include <adwaita.h>", "#include <glib-unix.h>"], "the system's headers alone")
         // A flag GLib 2.86 hides from Swift, typed as GLib's own and given its value: nothing of the host's.
         let flag = try Regex(#"^static const G[A-Za-z]+ STATEUI_[A-Z_]+ = G_[A-Z_]+;$"#)
         XCTAssertEqual(
-            code.dropFirst().filter { (try? flag.wholeMatch(in: String($0))) == nil }, [],
+            code.dropFirst(includes.count).filter { (try? flag.wholeMatch(in: String($0))) == nil }, [],
             "the header declares something of its own")
     }
 

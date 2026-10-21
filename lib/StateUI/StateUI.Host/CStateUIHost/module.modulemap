@@ -1,0 +1,4 @@
+module CStateUIHost [system] {
+    header "CStateUIHost.h"
+    export *
+}

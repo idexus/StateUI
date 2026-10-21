@@ -358,7 +358,7 @@ Keep portable interface decisions on StateUI's host-normalized boundary:
 - use `Task.sleep` or `Ticker` for application timing, not Foundation
   `Timer` or `RunLoop`;
 - isolate work for the UI thread to `MainActor`, not `DispatchQueue.main`,
-  which nothing drains on Android, Windows, or Linux.
+  which the compiler does not check and the Web does not have.
 
 An application can convert between its Foundation-rich domain model and these
 small StateUI values at its boundary. That keeps the library's description

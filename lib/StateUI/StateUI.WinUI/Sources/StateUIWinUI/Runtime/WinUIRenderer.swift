@@ -98,6 +98,7 @@ final class WinUIRenderer {
         let renderer = WinUIRenderer()
         shared = renderer
         renderer.start(restoringKept: previous == nil, turns: WinUIDoorbell.install)
+        WinUIMainQueue.watch()
         stateui_winui_watch_environment()
         return renderer
     }

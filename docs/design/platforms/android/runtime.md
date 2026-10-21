@@ -56,6 +56,14 @@ thread for work it made - a state written, an act sent - and on the thread
 that queued a job, a handler's resume or a post among them. No thread of the
 host's waits for a turn, and nothing on the path enters the JVM.
 
+## The main queue
+
+The main looper watches libdispatch's main queue's eventfd beside the
+doorbell's (`ALooper_addFd`) and drains the queue as it is readable
+([the main queue](../../host/runtime.md#the-main-queue)). The library loads on
+the UI thread - in the activity's creation, and in the test runner's - so the
+queue is bound to it.
+
 ## One frame
 
 The frame clock asks the UI thread's `Choreographer` for one frame at a time

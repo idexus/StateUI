@@ -53,6 +53,13 @@ GLib's post is thread-safe: on the UI thread for work it made - a state
 written, an act sent - and on the thread that queued a job, a handler's resume
 or a post among them. No thread of the host's waits.
 
+## The main queue
+
+GLib's main loop watches libdispatch's main queue's eventfd
+(`g_unix_fd_add`) and drains the queue as it is readable
+([the main queue](../../host/runtime.md#the-main-queue)); the host watches it
+once, as it starts.
+
 ## One frame
 
 The frame clock adds a tick callback to the window while something holds it,

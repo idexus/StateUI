@@ -103,6 +103,7 @@ final class AndroidRenderer {
         }
         if let previous { renderer.scenes = previous.scenes }
         renderer.start(restoringKept: previous == nil, restoringScenes: !sceneStands, turns: AndroidDoorbell.install)
+        AndroidMainQueue.watch()
         if previous != nil {
             // The activity before left its dialogs unanswered: the question showing is asked again in this one.
             actToolkit.forgetDialogs()

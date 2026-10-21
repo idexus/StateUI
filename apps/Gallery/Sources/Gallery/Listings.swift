@@ -2105,12 +2105,8 @@ enum Listings {
             }
         }
 
-        // WRONG - never do this to "reach the UI thread":
-        //
-        //     DispatchQueue.main.async { total = value }   // never runs on Android/Windows
-        //
-        // RIGHT - in a handler, just write it: it runs on MainActor, the UI thread.
-        // From a task, post it:
+        // In a handler, just write it: it runs on MainActor, the UI thread.
+        // From a task, post it - on every host, the Web included:
         //
         //     total = value
         //     $total.post(value)
@@ -10143,6 +10139,33 @@ enum Listings {
                 Text("The same eleven words, and one of these declares a color.")
                     .style(.quoteLoud)
             }
+        }
+        """#,
+        "SummedOffTheUIThread": #"""
+        // Sources/Samples/State/MainQueueSample.swift
+        import Dispatch
+
+        @State private var result = "Nothing summed yet"
+
+        var body: some View {
+            VStack {
+                Text(result)
+
+                Button("Sum a million on another thread").onClicked {
+                    result = "Summing…"
+                    let shown = $result
+                    #if os(WASI)
+                    shown.wrappedValue = "The Web has no main queue - post to the state instead"
+                    #else
+                    DispatchQueue.global().async {
+                        let sum = (1 ... 1_000_000).reduce(0, +)
+                        // The main queue runs this on the UI thread, where the state is written.
+                        DispatchQueue.main.async { shown.wrappedValue = "\(sum), handed back on the main queue" }
+                    }
+                    #endif
+                }
+            }
+            .horizontalAlignment(.start)
         }
         """#,
         "SwipeSample": #"""

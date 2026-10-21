@@ -210,9 +210,10 @@ targets, and test targets. `@MainActor` names a function whose contract is
 specifically UI-isolated rather than merely caller-inheriting; a package whose
 UI code is already isolated to `@MainActor` runs unchanged.
 
-`DispatchQueue.main` is not the UI thread's queue on Android, Windows, Linux
-or the Web: nothing drains it there. Work for the UI thread goes to
-`MainActor`.
+`DispatchQueue.main` runs its work on the UI thread on every native host - off
+Apple the host drains libdispatch's main queue there; the Web has none. Work
+for the UI thread still goes to `MainActor`, whose isolation the compiler
+checks.
 
 ## State across tasks
 

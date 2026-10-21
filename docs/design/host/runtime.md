@@ -188,6 +188,20 @@ resume or a post - on the thread the work came from; no thread of the host's
 waits. One turn is posted until its drain begins. The turn itself is the
 `Pump`'s.
 
+## The main queue
+
+Off Apple, libdispatch keeps a main queue no run loop turns: an application's
+`DispatchQueue.main.async` would wait for ever. So every host there drains it
+on its UI thread (`MainQueue`): libdispatch's handle for it - an eventfd on
+Linux and Android, an event on Windows, signaled while the queue holds work -
+is watched by the host's own loop, and as it signals the host clears it, then
+runs what the queue holds (`MainQueue.drain`), the two entry points a run loop
+takes of libdispatch. libdispatch binds its main queue to the thread it
+started on, the process's first - the UI thread on every host - and stops the
+process when another thread drains it. The library itself still sends nothing
+there but `UIThread.swift`'s one drain; Apple's run loop drains the queue of
+itself, and the Web has none.
+
 ## The turn on Apple
 
 On Apple every source of work is a pass of the main run loop: a handler's

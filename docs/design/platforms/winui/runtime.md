@@ -78,6 +78,15 @@ room - waits in the host layer's queue (`HostRuntime.afterLayout`), which asks
 the relay to post a turn; the queue runs as that turn begins, once the pass is
 over ([after a layout pass](../../host/runtime.md#after-a-layout-pass)).
 
+## The main queue
+
+libdispatch's main queue signals an event. The system's thread pool waits on
+it and posts a turn through the relay, and every turn drains the queue - at
+once where it holds nothing - and waits again, since a wait ends at its signal
+([the main queue](../../host/runtime.md#the-main-queue)). The thread pool's
+callback is isolated to nobody: one formed in a `MainActor` function would be
+checked for `MainActor` on the pool's thread, which stops the process.
+
 ## One frame
 
 The frame clock subscribes to `CompositionTarget.Rendering` while something

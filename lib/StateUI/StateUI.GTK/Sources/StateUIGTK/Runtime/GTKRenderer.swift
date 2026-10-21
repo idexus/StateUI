@@ -131,6 +131,7 @@ final class GTKRenderer {
         let renderer = GTKRenderer(application: application)
         shared = renderer
         renderer.start(turns: GTKDoorbell.install)
+        GTKMainQueue.watch()
         return renderer
     }
 

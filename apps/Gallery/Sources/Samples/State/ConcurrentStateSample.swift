@@ -1,11 +1,10 @@
 import StateUI
 
-/// How a task reaches `@State`, and the one move that is forbidden.
+/// How a task reaches `@State`: it posts to it.
 ///
 /// The headline the sample proves on screen: two hundred tasks counting at
 /// once all land, because each posts its count to the state and every post
-/// runs over the last. The notes carry the rule the screen cannot show - never
-/// post to `DispatchQueue.main`.
+/// runs over the last.
 @MainActor
 struct ConcurrentStateSample: SampleContent, ExampleContent {
     // listing: ConcurrentStateSample
@@ -21,7 +20,7 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
 
     static let id = "concurrentState"
     static let title = "State from tasks"
-    static let summary = "Writing @State from many tasks at once - and the one thing you may not do to get there."
+    static let summary = "Writing @State from many tasks at once: each posts to it, and none is lost."
 
     // listing: ConcurrentStateSample
     var body: some View {
@@ -78,12 +77,8 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
         .spacing(16)
     }
 
-    // WRONG - never do this to "reach the UI thread":
-    //
-    //     DispatchQueue.main.async { total = value }   // never runs on Android/Windows
-    //
-    // RIGHT - in a handler, just write it: it runs on MainActor, the UI thread.
-    // From a task, post it:
+    // In a handler, just write it: it runs on MainActor, the UI thread.
+    // From a task, post it - on every host, the Web included:
     //
     //     total = value
     //     $total.post(value)
@@ -100,12 +95,10 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Which is the one move that is forbidden: never post to "
-                + "`DispatchQueue.main` to \"reach the UI thread\". Nothing drains it "
-                + "on Android or Windows - the UI thread turns the platform's own loop "
-                + "instead - so what is posted there never runs, "
-                + "silently. A handler already runs on `MainActor`, the UI thread; you "
-                + "do not move yourself there, and you do not need to.")
+            Text("A handler already runs on `MainActor`, the UI thread: you do not "
+                + "move yourself there, and you do not need to. `DispatchQueue.main` "
+                + "reaches the UI thread too, on every host but the Web, which has "
+                + "none - Main queue shows it; a post reaches it everywhere.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

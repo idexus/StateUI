@@ -27,7 +27,7 @@ ChoosingItemsSample.swift 0bac861b74933e30
 ClipboardSample.swift b65b0d17cdce1e12
 ComplaintsSample.swift ccb58f7f38490263
 ConcurrentAnimationSample.swift 12bb98fef200d6df
-ConcurrentStateSample.swift 7dd2335765433b1f
+ConcurrentStateSample.swift 631956e254bad9b2
 ConnectivitySample.swift b032daec8c0b386f
 ContextMenuSample.swift 639add5daf31314b
 ConverterSample.swift 4826e332b502150c
@@ -72,6 +72,7 @@ LivingLayoutSample.swift 6962038d81a843fd
 LoadingItemsSample.swift 0475570786822801
 LocaleInfoSample.swift 53a7aa3516ee574a
 LocalizationSample.swift 1636a0f168875c65
+MainQueueSample.swift 142b7947497fae78
 MapSample.swift 0a52199d9ecebd75
 MaterialsSample.swift 95e9e841bc225ed0
 MenuBarSample.swift feaefec006cc6607

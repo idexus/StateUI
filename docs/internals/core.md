@@ -501,7 +501,7 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 ### Threads
 
 - **`UIThreadExecutor`** (`UIThread.swift`) is `MainActor`'s executor where
-  nothing drains the platform's main queue, and the doorbell: a job queued, or
+  no run loop of the platform's turns its main queue, and the doorbell: a job queued, or
   work the UI thread made, posts a turn the host's way; `stateUIRunJobs` drains
   it on the calling thread, bounded.
   *Internal*; a host claims the UI thread through `HostBoundary.claimUIThread`,
