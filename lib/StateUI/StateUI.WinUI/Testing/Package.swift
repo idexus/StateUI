@@ -16,6 +16,7 @@ let package = Package(
         .package(name: "StateUIRoot", path: "../../../.."),
         .package(name: "StateUIHost", path: "../../StateUI.Host"),
         .package(name: "StateUIConformance", path: "../../StateUI.Conformance"),
+        .package(name: "StateUITesting", path: "../../StateUI.Testing"),
         .package(name: "StateUIWinUI", path: ".."),
         .package(name: "StateUIWebViewWinUI", path: "../../../Backends/WebView.WinUI"),
     ],
@@ -39,6 +40,7 @@ let package = Package(
                 .product(name: "StateUI", package: "StateUIRoot"),
                 .product(name: "StateUIHost", package: "StateUIHost"),
                 .product(name: "StateUIConformance", package: "StateUIConformance"),
+                .product(name: "StateUITesting", package: "StateUITesting"),
             ],
             path: "Tests",
             // The pictures a test shows, read from where they stand rather than bundled.

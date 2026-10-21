@@ -32,16 +32,19 @@ public final class TestWindow {
     /// where a test reads what it changed with no waiting.
     public convenience init(motion: Motion = .standard, @ViewBuilder _ page: @escaping @MainActor () -> some View)
         async throws {
-        try await self.init(driver: CoreDriver(), motion: motion, page)
+        self.init(driver: CoreDriver(), motion: motion, page)
+        await settle()
     }
 
-    /// Shows `page` through `driver`, every change animating under `motion`.
-    init(driver: any HostDriver, motion: Motion, @ViewBuilder _ page: @escaping @MainActor () -> some View)
-        async throws {
+    /// Shows `page` through `driver` - a host's own, on its toolkit - every change animating under `motion`, the
+    /// work it began done: what a host's suite walks a window through (`TestWindowWalk`).
+    @_spi(Host) public init(
+        driver: any HostDriver, motion: Motion = .standard, @ViewBuilder _ page: @escaping @MainActor () -> some View
+    ) {
         self.driver = driver
         HostBoundary.application.motion = motion
         tree = driver.start(clock: nil, reducesMotion: false) { page() }
-        await settle()
+        settleNow()
     }
 
     /// The view automation knows by `identifier` - its `accessibilityIdentifier`; it fails where no view, or more
@@ -69,12 +72,17 @@ public final class TestWindow {
     var root: MountedElement? { tree.root }
 
     /// Runs the page's work until nothing more waits: the handlers an act raised, the work they began, the frames
-    /// they asked for.
+    /// they asked for - the UI thread's work run between the steps.
     func settle() async {
         for _ in 0..<Self.turns {
             driver.step()
             await Task.yield()
         }
+    }
+
+    /// The same, the driver's steps alone running the UI thread's work - a host's own loop, turned by its driver.
+    func settleNow() {
+        for _ in 0..<Self.turns { driver.step() }
     }
 
     /// How many steps a settling takes: a second of frames, each with the work waiting between them.

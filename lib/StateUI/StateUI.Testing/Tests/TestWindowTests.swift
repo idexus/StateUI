@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import StateUI
-import StateUITesting
+@_spi(Host) import StateUI
+@_spi(Host) @testable import StateUITesting
 import XCTest
 
 /// A test's window shows a page with no toolkit, finds its views as automation does, and acts on them as the user
@@ -44,6 +44,11 @@ final class TestWindowTests: XCTestCase {
         XCTAssertEqual(field.value(TextualElementContract.text), "Grace")
     }
 
+    /// The walk every host's suite takes a window through holds with no toolkit too.
+    func testTheWalkHoldsWithNoToolkit() {
+        XCTAssertEqual(TestWindowWalk.failures(on: CoreDriver()), [])
+    }
+
     /// A view no view is, or one two views are, is a failure naming it - not a guess.
     func testAViewNotThereOrTwiceThereFails() async throws {
         let window = try await TestWindow(motion: .none) { FormPage() }
@@ -54,42 +59,5 @@ final class TestWindowTests: XCTestCase {
         XCTAssertThrowsError(try window.element("form.twice")) { error in
             XCTAssertEqual("\(error)", "2 views are the view \"form.twice\"")
         }
-    }
-}
-
-/// A button counting its clicks.
-private struct CounterPage: View {
-    @State private var clicks = 0
-
-    var body: some View {
-        Button("Clicked \(clicks) time\(clicks == 1 ? "" : "s")")
-            .accessibilityIdentifier("counter.add")
-            .onClicked { clicks += 1 }
-    }
-}
-
-/// A field, a switch, and the greeting both make.
-private struct FormPage: View {
-    @State private var name = ""
-    @State private var lit = false
-
-    var body: some View {
-        VStack {
-            TextField($name).accessibilityIdentifier("form.name")
-            Switch($lit).accessibilityIdentifier("form.lamp")
-            Text("Hello, \(name) - \(lit ? "lit" : "dark")").accessibilityIdentifier("form.greeting")
-            Text("One").accessibilityIdentifier("form.twice")
-            Text("Two").accessibilityIdentifier("form.twice")
-        }
-    }
-}
-
-/// A field the page aims at.
-private struct AimedPage: View {
-    @Aim(TextField.self) var name
-    @State private var words = ""
-
-    var body: some View {
-        TextField($words).aim(name)
     }
 }

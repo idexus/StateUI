@@ -15,6 +15,7 @@ let package = Package(
         .package(name: "StateUIHost", path: "../StateUI.Host"),
         .package(name: "StateUIApple", path: "../StateUI.Apple"),
         .package(name: "StateUIConformance", path: "../StateUI.Conformance"),
+        .package(name: "StateUITesting", path: "../StateUI.Testing"),
     ],
     targets: [
         .target(
@@ -34,6 +35,7 @@ let package = Package(
                 .product(name: "StateUIHost", package: "StateUIHost"),
                 .product(name: "StateUIApple", package: "StateUIApple"),
                 .product(name: "StateUIConformance", package: "StateUIConformance"),
+                .product(name: "StateUITesting", package: "StateUITesting"),
             ],
             path: "Tests",
             exclude: ["Resources"],

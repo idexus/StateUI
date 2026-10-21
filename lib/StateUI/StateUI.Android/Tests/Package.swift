@@ -15,6 +15,7 @@ let package = Package(
         .package(name: "StateUIAndroid", path: ".."),
         .package(name: "StateUIHost", path: "../../StateUI.Host"),
         .package(name: "StateUIConformance", path: "../../StateUI.Conformance"),
+        .package(name: "StateUITesting", path: "../../StateUI.Testing"),
     ],
     targets: [
         .target(
@@ -24,6 +25,7 @@ let package = Package(
                 .product(name: "StateUIAndroid", package: "StateUIAndroid"),
                 .product(name: "StateUIHost", package: "StateUIHost"),
                 .product(name: "StateUIConformance", package: "StateUIConformance"),
+                .product(name: "StateUITesting", package: "StateUITesting"),
             ],
             path: "Sources",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]

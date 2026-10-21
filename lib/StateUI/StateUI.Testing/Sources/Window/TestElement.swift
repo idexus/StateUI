@@ -25,13 +25,24 @@ public struct TestElement {
     ///
     ///     try await button.perform(.activate)
     public func perform(_ act: UserAct) async throws {
+        try does(act)
+        await window.settle()
+    }
+
+    /// The same, the driver's steps alone running the work it began - on a host's own loop.
+    @_spi(Host) public func performNow(_ act: UserAct) throws {
+        try does(act)
+        window.settleNow()
+    }
+
+    /// Does `act` to the view standing now, through the window's driver.
+    private func does(_ act: UserAct) throws {
         let element = try mounted()
         do {
             try window.driver.perform(act, on: element)
         } catch let cannot as DriverCannot {
             throw TestFailure(description: "\(self) cannot \(act): \(cannot)")
         }
-        await window.settle()
     }
 
     /// What the view holds of `member` now - its words, its value, whether it is enabled - as the window shows it;

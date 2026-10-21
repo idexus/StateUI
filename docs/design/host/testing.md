@@ -42,3 +42,14 @@ A read names a contract member - `TextualElementContract.text`,
 `SwitchContract.isOn` - and answers the member's own type: what the view
 holds as the window shows it, the branch's `isEnabled` included, and nil
 where it holds none.
+
+## The same test on every host
+
+A window stands on a driver: with no toolkit the window's own, on a host its
+conformance driver, which acts on the toolkit's controls and reads them back.
+Each host's suite walks a window through its driver (`TestWindowWalk`) - a
+click counted, words typed and a switch turned reaching their states, a view
+found by its aim - so a test reads alike on every host and with no toolkit. A
+host's suite runs its tests in its own loop, on its UI thread, so the walk
+acts and settles there: the driver's steps turn the host's loop, and the
+work an act began runs in them.

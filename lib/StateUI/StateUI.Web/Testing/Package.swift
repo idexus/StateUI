@@ -12,6 +12,7 @@ let package = Package(
         .package(name: "StateUIRoot", path: "../../../.."),
         .package(name: "StateUIHost", path: "../../StateUI.Host"),
         .package(name: "StateUIConformance", path: "../../StateUI.Conformance"),
+        .package(name: "StateUITesting", path: "../../StateUI.Testing"),
         .package(name: "StateUIWeb", path: ".."),
     ],
     targets: [
@@ -23,6 +24,7 @@ let package = Package(
                 "CWebTesting", .product(name: "StateUIWeb", package: "StateUIWeb"),
                 .product(name: "StateUIHost", package: "StateUIHost"), .product(name: "StateUI", package: "StateUIRoot"),
                 .product(name: "StateUIConformance", package: "StateUIConformance"),
+                .product(name: "StateUITesting", package: "StateUITesting"),
             ],
             path: "Tests",
             exclude: ["Resources"],
