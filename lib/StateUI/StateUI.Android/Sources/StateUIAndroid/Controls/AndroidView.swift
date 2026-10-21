@@ -454,10 +454,10 @@ class AndroidView {
         laidOut = nil
     }
 
-    /// Where the view's top left corner stands in its window, in points.
+    /// Where the view's top left corner stands in its window, in points - the view its parent holds.
     var cornerInWindow: Point {
         let window = Java.ints([0, 0])
-        Java.call(reference, JavaAPI.getLocationInWindow, .object(window))
+        Java.call(outermost, JavaAPI.getLocationInWindow, .object(window))
         var pixels: [Int32] = [0, 0]
         pixels.withUnsafeMutableBufferPointer { Java.jni.GetIntArrayRegion(Java.env, window, 0, 2, $0.baseAddress) }
         Java.release(local: window)
@@ -478,8 +478,8 @@ class AndroidView {
 extension AndroidView {
     /// Where Android has the view in its parent, in points, read from the view itself: what a frame report says.
     var standingFrame: Rect {
-        let (left, top) = (Java.callInt(reference, JavaAPI.getLeft), Java.callInt(reference, JavaAPI.getTop))
-        let (right, bottom) = (Java.callInt(reference, JavaAPI.getRight), Java.callInt(reference, JavaAPI.getBottom))
+        let (left, top) = (Java.callInt(outermost, JavaAPI.getLeft), Java.callInt(outermost, JavaAPI.getTop))
+        let (right, bottom) = (Java.callInt(outermost, JavaAPI.getRight), Java.callInt(outermost, JavaAPI.getBottom))
         return Rect(
             x: Double(left) / density, y: Double(top) / density,
             width: Double(right - left) / density, height: Double(bottom - top) / density)

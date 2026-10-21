@@ -164,10 +164,11 @@ extension AndroidDriver {
     /// assistive technology meets - its node's words, as TalkBack reads them.
     private static func viewHolds(_ property: Prop, _ view: AndroidView) throws -> HostValue? {
         let reference = view.reference
-        let float = { (method: jmethodID) in Double(Java.callFloat(reference, method)) }
+        // How it shows and moves is the view's its parent holds - a list's pull to refresh.
+        let float = { (method: jmethodID) in Double(Java.callFloat(view.outermost, method)) }
         switch property {
         // Shown: attached to a window, and neither it nor any view it stands in hidden.
-        case .isVisible: return Java.callBool(reference, isShown).propValue
+        case .isVisible: return Java.callBool(view.outermost, isShown).propValue
         case .opacity: return float(getAlpha).propValue
         case .isEnabled: return Java.callBool(reference, isEnabled).propValue
         // The direction Android resolved for the view: LAYOUT_DIRECTION_RTL is 1.

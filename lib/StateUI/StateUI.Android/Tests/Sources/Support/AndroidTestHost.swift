@@ -292,11 +292,11 @@ extension AndroidRenderer {
 }
 
 extension AndroidView {
-    /// Where the view stands in its parent, and its size, in pixels.
+    /// Where the view stands in its parent, and its size, in pixels - the view its parent holds.
     var frame: (x: Int32, y: Int32, width: Int32, height: Int32) {
         (
-            Java.callInt(reference, TestJava.getLeft), Java.callInt(reference, TestJava.getTop),
-            Java.callInt(reference, TestJava.getWidth), Java.callInt(reference, TestJava.getHeight)
+            Java.callInt(outermost, TestJava.getLeft), Java.callInt(outermost, TestJava.getTop),
+            Java.callInt(outermost, TestJava.getWidth), Java.callInt(outermost, TestJava.getHeight)
         )
     }
 
