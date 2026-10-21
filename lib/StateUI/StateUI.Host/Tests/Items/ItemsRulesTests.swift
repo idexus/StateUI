@@ -55,6 +55,7 @@ final class ItemsRulesTests: XCTestCase {
         ]
         XCTAssertEqual(taps.map(\.chosen), [nil, ["b"], ["a", "b"], ["b"]])
         XCTAssertEqual(taps.map(\.opens), [true, true, false, false])
+        XCTAssertEqual([.none, .single, .multiple].map(ItemsTap.opens(in:)), [true, true, false], "a toolkit's own tap")
     }
 
     /// An item stands at the start, the center or the end of the room; nearest moves it only where it is not wholly

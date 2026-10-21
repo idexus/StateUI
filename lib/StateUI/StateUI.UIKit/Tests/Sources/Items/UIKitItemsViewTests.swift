@@ -37,8 +37,36 @@ private struct MailPage: View {
     }
 }
 
+/// A list choosing many above one choosing one.
+private struct ChoicesPage: View {
+    @State private var many: Set<String> = []
+    @State private var one: String?
+
+    var body: some View {
+        VStack {
+            ItemsView(["a", "b"]) { Text($0).padding(12) }.selection($many).width(300).height(200)
+            ItemsView(["a", "b"]) { Text($0).padding(12) }.selection($one).width(300).height(200)
+        }
+    }
+}
+
 @MainActor
 final class UIKitItemsViewTests: XCTestCase {
+    /// A tap extends a choice of many - UIKit performs no primary action there, which would choose the item alone -
+    /// and opens an item of a list choosing one, as every host's tap does (`ItemsTap`).
+    @MainActor
+    func testATapExtendsAChoiceOfManyAndOpensAnItemElsewhere() throws {
+        let host = UIKitRenderer.running { ChoicesPage() }
+        defer { host.finish() }
+        let lists = host.views(UIKitItemsView.self)
+        let first = IndexPath(item: 0, section: 0)
+
+        let opens = lists.map { $0.collection.delegate?.collectionView?($0.collection, canPerformPrimaryActionForItemAt: first) }
+
+        XCTAssertEqual(lists.map(\.modeForTesting), [.multiple, .single])
+        XCTAssertEqual(opens, [false, true], "a tap opens only where it changes no choice of many")
+    }
+
     /// A list item's context menu stands as its swipe actions too - its items in order, a destructive one UIKit's
     /// destructive style - and an action swiped to runs the item's handler.
     @MainActor

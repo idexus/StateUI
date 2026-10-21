@@ -16,7 +16,9 @@ or with the turn under way - stands in the cell. A cell that ends showing
 lets its entry go. The user's choice is the collection's selection -
 none, one or many as the tree says - told back in the list's order; what
 the tree selects is selected inside `ProgramWrite` and told nobody. An item
-opened is the collection's primary action, which a tap performs.
+opened is the collection's primary action, which a tap performs - but not in
+a choice of many (`ItemsTap.opens`): where UIKit performs a primary action, a
+tap chooses the item alone instead of adding it to the choice.
 `scrollTo` stands the item where its anchor says ([scrolling to an
 item](#scrolling-to-an-item)). The end reached is watched as the collection
 scrolls and lays out.

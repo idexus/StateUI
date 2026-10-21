@@ -221,6 +221,11 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing {
         userChose()
     }
 
+    /// A tap extends a choice of many: UIKit chooses the item alone where it performs a primary action.
+    func collectionView(_ collection: UICollectionView, canPerformPrimaryActionForItemAt indexPath: IndexPath) -> Bool {
+        ItemsTap.opens(in: mode)
+    }
+
     func collectionView(_ collection: UICollectionView, performPrimaryActionForItemAt indexPath: IndexPath) {
         guard let identity = source.itemIdentifier(for: indexPath) else { return }
         cells.userActivated(identity)
