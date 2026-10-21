@@ -118,7 +118,7 @@ StateSample.swift abfc1c415e278290
 StepperSample.swift a1eb96147d1526c6
 StyleSample.swift a57bc7051bc35542
 SwipeSample.swift 66a58baed064554c
-SwitchSample.swift ee3ccdaf5a4a3003
+SwitchSample.swift ae41f144fd9164ad
 TabsSample.swift b7e47aef40a90131
 TapSample.swift ecedf1892e5dde5c
 TaskSleepSample.swift 2b47ce00e9732b16

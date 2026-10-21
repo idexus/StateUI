@@ -5,6 +5,9 @@ struct SwitchSample: SampleContent, ExampleContent {
     // listing: SwitchSample
     @State private var soundOn = true
     @State private var said = "not thrown yet"
+    @State private var alignment = Alignment.fill
+
+    static let alignments: [Alignment] = [.fill, .start, .center, .end]
     // listing: end
 
     static let id = "switch"
@@ -24,6 +27,14 @@ struct SwitchSample: SampleContent, ExampleContent {
                 // Runs beside the binding's write-back, carrying what the
                 // switch NOW is rather than what this side guessed.
                 .onToggled { on in said = on ? "thrown on" : "thrown off" }
+                // Filling its row, its words stand at the start and the switch
+                // at the end; aligned, it is as wide as the two together.
+                .horizontalAlignment($alignment)
+
+            Picker(Self.alignments, selection: $alignment) { "\($0)".titled }
+                .accessibilityIdentifier("switch.alignment")
+                .accessibilityLabel("Alignment")
+                .presentation(.segmented)
 
             Text(soundOn ? "on" : "off")
                 .fontSize(15)

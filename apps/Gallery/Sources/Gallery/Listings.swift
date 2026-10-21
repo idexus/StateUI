@@ -10234,6 +10234,9 @@ enum Listings {
         // Sources/Samples/BasicInput/SwitchSample.swift
         @State private var soundOn = true
         @State private var said = "not thrown yet"
+        @State private var alignment = Alignment.fill
+
+        static let alignments: [Alignment] = [.fill, .start, .center, .end]
 
         var body: some View {
             VStack {
@@ -10245,6 +10248,12 @@ enum Listings {
                     // Runs beside the binding's write-back, carrying what the
                     // switch NOW is rather than what this side guessed.
                     .onToggled { on in said = on ? "thrown on" : "thrown off" }
+                    // Filling its row, its words stand at the start and the switch
+                    // at the end; aligned, it is as wide as the two together.
+                    .horizontalAlignment($alignment)
+
+                Picker(Self.alignments, selection: $alignment) { "\($0)".titled }
+                    .presentation(.segmented)
 
                 Text(soundOn ? "on" : "off")
 
