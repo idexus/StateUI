@@ -244,29 +244,24 @@ changed starts over alone, instead of matching an unrelated slot.
 A watcher belongs to the view it is written on. One written in a branch of an
 `if` is that branch's view's and starts afresh as the other branch shows; one
 written on a composed view watches while that view stands, whichever branch
-its body shows. A value watched across a condition is watched on the view
-whose body holds the condition:
+its body shows. A `Group` is such a view written in place - no element and no
+layout of its own, holding one view - so a value watched across a condition
+is watched on the group holding it:
 
 ```swift
-struct AccountBadge: View {
-    @Binding var signedIn: Bool
-
-    var body: some View {
-        if signedIn {
-            Text("Signed in")
-        } else {
-            Button("Sign in").onClicked { signedIn = true }
-        }
-    }
-}
-
 struct AccountPage: View {
     @State var signedIn = false
     @State var changes = 0
 
     var body: some View {
-        AccountBadge(signedIn: $signedIn)
-            .onChanged(signedIn) { changes += 1 }
+        Group {
+            if signedIn {
+                Text("Signed in")
+            } else {
+                Button("Sign in").onClicked { signedIn = true }
+            }
+        }
+        .onChanged(signedIn) { changes += 1 }
     }
 }
 ```

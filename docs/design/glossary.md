@@ -67,6 +67,7 @@ and this table maps the two.
 | carry, carried view | skipped subtree | a composed view whose inputs and reads held is not built, compared or sent |
 | inputs (`Input`) | props | a view's stored values, compared to decide whether to carry it |
 | placeholder (`Node.Stateful`) | lazy node | a composed view not built yet |
+| group (`Group`) | transparent container | a composed view written in place, holding one view: no element and no layout of its own |
 | producer | deferred children | a container's content, run when the element is described |
 | generation, baseline | version | the tree a patch was computed against |
 | drift | desync | a patch that does not match the tree the host holds |

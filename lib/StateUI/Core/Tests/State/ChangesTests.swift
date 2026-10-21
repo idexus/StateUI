@@ -211,6 +211,30 @@ final class ChangesTests: XCTestCase {
         XCTAssertEqual(log.lines, ["user 7", "user 0"], "the value moved twice, once as the branch changed")
     }
 
+    /// A group is no element - what it holds stands in its place - and a watch written on it watches whichever
+    /// branch of the `if/else` it holds shows.
+    func testAWatchOnAGroupKeepsWatchingAcrossItsBranches() {
+        let renders = Renders()
+        let log = Log()
+
+        func tree(_ signedIn: Bool, _ user: Int?) -> Node {
+            VStack {
+                Group {
+                    if signedIn { HStack { Text("reader") } } else { VStack { Text("sign in") } }
+                }
+                .onChanged(user) { log.lines.append("user \(user ?? 0)") }
+            }.node
+        }
+
+        let first = renders.render(tree(false, nil))
+        renders.render(tree(true, 7))
+        renders.render(tree(true, 7))
+        renders.render(tree(false, nil))
+
+        XCTAssertEqual(first.children.map(\.type), [.vStack], "the group stands as no element of its own")
+        XCTAssertEqual(log.lines, ["user 7", "user 0"], "the value moved twice, once as the branch changed")
+    }
+
     /// A watch written in a branch is that branch's view's: the other branch's starts over.
     func testAWatchWrittenInABranchStartsOverWithItsBranch() {
         let renders = Renders()

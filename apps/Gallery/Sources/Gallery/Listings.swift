@@ -1625,28 +1625,21 @@ enum Listings {
                 Switch($signedIn)
                     .text("Signed in")
 
-                // Written on the view whose body holds the `if/else`: it watches
-                // while that view stands, whichever branch it shows.
-                AccountBadge(signedIn: $signedIn)
-                    .horizontalAlignment(.center)
-                    .onChanged(signedIn) { changes += 1 }
+                // Written on the group holding the `if/else`: it watches whichever
+                // branch shows. The group adds no view of its own.
+                Group {
+                    if signedIn {
+                        Text("Signed in")
+                            .fontWeight(.bold)
+                    } else {
+                        Button("Sign in")
+                            .onClicked { signedIn = true }
+                    }
+                }
+                .horizontalAlignment(.center)
+                .onChanged(signedIn) { changes += 1 }
 
                 Text("Changed \(changes) times")
-            }
-        }
-
-        /// One view or another, as the account stands.
-        private struct AccountBadge: View {
-            @Binding var signedIn: Bool
-
-            var body: some View {
-                if signedIn {
-                    Text("Signed in")
-                        .fontWeight(.bold)
-                } else {
-                    Button("Sign in")
-                        .onClicked { signedIn = true }
-                }
             }
         }
         """#,

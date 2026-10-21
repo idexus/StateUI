@@ -77,7 +77,7 @@ struct OnChangedSample: SampleContent, ExampleContent {
     }
 }
 
-/// A watch written on a composed view, which goes on watching whichever branch its body shows.
+/// A watch written on a group, which goes on watching whichever branch of its `if/else` shows.
 private struct ChangesAcrossBranches: ExampleContent {
     // listing: ChangesAcrossBranches
     @State private var signedIn = false
@@ -89,11 +89,19 @@ private struct ChangesAcrossBranches: ExampleContent {
                 .text("Signed in")
                 .accessibilityIdentifier("onChanged.signedIn")
 
-            // Written on the view whose body holds the `if/else`: it watches
-            // while that view stands, whichever branch it shows.
-            AccountBadge(signedIn: $signedIn)
-                .horizontalAlignment(.center)
-                .onChanged(signedIn) { changes += 1 }
+            // Written on the group holding the `if/else`: it watches whichever
+            // branch shows. The group adds no view of its own.
+            Group {
+                if signedIn {
+                    Text("Signed in")
+                        .fontWeight(.bold)
+                } else {
+                    Button("Sign in")
+                        .onClicked { signedIn = true }
+                }
+            }
+            .horizontalAlignment(.center)
+            .onChanged(signedIn) { changes += 1 }
 
             Text("Changed \(changes) times")
                 .accessibilityIdentifier("onChanged.changes")
@@ -106,26 +114,9 @@ private struct ChangesAcrossBranches: ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("The watch is written on the view whose body holds the `if/else`, so it goes on watching "
-            + "whichever branch shows; one written inside a branch starts over with it.")
+        Text("The watch is written on the group holding the `if/else`, so it goes on watching whichever "
+            + "branch shows; one written inside a branch starts over with it.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
 }
-
-// listing: ChangesAcrossBranches
-/// One view or another, as the account stands.
-private struct AccountBadge: View {
-    @Binding var signedIn: Bool
-
-    var body: some View {
-        if signedIn {
-            Text("Signed in")
-                .fontWeight(.bold)
-        } else {
-            Button("Sign in")
-                .onClicked { signedIn = true }
-        }
-    }
-}
-// listing: end

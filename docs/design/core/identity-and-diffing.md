@@ -425,7 +425,8 @@ render; nothing about it crosses to the host. Its rules:
   a slot of another type starts over it changed hands
   a composed view's watch stays      written on the view, it is the view's
                                      while it stands - its body's root
-                                     replaced by another branch included
+                                     replaced by another branch included;
+                                     a `Group` is such a view, in place
   handlers run after the walk        a write mid-walk would be cleared
 ```
 
