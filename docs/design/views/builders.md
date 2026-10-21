@@ -26,7 +26,7 @@ gives back a view (`View where Modified: View`), so a chain goes on on
 
 The builder has no `buildExpression`. An overload taking `any View` is chosen
 for every view and erases it while type-checking stays green, so a value held
-as `any View` goes in explicitly, as `ModifiedContent(node: view.node)`. A
+as `any View` goes in explicitly, as `AnyView(view)`. A
 function returning views is `@ViewBuilder` and `some View`: several `return`s of
 different types become an `if`/`else`.
 
@@ -130,8 +130,7 @@ whose length changes wants `ForEach` instead.
 A piece writes its segment onto the nodes its views build (`BuilderPath`), a
 composed view's placeholder included, which is where a key has to sit for the
 differ to see it; a `ForEach` writes its item's identity as the node's `id`. A
-Text, a composed view and a hand-written `Node` in `ModifiedContent(node:)`
-take a segment the same way. A container asks for the nodes in its producer,
+Text, a composed view and an `AnyView` take a segment the same way. A container asks for the nodes in its producer,
 so its views are built only when the differ reaches the container.
 
 ## Menus collect without keys

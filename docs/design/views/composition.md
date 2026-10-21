@@ -38,7 +38,9 @@ gone by the next render. A modifier written on one therefore gives back a
 `ModifiedContent`, a wrapper holding the placeholder with the change written
 into it, and the differ writes what accumulates there over the built content.
 That is why `PropertyContainer.Modified` is an associated type rather than
-`Self`.
+`Self`. The wrapper names the view it was written on - `ModifiedContent<Header>`
+- so its type still tells what the view builds (pages.md). A view whose type a
+value chooses is an `AnyView`, a separate type, whose type tells nothing.
 
 `ModifiedContent` offers what every view has - margin, opacity, grid placement
 - and nothing only some views have: what is inside might be a Text or a stack,

@@ -37,7 +37,7 @@ private struct DetailPage: View {
     let section: String
 
     var body: some View {
-        ModifiedContent(node: label(section))
+        AnyView(node: label(section))
             .title(section)
     }
 }

@@ -105,7 +105,7 @@ private struct Reading: View {
 
     var body: some View {
         read()
-        return ModifiedContent(node: label("reader"))
+        return AnyView(node: label("reader"))
     }
 }
 

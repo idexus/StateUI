@@ -106,9 +106,9 @@ enum Presented {
     /// A page of `element`'s kind whose `member` is `value`, `beside` its words.
     static func page<Value: HostRepresentable & Sendable & Equatable>(
         _ element: String, _ member: ElementProperty<PageElementContract, Value>, _ value: Value, beside: [any View]
-    ) -> ModifiedContent {
+    ) -> AnyView {
         // Chosen by name, so held as `any View` and handed on as its node.
-        ModifiedContent(node: chosen(element, member, value, beside: beside).node)
+        AnyView(chosen(element, member, value, beside: beside))
     }
 
     /// The page `page(_:_:_:beside:)` shows, chosen by name.

@@ -93,8 +93,8 @@ enum Holding {
     static func layout(
         _ element: String, clips: Bool = false, through: Bool = false, width: Double? = nil, height: Double? = nil,
         _ content: () -> any View
-    ) -> ModifiedContent {
-        let held = ModifiedContent(node: content().node)
+    ) -> AnyView {
+        let held = AnyView(content())
         var worn: [any Worn] = [Write(LayoutContract.clipsContent, clips), Write(LayoutContract.letsInputThrough, through)]
         if let width {
             worn += [Write(VisualElementContract.width, width), Write(ViewContract.horizontalAlignment, Alignment.start)]
@@ -107,9 +107,9 @@ enum Holding {
         case "Grid": dressing.dress(Grid { held })
         case "HStack": dressing.dress(HStack { held })
         case "ZStack": dressing.dress(ZStack { held })
-        case "LayoutEngine": dressing.dress(ModifiedContent(node: Specimens.engine(holding: held).node))
+        case "LayoutEngine": dressing.dress(AnyView(Specimens.engine(holding: held)))
         default: dressing.dress(VStack { held })
         }
-        return ModifiedContent(node: layout.node)
+        return AnyView(layout)
     }
 }

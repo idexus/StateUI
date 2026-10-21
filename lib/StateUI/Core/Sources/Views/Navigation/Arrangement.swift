@@ -23,8 +23,7 @@ extension Node {
     /// holds a view of any type.
     static func isArrangement<Shown: View>(_ shown: Shown.Type) -> Bool? {
         if shown is any Arrangement.Type { return true }
-        if let branches = shown as? any Branches.Type { return branches.isArrangement }
-        if shown is ModifiedContent.Type { return nil }
+        if let holding = shown as? any Holding.Type { return holding.isArrangement }
         if Shown.Body.self is Never.Type { return false }
 
         return isArrangement(Shown.Body.self)
@@ -39,15 +38,26 @@ extension Node {
     }
 }
 
-/// An `if`/`else` of views, telling whether both of its branches build an arrangement.
+/// A view holding others, telling by its type whether it builds an arrangement.
 @MainActor
-private protocol Branches {
+private protocol Holding {
     static var isArrangement: Bool? { get }
 }
 
-extension Either: Branches where First: View, Second: View {
+/// An `if`/`else` builds one where both of its branches do.
+extension Either: Holding where First: View, Second: View {
     static var isArrangement: Bool? {
         let first = Node.isArrangement(First.self)
         return first == Node.isArrangement(Second.self) ? first : nil
     }
+}
+
+/// A modifier keeps what its view builds.
+extension ModifiedContent: Holding {
+    static var isArrangement: Bool? { Node.isArrangement(Content.self) }
+}
+
+/// A view of any type cannot tell.
+extension AnyView: Holding {
+    static var isArrangement: Bool? { nil }
 }

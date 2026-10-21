@@ -183,10 +183,11 @@ page stands - a window's view, a page of another arrangement - as the page
 itself, with no page element around it. Whether a view builds one is told by
 its type (`Node.isArrangement`): an arrangement, or a composed view whose
 `body`, followed down, ends on one; the placeholder records the view's type,
-so a modifier written on the view keeps the answer. A `body` whose `if`
-chooses between an arrangement and another view, or that ends on a modifier
-written on a composed view (`ModifiedContent`), cannot be told by its type,
-and stands as a view.
+and a modifier written on a composed view or a branch names the view it was
+written on (`ModifiedContent<Content>`), so a modifier keeps the answer
+wherever it stands. A `body` whose `if` chooses between an arrangement and
+another view, or that is an `AnyView`, cannot be told by its type, and stands
+as a view.
 
 Anywhere else an arrangement is left out of what is described and said once
 (`complain`): inside a layout, and inside a page, where a view's branch chose

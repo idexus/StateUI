@@ -37,9 +37,9 @@
     /// first tab and a modal stack's root are a stack of one page - `beside` the page's words, its title standing on
     /// the bar in the bar's colors.
     @MainActor
-    static func declaring(_ element: String, _ worn: [any Worn], beside: [any View]) -> ModifiedContent {
+    static func declaring(_ element: String, _ worn: [any Worn], beside: [any View]) -> AnyView {
         // Chosen by name, so held as `any View` and handed on as its node.
-        ModifiedContent(node: chosen(element, worn, beside: beside).node)
+        AnyView(chosen(element, worn, beside: beside))
     }
 
     /// The page `declaring(_:_:beside:)` shows, chosen by name.

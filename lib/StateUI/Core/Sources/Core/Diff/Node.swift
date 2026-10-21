@@ -412,8 +412,7 @@ public protocol Element {
     var node: Node { get }
 }
 
-/// A `Node` is an `Element`: a node already is what an element describes. In
-/// a view builder it goes as `ModifiedContent(node:)`.
+/// A `Node` is an `Element`: a node already is what an element describes.
 extension Node: Element {
     /// Itself - a node already is what an element describes.
     public var node: Node { self }

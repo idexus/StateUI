@@ -27,7 +27,7 @@ private struct Follower: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: label("at \(value)"))
+        return AnyView(node: label("at \(value)"))
     }
 }
 
@@ -36,7 +36,7 @@ private struct Follower: View {
 private struct Rider: View {
     @Binding var level: Double
 
-    var body: some View { ModifiedContent(node: label("riding")) }
+    var body: some View { AnyView(node: label("riding")) }
 
     /// A handler's write, as a child handed the binding makes one.
     func bump() { level += 1 }

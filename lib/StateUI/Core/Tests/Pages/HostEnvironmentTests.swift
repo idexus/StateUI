@@ -23,7 +23,7 @@ private struct BatteryLabel: View {
     @Environment(\.device) var device
 
     var body: some View {
-        ModifiedContent(node: label("\(Int(device.battery.chargeLevel * 100))% \(device.battery.state)"))
+        AnyView(node: label("\(Int(device.battery.chargeLevel * 100))% \(device.battery.state)"))
     }
 }
 
@@ -38,7 +38,7 @@ private struct Heading: View {
     var fits: Bool { device.display.orientation != .landscape }
 
     var body: some View {
-        ModifiedContent(node: label(fits ? "fits" : "too wide"))
+        AnyView(node: label(fits ? "fits" : "too wide"))
     }
 }
 
@@ -48,7 +48,7 @@ private struct Bystander: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: label("still"))
+        return AnyView(node: label("still"))
     }
 }
 

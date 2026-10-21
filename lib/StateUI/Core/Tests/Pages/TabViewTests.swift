@@ -24,7 +24,7 @@ private struct TabPage: View {
     let tab: Tab
 
     var body: some View {
-        ModifiedContent(node: label("\(tab)"))
+        AnyView(node: label("\(tab)"))
             .title("\(tab)")
             .icon(ImageSource("\(tab).png"))
     }

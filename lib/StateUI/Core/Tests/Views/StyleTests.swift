@@ -43,7 +43,7 @@ private struct StyledApp: Application {
 }
 
 private struct Home: View {
-    var body: some View { ModifiedContent(node: label("home")) }
+    var body: some View { AnyView(node: label("home")) }
 }
 
 @MainActor

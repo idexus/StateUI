@@ -43,7 +43,7 @@ private struct Shaped: View {
     let round: Bool
 
     var body: some View {
-        ModifiedContent(node: round ? label("round") : Button("square").node)
+        AnyView(node: round ? label("round") : Button("square").node)
     }
 }
 

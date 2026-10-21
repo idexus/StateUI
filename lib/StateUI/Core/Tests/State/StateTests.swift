@@ -77,7 +77,7 @@ private struct Shelf: View {
     var body: some View {
         VStack {
             if let extra {
-                ModifiedContent(node: extra.node)
+                AnyView(extra)
             }
 
             Button("Shelf: \(count)").onClicked { count += 1 }
@@ -104,8 +104,8 @@ private struct TitledPage: View {
     let titled: Bool
 
     var body: some View {
-        let counter = ModifiedContent(node: Counter().node)
-        return titled ? ModifiedContent(node: counter.title("Named").node) : counter
+        let counter = AnyView(Counter())
+        return titled ? AnyView(counter.title("Named")) : counter
     }
 }
 

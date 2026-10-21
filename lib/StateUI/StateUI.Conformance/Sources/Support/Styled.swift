@@ -66,6 +66,6 @@ struct StyledPage: View {
 
     var body: some View {
         let (inner, application) = (self.inner, self.application)
-        return VStack { ModifiedContent(node: inner.node) }.onCreated { application.styles = Styled.sheet }
+        return VStack { AnyView(inner) }.onCreated { application.styles = Styled.sheet }
     }
 }

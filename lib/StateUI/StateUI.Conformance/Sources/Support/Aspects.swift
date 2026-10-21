@@ -14,7 +14,7 @@
     public static func holds<Owner: Contract, Value: HostRepresentable & Sendable & Equatable>(
         _ member: ElementProperty<Owner, Value>, on element: String, _ first: Value, then second: Value,
         with worn: [any Worn] = [],
-        page: @escaping @MainActor (String, [any Worn], [any View]) -> ModifiedContent = Specimens.page(_:_:beside:),
+        page: @escaping @MainActor (String, [any Worn], [any View]) -> AnyView = Specimens.page(_:_:beside:),
         late: Bool = false
     ) -> ConformanceCase {
         ConformanceCase("\(element).\(member.name).holdsWhatTheTreeGivesAndChanges", proves: [

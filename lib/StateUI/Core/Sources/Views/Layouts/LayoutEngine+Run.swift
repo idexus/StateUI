@@ -324,17 +324,17 @@ extension LayoutEngine {
         /// One view inside the holder the run places, so the author's own properties on the view are never
         /// overwritten by a frame of arithmetic; a shade is the holder's second child. Where its view is not, a
         /// holder lets input through to the layout.
-        func wrapped(_ slot: Slot) -> ModifiedContent {
+        func wrapped(_ slot: Slot) -> AnyView {
             // With no shade and no tap, the holder is a view of its own: a new order carries every one.
             // Design: docs/design/views/layout-engine.md#a-view-in-its-holder
-            if mask == nil, tapped == nil { return ModifiedContent(node: holder(slot.item)) }
+            if mask == nil, tapped == nil { return AnyView(node: holder(slot.item)) }
 
             let holder = Grid { BuiltViews(nodes: [make(slot.item)] + (mask.map { [$0] } ?? [])) }
 
-            guard let tapped else { return ModifiedContent(node: holder.letsInputThrough(true).node) }
+            guard let tapped else { return AnyView(holder.letsInputThrough(true)) }
 
             let item = slot.item
-            return ModifiedContent(node: holder.onTapped(gate: tapped.gate) { try await tapped.run(item) }.node)
+            return AnyView(holder.onTapped(gate: tapped.gate) { try await tapped.run(item) })
         }
 
         /// One placement a view: a run that answered fewer or more is said once and made to fit.

@@ -22,7 +22,7 @@ private enum Route: Hashable {
 /// arrives with its titles.
 private struct Root: View {
     var body: some View {
-        ModifiedContent(node: label("home")).title("Home")
+        AnyView(node: label("home")).title("Home")
     }
 }
 
@@ -31,7 +31,7 @@ private struct Destination: View {
     let name: String
 
     var body: some View {
-        ModifiedContent(node: label(name)).title(name)
+        AnyView(node: label(name)).title(name)
     }
 }
 
@@ -40,8 +40,8 @@ private struct DressedDestination: View {
     let depth: Int
 
     var body: some View {
-        ModifiedContent(node: label("level \(depth)"))
-            .titleView { ModifiedContent(node: label("on the bar")) }
+        AnyView(node: label("level \(depth)"))
+            .titleView { AnyView(node: label("on the bar")) }
             .title("Level \(depth)")
             // Non-default values prove that the host must apply the branch; an assertion agreeing with a default
             // could pass without it.

@@ -85,7 +85,7 @@ struct SamplePage: View {
             }
 
             if let notes = example.notes {
-                Self.section("Notes", ModifiedContent(node: notes.node))
+                Self.section("Notes", AnyView(notes))
             }
 
             Self.section(example.codeHeading, CodeBlock(example.code))

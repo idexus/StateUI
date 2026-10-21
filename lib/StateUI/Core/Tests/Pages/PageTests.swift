@@ -144,6 +144,29 @@ private struct Choosing: View {
     }
 }
 
+/// A view whose body is a group of an arrangement on either branch, watching what chooses between them.
+private struct Watched: View {
+    let signedIn: Bool
+    @State private var path: [Int] = []
+    @State private var changes = 0
+
+    var body: some View {
+        Group {
+            if signedIn {
+                NavigationStack($path) { Plain() } destination: { _ in Plain() }
+            } else {
+                NavigationStack($path) { Text("signed out") } destination: { _ in Plain() }
+            }
+        }
+        .onChanged(signedIn) { changes += 1 }
+    }
+}
+
+/// A view whose body holds an arrangement as a view of any type.
+private struct Erased: View {
+    var body: some View { AnyView(Stacked()) }
+}
+
 /// What a view is offered.
 private final class Offered {}
 
@@ -322,7 +345,7 @@ final class PageTests: XCTestCase {
         ]
 
         for view in written {
-            let page = Renders().render(Node.page(ModifiedContent(node: view.node)))
+            let page = Renders().render(Node.page(AnyView(view)))
 
             XCTAssertEqual(page.type, .page)
             XCTAssertEqual(page.props[.background], Color.blue.propValue, "the page's own")
@@ -344,7 +367,7 @@ final class PageTests: XCTestCase {
 
         XCTAssertEqual(Set(arrangements.map(\.type)), NodeType.arrangements, "every arrangement is shown")
         for (view, type) in arrangements {
-            XCTAssertEqual(Node.page(ModifiedContent(node: view.node)).built.type, type)
+            XCTAssertEqual(Node.page(AnyView(view)).built.type, type)
         }
         XCTAssertEqual(Node.page(stack).built.children.first?.type, .page)
     }
@@ -374,10 +397,26 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(Node.page(Plain()).built.type, .page)
     }
 
+    /// A view whose body is a group holding arrangements on either branch, a watch written on the group, stands as
+    /// an arrangement: what a modifier gives back says by its type what it holds.
+    func testAModifiedGroupOfArrangementsStandsAsAnArrangement() {
+        XCTAssertEqual(Node.page(Watched(signedIn: true)).built.type, .navigationStack)
+        XCTAssertEqual(Node.page(Watched(signedIn: false)).built.type, .navigationStack)
+    }
+
     /// A body choosing between an arrangement and a view stands as a view, as its type cannot tell which it builds;
     /// the arrangement it chose, standing inside a page, is left out.
     func testABodyChoosingAnArrangementStandsAsAView() {
         let patch = Renders().render(Node.page(Choosing(stack: true)))
+
+        XCTAssertEqual(patch.type, .page)
+        XCTAssertFalse(patch.subtree.contains { $0.type == .navigationStack })
+    }
+
+    /// A body of an `AnyView` stands as a view, as its type cannot tell what it holds; the arrangement it holds,
+    /// standing inside a page, is left out.
+    func testABodyOfAnyViewStandsAsAView() {
+        let patch = Renders().render(Node.page(Erased()))
 
         XCTAssertEqual(patch.type, .page)
         XCTAssertFalse(patch.subtree.contains { $0.type == .navigationStack })

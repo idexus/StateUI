@@ -51,9 +51,9 @@
 @MainActor
 enum Stacked {
     /// A stack of `element`'s kind, its children `spacing` apart.
-    static func stack(_ element: String, spacing: Double, _ children: () -> [any View]) -> ModifiedContent {
+    static func stack(_ element: String, spacing: Double, _ children: () -> [any View]) -> AnyView {
         let held = children()
         let stack: any View = element == "HStack" ? HStack { Beside(held) }.spacing(spacing) : VStack { Beside(held) }.spacing(spacing)
-        return ModifiedContent(node: stack.node)
+        return AnyView(stack)
     }
 }

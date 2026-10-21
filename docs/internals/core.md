@@ -154,7 +154,7 @@ turns the nodes into the patch.
   `setValue(_:on:mode:kind:)`, which carries an application's own property.
   *Application.* ([Bindings](../design/views/bindings.md);
   [described and carried values](../interface/controls-and-input.md#described-and-carried-values))
-- **`View`**, **`ModifiedContent`**, **`ViewBuilder`** and
+- **`View`**, **`ModifiedContent`**, **`AnyView`**, **`ViewBuilder`** and
   **`ForEach`** (`Composition/`) compose: a composed view is a placeholder
   the differ builds or carries whole, a builder records the path of every
   statement, and `ForEach` keys each view by its item. *Application.*

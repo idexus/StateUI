@@ -73,7 +73,7 @@ private struct SaveLabel: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: label(words.save))
+        return AnyView(node: label(words.save))
     }
 }
 
@@ -85,7 +85,7 @@ private struct Provider: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: stack([SaveLabel(builds: reader).environment(localization).node]))
+        return AnyView(node: stack([SaveLabel(builds: reader).environment(localization).node]))
     }
 }
 

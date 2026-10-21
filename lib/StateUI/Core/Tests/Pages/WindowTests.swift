@@ -15,7 +15,7 @@ import XCTest
 
 /// A page and nothing else - what its window is told, a title bar included, being the window session's.
 private struct Home: View {
-    var body: some View { ModifiedContent(node: label("home")) }
+    var body: some View { AnyView(node: label("home")) }
 }
 
 /// A page laying a banner over its window while a state says so, and a field under it always.
@@ -24,8 +24,8 @@ private struct Noticed: View {
 
     var body: some View {
         let banner = banner
-        return ModifiedContent(node: label("home")).overlays {
-            if banner.wrappedValue { ModifiedContent(node: label("banner")) }
+        return AnyView(node: label("home")).overlays {
+            if banner.wrappedValue { AnyView(node: label("banner")) }
             TextField("toast")
         }
     }
@@ -69,9 +69,9 @@ final class WindowTests: XCTestCase {
     /// nothing in its session.
     func testAnArrangementDeclaresItsBarAsValues() {
         let node = SplitView(State(wrappedValue: true).projectedValue) {
-            ModifiedContent(node: label("menu"))
+            AnyView(node: label("menu"))
         } detail: {
-            ModifiedContent(node: label("detail"))
+            AnyView(node: label("detail"))
         }
         .barTitle("StateUI")
         .barSubtitle("Home")
@@ -94,9 +94,9 @@ final class WindowTests: XCTestCase {
     func testAViewDeclaresItsOverlaysInOneStack() throws {
         XCTAssertFalse(Node.window(Home(), session: WindowSession()).built.children.contains { $0.type == .overlay })
 
-        let node = ModifiedContent(node: label("home")).overlays {
-            ModifiedContent(node: label("banner"))
-            ModifiedContent(node: label("toast"))
+        let node = AnyView(node: label("home")).overlays {
+            AnyView(node: label("banner"))
+            AnyView(node: label("toast"))
         }.node
 
         let overlay = try XCTUnwrap(node.children.last)
@@ -127,7 +127,7 @@ final class WindowTests: XCTestCase {
     /// focus and caret would live on in a control the author had switched away from.
     func testTheTwoBranchesOfAnIfInADeclarationAreDifferentElements() {
         func tree(editing: Bool) -> Node {
-            ModifiedContent(node: label("home"))
+            AnyView(node: label("home"))
                 .titleView {
                     if editing {
                         TextField("name")

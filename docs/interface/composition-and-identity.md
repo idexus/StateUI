@@ -159,6 +159,23 @@ The `if` and `else` branches are distinct identities even when both create the
 same control type. Switching branches replaces the element because the
 application described a different logical place.
 
+A view whose type a value chooses - one of several kept together, or one held
+as `any View` - goes in as an `AnyView`:
+
+```swift
+let samples: [String: AnyView] = [
+    "Text": AnyView(Text("Hello")),
+    "Button": AnyView(Button("Press")),
+]
+
+VStack {
+    samples["Button"] ?? AnyView(Text("None"))
+}
+```
+
+Its type no longer tells what it holds, so where a type can say it, it keeps
+saying it: an `if`/`else` of views is one view, and a `Group` holds one.
+
 A plain `for` is deliberately unavailable inside `ViewBuilder`. Use `ForEach`
 so each repeated child has an item identity:
 

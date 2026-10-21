@@ -25,7 +25,7 @@
 /// One statement keeps its type, and an `if`/`else` whose branches are views
 /// is a view (`Either`); several statements or an `if` with no `else` are
 /// what a container holds and never one view. A value held as `any View` goes
-/// in as `ModifiedContent(node: view.node)`.
+/// in as `AnyView(view)`.
 @resultBuilder
 @MainActor
 public enum ViewBuilder {

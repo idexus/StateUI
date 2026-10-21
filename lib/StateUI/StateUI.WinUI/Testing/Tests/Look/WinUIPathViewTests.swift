@@ -127,7 +127,7 @@ final class WinUIPathViewTests: XCTestCase {
     ) throws -> [UInt32] {
         try onUIThread {
             let host = WinUIRenderer.running {
-                VStack { ModifiedContent(node: shape().node) }
+                VStack { AnyView(shape()) }
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
             }

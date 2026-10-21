@@ -48,7 +48,7 @@ private struct NameLabel: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: label(session.name))
+        return AnyView(node: label(session.name))
     }
 }
 
@@ -59,7 +59,7 @@ private struct AccentLabel: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: label(theme.accent))
+        return AnyView(node: label(theme.accent))
     }
 }
 
@@ -71,7 +71,7 @@ private struct Provider: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: stack([NameLabel(builds: reader).environment(session).node]))
+        return AnyView(node: stack([NameLabel(builds: reader).environment(session).node]))
     }
 }
 

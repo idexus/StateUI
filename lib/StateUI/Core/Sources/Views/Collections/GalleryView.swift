@@ -313,7 +313,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
         // The empty view is held as `any View`, so every answer goes as a node.
         if count == 0, let empty {
-            return ModifiedContent(node: empty.node)
+            return AnyView(empty)
         }
 
         // Locals rather than `self`, which holds a class.
@@ -339,7 +339,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             // the holder every frame. The holder is the card's size: a card the run has not placed yet would fill
             // the room.
             Grid {
-                ModifiedContent(node: make(item))
+                AnyView(node: make(item))
                     // Which card is pressed, never which is in front.
                     .scale(dips.wrappedValue == item[keyPath: path] ? Self.dip : 1)
                     .motion(Self.pressing)
@@ -409,7 +409,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         // What the position asked for ends with the gallery.
         .onDestroying { positionRuns.orphan() }
 
-        return ModifiedContent(node: deck.node)
+        return AnyView(deck)
     }
 
     /// How small the card in front is drawn while it is held down.

@@ -501,8 +501,11 @@ in that says them says nothing, and is told so once.
 
 An arrangement - `NavigationStack`, `TabView`, `SplitView`, `ModalStack` - is
 a view that stands where a page stands, as the page itself: written there, or
-the `body` of the view written there. Anywhere else - inside a `VStack`, inside
-a page's content - it is left out and said once. It fills where it stands, so
+the `body` of the view written there - through a modifier, a `Group`, or an
+`if`/`else` whose every branch is one. A `body` whose type cannot tell - an
+`if` choosing between an arrangement and another view, an `AnyView` - stands
+on a page. Anywhere else - inside a `VStack`, inside a page's content - an
+arrangement is left out and said once. It fills where it stands, so
 it keeps only what its contract declares, and takes its own `.title` and
 `.icon`, for where it is an item of something else, such as a tab.
 

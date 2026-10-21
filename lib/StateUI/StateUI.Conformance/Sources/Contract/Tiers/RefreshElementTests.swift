@@ -128,7 +128,7 @@
 
     /// `element` - a scroller of lines, or a list of them - wearing `pull`, found by `id`.
     @MainActor
-    static func specimen(_ element: String, id: String = "specimen", _ pull: Pull) -> ModifiedContent {
+    static func specimen(_ element: String, id: String = "specimen", _ pull: Pull) -> AnyView {
         let worn = element == "ItemsView"
             ? pull.worn(by: ItemsView(0..<20) { Text("Item \($0)") })
             : pull.worn(by: ScrollView { VStack { ForEach(0..<20) { Text("Line \($0)") } } })
@@ -150,12 +150,12 @@ struct Pull {
     }
 
     /// `element` wearing it.
-    func worn<Element: Pulled>(by element: Element) -> ModifiedContent {
+    func worn<Element: Pulled>(by element: Element) -> AnyView {
         var element = element
         if let refreshing { element = element.isRefreshing(refreshing) }
         if let enabled { element = element.isRefreshEnabled(enabled) }
         if let heard { element = element.onRefreshRequested(heard) }
-        return ModifiedContent(node: element.node)
+        return AnyView(element)
     }
 }
 

@@ -133,7 +133,7 @@ extension MenuItemElementTests {
 /// context menu's "Copy" on ⌘C beside them.
 @MainActor
 enum Shortcuts {
-    static func page(_ element: String, heard: Received<String>) -> ModifiedContent {
+    static func page(_ element: String, heard: Received<String>) -> AnyView {
         let content = VStack {
             Text("Page").id("page")
             TextField("").id("field")
@@ -155,7 +155,7 @@ enum Shortcuts {
                         .onClicked { heard.values.append("one") }.id("one")
                 }
             } destination: { _ in Text("Pushed") }
-            return ModifiedContent(node: stack.node)
+            return AnyView(stack)
         }
         let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
             content.menuBar {
@@ -169,7 +169,7 @@ enum Shortcuts {
                 }
             }
         } destination: { _ in Text("Pushed") }
-        return ModifiedContent(node: stack.node)
+        return AnyView(stack)
     }
 }
 
@@ -179,9 +179,9 @@ enum Chosen {
     /// A page with an item of `element`'s kind in reach and one out of it, each named and heard as `item` says.
     static func page(
         _ element: String, _ item: @escaping @MainActor (Bool) -> (String, @MainActor () -> Void)
-    ) -> ModifiedContent {
+    ) -> AnyView {
         // Chosen by name, so held as `any View` and handed on as its node.
-        ModifiedContent(node: chosen(element, item).node)
+        AnyView(chosen(element, item))
     }
 
     /// The page `page(_:_:)` shows, chosen by name.
@@ -211,14 +211,14 @@ enum Chosen {
     /// `enabled` says, `beside` it out of the branch.
     static func branch(
         _ element: String, enabled: Bool, beside: some View, _ heard: @escaping @MainActor () -> Void
-    ) -> ModifiedContent {
+    ) -> AnyView {
         let branch: any View = element == "ToolbarItem"
             ? VStack { Text("Branch") }.toolbar { ToolbarItem("Item").onClicked { heard() }.id("item") }
             : VStack { Text("Row").contextMenu { MenuItem("Item").onClicked { heard() }.id("item") }.id("row") }
-        let page = VStack { Beside([Text("Page"), ModifiedContent(node: branch.node).isEnabled(enabled), beside]) }
-        guard element == "ToolbarItem" else { return ModifiedContent(node: page.node) }
+        let page = VStack { Beside([Text("Page"), AnyView(branch).isEnabled(enabled), beside]) }
+        guard element == "ToolbarItem" else { return AnyView(page) }
         // An item on a bar stands on a page in a navigation stack.
         let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) { page } destination: { _ in Text("Pushed") }
-        return ModifiedContent(node: stack.node)
+        return AnyView(stack)
     }
 }

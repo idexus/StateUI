@@ -114,7 +114,7 @@ struct SampleTabPage: View {
             }
 
             if let notes = example.notes {
-                SamplePage.section("Notes", ModifiedContent(node: notes.node))
+                SamplePage.section("Notes", AnyView(notes))
             }
 
             SamplePage.section(example.codeHeading, CodeBlock(example.code))

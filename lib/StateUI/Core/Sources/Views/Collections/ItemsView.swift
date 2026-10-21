@@ -64,9 +64,9 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
         source.finish(header: headerView, footer: footerView)
         // The empty view is held as `any View`, so both answers go as nodes; it stands in a scroller keeping the pull.
         if source.entries.isEmpty, let empty {
-            guard !pull.isEmpty else { return ModifiedContent(node: empty.node) }
-            let scroller = ScrollView { ModifiedContent(node: empty.node) }
-            return ModifiedContent(node: RefreshWorn.wear(pull, on: scroller).node)
+            guard !pull.isEmpty else { return AnyView(empty) }
+            let scroller = ScrollView { AnyView(empty) }
+            return AnyView(RefreshWorn.wear(pull, on: scroller))
         }
 
         let source = self.source
@@ -121,7 +121,7 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
             element.node.addHandlers(ItemsViewContract.endReached.token, [endReached.handler])
         }
 
-        return ModifiedContent(node: RefreshWorn.wear(pull, on: element).node)
+        return AnyView(RefreshWorn.wear(pull, on: element))
     }
 }
 

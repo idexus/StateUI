@@ -30,7 +30,7 @@ private struct Shows: View {
     let fade: State<Double>
 
     var body: some View {
-        ModifiedContent(node: label("\(fade.get())"))
+        AnyView(node: label("\(fade.get())"))
     }
 }
 

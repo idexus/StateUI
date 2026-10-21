@@ -23,7 +23,7 @@ private struct Percent: View {
     var body: some View {
         builds.count += 1
 
-        return ModifiedContent(node: label("\(Int(volume.projectedValue.convert { $0 * 100 }.wrappedValue))%"))
+        return AnyView(node: label("\(Int(volume.projectedValue.convert { $0 * 100 }.wrappedValue))%"))
     }
 }
 

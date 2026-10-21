@@ -113,7 +113,7 @@ final class LifetimeTests: XCTestCase {
         let shown = State(wrappedValue: true)
         let renders = Renders()
         func page(_ name: String) -> some View {
-            ModifiedContent(node: Node.page(
+            AnyView(node: Node.page(
                 Text(name)
                     .onDisappearing { log.wrappedValue.append("\(name) disappearing") }
                     .onDestroying { log.wrappedValue.append("\(name) destroying") }))
@@ -219,7 +219,7 @@ final class LifetimeTests: XCTestCase {
         let log = State(wrappedValue: [String]())
         let arriving = State(wrappedValue: false)
         let renders = Renders()
-        let tree = { VStack { ModifiedContent(node: chosen(arriving.wrappedValue, log: log.projectedValue).node) }.node }
+        let tree = { VStack { AnyView(chosen(arriving.wrappedValue, log: log.projectedValue)) }.node }
 
         renders.render(tree())
         arriving.wrappedValue = true

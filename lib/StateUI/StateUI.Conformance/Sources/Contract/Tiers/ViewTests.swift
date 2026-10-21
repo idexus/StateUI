@@ -525,7 +525,7 @@
     @MainActor
     static func reporting(
         _ element: String, _ frames: Received<[Double]>, _ worn: [any Worn], id: String = "specimen"
-    ) -> ModifiedContent {
+    ) -> AnyView {
         Specimens.view(element, worn + [Hear(ViewContract.frameChanged) { numbers in frames.values.append(numbers) }], id: id)
     }
 }
