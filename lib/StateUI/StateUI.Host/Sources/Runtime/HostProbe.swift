@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUIFoundation
+
 /// Where a runtime's time goes, stage by stage, in a process started probed (`STATEUI_PROBE=1`): each stage's
 /// milliseconds in the last second, how many times it ran and its longest run, written once a second while the
 /// runtime works as one line, `StateUI stages: …`. Unprobed, a stage runs as it is.
@@ -43,7 +45,7 @@ final class HostProbe {
 
     /// Starts probing this process where its environment asks, its lines handed to `write`.
     static func start(
-        where diagnostics: DiagnosticText, write: @escaping (String) -> Void = HostLog.writeStandardError
+        where diagnostics: DiagnosticText, write: @escaping (String) -> Void = writeStandardError
     ) {
         running = diagnostics.probes ? HostProbe(write: write) : nil
     }

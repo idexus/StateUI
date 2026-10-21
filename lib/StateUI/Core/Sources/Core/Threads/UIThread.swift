@@ -10,7 +10,7 @@ import Synchronization
 #if !os(WASI)
 import Dispatch
 #endif
-import StateUIFoundation
+@_spi(Host) import StateUIFoundation
 #if !canImport(Darwin)
 @_spi(ExperimentalCustomExecutors) import _Concurrency
 #endif

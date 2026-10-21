@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Dispatch
-import StateUIFoundation
+@_spi(Host) import StateUIFoundation
 import XCTest
 
 /// Which thread code runs on, on Android's own threads: the foundation's Bionic branch, which no other machine runs.

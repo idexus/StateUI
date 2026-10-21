@@ -3,7 +3,7 @@
 
 @_spi(Host) import StateUI
 
-import StateUIFoundation
+@_spi(Host) import StateUIFoundation
 
 /// What a host says for whoever reads its log rather than its screen, each line naming the host.
 /// Design: docs/design/host/runtime.md#the-log
@@ -15,7 +15,7 @@ import StateUIFoundation
 
     /// A log for `host` written to standard error, which nothing buffers.
     public init(host: String) {
-        self.init(host: host, output: Self.writeStandardError)
+        self.init(host: host, output: writeStandardError)
     }
 
     /// A log for `host` handed to `output`, line by line.
@@ -44,17 +44,5 @@ import StateUIFoundation
     /// The line `message` is written as.
     public func line(_ message: String) -> String {
         "StateUI \(host): \(message)\n"
-    }
-
-    /// Writes `text` to file descriptor 2, which nothing buffers.
-    public static func writeStandardError(_ text: String) {
-        var text = text
-        text.withUTF8 { bytes in
-            #if os(Windows)
-            _ = _write(2, bytes.baseAddress, UInt32(bytes.count))
-            #else
-            _ = write(2, bytes.baseAddress, bytes.count)
-            #endif
-        }
     }
 }

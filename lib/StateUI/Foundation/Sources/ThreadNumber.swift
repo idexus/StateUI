@@ -13,18 +13,20 @@ import WinSDK
 ///     assert(currentThreadNumber() == uiThread, "called from the UI thread")
 ///
 /// Design: docs/design/foundation/c-library.md#which-thread
-public func currentThreadNumber() -> UInt64 {
+@_spi(Host) public func currentThreadNumber() -> UInt64 {
     #if os(Windows)
     return UInt64(GetCurrentThreadId())
     #elseif os(WASI)
     return 0
-    #elseif canImport(Darwin)
+    #elseif os(macOS) || os(iOS)
     var number: UInt64 = 0
     pthread_threadid_np(nil, &number)
     return number
     #elseif os(Android)
     return UInt64(UInt(bitPattern: pthread_self()))
-    #else
+    #elseif os(Linux)
     return UInt64(pthread_self())
+    #else
+    #error("StateUIFoundation knows no thread number on this platform")
     #endif
 }

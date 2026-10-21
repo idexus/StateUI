@@ -3,7 +3,7 @@
 
 @_spi(Host) import StateUI
 
-import StateUIFoundation
+@_spi(Host) import StateUIFoundation
 
 /// What a runtime writes out for whoever reads its log rather than its screen: the running tally
 /// (`STATEUI_TALLY=1`), every inspected pass as text (`STATEUI_INSPECT=1`) and where its time goes, stage by stage
@@ -43,7 +43,7 @@ import StateUIFoundation
     public static var environment: DiagnosticText {
         DiagnosticText(
             tallies: switched("STATEUI_TALLY"), inspects: switched("STATEUI_INSPECT"),
-            probes: switched("STATEUI_PROBE"), write: HostLog.writeStandardError)
+            probes: switched("STATEUI_PROBE"), write: writeStandardError)
     }
 
     /// One message applied, which began at `began` milliseconds on the runtime's clock.
@@ -86,14 +86,6 @@ import StateUIFoundation
     }
 
     private static func switched(_ name: String) -> Bool {
-        #if os(Windows)
-        var value: UnsafeMutablePointer<CChar>?
-        var count = 0
-        guard _dupenv_s(&value, &count, name) == 0, let value else { return false }
-        defer { free(value) }
-        return String(cString: value) == "1"
-        #else
-        return getenv(name).map { String(cString: $0) == "1" } ?? false
-        #endif
+        environmentVariable(name) == "1"
     }
 }
