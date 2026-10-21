@@ -29,6 +29,10 @@ scratch="$package/.build/web"
 
 . "$here/swift-sdk.sh"
 
+# The tests' archive holds every module's objects and only gains members: one of a source since renamed or deleted
+# would link twice, or link what is gone. It is made anew each build.
+rm -f "$scratch/out/Products/Debug-webassembly-wasm32/libStateUIWebTests.a"
+
 STATEUI_HOST=web swift build --package-path "$package" --scratch-path "$scratch" --swift-sdk "$sdk" --build-tests
 products="$(STATEUI_HOST=web swift build --package-path "$package" --scratch-path "$scratch" --swift-sdk "$sdk" --show-bin-path)"
 program="$products/StateUIWebTests-test-runner.wasm"
