@@ -161,8 +161,9 @@ Build the signed Gallery bundle with its resources and icon:
 ```
 
 A new application is HelloWorld under another name, with every head
-HelloWorld has and its example test in `Tests/`, which `swift test` and
-**StateUI: Run Tests** run. This makes `apps/Notes`
+HelloWorld has and its example test in `Tests/` - its page shown in a test
+window, its button clicked ([Testing an application](interface/testing.md)) -
+which `swift test` and **StateUI: Run Tests** run. This makes `apps/Notes`
 (`.scripts/new-app.ps1 -Name Notes` on Windows):
 
 ```bash
@@ -398,7 +399,8 @@ apps/Notes/
     MainPageTests.swift
 ```
 
-The application target depends only on the `StateUI` product. The executable
+The application target depends only on the `StateUI` product, its tests on
+`StateUITesting` too. The executable
 target depends on the application target and `StateUIHead`
 (`lib/StateUI.Head`), which brings it the host the build is for -
 `StateUIAppKit` on an AppKit build - and on a backend's product where it

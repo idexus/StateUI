@@ -41,7 +41,7 @@ apps/Gallery/Platforms/GTK/        Gallery GTK head
 apps/Gallery/Platforms/Web/        Gallery Web head
 apps/Gallery/Tests/                Gallery acceptance tests
 apps/HelloWorld/Sources/           small platform-neutral example application
-apps/HelloWorld/Tests/             its example test, which every new application starts with
+apps/HelloWorld/Tests/             its example test, which every new application starts with: a click in a test window
 apps/HelloWorld/Platforms/AppKit/  HelloWorld AppKit entry point
 apps/HelloWorld/Platforms/UIKit/   HelloWorld UIKit head
 apps/HelloWorld/Platforms/Android/ HelloWorld Android head
@@ -294,8 +294,9 @@ layer's suite proves the rules every host shares, pure, with no toolkit. The
 conformance package's own tests prove its runner and that every member has
 its case; each host's suite runs the cases themselves. The AppKit suite drives
 native AppKit objects. The Gallery's treats Gallery as application behavior
-and compiles the documentation examples. HelloWorld's holds one example test
-of the application's own logic, which a new application starts with. In VS Code, **StateUI: Run Tests**
+and compiles the documentation examples. HelloWorld's holds one example test,
+which a new application starts with: its page shown in a test window, its
+button clicked. In VS Code, **StateUI: Run Tests**
 runs them as the chosen host.
 
 Each host's suite - its own tests and the conformance cases - has a script.
