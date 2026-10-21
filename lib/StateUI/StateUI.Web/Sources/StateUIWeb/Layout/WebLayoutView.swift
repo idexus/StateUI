@@ -203,7 +203,7 @@ class WebLayoutView: WebDOMView {
         view.placedByRun = nil
         view.drawInRun(nil, size: nil)
         view.style("will-change", nil)
-        for (side, length) in WebCSS.sides(values.margin, signed: true) { view.style("margin-\(side)", length) }
+        for (side, length) in WebCSS.sides(values.margin, margin: true) { view.style("margin-\(side)", length) }
         view.style("width", WebCSS.pixels(values.width))
         view.style("height", WebCSS.pixels(values.height))
         // A child is no larger than its slot - across a stack, in a cell, an area or a room it does not scroll in.
