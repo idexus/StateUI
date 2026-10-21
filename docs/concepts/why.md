@@ -8,7 +8,8 @@ names.
 
 Read this page before contributing. A change follows these decisions; a
 proposal to change one starts as a Proposal issue that answers the reason given
-here ([Contributing](../../CONTRIBUTING.md)).
+here ([Contributing](../../CONTRIBUTING.md)). The last section says what a
+consistent API is and the rules every change to it keeps.
 
 ## A property is one modifier: a value or a state
 
@@ -291,7 +292,10 @@ let a page already left write through a shared model.
 
 The StateUI library never imports Foundation; an application may. Handlers run
 on `MainActor`, drained by the platform's own loop on Apple, and by the host
-through `HostBoundary.runJobs` elsewhere.
+through `HostBoundary.runJobs` elsewhere. The library's own ground is
+`StateUIFoundation`: the platform's C library behind one import - `exp`, `sin`
+and the rest - which an application may import too; what the library builds on
+it is the host's.
 
 **Deliberately rejected:** Foundation in the library, and its timers, run loops
 and main queue as the library's clock. The library runs on macOS, iOS, Android,
@@ -331,3 +335,43 @@ not `min`). One concept has one word across the whole library.
 **Deliberately rejected:** a verb or a value as a modifier (`.center()`),
 abbreviations, and names that say what something resembles rather than what it
 is.
+
+## One road to one place
+
+A consistent API is one where every place is reached one way, spelled one way,
+and handed a type that says what it is: what an author learns once holds
+everywhere, and a mistake shows where it is written. Every change to the
+public API keeps to these rules:
+
+- **One road.** A concept has one spelling and one way in: a property its
+  member's modifier, several states read together `.multi`, a scroller's
+  offset `.scrollOffset($offset)`, the application `registerApplication()`. A
+  second road to the same place - an alias, a shortcut, an event repeating a
+  state - is removed, not kept beside the first.
+- **Through the contract.** A property, an event and an act are written with
+  the contract that declares them. What only a host needs - a key made from a
+  name, the renderer, the lists of properties the hosts share - stands behind
+  `@_spi(Host)`: an application meets what it writes, and the library exports
+  no C function.
+- **Typed values.** A value's type says what it is: a colour is
+  `Color(hex: 0x512BD4)`, and text read as one is `Color(parsing:)`, which may
+  fail; insets name their edges `start` and `end`, which follow the reading
+  direction; a button's purpose is an `ActionRole`. No string, number or flag
+  stands for something that has a type of its own.
+- **One shape for one kind.** A modifier gives back `Modified` and names a
+  state it borrows `state`; a host's `run` ends the process where its toolkit
+  holds the thread; every host's facade takes what the core takes, in the
+  same words.
+- **What an element starts, it ends.** A subscription, a ticker's run and a
+  handler's writes end with the element or the run that made them:
+  `.onHostEvent` ends with its view, and a run another replaced starts nothing.
+- **A rule is a test.** Where a type can refuse a mistake, it does, and a
+  closed road is proved by a listing that must not compile beside the open
+  one; where only the sources can tell, a guard reads them. A rule nothing
+  checks is not yet a rule.
+
+**Deliberately rejected:** an old spelling kept beside a new one, a
+convenience overload that reaches a member a second way, and a public
+declaration only a host uses. Each doubles what a reader learns and what every
+host must prove, and an API with two roads to one place has no one place where
+its behaviour is decided.
