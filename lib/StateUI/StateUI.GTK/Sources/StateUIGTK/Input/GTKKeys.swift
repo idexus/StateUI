@@ -24,6 +24,8 @@ enum GTKKeys {
         let key: Key
         if let known = named.first(where: { $0.value == keyval })?.key {
             key = Key(known)
+        } else if keyval == backTab {
+            key = .tab
         } else if let scalar = UnicodeScalar(gdk_keyval_to_unicode(keyval)), scalar.value > 0 {
             key = Key(Character(scalar))
         } else {
@@ -46,9 +48,13 @@ enum GTKKeys {
     }
 
     /// GDK's key value for each key writing no character.
+    /// What GDK calls Tab held with Shift.
+    private static let backTab: guint = 0xfe20
+
     private static let named: [NamedKey: guint] = [
         .return: 0xff0d, .escape: 0xff1b, .delete: 0xff08, .upArrow: 0xff52, .downArrow: 0xff54,
         .leftArrow: 0xff51, .rightArrow: 0xff53, .f1: 0xffbe, .f2: 0xffbf, .f3: 0xffc0, .f4: 0xffc1, .f5: 0xffc2,
         .f6: 0xffc3, .f7: 0xffc4, .f8: 0xffc5, .f9: 0xffc6, .f10: 0xffc7, .f11: 0xffc8, .f12: 0xffc9,
+        .tab: 0xff09, .space: 0x20, .home: 0xff50, .end: 0xff57, .pageUp: 0xff55, .pageDown: 0xff56,
     ]
 }

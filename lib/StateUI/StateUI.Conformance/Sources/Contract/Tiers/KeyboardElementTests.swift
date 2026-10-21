@@ -11,7 +11,7 @@
     public static let name = "KeyboardElement"
 
     public static var cases: [ConformanceCase] {
-        Specimens.wearing(KeyboardElementContract.self).map(keyed) + [keyedThroughTheKeyboard]
+        Specimens.wearing(KeyboardElementContract.self).flatMap { [keyed($0), moving($0)] } + [keyedThroughTheKeyboard]
     }
 
     /// The keys an element takes reach it as its page's content, with nothing holding the keyboard, and a key it
@@ -25,7 +25,8 @@
             s.start {
                 Specimens.view(element, [
                     Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
-                    Write(KeyboardElementContract.keysTaken, [Key.escape, .f5]), Hear(KeyboardElementContract.keyPressed) { heard.values.append($0) },
+                    Write(KeyboardElementContract.keysTaken, [Key.escape, .f5]),
+                    HearTwo(KeyboardElementContract.keyPressed) { key, _ in heard.values.append(key) },
                 ])
             }
             let view = try s.element("specimen")
@@ -43,6 +44,41 @@
         }
     }
 
+    /// The keys moving through a page - Tab, Space, Home, End, Page Up and Page Down - reach the element taking
+    /// them, and Tab held with Shift reaches it told apart from Tab alone.
+    @MainActor
+    static func moving(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).hearsTheKeysMovingThroughAPage", proves: [
+            Covered(KeyboardElementContract.keyPressed, on: element),
+            Covered(KeyboardElementContract.keysTaken, on: element),
+        ]) { s in
+            let names: [Key: String] = [
+                .tab: "tab", .space: "space", .home: "home", .end: "end", .pageUp: "pageUp", .pageDown: "pageDown",
+            ]
+            let heard = Received<String>()
+            s.start {
+                Specimens.view(element, [
+                    Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
+                    Write(KeyboardElementContract.keysTaken, Array(names.keys)),
+                    HearTwo(KeyboardElementContract.keyPressed) { key, held in
+                        heard.values.append((names[key] ?? "?") + (held.contains(.shift) ? " with shift" : ""))
+                    },
+                ])
+            }
+            let view = try s.element("specimen")
+
+            let pressed: [(Key, KeyModifiers)] = [
+                (.tab, .shift), (.tab, []), (.space, []), (.home, []), (.end, []), (.pageUp, []), (.pageDown, []),
+            ]
+            for (key, held) in pressed {
+                try s.perform(.pressKeys(KeyboardShortcut(key, modifiers: held)), on: view)
+            }
+            let expected = ["tab with shift", "tab", "space", "home", "end", "pageUp", "pageDown"]
+            s.settle { heard.values == expected }
+            s.expect(heard.values, expected)
+        }
+    }
+
     /// A key reaches the view holding the keyboard first, and the view holding that one after: the field takes
     /// its arrow, the stack around it Escape.
     @MainActor
@@ -53,9 +89,11 @@
             let heard = Received<String>()
             s.start {
                 VStack {
-                    TextField("").onKeyPressed(.upArrow) { heard.values.append("field \($0 == .upArrow)") }.id("field")
+                    TextField("")
+                        .onKeyPressed(.upArrow) { heard.values.append("field \($0.key == .upArrow)") }
+                        .id("field")
                 }
-                .onKeyPressed(.escape, .upArrow) { heard.values.append("stack \($0 == .escape)") }
+                .onKeyPressed(.escape, .upArrow) { heard.values.append("stack \($0.key == .escape)") }
                 .id("stack")
             }
             let field = try s.element("field")

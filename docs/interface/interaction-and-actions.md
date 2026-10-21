@@ -550,11 +550,11 @@ struct Search: View {
             TextField($query)
             Text("Row \(row)")
         }
-        .onKeyPressed(.upArrow, .downArrow, .escape) { key in
-            if key == .escape {
-                query = ""
-            } else {
-                row += key == .upArrow ? -1 : 1
+        .onKeyPressed(.upArrow, .downArrow, .tab, .escape) { press in
+            switch press.key {
+            case .escape: query = ""
+            case .tab: row += press.modifiers.contains(.shift) ? -1 : 1
+            default: row += press.key == .upArrow ? -1 : 1
             }
         }
     }
@@ -565,8 +565,12 @@ The nearest view naming a key takes it, out from the one holding the
 keyboard; with nothing holding it, the page's content does. A taken key
 reaches nothing else - the field above keeps its caret where it was - and
 every other key goes on as before. A text, a picture or a shape never holds
-the keyboard, so it offers no `onKeyPressed`. A key held with the platform's
-own key or Alt belongs to shortcuts. `.onKeyPressed(.escape, gate:
+the keyboard, so it offers no `onKeyPressed`. The handler is handed the key
+and the keys held with it (`KeyPress`): Shift, where it was - Tab and
+Shift-Tab are one key told apart by it. A key held with the platform's own key
+or Alt belongs to shortcuts. Besides letters, digits, Return, Escape, Delete,
+the arrows and F1 to F12, a view takes Tab, Space, Home, End, Page Up and Page
+Down. `.onKeyPressed(.escape, gate:
 .ignoreWhileRunning) { _ in try await close() }` takes a handler that awaits.
 
 ## Tooltips

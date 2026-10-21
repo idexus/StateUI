@@ -120,7 +120,7 @@ final class WebKeyboardTests: XCTestCase {
                     MenuItem("Paste")
                 }
             }
-            .onKeyPressed(.downArrow, .upArrow, .return, .escape) { taken.append($0) }
+            .onKeyPressed(.downArrow, .upArrow, .return, .escape) { taken.append($0.key) }
         }
         host.step()
         let row = try XCTUnwrap(host.views(WebTextView.self).first)

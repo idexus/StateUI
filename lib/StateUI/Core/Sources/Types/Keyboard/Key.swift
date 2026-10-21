@@ -19,12 +19,20 @@ public struct Key: Hashable, Sendable, ExpressibleByExtendedGraphemeClusterLiter
     /// The key writing no character; nil for a character's.
     @_spi(Host) public let named: NamedKey?
 
-    /// The key writing `character`.
+    /// The key writing `character`; a space's and a tab's are `.space` and `.tab`.
     public init(_ character: Character) {
-        let lower = character.lowercased()
-        self.character = lower.count == 1 ? Character(lower) : character
-        named = nil
+        if let named = Self.spaces[character] {
+            self.character = nil
+            self.named = named
+        } else {
+            let lower = character.lowercased()
+            self.character = lower.count == 1 ? Character(lower) : character
+            named = nil
+        }
     }
+
+    /// The keys writing white space, each one key by its name whichever way it is written.
+    private static let spaces: [Character: NamedKey] = [" ": .space, "\t": .tab]
 
     /// The key writing the character written, `"s"`.
     public init(extendedGraphemeClusterLiteral value: Character) {
@@ -57,6 +65,24 @@ public struct Key: Hashable, Sendable, ExpressibleByExtendedGraphemeClusterLiter
 
     /// The right arrow.
     public static let rightArrow = Key(.rightArrow)
+
+    /// Tab: with Shift, the way back.
+    public static let tab = Key(.tab)
+
+    /// The space bar.
+    public static let space = Key(.space)
+
+    /// Home: to the start.
+    public static let home = Key(.home)
+
+    /// End: to the end.
+    public static let end = Key(.end)
+
+    /// Page Up.
+    public static let pageUp = Key(.pageUp)
+
+    /// Page Down.
+    public static let pageDown = Key(.pageDown)
 
     /// The function key F1.
     public static let f1 = Key(.f1)
@@ -167,4 +193,16 @@ extension Key: HostRepresentable {
     case f11 = 21
     /// The function key F12.
     case f12 = 22
+    /// Tab.
+    case tab = 23
+    /// The space bar.
+    case space = 24
+    /// Home.
+    case home = 25
+    /// End.
+    case end = 26
+    /// Page Up.
+    case pageUp = 27
+    /// Page Down.
+    case pageDown = 28
 }

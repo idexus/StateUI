@@ -1,4 +1,4 @@
-# revision 3.1
+# revision 4.1
 Button.keyPressed: ✓ pressKeys on Button: the shortcut controller's action run, no key event
 Button.keysTaken: ✓ pressKeys on Button: the shortcut controller's action run, no key event
 CheckBox.keyPressed: ✓ pressKeys on CheckBox: the shortcut controller's action run, no key event

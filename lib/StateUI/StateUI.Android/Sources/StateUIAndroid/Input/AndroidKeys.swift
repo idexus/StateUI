@@ -47,6 +47,6 @@ enum AndroidKeys {
     private static let named: [NamedKey: Int32] = [
         .return: 66, .escape: 111, .delete: 67, .upArrow: 19, .downArrow: 20, .leftArrow: 21, .rightArrow: 22,
         .f1: 131, .f2: 132, .f3: 133, .f4: 134, .f5: 135, .f6: 136, .f7: 137, .f8: 138, .f9: 139, .f10: 140,
-        .f11: 141, .f12: 142,
+        .f11: 141, .f12: 142, .tab: 61, .space: 62, .home: 122, .end: 123, .pageUp: 92, .pageDown: 93,
     ]
 }

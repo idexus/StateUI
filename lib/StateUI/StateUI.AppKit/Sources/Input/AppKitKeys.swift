@@ -36,8 +36,9 @@ enum AppKitKeys {
         return KeyboardShortcut(pressed, modifiers: held)
     }
 
-    /// The characters a keyboard sends for keys a key equivalent names otherwise: Delete's DEL, the keypad Enter's ETX.
-    private static let sent: [Character: NamedKey] = ["\u{7f}": .delete, "\u{3}": .return]
+    /// The characters a keyboard sends for keys a key equivalent names otherwise: Delete's DEL, the keypad Enter's ETX,
+    /// Shift-Tab's back tab.
+    private static let sent: [Character: NamedKey] = ["\u{7f}": .delete, "\u{3}": .return, "\u{19}": .tab]
 
     /// The character AppKit's key equivalent names each key writing no character by.
     private static let named: [NamedKey: Character] = {
@@ -46,6 +47,8 @@ enum AppKitKeys {
             .return: "\r", .escape: "\u{1b}", .delete: "\u{8}",
             .upArrow: function(NSUpArrowFunctionKey), .downArrow: function(NSDownArrowFunctionKey),
             .leftArrow: function(NSLeftArrowFunctionKey), .rightArrow: function(NSRightArrowFunctionKey),
+            .tab: "\t", .space: " ", .home: function(NSHomeFunctionKey), .end: function(NSEndFunctionKey),
+            .pageUp: function(NSPageUpFunctionKey), .pageDown: function(NSPageDownFunctionKey),
         ]
         let functions: [NamedKey] = [.f1, .f2, .f3, .f4, .f5, .f6, .f7, .f8, .f9, .f10, .f11, .f12]
         for (offset, key) in functions.enumerated() { keys[key] = function(NSF1FunctionKey + offset) }

@@ -9,9 +9,14 @@ front; on a context menu's entry the platform only shows it beside the words.
 
 `Key` is a character's key, written as the character - `"s"`, a literal of
 one character, so `"save"` does not compile - or one of a closed set of keys
-writing none: Return, Escape, Delete, the four arrows and F1 to F12, numbered
-by StateUI. A letter is its key whatever its case: Shift is a modifier, so
-`"S"` is the key `"s"`, and a shortcut holding Shift says so in its modifiers.
+writing none: Return, Escape, Delete, the four arrows, F1 to F12, Tab, Space,
+Home, End, Page Up and Page Down, numbered by StateUI. A letter is its key
+whatever its case: Shift is a modifier, so `"S"` is the key `"s"`, and a
+shortcut holding Shift says so in its modifiers. A space and a tab are one
+key each however they are written: `Key(" ")` is `.space`, as `Key("\t")` is
+`.tab`, so a key's identity never depends on its spelling. Each host reads
+Tab held with Shift as Tab: AppKit sends it as a back tab, GDK as
+`ISO_Left_Tab`.
 
 ## Modifiers
 
@@ -60,7 +65,8 @@ What can hold the keyboard takes the keys it names (`onKeyPressed`,
 `KeyboardElementContract.keysTaken`): a control taking the focus - the
 `FocusElement` tier, which wears this one - or a layout holding the view that
 does; a text, a picture or a shape wears neither, since none of them can ever
-hold it. A key pressed reaches,
+hold it. The view hears the key with the keys held with it (`KeyPress`,
+the event `keyPressed` carrying both): Shift alone, as below. A key pressed reaches,
 out from the view holding the keyboard, the first view in sight and enabled
 taking it (`KeyPresses`); with nothing holding the keyboard, the content of
 the page in front and the views holding it. The view takes the key: neither

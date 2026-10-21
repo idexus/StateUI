@@ -47,6 +47,6 @@ enum WinUIKeys {
     private static let named: [NamedKey: Int32] = [
         .return: 13, .escape: 27, .delete: 8, .upArrow: 38, .downArrow: 40, .leftArrow: 37, .rightArrow: 39,
         .f1: 112, .f2: 113, .f3: 114, .f4: 115, .f5: 116, .f6: 117, .f7: 118, .f8: 119, .f9: 120, .f10: 121,
-        .f11: 122, .f12: 123,
+        .f11: 122, .f12: 123, .tab: 9, .space: 32, .home: 36, .end: 35, .pageUp: 33, .pageDown: 34,
     ]
 }

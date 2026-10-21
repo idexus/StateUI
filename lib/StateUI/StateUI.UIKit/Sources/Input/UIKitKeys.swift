@@ -59,6 +59,8 @@ enum UIKitKeys {
         .f1: UIKeyCommand.f1, .f2: UIKeyCommand.f2, .f3: UIKeyCommand.f3, .f4: UIKeyCommand.f4,
         .f5: UIKeyCommand.f5, .f6: UIKeyCommand.f6, .f7: UIKeyCommand.f7, .f8: UIKeyCommand.f8,
         .f9: UIKeyCommand.f9, .f10: UIKeyCommand.f10, .f11: UIKeyCommand.f11, .f12: UIKeyCommand.f12,
+        .tab: "\t", .space: " ", .home: UIKeyCommand.inputHome, .end: UIKeyCommand.inputEnd,
+        .pageUp: UIKeyCommand.inputPageUp, .pageDown: UIKeyCommand.inputPageDown,
     ]
 }
 #endif

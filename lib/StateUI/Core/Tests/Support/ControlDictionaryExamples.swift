@@ -727,8 +727,8 @@ extension ControlDictionary {
             VStack {
                 Text("Row \(row)")
             }
-            .onKeyPressed(.upArrow, .downArrow) { key in
-                row += key == .upArrow ? -1 : 1
+            .onKeyPressed(.upArrow, .downArrow) { press in
+                row += press.key == .upArrow ? -1 : 1
             }
             """#),
 

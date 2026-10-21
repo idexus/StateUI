@@ -10,11 +10,14 @@ extension KeyboardElement {
     /// Runs when one of `keys` is pressed while the element holds the keyboard, or holds the view that does - the
     /// nearest such element naming the key hears it; with nothing holding the keyboard, the page's content does.
     /// The element takes the keys it names, a field inside it no longer gets them, and every other key goes on as
-    /// before. A key held with the platform's own key or Alt is a shortcut's, never a view's.
+    /// before. The handler is told the key and whether Shift was held with it; a key held with the platform's own key
+    /// or Alt is a shortcut's, never a view's.
     ///
     ///     VStack { … }
-    ///         .onKeyPressed(.upArrow, .downArrow) { key in move(key == .upArrow ? -1 : 1) }
-    public func onKeyPressed(_ keys: Key..., perform handler: @escaping @MainActor (Key) throws -> Void) -> Modified {
+    ///         .onKeyPressed(.upArrow, .downArrow) { press in move(press.key == .upArrow ? -1 : 1) }
+    public func onKeyPressed(
+        _ keys: Key..., perform handler: @escaping @MainActor (KeyPress) throws -> Void
+    ) -> Modified {
         taking(keys, ValueHandler(step: handler))
     }
 
@@ -22,19 +25,19 @@ extension KeyboardElement {
     /// under way.
     ///
     ///     VStack { … }.onKeyPressed(.escape, gate: .ignoreWhileRunning) { _ in try await close() }
-    public func onKeyPressed(_ keys: Key..., gate: some Gate, perform handler: @escaping ValueEventHandler<Key>)
+    public func onKeyPressed(_ keys: Key..., gate: some Gate, perform handler: @escaping ValueEventHandler<KeyPress>)
         -> Modified {
         taking(keys, ValueHandler(run: handler, gate: gate))
     }
 
     /// The element taking `keys` beside those it takes already, `handler` hearing those alone.
-    private func taking(_ keys: [Key], _ handler: ValueHandler<Key>) -> Modified {
+    private func taking(_ keys: [Key], _ handler: ValueHandler<KeyPress>) -> Modified {
         // One `modified`: chaining would return `Modified.Modified`.
         modified {
             let taken = $0.props[KeyboardElementContract.keysTaken.token].flatMap([Key].init(propValue:)) ?? []
             $0.write(KeyboardElementContract.keysTaken, Key.ordered(taken + keys))
-            $0.addHandler(KeyboardElementContract.keyPressed, gate: handler.gate) { key in
-                if keys.contains(key) { try await handler.run(key) }
+            $0.addHandler(KeyboardElementContract.keyPressed, gate: handler.gate) { key, modifiers in
+                if keys.contains(key) { try await handler.run(KeyPress(key, modifiers: modifiers)) }
             }
         }
     }
