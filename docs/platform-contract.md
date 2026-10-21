@@ -463,7 +463,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Grid](controls/Grid.md) | 84 | 46 ✅ · 1 ☑️ · 35 ✓ | 43 ✅ · 1 ☑️ · 37 ✓ · 1 – | 64 ✅ · 5 ☑️ · 12 ✓ | 65 ✅ · 1 ☑️ · 13 ✓ · 4 – | 53 ✅ · 1 ☑️ · 23 ✓ · 7 – | 59 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [HStack](controls/HStack.md) | 81 | 43 ✅ · 1 ☑️ · 35 ✓ | 40 ✅ · 1 ☑️ · 37 ✓ · 1 – | 61 ✅ · 5 ☑️ · 12 ✓ | 62 ✅ · 1 ☑️ · 13 ✓ · 4 – | 50 ✅ · 1 ☑️ · 23 ✓ · 7 – | 56 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Image](controls/Image.md) | 74 | 36 ✅ · 2 ☑️ · 35 ✓ | 35 ✅ · 2 ☑️ · 35 ✓ · 1 – | 56 ✅ · 5 ☑️ · 10 ✓ | 53 ✅ · 14 ✓ · 6 – | 44 ✅ · 1 ☑️ · 22 ✓ · 6 – | 49 ✅ · 1 ☑️ · 20 ✓ · 3 – |
-| [ItemsView](controls/ItemsView.md) | 86 | 43 ✅ · 2 ☑️ · 39 ✓ · 1 – | 37 ✅ · 2 ☑️ · 41 ✓ · 5 – | 66 ✅ · 5 ☑️ · 13 ✓ | 66 ✅ · 1 ☑️ · 13 ✓ · 5 – | 54 ✅ · 1 ☑️ · 23 ✓ · 6 – | 60 ✅ · 1 ☑️ · 21 ✓ · 3 – |
+| [ItemsView](controls/ItemsView.md) | 86 | 43 ✅ · 2 ☑️ · 39 ✓ · 1 – | 37 ✅ · 2 ☑️ · 41 ✓ · 5 – | 67 ✅ · 5 ☑️ · 12 ✓ | 66 ✅ · 1 ☑️ · 13 ✓ · 5 – | 54 ✅ · 1 ☑️ · 23 ✓ · 6 – | 60 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [LayoutEngine](controls/LayoutEngine.md) | 90 | 38 ✅ · 1 ☑️ · 44 ✓ · 1 – | 37 ✅ · 1 ☑️ · 46 ✓ · 2 – | 61 ✅ · 5 ☑️ · 16 ✓ · 1 – | 53 ✅ · 1 ☑️ · 26 ✓ · 8 – | 46 ✅ · 1 ☑️ · 30 ✓ · 8 – | 58 ✅ · 2 ☑️ · 24 ✓ · 4 – |
 | [Line](controls/Line.md) | 82 | 45 ✅ · 2 ☑️ · 35 ✓ | 44 ✅ · 2 ☑️ · 35 ✓ · 1 – | 66 ✅ · 5 ☑️ · 10 ✓ | 62 ✅ · 14 ✓ · 6 – | 53 ✅ · 1 ☑️ · 22 ✓ · 6 – | 58 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Map](controls/Map.md) | 79 | 40 ✅ · 2 ☑️ · 36 ✓ · 1 – | 39 ✅ · 2 ☑️ · 36 ✓ · 2 – | 79 🧩 | 79 🧩 | 79 🧩 | 79 🧩 |
@@ -486,8 +486,8 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 81 | 43 ✅ · 1 ☑️ · 35 ✓ | 41 ✅ · 1 ☑️ · 36 ✓ · 1 – | 62 ✅ · 5 ☑️ · 11 ✓ | 62 ✅ · 1 ☑️ · 13 ✓ · 4 – | 51 ✅ · 1 ☑️ · 22 ✓ · 7 – | 56 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [WebView](controls/WebView.md) | 87 | 48 ✅ · 2 ☑️ · 36 ✓ · 1 – | 45 ✅ · 2 ☑️ · 38 ✓ · 2 – | 66 ✅ · 5 ☑️ · 12 ✓ · 3 – | 49 ✅ · 13 ✓ · 24 – | 56 ✅ · 1 ☑️ · 24 ✓ · 6 – | 57 ✅ · 1 ☑️ · 20 ✓ · 6 – |
 | [ZStack](controls/ZStack.md) | 80 | 42 ✅ · 1 ☑️ · 35 ✓ | 39 ✅ · 1 ☑️ · 37 ✓ · 1 – | 60 ✅ · 5 ☑️ · 12 ✓ | 61 ✅ · 1 ☑️ · 13 ✓ · 4 – | 49 ✅ · 1 ☑️ · 23 ✓ · 7 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
-| ✅ |  | 1486 | 1410 | 2121 | 2061 | 1729 | 1936 |
-| ✓ |  | 1215 | 1253 | 379 | 455 | 775 | 665 |
+| ✅ |  | 1486 | 1410 | 2122 | 2061 | 1729 | 1936 |
+| ✓ |  | 1215 | 1253 | 378 | 455 | 775 | 665 |
 | – |  | 47 | 96 | 36 | 198 | 214 | 118 |
 | **Met** | 2847 | **2748** | **2759** | **2536** | **2714** | **2718** | **2719** |
 | 🧩 |  | 0 | 0 | 79 | 79 | 79 | 79 |
@@ -496,7 +496,7 @@ Every control, and every part an application, its windows and its pages are made
 
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](controls/Application.md) | 18 | 8 ✅ · 10 ✓ | 8 ✅ · 10 ✓ | 7 ✅ · 1 ☑️ · 9 ✓ | 16 ✅ · 2 ✓ | 12 ✅ · 6 ✓ | 13 ✅ · 5 ✓ |
+| [Application](controls/Application.md) | 18 | 8 ✅ · 10 ✓ | 8 ✅ · 10 ✓ | 7 ✅ · 1 ☑️ · 10 ✓ | 15 ✅ · 3 ✓ | 12 ✅ · 6 ✓ | 13 ✅ · 5 ✓ |
 | [ButtonMenu](controls/ButtonMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ContextMenu](controls/ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Marker](controls/Marker.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
@@ -517,10 +517,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 9 | 5 ✅ · 1 ✓ · 1 – | 7 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 9 ✅ | 7 ✅ · 1 ✓ · 1 – | 9 ✅ |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 97 | 89 | 72 | 122 | 85 | 97 |
-| ✓ |  | 20 | 19 | 17 | 2 | 16 | 9 |
+| ✅ |  | 97 | 89 | 72 | 121 | 85 | 97 |
+| ✓ |  | 20 | 19 | 18 | 3 | 16 | 9 |
 | – |  | 3 | 17 | 26 | 2 | 27 | 19 |
-| **Met** | 135 | **120** | **125** | **115** | **126** | **128** | **125** |
+| **Met** | 135 | **120** | **125** | **116** | **126** | **128** | **125** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -576,7 +576,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 | 3 ✅ · 1 ✓ · 4 – | 4 ✅ | 5 ✅ · 3 ✓ | 7 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ · 2 ✓ | 4 ✅ · 3 – |
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [Image](controls/Image.md) | `isAnimating`, `source` | 2 | 1 ✅ | 1 ✅ |  | 1 ✅ | 1 ✅ | 1 ✅ |
-| [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectedItemsChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 8 ✅ · 1 ✓ | 9 ✅ | 9 ✅ | 8 ✅ · 1 ✓ |
+| [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectedItemsChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 9 ✅ | 9 ✅ | 9 ✅ | 8 ✅ · 1 ✓ |
 | [LayoutEngine](controls/LayoutEngine.md) | `handAxis`, `handMoved`, `handStepped`, `itemDrag`, `itemMoved`, `magnifies`, `pans`, `phase`, `pinchMoved`, `rotates` | 10 | 1 ✅ · 9 ✓ | 1 ✅ · 9 ✓ | 6 ✅ · 4 ✓ | 1 ✅ · 8 ✓ · 1 – | 3 ✅ · 7 ✓ | 5 ✅ · 1 ☑️ · 4 ✓ |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [Map](controls/Map.md) | `isScrollEnabled`, `showsTraffic`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 🧩 | 7 🧩 | 7 🧩 | 7 🧩 |

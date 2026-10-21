@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionInfoCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -74,7 +75,7 @@ final class StateUIItemsView extends RecyclerView {
         // The pool keeps every cell it is given: a cell dropped would leave its Swift view behind.
         getRecycledViewPool().setMaxRecycledViews(ITEM, Integer.MAX_VALUE);
         getRecycledViewPool().setMaxRecycledViews(EDGE, Integer.MAX_VALUE);
-        setLayoutManager(new LinearLayoutManager(context));
+        setLayoutManager(new Line(context, VERTICAL));
         addItemDecoration(new Spacing());
         setAdapter(adapter);
         addOnScrollListener(new OnScrollListener() {
@@ -231,6 +232,39 @@ final class StateUIItemsView extends RecyclerView {
         return mode;
     }
 
+    /** That number as Android's collections tell assistive technology: none, one, or many. */
+    private int selectionModeForAccessibility() {
+        switch (mode) {
+            case 1: return CollectionInfoCompat.SELECTION_MODE_SINGLE;
+            case 2: return CollectionInfoCompat.SELECTION_MODE_MULTIPLE;
+            default: return CollectionInfoCompat.SELECTION_MODE_NONE;
+        }
+    }
+
+    /** A line of items, Android's own, telling assistive technology how many the user may choose. */
+    private final class Line extends LinearLayoutManager {
+        Line(Context context, int orientation) {
+            super(context, orientation, false);
+        }
+
+        @Override
+        public int getSelectionModeForAccessibility(Recycler recycler, State state) {
+            return selectionModeForAccessibility();
+        }
+    }
+
+    /** A grid of items, Android's own, telling assistive technology how many the user may choose. */
+    private final class Lattice extends GridLayoutManager {
+        Lattice(Context context, int columns) {
+            super(context, columns);
+        }
+
+        @Override
+        public int getSelectionModeForAccessibility(Recycler recycler, State state) {
+            return selectionModeForAccessibility();
+        }
+    }
+
     /** The cell showing the entry of `identity`, where one does. */
     View cellShowing(String identity) {
         Integer position = positions.get(identity);
@@ -262,9 +296,9 @@ final class StateUIItemsView extends RecyclerView {
 
     private LayoutManager manager(int shape, int columns) {
         if (shape != GRID) {
-            return new LinearLayoutManager(getContext(), shape == ROW ? HORIZONTAL : VERTICAL, false);
+            return new Line(getContext(), shape == ROW ? HORIZONTAL : VERTICAL);
         }
-        GridLayoutManager grid = new GridLayoutManager(getContext(), Math.max(columns, 1));
+        GridLayoutManager grid = new Lattice(getContext(), Math.max(columns, 1));
         grid.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {

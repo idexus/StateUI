@@ -29,6 +29,9 @@ extension WinUIDriver {
         if ability == "read background of Canvas" {
             return "the colour the host's canvas clears its surface to under its drawing, which WinUI keeps as no brush"
         }
+        if ability == "read what the screen reader said" {
+            return "the relay's own list of what it handed UI Automation to announce"
+        }
         if ability == "read what was launched" {
             return "the host's own record of what it handed Windows, which a test holds back from launching"
         }

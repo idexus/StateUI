@@ -116,7 +116,11 @@ final class AndroidActToolkit: ActToolkit {
         dialogs.take(ticket)?(.success(HostQuestion.Given(chosen: place)))
     }
 
+    /// What the host told the screen reader, in order, where a test asked for it with `[]`; nil keeps nothing.
+    var announcedForTesting: [String]?
+
     func announce(_ words: String) {
+        announcedForTesting?.append(words)
         Java.frame {
             Java.call(root, JavaAPI.announceForAccessibility, .object(Java.string(words)))
         }

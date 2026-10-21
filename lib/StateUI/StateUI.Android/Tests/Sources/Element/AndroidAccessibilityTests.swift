@@ -94,4 +94,13 @@ enum TestAccessibility {
     }
 
     private static let stepping = Java.staticMethod(owner, "step", "(Landroid/view/View;Z)Z")
+
+    /// How many items a collection's node tells assistive technology the user may choose - Android's
+    /// `CollectionInfo` numbers, none, one, many - nil where the view's node is no collection.
+    static func selectionMode(of view: AndroidView) -> Int32? {
+        let mode = Java.callStaticInt(owner, choosing, .object(view.reference))
+        return mode < 0 ? nil : mode
+    }
+
+    private static let choosing = Java.staticMethod(owner, "selectionMode", "(Landroid/view/View;)I")
 }

@@ -92,6 +92,7 @@ final class AndroidDriver: HostDriver {
             reducesMotion: { reducesMotion })
         AndroidRenderer.shared = renderer
         self.renderer = renderer
+        renderer.actToolkit.announcedForTesting = []
         Java.call(window.reference, Self.setContentView, .object(root.reference))
         Java.callStatic(Self.testPixels, Self.paintNothing, .object(window.reference))
         AndroidPersistence.writeScenes("", context: window.reference)  // no scenes an earlier case kept
@@ -191,6 +192,11 @@ final class AndroidDriver: HostDriver {
     /// The night mode the activity's configuration stands in: the application's where it holds one.
     func theme() throws -> ColorScheme {
         Java.callStaticBool(JavaAPI.environment, Self.night, .object(TestContext.window.reference)) ? .dark : .light
+    }
+
+    /// What the host handed Android to say to the screen reader, in order.
+    func announced() throws -> [String] {
+        renderer?.actToolkit.announcedForTesting ?? []
     }
 
     /// What the relay handed the system to launch, in order: an address as written, a document by its name.

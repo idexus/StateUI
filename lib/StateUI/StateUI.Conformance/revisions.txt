@@ -50,7 +50,7 @@ VisualElement 17
 Shape 5
 BorderElement 10
 TextInput 7
-Application 6
+Application 7
 TextSpan 4
 Divider 4
 Canvas 3
@@ -84,7 +84,7 @@ CheckBox 2
 Ellipse 2
 Grid 2
 HStack 2
-ItemsView 3
+ItemsView 4
 Line 2
 Map 2
 Path 2

@@ -142,7 +142,7 @@ final class AndroidRenderer {
     private static let files = AndroidFileToolkit()
     private static let acts = HostActPerformer(
         toolkit: actToolkit, files: files, answers: CoreLink(), tree: { AndroidRenderer.shared?.runtime.tree })
-    private var actToolkit: AndroidActToolkit { Self.actToolkit }
+    var actToolkit: AndroidActToolkit { Self.actToolkit }
     var fileToolkit: AndroidFileToolkit { Self.files }
     private var acts: HostActPerformer { Self.acts }
 

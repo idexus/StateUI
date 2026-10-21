@@ -125,9 +125,12 @@ documents dropped to the drag listeners' reports, as a test can make no drag
 event. A few reads are the host's or its relay's own: a slider's range,
 which the SeekBar keeps only as steps, a stepper's value, which its two
 buttons do not hold, a picker's rows, a split view's
-showing sidebar and its colour, an ItemsView's selection mode, a date
-picker's bounds and a date or time picker's format, what the relay keeps of
-a dialog, the document picker it holds and what it launched. The driver
+showing sidebar and its colour, a date picker's bounds and a date or time
+picker's format, what the relay keeps of a dialog, the document picker it
+holds, what it launched and what the host handed Android to announce - no
+announcement reaches a test where TalkBack does not run. An ItemsView's
+selection mode is read as the list's node tells TalkBack, its collection's
+own. The driver
 names each (`byHost`), and a member a case proves only through them is
 the host's own - ✓ - never ✅. A frame report reads where Android holds the
 view, not where the host placed it last.

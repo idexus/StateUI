@@ -61,7 +61,9 @@ extension AndroidDriver {
             let argb = Java.callStaticLong(JavaAPI.views, Self.sidebarColour, .object(drawer.reference))
             return argb == Int64.min ? nil : Self.material(argb: argb)
         case (.selectedItems, let items as AndroidItemsView): return .strings(items.selectedForTesting)
-        case (.selectionMode, let items as AndroidItemsView): return items.modeForTesting.propValue
+        case (.selectionMode, let items as AndroidItemsView):
+            // As the list's node tells TalkBack: Android's collection numbers its modes as StateUI does.
+            return TestAccessibility.selectionMode(of: items).flatMap(SelectionMode.init(rawValue:))?.propValue
         case (.isAnimating, let spinner as AndroidActivityIndicatorView):
             // A spinner that runs is visible; one that stopped is invisible, and the host keeps no other trace.
             return (Java.callInt(spinner.reference, JavaAPI.getVisibility) == 0).propValue

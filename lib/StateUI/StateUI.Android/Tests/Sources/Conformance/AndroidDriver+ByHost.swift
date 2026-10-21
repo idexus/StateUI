@@ -37,8 +37,8 @@ extension AndroidDriver {
         case "read sidebarOverlays of SplitView": return "the split's own place for the room; the drawer stands by it"
         case "read sidebarBackground of SplitView":
             return "the colour the split keeps for its sidebar beside the detail, which a phone's room never shows"
-        case "read selectionMode of ItemsView": return "the mode the relay keeps, which its cells tell TalkBack"
         case "read a question": return "what the relay keeps of the dialog it showed"
+        case "read what the screen reader said": return "the host's own list of what it handed Android to announce"
         case "read a file dialog": return "the picker the relay holds, which a test never hands the system"
         case "read what was launched":
             return "the relay's own record of what it handed the system, which a test holds back from launching"

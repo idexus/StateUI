@@ -79,3 +79,9 @@ effect proves the member.
 
 A running ring's automation peer says it is busy before the name its element
 holds, so the driver reads an activity indicator's label from the element.
+
+What was said to the screen reader is the relay's own list of what it handed
+UI Automation to announce, and what was launched the host's record of what it
+handed Windows: a test runs with no screen reader to hear the one and holds
+back the other, so the driver names both (`byHost`), and a case proving a
+member through them proves the host's own - ✓.

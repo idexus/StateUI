@@ -37,6 +37,12 @@ public final class TestAccessibility {
         return false;
     }
 
+    /** How many items the view's node tells TalkBack the user may choose, as `CollectionInfo` numbers it; -1 for none. */
+    public static int selectionMode(View view) {
+        AccessibilityNodeInfo.CollectionInfo collection = view.createAccessibilityNodeInfo().getCollectionInfo();
+        return collection == null ? -1 : collection.getSelectionMode();
+    }
+
     /** Steps the view up or down as TalkBack steps a slider, where its node offers the step: whether it took it. */
     public static boolean step(View view, boolean up) {
         AccessibilityNodeInfo.AccessibilityAction wanted = up
