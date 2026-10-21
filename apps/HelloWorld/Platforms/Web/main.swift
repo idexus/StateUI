@@ -6,5 +6,5 @@ import StateUIWeb
 
 // Register the application module, then show it in the page; the browser
 // calls it from then on.
-stateui_app_register()
+registerApplication()
 StateUIWeb.run(name: "HelloWorld")

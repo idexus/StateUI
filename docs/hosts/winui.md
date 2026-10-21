@@ -81,16 +81,15 @@ or x64. A debugger here follows the machine's own architecture alone.
 ## The head
 
 An application's WinUI head is an executable. Its `main` names the
-application and hands the thread to the host, and ends the process with the
-code WinUI ended with - a start that failed fails it:
+application and hands the thread to the host; the host ends the process with
+the code WinUI ended with - a start that failed fails it:
 
 ```swift quote
 import NotesUI
-import StateUIFoundation
 import StateUIWinUI
 
-stateui_app_register()
-exit(StateUIWinUI.run())
+registerApplication()
+StateUIWinUI.run()
 ```
 
 `STATEUI_HOST=winui` is what makes a build a WinUI one: the application's

@@ -32,14 +32,17 @@ final class NativeProjectTests: XCTestCase {
                 contentsOf: app.appendingPathComponent("Platforms/AppKit/main.swift"),
                 encoding: .utf8)
             XCTAssertTrue(entry.contains("import StateUIAppKit"))
+            XCTAssertTrue(entry.contains("registerApplication()"))
             XCTAssertTrue(entry.contains("StateUIAppKit.run("))
 
+            // Every head names the application to its host in Swift: the module exports no C function to be named.
             let registration = try String(
                 contentsOf: app.appendingPathComponent("Sources/\(name)App.swift"),
                 encoding: .utf8)
             XCTAssertTrue(
-                registration.contains("@_cdecl(\"stateui_app_register\")"),
-                "\(name)'s module does not register the application for its Android head")
+                registration.contains("public func registerApplication()"),
+                "\(name)'s module does not name the application to its heads")
+            XCTAssertFalse(registration.contains("@_cdecl("), "\(name)'s module exports a C function")
         }
     }
 
@@ -131,8 +134,8 @@ final class NativeProjectTests: XCTestCase {
 
     /// A host calls the library in Swift, in its own process, so the library
     /// exports no C function: a `@_cdecl` in its sources is a door no host
-    /// opens. An application's own - the registration its Android head calls
-    /// from `JNI_OnLoad` - is the application's.
+    /// opens. An application's one is its Android head's `JNI_OnLoad`, which
+    /// Android calls by name.
     func testTheLibraryExportsNoCFunction() throws {
         var read = 0
 
@@ -426,7 +429,7 @@ final class NativeProjectTests: XCTestCase {
                 "\(name)'s Package.swift declares no WinUI head in Platforms/WinUI")
 
             let entry = try text("Platforms/WinUI/main.swift")
-            for shape in ["import StateUIWinUI", "stateui_app_register()", "StateUIWinUI.run()"] {
+            for shape in ["import StateUIWinUI", "registerApplication()", "StateUIWinUI.run()"] {
                 XCTAssertTrue(entry.contains(shape), "\(name)'s WinUI head does not say \(shape)")
             }
         }
@@ -542,7 +545,7 @@ final class NativeProjectTests: XCTestCase {
                 "\(name)'s Package.swift declares no GTK head in Platforms/GTK")
 
             let entry = try text("Platforms/GTK/main.swift")
-            for shape in ["import StateUIGTK", "stateui_app_register()", "StateUIGTK.run(applicationID: \"com.stateui."] {
+            for shape in ["import StateUIGTK", "registerApplication()", "StateUIGTK.run(applicationID: \"com.stateui."] {
                 XCTAssertTrue(entry.contains(shape), "\(name)'s GTK head does not say \(shape)")
             }
         }
@@ -584,7 +587,7 @@ final class NativeProjectTests: XCTestCase {
             XCTAssertTrue(android.contains("android:value=\"\(name)Android\""))
 
             let entry = try text("Platforms/Android/Swift/\(name)Android.swift")
-            for shape in ["@_cdecl(\"JNI_OnLoad\")", "stateui_app_register()", "StateUIAndroid.load("] {
+            for shape in ["@_cdecl(\"JNI_OnLoad\")", "registerApplication()", "StateUIAndroid.load("] {
                 XCTAssertTrue(entry.contains(shape), "\(name)'s Android head does not say \(shape)")
             }
 

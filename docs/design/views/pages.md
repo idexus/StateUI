@@ -348,10 +348,11 @@ sheet has gone is the stack's own (`popped`), with how many remain.
 ## The application is named once
 
 `stateUIUseApp` is the one line an application writes outside its interface,
-in `stateui_app_register()`, a `@_cdecl` function in the application's own
+in `registerApplication()`, a Swift function in the application's own
 module. Each platform's head calls it at startup: its `main.swift`, or on
 Android `JNI_OnLoad`, which Android calls by name as it loads the
-application's library.
+application's library. The application exports no C function to be named:
+its heads are Swift and call it as Swift calls a function.
 
 The application is made at its first need - the first render, or the host
 reading the keys it keeps - after anything an earlier one wrote into the

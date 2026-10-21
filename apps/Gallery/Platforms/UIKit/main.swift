@@ -4,7 +4,7 @@
 import GalleryUI
 import StateUIUIKit
 
-stateui_app_register()
+registerApplication()
 
 // listing: InteropActsSample.UIKit.swift, InteropEventsSample.UIKit.swift
 // What this host answers for the application, said before it runs: the

@@ -71,7 +71,7 @@ the user acts and as the display draws.
 import NotesUI
 import StateUIWeb
 
-stateui_app_register()
+registerApplication()
 StateUIWeb.run(name: "Notes")
 ```
 

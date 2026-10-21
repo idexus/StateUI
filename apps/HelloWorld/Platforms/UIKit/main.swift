@@ -4,5 +4,5 @@
 import HelloWorldUI
 import StateUIUIKit
 
-stateui_app_register()
+registerApplication()
 StateUIUIKit.run()

@@ -59,7 +59,7 @@ import StateUIAndroid
 
 @_cdecl("JNI_OnLoad")
 public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
-    MainActor.assumeIsolated { stateui_app_register() }
+    MainActor.assumeIsolated { registerApplication() }
     return StateUIAndroid.load(machine)
 }
 ```

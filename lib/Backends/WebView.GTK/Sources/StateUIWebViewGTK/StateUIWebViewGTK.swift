@@ -12,7 +12,7 @@ public enum StateUIWebViewGTK {
     /// Said once, from the application's GTK head, before `StateUIGTK.run(applicationID:)`.
     ///
     ///     StateUIWebViewGTK.register()
-    ///     exit(StateUIGTK.run(applicationID: "com.example.App"))
+    ///     StateUIGTK.run(applicationID: "com.example.App")
     public static func register() {
         StateUIControls.add(WebViewContract.self, create: { reports -> GTKWebView in
             let web = GTKWebView()

@@ -5,7 +5,7 @@ import Foundation
 import GalleryUI
 import StateUIAppKit
 
-stateui_app_register()
+registerApplication()
 
 // listing: InteropActsSample.AppKit.swift, InteropEventsSample.AppKit.swift
 // What this host answers for the application, said before it runs: the

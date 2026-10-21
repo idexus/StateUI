@@ -4,6 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 import CStateUIGTK
+import StateUIFoundation
 
 /// Runs a StateUI application as native GTK 4 and libadwaita widgets in the application's own process.
 ///
@@ -13,19 +14,19 @@ import CStateUIGTK
 ///     import HelloWorldUI
 ///     import StateUIGTK
 ///
-///     stateui_app_register()
+///     registerApplication()
 ///     StateUIGTK.run(applicationID: "com.stateui.helloworld")
 ///
 /// `.scripts/GTK/run-app.sh` builds the head and starts it. A control this
 /// host does not present yet shows its name in red where it belongs.
 public enum StateUIGTK {
-    /// Starts GTK on this thread and runs the application until its last window closes.
+    /// Starts GTK on this thread, runs the application until its last window closes, and ends the process with
+    /// the code GTK ended with - a start GTK refused fails it.
     ///
     /// - Parameter applicationID: the application's reverse-DNS name, which the desktop knows it by - its entry and
     ///   its icon are named by it; a second launch under the same name brings the running application's window
     ///   forward instead.
-    /// - Returns: the process's exit code, which the head ends the process with: `exit(StateUIGTK.run(...))`.
-    public static func run(applicationID: String) -> Int32 {
+    public static func run(applicationID: String) -> Never {
         let application = adw_application_new(applicationID, STATEUI_APPLICATION_DEFAULT_FLAGS)!
         gtk_window_set_default_icon_name(applicationID)
         connectSignal(UnsafeMutableRawPointer(application), "activate", number: 0) { application, _ in
@@ -33,6 +34,6 @@ public enum StateUIGTK {
         }
         let status = g_application_run(application.of(GApplication.self), CommandLine.argc, CommandLine.unsafeArgv)
         g_object_unref(UnsafeMutableRawPointer(application))
-        return status
+        exit(status)
     }
 }

@@ -12727,7 +12727,7 @@ extension Listings {
         @_cdecl("JNI_OnLoad")
         public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
             MainActor.assumeIsolated {
-                stateui_app_register()
+                registerApplication()
                 GalleryControls.register()
                 GalleryActs.register()
                 GalleryEventSources.register()
@@ -12911,7 +12911,7 @@ extension Listings {
         // Platforms/GTK/main.swift
         // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
         // the acts it performs, and the pushes it reports - each in Host/ beside this file.
-        stateui_app_register()
+        registerApplication()
         // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
         GalleryControls.register()
         GalleryActs.register()
@@ -14052,7 +14052,7 @@ extension Listings {
         // Platforms/GTK/main.swift
         // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
         // the acts it performs, and the pushes it reports - each in Host/ beside this file.
-        stateui_app_register()
+        registerApplication()
         // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
         GalleryControls.register()
         GalleryActs.register()

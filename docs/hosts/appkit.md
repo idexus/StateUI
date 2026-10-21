@@ -40,7 +40,7 @@ application, says what this host answers for it, then starts the host:
 import NotesUI
 import StateUIAppKit
 
-stateui_app_register()
+registerApplication()
 
 // The controls this host realizes, the acts it performs, and the pushes it
 // reports. Each lives in Host/ beside this file.
@@ -48,13 +48,16 @@ NotesControls.register()
 NotesActs.register()
 NotesEventSources.start()
 
-StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)
+StateUIAppKit.run()
 ```
 
-The head finds its artwork from its own source file, `#filePath`, so it runs
-the same whether a debugger, a task or a terminal starts it. The Gallery's
-head, run from the bundle its build makes, reads the bundle's `Images` and
-`StateUI.icns` first. The icon a head hands the host is
+`run` shows the artwork the program carries - the `Images` in its bundle, or
+in the `Resources` that `.scripts/AppKit/deploy.sh` lays beside it, with the
+icon there - and ends the process as the application ends. A head run from
+the build carries nothing, so it hands the host the artwork the application
+keeps, found from its own source file, `#filePath`
+(`run(resourceDirectory:applicationIcon:)`): it runs the same whether a
+debugger, a task or a terminal starts it. The icon a head hands the host is
 `Resources/AppIcon/appicon_macos.svg`, drawn on macOS's icon grid: a
 1024-point canvas whose body is an 824-point rounded square 100 points in.
 Artwork drawn edge to edge stands larger in the Dock than every icon beside

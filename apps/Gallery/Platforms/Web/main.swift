@@ -8,7 +8,7 @@ import StateUIWeb
 // before it runs - the controls it realizes, the acts it performs and the
 // pushes it reports, each in Host/ beside this file, their scripts in Page/ -
 // and show it in the page; the browser calls it from then on.
-stateui_app_register()
+registerApplication()
 GalleryControls.register()
 GalleryActs.register()
 // listing: InteropEventsSample.Web.swift

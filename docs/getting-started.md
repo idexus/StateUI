@@ -281,9 +281,8 @@ struct RegisteredPage: View {
     var body: some View { Text("Hello, StateUI") }
 }
 
-@_cdecl("stateui_app_register")
 @MainActor
-public func stateui_app_register() {
+public func registerApplication() {
     stateUIUseApp(RegisteredApp())
 }
 ```
@@ -295,7 +294,7 @@ import Foundation
 import NotesUI
 import StateUIAppKit
 
-stateui_app_register()
+registerApplication()
 
 let beside = Bundle.main.executableURL!.deletingLastPathComponent()
 let application = FileManager.default.fileExists(atPath: beside.appendingPathComponent("Resources").path)
@@ -317,13 +316,13 @@ belong to one application tree, renderer generation, and native host. Opening a
 new scene does not start another host; it asks that host to materialize another
 native scene session.
 
-The UIKit, WinUI, GTK and Web heads call the same `stateui_app_register`
+The UIKit, WinUI, GTK and Web heads call the same `registerApplication()`
 before their host's `run`, and the Android head when Android loads its
 library; each host's page describes its head: [UIKit](hosts/uikit.md),
 [Android Views](hosts/android.md), [WinUI](hosts/winui.md),
 [GTK](hosts/gtk.md), [Web](hosts/web.md).
 
-Between `stateui_app_register()` and `run`, a head registers what this host
+Between `registerApplication()` and `run`, a head registers what this host
 answers for the application beyond the library:
 
 - the application's own controls, acts and event sources, through the host's
@@ -340,16 +339,15 @@ The Gallery's GTK head registers both:
 
 ```swift quote
 import GalleryUI
-import StateUIFoundation
 import StateUIGTK
 import StateUIWebViewGTK
 
-stateui_app_register()
+registerApplication()
 GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
 StateUIWebViewGTK.register()
-exit(StateUIGTK.run(applicationID: "com.stateui.gallery"))
+StateUIGTK.run(applicationID: "com.stateui.gallery")
 ```
 
 `GalleryControls`, `GalleryActs` and `GalleryEventSources` are the Gallery's

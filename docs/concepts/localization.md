@@ -72,9 +72,8 @@ struct FilesApp: Application {
     }
 }
 
-@_cdecl("stateui_app_register")
 @MainActor
-public func stateui_app_register() {
+public func registerApplication() {
     stateUIUseApp(FilesApp())
 }
 

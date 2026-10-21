@@ -4,6 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
+import StateUIFoundation
 
 /// Runs a StateUI application as native WinUI 3 controls in the application's own process.
 ///
@@ -13,20 +14,18 @@ import CStateUIWinUI
 ///     import HelloWorldUI
 ///     import StateUIWinUI
 ///
-///     stateui_app_register()
+///     registerApplication()
 ///     StateUIWinUI.run()
 ///
 /// `.scripts/WinUI/run-app.ps1` builds the head and lays the Windows App SDK
 /// beside it. A control this host does not present yet shows its name in red
 /// where it belongs.
 public enum StateUIWinUI {
-    /// Starts WinUI on this thread and runs the application until its last window closes.
-    ///
-    /// - Returns: the process's exit code - 0, or the failure WinUI started with - which the head ends the process
-    ///   with: `exit(StateUIWinUI.run())`.
-    public static func run() -> Int32 {
+    /// Starts WinUI on this thread, runs the application until its last window closes, and ends the process with
+    /// 0 - or with the failure WinUI started with.
+    public static func run() -> Never {
         var callbacks = WinUICallbacks.table
-        return stateui_winui_run(&callbacks)
+        exit(stateui_winui_run(&callbacks))
     }
 }
 

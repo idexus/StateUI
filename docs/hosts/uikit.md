@@ -49,7 +49,7 @@ never returns:
 import NotesUI
 import StateUIUIKit
 
-stateui_app_register()
+registerApplication()
 
 // The controls this host realizes, the acts it performs, and the pushes it
 // reports. Each lives in Host/ beside this file.

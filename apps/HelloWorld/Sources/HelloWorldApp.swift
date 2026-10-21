@@ -25,11 +25,10 @@ struct HelloWorldApp: Application {
     }
 }
 
-/// The function every head of this application calls by name before its host
+/// Names this application to its host: every head calls it before its host
 /// runs - Platforms/<Host>. The library cannot declare it: the dependency runs
 /// app -> library.
-@_cdecl("stateui_app_register")
 @MainActor
-public func stateui_app_register() {
+public func registerApplication() {
     stateUIUseApp(HelloWorldApp())
 }

@@ -51,11 +51,11 @@ public protocol Application {
 /// Names the application to the host.
 ///
 /// The one line an app writes outside its own interface, in a function of its
-/// own module that every head calls by name before its host runs. The library
+/// own module that every head calls before its host runs. The library
 /// cannot declare that function, as the dependency runs app -> library:
 ///
-///     @_cdecl("stateui_app_register")
-///     public func stateui_app_register() {
+///     @MainActor
+///     public func registerApplication() {
 ///         stateUIUseApp(HelloWorldApp())
 ///     }
 ///

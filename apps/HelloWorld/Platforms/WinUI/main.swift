@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import HelloWorldUI
-import StateUIFoundation
 import StateUIWinUI
 
 // Register the application module, then hand WinUI this thread until the last
 // window closes.
-stateui_app_register()
-exit(StateUIWinUI.run())
+registerApplication()
+StateUIWinUI.run()
