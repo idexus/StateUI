@@ -283,6 +283,11 @@ STATEUI_WEB(utc_offset) double stateui_web_utc_offset(
 /// Tells a screen reader the words, through the page's polite live region.
 STATEUI_WEB(announce) void stateui_web_announce(const char *words, int32_t length);
 
+/// Puts the words on the browser's clipboard; `clipboard_read` tells `listener` once the browser answers: event 1
+/// and the words it holds, or 0 and why not, each read by `file_words`.
+STATEUI_WEB(clipboard_write) void stateui_web_clipboard_write(const char *words, int32_t length);
+STATEUI_WEB(clipboard_read) void stateui_web_clipboard_read(int32_t listener);
+
 /// Takes the focus off the field holding it, whose on-screen keyboard goes with it; whether one held it.
 STATEUI_WEB(blur_field) int32_t stateui_web_blur_field(void);
 

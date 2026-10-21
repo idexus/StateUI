@@ -19,6 +19,7 @@ private final class Toolkit: ActToolkit {
     /// The window each keyboard taken down was in, in turn; nil for the window the user is in.
     var keyboards: [MountedElement?] = []
     var announced: [String] = []
+    var clipboard: String?
     var themes: [ColorScheme] = []
     var focusable: Set<ElementID> = []
     var kept: [Act] = []
@@ -41,6 +42,8 @@ private final class Toolkit: ActToolkit {
     }
 
     func announce(_ words: String) { announced.append(words) }
+    func writeClipboard(_ words: String) { clipboard = words }
+    func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void) { answered(.success(clipboard)) }
     func useColorScheme(_ theme: ColorScheme) { themes.append(theme) }
     func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
         keyboards.append(window)
@@ -238,6 +241,20 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(answers.failures[4], "the Test host does not perform the act '\(Act.persistSceneValue.name)'")
         XCTAssertEqual(toolkit.announced, ["Saved"])
         XCTAssertEqual(answers.replies[5], [])
+    }
+
+    /// The clipboard is the toolkit's: words written are read back, and an empty clipboard reads as nothing.
+    func testTheClipboardIsTheToolkits() {
+        let (toolkit, answers) = (Toolkit(), Answers())
+        let acts = performer(toolkit, answers)
+
+        acts.perform(HostActCall(act: .readClipboard, arguments: [], completion: 1))
+        acts.perform(HostActCall(act: .writeClipboard, arguments: [.string("Copied")], completion: 2))
+        acts.perform(HostActCall(act: .readClipboard, arguments: [], completion: 3))
+
+        XCTAssertEqual(answers.replies[1], [.nothing], "an empty clipboard")
+        XCTAssertEqual(answers.replies[2], [])
+        XCTAssertEqual(answers.replies[3], [.string("Copied")])
     }
 
     /// The application's theme is the toolkit's to show, and the theme in force the core resolves against: the

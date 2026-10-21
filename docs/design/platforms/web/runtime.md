@@ -173,6 +173,13 @@ A question for the user is the browser's modal dialog
 page until the user answers it: the host layer shows one at a time. An ItemsView's scroll to an item is
 its own ([items](items.md#scrolling-to-an-item)).
 
+## The clipboard
+
+The clipboard is the browser's: words are written as the page's text, and
+read through the browser's own permission, the act answered once the browser
+answers - its words, nothing where it holds none, or why it refused. A page
+served over plain http has no clipboard, and its read fails with that reason.
+
 ## Files
 
 A file dialog is the browser's own, waiting its turn among the questions

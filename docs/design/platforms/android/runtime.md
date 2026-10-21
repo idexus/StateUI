@@ -153,6 +153,12 @@ activity finds none before what it asks. A ticket
 is one number across the process, and an answer from a dialog that went
 answers nothing.
 
+## The clipboard
+
+The clipboard is the `ClipboardManager`'s primary clip: words are written as
+plain text in place of what it held, and read as the first item's text, none
+where it holds no clip.
+
 ## Files
 
 A file dialog is the system's document picker, started for its result over

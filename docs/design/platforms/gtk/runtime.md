@@ -138,6 +138,12 @@ which GTK allows. The keyboard GNOME shows on a touch screen stands for the
 field holding the focus, so taking it down lets that field's focus go, and
 answers whether a field held it.
 
+## The clipboard
+
+The clipboard is the display's `GdkClipboard`: words are set on it at once,
+and read through GDK's asynchronous read, the act answered once it returns -
+nothing where it holds no words.
+
 ## Questions for the user
 
 A question - an alert, a confirmation, a choice of actions, a prompt - is

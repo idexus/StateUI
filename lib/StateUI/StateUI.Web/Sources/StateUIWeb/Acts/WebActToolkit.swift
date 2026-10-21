@@ -60,6 +60,19 @@ final class WebActToolkit: ActToolkit {
         WebRelay.announce(words)
     }
 
+    func writeClipboard(_ words: String) {
+        WebRelay.writeClipboard(words)
+    }
+
+    /// The browser asks the user before a page reads the clipboard; refused, the read fails with its reason.
+    func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void) {
+        let listener = WebRelay.once {
+            let words = WebRelay.fileWords
+            answered(WebRelay.fileKept ? .success(words.isEmpty ? nil : words) : .failure(ActFailure(words)))
+        }
+        WebRelay.readClipboard(listener)
+    }
+
     func useColorScheme(_ theme: ColorScheme) {
         WebRelay.useColorScheme(theme)
     }

@@ -360,6 +360,25 @@
                 s.expect(said.values, ["announced"])
                 s.expect(try s.announced(), ["Saved the draft"])
             },
+            ConformanceCase("wordsPutOnTheClipboardAreReadBack", proves: [
+                Covered(ApplicationContract.writeClipboard), Covered(ApplicationContract.readClipboard),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let read = Received<String>()
+                s.start {
+                    WithSessions { _, application in
+                        VStack {
+                            Button("Copy").onClicked(gate: .ignoreWhileRunning) {
+                                try await application.clipboard.write(text: "Copied with StateUI")
+                                read.values.append(try await application.clipboard.text() ?? "nothing")
+                            }.id("copy")
+                        }
+                    }
+                }
+
+                try s.perform(.activate, on: s.element("copy"))
+                s.settle { !read.values.isEmpty }
+                s.expect(read.values, ["Copied with StateUI"], "the words written, read back from the platform's clipboard")
+            },
             ConformanceCase("theApplicationShowsInTheThemeItHolds", proves: [
                 Covered(ApplicationContract.useColorScheme),
             ], needs: [Covered(ButtonContract.clicked), Covered(TextualElementContract.text, on: TextContract.self)]) { s in

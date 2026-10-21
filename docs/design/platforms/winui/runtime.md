@@ -206,6 +206,12 @@ the focus, which then falls to the window's first stop, its title bar, as the
 field that held it leaves. So the window lays out what it was given before the
 focus moves.
 
+## The clipboard
+
+The clipboard is Win32's - `OpenClipboard`, `CF_UNICODETEXT` - written and
+read at once from Swift, the words as UTF-16: what every Windows application
+reads and writes.
+
 ## Questions for the user
 
 A question - an alert, a confirmation, a choice of actions, a prompt - is

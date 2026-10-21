@@ -121,6 +121,8 @@ final class AppKitDriver: HostDriver {
         Self.emptyFiles()
         renderer.fileToolkit.holdsLaunchesForTesting = true
         renderer.actToolkit.announcedForTesting = []
+        // A pasteboard of the driver's own name: a run never writes over the user's clipboard.
+        renderer.actToolkit.pasteboard = NSPasteboard(name: NSPasteboard.Name("org.stateui.conformance"))
         AppKitRestorationBroker.shared.host = renderer
         for window in restorable { Self.restore(window) }
         renderer.startForTesting()

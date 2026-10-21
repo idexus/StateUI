@@ -309,6 +309,20 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
+    /// Words for the clipboard, and a handler waiting until they are on it.
+    func testWordsForTheClipboardCrossWithTheirArgumentsInPlace() async throws {
+        try await check("writeClipboard", [.string("Copied")]) {
+            try await StandardEnvironment.application.clipboard.write(text: "Copied")
+        }
+    }
+
+    /// The clipboard read, asked with no arguments, a handler waiting for its words.
+    func testReadingTheClipboardCrossesWithItsArgumentsInPlace() async throws {
+        try await check("readClipboard", []) {
+            _ = try? await StandardEnvironment.application.clipboard.text()
+        }
+    }
+
     /// A kept value on its way to the store, as the renderer queues it at a
     /// take: the key as a NAME, the value as it is, and nobody waiting.
     func testAKeptValueCrossesWithItsArgumentsInPlace() throws {

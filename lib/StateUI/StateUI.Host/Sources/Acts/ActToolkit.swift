@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 
 /// What a host's toolkit does for the acts every host performs (`HostActPerformer`): the time and the zones, a
-/// question shown, a word to a screen reader, the focus and the on-screen keyboard, a value kept.
+/// question shown, a word to a screen reader, the clipboard, the focus and the on-screen keyboard, a value kept.
 /// Design: docs/design/host/runtime.md#acts
 @_spi(Host) @MainActor public protocol ActToolkit: AnyObject {
     /// The host's name, as a failure names it.
@@ -30,6 +30,13 @@
 
     /// Tells the screen reader `words`, now.
     func announce(_ words: String)
+
+    /// Puts `words` on the system's clipboard, in place of whatever it held.
+    func writeClipboard(_ words: String)
+
+    /// Reads the words on the system's clipboard and calls `answered` with them - nil where it holds none - or with
+    /// why it could not read them.
+    func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void)
 
     /// Shows the whole application in `theme`: light, dark, or the system's again.
     func useColorScheme(_ theme: ColorScheme)

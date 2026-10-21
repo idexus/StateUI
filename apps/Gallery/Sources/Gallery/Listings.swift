@@ -1838,6 +1838,34 @@ enum Listings {
             ["Cheese", "Bacon", "Egg"].enumerated().filter { extras[$0.offset] }.map { $0.element }
         }
         """#,
+        "ClipboardSample": #"""
+        // Sources/Samples/Navigation/ClipboardSample.swift
+        @Environment(\.application) private var application
+        @State private var words = "Copy me somewhere"
+        @State private var answer = "nothing copied or pasted yet"
+
+        var body: some View {
+            VStack {
+                TextField($words)
+
+                Button("Copy")
+                    .onClicked(gate: .ignoreWhileRunning) {
+                        try await application.clipboard.write(text: words)
+                        answer = "copied"
+                    }
+
+                // What another application copied pastes here too; nil is an empty clipboard.
+                Button("Paste")
+                    .onClicked(gate: .ignoreWhileRunning) {
+                        guard let pasted = try await application.clipboard.text() else { return answer = "the clipboard is empty" }
+                        words = pasted
+                        answer = "pasted"
+                    }
+
+                Text(answer)
+            }
+        }
+        """#,
         "ComplaintsSample": #"""
         // Sources/Samples/Fundamentals/ComplaintsSample.swift
         /// What the library said while the page showed, oldest first.

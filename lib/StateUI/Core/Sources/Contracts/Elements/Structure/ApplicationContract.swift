@@ -4,7 +4,7 @@
 /// The application at the root of a StateUI tree, and what its host does for it
 /// with no control behind it: questions for the user, the files they open and
 /// save, what the system launches, the clock and the time zone, the screen
-/// reader, what is kept.
+/// reader, the clipboard, what is kept.
 public enum ApplicationContract: ElementContract, ApplicationTier {
     /// The node type the contract declares.
     public static let nodeType: NodeType = "Application"
@@ -102,6 +102,11 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
         Self, (Name, Name, String, String, String, String, String?, Int?, InputPurpose, String), String?
     >("prompt")
 
+    /// The words on the system's clipboard; nothing where it holds none.
+    ///
+    /// See `Clipboard.text()`.
+    public static let readClipboard = ElementAct<Self, Void, String?>("readClipboard")
+
     /// Reads a file the user chose: whole where nothing more is said, else at
     /// most so many bytes from its start.
     ///
@@ -123,10 +128,15 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// See `TimeZoneInfo.utcOffset`.
     public static let utcOffset = ElementAct<Self, (String?, CalendarDate?), Int>("utcOffset")
 
+    /// Puts words on the system's clipboard, in place of whatever it held.
+    ///
+    /// See `Clipboard.write(text:)`.
+    public static let writeClipboard = ElementAct<Self, String, Void>("writeClipboard")
+
     /// The element's own members.
     public static let members: [any ContractMember] = [
         alert, announce, chooseAction, confirm, currentTime, currentTimeZone, handlerFailed,
         hideOnScreenKeyboard, launchFile, launchLink, openFiles, persistSceneValue, persistValue, prompt,
-        readFile, saveFile, useColorScheme, utcOffset,
+        readClipboard, readFile, saveFile, useColorScheme, utcOffset, writeClipboard,
     ]
 }

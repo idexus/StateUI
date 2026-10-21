@@ -436,6 +436,7 @@ ZStack
   persistSceneValue()
   persistValue()
   prompt()
+  readClipboard()
   readFile()
   reload()
   saveFile()
@@ -443,3 +444,4 @@ ZStack
   unfocus()
   useColorScheme()
   utcOffset()
+  writeClipboard()

@@ -176,6 +176,9 @@ enum JavaAPI {
     static let getButtonTintList = Java.method(
         compoundButton, "getButtonTintList", "()Landroid/content/res/ColorStateList;")
     static let dialogs = Java.findClass("stateui/android/StateUIDialogs")
+    static let clipboard = Java.findClass("stateui/android/StateUIClipboard")
+    static let clipboardWrite = Java.staticMethod(clipboard, "write", "(Landroid/content/Context;Ljava/lang/String;)V")
+    static let clipboardRead = Java.staticMethod(clipboard, "read", "(Landroid/content/Context;)Ljava/lang/String;")
     static let alert = Java.staticMethod(
         dialogs, "alert", "(Landroid/content/Context;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V")
     static let confirm = Java.staticMethod(

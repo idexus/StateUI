@@ -125,6 +125,13 @@ so as their editing begins and ends, and every focus act says so too, as not
 every view taking the focus does. Kept values stand in the preferences, read
 before the first render.
 
+## The clipboard
+
+The clipboard is the general pasteboard: words are written as its string and
+read back at once. iOS asks the user before an application reads what another
+put there, and a refusal reads none. A conformance run writes to a pasteboard
+of the driver's own name, as the simulator's general one is the Mac's too.
+
 ## Questions for the user
 
 A question is UIKit's alert, presented over what the user's window shows -

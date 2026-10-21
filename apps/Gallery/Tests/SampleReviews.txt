@@ -24,6 +24,7 @@ CanvasSample.swift 52db70adead39b9b
 ChangingDeckSample.swift eba1ef0bd296c4b9
 CheckBoxSample.swift 70837379658f7ee0
 ChoosingItemsSample.swift 0bac861b74933e30
+ClipboardSample.swift b65b0d17cdce1e12
 ComplaintsSample.swift ccb58f7f38490263
 ConcurrentAnimationSample.swift 5f47e5692b0a332e
 ConcurrentStateSample.swift 7dd2335765433b1f

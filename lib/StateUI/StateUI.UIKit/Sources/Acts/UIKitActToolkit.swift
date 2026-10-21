@@ -66,6 +66,19 @@ final class UIKitActToolkit: ActToolkit {
         UIAccessibility.post(notification: .announcement, argument: words)
     }
 
+    /// The pasteboard the clipboard's acts write and read: the system's general one - a test's own, of its own
+    /// name, where it gives one.
+    var pasteboard = UIPasteboard.general
+
+    func writeClipboard(_ words: String) {
+        pasteboard.string = words
+    }
+
+    /// iOS asks the user before an application reads what another put on the pasteboard; refused, it reads none.
+    func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void) {
+        answered(.success(pasteboard.string))
+    }
+
     /// Shows every window in `theme`: each window's own style, unspecified for the system's.
     func useColorScheme(_ theme: ColorScheme) {
         for (_, controller) in renderer.roster.windows {

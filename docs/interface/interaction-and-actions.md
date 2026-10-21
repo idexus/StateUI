@@ -282,6 +282,32 @@ struct NotePage: View {
 }
 ```
 
+## The clipboard
+
+The system's clipboard is the application's `clipboard`: `write(text:)` puts
+words on it in place of what it held, and `text()` reads the words it holds,
+`nil` where it holds none.
+
+```swift
+struct LinkRow: View {
+    @Environment(\.application) private var application
+    let link: String
+
+    var body: some View {
+        HStack {
+            Text(link)
+            Button("Copy").onClicked(gate: .ignoreWhileRunning) {
+                try await application.clipboard.write(text: link)
+            }
+        }
+    }
+}
+```
+
+A platform may ask the user before the application reads what another
+application put there - iOS and a browser do. A browser's read throws where
+the user refuses, and a page served over plain http has no clipboard.
+
 ## Host-extension actions
 
 An application reaches its own host code through acts it declares in a tier

@@ -128,6 +128,12 @@ focus through the window's first responder. An act of the application's own
 is its registered performer's (`InteropActs`), handed the view an aimed act
 names; a performer may await.
 
+## The clipboard
+
+The clipboard is the general pasteboard: words are written in place of what
+it held and read back as its string, at once. A conformance run writes to a
+pasteboard of the driver's own name, so it never writes over the user's.
+
 ## Questions for the user
 
 A question is AppKit's own alert, a sheet on the window that asked - over the

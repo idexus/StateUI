@@ -192,6 +192,8 @@ final class UIKitDriver: HostDriver {
         try? FileManager.default.createDirectory(at: files, withIntermediateDirectories: true)
         renderer.fileToolkit.holdsLaunchesForTesting = true
         renderer.actToolkit.announcedForTesting = []
+        // A pasteboard of the driver's own name: a run never writes over the simulator's, which the Mac's follows.
+        renderer.actToolkit.pasteboard = UIPasteboard(name: UIPasteboard.Name("org.stateui.conformance"), create: true)!
     }
 
     /// One pass of the main loop, 20 ms long: a case's 150 steps wait three seconds, which a page WebKit loads in a

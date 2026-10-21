@@ -120,6 +120,14 @@ final class WinUIActToolkit: ActToolkit {
         if let content = renderer.userWindow?.content { stateui_winui_announce(content.handle, words) }
     }
 
+    func writeClipboard(_ words: String) {
+        WinUIClipboard.write(words)
+    }
+
+    func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void) {
+        answered(.success(WinUIClipboard.read()))
+    }
+
     func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
         renderer.window(asked: window)?.content.map { stateui_winui_hide_keyboard($0.handle) } ?? false
     }

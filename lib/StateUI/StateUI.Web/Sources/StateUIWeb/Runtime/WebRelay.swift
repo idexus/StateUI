@@ -510,6 +510,17 @@ enum WebRelay {
         utf8(words) { stateui_web_announce($0, $1) }
     }
 
+    /// Puts `words` on the browser's clipboard, where the page may write it.
+    static func writeClipboard(_ words: String) {
+        utf8(words) { stateui_web_clipboard_write($0, $1) }
+    }
+
+    /// Reads the browser's clipboard, `listener` told once it answers: event 1 and its words, or 0 and why not, both
+    /// read by `file_words`.
+    static func readClipboard(_ listener: Int32) {
+        stateui_web_clipboard_read(listener)
+    }
+
     /// Takes the focus off the field holding it; whether one held it.
     static func blurField() -> Bool { stateui_web_blur_field() != 0 }
 

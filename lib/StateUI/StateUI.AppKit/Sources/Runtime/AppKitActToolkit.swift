@@ -75,6 +75,19 @@ final class AppKitActToolkit: ActToolkit {
             userInfo: [.announcement: words, .priority: NSAccessibilityPriorityLevel.high.rawValue])
     }
 
+    /// The pasteboard the clipboard's acts write and read: the system's general one - a test's own, of its own
+    /// name, where it gives one.
+    var pasteboard = NSPasteboard.general
+
+    func writeClipboard(_ words: String) {
+        pasteboard.clearContents()
+        pasteboard.setString(words, forType: .string)
+    }
+
+    func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void) {
+        answered(.success(pasteboard.string(forType: .string)))
+    }
+
     /// Shows every window in `theme`: AppKit's application appearance, none for the system's.
     func useColorScheme(_ theme: ColorScheme) {
         NSApplication.shared.appearance = switch theme {

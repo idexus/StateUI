@@ -1,4 +1,4 @@
-# revision 7.1
+# revision 8.1
 Application: ✅
 Application.alert: ✅
 Application.announce: ✓ read what the screen reader said: the host's own list of what it asked GTK to announce
@@ -14,7 +14,9 @@ Application.openFiles: ✓ read a file dialog: the dialog the host holds, which 
 Application.persistSceneValue: ✅
 Application.persistValue: ✅
 Application.prompt: ✅
+Application.readClipboard: ✅
 Application.readFile: ✓ read a file dialog: the dialog the host holds, which a test never shows
 Application.saveFile: ✓ read a file dialog: the dialog the host holds, which a test never shows
 Application.useColorScheme: ✅
 Application.utcOffset: ✅
+Application.writeClipboard: ✅

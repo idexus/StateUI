@@ -62,6 +62,14 @@ final class GTKActToolkit: ActToolkit {
         gtk_accessible_announce(window.widget.opaque, words, GTK_ACCESSIBLE_ANNOUNCEMENT_PRIORITY_MEDIUM)
     }
 
+    func writeClipboard(_ words: String) {
+        GTKClipboard.write(words)
+    }
+
+    func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void) {
+        GTKClipboard.read { answered(.success($0)) }
+    }
+
     /// Shows the application in `theme`: libadwaita's colour scheme, the system's own for the system's.
     func useColorScheme(_ theme: ColorScheme) {
         let scheme: AdwColorScheme = switch theme {

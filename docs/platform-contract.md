@@ -339,10 +339,12 @@ the tier.
 | `persistSceneValue` | [Application](controls/Application.md) |
 | `persistValue` | [Application](controls/Application.md) |
 | `prompt` | [Application](controls/Application.md) |
+| `readClipboard` | [Application](controls/Application.md) |
 | `readFile` | [Application](controls/Application.md) |
 | `saveFile` | [Application](controls/Application.md) |
 | `useColorScheme` | [Application](controls/Application.md) |
 | `utcOffset` | [Application](controls/Application.md) |
+| `writeClipboard` | [Application](controls/Application.md) |
 | `scrollTo` | [ItemsView](controls/ItemsView.md) |
 | `moveToRegion` | [Map](controls/Map.md) |
 | `evaluateJavaScript` | [WebView](controls/WebView.md) |
@@ -496,7 +498,7 @@ Every control, and every part an application, its windows and its pages are made
 
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](controls/Application.md) | 18 | 8 ✅ · 10 ✓ | 8 ✅ · 10 ✓ | 7 ✅ · 1 ☑️ · 10 ✓ | 15 ✅ · 3 ✓ | 12 ✅ · 6 ✓ | 13 ✅ · 5 ✓ |
+| [Application](controls/Application.md) | 20 | 10 ✅ · 10 ✓ | 10 ✅ · 10 ✓ | 9 ✅ · 1 ☑️ · 10 ✓ | 17 ✅ · 3 ✓ | 14 ✅ · 6 ✓ | 15 ✅ · 5 ✓ |
 | [ButtonMenu](controls/ButtonMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ContextMenu](controls/ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Marker](controls/Marker.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
@@ -517,10 +519,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 9 | 5 ✅ · 1 ✓ · 1 – | 7 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 9 ✅ | 7 ✅ · 1 ✓ · 1 – | 9 ✅ |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 97 | 89 | 72 | 121 | 85 | 97 |
+| ✅ |  | 99 | 91 | 74 | 123 | 87 | 99 |
 | ✓ |  | 20 | 19 | 18 | 3 | 16 | 9 |
 | – |  | 3 | 17 | 26 | 2 | 27 | 19 |
-| **Met** | 135 | **120** | **125** | **116** | **126** | **128** | **125** |
+| **Met** | 137 | **122** | **127** | **118** | **128** | **130** | **127** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -701,6 +703,6 @@ realizes the element and each of its members.
 `currentTimeZone`, `evaluateJavaScript`, `focus`, `goBack`, `goForward`,
 `handlerFailed`, `hideOnScreenKeyboard`, `launchFile`, `launchLink`,
 `moveToRegion`, `openFiles`, `persistSceneValue`, `persistValue`, `prompt`,
-`readFile`, `reload`, `saveFile`, `scrollTo`, `unfocus`, `useColorScheme`,
-`utcOffset`.
+`readClipboard`, `readFile`, `reload`, `saveFile`, `scrollTo`, `unfocus`,
+`useColorScheme`, `utcOffset`, `writeClipboard`.
 <!-- vocabulary:end -->

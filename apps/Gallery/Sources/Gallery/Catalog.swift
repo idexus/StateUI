@@ -378,7 +378,7 @@ final class Catalog {
             route: "navigation",
             title: "Navigation",
             summary: "Moving between pages - the stack, the tabs and the split view; a "
-                + "modal, an alert, a file dialog, a toolbar and a menu over them; and a "
+                + "modal, an alert, a file dialog, the clipboard, a toolbar and a menu over them; and a "
                 + "search field in the navigation bar.",
             icon: ImageSource(light: "nav_shell.png", dark: "nav_shell_dark.png"),
             card: ImageSource("cat_navigation.png"),
@@ -389,6 +389,7 @@ final class Catalog {
                 Sample(ModalSample(nav: nav)),
                 Sample(DialogsSample()),
                 Sample(FilesSample()),
+                Sample(ClipboardSample()),
                 Sample(ToolbarSample()),
                 Sample(ToolbarLayersSample(nav: nav)),
                 Sample(MenuBarSample()),

@@ -119,6 +119,17 @@ final class AndroidActToolkit: ActToolkit {
     /// What the host told the screen reader, in order, where a test asked for it with `[]`; nil keeps nothing.
     var announcedForTesting: [String]?
 
+    func writeClipboard(_ words: String) {
+        Java.frame { Java.callStatic(JavaAPI.clipboard, JavaAPI.clipboardWrite, .object(context), .object(Java.string(words))) }
+    }
+
+    func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void) {
+        let words: String? = Java.frame {
+            Java.callStaticObject(JavaAPI.clipboard, JavaAPI.clipboardRead, .object(context)).map { Java.text($0) }
+        }
+        answered(.success(words))
+    }
+
     func announce(_ words: String) {
         announcedForTesting?.append(words)
         Java.frame {

@@ -75,6 +75,16 @@
         case .announce:
             toolkit.announce(call.arguments.first?.string ?? "")
             reply(call, [])
+        case .writeClipboard:
+            toolkit.writeClipboard(call.arguments.first?.string ?? "")
+            reply(call, [])
+        case .readClipboard:
+            toolkit.readClipboard { [weak self] read in
+                switch read {
+                case .success(let words): self?.reply(call, [words.map { .string($0) } ?? .nothing])
+                case .failure(let failure): self?.fail(call, failure.reason)
+                }
+            }
         case .useColorScheme:
             let theme = call.arguments.first.flatMap(ColorScheme.init(propValue:)) ?? .system
             toolkit.useColorScheme(theme)

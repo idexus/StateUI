@@ -396,6 +396,7 @@ WebView
   persistSceneValue()
   persistValue()
   prompt()
+  readClipboard()
   readFile()
   reload()
   saveFile()
@@ -403,3 +404,4 @@ WebView
   unfocus()
   useColorScheme()
   utcOffset()
+  writeClipboard()
