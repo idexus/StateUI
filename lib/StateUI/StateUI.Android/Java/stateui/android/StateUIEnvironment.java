@@ -181,7 +181,7 @@ final class StateUIEnvironment {
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context sender, Intent intent) {
-                StateUIHost.environmentChanged();
+                changed();
             }
         };
         IntentFilter filter = new IntentFilter();
@@ -198,12 +198,12 @@ final class StateUIEnvironment {
         ConnectivityManager.NetworkCallback network = new ConnectivityManager.NetworkCallback() {
             @Override
             public void onCapabilitiesChanged(Network changed, NetworkCapabilities capabilities) {
-                StateUIHost.environmentChanged();
+                changed();
             }
 
             @Override
             public void onLost(Network lost) {
-                StateUIHost.environmentChanged();
+                changed();
             }
         };
         ConnectivityManager manager = context.getSystemService(ConnectivityManager.class);
@@ -213,22 +213,34 @@ final class StateUIEnvironment {
             network = null;
         }
 
-        AccessibilityManager.TouchExplorationStateChangeListener reader = on -> StateUIHost.environmentChanged();
+        AccessibilityManager.TouchExplorationStateChangeListener reader = on -> changed();
         AccessibilityManager accessibility = context.getSystemService(AccessibilityManager.class);
         if (accessibility != null) accessibility.addTouchExplorationStateChangeListener(reader);
         Object animations = null;
         if (Build.VERSION.SDK_INT >= 33) {
-            ValueAnimator.DurationScaleChangeListener scale = changed -> StateUIHost.environmentChanged();
+            ValueAnimator.DurationScaleChangeListener scale = changed -> changed();
             ValueAnimator.registerDurationScaleChangeListener(scale);
             animations = scale;
         }
         Object contrast = null;
         if (Build.VERSION.SDK_INT >= 34) {
-            UiModeManager.ContrastChangeListener changed = level -> StateUIHost.environmentChanged();
+            UiModeManager.ContrastChangeListener changed = level -> changed();
             context.getSystemService(UiModeManager.class).addContrastChangeListener(context.getMainExecutor(), changed);
             contrast = changed;
         }
         return new Object[] { receiver, network, reader, animations, contrast };
+    }
+
+    /** The UI thread's queue, which a change told on another thread is handed to. */
+    private static final Handler uiThread = new Handler(Looper.getMainLooper());
+
+    /** Tells the Swift host the environment changed, on the UI thread whichever thread Android told it on. */
+    private static void changed() {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            StateUIHost.environmentChanged();
+        } else {
+            uiThread.post(StateUIHost::environmentChanged);
+        }
     }
 
     /** Stops what {@link #watch} started. */

@@ -112,7 +112,11 @@ system's animations are off - the renderer's own reading for its motion -
 more contrast where Android says the user raised it (Android 14 on; none
 before), TalkBack where touch exploration is on, and the configuration's font
 scale. TalkBack, the animations' scale and the contrast are watched as the
-rest are; the font scale comes with a configuration change.
+rest are; the font scale comes with a configuration change. Android tells
+some of what is watched on a thread of its own - the animations' scale on a
+binder's - so every change reaches the host through one door that hands it to
+the UI thread first (`StateUIEnvironment.changed`): the host reads it on the
+main actor alone.
 
 ## The activity's lifecycle
 

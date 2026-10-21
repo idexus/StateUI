@@ -83,6 +83,7 @@ final class AndroidRendererTests: XCTestCase {
             ("testTheWindowsTitleNamesTheActivity", testTheWindowsTitleNamesTheActivity),
             ("testTheHostReportsTheLocaleTheBatteryAndTheNetwork", testTheHostReportsTheLocaleTheBatteryAndTheNetwork),
             ("testTheHostReportsTheAccessibilitySettings", testTheHostReportsTheAccessibilitySettings),
+            ("testTheEnvironmentReachesTheHostOnTheUIThreadWhicheverThreadTellsIt", testTheEnvironmentReachesTheHostOnTheUIThreadWhicheverThreadTellsIt),
             ("testTheLocaleIsTheHostLayersReadingOfTheRelaysWords", testTheLocaleIsTheHostLayersReadingOfTheRelaysWords),
         ]
     }
@@ -341,6 +342,25 @@ final class AndroidRendererTests: XCTestCase {
         }
     }
 
+    /// Android tells some of what the environment watch hears on a thread of its own - the animations' scale on a
+    /// binder's: each listener reaches the host on the UI thread, whichever thread tells it.
+    func testTheEnvironmentReachesTheHostOnTheUIThreadWhicheverThreadTellsIt() throws {
+        try onMainActor {
+            _ = AndroidRenderer.running { Text("Watched") }
+            let context = TestContext.context.reference
+            let watch = try XCTUnwrap(Java.callStaticObject(JavaAPI.environment, EnvironmentWatch.watch, .object(context)))
+            defer {
+                Java.callStatic(JavaAPI.environment, EnvironmentWatch.unwatch, .object(context), .object(watch))
+                Java.release(local: watch)
+            }
+
+            Java.callStatic(EnvironmentWatch.test, EnvironmentWatch.tellOffTheUIThread, .object(context), .object(watch))
+            TestWindow.run(for: 50)
+
+            XCTAssertNotNil(AndroidRenderer.shared, "the host heard each change, and stands")
+        }
+    }
+
     /// The accessibility settings reported are the device's: less motion where the system's animations are off, as
     /// the renderer reads them for its own motion, no screen reader under a test, and the scale of the system's words.
     func testTheHostReportsTheAccessibilitySettings() {
@@ -393,4 +413,15 @@ private struct TitlingPage: View {
         let title = self.title
         return Text(title).onCreated { window.title = title }
     }
+}
+
+/// The host's watch on the environment, and the test's own teller of it.
+@MainActor
+private enum EnvironmentWatch {
+    static let watch = Java.staticMethod(JavaAPI.environment, "watch", "(Landroid/content/Context;)[Ljava/lang/Object;")
+    static let unwatch = Java.staticMethod(
+        JavaAPI.environment, "unwatch", "(Landroid/content/Context;[Ljava/lang/Object;)V")
+    static let test = Java.findClass("stateui/android/test/TestEnvironment")
+    static let tellOffTheUIThread = Java.staticMethod(
+        test, "tellOffTheUIThread", "(Landroid/content/Context;[Ljava/lang/Object;)V")
 }
