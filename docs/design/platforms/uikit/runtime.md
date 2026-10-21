@@ -98,7 +98,10 @@ it brings back. A battery UIKit knows
 nothing of - the simulator's - is none, full, on mains; Low Power Mode is the
 battery saver. The network is reachable when its path is satisfied, local
 when interfaces stand but no route leads out; each interface available to
-the path - Wi-Fi, wired, cellular - is a connection profile.
+the path - Wi-Fi, wired, cellular - is a connection profile. The accessibility
+settings are UIKit's - Reduce Motion, darker colours for more contrast,
+VoiceOver - and the scale of words the size the user chose draws the body's
+17 points at; each is told again as UIKit announces its change.
 
 The display is told again as UIKit sets out to give a window a new size
 (`viewWillTransition(to:with:)` on its root): the scene stands turned

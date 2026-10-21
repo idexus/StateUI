@@ -1,6 +1,7 @@
 # Each sample's sources - its file and every file its listings are cut from - fingerprinted when its
 # notes were last read against them. SampleReviewTests compares; only after the reading,
 # STATEUI_UPDATE_SAMPLES=1 records.
+AccessibilitySettingsSample.swift fa38044121b2ffbd
 ActivityIndicatorSample.swift 097a91a8164620dd
 AimSample.swift e9a994fc78551bdc
 AnalogClockSample.swift cc35899b4aee92b7

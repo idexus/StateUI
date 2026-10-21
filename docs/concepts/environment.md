@@ -119,7 +119,7 @@ to that field rather than to the whole object.
 | `\.application` | `ApplicationSession` | the application's facts (`info`), its phase, styles, motion, kept keys and open scenes |
 | `\.scene` | `SceneSession` | the scene the view stands in |
 | `\.window` | `WindowSession` | the window the view stands in |
-| `\.device` | `Device` | what the device is (`info`), its `display`, `battery` and `connectivity` |
+| `\.device` | `Device` | what the device is (`info`), its `display`, `battery`, `connectivity` and the user's `accessibility` settings |
 | `\.locale` | `LocaleInfo` | the user's language, region, zone and conventions |
 
 The facts the host reports, each group a typed value, are part of StateUI's
@@ -128,6 +128,7 @@ contract:
 | Read as - type | Properties | Meaning and initial fallback |
 | --- | --- | --- |
 | `device.battery` - `Battery` | `chargeLevel`, `state`, `powerSource`, `energySaverStatus` | charge and power state; level is `-1`, enums are `.unknown` until reported |
+| `device.accessibility` - `AccessibilitySettings` | `reducesMotion`, `prefersHigherContrast`, `isScreenReaderOn`, `textScale` | what the user asked of the system - less motion, more contrast, a screen reader, larger words; `false` and a scale of `1` until reported, and where a platform cannot tell |
 | `device.connectivity` - `Connectivity` | `networkAccess`, `connectionProfiles` | reachability and all active connection kinds; `.unknown` and `[]` until reported |
 | `device.display` - `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numeric values are `0` and enums `.unknown` until reported |
 | `device.info` - `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `isVirtual` | form factor, open platform name, hardware and system facts, and whether the device is an emulator, a simulator or a virtual machine; text starts empty, closed values `.unknown` and `isVirtual` nil |

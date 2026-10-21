@@ -463,6 +463,7 @@ typedef enum STATEUI_CLOSED_ENUM {
     StateUIFactsConnectivity,
     StateUIFactsTheme,
     StateUIFactsDisplay,
+    StateUIFactsAccessibility,
 } StateUIFacts;
 
 /// Starts the Windows App SDK and WinUI on this thread and runs its loop until the last window closes.
@@ -1153,8 +1154,8 @@ void stateui_winui_tabs_choose_as_user(StateUIObjectRef tabs, int32_t index);
 /// screen `window` stands on. Answers the length the facts need, their end not counted.
 int32_t stateui_winui_facts(StateUIFacts kind, StateUIObjectRef window, char *utf8, int32_t capacity);
 
-/// Watches the theme, the power, the network and the screens, `environmentChanged` called in the UI thread's turn
-/// after each change; once.
+/// Watches the theme, the power, the network, the screens and the accessibility settings, `environmentChanged`
+/// called in the UI thread's turn after each change; once.
 void stateui_winui_watch_environment(void);
 
 /// Listens on `element`, which the view `view` shows, for what `hearing` names, each heard through `heard`; 0

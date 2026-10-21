@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The device the application runs on: what it is, its display, its battery and its network. A view reads the
-/// one fact it shows, and builds again when that fact changes.
+/// The device the application runs on: what it is, its display, its battery, its network and what the user asked of
+/// it to use it. A view reads the one fact it shows, and builds again when that fact changes.
 ///
 ///     @Environment(\.device) private var device
 ///
@@ -21,18 +21,22 @@ public final class Device {
     /// Its network: whether there is access, and over what.
     public let connectivity: Connectivity
 
+    /// What the user asked of the system to use it: less motion, more contrast, a screen reader, larger words.
+    public let accessibility: AccessibilitySettings
+
     /// A device as a test or a preview fakes it, for one branch with `.environment(...)`; what is not said starts as
     /// a headless host's does.
     ///
     ///     Device(connectivity: Connectivity(networkAccess: .none))
     public init(
         info: DeviceInfo = DeviceInfo(), display: DeviceDisplay = DeviceDisplay(), battery: Battery = Battery(),
-        connectivity: Connectivity = Connectivity()
+        connectivity: Connectivity = Connectivity(), accessibility: AccessibilitySettings = AccessibilitySettings()
     ) {
         self.info = info
         self.display = display
         self.battery = battery
         self.connectivity = connectivity
+        self.accessibility = accessibility
     }
 }
 

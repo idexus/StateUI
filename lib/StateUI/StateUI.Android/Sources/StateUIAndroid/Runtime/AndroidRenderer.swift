@@ -229,7 +229,7 @@ final class AndroidRenderer {
         files.forgetDialogs()
     }
 
-    /// The zone, the clock, the battery or the network changed.
+    /// The zone, the clock, the battery, the network or an accessibility setting changed.
     func environmentChanged() {
         runtime.environmentChanged { AndroidEnvironment.reportChanging(to: runtime.core, context: context.reference) }
     }

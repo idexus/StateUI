@@ -255,6 +255,15 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(StandardEnvironment.device.battery.powerSource, .battery)
         XCTAssertEqual(StandardEnvironment.device.battery.energySaverStatus, .off)
 
+        HostBoundary.setAccessibilityInfo(HostAccessibilityInfo(
+            reducesMotion: true, prefersHigherContrast: true, isScreenReaderOn: true, textScale: 1.3))
+        XCTAssertTrue(StandardEnvironment.device.accessibility.reducesMotion)
+        XCTAssertTrue(StandardEnvironment.device.accessibility.prefersHigherContrast)
+        XCTAssertTrue(StandardEnvironment.device.accessibility.isScreenReaderOn)
+        XCTAssertEqual(StandardEnvironment.device.accessibility.textScale, 1.3)
+        HostBoundary.setAccessibilityInfo(HostAccessibilityInfo(
+            reducesMotion: false, prefersHigherContrast: false, isScreenReaderOn: false, textScale: 1))
+
         HostBoundary.setConnectivityInfo(HostConnectivityInfo(
             networkAccess: .constrainedInternet, connectionProfiles: [.wifi, .ethernet]))
         XCTAssertEqual(StandardEnvironment.device.connectivity.networkAccess, .constrainedInternet)

@@ -5,7 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// What the page tells the core it stands on: a browser on a phone or a tablet where its user points by touch, on a
-/// desktop else, the application's info, the user's appearance and its accent, and the user's locale.
+/// desktop else, the application's info, the user's appearance and its accent, the user's locale, and what the user
+/// asked of motion and contrast.
 /// Design: docs/design/platforms/web/runtime.md#the-environment
 @MainActor
 enum WebEnvironment {
@@ -19,19 +20,24 @@ enum WebEnvironment {
         reportChanging(to: core)
     }
 
-    /// Tells `core` what may change while the page is open: the appearance, dark or light, its accent, and the locale.
+    /// Tells `core` what may change while the page is open: the appearance, dark or light, its accent, the locale,
+    /// and less motion and more contrast - a page is told of no screen reader and no scale of the system's words.
     static func reportChanging(to core: CoreLink) {
         if let locale = locale(WebRelay.localeWords) { core.setLocaleInfo(locale) }
         core.setColorScheme(WebRelay.prefersDark ? .dark : .light)
         core.setAccentColor(Color(argb: WebRelay.accentColor))
+        core.setAccessibilityInfo(HostAccessibilityInfo(
+            reducesMotion: WebRelay.reducesMotion, prefersHigherContrast: WebRelay.prefersMoreContrast,
+            isScreenReaderOn: false, textScale: 1))
     }
 
-    /// Calls `changed` whenever the user's appearance turns dark or light, or the user's languages change, under the
-    /// listener it answers.
+    /// Calls `changed` whenever the user's appearance turns dark or light, the user's languages change, or less
+    /// motion or more contrast is asked for, under the listener it answers.
     static func watch(_ changed: @escaping () -> Void) -> Int32 {
         let listener = WebRelay.listener(changed)
         WebRelay.listenToAppearance(listener)
         WebRelay.listenToLocale(listener)
+        WebRelay.listenToAccessibility(listener)
         return listener
     }
 

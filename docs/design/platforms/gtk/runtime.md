@@ -116,7 +116,10 @@ read as GTK's own calendar reads it, and the direction GTK writes its
 language in; the power - UPower's display device, whether the machine
 is on mains, and whether the power profiles save energy, no battery where
 UPower stands nowhere; and the network - GIO's monitor, and the kind of
-connection NetworkManager calls the primary one. Once the window stands it
+connection NetworkManager calls the primary one; and the accessibility
+settings - less motion where GTK's animations are off, libadwaita's high
+contrast, GNOME's screen reader where the desktop keeps that setting (none
+elsewhere), and GTK's text scale - each watched. Once the window stands it
 tells the screen it stands on: its size in pixels, its scale and its refresh
 rate.
 

@@ -1,7 +1,8 @@
 # The standard environment
 
-The battery, the network, the display, the locale, the device, the
-application's manifest and its phase are state the host holds and the core
+The battery, the network, the display, the user's accessibility settings, the
+locale, the device, the application's manifest and its phase are state the
+host holds and the core
 can only be told about. Each is an object of `@State` properties, offered to
 every view the way an object an ancestor provides is, and read by its name.
 
@@ -13,6 +14,7 @@ every view the way an object an ancestor provides is, and read by its name.
                      display       width, height, density, orientation, rotation, refreshRate
                      battery       chargeLevel, state, powerSource, energySaverStatus
                      connectivity  networkAccess, connectionProfiles
+                     accessibility reducesMotion, prefersHigherContrast, isScreenReaderOn, textScale
   \.locale        LocaleInfo      language, region, name, languages, timeZone, uses24HourClock, firstDayOfWeek,
                                   isMetric, layoutDirection
   \.application   ApplicationSession
@@ -43,7 +45,7 @@ by the type. An object the application provides with
 The host seeds every provider before the first render, so the first tree
 already knows its form factor and its locale, and writes again whenever the
 platform reports a change. A host writes through `HostBoundary`, one setter
-per provider - `setBatteryInfo`, `setConnectivityInfo`, `setDisplayInfo`,
+per provider - `setBatteryInfo`, `setConnectivityInfo`, `setAccessibilityInfo`, `setDisplayInfo`,
 `setLocaleInfo`, `setDeviceInfo`, `setApplicationInfo` with `setColorScheme` and `setAccentColor`, and
 `setApplicationPhase` - each with the whole report, typed.
 

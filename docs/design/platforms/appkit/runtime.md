@@ -174,3 +174,6 @@ with no battery reports none - full, on mains - and Low Power Mode as the
 battery saver. The network is reachable when its path is satisfied, local when
 interfaces stand but no route leads out; each interface available to the path -
 Wi-Fi, wired, cellular - is a connection profile.
+The accessibility settings are the workspace's - Reduce Motion, Increase
+Contrast and VoiceOver - told again as the display's options or VoiceOver
+change; a Mac keeps no scale of the system's words, so its scale is 1.

@@ -182,4 +182,30 @@ final class UIKitEnvironmentTests: XCTestCase {
         XCTAssertNotEqual(battery.energySaverStatus, .unknown)
         XCTAssertTrue((0...1).contains(battery.chargeLevel))
     }
+
+    /// The accessibility settings reported are the device's own: less motion, darker colours and VoiceOver as UIKit
+    /// says them, and the scale of words the size the user chose draws - 1 at the size iOS starts at.
+    @MainActor
+    func testTheAccessibilitySettingsReportedAreTheDevices() {
+        let settings = StandardEnvironment.device.accessibility
+        defer {
+            HostBoundary.setAccessibilityInfo(HostAccessibilityInfo(
+                reducesMotion: false, prefersHigherContrast: false, isScreenReaderOn: false, textScale: 1))
+        }
+        HostBoundary.setAccessibilityInfo(HostAccessibilityInfo(
+            reducesMotion: !UIAccessibility.isReduceMotionEnabled,
+            prefersHigherContrast: !UIAccessibility.isDarkerSystemColorsEnabled,
+            isScreenReaderOn: !UIAccessibility.isVoiceOverRunning, textScale: 0))
+
+        UIKitEnvironment(core: CoreLink()).reportAccessibility()
+
+        XCTAssertEqual(settings.reducesMotion, UIAccessibility.isReduceMotionEnabled)
+        XCTAssertEqual(settings.prefersHigherContrast, UIAccessibility.isDarkerSystemColorsEnabled)
+        XCTAssertEqual(settings.isScreenReaderOn, UIAccessibility.isVoiceOverRunning)
+        if UIApplication.shared.preferredContentSizeCategory == .large {
+            XCTAssertEqual(settings.textScale, 1, accuracy: 0.001)
+        } else {
+            XCTAssertNotEqual(settings.textScale, 1)
+        }
+    }
 }

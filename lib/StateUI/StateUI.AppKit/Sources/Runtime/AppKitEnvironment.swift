@@ -8,8 +8,8 @@ import IOKit.ps
 @_spi(Host) import StateUIHost
 @_spi(Host) import StateUIApple
 
-/// The user's locale, the battery, the network, the theme and the accent, told to the core as the host starts and
-/// whenever one changes, for as long as the application runs.
+/// The user's locale, the battery, the network, the theme, the accent and the accessibility settings, told to the
+/// core as the host starts and whenever one changes, for as long as the application runs.
 /// Design: docs/design/platforms/appkit/runtime.md#the-environment
 @MainActor
 final class AppKitEnvironment {
@@ -21,6 +21,8 @@ final class AppKitEnvironment {
 
     private var observers: [NSObjectProtocol] = []
     private var appearanceWatch: NSKeyValueObservation?
+    private var accessibilityObserver: NSObjectProtocol?
+    private var voiceOverWatch: NSKeyValueObservation?
     private var powerSource: CFRunLoopSource?
     private var system: SystemWatch?
 
@@ -32,6 +34,8 @@ final class AppKitEnvironment {
     isolated deinit {
         for observer in observers { NotificationCenter.default.removeObserver(observer) }
         appearanceWatch?.invalidate()
+        if let accessibilityObserver { NSWorkspace.shared.notificationCenter.removeObserver(accessibilityObserver) }
+        voiceOverWatch?.invalidate()
         if let powerSource { CFRunLoopRemoveSource(CFRunLoopGetMain(), powerSource, .defaultMode) }
     }
 
@@ -44,6 +48,7 @@ final class AppKitEnvironment {
         reportBattery()
         reportTheme()
         reportAccent()
+        reportAccessibility()
         reportChange = reportingChanges
         watch()
     }
@@ -74,6 +79,30 @@ final class AppKitEnvironment {
             networkChanged: { [weak self] reached in self?.changed { $0.core.setConnectivityInfo(reached) } })
 
         watchTheme()
+        watchAccessibility()
+    }
+
+    /// Watches the display's accessibility options and VoiceOver, each change reported through the runtime's step.
+    private func watchAccessibility() {
+        let workspace = NSWorkspace.shared
+        accessibilityObserver = workspace.notificationCenter.addObserver(
+            forName: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated { self?.changed { $0.reportAccessibility() } }
+        }
+        voiceOverWatch = workspace.observe(\.isVoiceOverEnabled) { [weak self] _, _ in
+            MainActor.assumeIsolated { self?.changed { $0.reportAccessibility() } }
+        }
+    }
+
+    /// The user's accessibility settings: less motion, more contrast, VoiceOver; a Mac keeps no scale of the
+    /// system's words, so its scale is 1.
+    func reportAccessibility() {
+        let workspace = NSWorkspace.shared
+        core.setAccessibilityInfo(HostAccessibilityInfo(
+            reducesMotion: workspace.accessibilityDisplayShouldReduceMotion,
+            prefersHigherContrast: workspace.accessibilityDisplayShouldIncreaseContrast,
+            isScreenReaderOn: workspace.isVoiceOverEnabled, textScale: 1))
     }
 
     /// Reports the theme and the accent, then each change of them as it comes, through `reportingChanges` - alone,

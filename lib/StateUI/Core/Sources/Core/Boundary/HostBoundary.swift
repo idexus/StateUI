@@ -64,6 +64,15 @@
         update(battery, \.energySaverStatus, info.energySaverStatus)
     }
 
+    /// Replaces the standard report of the user's accessibility settings.
+    public static func setAccessibilityInfo(_ info: HostAccessibilityInfo) {
+        let settings = StandardEnvironment.device.accessibility
+        update(settings, \.reducesMotion, info.reducesMotion)
+        update(settings, \.prefersHigherContrast, info.prefersHigherContrast)
+        update(settings, \.isScreenReaderOn, info.isScreenReaderOn)
+        update(settings, \.textScale, info.textScale)
+    }
+
     /// Replaces the standard connectivity report.
     public static func setConnectivityInfo(_ info: HostConnectivityInfo) {
         let connectivity = StandardEnvironment.device.connectivity

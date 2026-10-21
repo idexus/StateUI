@@ -124,6 +124,11 @@ over the browser's words; Swift decides (`WebEnvironment.locale`), and tells
 the locale again as the user's languages change. So the library's words - a
 chrome's own buttons, a dialog's answers - stand in the user's language.
 
+What the user asked of motion and contrast is the browser's media queries,
+`prefers-reduced-motion` and `prefers-contrast: more`, told again as either
+turns. A page is told of no screen reader and no scale of the system's words:
+it reports none, and a scale of 1, as a platform that cannot tell does.
+
 ## One frame
 
 `WebFrameClock` asks for the browser's display frames with

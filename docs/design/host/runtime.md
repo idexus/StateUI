@@ -605,7 +605,10 @@ a language written right to left - the network as its access and a set of
 bits for its connections, a battery as present or not, charging, on mains
 or full, and a screen as landscape where it stands at least as wide as it is
 tall, turned by quarters from its natural orientation - none on one that
-turns with nothing. When any of it changes, one step
+turns with nothing - and the user's accessibility settings as four facts:
+less motion, more contrast, a screen reader running, the scale of words; one a
+platform cannot tell stays as the system draws by default, off, and a scale
+of 1. When any of it changes, one step
 follows on every host (`HostRuntime.environmentChanged`): the core is told
 what stands now, the tree follows the language's direction, and one turn
 renders what it all changed. A report that repeats what stands - and

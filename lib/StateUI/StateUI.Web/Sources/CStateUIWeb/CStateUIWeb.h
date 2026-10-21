@@ -228,6 +228,10 @@ STATEUI_WEB(touch_screen) double stateui_web_touch_screen(void);
 /// Whether the user asked for less motion.
 STATEUI_WEB(reduces_motion) int32_t stateui_web_reduces_motion(void);
 
+/// Whether the user asked for more contrast; `listen_accessibility` calls `listener` when it, or less motion, turns.
+STATEUI_WEB(prefers_more_contrast) int32_t stateui_web_prefers_more_contrast(void);
+STATEUI_WEB(listen_accessibility) void stateui_web_listen_accessibility(int32_t listener);
+
 /// Draws a canvas's drawing on the `<canvas>` element, sized to its room at the screen's own density: `count`
 /// numbers of operations (WebCanvasStroke.swift), and the words they write, each ended by a zero byte.
 STATEUI_WEB(draw_canvas) void stateui_web_draw_canvas(

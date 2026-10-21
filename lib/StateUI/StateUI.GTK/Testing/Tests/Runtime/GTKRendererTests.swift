@@ -223,6 +223,24 @@ extension GTKRendererTests {
             XCTAssertNotEqual(said[3], "\(NetworkAccess.unknown)", "the network")
         }
     }
+
+    /// The accessibility settings reported are the desktop's: its animations, libadwaita's contrast, GNOME's screen
+    /// reader and the text scale, as GTK reads them for its own drawing.
+    func testThePageReadsTheDesktopsAccessibilitySettings() throws {
+        try onUIThread {
+            HostBoundary.setAccessibilityInfo(HostAccessibilityInfo(
+                reducesMotion: !GTKEnvironment.reducesMotion, prefersHigherContrast: true,
+                isScreenReaderOn: !GTKEnvironment.isScreenReaderOn, textScale: 0))
+            _ = GTKRenderer.running { Text("Settings") }
+            let settings = StandardEnvironment.device.accessibility
+
+            XCTAssertEqual(settings.reducesMotion, GTKEnvironment.reducesMotion)
+            XCTAssertEqual(
+                settings.prefersHigherContrast, adw_style_manager_get_high_contrast(adw_style_manager_get_default()) != 0)
+            XCTAssertEqual(settings.isScreenReaderOn, GTKEnvironment.isScreenReaderOn)
+            XCTAssertEqual(settings.textScale, GTKEnvironment.textScale)
+        }
+    }
 }
 
 /// A page saying the locale's name and zone, the battery's state and the network's access.

@@ -439,6 +439,7 @@ final class Catalog {
                 Sample(LocalizationSample()),
                 Sample(ConnectivitySample()),
                 Sample(BatterySample()),
+                Sample(AccessibilitySettingsSample()),
                 Sample(PlatformSupportSample()),
                 Sample(ApplicationSessionSample()),
             ])

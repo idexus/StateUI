@@ -3,6 +3,7 @@
 
 package stateui.android;
 
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.UiModeManager;
@@ -32,6 +33,7 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
+import android.view.accessibility.AccessibilityManager;
 import android.view.inputmethod.InputMethodManager;
 import java.util.Calendar;
 import java.util.Locale;
@@ -129,6 +131,25 @@ final class StateUIEnvironment {
     }
 
     /**
+     * The user's accessibility settings: 1 where the system's animations are off, 1 where the user asked for more
+     * contrast - which Android says from 14 - 1 while TalkBack explores by touch, and the scale of the system's
+     * words.
+     */
+    static float[] accessibility(Context context) {
+        float contrast = 0;
+        if (Build.VERSION.SDK_INT >= 34) {
+            UiModeManager mode = context.getSystemService(UiModeManager.class);
+            contrast = mode != null && mode.getContrast() > 0 ? 1 : 0;
+        }
+        AccessibilityManager manager = context.getSystemService(AccessibilityManager.class);
+        return new float[] {
+            ValueAnimator.areAnimatorsEnabled() ? 0 : 1, contrast,
+            manager != null && manager.isTouchExplorationEnabled() ? 1 : 0,
+            context.getResources().getConfiguration().fontScale,
+        };
+    }
+
+    /**
      * Whether the internet is reachable - 4, 3 behind a portal or not yet proved, 2 on a local network alone, 1
      * with no network, 0 where the application may not ask - and the connections in use as bits: 1 Bluetooth, 2
      * cellular, 4 ethernet, 8 Wi-Fi.
@@ -153,8 +174,8 @@ final class StateUIEnvironment {
     }
 
     /**
-     * Tells the Swift host whenever the zone, the clock, the battery, its saver or the network changes, until
-     * {@link #unwatch} is handed what this answers.
+     * Tells the Swift host whenever the zone, the clock, the battery, its saver, the network, TalkBack, the
+     * animations or the contrast changes, until {@link #unwatch} is handed what this answers.
      */
     static Object[] watch(Context context) {
         BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -191,7 +212,23 @@ final class StateUIEnvironment {
         } catch (SecurityException notAllowed) {
             network = null;
         }
-        return new Object[] { receiver, network };
+
+        AccessibilityManager.TouchExplorationStateChangeListener reader = on -> StateUIHost.environmentChanged();
+        AccessibilityManager accessibility = context.getSystemService(AccessibilityManager.class);
+        if (accessibility != null) accessibility.addTouchExplorationStateChangeListener(reader);
+        Object animations = null;
+        if (Build.VERSION.SDK_INT >= 33) {
+            ValueAnimator.DurationScaleChangeListener scale = changed -> StateUIHost.environmentChanged();
+            ValueAnimator.registerDurationScaleChangeListener(scale);
+            animations = scale;
+        }
+        Object contrast = null;
+        if (Build.VERSION.SDK_INT >= 34) {
+            UiModeManager.ContrastChangeListener changed = level -> StateUIHost.environmentChanged();
+            context.getSystemService(UiModeManager.class).addContrastChangeListener(context.getMainExecutor(), changed);
+            contrast = changed;
+        }
+        return new Object[] { receiver, network, reader, animations, contrast };
     }
 
     /** Stops what {@link #watch} started. */
@@ -200,6 +237,18 @@ final class StateUIEnvironment {
         if (watch[1] != null) {
             context.getSystemService(ConnectivityManager.class)
                     .unregisterNetworkCallback((ConnectivityManager.NetworkCallback) watch[1]);
+        }
+        AccessibilityManager accessibility = context.getSystemService(AccessibilityManager.class);
+        if (accessibility != null) {
+            accessibility.removeTouchExplorationStateChangeListener(
+                    (AccessibilityManager.TouchExplorationStateChangeListener) watch[2]);
+        }
+        if (Build.VERSION.SDK_INT >= 33 && watch[3] != null) {
+            ValueAnimator.unregisterDurationScaleChangeListener((ValueAnimator.DurationScaleChangeListener) watch[3]);
+        }
+        if (Build.VERSION.SDK_INT >= 34 && watch[4] != null) {
+            context.getSystemService(UiModeManager.class)
+                    .removeContrastChangeListener((UiModeManager.ContrastChangeListener) watch[4]);
         }
     }
 

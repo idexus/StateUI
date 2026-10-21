@@ -545,6 +545,14 @@ enum WebRelay {
     /// Whether the user asked for less motion.
     static var reducesMotion: Bool { stateui_web_reduces_motion() != 0 }
 
+    /// Whether the user asked for more contrast.
+    static var prefersMoreContrast: Bool { stateui_web_prefers_more_contrast() != 0 }
+
+    /// Calls `listener` whenever less motion or more contrast is asked for, or no longer.
+    static func listenToAccessibility(_ listener: Int32) {
+        stateui_web_listen_accessibility(listener)
+    }
+
     static func listenToAppearance(_ listener: Int32) {
         stateui_web_listen_appearance(listener)
     }

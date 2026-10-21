@@ -25,6 +25,32 @@ enum Listings {
             }
         }
         """#,
+        "AccessibilitySettingsSample": #"""
+        // Sources/Samples/Environment/AccessibilitySettingsSample.swift
+        /// The settings, as the host last reported them.
+        @Environment(\.device) var device
+
+        var body: some View {
+            let settings = device.accessibility
+
+            return VStack {
+                // Each setting is read here, so a change to one builds this
+                // closure.
+                DebugInfoLabel()
+
+                Text("less motion · \(settings.reducesMotion ? "on" : "off")")
+                Text("more contrast · \(settings.prefersHigherContrast ? "on" : "off")")
+                Text("screen reader · \(settings.isScreenReaderOn ? "on" : "off")")
+                Text("words · \(Int((settings.textScale * 100).rounded())) %")
+
+                // A rule drawn stronger where the user asked for more contrast.
+                Rectangle()
+                    .fill(settings.prefersHigherContrast ? Palette.accent : Palette.outline)
+                    .height(settings.prefersHigherContrast ? 3 : 1)
+                    .isAccessibilityHidden(true)
+            }
+        }
+        """#,
         "AcrossList": #"""
         // Sources/Samples/Collections/ItemsViewSample.swift
         static let tags = [

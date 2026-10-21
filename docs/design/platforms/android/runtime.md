@@ -107,6 +107,13 @@ activity again, so the locale - its direction with it - is read as the new one
 starts. The network needs `ACCESS_NETWORK_STATE`, which every head's manifest
 asks for; without it the network is reported unknown.
 
+The accessibility settings are read with them: less motion where the
+system's animations are off - the renderer's own reading for its motion -
+more contrast where Android says the user raised it (Android 14 on; none
+before), TalkBack where touch exploration is on, and the configuration's font
+scale. TalkBack, the animations' scale and the contrast are watched as the
+rest are; the font scale comes with a configuration change.
+
 ## The activity's lifecycle
 
 The activity's resume, pause and stop are its one window's state - activated

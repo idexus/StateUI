@@ -293,6 +293,7 @@ name - `\.device`, `\.locale`, `\.application`. These carry no mark: no
 conformance case gives a verdict for a set of facts as a whole, so none is
 claimed for any host.
 
+- `device.accessibility`: `reducesMotion`, `prefersHigherContrast`, `isScreenReaderOn`, `textScale`
 - `device.battery`: `chargeLevel`, `state`, `powerSource`, `energySaverStatus`
 - `device.connectivity`: `networkAccess`, `connectionProfiles`
 - `device.display`: `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate`

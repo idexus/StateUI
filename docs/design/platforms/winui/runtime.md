@@ -179,7 +179,11 @@ paints its controls in, so a colour written for light and dark reads as
 WinUI's own text beside it. Windows says when the theme, the power, the
 network or a screen's area changes - a tablet turned among them; the relay
 posts each change to the UI thread, and the host tells the core again,
-the screen with it, and renders what it changed.
+the screen with it, and renders what it changed. The accessibility settings
+are Windows's - animations off for less motion, high contrast, a screen
+reader running, and the text scale - told again as animations, the contrast
+or the text scale change; Windows tells no change of the screen reader, which
+is read again with any other.
 
 ## Acts
 

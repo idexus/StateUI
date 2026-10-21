@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 import CStateUIGTK
 
-/// What the device, the application, the desktop's style and the screen are, told to the core as the host starts,
-/// and again whenever the desktop says one changed; and what the user asks of motion.
+/// What the device, the application, the desktop's style, the screen and the user's accessibility settings are, told
+/// to the core as the host starts, and again whenever the desktop says one changed.
 /// Design: docs/design/platforms/gtk/runtime.md#the-environment
 @MainActor
 enum GTKEnvironment {
@@ -28,7 +28,7 @@ enum GTKEnvironment {
     }
 
     /// Tells `core` what may change as it stands now: the desktop's style, dark or light, and its accent, the
-    /// locale, the power and the network.
+    /// locale, the power, the network and the accessibility settings.
     static func reportChanging(to core: CoreLink) {
         let style = adw_style_manager_get_default()
         core.setColorScheme(adw_style_manager_get_dark(style) != 0 ? .dark : .light)
@@ -36,10 +36,13 @@ enum GTKEnvironment {
         core.setLocaleInfo(locale)
         core.setBatteryInfo(battery)
         core.setConnectivityInfo(connectivity)
+        core.setAccessibilityInfo(HostAccessibilityInfo(
+            reducesMotion: reducesMotion, prefersHigherContrast: adw_style_manager_get_high_contrast(style) != 0,
+            isScreenReaderOn: isScreenReaderOn, textScale: textScale))
     }
 
-    /// Calls `changed` whenever the desktop's style turns dark or light, its accent changes where libadwaita offers
-    /// one to choose, or the power or the network change.
+    /// Calls `changed` whenever the desktop's style turns dark or light or its contrast changes, its accent changes
+    /// where libadwaita offers one to choose, the power or the network change, or an accessibility setting does.
     static func watch(_ changed: @escaping @MainActor () -> Void) {
         onChange = changed
         watchMachine(changed)
@@ -55,6 +58,43 @@ enum GTKEnvironment {
                 MainActor.assumeIsolated { GTKEnvironment.onChange?() }
             }
         }
+        watchAccessibility(style)
+    }
+
+    /// Watches the desktop's contrast, its animations, its text scale and GNOME's screen reader.
+    private static func watchAccessibility(_ style: OpaquePointer) {
+        connectNotify(UnsafeMutableRawPointer(style), "high-contrast", number: 0) { _, _, _ in
+            MainActor.assumeIsolated { GTKEnvironment.onChange?() }
+        }
+        if let settings = gtk_settings_get_default() {
+            for property in ["gtk-enable-animations", "gtk-xft-dpi"] {
+                connectNotify(UnsafeMutableRawPointer(settings), property, number: 0) { _, _, _ in
+                    MainActor.assumeIsolated { GTKEnvironment.onChange?() }
+                }
+            }
+        }
+        if let reader = readerSettings {
+            connectSignal(UnsafeMutableRawPointer(reader), "changed::screen-reader-enabled", number: 0) {
+                (_: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?, _: gpointer?) in
+                MainActor.assumeIsolated { GTKEnvironment.onChange?() }
+            }
+        }
+    }
+
+    /// GNOME's settings of its assistive applications, kept for the process; none on a desktop keeping no such
+    /// settings, where asking for them would end the process.
+    private static let readerSettings: UnsafeMutablePointer<GSettings>? = {
+        let schema = "org.gnome.desktop.a11y.applications"
+        guard let source = g_settings_schema_source_get_default(),
+              let found = g_settings_schema_source_lookup(source, schema, 1)
+        else { return nil }
+        g_settings_schema_unref(found)
+        return g_settings_new(schema)
+    }()
+
+    /// Whether GNOME's screen reader is on; off on a desktop keeping no such setting.
+    static var isScreenReaderOn: Bool {
+        readerSettings.map { g_settings_get_boolean($0, "screen-reader-enabled") != 0 } ?? false
     }
 
     private static var watching = false

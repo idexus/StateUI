@@ -7,8 +7,8 @@ import UIKit
 @_spi(Host) import StateUIHost
 @_spi(Host) import StateUIApple
 
-/// The theme, the accent, the user's locale, the battery, the network and the display, told to the core as the host
-/// starts - the theme and the accent as the first scene connects, the display as each does - and whenever one
+/// The theme, the accent, the user's locale, the battery, the network, the display and the accessibility settings,
+/// told to the core as the host starts - the theme and the accent as the first scene connects, the display as each does - and whenever one
 /// changes, for as long as the application runs.
 /// Design: docs/design/platforms/uikit/runtime.md#the-environment
 @MainActor
@@ -32,6 +32,7 @@ final class UIKitEnvironment {
     func start(reportingChanges: @escaping (() -> Void) -> Void) {
         reportLocale()
         reportBattery()
+        reportAccessibility()
         reportChange = reportingChanges
         watch()
     }
@@ -74,6 +75,15 @@ final class UIKitEnvironment {
                 MainActor.assumeIsolated { self?.changed { $0.reportBattery() } }
             })
         }
+        for name in [
+            UIAccessibility.reduceMotionStatusDidChangeNotification,
+            UIAccessibility.darkerSystemColorsStatusDidChangeNotification,
+            UIAccessibility.voiceOverStatusDidChangeNotification, UIContentSizeCategory.didChangeNotification,
+        ] {
+            observers.append(center.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
+                MainActor.assumeIsolated { self?.changed { $0.reportAccessibility() } }
+            })
+        }
         system = SystemWatch(
             localeChanged: { [weak self] in self?.changed { $0.reportLocale() } },
             networkChanged: { [weak self] reached in self?.changed { $0.core.setConnectivityInfo(reached) } })
@@ -100,6 +110,17 @@ final class UIKitEnvironment {
     /// The user's locale as it stands.
     func reportLocale() {
         core.setLocaleInfo(SystemFacts.locale)
+    }
+
+    /// The user's accessibility settings: less motion, darker colours for more contrast, VoiceOver, and the scale of
+    /// words as the size the user chose draws the body's 17 points.
+    func reportAccessibility() {
+        let chosen = UITraitCollection(preferredContentSizeCategory: UIApplication.shared.preferredContentSizeCategory)
+        core.setAccessibilityInfo(HostAccessibilityInfo(
+            reducesMotion: UIAccessibility.isReduceMotionEnabled,
+            prefersHigherContrast: UIAccessibility.isDarkerSystemColorsEnabled,
+            isScreenReaderOn: UIAccessibility.isVoiceOverRunning,
+            textScale: UIFontMetrics(forTextStyle: .body).scaledValue(for: 17, compatibleWith: chosen) / 17))
     }
 
     /// The device's battery; one UIKit knows nothing of - the simulator's - is none.

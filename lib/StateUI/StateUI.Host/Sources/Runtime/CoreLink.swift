@@ -207,6 +207,9 @@
     /// Reports the battery.
     public func setBatteryInfo(_ info: HostBatteryInfo) { HostBoundary.setBatteryInfo(info) }
 
+    /// Reports the user's accessibility settings.
+    public func setAccessibilityInfo(_ info: HostAccessibilityInfo) { HostBoundary.setAccessibilityInfo(info) }
+
     /// How many fields the host's reports have changed so far: a report repeating what stands leaves it.
     public var environmentChanges: Int { HostBoundary.environmentChanges }
 

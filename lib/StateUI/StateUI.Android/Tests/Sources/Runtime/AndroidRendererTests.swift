@@ -82,6 +82,7 @@ final class AndroidRendererTests: XCTestCase {
             ("testAStartedHostSaysWhatItRealizes", testAStartedHostSaysWhatItRealizes),
             ("testTheWindowsTitleNamesTheActivity", testTheWindowsTitleNamesTheActivity),
             ("testTheHostReportsTheLocaleTheBatteryAndTheNetwork", testTheHostReportsTheLocaleTheBatteryAndTheNetwork),
+            ("testTheHostReportsTheAccessibilitySettings", testTheHostReportsTheAccessibilitySettings),
             ("testTheLocaleIsTheHostLayersReadingOfTheRelaysWords", testTheLocaleIsTheHostLayersReadingOfTheRelaysWords),
         ]
     }
@@ -337,6 +338,22 @@ final class AndroidRendererTests: XCTestCase {
             XCTAssertFalse(texts.first?.hasPrefix("locale  ") ?? true, "\(texts)")
             XCTAssertFalse(texts.contains("battery unknown"), "\(texts)")
             XCTAssertFalse(texts.contains("network unknown"), "\(texts)")
+        }
+    }
+
+    /// The accessibility settings reported are the device's: less motion where the system's animations are off, as
+    /// the renderer reads them for its own motion, no screen reader under a test, and the scale of the system's words.
+    func testTheHostReportsTheAccessibilitySettings() {
+        onMainActor {
+            HostBoundary.setAccessibilityInfo(HostAccessibilityInfo(
+                reducesMotion: !AndroidRenderer.animationsRemoved(), prefersHigherContrast: false,
+                isScreenReaderOn: true, textScale: 0))
+            _ = AndroidRenderer.running { Text("Settings") }
+            let settings = StandardEnvironment.device.accessibility
+
+            XCTAssertEqual(settings.reducesMotion, AndroidRenderer.animationsRemoved())
+            XCTAssertFalse(settings.isScreenReaderOn)
+            XCTAssertGreaterThan(settings.textScale, 0.5)
         }
     }
 }
