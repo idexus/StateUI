@@ -189,7 +189,19 @@ This host leaves `Map` and its `Marker` to the application: the platform has
 no map of its own, and a map needs a provider and its key, so the host makes
 neither (`byApplication` in `AndroidRealization.swift`), and the
 [platform contract](../platform-contract.md#reading-the-matrix) marks them 🧩.
-What the user sees there is the application's own registration. Every other
+What the user sees there is the application's own registration. The
+Gallery's is Google's: its `GoogleMapView` over the Maps SDK for Android, its
+markers the map's children. Its key is the application's own, never the
+repository's - `Platforms/Android/google-maps-key.properties` beside
+`build.gradle.kts`, which git keeps out:
+
+```properties
+key=your key
+```
+
+The build hands it to the manifest's `com.google.android.geo.API_KEY`, which
+stands even empty, as a map that finds none stops its page. Without a key the
+map draws no tiles, and the Gallery says so under it. Every other
 element of the library is the host's own, its `WebView` included: Android's
 web view, in the Java layer's `StateUIWebView`, which makes it again, blank,
 should its web process die. The head registers nothing for it.

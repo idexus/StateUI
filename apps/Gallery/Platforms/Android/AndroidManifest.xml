@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- The WebView sample fetches its page, and the page's link leads on over plain HTTP. -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- The Map sample shows the user's own position, once the user allows it. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <application
         android:icon="@mipmap/appicon"
         android:roundIcon="@mipmap/appicon"
@@ -13,6 +16,8 @@
         android:usesCleartextTraffic="true"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+        <!-- The Maps SDK's key, from google-maps-key.properties: present even when empty, as the map stops without it. -->
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="${googleMapsKey}" />
         <activity
             android:name="com.stateui.gallery.GalleryActivity"
             android:exported="true"

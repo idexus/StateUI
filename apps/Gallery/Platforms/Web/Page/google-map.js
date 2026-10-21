@@ -8,8 +8,8 @@
 // raises `mapclick` ("latitude longitude"), `markerselect` and `markerdetails` (a marker's number) in `detail`.
 //
 // The API's key is the application's: Page/google-maps-key.js, which git keeps out, sets `StateUI.googleMapsKey`,
-// and `StateUI.googleMapsMapId` where the key's project has a map of its own. The Swift half is
-// Platforms/Web/Host/GoogleMapElement.swift.
+// and `StateUI.googleMapsMapId` where the key's project has a map of its own; without a key, "No key - only for
+// development" stands under the map. The Swift half is Platforms/Web/Host/GoogleMapElement.swift.
 
 /** The Maps JavaScript API, loaded once - Google's own loader, its `importLibrary` answering each library asked. */
 let api;
@@ -50,6 +50,14 @@ class GalleryMap extends HTMLElement {
     this.style.position = "relative";
     this.style.overflow = "hidden";
     if (!this.room.isConnected) this.append(this.room);
+    if (!globalThis.StateUI?.googleMapsKey && !this.missing) {
+      this.missing = document.createElement("div");
+      this.missing.textContent = "No key - only for development";
+      this.missing.style.cssText = "position: absolute; inset: auto 0 0 0; height: 28px; display: grid; "
+        + "place-items: center; font: 13px system-ui, sans-serif; color: inherit;";
+      this.room.style.bottom = "28px";
+      this.append(this.missing);
+    }
     this.made ??= this.make();
   }
 

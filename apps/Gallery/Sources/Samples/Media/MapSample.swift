@@ -127,8 +127,18 @@ struct MapSample: SampleContent, ExampleContent {
             Text("`Map` is drawn by the platform's own map where there is one - "
                 + "`MKMapView` on Apple. Elsewhere, the Web included, the application "
                 + "registers its own map with the host, the pins as its children - this "
-                + "gallery registers one on the Web; where none is registered, the host "
-                + "shows the map's name in its place.")
+                + "gallery registers Google's on Android and on the Web; where none is "
+                + "registered, the host shows the map's name in its place.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Google's map draws its tiles with a key of the application's own, which "
+                + "git keeps out of the repository. On the Web, "
+                + "apps/Gallery/Platforms/Web/Page/google-maps-key.js says "
+                + "`StateUI.googleMapsKey = \"your key\";`. On Android, "
+                + "apps/Gallery/Platforms/Android/google-maps-key.properties, beside "
+                + "build.gradle.kts, says `key=your key` - a key for Android apps, allowed "
+                + "for com.stateui.gallery - and the next build hands it to the map.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

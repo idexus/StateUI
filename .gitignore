@@ -28,6 +28,8 @@ artifacts/
 # A map provider's key is the application's own, never the repository's: the
 # Gallery's Web head reads it from this script, made on the machine that serves it.
 /apps/Gallery/Platforms/Web/Page/google-maps-key.js
+# Its Android head reads it from this file, `key=...`, beside its build.gradle.kts.
+/apps/Gallery/Platforms/Android/google-maps-key.properties
 
 # SDK evaluation leftovers MSBuild may leave beside a project.
 *.SdkResolver.*.proj.Backup.tmp

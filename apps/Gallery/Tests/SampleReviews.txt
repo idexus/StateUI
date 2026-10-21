@@ -31,7 +31,7 @@ ConcurrentStateSample.swift 631956e254bad9b2
 ConnectivitySample.swift b032daec8c0b386f
 ContextMenuSample.swift 639add5daf31314b
 ConverterSample.swift 4826e332b502150c
-Cube3DSample.swift b4553fc48ae3381d
+Cube3DSample.swift dc765107f9ba4033
 DatePickerSample.swift 96e1d0bb2c2f86e8
 DeviceDisplaySample.swift a9241d0b33fff4dc
 DeviceInfoSample.swift cb6c33fedbd844cf
@@ -54,8 +54,8 @@ IconSample.swift 4fcdfd60e61dfb97
 IdentitySample.swift 3161e5c1e7445fbf
 ImageSample.swift 798ac3475ce4ff0a
 InteropActsSample.swift 0db4d28344cff3c4
-InteropControlSample.swift 83790075f3825d64
-InteropEventsSample.swift e7d3f1dceea13032
+InteropControlSample.swift 25650a1accc73d34
+InteropEventsSample.swift 53473d9397fd4191
 ItemActionsSample.swift 33deb2472b783b81
 ItemsViewSample.swift ad7bb28667c10afe
 KeyPressSample.swift 0bc3f571522ec49a
@@ -73,7 +73,7 @@ LoadingItemsSample.swift 0475570786822801
 LocaleInfoSample.swift 53a7aa3516ee574a
 LocalizationSample.swift 1636a0f168875c65
 MainQueueSample.swift 142b7947497fae78
-MapSample.swift 0a52199d9ecebd75
+MapSample.swift 66e057528637bc65
 MaterialsSample.swift 95e9e841bc225ed0
 MenuBarSample.swift feaefec006cc6607
 ModalSample.swift 0a6c4f1a545e0b50

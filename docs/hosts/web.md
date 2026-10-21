@@ -207,6 +207,8 @@ repository's - `Page/google-maps-key.js`, which git keeps out, sets
 StateUI.googleMapsKey = "your key";
 ```
 
+Without a key the map draws no tiles, and the Gallery says so under it.
+
 ### Acts and events
 
 An act of the application's own is performed with `StateUIActs.add`, and an
