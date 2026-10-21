@@ -38,6 +38,10 @@ enum WinUIRealization {
         // MARK: Tiers - a member every wearer realizes alike
         .notPlanned(LayoutContract.avoidsSafeArea, reason: "A Windows desktop window keeps no area of its content "
             + "clear: nothing of the window stands over its content."),
+        .notPlanned(VisualElementContract.accessibilityRole,
+            reason: "A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another."),
+        .notPlanned(VisualElementContract.accessibilityValue,
+            reason: "A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another."),
         .partial(VisualElementContract.background,
             missing: "An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it."),
         .complete(BarElementContract.barBackgroundColor),
@@ -66,6 +70,14 @@ enum WinUIRealization {
         .notPlanned(PageContract.backButtonTitle, reason: "WinUI's way back is an arrow, with no words."),
         .notPlanned(TextInputContract.cursorPosition, on: SearchFieldContract.self, reason: searchCaret),
         .notPlanned(TextInputContract.selectionLength, on: SearchFieldContract.self, reason: searchCaret),
+        .complete(VisualElementContract.accessibilityRole, on: VStackContract.self),
+        .complete(VisualElementContract.accessibilityRole, on: HStackContract.self),
+        .complete(VisualElementContract.accessibilityRole, on: ZStackContract.self),
+        .complete(VisualElementContract.accessibilityRole, on: GridContract.self),
+        .complete(VisualElementContract.accessibilityValue, on: VStackContract.self),
+        .complete(VisualElementContract.accessibilityValue, on: HStackContract.self),
+        .complete(VisualElementContract.accessibilityValue, on: ZStackContract.self),
+        .complete(VisualElementContract.accessibilityValue, on: GridContract.self),
         .partial(TextInputContract.inputPurpose,
             missing: "Filling in: WinUI's text box keeps no saved names, passwords or codes to fill it in from; a "
             + "name, a password and a code get their keys and checking all the same."),

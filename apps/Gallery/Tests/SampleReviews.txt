@@ -99,7 +99,7 @@ ScrollViewSample.swift cf26f19b3729064f
 SearchFieldSample.swift 32903a70f555dea0
 SearchSample.swift 679d1baa31dfcd8b
 SelectableTextSample.swift 32194d184067f26d
-SemanticsSample.swift 02f2c635e5452a1f
+SemanticsSample.swift 1c27bde8cb11a850
 ShapesSample.swift b8954092be37d204
 ShortcutSample.swift daf4ef581131770c
 SizingSample.swift 1ced92cea7dceeeb

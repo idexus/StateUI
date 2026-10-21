@@ -27,6 +27,8 @@ How each of them realizes these members is on its own page.
 | `accessibilityHeading` | property | `AccessibilityHeadingLevel` | native |
 | `accessibilityHint` | property | `String` | native |
 | `accessibilityLabel` | property | `String` | native |
+| `accessibilityRole` | property | `AccessibilityRole` | native |
+| `accessibilityValue` | property | `String` | native |
 | `background` | property | `Material` | adaptive |
 | `frame` | property | `Rect` | structure |
 | `height` | property | `Double` | native |

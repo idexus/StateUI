@@ -1,72 +1,76 @@
-# revision 15.2
+# revision 16.2
 ActivityIndicator.height: ✅
-ActivityIndicator.rotationX: ✓ read rotationX of ActivityIndicator: the host's own tip, checked against the projection it laid on the element
+ActivityIndicator.pivotY: ✅
 ActivityIndicator.width: ✅
-Button.accessibilityLabel: ✅
-Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Canvas.layoutDirection: ✓ read layoutDirection of Canvas: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Capsule.scaleY: ✅
-Capsule.style: ✅
-CheckBox.isAccessibilityHidden: ✅
-DatePicker.maximumHeight: ✅
-DatePicker.maximumWidth: ✅
-DatePicker.minimumHeight: ✅
-DatePicker.minimumWidth: ✅
-DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own tip, checked against the projection it laid on the element
-Divider.tooltip: ✅
-Ellipse.tooltip: ✅
-Grid.opacity: ✅
-Grid.pivotY: ✅
-HStack.maximumHeight: ✅
-HStack.maximumWidth: ✅
-HStack.minimumHeight: ✅
-HStack.minimumWidth: ✅
+Button.scaleX: ✅
+Button.zIndex: ✅
+Canvas.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+Capsule.layoutDirection: ✓ read layoutDirection of Capsule: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Capsule.opacity: ✅
+CheckBox.frame: ✅
+CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own tip, checked against the projection it laid on the element
+DatePicker.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+Divider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Divider.isVisible: ✅
+Ellipse.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Ellipse.isVisible: ✅
+Grid.ignoresInput: ✅
+Grid.rotationX: ✓ read rotationX of Grid: the host's own tip, checked against the projection it laid on the element
+HStack.frame: ✅
 HStack.rotationY: ✓ read rotationY of HStack: the host's own tip, checked against the projection it laid on the element
-Image.scaleY: ✅
+Image.scale: ✅
 Image.style: ✅
-ItemsView.isAccessibilityHidden: ✅
-LayoutEngine.accessibilityHint: ✅
-LayoutEngine.layoutDirection: ✅
-Line.hidesChildrenFromAccessibility: ✅
-Map.maximumHeight: 🧩
-Map.maximumWidth: 🧩
-Map.minimumHeight: 🧩
-Map.minimumWidth: 🧩
-Map.rotationY: 🧩
-Path.isEnabled: does not apply - read isEnabled of Path - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Path.rotation: ✅
-Picker.accessibilityHeading: ✅
+ItemsView.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+LayoutEngine.ignoresInput: ✅
+LayoutEngine.rotationX: ✓ read rotationX of LayoutEngine: the host's own tip, checked against the projection it laid on the element
+Line.scale: ✅
+Line.style: ✅
+Map.accessibilityRole: 🧩
+Path.frame: ✅
+Path.rotationY: ✓ read rotationY of Path: the host's own tip, checked against the projection it laid on the element
+Picker.accessibilityHint: ✅
 Picker.translationY: ✅
-Polygon.layoutDirection: ✓ read layoutDirection of Polygon: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Polyline.frame: ✅
-Polyline.scaleX: ✅
+Polygon.hidesChildrenFromAccessibility: ✅
+Polyline.maximumHeight: ✅
+Polyline.maximumWidth: ✅
+Polyline.minimumHeight: ✅
+Polyline.minimumWidth: ✅
+Polyline.rotation: ✅
 ProgressBar.accessibilityHeading: ✅
-Rectangle.isEnabled: does not apply - read isEnabled of Rectangle - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Rectangle.rotation: ✅
-ScrollView.accessibilityHeading: ✅
-ScrollView.translationY: ✅
-SearchField.isAccessibilityHidden: ✅
-Slider.maximumHeight: ✅
-Slider.maximumWidth: ✅
-Slider.minimumHeight: ✅
-Slider.minimumWidth: ✅
-Slider.rotationY: ✓ read rotationY of Slider: the host's own tip, checked against the projection it laid on the element
-Spacer.tooltip: ✅
-Stepper.isEnabled: ✅
+ProgressBar.scaleY: ✅
+Rectangle.tooltip: ✅
+ScrollView.layoutDirection: ✓ read layoutDirection of ScrollView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ScrollView.opacity: ✅
+SearchField.maximumHeight: ✅
+SearchField.maximumWidth: ✅
+SearchField.minimumHeight: ✅
+SearchField.minimumWidth: ✅
+SearchField.rotation: ✅
+Slider.accessibilityLabel: ✅
+Slider.translationX: ✅
+Spacer.isAccessibilityHidden: ✅
+Stepper.maximumHeight: ✅
+Stepper.maximumWidth: ✅
+Stepper.minimumHeight: ✅
+Stepper.minimumWidth: ✅
 Stepper.rotation: ✅
 Switch.accessibilityLabel: ✅
-Text.maximumHeight: ✅
-Text.maximumWidth: ✅
-Text.minimumHeight: ✅
-Text.minimumWidth: ✅
-Text.rotationY: ✓ read rotationY of Text: the host's own tip, checked against the projection it laid on the element
-TextEditor.isVisible: ✅
-TextEditor.pivotX: ✅
-TextField.translationX: ✅
-TextField.zIndex: ✅
-TimePicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-VStack.frame: ✅
-VStack.scaleX: ✅
-WebView.translationX: ✅
-WebView.zIndex: ✅
-ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Switch.translationX: ✅
+Text.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Text.isVisible: ✅
+TextEditor.isAccessibilityHidden: ✅
+TextField.maximumHeight: ✅
+TextField.maximumWidth: ✅
+TextField.minimumHeight: ✅
+TextField.minimumWidth: ✅
+TextField.rotation: ✅
+TimePicker.accessibilityLabel: ✅
+TimePicker.translationX: ✅
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+VStack.isAccessibilityHidden: ✅
+WebView.isAccessibilityHidden: ✅
+ZStack.maximumHeight: ✅
+ZStack.maximumWidth: ✅
+ZStack.minimumHeight: ✅
+ZStack.minimumWidth: ✅
+ZStack.rotation: ✅

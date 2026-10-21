@@ -353,6 +353,8 @@ ZStack
   accessibilityHint
   accessibilityIdentifier
   accessibilityLabel
+  accessibilityRole
+  accessibilityValue
   allowsDrop
   area
   canDrag

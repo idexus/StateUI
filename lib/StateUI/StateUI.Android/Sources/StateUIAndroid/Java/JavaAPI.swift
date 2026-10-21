@@ -494,7 +494,8 @@ enum JavaAPI {
         views, "pressable",
         "(Landroid/content/Context;Lstateui/android/StateUIShapeDrawable;Landroid/graphics/drawable/Drawable;)Landroid/graphics/drawable/Drawable;")
     static let setAccessibility = Java.staticMethod(
-        views, "setAccessibility", "(Landroid/view/View;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZI)V")
+        views, "setAccessibility",
+        "(Landroid/view/View;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZI)V")
     static let textColors = Java.staticMethod(
         views, "textColors", "(Landroid/content/Context;I)Landroid/content/res/ColorStateList;")
     static let colouredBackground = Java.staticMethod(

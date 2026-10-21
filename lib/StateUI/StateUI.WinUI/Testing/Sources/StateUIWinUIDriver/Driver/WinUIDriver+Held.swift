@@ -170,6 +170,12 @@ extension WinUIDriver {
             return .string(try read(view, "automationName"))
         case "accessibilityLabel": return .string(view.automationWords.name)
         case "accessibilityHint": return .string(view.automationWords.help)
+        case "accessibilityRole":
+            let type = stateui_winui_automation_control_type(view.handle)
+            return AccessibilityRole.allCases.first { WinUILayoutView.controlType($0) == type }?.propValue
+        case "accessibilityValue":
+            let value = view.automationWords.value
+            return value.isEmpty ? nil : .string(value)
         case "role" where view is WinUIButtonView:
             // The accent WinUI holds for the main action; the host's own record for the roles it draws no look for.
             let button = view as! WinUIButtonView

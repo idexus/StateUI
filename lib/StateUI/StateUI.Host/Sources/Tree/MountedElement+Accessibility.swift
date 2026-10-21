@@ -26,6 +26,12 @@
     /// What the element does, said after its label; nil where it says nothing.
     public var hint: String?
 
+    /// What kind of thing the element is; nil for its view's own kind.
+    public var role: AccessibilityRole?
+
+    /// What the element holds, said after its label; nil for its view's own value.
+    public var value: String?
+
     /// Its level as a heading, 1 to 9; 0 where it is none.
     public var headingLevel: Int32
 
@@ -40,10 +46,15 @@
     }
 
     /// Words of these parts.
-    public init(identifier: String?, label: String?, hint: String?, headingLevel: Int32, presence: Presence?) {
+    public init(
+        identifier: String?, label: String?, hint: String?, role: AccessibilityRole? = nil, value: String? = nil,
+        headingLevel: Int32, presence: Presence?
+    ) {
         self.identifier = identifier
         self.label = label
         self.hint = hint
+        self.role = role
+        self.value = value
         self.headingLevel = headingLevel
         self.presence = presence
     }
@@ -52,16 +63,17 @@
 extension MountedElement {
     /// What assistive technology meets; a change to any of them puts the element's words on its view again.
     public static let accessibilityProperties: Set<Prop> = [
-        .accessibilityIdentifier, .accessibilityLabel, .accessibilityHint, .accessibilityHeading,
-        .isAccessibilityHidden, .hidesChildrenFromAccessibility,
+        .accessibilityIdentifier, .accessibilityLabel, .accessibilityHint, .accessibilityRole, .accessibilityValue,
+        .accessibilityHeading, .isAccessibilityHidden, .hidesChildrenFromAccessibility,
     ]
 
     /// The element's words for assistive technology: left out with its children, or hidden, or met, as it says -
     /// and saying nothing of it, met where it says words of its own - a label standing for all it holds, a hint, a
-    /// heading - or answers a tap; else as its view stands of itself.
+    /// kind, a value, a heading - or answers a tap; else as its view stands of itself.
     /// Design: docs/design/host/tree.md#what-assistive-technology-meets
     public var accessibilityWords: AccessibilityWords {
         let (label, hint) = (string(.accessibilityLabel), string(.accessibilityHint))
+        let (role, said) = (value(.accessibilityRole).flatMap(AccessibilityRole.init(propValue:)), string(.accessibilityValue))
         let headingLevel = max(0, value(.accessibilityHeading)?.enumeration ?? 0)
         let presence: AccessibilityWords.Presence? = switch (
             bool(.hidesChildrenFromAccessibility), bool(.isAccessibilityHidden)
@@ -69,11 +81,13 @@ extension MountedElement {
         case (true?, _): .hiddenWithChildren
         case (_, true?): .hidden
         case (_, false?): .met
-        default: label != nil || hint != nil || headingLevel > 0 || events[.tapped] != nil ? .met : nil
+        default:
+            label != nil || hint != nil || role != nil || said != nil || headingLevel > 0 || events[.tapped] != nil
+                ? .met : nil
         }
         return AccessibilityWords(
-            identifier: string(.accessibilityIdentifier), label: label, hint: hint, headingLevel: headingLevel,
-            presence: presence)
+            identifier: string(.accessibilityIdentifier), label: label, hint: hint, role: role, value: said,
+            headingLevel: headingLevel, presence: presence)
     }
 
     /// What assistive technology says for this element and all it holds, in reading order - the name of a row a

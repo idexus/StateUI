@@ -151,24 +151,29 @@ final class StateUIViews {
 
     /**
      * What assistive technology meets of `view`: the name a test finds it by, the words read for it and the
-     * hint after them - none leaves the view's own - whether it is a heading, and whether it is met at all.
+     * hint after them, the class its kind is said by and the value said after them - none leaves the view's
+     * own - whether it is a heading, and whether it is met at all.
      */
-    static void setAccessibility(View view, String identifier, String label, String hint, boolean heading,
-                                 int importance) {
+    static void setAccessibility(View view, String identifier, String label, String hint, String kind, String value,
+                                 boolean heading, int importance) {
         view.setContentDescription(label);
         view.setImportantForAccessibility(importance);
         if (Build.VERSION.SDK_INT >= 28) view.setAccessibilityHeading(heading);
-        view.setAccessibilityDelegate(identifier == null && hint == null ? null : new Words(identifier, hint));
+        if (Build.VERSION.SDK_INT >= 30) view.setStateDescription(value);
+        boolean words = identifier != null || hint != null || kind != null;
+        view.setAccessibilityDelegate(words ? new Words(identifier, hint, kind) : null);
     }
 
-    /** The words a view's accessibility node carries beyond the view's own: its name, and its hint. */
+    /** The words a view's accessibility node carries beyond the view's own: its name, its hint and its kind. */
     private static final class Words extends View.AccessibilityDelegate {
         private final String identifier;
         private final String hint;
+        private final String kind;
 
-        Words(String identifier, String hint) {
+        Words(String identifier, String hint, String kind) {
             this.identifier = identifier;
             this.hint = hint;
+            this.kind = kind;
         }
 
         @Override
@@ -176,6 +181,7 @@ final class StateUIViews {
             super.onInitializeAccessibilityNodeInfo(host, info);
             if (identifier != null) info.setViewIdResourceName(identifier);
             if (hint != null) info.setHintText(hint);
+            if (kind != null) info.setClassName(kind);
         }
     }
 

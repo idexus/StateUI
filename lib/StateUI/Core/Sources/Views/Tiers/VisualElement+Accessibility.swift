@@ -13,6 +13,27 @@ extension VisualElementProperties {
     /// it sits. On a control that shows its own words it replaces them.
     public func accessibilityLabel(_ value: String) -> Modified { setValue(VisualElementContract.accessibilityLabel, value) }
 
+    /// What kind of thing a screen reader says this view is, where no control's own kind says it - a view composed
+    /// of parts.
+    ///
+    ///     HStack { … }
+    ///         .accessibilityLabel("Rating")
+    ///         .accessibilityRole(.adjustable)
+    ///         .accessibilityValue("\(rating) of 5")
+    ///
+    /// A control is its own kind already: a button is one, a switch a toggle.
+    public func accessibilityRole(_ value: AccessibilityRole) -> Modified {
+        setValue(VisualElementContract.accessibilityRole, value)
+    }
+
+    /// What this view holds, which a screen reader says after its label - for a view composed of parts, whose value
+    /// no control's own says.
+    ///
+    ///     HStack { … }.accessibilityRole(.adjustable).accessibilityValue("3 of 5")
+    public func accessibilityValue(_ value: String) -> Modified {
+        setValue(VisualElementContract.accessibilityValue, value)
+    }
+
     /// What a screen reader says using the view does, after saying what it is.
     ///
     ///     Switch($lit)
@@ -84,5 +105,17 @@ extension VisualElement {
     /// and no view is rebuilt for it.
     public func accessibilityHint(_ state: Binding<String>) -> Modified {
         words(VisualElementContract.accessibilityHint, by: state)
+    }
+
+    /// `accessibilityRole` from a state, `$x`: the host sets each new value
+    /// as it stands, and no view is rebuilt for it.
+    public func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Modified {
+        twin(VisualElementContract.accessibilityRole, by: state)
+    }
+
+    /// `accessibilityValue` from a state, `$x`: the host writes each new text,
+    /// and no view is rebuilt for it.
+    public func accessibilityValue(_ state: Binding<String>) -> Modified {
+        words(VisualElementContract.accessibilityValue, by: state)
     }
 }

@@ -155,11 +155,11 @@ draws a turn about the vertical axis that way.
 
 ## Accessibility and automation
 
-Six modifiers say what a view is to somebody not looking at it, and they are
-two jobs that do not stand in for one another: an identifier for automation;
-and a label, a hint, a heading level, and whether a screen reader skips the
-view (`isAccessibilityHidden`) or the view and everything in it
-(`hidesChildrenFromAccessibility`).
+Eight modifiers say what a view is to somebody not looking at it, and they
+are two jobs that do not stand in for one another: an identifier for
+automation; and a label, a hint, a kind, a value, a heading level, and whether
+a screen reader skips the view (`isAccessibilityHidden`) or the view and
+everything in it (`hidesChildrenFromAccessibility`).
 
 `accessibilityIdentifier` is a handle nothing reads out: a UI test, a script or
 an agent driving the application asks the platform's automation for it, where
@@ -179,6 +179,16 @@ them, so the ones worth writing are on controls with no words of their own.
 Left unsaid, whether a screen reader skips a view is the platform's decision,
 which is nearly always right: a view with words is reachable and a plain
 container is not.
+
+A kind (`accessibilityRole`) and a value (`accessibilityValue`) are for a
+view composed of parts, which no control's own kind and value speak for: a
+rating of five pictures is one adjustable thing holding "3 of 5", not five
+images. A control is its kind already - a button is one, a switch a toggle -
+and says its own value, so the pair is worth writing on a layout. The kinds
+are the few every platform's screen reader names alike: a button, a toggle,
+something adjustable, a link, an image and words. A platform whose control is
+fixed to its own kind says a kind only on a layout StateUI draws, and the
+matrix marks the rest `–`.
 
 ## A tooltip
 

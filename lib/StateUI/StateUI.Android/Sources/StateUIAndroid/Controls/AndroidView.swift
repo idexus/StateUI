@@ -252,8 +252,8 @@ class AndroidView {
     func closed() {}
 
     /// What assistive technology meets of the view: the name a test finds it by, the words read for it and the
-    /// hint after them - none leaves the view's own - whether it is a heading, and whether it, or it and its
-    /// children, are met at all: none, as the view is of itself.
+    /// hint after them, its kind and its value - none leaves the view's own - whether it is a heading, and whether
+    /// it, or it and its children, are met at all: none, as the view is of itself.
     /// Design: docs/design/platforms/android/controls.md#what-assistive-technology-meets
     func setAccessibility(_ words: AccessibilityWords) {
         let own = ownPresence ?? Java.callInt(reference, JavaAPI.getImportantForAccessibility)
@@ -269,7 +269,22 @@ class AndroidView {
             Java.callStatic(
                 JavaAPI.views, JavaAPI.setAccessibility, .object(reference),
                 .object(words.identifier.flatMap(Java.string)), .object(words.label.flatMap(Java.string)),
-                .object(words.hint.flatMap(Java.string)), .bool(words.headingLevel > 0), .int(presence))
+                .object(words.hint.flatMap(Java.string)),
+                .object(words.role.flatMap(Self.accessibilityClass).flatMap(Java.string)),
+                .object(words.value.flatMap(Java.string)), .bool(words.headingLevel > 0), .int(presence))
+        }
+    }
+
+    /// The class TalkBack says a kind by; nil for a link, which Android names no class for.
+    /// Design: docs/design/platforms/android/controls.md#what-assistive-technology-meets
+    static func accessibilityClass(_ role: AccessibilityRole) -> String? {
+        switch role {
+        case .button: "android.widget.Button"
+        case .toggle: "android.widget.ToggleButton"
+        case .adjustable: "android.widget.SeekBar"
+        case .link: nil
+        case .image: "android.widget.ImageView"
+        case .text: "android.widget.TextView"
         }
     }
 

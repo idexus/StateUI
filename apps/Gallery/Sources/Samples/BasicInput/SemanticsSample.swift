@@ -8,6 +8,8 @@ struct SemanticsSample: SampleContent, ExampleContent {
 
     @State private var taps = 0
 
+    @State private var rating = 3
+
     /// The last thing said out loud, shown - because a machine with no screen
     /// reader running shows nothing at all otherwise, and what was said is the
     /// whole point of the button.
@@ -109,6 +111,30 @@ struct SemanticsSample: SampleContent, ExampleContent {
             }
             .spacing(4)
 
+            SectionTitle("One thing made of parts")
+
+            // Five stars drawn, one rating heard: a screen reader meets the row
+            // as one adjustable thing holding its value, not as five pictures.
+            HStack {
+                ForEach(1...5) { star in
+                    Text(star <= rating ? "★" : "☆")
+                        .fontSize(28)
+                        .textColor(Palette.accent)
+                        .onTapped { rating = star }
+                }
+            }
+            .spacing(4)
+            .horizontalAlignment(.center)
+            .accessibilityIdentifier("semantics.rating")
+            .accessibilityLabel("Rating")
+            .accessibilityRole(.adjustable)
+            .accessibilityValue("\(rating) of 5")
+
+            Text("A user hears: Rating, \(rating) of 5")
+                .fontSize(12)
+                .textColor(Palette.accent)
+                .horizontalTextAlignment(.center)
+
             SectionTitle("Said out loud")
 
             // Said out loud, now, whatever the user was on. An ACT, because
@@ -204,9 +230,11 @@ struct SemanticsSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("Two jobs, four modifiers, and they do not stand in for one another. "
+            Text("Two jobs, and they do not stand in for one another. "
                 + "`.accessibilityLabel` and `.accessibilityHint` are what a screen reader "
                 + "SAYS: the first names the control, the second says what using it does. "
+                + "`.accessibilityRole` and `.accessibilityValue` say what a view made of "
+                + "parts is and holds: the stars are one adjustable rating, not five pictures. "
                 + "`.accessibilityHeading` marks a view as a heading, which is how a "
                 + "user moves through a long page. `.accessibilityIdentifier` is a handle nobody "
                 + "hears - it is what a UI test, a script or an agent driving the "

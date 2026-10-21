@@ -23,6 +23,14 @@ public enum VisualElementContract: Contract {
     public static let accessibilityLabel = ElementProperty<Self, String>(
         "accessibilityLabel", layer: .native)
 
+    /// What kind of thing a screen reader says the element is, where its own kind does not say it.
+    public static let accessibilityRole = ElementProperty<Self, AccessibilityRole>(
+        "accessibilityRole", layer: .native)
+
+    /// What the element holds, said after its label, where it holds a value its own kind does not say.
+    public static let accessibilityValue = ElementProperty<Self, String>(
+        "accessibilityValue", layer: .native)
+
     /// Whether the element and everything in it are left out of what a screen
     /// reader reads.
     public static let hidesChildrenFromAccessibility = ElementProperty<Self, Bool>(
@@ -132,7 +140,7 @@ public enum VisualElementContract: Contract {
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [
-        accessibilityHeading, accessibilityHint, accessibilityLabel,
+        accessibilityHeading, accessibilityHint, accessibilityLabel, accessibilityRole, accessibilityValue,
         background, frame, height, hidesChildrenFromAccessibility, ignoresInput,
         isAccessibilityHidden, isEnabled, isVisible, layoutDirection,
         maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY,

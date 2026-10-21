@@ -87,6 +87,8 @@ extension NodeType {
     static let keysTaken = KeyboardElementContract.keysTaken.token
     static let accessibilityIdentifier = AutomationElementContract.accessibilityIdentifier.token
     static let accessibilityLabel = VisualElementContract.accessibilityLabel.token
+    static let accessibilityRole = VisualElementContract.accessibilityRole.token
+    static let accessibilityValue = VisualElementContract.accessibilityValue.token
     static let subtitle = MarkerContract.subtitle.token
     static let allowsDrop = ViewContract.allowsDrop.token
     static let area = ViewContract.area.token

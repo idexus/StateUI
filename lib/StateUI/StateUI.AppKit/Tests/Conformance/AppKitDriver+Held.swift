@@ -21,7 +21,7 @@ extension AppKitDriver {
             }
             return transform(property, drawn)
         case .accessibilityLabel, .accessibilityHint, .accessibilityIdentifier, .isAccessibilityHidden,
-             .hidesChildrenFromAccessibility:
+             .hidesChildrenFromAccessibility, .accessibilityRole, .accessibilityValue:
             guard let native else { return nil }
             return accessibility(property, native.accessibilityTarget(of: view), view)
         case .accessibilityHeading:
@@ -97,6 +97,10 @@ extension AppKitDriver {
         switch property {
         case .accessibilityLabel: return target.accessibilityLabel().propValue
         case .accessibilityHint: return target.accessibilityHelp().propValue
+        case .accessibilityRole:
+            let role = target.accessibilityRole()
+            return AccessibilityRole.allCases.first { AppKitElement.accessibilityRole($0) == role }?.propValue
+        case .accessibilityValue: return (target.accessibilityValue() as? String).propValue
         case .accessibilityIdentifier: return target.accessibilityIdentifier().propValue
         case .isAccessibilityHidden: return (!target.isAccessibilityElement()).propValue
         case .hidesChildrenFromAccessibility:

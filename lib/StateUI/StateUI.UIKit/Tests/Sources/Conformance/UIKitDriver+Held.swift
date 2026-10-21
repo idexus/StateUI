@@ -27,6 +27,12 @@ extension UIKitDriver {
             return transform(property, drawn)
         case .accessibilityLabel: return met(view).accessibilityLabel.propValue
         case .accessibilityHint: return met(view).accessibilityHint.propValue
+        case .accessibilityRole:
+            let traits = met(view).accessibilityTraits
+            // A kind said stands alone among the traits saying a kind.
+            let kinds = AccessibilityRole.allCases.filter { traits.contains(UIKitElement.accessibilityTrait($0)) }
+            return kinds.count == 1 ? kinds[0].propValue : nil
+        case .accessibilityValue: return met(view).accessibilityValue.propValue
         case .accessibilityIdentifier: return met(view).accessibilityIdentifier.propValue
         case .isAccessibilityHidden: return (!met(view).isAccessibilityElement).propValue
         case .hidesChildrenFromAccessibility:

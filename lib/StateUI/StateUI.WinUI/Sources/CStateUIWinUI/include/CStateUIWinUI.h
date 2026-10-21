@@ -1224,8 +1224,15 @@ void stateui_winui_set_accessibility(StateUIObjectRef element, char const *ident
 /// Whether assistive technology meets none of what stands in a panel.
 void stateui_winui_panel_hide_children(StateUIObjectRef panel, bool hidden);
 
+/// The `AutomationControlType` a panel's automation peer answers with, -1 for a panel's own, and the value it holds,
+/// null for none.
+void stateui_winui_panel_set_kind(StateUIObjectRef panel, int32_t controlType, char const *value);
+
+/// The `AutomationControlType` assistive technology meets the element as; -1 where it meets none.
+int32_t stateui_winui_automation_control_type(StateUIObjectRef element);
+
 /// What assistive technology meets of the element, as its automation peer says it - what a test reads: `what` 0 its
-/// name, 1 its help text, 2 its automation id, in UTF-8; the length they need, their end not counted.
+/// name, 1 its help text, 2 its automation id, 3 its value, in UTF-8; the length they need, their end not counted.
 int32_t stateui_winui_automation_words(StateUIObjectRef element, int32_t what, char *utf8, int32_t capacity);
 
 /// Its heading level, whether it is a control element and a content element, and how many of what stands in it

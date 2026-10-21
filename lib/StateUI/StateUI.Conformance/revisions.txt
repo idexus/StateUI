@@ -46,7 +46,7 @@ Image 3
 Page 6
 PageElement 2
 View 7
-VisualElement 15
+VisualElement 16
 Shape 5
 BorderElement 10
 TextInput 7

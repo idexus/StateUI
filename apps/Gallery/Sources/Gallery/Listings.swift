@@ -9147,6 +9147,8 @@ enum Listings {
 
         @State private var taps = 0
 
+        @State private var rating = 3
+
         /// The last thing said out loud, shown - because a machine with no screen
         /// reader running shows nothing at all otherwise, and what was said is the
         /// whole point of the button.
@@ -9217,6 +9219,22 @@ enum Listings {
                         .fontWeight(.bold)
                         .accessibilityHeading(.h1)
                 }
+
+                SectionTitle("One thing made of parts")
+
+                // Five stars drawn, one rating heard: a screen reader meets the row
+                // as one adjustable thing holding its value, not as five pictures.
+                HStack {
+                    ForEach(1...5) { star in
+                        Text(star <= rating ? "★" : "☆")
+                            .onTapped { rating = star }
+                    }
+                }
+                .horizontalAlignment(.center)
+                .accessibilityRole(.adjustable)
+                .accessibilityValue("\(rating) of 5")
+
+                Text("A user hears: Rating, \(rating) of 5")
 
                 SectionTitle("Said out loud")
 

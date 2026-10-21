@@ -20,6 +20,8 @@
                 headed(element),
                 Aspects.holds(VisualElementContract.accessibilityLabel, on: element, "Confirm", then: "Save"),
                 Aspects.holds(VisualElementContract.accessibilityHint, on: element, "Saves the form", then: "Saves it all"),
+                Aspects.holds(VisualElementContract.accessibilityRole, on: element, .button, then: .adjustable),
+                Aspects.holds(VisualElementContract.accessibilityValue, on: element, "3 of 5", then: "4 of 5"),
                 Aspects.holds(VisualElementContract.tooltip, on: element, "Saves the draft", then: "Saves every draft"),
                 Aspects.holds(VisualElementContract.accessibilityHeading, on: element, .h2, then: .h3),
                 Aspects.holds(VisualElementContract.isAccessibilityHidden, on: element, false, then: true, with: named),

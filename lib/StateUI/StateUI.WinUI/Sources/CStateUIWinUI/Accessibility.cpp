@@ -14,10 +14,12 @@
 
 #include <winrt/Microsoft.UI.Xaml.Automation.h>
 #include <winrt/Microsoft.UI.Xaml.Automation.Peers.h>
+#include <winrt/Microsoft.UI.Xaml.Automation.Provider.h>
 
 using namespace stateui;
 namespace automation = winrt::Microsoft::UI::Xaml::Automation;
 namespace peers = winrt::Microsoft::UI::Xaml::Automation::Peers;
+namespace provider = winrt::Microsoft::UI::Xaml::Automation::Provider;
 
 namespace {
     using Properties = automation::AutomationProperties;
@@ -73,7 +75,14 @@ extern "C" int32_t stateui_winui_automation_words(StateUIObjectRef handle, int32
     try {
         auto met = peer(handle);
         if (!met) return 0;
-        auto read = winrt::to_string(what == 0 ? met.GetName() : what == 1 ? met.GetHelpText() : met.GetAutomationId());
+        winrt::hstring said;
+        if (what == 3) {
+            auto valued = met.GetPattern(peers::PatternInterface::Value).try_as<provider::IValueProvider>();
+            said = valued ? valued.Value() : winrt::hstring();
+        } else {
+            said = what == 0 ? met.GetName() : what == 1 ? met.GetHelpText() : met.GetAutomationId();
+        }
+        auto read = winrt::to_string(said);
         if (utf8 && capacity > 0) {
             auto count = std::min(static_cast<int32_t>(read.size()), capacity - 1);
             std::memcpy(utf8, read.data(), count);
@@ -83,6 +92,16 @@ extern "C" int32_t stateui_winui_automation_words(StateUIObjectRef handle, int32
     } catch (...) {
         report("reading what assistive technology meets");
         return 0;
+    }
+}
+
+extern "C" int32_t stateui_winui_automation_control_type(StateUIObjectRef handle) {
+    try {
+        auto met = peer(handle);
+        return met ? static_cast<int32_t>(met.GetAutomationControlType()) : -1;
+    } catch (...) {
+        report("reading what assistive technology meets");
+        return -1;
     }
 }
 

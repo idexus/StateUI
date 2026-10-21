@@ -1,61 +1,70 @@
-# revision 15.2
-ActivityIndicator.scaleY: ✅
+# revision 16.2
+ActivityIndicator.scale: ✅
 ActivityIndicator.style: ✅
-Button.isAccessibilityHidden: ✅
-Canvas.height: ✅
-Canvas.rotationX: ✓ read rotationX of Canvas: the host's own tip, checked against the projection it laid on the element
-Canvas.width: ✅
-Capsule.accessibilityHint: ✅
-CheckBox.isVisible: ✅
-CheckBox.pivotX: ✅
-DatePicker.translationX: ✅
-DatePicker.zIndex: ✅
-Divider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Ellipse.background: – A WinUI shape is its figure alone: it paints no ground around it.
-Grid.ignoresInput: ✅
-Grid.scale: ✅
+Button.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Canvas.hidesChildrenFromAccessibility: ✅
+Capsule.ignoresInput: ✅
+Capsule.rotationX: ✓ read rotationX of Capsule: the host's own tip, checked against the projection it laid on the element
+CheckBox.accessibilityLabel: ✅
+CheckBox.translationX: ✅
+DatePicker.isAccessibilityHidden: ✅
+Divider.maximumHeight: ✅
+Divider.maximumWidth: ✅
+Divider.minimumHeight: ✅
+Divider.minimumWidth: ✅
+Divider.rotation: ✅
+Ellipse.maximumHeight: ✅
+Ellipse.maximumWidth: ✅
+Ellipse.minimumHeight: ✅
+Ellipse.minimumWidth: ✅
+Ellipse.rotation: ✅
+Grid.accessibilityHeading: ✅
+Grid.scaleY: ✅
+HStack.accessibilityLabel: ✅
 HStack.translationX: ✅
-HStack.zIndex: ✅
 Image.accessibilityHint: ✅
-ItemsView.isVisible: ✅
-ItemsView.pivotX: ✅
-LayoutEngine.hidesChildrenFromAccessibility: ✅
-Line.opacity: ✅
-Line.pivotY: ✅
-Map.translationX: 🧩
-Map.zIndex: 🧩
-Path.frame: ✅
-Path.scaleX: ✅
+Image.translationY: ✅
+ItemsView.isAccessibilityHidden: ✅
+LayoutEngine.accessibilityHeading: ✅
+LayoutEngine.scaleY: ✅
+Line.accessibilityHint: ✅
+Line.translationY: ✅
+Map.isAccessibilityHidden: 🧩
+Path.accessibilityLabel: ✅
+Path.translationX: ✅
 Picker.accessibilityHeading: ✅
 Polygon.height: ✅
-Polygon.rotationX: ✓ read rotationX of Polygon: the host's own tip, checked against the projection it laid on the element
+Polygon.pivotY: ✅
 Polygon.width: ✅
-Polyline.accessibilityLabel: ✅
-Polyline.isEnabled: ✅
-ProgressBar.layoutDirection: ✅
-Rectangle.frame: ✅
-Rectangle.scaleX: ✅
-ScrollView.accessibilityHeading: ✅
-SearchField.isVisible: ✅
-SearchField.pivotX: ✅
-Slider.translationX: ✅
-Slider.zIndex: ✅
-Spacer.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Stepper.frame: ✅
+Polyline.scaleX: ✅
+Polyline.zIndex: ✅
+ProgressBar.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+Rectangle.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Rectangle.isVisible: ✅
+ScrollView.ignoresInput: ✅
+ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own tip, checked against the projection it laid on the element
+SearchField.scaleX: ✅
+SearchField.zIndex: ✅
+Slider.tooltip: ✅
+Spacer.isEnabled: does not apply - read isEnabled of Spacer - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Spacer.pivotX: ✅
 Stepper.scaleX: ✅
-Switch.isAccessibilityHidden: ✅
-Text.translationX: ✅
-Text.zIndex: ✅
-TextEditor.maximumHeight: ✅
-TextEditor.maximumWidth: ✅
-TextEditor.minimumHeight: ✅
-TextEditor.minimumWidth: ✅
-TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own tip, checked against the projection it laid on the element
-TextField.tooltip: ✅
-TimePicker.isEnabled: ✅
-TimePicker.rotation: ✅
-VStack.accessibilityLabel: ✅
-VStack.isEnabled: ✅
-WebView.tooltip: ✅
-ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-ZStack.rotation: ✅
+Stepper.zIndex: ✅
+Switch.tooltip: ✅
+Text.maximumHeight: ✅
+Text.maximumWidth: ✅
+Text.minimumHeight: ✅
+Text.minimumWidth: ✅
+Text.rotation: ✅
+TextEditor.isEnabled: ✅
+TextEditor.pivotX: ✅
+TextField.scaleX: ✅
+TextField.zIndex: ✅
+TimePicker.tooltip: ✅
+VStack.isEnabled: does not apply - read isEnabled of VStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+VStack.pivotX: ✅
+WebView.isEnabled: – WinUI's WebView2 is no control: it keeps no enabled state, and its page takes the user's hand whatever the tree says.
+WebView.pivotX: ✅
+ZStack.scaleX: ✅
+ZStack.zIndex: ✅

@@ -560,6 +560,14 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(tree.root?.takeCreatedHandlers(), [])
     }
 
+    /// Every word assistive technology meets of an element is realized on every element: a host meeting assistive
+    /// technology says them all, so no case of one is left unrun.
+    func testEveryWordForAssistiveTechnologyIsRealized() {
+        let registry = Registry<AnyObject>()
+        registry.everyElementMeetsAssistiveTechnology()
+        XCTAssertEqual(Set(registry.sharedNames), Set(MountedElement.accessibilityProperties.map(\.name)))
+    }
+
     /// What assistive technology meets of an element is its words and its presence: left out with its children
     /// before hidden, hidden before met, and nothing said where the element says nothing.
     @MainActor
@@ -577,6 +585,11 @@ final class MountedTreeTests: XCTestCase {
                 .accessibilityHint: .string("Says hello"), .accessibilityHeading: .enumeration(2),
                 .isAccessibilityHidden: .bool(false),
             ]),
+            label("rated", [
+                .accessibilityLabel: .string("Rating"), .accessibilityRole: .enumeration(3),
+                .accessibilityValue: .string("3 of 5"),
+            ]),
+            label("kind", [.accessibilityRole: .enumeration(1)]),
             label("both", [.isAccessibilityHidden: .bool(true), .hidesChildrenFromAccessibility: .bool(true)]),
             label("hidden", [.isAccessibilityHidden: .bool(true)]),
             label("silent", [:]),
@@ -586,6 +599,10 @@ final class MountedTreeTests: XCTestCase {
 
         XCTAssertEqual(words("said"), AccessibilityWords(
             identifier: "greeting", label: "Hello", hint: "Says hello", headingLevel: 2, presence: .met))
+        XCTAssertEqual(words("rated"), AccessibilityWords(
+            identifier: nil, label: "Rating", hint: nil, role: .adjustable, value: "3 of 5", headingLevel: 0,
+            presence: .met))
+        XCTAssertEqual(words("kind")?.presence, .met, "a kind of its own said is words of its own")
         XCTAssertEqual(words("both")?.presence, .hiddenWithChildren)
         XCTAssertEqual(words("hidden")?.presence, .hidden)
         XCTAssertEqual(words("silent"), AccessibilityWords(

@@ -52,6 +52,12 @@ enum AppKitRealization {
             reason: "macOS gives an application no text size of the user's to follow."),
 
         // MARK: Entries - a control's or a part's own, and where it differs from its tier
+        .notPlanned(VisualElementContract.accessibilityValue, on: SliderContract.self,
+            reason: "AppKit's slider says its own number to assistive technology, over any value given."),
+        .notPlanned(VisualElementContract.accessibilityValue, on: DatePickerContract.self,
+            reason: "AppKit's date picker says its own date to assistive technology, over any value given."),
+        .notPlanned(VisualElementContract.accessibilityValue, on: TimePickerContract.self,
+            reason: "AppKit's date picker says its own time to assistive technology, over any value given."),
         .partial(TextFieldContract.submitLabel,
             missing: "The return key's word: a Mac has no keyboard on the screen whose return key says anything; Next "
             + "hands the keyboard on all the same."),

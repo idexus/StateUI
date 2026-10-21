@@ -290,7 +290,9 @@ takes GTK's heading role with its level. GTK fixes a widget's role once
 assistive technology has met it, so a widget becomes a heading only while it
 stands in no window - as the element's first properties find it - and a GTK
 widget in a role other than its own is not named by the words it shows, so a
-heading's label is its words, written again as they change.
+heading's label is its words, written again as they change. A kind is a
+role too, and the class a widget is made of fixes it, so the host says none;
+GTK says a value only of a range, a role of its own.
 
 GTK 4 tells assistive technology no identifier before 4.22, and from 4.22
 only a GtkBuilder file's id, which no public call sets on a widget made in

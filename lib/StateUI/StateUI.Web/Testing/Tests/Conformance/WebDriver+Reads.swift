@@ -177,6 +177,11 @@ extension WebDriver {
         switch property {
         case .accessibilityLabel: return .some(try WebBrowser.evaluate("e.getAttribute('aria-label')", on: named)?.propValue)
         case .accessibilityHint: return .some(try WebBrowser.evaluate("e.getAttribute('aria-description')", on: named)?.propValue)
+        case .accessibilityRole:
+            let role = try WebBrowser.evaluate("e.getAttribute('role') ?? ''", on: e) ?? ""
+            return AccessibilityRole.allCases.first { WebDOMView.role($0) == role }?.propValue
+        case .accessibilityValue:
+            return .some(try WebBrowser.evaluate("e.getAttribute('aria-valuetext')", on: e)?.propValue)
         case .accessibilityIdentifier: return .some(try WebBrowser.evaluate("e.dataset.identifier", on: e)?.propValue)
         case .accessibilityHeading:
             let level = try WebBrowser.number("e.getAttribute('role') === 'heading' ? Number(e.ariaLevel) : 0", on: e) ?? 0

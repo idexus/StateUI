@@ -31,6 +31,12 @@ final class UIKitElement: NativeElement {
 
     /// Whether VoiceOver meets the view of itself, read before the tree says anything of it.
     var accessibilityStanding: Bool?
+    /// The view's own kind among its traits, read before the element first says one.
+    var accessibilityOwnKind: UIAccessibilityTraits?
+    /// Whether the element said a kind, which then stands in place of its view's own.
+    var accessibilityKindSaid = false
+    /// Whether the element said a value for assistive technology, which then stands over its view's own.
+    var accessibilityValueSaid = false
 
     /// What the buttons on a page's bar say, which the bar keeps them for.
     var barButtonsSaid: [[UIKitBarAction.Said]]?

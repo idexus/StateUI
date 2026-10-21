@@ -292,8 +292,9 @@ class WebDOMView {
         attribute("data-identifier", words.identifier)
         named.attribute("aria-label", words.label?.isEmpty == false ? words.label : nil)
         named.attribute("aria-description", words.hint?.isEmpty == false ? words.hint : nil)
-        spoken = (words.headingLevel > 0, words.presence == .hidden)
+        spoken = (words.headingLevel > 0, words.presence == .hidden, words.role)
         writeRole()
+        attribute("aria-valuetext", words.value)
         attribute("aria-level", spoken.heading ? String(words.headingLevel) : nil)
         attribute("aria-hidden", words.presence == .hiddenWithChildren ? "true" : nil)
     }
@@ -319,13 +320,26 @@ class WebDOMView {
         }
     }
 
-    /// Whether assistive technology meets the view as a heading, and whether it skips it, as its words last said.
-    private var spoken = (heading: false, skipped: false)
+    /// Whether assistive technology meets the view as a heading, whether it skips it, and the kind it said, as its
+    /// words last said.
+    private var spoken: (heading: Bool, skipped: Bool, kind: AccessibilityRole?) = (false, false, nil)
 
-    /// The one writer of the view's role, from all it is: a heading, else skipped, else its own (`role`) - a
-    /// container the user taps a button.
+    /// The one writer of the view's role, from all it is: a heading, else skipped, else the kind it says, else its
+    /// own (`role`) - a container the user taps a button.
     private func writeRole() {
-        attribute("role", spoken.heading ? "heading" : spoken.skipped ? "none" : role)
+        attribute("role", spoken.heading ? "heading" : spoken.skipped ? "none" : spoken.kind.map(Self.role) ?? role)
+    }
+
+    /// The document's role for a kind the view says it is.
+    static func role(_ kind: AccessibilityRole) -> String {
+        switch kind {
+        case .button: "button"
+        case .toggle: "switch"
+        case .adjustable: "slider"
+        case .link: "link"
+        case .image: "img"
+        case .text: "paragraph"
+        }
     }
 
     /// The direction the view lays out and writes in.

@@ -1,7 +1,9 @@
-# revision 15.1
+# revision 16.1
 ActivityIndicator.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
+ActivityIndicator.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+ActivityIndicator.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 ActivityIndicator.background: ✓ read background of ActivityIndicator: the class of the host's style sheet the widget wears: GTK reads back no background
 ActivityIndicator.frame: ✅
 ActivityIndicator.height: ✅
@@ -33,6 +35,8 @@ ActivityIndicator.zIndex: ✅
 Button.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
+Button.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Button.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Button.background: ☑️ A brush fills the view with its first colour alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's colour standing in, its tint over it.
 Button.frame: ✅
 Button.height: ✅
@@ -64,6 +68,8 @@ Button.zIndex: ✅
 Canvas.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
+Canvas.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Canvas.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Canvas.background: ✓ read background of Canvas: the class of the host's style sheet the widget wears: GTK reads back no background
 Canvas.frame: ✅
 Canvas.height: ✅
@@ -95,6 +101,8 @@ Canvas.zIndex: ✅
 Capsule.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Capsule.accessibilityHint: ✅
 Capsule.accessibilityLabel: ✅
+Capsule.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Capsule.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Capsule.background: ✓ read background of Capsule: the class of the host's style sheet the widget wears: GTK reads back no background
 Capsule.frame: ✅
 Capsule.height: ✅
@@ -126,6 +134,8 @@ Capsule.zIndex: ✅
 CheckBox.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
+CheckBox.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+CheckBox.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 CheckBox.background: ✓ read background of CheckBox: the class of the host's style sheet the widget wears: GTK reads back no background
 CheckBox.frame: ✅
 CheckBox.height: ✅
@@ -157,6 +167,8 @@ CheckBox.zIndex: ✅
 DatePicker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
+DatePicker.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+DatePicker.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 DatePicker.background: ✓ read background of DatePicker: the class of the host's style sheet the widget wears: GTK reads back no background
 DatePicker.frame: ✅
 DatePicker.height: ✅
@@ -188,6 +200,8 @@ DatePicker.zIndex: ✅
 Divider.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Divider.accessibilityHint: ✅
 Divider.accessibilityLabel: ✅
+Divider.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Divider.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Divider.background: ✓ read background of Divider: the class of the host's style sheet the widget wears: GTK reads back no background
 Divider.frame: ✅
 Divider.height: ✅
@@ -219,6 +233,8 @@ Divider.zIndex: ✅
 Ellipse.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
+Ellipse.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Ellipse.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Ellipse.background: ✓ read background of Ellipse: the class of the host's style sheet the widget wears: GTK reads back no background
 Ellipse.frame: ✅
 Ellipse.height: ✅
@@ -250,6 +266,8 @@ Ellipse.zIndex: ✅
 Grid.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
+Grid.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Grid.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Grid.background: ✅
 Grid.frame: ✅
 Grid.height: ✅
@@ -281,6 +299,8 @@ Grid.zIndex: ✅
 HStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
+HStack.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+HStack.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 HStack.background: ✅
 HStack.frame: ✅
 HStack.height: ✅
@@ -312,6 +332,8 @@ HStack.zIndex: ✅
 Image.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
+Image.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Image.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Image.background: ✓ read background of Image: the class of the host's style sheet the widget wears: GTK reads back no background
 Image.frame: ✅
 Image.height: ✅
@@ -343,6 +365,8 @@ Image.zIndex: ✅
 ItemsView.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
+ItemsView.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+ItemsView.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 ItemsView.background: does not apply - read background of ItemsView - StateUI draws a list's box on GTK's snapshot, which holds none of its background; its drawing proves it
 ItemsView.frame: ✅
 ItemsView.height: ✅
@@ -374,6 +398,8 @@ ItemsView.zIndex: ✅
 LayoutEngine.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 LayoutEngine.accessibilityHint: ✅
 LayoutEngine.accessibilityLabel: ✅
+LayoutEngine.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+LayoutEngine.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 LayoutEngine.background: ◐ cannot read background of LayoutEngine - GTK's driver has no path for it yet
 LayoutEngine.frame: ✅
 LayoutEngine.height: ✅
@@ -405,6 +431,8 @@ LayoutEngine.zIndex: ✅
 Line.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
+Line.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Line.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Line.background: ✓ read background of Line: the class of the host's style sheet the widget wears: GTK reads back no background
 Line.frame: ✅
 Line.height: ✅
@@ -436,6 +464,8 @@ Line.zIndex: ✅
 Map.accessibilityHeading: 🧩
 Map.accessibilityHint: 🧩
 Map.accessibilityLabel: 🧩
+Map.accessibilityRole: 🧩
+Map.accessibilityValue: 🧩
 Map.background: 🧩
 Map.frame: 🧩
 Map.height: 🧩
@@ -467,6 +497,8 @@ Map.zIndex: 🧩
 Path.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
+Path.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Path.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Path.background: ✓ read background of Path: the class of the host's style sheet the widget wears: GTK reads back no background
 Path.frame: ✅
 Path.height: ✅
@@ -498,6 +530,8 @@ Path.zIndex: ✅
 Picker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
+Picker.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Picker.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Picker.background: ✓ read background of Picker: the class of the host's style sheet the widget wears: GTK reads back no background
 Picker.frame: ✅
 Picker.height: ✅
@@ -529,6 +563,8 @@ Picker.zIndex: ✅
 Polygon.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
+Polygon.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Polygon.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Polygon.background: ✓ read background of Polygon: the class of the host's style sheet the widget wears: GTK reads back no background
 Polygon.frame: ✅
 Polygon.height: ✅
@@ -560,6 +596,8 @@ Polygon.zIndex: ✅
 Polyline.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
+Polyline.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Polyline.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Polyline.background: ✓ read background of Polyline: the class of the host's style sheet the widget wears: GTK reads back no background
 Polyline.frame: ✅
 Polyline.height: ✅
@@ -591,6 +629,8 @@ Polyline.zIndex: ✅
 ProgressBar.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
+ProgressBar.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+ProgressBar.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 ProgressBar.background: ✓ read background of ProgressBar: the class of the host's style sheet the widget wears: GTK reads back no background
 ProgressBar.frame: ✅
 ProgressBar.height: ✅
@@ -622,6 +662,8 @@ ProgressBar.zIndex: ✅
 Rectangle.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
+Rectangle.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Rectangle.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Rectangle.background: ✓ read background of Rectangle: the class of the host's style sheet the widget wears: GTK reads back no background
 Rectangle.frame: ✅
 Rectangle.height: ✅
@@ -653,6 +695,8 @@ Rectangle.zIndex: ✅
 ScrollView.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
+ScrollView.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+ScrollView.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 ScrollView.background: ✅
 ScrollView.frame: ✅
 ScrollView.height: ✅
@@ -684,6 +728,8 @@ ScrollView.zIndex: ✅
 SearchField.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
+SearchField.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+SearchField.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 SearchField.background: ✓ read background of SearchField: the class of the host's style sheet the widget wears: GTK reads back no background
 SearchField.frame: ✅
 SearchField.height: ✅
@@ -715,6 +761,8 @@ SearchField.zIndex: ✅
 Slider.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
+Slider.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Slider.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Slider.background: ✓ read background of Slider: the class of the host's style sheet the widget wears: GTK reads back no background
 Slider.frame: ✅
 Slider.height: ✅
@@ -746,6 +794,8 @@ Slider.zIndex: ✅
 Spacer.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Spacer.accessibilityHint: ✅
 Spacer.accessibilityLabel: ✅
+Spacer.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Spacer.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Spacer.background: ✓ read background of Spacer: the class of the host's style sheet the widget wears: GTK reads back no background
 Spacer.frame: ✅
 Spacer.height: ✅
@@ -777,6 +827,8 @@ Spacer.zIndex: ✅
 Stepper.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
+Stepper.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Stepper.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Stepper.background: ✓ read background of Stepper: the class of the host's style sheet the widget wears: GTK reads back no background
 Stepper.frame: ✅
 Stepper.height: ✅
@@ -808,6 +860,8 @@ Stepper.zIndex: ✅
 Switch.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
+Switch.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Switch.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Switch.background: – GTK's switch paints its own box as its track: a colour there would recolour the track, not lie under it.
 Switch.frame: ✅
 Switch.height: ✅
@@ -839,6 +893,8 @@ Switch.zIndex: ✅
 Text.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
+Text.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Text.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 Text.background: ✓ read background of Text: the class of the host's style sheet the widget wears: GTK reads back no background
 Text.frame: ✅
 Text.height: ✅
@@ -870,6 +926,8 @@ Text.zIndex: ✅
 TextEditor.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
+TextEditor.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+TextEditor.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 TextEditor.background: ✓ read background of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no background
 TextEditor.frame: ✅
 TextEditor.height: ✅
@@ -901,6 +959,8 @@ TextEditor.zIndex: ✅
 TextField.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
+TextField.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+TextField.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 TextField.background: ✓ read background of TextField: the class of the host's style sheet the widget wears: GTK reads back no background
 TextField.frame: ✅
 TextField.height: ✅
@@ -932,6 +992,8 @@ TextField.zIndex: ✅
 TimePicker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
+TimePicker.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+TimePicker.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 TimePicker.background: ✓ read background of TimePicker: the class of the host's style sheet the widget wears: GTK reads back no background
 TimePicker.frame: ✅
 TimePicker.height: ✅
@@ -963,6 +1025,8 @@ TimePicker.zIndex: ✅
 VStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
+VStack.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+VStack.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 VStack.background: ✅
 VStack.frame: ✅
 VStack.height: ✅
@@ -994,6 +1058,8 @@ VStack.zIndex: ✅
 WebView.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
+WebView.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+WebView.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 WebView.background: ✓ read background of WebView: the class of the host's style sheet the widget wears: GTK reads back no background
 WebView.frame: ✅
 WebView.height: ✅
@@ -1025,6 +1091,8 @@ WebView.zIndex: ✅
 ZStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
+ZStack.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+ZStack.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
 ZStack.background: ✅
 ZStack.frame: ✅
 ZStack.height: ✅

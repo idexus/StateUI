@@ -342,10 +342,15 @@ not the frame holding it, so what hears the frame's focus hears the page's.
 ## What assistive technology meets
 
 A view's accessibility crosses in one call: the name a test finds it by, the
-words read for it in place of its own and the hint read after them, whether
-it is a heading, and whether it - or it with everything in it - is met at
-all. The name and the hint are the view's node's, written as the node is
-made; the rest are the view's own. A view the element says nothing of is as
+words read for it in place of its own and the hint read after them, its kind
+and its value, whether it is a heading, and whether it - or it with
+everything in it - is met at all. The name, the hint and the kind are the
+view's node's, written as the node is made; the rest are the view's own.
+TalkBack says a node's kind by its class, so a kind is the class of the
+widget TalkBack names it by - a button `Button`, a toggle `ToggleButton`,
+something adjustable `SeekBar`, an image `ImageView`, words `TextView`;
+Android names no class for a link, which is said as its view is. A value is
+the view's state description, which Android has from 11. A view the element says nothing of is as
 it is of itself: a text is met, a layout as Android decides, so its own
 presence is read once, before the element first says. Android marks a
 heading but not its level.

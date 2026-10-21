@@ -97,6 +97,34 @@ extension UIKitElement {
         let words = element.accessibilityWords
         target.accessibility(words, holdingNoChildren: element.children.isEmpty, standing: accessibilityStanding ?? false)
         (view as? UIKitSwitchView)?.authoredLabel = words.label
+        // A kind said stands in place of the view's own kind, and a value said over its own: unsaid again, the view's
+        // own come back.
+        if accessibilityOwnKind == nil { accessibilityOwnKind = target.accessibilityTraits.intersection(Self.kinds) }
+        if let role = words.role {
+            target.accessibilityTraits = target.accessibilityTraits.subtracting(Self.kinds)
+                .union(Self.accessibilityTrait(role))
+        } else if accessibilityKindSaid {
+            target.accessibilityTraits = target.accessibilityTraits.subtracting(Self.kinds)
+                .union(accessibilityOwnKind ?? [])
+        }
+        accessibilityKindSaid = words.role != nil
+        if words.value != nil || accessibilityValueSaid { target.accessibilityValue = words.value }
+        accessibilityValueSaid = words.value != nil
+    }
+
+    /// The traits saying what kind of thing a view is.
+    static let kinds: UIAccessibilityTraits = [.button, .toggleButton, .adjustable, .link, .image, .staticText]
+
+    /// UIKit's trait for a kind the element says it is.
+    static func accessibilityTrait(_ role: AccessibilityRole) -> UIAccessibilityTraits {
+        switch role {
+        case .button: .button
+        case .toggle: .toggleButton
+        case .adjustable: .adjustable
+        case .link: .link
+        case .image: .image
+        case .text: .staticText
+        }
     }
 }
 

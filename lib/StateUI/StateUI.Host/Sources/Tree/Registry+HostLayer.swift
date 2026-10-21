@@ -50,12 +50,16 @@ extension Registry {
     }
 
     /// What assistive technology meets of a view, put together by one rule (`MountedElement.accessibilityWords`):
-    /// its identifier where the toolkit gives an accessible one - `identifying` - its label, hint and heading level,
-    /// and whether it is met at all.
-    public func everyElementMeetsAssistiveTechnology(identifying: Bool = true) {
+    /// its identifier where the toolkit gives an accessible one - `identifying` - its label and hint, its kind and
+    /// value where a view may say a kind not its own - `sayingKinds` - its heading level, and whether it is met at all.
+    public func everyElementMeetsAssistiveTechnology(identifying: Bool = true, sayingKinds: Bool = true) {
         if identifying { everyElementRealizes(AutomationElementContract.accessibilityIdentifier) }
         everyElementRealizes(VisualElementContract.accessibilityLabel)
         everyElementRealizes(VisualElementContract.accessibilityHint)
+        if sayingKinds {
+            everyElementRealizes(VisualElementContract.accessibilityRole)
+            everyElementRealizes(VisualElementContract.accessibilityValue)
+        }
         everyElementRealizes(VisualElementContract.accessibilityHeading)
         everyElementRealizes(VisualElementContract.isAccessibilityHidden)
         everyElementRealizes(VisualElementContract.hidesChildrenFromAccessibility)

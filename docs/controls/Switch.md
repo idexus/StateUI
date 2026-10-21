@@ -32,13 +32,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (77)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>39 ✅ · 2 ☑️ · 35 ✓ · 1 –</td><td><code>NSSwitch</code> beside an <code>NSTextField</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>34 ✅ · 2 ☑️ · 37 ✓ · 4 –</td><td><code>UISwitch</code> beside a <code>UILabel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>57 ✅ · 3 ☑️ · 12 ✓ · 3 –</td><td><code>Switch</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>63 ✅ · 1 ☑️ · 13 ✓</td><td><code>ToggleSwitch</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>50 ✅ · 1 ☑️ · 24 ✓ · 2 –</td><td><code>GtkSwitch</code> beside a <code>GtkLabel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 20 ✓</td><td>checkbox <code>&lt;input&gt;</code> with <code>role=switch</code> in a <code>&lt;label&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (79)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>41 ✅ · 2 ☑️ · 35 ✓ · 1 –</td><td><code>NSSwitch</code> beside an <code>NSTextField</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>36 ✅ · 2 ☑️ · 37 ✓ · 4 –</td><td><code>UISwitch</code> beside a <code>UILabel</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>57 ✅ · 5 ☑️ · 12 ✓ · 3 –</td><td><code>Switch</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>63 ✅ · 1 ☑️ · 13 ✓ · 2 –</td><td><code>ToggleSwitch</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>50 ✅ · 1 ☑️ · 24 ✓ · 4 –</td><td><code>GtkSwitch</code> beside a <code>GtkLabel</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>58 ✅ · 1 ☑️ · 20 ✓</td><td>checkbox <code>&lt;input&gt;</code> with <code>role=switch</code> in a <code>&lt;label&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/SwitchContract.swift`.
@@ -71,6 +71,10 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tr><td colspan="9">AppKit: AppKit marks a heading, not its level: every level is a heading.<br>UIKit: UIKit marks a heading, not its level: every level is a heading.<br>Android Views: Android marks a heading, not its level: every level is a heading.<br>GTK 4: GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>accessibilityHint</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>accessibilityLabel</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityRole</code></td><td>property</td><td><code>AccessibilityRole</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: A link: Android names no kind for one, and the view is said as what it is.<br>WinUI 3: A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.<br>GTK 4: GTK fixes a widget's role as it is made, and a widget is the kind its class says.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityValue</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: Before Android 11 a view says no value of its own words.<br>WinUI 3: A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.<br>GTK 4: GTK says a value only of a range, a role a widget takes as it is made.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">–</td><td align="center">☑️</td></tr>
 <tr><td colspan="9">AppKit: AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.<br>UIKit: UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.<br>Android Views: Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.<br>WinUI 3: An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.<br>GTK 4: GTK's switch paints its own box as its track: a colour there would recolour the track, not lie under it.<br>Web: A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>frame</code></td><td>property</td><td><code>Rect</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

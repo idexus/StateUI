@@ -113,10 +113,12 @@ so its words never run under the arrow, which takes the words' colour.
 
 ## Accessibility
 
-What VoiceOver meets of a view is what the tree says of it - its label, hint
-and heading, whether it is met by the host layer's rule - over what the view
-says of itself, read before the tree says anything, to which it returns where
-the tree stops saying. A view
+What VoiceOver meets of a view is what the tree says of it - its label, hint,
+kind, value and heading, whether it is met by the host layer's rule - over
+what the view says of itself, read before the tree says anything, to which it
+returns where the tree stops saying. A kind is a trait, and one said takes
+the place of the traits of a kind the view has of itself, keeping the rest -
+selected, not enabled. A view
 holding no children of the tree's - a date or time picker, a spinner - is one
 thing to the user, though UIKit offers VoiceOver the parts inside it: hidden,
 it hides them too. A layout hidden from VoiceOver keeps its children met; only

@@ -61,6 +61,10 @@ enum GTKRealization {
         .notPlanned(PageElementContract.icon,
             reason: "GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions."),
         .complete(PageElementContract.title),
+        .notPlanned(VisualElementContract.accessibilityRole,
+            reason: "GTK fixes a widget's role as it is made, and a widget is the kind its class says."),
+        .notPlanned(VisualElementContract.accessibilityValue,
+            reason: "GTK says a value only of a range, a role a widget takes as it is made."),
         .partial(VisualElementContract.accessibilityHeading,
             missing: "GTK fixes a widget's role once it is shown: a view "
             + "becomes a heading, or stops being one, only as it is made; its level changes."),

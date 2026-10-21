@@ -608,6 +608,31 @@ Use `isAccessibilityHidden` and
 `hidesChildrenFromAccessibility` to control exposure only when the composed
 semantics require it.
 
+A view composed of parts says what it is and holds with `accessibilityRole`
+and `accessibilityValue`, so a screen reader meets one thing where the screen
+shows several:
+
+```swift
+struct Rating: View {
+    @State private var stars = 3
+
+    var body: some View {
+        HStack {
+            ForEach(1...5) { star in
+                Text(star <= stars ? "★" : "☆").onTapped { stars = star }
+            }
+        }
+        .accessibilityLabel("Rating")
+        .accessibilityRole(.adjustable)
+        .accessibilityValue("\(stars) of 5")
+    }
+}
+```
+
+A control is its own kind and says its own value already, so the pair belongs
+on a layout. The kinds are those every platform's screen reader names alike:
+`.button`, `.toggle`, `.adjustable`, `.link`, `.image` and `.text`.
+
 `accessibilityIdentifier` is an external stable identifier for UI automation. It is not
 the tree's `.id`, and assigning one does not change StateUI identity. A view, a
 menu's entry, a bar's item and a page arrangement take one; a run of text and a

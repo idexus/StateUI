@@ -13,7 +13,7 @@ import java.util.List;
 public final class TestAccessibility {
     private TestAccessibility() {}
 
-    /** One of the words assistive technology meets of the view - "label", "hint" or "id" - or none. */
+    /** One of the words assistive technology meets of the view - "label", "hint", "id", "kind" or "value" - or none. */
     public static String word(View view, String name) {
         AccessibilityNodeInfo info = view.createAccessibilityNodeInfo();
         CharSequence word;
@@ -21,6 +21,8 @@ public final class TestAccessibility {
             case "label": word = view.getContentDescription(); break;
             case "hint": word = info.getHintText(); break;
             case "id": word = info.getViewIdResourceName(); break;
+            case "kind": word = info.getClassName(); break;
+            case "value": word = Build.VERSION.SDK_INT >= 30 ? view.getStateDescription() : null; break;
             default: word = null; break;
         }
         return word == null ? null : word.toString();

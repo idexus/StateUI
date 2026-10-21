@@ -26,6 +26,10 @@ extension AppKitElement {
             target.setAccessibilityLabel(string(.accessibilityLabel))
         }
         target.setAccessibilityHelp(string(.accessibilityHint))
+        // A value said stands over the control's own; unsaid again, the control's own comes back.
+        let said = string(.accessibilityValue)
+        if said != nil || accessibilityValueSaid { target.setAccessibilityValue(said) }
+        accessibilityValueSaid = said != nil
 
         let excludesChildren = value(.hidesChildrenFromAccessibility)?.bool == true
         if excludesChildren {
@@ -43,12 +47,26 @@ extension AppKitElement {
         // pressed by the handler a click runs. See `AppKitHitTestView`.
         let pressable = events[.tapped] != nil && view is AppKitHitTestView
 
-        if words.headingLevel > 0 {
+        if let role = words.role {
+            target.setAccessibilityRole(Self.accessibilityRole(role))
+        } else if words.headingLevel > 0 {
             target.setAccessibilityRole(NSAccessibility.Role(rawValue: "AXHeading"))
         } else if pressable {
             target.setAccessibilityRole(.button)
         } else {
             target.setAccessibilityRole(defaults.role)
+        }
+    }
+
+    /// AppKit's role for a kind the element says it is.
+    static func accessibilityRole(_ role: AccessibilityRole) -> NSAccessibility.Role {
+        switch role {
+        case .button: .button
+        case .toggle: .checkBox
+        case .adjustable: .slider
+        case .link: .link
+        case .image: .image
+        case .text: .staticText
         }
     }
 

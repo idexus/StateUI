@@ -231,6 +231,12 @@ the ninth, which stands for any deeper. A word the element does not say is
 cleared, not written empty, so a control's own name - a button's caption -
 stands where no label replaces it.
 
+A WinUI control is the kind its class makes it and says its own value, so a
+kind and a value are said only by a layout StateUI draws: its panel's
+automation peer answers with the control type of the kind - a button, a check
+box for a toggle, a slider for something adjustable, a hyperlink, an image,
+text - and with the value pattern holding the value, read-only.
+
 Whether it is met at all is its accessibility view: an element hidden is
 `Raw`, which assistive technology skips while it still meets what stands in
 it; an element that says it is not hidden is `Content`; one that says

@@ -204,10 +204,25 @@ class WinUILayoutView: WinUIView {
         arrange(in: Rect(x: 0, y: 0, width: width, height: height))
     }
 
-    /// A layout skipped with its children hides from assistive technology all that stands in it.
+    /// A layout skipped with its children hides from assistive technology all that stands in it; the kind and the
+    /// value its element says, its panel's peer tells.
     override func setAccessibility(_ words: AccessibilityWords) {
         super.setAccessibility(words)
         stateui_winui_panel_hide_children(handle, words.presence == .hiddenWithChildren)
+        stateui_winui_panel_set_kind(handle, words.role.map(Self.controlType) ?? -1, words.value)
+    }
+
+    /// WinUI's `AutomationControlType` for a kind: a button, a check box for a toggle, a slider for something
+    /// adjustable, a hyperlink, an image, text.
+    static func controlType(_ role: AccessibilityRole) -> Int32 {
+        switch role {
+        case .button: 0
+        case .toggle: 2
+        case .adjustable: 15
+        case .link: 5
+        case .image: 6
+        case .text: 20
+        }
     }
 
     /// Cuts what the layout shows to its outline at its size, written only where it differs.

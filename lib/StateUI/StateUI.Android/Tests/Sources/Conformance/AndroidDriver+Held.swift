@@ -186,6 +186,10 @@ extension AndroidDriver {
         case .accessibilityLabel: return TestAccessibility.word("label", of: view).propValue
         case .accessibilityHint: return TestAccessibility.word("hint", of: view).propValue
         case .accessibilityIdentifier: return TestAccessibility.word("id", of: view).propValue
+        case .accessibilityRole:
+            let kind = TestAccessibility.word("kind", of: view)
+            return AccessibilityRole.allCases.first { AndroidView.accessibilityClass($0) == kind }?.propValue
+        case .accessibilityValue: return TestAccessibility.word("value", of: view).propValue
         case .isAccessibilityHidden:
             let presence = Java.callInt(reference, JavaAPI.getImportantForAccessibility)
             return (presence == 2 || presence == 4).propValue

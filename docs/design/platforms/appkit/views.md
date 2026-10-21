@@ -27,7 +27,11 @@ shows a copy of the icon drawn in theirs.
 A host view that wraps one native control hands assistive technology that
 control in its own place, through `AppKitAccessibilityPresenting`. The
 author's words, the role and whether the element takes part are written where
-VoiceOver meets the control, not on the view around it.
+VoiceOver meets the control, not on the view around it. A kind the element
+says is an accessibility role - a button, a check box for a toggle, a slider
+for something adjustable, a link, an image, static text - and a value its
+accessibility value; a slider and a date's or a time's picker say their own
+value over any given.
 
 ## A stated size
 
