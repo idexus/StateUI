@@ -106,7 +106,7 @@ SearchFieldSample.swift 32903a70f555dea0
 SearchSample.swift 679d1baa31dfcd8b
 SelectableTextSample.swift 32194d184067f26d
 SemanticsSample.swift 7bfab536a8de60e8
-ShapesSample.swift 5ee3df98e6b96579
+ShapesSample.swift c4b1d3983da2972c
 ShareSample.swift ca23e3ade29db45a
 ShortcutSample.swift daf4ef581131770c
 SizingSample.swift 1ced92cea7dceeeb

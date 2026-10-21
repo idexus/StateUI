@@ -9533,7 +9533,6 @@ enum Listings {
                     }
                     .spacing(28)
 
-                    // The leaning shapes stand farther apart: a lean draws past the room it is given.
                     HStack {
                         // The one shape that is whatever you can write down: SVG path
                         // syntax, normalized by StateUI for every native host.
@@ -9545,16 +9544,16 @@ enum Listings {
                         // A transform on the GEOMETRY - the same ViewTransform
                         // every view takes, drawn whole: a lean draws here, and the
                         // stroke follows the shape it makes. On any shape, not only
-                        // a Path.
+                        // a Path. Narrowed first, the lean stays inside its room.
                         Path("M 28,0 L 56,56 L 0,56 Z")
                             .fill(Palette.accent)
-                            .geometryTransform(.skew(20, 0))
+                            .geometryTransform(.scaleX(0.6).skew(20, 0))
                             .width(56)
                             .height(56)
 
                         Rectangle().fill(Palette.accent)
                             .cornerRadius(14)
-                            .geometryTransform(.skew(20, 0))
+                            .geometryTransform(.scaleX(0.6).skew(20, 0))
                             .width(56)
                             .height(56)
                     }
