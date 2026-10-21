@@ -11,8 +11,8 @@ extension View {
     ///         .onClicked { filtering = true }
     ///         .popover(isShown: $filtering) { FiltersPanel() }
     ///
-    /// A phone shows a popover as a sheet, as its platform does. The content sizes the popover; it is built while
-    /// the popover shows.
+    /// A phone shows a popover as a sheet, as its platform does. The content sizes the popover, and stands with
+    /// the view whether it shows or not: its state lasts from one showing to the next.
     ///
     /// - Parameters:
     ///   - state: whether the popover shows, written false as the user dismisses it.
