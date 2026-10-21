@@ -46,6 +46,39 @@ final class UIKitMotionTests: XCTestCase {
         XCTAssertEqual(midway, label.bounds.width, accuracy: 0.5, "its words at the width it is bound for")
     }
 
+    /// A button whose width travels as its words change lays them out at the width it is bound for, as a label does:
+    /// midway it is already as wide as it lands, so its words never break onto a second line on the way.
+    @MainActor
+    func testAButtonsWordsStandAtTheWidthItTravelsTo() throws {
+        let clock = TestClock()
+        let enabled = State(wrappedValue: true)
+        let host = UIKitRenderer.running(clock: clock) {
+            VStack {
+                Button(enabled.wrappedValue ? "Enabled" : "Disabled").horizontalAlignment(.center).id("button")
+            }
+            .motion(.eased(.milliseconds(200), .linear))
+            .width(300)
+            .verticalAlignment(.start)
+        }
+        defer { host.finish() }
+        let button = try XCTUnwrap(Self.view(of: "button", in: host))
+        let start = button.bounds.width
+
+        enabled.wrappedValue = false
+        host.runtime.pump.turn()
+        host.layOut()
+        clock.now = 100
+        host.frame()
+        host.layOut()
+        let midway = button.bounds.width
+        clock.now = 200
+        host.frame()
+        host.layOut()
+
+        XCTAssertGreaterThan(button.bounds.width, start + 1, "the button grew")
+        XCTAssertEqual(midway, button.bounds.width, accuracy: 0.5, "its words at the width it is bound for")
+    }
+
     /// A rectangle whose fill and width change under a motion stands halfway at half its time, and lands - the
     /// Gallery's Motion sample.
     @MainActor
@@ -120,24 +153,6 @@ final class UIKitMotionTests: XCTestCase {
         XCTAssertEqual(below.frame.minY - start, 40, accuracy: 1)
     }
 
-    /// The fill the rectangle draws, as red, green and blue.
-    @MainActor
-    private static func components(of box: UIKitShapeView) -> (red: Double, green: Double, blue: Double)? {
-        guard let fill = box.fillForTesting.lineColor else { return nil }
-        var (red, green, blue, alpha) = (CGFloat(0), CGFloat(0), CGFloat(0), CGFloat(0))
-        guard fill.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return nil }
-        return (red, green, blue)
-    }
-
-    /// The view of the element of `id` in the host's tree.
-    @MainActor
-    private static func view(of id: String, in host: UIKitRenderer) -> UIView? {
-        func find(_ element: MountedElement) -> MountedElement? {
-            element.id == .manual(id) ? element : element.children.lazy.compactMap(find).first
-        }
-        return host.runtime.tree.root.flatMap(find).flatMap { ($0.native as? UIKitElement)?.view }
-    }
-}
     /// A row hidden fades where it stands, then its stack closes over it - and every layout around the stack follows
     /// the stack's new size: the view below the stack comes up as far as the row was tall.
     @MainActor
@@ -175,3 +190,21 @@ final class UIKitMotionTests: XCTestCase {
         XCTAssertTrue(risen.contains { $0 > 1 && $0 < 39 }, "on its way, not at once: \(risen)")
     }
 
+    /// The fill the rectangle draws, as red, green and blue.
+    @MainActor
+    private static func components(of box: UIKitShapeView) -> (red: Double, green: Double, blue: Double)? {
+        guard let fill = box.fillForTesting.lineColor else { return nil }
+        var (red, green, blue, alpha) = (CGFloat(0), CGFloat(0), CGFloat(0), CGFloat(0))
+        guard fill.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return nil }
+        return (red, green, blue)
+    }
+
+    /// The view of the element of `id` in the host's tree.
+    @MainActor
+    private static func view(of id: String, in host: UIKitRenderer) -> UIView? {
+        func find(_ element: MountedElement) -> MountedElement? {
+            element.id == .manual(id) ? element : element.children.lazy.compactMap(find).first
+        }
+        return host.runtime.tree.root.flatMap(find).flatMap { ($0.native as? UIKitElement)?.view }
+    }
+}

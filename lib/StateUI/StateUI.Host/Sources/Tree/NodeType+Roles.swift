@@ -23,6 +23,11 @@
     public static let slotTypes: Set<NodeType> = [
         .toolbarItemGroup, .titleView, .menuBar, .contextMenu, .buttonMenu, .overlay, .popover,
     ]
+
+    /// The elements that lay words out in their room - a label, a button: one whose place travels stands at the size
+    /// it is bound for, its words there meanwhile (`PlacedView.travels(to:)`).
+    /// Design: docs/design/host/motion.md#words-at-their-destination
+    public static let wordsTypes: Set<NodeType> = [.text, .button]
 }
 
 @_spi(Host) extension MountedElement {

@@ -164,7 +164,7 @@ extension UIKitElement: PlacedView {
     }
 
     func travels(to destination: Rect?) {
-        if type == .text { wordsRoom = destination }
+        if NodeType.wordsTypes.contains(type) { wordsRoom = destination }
     }
 }
 
