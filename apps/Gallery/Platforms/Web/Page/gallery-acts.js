@@ -2,23 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // listing: InteropActsSample.Web.javascript, InteropEventsSample.Web.javascript
-// The gallery's own acts as the page's scripts answer them, and what they tell: the browser's clipboard and its
-// battery, wherever the browser offers them. The Swift half is Platforms/Web/Host/GalleryActs.swift and
+// The gallery's own acts as the page's scripts answer them, and what they tell: the browser's console and its
+// battery, wherever the browser offers it. The Swift half is Platforms/Web/Host/GalleryActs.swift and
 // GalleryEventSources.swift.
 // The page loads this script before the application starts.
 // listing: end
 
 // listing: InteropActsSample.Web.javascript
-// The clipboard: a page served over plain http, or one the user gave no leave, has none - the act then fails
-// with the reason.
-StateUI.acts.setClipboard = (words) => {
-  if (!navigator.clipboard) throw new Error("this page has no clipboard - one served over https has");
-  return navigator.clipboard.writeText(words);
-};
-
-StateUI.acts.readClipboard = () => {
-  if (!navigator.clipboard) throw new Error("this page has no clipboard - one served over https has");
-  return navigator.clipboard.readText();
+// A line for the log: the browser's console, where its developer tools read it.
+StateUI.acts.log = (line) => {
+  console.log(line);
+  return "";
 };
 // listing: end
 

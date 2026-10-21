@@ -71,14 +71,13 @@ public enum StateUIActs {
     /// Performs an act of the application's - one no control stands behind - when the application calls it with
     /// `stateUICall`.
     ///
-    ///     StateUIActs.add(GalleryContract.setClipboard) { text in
-    ///         gdk_clipboard_set_text(gdk_display_get_clipboard(gdk_display_get_default()), text)
+    ///     StateUIActs.add(GalleryContract.log) { line in
+    ///         g_log_default_handler("Gallery", STATEUI_LOG_LEVEL_MESSAGE, line, nil)
     ///     }
     ///
     /// The values are the act's own, as its contract declares them, so a performer of another shape does not
-    /// compile and a call carrying anything else fails with the reason. A performer may await - GTK reads the
-    /// clipboard asynchronously - and the call is answered once it returns. A second registration replaces the
-    /// first.
+    /// compile and a call carrying anything else fails with the reason. A performer may await, and the call is
+    /// answered once it returns. A second registration replaces the first.
     ///
     /// - Parameters:
     ///   - act: the member, written with its contract.

@@ -52,8 +52,8 @@ public struct StateUIError: Error, CustomStringConvertible, Equatable {
 /// handing it the arguments its contract declares and answering with the values
 /// it declares.
 ///
-///     let text = try await stateUICall(NotesContract.readClipboard)
-///     try await stateUICall(NotesContract.setClipboard, "note")
+///     let level = try await stateUICall(NotesContract.batteryLevel)
+///     try await stateUICall(NotesContract.log, "note")
 ///
 /// Throws `StateUIError` when the host could not perform it - including when no
 /// host answers its name - and when the answer is not what the contract

@@ -7,13 +7,13 @@
 ///     enum NotesContract: ApplicationTier {
 ///         static let name = "Notes"
 ///
-///         static let readClipboard = ElementAct<Self, Void, String>("Notes.ReadClipboard")
+///         static let batteryLevel = ElementAct<Self, Void, Double>("Notes.BatteryLevel")
 ///         static let batteryChanged = ElementEvent<Self, (Double, Bool)>("Notes.BatteryChanged")
 ///
-///         static let members: [any ContractMember] = [readClipboard, batteryChanged]
+///         static let members: [any ContractMember] = [batteryLevel, batteryChanged]
 ///     }
 ///
-///     let text = try await stateUICall(NotesContract.readClipboard)
+///     let level = try await stateUICall(NotesContract.batteryLevel)
 ///
 /// Its acts are called with `stateUICall` and `stateUISend` and its events
 /// heard with `HostEvents.on`: none of them aims at a control. An act of an

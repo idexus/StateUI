@@ -18,11 +18,8 @@ import StateUI
 public enum GalleryContract: ApplicationTier {
     public static let name = "Gallery"
 
-    /// Puts text on the system clipboard.
-    public static let setClipboard = ElementAct<Self, String, Void>("Gallery.SetClipboard")
-
-    /// Reads the system clipboard - empty text when it holds none.
-    public static let readClipboard = ElementAct<Self, Void, String>("Gallery.ReadClipboard")
+    /// Writes a line to the platform's own log, where its tools read it.
+    public static let log = ElementAct<Self, String, Void>("Gallery.Log")
 
     /// The battery's level, 0 through 1, and whether it is charging.
     public static let batteryLevel = ElementAct<Self, Void, (Double, Bool)>("Gallery.BatteryLevel")
@@ -40,7 +37,7 @@ public enum GalleryContract: ApplicationTier {
         ElementEvent<Self, Bool>("Gallery.ConnectivityChanged")
 
     public static let members: [any ContractMember] = [
-        setClipboard, readClipboard, batteryLevel, nobody, batteryChanged, connectivityChanged,
+        log, batteryLevel, nobody, batteryChanged, connectivityChanged,
     ]
 }
 // listing: end

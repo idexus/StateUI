@@ -197,8 +197,8 @@ Gallery's does. Until then the host realizes no web view.
 that element's control:
 
 ```swift quote
-StateUIActs.add(GalleryContract.readClipboard) {
-    await clipboardText()
+StateUIActs.add(GalleryContract.log) { line in
+    g_log_default_handler("Gallery", STATEUI_LOG_LEVEL_MESSAGE, line, nil)
 }
 
 StateUIActs.add(RatingBarContract.flash, on: RatingBarWidget.self) { bar in
@@ -206,8 +206,8 @@ StateUIActs.add(RatingBarContract.flash, on: RatingBarWidget.self) { bar in
 }
 ```
 
-A performer runs on the main thread, and may await - GTK reads the clipboard
-asynchronously - the call answered once it returns. Its arguments and answer
+A performer runs on the main thread, and may await, the call answered once it
+returns. Its arguments and answer
 are the act's own types; a call carrying anything else fails with the reason. A thrown error
 fails the act, and so does an aim at nothing; an act nobody registered is
 refused by name.

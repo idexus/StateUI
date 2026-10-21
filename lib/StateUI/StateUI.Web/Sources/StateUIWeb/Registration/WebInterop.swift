@@ -73,7 +73,7 @@ public final class WebPageElement {
 /// The application's own scripts - its head's `Page/*.js` - as Swift reaches them: an act they answer, and what
 /// they tell. A script answers an act by name on `StateUI.acts`, and tells with `StateUI.tell(name, words)`:
 ///
-///     StateUI.acts.readClipboard = () => navigator.clipboard.readText();
+///     StateUI.acts.log = (line) => { console.log(line); return ""; };
 ///     StateUI.tell("battery", `${battery.level} ${battery.charging}`);
 ///
 /// Words cross both ways: an application says in them what it hands over and reads back.
@@ -107,11 +107,11 @@ public enum StateUIScripts {
 @MainActor
 public enum StateUIActs {
     /// Performs an act of the application's - one no control stands behind - when the application calls it with
-    /// `stateUICall`. A performer may await - a browser reads its clipboard asynchronously - and the call is
+    /// `stateUICall`. A performer may await - a page's script answers through a promise - and the call is
     /// answered once it returns; what it throws fails the call. A second registration replaces the first.
     ///
-    ///     StateUIActs.add(GalleryContract.readClipboard) {
-    ///         try await StateUIScripts.call("readClipboard")
+    ///     StateUIActs.add(GalleryContract.log) { line in
+    ///         _ = try await StateUIScripts.call("log", line)
     ///     }
     public static func add<
         Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable

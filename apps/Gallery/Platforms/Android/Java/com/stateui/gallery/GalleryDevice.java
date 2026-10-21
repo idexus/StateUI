@@ -4,30 +4,21 @@
 package com.stateui.gallery;
 
 import android.content.BroadcastReceiver;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.util.Log;
 
 // listing: InteropActsSample.Android.java, InteropEventsSample.Android.java
-/** What the gallery's own acts and events ask of the device: its clipboard and its battery. */
+/** What the gallery's own acts and events ask of the device: its log and its battery. */
 final class GalleryDevice {
     private GalleryDevice() {}
 
-    /** Puts `text` on the clipboard. */
-    static void copy(Context context, String text) {
-        context.getSystemService(ClipboardManager.class).setPrimaryClip(ClipData.newPlainText("StateUI Gallery", text));
-    }
-
-    /** The clipboard's text; empty where it holds none. */
-    static String paste(Context context) {
-        ClipData clip = context.getSystemService(ClipboardManager.class).getPrimaryClip();
-        if (clip == null || clip.getItemCount() == 0) return "";
-        CharSequence text = clip.getItemAt(0).coerceToText(context);
-        return text == null ? "" : text.toString();
+    /** Writes `line` to Android's log, where logcat reads it. */
+    static void log(String line) {
+        Log.i("Gallery", line);
     }
 
     /** The battery's level, 0 to 1 - 0 where the device has none - and 1 where it charges, else 0. */

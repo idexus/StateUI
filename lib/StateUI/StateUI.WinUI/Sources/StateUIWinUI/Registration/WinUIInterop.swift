@@ -73,8 +73,8 @@ public enum StateUIActs {
     /// Performs an act of the application's - one no control stands behind - when the application calls it with
     /// `stateUICall`.
     ///
-    ///     StateUIActs.add(GalleryContract.setClipboard) { text in
-    ///         Clipboard.write(text)
+    ///     StateUIActs.add(GalleryContract.log) { line in
+    ///         line.withCString(encodedAs: UTF16.self) { OutputDebugStringW($0) }
     ///     }
     ///
     /// The values are the act's own, as its contract declares them, so a performer of another shape does not

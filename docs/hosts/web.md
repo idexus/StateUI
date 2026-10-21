@@ -215,15 +215,15 @@ the performer that control. An event of the application's own is declared
 with `StateUIEvents.raises` and raised with `StateUIEvents.raise`; every
 `HostEvents.on` subscription hears it.
 
-What only a page's JavaScript reaches - its clipboard, its battery - the
+What only a page's JavaScript reaches - its console, its battery - the
 application's own scripts reach for it. A script answers an act by name on
 `StateUI.acts`, and tells with `StateUI.tell(name, words)`; Swift calls the
 one with `StateUIScripts.call` - awaiting its promise, throwing why it broke -
 and hears the other with `StateUIScripts.hear`:
 
 ```swift quote
-StateUIActs.add(GalleryContract.readClipboard) {
-    try await StateUIScripts.call("readClipboard")
+StateUIActs.add(GalleryContract.log) { line in
+    _ = try await StateUIScripts.call("log", line)
 }
 
 StateUIScripts.hear("battery") { words in
@@ -234,7 +234,7 @@ StateUIScripts.hear("battery") { words in
 
 ```text
 // Page/gallery-acts.js
-StateUI.acts.readClipboard = () => navigator.clipboard.readText();
+StateUI.acts.log = (line) => { console.log(line); return ""; };
 navigator.getBattery?.().then((power) => {
     const tell = () => StateUI.tell("battery", `${power.level} ${power.charging}`);
     power.addEventListener("levelchange", tell);
@@ -243,9 +243,7 @@ navigator.getBattery?.().then((power) => {
 ```
 
 Words cross both ways: what an act takes and answers is written in them. A
-page served over plain http has no clipboard - its act fails with the
-reason - and a browser that says nothing of its battery answers 0 and tells
-nothing.
+browser that says nothing of its battery answers 0 and tells nothing.
 
 ## Running
 

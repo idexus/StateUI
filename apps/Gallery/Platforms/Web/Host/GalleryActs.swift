@@ -6,7 +6,7 @@ import StateUIWeb
 
 // listing: InteropActsSample.Web.swift
 /// The gallery's own acts, as this host answers them: through the page's own scripts, Page/gallery-acts.js, which
-/// reach the browser's clipboard and battery.
+/// reach the browser's console and battery.
 ///
 /// `GalleryContract` declares each name with what it takes and answers - see
 /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
@@ -16,11 +16,8 @@ enum GalleryActs {
     /// Registers every act this host performs. Said once, before the application runs.
     @MainActor
     static func register() {
-        StateUIActs.add(GalleryContract.setClipboard) { text in
-            _ = try await StateUIScripts.call("setClipboard", text)
-        }
-        StateUIActs.add(GalleryContract.readClipboard) {
-            try await StateUIScripts.call("readClipboard")
+        StateUIActs.add(GalleryContract.log) { line in
+            _ = try await StateUIScripts.call("log", line)
         }
         StateUIActs.add(GalleryContract.batteryLevel) {
             battery(try await StateUIScripts.call("batteryLevel"))

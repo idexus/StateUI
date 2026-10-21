@@ -200,10 +200,8 @@ should its web process die. The head registers nothing for it.
 that element's control:
 
 ```swift quote
-StateUIActs.add(GalleryContract.setClipboard) { text in
-    Java.frame {
-        Java.callStatic(device, copy, .object(StateUIAndroid.context), .object(Java.string(text)))
-    }
+StateUIActs.add(GalleryContract.log) { line in
+    Java.frame { Java.callStatic(device, log, .object(Java.string(line))) }
 }
 
 StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in

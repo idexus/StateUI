@@ -33,7 +33,7 @@ enum InteropHost {
     static let lamps = "The lamps are a `GtkDrawingArea` the gallery registers with `StateUIControls.add`, under the "
         + "members `TrafficLightContract` declares with the type of each value, held by a `GTKControl` of its own."
     static let made = "control"
-    static let awaiting = " A performer may await: GTK reads the clipboard asynchronously."
+    static let awaiting = " A performer may await."
     static let relay: CodeLanguage? = nil
     #elseif WINUI
     static let name = "WinUI"
@@ -55,7 +55,7 @@ enum InteropHost {
         + "`StateUIControls.add`, under the members `TrafficLightContract` declares with the type of each value, "
         + "held by a `WebControl` of its own."
     static let made = "control"
-    static let awaiting = " A performer may await: a browser reads its clipboard asynchronously."
+    static let awaiting = " A performer may await: a page's script answers through a promise."
     static let relay: CodeLanguage? = CodeLanguage.javascript
     #else
     static let name = "Android"

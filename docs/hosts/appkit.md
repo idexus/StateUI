@@ -242,9 +242,8 @@ public static func add<
 ```
 
 ```swift quote
-StateUIActs.add(NotesContract.setClipboard) { text in
-    NSPasteboard.general.clearContents()
-    NSPasteboard.general.setString(text, forType: .string)
+StateUIActs.add(NotesContract.log) { line in
+    Logger(subsystem: "com.example.notes", category: "Notes").notice("\(line, privacy: .public)")
 }
 
 StateUIActs.add(NotesContract.batteryLevel) {

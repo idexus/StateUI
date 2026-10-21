@@ -27,7 +27,7 @@ answers the call, by the host layer's rule ([an application's own
 acts](../../host/runtime.md#an-applications-own-acts)): an act of its own is handed the values its contract
 declares, and an act aimed at one of its elements is handed that element's
 control, the aim's identity turned back into what is on screen. A performer
-may await - GTK's clipboard answers only asynchronously - so it runs as a task
+may await - a GTK call that answers through a callback - so it runs as a task
 on the main actor and the call is answered once it returns. What a performer
 throws fails the call with its reason; an act nobody registered is
 refused by name. An event of the application's is raised through the core

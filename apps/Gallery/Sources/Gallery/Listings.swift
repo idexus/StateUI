@@ -3635,11 +3635,8 @@ enum Listings {
         public enum GalleryContract: ApplicationTier {
             public static let name = "Gallery"
 
-            /// Puts text on the system clipboard.
-            public static let setClipboard = ElementAct<Self, String, Void>("Gallery.SetClipboard")
-
-            /// Reads the system clipboard - empty text when it holds none.
-            public static let readClipboard = ElementAct<Self, Void, String>("Gallery.ReadClipboard")
+            /// Writes a line to the platform's own log, where its tools read it.
+            public static let log = ElementAct<Self, String, Void>("Gallery.Log")
 
             /// The battery's level, 0 through 1, and whether it is charging.
             public static let batteryLevel = ElementAct<Self, Void, (Double, Bool)>("Gallery.BatteryLevel")
@@ -3657,7 +3654,7 @@ enum Listings {
                 ElementEvent<Self, Bool>("Gallery.ConnectivityChanged")
 
             public static let members: [any ContractMember] = [
-                setClipboard, readClipboard, batteryLevel, nobody, batteryChanged, connectivityChanged,
+                log, batteryLevel, nobody, batteryChanged, connectivityChanged,
             ]
         }
         """#,
@@ -4742,7 +4739,7 @@ enum Listings {
         """#,
         "InteropActsSample": #"""
         // Sources/Samples/Interop/InteropActsSample.swift
-        @State private var draft = "Copy me somewhere"
+        @State private var line = "Hello from StateUI"
         @State private var status = "nothing asked yet"
         @State private var tenStars = false
         @Aim(RatingBar.self) private var stars
@@ -4751,19 +4748,12 @@ enum Listings {
             VStack {
                 DebugInfoLabel()
 
-                TextField($draft)
+                TextField($line)
 
-                Button("Copy to the clipboard")
+                Button("Write it to the system's log")
                     .onClicked(gate: .ignoreWhileRunning) {
-                        try await stateUICall(GalleryContract.setClipboard, draft)
-                        status = "copied"
-                    }
-
-                Button("Paste from the clipboard")
-                    .onClicked(gate: .ignoreWhileRunning) {
-                        let text = try await stateUICall(GalleryContract.readClipboard)
-                        draft = text
-                        status = text.isEmpty ? "the clipboard is empty" : "pasted"
+                        try await stateUICall(GalleryContract.log, line)
+                        status = "logged"
                     }
 
                 Button("Ask about the battery")
@@ -12749,21 +12739,13 @@ extension Listings {
         """#,
         "InteropActsSample.Android.java": #"""
         // Platforms/Android/Java/com/stateui/gallery/GalleryDevice.java
-        /** What the gallery's own acts and events ask of the device: its clipboard and its battery. */
+        /** What the gallery's own acts and events ask of the device: its log and its battery. */
         final class GalleryDevice {
             private GalleryDevice() {}
 
-            /** Puts `text` on the clipboard. */
-            static void copy(Context context, String text) {
-                context.getSystemService(ClipboardManager.class).setPrimaryClip(ClipData.newPlainText("StateUI Gallery", text));
-            }
-
-            /** The clipboard's text; empty where it holds none. */
-            static String paste(Context context) {
-                ClipData clip = context.getSystemService(ClipboardManager.class).getPrimaryClip();
-                if (clip == null || clip.getItemCount() == 0) return "";
-                CharSequence text = clip.getItemAt(0).coerceToText(context);
-                return text == null ? "" : text.toString();
+            /** Writes `line` to Android's log, where logcat reads it. */
+            static void log(String line) {
+                Log.i("Gallery", line);
             }
 
             /** The battery's level, 0 to 1 - 0 where the device has none - and 1 where it charges, else 0. */
@@ -12824,23 +12806,14 @@ extension Listings {
         """#,
         "InteropActsSample.Android.swift": #"""
         // Platforms/Android/Swift/Host/GalleryActs.swift
-        /// The acts the gallery performs on this head: its clipboard and its battery, asked of the device through the
-        /// gallery's own Java, com.stateui.gallery.GalleryDevice.
+        /// The acts the gallery performs on this head: its log and its battery, asked of the device through the gallery's
+        /// own Java, com.stateui.gallery.GalleryDevice.
         enum GalleryActs {
             /// Registers each act with the host. Said once, as the library loads.
             @MainActor
             static func register() {
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    Java.frame {
-                        Java.callStatic(Self.device, Self.copy, .object(StateUIAndroid.context), .object(Java.string(text)))
-                    }
-                }
-
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    let text: String = Java.frame {
-                        Java.text(Java.callStaticObject(Self.device, Self.paste, .object(StateUIAndroid.context)))
-                    }
-                    return text
+                StateUIActs.add(GalleryContract.log) { line in
+                    Java.frame { Java.callStatic(Self.device, Self.log, .object(Java.string(line))) }
                 }
 
                 StateUIActs.add(GalleryContract.batteryLevel) {
@@ -12863,10 +12836,7 @@ extension Listings {
             }
 
             @MainActor private static let device = Java.findClass("com/stateui/gallery/GalleryDevice")
-            @MainActor private static let copy = Java.staticMethod(
-                device, "copy", "(Landroid/content/Context;Ljava/lang/String;)V")
-            @MainActor private static let paste = Java.staticMethod(
-                device, "paste", "(Landroid/content/Context;)Ljava/lang/String;")
+            @MainActor private static let log = Java.staticMethod(device, "log", "(Ljava/lang/String;)V")
             @MainActor private static let batteryNow = Java.staticMethod(device, "battery", "(Landroid/content/Context;)[D")
         }
 
@@ -12915,13 +12885,8 @@ extension Listings {
             static func register() {
                 // A performer is handed the arguments its act declares and answers
                 // the values it declares.
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    NSPasteboard.general.clearContents()
-                    NSPasteboard.general.setString(text, forType: .string)
-                }
-
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    NSPasteboard.general.string(forType: .string) ?? ""
+                StateUIActs.add(GalleryContract.log) { line in
+                    Logger(subsystem: "com.stateui.gallery", category: "Gallery").notice("\(line, privacy: .public)")
                 }
 
                 StateUIActs.add(GalleryContract.batteryLevel) {
@@ -12967,13 +12932,9 @@ extension Listings {
             @MainActor
             static func register() {
                 // A performer is handed the arguments its act declares and answers the values it declares.
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    gdk_clipboard_set_text(clipboard(), text)
-                }
-                // GTK reads a clipboard only asynchronously: the performer awaits it.
-                // clipboardText() asks gdk_clipboard_read_text_async and resumes with its answer.
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    await clipboardText()
+                // GLib's own log, where journalctl reads it.
+                StateUIActs.add(GalleryContract.log) { line in
+                    g_log_default_handler("Gallery", STATEUI_LOG_LEVEL_MESSAGE, line, nil)
                 }
                 // The battery, as UPower tells it on the system bus.
                 StateUIActs.add(GalleryContract.batteryLevel) {
@@ -13018,12 +12979,8 @@ extension Listings {
             /// application runs.
             @MainActor
             static func register() {
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    UIPasteboard.general.string = text
-                }
-
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    UIPasteboard.general.string ?? ""
+                StateUIActs.add(GalleryContract.log) { line in
+                    Logger(subsystem: "com.stateui.gallery", category: "Gallery").notice("\(line, privacy: .public)")
                 }
 
                 StateUIActs.add(GalleryContract.batteryLevel) {
@@ -13060,21 +13017,15 @@ extension Listings {
         """#,
         "InteropActsSample.Web.javascript": #"""
         // Platforms/Web/Page/gallery-acts.js
-        // The gallery's own acts as the page's scripts answer them, and what they tell: the browser's clipboard and its
-        // battery, wherever the browser offers them. The Swift half is Platforms/Web/Host/GalleryActs.swift and
+        // The gallery's own acts as the page's scripts answer them, and what they tell: the browser's console and its
+        // battery, wherever the browser offers it. The Swift half is Platforms/Web/Host/GalleryActs.swift and
         // GalleryEventSources.swift.
         // The page loads this script before the application starts.
 
-        // The clipboard: a page served over plain http, or one the user gave no leave, has none - the act then fails
-        // with the reason.
-        StateUI.acts.setClipboard = (words) => {
-          if (!navigator.clipboard) throw new Error("this page has no clipboard - one served over https has");
-          return navigator.clipboard.writeText(words);
-        };
-
-        StateUI.acts.readClipboard = () => {
-          if (!navigator.clipboard) throw new Error("this page has no clipboard - one served over https has");
-          return navigator.clipboard.readText();
+        // A line for the log: the browser's console, where its developer tools read it.
+        StateUI.acts.log = (line) => {
+          console.log(line);
+          return "";
         };
 
         // The battery as two words, its level from 0 to 1 and whether it charges; a browser that says nothing of it - a
@@ -13087,7 +13038,7 @@ extension Listings {
         "InteropActsSample.Web.swift": #"""
         // Platforms/Web/Host/GalleryActs.swift
         /// The gallery's own acts, as this host answers them: through the page's own scripts, Page/gallery-acts.js, which
-        /// reach the browser's clipboard and battery.
+        /// reach the browser's console and battery.
         ///
         /// `GalleryContract` declares each name with what it takes and answers - see
         /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
@@ -13097,11 +13048,8 @@ extension Listings {
             /// Registers every act this host performs. Said once, before the application runs.
             @MainActor
             static func register() {
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    _ = try await StateUIScripts.call("setClipboard", text)
-                }
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    try await StateUIScripts.call("readClipboard")
+                StateUIActs.add(GalleryContract.log) { line in
+                    _ = try await StateUIScripts.call("log", line)
                 }
                 StateUIActs.add(GalleryContract.batteryLevel) {
                     battery(try await StateUIScripts.call("batteryLevel"))
@@ -13183,12 +13131,9 @@ extension Listings {
             /// Registers every act this host performs. Said once, before the application runs.
             @MainActor
             static func register() {
-                // The clipboard needs no relay: Swift calls Win32 itself - OpenClipboard, CF_UNICODETEXT.
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    Clipboard.write(text)
-                }
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    Clipboard.read()
+                // The log needs no relay: Swift calls Win32 itself - OutputDebugStringW, which a debugger reads.
+                StateUIActs.add(GalleryContract.log) { line in
+                    line.withCString(encodedAs: UTF16.self) { OutputDebugStringW($0) }
                 }
                 // The power status, GetSystemPowerStatus, read by the gallery's relay.
                 StateUIActs.add(GalleryContract.batteryLevel) {
@@ -13924,21 +13869,13 @@ extension Listings {
         }
 
         // Platforms/Android/Java/com/stateui/gallery/GalleryDevice.java
-        /** What the gallery's own acts and events ask of the device: its clipboard and its battery. */
+        /** What the gallery's own acts and events ask of the device: its log and its battery. */
         final class GalleryDevice {
             private GalleryDevice() {}
 
-            /** Puts `text` on the clipboard. */
-            static void copy(Context context, String text) {
-                context.getSystemService(ClipboardManager.class).setPrimaryClip(ClipData.newPlainText("StateUI Gallery", text));
-            }
-
-            /** The clipboard's text; empty where it holds none. */
-            static String paste(Context context) {
-                ClipData clip = context.getSystemService(ClipboardManager.class).getPrimaryClip();
-                if (clip == null || clip.getItemCount() == 0) return "";
-                CharSequence text = clip.getItemAt(0).coerceToText(context);
-                return text == null ? "" : text.toString();
+            /** Writes `line` to Android's log, where logcat reads it. */
+            static void log(String line) {
+                Log.i("Gallery", line);
             }
 
             /** The battery's level, 0 to 1 - 0 where the device has none - and 1 where it charges, else 0. */
@@ -14200,8 +14137,8 @@ extension Listings {
         """#,
         "InteropEventsSample.Web.javascript": #"""
         // Platforms/Web/Page/gallery-acts.js
-        // The gallery's own acts as the page's scripts answer them, and what they tell: the browser's clipboard and its
-        // battery, wherever the browser offers them. The Swift half is Platforms/Web/Host/GalleryActs.swift and
+        // The gallery's own acts as the page's scripts answer them, and what they tell: the browser's console and its
+        // battery, wherever the browser offers it. The Swift half is Platforms/Web/Host/GalleryActs.swift and
         // GalleryEventSources.swift.
         // The page loads this script before the application starts.
 

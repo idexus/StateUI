@@ -4,6 +4,7 @@
 import GalleryUI
 import StateUIUIKit
 import UIKit
+import os
 
 // listing: InteropActsSample.UIKit.swift
 /// The gallery's own acts, as this host answers them.
@@ -18,12 +19,8 @@ enum GalleryActs {
     /// application runs.
     @MainActor
     static func register() {
-        StateUIActs.add(GalleryContract.setClipboard) { text in
-            UIPasteboard.general.string = text
-        }
-
-        StateUIActs.add(GalleryContract.readClipboard) {
-            UIPasteboard.general.string ?? ""
+        StateUIActs.add(GalleryContract.log) { line in
+            Logger(subsystem: "com.stateui.gallery", category: "Gallery").notice("\(line, privacy: .public)")
         }
 
         StateUIActs.add(GalleryContract.batteryLevel) {

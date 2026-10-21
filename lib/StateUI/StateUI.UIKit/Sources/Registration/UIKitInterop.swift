@@ -37,8 +37,8 @@ public enum StateUIActs {
     /// performer of another shape does not compile and a call carrying
     /// anything else fails with the reason rather than running on a guess.
     ///
-    ///     StateUIActs.add(GalleryContract.setClipboard) { text in
-    ///         UIPasteboard.general.string = text
+    ///     StateUIActs.add(GalleryContract.log) { line in
+    ///         Logger(subsystem: "com.stateui.gallery", category: "Gallery").notice("\(line, privacy: .public)")
     ///     }
     ///
     /// A second registration of an act replaces the first.

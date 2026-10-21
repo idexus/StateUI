@@ -229,8 +229,8 @@ the same way, with the provider and the key it needs.
 that element's view:
 
 ```swift quote
-StateUIActs.add(NotesContract.setClipboard) { text in
-    UIPasteboard.general.string = text
+StateUIActs.add(NotesContract.log) { line in
+    Logger(subsystem: "com.example.notes", category: "Notes").notice("\(line, privacy: .public)")
 }
 
 StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in

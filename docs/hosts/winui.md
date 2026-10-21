@@ -225,8 +225,8 @@ the Gallery's does. Until then the host realizes no web view.
 that element's control:
 
 ```swift quote
-StateUIActs.add(GalleryContract.readClipboard) { () -> String in
-    Clipboard.read()
+StateUIActs.add(GalleryContract.log) { line in
+    line.withCString(encodedAs: UTF16.self) { OutputDebugStringW($0) }
 }
 
 StateUIActs.add(RatingBarContract.flash, on: RatingBarControl.self) { bar in
@@ -238,7 +238,7 @@ A performer runs on the main thread, and may await, the call answered once it
 returns. Its arguments and answer are the act's own types; a call carrying
 anything else fails with the reason. A thrown error fails the act, and so does
 an aim at nothing; an act nobody registered is refused by name. A performer
-may call Win32 itself through `WinSDK` - the Gallery's clipboard does.
+may call Win32 itself through `WinSDK` - the Gallery's log does.
 
 ### An event without a control
 

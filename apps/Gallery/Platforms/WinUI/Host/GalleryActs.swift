@@ -17,12 +17,9 @@ enum GalleryActs {
     /// Registers every act this host performs. Said once, before the application runs.
     @MainActor
     static func register() {
-        // The clipboard needs no relay: Swift calls Win32 itself - OpenClipboard, CF_UNICODETEXT.
-        StateUIActs.add(GalleryContract.setClipboard) { text in
-            Clipboard.write(text)
-        }
-        StateUIActs.add(GalleryContract.readClipboard) {
-            Clipboard.read()
+        // The log needs no relay: Swift calls Win32 itself - OutputDebugStringW, which a debugger reads.
+        StateUIActs.add(GalleryContract.log) { line in
+            line.withCString(encodedAs: UTF16.self) { OutputDebugStringW($0) }
         }
         // The power status, GetSystemPowerStatus, read by the gallery's relay.
         StateUIActs.add(GalleryContract.batteryLevel) {
@@ -31,36 +28,6 @@ enum GalleryActs {
     }
 }
 // listing: end
-
-/// The system's clipboard, its words as UTF-16 - what every Windows application reads and writes.
-enum Clipboard {
-    /// Puts `text` on the clipboard in place of whatever it held.
-    static func write(_ text: String) {
-        guard OpenClipboard(nil) else { return }
-        defer { CloseClipboard() }
-        EmptyClipboard()
-
-        let units = Array(text.utf16) + [0]
-        guard let memory = GlobalAlloc(UINT(GMEM_MOVEABLE), SIZE_T(units.count * 2)) else { return }
-        guard let locked = GlobalLock(memory) else {
-            GlobalFree(memory)
-            return
-        }
-        units.withUnsafeBytes { bytes in locked.copyMemory(from: bytes.baseAddress!, byteCount: bytes.count) }
-        GlobalUnlock(memory)
-        // The clipboard owns what it took; what it refused is freed here.
-        if SetClipboardData(UINT(CF_UNICODETEXT), memory) == nil { GlobalFree(memory) }
-    }
-
-    /// The words on the clipboard; nothing where it holds none.
-    static func read() -> String {
-        guard OpenClipboard(nil) else { return "" }
-        defer { CloseClipboard() }
-        guard let memory = GetClipboardData(UINT(CF_UNICODETEXT)), let locked = GlobalLock(memory) else { return "" }
-        defer { GlobalUnlock(memory) }
-        return String(decodingCString: locked.assumingMemoryBound(to: UInt16.self), as: UTF16.self)
-    }
-}
 
 /// The battery as Windows knows it, which the gallery's relay reads.
 enum GalleryPower {

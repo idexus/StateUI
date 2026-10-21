@@ -17,13 +17,9 @@ enum GalleryActs {
     @MainActor
     static func register() {
         // A performer is handed the arguments its act declares and answers the values it declares.
-        StateUIActs.add(GalleryContract.setClipboard) { text in
-            gdk_clipboard_set_text(clipboard(), text)
-        }
-        // GTK reads a clipboard only asynchronously: the performer awaits it.
-        // clipboardText() asks gdk_clipboard_read_text_async and resumes with its answer.
-        StateUIActs.add(GalleryContract.readClipboard) {
-            await clipboardText()
+        // GLib's own log, where journalctl reads it.
+        StateUIActs.add(GalleryContract.log) { line in
+            g_log_default_handler("Gallery", STATEUI_LOG_LEVEL_MESSAGE, line, nil)
         }
         // The battery, as UPower tells it on the system bus.
         StateUIActs.add(GalleryContract.batteryLevel) {
@@ -31,30 +27,4 @@ enum GalleryActs {
         }
     }
     // listing: end
-
-    private static func clipboard() -> OpaquePointer? {
-        gdk_display_get_clipboard(gdk_display_get_default())
-    }
-
-    /// The words on the clipboard, however long GTK takes to read them; nothing where it holds none.
-    private static func clipboardText() async -> String {
-        await withCheckedContinuation { (continuation: CheckedContinuation<String, Never>) in
-            let waiting = Unmanaged.passRetained(Waiting(continuation)).toOpaque()
-            gdk_clipboard_read_text_async(clipboard(), nil, { source, result, data in
-                let waiting = Unmanaged<Waiting>.fromOpaque(data!).takeRetainedValue()
-                let text = gdk_clipboard_read_text_finish(OpaquePointer(source), result, nil)
-                waiting.continuation.resume(returning: text.map { String(cString: $0) } ?? "")
-                g_free(text)
-            }, waiting)
-        }
-    }
-
-    /// A continuation carried through a C callback's data.
-    private final class Waiting: Sendable {
-        let continuation: CheckedContinuation<String, Never>
-
-        init(_ continuation: CheckedContinuation<String, Never>) {
-            self.continuation = continuation
-        }
-    }
 }
