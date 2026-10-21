@@ -103,6 +103,10 @@
     /// request's own `X-Asked` said, and the request's body.
     func served() throws -> String
 
+    /// How many requests for `/held` the driver's server took, and how many of them their client stopped - the
+    /// connection closed before the answer.
+    func held() throws -> (taken: Int, stopped: Int)
+
     /// The file dialog the window of `element` shows now; nil where it shows none.
     func fileDialog(over element: MountedElement) throws -> FileDialog?
 
@@ -204,6 +208,13 @@ extension HostDriver {
     public func served() throws -> String {
         guard let server = LoopbackServer.shared else { throw DriverCannot("serve a request") }
         return server.address
+    }
+
+    public func held() throws -> (taken: Int, stopped: Int) {
+        guard LoopbackServer.shared != nil else { throw DriverCannot("count the requests held") }
+        return (
+            LoopbackServer.heldStarted.load(ordering: .sequentiallyConsistent),
+            LoopbackServer.heldStopped.load(ordering: .sequentiallyConsistent))
     }
 
     public func fileDialog(over element: MountedElement) throws -> FileDialog? {

@@ -40,13 +40,13 @@ Inherits nothing: every member below is its own.
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (22)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>11 ✅ · 11 ✓</td><td><code>NSApplication</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>12 ✅ · 10 ✓</td><td><code>UIApplication</code> / structure, a <code>UIWindowScene</code> per window</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>10 ✅ · 1 ☑️ · 11 ✓</td><td>structure / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>18 ✅ · 4 ✓</td><td><code>Application</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>15 ✅ · 6 ✓ · 1 –</td><td><code>AdwApplication</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>16 ✅ · 6 ✓</td><td><code>document</code> / structure</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (23)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>12 ✅ · 11 ✓</td><td><code>NSApplication</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>13 ✅ · 10 ✓</td><td><code>UIApplication</code> / structure, a <code>UIWindowScene</code> per window</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>11 ✅ · 1 ☑️ · 11 ✓</td><td>structure / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>19 ✅ · 4 ✓</td><td><code>Application</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>16 ✅ · 6 ✓ · 1 –</td><td><code>AdwApplication</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>17 ✅ · 6 ✓</td><td><code>document</code> / structure</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/ApplicationContract.swift`.
@@ -59,6 +59,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/ApplicationCo
 <tr><td colspan="9">AppKit: only through the host's own: read a question: the captions the host keeps, not the alert's buttons<br>UIKit: only through the host's own: read a question: the buttons' captions the host keeps<br>Android Views: only through the host's own: read a question: what the relay keeps of the dialog it showed</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>announce</code></td><td>act</td><td><code>(String) -&gt; Void</code></td><td></td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read what the screen reader said: the host's own list of what it announced<br>Android Views: only through the host's own: read what the screen reader said: the host's own list of what it handed Android to announce<br>WinUI 3: only through the host's own: read what the screen reader said: the relay's own list of what it handed UI Automation to announce<br>GTK 4: only through the host's own: read what the screen reader said: the host's own list of what it asked GTK to announce</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>cancelCall</code></td><td>act</td><td><code>(Int) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>chooseAction</code></td><td>act</td><td><code>(Name, Name, String, [String], Int?, String) -&gt; Int?</code></td><td></td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: read a question: the captions the host keeps, not the alert's buttons<br>UIKit: only through the host's own: read a question: the buttons' captions the host keeps<br>Android Views: only through the host's own: read a question: what the relay keeps of the dialog it showed</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>confirm</code></td><td>act</td><td><code>(Name, Name, String, String, String, String) -&gt; Bool</code></td><td></td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>

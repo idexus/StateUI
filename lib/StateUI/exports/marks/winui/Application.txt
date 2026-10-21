@@ -1,7 +1,8 @@
-# revision 10.1
+# revision 11.1
 Application: ✅
 Application.alert: ✅
 Application.announce: ✓ read what the screen reader said: the relay's own list of what it handed UI Automation to announce
+Application.cancelCall: ✅
 Application.chooseAction: ✅
 Application.confirm: ✅
 Application.currentTime: ✅

@@ -23,6 +23,11 @@ extension WebRelay {
         }
     }
 
+    /// Stops the request `listener` waits for: its listener hears why.
+    static func cancelRequest(_ listener: Int32) {
+        stateui_web_cancel_request(listener)
+    }
+
     /// Whether the request being heard was answered.
     static var requestAnswered: Bool { stateui_web_event_number(0) != 0 }
 

@@ -263,6 +263,9 @@ STATEUI_WEB(send_request) void stateui_web_send_request(
     const char *address, int32_t addressLength, const char *method, int32_t methodLength, const char *headers,
     int32_t headersLength, const uint8_t *body, int32_t bodyLength, int32_t listener);
 
+/// Stops the request `listener` waits for, through its `AbortController`: the listener hears event 0 and why.
+STATEUI_WEB(cancel_request) void stateui_web_cancel_request(int32_t listener);
+
 /// The answered request's headers, or why none came, read by `copy_read`: its length.
 STATEUI_WEB(request_words) int32_t stateui_web_request_words(void);
 

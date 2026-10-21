@@ -94,7 +94,10 @@ count` before it and `count = old + 1` after.
 A run that a later event cancels, or whose element leaves the tree, changes
 nothing from then on: its task is cancelled, and its state writes, movements,
 posts and acts are refused, each refusal said once - a slower, older search
-never overwrites a newer one, and a page already left never navigates. A
+never overwrites a newer one, and a page already left never navigates. What
+it awaits from the host ends with it: the `await` throws `CancellationError`
+at once, which ends the run quietly, and the host stops the call - a request
+is cancelled, a question not yet shown is never shown. A
 `Task { }` or a child task the run started is refused with it; one started
 with `Task(gate:)` or `Task.detached` is not. An element leaving ends its own runs
 alone: behind a gatekeeper, the others' runs go on. A handler without an `await`

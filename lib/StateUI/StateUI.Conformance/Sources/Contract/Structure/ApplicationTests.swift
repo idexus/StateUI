@@ -341,6 +341,37 @@
                 s.settle { !said.values.isEmpty }
                 s.expect(said.values, ["201 POST kept Kept words"], "the status, the headers both ways and the body")
             },
+            ConformanceCase("aRequestEndsWithItsRun", proves: [
+                Covered(ApplicationContract.cancelCall),
+            ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.sendRequest)]) { s in
+                let address = try s.served()
+                let before = try s.held()
+                let said = Received<String>()
+                let presses = Received<Int>()
+                s.start {
+                    WithSessions { _, application in
+                        VStack {
+                            // The first press asks for what the server holds; the second ends the first's run.
+                            Button("Send").onClicked(gate: .cancelPrevious) {
+                                presses.values.append(presses.values.count)
+                                let path = presses.values.count == 1 ? "/held" : "/parcels"
+                                let response = try await application.send(HTTPRequest(address + path))
+                                said.values.append("\(path) \(response.status)")
+                            }.id("send")
+                        }
+                    }
+                }
+
+                try s.perform(.activate, on: s.element("send"))
+                try s.settle { try s.held().taken > before.taken }
+                try s.perform(.activate, on: s.element("send"))
+                try s.settle {
+                    let stopped = try s.held().stopped
+                    return !said.values.isEmpty && stopped > before.stopped
+                }
+                s.expect(said.values, ["/parcels 201"], "the first run ended with no answer; the second's came")
+                s.expect(try s.held().stopped - before.stopped, 1, "the first run's request stopped as the run ended")
+            },
             ConformanceCase("anAddressAndAFileAreLaunched", proves: [
                 Covered(ApplicationContract.launchLink), Covered(ApplicationContract.launchFile),
             ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile)]) { s in

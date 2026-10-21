@@ -9,4 +9,7 @@ enum Reply: Equatable, Sendable {
 
     /// The act could not be performed, and this is why.
     case failed(String)
+
+    /// The caller's run ended before an answer came: it hears its cancellation.
+    case cancelled
 }

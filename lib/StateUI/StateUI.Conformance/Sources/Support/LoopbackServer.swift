@@ -2,19 +2,25 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import StateUIFoundation
+import Synchronization
 #if os(Windows)
 import WinSDK
 #endif
 
-/// The HTTP server the request cases send to, on this machine's loopback, beside the UI thread: it answers every
-/// request with the status 201, `X-Method` naming the request's method, `X-Asked` saying what the request's own
-/// `X-Asked` said, and the request's body (`HostDriver.served()`).
+/// The HTTP server the request cases send to, on this machine's loopback, beside the UI thread, a thread a
+/// connection: it answers a request with the status 201, `X-Method` naming the request's method, `X-Asked` saying
+/// what the request's own `X-Asked` said, and the request's body (`HostDriver.served()`); a request for `/held` it
+/// holds - five seconds, or until its client closes the connection, which it counts (`HostDriver.held()`).
 final class LoopbackServer: Sendable {
     /// The server, started at its first use; nil where the platform opens no socket.
     static let shared: LoopbackServer? = LoopbackServer()
 
     /// Where it listens, its scheme included.
     let address: String
+
+    /// The requests for `/held` that came, and those whose client closed the connection before the answer.
+    static let heldStarted = Atomic<Int>(0)
+    static let heldStopped = Atomic<Int>(0)
 
     private init?() {
         #if os(WASI)
@@ -41,7 +47,7 @@ final class LoopbackServer: Sendable {
         }
         guard bound else { return nil }
         address = "http://127.0.0.1:\(UInt16(bigEndian: place.sin_port))"
-        Self.start(listening: listener)
+        Self.start(on: listener, Self.accepting)
         #endif
     }
 
@@ -56,6 +62,11 @@ final class LoopbackServer: Sendable {
     }
     private static func send(_ socket: Socket, _ bytes: UnsafeRawBufferPointer) -> Int {
         Int(WinSDK.send(socket, bytes.baseAddress?.assumingMemoryBound(to: CChar.self), Int32(bytes.count), 0))
+    }
+    /// Whether `socket` has something to read - its client's closing included - within `milliseconds`.
+    private static func readable(_ socket: Socket, within milliseconds: Int32) -> Bool {
+        var watched = WSAPOLLFD(fd: socket, events: Int16(POLLRDNORM), revents: 0)
+        return WSAPoll(&watched, 1, milliseconds) > 0
     }
     #else
     private typealias Socket = Int32
@@ -79,20 +90,41 @@ final class LoopbackServer: Sendable {
         return StateUIFoundation.send(socket, bytes.baseAddress!, bytes.count, Int32(MSG_NOSIGNAL))
         #endif
     }
+    /// Whether `socket` has something to read - its client's closing included - within `milliseconds`.
+    private static func readable(_ socket: Socket, within milliseconds: Int32) -> Bool {
+        var watched = pollfd(fd: socket, events: Int16(POLLIN), revents: 0)
+        return poll(&watched, 1, milliseconds) > 0
+    }
     #endif
 
-    /// The listening socket a thread was handed.
-    private static func held(_ argument: UnsafeMutableRawPointer?) -> Socket {
-        argument!.assumingMemoryBound(to: Socket.self).pointee
+    /// What a thread runs, handed its socket.
+    private typealias Work = @convention(c) (UnsafeMutableRawPointer?) -> Void
+
+    /// Accepts connections for as long as the process runs, each answered on a thread of its own.
+    private static let accepting: Work = { argument in
+        let listener = LoopbackServer.taken(argument)
+        while true {
+            let connection = accept(listener, nil, nil)
+            guard LoopbackServer.isOpen(connection) else { continue }
+            LoopbackServer.start(on: connection, LoopbackServer.answering)
+        }
     }
 
-    /// Answers each request `listener` accepts, one after another, on a thread of its own.
-    private static func start(listening listener: Socket) {
-        let held = UnsafeMutablePointer<Socket>.allocate(capacity: 1)
-        held.initialize(to: listener)
+    /// Answers one connection and closes it.
+    private static let answering: Work = { argument in
+        let connection = LoopbackServer.taken(argument)
+        LoopbackServer.answer(connection)
+        LoopbackServer.shut(connection)
+    }
+
+    /// Runs `work` on a thread of its own, handed `socket`.
+    private static func start(on socket: Socket, _ work: Work) {
+        let held = UnsafeMutablePointer<(Socket, Work)>.allocate(capacity: 1)
+        held.initialize(to: (socket, work))
         #if os(Windows)
         _ = CreateThread(nil, 0, { argument in
-            LoopbackServer.serve(LoopbackServer.held(argument))
+            let (socket, work) = LoopbackServer.handed(argument)
+            work(LoopbackServer.argument(of: socket))
             return 0
         }, held, 0, nil)
         #else
@@ -102,20 +134,26 @@ final class LoopbackServer: Sendable {
         var thread = pthread_t()
         #endif
         pthread_create(&thread, nil, { argument in
-            LoopbackServer.serve(LoopbackServer.held(argument))
+            let (socket, work) = LoopbackServer.handed(argument)
+            work(LoopbackServer.argument(of: socket))
             return nil
         }, held)
         #endif
     }
 
-    /// Accepts and answers requests for as long as the process runs.
-    private static func serve(_ listener: Socket) {
-        while true {
-            let connection = accept(listener, nil, nil)
-            guard isOpen(connection) else { continue }
-            answer(connection)
-            shut(connection)
-        }
+    /// The socket and the work a thread was handed, let go of.
+    private static func handed(_ argument: UnsafeMutableRawPointer?) -> (Socket, Work) {
+        let held = argument!.assumingMemoryBound(to: (Socket, Work).self)
+        defer { held.deinitialize(count: 1); held.deallocate() }
+        return held.pointee
+    }
+
+    /// `socket` as the argument of a thread's work, and back.
+    private static func argument(of socket: Socket) -> UnsafeMutableRawPointer? {
+        UnsafeMutableRawPointer(bitPattern: UInt(socket))
+    }
+    private static func taken(_ argument: UnsafeMutableRawPointer?) -> Socket {
+        Socket(UInt(bitPattern: argument))
     }
 
     /// Reads one request from `connection` and answers it.
@@ -136,7 +174,23 @@ final class LoopbackServer: Sendable {
         }
         guard let end = headerEnd else { return }
         let head = received[..<end]
-        let method = String(decoding: head.prefix { $0 != 32 }, as: UTF8.self)
+        let line = String(decoding: head.prefix { $0 != 13 }, as: UTF8.self).split(separator: " ")
+        let method = line.first.map(String.init) ?? ""
+        let path = line.count > 1 ? String(line[1]) : "/"
+        if path.hasSuffix("/held") {
+            heldStarted.add(1, ordering: .sequentiallyConsistent)
+            // Nothing more comes on this connection: what reads now is its client closing it.
+            var closed = false
+            for _ in 0..<100 {
+                guard !closed else { break }
+                closed = readable(connection, within: 50)
+                    && chunk.withUnsafeMutableBytes { receive(connection, into: $0) } <= 0
+            }
+            if closed {
+                heldStopped.add(1, ordering: .sequentiallyConsistent)
+                return
+            }
+        }
         let body = Array(received[end..<min(received.count, end + bodyLength)])
         let response = Array(("HTTP/1.1 201 Created\r\nX-Method: \(method)\r\n"
             + "X-Asked: \(header("x-asked", in: head) ?? "")\r\nContent-Type: text/plain\r\n"

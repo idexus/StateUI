@@ -9,10 +9,11 @@
 @_spi(Host) public enum HostActs {
     /// The acts every host performs: the focus, the questions for the user and a word to a screen reader, the
     /// clipboard, the time and the zones, the on-screen keyboard, a value kept - the application's or a scene's - a
-    /// handler's failure told, and the theme the application shows in.
+    /// handler's failure told, the theme the application shows in, and a call stopped as its caller's run ends.
     public static let performed: [any ContractMember] = [
         FocusElementContract.focus, FocusElementContract.unfocus,
-        ApplicationContract.alert, ApplicationContract.announce, ApplicationContract.chooseAction,
+        ApplicationContract.alert, ApplicationContract.announce, ApplicationContract.cancelCall,
+        ApplicationContract.chooseAction,
         ApplicationContract.confirm, ApplicationContract.currentTime, ApplicationContract.currentTimeZone,
         ApplicationContract.handlerFailed, ApplicationContract.hideOnScreenKeyboard,
         ApplicationContract.persistSceneValue, ApplicationContract.persistValue, ApplicationContract.prompt,

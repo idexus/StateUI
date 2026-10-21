@@ -54,6 +54,8 @@ public final class Arrival {
             outcome = .success(values.first?.bool ?? true)
         case .failed(let message):
             outcome = .failure(StateUIError(message: message))
+        case .cancelled:
+            outcome = .failure(CancellationError())
         }
 
         let resumed = waiting

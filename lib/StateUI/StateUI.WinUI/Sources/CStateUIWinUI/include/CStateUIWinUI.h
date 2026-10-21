@@ -1341,6 +1341,10 @@ void stateui_winui_read_file(int64_t ticket, char const *path, int64_t maximum);
 void stateui_winui_send_request(
     int64_t ticket, char const *address, char const *method, char const *headers, uint8_t const *body, int64_t length);
 
+/// Stops the request sent under `ticket`, where it is under way: its answer comes back through `requestAnswered`,
+/// saying why.
+void stateui_winui_cancel_request(int64_t ticket);
+
 /// Hands the file at the path `target`, or the address `target`, to Windows to open in the application it gives it;
 /// whether one took it comes back through `launchAnswered`, under `ticket`, on the UI thread.
 void stateui_winui_launch(int64_t ticket, char const *target, bool file);

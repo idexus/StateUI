@@ -94,10 +94,17 @@ private final class Network: NetworkToolkit {
     var readsRelativeAddresses = false
     var sent: [HostRequest] = []
     var answer: Result<HostResponse, ActFailure> = .success(HostResponse(status: 200, headers: [], body: []))
+    /// Whether the server holds its answer, the request under way.
+    var holds = false
+    var held: [(Result<HostResponse, ActFailure>) -> Void] = []
+    var stopped: [String] = []
 
-    func send(_ request: HostRequest, answered: @escaping (Result<HostResponse, ActFailure>) -> Void) {
+    func send(
+        _ request: HostRequest, answered: @escaping (Result<HostResponse, ActFailure>) -> Void
+    ) -> () -> Void {
         sent.append(request)
-        answered(answer)
+        if holds { held.append(answered) } else { answered(answer) }
+        return { [weak self] in self?.stopped.append(request.address) }
     }
 }
 
@@ -169,6 +176,39 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(answers.failures[3]?.contains("does not perform the act 'sendRequest'"), true)
         XCTAssertFalse(HostRequest(address: "parcels/42").namesItsScheme)
         XCTAssertTrue(HostRequest(address: "http://localhost:8080").namesItsScheme)
+    }
+
+    /// A call whose caller's run ended is stopped: a request under way through what the platform's networking
+    /// answered for it, once; one already answered has nothing left to stop.
+    func testARequestWhoseCallerWentIsStopped() {
+        let (network, answers) = (Network(), Answers())
+        let acts = HostActPerformer(toolkit: Toolkit(), network: network, answers: answers, tree: { nil })
+        let asked: [HostValue] = [.string("https://example.com/held"), .name("GET"), .strings([]), .bytes([])]
+
+        acts.perform(HostActCall(act: .sendRequest, arguments: [.string("https://example.com")] + asked.dropFirst(),
+                                 completion: 1))
+        network.holds = true
+        acts.perform(HostActCall(act: .sendRequest, arguments: asked, completion: 2))
+        acts.perform(HostActCall(act: .cancelCall, arguments: [.number(1)], completion: nil))
+        acts.perform(HostActCall(act: .cancelCall, arguments: [.number(2)], completion: nil))
+        acts.perform(HostActCall(act: .cancelCall, arguments: [.number(2)], completion: nil))
+
+        XCTAssertEqual(network.stopped, ["https://example.com/held"], "the request under way, stopped once")
+    }
+
+    /// A question whose caller's run ended before its turn leaves the queue unasked; one showing stays for the user.
+    func testAQuestionWhoseCallerWentIsNeverAsked() {
+        let (toolkit, answers) = (Toolkit(), Answers())
+        let acts = performer(toolkit, answers)
+
+        acts.perform(HostActCall(act: .confirm, arguments: HostActCall.usersWindow + [.string("Delete?")], completion: 1))
+        acts.perform(HostActCall(act: .alert, arguments: HostActCall.usersWindow + [.string("Done")], completion: 2))
+        acts.perform(HostActCall(act: .alert, arguments: HostActCall.usersWindow + [.string("Saved")], completion: 3))
+        acts.perform(HostActCall(act: .cancelCall, arguments: [.number(2)], completion: nil))
+        acts.perform(HostActCall(act: .cancelCall, arguments: [.number(1)], completion: nil))
+        toolkit.shown[0].answered(.success(.init(accepted: true)))
+
+        XCTAssertEqual(toolkit.shown.map(\.question.title), ["Delete?", "Saved"], "the one gone, never shown")
     }
 
     /// The time and the zones are the toolkit's, answered as every host answers them; a zone nobody knows fails

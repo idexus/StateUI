@@ -75,6 +75,18 @@ turn - so a test waiting for a quiet queue reads this count to tell "the
 resume has not landed yet" from "nothing to wait for". `dispatch` runs nothing
 for a completion, for the same reason.
 
+## A call ends with its run
+
+A caller waiting for an answer waits in its run, and the run can end before
+the answer comes: a later event under `.cancelPrevious`, the element leaving,
+the task cancelled. The caller then stops waiting at once - it throws
+`CancellationError`, which a superseded run ends with quietly - its id is let
+go of, so an answer coming later reaches no one, and the host is told to stop
+the call (`cancelCall`, the id as its argument, nobody waiting). The host
+stops what it can: a request is cancelled through the platform's own call, a
+question still waiting its turn leaves the queue. Every act ends the same
+way; one that answers at once has nothing left to stop.
+
 ## A batch is not a transaction
 
 The host takes the queue in order and starts each act in that order, but an act

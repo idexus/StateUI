@@ -361,7 +361,10 @@ read. A request carries a method, headers and a body
 (`HTTPRequest(address, method: .post, headers:, body:)`), and a header's
 name is read in any case (`response.header("Content-Type")`). The platform
 keeps the cookies a server sets, as a browser does, so a session a server
-opens holds for the requests after it.
+opens holds for the requests after it. A request ends with the run that sent
+it: under `.cancelPrevious` the next tap stops the one under way, and a page
+left stops its own
+([Concurrency](concurrency.md#when-the-event-comes-again)).
 
 An address names its scheme. On the Web an address with none stands on the
 page's own, and the browser's rules for another site's answers hold. An

@@ -21,6 +21,9 @@
     /// What the user is asked, one showing at a time; each answers under its ticket.
     private let questions = QuestionQueue<(call: HostActCall, asked: Asked, window: AskedWindow?)>()
 
+    /// What stops each call still under way, by the id its answer goes under: a request.
+    private var stops: [Int: () -> Void] = [:]
+
     /// The question showing - one at a time - and how many times it was shown: an answer counts from its latest
     /// showing.
     private var showing: (ticket: Int64, count: Int)?
@@ -80,6 +83,8 @@
             perform(call, files: files)
         case .sendRequest:
             send(call)
+        case .cancelCall:
+            stop(call)
         case .announce:
             toolkit.announce(call.arguments.first?.string ?? "")
             reply(call, [])
@@ -269,7 +274,26 @@
         guard request.namesItsScheme || network.readsRelativeAddresses else {
             return fail(call, "the address '\(request.address)' names no scheme, and no page stands to read it against")
         }
-        network.send(request) { [weak self] answered in self?.deliver(call, answered.map(\.answer)) }
+        var finished = false
+        let stop = network.send(request) { [weak self] answered in
+            finished = true
+            if let id = call.completion { self?.stops[id] = nil }
+            self?.deliver(call, answered.map(\.answer))
+        }
+        if let id = call.completion, !finished { stops[id] = stop }
+    }
+
+    // MARK: - A call stopped
+
+    /// Stops the call the act names, its caller's run having ended: a request is stopped, a question still waiting
+    /// its turn leaves the queue unasked. A question showing stays for the user, its answer reaching no one.
+    /// Design: docs/design/core/acts.md#a-call-ends-with-its-run
+    private func stop(_ call: HostActCall) {
+        guard let id = call.arguments.value(0)?.number.map({ Int($0) }) else { return }
+        stops.removeValue(forKey: id)?()
+        if let ticket = questions.ticket(where: { $0.call.completion == id }), ticket != showing?.ticket {
+            _ = questions.answered(ticket)
+        }
     }
 
     // MARK: - The focus

@@ -18,10 +18,12 @@ final class GTKNetwork: NetworkToolkit {
         return session
     }()
 
-    func send(_ request: HostRequest, answered: @escaping (Result<HostResponse, ActFailure>) -> Void) {
+    func send(
+        _ request: HostRequest, answered: @escaping (Result<HostResponse, ActFailure>) -> Void
+    ) -> () -> Void {
         guard let message = soup_message_new(request.method, request.address) else {
             Task { @MainActor in answered(.failure(ActFailure("'\(request.address)' is no address"))) }
-            return
+            return {}
         }
         let headers = soup_message_get_request_headers(message)
         // The body's type stands with the body.
@@ -37,7 +39,9 @@ final class GTKNetwork: NetworkToolkit {
             soup_message_headers_append(headers, "Content-Type", type)
         }
 
-        let sent = Sent { _, result in
+        let stopping = Stopping()
+        let sent = Sent { [stopping] _, result in
+            _ = stopping
             defer { g_object_unref(UnsafeMutableRawPointer(message)) }
             var error: UnsafeMutablePointer<GError>?
             let body = soup_session_send_and_read_finish(Self.session, result, &error)
@@ -54,7 +58,18 @@ final class GTKNetwork: NetworkToolkit {
             MainActor.assumeIsolated { answered(answer) }
         }
         soup_session_send_and_read_async(
-            Self.session, message, Int32(G_PRIORITY_DEFAULT), nil, Sent.finished, Unmanaged.passRetained(sent).toOpaque())
+            Self.session, message, Int32(G_PRIORITY_DEFAULT), stopping.cancellable, Sent.finished,
+            Unmanaged.passRetained(sent).toOpaque())
+        return { g_cancellable_cancel(stopping.cancellable) }
+    }
+
+    /// What stops a request, held for as long as its answer or its stop may reach it.
+    private final class Stopping: @unchecked Sendable {
+        let cancellable = g_cancellable_new()
+
+        deinit {
+            g_object_unref(UnsafeMutableRawPointer(cancellable))
+        }
     }
 
     /// Every header of `headers`, in the order libsoup holds them.

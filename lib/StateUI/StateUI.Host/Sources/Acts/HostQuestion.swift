@@ -181,6 +181,11 @@
         waiting.first
     }
 
+    /// The ticket of the first question waiting that `matches` picks; nil where none does.
+    public func ticket(where matches: (Question) -> Bool) -> Int64? {
+        waiting.first { matches($0.question) }?.ticket
+    }
+
     /// The question under `ticket` was answered: it, and the next question to show now; nil where none waits under
     /// that ticket.
     public func answered(_ ticket: Int64) -> (question: Question, next: Question?)? {

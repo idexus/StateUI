@@ -11,8 +11,10 @@
 final class WebNetwork: NetworkToolkit {
     var readsRelativeAddresses: Bool { true }
 
-    func send(_ request: HostRequest, answered: @escaping (Result<HostResponse, ActFailure>) -> Void) {
-        WebRelay.send(request, WebRelay.once {
+    func send(
+        _ request: HostRequest, answered: @escaping (Result<HostResponse, ActFailure>) -> Void
+    ) -> () -> Void {
+        let listener = WebRelay.once {
             guard WebRelay.requestAnswered else { return answered(.failure(ActFailure(WebRelay.requestWords))) }
             let words = WebRelay.requestWords.split(separator: "\u{1F}", omittingEmptySubsequences: false)
                 .map(String.init)
@@ -21,6 +23,8 @@ final class WebNetwork: NetworkToolkit {
             }
             let status = WebRelay.requestStatus
             answered(.success(HostResponse(status: status, headers: headers, body: WebRelay.requestBody)))
-        })
+        }
+        WebRelay.send(request, listener)
+        return { WebRelay.cancelRequest(listener) }
     }
 }

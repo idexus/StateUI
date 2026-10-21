@@ -212,6 +212,7 @@ enum JavaAPI {
     static let requests = Java.findClass("stateui/android/StateUIRequests")
     static let sendRequest = Java.staticMethod(
         requests, "send", "(JLjava/lang/String;Ljava/lang/String;[Ljava/lang/String;[B)V")
+    static let cancelRequest = Java.staticMethod(requests, "cancel", "(J)V")
 
     static let store = Java.findClass("stateui/android/StateUIStore")
     static let readStore = Java.staticMethod(

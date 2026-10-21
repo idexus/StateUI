@@ -407,6 +407,33 @@ final class ActCallShapeTests: XCTestCase {
         XCTAssertEqual(response.text, "Not here")
     }
 
+    /// A caller whose run is cancelled stops waiting at once - it hears its cancellation, and an answer coming later
+    /// reaches no one - and the host is told to stop the call, nobody waiting for that.
+    func testACallEndsWithItsRun() async throws {
+        drain()
+        let task = Self.begin { _ = try await StandardEnvironment.application.send(HTTPRequest("https://example.com")) }
+        let id = try XCTUnwrap(drain().first?.completion)
+
+        task.cancel()
+        await settle()
+        let stopping = drain()
+        let stillWaited = Renderer.shared.waiting.contains(id)
+        if stillWaited {
+            HostBoundary.reply(id, with: [.number(200), .strings([]), .bytes([])])
+            await settle()
+        }
+
+        XCTAssertFalse(stillWaited, "no caller waits any more")
+        taken(stopping, "cancelCall", [.number(Double(id))], awaited: false)
+        do {
+            try await task.value
+            XCTFail("the call answered")
+        } catch {
+            XCTAssertTrue(error is CancellationError, "the caller hears its cancellation, not \(error)")
+        }
+        XCTAssertFalse(HostBoundary.reply(id, with: [.number(200)]), "a late answer reaches no one")
+    }
+
     /// An address launched crosses as written.
     func testALinkCrossesAsWritten() async throws {
         try await check("launchLink", [.string("https://www.swift.org")]) {

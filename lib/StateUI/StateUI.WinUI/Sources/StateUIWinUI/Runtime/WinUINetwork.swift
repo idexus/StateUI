@@ -13,13 +13,16 @@ final class WinUINetwork: NetworkToolkit {
     /// What hears each request's answer, by ticket.
     private let requests = Numbered<(Result<HostResponse, ActFailure>) -> Void>()
 
-    func send(_ request: HostRequest, answered: @escaping (Result<HostResponse, ActFailure>) -> Void) {
+    func send(
+        _ request: HostRequest, answered: @escaping (Result<HostResponse, ActFailure>) -> Void
+    ) -> () -> Void {
         let ticket = requests.hold(answered)
         let headers = request.headers.flatMap { [$0.name, $0.value] }.joined(separator: "\u{1F}")
         request.body.withUnsafeBufferPointer { body in
             stateui_winui_send_request(
                 ticket, request.address, request.method, headers, body.baseAddress, Int64(body.count))
         }
+        return { stateui_winui_cancel_request(ticket) }
     }
 
     /// The request under `ticket` was answered: its status, its headers' names and values in turn a unit separator

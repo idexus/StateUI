@@ -13,7 +13,9 @@ final class AndroidNetwork: NetworkToolkit {
     /// What hears each request's answer, by ticket.
     private let requests = Numbered<(Result<HostResponse, ActFailure>) -> Void>()
 
-    func send(_ request: HostRequest, answered: @escaping (Result<HostResponse, ActFailure>) -> Void) {
+    func send(
+        _ request: HostRequest, answered: @escaping (Result<HostResponse, ActFailure>) -> Void
+    ) -> () -> Void {
         let ticket = requests.hold(answered)
         Java.frame {
             Java.callStatic(
@@ -21,6 +23,7 @@ final class AndroidNetwork: NetworkToolkit {
                 .object(Java.string(request.method)),
                 .object(Java.strings(request.headers.flatMap { [$0.name, $0.value] })), .object(Java.bytes(request.body)))
         }
+        return { Java.callStatic(JavaAPI.requests, JavaAPI.cancelRequest, .long(ticket)) }
     }
 
     /// The request under `ticket` was answered: its status, its headers as names and values in turn and its body,

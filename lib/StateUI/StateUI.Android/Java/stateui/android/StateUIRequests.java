@@ -15,6 +15,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,6 +27,9 @@ import java.util.concurrent.Executors;
 final class StateUIRequests {
     private static final Handler ui = new Handler(Looper.getMainLooper());
     private static final ExecutorService senders = Executors.newCachedThreadPool();
+    /** Each request's connection under way, and the requests stopped, by ticket. */
+    private static final Map<Long, HttpURLConnection> underWay = new ConcurrentHashMap<>();
+    private static final Set<Long> stopped = ConcurrentHashMap.newKeySet();
 
     private StateUIRequests() {}
 
@@ -42,6 +47,8 @@ final class StateUIRequests {
             HttpURLConnection connection = null;
             try {
                 connection = (HttpURLConnection) new URL(address).openConnection();
+                underWay.put(ticket, connection);
+                if (stopped.contains(ticket)) throw new java.io.IOException("the request was stopped");
                 connection.setRequestMethod(method);
                 for (int index = 0; index + 1 < headers.length; index += 2) {
                     connection.addRequestProperty(headers[index], headers[index + 1]);
@@ -70,6 +77,8 @@ final class StateUIRequests {
             } catch (Exception failed) {
                 failure = failed.getMessage() != null ? failed.getMessage() : failed.toString();
             } finally {
+                underWay.remove(ticket);
+                stopped.remove(ticket);
                 if (connection != null) connection.disconnect();
             }
             int answered = status;
@@ -78,6 +87,13 @@ final class StateUIRequests {
             String why = failure;
             ui.post(() -> StateUIHost.requestAnswered(ticket, answered, names, bytes, why));
         });
+    }
+
+    /** Stops the request under `ticket`: its connection closed, or never opened. */
+    static void cancel(long ticket) {
+        stopped.add(ticket);
+        HttpURLConnection connection = underWay.remove(ticket);
+        if (connection != null) senders.execute(connection::disconnect);
     }
 
     private static byte[] all(InputStream in) throws java.io.IOException {

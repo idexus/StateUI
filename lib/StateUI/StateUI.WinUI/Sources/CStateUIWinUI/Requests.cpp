@@ -9,7 +9,9 @@
 #include "Relay.h"
 
 #include <cctype>
+#include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -28,6 +30,16 @@ namespace {
     http::HttpClient &client() {
         static http::HttpClient shared;
         return shared;
+    }
+
+    /// Each request under way, by its ticket: what stops it.
+    std::mutex underWayLock;
+    std::map<int64_t, IAsyncOperationWithProgress<http::HttpResponseMessage, http::HttpProgress>> underWay;
+
+    /// The request under `ticket` is under way no more.
+    void ended(int64_t ticket) {
+        std::lock_guard held(underWayLock);
+        underWay.erase(ticket);
     }
 
     /// Answers the request under `ticket` on the UI thread.
@@ -86,9 +98,16 @@ extern "C" void stateui_winui_send_request(
                 message.Headers().TryAppendWithoutValidation(name, value);
             }
         }
-        client().SendRequestAsync(message).Completed(guarded("handling a request's answer", [ticket](
+        auto sending = client().SendRequestAsync(message);
+        {
+            std::lock_guard held(underWayLock);
+            underWay.emplace(ticket, sending);
+        }
+        sending.Completed(guarded("handling a request's answer", [ticket](
                 IAsyncOperationWithProgress<http::HttpResponseMessage, http::HttpProgress> const &sending,
                 AsyncStatus status) {
+            ended(ticket);
+            if (status == AsyncStatus::Canceled) return answer(ticket, 0, "", {}, "the request was stopped");
             if (status != AsyncStatus::Completed) return answer(ticket, 0, "", {}, failure(sending.ErrorCode()));
             auto response = sending.GetResults();
             auto code = static_cast<int32_t>(response.StatusCode());
@@ -105,5 +124,21 @@ extern "C" void stateui_winui_send_request(
     } catch (...) {
         auto code = report("sending a request");
         answer(ticket, 0, "", {}, "the request could not be sent: 0x" + std::to_string(code));
+    }
+}
+
+extern "C" void stateui_winui_cancel_request(int64_t ticket) {
+    try {
+        IAsyncOperationWithProgress<http::HttpResponseMessage, http::HttpProgress> sending{nullptr};
+        {
+            std::lock_guard held(underWayLock);
+            auto found = underWay.find(ticket);
+            if (found == underWay.end()) return;
+            sending = found->second;
+            underWay.erase(found);
+        }
+        sending.Cancel();
+    } catch (...) {
+        report("stopping a request");
     }
 }

@@ -158,6 +158,16 @@ extension WebDriver {
         "/stateui-served"
     }
 
+    /// The requests for `/held` the page's server took and those stopped, asked of it as the page asks.
+    func held() throws -> (taken: Int, stopped: Int) {
+        let said = try WebBrowser.evaluate(
+            "(() => { const asked = new XMLHttpRequest(); asked.open('GET', '/stateui-held', false); asked.send(); "
+                + "return asked.responseText; })()", on: 0) ?? ""
+        let counts = said.split(separator: " ").compactMap { Int($0) }
+        guard counts.count == 2 else { throw DriverCannot("count the requests held") }
+        return (counts[0], counts[1])
+    }
+
     /// What assistive technology was told, a few frames given for the page's live region to say it.
     func announced() throws -> [String] {
         for _ in 0..<10 {

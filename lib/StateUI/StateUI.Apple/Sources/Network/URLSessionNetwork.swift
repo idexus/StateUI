@@ -12,16 +12,19 @@ import Foundation
     /// A toolkit sending through the shared session.
     public init() {}
 
-    public func send(_ request: HostRequest, answered: @escaping (Result<HostResponse, ActFailure>) -> Void) {
+    public func send(
+        _ request: HostRequest, answered: @escaping (Result<HostResponse, ActFailure>) -> Void
+    ) -> () -> Void {
         guard let address = URL(string: request.address) else {
-            return answered(.failure(ActFailure("'\(request.address)' is no address")))
+            answered(.failure(ActFailure("'\(request.address)' is no address")))
+            return {}
         }
         var asked = URLRequest(url: address)
         asked.httpMethod = request.method
         for header in request.headers { asked.addValue(header.value, forHTTPHeaderField: header.name) }
         if !request.body.isEmpty { asked.httpBody = Data(request.body) }
 
-        Task { @MainActor in
+        let sending = Task { @MainActor in
             do {
                 let (body, response) = try await URLSession.shared.data(for: asked)
                 guard let response = response as? HTTPURLResponse else {
@@ -35,5 +38,6 @@ import Foundation
                 answered(.failure(ActFailure(error.localizedDescription)))
             }
         }
+        return { sending.cancel() }
     }
 }

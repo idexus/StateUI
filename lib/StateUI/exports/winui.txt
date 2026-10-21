@@ -411,6 +411,7 @@ ZStack
 (acts)
   alert()
   announce()
+  cancelCall()
   chooseAction()
   confirm()
   currentTime()

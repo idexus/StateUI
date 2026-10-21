@@ -24,6 +24,10 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// See `ApplicationSession.announce`.
     public static let announce = ElementAct<Self, String, Void>("announce")
 
+    /// Stops what the host performs for the call answered under an id: its caller's run ended - a request stopped,
+    /// a question still waiting its turn dropped. The library sends it; an application calls nothing.
+    public static let cancelCall = ElementAct<Self, Int, Void>("cancelCall")
+
     /// Offers the user a list of actions over a window - the window, the title,
     /// each action's caption, the place of the destructive one where there is
     /// one, and the cancel's caption - answering the place of the one chosen,
@@ -150,7 +154,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        alert, announce, chooseAction, confirm, currentTime, currentTimeZone, handlerFailed,
+        alert, announce, cancelCall, chooseAction, confirm, currentTime, currentTimeZone, handlerFailed,
         hideOnScreenKeyboard, launchFile, launchLink, openFiles, persistSceneValue, persistValue, prompt,
         readClipboard, readFile, saveFile, sendRequest, share, useColorScheme, utcOffset, writeClipboard,
     ]

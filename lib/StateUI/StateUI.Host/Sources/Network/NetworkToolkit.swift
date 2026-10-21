@@ -11,8 +11,10 @@
     var readsRelativeAddresses: Bool { get }
 
     /// Sends `request` and calls `answered` on the UI thread with what the server said - whatever its status - or
-    /// why no answer came.
-    func send(_ request: HostRequest, answered: @escaping (Result<HostResponse, ActFailure>) -> Void)
+    /// why no answer came; answers what stops it, which its caller calls once nobody waits for the answer.
+    func send(
+        _ request: HostRequest, answered: @escaping (Result<HostResponse, ActFailure>) -> Void
+    ) -> () -> Void
 }
 
 extension NetworkToolkit {

@@ -220,6 +220,12 @@
         return try driven { try driver.served() }
     }
 
+    /// The requests for `/held` the driver's server took, and those stopped (`HostDriver.held()`).
+    public func held() throws -> (taken: Int, stopped: Int) {
+        note("count the requests held")
+        return try driven { try driver.held() }
+    }
+
     /// The file dialog the window shows now; nil where it shows none.
     public func fileDialog() throws -> FileDialog? {
         guard let root = tree?.root else { return nil }
