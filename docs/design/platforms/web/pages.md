@@ -134,6 +134,13 @@ for a context menu.
 Its entries stand in a grid of rows each as tall as it is: WebKit spreads a
 grid held to a maximum height over its rows, and a menu of three stood the
 window's height in Safari.
+A context menu a held finger opens is the page's to close: that finger went
+down before the menu stood, so its lift comes beside the menu, and the
+browser's light dismissal - a press and a release beside it - closed it the
+moment it lifted (Safari on a phone). Opened by a hold, the menu stands as
+`popover="manual"` while it is open and closes on a press beside it or
+Escape, the relay's own; the view it belongs to chooses none of its words by
+the hold and shows no callout of the browser's (`data-holds-menu`).
 
 A bar's action that is a menu opens its entries under it. The actions
 standing behind the bar - its overflow - and the menus the page's path

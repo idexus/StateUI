@@ -281,6 +281,10 @@ body {
 .stateui-menu > [role="menuitemcheckbox"][aria-checked="true"]::before { content: "✓"; }
 .stateui-menu > [role="separator"] { height: 1px; margin: 5px 6px; background: var(--stateui-line); }
 
+/* A view whose menu a held finger opens: the hold is the menu's, not a choice of the view's words nor the browser's
+   callout. */
+[data-holds-menu] { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+
 /* A popover: the document's own, under its anchor over everything, a card on the page's raised surface; its
    layout's grid shows only while it is open. */
 .stateui-popover {
