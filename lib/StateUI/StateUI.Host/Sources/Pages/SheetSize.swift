@@ -13,6 +13,7 @@
     /// The most a sheet stands at.
     public var most: LayoutSize
 
+    /// A room of these sizes.
     public init(least: LayoutSize, standard: LayoutSize, most: LayoutSize) {
         self.least = least
         self.standard = standard

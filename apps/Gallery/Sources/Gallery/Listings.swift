@@ -9056,6 +9056,35 @@ enum Listings {
             .verticalAlignment(.center)
         }
         """#,
+        "SafeAreaSample": #"""
+        // Sources/Samples/Layout/SafeAreaSample.swift
+        @State private var presented = false
+        @State private var under = true
+        @State private var path: [Int] = []
+
+        var body: some View {
+            Button("Open a page")
+                .onClicked { presented = true }
+                .sheet(isPresented: $presented) {
+                    NavigationStack($path) {
+                        Grid {
+                            ScrollView {
+                                VStack {
+                                    Switch($under).text("Under the bars")
+                                    ForEach(Array(1...40), id: \.self) { row in
+                                        Text("Row \(row)")
+                                    }
+                                }
+                            }
+                        }
+                        .avoidsSafeArea(under ? .none : .container)
+                        .galleryPage("Safe area")
+                    } destination: { _ in
+                        Text("")
+                    }
+                }
+        }
+        """#,
         "SameInputsSample": #"""
         // Sources/Samples/Fundamentals/SameInputsSample.swift
         @State private var counter = 0

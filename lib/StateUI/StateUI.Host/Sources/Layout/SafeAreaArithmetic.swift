@@ -6,11 +6,16 @@
 /// What a scroller keeps clear on each edge of its room, in its toolkit's terms: the depth of the bars it reaches
 /// under there.
 @_spi(Host) public struct Clearance: Equatable, Sendable {
+    /// The depth kept clear at the top.
     public var top: Double
+    /// The depth kept clear at the left.
     public var left: Double
+    /// The depth kept clear at the bottom.
     public var bottom: Double
+    /// The depth kept clear at the right.
     public var right: Double
 
+    /// A clearance of these depths.
     public init(top: Double, left: Double, bottom: Double, right: Double) {
         (self.top, self.left, self.bottom, self.right) = (top, left, bottom, right)
     }

@@ -238,6 +238,7 @@ final class Catalog {
                 Sample(ScrollViewSample()),
                 Sample(SizingSample()),
                 Sample(OutlineSample()),
+                Sample(SafeAreaSample()),
                 Sample(TransformSample()),
                 Sample(LayoutDirectionSample()),
                 Sample(GeometryReaderSample()),

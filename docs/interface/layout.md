@@ -430,10 +430,15 @@ is drawn and nothing is cut. A dashed outline belongs to a shape: lay a
 
 ## Safe areas and clipping
 
-`avoidsSafeArea` states, edge by edge, what a layout stands clear of on a
-screen with bars and a notch. A page's content stands clear of them by
-default (`.container`); the page's own layout says `.none` - edge to edge -
-to run under them, so its background colors the status bar's strip:
+Every room a page stands in - a window, a sheet, a popover - has a safe area:
+the part of it clear of what stands over the page there. That is a phone's
+status bar, notch and home indicator, the keyboard, a popover's arrow, and the
+page's own bars - a stack's, the tabs', a split view column's part of the bar.
+`avoidsSafeArea` states, edge by edge, what a page's own layout stands clear
+of. Its content stands clear of all of it by default (`.container`); `.none`,
+edge to edge, runs it under, so its background colors the status bar's strip
+and its rows scroll under a translucent bar, the first and the last stopping
+clear of it:
 
 ```swift
 import StateUI
@@ -451,7 +456,9 @@ struct Header: View {
 ```
 
 Words under the bars are hidden by them, so a layout that runs under them
-pads its words clear. `clipsContent` controls whether descendants may draw
+pads its words clear. A bar a platform stands beside the page rather than
+over it has nothing to run under, and a desktop window with nothing over its
+content has its whole room safe. `clipsContent` controls whether descendants may draw
 outside the assigned rectangle, cut to the layout's shape where it names one.
 The [platform contract](../platform-contract.md) says where each is realized.
 
