@@ -294,7 +294,7 @@ final class UIKitDriver: HostDriver {
         case (.scroll(let target), let scroll as UIKitScrollView):
             // A finger takes the scroller, moves it there, and lets go without a throw.
             scroll.scrollViewWillBeginDragging(scroll.scroller)
-            scroll.scroller.contentOffset = CGPoint(x: target.x, y: target.y)
+            scroll.scroller.contentOffset = scroll.native(of: target)
             scroll.scrollViewDidEndDragging(scroll.scroller, willDecelerate: false)
         case (.choose(let place), let picker as any UIKitChoosing): picker.userChose(place)
         case (.endContent, let web as WebKitView):
@@ -502,7 +502,7 @@ final class UIKitDriver: HostDriver {
         case (.isRefreshing, let pulled as any UIKitRefreshing):
             return (pulled.refresh.scroller?.refreshControl?.isRefreshing ?? false).propValue
         case (.scrollOffset, let scroll as UIKitScrollView):
-            return Point(x: scroll.scroller.contentOffset.x, y: scroll.scroller.contentOffset.y).propValue
+            return scroll.toolkitStanding.propValue
         case (.orientation, let scroll as UIKitScrollView): return scroll.orientation.propValue
         case (.source, let image as UIKitImageView): return image.image?.accessibilityIdentifier.map { .string($0) }
         case (.userAgent, let web as WebKitView): return web.customUserAgent.propValue

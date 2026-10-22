@@ -13,14 +13,15 @@ the whole window.
 
 ## The safe area
 
-A page's view stands in its controller's safe area, clear of the bars, the
-notch and an iPad window's own controls in its corner (the safe area with its
-corner adapted), and out to the screen's edge where its content lets itself
-under the screen's bars and notch - never under a stack's bar or the tabs
-(`barsOver`) ([the safe area](../../host/layout.md#the-safe-area)); the
-controller's own view shows the page's background, so it stands behind the
-bars either way. Only a page's own layout reaches under them; one deeper in
-stands where its page puts it. A frame report's safe area is that same one -
+A page's view stands in its controller's safe area, clear of the screen's
+bars, the notch, a stack's bar, the tabs and an iPad window's own controls in
+its corner (the safe area with its corner adapted), and out to the
+controller's edge where its content lets itself under them ([the safe
+area](../../host/layout.md#the-safe-area)) - under the glass of a stack's bar
+too; a scroller let under keeps their depth as its content inset, its offset
+counted from its first row clear. The controller's own view shows the page's
+background, so it stands behind the bars either way. Only a page's own layout
+reaches under them; one deeper in stands where its page puts it. A frame report's safe area is that same one -
 the page's, under its stack's bar as well as the status bar - so a view at its
 page's top corner reads nothing from it.
 
@@ -200,9 +201,10 @@ thing passing.
 
 A view's popover is a controller presented in UIKit's popover style from
 its anchor's view, sized to what it holds - a popover on a phone too. What it
-holds stands within the popover's safe area: iOS 26 lays the controller's view
-under the arrow and says so by its safe area, iOS 27 moves the view clear of
-the arrow itself. It passes over what the window shows like everything else that
+holds stands in the popover's safe area by the rule every room keeps ([the
+safe area](../../host/layout.md#the-safe-area)): iOS 26 lays the controller's
+view under the arrow and says so by its safe area, iOS 27 moves the view clear
+of the arrow itself. It passes over what the window shows like everything else that
 passes ([what passes over the sheets](#what-passes-over-the-sheets)), so it
 waits for a sheet in motion. A tap beside it or a swipe reaches its
 delegate, which tells the host.

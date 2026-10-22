@@ -34,24 +34,6 @@ final class UIKitPageController: UIViewController {
         if let shown = page?.view { view.addSubview(shown) }
     }
 
-    /// The room UIKit's own bars take over the page's view - a stack's bar above, the tabs below - which its content
-    /// never stands under: only the screen's bars and notch are the safe area's to give.
-    private var barsOver: UIEdgeInsets {
-        func covered(by bar: UIView?) -> CGRect? {
-            guard let bar, !bar.isHidden, bar.window != nil else { return nil }
-            return view.convert(bar.bounds, from: bar).intersection(view.bounds)
-        }
-        var over = UIEdgeInsets.zero
-        if navigationController?.isNavigationBarHidden == false,
-           let bar = covered(by: navigationController?.navigationBar), !bar.isNull {
-            over.top = max(0, bar.maxY)
-        }
-        if let tabs = covered(by: tabBarController?.tabBar), !tabs.isNull, tabs.height > 0 {
-            over.bottom = max(0, view.bounds.maxY - tabs.minY)
-        }
-        return over
-    }
-
     /// The page's background behind the whole screen it stands on, the bars and the notch included; where the page
     /// says none, a sidebar's ground, else the window's - what the window is made of under a page that paints nothing
     /// of its own - else the system's.
@@ -143,16 +125,16 @@ final class UIKitPageController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         layGround()
-        let (safe, whole) = (view.bounds.inset(by: insets), view.bounds.inset(by: barsOver))
+        // The bars over the page are its safe area's as the screen's are: content stands clear of them, or under.
+        // Design: docs/design/host/layout.md#the-safe-area
+        let (inside, whole) = (view.bounds.inset(by: insets), view.bounds)
+        let safe = Rect(x: inside.minX, y: inside.minY, width: inside.width, height: inside.height)
         let room = SafeAreaArithmetic.room(
-            safe: Rect(x: safe.minX, y: safe.minY, width: safe.width, height: safe.height),
-            whole: Rect(x: whole.minX, y: whole.minY, width: whole.width, height: whole.height),
+            safe: safe, whole: Rect(x: whole.minX, y: whole.minY, width: whole.width, height: whole.height),
             edges: page?.element.contentSafeArea, direction: page?.element.layoutDirection ?? .leftToRight)
         page?.placedFrame = room
-        let clearance = SafeAreaArithmetic.endClearance(
-            room: room, safe: Rect(x: safe.minX, y: safe.minY, width: safe.width, height: safe.height))
-        (page?.element.pageScroller?.uiKit.view as? UIKitScrollView)?.keepEndClear(
-            right: clearance.right, bottom: clearance.bottom)
+        (page?.element.pageScroller?.uiKit.view as? UIKitScrollView)?.keepClear(
+            SafeAreaArithmetic.clearance(room: room, safe: safe))
         page?.view?.layoutIfNeeded()
         // What reads a frame says where it stands within this pass, and what that moves is laid out again: a room
         // UIKit alone narrowed - a sidebar sliding - places its layout in the frame that measured it.

@@ -434,6 +434,57 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(page()?.view).frame.minY, 0, "under it")
     }
 
+    /// A stack's bar is part of the safe area of the page under it: the page's content stands clear of it, and where
+    /// it lets itself under the bars it reaches the screen's top edge, under the bar.
+    @MainActor
+    func testAPagesContentReachesUnderAStacksBarWhereItSaysSo() throws {
+        let under = State(wrappedValue: false)
+        let host = UIKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                ZStack {}.avoidsSafeArea(under.wrappedValue ? .none : .container).title("Under the bar")
+            } destination: { _ in Text("Next") }
+        }
+        defer { host.finish() }
+        let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement) }
+        let controller = try XCTUnwrap(page()?.controller)
+        let bar = try XCTUnwrap(controller.navigationController?.navigationBar)
+        host.settle { bar.window != nil && (page()?.view?.frame.minY ?? 0) > 0 }
+        let below = Double(controller.view.convert(bar.bounds, from: bar).maxY)
+        let standing = Double(try XCTUnwrap(page()?.view?.frame.minY))
+        XCTAssertEqual(standing, below, accuracy: 0.5, "clear of the bar")
+
+        under.wrappedValue = true
+        host.settle { page()?.view?.frame.minY == 0 }
+        XCTAssertEqual(try XCTUnwrap(page()?.view).frame.minY, 0, "under it")
+    }
+
+    /// A page's scroller let under a stack's bar scrolls under it and keeps the bar's depth clear at its start, so
+    /// its first row stands clear of the bar at the offset the tree calls nothing.
+    @MainActor
+    func testAPagesScrollerUnderTheBarKeepsItsFirstRowClear() throws {
+        let offset = State(wrappedValue: Point(0, 0))
+        let host = UIKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Grid { ScrollView { Text("rows").height(2000) }.scrollOffset(offset.projectedValue) }
+                    .avoidsSafeArea(.none)
+                    .title("Rows")
+            } destination: { _ in Text("Next") }
+        }
+        defer { host.finish() }
+        let scroller = { host.views(UIKitScrollView.self).first?.scroller }
+        host.settle { (scroller()?.contentInset.top ?? 0) > 0 }
+        let top = Double(try XCTUnwrap(scroller()).contentInset.top)
+        XCTAssertGreaterThan(top, 0, "the bar's depth kept clear")
+        let start = Double(try XCTUnwrap(scroller()?.contentOffset.y))
+        XCTAssertEqual(start, -top, accuracy: 0.5, "its first row clear of the bar")
+        XCTAssertEqual(offset.wrappedValue, Point(0, 0), "where the tree calls nothing")
+
+        offset.wrappedValue = Point(0, 100)
+        host.settle { abs(Double(scroller()?.contentOffset.y ?? 0) - (100 - top)) < 0.5 }
+        let moved = Double(try XCTUnwrap(scroller()?.contentOffset.y))
+        XCTAssertEqual(moved, 100 - top, accuracy: 0.5, "counted from its first row")
+    }
+
     /// A page's scroller let under the strip at its bottom scrolls under the home indicator and keeps the strip
     /// clear at its end, so its last row scrolls out from under it; one standing clear of the strip keeps nothing.
     @MainActor

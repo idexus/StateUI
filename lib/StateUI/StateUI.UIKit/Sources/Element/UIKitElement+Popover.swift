@@ -16,7 +16,7 @@ extension UIKitElement {
         guard anchor.window != nil, let root = host?.root(asked: element.enclosing(type: .window)) else {
             return element.waitForItsWindow()
         }
-        let popover = shownPopover ?? UIKitPopover(content: content) { [weak self] in self?.popoverClosed() }
+        let popover = shownPopover ?? UIKitPopover(content: content, of: element) { [weak self] in self?.popoverClosed() }
         shownPopover = popover
         popover.show(by: anchor, size: content.sizeThatFits(UIView.layoutFittingExpandedSize), in: root)
     }

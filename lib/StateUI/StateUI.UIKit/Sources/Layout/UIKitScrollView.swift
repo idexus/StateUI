@@ -112,15 +112,34 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefresh
         if let target = scrollerOffset.laidOutNow() { move(to: target) }
     }
 
-    /// Keeps `right` and `bottom` points clear at the content's end - the strip of the bars a page's scroller reaches
-    /// under there - so the last content scrolls out from under it; the start, and the offsets, stay as they are.
+    /// What the scroller keeps clear on each edge - the bars a room's scroller reaches under - so its first and last
+    /// content scroll out from under them; its offsets are counted from its first content clear of them.
+    private var clearance = Clearance.none
+
+    /// Keeps `clearance` clear, the scroller standing where the tree has it.
     /// Design: docs/design/host/layout.md#the-safe-area
-    func keepEndClear(right: Double, bottom: Double) {
-        let inset = UIEdgeInsets(top: 0, left: 0, bottom: bottom, right: right)
-        guard scroller.contentInset != inset else { return }
-        scroller.contentInset = inset
-        scroller.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: bottom, right: 0)
-        scroller.horizontalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: right)
+    func keepClear(_ clearance: Clearance) {
+        guard clearance != self.clearance else { return }
+        let standing = toolkitStanding
+        self.clearance = clearance
+        let (top, left, bottom, right) = (clearance.top, clearance.left, clearance.bottom, clearance.right)
+        scroller.contentInset = UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
+        scroller.verticalScrollIndicatorInsets = UIEdgeInsets(top: top, left: 0, bottom: bottom, right: 0)
+        scroller.horizontalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: left, bottom: 0, right: right)
+        let native = SafeAreaArithmetic.native(offset: standing, clearance: clearance)
+        ProgramWrite.perform { scroller.contentOffset = CGPoint(x: native.x, y: native.y) }
+    }
+
+    /// The toolkit's offset for the scroller to stand at `offset`, counted from its first content kept clear.
+    func native(of offset: Point) -> CGPoint {
+        let native = SafeAreaArithmetic.native(offset: offset, clearance: clearance)
+        return CGPoint(x: native.x, y: native.y)
+    }
+
+    /// Where the toolkit shows the scroller standing, counted from its first content clear of what it keeps clear.
+    var toolkitStanding: Point {
+        SafeAreaArithmetic.offset(
+            native: Point(x: scroller.contentOffset.x, y: scroller.contentOffset.y), clearance: clearance)
     }
 
     // MARK: - The user's movement
@@ -128,8 +147,7 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefresh
     func scrollViewDidScroll(_ scroller: UIScrollView) {
         // A scroll moves whatever stands in the scroller, whoever moved it: a frame read under it is said again.
         laidOut?()
-        let standing = Point(x: scroller.contentOffset.x, y: scroller.contentOffset.y)
-        guard let moved = scrollerOffset.toolkitMoved(to: standing) else { return }
+        guard let moved = scrollerOffset.toolkitMoved(to: toolkitStanding) else { return }
         movement.userMoved(from: moved.from, to: moved.to)
     }
 
@@ -171,11 +189,12 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefresh
     private func move(to target: Point) {
         let inset = scroller.contentInset
         let reach = Point(
-            x: max(0, scroller.contentSize.width + inset.right - scroller.bounds.width),
-            y: max(0, scroller.contentSize.height + inset.bottom - scroller.bounds.height))
+            x: max(0, scroller.contentSize.width + inset.left + inset.right - scroller.bounds.width),
+            y: max(0, scroller.contentSize.height + inset.top + inset.bottom - scroller.bounds.height))
         let kept = ScrollArithmetic.kept(target, reach: reach)
         guard scrollerOffset.programMoves(to: kept) else { return }
-        ProgramWrite.perform { scroller.contentOffset = CGPoint(x: kept.x, y: kept.y) }
+        let native = SafeAreaArithmetic.native(offset: kept, clearance: clearance)
+        ProgramWrite.perform { scroller.contentOffset = CGPoint(x: native.x, y: native.y) }
     }
 }
 #endif

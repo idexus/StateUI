@@ -3,6 +3,8 @@
 
 #if os(iOS)
 import UIKit
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A view's popover: UIKit's popover presentation of the popover element's view by its anchor - a popover on a phone
 /// too - passed over what the window presents (`UIKitRootViewController.pass`); `onClosed` hears the user take it
@@ -17,10 +19,10 @@ final class UIKitPopover: NSObject, UIPopoverPresentationControllerDelegate {
     /// Whether it stands shown, or passes on its way to.
     private(set) var isShown = false
 
-    init(content: UIView, onClosed: @escaping () -> Void) {
+    init(content: UIView, of element: MountedElement, onClosed: @escaping () -> Void) {
         self.onClosed = onClosed
         super.init()
-        controller.view = UIKitPopoverRoom(content: content)
+        controller.view = UIKitPopoverRoom(content: content, of: element)
         controller.modalPresentationStyle = .popover
     }
 
@@ -60,14 +62,17 @@ final class UIKitPopover: NSObject, UIPopoverPresentationControllerDelegate {
     }
 }
 
-/// A popover's own view: what it holds laid within its safe area, clear of the arrow UIKit lays it under on iOS 26.
-/// Design: docs/design/platforms/uikit/pages.md#a-popover
+/// A popover's own view: what it holds laid in the room its safe area gives - clear of the arrow UIKit lays it under
+/// on iOS 26, or under it where its content says so - by the rule every room keeps.
+/// Design: docs/design/host/layout.md#the-safe-area
 @MainActor
 private final class UIKitPopoverRoom: UIView {
     private let content: UIView
+    private weak var element: MountedElement?
 
-    init(content: UIView) {
+    init(content: UIView, of element: MountedElement) {
         self.content = content
+        self.element = element
         super.init(frame: .zero)
         addSubview(content)
     }
@@ -78,7 +83,14 @@ private final class UIKitPopoverRoom: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        content.frame = bounds.inset(by: safeAreaInsets)
+        let inside = bounds.inset(by: safeAreaInsets)
+        let safe = Rect(x: inside.minX, y: inside.minY, width: inside.width, height: inside.height)
+        let room = SafeAreaArithmetic.room(
+            safe: safe, whole: Rect(x: 0, y: 0, width: bounds.width, height: bounds.height),
+            edges: element?.contentSafeArea, direction: element?.layoutDirection ?? .leftToRight)
+        content.frame = CGRect(x: room.x, y: room.y, width: room.width, height: room.height)
+        (element?.pageScroller?.uiKit.view as? UIKitScrollView)?.keepClear(
+            SafeAreaArithmetic.clearance(room: room, safe: safe))
     }
 
     override func safeAreaInsetsDidChange() {

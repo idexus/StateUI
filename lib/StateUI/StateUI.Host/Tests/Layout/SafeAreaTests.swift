@@ -42,18 +42,26 @@ final class SafeAreaTests: XCTestCase {
         XCTAssertEqual(rtl, Rect(x: 40, y: 60, width: 360, height: 710), "out to the right edge, right to left")
     }
 
-    /// A scroller let under the strip at its bottom keeps that strip clear at its end, so its last row scrolls out
-    /// from under it; one standing clear of the bars, or let under them at its top alone, keeps nothing.
-    func testAScrollerUnderTheStripAtItsEndKeepsItClear() {
-        let under = SafeAreaArithmetic.room(
-            safe: safe, whole: whole, edges: .edges(start: .container, top: .container, end: .container, bottom: .none),
-            direction: .leftToRight)
-        XCTAssertTrue(SafeAreaArithmetic.endClearance(room: under, safe: safe) == (0, 30), "the strip under it")
-        XCTAssertTrue(SafeAreaArithmetic.endClearance(room: safe, safe: safe) == (0, 0), "clear of the bars")
+    /// A scroller let under the bars keeps clear what they take on each edge it reaches under - the top bar's depth
+    /// at its start, the strip's at its end - so its first and last rows scroll out from under them; one standing
+    /// clear of the bars keeps nothing.
+    func testAScrollerUnderTheBarsKeepsItsFirstAndLastRowsClear() {
+        let under = room(.uniform(.none))
+        XCTAssertEqual(SafeAreaArithmetic.clearance(room: under, safe: safe), Clearance(top: 60, left: 0, bottom: 30, right: 0))
+        XCTAssertEqual(SafeAreaArithmetic.clearance(room: safe, safe: safe), .none, "clear of the bars")
         let top = SafeAreaArithmetic.room(
             safe: safe, whole: whole, edges: .edges(start: .container, top: .none, end: .container, bottom: .container),
             direction: .leftToRight)
-        XCTAssertTrue(SafeAreaArithmetic.endClearance(room: top, safe: safe) == (0, 0), "under the top bar alone")
+        XCTAssertEqual(SafeAreaArithmetic.clearance(room: top, safe: safe), Clearance(top: 60, left: 0, bottom: 0, right: 0))
+    }
+
+    /// A scroller keeping its start clear says where it stands from its first row clear of the bars: its toolkit's
+    /// offset with the start's clearance added, and the toolkit's offset for one the tree writes less it.
+    func testAScrollersOffsetCountsFromItsFirstRowClearOfTheBars() {
+        let clear = Clearance(top: 60, left: 20, bottom: 30, right: 0)
+        XCTAssertEqual(SafeAreaArithmetic.offset(native: Point(x: -20, y: -60), clearance: clear), Point(x: 0, y: 0))
+        XCTAssertEqual(SafeAreaArithmetic.native(offset: Point(x: 0, y: 100), clearance: clear), Point(x: -20, y: 40))
+        XCTAssertEqual(SafeAreaArithmetic.offset(native: Point(x: 5, y: 7), clearance: .none), Point(x: 5, y: 7))
     }
 
     /// A page's scroller is its content when that scrolls, or the scroller its content holds alone; content holding

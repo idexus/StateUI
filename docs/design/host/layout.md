@@ -290,19 +290,24 @@ their roles too (`Style<Button>(role:)`).
 
 ## The safe area
 
-On UIKit a window with bars and a notch over its screen - a phone's, a
-tablet's - stands a page's content clear of them, in the safe area. Where the
-content's own layout lets itself under them on an edge - `.none`, edge to
-edge, or `.keyboard`, clear of the keyboard alone - its page reaches out to the
-screen's edge there (`SafeAreaArithmetic.room`), so a background or a
-gradient runs behind the status bar. A scroller let under the strip at its
-bottom or its right - a list running under a phone's home indicator - keeps
-that strip clear at its end (`SafeAreaArithmetic.endClearance`): its rows
-scroll under the strip and the last stops clear of it, as the platform's own
-lists do; its start and its offsets stay as they are. A bar of the page's own - a stack's, the
-tabs - is no part of the safe area to give: content never runs under one. The
-page's background stands behind the bars either way. A desktop window has no safe area: its content stands in its
-whole room.
+Every room a page stands in - a window, a sheet, a popover - has a safe area:
+the part of it clear of what stands over the page. That is the platform's - a
+phone's status bar, notch and home indicator, the keyboard - the room's - a
+popover's arrow, a sheet's grabber - and the arrangement's own bars over the
+page: a stack's, the tabs', a split view column's part of the bar. A page's
+content stands in it (`SafeAreaArithmetic.room`); where the content's own
+layout lets itself under what stands over it on an edge - `.none`, edge to
+edge, or `.keyboard`, clear of the keyboard alone - its room reaches out to
+the room's edge there, so a background or a gradient runs behind a bar or the
+status bar. A scroller let under keeps clear, on each edge it reaches under,
+the depth of what stands over it there (`SafeAreaArithmetic.clearance`): its
+content scrolls under the bars and its first and last rows stop clear of
+them, as the platform's own lists do, and its offset counts from its first
+row clear (`offset`, `native`) - the tree's nothing is that row in place. A
+host gives each room's insets as its toolkit has them; a bar its platform
+stands beside the page rather than over it insets nothing, and a desktop
+window with nothing over its content has its whole room safe. The page's
+background stands behind everything over it either way.
 
 ## Words on a painted band
 
