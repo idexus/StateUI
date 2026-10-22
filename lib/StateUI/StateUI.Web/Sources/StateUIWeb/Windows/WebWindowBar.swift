@@ -113,8 +113,10 @@ final class WebWindowBar: WebDOMView {
         showTitle(chrome.showsTitle ? shown : "", or: view, repeating: area?.title)
 
         style("--stateui-bar-background", WebCSS.fill(chrome.background))
-        // A clear bar shows what is behind it as it is: no blur, no deeper color under it.
-        style("--stateui-bar-filter", HostBrush(chrome.background).isClear ? "none" : nil)
+        // A clear bar paints nothing, and only softens what scrolls under it toward the top.
+        let clear = HostBrush(chrome.background).isClear
+        style("--stateui-bar-filter", clear ? "none" : nil)
+        attribute("data-clear", clear ? "" : nil)
         // Words the tree gives no color stand light on a dark band and dark on a light one.
         style("--stateui-bar-foreground", WebCSS.color(BandWords.color(on: chrome.background, written: chrome.foreground)))
         // The buttons on glass unless said otherwise: the Web's own look for them, `.system`, is plain.

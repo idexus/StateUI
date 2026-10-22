@@ -22,10 +22,12 @@ technology and its tooltip. The bar's own buttons - the toggle, the way
 back, a sheet's close, the overflow - are named in the library's words, in
 the user's language (`ChromeWords`). The bar's colors are the arrangement's, written
 as CSS variables the stylesheet paints it with; without them the bar is the
-page's surface, translucent, blurred and deepened over what lies behind it;
-the room stands in the row below the bar, so nothing scrolls beneath it.
-A clear bar drops the blur: it shows what lies behind it as it is, the same
-color as the page under it. No line stands under the bar. The same title
+page's surface, translucent, blurred and deepened over what lies behind it,
+the room running under it ([the safe area](#the-safe-area)). A clear bar
+paints nothing: a page resting below it shows as it is, the same color as
+the page under it, and what scrolls under it softens - blurred at the top,
+the blur fading out toward the bar's bottom edge (`data-clear`). No line
+stands under the bar. The same title
 names the browser's tab, beside the site's name ([The tab](#the-tab)).
 
 Beside a sidebar shown, the bar stands in two parts as wide as the split
