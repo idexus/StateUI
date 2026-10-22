@@ -20,7 +20,7 @@ final class UIKitPopover: NSObject, UIPopoverPresentationControllerDelegate {
     init(content: UIView, onClosed: @escaping () -> Void) {
         self.onClosed = onClosed
         super.init()
-        controller.view = content
+        controller.view = UIKitPopoverRoom(content: content)
         controller.modalPresentationStyle = .popover
     }
 
@@ -57,6 +57,33 @@ final class UIKitPopover: NSObject, UIPopoverPresentationControllerDelegate {
         isShown = false
         root?.passed(controller)
         onClosed()
+    }
+}
+
+/// A popover's own view: what it holds laid within its safe area, clear of the arrow UIKit lays it under on iOS 26.
+/// Design: docs/design/platforms/uikit/pages.md#a-popover
+@MainActor
+private final class UIKitPopoverRoom: UIView {
+    private let content: UIView
+
+    init(content: UIView) {
+        self.content = content
+        super.init(frame: .zero)
+        addSubview(content)
+    }
+
+    required init?(coder: NSCoder) {
+        nil
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        content.frame = bounds.inset(by: safeAreaInsets)
+    }
+
+    override func safeAreaInsetsDidChange() {
+        super.safeAreaInsetsDidChange()
+        setNeedsLayout()
     }
 }
 #endif

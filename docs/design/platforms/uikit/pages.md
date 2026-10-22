@@ -199,8 +199,10 @@ thing passing.
 ## A popover
 
 A view's popover is a controller presented in UIKit's popover style from
-its anchor's view, sized to what it holds - on a phone UIKit adapts it to a
-sheet. It passes over what the window shows like everything else that
+its anchor's view, sized to what it holds - a popover on a phone too. What it
+holds stands within the popover's safe area: iOS 26 lays the controller's view
+under the arrow and says so by its safe area, iOS 27 moves the view clear of
+the arrow itself. It passes over what the window shows like everything else that
 passes ([what passes over the sheets](#what-passes-over-the-sheets)), so it
 waits for a sheet in motion. A tap beside it or a swipe reaches its
 delegate, which tells the host.
