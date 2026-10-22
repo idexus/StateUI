@@ -55,7 +55,8 @@ final class AndroidConformanceTests: XCTestCase {
             ("testMenuItem", testMenuItem),
             ("testDivider", testDivider),
             ("testMenuSeparator", testMenuSeparator),
-            ("testModalStack", testModalStack),
+            ("testAnchor", testAnchor),
+            ("testSheet", testSheet),
             ("testNavigationStack", testNavigationStack),
             ("testOverlay", testOverlay),
             ("testPage", testPage),
@@ -141,7 +142,8 @@ final class AndroidConformanceTests: XCTestCase {
     func testMenuItem() throws { try conform(MenuItemTests.self) }
     func testDivider() throws { try conform(DividerTests.self) }
     func testMenuSeparator() throws { try conform(MenuSeparatorTests.self) }
-    func testModalStack() throws { try conform(ModalStackTests.self) }
+    func testAnchor() throws { try conform(AnchorTests.self) }
+    func testSheet() throws { try conform(SheetTests.self) }
     func testNavigationStack() throws { try conform(NavigationStackTests.self) }
     func testOverlay() throws { try conform(OverlayTests.self) }
     func testPage() throws { try conform(PageTests.self) }

@@ -350,7 +350,7 @@ declaring the kind, which opens with it where it does not stand
 restoration, focus, hiding, and closure are mapped to those sessions while
 StateUI retains deterministic state and tree ownership.
 
-Navigation paths, tab selections, sidebar visibility, and modal stacks are
+Navigation paths, tab selections, sidebar visibility, and presented sheets are
 state. A control method is invoked through an `@Aim`; an aim identifies a
 control and is not state.
 

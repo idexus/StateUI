@@ -87,6 +87,8 @@ final class UIKitElement: NativeElement {
     var type: NodeType { element.type }
     var parent: UIKitElement? { element.parent?.uiKit }
     var children: [UIKitElement] { element.children.map(\.uiKit) }
+    /// The children it places, an anchor's in the anchor's place.
+    var arranged: [UIKitElement] { element.arrangedChildren.map(\.uiKit) }
     func value(_ property: Prop) -> HostValue? { element.value(property) }
 
     // MARK: - The native half's part in a patch

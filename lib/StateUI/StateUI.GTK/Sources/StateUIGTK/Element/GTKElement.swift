@@ -30,6 +30,8 @@ final class GTKElement: NativeElement {
     var type: NodeType { element.type }
     var parent: GTKElement? { element.parent?.gtk }
     var children: [GTKElement] { element.children.map(\.gtk) }
+    /// The children it places, an anchor's in the anchor's place.
+    var arranged: [GTKElement] { element.arrangedChildren.map(\.gtk) }
     func value(_ property: Prop) -> HostValue? { element.value(property) }
 
     // MARK: - The native half's part in a patch

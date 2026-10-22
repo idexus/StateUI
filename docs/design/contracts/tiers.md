@@ -64,7 +64,7 @@ Swift protocols behind them refine each other.
                      ScrollView, Slider, Stepper, Switch, TimePicker,
                      WebView, every TextInput
   PageElement        Page, NavigationStack, TabView, SplitView
-  BarElement         NavigationStack, TabView, SplitView, ModalStack
+  BarElement         NavigationStack, TabView, SplitView
   text tiers only    TextSpan
   no tier            Application, Scene, Window, MenuBar, Menu, ButtonMenu,
                      MenuSeparator, ContextMenu, Overlay, Marker, and the

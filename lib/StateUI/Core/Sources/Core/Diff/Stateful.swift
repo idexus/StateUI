@@ -173,47 +173,12 @@ extension Node {
             }
         }
 
-        /// Builds the subtree and lands what the author wrote on the view onto its root.
+        /// Builds the subtree and lands what the author wrote on the view onto its root - through the anchor its body
+        /// stands on, where it stands on one.
         func expand(over written: Node) -> Node {
             var node = build()
             node.branch = node.branch ?? (node.identity == nil ? node.key : nil)
-            node.props.merge(written.props) { _, wrote in wrote }
-
-            // The states driven to it, for the same reason: a registration left on the
-            // placeholder names a control nothing holds.
-            node.driven.merge(written.driven) { _, wrote in wrote }
-
-            // And how it animates: `.motion(_:)` on a composed view is about the view.
-            node.motion = MotionPlan.merged(node.motion, under: written.motion)
-
-            for (name, handlers) in written.events.sorted(by: { $0.key < $1.key }) {
-                node.addHandlers(name, handlers)
-            }
-
-            // Its own watches first, then what was written on it - one order every render - each the view's own,
-            // which it watches for across the branches its body shows.
-            node.watches += written.watches.map { watch in
-                var watch = watch
-                watch.writtenOn = viewType
-                return watch
-            }
-
-            // And its lifetime handlers, in the same order (Lifetime.swift).
-            node.created += written.created
-            node.destroying += written.destroying
-            node.hostEvents += written.hostEvents
-
-            // And its engines, registered against the element its body ends on.
-            node.engines += written.engines
-
-            // And slot children written on it - a `.contextMenu` - after its own.
-            node.children += written.children
-
-            // And what is written on it of its page, over what its body says.
-            if let wrote = written.pageValues {
-                node.pageValues = node.pageValues.map { $0.merged(under: wrote) } ?? wrote
-            }
-
+            node.land(written)
             node.identity = written.identity ?? node.identity
             node.key = written.key ?? node.key
             return node

@@ -80,12 +80,12 @@ extension UIKitElement {
             // A tab bar wears the colors of the bar on its path, which a theme or a state moves on an element above.
             // Design: docs/design/host/pages.md#the-bar-a-path-declares
             tabs?.showColors(background: element.barColors.background, foreground: element.barColors.foreground)
-            children.forEach { $0.composeChrome() }
+            arranged.forEach { $0.composeChrome() }
         case .navigationStack:
             (controller as? UIKitNavigationController)?.showTopsBar()
-            children.forEach { $0.composeChrome() }
+            arranged.forEach { $0.composeChrome() }
         case .splitView:
-            children.forEach { $0.composeChrome() }
+            arranged.forEach { $0.composeChrome() }
         default:
             break
         }
@@ -101,23 +101,23 @@ extension UIKitElement {
             guard let navigation = controller as? UIKitNavigationController else { return }
             navigation.onPopped = { [weak self] staying in self?.userPopped(staying: staying) }
             navigation.showsBar = { [weak self] shown in
-                self?.children.first { $0.controller === shown }?.element.showsTheStacksBar ?? true
+                self?.arranged.first { $0.controller === shown }?.element.showsTheStacksBar ?? true
             }
             // A page comes in wearing its own bar: UIKit takes the bar's look as the move starts, which a layout in
             // the same turn - a sidebar going - can start before the window's chrome is composed.
-            children.forEach { $0.composeChrome() }
-            navigation.setPages(children.compactMap(\.controller), reducingMotion: host?.reducesMotion() ?? true)
+            arranged.forEach { $0.composeChrome() }
+            navigation.setPages(arranged.compactMap(\.controller), reducingMotion: host?.reducesMotion() ?? true)
         case .tabView:
             guard let tabs = controller as? UIKitTabBarController else { return }
             tabs.show(
-                children.compactMap { tab in
+                arranged.compactMap { tab in
                     tab.controller.map { ($0, tab.value(.title)?.string ?? "", HostPicture(tab.value(.icon))) }
                 },
                 requested: value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
         case .splitView:
             guard let split = controller as? UIKitSplitViewController else { return }
-            split.show(sidebar: children.first?.controller, detail: children.dropFirst().first?.controller)
+            split.show(sidebar: arranged.first?.controller, detail: arranged.dropFirst().first?.controller)
             split.onPresentationChanged = { [weak self] presented in self?.sidebarChanged(to: presented) }
             if let host { split.slide(on: host.runtime.sidebarSlide, mount: element.mount) }
             if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }

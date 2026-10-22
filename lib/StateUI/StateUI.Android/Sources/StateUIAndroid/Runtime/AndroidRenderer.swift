@@ -366,7 +366,7 @@ final class AndroidRenderer {
     private var systemWayBack: WayBack? {
         if let way = presentation.wayBack { return way }
         guard let stack = (presentation.sheets.last ?? presentation.arrangement)?.visibleNavigationStack,
-              stack.children.count > 1, stack.children.last?.value(.showsBackButton)?.bool != false
+              stack.children.count > 1, stack.arrangedChildren.last?.value(.showsBackButton)?.bool != false
         else { return nil }
         return .pop(stack)
     }

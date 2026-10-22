@@ -7,31 +7,32 @@ import UIKit
 @testable import StateUIUIKit
 import XCTest
 
-/// A page under the numbered sheets one state lists.
+/// A page presenting a sheet while `first`, which presents another in it while `second`.
 @MainActor
-private func sheetsOver(_ sheets: State<[Int]>) -> ModalStack {
-    ModalStack(sheets.projectedValue) {
-        Text("beneath")
-    } destination: { number in
-        Text("On sheet \(number)")
-    }
+private func sheetsOver(_ first: State<Bool>, _ second: State<Bool>) -> some View {
+    Text("beneath")
+        .sheet(isPresented: first.projectedValue) {
+            Text("On sheet 1")
+                .sheet(isPresented: second.projectedValue) { Text("On sheet 2") }
+        }
 }
 
-/// A page whose button asks for a sheet and a question in one turn, and for a second sheet once answered.
+/// A page whose button asks for a sheet and a question in one turn, and for a second sheet in it once answered.
 private struct SheetAndQuestion: View {
     @Environment(\.window) private var window
-    @State private var sheets: [Int] = []
+    @State private var first = false
+    @State private var second = false
 
     var body: some View {
-        ModalStack($sheets) {
-            Button("Ask").onClicked(gate: .ignoreWhileRunning) {
-                sheets.append(1)
+        Button("Ask")
+            .onClicked(gate: .ignoreWhileRunning) {
+                first = true
                 _ = try await window.confirm("Sure?", message: "Both come", accept: "Yes", cancel: "No")
-                sheets.append(2)
+                second = true
             }
-        } destination: { number in
-            Text("On sheet \(number)")
-        }
+            .sheet(isPresented: $first) {
+                Text("On sheet 1").sheet(isPresented: $second) { Text("On sheet 2") }
+            }
     }
 }
 
@@ -67,8 +68,8 @@ final class UIKitSheetsTests: XCTestCase {
     @MainActor
     func testASceneBroughtBackShowsItsSheetsAgain() throws {
         let scene = try XCTUnwrap(TestScene.scene)
-        let sheets = State(wrappedValue: [1])
-        let host = UIKitRenderer.running(reducesMotion: true) { sheetsOver(sheets) }
+        let (first, second) = (State(wrappedValue: true), State(wrappedValue: false))
+        let host = UIKitRenderer.running(reducesMotion: true) { sheetsOver(first, second) }
         defer { host.finish() }
         func root() -> UIViewController? { host.roster.windows.first?.1.window?.rootViewController }
         host.settle { root()?.presentedViewController?.viewIfLoaded?.window != nil }
@@ -78,7 +79,7 @@ final class UIKitSheetsTests: XCTestCase {
         host.settle { root()?.presentedViewController?.viewIfLoaded?.window != nil }
         XCTAssertNotNil(root()?.presentedViewController?.viewIfLoaded?.window, "the sheet stands again")
 
-        sheets.wrappedValue = [1, 2]
+        second.wrappedValue = true
         host.settle { root()?.presentedViewController?.presentedViewController?.viewIfLoaded?.window != nil }
         XCTAssertNotNil(
             root()?.presentedViewController?.presentedViewController?.viewIfLoaded?.window, "the next comes over it")
@@ -88,8 +89,8 @@ final class UIKitSheetsTests: XCTestCase {
     /// it stands.
     @MainActor
     func testSheetsTheWindowStartsWithStandEachOverTheOneBefore() throws {
-        let sheets = State(wrappedValue: [1, 2])
-        let host = UIKitRenderer.running(reducesMotion: true) { sheetsOver(sheets) }
+        let (first, second) = (State(wrappedValue: true), State(wrappedValue: true))
+        let host = UIKitRenderer.running(reducesMotion: true) { sheetsOver(first, second) }
         defer { host.finish() }
         let root = try XCTUnwrap(host.roster.windows.first?.1.window?.rootViewController)
 
@@ -102,8 +103,8 @@ final class UIKitSheetsTests: XCTestCase {
     /// Presenting sheets, moving as UIKit moves them, tells the window nothing: only the user's swipe does.
     @MainActor
     func testSheetsPresentedWithMotionTellTheWindowNothing() throws {
-        let sheets = State(wrappedValue: [1, 2])
-        let host = UIKitRenderer.running(reducesMotion: false) { sheetsOver(sheets) }
+        let (first, second) = (State(wrappedValue: true), State(wrappedValue: true))
+        let host = UIKitRenderer.running(reducesMotion: false) { sheetsOver(first, second) }
         defer { host.finish() }
         let root = try XCTUnwrap(host.roster.windows.first?.1.window?.rootViewController)
 
@@ -111,26 +112,26 @@ final class UIKitSheetsTests: XCTestCase {
         let settled = Date(timeIntervalSinceNow: 1)
         host.settle { Date() > settled }
 
-        XCTAssertEqual(sheets.wrappedValue, [1, 2])
+        XCTAssertEqual([first.wrappedValue, second.wrappedValue], [true, true])
         XCTAssertNotNil(root.presentedViewController?.presentedViewController, "both still stand")
     }
 
     /// A window whose sheets were still coming as it went leaves the next window's sheets to come as asked.
     @MainActor
     func testTheNextWindowsSheetsComeAfterOneWhoseSheetsWereMoving() throws {
-        let before = State(wrappedValue: [Int]())
-        let first = UIKitRenderer.running(reducesMotion: false) { sheetsOver(before) }
-        before.wrappedValue = [1, 2]
-        first.settle { first.roster.windows.first?.1.window?.rootViewController?.presentedViewController != nil }
-        first.finish()
+        let (one, two) = (State(wrappedValue: false), State(wrappedValue: false))
+        let before = UIKitRenderer.running(reducesMotion: false) { sheetsOver(one, two) }
+        (one.wrappedValue, two.wrappedValue) = (true, true)
+        before.settle { before.roster.windows.first?.1.window?.rootViewController?.presentedViewController != nil }
+        before.finish()
 
-        let sheets = State(wrappedValue: [1, 2])
-        let host = UIKitRenderer.running(reducesMotion: false) { sheetsOver(sheets) }
+        let (first, second) = (State(wrappedValue: true), State(wrappedValue: true))
+        let host = UIKitRenderer.running(reducesMotion: false) { sheetsOver(first, second) }
         defer { host.finish() }
         let root = try XCTUnwrap(host.roster.windows.first?.1.window?.rootViewController)
         host.settle { root.presentedViewController?.presentedViewController != nil }
 
-        XCTAssertEqual(sheets.wrappedValue, [1, 2], "nothing told the window its sheets went")
+        XCTAssertEqual([first.wrappedValue, second.wrappedValue], [true, true], "nothing told the window they went")
         XCTAssertNotNil(root.presentedViewController?.presentedViewController, "both came")
     }
 
@@ -138,20 +139,25 @@ final class UIKitSheetsTests: XCTestCase {
     /// gone: UIKit presents nothing over a controller whose sheet is still moving, and drops what it is asked.
     @MainActor
     func testASheetAskedForWhileTheOneBeforeStillMovesComesOnceItHasGone() throws {
-        let sheets = State(wrappedValue: [Int]())
-        let host = UIKitRenderer.running(reducesMotion: false) { sheetsOver(sheets) }
+        let (one, two) = (State(wrappedValue: false), State(wrappedValue: false))
+        let host = UIKitRenderer.running(reducesMotion: false) {
+            VStack {
+                Text("beneath").sheet(isPresented: one.projectedValue) { Text("On sheet 1") }
+                Text("beside").sheet(isPresented: two.projectedValue) { Text("On sheet 2") }
+            }
+        }
         defer { host.finish() }
         let root = try XCTUnwrap(host.roster.windows.first?.1.window?.rootViewController)
         let shown = Date(timeIntervalSinceNow: 0.5)
         host.settle { Date() > shown }
         let stands = { host.views(UIKitTextView.self).first { $0.text == "On sheet 2" }?.window != nil }
 
-        sheets.wrappedValue = [1]
+        one.wrappedValue = true
         host.runtime.pump.turn()
         XCTAssertEqual(root.presentedViewController?.isBeingPresented, true, "the first sheet is on its way in")
-        sheets.wrappedValue = []
+        one.wrappedValue = false
         host.runtime.pump.turn()
-        sheets.wrappedValue = [2]
+        two.wrappedValue = true
         host.runtime.pump.turn()
         let given = Date(timeIntervalSinceNow: 3)
         host.settle { stands() || Date() > given }
@@ -159,26 +165,26 @@ final class UIKitSheetsTests: XCTestCase {
         XCTAssertTrue(stands(), "the second sheet never stood in the window")
     }
 
-    /// The user swiping the top sheet down takes it off the window's stack: the window hears how many stay.
+    /// The user swiping the top sheet down takes it away: false onto its state, the one under it staying.
     @MainActor
     func testTheUsersSwipeTakesTheTopSheetAway() throws {
-        let sheets = State(wrappedValue: [1, 2])
-        let host = UIKitRenderer.running(reducesMotion: true) { sheetsOver(sheets) }
+        let (first, second) = (State(wrappedValue: true), State(wrappedValue: true))
+        let host = UIKitRenderer.running(reducesMotion: true) { sheetsOver(first, second) }
         defer { host.finish() }
         let root = try XCTUnwrap(host.roster.windows.first?.1.window?.rootViewController)
         host.settle { root.presentedViewController?.presentedViewController != nil }
         let top = try XCTUnwrap(root.presentedViewController?.presentedViewController)
         let presentation = try XCTUnwrap(top.presentationController)
-        guard case .dismissSheet(let remaining)? = host.roster.windows.first?.1.presentation.wayBack else {
+        guard case .dismissSheets(let pages)? = host.roster.windows.first?.1.presentation.wayBack else {
             return XCTFail("the window's way back is its top sheet")
         }
-        XCTAssertEqual(remaining, 1)
+        XCTAssertEqual(pages.count, 1)
 
         top.presentingViewController?.dismiss(animated: false)
         presentation.delegate?.presentationControllerDidDismiss?(presentation)
-        host.settle { sheets.wrappedValue == [1] && root.presentedViewController?.presentedViewController == nil }
+        host.settle { !second.wrappedValue && root.presentedViewController?.presentedViewController == nil }
 
-        XCTAssertEqual(sheets.wrappedValue, [1])
+        XCTAssertEqual([first.wrappedValue, second.wrappedValue], [true, false])
         XCTAssertNotNil(root.presentedViewController, "the first stays")
         XCTAssertNil(root.presentedViewController?.presentedViewController)
     }

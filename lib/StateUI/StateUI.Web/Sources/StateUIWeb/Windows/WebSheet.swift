@@ -4,9 +4,9 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A page a modal stack presents, on a sheet: the browser's own modal `<dialog>` over the window - a card in the
-/// middle, from the bottom where the page is narrow - its bar the page's chrome with a button closing it, the page
-/// in the room under it. Escape closes it as that button does: the tree decides.
+/// A page a view presents, on a sheet: the browser's own modal `<dialog>` over the window - a card in the
+/// middle, from the bottom where the page is narrow - its bar, where a stack in it brings one, the page's chrome
+/// with a button closing it, the page in the room under it. Escape is the user's dismissal: the tree decides.
 /// Design: docs/design/platforms/web/pages.md#sheets
 @MainActor
 final class WebSheet {

@@ -15,8 +15,9 @@ own.
     Scene                            windows and the state they share
       Window                         a window onto a page
         Page, NavigationStack,       what a window shows; the arrangements are pages too
-        TabView, SplitView,
-        ModalStack                   a page with the pages presented over it, the last on top
+        TabView, SplitView
+  Sheet                              a page a view presents over its window while a state says so
+  Anchor                             what a view whose root may change stands on
   Overlay                            the views a page lays over its window, and the library's own
   MenuBar, Menu, MenuItem,           a page's menus, their entries, and the lines between them
   MenuSeparator

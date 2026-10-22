@@ -165,14 +165,15 @@ only where the user allowed it.
 
 ## Sheets
 
-A page a modal stack presents stands on a sheet: the browser's own modal
+A page a view presents stands on a sheet: the browser's own modal
 `<dialog>`, which takes the focus and every input until it closes and shades
 the page under it - a card in the middle, from the bottom where the page is
-narrow. Its bar is the page's chrome (`WindowChrome` of the sheet's page),
-its way back the window's (`WindowPresentation.wayBack`), and it ends with a
-button closing the sheet. Escape asks the same as that button: the browser
-does not close the dialog itself, the modal stack is told how many sheets
-remain, and a sheet closes as the tree lets its page go. The last sheet's
+narrow. A sheet has no bar of its own: a stack in it brings one
+(`bringsABar`), the chrome of the sheet's page (`WindowChrome`), its way back
+the window's (`WindowPresentation.wayBack`), ending with a button closing the
+sheet. Escape is the user's dismissal as that button is: the browser does not
+close the dialog itself, false is written onto the top sheet's state, and a
+sheet closes as the tree lets its page go. The last sheet's
 title names the browser's tab.
 
 ## Questions for the user

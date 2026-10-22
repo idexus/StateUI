@@ -11,13 +11,10 @@ import CStateUIAndroid
 /// What the Android driver reads of the bar an arrangement declares: Android's toolbar over the page it shows - the
 /// line under its title, the color it is painted and the color its title is drawn in.
 extension AndroidDriver {
-    /// `property` of the bar the page `element` shows stands under; nil where no stack gives that page a bar. A page
-    /// a sheet shows stands under no bar but its own stack's.
-    static func barHolds(_ property: Prop, of element: MountedElement) throws -> HostValue? {
-        let sheetsStack = (element.visiblePage ?? element).sheetsModalStack
+    /// `property` of the bar the page `element` shows stands under; nil where no stack gives that page a bar.
+    static func barHolds(_ property: Prop, of element: MountedElement) -> HostValue? {
         var each = element.visiblePage
-        while let found = each, found.type != .navigationStack, found !== sheetsStack { each = found.parent }
-        if sheetsStack != nil, each == nil || each === sheetsStack { throw DriverCannot("read the bar of a sheet") }
+        while let found = each, found.type != .navigationStack { each = found.parent }
         guard let bar = ((each?.native as? AndroidElement)?.view as? AndroidNavigationView)?.bar else { return nil }
         switch property {
         case .barSubtitle:

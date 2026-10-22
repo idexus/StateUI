@@ -20,7 +20,7 @@ final class GTKWindowController {
     /// What the window shows, by the host layer's rule.
     let presentation = WindowPresentation()
 
-    /// A sheet for each page the window's modal stack presents, the last on top.
+    /// A sheet for each page the window's views present, the last shown on top.
     private(set) var sheets: [(element: MountedElement, sheet: GTKSheet)] = []
 
     /// The shortcuts of the window's bar items and menu bar entries.
@@ -70,17 +70,19 @@ final class GTKWindowController {
         sheets.removeLast(sheets.count - change.kept)
         for page in change.coming {
             guard let view = page.gtk.view else { continue }
-            let sheet = GTKSheet(page: view, framed: GTKElement.framedTypes.contains(page.type))
+            // A page stands on the dialog alone - a sheet has no bar of its own; a tabbed view in the frame its
+            // switcher stands in.
+            let sheet = GTKSheet(page: view, framed: page.type == .tabView)
             sheet.onClosedByUser = { [weak self] in self?.dismissTopSheet(in: runtime) }
             sheet.present(over: window)
             sheets.append((page, sheet))
         }
     }
 
-    /// The user took the top sheet away - Escape, its close button: the modal stack is told how many remain.
+    /// The user took the top sheet away - Escape, its close button: false is written onto its state.
     private func dismissTopSheet(in runtime: HostRuntime) {
         guard let element, !presentation.sheets.isEmpty else { return }
-        runtime.goBack(.dismissSheet(remaining: presentation.sheets.count - 1), in: element)
+        runtime.goBack(.dismissSheets(Array(presentation.sheets.suffix(1))), in: element)
     }
 
     /// Writes every shown page's chrome on its header bar, and names the window after the page the user sees.
@@ -136,7 +138,7 @@ final class GTKWindowController {
         switch way {
         case .pop(let stack):
             return (stack.gtk.view as? GTKNavigationView)?.popByUser() ?? false
-        case .dismissSheet:
+        case .dismissSheets:
             runtime.goBack(way, in: element)
             return true
         }

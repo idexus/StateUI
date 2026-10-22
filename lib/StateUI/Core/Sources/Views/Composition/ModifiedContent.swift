@@ -13,4 +13,10 @@ public struct ModifiedContent<Content: View>: ElementView {
     init(node: Node) {
         self.node = node
     }
+
+    /// The same view with one more modifier written on it: what outlives its branches on its anchor, where it may
+    /// build one or another.
+    public func modified(_ change: (inout Node) -> Void) -> Self {
+        ModifiedContent(node: node.writing(change, flips: Node.flips(Content.self)))
+    }
 }

@@ -47,7 +47,7 @@ private struct Place {
     var section: Binding<GallerySection> { nav.$section }
     var path: Binding<[Route]> { nav.$path }
     var menu: Binding<Bool> { nav.$menuOpen }
-    var sheets: Binding<[Sheet]> { nav.$sheets }
+    var presentsPage: Binding<Bool> { nav.$presentsPage }
     var tabs: Binding<[DemoTab]> { nav.$tabs }
     var tab: Binding<DemoTab> { nav.$tab }
     var tabsPath: Binding<[Route]> { nav.$tabsPath }
@@ -533,7 +533,7 @@ final class CatalogTests: XCTestCase {
     /// The window showing `page` as the host is first told about it: registered as an
     /// application of one window and rendered as a complete typed host patch -
     /// which is where what `.onCreated` writes into a session lands: the title
-    /// bar, the modal stack, every page's title.
+    /// bar, every page's title.
     private func firstPatch(_ page: MainPage) -> HostPatch {
         OpenScenes.shared.reset()
         Renderer.shared.clearInvalidation()
@@ -1054,9 +1054,7 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(window.type, "Window")
 
-        let modal = try XCTUnwrap(window.children.first)
-        XCTAssertEqual(modal.type, "ModalStack", "what is presented over it all")
-        let flyout = try XCTUnwrap(modal.children.first)
+        let flyout = try XCTUnwrap(window.children.first)
 
         XCTAssertEqual(flyout.type, "SplitView")
         XCTAssertEqual(flyout.props["showsSidebar"], .bool(false))
@@ -1078,7 +1076,7 @@ final class CatalogTests: XCTestCase {
         // The pane's title is its session's, written as the pane comes in, so
         // it is in the complete patch that brings the pane to the host.
         let first = firstPatch(mainPage(Place().nav))
-        let shownPane = try XCTUnwrap(first.children.first?.children.first?.children.first)
+        let shownPane = try XCTUnwrap(first.children.first?.children.first)
 
         XCTAssertEqual(shownPane.type, "Page")
         XCTAssertNotNil(prop(shownPane, .title), "the flyout pane has no native title")
@@ -1116,7 +1114,7 @@ final class CatalogTests: XCTestCase {
         let state = WindowBarState()
         state.subtitle = "Shared"
         let quiet = firstPatch(mainPage(Place().nav, bar: state))
-        let split = try XCTUnwrap(quiet.children.first { $0.type == "ModalStack" }?.children.first)
+        let split = try XCTUnwrap(quiet.children.first)
 
         XCTAssertEqual(split.type, .splitView)
         XCTAssertEqual(prop(split, .barTitle), .string("StateUI"))
@@ -1126,40 +1124,41 @@ final class CatalogTests: XCTestCase {
 
         state.showsSurprise = true
         let asked = firstPatch(mainPage(Place().nav, bar: state))
-        let declaring = try XCTUnwrap(asked.children.first { $0.type == "ModalStack" }?.children.first)
+        let declaring = try XCTUnwrap(asked.children.first)
         XCTAssertTrue(actions(on: declaring).contains("Surprise me"))
     }
 
-    /// And what is presented over all of it: the window's page is a modal
-    /// stack holding the split view, the sheets after it.
-    func testTheWindowsPageIsAModalStack() throws {
+    /// And what is presented over all of it: a sheet the split view
+    /// declares, holding nothing until the state says so.
+    func testTheWindowPresentsAPageOverItAll() throws {
         let shown = firstPatch(mainPage(Place().nav))
 
-        let presented = try XCTUnwrap(shown.children.first { $0.type == "ModalStack" })
+        let sheet = try XCTUnwrap(shown.children.first?.children.first { $0.type == .sheet })
 
-        XCTAssertEqual(presented.children.map(\.type), [.splitView], "the gallery opens with nothing over it")
-        XCTAssertNotNil(presented.events?[.popped], "a sheet the user drags down would not reach the array")
+        XCTAssertTrue(sheet.children.isEmpty, "the gallery opens with nothing over it")
+        XCTAssertNotNil(sheet.events?[.isPresentedChanged], "a sheet the user drags down would not reach the state")
     }
 
-    /// Presenting and closing are the array growing and shrinking - the same
-    /// two moves a navigation path has, one level up.
-    func testPresentingAndClosingAreTheArray() {
+    /// Presenting is the state turning true: the page stands over it all.
+    func testPresentingIsTheState() throws {
         let place = Place()
+        place.presentsPage.wrappedValue = true
 
-        place.nav.present(.page)
-        XCTAssertEqual(place.sheets.wrappedValue, [.page])
+        let shown = firstPatch(mainPage(place.nav))
+        let sheet = try XCTUnwrap(shown.children.first?.children.first { $0.type == .sheet })
 
-        place.nav.present(.page)
-        XCTAssertEqual(place.sheets.wrappedValue.count, 2, "a sheet may present a sheet")
+        XCTAssertEqual(sheet.children.count, 1, "the page over it all")
+    }
 
-        place.nav.dismiss()
-        XCTAssertEqual(place.sheets.wrappedValue, [.page])
+    /// The page presented closes itself by writing its state false - the
+    /// same move a pushed page makes on its path, one level up.
+    func testAPagePresentedClosesItselfByItsState() throws {
+        let shown = State(wrappedValue: true)
+        let close = try XCTUnwrap(clicked("Close", in: ModalPage(shown: shown.projectedValue, depth: 1).node))
 
-        place.nav.dismiss()
-        XCTAssertTrue(place.sheets.wrappedValue.isEmpty)
+        Renderer.shared.start(EventRegistration(close))
 
-        place.nav.dismiss()
-        XCTAssertTrue(place.sheets.wrappedValue.isEmpty, "and closing nothing is nothing")
+        XCTAssertFalse(shown.wrappedValue)
     }
 
     /// The galleries are a SCENE: gallery windows, as many as are opened - what
@@ -1316,7 +1315,7 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(detail.children.count, DemoTab.opening.count)
 
         let shown = firstPatch(mainPage(place.nav))
-        let tabbed = try XCTUnwrap(shown.children.first?.children.first?.children.first { $0.type == "TabView" })
+        let tabbed = try XCTUnwrap(shown.children.first?.children.first { $0.type == "TabView" })
         let stack = try XCTUnwrap(tabbed.children.first)
         let second = try XCTUnwrap(tabbed.children.last)
 

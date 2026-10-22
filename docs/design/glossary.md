@@ -22,8 +22,9 @@ and this table maps the two.
 | watcher (`.onChanged`) | change observer | a view that runs code when a value it watches changes |
 | mixin tier | mixin, trait | a tier several contracts wear for one group of members |
 | Normal (visual state) | default visual state | the visual state a control is in when none of its other states holds |
-| arrangement | page container | a page that arranges other pages: a stack, tabs, a split view, a modal stack |
-| arrangement (navigation) | navigation container | `NavigationStack`, `TabView`, `SplitView` and `ModalStack`: what decides which page shows |
+| anchor | - | the element a view whose root may change stands on, holding what is written on it to outlive a branch; no view of its own |
+| arrangement | page container | a page that arranges other pages: a stack, tabs, a split view |
+| arrangement (navigation) | navigation container | `NavigationStack`, `TabView` and `SplitView`: what decides which page shows |
 | session | per-instance runtime state | the values one opening of an application, a scene or a window holds |
 
 ## State and reactivity

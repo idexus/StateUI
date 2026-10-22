@@ -92,6 +92,7 @@ of its members each meets, and why a cell is empty.
 | Element | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](controls/ActivityIndicator.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [Anchor](controls/Anchor.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Application](controls/Application.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Button](controls/Button.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ButtonMenu](controls/ButtonMenu.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -114,7 +115,6 @@ of its members each meets, and why a cell is empty.
 | [MenuBar](controls/MenuBar.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuItem](controls/MenuItem.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuSeparator](controls/MenuSeparator.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ModalStack](controls/ModalStack.md) | adaptive | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 | [NavigationStack](controls/NavigationStack.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Overlay](controls/Overlay.md) | structure | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 | [Page](controls/Page.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -128,6 +128,7 @@ of its members each meets, and why a cell is empty.
 | [Scene](controls/Scene.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ScrollView](controls/ScrollView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [SearchField](controls/SearchField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [Sheet](controls/Sheet.md) | adaptive | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 | [Slider](controls/Slider.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Spacer](controls/Spacer.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [SplitView](controls/SplitView.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -207,7 +208,8 @@ contract.
 | `NavigationStack` | custom `NSView` stack; title, back and actions in the window's `NSToolbar` | `UINavigationController` | custom `ViewGroup` stack + `Toolbar` | custom `Panel` stack; title, back and actions in the window's `TitleBar` | `AdwNavigationView` of `AdwNavigationPage`s | `<div>` stack; one History API entry to go back |
 | `TabView` | `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` where the tabbed view stands in a split view's detail, else the title bar's bottom accessory - with top tabs where no window serves it | `UITabBarController` | custom `ViewGroup` + `LinearLayout` tab row | custom `Panel` under a `SelectorBar` | `GtkStack` + `GtkStackSwitcher` | ARIA `tablist` of `<button>` tabs |
 | `SplitView` | `NSSplitViewController` | `UISplitViewController` | custom `ViewGroup`: a drawer where narrow, beside where wide | `SplitView`, the sidebar in its pane: beside the detail from 1008 DIPs, over it where narrower | `AdwOverlaySplitView` | `<aside>` in a CSS grid: beside the detail from 900px wide, a drawer over it where narrower |
-| `ModalStack` | sheet `NSWindow` | `present(_:animated:)` | `FrameLayout` sheet over the activity | sheets of `ContentDialog`'s look in a `Grid` layer over the window | `AdwDialog` | `<dialog>` with `showModal()` |
+| `Sheet` | sheet `NSWindow` | `present(_:animated:)` | `FrameLayout` sheet over the activity | sheets of `ContentDialog`'s look in a `Grid` layer over the window | `AdwDialog` | `<dialog>` with `showModal()` |
+| `Anchor` | structure | structure | structure | structure | structure | structure |
 | `Overlay` | pass-through `NSView` above the page | pass-through `UIView` above the page | top child of a `FrameLayout` | top layer of a root `Grid` | custom `GtkWidget` in the window's `GtkOverlay` | `<div>` layered over the page |
 | `Popover` | `NSPopover` | `UIPopoverPresentationController` - a sheet on a phone | `PopupWindow` | `Flyout` | `GtkPopover` | `<div popover>` |
 | `ContextMenu`, `MenuBar`, `Menu`, `MenuItem` | `NSMenu` / `NSMenuItem` | `UIMenu` / `UIAction`; `UIContextMenuInteraction`; `UIMenuBuilder` menu bar | `ContextMenu` / `SubMenu` / `MenuItem`; a menu bar's menus in the `Toolbar` overflow | `MenuFlyout` / `MenuBar` | `GMenu` in a `GtkPopoverMenu`; a menu bar as a `GtkMenuButton` main menu | ARIA `menu` in a `popover`; a menu bar's menus under the bar's More button |
@@ -254,7 +256,7 @@ These surfaces lack an honest native counterpart on at least one target:
 - `NavigationStack`: Android Views has no page-stack control; GTK 4 has one only in libadwaita, which its host requires.
 - `TabView`: Android Views has no framework tab bar; Web has no tab element.
 - `SplitView`: Android Views has no framework drawer or split pane, so its host lays out its own; Web has no native pane.
-- `ModalStack`: Android Views has no modal page presentation, so its host slides a sheet over the activity; WinUI 3 shows one `ContentDialog` at a time, so its host stacks sheets of a dialog's look over the window.
+- `Sheet`: Android Views has no modal page presentation, so its host slides a sheet over the activity; WinUI 3 shows one `ContentDialog` at a time, so its host stacks sheets of a dialog's look over the window.
 - The application's name and mark in the bar (`barTitle`, `barIcon`): UIKit, Android Views and GTK 4 give each page a bar of its own that names that page; Web shows no mark in its bar - the browser's tab shows the site's icon.
 - Menus: Android Views has no menu bar, so a menu bar's menus join the bar's overflow; Web has no native menu element.
 - `Grid`: AppKit, UIKit, and GTK 4 have no container with star and auto tracks.
@@ -504,6 +506,7 @@ Every control, and every part an application, its windows and its pages are made
 
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| [Anchor](controls/Anchor.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Application](controls/Application.md) | 24 | 12 ✅ · 11 ✓ · 1 – | 14 ✅ · 10 ✓ | 11 ✅ · 1 ☑️ · 11 ✓ · 1 – | 19 ✅ · 4 ✓ · 1 – | 16 ✅ · 6 ✓ · 1 – | 18 ✅ · 6 ✓ |
 | [ButtonMenu](controls/ButtonMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ContextMenu](controls/ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -512,12 +515,12 @@ Every control, and every part an application, its windows and its pages are made
 | [MenuBar](controls/MenuBar.md) | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [MenuItem](controls/MenuItem.md) | 9 | 8 ✅ · 1 ☑️ | 8 ✅ · 1 ☑️ | 7 ✅ · 2 – | 9 ✅ | 6 ✅ · 3 – | 9 ✅ |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ModalStack](controls/ModalStack.md) | 8 | 5 ✅ · 1 ☑️ · 2 – | 4 ✅ · 4 – | 3 ✅ · 1 ☑️ · 4 – | 6 ✅ · 2 – | 4 ✅ · 4 – | 7 ✅ · 1 – |
 | [NavigationStack](controls/NavigationStack.md) | 11 | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 7 ✅ · 4 – | 6 ✅ · 1 ☑️ · 4 – | 9 ✅ · 2 – | 5 ✅ · 6 – | 10 ✅ · 1 – |
 | [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 | [Page](controls/Page.md) | 12 | 9 ✅ | 12 ✅ | 11 ✅ · 1 – | 11 ✅ · 1 – | 9 ✅ · 2 – | 11 ✅ |
 | [Popover](controls/Popover.md) | 2 | 2 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](controls/Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
+| [Sheet](controls/Sheet.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [SplitView](controls/SplitView.md) | 15 | 10 ✅ · 1 ☑️ · 3 – | 10 ✅ · 1 ✓ · 4 – | 5 ✅ · 2 ☑️ · 4 ✓ · 4 – | 11 ✅ · 2 ☑️ · 2 – | 7 ✅ · 2 ✓ · 6 – | 12 ✅ · 2 ☑️ · 1 – |
 | [TabView](controls/TabView.md) | 12 | 7 ✅ · 1 ☑️ · 1 ✓ · 2 – | 8 ✅ · 4 – | 7 ✅ · 1 ☑️ · 4 – | 10 ✅ · 2 – | 6 ✅ · 6 – | 11 ✅ · 1 – |
 | [TextSpan](controls/TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
@@ -526,10 +529,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 9 | 5 ✅ · 1 ✓ · 1 – | 7 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 9 ✅ | 7 ✅ · 1 ✓ · 1 – | 9 ✅ |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 101 | 96 | 77 | 126 | 90 | 112 |
+| ✅ |  | 98 | 94 | 76 | 122 | 88 | 107 |
 | ✓ |  | 23 | 20 | 20 | 5 | 17 | 10 |
-| – |  | 12 | 25 | 35 | 11 | 36 | 19 |
-| **Met** | 151 | **136** | **141** | **132** | **142** | **143** | **141** |
+| – |  | 10 | 21 | 31 | 9 | 32 | 18 |
+| **Met** | 145 | **131** | **135** | **127** | **136** | **137** | **135** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -594,7 +597,6 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [MenuBar](controls/MenuBar.md) | `order` | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [MenuItem](controls/MenuItem.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [ModalStack](controls/ModalStack.md) | `popped` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [NavigationStack](controls/NavigationStack.md) | `popped` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `background`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsNavigationBar`, `showsTitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 10 | 8 ✅ | 10 ✅ | 9 ✅ · 1 – | 9 ✅ · 1 – | 8 ✅ · 1 – | 9 ✅ |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
@@ -607,6 +609,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Scene](controls/Scene.md) | `activated`, `deactivated`, `stopped`, `windowClosed` | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [ScrollView](controls/ScrollView.md) | `horizontalScrollIndicator`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `verticalScrollIndicator` | 5 | 4 ✅ · 1 ✓ | 3 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ |
 | [SearchField](controls/SearchField.md) | `submitLabel`, `onSubmitted` (`submitted`) | 2 | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 1 ✅ · 1 ☑️ | 1 ✅ · 1 ☑️ | 2 ✅ |
+| [Sheet](controls/Sheet.md) | `isPresented`, `isPresentedChanged` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Slider](controls/Slider.md) | `onReleased` (`released`), `onPressed` (`pressed`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 4 ✅ · 2 ✓ | 6 ✅ | 4 ✅ | 4 ✅ · 2 – | 6 ✅ |
 | [SplitView](controls/SplitView.md) | `showsSidebar`, `showsSidebarChanged`, `sidebarBackground`, `flyoutBackground`, `sidebarOverlays` | 5 | 4 ✅ · 1 – | 4 ✅ · 1 ✓ | 1 ☑️ · 4 ✓ | 3 ✅ · 2 ☑️ | 3 ✅ · 2 ✓ | 3 ✅ · 2 ☑️ |
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ |
@@ -638,14 +641,14 @@ realizes the element and each of its members.
 <!-- vocabulary:begin -->
 ### Controls and structural nodes
 
-`ActivityIndicator`, `Application`, `Button`, `ButtonMenu`, `Canvas`, `Capsule`,
-`CheckBox`, `ContextMenu`, `DatePicker`, `Divider`, `Ellipse`, `Grid`, `HStack`,
-`Image`, `ItemsView`, `LayoutEngine`, `Line`, `Map`, `Marker`, `Menu`,
-`MenuBar`, `MenuItem`, `MenuSeparator`, `ModalStack`, `NavigationStack`,
-`Overlay`, `Page`, `Path`, `Picker`, `Polygon`, `Polyline`, `Popover`,
-`ProgressBar`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`, `Slider`,
-`Spacer`, `SplitView`, `Stepper`, `Switch`, `TabView`, `Text`, `TextEditor`,
-`TextField`, `TextSpan`, `TextSpans`, `TimePicker`, `TitleView`, `ToolbarItem`,
+`ActivityIndicator`, `Anchor`, `Application`, `Button`, `ButtonMenu`, `Canvas`,
+`Capsule`, `CheckBox`, `ContextMenu`, `DatePicker`, `Divider`, `Ellipse`,
+`Grid`, `HStack`, `Image`, `ItemsView`, `LayoutEngine`, `Line`, `Map`, `Marker`,
+`Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`, `NavigationStack`, `Overlay`,
+`Page`, `Path`, `Picker`, `Polygon`, `Polyline`, `Popover`, `ProgressBar`,
+`Rectangle`, `Scene`, `ScrollView`, `SearchField`, `Sheet`, `Slider`, `Spacer`,
+`SplitView`, `Stepper`, `Switch`, `TabView`, `Text`, `TextEditor`, `TextField`,
+`TextSpan`, `TextSpans`, `TimePicker`, `TitleView`, `ToolbarItem`,
 `ToolbarItemGroup`, `VStack`, `WebView`, `Window`, `ZStack`.
 
 ### Properties
@@ -665,7 +668,7 @@ realizes the element and each of its members.
 `horizontalScrollIndicator`, `horizontalTextAlignment`, `icon`, `iconPosition`,
 `iconSpacing`, `ignoresInput`, `inputPurpose`, `isAccessibilityHidden`,
 `isAnimating`, `isEnabled`, `isFontAutoScalingEnabled`, `isMaximizable`,
-`isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isReadOnly`,
+`isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isPresented`, `isReadOnly`,
 `isRefreshEnabled`, `isRefreshing`, `isScrollEnabled`, `isSelectable`,
 `isShown`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `isVisible`,
 `isZoomEnabled`, `itemDrag`, `items`, `itemsLayout`, `keyboardShortcut`,
@@ -697,16 +700,16 @@ realizes the element and each of its members.
 `created`, `dateChanged`, `deactivated`, `destroying`, `detailsClicked`,
 `disappearing`, `dragEnded`, `dragged`, `dragLeave`, `dragOver`, `dragStarting`,
 `drop`, `endReached`, `filesDropped`, `frameChanged`, `handMoved`,
-`handStepped`, `isFocusedChanged`, `isShownChanged`, `itemActivated`,
-`itemMoved`, `keyPressed`, `mapClicked`, `navigated`, `navigatedFrom`,
-`navigatedTo`, `navigating`, `navigatingFrom`, `opened`, `panUpdated`,
-`pinchMoved`, `pinchUpdated`, `pointerEntered`, `pointerExited`, `pointerMoved`,
-`pointerPressed`, `pointerReleased`, `popped`, `pressed`, `processTerminated`,
-`realizedChanged`, `refreshRequested`, `released`, `resumed`, `scrollStopped`,
-`selected`, `selectedIndexChanged`, `selectedItemsChanged`,
-`selectedTabChanged`, `showsSidebarChanged`, `stopped`, `submitted`, `swiped`,
-`tapped`, `textChanged`, `timeChanged`, `toggled`, `valueChanged`,
-`windowClosed`.
+`handStepped`, `isFocusedChanged`, `isPresentedChanged`, `isShownChanged`,
+`itemActivated`, `itemMoved`, `keyPressed`, `mapClicked`, `navigated`,
+`navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`, `opened`,
+`panUpdated`, `pinchMoved`, `pinchUpdated`, `pointerEntered`, `pointerExited`,
+`pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`, `pressed`,
+`processTerminated`, `realizedChanged`, `refreshRequested`, `released`,
+`resumed`, `scrollStopped`, `selected`, `selectedIndexChanged`,
+`selectedItemsChanged`, `selectedTabChanged`, `showsSidebarChanged`, `stopped`,
+`submitted`, `swiped`, `tapped`, `textChanged`, `timeChanged`, `toggled`,
+`valueChanged`, `windowClosed`.
 
 ### Acts
 

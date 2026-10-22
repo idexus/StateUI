@@ -150,6 +150,9 @@
 
     /// The popovers their hosts could not show for want of their window, by mount.
     private var waitingPopovers: [UInt64: Held] = [:]
+
+    /// The sheets the views declare, by mount: a window's presentation looks among them.
+    private var sheets: [UInt64: Held] = [:]
     private var patchTime: Double?
     private(set) var languageDirection: LayoutDirection?
     private var patchReducesMotion: Bool?
@@ -261,6 +264,15 @@
     /// `element` is mounted: a frame finds it by its mount.
     func mounted(_ element: MountedElement) {
         byMount[element.mount] = Held(element: element)
+        if element.type == .sheet { sheets[element.mount] = Held(element: element) }
+    }
+
+    /// The pages `window`'s sheets present, in the order they showed: a sheet's page is made as it shows.
+    /// Design: docs/design/host/tree.md#a-window-shown
+    public func presentedSheets(in window: MountedElement) -> [MountedElement] {
+        sheets.values.compactMap(\.element)
+            .compactMap { $0.enclosing(type: .window) === window ? $0.children.first : nil }
+            .sorted { $0.mount < $1.mount }
     }
 
     /// `element` presents `states` now rather than `before`, the states its bound properties take a frame's values
@@ -277,6 +289,7 @@
     func unmounted(_ element: MountedElement, presenting states: [Int32]) {
         byMount[element.mount] = nil
         waitingPopovers[element.mount] = nil
+        sheets[element.mount] = nil
         presents(element, [], before: states)
         left(element.mount)
     }

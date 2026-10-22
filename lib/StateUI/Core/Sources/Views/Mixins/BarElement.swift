@@ -20,8 +20,8 @@
 ///
 /// A split view's bar is both its panes': a sidebar with a bar of its own
 /// wears what its split view declares, and nothing from around it. A sheet
-/// wears the colors of the modal stack showing it, and nothing else from
-/// around it.
+/// has no bar of its own: a stack in it brings one, taking nothing from
+/// around the sheet.
 public protocol BarElement: PropertyContainer {}
 
 extension BarElement {

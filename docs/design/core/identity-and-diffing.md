@@ -294,6 +294,45 @@ names are compared and the counts are not. The placeholder is kept fresh for the
 reason, so a later clean walk that builds the view from it runs the newest
 inputs.
 
+## A view's anchor
+
+A view that keeps no node of its own - a composed view, a `Group`, an
+`if/else` a builder made, an `AnyView` - stands for what it builds, and what
+it builds may be one branch or another: a flip replaces that root. What is
+written on such a view to outlive a branch stands on the view's anchor
+instead - an element of no view of its own, made by the first modifier
+writing any of:
+
+```text
+  .onChanged                  the view watches while it stands
+  .onCreated, .onDestroying   the view comes and goes, not its branch
+  .onHostEvent                heard while the view stands
+  .sheet, .popover            presented by the view: a flip closes nothing
+```
+
+The anchor holds the view - its placeholder, or the branch it chose - as its
+first child, the sheet and the popover beside it, and a flip replaces that
+child alone. It takes the environments provided on the view, so what it
+presents sees them, and the identity written on a composed view; a branch's
+own identity stays the branch's. Every modifier written after it lands
+through it (`Node.writing`): what outlives a branch on the anchor, the rest -
+values, handlers, motion, engines, aims, readings, a context menu, what the
+view says of its page - on what it holds, so a look never waits on an element
+of no view. A composed view folds what is written on it onto its body's root
+the same way, through an anchor its body stands on (`Node.land`).
+
+An anchor is made only where the view's root may change, which its type tells
+(`Node.flips`): an `if/else`, an `AnyView`, a modifier or a composed view over
+one of them. A view whose body is a `VStack`, a control or a `Group` of one
+view keeps one root while it stands, and what is written on it lands on that
+root - no element is added where nothing could be lost. An optional `if` and a
+`ForEach` are content alone: no modifier is written on them.
+
+An anchor standing at a page's root is no view of the page: the view it holds
+is, and says what it says of the page through it. An anchor tells whether it
+builds an arrangement by what it holds. It comes in before what it holds, so
+`.onCreated` written on a view runs before its body's own.
+
 ## What a carry cannot see
 
 A view's inputs say nothing about the style sheet or about a provider above
@@ -423,10 +462,10 @@ render; nothing about it crosses to the host. Its rules:
                                      never answer for each other
   a different count starts over      a watch under an `if` shifts every slot
   a slot of another type starts over it changed hands
-  a composed view's watch stays      written on the view, it is the view's
-                                     while it stands - its body's root
-                                     replaced by another branch included;
-                                     a `Group` is such a view, in place
+  a composed view's watch stays      written on the view, it stands on the
+                                     view's anchor while the view stands -
+                                     whichever branch its body shows; a
+                                     `Group` is such a view, in place
   handlers run after the walk        a write mid-walk would be cleared
 ```
 

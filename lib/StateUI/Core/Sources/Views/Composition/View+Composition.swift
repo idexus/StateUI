@@ -12,10 +12,9 @@ extension View where Modified == ModifiedContent<Self> {
     }
 
     /// A modifier written on a composed view, kept on a `ModifiedContent`
-    /// wrapping the placeholder.
+    /// wrapping the placeholder; what outlives its branches on its anchor, where
+    /// its body may build one or another.
     public func modified(_ change: (inout Node) -> Void) -> ModifiedContent<Self> {
-        var node = self.node
-        change(&node)
-        return ModifiedContent(node: node)
+        ModifiedContent(node: node.writing(change, flips: Node.flips(Self.self)))
     }
 }

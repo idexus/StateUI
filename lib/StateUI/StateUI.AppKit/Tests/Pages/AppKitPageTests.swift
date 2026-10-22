@@ -606,30 +606,6 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertFalse(controller.tabRowStandsInTitleBarForTesting)
     }
 
-    /// A tabbed detail under a modal stack - the window's page, its sheets over
-    /// it - stands its tabs in the window's row as it does with no modal stack.
-    @MainActor
-    func testATabbedDetailUnderAModalStackTakesTheWindowsRow() throws {
-        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
-
-        renderer.applyForTesting(tree(flyout(
-            presented: true,
-            menu: page("menu", title: "Menu", events: 100),
-            detail: tabbed([
-                page("home", title: "Home", events: 200),
-                page("browse", title: "Browse", events: 300),
-            ], selected: 0)), modals: []))
-
-        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
-        let split = try XCTUnwrap(renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
-        XCTAssertEqual(controller.tabRowForTesting.controlForTesting.segmentCount, 2)
-        XCTAssertTrue(split.detailRowForTesting === controller.tabRowForTesting)
-    }
-
-    /// A tabbed view in a tab of another is a native tab view with its tabs on
-    /// the top edge of its content, named by its pages; a tab clicked there is
-    /// the user choosing. The window's toolbar serves only the outer one.
     @MainActor
     func testATabViewInsideATabShowsItsTabsOnItsContent() throws {
         let renderer = testRenderer(
@@ -1093,7 +1069,7 @@ final class AppKitPageTests: XCTestCase {
     }
 
     @MainActor
-    func testModalStackMovesVisibilityBetweenRootAndTopSheet() throws {
+    func testSheetsMoveVisibilityBetweenRootAndTopSheet() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -1197,15 +1173,19 @@ private extension AppKitPageTests {
     ) -> HostPatch {
         var window = HostPatch(id: .manual("window"), type: .window)
         if let width { window.properties[.width] = .number(width) }
-        if let modals {
-            // The window's page is a modal stack: the page it holds, then its sheets.
-            var stack = HostPatch(id: .manual("modals"), type: .modalStack)
-            stack.children = .arranged([page] + modals)
-            stack.events = .replace([.popped: 902])
-            window.children = .arranged([stack])
-        } else {
-            window.children = .arranged([page])
+        // The window's page presents the sheets, each a slot of its own holding its page.
+        var root = page
+        if let modals, !modals.isEmpty {
+            guard case .arranged(let children) = page.children else { preconditionFailure("a page of children") }
+            root.children = .arranged(children + modals.enumerated().map { place, modal in
+                var sheet = HostPatch(id: .manual("sheet \(place)"), type: .sheet)
+                sheet.properties[.isPresented] = .bool(true)
+                sheet.events = .replace([.isPresentedChanged: 902 + Int32(place)])
+                sheet.children = .arranged([modal])
+                return sheet
+            })
         }
+        window.children = .arranged([root])
 
         var scene = HostPatch(id: .manual("scene"), type: .scene)
         scene.children = .arranged([window])

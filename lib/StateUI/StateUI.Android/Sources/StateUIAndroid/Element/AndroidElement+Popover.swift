@@ -11,7 +11,7 @@ extension AndroidElement {
     func configurePopover() {
         guard type == .popover, let popover = view as? AndroidPopoverView else { return }
         guard element.asksToShow else { return popover.close() }
-        guard let anchor = parent?.view else { return }
+        guard let anchor = element.presenter?.android.view else { return }
         popover.onClosed = { [weak self] in self?.popoverClosed() }
         popover.show(by: anchor)
     }

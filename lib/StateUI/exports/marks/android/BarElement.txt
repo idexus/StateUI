@@ -1,11 +1,4 @@
-# revision 6.1
-ModalStack.barBackgroundColor: ✅
-ModalStack.barButtonBackgroundColor: – A toolbar's action is Android's own, with no background of the application's.
-ModalStack.barForegroundColor: ☑️ The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the color itself - on a tab row, the chosen tab's words.
-ModalStack.barIcon: – An Android bar is its stack's own: it shows its page's title, and no application's mark.
-ModalStack.barSubtitle: ✅
-ModalStack.barTitle: – An Android bar is its stack's own and names its page; an application names itself in none.
-ModalStack.toolbarStyle: – The toolbar's actions keep Android's own look.
+# revision 7.1
 NavigationStack.barBackgroundColor: ✅
 NavigationStack.barButtonBackgroundColor: – A toolbar's action is Android's own, with no background of the application's.
 NavigationStack.barForegroundColor: ☑️ The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the color itself - on a tab row, the chosen tab's words.

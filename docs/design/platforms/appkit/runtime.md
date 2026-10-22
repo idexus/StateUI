@@ -23,8 +23,8 @@ by a window controller in the tree's order (`WindowRoster`); a window the
 tree no longer holds closes, the last first, telling nothing. What a window
 shows comes from the host layer (`WindowPresentation`): its arrangement of
 pages is the window's content under one unified toolbar ([the window's
-chrome](../../host/pages.md#the-windows-chrome)), the pages its modal stack
-presents are sheets, and the page the user sees and the window made are told
+chrome](../../host/pages.md#the-windows-chrome)), the pages its views
+present are sheets, and the page the user sees and the window made are told
 before the window first comes to the front. A new window with no place asked
 stands centered, each after the first a step down and to the right.
 

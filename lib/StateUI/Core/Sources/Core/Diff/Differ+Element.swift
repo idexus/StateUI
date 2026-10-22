@@ -57,12 +57,14 @@ extension Differ {
         node: Node,
         forced: Bool = false,
         sizesArrive: Bool = false,
+        atPagePosition: Bool? = nil,
         from start: Int = 0
     ) -> (node: RenderedNode, patch: HostPatch) {
         let pass = ElementPass(
             id: id, rendered: rendered, node: node, forced: forced, sizesArrive: sizesArrive,
-            atPageRoot: describesPageRoot, outerScene: sceneRecord, start: start)
-        describesPageRoot = false
+            atPageRoot: describesPageRoot, atPagePosition: atPagePosition ?? describesPagePosition,
+            outerScene: sceneRecord, start: start)
+        (describesPageRoot, describesPagePosition) = (false, false)
 
         // What the element entered - the environments provided, the views, its scene, an inspector's frame - is
         // left once it and its subtree are done.
@@ -82,8 +84,13 @@ extension Differ {
             children = described.children
             pass.patch.children = described.patch.children
         } else {
+            // An anchor at a page's root is no view of the page: the view it holds is.
+            // Design: docs/design/core/identity-and-diffing.md#a-views-anchor
+            describesPageRoot = pass.atPageRoot && pass.node.type == .anchor
             children = reconcileChildren(
-                of: pass.previous, node: pass.node, into: &pass.patch, sizesArrive: pass.node.childSizesArrive)
+                of: pass.previous, node: pass.node, into: &pass.patch, sizesArrive: pass.node.childSizesArrive,
+                atPagePosition: pass.atPagePosition)
+            describesPageRoot = false
         }
         return finish(pass, children: children)
     }
@@ -484,17 +491,9 @@ extension Differ {
         // Design: docs/design/core/identity-and-diffing.md#watching-values
         var pairs: [(index: Int, old: Any)] = []
         if let previous = previous, previous.watched.count == node.watches.count {
-            pairs = previous.watched.enumerated().map { ($0.offset, $0.element.value) }
-        } else if replace, let rendered {
-            // A watch written on a composed view is the view's, which stands while the element its body shows is
-            // replaced - another branch of its `if/else`: it goes on against what the view watched.
-            for view in Set(node.watches.compactMap(\.writtenOn)) {
-                let fresh = node.watches.indices.filter { node.watches[$0].writtenOn == view }
-                let old = rendered.watched.filter { $0.writtenOn == view }.map(\.value)
-                if fresh.count == old.count { pairs += zip(fresh, old).map { ($0, $1) } }
-            }
+            pairs = previous.watched.enumerated().map { ($0.offset, $0.element) }
         }
-        for (index, old) in pairs.sorted(by: { $0.index < $1.index }) {
+        for (index, old) in pairs {
             let watch = node.watches[index]
 
             // Nil: the stored value is of another type, and the slot starts over.
@@ -654,7 +653,7 @@ extension Differ {
             builds: pass.builds,
             provided: Array(scope.suffix(pass.pushed)),
             seen: pass.seen,
-            watched: node.watches.map { ($0.writtenOn, $0.value) },
+            watched: node.watches.map(\.value),
             engines: pass.engines,
             driven: pass.driven,
             readings: pass.readings,
@@ -663,12 +662,13 @@ extension Differ {
         )
         result.identity = pass.identity
         result.sizesArrive = pass.sizesArrive
+        result.atPagePosition = pass.atPagePosition
         result.visualInput = pass.visualInput
         result.runs = pass.kept
         result.visualState = pass.visualState
 
         // What it says of the page it is the view of.
-        result.pageValues = pass.atPageRoot ? pass.pageValues : nil
+        result.pageValues = !pass.atPageRoot ? nil : node.type == .anchor ? children.first?.pageValues : pass.pageValues
 
         // What it runs as it leaves: this build's closures, the newest; and what it hears.
         result.destroying = node.destroying
@@ -865,8 +865,10 @@ final class ElementPass {
     let start: Int
     var builtFrom: Int
 
-    /// Whether this is the view a page shows (PageValues.swift), and the scene the walk was in as it came.
+    /// Whether this is the view a page shows (PageValues.swift), whether it stands where a page stands, and the scene
+    /// the walk was in as it came.
     let atPageRoot: Bool
+    let atPagePosition: Bool
     let outerScene: SceneRecord?
 
     /// How many times this element has been described, this time included; the builder path, read before any
@@ -924,7 +926,7 @@ final class ElementPass {
 
     init(
         id: ElementID, rendered: RenderedNode?, node: Node, forced: Bool, sizesArrive: Bool, atPageRoot: Bool,
-        outerScene: SceneRecord?, start: Int
+        atPagePosition: Bool, outerScene: SceneRecord?, start: Int
     ) {
         self.id = id
         self.rendered = rendered
@@ -933,6 +935,7 @@ final class ElementPass {
         builtFrom = start
         self.sizesArrive = sizesArrive
         self.atPageRoot = atPageRoot
+        self.atPagePosition = atPagePosition
         self.outerScene = outerScene
         builds = (rendered?.builds ?? 0) + 1
         key = node.key

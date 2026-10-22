@@ -104,8 +104,8 @@ arrangement of pages is its window's content, under the window's chrome, which
 names it after the visible page, else after the element's title
 ([the window's chrome](pages.md#the-windows-chrome)); the window is activated
 the first time it shows a page, and told it was made once, in its turn
-(`WindowPresentation`); the pages the window's modal stack presents stand on
-sheets over it.
+(`WindowPresentation`); the pages the window's views present stand on sheets
+over it.
 
 ## A window's frame
 

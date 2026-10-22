@@ -21,7 +21,7 @@ struct MainPage: View {
 }
 ```
 
-Worn by: [ModalStack](../ModalStack.md) · [NavigationStack](../NavigationStack.md) · [SplitView](../SplitView.md) · [TabView](../TabView.md)
+Worn by: [NavigationStack](../NavigationStack.md) · [SplitView](../SplitView.md) · [TabView](../TabView.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/BarElementContract.swift`.
 

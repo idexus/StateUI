@@ -24,11 +24,6 @@ struct Watch {
     /// What a change does while a run is under way.
     let gate: any Gate
 
-    /// The composed view it was written on, which it watches for while that view stands - whatever its body shows;
-    /// nil for one written on the element itself.
-    /// Design: docs/design/core/identity-and-diffing.md#watching-values
-    var writtenOn: KeyName?
-
     /// A watch on one value. Written by `.onChanged`, never by hand.
     init<Value: Equatable>(_ value: Value, gate: some Gate, run: @escaping ErasedChangeHandler) {
         self.value = value

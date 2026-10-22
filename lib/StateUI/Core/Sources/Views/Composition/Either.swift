@@ -44,10 +44,9 @@ extension Either: PropertyContainer, ModifiableElement, AutomationElement, Visua
     /// None: a branch is described by the view it chose.
     public var body: Never { fatalError("a branch has no body: it is the view it chose") }
 
-    /// A modifier written on the branch, kept on a `ModifiedContent`.
+    /// A modifier written on the branch, kept on a `ModifiedContent`; what outlives the branch on the anchor of
+    /// the `if/else`.
     public func modified(_ change: (inout Node) -> Void) -> ModifiedContent<Self> {
-        var node = self.node
-        change(&node)
-        return ModifiedContent(node: node)
+        ModifiedContent(node: node.writing(change, flips: true))
     }
 }

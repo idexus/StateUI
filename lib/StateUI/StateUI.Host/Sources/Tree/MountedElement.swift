@@ -379,7 +379,7 @@
     var held: [MountedElement] { children + slots }
 
     /// The arrangements of pages, which keep their slots apart from their pages.
-    private static let arrangements: Set<NodeType> = [.navigationStack, .tabView, .splitView, .modalStack]
+    private static let arrangements: Set<NodeType> = [.navigationStack, .tabView, .splitView]
 
     /// Puts a grid's or a ZStack's children in the order they are drawn: by `zIndex`, ties in the order
     /// written. Answers whether the order moved.

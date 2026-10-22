@@ -261,7 +261,7 @@ changed starts over alone, instead of matching an unrelated slot.
 A watcher belongs to the view it is written on. One written in a branch of an
 `if` is that branch's view's and starts afresh as the other branch shows; one
 written on a composed view watches while that view stands, whichever branch
-its body shows. A `Group` is such a view written in place - no element and no
+its body shows. A `Group` is such a view written in place - no view and no
 layout of its own, holding one view - so a value watched across a condition
 is watched on the group holding it:
 
@@ -300,6 +300,40 @@ Text(results.joined(separator: ", "))
 Handlers run after the tree walk. A write made by a handler can therefore be
 settled safely. A handler that unconditionally changes the value it watches
 creates a feedback loop; every such write needs a stopping condition.
+
+## What outlives a branch
+
+A composed view, a `Group` or an `if/else` builds one view or another as its
+state moves, and the view it showed is replaced. What is written on it to
+last as long as it stands - `.onChanged`, `.onCreated` and `.onDestroying`,
+`.onHostEvent`, `.sheet` and `.popover` - stays through the switch: a watch
+keeps watching, a sheet stays shown, and `.onDestroying` runs once the view
+itself leaves.
+
+```swift
+struct AccountPage: View {
+    @State var signedIn = false
+    @State var showsHelp = false
+
+    var body: some View {
+        Group {
+            if signedIn {
+                Text("Signed in")
+            } else {
+                Button("Sign in").onClicked { signedIn = true }
+            }
+        }
+        .sheet(isPresented: $showsHelp) { Text("Help") }
+    }
+}
+```
+
+Signing in while the help shows leaves it shown. What is about the look - a
+margin, an opacity, a handler of the view's own events - stands on the view
+shown, branch by branch. Such a view stands on an anchor: an element with no
+view and no layout of its own, which a layout places as what it holds. It is
+made only where the view may build one root or another, as its type tells - a
+view whose body is a `VStack` keeps one root and needs none.
 
 ## Build diagnostics
 

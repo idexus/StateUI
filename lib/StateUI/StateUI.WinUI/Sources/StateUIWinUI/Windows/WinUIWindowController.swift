@@ -19,7 +19,7 @@ final class WinUIWindowController {
     /// What the window shows, by the host layer's rule.
     private let presentation = WindowPresentation()
 
-    /// The sheets the window shows, one for each page its modal stack presents, the last on top.
+    /// The sheets the window shows, one for each page its views present, the last shown on top.
     private var sheets: [(element: MountedElement, sheet: WinUISheetView)] = []
 
     /// The page or tab view heading its content with its title, while the chrome names the application in its
@@ -64,7 +64,7 @@ final class WinUIWindowController {
     /// Keeps a sheet for each page presented, in its order, by the host layer's rule (`SheetChange`): a sheet gone
     /// leaves, the top first, and one new comes over those before it - each under its page's title, written again on
     /// every presentation.
-    /// Design: docs/design/platforms/winui/pages.md#the-modal-stack
+    /// Design: docs/design/platforms/winui/pages.md#sheets
     private func showSheets(_ pages: [MountedElement]) {
         let change = SheetChange(from: sheets, to: pages) { $0.element === $1 }
         for _ in change.leaving { window.popSheet() }
@@ -79,14 +79,16 @@ final class WinUIWindowController {
     }
 
     private func show(_ page: MountedElement, on sheet: WinUISheetView) {
-        sheet.show(title: page.visiblePage?.value(.title)?.string ?? "", page: page.winUI.view)
+        // A sheet has no bar of its own: the card shows a title where a stack in it brings one.
+        let title = page.bringsABar ? page.visiblePage?.value(.title)?.string ?? "" : ""
+        sheet.show(title: title, page: page.winUI.view)
     }
 
     /// The user took the top sheet away - Escape, its dismissing: the window is told how many remain.
     func dismissTopSheet(in runtime: HostRuntime) {
         guard let element, !presentation.sheets.isEmpty else { return }
 
-        runtime.goBack(.dismissSheet(remaining: presentation.sheets.count - 1), in: element)
+        runtime.goBack(.dismissSheets(Array(presentation.sheets.suffix(1))), in: element)
     }
 
     /// Goes the way back the window offers: the top sheet's, else the arrangement's.

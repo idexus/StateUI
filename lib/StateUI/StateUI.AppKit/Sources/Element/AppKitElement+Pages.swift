@@ -23,7 +23,7 @@ extension AppKitElement {
 
     /// The window's arrangement of pages among its children.
     var pageNode: AppKitElement? {
-        children.first { NodeType.pageTypes.contains($0.type) }
+        element.arrangedChildren.first { NodeType.pageTypes.contains($0.type) }?.appKit
     }
 
     var pageView: NSView? {
@@ -38,7 +38,7 @@ extension AppKitElement {
         tabs.tabsShownByWindow = element.tabsStandInWindow
         tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
         tabs.setItems(
-            children.compactMap { child in
+            element.arrangedChildren.map(\.appKit).compactMap { child in
                 child.layoutItem.map {
                     AppKitTabItem(layout: $0, title: child.string(.title), image: child.image(.icon))
                 }

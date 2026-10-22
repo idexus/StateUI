@@ -31,6 +31,26 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(runtime.tree.root).pages.map(\.id), [.manual("root"), .manual("pushed")])
     }
 
+    /// A sheet has no bar of its own: a stack on its visible path brings one, where its top page keeps it.
+    func testASheetShowsABarOnlyWhereAStackBringsOne() throws {
+        let runtime = HostRuntime.still()
+        runtime.tree.apply(node("window", .window, children: [
+            node("page", .page),
+            node("stack", .navigationStack, children: [node("root", .page)]),
+            node("bare", .navigationStack, children: [node("hidden", .page, [.showsNavigationBar: .bool(false)])]),
+            node("split", .splitView, children: [
+                node("sidebar", .page), node("detail", .navigationStack, children: [node("top", .page)]),
+            ]),
+        ]), complete: true)
+        let root = try XCTUnwrap(runtime.tree.root)
+        func brings(_ id: String) throws -> Bool { try XCTUnwrap(root.first(id: .manual(id))).bringsABar }
+
+        XCTAssertFalse(try brings("page"), "a page alone")
+        XCTAssertTrue(try brings("stack"))
+        XCTAssertFalse(try brings("bare"), "a stack whose top page hides its bar")
+        XCTAssertTrue(try brings("split"), "a stack in the detail")
+    }
+
     /// A runtime holding `root`, whose phases are written down in the order told.
     private func runtime(_ root: HostPatch, told: @escaping (Int32) -> Void) -> HostRuntime {
         let runtime = HostRuntime.still()
@@ -89,52 +109,47 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(told, [9, 10])
     }
 
-    /// A tabbed view's tabs stand in the window's row down its stacks, its split view details and a modal stack's
-    /// root - the page the window shows - and nowhere else: never in a sidebar, a tab of another or a sheet.
+    /// A tabbed view's tabs stand in the window's row down its stacks and its split view details - the page the
+    /// window shows - and nowhere else: never in a sidebar, a tab of another or a sheet.
     func testTabsStandInTheWindowDownItsStacksAndDetails() throws {
         let tabs = { (id: String) in self.node(id, .tabView, children: [self.node("\(id).page", .page)]) }
         let runtime = runtime(node("window", .window, children: [
-            node("modal", .modalStack, children: [
-                node("split", .splitView, children: [
-                    tabs("sidebar"),
-                    node("stack", .navigationStack, children: [node("detail", .tabView, children: [tabs("inner")])]),
-                ]),
-                tabs("sheet"),
+            node("split", .splitView, children: [
+                tabs("sidebar"),
+                node("stack", .navigationStack, children: [node("detail", .tabView, children: [
+                    tabs("inner"), node("detail.page", .page, children: [presenting(tabs("sheet"))]),
+                ])]),
             ]),
         ])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
         let stands = { (id: String) in root.first(id: .manual(id))?.tabsStandInWindow }
 
-        XCTAssertEqual(stands("detail"), true, "down a modal stack's root, a split view's detail and a stack")
-        XCTAssertTrue(root.first(id: .manual("modal"))?.visibleTabView === root.first(id: .manual("detail")))
+        XCTAssertEqual(stands("detail"), true, "down a split view's detail and a stack")
+        XCTAssertTrue(root.first(id: .manual("split"))?.visibleTabView === root.first(id: .manual("detail")))
         XCTAssertEqual(stands("sidebar"), false, "a sidebar keeps its own row")
         XCTAssertEqual(stands("inner"), false, "a tab of another keeps its own row")
         XCTAssertEqual(stands("sheet"), false, "a sheet keeps its own row")
 
-        let bare = self.runtime(node("window", .window, children: [
-            node("modal", .modalStack, children: [tabs("root")]),
-        ])) { _ in }
-        XCTAssertEqual(bare.tree.root?.first(id: .manual("root"))?.tabsStandInWindow, true, "a modal stack's root")
+        let bare = self.runtime(node("window", .window, children: [tabs("root")])) { _ in }
+        XCTAssertEqual(bare.tree.root?.first(id: .manual("root"))?.tabsStandInWindow, true, "the window's page")
     }
 
-    /// Every tabbed view an arrangement of pages shows - through its pages and the arrangements in them, a sheet's
-    /// own - is what the chrome paints the bars' colors on again; none in a page's content.
+    /// Every tabbed view an arrangement of pages shows - through its pages and the arrangements in them - is what the
+    /// chrome paints the bars' colors on again; none in a page's content, and a sheet's from its own page.
     func testTheTabbedViewsAnArrangementShowsAreFoundThroughItsPages() throws {
         let tabs = { (id: String) in self.node(id, .tabView, children: [self.node("\(id).page", .page)]) }
         let runtime = runtime(node("window", .window, children: [
-            node("modal", .modalStack, children: [
-                node("split", .splitView, children: [
-                    tabs("sidebar"),
-                    node("stack", .navigationStack, children: [node("detail", .tabView, children: [tabs("inner")])]),
-                ]),
-                tabs("sheet"),
+            node("split", .splitView, children: [
+                tabs("sidebar"),
+                node("stack", .navigationStack, children: [node("detail", .tabView, children: [
+                    tabs("inner"), node("detail.page", .page, children: [presenting(tabs("sheet"))]),
+                ])]),
             ]),
         ])) { _ in }
-        let modal = try XCTUnwrap(runtime.tree.root?.first(id: .manual("modal")))
+        let split = try XCTUnwrap(runtime.tree.root?.first(id: .manual("split")))
 
-        XCTAssertEqual(
-            modal.tabViewsShown.map(\.id), [.manual("sidebar"), .manual("detail"), .manual("inner"), .manual("sheet")])
-        XCTAssertEqual(try XCTUnwrap(modal.first(id: .manual("sheet"))).tabViewsShown.map(\.id), [.manual("sheet")])
+        XCTAssertEqual(split.tabViewsShown.map(\.id), [.manual("sidebar"), .manual("detail"), .manual("inner")])
+        XCTAssertEqual(try XCTUnwrap(split.first(id: .manual("sheet"))).tabViewsShown.map(\.id), [.manual("sheet")])
     }
 
     /// A page's bar says its title; a sidebar's page that says none - itself, or the root of a stack there - shows the
@@ -491,12 +506,14 @@ final class PagesTests: XCTestCase {
 
     /// A page hiding its bar shows no actions; a sheet's page takes nothing from the window it stands over.
     func testAHiddenBarAndASheetTakeNothingFromAround() throws {
-        var window = pathWindow(outer: [toolbarGroup("window", [toolbarAction("inspector")])], inner: [])
-        guard case .arranged(let children) = window.children else { return XCTFail("a window of children") }
-        window.children = .arranged([node("modal", .modalStack, children: children + [
-            node("sheet", .page, children: [toolbarGroup("mine", [toolbarAction("done")])]),
-        ])])
-        let runtime = runtime(window) { _ in }
+        let runtime = runtime(node("window", .window, children: [
+            node("stack", .navigationStack, children: [
+                node("home", .page, children: [
+                    presenting(node("sheet", .page, children: [toolbarGroup("mine", [toolbarAction("done")])])),
+                ]),
+                toolbarGroup("window", [toolbarAction("inspector")]),
+            ]),
+        ])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
 
         XCTAssertEqual(try XCTUnwrap(root.first(id: .manual("sheet"))).chromeActions.primary.map(\.id), [.manual("done")])
@@ -665,11 +682,11 @@ final class PagesTests: XCTestCase {
 
     /// The bar a path declares is its nearest arrangement's, one value at a time: the window's page names the
     /// application, a stack further in paints its own bar and says its own line. A sidebar wears its own split view's
-    /// bar and nothing from around it; a sheet wears the colors of the modal stack showing it, and nothing else from
-    /// around it; an empty picture is none, and a page with nothing declared shows no title area.
+    /// bar and nothing from around it; a sheet takes nothing from around it; an empty picture is none, and a page
+    /// with nothing declared shows no title area.
     func testTheBarAPathDeclaresIsItsNearest() throws {
         let runtime = runtime(node("window", .window, children: [
-            node("modal", .modalStack, [
+            node("outer", .navigationStack, [
                 .barTitle: .string("StateUI"), .barSubtitle: .string("Fundamentals"), .barIcon: .string(""),
                 .barBackgroundColor: .string("window"), .toolbarStyle: ToolbarStyle.rounded.propValue,
             ], children: [
@@ -678,13 +695,14 @@ final class PagesTests: XCTestCase {
                     node("stack", .navigationStack, [
                         .barBackgroundColor: .string("stack"), .barSubtitle: .string("Buttons"),
                         .barButtonBackgroundColor: .string("stack's buttons"),
-                    ], children: [node("detail", .page, [.title: .string("Detail")])]),
+                    ], children: [node("detail", .page, [.title: .string("Detail")], children: [
+                        presenting(node("sheet", .page)),
+                    ])]),
                 ]),
-                node("sheet", .page),
             ]),
         ])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
-        let chrome = WindowChrome(window: root, arrangement: root.first(id: .manual("split")))
+        let chrome = WindowChrome(window: root, arrangement: root.first(id: .manual("outer")))
 
         XCTAssertEqual(chrome.title, "Detail", "the page still names the window")
         XCTAssertEqual(chrome.titleArea, WindowChrome.TitleArea(title: "StateUI", subtitle: "Buttons", icon: nil))
@@ -701,9 +719,9 @@ final class PagesTests: XCTestCase {
 
         let sheet = try XCTUnwrap(root.first(id: .manual("sheet")))
         XCTAssertNil(sheet.titleArea, "a sheet's bar names nothing from around it")
-        XCTAssertEqual(sheet.barColors.background, .string("window"), "the modal stack paints the sheets it shows")
-        XCTAssertNil(sheet.barColors.foreground, "and nothing from the split view beside the sheet")
-        XCTAssertEqual(sheet.toolbarStyle, .rounded, "the stack's buttons' look too")
+        XCTAssertNil(sheet.barColors.background, "nor wears its colors")
+        XCTAssertNil(sheet.barColors.foreground)
+        XCTAssertEqual(sheet.toolbarStyle, .system, "nor its buttons' look")
         XCTAssertNil(sheet.barButtonBackground)
 
         let bare = self.runtime(node("window", .window, children: [node("page", .page)])) { _ in }
@@ -939,27 +957,21 @@ final class PagesTests: XCTestCase {
         }
     }
 
-    /// Back in a window takes the top sheet's own stack, else the top sheet, else the arrangement's stack.
-    func testTheWayBackTakesTheTopSheetFirst() throws {
-        let twoPages = { (id: String) in
-            self.node(id, .navigationStack, children: [self.node("\(id).a", .page), self.node("\(id).b", .page)])
-        }
-        func wayBack(_ sheets: [HostPatch]) throws -> WayBack? {
-            let modal = node("modal", .modalStack, children: [twoPages("main")] + sheets)
-            let runtime = runtime(node("window", .window, children: [modal])) { _ in }
-            let presentation = WindowPresentation()
-            _ = presentation.show(try XCTUnwrap(runtime.tree.root), in: runtime.lifecycle)
-            return presentation.wayBack
-        }
+    /// Back in a window takes the arrangement's stack where no sheet shows.
+    func testTheWayBackTakesTheArrangementsStackWithNoSheet() throws {
+        let runtime = runtime(node("window", .window, children: [
+            node("main", .navigationStack, children: [node("main.a", .page), node("main.b", .page)]),
+        ])) { _ in }
+        let presentation = WindowPresentation()
+        _ = presentation.show(try XCTUnwrap(runtime.tree.root), in: runtime.lifecycle)
 
-        guard case .pop(let stack) = try wayBack([twoPages("sheet")]) else { return XCTFail("the sheet's stack") }
-        XCTAssertEqual(stack.id, .manual("sheet"))
-        guard case .dismissSheet(let remaining) = try wayBack([node("one", .page), node("two", .page)]) else {
-            return XCTFail("the top sheet")
-        }
-        XCTAssertEqual(remaining, 1)
-        guard case .pop(let main) = try wayBack([]) else { return XCTFail("the arrangement's stack") }
+        guard case .pop(let main) = presentation.wayBack else { return XCTFail("the arrangement's stack") }
         XCTAssertEqual(main.id, .manual("main"))
+    }
+
+    /// A button presenting `page` in its sheet.
+    private func presenting(_ page: HostPatch, as id: String = "presenter") -> HostPatch {
+        node(id, .button, children: [node("\(id).sheet", .sheet, [.isPresented: .bool(true)], children: [page])])
     }
 }
 

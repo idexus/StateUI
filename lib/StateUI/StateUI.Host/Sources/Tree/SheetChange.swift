@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What the sheets a window shows become to stand as its modal stack asks, the same on every host: those shown that
+/// What the sheets a window shows become to stand as its views ask, the same on every host: those shown that
 /// stand as asked from the bottom stay, the rest leave from the top, and each asked for after them comes over the one
 /// before.
 /// Design: docs/design/host/pages.md#sheets

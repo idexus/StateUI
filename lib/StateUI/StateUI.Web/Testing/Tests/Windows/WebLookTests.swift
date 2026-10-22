@@ -16,9 +16,7 @@ final class WebLookTests: XCTestCase {
 
     func testAControlOnASheetWearsTheStylesheet() throws {
         let host = WebRenderer.running {
-            ModalStack(State(wrappedValue: [1]).projectedValue) {
-                Text("Beneath")
-            } destination: { _ in
+            Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
                 VStack { Switch(true); Button("Done") }
             }
         }

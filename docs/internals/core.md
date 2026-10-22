@@ -130,10 +130,10 @@ turns the nodes into the patch.
   to the host from the application's own registration function.
   *Application.* ([Pages and windows](../design/views/pages.md);
   [applications and sessions](../interface/application-and-sessions.md))
-- **`NavigationStack`**, **`TabView`**, **`SplitView`** and
-  **`ModalStack`** (`Navigation/`) are arrangements: views standing where a
-  page stands, which key the pages they hold, whose stack, chosen tab and
-  modal stack are state. `Menu`,
+- **`NavigationStack`**, **`TabView`** and **`SplitView`** (`Navigation/`)
+  are arrangements: views standing where a page stands, which key the pages
+  they hold, whose stack, chosen tab and sidebar are state; `.sheet`
+  presents a page while a state says so. `Menu`,
   `MenuItem`, `MenuSeparator` and `ToolbarItem` (`Menus/`) are a menu's
   entries and a page's actions, collected without keys. *Application.*
   ([An arrangement is a view](../design/views/pages.md#an-arrangement-is-a-view),
@@ -615,7 +615,7 @@ never against a stored copy
 | `Rendering/` | builders and paths, builds and carried views, the diff, an element's release, determinism, the patch's shape, the typed render, drawings and SVG paths, the inspector, complaints (`ComplaintsTests`), who a view is (`IdentityTests`) |
 | `State/` | `@State`, readers and invalidation, what a state costs (`StateCostTests`), carried state and its cost, a material on it (`MaterialChannelTests`), carried views (`CarriedViewTests`), numbers no type holds (`NumberDecodingTests`), conversions, journeys and motion, the cycle and engines, the ticker, kept and model state, the environment, `.onChanged` and lifetime handlers, placed runs, driven patches |
 | `Contracts/` | the contracts and the library's list, closed vocabularies, payloads, the whole contract against every name the library uses, the registry, declarations, realizations, the register and its verdicts, and the rendered dictionary (`ControlDictionaryTests`) |
-| `Pages/` | scenes, windows, pages and their bars, the navigation stack, tabs, the split view, the modal stack, the environment a host writes, a window's value as text (`ValueTextTests`) |
+| `Pages/` | scenes, windows, pages and their bars, the navigation stack, tabs, the split view, sheets, the environment a host writes, a window's value as text (`ValueTextTests`) |
 | `Acts/` | act calls and their shape, aims, host events |
 | `Views/` | controls, styles and visual states, colors and brushes, gestures, the frame reader, the gallery view, the position indicator (`PositionIndicatorTests`), the items view (`ItemsViewTests`), context menus, drawing transforms |
 | `Threading/` | the UI thread's executor and the doorbell, the jobs kept for later (`TimetableTests`), posts, the gates a handler or a task passes through and what a superseded run changes, acts sent from child tasks, no promise the compiler cannot check, every async function on its caller's executor, and the library's four rules: no Foundation, no `DispatchQueue.main` but the one drain, no `Timer` or `RunLoop`, no `strdup` |

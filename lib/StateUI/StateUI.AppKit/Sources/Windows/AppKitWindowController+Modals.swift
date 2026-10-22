@@ -29,12 +29,12 @@ extension AppKitWindowController {
         }
     }
 
-    /// The user took `modal` away - its close button, Escape: the window is told how many sheets remain, and the
-    /// sheet goes as the tree follows.
+    /// The user took `modal` away - its close button, Escape: its sheet's state is told it closed, and the sheet goes
+    /// as the tree follows.
     /// Design: docs/design/host/pages.md#the-way-back
     func userDismissed(_ modal: AppKitModalWindowController) {
         guard let element, modals.last === modal else { return }
-        host?.runtime.goBack(.dismissSheet(remaining: modals.count - 1), in: element)
+        host?.runtime.goBack(.dismissSheets([modal.node.element]), in: element)
     }
 
     func dismissTopModalForTesting() {

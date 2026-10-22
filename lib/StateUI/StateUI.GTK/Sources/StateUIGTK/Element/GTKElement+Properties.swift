@@ -13,7 +13,7 @@ extension GTKElement {
             })
         }
         if element.isDrawnByParent(in: GTKRegistrations.registry) || element.isViewless { return nil }
-        if type == .divider { return GTKDividerView(inRow: element.parent?.type == .hStack) }
+        if type == .divider { return GTKDividerView(inRow: element.placingParent?.type == .hStack) }
         if let registered = GTKRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },

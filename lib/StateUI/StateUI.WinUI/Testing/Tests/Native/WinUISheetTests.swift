@@ -9,56 +9,45 @@ import CStateUIWinUI
 import StateUIConformance
 import XCTest
 
-private enum Sheet: Hashable {
-    case first, second
-}
-
 /// The page beneath the window's sheets, presenting the first and saying where it stands.
 private struct SheetsPage: View {
     let log: Received<String>
-    @Binding var sheets: [Sheet]
+    let first: State<Bool>
+    let second: State<Bool>
 
     var body: some View {
-        let sheets = $sheets
+        let first = self.first
         return VStack {
             Text("beneath")
-            Button("Present").onClicked { sheets.wrappedValue.append(.first) }
+            Button("Present").onClicked { first.wrappedValue = true }
         }
         .loggingPhases(log, as: "beneath")
-    }
-}
-
-/// The window's sheets over a page saying where it stands.
-@MainActor
-private func sheetsOver(_ sheets: State<[Sheet]>, log: Received<String>) -> ModalStack {
-    ModalStack(sheets.projectedValue) {
-        SheetsPage(log: log, sheets: sheets.projectedValue)
-    } destination: { sheet in
-        SheetPage(name: "\(sheet)", sheets: sheets.projectedValue)
+        .sheet(isPresented: first.projectedValue) { SheetPage(presents: second) }
     }
 }
 
 /// A page presented on a sheet, which presents another.
 private struct SheetPage: View {
-    let name: String
-    @Binding var sheets: [Sheet]
+    let presents: State<Bool>
 
     var body: some View {
-        VStack {
-            Text("on \(name)")
-            Button("Another").onClicked { sheets.append(.second) }
+        let presents = self.presents
+        return VStack {
+            Text("on first")
+            Button("Another").onClicked { presents.wrappedValue = true }
         }
-        .title(name)
+        .title("first")
+        .sheet(isPresented: presents.projectedValue) { Text("on second").title("second") }
     }
 }
 
 final class WinUISheetTests: XCTestCase {
-    /// Escape takes the top sheet away and the way back of a sheet with none of its own takes it away too: the
-    /// window hears how many remain, and the page beneath shows again.
+    /// Escape takes the top sheet away and the way back of a sheet with none of its own takes it away too: each
+    /// writes false onto its state, and the page beneath shows again.
     func testEscapeAndTheWayBackTakeTheTopSheetAway() throws {
         try onUIThread {
-            let (sheets, log) = (State(wrappedValue: [Sheet]()), Received<String>())
-            let host = WinUIRenderer.running { sheetsOver(sheets, log: log) }
+            let (first, second, log) = (State(wrappedValue: false), State(wrappedValue: false), Received<String>())
+            let host = WinUIRenderer.running { SheetsPage(log: log, first: first, second: second) }
             let window = try XCTUnwrap(host.window)
             try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
             host.settle { stateui_winui_window_sheets(window.handle) == 1 }
@@ -68,10 +57,12 @@ final class WinUISheetTests: XCTestCase {
             window.titleBar.chose(-3)
             host.settle { stateui_winui_window_sheets(window.handle) == 1 }
             XCTAssertEqual(stateui_winui_window_sheets(window.handle), 1, "Escape took the top away")
+            XCTAssertEqual([first.wrappedValue, second.wrappedValue], [true, false])
 
             window.titleBar.chose(-1)
             host.settle { stateui_winui_window_sheets(window.handle) == 0 }
             XCTAssertEqual(stateui_winui_window_sheets(window.handle), 0, "the way back took the last away")
+            XCTAssertFalse(first.wrappedValue)
             XCTAssertEqual(Array(log.values.suffix(2)), ["beneath appearing", "beneath navigatedTo"], "shown again, as a move")
         }
     }

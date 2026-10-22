@@ -136,9 +136,10 @@ final class UIKitWindowController {
             root.lay(overlays.compactMap(\.uiKit.view))
         }
         if let sheets = changes.sheets {
-            root.onSheetDismissed = { [weak runtime, weak element] remaining in
-                guard let runtime, let element else { return }
-                runtime.goBack(.dismissSheet(remaining: remaining), in: element)
+            // The sheets over the `remaining` that stay go, the top first.
+            root.onSheetDismissed = { [weak self, weak runtime, weak element] remaining in
+                guard let self, let runtime, let element else { return }
+                runtime.goBack(.dismissSheets(presentation.sheets.dropFirst(remaining).reversed()), in: element)
             }
             root.present(sheets.compactMap(\.uiKit.controller), animated: !runtime.reducesMotion())
         }

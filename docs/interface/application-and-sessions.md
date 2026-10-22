@@ -499,7 +499,7 @@ edge and what it shows is that view's own `.padding`. These are said of the
 page only by the view it shows - or by that view's `body` - and a view further
 in that says them says nothing, and is told so once.
 
-An arrangement - `NavigationStack`, `TabView`, `SplitView`, `ModalStack` - is
+An arrangement - `NavigationStack`, `TabView`, `SplitView` - is
 a view that stands where a page stands, as the page itself: written there, or
 the `body` of the view written there - through a modifier, a `Group`, or an
 `if`/`else` whose every branch is one. A `body` whose type cannot tell - an
@@ -522,9 +522,9 @@ The back-button title belongs to the page being returned to, not the page
 currently on top. Hiding the native back button hides that affordance; it is
 not a cross-platform navigation lock. Title views, toolbar
 items, and menu items are ordinary identified subtrees built where their
-native surface presents them. Modal presentation is adaptive: each host uses
-its platform's native presentation for the pages a `ModalStack` presents
-([modal pages](navigation-and-presentation.md#modal-pages)).
+native surface presents them. A sheet is adaptive: each host uses its
+platform's native presentation for the pages views present
+([sheets](navigation-and-presentation.md#sheets)).
 
 Page content remains compositional. An image behind content is an `Image` in
 the page tree, safe-area participation is a layout property, and input is

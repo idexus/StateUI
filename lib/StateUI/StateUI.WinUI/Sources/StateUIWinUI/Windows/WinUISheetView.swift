@@ -3,9 +3,9 @@
 
 import CStateUIWinUI
 
-/// A sheet: a page the window's modal stack presents, on a card over a veil across the window, under the page's
+/// A sheet: a page a view presents, on a card over a veil across the window, under the page's
 /// title.
-/// Design: docs/design/platforms/winui/pages.md#the-modal-stack
+/// Design: docs/design/platforms/winui/pages.md#sheets
 @MainActor
 final class WinUISheetView: WinUIView {
     init() {

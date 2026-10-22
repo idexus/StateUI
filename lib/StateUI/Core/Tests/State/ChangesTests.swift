@@ -211,8 +211,7 @@ final class ChangesTests: XCTestCase {
         XCTAssertEqual(log.lines, ["user 7", "user 0"], "the value moved twice, once as the branch changed")
     }
 
-    /// A group is no element - what it holds stands in its place - and a watch written on it watches whichever
-    /// branch of the `if/else` it holds shows.
+    /// A watch written on a group stands on its anchor, holding whichever branch of the `if/else` it holds shows.
     func testAWatchOnAGroupKeepsWatchingAcrossItsBranches() {
         let renders = Renders()
         let log = Log()
@@ -231,7 +230,8 @@ final class ChangesTests: XCTestCase {
         renders.render(tree(true, 7))
         renders.render(tree(false, nil))
 
-        XCTAssertEqual(first.children.map(\.type), [.vStack], "the group stands as no element of its own")
+        XCTAssertEqual(first.children.map(\.type), [.anchor], "the group stands as its anchor")
+        XCTAssertEqual(first.children.first?.children.map(\.type), [.vStack], "holding the branch shown")
         XCTAssertEqual(log.lines, ["user 7", "user 0"], "the value moved twice, once as the branch changed")
     }
 

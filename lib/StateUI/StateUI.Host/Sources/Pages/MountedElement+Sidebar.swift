@@ -48,7 +48,7 @@ extension MountedElement {
         var child = self
         while let parent = child.parent {
             switch parent.type {
-            case .navigationStack: child = parent
+            case .navigationStack, .anchor: child = parent
             case .splitView: return parent.writingOrder[child.id] == 0
             default: return false
             }

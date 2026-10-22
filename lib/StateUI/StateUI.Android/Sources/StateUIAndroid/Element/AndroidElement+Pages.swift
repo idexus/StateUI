@@ -32,7 +32,7 @@ extension AndroidElement {
             if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }
             groundSidebar()
             // The detail's bars show the sidebar's button: they are told once the split holds both its pages.
-            children.dropFirst().first?.refreshBars()
+            arranged.dropFirst().first?.refreshBars()
         default:
             break
         }
@@ -59,7 +59,7 @@ extension AndroidElement {
         guard let tabs = view as? AndroidTabView else { return }
 
         var row = AndroidTabView.Row()
-        row.tabs = children.map { tab in
+        row.tabs = arranged.map { tab in
             AndroidTabView.Tab(
                 title: tab.value(.title)?.string ?? "",
                 picture: HostPicture(tab.value(.icon)))
@@ -91,8 +91,8 @@ extension AndroidElement {
             if let split = view as? AndroidSplitView, split.overlays, split.isPresented {
                 return { [weak self] in self?.changeSidebarVisibility(to: false) }
             }
-            return children.dropFirst().first?.drawerBack
-        case .navigationStack: return children.last?.drawerBack
+            return arranged.dropFirst().first?.drawerBack
+        case .navigationStack: return arranged.last?.drawerBack
         case .tabView: return element.selectedTab?.android.drawerBack
         default: return nil
         }
@@ -149,12 +149,12 @@ extension AndroidElement {
         content.menus = Self.menuEntries(page?.chromeMenus.menus ?? [], items: &items)
         if element.visibleBackStack === element {
             content.navigation = .back
-        } else if let split = enclosingSplit, let sidebar = split.children.first,
+        } else if let split = enclosingSplit, let sidebar = split.arranged.first,
                   (split.view as? AndroidSplitView)?.overlays == true {
             content.navigation = .sidebar(HostPicture(sidebar.value(.icon)))
         }
 
-        navigation.setShowsBar(element.children.last?.showsTheStacksBar ?? true)
+        navigation.setShowsBar(element.arrangedChildren.last?.showsTheStacksBar ?? true)
         let bar = navigation.bar(taking: AndroidBarView.Words(on: colors.background))
         bar.show(content)
         bar.showTitleView(page?.chromeTitleView?.android.layoutItem?.view)
@@ -179,14 +179,14 @@ extension AndroidElement {
 
         if type == .tabView { refreshTabs() }
         refreshBar()
-        children.forEach { $0.refreshBars() }
+        arranged.forEach { $0.refreshBars() }
     }
 
     /// The split view whose detail this arrangement stands in, through any stack or tab on the way.
     private var enclosingSplit: AndroidElement? {
         var child: AndroidElement = self
-        while let parent = child.parent {
-            if parent.type == .splitView { return parent.children.first === child ? nil : parent }
+        while let parent = child.element.placingParent?.android {
+            if parent.type == .splitView { return parent.arranged.first === child ? nil : parent }
             guard NodeType.pageTypes.contains(parent.type) else { return nil }
             child = parent
         }

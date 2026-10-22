@@ -27,14 +27,11 @@ private struct OverlaidPage: View {
     }
 }
 
-/// The overlaid page under the window's sheets, each a label.
+/// The overlaid page presenting a sheet of a label while `shows`.
 @MainActor
-private func sheetsOver(_ sheets: State<[Int]>, menus: State<Bool>, windows: Received<WindowSession>) -> ModalStack {
-    ModalStack(sheets.projectedValue) {
-        OverlaidPage(menus: menus, windows: windows)
-    } destination: { number in
-        Text("Sheet \(number)")
-    }
+private func sheetsOver(_ shows: State<Bool>, menus: State<Bool>, windows: Received<WindowSession>) -> some View {
+    OverlaidPage(menus: menus, windows: windows)
+        .sheet(isPresented: shows.projectedValue) { Text("Sheet 1") }
 }
 
 final class WinUIOverlayTests: XCTestCase {
@@ -42,7 +39,7 @@ final class WinUIOverlayTests: XCTestCase {
     /// it, and a click beside what it holds goes on to the page; closed, it is gone.
     func testTheWindowsOverlayStandsOverItsPageLettingAClickBesideItThrough() throws {
         try onUIThread {
-            let (sheets, menus, windows) = (State(wrappedValue: [Int]()), State(wrappedValue: false), Received<WindowSession>())
+            let (sheets, menus, windows) = (State(wrappedValue: false), State(wrappedValue: false), Received<WindowSession>())
             let host = WinUIRenderer.running { sheetsOver(sheets, menus: menus, windows: windows) }
             let window = try XCTUnwrap(host.window)
             let session = try XCTUnwrap(windows.values.last)
@@ -61,7 +58,7 @@ final class WinUIOverlayTests: XCTestCase {
             XCTAssertTrue(overlay.reaches(size.width / 2, size.height - 20))
             XCTAssertTrue(beneath.reaches(size.width / 2, 20), "a click beside it reaches the page")
 
-            sheets.wrappedValue = [1]
+            sheets.wrappedValue = true
             host.settle { stateui_winui_window_sheets(window.handle) == 1 }
             XCTAssertTrue(overlay.reaches(size.width / 2, size.height - 20), "over the sheet presented after it")
 
@@ -76,7 +73,7 @@ final class WinUIOverlayTests: XCTestCase {
     /// beneath the chrome takes neither away.
     func testTheChromeStandingAgainLeavesTheSheetsAndTheOverlay() throws {
         try onUIThread {
-            let (sheets, menus, windows) = (State(wrappedValue: [1]), State(wrappedValue: false), Received<WindowSession>())
+            let (sheets, menus, windows) = (State(wrappedValue: true), State(wrappedValue: false), Received<WindowSession>())
             let host = WinUIRenderer.running { sheetsOver(sheets, menus: menus, windows: windows) }
             let window = try XCTUnwrap(host.window)
             let session = try XCTUnwrap(windows.values.last)

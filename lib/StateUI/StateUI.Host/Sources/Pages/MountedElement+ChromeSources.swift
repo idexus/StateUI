@@ -67,5 +67,5 @@ extension MountedElement {
     private static let declarationTypes: Set<NodeType> = [.toolbarItemGroup, .titleView, .menuBar, .overlay]
 
     /// The elements the chrome is made of by their type.
-    private static let chromeTypes = declarationTypes.union(NodeType.pageTypes).union([.application, .scene, .window])
+    private static let chromeTypes = declarationTypes.union(NodeType.pageTypes).union([.application, .scene, .window, .sheet])
 }

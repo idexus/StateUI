@@ -4,7 +4,7 @@
 // The pages a window presents over everything, as WinUI presents a dialog:
 // each on a card over a veil across the whole window, the last on top and
 // the page beneath out of reach, entering as a dialog enters.
-// Design: docs/design/platforms/winui/pages.md#the-modal-stack
+// Design: docs/design/platforms/winui/pages.md#sheets
 
 #include "Relay.h"
 

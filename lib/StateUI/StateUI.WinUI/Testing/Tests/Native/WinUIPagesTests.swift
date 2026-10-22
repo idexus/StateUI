@@ -528,18 +528,26 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
-    /// A tabbed detail under a modal stack - the window's page, its sheets over it - stands its tabs across the
-    /// detail as it does with no modal stack.
-    func testATabbedDetailUnderAModalStackStandsItsTabsAcrossTheDetail() throws {
+    /// A tabbed detail of a split view the window's anchor holds - a sheet written on the view choosing the
+    /// window's arrangement - stands its tabs across the detail as it does with no anchor.
+    func testATabbedDetailInTheWindowsAnchorStandsItsTabsAcrossTheDetail() throws {
         try onUIThread {
+            let signedIn = State(wrappedValue: true)
             let host = WinUIRenderer.running {
-                ModalStack(State(wrappedValue: [Int]()).projectedValue) {
-                    SplitView(State(wrappedValue: true).projectedValue) {
-                        TitledPage(title: "Menu")
-                    } detail: {
-                        TabView([0, 1]) { number in TitledPage(title: "Tab \(number)") }
+                Group {
+                    if signedIn.wrappedValue {
+                        SplitView(State(wrappedValue: true).projectedValue) {
+                            TitledPage(title: "Menu")
+                        } detail: {
+                            TabView([0, 1]) { number in TitledPage(title: "Tab \(number)") }
+                        }
+                    } else {
+                        NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                            TitledPage(title: "Sign in")
+                        } destination: { _ in TitledPage(title: "Next") }
                     }
-                } destination: { number in TitledPage(title: "Sheet \(number)") }
+                }
+                .sheet(isPresented: State(wrappedValue: false).projectedValue) { TitledPage(title: "Sheet") }
             }
             let window = try XCTUnwrap(host.window)
             let split = try XCTUnwrap(host.views(WinUISplitView.self).first)

@@ -69,7 +69,7 @@
         case .progressBar:
             return property == .progress
 
-        case .navigationStack, .tabView, .splitView, .modalStack:
+        case .navigationStack, .tabView, .splitView:
             return barProperties.contains(property)
 
         case .rectangle:

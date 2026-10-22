@@ -53,7 +53,7 @@ Every page shows its contract in use right under its first paragraph: a
 short Swift block, before the hosts and the members. An element's example
 declares it as an application does - a control with its purpose value and a
 modifier or two, a structure part through the modifier or the arrangement
-that declares it (`.toolbar { }`, `.overlays { }`, `ModalStack`); a tier's
+that declares it (`.toolbar { }`, `.overlays { }`, `.sheet { }`); a tier's
 example writes its members on one of the elements wearing it.
 
 The examples are written once, in the dictionary's own source,

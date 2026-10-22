@@ -50,16 +50,16 @@ extension MountedElement {
 
     /// The edges a page's content lets it under the bars on: its own content's, which is the page's one child.
     public var contentSafeArea: SafeAreaEdges? {
-        type == .page ? children.first?.avoidsSafeArea : avoidsSafeArea
+        type == .page ? arrangedChildren.first?.avoidsSafeArea : avoidsSafeArea
     }
 
     /// The scroller a page's content is, or the one it holds alone, layout in layout; nil for none.
     public var pageScroller: MountedElement? {
-        var held = type == .page ? children.first : self
+        var held = type == .page ? arrangedChildren.first : self
         while let element = held {
             if element.type == .scrollView { return element }
-            guard element.children.count == 1 else { return nil }
-            held = element.children.first
+            guard element.arrangedChildren.count == 1 else { return nil }
+            held = element.arrangedChildren.first
         }
         return nil
     }

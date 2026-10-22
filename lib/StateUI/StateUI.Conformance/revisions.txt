@@ -11,7 +11,6 @@
 # Raise a family's revision where a change changes what its cases prove - the
 # cases, or what every host decides alike - and a host's own where that host's
 # change alone does. A change that proves nothing new raises nothing.
-
 TextEditor 3
 SplitView 6
 android TextAlignmentElement 2
@@ -24,9 +23,8 @@ MenuBar 3
 MenuItem 3
 Window 6
 Scene 3
-ModalStack 6
 Overlay 5
-BarElement 6
+BarElement 7
 NavigationStack 3
 uikit WebView 2
 android WebView 3

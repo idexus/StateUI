@@ -203,14 +203,14 @@ phases](../../host/pages.md#a-pages-phases)); WinUI supplies the tab the user
 chose and whether the split view's pane shows, which the layer reads to
 know what an arrangement shows.
 
-## The modal stack
+## Sheets
 
-The pages a modal stack standing as the window's page presents stand over
+The pages a window's views present stand over
 everything the window shows, as WinUI presents a dialog: each on a card over a veil across the
 whole window - the chrome and the tabs too - the last on top. The card is a
 dialog's own - its background, outline and corners, no wider than a dialog
-and clear of the window's edges - with the presented page's title above the
-page, and it enters as a dialog enters. The veil takes every click meant for
+and clear of the window's edges - with the title of a stack it holds above the
+page, none over a page alone (`bringsABar`), and it enters as a dialog enters. The veil takes every click meant for
 what is beneath, and the keyboard goes round inside the top card.
 
 The sheets stand in one layer of the window's root over its rows by their own

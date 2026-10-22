@@ -165,60 +165,84 @@ never leaves a flyout with nothing under its words. The sidebar page's own
 `.pageBackground` still paints the page on top. A platform that blurs nothing
 inside a window shows a blur as its color.
 
-## Modal pages
+## Sheets
 
-Modal presentation is an arrangement of an application array, `ModalStack`,
-standing as a window's page: the page it holds first, and a page presented
-over it for each element of the array:
+A view presents a page over the window - a sheet - while a state says so:
 
 ```swift
-enum Sheet: Hashable {
-    case settings
-    case about
-}
-
-struct Home: View {
-    @Binding var sheets: [Sheet]
+struct NotesPage: View {
+    @State private var editing = false
 
     var body: some View {
-        Button("Settings").onClicked { sheets.append(.settings) }
+        Button("New note")
+            .onClicked { editing = true }
+            .sheet(isPresented: $editing) {
+                VStack {
+                    Text("A new note")
+                    Button("Done").onClicked { editing = false }
+                }
+                .padding(24)
+            }
     }
 }
+```
 
-struct Presented: View {
-    let title: String
-    @Binding var sheets: [Sheet]
+Writing false takes it away. The user takes it away too - a swipe down,
+Escape, the system's way back - and that writes false, so the state always
+says whether the sheet shows. The view presenting it leaving the screen takes
+it away and writes false as well.
+
+A value presents a page made of it: nil takes it away, the user's dismissal
+writes nil, and another value presents another page in its place:
+
+```swift
+struct Folders: View {
+    @State private var opened: String?
 
     var body: some View {
         VStack {
-            Text(title)
-            Button("Close").onClicked { sheets.removeLast() }
+            Button("Inbox").onClicked { opened = "Inbox" }
+            Button("Sent").onClicked { opened = "Sent" }
         }
-    }
-}
-
-struct MainPage: View {
-    @State private var sheets: [Sheet] = []
-
-    var body: some View {
-        ModalStack($sheets) {
-            Home(sheets: $sheets)
-        } destination: { sheet in
-            switch sheet {
-            case .settings: Presented(title: "Settings", sheets: $sheets)
-            case .about: Presented(title: "About", sheets: $sheets)
-            }
+        .sheet(item: $opened) { name in
+            Text(name).padding(24)
         }
     }
 }
 ```
 
-Appending presents, removing dismisses, and the last element is on top. A
-native dismissal truncates the bound array to the number of pages still
-presented. A modal page therefore carries its own dismissal route by receiving
-the binding. The stack is the window's page, so its sheets stand over
-everything the window shows; closing the window tears down every page it
-presents.
+A sheet has no bar of its own. A `NavigationStack` in it brings one - the
+stack's titles, its way back, its actions and its colors - and nothing from
+around the sheet reaches it:
+
+```swift
+struct SettingsButton: View {
+    @State private var showsSettings = false
+    @State private var path: [String] = []
+
+    var body: some View {
+        Button("Settings")
+            .onClicked { showsSettings = true }
+            .sheet(isPresented: $showsSettings) {
+                NavigationStack($path) {
+                    Button("Account")
+                        .onClicked { path.append("Account") }
+                        .title("Settings")
+                } destination: { name in
+                    Text(name).title(name)
+                }
+            }
+    }
+}
+```
+
+A sheet presented in a sheet stands over it, and so does one presented from
+beneath while another shows: the last shown is on top. A view holds one
+sheet - written again on the same view, the second stands in place of the
+first - so two sheets stand on two views. One written on a composed view, a
+`Group` or an `if/else` stays as the view's body shows another branch
+([What outlives a branch](composition-and-identity.md#what-outlives-a-branch)).
+Closing a window takes away every sheet in it.
 
 ## Popovers
 
@@ -414,8 +438,7 @@ Every arrangement accepts a flat `barBackgroundColor` and a `barForegroundColor`
 for its title and native action affordances; a page's bar takes each from the
 nearest arrangement around it that declares one, so a stack further in paints
 its own - a sidebar takes only what its own split view declares, and a sheet
-takes the colors of the modal stack showing it and nothing else from around
-it; a Mac's sheet stands with no bar. The
+has no bar until a stack in it brings one, painted as that stack says. The
 application's name, the line under the title and its mark are declared the same
 way ([The window's bar](application-and-sessions.md#the-windows-bar)). Native tab
 selectors keep their selected and unselected states, legible over a written

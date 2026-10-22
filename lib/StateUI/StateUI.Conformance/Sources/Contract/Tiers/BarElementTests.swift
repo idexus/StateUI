@@ -5,8 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// `BarElementContract` on a host: the bar an arrangement declares holds the colors, the application's name, line
-/// and mark the tree gives it, and those the tree changes them to - on every element wearing the tier; a modal
-/// stack's colors paint the sheets it shows too.
+/// and mark the tree gives it, and those the tree changes them to - on every element wearing the tier.
 @_spi(Host) public enum BarElementTests: ConformanceFamily {
     public static let name = "BarElement"
 
@@ -22,46 +21,7 @@
                 holds(BarElementContract.barIcon, on: element, "test_dot.png", then: "test_wide.png"),
                 holds(BarElementContract.barButtonBackgroundColor, on: element, .steelBlue, then: .firebrick),
                 holds(BarElementContract.toolbarStyle, on: element, .glass, then: .rounded),
-            ] + (element == "ModalStack" ? [colorsPaintTheSheets()] : [])
-        }
-    }
-
-    /// A modal stack's bar colors paint the bar of the sheet it shows, and those the tree changes them to.
-    @MainActor
-    static func colorsPaintTheSheets() -> ConformanceCase {
-        ConformanceCase("ModalStack.barColors.paintTheSheetsItShows", proves: [
-            Covered(BarElementContract.barBackgroundColor, on: "ModalStack"),
-            Covered(BarElementContract.barForegroundColor, on: "ModalStack"),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
-            let painted = State(wrappedValue: false)
-            s.start {
-                ModalStack(State(wrappedValue: [1]).projectedValue) {
-                    VStack { Text("Page") }.title("Page")
-                } destination: { _ in
-                    VStack { Button("Change").onClicked { painted.wrappedValue = true }.id("change") }
-                        .title("Sheet")
-                        .id("sheet")
-                }
-                .barBackgroundColor(painted.wrappedValue ? .firebrick : .steelBlue)
-                .barForegroundColor(painted.wrappedValue ? .black : .white)
-            }
-            try s.settle { try s.isShown("sheet") }
-            var sheet = try s.element("sheet")
-            while sheet.type != .page, let parent = sheet.parent { sheet = parent }
-            let bar = { (member: ElementProperty<BarElementContract, Color>) in try s.held(member, on: sheet) }
-            // A color changing travels to the new one: both are waited for.
-            try s.settle {
-                try bar(BarElementContract.barBackgroundColor) == .steelBlue && bar(BarElementContract.barForegroundColor) == .white
-            }
-            s.expect(try bar(BarElementContract.barBackgroundColor), .steelBlue, "the stack's color on its sheet's bar")
-            s.expect(try bar(BarElementContract.barForegroundColor), .white, "and what stands on it in the stack's")
-
-            try s.perform(.activate, on: s.element("change"))
-            try s.settle {
-                try bar(BarElementContract.barBackgroundColor) == .firebrick && bar(BarElementContract.barForegroundColor) == .black
-            }
-            s.expect(try bar(BarElementContract.barBackgroundColor), .firebrick, "the color the tree changed it to")
-            s.expect(try bar(BarElementContract.barForegroundColor), .black, "and the words'")
+            ]
         }
     }
 
@@ -76,7 +36,7 @@
     }
 
     /// A page where `element` wears `worn` around a bar every host draws - a split view's detail, a tabbed view's
-    /// first tab and a modal stack's root are a stack of one page - `beside` the page's words, its title standing on
+    /// first tab are a stack of one page - `beside` the page's words, its title standing on
     /// the bar in the bar's colors.
     @MainActor
     static func declaring(_ element: String, _ worn: [any Worn], beside: [any View]) -> AnyView {
@@ -109,10 +69,6 @@
                     Text("Other")
                 }
             })
-        case "ModalStack":
-            return dressing.wear(ModalStack(State(wrappedValue: [Int]()).projectedValue) {
-                stack()
-            } destination: { _ in Text("Sheet") })
         default:
             return Specimens.page(element, worn, beside: beside)
         }

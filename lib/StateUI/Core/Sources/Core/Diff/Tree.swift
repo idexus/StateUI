@@ -96,9 +96,9 @@ final class RenderedNode {
     /// which a carry compares.
     var seen: [ObjectIdentifier: ObjectIdentifier]
 
-    /// The `.onChanged` values of its last build, in written order, each with the composed view it was written on -
-    /// the values only; the closures belong to their render.
-    var watched: [(writtenOn: KeyName?, value: Any)]
+    /// The `.onChanged` values of its last build, in written order - the values only; the closures belong to their
+    /// render.
+    var watched: [Any]
 
     /// What `.onDestroying` runs as it leaves: its last build's closures.
     var destroying: [EventHandler] = []
@@ -119,6 +119,9 @@ final class RenderedNode {
 
     /// What the view a page shows says of its page, for the page to take on every description of it.
     var pageValues: PageValues?
+
+    /// Whether it stands where a page stands - kept for the clean walk, which enters it from no parent.
+    var atPagePosition = false
 
     /// The properties driven to a state, as the host was told them.
     var driven: [Prop: StateEntry] = [:]
@@ -161,7 +164,7 @@ final class RenderedNode {
         builds: Int = 1,
         provided: [(key: ObjectIdentifier, object: AnyObject)] = [],
         seen: [ObjectIdentifier: ObjectIdentifier] = [:],
-        watched: [(writtenOn: KeyName?, value: Any)] = [],
+        watched: [Any] = [],
         engines: [Int] = [],
         driven: [Prop: StateEntry] = [:],
         readings: [Sampling] = [],

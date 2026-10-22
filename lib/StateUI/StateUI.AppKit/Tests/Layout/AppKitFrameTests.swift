@@ -70,11 +70,9 @@ final class AppKitFrameTests: XCTestCase {
     @MainActor
     func testAViewOnASheetSaysWhereItStandsAsTheSheetIsLaidOut() throws {
         let heard = Received<[Double]>()
-        let sheets = State(wrappedValue: [1])
+        let shows = State(wrappedValue: true)
         let renderer = AppKitRenderer.running {
-            ModalStack(sheets.projectedValue) {
-                Text("home")
-            } destination: { _ in
+            Text("home").sheet(isPresented: shows.projectedValue) {
                 VStack {
                     Rectangle().fill(.steelBlue).width(120).height(60)
                         .onEvent(ViewContract.frameChanged) { heard.values.append($0) }

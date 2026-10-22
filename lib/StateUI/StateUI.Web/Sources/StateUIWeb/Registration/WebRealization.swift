@@ -64,7 +64,8 @@ enum WebRealization {
         // MARK: Entries - a control's or a part's own
         .complete(ButtonContract.menuKind),
         .complete(ButtonContract.showsMenuArrow),
-        .complete(ModalStackContract.popped),
+        .complete(SheetContract.isPresented),
+        .complete(SheetContract.isPresentedChanged),
         .complete(NavigationStackContract.popped),
         .complete(PageContract.appearing),
         .complete(PageContract.backButtonTitle),

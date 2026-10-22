@@ -22,6 +22,7 @@ extension NodeType {
 
 @_spi(Host) public extension NodeType {
     static let activityIndicator = ActivityIndicatorContract.nodeType
+    static let anchor = AnchorContract.nodeType
     static let application = ApplicationContract.nodeType
     static let button = ButtonContract.nodeType
     static let checkBox = CheckBoxContract.nodeType
@@ -50,11 +51,11 @@ extension NodeType {
     static let menuSeparator = MenuSeparatorContract.nodeType
     static let buttonMenu = ButtonMenuContract.nodeType
     static let spacer = SpacerContract.nodeType
-    static let modalStack = ModalStackContract.nodeType
     static let navigationStack = NavigationStackContract.nodeType
     static let titleView = TitleViewContract.nodeType
     static let overlay = OverlayContract.nodeType
     static let popover = PopoverContract.nodeType
+    static let sheet = SheetContract.nodeType
     static let path = PathContract.nodeType
     static let picker = PickerContract.nodeType
     static let marker = MarkerContract.nodeType
@@ -176,6 +177,7 @@ extension NodeType {
     static let sidebarOverlays = SplitViewContract.sidebarOverlays.token
     static let isReadOnly = TextInputContract.isReadOnly.token
     static let isShown = PopoverContract.isShown.token
+    static let isPresented = SheetContract.isPresented.token
     static let isRefreshEnabled = RefreshElementContract.isRefreshEnabled.token
     static let isRefreshing = RefreshElementContract.isRefreshing.token
     static let isScrollEnabled = MapContract.isScrollEnabled.token
@@ -313,6 +315,7 @@ extension NodeType {
     static let handStepped = LayoutEngineContract.handStepped.token
     static let isFocusedChanged = FocusElementContract.isFocusedChanged.token
     static let isShownChanged = PopoverContract.isShownChanged.token
+    static let isPresentedChanged = SheetContract.isPresentedChanged.token
     static let itemMoved = LayoutEngineContract.itemMoved.token
     static let pinchMoved = LayoutEngineContract.pinchMoved.token
     static let keyPressed = KeyboardElementContract.keyPressed.token

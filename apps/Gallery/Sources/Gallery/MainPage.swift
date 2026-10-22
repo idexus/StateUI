@@ -7,7 +7,7 @@ import StateUI
 /// The view a window shows is where an application says what a screenful IS, so everything
 /// about the way the gallery moves lives here: the split view holding the menu and
 /// the section, the stack the sections push onto, the tabs that one section is
-/// arranged as, and the modal stack over all of it. `GalleryWindow` next door is
+/// arranged as, and the page presented over all of it. `GalleryWindow` next door is
 /// then what it should be - the window's state, and the page built from it.
 ///
 /// **The arrangement is one page with a menu on one side and whatever the
@@ -68,106 +68,95 @@ struct MainPage: View {
     /// THE ARRANGEMENT, and it is three ordinary values: a split view holding two
     /// pages, a stack holding an array, a set of tabs holding a selection.
     var body: some View {
-        // listing: MainPage.modal
-        // What is over all of it: the pages presented over the split view, the
-        // stack and the bars alike - empty almost always: presenting is
-        // `sheets.append`, and a sheet the user dismisses shortens the array
-        // itself.
-        ModalStack(nav.$sheets) {
-        // listing: end
-            // listing: MainPage.modal
-            // The split view, its bars and its pages - what the sheets are
-            // presented over.
-            // listing: end
-            // listing: MainPage.split
-            SplitView(nav.$menuOpen) {
-                MenuPage(
-                    catalog: catalog,
-                    nav: nav,
-                    log: log,
-                    listsHiddenRow: nav.listsHiddenRow)
-            } detail: {
-                detail()
-            }
-            // What the sidebar stands on beside the page and sliding over it,
-            // in each theme, as the gallery's looks say.
-            .sidebarBackground(surface(\.sidebar, .sidebar))
-            .flyoutBackground(surface(\.flyout, .flyout))
-            // Where the platform places it for the room: a choice closes it
-            // over the page and leaves it open beside it.
-            .sidebarOverlays(nav.$menuOverlays)
-            // listing: end
-            // listing: MainPage.bar
-            // The gallery's own actions, declared once around every page: a page's
-            // own stand nearer the title, and these keep their place at the edge.
-            // Each wears an icon, which keeps its size on the bar steady; its
-            // caption stays for accessibility and for bars that show words.
-            .toolbar(id: "gallery") {
-                ToolbarItem.inspector(window)
-                    .text("Inspector")
-                    .icon(ImageSource(light: "nav_inspect.png", dark: "nav_inspect_dark.png"))
-
-                if !nav.showing(.home) {
-                    ToolbarItem.home(nav)
-                }
-
-                if bar.showsSurprise {
-                    ToolbarItem("Surprise me")
-                        .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
-                        .onClicked { nav.surprise(from: catalog, on: device) }
-                }
-            }
-            // What the window's bar says of the gallery: its name and mark,
-            // where the platform's chrome names the application, and under the
-            // title the line the Window bar sample types.
-            .barTitle("StateUI")
-            .barSubtitle(bar.subtitle)
-            .barIcon(Self.mark)
-            // listing: end
-            // The bars of both panes, as the gallery's look says.
-            .barLook(look.bars, in: look.barColor, system: application.info.accentColor)
-            .barButtons(style.toolbarStyle, tinted: style.tintsBarButtons)
-            // listing: MainPage.overlays
-            // The window's notice, over every page while the gallery says so.
-            .overlays {
-                if nav.windowNotice {
-                    WindowNotice(words: "Over every page", shown: nav.$windowNotice)
-                }
-            }
-            // listing: end
-            // listing: MainPage.created
-            // The window's name and its size: `width` and `height` are its size
-            // as it opens, the minimum how small the user may drag it before the
-            // layout stops making sense - and no maximum, so maximized it fills
-            // the largest screen. On a phone or a
-            // tablet the system sizes the window and these go unused - and the
-            // gallery writes no `x` or `y` on purpose: pinning an app to the same
-            // corner of the screen at every launch is worse than letting the
-            // platform place it.
-            .onCreated {
-                window.title = "StateUI Gallery"
-                window.width = 1100
-                window.height = 800
-                dress(window)
-                window.minimumWidth = 700
-                window.minimumHeight = 500
-                window.isMaximizable = true
-                window.isMinimizable = true
-
-                log.note("created")
-            }
-            // The Appearance sample changes the look while the window stands.
-            .onChanged(style.look(dark: false)) { dress(window) }
-            .onChanged(style.look(dark: true)) { dress(window) }
-            .onChanged(application.info.accentColor) { dress(window) }
-            // listing: end
-        // listing: MainPage.modal
-        } destination: { _ in
-            ModalPage(nav: nav)
+        // listing: MainPage.split
+        SplitView(nav.$menuOpen) {
+            MenuPage(
+                catalog: catalog,
+                nav: nav,
+                log: log,
+                listsHiddenRow: nav.listsHiddenRow)
+        } detail: {
+            detail()
         }
-        // The sheets' bars wear the gallery's look as the panes' do.
+        // What the sidebar stands on beside the page and sliding over it,
+        // in each theme, as the gallery's looks say.
+        .sidebarBackground(surface(\.sidebar, .sidebar))
+        .flyoutBackground(surface(\.flyout, .flyout))
+        // Where the platform places it for the room: a choice closes it
+        // over the page and leaves it open beside it.
+        .sidebarOverlays(nav.$menuOverlays)
+        // listing: end
+        // listing: MainPage.bar
+        // The gallery's own actions, declared once around every page: a page's
+        // own stand nearer the title, and these keep their place at the edge.
+        // Each wears an icon, which keeps its size on the bar steady; its
+        // caption stays for accessibility and for bars that show words.
+        .toolbar(id: "gallery") {
+            ToolbarItem.inspector(window)
+                .text("Inspector")
+                .icon(ImageSource(light: "nav_inspect.png", dark: "nav_inspect_dark.png"))
+
+            if !nav.showing(.home) {
+                ToolbarItem.home(nav)
+            }
+
+            if bar.showsSurprise {
+                ToolbarItem("Surprise me")
+                    .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
+                    .onClicked { nav.surprise(from: catalog, on: device) }
+            }
+        }
+        // What the window's bar says of the gallery: its name and mark,
+        // where the platform's chrome names the application, and under the
+        // title the line the Window bar sample types.
+        .barTitle("StateUI")
+        .barSubtitle(bar.subtitle)
+        .barIcon(Self.mark)
+        // listing: end
+        // The bars of both panes, as the gallery's look says.
         .barLook(look.bars, in: look.barColor, system: application.info.accentColor)
         .barButtons(style.toolbarStyle, tinted: style.tintsBarButtons)
+        // listing: MainPage.overlays
+        // The window's notice, over every page while the gallery says so.
+        .overlays {
+            if nav.windowNotice {
+                WindowNotice(words: "Over every page", shown: nav.$windowNotice)
+            }
+        }
+        // listing: end
+        // listing: MainPage.created
+        // The window's name and its size: `width` and `height` are its size
+        // as it opens, the minimum how small the user may drag it before the
+        // layout stops making sense - and no maximum, so maximized it fills
+        // the largest screen. On a phone or a
+        // tablet the system sizes the window and these go unused - and the
+        // gallery writes no `x` or `y` on purpose: pinning an app to the same
+        // corner of the screen at every launch is worse than letting the
+        // platform place it.
+        .onCreated {
+            window.title = "StateUI Gallery"
+            window.width = 1100
+            window.height = 800
+            dress(window)
+            window.minimumWidth = 700
+            window.minimumHeight = 500
+            window.isMaximizable = true
+            window.isMinimizable = true
+
+            log.note("created")
+        }
+        // The Appearance sample changes the look while the window stands.
+        .onChanged(style.look(dark: false)) { dress(window) }
+        .onChanged(style.look(dark: true)) { dress(window) }
+        .onChanged(application.info.accentColor) { dress(window) }
+        // listing: end
+        // listing: MainPage.modal
+        // What is over all of it: a page presented over the split view,
+        // the stack and the bars alike - while the state says so, the
+        // user's dismissal writing it false.
+        .sheet(isPresented: nav.$presentsPage) {
+            ModalPage(shown: nav.$presentsPage, depth: 1)
+        }
         // listing: end
     }
 

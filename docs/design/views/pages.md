@@ -100,9 +100,9 @@ order makes the window's children the same list in every run.
 
 ```text
   Window
-   ├── ModalStack    the window's page, here a modal stack
-   │    ├── Page         what it holds
-   │    └── Page …       its sheets, the last on top
+   ├── SplitView     the window's page, here a split view
+   │    ├── Page         its sidebar and its detail
+   │    └── Sheet        what a view in it presents, holding its page
    └── Overlay       the library's: a docked inspector's panel
         └── ZStack       lets a click beside it through
 ```
@@ -170,14 +170,13 @@ The place decides, not the type, since any view may stand on a page. An
 arrangement standing where a page stands is the page. A `NavigationStack`, a
 `TabView` or a `SplitView` takes the title and the icon itself, for where it is
 shown as an item of something else, such as a tab; anything else said of a page
-there - and on a `ModalStack`, whose contract declares neither, the title and
-the icon too - is said once (`complain`) and left out.
+there is said once (`complain`) and left out.
 Written on a view no page shows - inside a layout, deeper in a body - what a
 view says of its page says nothing, and is said once.
 
 ## An arrangement is a view
 
-`NavigationStack`, `TabView`, `SplitView` and `ModalStack` are views
+`NavigationStack`, `TabView` and `SplitView` are views
 (`ElementView`), so a view's `body` may be one. An arrangement stands where a
 page stands - a window's view, a page of another arrangement - as the page
 itself, with no page element around it. Whether a view builds one is told by
@@ -187,7 +186,9 @@ and a modifier written on a composed view or a branch names the view it was
 written on (`ModifiedContent<Content>`), so a modifier keeps the answer
 wherever it stands. A `body` whose `if` chooses between an arrangement and
 another view, or that is an `AnyView`, cannot be told by its type, and stands
-as a view.
+as a view. A view whose `if/else` chooses between two arrangements, with what
+outlives a branch written on it, stands on an anchor holding the arrangement:
+the anchor stands where the page stands, and so does what it holds.
 
 Anywhere else an arrangement is left out of what is described and said once
 (`complain`): inside a layout, and inside a page, where a view's branch chose
@@ -200,7 +201,7 @@ gesture.
 
 What a screen is - its title, its buttons - its view says of its page. An
 arrangement's bar belongs to the arrangement (`BarElement`) and looks the same
-whichever page it shows. An arrangement other than a `ModalStack` standing
+whichever page it shows. An arrangement standing
 where a page stands takes its own title and icon from the same modifiers, for
 where it is shown as an item of something else, such as a tab.
 
@@ -233,8 +234,6 @@ mechanism; an `.id()` written on the view stays on the view the page shows.
 ```text
   NavigationStack   the root              "root"
                     a pushed page         "<depth>/<route>"
-  ModalStack        the root              "root"
-                    a presented page      "<depth>/<sheet>"
   TabView           a tab's page          "<tab>"
   SplitView         the two pages         "sidebar", "detail"
 ```
@@ -313,20 +312,24 @@ choice closes the sidebar is the author's, and the place is what decides it.
 A guess by device - a desktop never closes, a tablet always does - is wrong
 in a narrow window and on a tablet turned across.
 
-## The modal stack is the state
+## A sheet is a state
 
-What is presented over a window is a stack of the author's own values, the
-last on top: presenting is `sheets.append(.settings)`, closing is
-`sheets.removeLast()`, closing everything is `sheets = []`. There is no present
-call and no completion to await. It is a stack because the platforms make it
-one: a sheet may present a sheet.
+What is presented over a window is a state of the view presenting it:
+`.sheet(isPresented: $editing) { … }` while a flag holds true, `.sheet(item:
+$note) { note in … }` while a value holds one. Presenting is writing the
+state, closing is writing it back; there is no present call and no completion
+to await. The sheet is a slot of the view (`Sheet`), one a view - written
+again it stands in - holding its page only while it shows, so its content is
+built as it shows and a value's page is keyed by the value: another value is
+another page in its place.
 
-`ModalStack` is an arrangement of `NavigationStack`'s shape, standing as a
-window's page: the page it holds first, the sheets after it, each built as
-the arrangement builds from the array as it stands then, so what builds the
-arrangement is what builds again when the array moves. A sheet's identity
-carries its depth and its value, as a stack's page does. The report that a
-sheet has gone is the stack's own (`popped`), with how many remain.
+A sheet closes three ways, each written onto its state: the user's dismissal
+(`isPresentedChanged`), the application's own write, and the view presenting
+it leaving the tree (`onDestroying`), which takes the sheet with it. A sheet
+declared in a sheet's content stands over it; one presented from beneath
+stands over the top one - the host layer orders a window's sheets as they
+showed. A sheet has no bar of its own: a `NavigationStack` in it brings one,
+taking nothing from around the sheet, which stands where a page stands.
 
 ## What an arrangement does not offer
 

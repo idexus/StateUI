@@ -161,8 +161,9 @@ numbers, as a 64-bit one reaches JavaScript as a `BigInt`.
 ## A window shown
 
 A window shows the first arrangement of pages among its children - a page, a
-stack of them, tabs, a split view - and where that is a modal stack, the page
-it holds with the pages it presents over it as sheets; the overlays laid over
+stack of them, tabs, a split view, an anchor's standing in its place - and over
+it the pages its views present as sheets, in the order they showed
+(`MountedTree.presentedSheets`); the overlays laid over
 them ([the overlays of a window](pages.md#the-overlays-of-a-window)); and
 whether its scene hides it ([the
 application's phase](runtime.md#the-applications-phase)), and says each to

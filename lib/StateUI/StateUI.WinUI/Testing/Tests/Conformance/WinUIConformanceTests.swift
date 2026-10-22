@@ -58,7 +58,8 @@ final class WinUIConformanceTests: XCTestCase {
     func testMenuItem() { conform(MenuItemTests.self) }
     func testDivider() { conform(DividerTests.self) }
     func testMenuSeparator() { conform(MenuSeparatorTests.self) }
-    func testModalStack() { conform(ModalStackTests.self) }
+    func testAnchor() { conform(AnchorTests.self) }
+    func testSheet() { conform(SheetTests.self) }
     func testNavigationStack() { conform(NavigationStackTests.self) }
     func testOverlay() { conform(OverlayTests.self) }
     func testPage() { conform(PageTests.self) }

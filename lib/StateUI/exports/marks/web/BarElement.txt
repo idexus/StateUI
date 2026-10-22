@@ -1,11 +1,4 @@
-# revision 6.1
-ModalStack.barBackgroundColor: ✅
-ModalStack.barButtonBackgroundColor: ✅
-ModalStack.barForegroundColor: ✅
-ModalStack.barIcon: – A page's bar names its page and the application, and no mark: the browser's tab shows the site's icon.
-ModalStack.barSubtitle: ✅
-ModalStack.barTitle: ✅
-ModalStack.toolbarStyle: ✅
+# revision 7.1
 NavigationStack.barBackgroundColor: ✅
 NavigationStack.barButtonBackgroundColor: ✅
 NavigationStack.barForegroundColor: ✅

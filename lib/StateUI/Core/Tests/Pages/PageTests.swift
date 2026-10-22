@@ -362,7 +362,6 @@ final class PageTests: XCTestCase {
             (stack, .navigationStack),
             (TabView([0, 1]) { _ in Plain() }, .tabView),
             (SplitView(sidebar.projectedValue) { Plain() } detail: { Plain() }, .splitView),
-            (ModalStack(path.projectedValue) { Plain() } destination: { _ in Plain() }, .modalStack),
         ]
 
         XCTAssertEqual(Set(arrangements.map(\.type)), NodeType.arrangements, "every arrangement is shown")
@@ -398,10 +397,13 @@ final class PageTests: XCTestCase {
     }
 
     /// A view whose body is a group holding arrangements on either branch, a watch written on the group, stands as
-    /// an arrangement: what a modifier gives back says by its type what it holds.
+    /// an arrangement its anchor holds: what a modifier gives back says by its type what it holds.
     func testAModifiedGroupOfArrangementsStandsAsAnArrangement() {
-        XCTAssertEqual(Node.page(Watched(signedIn: true)).built.type, .navigationStack)
-        XCTAssertEqual(Node.page(Watched(signedIn: false)).built.type, .navigationStack)
+        for signedIn in [true, false] {
+            let built = Node.page(Watched(signedIn: signedIn)).built
+            XCTAssertEqual(built.type, .anchor)
+            XCTAssertEqual(built.children.map(\.type), [.navigationStack])
+        }
     }
 
     /// A body choosing between an arrangement and a view stands as a view, as its type cannot tell which it builds;

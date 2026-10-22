@@ -12,7 +12,7 @@ extension AppKitElement {
     func configurePopover() {
         guard element.type == .popover, let content = view as? AppKitSingleChildView else { return }
         guard element.asksToShow else { return shownPopover?.close() ?? () }
-        guard let anchor = element.parent?.appKit.view else { return }
+        guard let anchor = element.presenter?.appKit.view else { return }
         guard anchor.window != nil else { return element.waitForItsWindow() }
         let popover = shownPopover ?? AppKitPopover(content: content) { [weak self] in self?.popoverClosed() }
         shownPopover = popover

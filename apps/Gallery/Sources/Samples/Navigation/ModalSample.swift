@@ -1,6 +1,6 @@
 import StateUI
 
-/// A native modal stack owned by application state.
+/// A page presented over everything by application state.
 struct ModalSample: SampleContent, ExampleContent {
     // listing: ModalSample
     let nav: Navigation
@@ -8,7 +8,7 @@ struct ModalSample: SampleContent, ExampleContent {
 
     static let id = "modal"
     static let title = "Presenting over everything"
-    static let summary = "One array drives the platform's native modal stack."
+    static let summary = "A state presents a page over everything, and a sheet may present another."
 
     static var code: String { Listings.joined("Navigation.sheets", "MainPage.modal", "ModalPage", "ModalSample") }
 
@@ -22,9 +22,9 @@ struct ModalSample: SampleContent, ExampleContent {
             Button("Present native modal")
                 .accessibilityIdentifier("modal.present")
                 .horizontalAlignment(.center)
-                .onClicked { nav.present(.page) }
+                .onClicked { nav.presentsPage = true }
 
-            Text(nav.sheets.isEmpty ? "Nothing presented" : "Depth: \(nav.sheets.count)")
+            Text(nav.presentsPage ? "Presented" : "Nothing presented")
                 .fontSize(13)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)

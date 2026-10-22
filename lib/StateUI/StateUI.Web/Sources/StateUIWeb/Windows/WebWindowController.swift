@@ -17,7 +17,7 @@ final class WebWindowController {
     /// What the window shows, by the host layer's rule.
     let presentation = WindowPresentation()
 
-    /// A sheet for each page the window's modal stack presents, the last on top.
+    /// A sheet for each page the window's views present, the last shown on top.
     private(set) var sheets: [(element: MountedElement, sheet: WebSheet)] = []
 
     private unowned let runtime: HostRuntime
@@ -136,10 +136,10 @@ final class WebWindowController {
         if leavesHistory { Self.unclaimedLeaves += 1 }
     }
 
-    /// The user took the top sheet away: the modal stack is told how many remain.
+    /// The user took the top sheet away: false is written onto its state.
     private func dismissTopSheet() {
         guard let element, !presentation.sheets.isEmpty else { return }
-        runtime.goBack(.dismissSheet(remaining: presentation.sheets.count - 1), in: element)
+        runtime.goBack(.dismissSheets(Array(presentation.sheets.suffix(1))), in: element)
     }
 
     /// Writes the window's chrome on its bar and each sheet's on the sheet's - their tabbed views' strips in their
@@ -159,6 +159,8 @@ final class WebWindowController {
             let own = WindowChrome(window: element, arrangement: page)
             let named = own.title.flatMap { $0.isEmpty ? nil : $0 } ?? ""
             sheet.bar.show(own, title: named, sidebar: nil)
+            // A sheet has no bar of its own: a stack in it brings one.
+            sheet.bar.setShown(page.bringsABar)
             if !named.isEmpty { title = named }
         }
         WebRelay.setTitle(Self.tab(page: title, site: WebRelay.siteName))

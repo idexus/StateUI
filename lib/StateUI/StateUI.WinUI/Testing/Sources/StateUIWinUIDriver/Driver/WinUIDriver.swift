@@ -26,7 +26,6 @@ final class WinUIDriver: HostDriver {
     let host = "WinUI 3"
     let cannot: [String: String] = [:]
     let platformHasNone = [
-        "read the bar of a sheet": "a sheet on WinUI is a card under its title, with no bar of its own",
         "read submitLabel of TextField": WinUIDriver.noReturnWord,
         "read what the platform fills in of TextField": WinUIDriver.nothingFilledIn,
         "read what the platform fills in of SearchField": WinUIDriver.nothingFilledIn,

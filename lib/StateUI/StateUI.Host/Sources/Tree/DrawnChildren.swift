@@ -32,7 +32,7 @@ extension MountedElement {
     ///
     /// - Parameter registry: the host's registrations.
     public func isDrawnByParent<View: AnyObject>(in registry: Registry<View>) -> Bool {
-        guard let parent else { return false }
+        guard let parent = placingParent else { return false }
 
         return registry.childTypes(of: parent.type).contains(type)
     }
@@ -50,7 +50,7 @@ extension MountedElement {
         guard childrenChanged else { return }
 
         registry.applyChildren(to: view, of: type) { childType in
-            children.filter { $0.type == childType }.map { $0.asChild(in: runtime) }
+            arrangedChildren.filter { $0.type == childType }.map { $0.asChild(in: runtime) }
         }
     }
 }

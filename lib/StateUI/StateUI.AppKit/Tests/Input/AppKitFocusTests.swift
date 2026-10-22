@@ -59,7 +59,7 @@ final class AppKitFocusTests: XCTestCase {
         for (place, renderer) in [
             ("a window's page", AppKitRenderer.running { TwoFields() }),
             ("a sheet", AppKitRenderer.running {
-                ModalStack(State(wrappedValue: [1]).projectedValue) { Text("Under") } destination: { _ in TwoFields() }
+                Text("Under").sheet(isPresented: State(wrappedValue: true).projectedValue) { TwoFields() }
             }),
         ] {
             defer { renderer.closeForTesting() }

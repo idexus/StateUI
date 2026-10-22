@@ -8,7 +8,7 @@ import CStateUIAndroid
 /// The pages a window presents over its page, in order, the top one in front - each in a holder on the theme's
 /// window background, rising from the bottom as it comes and going down as it leaves. The pages hear it from the
 /// host layer (`WindowPresentation`).
-/// Design: docs/design/platforms/android/pages.md#a-modal-stack
+/// Design: docs/design/platforms/android/pages.md#sheets
 @MainActor
 final class AndroidModals {
     /// A presented page, held by its mounted element, which owns its Android half - whole still when the
@@ -28,7 +28,7 @@ final class AndroidModals {
     }
 
 
-    /// Presents the modal stack's pages by the host layer's rule (`SheetChange`): the ones shown and still described
+    /// Presents the window's sheets by the host layer's rule (`SheetChange`): the ones shown and still described
     /// stay, the rest leave from the top, and each new one rises over the one before; the page in front is the one
     /// that shows. Whether one rose.
     @discardableResult

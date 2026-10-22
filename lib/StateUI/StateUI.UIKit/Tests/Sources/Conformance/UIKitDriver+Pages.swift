@@ -179,7 +179,7 @@ extension UIKitDriver {
             throw DriverCannot("go back in a window offering no way back")
         }
         switch way {
-        case .dismissSheet:
+        case .dismissSheets:
             // A user swipes a sheet down once UIKit shows it.
             let asked = controller.presentation.sheets.count
             if let root = controller.window?.rootViewController {

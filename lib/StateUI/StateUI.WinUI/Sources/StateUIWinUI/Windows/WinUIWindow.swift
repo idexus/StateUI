@@ -175,7 +175,7 @@ final class WinUIWindow {
     }
 
     /// Shows `sheet` over everything the window shows, its sheets before included; it takes the keyboard.
-    /// Design: docs/design/platforms/winui/pages.md#the-modal-stack
+    /// Design: docs/design/platforms/winui/pages.md#sheets
     func pushSheet(_ sheet: WinUISheetView) {
         stateui_winui_window_push_sheet(handle, sheet.handle)
     }

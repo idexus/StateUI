@@ -1,11 +1,4 @@
-# revision 6.1
-ModalStack.barBackgroundColor: ✅
-ModalStack.barButtonBackgroundColor: – An app bar button is WinUI's own, with no background of the application's.
-ModalStack.barForegroundColor: ✅
-ModalStack.barIcon: ✅
-ModalStack.barSubtitle: ✅
-ModalStack.barTitle: ✅
-ModalStack.toolbarStyle: – The bar's buttons keep WinUI's own look.
+# revision 7.1
 NavigationStack.barBackgroundColor: ✅
 NavigationStack.barButtonBackgroundColor: – An app bar button is WinUI's own, with no background of the application's.
 NavigationStack.barForegroundColor: ✅

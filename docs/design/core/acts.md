@@ -203,7 +203,7 @@ is up and resumes with the answer. Asking, waiting and branching is one
 sequential thought; an act keeps it in one place where a binding would split it
 into a state write here and a result closure there. No dialog names a page:
 a handler holds a description of a page, not the page, so the host shows the
-dialog on the page its window shows, the top of the modal stack included,
+dialog on the page its window shows, the top sheet included,
 which only the host can know.
 
 ## Files

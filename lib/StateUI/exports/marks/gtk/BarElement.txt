@@ -1,11 +1,4 @@
-# revision 6.1
-ModalStack.barBackgroundColor: ✅
-ModalStack.barButtonBackgroundColor: – A header bar's buttons are libadwaita's own, flat.
-ModalStack.barForegroundColor: ✅
-ModalStack.barIcon: – A GNOME header bar is its page's own and shows no application's mark.
-ModalStack.barSubtitle: ✅
-ModalStack.barTitle: – A GNOME header bar is its page's own and names that page; an application names itself in none.
-ModalStack.toolbarStyle: – The header bar's buttons keep libadwaita's own look.
+# revision 7.1
 NavigationStack.barBackgroundColor: ✅
 NavigationStack.barButtonBackgroundColor: – A header bar's buttons are libadwaita's own, flat.
 NavigationStack.barForegroundColor: ✅

@@ -46,19 +46,38 @@ final class WindowPresentationTests: XCTestCase {
         node(id, .overlay, [node("\(id).layer", .zStack)])
     }
 
-    /// A modal stack standing as a window's page: its root is what the window shows, its other pages the sheets over
-    /// it, the last on top.
-    func testAModalStackShowsItsRootUnderItsSheets() throws {
-        let runtime = HostRuntime.still()
-        runtime.tree.apply(node("window", .window, [
-            node("modal", .modalStack, [
-                node("stack", .navigationStack, [node("home", .page)]), node("first", .page), node("second", .page),
-            ]),
-        ]), complete: true)
+    /// A sheet `id` presenting `page` while it shows; nothing where it does not.
+    private func sheet(_ id: String, _ page: HostPatch, shows: Bool) -> HostPatch {
+        node(id, .sheet, shows ? [page] : [])
+    }
 
-        let changes = WindowPresentation().show(try XCTUnwrap(runtime.tree.root), in: runtime.lifecycle)
-        XCTAssertEqual(changes.arrangement?.shown?.id, .manual("stack"))
-        XCTAssertEqual(changes.sheets?.map(\.id), [.manual("first"), .manual("second")])
+    /// The window's page is what it shows, the pages its views present the sheets over it, in the order they showed:
+    /// one presented in a sheet over that one, one presented from beneath over the top one; a sheet closing takes the
+    /// one in it away.
+    func testTheSheetsAreThePagesItsViewsPresentInTheOrderTheyShowed() throws {
+        let runtime = HostRuntime.still()
+        func tree(_ shown: Set<String>) -> HostPatch {
+            node("window", .window, [
+                node("stack", .navigationStack, [node("home", .page, [node("content", .vStack, [
+                    node("edit", .button, [sheet("editing", node("editor", .page, [
+                        node("pick", .button, [sheet("picking", node("picker", .page), shows: shown.contains("picker"))]),
+                    ]), shows: shown.contains("editor"))]),
+                    node("share", .button, [sheet("sharing", node("sharer", .page), shows: shown.contains("sharer"))]),
+                ])])]),
+            ])
+        }
+        let presentation = WindowPresentation()
+        func show(_ shown: Set<String>) throws -> WindowPresentation.Changes {
+            runtime.tree.apply(tree(shown), complete: true)
+            return presentation.show(try XCTUnwrap(runtime.tree.root), in: runtime.lifecycle)
+        }
+
+        XCTAssertEqual(try show([]).arrangement?.shown?.id, .manual("stack"))
+        XCTAssertEqual(try show(["editor"]).sheets?.map(\.id), [.manual("editor")])
+        XCTAssertEqual(try show(["editor", "picker"]).sheets?.map(\.id), [.manual("editor"), .manual("picker")])
+        XCTAssertEqual(try show(["editor", "picker", "sharer"]).sheets?.map(\.id),
+                       [.manual("editor"), .manual("picker"), .manual("sharer")], "from beneath, over the top one")
+        XCTAssertEqual(try show(["sharer"]).sheets?.map(\.id), [.manual("sharer")], "the editor took its picker away")
     }
 
     /// The overlays a window lays: those its shown path declares, the outer under the inner, then each sheet's, then
@@ -67,12 +86,12 @@ final class WindowPresentationTests: XCTestCase {
         let runtime = HostRuntime.still()
         func tree(pushed: Bool) -> HostPatch {
             node("window", .window, [
-                node("modal", .modalStack, [
-                    node("stack", .navigationStack, [
-                        node("home", .page, [node("content", .vStack, [node("words", .text), overlay("home's")])]),
-                    ] + (pushed ? [node("detail", .page)] : []) + [overlay("stack's")]),
-                    node("sheet", .page, [overlay("sheet's")]),
-                ]),
+                node("stack", .navigationStack, [
+                    node("home", .page, [node("content", .vStack, [
+                        node("words", .text, [sheet("sheeting", node("sheet", .page, [overlay("sheet's")]), shows: true)]),
+                        overlay("home's"),
+                    ])]),
+                ] + (pushed ? [node("detail", .page)] : []) + [overlay("stack's")]),
                 overlay("inspector"),
             ])
         }

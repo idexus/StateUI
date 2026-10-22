@@ -1,3 +1,0 @@
-# revision 6.1
-ModalStack: ◐ cannot read what reaches Rectangle - Android's driver has no path for it yet
-ModalStack.popped: ✅

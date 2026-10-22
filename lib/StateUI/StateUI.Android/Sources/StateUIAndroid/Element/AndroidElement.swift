@@ -34,6 +34,8 @@ final class AndroidElement: NativeElement {
     var type: NodeType { element.type }
     var parent: AndroidElement? { element.parent?.android }
     var children: [AndroidElement] { element.children.map(\.android) }
+    /// The children it places, an anchor's in the anchor's place.
+    var arranged: [AndroidElement] { element.arrangedChildren.map(\.android) }
     func value(_ property: Prop) -> HostValue? { element.value(property) }
 
     // MARK: - The native half's part in a patch

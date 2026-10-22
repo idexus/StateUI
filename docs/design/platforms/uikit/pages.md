@@ -152,7 +152,7 @@ slide follows the spring, not the column.
 
 ## Sheets
 
-A modal stack standing as the window's page is UIKit's page sheets, each presented over the one
+The pages a window's views present are UIKit's page sheets, each presented over the one
 before once that one stands - UIKit presents over a controller only then -
 and all of them only once the window stands on screen: a sheet presented
 before, UIKit takes away again at once and tells as the user's. Which stay
@@ -163,7 +163,7 @@ is still coming or going: it drops the request and says nothing, and the
 window would hold a sheet never shown. So while a sheet the
 window presented or took away still moves, what is asked waits - the latest
 asking - and comes as that movement ends. The user swiping the top sheet down
-is the window's way back, told the stack as how many stay; a window that leaves tells
+is the window's way back, false written onto its state; a window that leaves tells
 nobody of its sheets, which leave with it. A window whose scene iOS lets go of
 and brings back takes nothing UIKit kept presented over its root - UIKit takes
 that away in its own time, dropping what is presented over it meanwhile - so

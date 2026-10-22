@@ -1,11 +1,4 @@
-# revision 6.1
-ModalStack.barBackgroundColor: ✅
-ModalStack.barButtonBackgroundColor: – A bar button stands in the system's glass, which takes no color of the application's.
-ModalStack.barForegroundColor: ✅
-ModalStack.barIcon: – A UIKit bar is each page's own: it shows that page's title, and no application's mark.
-ModalStack.barSubtitle: ✅
-ModalStack.barTitle: – A UIKit bar is each page's own and names that page; an application names itself in none.
-ModalStack.toolbarStyle: – The bar's buttons keep iOS's own look.
+# revision 7.1
 NavigationStack.barBackgroundColor: ✅
 NavigationStack.barButtonBackgroundColor: – A bar button stands in the system's glass, which takes no color of the application's.
 NavigationStack.barForegroundColor: ✅

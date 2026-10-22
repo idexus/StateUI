@@ -10,7 +10,8 @@ extension Node {
         let content = shown.node
         if content.isArrangement == true { return content }
 
-        var kind = PathNumber().appending(content.stateful?.viewType.number ?? content.type.key.number)
+        let shown = content.type == .anchor ? content.children[0] : content
+        var kind = PathNumber().appending(shown.stateful?.viewType.number ?? shown.type.key.number)
         if let identity = content.identity { kind = kind.appending(UInt64(bitPattern: Int64(identity.number))) }
         if let key = content.key { kind = kind.appending(key.number) }
 

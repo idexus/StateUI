@@ -786,7 +786,9 @@ enum SourceTree {
     /// `.contextMenu` on any view appends it. It is a menu, not a view - and
     /// the entries in it are the menu bar's, already here. Covered by
     /// ContextMenuTests rather than by a control case, for the reason the
-    /// toolbar's are: there is no control to build one on.
+    /// toolbar's are: there is no control to build one on. A Sheet is written
+    /// by a modifier too, and stands over the window rather than in a view:
+    /// SheetTests covers it.
     /// A Marker is a map's marker - a label, an address and a point - so it
     /// cannot be built alone or styled, and its modifiers are exercised by the
     /// Map case, which builds both.
@@ -794,7 +796,7 @@ enum SourceTree {
         "TextSpans", "TextSpan",
         "ToolbarItemGroup", "ToolbarItem", "TitleView", "MenuBar", "Menu", "Overlay",
         "MenuItem", "MenuSeparator", "ButtonMenu",
-        "ContextMenu", "Popover",
+        "ContextMenu", "Popover", "Sheet",
         "Marker",
     ]
 
@@ -821,8 +823,7 @@ enum SourceTree {
     /// PAGE arranges other pages, so there is no control to build one on and
     /// nothing about it can be styled - what they do is a stack and a set of
     /// tabs, and NavigationStackTests and TabViewTests are where those are
-    /// checked. ModalStack.swift arranges pages too, over the
-    /// window rather than inside it.
+    /// checked.
     ///
     /// The shared tier's files STAY IN, describing no type of their own: their
     /// property keys are the shared tier, which `testEveryModifierIsExercised`
@@ -840,7 +841,6 @@ enum SourceTree {
             "StyleTarget.swift", "VisualState.swift", "VisualStateList.swift",
             "VisualElement+VisualStates.swift",
             "NavigationStack.swift", "TabView.swift", "SplitView.swift",
-            "ModalStack.swift",
         ]
 
         guard let walk = FileManager.default.enumerator(atPath: views.path) else {

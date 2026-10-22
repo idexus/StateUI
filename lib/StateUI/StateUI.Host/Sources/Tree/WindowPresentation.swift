@@ -14,7 +14,7 @@
         /// The arrangement shown before, and the one shown now; nil where it is the same.
         public var arrangement: (previous: MountedElement?, shown: MountedElement?)?
 
-        /// The pages its modal stack presents as sheets, the last on top, where they changed.
+        /// The pages its views present as sheets, the last on top, where they changed.
         public var sheets: [MountedElement]?
 
         /// What the window lays over its pages and sheets now, where that changed: each layer, the first lowest.
@@ -63,16 +63,14 @@
         let previousVisible = sheets.last ?? arrangement
         let hadSheets = !sheets.isEmpty
 
-        // A modal stack standing as the window's page: its root is what the window shows, its other pages the sheets.
+        // The window's page, and over it the pages its views present as sheets, in the order they showed.
         // Design: docs/design/host/tree.md#a-window-shown
-        let page = window.children.first { NodeType.pageTypes.contains($0.type) }
-        let modalStack = page?.type == .modalStack ? page : nil
-        let arrangement = modalStack?.children.first ?? page
+        let arrangement = window.arrangedChildren.first { NodeType.pageTypes.contains($0.type) }
         if arrangement !== self.arrangement {
             changes.arrangement = (self.arrangement, arrangement)
             self.arrangement = arrangement
         }
-        let sheets = modalStack.map { Array($0.children.dropFirst()) } ?? []
+        let sheets = window.tree?.presentedSheets(in: window) ?? []
         if !sheets.elementsEqual(self.sheets, by: ===) {
             changes.sheets = sheets
             self.sheets = sheets
@@ -120,7 +118,7 @@
     /// Design: docs/design/host/pages.md#the-way-back
     public var wayBack: WayBack? {
         if let top = sheets.last {
-            return top.visibleBackStack.map(WayBack.pop) ?? .dismissSheet(remaining: sheets.count - 1)
+            return top.visibleBackStack.map(WayBack.pop) ?? .dismissSheets([top])
         }
         return arrangement?.visibleBackStack.map(WayBack.pop)
     }

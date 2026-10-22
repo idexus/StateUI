@@ -9,6 +9,6 @@
     /// The top page of the stack goes.
     case pop(MountedElement)
 
-    /// The top sheet goes, `remaining` staying.
-    case dismissSheet(remaining: Int)
+    /// These sheets' pages go, the top first: each sheet's state is told it closed.
+    case dismissSheets([MountedElement])
 }

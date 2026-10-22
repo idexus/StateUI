@@ -4,9 +4,9 @@
 @_spi(Host) import StateUIHost
 import CStateUIGTK
 
-/// A page a window's modal stack presents, shown as libadwaita's `AdwDialog` over the window: a page in a frame of
-/// its own - whose header bar holds the dialog's close button - or an arrangement whose pages carry theirs. The
-/// user's close tells `onClosedByUser`; the program's tells nothing.
+/// A page a view presents, shown as libadwaita's `AdwDialog` over the window: a page alone - a sheet has no bar of
+/// its own - or an arrangement whose pages carry theirs, a stack's header bars holding the dialog's close button; a
+/// tabbed view in a frame holding its switcher. The user's close tells `onClosedByUser`; the program's tells nothing.
 /// Design: docs/design/platforms/gtk/pages.md#sheets
 @MainActor
 final class GTKSheet {
@@ -16,7 +16,7 @@ final class GTKSheet {
     /// The view the sheet shows.
     let page: GTKView
 
-    /// The frame a page stands in on the sheet; nil for an arrangement.
+    /// The frame a tabbed view stands in on the sheet; nil for a page or another arrangement.
     let frame: GTKPageFrame?
 
     /// What the sheet does when the user closes it - Escape, its close button.

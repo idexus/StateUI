@@ -55,7 +55,8 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testMenuItem() { conform(MenuItemTests.self) }
     @MainActor func testDivider() { conform(DividerTests.self) }
     @MainActor func testMenuSeparator() { conform(MenuSeparatorTests.self) }
-    @MainActor func testModalStack() { conform(ModalStackTests.self) }
+    @MainActor func testAnchor() { conform(AnchorTests.self) }
+    @MainActor func testSheet() { conform(SheetTests.self) }
     @MainActor func testNavigationStack() { conform(NavigationStackTests.self) }
     @MainActor func testOverlay() { conform(OverlayTests.self) }
     @MainActor func testPage() { conform(PageTests.self) }

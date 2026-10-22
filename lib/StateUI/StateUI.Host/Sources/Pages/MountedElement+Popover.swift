@@ -11,6 +11,12 @@ extension MountedElement {
         children.first { $0.type == .popover }
     }
 
+    /// The element whose view this popover stands by: the one it is declared on, or what the anchor it is declared
+    /// on shows.
+    public var presenter: MountedElement? {
+        parent?.presentingElement
+    }
+
     /// Whether this popover asks to show.
     public var asksToShow: Bool {
         value(.isShown)?.bool == true

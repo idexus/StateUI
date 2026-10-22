@@ -276,7 +276,7 @@ toolkit's calls:
   and `close`.
   ([The windows a tree holds](../design/host/tree.md#the-windows-a-tree-holds))
 - **`WindowPresentation`** says what a window shows, where it changed: its
-  arrangement of pages, the pages its modal stack presents as sheets, what it
+  arrangement of pages, the pages its views present as sheets, what it
   lays over them, its frame, bounds and traits, and whether its scene hides
   it. The page the user sees hears
   that it is shown, and a new window that it was made, each in its turn,

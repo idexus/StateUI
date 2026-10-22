@@ -24,7 +24,6 @@ final class AppKitDriver: HostDriver {
     /// children, what StateUI measures and what the host cuts - each proven by its effect in another case.
     private static func none() -> [String: String] {
         var none = [
-            "read the bar of a sheet": "a sheet on the Mac stands with no bar; its window's is the modal stack's own",
             "read growsWithText of TextEditor":
                 "an editor's growing is StateUI's measuring, which no property of AppKit's holds; its frames prove it",
             "read shape of a box shorter than its radius":
@@ -213,9 +212,6 @@ final class AppKitDriver: HostDriver {
             return held
         }
         if property == .barTitle || property == .barSubtitle { return try titleAreaHolds(property, element) }
-        if [.barBackgroundColor, .barForegroundColor].contains(property), element.sheetsModalStack != nil {
-            throw DriverCannot("read the bar of a sheet")
-        }
         if property == .barBackgroundColor { return try barHolds(element) }
         if property == .barForegroundColor { return try barWordsColor(element) }
         if property == .barIcon { return try titleAreaIcon(element) }

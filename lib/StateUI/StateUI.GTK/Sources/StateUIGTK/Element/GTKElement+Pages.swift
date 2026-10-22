@@ -73,9 +73,10 @@ extension GTKElement {
         switch type {
         case .navigationStack:
             guard let navigation = view as? GTKNavigationView else { return }
-            for (index, (page, frame)) in zip(children, navigation.frames).enumerated() {
+            let pages = arranged
+            for (index, (page, frame)) in zip(pages, navigation.frames).enumerated() {
                 var chrome = page.chrome
-                if index == children.count - 1 {
+                if index == pages.count - 1 {
                     chrome.sidebar = sidebar
                     if let tabs { chrome.tabs = tabs }
                 }
@@ -91,11 +92,11 @@ extension GTKElement {
             let showing: (shows: Bool, toggle: () -> Void) = (shows, { [weak self] in
                 self?.changeSidebarVisibility(to: !shows)
             })
-            if let sidebar = children.first {
+            if let sidebar = arranged.first {
                 split.sidebarFrame?.show(sidebar.chrome)
                 sidebar.composeChrome()
             }
-            if let detail = children.dropFirst().first {
+            if let detail = arranged.dropFirst().first {
                 if let frame = split.detailFrame {
                     var chrome = detail.chrome
                     chrome.sidebar = showing
@@ -122,7 +123,7 @@ extension GTKElement {
             (view as? GTKNavigationView)?.onPopped = { [weak self] remaining in self?.userPopped(remaining: remaining) }
         case .tabView:
             guard let tabs = view as? GTKTabView else { return }
-            tabs.show(children.map { $0.value(.title)?.string ?? "" }, requested: value(.selectedTab)?.number.map { Int($0) })
+            tabs.show(arranged.map { $0.value(.title)?.string ?? "" }, requested: value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
         case .splitView:
             guard let split = view as? GTKSplitView else { return }

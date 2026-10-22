@@ -373,20 +373,20 @@ final class GTKPagesTests: XCTestCase {
     }
 
     /// A sheet is libadwaita's dialog over the window, its page in a frame of its own; the user closing it - Escape,
-    /// its close button - takes it off the modal stack, and the program's close tells nothing.
-    func testASheetTheUserClosesLeavesTheModalStack() throws {
+    /// its close button - writes false onto its state, and the program's close tells nothing.
+    func testASheetTheUserClosesWritesItsState() throws {
         try onUIThread {
-            let sheets = State(wrappedValue: [1, 2])
+            let (first, second) = (State(wrappedValue: true), State(wrappedValue: true))
             let host = GTKRenderer.running {
-                ModalStack(sheets.projectedValue) {
-                    TitledPage(title: "Beneath")
-                } destination: { number in
-                    TitledPage(title: "Sheet \(number)")
-                }
+                TitledPage(title: "Beneath")
+                    .sheet(isPresented: first.projectedValue) {
+                        TitledPage(title: "Sheet 1")
+                            .sheet(isPresented: second.projectedValue) { TitledPage(title: "Sheet 2") }
+                    }
             }
             let controller = try XCTUnwrap(host.windows.first)
             host.settle { controller.sheets.count == 2 }
-            XCTAssertEqual(controller.sheets.map { $0.sheet.frame?.chrome.title }, ["Sheet 1", "Sheet 2"])
+            XCTAssertEqual(controller.sheets.map { String(cString: adw_dialog_get_title($0.sheet.dialog)) }, ["Sheet 1", "Sheet 2"])
             let window = controller.window.widget.of(AdwApplicationWindow.self)
             XCTAssertTrue(adw_application_window_get_visible_dialog(window) == controller.sheets[1].sheet.dialog,
                           "the top sheet shows")
@@ -394,12 +394,12 @@ final class GTKPagesTests: XCTestCase {
             // libadwaita says a dialog closed once its sheet has gone, which a window behind another, drawn no
             // frames, never gets to by itself: the close is told as libadwaita tells it.
             GTKTestHost.emit(OpaquePointer(controller.sheets[1].sheet.dialog), "closed")
-            host.settle { sheets.wrappedValue == [1] }
-            XCTAssertEqual(sheets.wrappedValue, [1], "the user's close")
+            host.settle { !second.wrappedValue }
+            XCTAssertEqual([first.wrappedValue, second.wrappedValue], [true, false], "the user's close")
 
-            sheets.wrappedValue = []
+            first.wrappedValue = false
             host.settle { controller.sheets.isEmpty }
-            XCTAssertEqual(sheets.wrappedValue, [], "the program's close heard by nobody")
+            XCTAssertEqual([first.wrappedValue, second.wrappedValue], [false, false], "the program's close heard by nobody")
         }
     }
 
@@ -437,28 +437,29 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
-    /// A sheet swapped beneath one that stays stands beneath it: the sheets from the change up leave and come again,
-    /// so the modal stack's last is the one on top.
-    func testASheetSwappedBeneathAnotherStandsBeneathIt() throws {
+    /// A sheet beneath another given another page comes over it, as a page presented anew: the sheets from the
+    /// change up leave and come again, so the last shown is the one on top.
+    func testASheetGivenAnotherPageComesOverTheOthers() throws {
         try onUIThread {
-            let sheets = State(wrappedValue: [1, 2])
+            let (note, shows) = (State<Int?>(wrappedValue: 1), State(wrappedValue: false))
             let host = GTKRenderer.running {
-                ModalStack(sheets.projectedValue) {
-                    TitledPage(title: "Beneath")
-                } destination: { number in
-                    TitledPage(title: "Sheet \(number)")
+                VStack {
+                    Text("Notes").sheet(item: note.projectedValue) { number in TitledPage(title: "Sheet \(number)") }
+                    Text("More").sheet(isPresented: shows.projectedValue) { TitledPage(title: "Sheet 2") }
                 }
             }
             let controller = try XCTUnwrap(host.windows.first)
+            host.settle { controller.sheets.count == 1 }
+            shows.wrappedValue = true
             host.settle { controller.sheets.count == 2 }
 
-            sheets.wrappedValue = [3, 2]
-            host.settle { controller.sheets.map { $0.sheet.frame?.chrome.title } == ["Sheet 3", "Sheet 2"] }
+            note.wrappedValue = 3
+            host.settle { controller.sheets.map { String(cString: adw_dialog_get_title($0.sheet.dialog)) } == ["Sheet 2", "Sheet 3"] }
 
-            XCTAssertEqual(controller.sheets.map { $0.sheet.frame?.chrome.title }, ["Sheet 3", "Sheet 2"])
+            XCTAssertEqual(controller.sheets.map { String(cString: adw_dialog_get_title($0.sheet.dialog)) }, ["Sheet 2", "Sheet 3"])
             let window = controller.window.widget.of(AdwApplicationWindow.self)
             XCTAssertTrue(adw_application_window_get_visible_dialog(window) == controller.sheets[1].sheet.dialog,
-                          "the modal stack's last on top")
+                          "the last shown on top")
         }
     }
 
@@ -486,17 +487,17 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
-    /// A header bar takes the colors the window's page declares around the page it shows.
+    /// A header bar takes the colors the stack around the page it shows declares.
     func testAHeaderBarTakesTheColorsItsPathDeclares() throws {
         try onUIThread {
             let host = GTKRenderer.running {
-                ModalStack(State(wrappedValue: [Int]()).projectedValue) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     Text("under a painted bar")
-                } destination: { _ in Text("Sheet") }
+                } destination: { _ in Text("Next") }
                 .barBackgroundColor(Color(hex: 0x00FF00))
                 .barForegroundColor(Color(hex: 0xFFFFFF))
             }
-            let frame = try XCTUnwrap(host.window?.pageFrame)
+            let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
             host.settle { gtk_widget_has_css_class(frame.header, "stateui-bar-b00FF00FF-fFFFFFFFF") != 0 }
 
             XCTAssertNotEqual(gtk_widget_has_css_class(frame.header, "stateui-bar-b00FF00FF-fFFFFFFFF"), 0)
@@ -625,9 +626,9 @@ private struct SheetedOpeningPage: View {
 }
 
 private struct SheetedPage: View {
-    @State private var sheets = [1]
+    @State private var shows = true
 
     var body: some View {
-        ModalStack($sheets) { TitledPage(title: "Beneath") } destination: { number in TitledPage(title: "Sheet \(number)") }
+        TitledPage(title: "Beneath").sheet(isPresented: $shows) { TitledPage(title: "Sheet 1") }
     }
 }

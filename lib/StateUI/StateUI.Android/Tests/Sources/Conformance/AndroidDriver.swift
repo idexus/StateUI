@@ -22,8 +22,6 @@ final class AndroidDriver: HostDriver {
     /// another case.
     private static func none() -> [String: String] {
         var none = [
-            "read the bar of a sheet":
-                "a sheet on Android stands with no bar of its own; a stack in it brings its bar, as a stack's case proves",
             "read keyboardShortcut of Button":
                 "Android keeps no shortcut on a view: the activity hands the host each key no view takes, as a pressed shortcut proves",
             "read growsWithText of TextEditor":

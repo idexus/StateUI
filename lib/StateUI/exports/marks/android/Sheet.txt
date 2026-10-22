@@ -1,0 +1,4 @@
+# revision 1.1
+Sheet: ◐ cannot read what reaches Rectangle - Android's driver has no path for it yet
+Sheet.isPresented: ✅
+Sheet.isPresentedChanged: ✅

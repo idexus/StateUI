@@ -7,9 +7,9 @@
 // Design: docs/design/contracts/README.md#what-an-element-does-not-wear
 
 extension Differ {
-    /// Whether `child` may stand under `parent`: an arrangement only where a page stands.
-    func standsWhereItMay(_ child: RenderedNode, under parent: NodeType) -> Bool {
-        guard NodeType.arrangements.contains(child.type), !NodeType.pagePositions.contains(parent) else { return true }
+    /// Whether `child` may stand under `parent`, which `placesPages` or not: an arrangement only where a page stands.
+    func standsWhereItMay(_ child: RenderedNode, under parent: NodeType, placesPages: Bool) -> Bool {
+        guard NodeType.arrangements.contains(child.type), !placesPages else { return true }
 
         complain(
             "\(child.type.name) stands where a page stands - a window's view, or a page of an arrangement - "

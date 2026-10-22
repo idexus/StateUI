@@ -223,7 +223,7 @@
     /// shows again for the page the user sees, whether or not anything renders.
     /// Design: docs/design/host/pages.md#a-pages-phases
     public func tabChosen(_ tabbed: MountedElement, from previous: Int, to selected: Int) {
-        let tabs = tabbed.children
+        let tabs = tabbed.arrangedChildren
         guard tabs.indices.contains(selected) else { return }
 
         if tabbed.isPagePresented {
@@ -238,7 +238,7 @@
 
     /// The sidebar of `split` showed or hid on screen: its page hears it, then the state its binding carries.
     public func sidebarShown(_ split: MountedElement, _ shown: Bool) {
-        if split.isPagePresented { split.children.first?.setPagePresented(shown, reason: .appearance) }
+        if split.isPagePresented { split.arrangedChildren.first?.setPagePresented(shown, reason: .appearance) }
         split.reportUserChange(.showsSidebar, .showsSidebarChanged, .bool(shown), in: self)
         pump.turnIfWanted()
     }
@@ -251,18 +251,18 @@
         dispatch(handler, payload: [.number(Double(staying - 1))])
     }
 
-    /// Goes `way` back in `window`: a stack's top page goes, the path told it is one shorter, or the top sheet goes,
-    /// the modal stack told how many remain.
+    /// Goes `way` back in `window`: a stack's top page goes, the path told it is one shorter, or sheets go, the
+    /// state of each told it closed - the user's dismissal, written onto it.
     /// Design: docs/design/host/pages.md#the-way-back
     public func goBack(_ way: WayBack, in window: MountedElement) {
         switch way {
         case .pop(let stack):
             guard stack.children.count > 1 else { return }
             stackPopped(stack, staying: stack.children.count - 1)
-        case .dismissSheet(let remaining):
-            let stack = window.children.first { $0.type == .modalStack }
-            guard let handler = stack?.handler(.popped) else { return }
-            dispatch(handler, payload: [.number(Double(remaining))])
+        case .dismissSheets(let pages):
+            for sheet in pages.compactMap(\.parent) where sheet.type == .sheet {
+                sheet.reportUserChange(.isPresented, .isPresentedChanged, .bool(false), in: self)
+            }
         }
     }
 

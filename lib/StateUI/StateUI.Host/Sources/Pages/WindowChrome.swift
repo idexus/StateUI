@@ -89,7 +89,7 @@
         followed.contains(type) || type == .page && !changed.isDisjoint(with: pageValues)
     }
 
-    private static let followed: Set<NodeType> = [.window, .navigationStack, .tabView, .splitView, .modalStack]
+    private static let followed: Set<NodeType> = [.window, .navigationStack, .tabView, .splitView]
 
     /// What of a page the chrome shows - its title, its way back, its bar and the back button's words: a change to
     /// one shows the chrome again, from a state too.

@@ -34,6 +34,8 @@ final class WinUIElement: NativeElement {
     var type: NodeType { element.type }
     var parent: WinUIElement? { element.parent?.winUI }
     var children: [WinUIElement] { element.children.map(\.winUI) }
+    /// The children it places, an anchor's in the anchor's place.
+    var arranged: [WinUIElement] { element.arrangedChildren.map(\.winUI) }
     func value(_ property: Prop) -> HostValue? { element.value(property) }
 
     // MARK: - The native half's part in a patch

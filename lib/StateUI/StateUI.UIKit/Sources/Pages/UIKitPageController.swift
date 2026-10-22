@@ -70,7 +70,8 @@ final class UIKitPageController: UIViewController {
     /// for a page that is no sidebar.
     /// Design: docs/design/host/pages.md#a-sidebars-material
     private func sidebarMaterial(of element: MountedElement?) -> (material: HostMaterial, over: Bool)? {
-        guard let element, let split = element.parent, split.type == .splitView, split.children.first === element,
+        guard let element, let split = element.placingParent, split.type == .splitView,
+              split.arrangedChildren.first === element,
               let controller = splitViewController as? UIKitSplitViewController
         else { return nil }
         return (split.sidebarMaterial(over: controller.overlays), controller.overlays)

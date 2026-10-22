@@ -17,8 +17,8 @@ tab shown is the one the user chose, else the one the tree says, kept within
 the tabs; the sidebar shows as it stands on screen, else as the tree says.
 
 A tabbed view's tabs stand in its window's row where it is the first tabbed
-view down the window's stacks, split view details and a modal stack's root -
-the page the window shows under its sheets (`tabsStandInWindow`): one in a
+view down the window's stacks and split view details - the page the window
+shows under its sheets (`tabsStandInWindow`): one in a
 sidebar, in a tab of another, in a sheet or inside content keeps a row of its
 own. It is read from where the tabbed view stands, each time, so a view moved
 elsewhere keeps no word it once had. A split view's sidebar and a modal
@@ -124,8 +124,8 @@ A window's way back (`WindowPresentation.wayBack`) takes the top sheet first:
 its own stack's top page where it can go back, else the sheet itself; with no
 sheet, the arrangement's stack. A stack can go back where it holds more than
 one page and its top page shows its bar and its way back. Going back tells the
-stack it is one page shorter, or the window's modal stack how many sheets
-remain (`HostRuntime.goBack`).
+stack it is one page shorter, or writes false onto the top sheet's state
+(`HostRuntime.goBack`).
 
 ## A path that changes
 
@@ -152,13 +152,29 @@ every page in it (`MountedElement.pages`) on the new one.
 
 ## Sheets
 
-A window's sheets follow its modal stack by one rule (`SheetChange`): the
+A window's sheets are the pages its views present
+(`MountedTree.presentedSheets`), in the order they showed: a sheet's page is
+made as it shows, so one presented from beneath stands over the top one. They
+follow by one rule (`SheetChange`): the
 sheets shown that stand as asked, counted from the bottom, stay; the rest
 leave, the top first; and each page asked for after them comes over the one
 before. A sheet swapped beneath one that stays takes every sheet above it
 along, so the stack's last page is always the one on top. A host says only
 whether a sheet shown stands as asked - the same page, and on GTK and the Web
 the same native page - and presents and dismisses as its toolkit does.
+
+## An anchor stands as what it holds
+
+A composed view's anchor has no view of its own (`viewlessTypes`): what it
+holds stands in its place. A layout places the anchor's view among its own
+children (`arrangedChildren`), so its layout values, its drawing and its
+replacement are that view's; the element placing it is the one around the
+anchor (`placingParent`). The same list is an arrangement's pages, so a
+window, a stack, a tab or a split view holding an anchor shows the
+arrangement or page it holds, and every walk down the page path goes through
+it. A walk up the path steps through an anchor as through a stack. What the
+anchor presents - a sheet, a popover - stands by the view it shows
+(`presenter`).
 
 ## Slots
 
@@ -181,8 +197,7 @@ A page's chrome takes what is declared on its path (`declared`): the slots of
 each arrangement around the page, from the outermost in, then what the
 page's own tree declares, in the tree's order. Each carries its level - the
 outermost arrangement's 0, the page's own last. The path ends at the window
-and at a sheet's modal stack, so a sheet starts one of its own - a modal
-stack's root stands on the path around the stack - and so does a split
+and at a sheet, so a sheet starts one of its own - and so does a split
 view's sidebar, which is not on the path; a native
 collection's items belong to no page. A page that goes takes its
 declarations with it, and what the levels around it declare stands as it
@@ -229,9 +244,8 @@ path is the declarations' (`arrangementsAround`), but for a split view's
 sidebar, which wears its own split view's bar - a split view's bar is both its
 panes', so its colors paint a sidebar's own bar where a platform draws one
 (`barArrangements`) - and nothing from around the split view; a sheet's path
-stops at the modal stack showing it (`sheetsModalStack`), whose colors paint
-the sheets it shows as they paint the page it holds - one color for the
-stack's every bar - and nothing else from around it reaches the sheet. The
+stops at the sheet, which has no bar of its own: a stack in it brings one,
+painted as that stack says, and nothing from around the sheet reaches it. The
 colors are `barColors`; the name, the line and
 the mark are the title area (`titleArea`), none where none is declared, an
 empty line or picture none. A host shows the title area where its platform
@@ -255,14 +269,13 @@ outer under the inner, then each sheet's in turn, then the window's own - the
 library's docked inspector - over every other. Each is one layer holding the
 views declared together. A page that stops being shown - a page pushed over
 it, a tab chosen away - takes its overlays with it; nothing is restored,
-because nothing was overwritten. A modal stack standing as the window's page
-is shown as its root under its sheets.
+because nothing was overwritten.
 
 ## A popover
 
 A view's popover is a slot of its own (`.popover`): its parent never lays it
-out, and its host shows it in the platform's popover by the parent's view
-while `isShown` is true, taking it away when it turns false - AppKit's
+out, and its host shows it in the platform's popover by the view its parent
+shows (`presenter`) while `isShown` is true, taking it away when it turns false - AppKit's
 `NSPopover`, UIKit's popover presentation (a sheet on a phone), Android's
 `PopupWindow`, WinUI's `Flyout`, GTK's `GtkPopover`, the browser's popover.
 What it holds is a tree laid out on its own and sized by its content.

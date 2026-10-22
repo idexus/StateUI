@@ -16,6 +16,22 @@ extension ControlDictionary {
                 .tint(.firebrick)
             """#),
 
+        (AnchorContract.self, #"""
+            @State var signedIn = false
+            @State var showsHelp = false
+
+            Group {
+                if signedIn {
+                    Text("Welcome")
+                } else {
+                    Button("Sign in").onClicked { signedIn = true }
+                }
+            }
+            .sheet(isPresented: $showsHelp) {
+                Text("Help")
+            }
+            """#),
+
         (ApplicationContract.self, #"""
             struct NotesApp: Application {
                 var body: some Scene { WindowGroup { NotesPage() } }
@@ -226,18 +242,14 @@ extension ControlDictionary {
                 }
             """#),
 
-        (ModalStackContract.self, #"""
-            struct MainPage: View {
-                @State private var sheets: [String] = []
+        (SheetContract.self, #"""
+            @State var editing = false
 
-                var body: some View {
-                    ModalStack($sheets) {
-                        Button("Settings").onClicked { sheets.append("Settings") }
-                    } destination: { sheet in
-                        Button("Close \(sheet)").onClicked { sheets.removeLast() }
-                    }
+            Button("Edit")
+                .onClicked { editing = true }
+                .sheet(isPresented: $editing) {
+                    Button("Done").onClicked { editing = false }
                 }
-            }
             """#),
 
         (NavigationStackContract.self, #"""

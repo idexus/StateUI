@@ -6694,21 +6694,12 @@ enum Listings {
         """#,
         "MainPage.modal": #"""
         // Sources/Gallery/MainPage.swift
-        // What is over all of it: the pages presented over the split view, the
-        // stack and the bars alike - empty almost always: presenting is
-        // `sheets.append`, and a sheet the user dismisses shortens the array
-        // itself.
-        ModalStack(nav.$sheets) {
-
-            // The split view, its bars and its pages - what the sheets are
-            // presented over.
-
-        } destination: { _ in
-            ModalPage(nav: nav)
+        // What is over all of it: a page presented over the split view,
+        // the stack and the bars alike - while the state says so, the
+        // user's dismissal writing it false.
+        .sheet(isPresented: nav.$presentsPage) {
+            ModalPage(shown: nav.$presentsPage, depth: 1)
         }
-        // The sheets' bars wear the gallery's look as the panes' do.
-        .barLook(look.bars, in: look.barColor, system: application.info.accentColor)
-        .barButtons(style.toolbarStyle, tinted: style.tintsBarButtons)
         """#,
         "MainPage.overlays": #"""
         // Sources/Gallery/MainPage.swift
@@ -7157,12 +7148,19 @@ enum Listings {
         // Sources/Samples/Navigation/ModalPage.swift
         /// A page presented OVER everything - the bars, the menu and the stack alike.
         ///
-        /// It carries its own way out because the modal presentation covers the page
-        /// that opened it.
+        /// A sheet has no bar of its own, so it carries its own way out; a stack
+        /// presented in a sheet brings its bar. Each sheet stands on the button
+        /// presenting it, by a state of its own.
         struct ModalPage: View {
-            /// Where the gallery is. A modal closes itself by shortening the array it
-            /// is a member of, exactly as a pushed page pops itself.
-            let nav: Navigation
+            /// Whether this page stands presented: Close writes it false.
+            @Binding var shown: Bool
+
+            /// How many sheets stand, this one included.
+            let depth: Int
+
+            /// Whether another page stands over this one, and whether a stack does.
+            @State private var presentsAnother = false
+            @State private var presentsStack = false
 
             var body: some View {
                 VStack {
@@ -7171,20 +7169,48 @@ enum Listings {
                     Text("Native modal page")
                         .fontWeight(.bold)
 
-                    Text("The host chooses the presentation that belongs to this platform.")
+                    Text("Present a stack: its bar comes with it.")
 
                     Button("Close")
                         .horizontalAlignment(.center)
-                        .onClicked { nav.dismiss() }
+                        .onClicked { shown = false }
 
                     Button("Present another")
                         .horizontalAlignment(.center)
-                        .onClicked { nav.present(.page) }
+                        .onClicked { presentsAnother = true }
+                        .sheet(isPresented: $presentsAnother) {
+                            ModalPage(shown: $presentsAnother, depth: depth + 1)
+                        }
 
-                    Text("Depth: \(nav.sheets.count)")
+                    Button("Present a stack")
+                        .horizontalAlignment(.center)
+                        .onClicked { presentsStack = true }
+                        .sheet(isPresented: $presentsStack) {
+                            StackSheet(shown: $presentsStack)
+                        }
+
+                    Text("Depth: \(depth)")
                 }
                 .verticalAlignment(.center)
-                .galleryPage("Presented")
+            }
+        }
+
+        /// A stack presented in a sheet: the bar over its pages is the stack's own.
+        struct StackSheet: View {
+            @Binding var shown: Bool
+            @State private var path: [Int] = []
+
+            var body: some View {
+                NavigationStack($path) {
+                    VStack {
+                        Button("Push").onClicked { path.append(path.count + 1) }
+                        Button("Close").onClicked { shown = false }
+                    }
+                    .galleryPage("In a stack")
+                } destination: { number in
+                    Text("Page \(number)")
+                        .galleryPage("Pushed")
+                }
             }
         }
         """#,
@@ -7198,9 +7224,9 @@ enum Listings {
 
                 Button("Present native modal")
                     .horizontalAlignment(.center)
-                    .onClicked { nav.present(.page) }
+                    .onClicked { nav.presentsPage = true }
 
-                Text(nav.sheets.isEmpty ? "Nothing presented" : "Depth: \(nav.sheets.count)")
+                Text(nav.presentsPage ? "Presented" : "Nothing presented")
             }
         }
         """#,
@@ -7461,35 +7487,10 @@ enum Listings {
         """#,
         "Navigation.sheets": #"""
         // Sources/Gallery/Navigation.swift
-        /// A page the gallery presents OVER everything - see `ModalSample`.
-        ///
-        /// The modal stack is the WINDOW's page, so a sheet this value names covers
-        /// the bars as well as the content.
-        enum Sheet: Hashable {
-            /// A page shown through the host's adaptive native modal presentation.
-            case page
-        }
-
-        /// What is presented over all of it, the first presented first and the
-        /// top one last. Usually empty, and almost always one deep when it is not -
-        /// it is a stack because the platforms make it one: a sheet may present a
-        /// sheet.
-        @State var sheets: [Sheet] = []
-
-        /// Presents a page over everything - the bars included, which is the whole
-        /// difference from `push`.
-        func present(_ sheet: Sheet) {
-            sheets.append(sheet)
-        }
-
-        /// Closes the top one. A sheet the USER dismisses needs none of this: the
-        /// host reports how many survived and `ModalStack` shortens the array, the
-        /// same way a back gesture shortens a path.
-        func dismiss() {
-            if !sheets.isEmpty {
-                sheets.removeLast()
-            }
-        }
+        /// Whether a page stands presented over all of it - the bars included,
+        /// which is the whole difference from `push`. The user dismissing it
+        /// writes false, the way a back gesture shortens a path.
+        @State var presentsPage = false
         """#,
         "NavigationSample": #"""
         // Sources/Samples/Navigation/NavigationSample.swift
