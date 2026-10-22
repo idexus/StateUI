@@ -195,13 +195,23 @@ class WinUILayoutView: WinUIView {
     /// How many times a layout has sized its children - what a test counts.
     static var sizings = 0
 
-    /// Answers WinUI's arrange: places the box and every child in `width` by `height` DIPs, inside the pass.
+    /// Answers WinUI's arrange: places the box in `width` by `height` DIPs and every child in the room it is
+    /// bound for, inside the pass.
     func arrange(width: Double, height: Double) {
         WinUIView.arranging += 1
         defer { WinUIView.arranging -= 1 }
         boxView?.layout(Rect(x: 0, y: 0, width: width, height: height))
         writeCut(width: width, height: height)
-        arrange(in: Rect(x: 0, y: 0, width: width, height: height))
+        let room = arrangementRoom ?? LayoutSize(width: width, height: height)
+        arrange(in: Rect(x: 0, y: 0, width: room.width, height: room.height))
+    }
+
+    /// The size the layout is bound for while its place travels: its children stand there meanwhile, as they will
+    /// once it lands, its own box traveling around them. Design: docs/design/host/motion.md#words-at-their-destination
+    private(set) var arrangementRoom: LayoutSize?
+
+    override func travels(to destination: Rect?) {
+        arrangementRoom = destination.map { LayoutSize(width: $0.width, height: $0.height) }
     }
 
     /// A layout skipped with its children hides from assistive technology all that stands in it; the kind and the

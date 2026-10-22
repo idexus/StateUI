@@ -30,6 +30,14 @@ per width until WinUI measures it again or a change forgets it on the way up.
 Measured at every width asked of it, a layout would forget its sizes each time
 and measure its whole subtree again.
 
+A layout whose place travels lays its children out at the size it is bound
+for ([words at their destination](../../host/motion.md#words-at-their-destination)),
+so it is measured at that width while its box passes through the others.
+Measured at the widths it passes through, words that fit the destination on
+one line would break onto two inside the layout's measure and stand on one
+inside its parent's: their size would change with every pass, and WinUI ends
+the process over a layout that never settles (`AG_E_LAYOUT_CYCLE`).
+
 ## A place between passes
 
 A child's `Arrange` written outside its parent's arrangement does nothing, so

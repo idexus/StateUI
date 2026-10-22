@@ -25,6 +25,23 @@ private struct LengtheningPage: View {
     }
 }
 
+/// Words in a stack as wide as they are, which travels on a 400 ms linear law as they change.
+private struct SaidPage: View {
+    let open: State<Bool>
+
+    var body: some View {
+        VStack {
+            VStack {
+                Text(open.wrappedValue ? "The popover shows" : "The popover is closed").fontSize(13).id("said")
+            }
+            .horizontalAlignment(.start)
+            .id("stack")
+        }
+        .motion(.eased(.milliseconds(400), .linear))
+        .verticalAlignment(.start)
+    }
+}
+
 /// A stack's children travel to the places a patch gives them; one that joins fades in, one hidden fades out first.
 @MainActor
 final class GTKLayoutMotionTests: XCTestCase {
@@ -46,6 +63,35 @@ final class GTKLayoutMotionTests: XCTestCase {
             gtk_widget_measure(label.widget, GTK_ORIENTATION_HORIZONTAL, -1, nil, &natural, nil, nil)
             XCTAssertLessThan(label.placedFrame.width, Double(natural) - 1, "its place on its way")
             XCTAssertEqual(gtk_widget_get_width(label.widget), natural, "its words at the width it is bound for")
+        }
+    }
+
+    /// A label filling a stack whose width travels lays its words out at the width the stack is bound for: the
+    /// stack lays its children out there, its own place traveling around them - the words never break onto a second
+    /// line on the way, as the Popover sample's did as its popover closed.
+    func testALabelInAStackThatTravelsKeepsItsWordsOnOneLine() throws {
+        try onUIThread {
+            let clock = TestClock()
+            let open = State(wrappedValue: true)
+            let host = GTKRenderer.running(clock: clock) { SaidPage(open: open) }
+            host.layOut()
+            let said = try XCTUnwrap(host.view(id: .manual("said")))
+            let stack = try XCTUnwrap(host.view(id: .manual("stack")))
+            let line = gtk_widget_get_height(said.widget)
+
+            open.wrappedValue = false
+            host.runtime.pump.turn()
+            host.layOut()
+            var (heights, widths) = ([gtk_widget_get_height(said.widget)], [gtk_widget_get_width(stack.widget)])
+            for now in stride(from: 50, through: 800, by: 50) {
+                clock.now = Double(now)
+                host.frame()
+                heights.append(gtk_widget_get_height(said.widget))
+                widths.append(gtk_widget_get_width(stack.widget))
+            }
+
+            XCTAssertTrue(widths.contains { $0 > widths[0] + 1 && $0 < widths[widths.count - 1] - 1 }, "\(widths)")
+            XCTAssertEqual(heights.max() ?? 0, line, "one line all the way: \(heights)")
         }
     }
 

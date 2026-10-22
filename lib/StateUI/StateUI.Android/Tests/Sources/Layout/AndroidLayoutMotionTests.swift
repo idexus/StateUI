@@ -7,11 +7,29 @@
 import StateUIConformance
 import XCTest
 
+/// Words in a stack as wide as they are, which travels on a 400 ms linear law as they change.
+private struct SaidPage: View {
+    let open: State<Bool>
+
+    var body: some View {
+        VStack {
+            VStack {
+                Text(open.wrappedValue ? "The popover shows" : "The popover is closed").fontSize(13).id("said")
+            }
+            .horizontalAlignment(.start)
+            .id("stack")
+        }
+        .motion(.eased(.milliseconds(400), .linear))
+        .verticalAlignment(.start)
+    }
+}
+
 /// A stack's children travel to the places a patch gives them; one that joins fades in, one hidden fades out first.
 final class AndroidLayoutMotionTests: XCTestCase {
     static var allTests: [(String, (AndroidLayoutMotionTests) -> () throws -> Void)] {
         [
             ("testATextsWordsStandAtTheWidthItTravelsTo", testATextsWordsStandAtTheWidthItTravelsTo),
+            ("testALabelInAStackThatTravelsKeepsItsWordsOnOneLine", testALabelInAStackThatTravelsKeepsItsWordsOnOneLine),
             ("testAChildAPatchMovesTravelsToItsNewPlace", testAChildAPatchMovesTravelsToItsNewPlace),
             ("testAChildThatJoinsAStandingStackFadesIn", testAChildThatJoinsAStandingStackFadesIn),
             ("testWithLessMotionEveryChildArrives", testWithLessMotionEveryChildArrives),
@@ -64,6 +82,36 @@ final class AndroidLayoutMotionTests: XCTestCase {
 
             XCTAssertGreaterThan(label.frame.width, start + 2, "the caption grew")
             XCTAssertEqual(midway, label.frame.width, "its words at the width it is bound for")
+        }
+    }
+
+    /// A label filling a stack whose width travels lays its words out at the width the stack is bound for: the
+    /// stack lays its children out there, its own place traveling around them - the words never break onto a second
+    /// line on the way, as the Popover sample's did as its popover closed.
+    func testALabelInAStackThatTravelsKeepsItsWordsOnOneLine() throws {
+        try onMainActor {
+            let clock = TestClock()
+            let open = State(wrappedValue: true)
+            let host = AndroidRenderer.running(clock: clock) { SaidPage(open: open) }
+            host.layOut()
+            let said = try XCTUnwrap(host.view(id: .manual("said")))
+            let stack = try XCTUnwrap(host.view(id: .manual("stack")))
+            let line = said.frame.height
+
+            open.wrappedValue = false
+            host.runtime.pump.turn()
+            host.layOut()
+            var (heights, widths) = ([said.frame.height], [stack.frame.width])
+            for now in stride(from: 50, through: 800, by: 50) {
+                clock.now = Double(now)
+                host.frame()
+                host.layOut()
+                heights.append(said.frame.height)
+                widths.append(stack.frame.width)
+            }
+
+            XCTAssertTrue(widths.contains { $0 > widths[0] + 1 && $0 < widths[widths.count - 1] - 1 }, "\(widths)")
+            XCTAssertEqual(heights.max() ?? 0, line, "one line all the way: \(heights)")
         }
     }
 

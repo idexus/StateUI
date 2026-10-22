@@ -174,9 +174,18 @@ class AndroidLayoutView: AndroidView {
         arrange(width: width, height: height)
     }
 
-    /// Places every child in `width` by `height` pixels.
+    /// Places every child in the room the layout is bound for, else in `width` by `height` pixels.
     func arrange(width: Int32, height: Int32) {
-        arrange(in: Rect(x: 0, y: 0, width: Double(width) / density, height: Double(height) / density))
+        let room = arrangementRoom ?? LayoutSize(width: Double(width) / density, height: Double(height) / density)
+        arrange(in: Rect(x: 0, y: 0, width: room.width, height: room.height))
+    }
+
+    /// The size the layout is bound for while its place travels: its children stand there meanwhile, as they will
+    /// once it lands, its own box traveling around them. Design: docs/design/host/motion.md#words-at-their-destination
+    private(set) var arrangementRoom: LayoutSize?
+
+    override func travels(to destination: Rect?) {
+        arrangementRoom = destination.map { LayoutSize(width: $0.width, height: $0.height) }
     }
 
     /// The room the children take for the width offered, in points.

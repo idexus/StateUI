@@ -135,11 +135,21 @@ class GTKLayoutView: GTKPanelView {
         return measurements.size(offering: offered) { contentSize(width: offered) }.height
     }
 
-    /// Answers GTK's allocation: places every child in `width` by `height`, inside the allocation.
+    /// Answers GTK's allocation: places every child in the room the layout is bound for, else in `width` by
+    /// `height`, inside the allocation.
     override func allocate(width: Double, height: Double) {
         GTKView.allocating += 1
         defer { GTKView.allocating -= 1 }
-        arrange(in: Rect(x: 0, y: 0, width: width, height: height))
+        let room = arrangementRoom ?? LayoutSize(width: width, height: height)
+        arrange(in: Rect(x: 0, y: 0, width: room.width, height: room.height))
+    }
+
+    /// The size the layout is bound for while its place travels: its children stand there meanwhile, as they will
+    /// once it lands, its own box traveling around them. Design: docs/design/host/motion.md#words-at-their-destination
+    private(set) var arrangementRoom: LayoutSize?
+
+    override func travels(to destination: Rect?) {
+        arrangementRoom = destination.map { LayoutSize(width: $0.width, height: $0.height) }
     }
 
     /// The room the children take for the width offered.

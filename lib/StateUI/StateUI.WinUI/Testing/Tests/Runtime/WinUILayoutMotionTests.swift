@@ -8,6 +8,23 @@
 import StateUIConformance
 import XCTest
 
+/// Words in a stack as wide as they are, which travels on a 400 ms linear law as they change.
+private struct SaidPage: View {
+    let open: State<Bool>
+
+    var body: some View {
+        VStack {
+            VStack {
+                Text(open.wrappedValue ? "The popover shows" : "The popover is closed").fontSize(13).id("said")
+            }
+            .horizontalAlignment(.start)
+            .id("stack")
+        }
+        .motion(.eased(.milliseconds(400), .linear))
+        .verticalAlignment(.start)
+    }
+}
+
 /// A stack's children travel to the places a patch gives them; one that joins fades in, one hidden fades out first.
 final class WinUILayoutMotionTests: XCTestCase {
     /// A vertical stack of 100 x 40 labels in `order`, traveling on a 200 ms linear law; `hidden` fade out in 100 ms.
@@ -22,6 +39,34 @@ final class WinUILayoutMotionTests: XCTestCase {
             return row
         })
         return stack
+    }
+
+    /// A label filling a stack whose width travels lays its words out at the width the stack is bound for: the
+    /// stack lays its children out there, its own place traveling around them - measured at both widths in one
+    /// pass, the words broke onto a second line and back, and WinUI's layout never settled.
+    func testALabelInAStackThatTravelsKeepsItsWordsOnOneLine() throws {
+        try onUIThread {
+            let clock = TestClock()
+            let open = State(wrappedValue: true)
+            let host = WinUIRenderer.running(clock: clock) { SaidPage(open: open) }
+            let said = try XCTUnwrap(host.view(id: .manual("said")))
+            let stack = try XCTUnwrap(host.view(id: .manual("stack")))
+            let line = said.laidOutFrame.height
+
+            open.wrappedValue = false
+            host.runtime.pump.turn()
+            host.layOut()
+            var (heights, widths) = ([said.laidOutFrame.height], [stack.laidOutFrame.width])
+            for now in stride(from: 50, through: 800, by: 50) {
+                clock.now = Double(now)
+                host.frame()
+                heights.append(said.laidOutFrame.height)
+                widths.append(stack.laidOutFrame.width)
+            }
+
+            XCTAssertTrue(widths.contains { $0 > widths[0] + 1 && $0 < widths[widths.count - 1] - 1 }, "\(widths)")
+            XCTAssertEqual(heights.max() ?? 0, line, accuracy: 0.5, "one line all the way: \(heights)")
+        }
     }
 
     func testAChildAPatchMovesTravelsToItsNewPlace() throws {

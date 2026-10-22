@@ -245,11 +245,13 @@ class WinUIView {
         let resized = placed.map { $0.width != place.width || $0.height != place.height } ?? true
         placed = place
         if Self.arranging > 0 {
-            // A layout of StateUI's measures its own children at its place before it is put there.
+            // A layout of StateUI's measures its own children where it lays them out - the room it is bound for,
+            // else its place - before it is put there.
             // Design: docs/design/platforms/winui/layout.md#measured-every-pass
             if let layout = self as? WinUILayoutView, placingLayout != nil {
-                _ = measure(width: place.width, height: nil)
-                layout.standsAt = place.width
+                let width = layout.arrangementRoom?.width ?? place.width
+                _ = measure(width: width, height: nil)
+                layout.standsAt = width
             }
             let room = wordsRoom ?? place
             stateui_winui_arrange(handle, place.x, place.y, room.width, room.height)
