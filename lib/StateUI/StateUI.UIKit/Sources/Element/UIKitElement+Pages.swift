@@ -57,7 +57,14 @@ extension UIKitElement {
         chrome.leadingActions = actions.start.map { $0.map(Self.action) }
         chrome.actions = actions.end.map { $0.map(Self.action) }
         chrome.overflow = actions.overflow.map(Self.action)
+        if element.offersItsSheetsClose { chrome.closes = { [weak self] in self?.closeItsSheet() } }
         return chrome
+    }
+
+    /// The user pressed the bar's close button: the sheet the page's stack stands in goes, false onto its state.
+    private func closeItsSheet() {
+        guard let way = element.closingItsSheet, let window = element.enclosing(type: .window) else { return }
+        host?.runtime.goBack(way, in: window)
     }
 
     /// A page's action as the bar takes it, read as a menu's entry is (`MenuEntry`).

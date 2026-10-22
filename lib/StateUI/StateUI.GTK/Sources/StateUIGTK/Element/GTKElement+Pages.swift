@@ -54,6 +54,7 @@ extension GTKElement {
         chrome.titleView = element.chromeTitleView?.gtk.view
         chrome.showsBar = value(.showsNavigationBar)?.bool != false
         chrome.offersBack = value(.showsBackButton)?.bool != false
+        chrome.offersClose = element.enclosing(type: .sheet) == nil || element.offersItsSheetsClose
         (chrome.barBackground, chrome.barForeground) = element.barColors
 
         let actions = element.chromeActions

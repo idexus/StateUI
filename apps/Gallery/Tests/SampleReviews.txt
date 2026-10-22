@@ -77,7 +77,7 @@ MainQueueSample.swift 142b7947497fae78
 MapSample.swift 66e057528637bc65
 MaterialsSample.swift 95e9e841bc225ed0
 MenuBarSample.swift feaefec006cc6607
-ModalSample.swift c03b001e99488cea
+ModalSample.swift be7254f59ce6d298
 MotionSample.swift 8ed780503cc73b27
 MultiWindowSample.swift 3e0b39c98b04bb73
 NavigationSample.swift 24d236c23fc9ca63

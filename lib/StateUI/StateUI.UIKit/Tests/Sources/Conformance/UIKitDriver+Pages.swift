@@ -82,6 +82,7 @@ extension UIKitDriver {
         case .icon where onTab: return controller.tabBarItem.image?.accessibilityIdentifier.map { .string($0) }
         case .title: return (controller.navigationItem.title ?? "").propValue
         case .showsBackButton: return (!controller.navigationItem.hidesBackButton).propValue
+        case .showsCloseButton: return (Self.closeAction(on: controller) != nil).propValue
         // The bar shows the title where it holds no view in its place.
         case .showsTitle: return (controller.navigationItem.titleView == nil).propValue
         case .backButtonTitle: return controller.navigationItem.backButtonTitle?.propValue
@@ -207,6 +208,12 @@ extension UIKitDriver {
             top = each.presentedViewController
         }
         return count
+    }
+
+    /// The close button's action on the bar over `controller`'s page; nil where it offers none.
+    static func closeAction(on controller: UIViewController) -> UIAction? {
+        controller.navigationItem.trailingItemGroups.flatMap(\.barButtonItems).lazy
+            .compactMap(\.primaryAction).first { $0.identifier == UIKitPageChrome.closeIdentifier }
     }
 
     /// The controller presented last over `root`.

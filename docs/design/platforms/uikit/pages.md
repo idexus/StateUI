@@ -152,6 +152,10 @@ slide follows the spring, not the column.
 
 ## Sheets
 
+A stack in a sheet brings its navigation bar, whose pages offer UIKit's close
+button at the trailing edge (`UIBarButtonItem` `.close`) unless a page says it
+offers none.
+
 The pages a window's views present are UIKit's page sheets, each presented over the one
 before once that one stands - UIKit presents over a controller only then -
 and all of them only once the window stands on screen: a sheet presented

@@ -517,7 +517,7 @@ Every control, and every part an application, its windows and its pages are made
 | [MenuSeparator](controls/MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [NavigationStack](controls/NavigationStack.md) | 11 | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 7 ✅ · 4 – | 6 ✅ · 1 ☑️ · 4 – | 9 ✅ · 2 – | 5 ✅ · 6 – | 10 ✅ · 1 – |
 | [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
-| [Page](controls/Page.md) | 12 | 9 ✅ | 12 ✅ | 11 ✅ · 1 – | 11 ✅ · 1 – | 9 ✅ · 2 – | 11 ✅ |
+| [Page](controls/Page.md) | 13 | 9 ✅ | 13 ✅ | 12 ✅ · 1 – | 11 ✅ · 1 – | 10 ✅ · 2 – | 12 ✅ |
 | [Popover](controls/Popover.md) | 2 | 2 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](controls/Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [Sheet](controls/Sheet.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
@@ -529,10 +529,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 9 | 5 ✅ · 1 ✓ · 1 – | 7 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 9 ✅ | 7 ✅ · 1 ✓ · 1 – | 9 ✅ |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 98 | 94 | 76 | 122 | 88 | 107 |
+| ✅ |  | 98 | 95 | 77 | 122 | 89 | 108 |
 | ✓ |  | 23 | 20 | 20 | 5 | 17 | 10 |
 | – |  | 10 | 21 | 31 | 9 | 32 | 18 |
-| **Met** | 145 | **131** | **135** | **127** | **136** | **137** | **135** |
+| **Met** | 146 | **131** | **136** | **128** | **136** | **138** | **136** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -598,7 +598,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [MenuBar](controls/MenuBar.md) | `order` | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [MenuItem](controls/MenuItem.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [NavigationStack](controls/NavigationStack.md) | `popped` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `background`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsNavigationBar`, `showsTitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 10 | 8 ✅ | 10 ✅ | 9 ✅ · 1 – | 9 ✅ · 1 – | 8 ✅ · 1 – | 9 ✅ |
+| [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `background`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsCloseButton`, `showsNavigationBar`, `showsTitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 11 | 8 ✅ | 11 ✅ | 10 ✅ · 1 – | 9 ✅ · 1 – | 9 ✅ · 1 – | 10 ✅ |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `placeholder`, `presentation`, `selectedIndex`, `selectedIndexChanged` | 8 | 4 ✅ · 1 ✓ | 1 ✅ · 1 ☑️ · 3 ✓ | 3 ✅ · 1 ☑️ · 1 ✓ | 8 ✅ | 4 ✅ · 4 – | 5 ✅ · 3 – |
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
@@ -683,15 +683,16 @@ realizes the element and each of its members.
 `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
 `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
 `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
-`showsClearButton`, `showsMenuArrow`, `showsNavigationBar`, `showsSidebar`,
-`showsText`, `showsTitle`, `showsTraffic`, `showsUserLocation`, `side`,
-`sidebarBackground`, `sidebarOverlays`, `source`, `spacing`, `step`, `stroke`,
-`style`, `submitLabel`, `subtitle`, `swipeDirection`, `swipeThreshold`,
-`tapCount`, `text`, `textCase`, `textColor`, `textDecorations`, `textStyle`,
-`time`, `tint`, `title`, `toolbarStyle`, `tooltip`, `tracking`, `translationX`,
-`translationY`, `type`, `userAgent`, `value`, `verticalAlignment`,
-`verticalScrollIndicator`, `verticalTextAlignment`, `width`, `windowType`,
-`windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`, `zIndex`.
+`showsClearButton`, `showsCloseButton`, `showsMenuArrow`, `showsNavigationBar`,
+`showsSidebar`, `showsText`, `showsTitle`, `showsTraffic`, `showsUserLocation`,
+`side`, `sidebarBackground`, `sidebarOverlays`, `source`, `spacing`, `step`,
+`stroke`, `style`, `submitLabel`, `subtitle`, `swipeDirection`,
+`swipeThreshold`, `tapCount`, `text`, `textCase`, `textColor`,
+`textDecorations`, `textStyle`, `time`, `tint`, `title`, `toolbarStyle`,
+`tooltip`, `tracking`, `translationX`, `translationY`, `type`, `userAgent`,
+`value`, `verticalAlignment`, `verticalScrollIndicator`,
+`verticalTextAlignment`, `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`,
+`y`, `y1`, `y2`, `zIndex`.
 
 ### Events
 

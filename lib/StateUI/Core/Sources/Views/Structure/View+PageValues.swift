@@ -80,6 +80,20 @@ extension View {
         pageSays { $0.twin(PageContract.showsBackButton, by: state) }
     }
 
+    /// Whether the bar over the page, where its stack stands in a sheet, offers a button closing the sheet - false
+    /// for a page the user must finish rather than leave. Escape and the system's way back close the sheet all the
+    /// same.
+    ///
+    ///     SettingsForm().title("Settings").showsCloseButton(false)
+    public func showsCloseButton(_ value: Bool) -> Modified {
+        pageSays { $0.setValue(PageContract.showsCloseButton, value) }
+    }
+
+    /// Whether the bar offers the sheet's close button, from a state, `$x`.
+    public func showsCloseButton(_ state: Binding<Bool>) -> Modified {
+        pageSays { $0.twin(PageContract.showsCloseButton, by: state) }
+    }
+
     /// What the back button reads while the page ABOVE this one is on top - written on the page the user would go
     /// back to. A host whose back affordance has no words leaves it out.
     public func backButtonTitle(_ value: String) -> Modified {

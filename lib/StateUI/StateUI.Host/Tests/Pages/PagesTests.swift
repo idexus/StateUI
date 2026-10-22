@@ -51,6 +51,28 @@ final class PagesTests: XCTestCase {
         XCTAssertTrue(try brings("split"), "a stack in the detail")
     }
 
+    /// The bar a stack brings to a sheet offers a button closing it, but where the page it shows says it does not.
+    func testASheetsStackOffersItsCloseButtonButWhereThePageSaysNot() throws {
+        let runtime = HostRuntime.still()
+        runtime.tree.apply(node("window", .window, children: [
+            node("beneath", .navigationStack, children: [node("home", .page, children: [
+                node("plain", .sheet, children: [node("page", .page)]),
+                node("stacked", .sheet, children: [node("stack", .navigationStack, children: [node("root", .page)])]),
+                node("finishing", .sheet, children: [
+                    node("closed", .navigationStack, children: [node("finish", .page, [.showsCloseButton: .bool(false)])]),
+                ]),
+            ])]),
+        ]), complete: true)
+        let root = try XCTUnwrap(runtime.tree.root)
+        func element(_ id: String) throws -> MountedElement { try XCTUnwrap(root.first(id: .manual(id))) }
+
+        XCTAssertFalse(try element("page").offersClose, "no bar, no button")
+        XCTAssertTrue(try element("stack").offersClose)
+        XCTAssertTrue(try element("root").offersItsSheetsClose, "on the bar over the stack's page")
+        XCTAssertFalse(try element("closed").offersClose, "the page says it offers none")
+        XCTAssertFalse(try element("home").offersItsSheetsClose, "a stack in no sheet")
+    }
+
     /// A runtime holding `root`, whose phases are written down in the order told.
     private func runtime(_ root: HostPatch, told: @escaping (Int32) -> Void) -> HostRuntime {
         let runtime = HostRuntime.still()

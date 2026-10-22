@@ -37,6 +37,11 @@ final class WebSheet {
         WebRelay.showModal(dialog.node)
     }
 
+    /// Shows the bar's close button where `offers`, which closes the sheet as the user's dismissal.
+    func offersClose(_ offers: Bool) {
+        bar.onClose = offers ? { [weak self] in self?.onClosedByUser() } : nil
+    }
+
     /// Takes the sheet away; its page stays the tree's.
     func close() {
         WebRelay.closeModal(dialog.node)

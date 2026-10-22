@@ -31,6 +31,10 @@ extension WebDriver {
         if element.type == .menuItem, act == .activate { return try choose(element) }
         if let page = Self.pageState(after: act) { return try running().pageChanged(page) }
         if act == .close, element.type == .window { return try running().runtime.ending() }
+        if act == .close, element.type == .page {
+            // The close button on the bar of the sheet the page stands in, as a click presses it.
+            return try click(try sheetBar(over: element), part: "button:has(> [data-glyph=close])")
+        }
         if case .answer(let button, let typing) = act { return try answer(button, typing: typing, on: element) }
         if case .answerFiles(let names) = act { return try answerFiles(names, on: element) }
         if case .answerShare(let shared) = act { return try answerShare(shared, on: element) }
@@ -324,6 +328,14 @@ extension WebDriver {
     }
 
     /// The element of the bar of the window `element` stands in.
+    /// The bar of the sheet `element` stands in.
+    func sheetBar(over element: MountedElement) throws -> Int32 {
+        let page = element.enclosing(type: .sheet)?.children.first
+        guard let sheet = renderer?.roster.controllers.lazy.flatMap(\.sheets).first(where: { $0.element === page })
+        else { throw DriverCannot("find the bar of the sheet over \(element.type.name)") }
+        return sheet.sheet.bar.node
+    }
+
     func bar(over element: MountedElement) throws -> Int32 {
         guard let bar = renderer?.roster.controllers.first?.window.bar else { throw DriverCannot("find the window's bar") }
         return bar.node

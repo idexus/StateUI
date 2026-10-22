@@ -346,6 +346,12 @@ final class UIKitDriver: HostDriver {
                   let presentation = popover.controller.presentationController
             else { throw DriverCannot(act, on: element) }
             popover.controller.dismiss(animated: false) { popover.presentationControllerDidDismiss(presentation) }
+        case (.close, _) where element.type == .page:
+            // The close button on the bar over the page, as the user presses it.
+            guard let controller = (element.native as? UIKitElement)?.controller,
+                  let close = Self.closeAction(on: controller)
+            else { throw DriverCannot(act, on: element) }
+            UIButton().sendAction(close)
         case (.close, _) where element.type == .window:
             // As the user swipes a window's scene away: it leaves the front, goes behind, then closes.
             renderer?.window(element, movedTo: .inactive)

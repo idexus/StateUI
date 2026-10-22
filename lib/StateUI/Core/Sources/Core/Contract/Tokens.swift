@@ -210,6 +210,7 @@ extension NodeType {
     static let minimumWidth = VisualElementContract.minimumWidth.token
     static let backButtonTitle = PageContract.backButtonTitle.token
     static let showsBackButton = PageContract.showsBackButton.token
+    static let showsCloseButton = PageContract.showsCloseButton.token
     static let showsNavigationBar = PageContract.showsNavigationBar.token
     static let showsTitle = PageContract.showsTitle.token
     static let opacity = VisualElementContract.opacity.token

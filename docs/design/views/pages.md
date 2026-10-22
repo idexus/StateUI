@@ -329,7 +329,9 @@ it leaving the tree (`onDestroying`), which takes the sheet with it. A sheet
 declared in a sheet's content stands over it; one presented from beneath
 stands over the top one - the host layer orders a window's sheets as they
 showed. A sheet has no bar of its own: a `NavigationStack` in it brings one,
-taking nothing from around the sheet, which stands where a page stands.
+taking nothing from around the sheet, which stands where a page stands; the
+bar offers the sheet's close button unless the page it shows says not
+(`showsCloseButton`), as it says whether it offers its way back.
 
 ## What an arrangement does not offer
 

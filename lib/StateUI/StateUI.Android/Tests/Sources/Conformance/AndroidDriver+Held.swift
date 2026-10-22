@@ -17,7 +17,8 @@ extension AndroidDriver {
         if [.barSubtitle, .barBackgroundColor, .barForegroundColor].contains(property) {
             return Self.barHolds(property, of: element)
         }
-        if element.type == .page, [.showsBackButton, .showsNavigationBar, .showsTitle].contains(property) {
+        if element.type == .page,
+           [.showsBackButton, .showsCloseButton, .showsNavigationBar, .showsTitle].contains(property) {
             return Self.pageBarHolds(property, of: element)
         }
         if property == .title || property == .icon, let tabs = element.parent, tabs.type == .tabView {

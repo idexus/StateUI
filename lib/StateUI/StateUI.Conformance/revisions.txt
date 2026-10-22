@@ -41,7 +41,7 @@ DatePicker 5
 TimePicker 4
 Picker 4
 Image 3
-Page 6
+Page 7
 PageElement 2
 View 7
 VisualElement 17

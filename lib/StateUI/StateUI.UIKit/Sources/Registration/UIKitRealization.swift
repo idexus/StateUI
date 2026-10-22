@@ -115,6 +115,7 @@ enum UIKitRealization {
         .complete(PageContract.background),
         .complete(PageContract.disappearing),
         .complete(PageContract.showsBackButton),
+        .complete(PageContract.showsCloseButton),
         .complete(PageContract.showsNavigationBar),
         .complete(PageContract.showsTitle),
         .complete(PageElementContract.icon, on: PageContract.self),

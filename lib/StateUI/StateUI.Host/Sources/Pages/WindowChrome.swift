@@ -94,6 +94,6 @@
     /// What of a page the chrome shows - its title, its way back, its bar and the back button's words: a change to
     /// one shows the chrome again, from a state too.
     public static let pageValues: Set<Prop> = [
-        .title, .showsBackButton, .backButtonTitle, .showsNavigationBar, .showsTitle,
+        .title, .showsBackButton, .showsCloseButton, .backButtonTitle, .showsNavigationBar, .showsTitle,
     ]
 }

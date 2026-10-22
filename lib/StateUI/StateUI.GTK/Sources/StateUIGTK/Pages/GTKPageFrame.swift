@@ -99,6 +99,9 @@ final class GTKPageFrame {
         if chrome.offersBack != self.chrome.offersBack {
             adw_header_bar_set_show_back_button(header.opaque, chrome.offersBack ? 1 : 0)
         }
+        if chrome.offersClose != self.chrome.offersClose {
+            adw_header_bar_set_show_end_title_buttons(header.opaque, chrome.offersClose ? 1 : 0)
+        }
         if chrome.tabs !== self.chrome.tabs { showTabs(chrome.tabs) }
         if chrome.barBackground != self.chrome.barBackground || chrome.barForeground != self.chrome.barForeground {
             paintBar(background: chrome.barBackground, foreground: chrome.barForeground)

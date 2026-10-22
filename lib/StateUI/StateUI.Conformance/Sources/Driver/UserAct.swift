@@ -24,7 +24,8 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     case choose(Int)
     /// A picker's list, a date's calendar or a time's clock opened; a map's pin's details.
     case open
-    /// A picker's list, a date's calendar or a time's clock closed; a window closed; a popover dismissed.
+    /// A picker's list, a date's calendar or a time's clock closed; a window closed; a popover dismissed; a sheet
+    /// closed by the close button on the bar over its page.
     case close
     /// A day picked from a date's calendar.
     case pickDate(CalendarDate)

@@ -202,6 +202,16 @@ final class GTKDriver: HostDriver {
         if act == .activate, element.type == .toolbarItem { return try chooseAction(element) }
         if act == .activate, element.type == .menuItem { return try chooseMenuItem(element) }
         if act == .close, element.type == .window { return try close(element) }
+        if act == .close, element.type == .page {
+            // The close button of the dialog the page's sheet is, as a click presses it: libadwaita closes the
+            // dialog as its close button does, which tells the closing.
+            let page = element.enclosing(type: .sheet)?.children.first
+            guard (try? frame(of: element)).map({ adw_header_bar_get_show_end_title_buttons($0.header.opaque) }) == 1,
+                  let shown = renderer?.windows.lazy.flatMap(\.sheets).first(where: { $0.element === page })
+            else { throw DriverCannot(act, on: element) }
+            _ = adw_dialog_close(shown.sheet.dialog)
+            return
+        }
         if act == .close, let popover = (element.native as? GTKElement)?.view as? GTKPopoverView {
             // As a click beside it: the popover popped down while it is wanted, which tells its closing.
             guard let shown = popover.popover else { throw DriverCannot(act, on: element) }

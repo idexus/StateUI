@@ -236,6 +236,28 @@ struct SettingsButton: View {
 }
 ```
 
+The stack's bar offers a button closing the sheet - writing false, as every
+dismissal does. A page the user must finish rather than leave says it offers
+none, as it says whether it offers the way back:
+
+```swift
+struct SignUpSheet: View {
+    @Binding var shown: Bool
+    @State private var path: [Int] = []
+
+    var body: some View {
+        NavigationStack($path) {
+            Button("Finish")
+                .onClicked { shown = false }
+                .title("Sign up")
+                .showsCloseButton(false)
+        } destination: { step in
+            Text("Step \(step)")
+        }
+    }
+}
+```
+
 A sheet presented in a sheet stands over it, and so does one presented from
 beneath while another shows: the last shown is on top. A view holds one
 sheet - written again on the same view, the second stands in place of the

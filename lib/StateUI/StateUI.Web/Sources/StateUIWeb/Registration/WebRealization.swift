@@ -75,6 +75,7 @@ enum WebRealization {
         .complete(PageContract.navigatedTo),
         .complete(PageContract.navigatingFrom),
         .complete(PageContract.showsBackButton),
+        .complete(PageContract.showsCloseButton),
         .complete(PageContract.showsNavigationBar),
         .complete(PageContract.showsTitle),
         .complete(PopoverContract.isShown),

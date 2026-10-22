@@ -171,7 +171,7 @@ the page under it - a card in the middle, from the bottom where the page is
 narrow. A sheet has no bar of its own: a stack in it brings one
 (`bringsABar`), the chrome of the sheet's page (`WindowChrome`), its way back
 the window's (`WindowPresentation.wayBack`), ending with a button closing the
-sheet. Escape is the user's dismissal as that button is: the browser does not
+sheet unless the page says it offers none. Escape is the user's dismissal as that button is: the browser does not
 close the dialog itself, false is written onto the top sheet's state, and a
 sheet closes as the tree lets its page go. The last sheet's
 title names the browser's tab.

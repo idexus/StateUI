@@ -90,6 +90,7 @@ enum AndroidRealization {
         .complete(PageContract.background),
         .complete(PageContract.disappearing),
         .complete(PageContract.showsBackButton),
+        .complete(PageContract.showsCloseButton),
         .complete(PageContract.showsNavigationBar),
         .complete(PageContract.showsTitle),
         .complete(PopoverContract.isShown),

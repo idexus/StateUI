@@ -149,6 +149,8 @@ extension AndroidElement {
         content.menus = Self.menuEntries(page?.chromeMenus.menus ?? [], items: &items)
         if element.visibleBackStack === element {
             content.navigation = .back
+        } else if element.offersClose {
+            content.navigation = .close
         } else if let split = enclosingSplit, let sidebar = split.arranged.first,
                   (split.view as? AndroidSplitView)?.overlays == true {
             content.navigation = .sidebar(HostPicture(sidebar.value(.icon)))
@@ -165,10 +167,10 @@ extension AndroidElement {
         }
         bar.onNavigation = { [weak self] in
             guard let self else { return }
-            if content.navigation == .back {
-                host?.goBack(.pop(element))
-            } else {
-                enclosingSplit?.changeSidebarVisibility(to: true)
+            switch content.navigation {
+            case .back: host?.goBack(.pop(element))
+            case .close: if let way = element.closingItsSheet { host?.goBack(way) }
+            default: enclosingSplit?.changeSidebarVisibility(to: true)
             }
         }
     }

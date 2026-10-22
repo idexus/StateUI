@@ -25,11 +25,19 @@ struct UIKitPageChrome {
     var leadingActions: [[UIKitBarAction]] = []
     var actions: [[UIKitBarAction]] = []
     var overflow: [UIKitBarAction] = []
+    /// What the bar's close button does, where the page's stack stands in a sheet and offers one; nil for none.
+    var closes: (() -> Void)?
 
-    /// What the bar's buttons say, the leading groups, the trailing and the overflow.
+    /// What the bar's buttons say, the leading groups, the trailing, the overflow and the close.
     var buttonsSaid: [[UIKitBarAction.Said]] {
         leadingActions.map { $0.map(\.said) } + [[]] + actions.map { $0.map(\.said) } + [overflow.map(\.said)]
+            + [closes == nil ? [] : [Self.closeSaid]]
     }
+
+    /// What the close button says among the bar's buttons, and the identifier of its action.
+    private static let closeSaid = UIKitBarAction.Said(
+        title: "", icon: nil, isEnabled: true, isDestructive: false, identifier: closeIdentifier.rawValue, mount: nil)
+    static let closeIdentifier = UIAction.Identifier("stateui.close")
 
     /// Puts it on `item`, the bar a navigation controller shows for the page - its buttons made again only where
     /// they say something else than `standing` says, else recolored; `standing` then says what they say.
@@ -63,8 +71,15 @@ struct UIKitPageChrome {
             let menu = overflow.isEmpty ? [] : [[UIBarButtonItem(
                 image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: overflow.map(\.menuAction)))]]
             menu.joined().forEach { $0.tintColor = foreground }
+            // The sheet's close at the trailing edge, UIKit's own button.
+            let close = closes.map { closes in
+                [UIBarButtonItem(systemItem: .close, primaryAction: UIAction(identifier: Self.closeIdentifier) { _ in
+                    closes()
+                })]
+            }
+            close?.forEach { $0.tintColor = foreground }
             item.trailingItemGroups = actions.map { Self.group($0.map { $0.barItem(tint: foreground) }) }
-                + menu.map(Self.group)
+                + menu.map(Self.group) + (close.map { [Self.group($0)] } ?? [])
         } else {
             for (group, actions) in zip(item.leadingItemGroups + item.trailingItemGroups, leadingActions + actions) {
                 for (button, action) in zip(group.barButtonItems, actions) { button.tintColor = action.tint(foreground) }

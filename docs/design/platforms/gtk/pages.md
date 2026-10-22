@@ -181,8 +181,9 @@ and hands the focus back to it before the action runs.
 A page a view presents is a sheet: libadwaita's `AdwDialog`
 over the window, each over those before it, the last on top - a page alone,
 as a sheet has no bar of its own, or an arrangement whose pages carry theirs,
-a stack's header bar holding the dialog's close button; a tabbed view stands
-in a frame holding its switcher. A sheet asks for 560 by 480, which
+a stack's header bar holding the dialog's close button, hidden where its page
+says it offers none (`show-end-title-buttons`); a tabbed view stands in a frame
+holding its switcher. A sheet asks for 560 by 480, which
 libadwaita fits to the window, rising from its bottom where the window is
 narrow. The user's close - Escape, the close button - takes the top sheet
 away through the host layer's way back, false written onto its state;

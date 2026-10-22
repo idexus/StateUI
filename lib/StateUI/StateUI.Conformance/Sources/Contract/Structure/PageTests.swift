@@ -101,7 +101,57 @@
             pushedFollows(PageContract.showsTitle, false, then: true) { $0.title("Notes").showsTitle($1) },
             pushedFollowsColor(PageContract.background, .red, then: .blue) { $0.pageBackground($1) },
             followsAMaterial,
+            sheetsStackHolds(PageContract.showsCloseButton, false, then: true) { $0.showsCloseButton($1) },
+            closesItsSheet,
         ]
+    }
+
+    /// `member` of the page a stack standing in a sheet shows holds what its view says, and what it says once its
+    /// body - and nothing around it - is built again.
+    @MainActor
+    static func sheetsStackHolds<Value: HostRepresentable & Sendable & Equatable>(
+        _ member: ElementProperty<PageContract, Value>, _ first: Value, then second: Value,
+        _ say: @escaping @MainActor (VStack, Value) -> VStack
+    ) -> ConformanceCase {
+        ConformanceCase("Page.\(member.name).holdsWhatItsViewSaysInASheetsStack", proves: [
+            Covered(member),
+        ], needs: [Covered(ButtonContract.clicked), Covered(SheetContract.isPresented)]) { s in
+            let value = State(wrappedValue: first)
+            s.start {
+                Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                        Saying(value: value, second: second, say: say)
+                    } destination: { _ in
+                        Text("Next")
+                    }
+                }
+            }
+            try held(member, first, then: second, s)
+        }
+    }
+
+    /// The user pressing the close button on the bar a stack brings to a sheet closes the sheet, false onto its
+    /// state.
+    @MainActor
+    static var closesItsSheet: ConformanceCase {
+        ConformanceCase("Page.showsCloseButton.closesTheSheetOntoItsState", proves: [
+            Covered(PageContract.showsCloseButton),
+        ], needs: [Covered(SheetContract.isPresented)]) { s in
+            let shows = State(wrappedValue: true)
+            s.start {
+                Text("Beneath").sheet(isPresented: shows.projectedValue) {
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                        Text("In the sheet").title("Sheet")
+                    } destination: { _ in
+                        Text("Next")
+                    }
+                }
+            }
+            try s.settle { try s.held(PageContract.showsCloseButton, on: pushedPage(s)) == true }
+            try s.perform(.close, on: pushedPage(s))
+            s.settle { !shows.wrappedValue }
+            s.expect(shows.wrappedValue, false, "the close written onto the sheet's state")
+        }
     }
 
     /// `member` of a page pushed over the root holds what its view says, and what it says once its body - and

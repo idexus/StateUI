@@ -159,8 +159,9 @@ final class WebWindowController {
             let own = WindowChrome(window: element, arrangement: page)
             let named = own.title.flatMap { $0.isEmpty ? nil : $0 } ?? ""
             sheet.bar.show(own, title: named, sidebar: nil)
-            // A sheet has no bar of its own: a stack in it brings one.
+            // A sheet has no bar of its own: a stack in it brings one, offering the close unless its page says not.
             sheet.bar.setShown(page.bringsABar)
+            sheet.offersClose(page.offersClose)
             if !named.isEmpty { title = named }
         }
         WebRelay.setTitle(Self.tab(page: title, site: WebRelay.siteName))

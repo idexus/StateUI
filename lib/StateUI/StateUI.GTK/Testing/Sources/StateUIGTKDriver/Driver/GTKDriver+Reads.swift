@@ -49,6 +49,10 @@ extension GTKDriver {
             return (try? frame(of: element)).map { (adw_toolbar_view_get_reveal_top_bars($0.widget.opaque) != 0).propValue }
         case _ where property == .showsTitle && element.type == .page:
             return (try? frame(of: element)).map { (gtk_widget_get_visible($0.titleWidget) != 0).propValue }
+        case _ where property == .showsCloseButton && element.type == .page:
+            return (try? frame(of: element)).map {
+                (adw_header_bar_get_show_end_title_buttons($0.header.opaque) != 0).propValue
+            }
         case _ where property == .showsBackButton && element.type == .page:
             return (try? frame(of: element)).map { (adw_header_bar_get_show_back_button($0.header.opaque) != 0).propValue }
         case let layout as GTKLayoutView: return layoutHolds(property, layout)

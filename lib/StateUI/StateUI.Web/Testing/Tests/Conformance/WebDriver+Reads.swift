@@ -133,6 +133,10 @@ extension WebDriver {
         case (.page, .showsTitle):
             guard let bar = try? bar(over: element) else { return nil }
             return try WebBrowser.truth("e.dataset.title !== 'none'", on: bar).propValue
+        case (.page, .showsCloseButton):
+            guard let bar = try? sheetBar(over: element) else { return nil }
+            return try WebBrowser.truth(
+                "!e.hidden && !e.querySelector('button:has(> [data-glyph=close])').hidden", on: bar).propValue
         case (.page, .showsBackButton):
             guard let bar = try? bar(over: element) else { return nil }
             return try WebBrowser.truth("!e.hidden && !e.querySelector('button:has(> [data-glyph=back])').hidden", on: bar).propValue

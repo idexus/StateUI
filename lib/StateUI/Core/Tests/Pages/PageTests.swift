@@ -70,6 +70,8 @@ private struct EveryPropertyPage: View {
             .showsNavigationBar(false)
             .showsBackButton(false)
             .backButtonTitle("Back")
+            // And of the sheet the stack stands in.
+            .showsCloseButton(false)
             // And every phase it hears.
             .onAppearing {}
             .onDisappearing {}
@@ -112,6 +114,7 @@ private struct KnobPage: View {
             .pageBackground(on ? .red : .whiteSmoke)
             .showsNavigationBar(on)
             .showsBackButton(on)
+            .showsCloseButton(on)
             .backButtonTitle(on ? "Back" : "Return")
     }
 }
@@ -553,6 +556,7 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(page.props["showsNavigationBar"], .bool(false))
         XCTAssertEqual(page.props["showsBackButton"], .bool(false))
         XCTAssertEqual(page.props["backButtonTitle"], .string("Back"))
+        XCTAssertEqual(page.props["showsCloseButton"], .bool(false))
     }
 
     /// A page whose view says nothing sends nothing - no value, no event - leaving the native defaults intact.
@@ -628,7 +632,7 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(page.props, [
             "backButtonTitle": .string("Back"), "background": Color(hex: 0xF5F5F5).propValue,
             "showsBackButton": .bool(false), "showsNavigationBar": .bool(false), "icon": .string("tab.png"),
-            "title": .string("Everything"), "showsTitle": .bool(false),
+            "title": .string("Everything"), "showsTitle": .bool(false), "showsCloseButton": .bool(false),
         ])
         XCTAssertEqual(page.eventNames, HostPatch.pageEvents)
         XCTAssertEqual(page.children.map(\.type), [.text])

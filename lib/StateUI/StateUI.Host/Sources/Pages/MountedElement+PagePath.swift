@@ -55,6 +55,27 @@ extension MountedElement {
         visibleNavigationStack.map { $0.arrangedChildren.last?.value(.showsNavigationBar)?.bool != false } ?? false
     }
 
+    /// Whether the bar a sheet showing this arrangement shows offers a button closing the sheet: the bar a stack in it
+    /// brings, where the page it shows says nothing against it.
+    /// Design: docs/design/host/pages.md#sheets
+    public var offersClose: Bool {
+        bringsABar && visiblePage?.offersItsSheetsClose == true
+    }
+
+    /// The way back closing the sheet this element stands in - what its bar's close button takes; nil outside one.
+    public var closingItsSheet: WayBack? {
+        enclosing(type: .sheet)?.children.first.map { .dismissSheets([$0]) }
+    }
+
+    /// Whether this page's bar offers the button closing the sheet its stack stands in: a page of a stack in a sheet,
+    /// saying nothing against it.
+    public var offersItsSheetsClose: Bool {
+        guard type == .page, value(.showsCloseButton)?.bool != false,
+              let stack = placingParent, stack.type == .navigationStack
+        else { return false }
+        return stack.enclosing(type: .sheet) != nil
+    }
+
     /// Whether the stack this element stands on shows its bar over it: over a page that keeps its bar, and over an
     /// arrangement only where the page it shows stands in no stack of its own - that stack's bar is the one.
     public var showsTheStacksBar: Bool {

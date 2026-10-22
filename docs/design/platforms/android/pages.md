@@ -121,6 +121,10 @@ has nowhere to go back to.
 
 ## Sheets
 
+A stack in a sheet brings its bar; where its page offers no way back, the
+bar's navigation button is the sheet's close - Material's cross - unless the
+page says it offers none.
+
 The pages a window's views present stand over its arrangement in the
 activity's root, in the order they showed, the top one in front, each in a holder on the
 theme's window background that takes every touch meant for the page beneath.

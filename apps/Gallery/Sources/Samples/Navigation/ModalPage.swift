@@ -61,20 +61,23 @@ struct ModalPage: View {
     }
 }
 
-/// A stack presented in a sheet: the bar over its pages is the stack's own.
+/// A stack presented in a sheet: the bar over its pages is the stack's own, its close button the page's to offer.
 struct StackSheet: View {
     @Binding var shown: Bool
     @State private var path: [Int] = []
+    @State private var offersClose = true
 
     var body: some View {
         NavigationStack($path) {
             VStack {
+                Switch($offersClose).text("Close button")
                 Button("Push").onClicked { path.append(path.count + 1) }
                 Button("Close").onClicked { shown = false }
             }
             .spacing(16)
             .padding(24)
             .galleryPage("In a stack")
+            .showsCloseButton(offersClose)
         } destination: { number in
             Text("Page \(number)")
                 .padding(24)

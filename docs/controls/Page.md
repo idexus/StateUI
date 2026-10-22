@@ -35,13 +35,13 @@ Inherits: [PageElement](tiers/PageElement.md)
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (12)</th><th>Realization</th></tr></thead>
+<thead><tr><th>Host</th><th>Created</th><th>Members (13)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>9 ✅</td><td>custom <code>NSView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>12 ✅</td><td><code>UIViewController</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>11 ✅ · 1 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>13 ✅</td><td><code>UIViewController</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>12 ✅ · 1 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>11 ✅ · 1 –</td><td>custom <code>Panel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>9 ✅ · 2 –</td><td>custom <code>GtkWidget</code> in an <code>AdwToolbarView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>11 ✅</td><td><code>&lt;section&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>10 ✅ · 2 –</td><td>custom <code>GtkWidget</code> in an <code>AdwToolbarView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>12 ✅</td><td><code>&lt;section&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/PageContract.swift`.
@@ -57,6 +57,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/PageContract.
 <tr><td colspan="9">GTK 4: cannot read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>onDisappearing</code> (<code>disappearing</code>)</td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>showsBackButton</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>showsCloseButton</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit, WinUI 3: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>showsNavigationBar</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read showsNavigationBar of Page - AppKit's driver has no path for it yet</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>showsTitle</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

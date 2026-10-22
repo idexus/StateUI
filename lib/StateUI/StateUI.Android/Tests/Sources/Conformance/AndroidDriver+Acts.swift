@@ -144,6 +144,9 @@ extension AndroidDriver {
             // As a touch beside it: Android's popup window dismissed, which tells its listener.
             guard let window = popover.window else { throw DriverCannot(act, on: element) }
             Java.call(window.reference, JavaAPI.dismissPopover)
+        case (.close, _) where element.type == .page:
+            // The close button on the bar over the page, as a touch presses it.
+            guard Self.pressNavigation(over: element) else { throw DriverCannot(act, on: element) }
         case (.close, _) where element.type == .window:
             renderer?.setPhase(.inactive)
             renderer?.setPhase(.background)

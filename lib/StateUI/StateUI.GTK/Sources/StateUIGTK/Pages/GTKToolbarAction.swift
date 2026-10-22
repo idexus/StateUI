@@ -70,6 +70,7 @@ struct GTKPageChrome {
     var mainMenu: [MenuEntry] = []
     var showsBar = true
     var offersBack = true
+    var offersClose = true
 
     /// What the bar is painted in, and what stands on it in; nil for the platform's.
     var barBackground: HostValue?

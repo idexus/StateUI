@@ -15,6 +15,8 @@ final class AndroidBarView: AndroidView {
         case back
         /// The sidebar's picture, or none to show the platform's own.
         case sidebar(HostPicture?)
+        /// The sheet the stack stands in closing.
+        case close
     }
 
     /// What the bar says and shows: its title and the line under it, its colors, its actions, and the page's menus
@@ -97,6 +99,7 @@ final class AndroidBarView: AndroidView {
         case .none: (.none, nil, "")
         case .back: (.back, nil, said.back)
         case .sidebar(let picture): (.sidebar, picture, said.sidebar)
+        case .close: (.close, nil, said.close)
         }
         let bitmap = picture.flatMap(AndroidPictures.bitmap)
         let words = Java.string(description)

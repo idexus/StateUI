@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
@@ -30,6 +31,17 @@ public final class TestBars {
         if (bar.getNavigationIcon() == null) return null;
         CharSequence words = bar.getNavigationContentDescription();
         return words == null ? "" : words.toString();
+    }
+
+    /** Presses the bar's navigation button as a touch does; false where it shows none. */
+    public static boolean pressNavigation(Toolbar bar) {
+        CharSequence words = bar.getNavigationContentDescription();
+        for (int at = 0; words != null && at < bar.getChildCount(); at++) {
+            View child = bar.getChildAt(at);
+            boolean said = words.equals(child.getContentDescription());
+            if (child instanceof ImageButton && said) return child.performClick();
+        }
+        return false;
     }
 
     /** Whether the bar is on screen: shown, and in a window. */

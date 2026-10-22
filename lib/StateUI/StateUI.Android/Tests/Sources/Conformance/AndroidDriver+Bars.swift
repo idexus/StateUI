@@ -49,6 +49,11 @@ extension AndroidDriver {
                 Java.callStaticObject(testBars, barNavigation, .object(bar.reference)).map { Java.text($0) }
             }
             return (words == "Back").propValue
+        case .showsCloseButton:
+            let words = Java.frame {
+                Java.callStaticObject(testBars, barNavigation, .object(bar.reference)).map { Java.text($0) }
+            }
+            return (words == "Close").propValue
         default:
             return nil
         }
@@ -58,6 +63,16 @@ extension AndroidDriver {
     private static let barNavigation = Java.staticMethod(
         testBars, "navigation", "(Landroid/widget/Toolbar;)Ljava/lang/String;")
     private static let barShown = Java.staticMethod(testBars, "shown", "(Landroid/widget/Toolbar;)Z")
+    private static let barPressNavigation = Java.staticMethod(
+        testBars, "pressNavigation", "(Landroid/widget/Toolbar;)Z")
+
+    /// Presses the navigation button of the bar over `page`, as a touch does; false where it shows none.
+    static func pressNavigation(over page: MountedElement) -> Bool {
+        guard let stack = page.parent, stack.type == .navigationStack,
+              let bar = ((stack.native as? AndroidElement)?.view as? AndroidNavigationView)?.bar
+        else { return false }
+        return Java.callStaticBool(testBars, barPressNavigation, .object(bar.reference))
+    }
     private static let barTitled = Java.staticMethod(testBars, "titled", "(Landroid/widget/Toolbar;)Z")
     private static let barSubtitle = Java.staticMethod(
         testBars, "subtitle", "(Landroid/widget/Toolbar;)Ljava/lang/String;")

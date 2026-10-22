@@ -29,6 +29,9 @@ public enum PageContract: ElementContract {
     /// Whether the page offers a way back.
     public static let showsBackButton = ElementProperty<Self, Bool>("showsBackButton", layer: .adaptive)
 
+    /// Whether the bar over the page, standing in a sheet, offers a button closing the sheet.
+    public static let showsCloseButton = ElementProperty<Self, Bool>("showsCloseButton", layer: .adaptive)
+
     /// Whether the bar shows above the page.
     public static let showsNavigationBar = ElementProperty<Self, Bool>("showsNavigationBar", layer: .adaptive)
 
@@ -47,7 +50,8 @@ public enum PageContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        appearing, backButtonTitle, background, disappearing, showsBackButton, showsNavigationBar, showsTitle,
+        appearing, backButtonTitle, background, disappearing, showsBackButton, showsCloseButton, showsNavigationBar,
+        showsTitle,
         navigatedFrom, navigatedTo, navigatingFrom,
     ]
 }

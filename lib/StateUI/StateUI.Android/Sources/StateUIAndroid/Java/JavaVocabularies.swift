@@ -43,7 +43,7 @@ enum AndroidAnswer: Int32 {
 
 /// What a bar's navigation button does (`StateUIBar`).
 enum AndroidBarNavigation: Int32 {
-    case none = 0, back = 1, sidebar = 2
+    case none = 0, back = 1, sidebar = 2, close = 3
 }
 
 /// An entry of a list (`StateUIItemsView`).

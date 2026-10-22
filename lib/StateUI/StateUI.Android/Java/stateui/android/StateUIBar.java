@@ -24,7 +24,7 @@ import android.widget.Toolbar;
 final class StateUIBar extends Toolbar implements View.OnClickListener {
     /** What the navigation button does, as the Swift host numbers it. */
     // Swift: AndroidBarNavigation
-    static final int NONE = 0, BACK = 1, SIDEBAR = 2;
+    static final int NONE = 0, BACK = 1, SIDEBAR = 2, CLOSE = 3;
 
     private final long view;
 
@@ -97,6 +97,8 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
         } else if (kind == SIDEBAR) {
             icon = picture != null ? StateUIViews.glyph(getContext(), picture) : menuGlyph(tint);
             if (picture != null && tint != 0 && StateUIViews.isMask(picture)) icon.setTint(tint);
+        } else if (kind == CLOSE) {
+            icon = closeGlyph(tint);
         }
         setNavigationIcon(icon);
         setNavigationContentDescription(icon == null ? null : description);
@@ -107,7 +109,23 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
     private Drawable menuGlyph(int tint) {
         Path lines = new Path();
         for (int top : new int[] {6, 11, 16}) lines.addRect(3, top, 21, top + 2, Path.Direction.CW);
-        ShapeDrawable glyph = new ShapeDrawable(new PathShape(lines, 24, 24));
+        return glyph(lines, tint);
+    }
+
+    /** Material's close glyph - a cross on its 24 dp icon grid - in `tint`, or at 0 the theme's for controls. */
+    private Drawable closeGlyph(int tint) {
+        float[] cross = {19, 6.41f, 17.59f, 5, 12, 10.59f, 6.41f, 5, 5, 6.41f, 10.59f, 12, 5, 17.59f, 6.41f, 19,
+            12, 13.41f, 17.59f, 19, 19, 17.59f, 13.41f, 12};
+        Path path = new Path();
+        path.moveTo(cross[0], cross[1]);
+        for (int at = 2; at < cross.length; at += 2) path.lineTo(cross[at], cross[at + 1]);
+        path.close();
+        return glyph(path, tint);
+    }
+
+    /** `path` on the 24 dp icon grid as a drawable, in `tint` or at 0 the theme's for controls. */
+    private Drawable glyph(Path path, int tint) {
+        ShapeDrawable glyph = new ShapeDrawable(new PathShape(path, 24, 24));
         int size = Math.round(24 * getResources().getDisplayMetrics().density);
         glyph.setIntrinsicWidth(size);
         glyph.setIntrinsicHeight(size);
