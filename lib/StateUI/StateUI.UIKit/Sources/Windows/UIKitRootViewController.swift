@@ -130,7 +130,7 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
     private func presentEach(_ coming: [UIViewController], animated: Bool) {
         guard let sheet = coming.first else { return presentPassing() }
         let presenter = sheets.last ?? self
-        sheet.modalPresentationStyle = .pageSheet
+        sheet.modalPresentationStyle = .formSheet
         sheet.presentationController?.delegate = self
         sheets.append(sheet)
         moving = true

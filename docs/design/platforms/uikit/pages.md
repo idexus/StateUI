@@ -156,7 +156,9 @@ A stack in a sheet brings its navigation bar, whose pages offer UIKit's close
 button at the trailing edge (`UIBarButtonItem` `.close`) unless a page says it
 offers none.
 
-The pages a window's views present are UIKit's page sheets, each presented over the one
+The pages a window's views present are UIKit's form sheets - a card in the
+middle of a wide screen, rising from the bottom of a narrow one; a page sheet
+would stand over nearly the whole of an iPad's screen - each presented over the one
 before once that one stands - UIKit presents over a controller only then -
 and all of them only once the window stands on screen: a sheet presented
 before, UIKit takes away again at once and tells as the user's. Which stay

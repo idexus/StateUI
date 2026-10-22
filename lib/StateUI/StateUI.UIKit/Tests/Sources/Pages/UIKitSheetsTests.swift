@@ -100,6 +100,23 @@ final class UIKitSheetsTests: XCTestCase {
         XCTAssertNotNil(root.presentedViewController?.presentedViewController, "the second over the first")
     }
 
+    /// A sheet stands as the platform's own: a card in the middle of a wide screen - an iPad's - and rising from
+    /// the bottom of a narrow one, never a page over the whole of a wide screen.
+    @MainActor
+    func testASheetStandsAsThePlatformsSheet() throws {
+        let first = State(wrappedValue: true)
+        let host = UIKitRenderer.running(reducesMotion: true) { sheetsOver(first, State(wrappedValue: false)) }
+        defer { host.finish() }
+        let root = try XCTUnwrap(host.roster.windows.first?.1.window?.rootViewController)
+        host.settle { root.presentedViewController?.viewIfLoaded?.window != nil }
+        let sheet = try XCTUnwrap(root.presentedViewController)
+
+        XCTAssertEqual(sheet.modalPresentationStyle, .formSheet)
+        if root.traitCollection.horizontalSizeClass == .regular {
+            XCTAssertLessThan(sheet.view.frame.width, root.view.bounds.width * 0.8, "a card in the middle")
+        }
+    }
+
     /// Presenting sheets, moving as UIKit moves them, tells the window nothing: only the user's swipe does.
     @MainActor
     func testSheetsPresentedWithMotionTellTheWindowNothing() throws {
