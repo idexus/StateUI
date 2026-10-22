@@ -30,7 +30,9 @@ How each of them realizes these members is on its own page.
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
 | `barBackgroundColor` | property | `Color` | adaptive |
+| `barButtonBackgroundColor` | property | `Color` | adaptive |
 | `barForegroundColor` | property | `Color` | adaptive |
 | `barIcon` | property | `ImageSource` | adaptive |
 | `barSubtitle` | property | `String` | adaptive |
 | `barTitle` | property | `String` | adaptive |
+| `toolbarStyle` | property | `ToolbarStyle` | adaptive |

@@ -196,7 +196,7 @@ body {
   transition: background-color 0.15s ease;
 }
 .stateui-bar {
-  --stateui-glass: color-mix(in srgb, currentColor 13%, transparent);
+  --stateui-glass: var(--stateui-bar-button, color-mix(in srgb, currentColor 13%, transparent));
   --stateui-glass-edge: inset 0 0.5px 0 color-mix(in srgb, white 28%, transparent), 0 1px 4px rgb(0 0 0 / 0.08);
 }
 /* The actions at an edge of the bar: each group of them together on a glass of its own, apart from the next. */
@@ -216,6 +216,25 @@ body {
 .stateui-bar button:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
 .stateui-bar button:disabled { opacity: 0.4; cursor: default; }
 .stateui-bar button img { width: 22px; height: 22px; }
+/* Plain buttons: no background at rest, one under the pointer - the Web's own look for a bar's buttons. */
+.stateui-bar[data-toolbar-style="plain"] :is(button, .stateui-bar-group, .stateui-bar-actions > button) {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 6px;
+}
+.stateui-bar[data-toolbar-style="plain"] button:hover {
+  background: var(--stateui-bar-button, color-mix(in srgb, currentColor 10%, transparent));
+}
+.stateui-bar[data-toolbar-style="plain"] button:active {
+  background: var(--stateui-bar-button, color-mix(in srgb, currentColor 16%, transparent));
+}
+/* Rounded buttons: a flat rounded rectangle behind each, a group of them sharing one. */
+.stateui-bar[data-toolbar-style="rounded"] :is(button, .stateui-bar-group, .stateui-bar-actions > button) {
+  border-radius: 8px;
+  box-shadow: none;
+}
+.stateui-bar[data-toolbar-style="rounded"] .stateui-bar-group button { background: transparent; }
+.stateui-bar[data-toolbar-style] button:focus-visible { box-shadow: var(--stateui-focus); }
 .stateui-glyph {
   display: block;
   width: 22px;

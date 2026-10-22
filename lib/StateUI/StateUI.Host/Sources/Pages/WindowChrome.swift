@@ -34,6 +34,12 @@
     /// The color of what stands on the bars: the nearest declared on the visible page's path.
     public var foreground: HostValue?
 
+    /// The color behind the bars' buttons: the nearest declared on the visible page's path.
+    public var buttonBackground: HostValue?
+
+    /// How the bars' buttons stand: the nearest declared on the visible page's path, `.system` where none is.
+    public var toolbarStyle = ToolbarStyle.system
+
     /// The menus the visible page's path declares, composed.
     public var menus = ChromeMenus()
 
@@ -52,6 +58,8 @@
         center = page?.chromeTitleView
         titleArea = page?.titleArea
         (background, foreground) = page?.barColors ?? (nil, nil)
+        buttonBackground = page?.barButtonBackground
+        toolbarStyle = page?.toolbarStyle ?? .system
         if let page { menus = page.chromeMenus }
         sidebarToggle = arrangement?.type == .splitView ? arrangement : nil
     }

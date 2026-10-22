@@ -874,6 +874,11 @@ enum Listings {
             ("The system's", .system), ("Light", .light), ("Dark", .dark),
         ]
 
+        /// How the bars' buttons may stand, in the order they are offered.
+        private static let toolbarStyles: [(name: String, style: ToolbarStyle)] = [
+            ("The Web's own", .system), ("Glass", .glass), ("Plain", .plain), ("Rounded", .rounded),
+        ]
+
         /// The accents the application may hold, the platform's first.
         private static let accents: [(name: String, color: Color?)] =
             [("The platform's", nil)] + AccentChoice.own.map { ($0.name, $0.color(system: .accent, for: .bar)) }
@@ -899,6 +904,17 @@ enum Listings {
                 Picker(Array(accents.indices), selection: Binding(
                     get: { accents.firstIndex { $0.color == application.accentColor } ?? 0 },
                     set: { application.accentColor = accents[$0].color })) { accents[$0].name }
+
+                #if WEB
+                // The bars' buttons, which the Web draws itself.
+                SectionTitle("The bars' buttons")
+                Picker(Self.toolbarStyles.map(\.style), selection: Binding(
+                    get: { style.toolbarStyle }, set: { style.toolbarStyle = $0 })) { chosen in
+                    Self.toolbarStyles.first { $0.style == chosen }?.name ?? ""
+                }
+                Switch(Binding(get: { style.tintsBarButtons }, set: { style.tintsBarButtons = $0 }))
+                    .text("On the accent's tint")
+                #endif
 
                 // A look for each theme: the gallery wears the one of the theme in
                 // force, and changes with it. Side by side where there is room,
@@ -3647,6 +3663,23 @@ enum Listings {
             /// The look the gallery wears in a theme, `dark` or not.
             func look(dark: Bool) -> ThemeLook {
                 dark ? darkLook : lightLook
+            }
+
+            /// How the bars' buttons stand where the host draws them itself: on glass
+            /// on the Web, the gallery's own look for them.
+            @State var toolbarStyle = SessionStyle.ownToolbarStyle
+
+            /// Whether the bars' buttons stand on the accent's tint.
+            @State var tintsBarButtons = false
+
+            /// The gallery's own look for the bars' buttons: glass on the Web, the
+            /// platform's own elsewhere.
+            static var ownToolbarStyle: ToolbarStyle {
+                #if WEB
+                .glass
+                #else
+                .system
+                #endif
             }
 
             /// Whether the Fonts and Colors windows hide while another scene is the
@@ -6675,6 +6708,7 @@ enum Listings {
         }
         // The sheets' bars wear the gallery's look as the panes' do.
         .barLook(look.bars, in: look.barColor, system: application.info.accentColor)
+        .barButtons(style.toolbarStyle, tinted: style.tintsBarButtons)
         """#,
         "MainPage.overlays": #"""
         // Sources/Gallery/MainPage.swift

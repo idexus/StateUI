@@ -18,4 +18,11 @@ extension BarElement where Modified == Self {
                 .barForegroundColor(accent.carriesThemesWords ? Palette.text : Palette.onBrand)
         }
     }
+
+    /// The bars' buttons standing as `style` says, on the accent's tint where
+    /// `tinted`.
+    func barButtons(_ style: ToolbarStyle, tinted: Bool) -> Self {
+        let styled = toolbarStyle(style)
+        return tinted ? styled.barButtonBackgroundColor(Color.accent.opacity(0.25)) : styled
+    }
 }

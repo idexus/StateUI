@@ -28,6 +28,11 @@ struct AppearanceSample: SampleContent, ExampleContent {
         ("The system's", .system), ("Light", .light), ("Dark", .dark),
     ]
 
+    /// How the bars' buttons may stand, in the order they are offered.
+    private static let toolbarStyles: [(name: String, style: ToolbarStyle)] = [
+        ("The Web's own", .system), ("Glass", .glass), ("Plain", .plain), ("Rounded", .rounded),
+    ]
+
     /// The accents the application may hold, the platform's first.
     private static let accents: [(name: String, color: Color?)] =
         [("The platform's", nil)] + AccentChoice.own.map { ($0.name, $0.color(system: .accent, for: .bar)) }
@@ -57,6 +62,20 @@ struct AppearanceSample: SampleContent, ExampleContent {
                 set: { application.accentColor = accents[$0].color })) { accents[$0].name }
                 .accessibilityIdentifier("appearance.accent")
                 .accessibilityLabel("Accent")
+
+            #if WEB
+            // The bars' buttons, which the Web draws itself.
+            SectionTitle("The bars' buttons")
+            Picker(Self.toolbarStyles.map(\.style), selection: Binding(
+                get: { style.toolbarStyle }, set: { style.toolbarStyle = $0 })) { chosen in
+                Self.toolbarStyles.first { $0.style == chosen }?.name ?? ""
+            }
+                .accessibilityIdentifier("appearance.toolbarStyle")
+                .accessibilityLabel("Buttons")
+            Switch(Binding(get: { style.tintsBarButtons }, set: { style.tintsBarButtons = $0 }))
+                .text("On the accent's tint")
+                .accessibilityIdentifier("appearance.tintsBarButtons")
+            #endif
 
             // A look for each theme: the gallery wears the one of the theme in
             // force, and changes with it. Side by side where there is room,
@@ -104,7 +123,8 @@ struct AppearanceSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("An accent of the application's own draws the controls where the user chooses none for the "
-                + "system - the Web, the iPhone and the iPad, GNOME before 47; elsewhere the user's stands.")
+                + "system - the Web, the iPhone and the iPad, GNOME before 47; elsewhere the user's stands. "
+                + "The bars' buttons - on glass, plain or rounded - are the Web's own to draw.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

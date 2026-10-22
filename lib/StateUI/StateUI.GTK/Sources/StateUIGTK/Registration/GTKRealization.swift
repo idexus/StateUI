@@ -49,6 +49,8 @@ enum GTKRealization {
             + "identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget "
             + "made in code."),
         .complete(BarElementContract.barBackgroundColor),
+        .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "A header bar's buttons are libadwaita's own, flat."),
+        .notPlanned(BarElementContract.toolbarStyle, reason: "The header bar's buttons keep libadwaita's own look."),
         .complete(BarElementContract.barForegroundColor),
         .complete(BarElementContract.barSubtitle),
         .notPlanned(BarElementContract.barIcon,

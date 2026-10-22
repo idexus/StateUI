@@ -59,6 +59,8 @@ enum WinUIRealization {
         .partial(VisualElementContract.background,
             missing: "An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it."),
         .complete(BarElementContract.barBackgroundColor),
+        .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "An app bar button is WinUI's own, with no background of the application's."),
+        .notPlanned(BarElementContract.toolbarStyle, reason: "The bar's buttons keep WinUI's own look."),
         .complete(BarElementContract.barForegroundColor),
         .complete(BarElementContract.barIcon),
         .complete(BarElementContract.barSubtitle),

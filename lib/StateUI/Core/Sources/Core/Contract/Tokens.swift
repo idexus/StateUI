@@ -108,6 +108,8 @@ extension NodeType {
     static let growsWithText = TextEditorContract.growsWithText.token
     static let background = VisualElementContract.background.token
     static let barBackgroundColor = BarElementContract.barBackgroundColor.token
+    static let barButtonBackgroundColor = BarElementContract.barButtonBackgroundColor.token
+    static let toolbarStyle = BarElementContract.toolbarStyle.token
     static let barIcon = BarElementContract.barIcon.token
     static let barSubtitle = BarElementContract.barSubtitle.token
     static let barTitle = BarElementContract.barTitle.token

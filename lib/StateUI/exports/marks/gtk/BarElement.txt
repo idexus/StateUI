@@ -1,21 +1,29 @@
-# revision 5.1
+# revision 6.1
 ModalStack.barBackgroundColor: ✅
+ModalStack.barButtonBackgroundColor: – A header bar's buttons are libadwaita's own, flat.
 ModalStack.barForegroundColor: ✅
 ModalStack.barIcon: – A GNOME header bar is its page's own and shows no application's mark.
 ModalStack.barSubtitle: ✅
 ModalStack.barTitle: – A GNOME header bar is its page's own and names that page; an application names itself in none.
+ModalStack.toolbarStyle: – The header bar's buttons keep libadwaita's own look.
 NavigationStack.barBackgroundColor: ✅
+NavigationStack.barButtonBackgroundColor: – A header bar's buttons are libadwaita's own, flat.
 NavigationStack.barForegroundColor: ✅
 NavigationStack.barIcon: – A GNOME header bar is its page's own and shows no application's mark.
 NavigationStack.barSubtitle: ✅
 NavigationStack.barTitle: – A GNOME header bar is its page's own and names that page; an application names itself in none.
+NavigationStack.toolbarStyle: – The header bar's buttons keep libadwaita's own look.
 SplitView.barBackgroundColor: ✅
+SplitView.barButtonBackgroundColor: – A header bar's buttons are libadwaita's own, flat.
 SplitView.barForegroundColor: ✅
 SplitView.barIcon: – A GNOME header bar is its page's own and shows no application's mark.
 SplitView.barSubtitle: ✅
 SplitView.barTitle: – A GNOME header bar is its page's own and names that page; an application names itself in none.
+SplitView.toolbarStyle: – The header bar's buttons keep libadwaita's own look.
 TabView.barBackgroundColor: ✅
+TabView.barButtonBackgroundColor: – A header bar's buttons are libadwaita's own, flat.
 TabView.barForegroundColor: ✅
 TabView.barIcon: – A GNOME header bar is its page's own and shows no application's mark.
 TabView.barSubtitle: ✅
 TabView.barTitle: – A GNOME header bar is its page's own and names that page; an application names itself in none.
+TabView.toolbarStyle: – The header bar's buttons keep libadwaita's own look.

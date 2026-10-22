@@ -126,6 +126,7 @@ struct MainPage: View {
             // listing: end
             // The bars of both panes, as the gallery's look says.
             .barLook(look.bars, in: look.barColor, system: application.info.accentColor)
+            .barButtons(style.toolbarStyle, tinted: style.tintsBarButtons)
             // listing: MainPage.overlays
             // The window's notice, over every page while the gallery says so.
             .overlays {
@@ -166,6 +167,7 @@ struct MainPage: View {
         }
         // The sheets' bars wear the gallery's look as the panes' do.
         .barLook(look.bars, in: look.barColor, system: application.info.accentColor)
+        .barButtons(style.toolbarStyle, tinted: style.tintsBarButtons)
         // listing: end
     }
 

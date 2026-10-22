@@ -139,6 +139,23 @@ final class SessionStyle {
         dark ? darkLook : lightLook
     }
 
+    /// How the bars' buttons stand where the host draws them itself: on glass
+    /// on the Web, the gallery's own look for them.
+    @State var toolbarStyle = SessionStyle.ownToolbarStyle
+
+    /// Whether the bars' buttons stand on the accent's tint.
+    @State var tintsBarButtons = false
+
+    /// The gallery's own look for the bars' buttons: glass on the Web, the
+    /// platform's own elsewhere.
+    static var ownToolbarStyle: ToolbarStyle {
+        #if WEB
+        .glass
+        #else
+        .system
+        #endif
+    }
+
     /// Whether the Fonts and Colors windows hide while another scene is the
     /// one in front.
     @State var hidesTools = false

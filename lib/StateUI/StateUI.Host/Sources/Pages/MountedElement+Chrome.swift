@@ -35,8 +35,23 @@ extension MountedElement {
     /// itself included - a sheet's path ending at the modal stack showing it.
     /// Design: docs/design/host/pages.md#the-bar-a-path-declares
     public var barColors: (background: HostValue?, foreground: HostValue?) {
-        (barValue(.barBackgroundColor) ?? sheetsModalStack?.value(.barBackgroundColor),
-         barValue(.barForegroundColor) ?? sheetsModalStack?.value(.barForegroundColor))
+        (barLook(.barBackgroundColor), barLook(.barForegroundColor))
+    }
+
+    /// The color behind this element's bar's buttons, found as its bar's colors; nil for the host's own.
+    public var barButtonBackground: HostValue? {
+        barLook(.barButtonBackgroundColor)
+    }
+
+    /// How this element's bar's buttons stand, found as its bar's colors; `.system` where none is declared.
+    public var toolbarStyle: ToolbarStyle {
+        barLook(.toolbarStyle)?.enumeration.flatMap(ToolbarStyle.init(rawValue:)) ?? .system
+    }
+
+    /// `member` of how the bar looks: the nearest declared on its path, a sheet's path ending at the modal stack
+    /// showing it.
+    private func barLook(_ member: Prop) -> HostValue? {
+        barValue(member) ?? sheetsModalStack?.value(member)
     }
 
     /// The tabbed views this arrangement of pages shows, itself first where it is one, through its pages and the

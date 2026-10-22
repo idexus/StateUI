@@ -39,13 +39,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [BarElement](tiers/
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (10)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>7 ✅ · 1 ☑️ · 1 ✓</td><td><code>NSTabView</code>: tabless under a full-width select-one <code>NSSegmentedControl</code> beneath the toolbar - the split view detail's <code>NSSplitViewItemAccessoryViewController</code> where the tabbed view stands in a split view's detail, else the title bar's bottom accessory - with top tabs where no window serves it</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>8 ✅ · 2 –</td><td><code>UITabBarController</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>7 ✅ · 1 ☑️ · 2 –</td><td>custom <code>ViewGroup</code> + <code>LinearLayout</code> tab row</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>10 ✅</td><td>custom <code>Panel</code> under a <code>SelectorBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>6 ✅ · 4 –</td><td><code>GtkStack</code> + <code>GtkStackSwitcher</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>9 ✅ · 1 –</td><td>ARIA <code>tablist</code> of <code>&lt;button&gt;</code> tabs</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (12)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>7 ✅ · 1 ☑️ · 1 ✓ · 2 –</td><td><code>NSTabView</code>: tabless under a full-width select-one <code>NSSegmentedControl</code> beneath the toolbar - the split view detail's <code>NSSplitViewItemAccessoryViewController</code> where the tabbed view stands in a split view's detail, else the title bar's bottom accessory - with top tabs where no window serves it</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>8 ✅ · 4 –</td><td><code>UITabBarController</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>7 ✅ · 1 ☑️ · 4 –</td><td>custom <code>ViewGroup</code> + <code>LinearLayout</code> tab row</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>10 ✅ · 2 –</td><td>custom <code>Panel</code> under a <code>SelectorBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>6 ✅ · 6 –</td><td><code>GtkStack</code> + <code>GtkStackSwitcher</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>11 ✅ · 1 –</td><td>ARIA <code>tablist</code> of <code>&lt;button&gt;</code> tabs</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/TabViewContract.swift`.
@@ -76,6 +76,8 @@ What an arrangement declares of the bar while it stands on the visible path: its
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>barBackgroundColor</code></td><td>property</td><td><code>Color</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>barButtonBackgroundColor</code></td><td>property</td><td><code>Color</code></td><td>adaptive</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: A toolbar item stands in the Mac's own look, with no background of the application's.<br>UIKit: A bar button stands in the system's glass, which takes no color of the application's.<br>Android Views: A toolbar's action is Android's own, with no background of the application's.<br>WinUI 3: An app bar button is WinUI's own, with no background of the application's.<br>GTK 4: A header bar's buttons are libadwaita's own, flat.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>barForegroundColor</code></td><td>property</td><td><code>Color</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color.<br>Android Views: The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the color itself - on a tab row, the chosen tab's words.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>barIcon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td></tr>
@@ -83,6 +85,8 @@ What an arrangement declares of the bar while it stands on the visible path: its
 <tbody><tr></tr><tr><td><code>barSubtitle</code></td><td>property</td><td><code>String</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>barTitle</code></td><td>property</td><td><code>String</code></td><td>adaptive</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: A UIKit bar is each page's own and names that page; an application names itself in none.<br>Android Views: An Android bar is its stack's own and names its page; an application names itself in none.<br>GTK 4: A GNOME header bar is its page's own and names that page; an application names itself in none.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>toolbarStyle</code></td><td>property</td><td><code>ToolbarStyle</code></td><td>adaptive</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: The toolbar's items keep the Mac's own look.<br>UIKit: The bar's buttons keep iOS's own look.<br>Android Views: The toolbar's actions keep Android's own look.<br>WinUI 3: The bar's buttons keep WinUI's own look.<br>GTK 4: The header bar's buttons keep libadwaita's own look.</td></tr></tbody>
 </table>
 
 ## From [PageElement](tiers/PageElement.md)

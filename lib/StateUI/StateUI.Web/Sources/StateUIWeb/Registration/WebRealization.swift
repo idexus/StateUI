@@ -34,6 +34,8 @@ enum WebRealization {
         .notPlanned(VisualElementContract.accessibilityAdjusted,
             reason: "A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own."),
         .complete(BarElementContract.barBackgroundColor),
+        .complete(BarElementContract.barButtonBackgroundColor),
+        .complete(BarElementContract.toolbarStyle),
         .complete(BarElementContract.barForegroundColor),
         .notPlanned(BarElementContract.barIcon,
             reason: "A page's bar names its page and the application, and no mark: the browser's tab shows the site's icon."),

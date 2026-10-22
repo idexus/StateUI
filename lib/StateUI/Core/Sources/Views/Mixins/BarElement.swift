@@ -20,7 +20,8 @@
 ///
 /// A split view's bar is both its panes': a sidebar with a bar of its own
 /// wears what its split view declares, and nothing from around it. A sheet
-/// takes nothing from around it.
+/// wears the colors of the modal stack showing it, and nothing else from
+/// around it.
 public protocol BarElement: PropertyContainer {}
 
 extension BarElement {
@@ -36,6 +37,24 @@ extension BarElement {
     /// Leave it unwritten to retain the native material and appearance.
     public func barBackgroundColor(_ value: Color) -> Modified {
         setValue(BarElementContract.barBackgroundColor, value)
+    }
+
+    /// The color behind the bar's buttons - a glass or a rounded one, and a
+    /// plain one under the pointer - where the host draws them a background:
+    /// the Web. Native bars keep their platform's own.
+    ///
+    ///     .barButtonBackgroundColor(Color(light: Color(hex: 0xD5E0E4), dark: Color(hex: 0x272D39)))
+    public func barButtonBackgroundColor(_ value: Color) -> Modified {
+        setValue(BarElementContract.barButtonBackgroundColor, value)
+    }
+
+    /// How the bar's buttons stand where the host draws them itself - the
+    /// Web: `.glass`, `.plain`, `.rounded`, or the platform's own,
+    /// `.system`, unless said. Native bars keep their platform's buttons.
+    ///
+    ///     .toolbarStyle(.plain)
+    public func toolbarStyle(_ value: ToolbarStyle) -> Modified {
+        setValue(BarElementContract.toolbarStyle, value)
     }
 
     /// The color of what stands on the bar: the title and the native

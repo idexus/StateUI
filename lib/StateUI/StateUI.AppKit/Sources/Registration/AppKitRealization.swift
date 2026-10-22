@@ -30,6 +30,8 @@ enum AppKitRealization {
         .notPlanned(RefreshElementContract.refreshRequested, reason: Self.noPull),
         .notPlanned(ApplicationContract.useAccentColor, reason: "macOS draws every control in the accent the user chose."),
         .complete(BarElementContract.barBackgroundColor),
+        .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "A toolbar item stands in the Mac's own look, with no background of the application's."),
+        .notPlanned(BarElementContract.toolbarStyle, reason: "The toolbar's items keep the Mac's own look."),
         .partial(BarElementContract.barForegroundColor,
             missing: "Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color."),
         .complete(BarElementContract.barIcon),

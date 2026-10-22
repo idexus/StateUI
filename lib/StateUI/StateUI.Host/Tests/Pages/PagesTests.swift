@@ -671,12 +671,13 @@ final class PagesTests: XCTestCase {
         let runtime = runtime(node("window", .window, children: [
             node("modal", .modalStack, [
                 .barTitle: .string("StateUI"), .barSubtitle: .string("Fundamentals"), .barIcon: .string(""),
-                .barBackgroundColor: .string("window"),
+                .barBackgroundColor: .string("window"), .toolbarStyle: ToolbarStyle.rounded.propValue,
             ], children: [
                 node("split", .splitView, [.barForegroundColor: .string("split")], children: [
                     node("menu", .page),
                     node("stack", .navigationStack, [
                         .barBackgroundColor: .string("stack"), .barSubtitle: .string("Buttons"),
+                        .barButtonBackgroundColor: .string("stack's buttons"),
                     ], children: [node("detail", .page, [.title: .string("Detail")])]),
                 ]),
                 node("sheet", .page),
@@ -689,16 +690,21 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(chrome.titleArea, WindowChrome.TitleArea(title: "StateUI", subtitle: "Buttons", icon: nil))
         XCTAssertEqual(chrome.background, .string("stack"))
         XCTAssertEqual(chrome.foreground, .string("split"))
+        XCTAssertEqual(chrome.buttonBackground, .string("stack's buttons"))
+        XCTAssertEqual(chrome.toolbarStyle, .rounded, "the buttons' look is the window's page's")
 
         let menu = try XCTUnwrap(root.first(id: .manual("menu")))
         XCTAssertEqual(menu.barColors.foreground, .string("split"), "the sidebar wears its split view's bar")
         XCTAssertNil(menu.barColors.background, "and nothing from around the split view")
         XCTAssertNil(menu.titleArea, "nothing from around the split view")
+        XCTAssertEqual(menu.toolbarStyle, .system, "nor the buttons' look")
 
         let sheet = try XCTUnwrap(root.first(id: .manual("sheet")))
         XCTAssertNil(sheet.titleArea, "a sheet's bar names nothing from around it")
         XCTAssertEqual(sheet.barColors.background, .string("window"), "the modal stack paints the sheets it shows")
         XCTAssertNil(sheet.barColors.foreground, "and nothing from the split view beside the sheet")
+        XCTAssertEqual(sheet.toolbarStyle, .rounded, "the stack's buttons' look too")
+        XCTAssertNil(sheet.barButtonBackground)
 
         let bare = self.runtime(node("window", .window, children: [node("page", .page)])) { _ in }
         let bareRoot = try XCTUnwrap(bare.tree.root)

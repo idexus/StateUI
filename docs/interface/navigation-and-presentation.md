@@ -428,6 +428,29 @@ system's look. What the window shows around the bars is its own background
 (`window.background`). Gradients
 remain ordinary view composition where the application owns the surface.
 
+Where the host draws the bar's buttons itself - the Web - `toolbarStyle` says
+how they stand: `.glass`, each on a round glass; `.plain`, no background until
+the pointer is over one; `.rounded`, a flat rounded rectangle; or the
+platform's own, `.system`, unless said - plain on the Web.
+`barButtonBackgroundColor` is the color behind them. Both are found along the
+path as the bar's colors are, and native bars keep their platform's buttons:
+
+```swift
+struct NotesPage: View {
+    @State private var path: [Int] = []
+
+    var body: some View {
+        NavigationStack($path) {
+            Text("Notes")
+        } destination: { _ in
+            Text("Note")
+        }
+        .toolbarStyle(.rounded)
+        .barButtonBackgroundColor(Color(hex: 0xD5E0E4))
+    }
+}
+```
+
 ## Menu bars and context menus
 
 A page's menus are declared like its actions, with `.menuBar { }` on the

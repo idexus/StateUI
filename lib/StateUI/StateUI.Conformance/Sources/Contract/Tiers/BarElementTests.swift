@@ -20,6 +20,8 @@
                 holds(BarElementContract.barTitle, on: element, "Notes", then: "Drafts"),
                 holds(BarElementContract.barSubtitle, on: element, "Inbox", then: "Sent"),
                 holds(BarElementContract.barIcon, on: element, "test_dot.png", then: "test_wide.png"),
+                holds(BarElementContract.barButtonBackgroundColor, on: element, .steelBlue, then: .firebrick),
+                holds(BarElementContract.toolbarStyle, on: element, .glass, then: .rounded),
             ] + (element == "ModalStack" ? [colorsPaintTheSheets()] : [])
         }
     }

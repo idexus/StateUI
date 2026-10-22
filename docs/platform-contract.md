@@ -512,24 +512,24 @@ Every control, and every part an application, its windows and its pages are made
 | [MenuBar](controls/MenuBar.md) | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [MenuItem](controls/MenuItem.md) | 9 | 8 ✅ · 1 ☑️ | 8 ✅ · 1 ☑️ | 7 ✅ · 2 – | 9 ✅ | 6 ✅ · 3 – | 9 ✅ |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ModalStack](controls/ModalStack.md) | 6 | 5 ✅ · 1 ☑️ | 4 ✅ · 2 – | 3 ✅ · 1 ☑️ · 2 – | 6 ✅ | 4 ✅ · 2 – | 5 ✅ · 1 – |
-| [NavigationStack](controls/NavigationStack.md) | 9 | 6 ✅ · 1 ☑️ · 1 ✓ | 7 ✅ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 9 ✅ | 5 ✅ · 4 – | 8 ✅ · 1 – |
+| [ModalStack](controls/ModalStack.md) | 8 | 5 ✅ · 1 ☑️ · 2 – | 4 ✅ · 4 – | 3 ✅ · 1 ☑️ · 4 – | 6 ✅ · 2 – | 4 ✅ · 4 – | 7 ✅ · 1 – |
+| [NavigationStack](controls/NavigationStack.md) | 11 | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 7 ✅ · 4 – | 6 ✅ · 1 ☑️ · 4 – | 9 ✅ · 2 – | 5 ✅ · 6 – | 10 ✅ · 1 – |
 | [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 | [Page](controls/Page.md) | 12 | 9 ✅ | 12 ✅ | 11 ✅ · 1 – | 11 ✅ · 1 – | 9 ✅ · 2 – | 11 ✅ |
 | [Popover](controls/Popover.md) | 2 | 2 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](controls/Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
-| [SplitView](controls/SplitView.md) | 13 | 10 ✅ · 1 ☑️ · 1 – | 10 ✅ · 1 ✓ · 2 – | 5 ✅ · 2 ☑️ · 4 ✓ · 2 – | 11 ✅ · 2 ☑️ | 7 ✅ · 2 ✓ · 4 – | 10 ✅ · 2 ☑️ · 1 – |
-| [TabView](controls/TabView.md) | 10 | 7 ✅ · 1 ☑️ · 1 ✓ | 8 ✅ · 2 – | 7 ✅ · 1 ☑️ · 2 – | 10 ✅ | 6 ✅ · 4 – | 9 ✅ · 1 – |
+| [SplitView](controls/SplitView.md) | 15 | 10 ✅ · 1 ☑️ · 3 – | 10 ✅ · 1 ✓ · 4 – | 5 ✅ · 2 ☑️ · 4 ✓ · 4 – | 11 ✅ · 2 ☑️ · 2 – | 7 ✅ · 2 ✓ · 6 – | 12 ✅ · 2 ☑️ · 1 – |
+| [TabView](controls/TabView.md) | 12 | 7 ✅ · 1 ☑️ · 1 ✓ · 2 – | 8 ✅ · 4 – | 7 ✅ · 1 ☑️ · 4 – | 10 ✅ · 2 – | 6 ✅ · 6 – | 11 ✅ · 1 – |
 | [TextSpan](controls/TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ToolbarItem](controls/ToolbarItem.md) | 9 | 5 ✅ · 1 ✓ · 1 – | 7 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 9 ✅ | 7 ✅ · 1 ✓ · 1 – | 9 ✅ |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 101 | 96 | 77 | 126 | 90 | 104 |
+| ✅ |  | 101 | 96 | 77 | 126 | 90 | 112 |
 | ✓ |  | 23 | 20 | 20 | 5 | 17 | 10 |
-| – |  | 4 | 17 | 27 | 3 | 28 | 19 |
-| **Met** | 143 | **128** | **133** | **124** | **134** | **135** | **133** |
+| – |  | 12 | 25 | 35 | 11 | 36 | 19 |
+| **Met** | 151 | **136** | **141** | **132** | **142** | **143** | **141** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -571,7 +571,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [KeyboardElement](controls/tiers/KeyboardElement.md) | `keyPressed`, `keysTaken` | 2 |
 | [FocusElement](controls/tiers/FocusElement.md) | `isFocusedChanged` | 1 |
 | [RefreshElement](controls/tiers/RefreshElement.md) | `isRefreshEnabled`, `isRefreshing`, `onRefreshRequested` (`refreshRequested`) | 3 |
-| [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor`, `barForegroundColor`, `barIcon`, `barSubtitle`, `barTitle` | 5 |
+| [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor`, `barButtonBackgroundColor`, `barForegroundColor`, `barIcon`, `barSubtitle`, `barTitle`, `toolbarStyle` | 7 |
 | [MenuItemElement](controls/tiers/MenuItemElement.md) | `onClicked` (`clicked`), `icon`, `isEnabled`, `keyboardShortcut`, `role`, `text` | 6 |
 | [PageElement](controls/tiers/PageElement.md) | `icon`, `title` | 2 |
 
@@ -653,30 +653,30 @@ realizes the element and each of its members.
 `accessibilityActions`, `accessibilityHeading`, `accessibilityHint`,
 `accessibilityIdentifier`, `accessibilityLabel`, `accessibilityRole`,
 `accessibilityValue`, `allowsDrop`, `area`, `avoidsSafeArea`, `backButtonTitle`,
-`background`, `barBackgroundColor`, `barForegroundColor`, `barIcon`,
-`barSubtitle`, `barTitle`, `canDrag`, `clipsContent`, `columns`,
-`columnSpacing`, `contentMode`, `cornerRadius`, `cursorPosition`, `dash`,
-`dashPhase`, `data`, `date`, `dragText`, `drawing`, `droppedFileTypes`,
-`endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`, `flyoutBackground`,
-`fontAttributes`, `fontFamily`, `fontSize`, `fontWeight`, `format`, `frame`,
-`geometryTransform`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`,
-`growsWithText`, `handAxis`, `height`, `hidesChildrenFromAccessibility`,
-`hidesWhenInactive`, `horizontalAlignment`, `horizontalScrollIndicator`,
-`horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
-`ignoresInput`, `inputPurpose`, `isAccessibilityHidden`, `isAnimating`,
-`isEnabled`, `isFontAutoScalingEnabled`, `isMaximizable`, `isMinimizable`,
-`isOn`, `isOpen`, `isPassword`, `isReadOnly`, `isRefreshEnabled`,
-`isRefreshing`, `isScrollEnabled`, `isSelectable`, `isShown`,
-`isSpellCheckEnabled`, `isTextPredictionEnabled`, `isVisible`, `isZoomEnabled`,
-`itemDrag`, `items`, `itemsLayout`, `keyboardShortcut`, `keysTaken`, `label`,
-`layoutDirection`, `letsInputThrough`, `lineBreak`, `lineCap`, `lineHeight`,
-`lineJoin`, `lineWidth`, `location`, `magnifies`, `mapType`, `margin`,
-`maximum`, `maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`,
-`maximumWidth`, `menuKind`, `minimum`, `minimumDate`, `minimumHeight`,
-`minimumWidth`, `miterLimit`, `opacity`, `options`, `order`, `orientation`,
-`padding`, `pans`, `panTouchCount`, `panXChannel`, `panYChannel`, `phase`,
-`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `placement`, `points`,
-`presentation`, `progress`, `region`, `role`, `rotates`, `rotation`,
+`background`, `barBackgroundColor`, `barButtonBackgroundColor`,
+`barForegroundColor`, `barIcon`, `barSubtitle`, `barTitle`, `canDrag`,
+`clipsContent`, `columns`, `columnSpacing`, `contentMode`, `cornerRadius`,
+`cursorPosition`, `dash`, `dashPhase`, `data`, `date`, `dragText`, `drawing`,
+`droppedFileTypes`, `endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`,
+`flyoutBackground`, `fontAttributes`, `fontFamily`, `fontSize`, `fontWeight`,
+`format`, `frame`, `geometryTransform`, `gridColumn`, `gridColumnSpan`,
+`gridRow`, `gridRowSpan`, `growsWithText`, `handAxis`, `height`,
+`hidesChildrenFromAccessibility`, `hidesWhenInactive`, `horizontalAlignment`,
+`horizontalScrollIndicator`, `horizontalTextAlignment`, `icon`, `iconPosition`,
+`iconSpacing`, `ignoresInput`, `inputPurpose`, `isAccessibilityHidden`,
+`isAnimating`, `isEnabled`, `isFontAutoScalingEnabled`, `isMaximizable`,
+`isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isReadOnly`,
+`isRefreshEnabled`, `isRefreshing`, `isScrollEnabled`, `isSelectable`,
+`isShown`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `isVisible`,
+`isZoomEnabled`, `itemDrag`, `items`, `itemsLayout`, `keyboardShortcut`,
+`keysTaken`, `label`, `layoutDirection`, `letsInputThrough`, `lineBreak`,
+`lineCap`, `lineHeight`, `lineJoin`, `lineWidth`, `location`, `magnifies`,
+`mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`, `maximumLength`,
+`maximumLines`, `maximumWidth`, `menuKind`, `minimum`, `minimumDate`,
+`minimumHeight`, `minimumWidth`, `miterLimit`, `opacity`, `options`, `order`,
+`orientation`, `padding`, `pans`, `panTouchCount`, `panXChannel`, `panYChannel`,
+`phase`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `placement`,
+`points`, `presentation`, `progress`, `region`, `role`, `rotates`, `rotation`,
 `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
 `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
 `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
@@ -685,10 +685,10 @@ realizes the element and each of its members.
 `sidebarBackground`, `sidebarOverlays`, `source`, `spacing`, `step`, `stroke`,
 `style`, `submitLabel`, `subtitle`, `swipeDirection`, `swipeThreshold`,
 `tapCount`, `text`, `textCase`, `textColor`, `textDecorations`, `textStyle`,
-`time`, `tint`, `title`, `tooltip`, `tracking`, `translationX`, `translationY`,
-`type`, `userAgent`, `value`, `verticalAlignment`, `verticalScrollIndicator`,
-`verticalTextAlignment`, `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`,
-`y`, `y1`, `y2`, `zIndex`.
+`time`, `tint`, `title`, `toolbarStyle`, `tooltip`, `tracking`, `translationX`,
+`translationY`, `type`, `userAgent`, `value`, `verticalAlignment`,
+`verticalScrollIndicator`, `verticalTextAlignment`, `width`, `windowType`,
+`windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`, `zIndex`.
 
 ### Events
 

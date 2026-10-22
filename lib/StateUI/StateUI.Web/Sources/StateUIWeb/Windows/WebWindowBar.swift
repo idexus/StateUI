@@ -83,6 +83,15 @@ final class WebWindowBar: WebDOMView {
         WebRelay.insert(subtitle.node, into: heading.node, at: 1)
     }
 
+    /// The look of the bar's buttons `style` asks for, as the bar's `data-toolbar-style` says it; nil for glass.
+    static func look(of style: ToolbarStyle) -> String? {
+        switch style {
+        case .glass: nil
+        case .system, .plain: "plain"
+        case .rounded: "rounded"
+        }
+    }
+
     /// Shows `chrome`: its parts where it has them, its actions in their groups, its colors; `sidebar` says whether
     /// the split view the toggle serves shows its sidebar, nil where there is none.
     func show(_ chrome: WindowChrome, title shown: String, sidebar: Bool?, split: WebSplitView? = nil) {
@@ -108,6 +117,9 @@ final class WebWindowBar: WebDOMView {
         style("--stateui-bar-filter", HostBrush(chrome.background).isClear ? "none" : nil)
         // Words the tree gives no color stand light on a dark band and dark on a light one.
         style("--stateui-bar-foreground", WebCSS.color(BandWords.color(on: chrome.background, written: chrome.foreground)))
+        // The buttons on glass unless said otherwise: the Web's own look for them, `.system`, is plain.
+        attribute("data-toolbar-style", Self.look(of: chrome.toolbarStyle))
+        style("--stateui-bar-button", WebCSS.fill(chrome.buttonBackground))
 
         var kept: [ObjectIdentifier: WebBarButton] = [:]
         var made: [WebDOMView] = []

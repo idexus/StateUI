@@ -24,6 +24,8 @@ enum UIKitRealization {
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
         .complete(BarElementContract.barBackgroundColor),
+        .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "A bar button stands in the system's glass, which takes no color of the application's."),
+        .notPlanned(BarElementContract.toolbarStyle, reason: "The bar's buttons keep iOS's own look."),
         .complete(BarElementContract.barForegroundColor),
         .notPlanned(BarElementContract.barIcon,
             reason: "A UIKit bar is each page's own: it shows that page's title, and no application's mark."),

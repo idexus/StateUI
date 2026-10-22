@@ -186,7 +186,9 @@ final class NavigationStackTests: XCTestCase {
         let sent = Set(
             stack(path.projectedValue)
                 .barBackgroundColor(.black)
+                .barButtonBackgroundColor(.gray)
                 .barForegroundColor(.white)
+                .toolbarStyle(.plain)
                 .barTitle("StateUI")
                 .barSubtitle("Home")
                 .barIcon("mark.png")

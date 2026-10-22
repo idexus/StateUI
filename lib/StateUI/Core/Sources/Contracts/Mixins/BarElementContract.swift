@@ -10,6 +10,11 @@ public enum BarElementContract: Contract {
     /// The bar's color; unwritten, the platform's own material.
     public static let barBackgroundColor = ElementProperty<Self, Color>("barBackgroundColor", layer: .adaptive)
 
+    /// The color behind the bar's buttons, where the host draws them a
+    /// background.
+    public static let barButtonBackgroundColor = ElementProperty<Self, Color>(
+        "barButtonBackgroundColor", layer: .adaptive)
+
     /// The color of what stands on the bar: the title and the native
     /// affordances.
     public static let barForegroundColor = ElementProperty<Self, Color>("barForegroundColor", layer: .adaptive)
@@ -25,8 +30,12 @@ public enum BarElementContract: Contract {
     /// the application.
     public static let barTitle = ElementProperty<Self, String>("barTitle", layer: .adaptive)
 
+    /// How the bar's buttons stand, where the host draws them itself.
+    public static let toolbarStyle = ElementProperty<Self, ToolbarStyle>("toolbarStyle", layer: .adaptive)
+
     /// The tier's own members.
     public static let members: [any ContractMember] = [
-        barBackgroundColor, barForegroundColor, barIcon, barSubtitle, barTitle,
+        barBackgroundColor, barButtonBackgroundColor, barForegroundColor, barIcon, barSubtitle, barTitle,
+        toolbarStyle,
     ]
 }

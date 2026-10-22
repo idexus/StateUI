@@ -120,6 +120,12 @@ extension WebDriver {
         case (_, .barTitle): return .some(try barWords(".stateui-bar-name"))
         case (_, .barSubtitle): return .some(try barWords(".stateui-bar-subtitle"))
         case (_, .barBackgroundColor): return .some(try barColor("--stateui-bar-background", over: element))
+        case (_, .barButtonBackgroundColor): return .some(try barColor("--stateui-bar-button", over: element))
+        case (_, .toolbarStyle):
+            // The bar's buttons on glass where it says no look of its own.
+            let look = try WebBrowser.evaluate("e.dataset.toolbarStyle ?? ''", on: standingBar(over: element).node) ?? ""
+            let style: ToolbarStyle = look == "plain" ? .plain : look == "rounded" ? .rounded : .glass
+            return .some(style.propValue)
         case (_, .barForegroundColor): return .some(try barColor("--stateui-bar-foreground", over: element))
         case (.page, .showsNavigationBar):
             guard let bar = try? bar(over: element) else { return nil }
@@ -151,16 +157,20 @@ extension WebDriver {
             .propValue
     }
 
-    /// The color the window's bar is painted with by its variable `variable`; nil for the page's own.
-    /// A color of the bar `element` stands under: the bar of the sheet it stands in, else the window's.
-    private func barColor(_ variable: String, over element: MountedElement) throws -> HostValue? {
+    /// The bar `element` stands under: the bar of the sheet it stands in, else the window's.
+    private func standingBar(over element: MountedElement) throws -> WebWindowBar {
         guard let controller = renderer?.roster.controllers.first else { throw DriverCannot("find the window's bar") }
         let sheet = controller.sheets.last { shown in
             var each: MountedElement? = element
             while let found = each, found !== shown.element { each = found.parent }
             return each != nil
         }
-        let bar = sheet?.sheet.bar ?? controller.window.bar
+        return sheet?.sheet.bar ?? controller.window.bar
+    }
+
+    /// The color the bar `element` stands under is painted with by its variable `variable`; nil for the page's own.
+    private func barColor(_ variable: String, over element: MountedElement) throws -> HostValue? {
+        let bar = try standingBar(over: element)
         let painted = "getComputedStyle(e).getPropertyValue('\(variable)').trim() || null"
         guard try WebBrowser.evaluate(painted, on: bar.node) != nil else { return nil }
         return try color(painted, on: bar.node)?.propValue
