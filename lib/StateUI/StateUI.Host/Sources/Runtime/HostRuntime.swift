@@ -260,8 +260,11 @@
             guard stack.children.count > 1 else { return }
             stackPopped(stack, staying: stack.children.count - 1)
         case .dismissSheets(let pages):
-            for sheet in pages.compactMap(\.parent) where sheet.type == .sheet {
-                sheet.reportUserChange(.isPresented, .isPresentedChanged, .bool(false), in: self)
+            // One render for them all: none between may ask again for a sheet already gone.
+            performUserTransaction {
+                for sheet in pages.compactMap(\.parent) where sheet.type == .sheet {
+                    sheet.reportUserChange(.isPresented, .isPresentedChanged, .bool(false), in: self)
+                }
             }
         }
     }

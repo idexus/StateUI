@@ -91,6 +91,31 @@ final class SheetsTests: XCTestCase {
         XCTAssertTrue(Sheets.editing.wrappedValue)
     }
 
+    /// Sheets the user took away together go in one render: none between asks again for one already gone, which a
+    /// toolkit would show again.
+    func testSheetsGoingTogetherGoInOneRender() throws {
+        let runtime = runtime()
+        let rendered = Rendered { [unowned self] in (try? self.shown(runtime).count) ?? -1 }
+        runtime.presenter = rendered
+        let going = try [page(holding: "note", in: runtime), page(holding: "picker", in: runtime), page(holding: "pick", in: runtime)]
+
+        runtime.goBack(.dismissSheets(going), in: try window(runtime))
+        runtime.pump.turn()
+
+        XCTAssertEqual(rendered.sheets, [0], "one render, every sheet gone")
+    }
+
+    /// How many sheets the window showed at each render.
+    private final class Rendered: HostPresenter {
+        let count: () -> Int
+        var sheets: [Int] = []
+        init(_ count: @escaping () -> Int) { self.count = count }
+        func presentRendered(touchedChrome: Bool) { sheets.append(count()) }
+        func presentFrame(movedChrome: Bool) {}
+        func perform(_ call: HostActCall) {}
+        func focus(_ element: MountedElement) {}
+    }
+
     /// What stands under a sheet is out of the user's sight, the top sheet's in it; with no sheet, the window's page
     /// is in sight again.
     func testWhatStandsUnderASheetIsOutOfSight() throws {

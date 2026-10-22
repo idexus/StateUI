@@ -125,7 +125,9 @@ its own stack's top page where it can go back, else the sheet itself; with no
 sheet, the arrangement's stack. A stack can go back where it holds more than
 one page and its top page shows its bar and its way back. Going back tells the
 stack it is one page shorter, or writes false onto the top sheet's state
-(`HostRuntime.goBack`).
+(`HostRuntime.goBack`). Sheets the user took away together have their states
+written in one transaction, rendered once: a render between would ask again
+for a sheet already gone, which a toolkit shows again.
 
 ## A path that changes
 
