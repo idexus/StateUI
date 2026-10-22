@@ -40,14 +40,23 @@
     /// on each edge `edges` lets the content under the bars; `safe` where the content says nothing. The start and
     /// the end are the content's `direction`'s: right to left, the start is the right edge.
     public static func room(safe: Rect, whole: Rect, edges: SafeAreaEdges?, direction: LayoutDirection) -> Rect {
-        guard let edges else { return safe }
+        let under = under(edges, direction: direction)
+        let minX = under.left ? whole.x : safe.x
+        let minY = under.top ? whole.y : safe.y
+        let maxX = under.right ? whole.x + whole.width : safe.x + safe.width
+        let maxY = under.bottom ? whole.y + whole.height : safe.y + safe.height
+        return Rect(x: minX, y: minY, width: max(0, maxX - minX), height: max(0, maxY - minY))
+    }
+
+    /// On which edges content standing so runs under what stands over its room: the start and the end are its
+    /// `direction`'s; none where it says nothing.
+    public static func under(
+        _ edges: SafeAreaEdges?, direction: LayoutDirection
+    ) -> (top: Bool, left: Bool, bottom: Bool, right: Bool) {
+        guard let edges else { return (false, false, false, false) }
         let (start, top, end, bottom) = sides(edges)
         let (left, right) = direction == .rightToLeft ? (end, start) : (start, end)
-        let minX = underTheBars(left) ? whole.x : safe.x
-        let minY = underTheBars(top) ? whole.y : safe.y
-        let maxX = underTheBars(right) ? whole.x + whole.width : safe.x + safe.width
-        let maxY = underTheBars(bottom) ? whole.y + whole.height : safe.y + safe.height
-        return Rect(x: minX, y: minY, width: max(0, maxX - minX), height: max(0, maxY - minY))
+        return (underTheBars(top), underTheBars(left), underTheBars(bottom), underTheBars(right))
     }
 
     /// What a scroller filling a page's `room` keeps clear on each edge: where the room reaches past `safe` - under

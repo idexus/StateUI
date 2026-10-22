@@ -44,6 +44,20 @@ in words, and the browser's tab shows the site's own icon.
 The page is one window: an application's second window has no place of its
 own in it.
 
+## The safe area
+
+The page is drawn under a phone's status bar, notch and home indicator
+(`viewport-fit=cover`), and the stylesheet passes what stands over each edge
+down as `--stateui-over-top`, `-left`, `-bottom` and `-right`, from
+`env(safe-area-inset-*)` ([the safe area](../../host/layout.md#the-safe-area)).
+The window's bar reaches under the top, its words clear of it and of the
+sides, and leaves its room the rest; a card sheet stands clear of all of it in
+the middle, a phone's sheet from the bottom keeps the bottom and the sides. A
+page stands its content clear of what is left by its own padding, but on an
+edge where the content lets itself under (`SafeAreaArithmetic.under`), where
+the content's scroller takes that padding instead, its first and last rows
+scrolling out from under it. The overlays stand clear of all of it.
+
 ## The color under the window
 
 The page under the window wears the window's color, where the window is one

@@ -105,6 +105,30 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(standard, [min(560, window[0] - 32), min(640, window[1] - 64)], "the standard size")
     }
 
+    /// A phone's status bar and home indicator stand over the window: its bar reaches under the top, its words clear
+    /// of it, and a page's content stands clear of the bottom, or under it where the content says so.
+    func testAPageStandsClearOfWhatStandsOverTheWindow() throws {
+        WebBrowser.ask([("safeTop", .number(47)), ("safeBottom", .number(34))])
+        defer { WebBrowser.ask([("safeTop", .number(0)), ("safeBottom", .number(0))]) }
+        let under = State(wrappedValue: false)
+        let host = WebRenderer.running {
+            ZStack {}.avoidsSafeArea(under.wrappedValue ? .none : .container).id("content")
+        }
+        let content = { (host.runtime.tree.root?.first(id: .manual("content"))?.native as? WebElement)?.view?.node }
+        host.settle { content() != nil }
+        let node = try XCTUnwrap(content())
+        let bottom: () throws -> Double? = { try WebBrowser.number("e.getBoundingClientRect().bottom", on: node) }
+        let window = try XCTUnwrap(WebBrowser.number("innerHeight", on: 0))
+        let bar = try XCTUnwrap(WebBrowser.number(
+            "parseFloat(getComputedStyle(document.querySelector('.stateui-window > .stateui-bar')).paddingTop)", on: 0))
+        XCTAssertEqual(bar, 47, "the bar's words clear of the notch")
+        XCTAssertEqual(try XCTUnwrap(bottom()), window - 34, accuracy: 0.5, "clear of the home indicator")
+
+        under.wrappedValue = true
+        host.settle { (try? bottom()) == window }
+        XCTAssertEqual(try XCTUnwrap(bottom()), window, accuracy: 0.5, "under it")
+    }
+
     func testAControlOverEveryPageWearsTheStylesheet() throws {
         let host = WebRenderer.running {
             Text("Beneath").overlays { VStack { Switch(true); Button("Over") } }
