@@ -294,6 +294,32 @@ final class ActCallShapeTests: XCTestCase {
         taken(drain(), "useColorScheme", [.enumeration(ColorScheme.system.rawValue)], awaited: false)
     }
 
+    /// The accent the application holds crosses as one color - a pair's half in force, and the other half as the
+    /// theme turns - and none once it gives the platform's back.
+    func testTheApplicationsAccentCrossesAsTheHalfInForce() throws {
+        drain()
+        HostBoundary.setColorScheme(.light)
+        let application = StandardEnvironment.application
+        defer {
+            application.accentColor = nil
+            HostBoundary.setColorScheme(.light)
+            drain()
+        }
+        application.accentColor = Color(light: .firebrick, dark: .steelBlue)
+        taken(drain(), "useAccentColor", [Color.firebrick.propValue], awaited: false)
+
+        HostBoundary.setColorScheme(.dark)
+        taken(drain(), "useAccentColor", [Color.steelBlue.propValue], awaited: false)
+
+        application.accentColor = .firebrick
+        taken(drain(), "useAccentColor", [Color.firebrick.propValue], awaited: false)
+        HostBoundary.setColorScheme(.light)
+        XCTAssertTrue(drain().isEmpty, "an accent of one color is not sent again as the theme turns")
+
+        application.accentColor = nil
+        taken(drain(), "useAccentColor", [.nothing], awaited: false)
+    }
+
     func testAFailedHandlerCrossesWithItsArgumentsInPlace() throws {
         drain()
         Renderer.shared.report(StateUIError(message: "boom"))

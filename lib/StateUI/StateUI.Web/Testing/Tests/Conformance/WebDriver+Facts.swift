@@ -152,6 +152,14 @@ extension WebDriver {
         return try WebBrowser.truth("matchMedia('(prefers-color-scheme: dark)').matches", on: 0) ? .dark : .light
     }
 
+    /// The accent the page draws its controls in: its accent's color, as a probe on the page shows it.
+    func accent() throws -> Color {
+        let shown = "(() => { const p = document.createElement('span'); p.style.color = 'var(--stateui-accent)'; "
+            + "document.body.append(p); const c = getComputedStyle(p).color; p.remove(); return c; })()"
+        guard let accent = try color(shown, on: 0) else { throw DriverCannot("read the accent the application draws in") }
+        return accent
+    }
+
     /// The request cases' server: the page's own, which `run-in-browser.mjs` answers under this address - a page
     /// stands, so the address names no scheme.
     func served() throws -> String {

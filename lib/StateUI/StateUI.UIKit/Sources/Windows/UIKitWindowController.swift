@@ -75,6 +75,7 @@ final class UIKitWindowController {
         let window = UIWindow(windowScene: scene)
         window.backgroundColor = background
         window.overrideUserInterfaceStyle = UIKitActToolkit.style(HostThemes.held)
+        window.tintColor = UIKitActToolkit.tint(HostAccents.held)
         window.rootViewController = root
         root.onResizing = { [weak self, weak scene] in
             guard let scene else { return }

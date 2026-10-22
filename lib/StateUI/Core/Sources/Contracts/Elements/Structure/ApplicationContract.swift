@@ -82,6 +82,12 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// See `ApplicationSession.colorScheme`.
     public static let useColorScheme = ElementAct<Self, ColorScheme, Void>("useColorScheme")
 
+    /// Draws the application's controls in its own accent where the user
+    /// chooses none for the system; nil gives the platform's back.
+    ///
+    /// See `ApplicationSession.accentColor`.
+    public static let useAccentColor = ElementAct<Self, Color?, Void>("useAccentColor")
+
     /// Asks the user for files to open in the dialog over a window - the
     /// window, the kinds it shows, none for any, and whether it takes several -
     /// answering the files chosen, none where it was cancelled.
@@ -156,6 +162,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     public static let members: [any ContractMember] = [
         alert, announce, cancelCall, chooseAction, confirm, currentTime, currentTimeZone, handlerFailed,
         hideOnScreenKeyboard, launchFile, launchLink, openFiles, persistSceneValue, persistValue, prompt,
-        readClipboard, readFile, saveFile, sendRequest, share, useColorScheme, utcOffset, writeClipboard,
+        readClipboard, readFile, saveFile, sendRequest, share, useAccentColor, useColorScheme, utcOffset,
+        writeClipboard,
     ]
 }

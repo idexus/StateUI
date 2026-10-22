@@ -28,6 +28,7 @@ enum AppKitRealization {
         .notPlanned(RefreshElementContract.isRefreshEnabled, reason: Self.noPull),
         .notPlanned(RefreshElementContract.isRefreshing, reason: Self.noPull),
         .notPlanned(RefreshElementContract.refreshRequested, reason: Self.noPull),
+        .notPlanned(ApplicationContract.useAccentColor, reason: "macOS draws every control in the accent the user chose."),
         .complete(BarElementContract.barBackgroundColor),
         .partial(BarElementContract.barForegroundColor,
             missing: "Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color."),

@@ -12,10 +12,12 @@
 
     /// Updates the appearance used to resolve themed values before rendering.
     public static func setColorScheme(_ theme: ColorScheme) {
+        let turned = StandardEnvironment.application.info.colorScheme != theme
         update(StandardEnvironment.application.info, \.colorScheme, theme)
+        if turned { StandardEnvironment.application.themeTurned() }
     }
 
-    /// Updates the accent the user chose for the system.
+    /// Updates the accent in force: the user's, or the application's where the platform took it.
     public static func setAccentColor(_ color: Color) {
         update(StandardEnvironment.application.info, \.accentColor, color)
     }

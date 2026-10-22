@@ -25,8 +25,9 @@ public final class ApplicationInfo {
     @State public internal(set) var colorScheme: ColorScheme = .system
 
     /// The accent the user chose for the system - where the platform has
-    /// none, the application's own tint - updated live when the user changes
-    /// it. A view reading it is built again as it changes.
+    /// none, the application's own (`application.accentColor`), else the
+    /// platform's - updated live as it changes. A view reading it is built
+    /// again as it changes.
     ///
     ///     Switch($on).tint(app.info.accentColor)
     @State public internal(set) var accentColor = ApplicationInfo.standardAccent

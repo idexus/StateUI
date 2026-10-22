@@ -214,6 +214,12 @@
         return try driven { try driver.theme() }
     }
 
+    /// The accent the platform draws the application's controls in now.
+    public func accent() throws -> Color {
+        note("read the accent the application draws in")
+        return try driven { try driver.accent() }
+    }
+
     /// The address of the driver's HTTP server (`HostDriver.served()`).
     public func served() throws -> String {
         note("serve a request")

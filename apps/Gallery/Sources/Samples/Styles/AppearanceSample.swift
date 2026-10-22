@@ -28,11 +28,16 @@ struct AppearanceSample: SampleContent, ExampleContent {
         ("The system's", .system), ("Light", .light), ("Dark", .dark),
     ]
 
+    /// The accents the application may hold, the platform's first.
+    private static let accents: [(name: String, color: Color?)] =
+        [("The platform's", nil)] + AccentChoice.own.map { ($0.name, $0.color(system: .accent, for: .bar)) }
+
     var body: some View {
         // Read here, so a theme held anywhere builds the picker again at its
         // new place.
         let application = self.application
         let themes = Self.themes
+        let accents = Self.accents
 
         return VStack {
             // The theme first: which of the two looks below the gallery wears.
@@ -43,6 +48,15 @@ struct AppearanceSample: SampleContent, ExampleContent {
             }
                 .accessibilityIdentifier("appearance.theme")
                 .accessibilityLabel("Theme")
+
+            // The accent the platform draws its controls in, where the user
+            // chooses none for the system.
+            SectionTitle("The accent")
+            Picker(Array(accents.indices), selection: Binding(
+                get: { accents.firstIndex { $0.color == application.accentColor } ?? 0 },
+                set: { application.accentColor = accents[$0].color })) { accents[$0].name }
+                .accessibilityIdentifier("appearance.accent")
+                .accessibilityLabel("Accent")
 
             // A look for each theme: the gallery wears the one of the theme in
             // force, and changes with it. Side by side where there is room,
@@ -86,6 +100,11 @@ struct AppearanceSample: SampleContent, ExampleContent {
 
             Text("\"The system's accent\" is the one the user chose, as `app.info.accentColor` "
                 + "reports it - a change in the system's settings repaints the gallery.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("An accent of the application's own draws the controls where the user chooses none for the "
+                + "system - the Web, the iPhone and the iPad, GNOME before 47; elsewhere the user's stands.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

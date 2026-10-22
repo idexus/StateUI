@@ -210,6 +210,7 @@ STATEUI_WEB(prefers_dark) int32_t stateui_web_prefers_dark(void);
 
 /// Shows the page in `scheme`, a `ColorScheme`.
 STATEUI_WEB(use_color_scheme) void stateui_web_use_color_scheme(int32_t scheme);
+STATEUI_WEB(use_accent_color) void stateui_web_use_accent_color(int32_t argb, int32_t has);
 
 STATEUI_WEB(accent_color) int32_t stateui_web_accent_color(void);
 STATEUI_WEB(listen_appearance) void stateui_web_listen_appearance(int32_t listener);

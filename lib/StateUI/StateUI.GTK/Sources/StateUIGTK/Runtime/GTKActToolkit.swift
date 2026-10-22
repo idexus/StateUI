@@ -89,6 +89,16 @@ final class GTKActToolkit: ActToolkit {
         adw_style_manager_set_color_scheme(adw_style_manager_get_default(), scheme)
     }
 
+    /// Draws the application's controls in `accent` - libadwaita's accent colors - where the user chooses none for
+    /// the desktop, libadwaita's own again where nil; GNOME 47 on, the user's stands. The accent drawn is reported
+    /// again.
+    func useAccentColor(_ accent: Color?) -> Bool {
+        guard !GTKEnvironment.userChoosesAccent else { return false }
+        GTKStyleSheet.accent(accent.flatMap { GTKBrush.rgba($0.propValue) }, variables: GTKEnvironment.offersAccent)
+        CoreLink().setAccentColor(GTKEnvironment.accent)
+        return true
+    }
+
     /// The keyboard GNOME shows on a touch screen stands for the field holding the focus in the window asked: the
     /// field lets the focus go, and the keyboard goes down. Whether a field held it.
     func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {

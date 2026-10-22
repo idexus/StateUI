@@ -874,11 +874,16 @@ enum Listings {
             ("The system's", .system), ("Light", .light), ("Dark", .dark),
         ]
 
+        /// The accents the application may hold, the platform's first.
+        private static let accents: [(name: String, color: Color?)] =
+            [("The platform's", nil)] + AccentChoice.own.map { ($0.name, $0.color(system: .accent, for: .bar)) }
+
         var body: some View {
             // Read here, so a theme held anywhere builds the picker again at its
             // new place.
             let application = self.application
             let themes = Self.themes
+            let accents = Self.accents
 
             return VStack {
                 // The theme first: which of the two looks below the gallery wears.
@@ -887,6 +892,13 @@ enum Listings {
                        selection: Binding(get: { application.colorScheme }, set: { application.colorScheme = $0 })) { scheme in
                     themes.first { $0.scheme == scheme }?.name ?? ""
                 }
+
+                // The accent the platform draws its controls in, where the user
+                // chooses none for the system.
+                SectionTitle("The accent")
+                Picker(Array(accents.indices), selection: Binding(
+                    get: { accents.firstIndex { $0.color == application.accentColor } ?? 0 },
+                    set: { application.accentColor = accents[$0].color })) { accents[$0].name }
 
                 // A look for each theme: the gallery wears the one of the theme in
                 // force, and changes with it. Side by side where there is room,
@@ -6662,7 +6674,7 @@ enum Listings {
             ModalPage(nav: nav)
         }
         // The sheets' bars wear the gallery's look as the panes' do.
-        .bars(look.bars, in: look.barColor, system: application.info.accentColor)
+        .barLook(look.bars, in: look.barColor, system: application.info.accentColor)
         """#,
         "MainPage.overlays": #"""
         // Sources/Gallery/MainPage.swift

@@ -116,6 +116,9 @@ final class WinUIActToolkit: ActToolkit {
         for controller in renderer.windows { controller.window.useTheme(theme) }
     }
 
+    /// Keeps the accent the user chose for Windows: WinUI draws its controls in it.
+    func useAccentColor(_ accent: Color?) -> Bool { false }
+
     func announce(_ words: String) {
         if let content = renderer.userWindow?.content { stateui_winui_announce(content.handle, words) }
     }

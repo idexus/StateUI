@@ -453,6 +453,7 @@ ZStack
   sendRequest()
   share()
   unfocus()
+  useAccentColor()
   useColorScheme()
   utcOffset()
   writeClipboard()

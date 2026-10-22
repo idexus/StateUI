@@ -347,6 +347,7 @@ the tier.
 | `saveFile` | [Application](controls/Application.md) |
 | `sendRequest` | [Application](controls/Application.md) |
 | `share` | [Application](controls/Application.md) |
+| `useAccentColor` | [Application](controls/Application.md) |
 | `useColorScheme` | [Application](controls/Application.md) |
 | `utcOffset` | [Application](controls/Application.md) |
 | `writeClipboard` | [Application](controls/Application.md) |
@@ -503,7 +504,7 @@ Every control, and every part an application, its windows and its pages are made
 
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](controls/Application.md) | 23 | 12 ✅ · 11 ✓ | 13 ✅ · 10 ✓ | 11 ✅ · 1 ☑️ · 11 ✓ | 19 ✅ · 4 ✓ | 16 ✅ · 6 ✓ · 1 – | 17 ✅ · 6 ✓ |
+| [Application](controls/Application.md) | 24 | 12 ✅ · 11 ✓ · 1 – | 14 ✅ · 10 ✓ | 11 ✅ · 1 ☑️ · 11 ✓ · 1 – | 19 ✅ · 4 ✓ · 1 – | 16 ✅ · 6 ✓ · 1 – | 18 ✅ · 6 ✓ |
 | [ButtonMenu](controls/ButtonMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ContextMenu](controls/ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Marker](controls/Marker.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
@@ -525,10 +526,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 9 | 5 ✅ · 1 ✓ · 1 – | 7 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 9 ✅ | 7 ✅ · 1 ✓ · 1 – | 9 ✅ |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 101 | 95 | 77 | 126 | 90 | 103 |
+| ✅ |  | 101 | 96 | 77 | 126 | 90 | 104 |
 | ✓ |  | 23 | 20 | 20 | 5 | 17 | 10 |
-| – |  | 3 | 17 | 26 | 2 | 28 | 19 |
-| **Met** | 142 | **127** | **132** | **123** | **133** | **135** | **132** |
+| – |  | 4 | 17 | 27 | 3 | 28 | 19 |
+| **Met** | 143 | **128** | **133** | **124** | **134** | **135** | **133** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -714,5 +715,6 @@ realizes the element and each of its members.
 `handlerFailed`, `hideOnScreenKeyboard`, `launchFile`, `launchLink`,
 `moveToRegion`, `openFiles`, `persistSceneValue`, `persistValue`, `prompt`,
 `readClipboard`, `readFile`, `reload`, `saveFile`, `scrollTo`, `sendRequest`,
-`share`, `unfocus`, `useColorScheme`, `utcOffset`, `writeClipboard`.
+`share`, `unfocus`, `useAccentColor`, `useColorScheme`, `utcOffset`,
+`writeClipboard`.
 <!-- vocabulary:end -->

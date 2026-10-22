@@ -1,4 +1,4 @@
-# revision 11.1
+# revision 12.1
 Application: ✅
 Application.alert: ✅
 Application.announce: ✓ read what the screen reader said: the relay's own list of what it handed UI Automation to announce
@@ -20,6 +20,7 @@ Application.readFile: ✅
 Application.saveFile: ✅
 Application.sendRequest: ✅
 Application.share: ✓ read a share sheet: what the host holds of a share sheet a test never shows
+Application.useAccentColor: – Windows draws every control in the accent the user chose.
 Application.useColorScheme: ✅
 Application.utcOffset: ✅
 Application.writeClipboard: ✅

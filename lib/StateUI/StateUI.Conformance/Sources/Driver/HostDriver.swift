@@ -98,6 +98,9 @@
     /// The theme the platform shows the application in now: light or dark.
     func theme() throws -> ColorScheme
 
+    /// The accent the platform draws the application's controls in now.
+    func accent() throws -> Color
+
     /// The address of an HTTP server the driver stands up on this machine, no scheme left out: it answers every
     /// request with the status 201, the header `X-Method` naming the request's method, `X-Asked` saying what the
     /// request's own `X-Asked` said, and the request's body.
@@ -203,6 +206,10 @@ extension HostDriver {
 
     public func theme() throws -> ColorScheme {
         throw DriverCannot("read the theme the application shows in")
+    }
+
+    public func accent() throws -> Color {
+        throw DriverCannot("read the accent the application draws in")
     }
 
     public func served() throws -> String {

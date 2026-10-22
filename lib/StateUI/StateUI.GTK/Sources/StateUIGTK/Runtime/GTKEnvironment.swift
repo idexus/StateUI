@@ -101,6 +101,17 @@ enum GTKEnvironment {
 
     /// Whether libadwaita offers the user an accent to choose - from 1.6 on, once its style manager stands: before
     /// it, GTK knows no class to look in.
+    /// Whether the user chooses the desktop's accent: libadwaita 1.6 on, where the system supports one.
+    static var userChoosesAccent: Bool {
+        guard offersAccent else { return false }
+        var supports = GValue()
+        g_value_init(&supports, g_type_from_name("gboolean"))
+        defer { g_value_unset(&supports) }
+        g_object_get_property(
+            UnsafeMutablePointer<GObject>(adw_style_manager_get_default()), "system-supports-accent-colors", &supports)
+        return g_value_get_boolean(&supports) != 0
+    }
+
     static var offersAccent: Bool {
         let styles = g_type_class_peek(adw_style_manager_get_type())?.assumingMemoryBound(to: GObjectClass.self)
         return styles.map { g_object_class_find_property($0, "accent-color") != nil } ?? false

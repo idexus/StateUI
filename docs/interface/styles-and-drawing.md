@@ -187,6 +187,24 @@ settings builds again exactly the views wearing it, in a style too:
 let marked = Color.accent.opacity(0.7)
 ```
 
+An application gives an accent of its own with `application.accentColor`. It
+stands where the user chooses none for the system - the Web, iOS and iPadOS,
+GNOME before 47 - and draws the platform's controls there; on macOS, Windows,
+Android and GNOME 47 on, the user's stands. `nil` gives the platform's back,
+and a pair follows the theme:
+
+```swift
+struct BrandAccent: View {
+    @Environment(\.application) private var application
+
+    var body: some View {
+        Button("Brand accent").onClicked {
+            application.accentColor = Color(hex: 0x4CC2FF)
+        }
+    }
+}
+```
+
 ## Materials
 
 A background is a material: what the surface behind the view's content is

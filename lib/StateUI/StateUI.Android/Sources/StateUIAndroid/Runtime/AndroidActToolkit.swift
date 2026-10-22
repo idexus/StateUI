@@ -183,6 +183,9 @@ final class AndroidActToolkit: ActToolkit {
         Java.callStatic(JavaAPI.environment, JavaAPI.useNightMode, .object(AndroidRenderer.context), .int(theme.rawValue))
     }
 
+    /// Keeps the theme's accent, set before the activity starts - from Android 12 the user's.
+    func useAccentColor(_ accent: Color?) -> Bool { false }
+
     /// Takes the keyboard down from whatever holds the focus in the activity's window, the one asked.
     func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
         guard AndroidRenderer.window(asked: window) != nil else { return false }

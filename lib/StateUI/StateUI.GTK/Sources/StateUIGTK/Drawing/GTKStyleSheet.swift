@@ -12,6 +12,27 @@ enum GTKStyleSheet {
     private static var provider: UnsafeMutablePointer<GtkCssProvider>?
     private static var rules: [String: String] = [:]
 
+    /// The rules giving libadwaita the application's accent, apart from the classes.
+    private static var accentProvider: UnsafeMutablePointer<GtkCssProvider>?
+
+    /// Gives libadwaita's accent colors `accent`, its own again where nil: as its 1.6 variables where `variables`,
+    /// else as the named colors before them.
+    static func accent(_ accent: GdkRGBA?, variables: Bool) {
+        let provider = accentProvider ?? {
+            let made = gtk_css_provider_new()!
+            gtk_style_context_add_provider_for_display(
+                gdk_display_get_default(), made.opaque, guint(GTK_STYLE_PROVIDER_PRIORITY_APPLICATION))
+            accentProvider = made
+            return made
+        }()
+        let sheet = accent.map { color in
+            variables
+                ? ":root { --accent-bg-color: \(css(color)); --accent-color: \(css(color)); }\n"
+                : "@define-color accent_bg_color \(css(color));\n@define-color accent_color \(css(color));\n"
+        } ?? ""
+        gtk_css_provider_load_from_string(provider, sheet)
+    }
+
     /// How many rules the sheet holds - what a test counts.
     static var ruleCount: Int { rules.count }
 

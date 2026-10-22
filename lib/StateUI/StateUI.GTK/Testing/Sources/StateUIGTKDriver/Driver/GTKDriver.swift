@@ -20,6 +20,8 @@ final class GTKDriver: HostDriver {
     /// what StateUI measures, what the host cuts - each proven by its effect in another case - and a clock's format.
     private static func none() -> [String: String] {
         var none = [
+            "read an accent of the application's":
+                "this desktop lets the user choose the accent - GNOME 47 on - and the user's stands",
             "read submitLabel of TextField": "GTK gives an entry no word for the return key of a keyboard on the screen",
             "read submitLabel of SearchField": "GTK gives an entry no word for the return key of a keyboard on the screen",
             "read growsWithText of TextEditor":

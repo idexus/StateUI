@@ -125,7 +125,7 @@ struct MainPage: View {
             .barIcon(Self.mark)
             // listing: end
             // The bars of both panes, as the gallery's look says.
-            .bars(look.bars, in: look.barColor, system: application.info.accentColor)
+            .barLook(look.bars, in: look.barColor, system: application.info.accentColor)
             // listing: MainPage.overlays
             // The window's notice, over every page while the gallery says so.
             .overlays {
@@ -165,7 +165,7 @@ struct MainPage: View {
             ModalPage(nav: nav)
         }
         // The sheets' bars wear the gallery's look as the panes' do.
-        .bars(look.bars, in: look.barColor, system: application.info.accentColor)
+        .barLook(look.bars, in: look.barColor, system: application.info.accentColor)
         // listing: end
     }
 

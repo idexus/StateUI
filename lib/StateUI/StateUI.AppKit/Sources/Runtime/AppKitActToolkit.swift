@@ -115,6 +115,9 @@ final class AppKitActToolkit: ActToolkit {
         }
     }
 
+    /// Keeps the accent the user chose for the Mac: AppKit draws its controls in it.
+    func useAccentColor(_ accent: Color?) -> Bool { false }
+
     /// Takes the focus off whatever holds it in the window asked; whether anything did.
     func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
         guard let window = renderer.window(asked: window),

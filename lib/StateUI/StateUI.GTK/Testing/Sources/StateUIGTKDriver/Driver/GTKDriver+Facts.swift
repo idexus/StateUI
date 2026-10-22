@@ -95,6 +95,13 @@ extension GTKDriver {
         GTKActToolkit.announcedForTesting ?? []
     }
 
+    /// The accent libadwaita draws the application's controls in, as its `accent` class colors words - none to
+    /// read of the application's where the user chooses the desktop's.
+    func accent() throws -> Color {
+        if GTKEnvironment.userChoosesAccent { throw DriverCannot("read an accent of the application's") }
+        return GTKEnvironment.accent
+    }
+
     /// Whether libadwaita shows the application dark now.
     func theme() throws -> ColorScheme {
         adw_style_manager_get_dark(adw_style_manager_get_default()) != 0 ? .dark : .light

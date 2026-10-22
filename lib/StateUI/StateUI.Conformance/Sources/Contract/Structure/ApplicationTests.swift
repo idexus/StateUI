@@ -486,6 +486,25 @@
                 try s.settle { try agree() }
                 s.expect(try agree(), true, "the system's theme, shown and resolved alike")
             },
+            ConformanceCase("theApplicationDrawsInTheAccentItHolds", proves: [
+                Covered(ApplicationContract.useAccentColor),
+            ], needs: [Covered(ButtonContract.clicked), Covered(TextualElementContract.text, on: TextContract.self)]) { s in
+                s.start { AccentChoices() }
+
+                @MainActor func inForce() throws -> String? {
+                    try s.held(TextualElementContract.text, on: s.element("inForce"))
+                }
+                let own = try s.accent()
+                try s.perform(.activate, on: s.element("brick"))
+                try s.settle { try s.accent() == .firebrick && inForce() == "brick" }
+                s.expect(try s.accent(), .firebrick, "the platform draws the application's controls in its accent")
+                s.expect(try inForce(), "brick", "and Color.accent is it")
+
+                try s.perform(.activate, on: s.element("platform"))
+                try s.settle { try s.accent() == own && inForce() == "own" }
+                s.expect(try s.accent(), own, "the platform's own again")
+                s.expect(try inForce(), "own")
+            },
             ConformanceCase("theHostTellsTheTimeOfDay", proves: [
                 Covered(ApplicationContract.currentTime),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
@@ -638,6 +657,20 @@ struct ConformanceFailure: Error, CustomStringConvertible {
 }
 
 /// Buttons that hold the application's theme, over the theme in force as words.
+/// Buttons giving the application an accent and the platform's back, over the accent in force.
+private struct AccentChoices: View {
+    @Environment(\.application) private var application
+
+    var body: some View {
+        let application = self.application
+        return VStack {
+            Text(application.info.accentColor == .firebrick ? "brick" : "own").id("inForce")
+            Button("Brick").onClicked { application.accentColor = .firebrick }.id("brick")
+            Button("Platform").onClicked { application.accentColor = nil }.id("platform")
+        }
+    }
+}
+
 private struct ThemeChoices: View {
     @Environment(\.application) private var application
 

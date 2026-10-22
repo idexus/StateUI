@@ -103,6 +103,10 @@
             toolkit.useColorScheme(theme)
             CoreLink().holdColorScheme(theme)
             reply(call, [])
+        case .useAccentColor:
+            let accent = call.arguments.first.flatMap(Color.init(propValue:))
+            CoreLink().holdAccentColor(toolkit.useAccentColor(accent) ? accent : nil)
+            reply(call, [])
         case .hideOnScreenKeyboard:
             switch window(asked: AskedWindow(call)) {
             case .some(let window): reply(call, [.bool(toolkit.hideOnScreenKeyboard(in: window))])

@@ -103,6 +103,18 @@ final class UIKitActToolkit: ActToolkit {
         }
     }
 
+    /// Tints every window in `accent`, the system's again where nil: iOS lets the user choose no accent, so the
+    /// application's stands.
+    func useAccentColor(_ accent: Color?) -> Bool {
+        for (_, controller) in renderer.roster.windows { controller.window?.tintColor = Self.tint(accent) }
+        return true
+    }
+
+    /// UIKit's tint for `accent`; nil for the system's.
+    static func tint(_ accent: Color?) -> UIColor? {
+        accent.flatMap { UIColor(stateUI: $0.propValue) }
+    }
+
     /// UIKit's style for `theme`.
     static func style(_ theme: ColorScheme) -> UIUserInterfaceStyle {
         switch theme {

@@ -56,6 +56,38 @@ public final class ApplicationSession {
     /// The theme the application asked for last.
     @State private var heldColorScheme = ColorScheme.system
 
+    /// The application's own accent, which its controls and `Color.accent`
+    /// take where the user chooses none for the system - the Web, iOS and
+    /// iPadOS, GNOME before 47; where the user chose one - macOS, Windows,
+    /// Android, GNOME 47 on - the user's stands. nil keeps the platform's.
+    ///
+    ///     application.accentColor = Color(hex: 0x4CC2FF)
+    ///
+    /// The host reports the accent in force as `info.accentColor`; a pair
+    /// follows the theme.
+    public var accentColor: Color? {
+        get { heldAccentColor }
+        set {
+            guard newValue != heldAccentColor else { return }
+            heldAccentColor = newValue
+            sendAccentColor()
+        }
+    }
+
+    /// The accent the application asked for last.
+    @State private var heldAccentColor: Color?
+
+    /// Hands the host the accent the application holds, its half in force where it is a pair: again as the theme
+    /// turns.
+    func sendAccentColor() {
+        stateUISend(ApplicationContract.useAccentColor, heldAccentColor.flatMap { Color(propValue: $0.propValue.resolvingTheme()) })
+    }
+
+    /// The theme in force turned: an accent of two halves is handed on again.
+    func themeTurned() {
+        if heldAccentColor?.propValue.isThemed == true { sendAccentColor() }
+    }
+
     /// The styles every control in the application can be given.
     ///
     ///     init() {

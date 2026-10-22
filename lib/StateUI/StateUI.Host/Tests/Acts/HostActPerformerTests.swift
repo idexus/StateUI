@@ -22,6 +22,8 @@ private final class Toolkit: ActToolkit {
     var clipboard: String?
     var shares: [(shared: HostShare, answered: (Result<Bool, ActFailure>) -> Void)] = []
     var themes: [ColorScheme] = []
+    var accents: [Color?] = []
+    var takesAccent = true
     var focusable: Set<ElementID> = []
     var kept: [Act] = []
     var own: Set<Act> = []
@@ -53,6 +55,10 @@ private final class Toolkit: ActToolkit {
         return window ?? self.window
     }
     func useColorScheme(_ theme: ColorScheme) { themes.append(theme) }
+    func useAccentColor(_ accent: Color?) -> Bool {
+        accents.append(accent)
+        return takesAccent
+    }
     func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
         keyboards.append(window)
         return true
@@ -384,6 +390,33 @@ final class HostActPerformerTests: XCTestCase {
         acts.perform(HostActCall(act: .useColorScheme, arguments: [ColorScheme.system.propValue], completion: 2))
         XCTAssertEqual(toolkit.themes, [.dark, .system])
         XCTAssertEqual(StandardEnvironment.application.info.colorScheme, .light, "the system's again")
+    }
+
+    /// The application's accent stands where the toolkit takes it - a platform whose user chooses none - over the
+    /// accent the platform reports, until the application gives it back; where the toolkit does not, the user's
+    /// stays in force.
+    func testTheApplicationsAccentStandsWhereThePlatformTakesIt() {
+        let (toolkit, answers) = (Toolkit(), Answers())
+        let acts = performer(toolkit, answers)
+        defer { acts.perform(HostActCall(act: .useAccentColor, arguments: [.nothing], completion: nil)) }
+        let (brick, own, user) = (Color.firebrick, Color(hex: 0x0A84FF), Color(hex: 0x00AA55))
+        CoreLink().setAccentColor(own)
+
+        acts.perform(HostActCall(act: .useAccentColor, arguments: [brick.propValue], completion: 1))
+        XCTAssertEqual(toolkit.accents, [brick])
+        XCTAssertEqual(answers.replies[1], [])
+        XCTAssertEqual(StandardEnvironment.application.info.accentColor, brick, "the application's, where it was taken")
+        CoreLink().setAccentColor(own)
+        XCTAssertEqual(StandardEnvironment.application.info.accentColor, brick, "a platform's report leaves it held")
+
+        acts.perform(HostActCall(act: .useAccentColor, arguments: [.nothing], completion: 2))
+        XCTAssertEqual(toolkit.accents, [brick, nil])
+        XCTAssertEqual(StandardEnvironment.application.info.accentColor, own, "the platform's again")
+
+        toolkit.takesAccent = false
+        CoreLink().setAccentColor(user)
+        acts.perform(HostActCall(act: .useAccentColor, arguments: [brick.propValue], completion: 3))
+        XCTAssertEqual(StandardEnvironment.application.info.accentColor, user, "the user's, where the platform has one")
     }
 
     // MARK: - Files

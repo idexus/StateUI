@@ -127,6 +127,14 @@ extension UIKitDriver {
         return window.traitCollection.userInterfaceStyle == .dark ? .dark : .light
     }
 
+    /// The tint the user's window draws its controls in.
+    func accent() throws -> Color {
+        guard let window = renderer?.userWindow else { throw DriverCannot("read the accent: no window shows") }
+        // A window with no tint of its own draws in the system's.
+        let tint: UIColor? = window.tintColor
+        return Self.color(tint ?? UIColor.tintColor.resolvedColor(with: window.traitCollection))
+    }
+
     /// The words the host keeps under `key` for the next launch.
     func kept(_ key: String, inScene: Bool) throws -> String? {
         if inScene {

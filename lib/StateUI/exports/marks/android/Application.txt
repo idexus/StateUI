@@ -1,4 +1,4 @@
-# revision 11.1
+# revision 12.1
 Application: ✅
 Application.alert: ✓ read a question: what the relay keeps of the dialog it showed
 Application.announce: ✓ read what the screen reader said: the host's own list of what it handed Android to announce
@@ -20,6 +20,7 @@ Application.readFile: ✓ read a file dialog: the picker the relay holds, which 
 Application.saveFile: ✓ read a file dialog: the picker the relay holds, which a test never hands the system
 Application.sendRequest: ✅
 Application.share: ✓ read a share sheet: what the host holds of a chooser a test never shows
+Application.useAccentColor: – Android draws its controls in the theme's accent, set before the activity starts - from 12 the user's.
 Application.useColorScheme: ☑️ Before Android 12 an application holds no night mode of its own: it shows the system's.
 Application.utcOffset: ✅
 Application.writeClipboard: ✅

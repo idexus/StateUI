@@ -48,6 +48,10 @@
     /// Shows the whole application in `theme`: light, dark, or the system's again.
     func useColorScheme(_ theme: ColorScheme)
 
+    /// Draws the application's controls in `accent` - the platform's again where nil - where the user chooses no
+    /// accent on the platform: whether it took it.
+    func useAccentColor(_ accent: Color?) -> Bool
+
     /// Takes the on-screen keyboard down from whatever in `window` - the window the user is in where nil - holds
     /// the focus; whether one was up.
     func hideOnScreenKeyboard(in window: MountedElement?) -> Bool

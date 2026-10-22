@@ -657,6 +657,18 @@ toolkit that tells the system's alone, a browser's media query, reports the
 application's all the same, and one that tells its own effective look agrees
 with it.
 
+## The accent in force
+
+An application may hold an accent of its own (`application.accentColor`),
+which its act hands the toolkit. A platform whose user chooses no accent - the
+Web, UIKit, GNOME before libadwaita 1.6 - draws its controls in it and says it
+took it; one whose user chose one - AppKit, WinUI, Android, GNOME 47 on -
+keeps the user's and says it did not. The accent the core resolves
+`Color.accent` against is then the accent in force, the same on every host
+(`HostAccents`): the application's where its platform took it, else the one
+the platform reports - so a platform's later report leaves the application's
+in force. The core hands on a pair's half in force, again as the theme turns.
+
 ## The application's phase
 
 A toolkit tells what each window does - whether it is minimized, and whether

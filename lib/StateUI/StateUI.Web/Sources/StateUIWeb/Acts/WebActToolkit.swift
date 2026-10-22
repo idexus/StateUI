@@ -91,6 +91,14 @@ final class WebActToolkit: ActToolkit {
         WebRelay.useColorScheme(theme)
     }
 
+    /// Draws the page's controls in `accent`, the host's own again where nil: a browser lets the user choose no
+    /// accent for a page, so the application's stands. The accent the page draws in is reported again.
+    func useAccentColor(_ accent: Color?) -> Bool {
+        WebRelay.useAccentColor(accent?.propValue.argb)
+        CoreLink().setAccentColor(Color(argb: WebRelay.accentColor))
+        return true
+    }
+
     /// Takes the focus off the field holding it in the window the browser shows, the one asked.
     func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
         renderer.window(asked: window) != nil && WebRelay.blurField()

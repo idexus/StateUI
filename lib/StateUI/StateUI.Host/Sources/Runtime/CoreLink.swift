@@ -182,8 +182,11 @@
         HostBoundary.setColorScheme(HostThemes.report(system: theme))
     }
 
-    /// Reports the accent the user chose for the system.
-    public func setAccentColor(_ color: Color) { HostBoundary.setAccentColor(color) }
+    /// Reports the accent the platform draws in: the user's, or its own where the user chooses none.
+    public func setAccentColor(_ color: Color) { HostBoundary.setAccentColor(HostAccents.report(system: color)) }
+
+    /// Takes the application's accent its platform took, nil for none.
+    public func holdAccentColor(_ accent: Color?) { HostBoundary.setAccentColor(HostAccents.hold(accent)) }
 
     /// Takes the theme the application holds; themed values resolve against the theme in force.
     public func holdColorScheme(_ theme: ColorScheme) {
