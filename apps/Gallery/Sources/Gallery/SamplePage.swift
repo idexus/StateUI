@@ -39,9 +39,11 @@ struct SamplePage: View {
     var body: some View {
         // Dressed as every page of the gallery is. What a sample adds to the
         // bar - its buttons, its title view - it declares on its own views.
-        // Under a phone's home indicator, as the group's list runs.
+        // Under the bars and a phone's home indicator, as the group's list
+        // runs: its rows scroll under a glass bar, the first and the last
+        // stopping clear of it.
         Grid { scrolling }
-            .avoidsSafeArea(.container, .container, .container, .none)
+            .avoidsSafeArea(.none)
             .galleryPage(sample.title)
     }
 
