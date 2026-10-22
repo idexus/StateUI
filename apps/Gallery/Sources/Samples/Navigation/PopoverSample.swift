@@ -10,6 +10,7 @@ private struct MailFilters: ExampleContent {
     var body: some View {
         VStack {
             Button("Filters")
+                .horizontalAlignment(.start)
                 .onClicked { filtering = true }
                 .popover(isPresented: $filtering) {
                     VStack {
