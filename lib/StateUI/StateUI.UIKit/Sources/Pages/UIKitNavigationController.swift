@@ -10,7 +10,15 @@ import UIKit
 /// pages away - the back button, the edge swipe, the back button's menu - is told as how many stay.
 /// Design: docs/design/platforms/uikit/pages.md#a-navigation-stack
 @MainActor
-final class UIKitNavigationController: UINavigationController, UINavigationControllerDelegate {
+final class UIKitNavigationController: UINavigationController, UINavigationControllerDelegate, UIKitSheetStanding {
+    /// What runs once the controller has left the screen, as a sheet (`UIKitSheetStanding`).
+    var leftScreen: (() -> Void)?
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        leftScreen?()
+    }
+
     /// What the stack does when the user took its top pages away, handed how many stay.
     var onPopped: ((Int) -> Void)?
 

@@ -204,6 +204,30 @@ final class UIKitSheetsTests: XCTestCase {
         XCTAssertTrue(stands(), "the second sheet never stood in the window")
     }
 
+    /// A sheet UIKit takes away without telling the presentation's delegate - an iPad's form sheets over one
+    /// another, swiped down one by one - still writes false onto its state, and asked for again it stands again.
+    @MainActor
+    func testASheetUIKitTakesAwayUntoldWritesItsState() throws {
+        let (first, second) = (State(wrappedValue: true), State(wrappedValue: true))
+        let host = UIKitRenderer.running(reducesMotion: true) { sheetsOver(first, second) }
+        defer { host.finish() }
+        let root = try XCTUnwrap(host.roster.windows.first?.1.window?.rootViewController)
+        host.settle { root.presentedViewController?.presentedViewController != nil }
+
+        try XCTUnwrap(root.presentedViewController).dismiss(animated: false)
+        host.settle { !second.wrappedValue }
+        XCTAssertEqual([first.wrappedValue, second.wrappedValue], [true, false], "the top one went")
+
+        root.dismiss(animated: false)
+        host.settle { !first.wrappedValue }
+        XCTAssertFalse(first.wrappedValue, "the last one went")
+
+        first.wrappedValue = true
+        host.runtime.pump.turn()
+        host.settle { root.presentedViewController != nil }
+        XCTAssertNotNil(root.presentedViewController, "asked again, it stands again")
+    }
+
     /// The user swiping the top sheet down takes it away: false onto its state, the one under it staying.
     @MainActor
     func testTheUsersSwipeTakesTheTopSheetAway() throws {

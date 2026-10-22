@@ -179,7 +179,12 @@ is still coming or going: it drops the request and says nothing, and the
 window would hold a sheet never shown. So while a sheet the
 window presented or took away still moves, what is asked waits - the latest
 asking - and comes as that movement ends. The user swiping the top sheet down
-is the window's way back, false written onto its state; a window that leaves tells
+is the window's way back, false written onto its state. UIKit does not always
+tell the presentation's delegate: on an iPad, form sheets over one another
+swiped down one by one tell only every other one. So each sheet tells the root
+as it leaves the screen (`UIKitSheetStanding`), and the root holds its sheets
+against UIKit's own: from the first being taken away or gone, each over it is
+the user's; a window that leaves tells
 nobody of its sheets, which leave with it. A window whose scene iOS lets go of
 and brings back takes nothing UIKit kept presented over its root - UIKit takes
 that away in its own time, dropping what is presented over it meanwhile - so

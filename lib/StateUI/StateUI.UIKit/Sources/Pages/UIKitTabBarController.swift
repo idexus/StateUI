@@ -10,7 +10,16 @@ import UIKit
 /// shows is the host layer's rule (`TabChoice`); the user's choice is told as the tab before and the tab now.
 /// Design: docs/design/platforms/uikit/pages.md#tabs
 @MainActor
-final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegate, UINavigationControllerDelegate {
+final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegate, UINavigationControllerDelegate,
+    UIKitSheetStanding {
+    /// What runs once the controller has left the screen, as a sheet (`UIKitSheetStanding`).
+    var leftScreen: (() -> Void)?
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        leftScreen?()
+    }
+
     /// How tall a tab's picture stands - UIKit's icon size for a tab - and on a tab bar made low by a phone on its
     /// side.
     static let glyphHeight = 25.0

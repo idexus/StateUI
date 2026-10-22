@@ -11,7 +11,10 @@ import UIKit
 /// item what the page says of its bar.
 /// Design: docs/design/platforms/uikit/pages.md
 @MainActor
-final class UIKitPageController: UIViewController {
+final class UIKitPageController: UIViewController, UIKitSheetStanding {
+    /// What runs once the controller has left the screen, as a sheet (`UIKitSheetStanding`).
+    var leftScreen: (() -> Void)?
+
     /// The page's element, which stands its view.
     private weak var page: UIKitElement?
 
@@ -26,6 +29,11 @@ final class UIKitPageController: UIViewController {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("UIKitPageController is made in code")
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        leftScreen?()
     }
 
     override func loadView() {

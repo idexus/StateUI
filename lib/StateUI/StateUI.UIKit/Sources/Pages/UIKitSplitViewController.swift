@@ -11,7 +11,15 @@ import UIKit
 /// detail; in a wide one it stands beside it. The sidebar showing or hiding on screen is told, whoever moved it.
 /// Design: docs/design/platforms/uikit/pages.md#a-split-view
 @MainActor
-final class UIKitSplitViewController: UISplitViewController, UISplitViewControllerDelegate {
+final class UIKitSplitViewController: UISplitViewController, UISplitViewControllerDelegate, UIKitSheetStanding {
+    /// What runs once the controller has left the screen, as a sheet (`UIKitSheetStanding`).
+    var leftScreen: (() -> Void)?
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        leftScreen?()
+    }
+
     /// What the controller does when its sidebar showed or hid.
     var onPresentationChanged: ((Bool) -> Void)?
 
