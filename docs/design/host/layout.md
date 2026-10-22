@@ -300,7 +300,9 @@ own layout ignores the safe area on (`ignoresSafeArea`, the start and the end
 as it lays out) its room reaches out to the room's edge, so a background or a
 gradient runs behind a bar or the status bar. What stands over an edge is one
 answer whatever it is: no platform keeps a page clear of one thing over an
-edge and under another. A scroller let under keeps clear, on each edge it reaches under,
+edge and under another. A column beside a page - a split view's sidebar
+standing beside its detail - is no part of what the page runs under: where a
+toolkit lays the page under that column, the page's room starts at its edge. A scroller let under keeps clear, on each edge it reaches under,
 the depth of what stands over it there (`SafeAreaArithmetic.clearance`): its
 content scrolls under the bars and its first and last rows stop clear of
 them, as the platform's own lists do, and its offset counts from its first

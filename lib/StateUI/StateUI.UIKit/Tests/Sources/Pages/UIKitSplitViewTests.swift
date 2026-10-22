@@ -39,6 +39,32 @@ final class UIKitSplitViewTests: XCTestCase {
         XCTAssertTrue(menuOpen.wrappedValue, "the program's move is not told back as another")
     }
 
+    /// A sidebar beside the detail is a column beside its page, no part of what the page runs under: content ignoring
+    /// the safe area on every edge stands from the sidebar's edge, and runs under the bars and out to the window's
+    /// other edges.
+    @MainActor
+    func testADetailRunningUnderItsBarsStandsBesideTheSidebar() throws {
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: {
+                ZStack {}.ignoresSafeArea(.all).id("content")
+            }
+        }
+        defer { host.finish() }
+        let split = try XCTUnwrap(Self.controller(of: .splitView, in: host) as? UISplitViewController)
+        host.settle { split.view.window != nil && split.displayMode != .secondaryOnly }
+        guard split.displayMode == .oneBesideSecondary else { throw XCTSkip("a phone's sidebar slides over the detail") }
+        let content = { (host.runtime.tree.root?.first(id: .manual("content"))?.native as? UIKitElement)?.view }
+        let sidebar = try XCTUnwrap(split.viewController(for: .primary)?.view)
+        host.settle { content()?.window != nil }
+        let view = try XCTUnwrap(content())
+        let frame = view.convert(view.bounds, to: nil)
+        let window = try XCTUnwrap(view.window).bounds
+
+        XCTAssertGreaterThanOrEqual(frame.minX, sidebar.convert(sidebar.bounds, to: nil).maxX - 0.5, "beside the sidebar")
+        XCTAssertEqual(frame.minY, window.minY, accuracy: 0.5, "under the bar")
+        XCTAssertEqual(frame.maxX, window.maxX, accuracy: 0.5, "out to the trailing edge")
+    }
+
     /// A sidebar whose page says no title names its column's bar by the application's name; the detail stays
     /// untitled.
     @MainActor

@@ -21,7 +21,12 @@ area](../../host/layout.md#the-safe-area)) - under the glass of a stack's bar
 too; a scroller let under keeps their depth as its content inset, its offset
 counted from its first row clear. The controller's own view shows the page's
 background, so it stands behind the bars either way. Only a page's own layout
-reaches under them; one deeper in stands where its page puts it. A frame report's safe area is that same one -
+reaches under them; one deeper in stands where its page puts it. A sidebar
+beside the detail is no part of it: UIKit lays the detail's column under the
+sidebar and counts the sidebar in its safe area, so a detail's page takes the
+sidebar's inset off its whole room too, and runs under the bars but never under
+the sidebar - as far from its leading edge as the sidebar has come while it
+slides. A frame report's safe area is that same one -
 the page's, under its stack's bar as well as the status bar - so a view at its
 page's top corner reads nothing from it.
 

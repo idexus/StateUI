@@ -122,12 +122,31 @@ final class UIKitPageController: UIViewController {
         return insets
     }
 
+    /// Whether a split view's sidebar stands beside this page - in its detail - rather than over it, or slides so.
+    private var standsBesideASidebar: Bool {
+        guard let split = splitViewController, let detail = split.viewController(for: .secondary),
+              slidingInset != nil || [.oneBesideSecondary, .twoBesideSecondary].contains(split.displayMode)
+        else { return false }
+        var controller: UIViewController? = self
+        while let shown = controller, shown !== detail { controller = shown.parent }
+        return controller != nil
+    }
+
+    /// The whole room the page stands in: its view, but for a sidebar beside it - UIKit lays the detail under that
+    /// column, which is no part of what the page runs under.
+    private var whole: CGRect {
+        guard standsBesideASidebar else { return view.bounds }
+        var beside = UIEdgeInsets.zero
+        if leadsRight { beside.right = insets.right } else { beside.left = insets.left }
+        return view.bounds.inset(by: beside)
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         layGround()
         // The bars over the page are its safe area's as the screen's are: content stands clear of them, or under.
         // Design: docs/design/host/layout.md#the-safe-area
-        let (inside, whole) = (view.bounds.inset(by: insets), view.bounds)
+        let (inside, whole) = (view.bounds.inset(by: insets), whole)
         let safe = Rect(x: inside.minX, y: inside.minY, width: inside.width, height: inside.height)
         let room = SafeAreaArithmetic.room(
             safe: safe, whole: Rect(x: whole.minX, y: whole.minY, width: whole.width, height: whole.height),
