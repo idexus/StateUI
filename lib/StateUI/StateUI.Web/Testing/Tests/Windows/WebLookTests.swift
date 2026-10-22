@@ -54,6 +54,27 @@ final class WebLookTests: XCTestCase {
         }
     }
 
+    /// A popover stands as tall as what it holds: its height is the page's `auto`, never the browser's own
+    /// `fit-content`, which WebKit stretches over the whole window.
+    func testAPopoverStandsAsTallAsWhatItHolds() throws {
+        let host = WebRenderer.running {
+            Button("Filters").popover(isPresented: State(wrappedValue: true).projectedValue) {
+                VStack { Switch(true); Button("Done") }
+            }
+        }
+        let popover = "document.querySelector('.stateui-popover:popover-open')"
+        host.settle { (try? WebBrowser.number("\(popover) ? 1 : 0", on: 0)) == 1 }
+
+        let height = try XCTUnwrap(WebBrowser.number("\(popover).getBoundingClientRect().height", on: 0))
+        let window = try XCTUnwrap(WebBrowser.number("innerHeight", on: 0))
+        let declared = try WebBrowser.evaluate("""
+            [...document.styleSheets].flatMap(s => { try { return [...s.cssRules]; } catch { return []; } })
+              .filter(r => r.style?.height && \(popover).matches(r.selectorText)).map(r => r.style.height).join(" | ")
+            """, on: 0)
+        XCTAssertLessThan(height, window / 2, "as tall as what it holds")
+        XCTAssertEqual(declared, "auto", "the page's height, not the browser's")
+    }
+
     func testAControlOverEveryPageWearsTheStylesheet() throws {
         let host = WebRenderer.running {
             Text("Beneath").overlays { VStack { Switch(true); Button("Over") } }

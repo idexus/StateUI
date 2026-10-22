@@ -305,10 +305,12 @@ body {
 [data-holds-menu] { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
 
 /* A popover: the document's own, under its anchor over everything, a card on the page's raised surface; its
-   layout's grid shows only while it is open. */
+   layout's grid shows only while it is open. As tall as what it holds: WebKit stretches the browser's own
+   fit-content height to the max-height. */
 .stateui-popover {
   position: fixed;
   inset: auto;
+  height: auto;
   margin: 0;
   padding: 0;
   max-width: calc(100vw - 16px);
