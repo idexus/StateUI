@@ -13,10 +13,14 @@ extension WebElement {
         guard type == .page, let view else { return }
         let under = SafeAreaArithmetic.under(element.contentSafeArea, direction: element.layoutDirection)
         let scroller = element.pageScroller?.web.view
-        for (edge, runsUnder) in [("top", under.top), ("left", under.left), ("bottom", under.bottom), ("right", under.right)] {
+        let edges = [("top", under.top), ("left", under.left), ("bottom", under.bottom), ("right", under.right)]
+        for (edge, runsUnder) in edges {
             let depth = "var(--stateui-over-\(edge))"
             view.style("padding-\(edge)", runsUnder ? nil : depth)
             scroller?.style("padding-\(edge)", runsUnder ? depth : nil)
         }
+        // What stands in the page has nothing over it on an edge the page stands its content clear of.
+        let pads = edges.filter { !$0.1 }.map(\.0).joined(separator: " ")
+        view.attribute("data-pads", pads.isEmpty ? nil : pads)
     }
 }

@@ -50,13 +50,18 @@ The page is drawn under a phone's status bar, notch and home indicator
 (`viewport-fit=cover`), and the stylesheet passes what stands over each edge
 down as `--stateui-over-top`, `-left`, `-bottom` and `-right`, from
 `env(safe-area-inset-*)` ([the safe area](../../host/layout.md#the-safe-area)).
-The window's bar reaches under the top, its words clear of it and of the
-sides, and leaves its room the rest; a card sheet stands clear of all of it in
-the middle, a phone's sheet from the bottom keeps the bottom and the sides. A
-page stands its content clear of what is left by its own padding, but on an
+The window's bar is a material over the top of its room, as the platforms'
+glass bars are: it reaches under the top of the window, its words clear of it
+and of the sides, at a height of its own, and the room runs under it, the
+bar's depth the top of the room's safe area. A row of tabs stands below it,
+its pages clear of nothing at their top; a card sheet stands clear of all of
+it in the middle, a phone's sheet from the bottom keeps the bottom and the
+sides. A page stands its content clear of what is left by its own padding -
+what stands in it then has nothing over that edge (`data-pads`) - but on an
 edge where the content lets itself under (`SafeAreaArithmetic.under`), where
-the content's scroller takes that padding instead, its first and last rows
-scrolling out from under it. The overlays stand clear of all of it.
+the content's scroller takes that padding instead, its rows scrolling under
+the bar's material, the first and the last clear of it. The overlays stand
+clear of all of it.
 
 ## The color under the window
 

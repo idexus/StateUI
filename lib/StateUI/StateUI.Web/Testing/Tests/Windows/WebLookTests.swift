@@ -129,6 +129,29 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(bottom()), window, accuracy: 0.5, "under it")
     }
 
+    /// The window's bar is a material over the top of its room: a page's content stands below it, and a page's rows
+    /// let under it scroll under it, the first clear of it.
+    func testAPagesRowsScrollUnderTheWindowsBar() throws {
+        let under = State(wrappedValue: false)
+        let host = WebRenderer.running {
+            Grid { ScrollView { Text("rows").height(2000) }.id("rows") }
+                .avoidsSafeArea(under.wrappedValue ? .none : .container)
+        }
+        let rows = { (host.runtime.tree.root?.first(id: .manual("rows"))?.native as? WebElement)?.view?.node }
+        host.settle { rows() != nil }
+        let node = try XCTUnwrap(rows())
+        let bar = try XCTUnwrap(WebBrowser.number(
+            "document.querySelector('.stateui-window > .stateui-bar').getBoundingClientRect().height", on: 0))
+        let top: () throws -> Double? = { try WebBrowser.number("e.getBoundingClientRect().top", on: node) }
+        XCTAssertEqual(try XCTUnwrap(top()), bar, accuracy: 0.5, "below the bar")
+
+        under.wrappedValue = true
+        host.settle { (try? top()) == 0 }
+        XCTAssertEqual(try XCTUnwrap(top()), 0, accuracy: 0.5, "under it")
+        let clear = try XCTUnwrap(WebBrowser.number("parseFloat(getComputedStyle(e).paddingTop)", on: node))
+        XCTAssertEqual(clear, bar, accuracy: 0.5, "its first row clear of it")
+    }
+
     func testAControlOverEveryPageWearsTheStylesheet() throws {
         let host = WebRenderer.running {
             Text("Beneath").overlays { VStack { Switch(true); Button("Over") } }

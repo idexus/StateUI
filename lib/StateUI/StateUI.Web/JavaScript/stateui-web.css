@@ -94,11 +94,21 @@ body {
   --stateui-over-bottom: env(safe-area-inset-bottom, 0px);
   --stateui-over-right: env(safe-area-inset-right, 0px);
 }
+/* The window's bar is a material over the top of its room, as the platforms' glass bars are: the room runs under it,
+   its depth the top of the room's safe area, so a page's rows scroll under it where the page says so. */
 .stateui-window > .stateui-bar {
-  min-height: calc(var(--stateui-bar-height) + var(--stateui-over-top));
+  grid-row: 1;
+  height: calc(var(--stateui-bar-height) + var(--stateui-over-top));
   padding: var(--stateui-over-top) calc(12px + var(--stateui-over-right)) 0 calc(12px + var(--stateui-over-left));
 }
-.stateui-window:has(> .stateui-bar:not([hidden])) > :is(.stateui-room, .stateui-overlays) { --stateui-over-top: 0px; }
+.stateui-window:has(> .stateui-bar:not([hidden])) > :is(.stateui-room, .stateui-overlays) {
+  --stateui-over-top: calc(var(--stateui-bar-height) + env(safe-area-inset-top, 0px));
+}
+/* What a page stands its content clear of is nothing more to what stands in it. */
+[data-pads~="top"] > * { --stateui-over-top: 0px; }
+[data-pads~="left"] > * { --stateui-over-left: 0px; }
+[data-pads~="bottom"] > * { --stateui-over-bottom: 0px; }
+[data-pads~="right"] > * { --stateui-over-right: 0px; }
 
 /* The window: its bar over the room its pages stand in. */
 .stateui-window {
@@ -107,9 +117,9 @@ body {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
 }
-.stateui-room { grid-row: 2; grid-column: 1; display: grid; min-height: 0; min-width: 0; position: relative; }
+.stateui-room { grid-row: 1 / 3; grid-column: 1; display: grid; min-height: 0; min-width: 0; position: relative; }
 .stateui-overlays {
-  grid-row: 2; grid-column: 1; z-index: 20; min-height: 0; min-width: 0;
+  grid-row: 1 / 3; grid-column: 1; z-index: 20; min-height: 0; min-width: 0;
   padding: var(--stateui-over-top) var(--stateui-over-right) var(--stateui-over-bottom) var(--stateui-over-left);
 }
 
@@ -514,6 +524,10 @@ body {
 
 /* A tabbed view: the strip of its tabs' names over the one cell its pages share, the chosen one shown. */
 .stateui-tabs { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; min-width: 0; }
+/* The row of tabs stands under what stands over the top of the tabs - the window's bar - and the pages under it clear
+   of nothing at their top. */
+.stateui-tabs > .stateui-tab-strip { margin-top: var(--stateui-over-top); }
+.stateui-tabs > :not(.stateui-tab-strip) { --stateui-over-top: 0px; }
 /* The strip scrolls across alone: its line is drawn inside it, so nothing stands below to scroll down to. */
 .stateui-tabs > .stateui-tab-strip {
   display: flex;
