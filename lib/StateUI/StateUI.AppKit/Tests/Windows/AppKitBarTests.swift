@@ -188,7 +188,8 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertEqual(offset.wrappedValue, Point(0, 0), "where the tree calls nothing")
 
         offset.wrappedValue = Point(0, 100)
-        for _ in 0..<100 where abs(scroll.contentView.bounds.origin.y - (100 - top)) > 0.5 {
+        for _ in 0..<100 {
+            guard abs(scroll.contentView.bounds.origin.y - (100 - top)) > 0.5 else { break }
             RunLoop.current.run(until: Date().addingTimeInterval(0.02))
             renderer.runtime.pump.turn()
             renderer.displayFrameForTesting()
