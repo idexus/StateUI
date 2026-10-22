@@ -91,11 +91,17 @@ final class AndroidNavigationView: AndroidLayoutView {
         return LayoutSize(width: page.width, height: page.height + barHeight(width: width))
     }
 
+    /// The bar along the top, reaching under what stands over it there, the top page below it with the rest
+    /// (`Clearance.underABarAtTheTop`).
+    /// Design: docs/design/platforms/android/pages.md#the-safe-area
     override func arrange(in bounds: Rect) {
+        let (barInsets, pageInsets) = showsBar ? roomInsets.underABarAtTheTop : (.none, roomInsets)
+        bar.pad(barInsets)
         let height = barHeight(width: bounds.width)
         if showsBar { bar.layout(Rect(x: 0, y: 0, width: bounds.width, height: height)) }
         guard let page = items.last else { return }
 
+        (page.view as? AndroidLayoutView)?.roomInsets = pageInsets
         let room = Rect(x: 0, y: height, width: bounds.width, height: max(0, bounds.height - height))
         page.view.layout(SingleChildArithmetic.place(of: page, in: room, direction: direction))
     }

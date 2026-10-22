@@ -320,6 +320,7 @@ final class AndroidRenderer {
         }
         let rose = changes.sheets.map { modals.present($0) } ?? false
         modals.standAtTheirSizes()
+        standUnderTheWindowsInsets()
 
         // The overlays lie over everything, the first lowest, lifted over a page that rose after them; they take no
         // touch beside what they hold, which goes on to the page under them.
@@ -338,6 +339,29 @@ final class AndroidRenderer {
 
     /// The overlays' views the root holds now, the first lowest, let go of as the window stops showing them.
     private var shownOverlays: [AndroidView] = []
+
+    /// What stands over the activity's root on each edge, in points: the system's bars and a cutout, and the keyboard
+    /// at the bottom - Android draws the root edge to edge.
+    /// Design: docs/design/platforms/android/pages.md#the-safe-area
+    private(set) var windowInsets = Clearance.none
+
+    /// Android told what stands over the root now, in pixels: every arrangement it shows stands under it again.
+    func insetsChanged(left: Int32, top: Int32, right: Int32, bottom: Int32, keyboard: Int32) {
+        let insets = Clearance(
+            top: Double(top) / density, left: Double(left) / density,
+            bottom: Double(max(bottom, keyboard)) / density, right: Double(right) / density)
+        guard insets != windowInsets else { return }
+        windowInsets = insets
+        standUnderTheWindowsInsets()
+    }
+
+    /// Hands what stands over the root to every arrangement standing in it - the window's, a full sheet's page - and
+    /// to the overlays.
+    private func standUnderTheWindowsInsets() {
+        (presentation.arrangement?.android.view as? AndroidLayoutView)?.roomInsets = windowInsets
+        for overlay in presentation.overlays { (overlay.android.view as? AndroidLayoutView)?.roomInsets = windowInsets }
+        modals.standUnder(windowInsets)
+    }
 
     /// Shows the first window's chrome again where a frame moved what it shows (`WindowChrome.follows`): its title,
     /// the bar and tab row of every arrangement it and its sheets show, and whether there is a way back.

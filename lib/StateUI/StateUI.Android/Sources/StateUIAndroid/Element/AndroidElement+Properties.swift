@@ -30,7 +30,10 @@ extension AndroidElement {
         }
 
         switch type {
-        case .page, .overlay:
+        case .page:
+            return AndroidPageView(page: element)
+
+        case .overlay:
             return AndroidSingleChildView()
 
         case .popover:

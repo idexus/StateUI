@@ -22,6 +22,9 @@ final class StateUIHost {
     /** The display turned or resized, or the theme changed. */
     static native void configured();
 
+    /** What stands over the activity's root on each edge, in pixels: the system's bars and a cutout, the keyboard. */
+    static native void insets(int left, int top, int right, int bottom, int keyboard);
+
     /** The user asked to go back; whether the host went. */
     static native boolean back();
 

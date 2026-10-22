@@ -465,6 +465,13 @@ class AndroidView {
     }
 
     /// `points` in whole pixels.
+    /// Pads the view's own content clear of `clearance`, in points: a bar reaching under the system's bars.
+    func pad(_ clearance: Clearance) {
+        Java.call(
+            reference, JavaAPI.setPadding, .int(pixels(clearance.left)), .int(pixels(clearance.top)),
+            .int(pixels(clearance.right)), .int(pixels(clearance.bottom)))
+    }
+
     func pixels(_ points: Double) -> Int32 {
         Int32((points * density).rounded())
     }

@@ -42,8 +42,8 @@ public class StateUIActivity extends Activity {
         System.loadLibrary(library());
 
         FrameLayout root = new FrameLayout(this);
-        root.setFitsSystemWindows(true);
         setContentView(root);
+        StateUIViews.edgeToEdge(this, root, !StateUIEnvironment.night(this));
 
         StateUIHost.start(this, root, getResources().getDisplayMetrics().density);
         environmentWatch = StateUIEnvironment.watch(this);

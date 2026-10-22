@@ -17,6 +17,17 @@
 
     /// Nothing kept clear.
     public static let none = Clearance(top: 0, left: 0, bottom: 0, right: 0)
+
+    /// What a bar standing beside a page at its top takes of what stands over the room - the top, under which it
+    /// reaches, its own content clear of it and of the sides - and what it leaves the page below it.
+    public var underABarAtTheTop: (bar: Clearance, page: Clearance) {
+        (Clearance(top: top, left: left, bottom: 0, right: right), Clearance(top: 0, left: left, bottom: bottom, right: right))
+    }
+
+    /// What a bar standing beside a page at its bottom - a row of tabs - takes, and what it leaves the page above it.
+    public var overABarAtTheBottom: (bar: Clearance, page: Clearance) {
+        (Clearance(top: 0, left: left, bottom: bottom, right: right), Clearance(top: top, left: left, bottom: 0, right: right))
+    }
 }
 
 /// Where a page's content stands against the safe area of the room it stands in - a window, a sheet, a popover - the

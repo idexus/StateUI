@@ -110,6 +110,8 @@ enum TestJava {
     static let getTop = Java.method(JavaAPI.view, "getTop", "()I")
     static let getWidth = Java.method(JavaAPI.view, "getWidth", "()I")
     static let getHeight = Java.method(JavaAPI.view, "getHeight", "()I")
+    static let getPaddingTop = Java.method(JavaAPI.view, "getPaddingTop", "()I")
+    static let getPaddingBottom = Java.method(JavaAPI.view, "getPaddingBottom", "()I")
     static let getChildCount = Java.method(JavaAPI.viewGroup, "getChildCount", "()I")
     static let indexOfChild = Java.method(JavaAPI.viewGroup, "indexOfChild", "(Landroid/view/View;)I")
     static let getToolbarTitle = Java.method(

@@ -21,8 +21,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.DisplayCutout;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -494,6 +499,54 @@ final class StateUIViews {
     static int windowDp(Context context, boolean across) {
         android.content.res.Configuration configuration = context.getResources().getConfiguration();
         return across ? configuration.screenWidthDp : configuration.screenHeightDp;
+    }
+
+    /**
+     * Draws the activity edge to edge, the system's bars clear over it - their words dark on a light theme - and tells
+     * the host what stands over the root on each edge as it changes: the system's bars and a cutout, and the
+     * keyboard, which no longer makes the window smaller.
+     */
+    @SuppressWarnings("deprecation")
+    static void edgeToEdge(Activity activity, View root, boolean light) {
+        Window window = activity.getWindow();
+        window.setStatusBarColor(Color.TRANSPARENT);
+        window.setNavigationBarColor(Color.TRANSPARENT);
+        WindowManager.LayoutParams attributes = window.getAttributes();
+        attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+        window.setAttributes(attributes);
+        if (Build.VERSION.SDK_INT >= 30) {
+            window.setDecorFitsSystemWindows(false);
+            int dark = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+                    | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
+            WindowInsetsController bars = window.getInsetsController();
+            if (bars != null) bars.setSystemBarsAppearance(light ? dark : 0, dark);
+        } else {
+            int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+            if (light) flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+            window.getDecorView().setSystemUiVisibility(flags);
+        }
+        root.setOnApplyWindowInsetsListener((view, insets) -> {
+            if (Build.VERSION.SDK_INT >= 30) {
+                android.graphics.Insets over = insets.getInsets(
+                        WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
+                int keyboard = insets.getInsets(WindowInsets.Type.ime()).bottom;
+                StateUIHost.insets(over.left, over.top, over.right, over.bottom, keyboard);
+            } else {
+                DisplayCutout cutout = insets.getDisplayCutout();
+                int left = insets.getStableInsetLeft(), top = insets.getStableInsetTop();
+                int right = insets.getStableInsetRight(), bottom = insets.getStableInsetBottom();
+                if (cutout != null) {
+                    left = Math.max(left, cutout.getSafeInsetLeft());
+                    top = Math.max(top, cutout.getSafeInsetTop());
+                    right = Math.max(right, cutout.getSafeInsetRight());
+                    bottom = Math.max(bottom, cutout.getSafeInsetBottom());
+                }
+                StateUIHost.insets(left, top, right, bottom, insets.getSystemWindowInsetBottom());
+            }
+            return insets;
+        });
+        root.requestApplyInsets();
     }
 
     /** What a sheet's holder standing a card in a wide window is tagged. */

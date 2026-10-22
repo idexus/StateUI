@@ -55,6 +55,14 @@ final class AndroidModals {
         return shown.count > change.kept
     }
 
+    /// Hands what stands over the window to each sheet filling it; a card stands clear of it in the middle.
+    func standUnder(_ insets: Clearance) {
+        for sheet in shown {
+            let fills = Self.card(for: sheet.element, in: window).width == 0
+            (sheet.element.android.view as? AndroidLayoutView)?.roomInsets = fills ? insets : .none
+        }
+    }
+
     /// Stands each sheet's card in a wide window as large as its page asks now.
     func standAtTheirSizes() {
         for sheet in shown {

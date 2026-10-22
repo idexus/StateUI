@@ -62,6 +62,12 @@ enum JavaNatives {
                 AndroidRenderer.shared?.setPhase(ApplicationPhase(rawValue: phase) ?? .active)
             }
         }
+        let insets: @convention(c) (Environment, jclass?, jint, jint, jint, jint, jint) -> Void = {
+            _, _, left, top, right, bottom, keyboard in
+            MainActor.assumeIsolated {
+                AndroidRenderer.shared?.insetsChanged(left: left, top: top, right: right, bottom: bottom, keyboard: keyboard)
+            }
+        }
         let configured: @convention(c) (Environment, jclass?) -> Void = { _, _ in
             MainActor.assumeIsolated { AndroidRenderer.shared?.configured() }
         }
@@ -403,6 +409,7 @@ enum JavaNatives {
             ("start", "(Landroid/app/Activity;Landroid/widget/FrameLayout;F)V", unsafeBitCast(start, to: UnsafeMutableRawPointer.self)),
             ("phase", "(I)V", unsafeBitCast(phase, to: UnsafeMutableRawPointer.self)),
             ("configured", "()V", unsafeBitCast(configured, to: UnsafeMutableRawPointer.self)),
+            ("insets", "(IIIII)V", unsafeBitCast(insets, to: UnsafeMutableRawPointer.self)),
             ("back", "()Z", unsafeBitCast(back, to: UnsafeMutableRawPointer.self)),
             ("frame", "(J)V", unsafeBitCast(frame, to: UnsafeMutableRawPointer.self)),
             ("clicked", "(J)V", unsafeBitCast(clicked, to: UnsafeMutableRawPointer.self)),

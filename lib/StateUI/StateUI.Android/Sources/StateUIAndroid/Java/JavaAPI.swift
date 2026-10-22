@@ -33,6 +33,7 @@ enum JavaAPI {
     static let colorDrawable = Java.findClass("android/graphics/drawable/ColorDrawable")
     static let newColorDrawable = Java.method(colorDrawable, "<init>", "(I)V")
     static let setPadding = Java.method(view, "setPadding", "(IIII)V")
+    static let setClipToPadding = Java.method(viewGroup, "setClipToPadding", "(Z)V")
     static let getPaddingLeft = Java.method(view, "getPaddingLeft", "()I")
     static let getPaddingTop = Java.method(view, "getPaddingTop", "()I")
     static let getPaddingRight = Java.method(view, "getPaddingRight", "()I")

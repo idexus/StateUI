@@ -80,10 +80,14 @@ final class AndroidTabView: AndroidLayoutView {
 
     /// The row across the bottom, the chosen tab's page over the rest (`RowEdge`).
     override func arrange(in bounds: Rect) {
+        // The row reaches under what stands over the bottom, its tabs clear of it; the page takes the rest.
+        let (rowInsets, pageInsets) = roomInsets.overABarAtTheBottom
+        row.pad(rowInsets)
         let (rowRoom, room) = RowEdge.bottom.split(bounds, row: rowHeight(width: bounds.width))
         row.layout(rowRoom)
         guard let page = selectedItem else { return }
 
+        (page.view as? AndroidLayoutView)?.roomInsets = pageInsets
         page.view.layout(SingleChildArithmetic.place(of: page, in: room, direction: direction))
     }
 

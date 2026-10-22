@@ -34,6 +34,9 @@ final class AndroidPagesTests: XCTestCase {
             ("testATabsAndAnActionsPicturesStandAtTheIconSize", testATabsAndAnActionsPicturesStandAtTheIconSize),
             ("testASheetPresentsOverThePageAndBackTakesItDown", testASheetPresentsOverThePageAndBackTakesItDown),
             ("testASheetStandsOnACardAsLargeAsItsPageInAWideWindow", testASheetStandsOnACardAsLargeAsItsPageInAWideWindow),
+            ("testAPageStandsClearOfTheSystemsBarsUnlessItSaysSo", testAPageStandsClearOfTheSystemsBarsUnlessItSaysSo),
+            ("testAStacksBarReachesUnderTheStatusBar", testAStacksBarReachesUnderTheStatusBar),
+            ("testAPagesScrollerUnderTheNavigationBarKeepsItsLastRowClear", testAPagesScrollerUnderTheNavigationBarKeepsItsLastRowClear),
             ("testThePageUnderPagesTheProgramTakesDownShowsAgain", testThePageUnderPagesTheProgramTakesDownShowsAgain),
             ("testAnArrangementTheWindowShowsInsteadAppears", testAnArrangementTheWindowShowsInsteadAppears),
             ("testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough", testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough),
@@ -702,6 +705,62 @@ extension AndroidPagesTests {
             let shown = try XCTUnwrap(Java.callObject(holder.reference, TestJava.getChildAt, .int(0)).map(JavaObject.init))
             XCTAssertEqual([Java.callInt(shown.reference, TestJava.getWidth), Java.callInt(shown.reference, TestJava.getHeight)],
                            [600, 400], "a card in the middle")
+        }
+    }
+
+    /// Drawn edge to edge, a page's content stands clear of what stands over the window - the status bar, the
+    /// navigation bar - and where it lets itself under the bars it reaches the window's edges; two pixels a point.
+    func testAPageStandsClearOfTheSystemsBarsUnlessItSaysSo() throws {
+        try onMainActor {
+            let under = State(wrappedValue: false)
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                ZStack {}.avoidsSafeArea(under.wrappedValue ? .none : .container).id("content")
+            }
+            host.insetsChanged(left: 0, top: 48, right: 0, bottom: 96, keyboard: 0)
+            host.layOut()
+            let content = try XCTUnwrap(host.view(id: .manual("content")))
+            XCTAssertEqual([content.frame.y, content.frame.height], [48, 1920 - 48 - 96], "clear of both bars")
+
+            under.wrappedValue = true
+            host.runtime.pump.turn()
+            host.layOut()
+            XCTAssertEqual([content.frame.y, content.frame.height], [0, 1920], "under them")
+        }
+    }
+
+    /// A stack's bar reaches under the status bar, its own words clear of it, and its page stands below it, clear of
+    /// the navigation bar.
+    func testAStacksBarReachesUnderTheStatusBar() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    ZStack {}.id("content").title("Under the bar")
+                } destination: { _ in Text("Next") }
+            }
+            host.insetsChanged(left: 0, top: 48, right: 0, bottom: 96, keyboard: 0)
+            host.layOut()
+            let stack = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+            let bar = stack.bar
+            XCTAssertEqual(bar.frame.y, 0, "from the screen's top")
+            XCTAssertEqual(Java.callInt(bar.reference, TestJava.getPaddingTop), 48, "its words clear of the status bar")
+            let content = try XCTUnwrap(host.view(id: .manual("content")))
+            XCTAssertEqual(content.frame.y, 0, "the page right below the bar, in its own place")
+            XCTAssertEqual(content.frame.height, 1920 - bar.frame.height - 96, "clear of the navigation bar")
+        }
+    }
+
+    /// A page's scroller let under the navigation bar keeps its depth clear at its end, Android's padding drawn
+    /// through, so its last row scrolls out from under it.
+    func testAPagesScrollerUnderTheNavigationBarKeepsItsLastRowClear() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                Grid { ScrollView { Text("rows").height(2000) } }.avoidsSafeArea(.none)
+            }
+            host.insetsChanged(left: 0, top: 48, right: 0, bottom: 96, keyboard: 0)
+            host.layOut()
+            let scroll = try XCTUnwrap(host.views(AndroidScrollView.self).first?.scrollers.first)
+            XCTAssertEqual(Java.callInt(scroll.reference, TestJava.getPaddingTop), 48)
+            XCTAssertEqual(Java.callInt(scroll.reference, TestJava.getPaddingBottom), 96)
         }
     }
 

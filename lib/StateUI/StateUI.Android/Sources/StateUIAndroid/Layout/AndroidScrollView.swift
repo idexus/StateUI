@@ -136,6 +136,26 @@ final class AndroidScrollView: AndroidLayoutView, AndroidRefreshing {
         }
     }
 
+    /// What the scroller keeps clear on each edge, in points - what a page's scroller reaches under - so its first
+    /// and last content scroll out from under it: Android's own padding, the content drawn through it, the offset
+    /// counted from the first content clear as Android counts it.
+    /// Design: docs/design/platforms/android/pages.md#the-safe-area
+    func keepClear(_ clearance: Clearance) {
+        guard clearance != kept else { return }
+        kept = clearance
+        for scroller in scrollers {
+            Java.call(scroller.reference, JavaAPI.setClipToPadding, .bool(false))
+            let down = scroller === vertical
+            let across = scroller === horizontal
+            Java.call(
+                scroller.reference, JavaAPI.setPadding,
+                .int(across || !down ? pixels(clearance.left) : 0), .int(down ? pixels(clearance.top) : 0),
+                .int(across || !down ? pixels(clearance.right) : 0), .int(down ? pixels(clearance.bottom) : 0))
+        }
+    }
+
+    private var kept = Clearance.none
+
     // MARK: - The user's movement
 
     /// Android moved the scroller: where to, joined to the moves before it until the display's next frame.

@@ -55,6 +55,16 @@ final class SafeAreaTests: XCTestCase {
         XCTAssertEqual(SafeAreaArithmetic.clearance(room: top, safe: safe), Clearance(top: 60, left: 0, bottom: 0, right: 0))
     }
 
+    /// A bar standing beside its page takes what stands over its own edge - reaching under it, its content clear of
+    /// it and of the sides - and leaves the page the rest.
+    func testABarBesideItsPageTakesItsEdgeAndLeavesThePageTheRest() {
+        let over = Clearance(top: 24, left: 8, bottom: 48, right: 0)
+        XCTAssertEqual(over.underABarAtTheTop.bar, Clearance(top: 24, left: 8, bottom: 0, right: 0))
+        XCTAssertEqual(over.underABarAtTheTop.page, Clearance(top: 0, left: 8, bottom: 48, right: 0))
+        XCTAssertEqual(over.overABarAtTheBottom.bar, Clearance(top: 0, left: 8, bottom: 48, right: 0))
+        XCTAssertEqual(over.overABarAtTheBottom.page, Clearance(top: 24, left: 8, bottom: 0, right: 0))
+    }
+
     /// A scroller keeping its start clear says where it stands from its first row clear of the bars: its toolkit's
     /// offset with the start's clearance added, and the toolkit's offset for one the tree writes less it.
     func testAScrollersOffsetCountsFromItsFirstRowClearOfTheBars() {

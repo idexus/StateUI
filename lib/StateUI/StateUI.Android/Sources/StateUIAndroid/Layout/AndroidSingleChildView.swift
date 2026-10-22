@@ -14,6 +14,16 @@ class AndroidSingleChildView: AndroidLayoutView {
     override func arrange(in bounds: Rect) {
         guard let item = items.first, item.isShown else { return }
 
-        item.view.layout(SingleChildArithmetic.place(of: item, in: bounds, direction: direction))
+        // A page it holds stands in the whole room, under what stands over it by the page's own rule; anything else
+        // stands clear of that.
+        if let page = item.view as? AndroidPageView {
+            page.roomInsets = roomInsets
+            return page.layout(SingleChildArithmetic.place(of: item, in: bounds, direction: direction))
+        }
+        let room = Rect(
+            x: bounds.x + roomInsets.left, y: bounds.y + roomInsets.top,
+            width: max(0, bounds.width - roomInsets.left - roomInsets.right),
+            height: max(0, bounds.height - roomInsets.top - roomInsets.bottom))
+        item.view.layout(SingleChildArithmetic.place(of: item, in: room, direction: direction))
     }
 }

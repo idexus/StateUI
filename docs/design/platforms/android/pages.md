@@ -119,6 +119,24 @@ tells the activity whenever it has a way back, so from Android 13 the
 system's predictive back animates to the launcher only where the application
 has nowhere to go back to.
 
+## The safe area
+
+The activity draws edge to edge on every system it runs on - its window
+behind the status bar, the navigation bar and a cutout, the bars clear and
+their words dark on a light theme - and its root hears what stands over each
+edge as it changes: the system's bars and a cutout, and the keyboard, which
+no longer makes the window smaller, its height counted at the bottom where it
+is taller. Each arrangement passes that down ([the safe
+area](../../host/layout.md#the-safe-area)): a stack's bar reaches under the
+top, its words clear of it and of the sides (`Clearance.underABarAtTheTop`),
+a row of tabs under the bottom (`overABarAtTheBottom`), a split view's sidebar
+and detail under the whole; each leaves its page the rest. A page stands its
+content clear of what is left, or under it where the content says so, and a
+scroller let under keeps it as Android's own padding with its content drawn
+through, so its offset counts from its first row as Android counts it. A
+sheet filling the window stands under the same; a card stands clear in the
+middle.
+
 ## Sheets
 
 A stack in a sheet brings its bar; where its page offers no way back, the

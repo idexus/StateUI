@@ -196,6 +196,13 @@ class AndroidLayoutView: AndroidView {
     /// Places the children in `bounds`, in points.
     func arrange(in bounds: Rect) {}
 
+    /// What stands over this arrangement's room on each edge, in points - the system's bars, a cutout, the keyboard -
+    /// as the arrangement around it passes it down: its own bars take their edge, its page the rest.
+    /// Design: docs/design/platforms/android/pages.md#the-safe-area
+    var roomInsets = Clearance.none {
+        didSet { if roomInsets != oldValue { requestLayout() } }
+    }
+
     /// Whether two lists hold the same views in the same order.
     private static func same(_ left: [AndroidView], _ right: [AndroidView]) -> Bool {
         left.count == right.count && zip(left, right).allSatisfy { $0 === $1 }
