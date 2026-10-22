@@ -123,7 +123,7 @@ final class AppKitElement: NSObject, NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         // A page's content standing against the safe area otherwise: its window lays its page again.
-        if changed.contains(.avoidsSafeArea) { view?.window?.contentView?.needsLayout = true }
+        if changed.contains(.ignoresSafeArea) { view?.window?.contentView?.needsLayout = true }
         applyProperties(changed: changed)
         if let view, let host { element.applyDrawnChildren(to: view, through: AppKitRegistrations.registry, in: host.runtime) }
         configureContextMenu()

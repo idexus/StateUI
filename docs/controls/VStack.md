@@ -191,12 +191,12 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 ## From [Layout](tiers/Layout.md)
 
-What every layout has: the screen's unsafe strips it keeps clear of, and whether its children are clipped or let input through.
+What every layout has: the edges it runs under what stands over its page on, and whether its children are clipped or let input through.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>avoidsSafeArea</code></td><td>property</td><td><code>SafeAreaEdges</code></td><td>adaptive</td><td align="center"></td><td align="center">·</td><td align="center"></td><td align="center">–</td><td align="center">–</td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit, Android Views, Web: not realized<br>UIKit: cannot read avoidsSafeArea of VStack - UIKit's view places its children where StateUI's layout says; their frames prove it<br>WinUI 3: A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.<br>GTK 4: A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>ignoresSafeArea</code></td><td>property</td><td><code>SafeAreaEdges</code></td><td>adaptive</td><td align="center"></td><td align="center">·</td><td align="center"></td><td align="center">–</td><td align="center">–</td><td align="center"></td></tr>
+<tr><td colspan="9">AppKit, Android Views, Web: not realized<br>UIKit: cannot read ignoresSafeArea of VStack - UIKit's view places its children where StateUI's layout says; their frames prove it<br>WinUI 3: A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.<br>GTK 4: A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>clipsContent</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>letsInputThrough</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read letsInputThrough of VStack - AppKit's driver has no path for it yet<br>UIKit: cannot read letsInputThrough of VStack - UIKit's driver has no path for it yet<br>Android Views, WinUI 3: not realized</td></tr></tbody>

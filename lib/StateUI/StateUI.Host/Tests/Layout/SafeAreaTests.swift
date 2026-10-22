@@ -11,33 +11,26 @@ final class SafeAreaTests: XCTestCase {
     private let whole = Rect(x: 0, y: 0, width: 400, height: 800)
     private let safe = Rect(x: 0, y: 60, width: 400, height: 710)
 
-    /// The room content standing so on its edges has, left to right.
-    private func room(_ edges: SafeAreaEdges?) -> Rect {
+    /// The room content ignoring the safe area on `edges` has, left to right.
+    private func room(_ edges: SafeAreaEdges) -> Rect {
         SafeAreaArithmetic.room(safe: safe, whole: whole, edges: edges, direction: .leftToRight)
     }
 
-    /// Content that says nothing, or stands clear of the bars, stands in the safe area; content let under the bars
-    /// reaches the window's edge on every edge it says so.
-    func testContentReachesTheWindowsEdgeWhereItLetsItselfUnderTheBars() {
-        XCTAssertEqual(room(nil), safe)
-        XCTAssertEqual(room(.uniform(.container)), safe)
-        XCTAssertEqual(room(.uniform(.all)), safe)
-        XCTAssertEqual(room(.uniform(.none)), whole)
-        XCTAssertEqual(room(.uniform(.keyboard)), whole)
-        XCTAssertEqual(
-            SafeAreaArithmetic.room(
-                safe: safe, whole: whole, edges: .edges(start: .container, top: .none, end: .container, bottom: .all),
-                direction: .leftToRight),
-            Rect(x: 0, y: 0, width: 400, height: 770), "under the top bar alone")
+    /// Content ignoring the safe area on no edge stands in it; content ignoring it reaches the window's edge on every
+    /// edge it says so.
+    func testContentReachesTheWindowsEdgeOnEachEdgeItIgnoresTheSafeAreaOn() {
+        XCTAssertEqual(room(.none), safe)
+        XCTAssertEqual(room(.all), whole)
+        XCTAssertEqual(room(.top), Rect(x: 0, y: 0, width: 400, height: 770), "under the top bar alone")
+        XCTAssertEqual(room(.vertical), Rect(x: 0, y: 0, width: 400, height: 800), "under both")
     }
 
     /// The start and the end of the edges a layout says are its direction's: content let under the bars at its
     /// start reaches the window's left edge left to right and its right edge right to left.
     func testContentLetUnderTheBarsAtItsStartReachesTheEdgeItsDirectionStartsFrom() {
         let notched = Rect(x: 40, y: 60, width: 320, height: 710)
-        let edges = SafeAreaEdges.edges(start: .none, top: .container, end: .container, bottom: .container)
-        let ltr = SafeAreaArithmetic.room(safe: notched, whole: whole, edges: edges, direction: .leftToRight)
-        let rtl = SafeAreaArithmetic.room(safe: notched, whole: whole, edges: edges, direction: .rightToLeft)
+        let ltr = SafeAreaArithmetic.room(safe: notched, whole: whole, edges: .start, direction: .leftToRight)
+        let rtl = SafeAreaArithmetic.room(safe: notched, whole: whole, edges: .start, direction: .rightToLeft)
         XCTAssertEqual(ltr, Rect(x: 0, y: 60, width: 360, height: 710), "out to the left edge, left to right")
         XCTAssertEqual(rtl, Rect(x: 40, y: 60, width: 360, height: 710), "out to the right edge, right to left")
     }
@@ -46,13 +39,10 @@ final class SafeAreaTests: XCTestCase {
     /// at its start, the strip's at its end - so its first and last rows scroll out from under them; one standing
     /// clear of the bars keeps nothing.
     func testAScrollerUnderTheBarsKeepsItsFirstAndLastRowsClear() {
-        let under = room(.uniform(.none))
+        let under = room(.all)
         XCTAssertEqual(SafeAreaArithmetic.clearance(room: under, safe: safe), Clearance(top: 60, left: 0, bottom: 30, right: 0))
         XCTAssertEqual(SafeAreaArithmetic.clearance(room: safe, safe: safe), .none, "clear of the bars")
-        let top = SafeAreaArithmetic.room(
-            safe: safe, whole: whole, edges: .edges(start: .container, top: .none, end: .container, bottom: .container),
-            direction: .leftToRight)
-        XCTAssertEqual(SafeAreaArithmetic.clearance(room: top, safe: safe), Clearance(top: 60, left: 0, bottom: 0, right: 0))
+        XCTAssertEqual(SafeAreaArithmetic.clearance(room: room(.top), safe: safe), Clearance(top: 60, left: 0, bottom: 0, right: 0))
     }
 
     /// A bar standing beside its page takes what stands over its own edge - reaching under it, its content clear of

@@ -624,7 +624,7 @@ extension ControlDictionary {
                 Text("Edge to edge")
             }
             .background(.steelBlue)
-            .avoidsSafeArea(.none)
+            .ignoresSafeArea(.all)
             .clipsContent(true)
             """#),
 

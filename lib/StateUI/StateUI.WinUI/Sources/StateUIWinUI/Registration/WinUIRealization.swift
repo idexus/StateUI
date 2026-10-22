@@ -44,7 +44,7 @@ enum WinUIRealization {
         .notPlanned(RefreshElementContract.isRefreshEnabled, on: ItemsViewContract.self, reason: Self.noListPull),
         .notPlanned(RefreshElementContract.isRefreshing, on: ItemsViewContract.self, reason: Self.noListPull),
         .notPlanned(RefreshElementContract.refreshRequested, on: ItemsViewContract.self, reason: Self.noListPull),
-        .notPlanned(LayoutContract.avoidsSafeArea, reason: "A Windows desktop window keeps no area of its content "
+        .notPlanned(LayoutContract.ignoresSafeArea, reason: "A Windows desktop window keeps no area of its content "
             + "clear: nothing of the window stands over its content."),
         .notPlanned(VisualElementContract.accessibilityActionPerformed,
             reason: "UI Automation offers no action of an application's own words."),

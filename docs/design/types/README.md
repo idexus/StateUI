@@ -100,13 +100,13 @@ back as the types `ApplicationContract.currentTime` declares.
 | --- | --- | --- |
 | `.string` | text an author wrote | captions, placeholders, picture file names, path data, formats |
 | `.name` | a word from an open vocabulary | `Name`: font families, kept keys; a style key is resolved in the core |
-| `.enumeration` | a member's number, or a flag set's bits | every closed vocabulary, `FontAttributes`, `SwipeDirection` |
+| `.enumeration` | a member's number, or a flag set's bits | every closed vocabulary, `FontAttributes`, `SwipeDirection`, `SafeAreaEdges` |
 | `.number` | one number | `Double`, `Int`, a uniform `CornerRadius` |
 | `.bool` | true or false | `Bool` |
 | `.numbers` | a run of numbers in a stated order | `Insets`, `Rect`, `Point`, a list of points, `CalendarDate`, `ClockTime` |
 | `.strings` | a list of text | a `Picker`'s options |
 | `.color` | four channels | `Color` |
-| `.values` | parts of different kinds | `Brush`, `GridLength`, `ContainerShape`, `SafeAreaEdges`, `ViewTransform`, a drawing |
+| `.values` | parts of different kinds | `Brush`, `GridLength`, `ContainerShape`, `ViewTransform`, a drawing |
 | `.nothing` | a position with no value | an optional argument or payload position |
 | `.themed` | a half for each theme | `Color(light:dark:)`, `ImageSource(light:dark:)`; resolved by the differ, never handed to a host |
 | `.systemColor` | the accent in force and its alpha | `Color.accent`; resolved by the differ, never handed to a host |

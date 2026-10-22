@@ -24,7 +24,7 @@ final class AndroidPageView: AndroidSingleChildView {
             width: max(0, bounds.width - roomInsets.left - roomInsets.right),
             height: max(0, bounds.height - roomInsets.top - roomInsets.bottom))
         let room = SafeAreaArithmetic.room(
-            safe: safe, whole: bounds, edges: page?.contentSafeArea, direction: page?.layoutDirection ?? direction)
+            safe: safe, whole: bounds, edges: page?.contentIgnoresSafeArea ?? .none, direction: page?.layoutDirection ?? direction)
         item.view.layout(SingleChildArithmetic.place(of: item, in: room, direction: direction))
         (page?.pageScroller?.android.view as? AndroidScrollView)?.keepClear(
             SafeAreaArithmetic.clearance(room: room, safe: safe))

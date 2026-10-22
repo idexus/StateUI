@@ -112,7 +112,7 @@ final class WebLookTests: XCTestCase {
         defer { WebBrowser.ask([("safeTop", .number(0)), ("safeBottom", .number(0))]) }
         let under = State(wrappedValue: false)
         let host = WebRenderer.running {
-            ZStack {}.avoidsSafeArea(under.wrappedValue ? .none : .container).id("content")
+            ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : .none).id("content")
         }
         let content = { (host.runtime.tree.root?.first(id: .manual("content"))?.native as? WebElement)?.view?.node }
         host.settle { content() != nil }
@@ -135,7 +135,7 @@ final class WebLookTests: XCTestCase {
         let under = State(wrappedValue: false)
         let host = WebRenderer.running {
             Grid { ScrollView { Text("rows").height(2000) }.id("rows") }
-                .avoidsSafeArea(under.wrappedValue ? .none : .container)
+                .ignoresSafeArea(under.wrappedValue ? .all : .none)
         }
         let rows = { (host.runtime.tree.root?.first(id: .manual("rows"))?.native as? WebElement)?.view?.node }
         host.settle { rows() != nil }

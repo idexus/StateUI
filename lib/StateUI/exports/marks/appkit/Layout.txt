@@ -1,16 +1,16 @@
 # revision 2.1
-Grid.avoidsSafeArea: not realized
 Grid.clipsContent: ✅
+Grid.ignoresSafeArea: not realized
 Grid.letsInputThrough: ◐ cannot read letsInputThrough of Grid - AppKit's driver has no path for it yet
-HStack.avoidsSafeArea: not realized
 HStack.clipsContent: ✅
+HStack.ignoresSafeArea: not realized
 HStack.letsInputThrough: ◐ cannot read letsInputThrough of HStack - AppKit's driver has no path for it yet
-LayoutEngine.avoidsSafeArea: not realized
 LayoutEngine.clipsContent: ✅
+LayoutEngine.ignoresSafeArea: not realized
 LayoutEngine.letsInputThrough: ◐ cannot read letsInputThrough of LayoutEngine - AppKit's driver has no path for it yet
-VStack.avoidsSafeArea: not realized
 VStack.clipsContent: ✅
+VStack.ignoresSafeArea: not realized
 VStack.letsInputThrough: ◐ cannot read letsInputThrough of VStack - AppKit's driver has no path for it yet
-ZStack.avoidsSafeArea: not realized
 ZStack.clipsContent: ✅
+ZStack.ignoresSafeArea: not realized
 ZStack.letsInputThrough: ◐ cannot read letsInputThrough of ZStack - AppKit's driver has no path for it yet

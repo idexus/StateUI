@@ -1,38 +1,52 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What each edge of a layout stays clear of - one answer for all four, or one
-/// for each. What `.avoidsSafeArea` takes.
-public enum SafeAreaEdges: Equatable, Sendable, HostRepresentable {
-    /// The same answer for all four edges.
-    case uniform(SafeArea)
+// A flag set, its bits numbered by StateUI: append a flag, never insert one.
+// Design: docs/design/types/vocabularies.md#flag-sets-carry-bits
 
-    /// Each edge's own: start, top, end, bottom - the start and the end as the element lays out.
-    case edges(start: SafeArea, top: SafeArea, end: SafeArea, bottom: SafeArea)
+/// The edges of a layout that run under what stands over its page - the bars,
+/// a notch, the home indicator, the on-screen keyboard. What `.ignoresSafeArea`
+/// takes.
+///
+///     Grid { … }.ignoresSafeArea([.start, .top])
+///
+/// The start and the end are the layout's own: right to left, the start is the
+/// right edge.
+public struct SafeAreaEdges: OptionSet, Sendable {
+    /// The edge bits.
+    public let rawValue: Int32
 
-    /// One member, or the four in order, each a value of its own.
-    public var propValue: PropValue {
-        switch self {
-        case .uniform(let area):
-            return area.propValue
-        case .edges(let start, let top, let end, let bottom):
-            return .values([start.propValue, top.propValue, end.propValue, bottom.propValue])
-        }
+    /// From the raw bits. `.top`, `[.start, .top]` and `.all` are the ordinary
+    /// way in.
+    public init(rawValue: Int32) {
+        self.rawValue = rawValue
     }
 
-    /// The answer back: one member, or four in order - nil for anything else.
-    /// - Parameter propValue: what the host sent.
-    public init?(propValue: PropValue) {
-        if let area = SafeArea(propValue: propValue) {
-            self = .uniform(area)
-            return
-        }
+    /// No edge: the layout stands clear of everything over its page - what it
+    /// does when nothing is said.
+    public static let none = SafeAreaEdges([])
 
-        guard let values = propValue.values, values.count == 4,
-              let start = SafeArea(propValue: values[0]), let top = SafeArea(propValue: values[1]),
-              let end = SafeArea(propValue: values[2]), let bottom = SafeArea(propValue: values[3])
-        else { return nil }
+    /// The edge a line of words starts from.
+    public static let start = SafeAreaEdges(rawValue: 1 << 0)
 
-        self = .edges(start: start, top: top, end: end, bottom: bottom)
-    }
+    /// The top edge.
+    public static let top = SafeAreaEdges(rawValue: 1 << 1)
+
+    /// The edge a line of words ends at.
+    public static let end = SafeAreaEdges(rawValue: 1 << 2)
+
+    /// The bottom edge.
+    public static let bottom = SafeAreaEdges(rawValue: 1 << 3)
+
+    /// The start and the end.
+    public static let horizontal: SafeAreaEdges = [.start, .end]
+
+    /// The top and the bottom.
+    public static let vertical: SafeAreaEdges = [.top, .bottom]
+
+    /// Every edge: edge to edge.
+    public static let all: SafeAreaEdges = [.start, .top, .end, .bottom]
 }
+
+extension SafeAreaEdges: HostRepresentable {}
+extension SafeAreaEdges: StateChoice {}

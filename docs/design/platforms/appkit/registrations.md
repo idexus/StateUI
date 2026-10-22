@@ -54,7 +54,8 @@ A declaration says what the host does, not what a tier offers:
 
 - `panTouchCount` is recorded partial: the host layer hears a one-finger pan
   only, which only a record with its note can say.
-- `avoidsSafeArea` is absent: this host does not read it.
+- `ignoresSafeArea` is absent: the window lays its page by it, and no
+  conformance case proves that effect yet, so nothing records it.
 - `background` is taken by the registrations of the controls that have it. A
   background is a partial realization on this host, which only a record with
   its note can say.

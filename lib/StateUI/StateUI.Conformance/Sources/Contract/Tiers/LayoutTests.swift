@@ -14,7 +14,7 @@
         Specimens.wearing(LayoutContract.self).flatMap { element in
             [
                 clipped(element), throughIt(element),
-                Aspects.holds(LayoutContract.avoidsSafeArea, on: element, .uniform(.container), then: .uniform(.none)),
+                Aspects.holds(LayoutContract.ignoresSafeArea, on: element, SafeAreaEdges.none, then: .all),
                 Aspects.holds(LayoutContract.clipsContent, on: element, false, then: true),
                 Aspects.holds(LayoutContract.letsInputThrough, on: element, false, then: true),
             ]

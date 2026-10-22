@@ -9077,7 +9077,7 @@ enum Listings {
                                 }
                             }
                         }
-                        .avoidsSafeArea(under ? .none : .container)
+                        .ignoresSafeArea(under ? .all : .none)
                         .galleryPage("Safe area")
                     } destination: { _ in
                         Text("")

@@ -295,11 +295,12 @@ the part of it clear of what stands over the page. That is the platform's - a
 phone's status bar, notch and home indicator, the keyboard - the room's - a
 popover's arrow, a sheet's grabber - and the arrangement's own bars over the
 page: a stack's, the tabs', a split view column's part of the bar. A page's
-content stands in it (`SafeAreaArithmetic.room`); where the content's own
-layout lets itself under what stands over it on an edge - `.none`, edge to
-edge, or `.keyboard`, clear of the keyboard alone - its room reaches out to
-the room's edge there, so a background or a gradient runs behind a bar or the
-status bar. A scroller let under keeps clear, on each edge it reaches under,
+content stands in it (`SafeAreaArithmetic.room`); on each edge the content's
+own layout ignores the safe area on (`ignoresSafeArea`, the start and the end
+as it lays out) its room reaches out to the room's edge, so a background or a
+gradient runs behind a bar or the status bar. What stands over an edge is one
+answer whatever it is: no platform keeps a page clear of one thing over an
+edge and under another. A scroller let under keeps clear, on each edge it reaches under,
 the depth of what stands over it there (`SafeAreaArithmetic.clearance`): its
 content scrolls under the bars and its first and last rows stop clear of
 them, as the platform's own lists do, and its offset counts from its first

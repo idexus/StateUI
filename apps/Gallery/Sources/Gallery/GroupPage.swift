@@ -25,7 +25,7 @@ struct GroupPage: View {
         // platform's own lists do: its rows scroll under a glass bar, the
         // first and the last stopping clear of it.
         Grid { list }
-            .avoidsSafeArea(.none)
+            .ignoresSafeArea(.all)
             .galleryPage(group.title)
     }
 

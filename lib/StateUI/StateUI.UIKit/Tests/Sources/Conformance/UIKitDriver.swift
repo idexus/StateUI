@@ -41,7 +41,7 @@ final class UIKitDriver: HostDriver {
         for layout in ["Grid", "HStack", "VStack", "ZStack", "ScrollView"] {
             none["read shape of \(layout)"] =
                 "UIKit holds a layout's outline as its layer's path, no shape; its drawing proves it"
-            for member in ["padding", "avoidsSafeArea"] {
+            for member in ["padding", "ignoresSafeArea"] {
                 none["read \(member) of \(layout)"] =
                     "UIKit's view places its children where StateUI's layout says; their frames prove it"
             }

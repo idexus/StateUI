@@ -551,9 +551,9 @@ final class ControlTests: XCTestCase {
                         .selectionLength(2)
                 }
                 .spacing(12)
-                // The safe strip is one of the LAYOUT tier's own properties;
-                // the four-value form markers its full spelling in the patch.
-                .avoidsSafeArea(.none, .keyboard, .container, .all)
+                // The safe area is one of the LAYOUT tier's own properties;
+                // a set of edges spells its bits in the patch.
+                .ignoresSafeArea([.start, .top])
                 .clipsContent(true)
                 .letsInputThrough(true)
                 .style(.card)
@@ -791,7 +791,7 @@ final class ControlTests: XCTestCase {
             "barBackgroundColor", "barButtonBackgroundColor", "barForegroundColor", "barIcon", "barSubtitle", "barTitle",
             "toolbarStyle", "isScrollEnabled",
             "isZoomEnabled", "showsTraffic", "showsUserLocation", "title",
-            "mapType", "avoidsSafeArea",
+            "mapType", "ignoresSafeArea",
         ])
         var values: Set<String> = []
         var twins: Set<String> = []

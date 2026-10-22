@@ -131,7 +131,7 @@ final class UIKitPageController: UIViewController {
         let safe = Rect(x: inside.minX, y: inside.minY, width: inside.width, height: inside.height)
         let room = SafeAreaArithmetic.room(
             safe: safe, whole: Rect(x: whole.minX, y: whole.minY, width: whole.width, height: whole.height),
-            edges: page?.element.contentSafeArea, direction: page?.element.layoutDirection ?? .leftToRight)
+            edges: page?.element.contentIgnoresSafeArea ?? .none, direction: page?.element.layoutDirection ?? .leftToRight)
         page?.placedFrame = room
         (page?.element.pageScroller?.uiKit.view as? UIKitScrollView)?.keepClear(
             SafeAreaArithmetic.clearance(room: room, safe: safe))

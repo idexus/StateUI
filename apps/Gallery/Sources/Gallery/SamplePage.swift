@@ -43,7 +43,7 @@ struct SamplePage: View {
         // runs: its rows scroll under a glass bar, the first and the last
         // stopping clear of it.
         Grid { scrolling }
-            .avoidsSafeArea(.none)
+            .ignoresSafeArea(.all)
             .galleryPage(sample.title)
     }
 

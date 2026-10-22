@@ -2,14 +2,14 @@
 
 # Layout
 
-What every layout has: the screen's unsafe strips it keeps clear of, and whether its children are clipped or let input through.
+What every layout has: the edges it runs under what stands over its page on, and whether its children are clipped or let input through.
 
 ```swift
 VStack {
     Text("Edge to edge")
 }
 .background(.steelBlue)
-.avoidsSafeArea(.none)
+.ignoresSafeArea(.all)
 .clipsContent(true)
 ```
 
@@ -23,6 +23,6 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `avoidsSafeArea` | property | `SafeAreaEdges` | adaptive |
+| `ignoresSafeArea` | property | `SafeAreaEdges` | adaptive |
 | `clipsContent` | property | `Bool` | native |
 | `letsInputThrough` | property | `Bool` | native |

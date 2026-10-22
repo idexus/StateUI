@@ -87,7 +87,7 @@ private final class UIKitPopoverRoom: UIView {
         let safe = Rect(x: inside.minX, y: inside.minY, width: inside.width, height: inside.height)
         let room = SafeAreaArithmetic.room(
             safe: safe, whole: Rect(x: 0, y: 0, width: bounds.width, height: bounds.height),
-            edges: element?.contentSafeArea, direction: element?.layoutDirection ?? .leftToRight)
+            edges: element?.contentIgnoresSafeArea ?? .none, direction: element?.layoutDirection ?? .leftToRight)
         content.frame = CGRect(x: room.x, y: room.y, width: room.width, height: room.height)
         (element?.pageScroller?.uiKit.view as? UIKitScrollView)?.keepClear(
             SafeAreaArithmetic.clearance(room: room, safe: safe))

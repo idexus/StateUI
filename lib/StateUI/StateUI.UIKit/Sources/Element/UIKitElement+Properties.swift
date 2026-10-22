@@ -62,7 +62,7 @@ extension UIKitElement {
                 case .background:
                     view.backgroundColor = HostMaterial(value(.background)).painted.flatMap(UIColor.init(stateUI:))
                     (controller as? UIKitPageController)?.showBackground()
-                case .avoidsSafeArea:
+                case .ignoresSafeArea:
                     // A page's content standing against the safe area otherwise: its page stands again.
                     (parent?.controller as? UIKitPageController)?.view.setNeedsLayout()
                 default: break

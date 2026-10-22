@@ -33,7 +33,7 @@ value written out as text.
 
 ## Flag sets carry bits
 
-`FontAttributes`, `TextDecorations` and `SwipeDirection` are option sets, so `.underline` and
+`FontAttributes`, `TextDecorations`, `SwipeDirection` and `SafeAreaEdges` are option sets, so `.underline` and
 `[.underline, .strikethrough]` both work. Their bits are StateUI's own by the same rule, each written out
 and rising in declaration order - not always from `1 << 0`: `FontAttributes.italic` is `1 << 1` - and a
 composite such as `.all` is the OR of its parts. A
@@ -61,10 +61,6 @@ numbers as 4 and 5. `Brush.Kind` numbers from 1 rather than 0: the contract asks
 only that both sides say the same number. A grid length's `.auto` carries a
 1, so every length is the same two parts and a host reads each one the same
 way.
-
-`SafeAreaEdges` is one member for all four edges, or four members in the
-order left, top, right, bottom. The four cross as a list of four
-`.enumeration` values, never as `.numbers`: a member is not a quantity.
 
 ## Choices a state can carry
 

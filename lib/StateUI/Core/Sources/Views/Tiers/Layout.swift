@@ -25,52 +25,20 @@ extension LayoutProperties {
         setValue(LayoutContract.letsInputThrough, value)
     }
 
-    /// Which parts of the screen's unsafe strip - the notch, the bars, the
-    /// on-screen keyboard - this layout stays clear of, one value for all four
-    /// edges.
+    /// The edges on which this layout runs under what stands over its page -
+    /// the bars, a notch, the home indicator, the on-screen keyboard; on the
+    /// others it stands clear of them.
     ///
-    ///     VStack { … }.avoidsSafeArea(.none)    // edge to edge
+    ///     VStack { … }.ignoresSafeArea(.all)             // edge to edge
+    ///     Grid { … }.ignoresSafeArea([.start, .top])
     ///
-    /// A page's own layout is the one that lets itself under the strip; a
-    /// layout deeper in stands where its page puts it, and a window with no
-    /// unsafe strip changes nothing. A layout that stays clear of the strip is
-    /// inset by it, so a header meant to reach the top edge wants `.none`: its
-    /// content then sits where its padding says, and its frame fits that
-    /// content.
-    public func avoidsSafeArea(_ value: SafeArea) -> Modified {
-        setValue(LayoutContract.avoidsSafeArea, .uniform(value))
-    }
-
-    /// The same, said for the horizontal and the vertical edges separately.
-    ///
-    ///     Grid { … }.avoidsSafeArea(.none, .container)
-    ///
-    /// The start and the end take the first, top and bottom the second.
-    ///
-    /// - Parameters:
-    ///   - horizontal: what the start and the end edges stay clear of.
-    ///   - vertical: what the top and bottom edges stay clear of.
-    public func avoidsSafeArea(
-        _ horizontal: SafeArea,
-        _ vertical: SafeArea
-    ) -> Modified {
-        avoidsSafeArea(horizontal, vertical, horizontal, vertical)
-    }
-
-    /// The same, one edge at a time: start, top, end, bottom - the start and the end as the layout lays out.
-    ///
-    /// - Parameters:
-    ///   - start: what the edge a line of words starts from stays clear of.
-    ///   - top: what the top edge stays clear of.
-    ///   - end: what the edge a line of words ends at stays clear of.
-    ///   - bottom: what the bottom edge stays clear of.
-    public func avoidsSafeArea(
-        _ start: SafeArea,
-        _ top: SafeArea,
-        _ end: SafeArea,
-        _ bottom: SafeArea
-    ) -> Modified {
-        setValue(LayoutContract.avoidsSafeArea, .edges(start: start, top: top, end: end, bottom: bottom))
+    /// A page's own layout is the one that runs under them; a layout deeper in
+    /// stands where its page puts it, and a page with nothing over it changes
+    /// nothing. A scroller filling a page that runs under the bars keeps its
+    /// first and last content clear of them. A header meant to reach the top
+    /// edge wants `.top`: its content then sits where its padding says.
+    public func ignoresSafeArea(_ edges: SafeAreaEdges) -> Modified {
+        setValue(LayoutContract.ignoresSafeArea, edges)
     }
 }
 
@@ -87,9 +55,9 @@ extension Layout {
         twin(LayoutContract.clipsContent, by: state)
     }
 
-    /// `avoidsSafeArea` from a state, `$x`: the host sets each new value as it
+    /// `ignoresSafeArea` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
-    public func avoidsSafeArea(_ state: Binding<SafeArea>) -> Modified {
-        twin(LayoutContract.avoidsSafeArea, carrying: state)
+    public func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Modified {
+        twin(LayoutContract.ignoresSafeArea, carrying: state)
     }
 }

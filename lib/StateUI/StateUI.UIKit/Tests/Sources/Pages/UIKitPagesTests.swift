@@ -419,7 +419,7 @@ final class UIKitPagesTests: XCTestCase {
     func testAPagesContentReachesUnderTheBarsWhereItSaysSo() throws {
         let under = State(wrappedValue: false)
         let host = UIKitRenderer.running {
-            ZStack {}.avoidsSafeArea(under.wrappedValue ? .none : .container)
+            ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : .none)
         }
         defer { host.finish() }
         let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement) }
@@ -441,7 +441,7 @@ final class UIKitPagesTests: XCTestCase {
         let under = State(wrappedValue: false)
         let host = UIKitRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                ZStack {}.avoidsSafeArea(under.wrappedValue ? .none : .container).title("Under the bar")
+                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : .none).title("Under the bar")
             } destination: { _ in Text("Next") }
         }
         defer { host.finish() }
@@ -466,7 +466,7 @@ final class UIKitPagesTests: XCTestCase {
         let host = UIKitRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Grid { ScrollView { Text("rows").height(2000) }.scrollOffset(offset.projectedValue) }
-                    .avoidsSafeArea(.none)
+                    .ignoresSafeArea(.all)
                     .title("Rows")
             } destination: { _ in Text("Next") }
         }
@@ -492,7 +492,7 @@ final class UIKitPagesTests: XCTestCase {
         let under = State(wrappedValue: true)
         let host = UIKitRenderer.running {
             Grid { ScrollView { Text("rows") } }
-                .avoidsSafeArea(.container, .container, .container, under.wrappedValue ? .none : .container)
+                .ignoresSafeArea(under.wrappedValue ? .bottom : .none)
         }
         defer { host.finish() }
         let scroller = { host.views(UIKitScrollView.self).first?.scroller }

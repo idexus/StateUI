@@ -434,11 +434,12 @@ Every room a page stands in - a window, a sheet, a popover - has a safe area:
 the part of it clear of what stands over the page there. That is a phone's
 status bar, notch and home indicator, the keyboard, a popover's arrow, and the
 page's own bars - a stack's, the tabs', a split view column's part of the bar.
-`avoidsSafeArea` states, edge by edge, what a page's own layout stands clear
-of. Its content stands clear of all of it by default (`.container`); `.none`,
-edge to edge, runs it under, so its background colors the status bar's strip
-and its rows scroll under a translucent bar, the first and the last stopping
-clear of it:
+A page's own layout stands clear of all of it by default; `ignoresSafeArea`
+names the edges it runs under instead - `.all` edge to edge, `.top`,
+`[.start, .top]` - so its background colors the status bar's strip and its
+rows scroll under a translucent bar, the first and the last stopping clear
+of it. The start and the end are the layout's own: right to left, the start
+is the right edge.
 
 ```swift
 import StateUI
@@ -450,7 +451,7 @@ struct Header: View {
         }
         .padding(start: 20, top: 60, end: 20, bottom: 20)
         .background(.steelBlue)
-        .avoidsSafeArea(.none)
+        .ignoresSafeArea(.all)
     }
 }
 ```

@@ -37,14 +37,13 @@
 
 /// Where a page's content stands against the safe area of the room it stands in - a window, a sheet, a popover - the
 /// same on every host: clear of what stands over the room - the platform's bars, a notch, the keyboard, a popover's
-/// arrow, the arrangement's own bars - but on an edge where its layout lets it under them - edge to edge, or clear of
-/// the keyboard alone - out to the room's edge.
+/// arrow, the arrangement's own bars - but on an edge its layout ignores the safe area on, out to the room's edge.
 /// Design: docs/design/host/layout.md#the-safe-area
 @_spi(Host) public enum SafeAreaArithmetic {
     /// The room a page's content stands in: `safe` - the room clear of what stands over it - reaching out to `whole`
-    /// on each edge `edges` lets the content under the bars; `safe` where the content says nothing. The start and
-    /// the end are the content's `direction`'s: right to left, the start is the right edge.
-    public static func room(safe: Rect, whole: Rect, edges: SafeAreaEdges?, direction: LayoutDirection) -> Rect {
+    /// on each edge the content ignores the safe area on, `edges`, and `safe` on the others. The start and the end
+    /// are the content's `direction`'s: right to left, the start is the right edge.
+    public static func room(safe: Rect, whole: Rect, edges: SafeAreaEdges, direction: LayoutDirection) -> Rect {
         let under = under(edges, direction: direction)
         let minX = under.left ? whole.x : safe.x
         let minY = under.top ? whole.y : safe.y
@@ -53,15 +52,14 @@
         return Rect(x: minX, y: minY, width: max(0, maxX - minX), height: max(0, maxY - minY))
     }
 
-    /// On which edges content standing so runs under what stands over its room: the start and the end are its
-    /// `direction`'s; none where it says nothing.
+    /// On which edges content ignoring the safe area on `edges` runs under what stands over its room: the start and
+    /// the end are its `direction`'s.
     public static func under(
-        _ edges: SafeAreaEdges?, direction: LayoutDirection
+        _ edges: SafeAreaEdges, direction: LayoutDirection
     ) -> (top: Bool, left: Bool, bottom: Bool, right: Bool) {
-        guard let edges else { return (false, false, false, false) }
-        let (start, top, end, bottom) = sides(edges)
+        let (start, end) = (edges.contains(.start), edges.contains(.end))
         let (left, right) = direction == .rightToLeft ? (end, start) : (start, end)
-        return (underTheBars(top), underTheBars(left), underTheBars(bottom), underTheBars(right))
+        return (edges.contains(.top), left, edges.contains(.bottom), right)
     }
 
     /// What a scroller filling a page's `room` keeps clear on each edge: where the room reaches past `safe` - under
@@ -74,10 +72,6 @@
             right: max(0, room.x + room.width - (safe.x + safe.width)))
     }
 
-
-
-
-
     /// Where a scroller keeping `clearance` stands, counted from its first content clear of the bars: its toolkit's
     /// offset `native` with the start's clearance added.
     public static func offset(native: Point, clearance: Clearance) -> Point {
@@ -88,30 +82,18 @@
     public static func native(offset: Point, clearance: Clearance) -> Point {
         Point(x: offset.x - clearance.left, y: offset.y - clearance.top)
     }
-
-    /// Whether content standing so on an edge runs under the bars and the notch there.
-    public static func underTheBars(_ area: SafeArea) -> Bool {
-        area == .none || area == .keyboard
-    }
-
-    private static func sides(_ edges: SafeAreaEdges) -> (SafeArea, SafeArea, SafeArea, SafeArea) {
-        switch edges {
-        case .uniform(let area): (area, area, area, area)
-        case .edges(let start, let top, let end, let bottom): (start, top, end, bottom)
-        }
-    }
 }
 
 extension MountedElement {
-    /// Which edges of the window's safe area this layout stands clear of, as the tree says; nil where it says nothing.
-    public var avoidsSafeArea: SafeAreaEdges? {
-        value(.avoidsSafeArea).flatMap(SafeAreaEdges.init(propValue:))
+    /// The edges this layout runs under what stands over its page on, as the tree says; none where it says nothing.
+    public var ignoresSafeArea: SafeAreaEdges {
+        value(.ignoresSafeArea).flatMap(SafeAreaEdges.init(propValue:)) ?? .none
     }
 
-    /// The edges a room's content lets it under the bars on - a page's, a popover's: its own content's, which is the
+    /// The edges a room's content runs under the bars on - a page's, a popover's: its own content's, which is the
     /// room's one child.
-    public var contentSafeArea: SafeAreaEdges? {
-        isRoom ? arrangedChildren.first?.avoidsSafeArea : avoidsSafeArea
+    public var contentIgnoresSafeArea: SafeAreaEdges {
+        isRoom ? arrangedChildren.first?.ignoresSafeArea ?? .none : ignoresSafeArea
     }
 
     /// The scroller a room's content is, or the one it holds alone, layout in layout; nil for none.

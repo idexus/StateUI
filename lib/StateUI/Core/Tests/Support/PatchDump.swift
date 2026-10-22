@@ -201,8 +201,6 @@ enum PatchDump {
             return spelled(member, as: IconPosition.self)
         case Prop.type.name:
             return spelled(member, as: MarkerType.self)
-        case Prop.avoidsSafeArea.name:
-            return spelled(member, as: SafeArea.self)
         case Prop.layoutDirection.name:
             return spelled(member, as: LayoutDirection.self)
         case Prop.accessibilityHeading.name:
@@ -252,6 +250,17 @@ enum PatchDump {
                 ("up", SwipeDirection.up.rawValue),
                 ("down", SwipeDirection.down.rawValue),
                 ("all", SwipeDirection.all.rawValue),
+            ])
+        case Prop.ignoresSafeArea.name:
+            return spelled(member, asBitsOf: [
+                ("none", SafeAreaEdges.none.rawValue),
+                ("start", SafeAreaEdges.start.rawValue),
+                ("top", SafeAreaEdges.top.rawValue),
+                ("end", SafeAreaEdges.end.rawValue),
+                ("bottom", SafeAreaEdges.bottom.rawValue),
+                ("horizontal", SafeAreaEdges.horizontal.rawValue),
+                ("vertical", SafeAreaEdges.vertical.rawValue),
+                ("all", SafeAreaEdges.all.rawValue),
             ])
 
         default:

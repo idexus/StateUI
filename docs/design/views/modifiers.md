@@ -261,13 +261,13 @@ and in the whole of a ZStack's room.
 
 ## Safe area edges
 
-`avoidsSafeArea` takes one value for all four edges, two for the horizontal
-and the vertical edges, or four. The two-value form is written out to four
-edges before it travels, so the patch carries one shape of the property and the
-host reads one thing rather than three spellings of it. The four regions
-travel as members, in order, each a value of its own rather than a run of
-numbers - a member and a quantity are different things to a host - and the
-one-value form sends a single `.enumeration`.
+`ignoresSafeArea` takes the set of edges a layout runs under what stands over
+its page on - `.all`, `.top`, `[.start, .top]` - and stands clear on the rest;
+`.none` is what saying nothing does. What stands over an edge is one answer
+whatever it is - the bars, a notch, the keyboard - since no platform keeps a
+page clear of one and under another, so the set says only where. It crosses as
+one `.enumeration` holding its bits, the start and the end as the layout lays
+out, and the host reads them against its layout's direction.
 
 ## Environment
 

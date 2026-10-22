@@ -95,10 +95,10 @@ extension NodeType {
     static let subtitle = MarkerContract.subtitle.token
     static let allowsDrop = ViewContract.allowsDrop.token
     static let area = ViewContract.area.token
-    static let avoidsSafeArea = LayoutContract.avoidsSafeArea.token
     static let barForegroundColor = BarElementContract.barForegroundColor.token
     static let endReachedWithin = ItemsViewContract.endReachedWithin.token
     static let hidesWhenInactive = WindowContract.hidesWhenInactive.token
+    static let ignoresSafeArea = LayoutContract.ignoresSafeArea.token
     static let isAccessibilityHidden = VisualElementContract.isAccessibilityHidden.token
     static let items = ItemsViewContract.items.token
     static let itemsLayout = ItemsViewContract.itemsLayout.token

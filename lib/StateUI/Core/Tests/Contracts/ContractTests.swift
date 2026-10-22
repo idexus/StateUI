@@ -162,14 +162,9 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(Material(propValue: brush.propValue), .gradient(brush))
         XCTAssertEqual(Brush(propValue: Color.tomato.propValue), .solidColor(.tomato), "a color state's fill")
 
-        XCTAssertEqual(SafeAreaEdges.uniform(.none).propValue, .enumeration(0))
-        XCTAssertEqual(
-            SafeAreaEdges.edges(start: .none, top: .container, end: .none, bottom: .container).propValue,
-            .values([.enumeration(0), .enumeration(2), .enumeration(0), .enumeration(2)]))
-        XCTAssertEqual(SafeAreaEdges(propValue: .enumeration(3)), .uniform(.all))
-        XCTAssertEqual(
-            SafeAreaEdges(propValue: .values([.enumeration(0), .enumeration(1), .enumeration(2), .enumeration(3)])),
-            .edges(start: .none, top: .keyboard, end: .container, bottom: .all))
+        XCTAssertEqual(SafeAreaEdges.none.propValue, .enumeration(0))
+        XCTAssertEqual(SafeAreaEdges([.start, .top]).propValue, .enumeration(3))
+        XCTAssertEqual(SafeAreaEdges(propValue: .enumeration(15)), .all)
     }
 
     /// Every value a member holds comes back from its host form as itself -
@@ -193,8 +188,7 @@ final class ContractTests: XCTestCase {
             [Point(1, 2), Point(3, 4)] as [Point], [1, 2.5] as [Double], ["a", "b"] as [String],
             ImageSource("logo.png"), ImageSource(light: "logo.png", dark: "logo_dark.png"),
             ViewTransform.rotate(15).scaleX(1.2),
-            SafeAreaEdges.uniform(.all),
-            SafeAreaEdges.edges(start: .none, top: .container, end: .none, bottom: .container),
+            SafeAreaEdges.all, SafeAreaEdges([.start, .bottom]),
             CornerRadius.uniform(8), CornerRadius.corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: 4),
             WebViewSource.url("https://example.com"), WebViewSource.html("<p/>", baseURL: nil),
             WebViewSource.html("<p/>", baseURL: "https://example.com"),
@@ -216,7 +210,7 @@ final class ContractTests: XCTestCase {
             AccessibilityHeadingLevel(rawValue: 1)!, AccessibilityRole.adjustable, ScrollIndicatorVisibility(rawValue: 1)!,
             LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,
             FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarItemPlacement(rawValue: 1)!, ToolbarSide.start,
-            SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, ButtonRole.cancel, ActionRole.destructive, DateStyle.medium,
+            SafeAreaEdges.top, IconPosition(rawValue: 1)!, ButtonRole.cancel, ActionRole.destructive, DateStyle.medium,
             [Key.escape, "a"], MapType(rawValue: 1)!,
             WebNavigationType(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.changed,
             LayoutInput.Axis.vertical,

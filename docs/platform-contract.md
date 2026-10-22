@@ -554,7 +554,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [AutomationElement](controls/tiers/AutomationElement.md) | `accessibilityIdentifier` | 1 |
 | [VisualElement](controls/tiers/VisualElement.md) | `accessibilityActionPerformed`, `accessibilityActions`, `onAccessibilityAdjusted` (`accessibilityAdjusted`), `accessibilityHeading`, `accessibilityHint`, `accessibilityLabel`, `accessibilityRole`, `accessibilityValue`, `background`, `frame`, `height`, `hidesChildrenFromAccessibility`, `ignoresInput`, `isAccessibilityHidden`, `isEnabled`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `style`, `tooltip`, `translationX`, `translationY`, `width`, `zIndex` | 36 |
 | [View](controls/tiers/View.md) | `allowsDrop`, `area`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `droppedFileTypes`, `onDragEnded` (`dragEnded`), `onDrop` (`filesDropped`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 34 |
-| [Layout](controls/tiers/Layout.md) | `avoidsSafeArea`, `clipsContent`, `letsInputThrough` | 3 |
+| [Layout](controls/tiers/Layout.md) | `ignoresSafeArea`, `clipsContent`, `letsInputThrough` | 3 |
 | [Stack](controls/tiers/Stack.md) | `spacing` | 1 |
 | [TextInput](controls/tiers/TextInput.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 10 |
 | [Shape](controls/tiers/Shape.md) | `contentMode`, `geometryTransform`, `stroke`, `dashPhase`, `dash`, `lineCap`, `lineWidth` | 7 |
@@ -655,18 +655,18 @@ realizes the element and each of its members.
 
 `accessibilityActions`, `accessibilityHeading`, `accessibilityHint`,
 `accessibilityIdentifier`, `accessibilityLabel`, `accessibilityRole`,
-`accessibilityValue`, `allowsDrop`, `area`, `avoidsSafeArea`, `backButtonTitle`,
-`background`, `barBackgroundColor`, `barButtonBackgroundColor`,
-`barForegroundColor`, `barIcon`, `barSubtitle`, `barTitle`, `canDrag`,
-`clipsContent`, `columns`, `columnSpacing`, `contentMode`, `cornerRadius`,
-`cursorPosition`, `dash`, `dashPhase`, `data`, `date`, `dragText`, `drawing`,
-`droppedFileTypes`, `endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`,
-`flyoutBackground`, `fontAttributes`, `fontFamily`, `fontSize`, `fontWeight`,
-`format`, `frame`, `geometryTransform`, `gridColumn`, `gridColumnSpan`,
-`gridRow`, `gridRowSpan`, `growsWithText`, `handAxis`, `height`,
-`hidesChildrenFromAccessibility`, `hidesWhenInactive`, `horizontalAlignment`,
-`horizontalScrollIndicator`, `horizontalTextAlignment`, `icon`, `iconPosition`,
-`iconSpacing`, `ignoresInput`, `inputPurpose`, `isAccessibilityHidden`,
+`accessibilityValue`, `allowsDrop`, `area`, `backButtonTitle`, `background`,
+`barBackgroundColor`, `barButtonBackgroundColor`, `barForegroundColor`,
+`barIcon`, `barSubtitle`, `barTitle`, `canDrag`, `clipsContent`, `columns`,
+`columnSpacing`, `contentMode`, `cornerRadius`, `cursorPosition`, `dash`,
+`dashPhase`, `data`, `date`, `dragText`, `drawing`, `droppedFileTypes`,
+`endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`, `flyoutBackground`,
+`fontAttributes`, `fontFamily`, `fontSize`, `fontWeight`, `format`, `frame`,
+`geometryTransform`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`,
+`growsWithText`, `handAxis`, `height`, `hidesChildrenFromAccessibility`,
+`hidesWhenInactive`, `horizontalAlignment`, `horizontalScrollIndicator`,
+`horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
+`ignoresInput`, `ignoresSafeArea`, `inputPurpose`, `isAccessibilityHidden`,
 `isAnimating`, `isEnabled`, `isFontAutoScalingEnabled`, `isMaximizable`,
 `isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isPresented`, `isReadOnly`,
 `isRefreshEnabled`, `isRefreshing`, `isScrollEnabled`, `isSelectable`,

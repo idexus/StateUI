@@ -100,8 +100,8 @@ enum UIKitRealization {
             why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
         .partial(MenuContract.isEnabled, missing: "UIKit holds no menu out of reach itself: each of its entries is."),
-        .partial(LayoutContract.avoidsSafeArea, missing: "UIKit lets a page's own layout under the bars and the notch; "
-            + "a layout deeper in stands where its page puts it, and none stands clear of the keyboard."),
+        .partial(LayoutContract.ignoresSafeArea, missing: "UIKit lets a page's own layout under the bars and the notch; "
+            + "a layout deeper in stands where its page puts it, and the safe area holds no keyboard."),
         .partial(ViewContract.panTouchCount,
             missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
         .complete(MenuContract.text),

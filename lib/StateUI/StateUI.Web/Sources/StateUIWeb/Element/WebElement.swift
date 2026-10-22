@@ -79,7 +79,7 @@ final class WebElement: NativeElement {
         if !still { arrangeChildren() }
         // A page stands against its safe area again as it or its content says another way (`standInTheSafeArea`).
         if !still { standInTheSafeArea() }
-        if changed.contains(.avoidsSafeArea) { element.parent?.web.standInTheSafeArea() }
+        if changed.contains(.ignoresSafeArea) { element.parent?.web.standInTheSafeArea() }
         listenForTheUser()
         offerContextMenu()
         offerButtonMenu()

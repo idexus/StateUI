@@ -177,7 +177,7 @@ extension AppKitWindowContentView {
         let safe = Rect(x: safeAreaRect.minX, y: safeAreaRect.minY, width: safeAreaRect.width, height: safeAreaRect.height)
         let room = SafeAreaArithmetic.room(
             safe: safe, whole: Rect(x: 0, y: 0, width: bounds.width, height: bounds.height),
-            edges: visiblePage?.contentSafeArea, direction: visiblePage?.layoutDirection ?? .leftToRight)
+            edges: visiblePage?.contentIgnoresSafeArea ?? .none, direction: visiblePage?.layoutDirection ?? .leftToRight)
         page?.frame = NSRect(x: room.x, y: room.y, width: room.width, height: room.height)
         (visiblePage?.pageScroller?.appKit.view as? AppKitScrollView)?.keepClear(
             SafeAreaArithmetic.clearance(room: room, safe: safe))

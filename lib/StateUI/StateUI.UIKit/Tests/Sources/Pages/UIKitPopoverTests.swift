@@ -42,7 +42,7 @@ final class UIKitPopoverTests: XCTestCase {
         let host = UIKitRenderer.running(reducesMotion: true) {
             VStack {
                 Button("Filters").popover(isPresented: State(wrappedValue: true).projectedValue) {
-                    VStack { Text("Inside") }.padding(16).avoidsSafeArea(.none)
+                    VStack { Text("Inside") }.padding(16).ignoresSafeArea(.all)
                 }
             }
         }

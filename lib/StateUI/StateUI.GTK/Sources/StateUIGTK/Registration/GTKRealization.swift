@@ -43,7 +43,7 @@ enum GTKRealization {
         .notPlanned(RefreshElementContract.isRefreshEnabled, reason: Self.noPull),
         .notPlanned(RefreshElementContract.isRefreshing, reason: Self.noPull),
         .notPlanned(RefreshElementContract.refreshRequested, reason: Self.noPull),
-        .notPlanned(LayoutContract.avoidsSafeArea, reason: "A GNOME window keeps no area of its content clear: its "
+        .notPlanned(LayoutContract.ignoresSafeArea, reason: "A GNOME window keeps no area of its content clear: its "
             + "header bar stands above the content, over none of it."),
         .notPlanned(AutomationElementContract.accessibilityIdentifier, reason: "GTK 4 tells assistive technology no "
             + "identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget "
