@@ -11,7 +11,7 @@ private struct MailFilters: ExampleContent {
         VStack {
             Button("Filters")
                 .onClicked { filtering = true }
-                .popover(isShown: $filtering) {
+                .popover(isPresented: $filtering) {
                     VStack {
                         Switch($unreadOnly).text("Unread only")
                         Switch($flaggedOnly).text("Flagged only")
@@ -37,13 +37,37 @@ private struct MailFilters: ExampleContent {
     }
 }
 
+/// A popover of the explanation a state holds: another topic shows another in its place.
+private struct Explanations: ExampleContent {
+    // listing: Explanations
+    @State private var explained: String?
+
+    var body: some View {
+        HStack {
+            Button("Sync").onClicked { explained = "Sync keeps your mail the same on every device." }
+            Button("Backup").onClicked { explained = "Backup saves a copy of your mail every night." }
+        }
+        .spacing(10)
+        .popover(item: $explained) { words in
+            Text(words).width(220).padding(16)
+        }
+    }
+    // listing: end
+
+    var notes: (any View)? {
+        Text("Tap a topic, then the other while its explanation shows.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
+    }
+}
+
 /// What a view shows in the platform's popover, by the view.
 struct PopoverSample: SampleContent {
     static let id = "popover"
     static let title = "Popover"
-    static let summary = "What a view shows over the page by itself, as long as a state says - a sheet on a phone."
+    static let summary = "What a view shows over the page by itself, as long as a state says."
 
     var examples: [Example] {
-        [Example(MailFilters())]
+        [Example(MailFilters()), Example(Explanations())]
     }
 }

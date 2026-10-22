@@ -4,9 +4,9 @@
 #if os(iOS)
 import UIKit
 
-/// A view's popover: UIKit's popover presentation of the popover element's view by its anchor - a sheet on a phone,
-/// as UIKit adapts it - passed over what the window presents (`UIKitRootViewController.pass`); `onClosed` hears the
-/// user take it away.
+/// A view's popover: UIKit's popover presentation of the popover element's view by its anchor - a popover on a phone
+/// too - passed over what the window presents (`UIKitRootViewController.pass`); `onClosed` hears the user take it
+/// away.
 /// Design: docs/design/platforms/uikit/pages.md#a-popover
 @MainActor
 final class UIKitPopover: NSObject, UIPopoverPresentationControllerDelegate {
@@ -27,14 +27,24 @@ final class UIKitPopover: NSObject, UIPopoverPresentationControllerDelegate {
     /// Shows the popover by `anchor` at `size`, over what `root`'s window presents.
     func show(by anchor: UIView, size: CGSize, in root: UIKitRootViewController) {
         controller.preferredContentSize = size
+        let popover = controller.popoverPresentationController
+        // Shown by a view made anew - its branch flipped: it stands by the new one.
+        if popover?.sourceView !== anchor {
+            popover?.sourceView = anchor
+            popover?.sourceRect = anchor.bounds
+        }
         guard !isShown else { return }
         isShown = true
         self.root = root
-        let popover = controller.popoverPresentationController
-        popover?.sourceView = anchor
-        popover?.sourceRect = anchor.bounds
         popover?.delegate = self
         root.pass(controller)
+    }
+
+    /// A popover on a phone too, by its view: UIKit would make it a sheet where the room is compact.
+    func adaptivePresentationStyle(
+        for controller: UIPresentationController, traitCollection: UITraitCollection
+    ) -> UIModalPresentationStyle {
+        .none
     }
 
     func close() {

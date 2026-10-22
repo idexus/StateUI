@@ -78,7 +78,7 @@ final class ContractPayloadTests: XCTestCase {
         check(MenuItemContract.toggled, [.bool(true)])
         check(MarkerContract.detailsClicked)
         check(SheetContract.isPresentedChanged, [.bool(false)])
-        check(PopoverContract.isShownChanged, [.bool(false)])
+        check(PopoverContract.isPresentedChanged, [.bool(false)])
         check(RefreshElementContract.refreshRequested)
         check(SceneContract.activated)
         check(SceneContract.deactivated)

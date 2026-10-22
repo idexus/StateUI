@@ -211,7 +211,7 @@ contract.
 | `Sheet` | sheet `NSWindow` | `present(_:animated:)` | `FrameLayout` sheet over the activity | sheets of `ContentDialog`'s look in a `Grid` layer over the window | `AdwDialog` | `<dialog>` with `showModal()` |
 | `Anchor` | structure | structure | structure | structure | structure | structure |
 | `Overlay` | pass-through `NSView` above the page | pass-through `UIView` above the page | top child of a `FrameLayout` | top layer of a root `Grid` | custom `GtkWidget` in the window's `GtkOverlay` | `<div>` layered over the page |
-| `Popover` | `NSPopover` | `UIPopoverPresentationController` - a sheet on a phone | `PopupWindow` | `Flyout` | `GtkPopover` | `<div popover>` |
+| `Popover` | `NSPopover` | `UIPopoverPresentationController`, a popover on a phone too | `PopupWindow` | `Flyout` | `GtkPopover` | `<div popover>` |
 | `ContextMenu`, `MenuBar`, `Menu`, `MenuItem` | `NSMenu` / `NSMenuItem` | `UIMenu` / `UIAction`; `UIContextMenuInteraction`; `UIMenuBuilder` menu bar | `ContextMenu` / `SubMenu` / `MenuItem`; a menu bar's menus in the `Toolbar` overflow | `MenuFlyout` / `MenuBar` | `GMenu` in a `GtkPopoverMenu`; a menu bar as a `GtkMenuButton` main menu | ARIA `menu` in a `popover`; a menu bar's menus under the bar's More button |
 | `ButtonMenu` | `NSComboButton`, unified or split | `UIButton.menu`, opened by a tap or held | `PopupMenu` at the button, opened by a click or held | `DropDownButton`, `SplitButton` | `GtkMenuButton`, `AdwSplitButton` | `aria-haspopup` button opening an ARIA `menu`, or held for it |
 | `Divider` | an `NSBox` separator | a hairline `UIView` in the separator color | a `View` in the theme's list divider | a line in `DividerStrokeColorDefaultBrush` | a `GtkSeparator` | `<hr>` |
@@ -518,7 +518,7 @@ Every control, and every part an application, its windows and its pages are made
 | [NavigationStack](controls/NavigationStack.md) | 11 | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 7 ✅ · 4 – | 6 ✅ · 1 ☑️ · 4 – | 9 ✅ · 2 – | 5 ✅ · 6 – | 10 ✅ · 1 – |
 | [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 | [Page](controls/Page.md) | 13 | 9 ✅ | 13 ✅ | 12 ✅ · 1 – | 11 ✅ · 1 – | 10 ✅ · 2 – | 12 ✅ |
-| [Popover](controls/Popover.md) | 2 | 2 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
+| [Popover](controls/Popover.md) | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](controls/Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [Sheet](controls/Sheet.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [SplitView](controls/SplitView.md) | 15 | 10 ✅ · 1 ☑️ · 3 – | 10 ✅ · 1 ✓ · 4 – | 5 ✅ · 2 ☑️ · 4 ✓ · 4 – | 11 ✅ · 2 ☑️ · 2 – | 7 ✅ · 2 ✓ · 6 – | 12 ✅ · 2 ☑️ · 1 – |
@@ -529,8 +529,8 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 9 | 5 ✅ · 1 ✓ · 1 – | 7 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 9 ✅ | 7 ✅ · 1 ✓ · 1 – | 9 ✅ |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 98 | 95 | 77 | 122 | 89 | 108 |
-| ✓ |  | 23 | 20 | 20 | 5 | 17 | 10 |
+| ✅ |  | 99 | 95 | 77 | 122 | 89 | 108 |
+| ✓ |  | 22 | 20 | 20 | 5 | 17 | 10 |
 | – |  | 10 | 21 | 31 | 9 | 32 | 18 |
 | **Met** | 146 | **131** | **136** | **128** | **136** | **138** | **136** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
@@ -603,7 +603,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `placeholder`, `presentation`, `selectedIndex`, `selectedIndexChanged` | 8 | 4 ✅ · 1 ✓ | 1 ✅ · 1 ☑️ · 3 ✓ | 3 ✅ · 1 ☑️ · 1 ✓ | 8 ✅ | 4 ✅ · 4 – | 5 ✅ · 3 – |
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Polyline](controls/Polyline.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [Popover](controls/Popover.md) | `isShown`, `isShownChanged` | 2 | 2 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
+| [Popover](controls/Popover.md) | `isPresented`, `isPresentedChanged` | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [ProgressBar](controls/ProgressBar.md) | `progress` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Scene](controls/Scene.md) | `activated`, `deactivated`, `stopped`, `windowClosed` | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
@@ -670,16 +670,16 @@ realizes the element and each of its members.
 `isAnimating`, `isEnabled`, `isFontAutoScalingEnabled`, `isMaximizable`,
 `isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isPresented`, `isReadOnly`,
 `isRefreshEnabled`, `isRefreshing`, `isScrollEnabled`, `isSelectable`,
-`isShown`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `isVisible`,
-`isZoomEnabled`, `itemDrag`, `items`, `itemsLayout`, `keyboardShortcut`,
-`keysTaken`, `label`, `layoutDirection`, `letsInputThrough`, `lineBreak`,
-`lineCap`, `lineHeight`, `lineJoin`, `lineWidth`, `location`, `magnifies`,
-`mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`, `maximumLength`,
-`maximumLines`, `maximumWidth`, `menuKind`, `minimum`, `minimumDate`,
-`minimumHeight`, `minimumWidth`, `miterLimit`, `opacity`, `options`, `order`,
-`orientation`, `padding`, `pans`, `panTouchCount`, `panXChannel`, `panYChannel`,
-`phase`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `placement`,
-`points`, `presentation`, `progress`, `region`, `role`, `rotates`, `rotation`,
+`isSpellCheckEnabled`, `isTextPredictionEnabled`, `isVisible`, `isZoomEnabled`,
+`itemDrag`, `items`, `itemsLayout`, `keyboardShortcut`, `keysTaken`, `label`,
+`layoutDirection`, `letsInputThrough`, `lineBreak`, `lineCap`, `lineHeight`,
+`lineJoin`, `lineWidth`, `location`, `magnifies`, `mapType`, `margin`,
+`maximum`, `maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`,
+`maximumWidth`, `menuKind`, `minimum`, `minimumDate`, `minimumHeight`,
+`minimumWidth`, `miterLimit`, `opacity`, `options`, `order`, `orientation`,
+`padding`, `pans`, `panTouchCount`, `panXChannel`, `panYChannel`, `phase`,
+`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `placement`, `points`,
+`presentation`, `progress`, `region`, `role`, `rotates`, `rotation`,
 `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
 `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
 `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
@@ -701,16 +701,16 @@ realizes the element and each of its members.
 `created`, `dateChanged`, `deactivated`, `destroying`, `detailsClicked`,
 `disappearing`, `dragEnded`, `dragged`, `dragLeave`, `dragOver`, `dragStarting`,
 `drop`, `endReached`, `filesDropped`, `frameChanged`, `handMoved`,
-`handStepped`, `isFocusedChanged`, `isPresentedChanged`, `isShownChanged`,
-`itemActivated`, `itemMoved`, `keyPressed`, `mapClicked`, `navigated`,
-`navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`, `opened`,
-`panUpdated`, `pinchMoved`, `pinchUpdated`, `pointerEntered`, `pointerExited`,
-`pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`, `pressed`,
-`processTerminated`, `realizedChanged`, `refreshRequested`, `released`,
-`resumed`, `scrollStopped`, `selected`, `selectedIndexChanged`,
-`selectedItemsChanged`, `selectedTabChanged`, `showsSidebarChanged`, `stopped`,
-`submitted`, `swiped`, `tapped`, `textChanged`, `timeChanged`, `toggled`,
-`valueChanged`, `windowClosed`.
+`handStepped`, `isFocusedChanged`, `isPresentedChanged`, `itemActivated`,
+`itemMoved`, `keyPressed`, `mapClicked`, `navigated`, `navigatedFrom`,
+`navigatedTo`, `navigating`, `navigatingFrom`, `opened`, `panUpdated`,
+`pinchMoved`, `pinchUpdated`, `pointerEntered`, `pointerExited`, `pointerMoved`,
+`pointerPressed`, `pointerReleased`, `popped`, `pressed`, `processTerminated`,
+`realizedChanged`, `refreshRequested`, `released`, `resumed`, `scrollStopped`,
+`selected`, `selectedIndexChanged`, `selectedItemsChanged`,
+`selectedTabChanged`, `showsSidebarChanged`, `stopped`, `submitted`, `swiped`,
+`tapped`, `textChanged`, `timeChanged`, `toggled`, `valueChanged`,
+`windowClosed`.
 
 ### Acts
 

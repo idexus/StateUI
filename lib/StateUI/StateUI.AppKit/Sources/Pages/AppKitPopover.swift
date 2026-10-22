@@ -17,6 +17,9 @@ final class AppKitPopover: NSObject, @MainActor NSPopoverDelegate {
     /// The window the popover is held in unshown, while it is.
     private var unseen: NSPanel?
 
+    /// The view the popover stands by while it shows.
+    private weak var anchored: NSView?
+
     init(content: NSView, onClosed: @escaping () -> Void) {
         self.content = content
         self.onClosed = onClosed
@@ -40,7 +43,13 @@ final class AppKitPopover: NSObject, @MainActor NSPopoverDelegate {
             return
         }
         popover.contentSize = size
+        // Shown by a view made anew - its branch flipped: it stands by the new one.
+        if popover.isShown, anchored !== anchor {
+            anchored = anchor
+            return popover.show(relativeTo: anchor.bounds, of: anchor, preferredEdge: .maxY)
+        }
         guard !popover.isShown else { return }
+        anchored = anchor
         let controller = NSViewController()
         controller.view = content
         popover.contentViewController = controller

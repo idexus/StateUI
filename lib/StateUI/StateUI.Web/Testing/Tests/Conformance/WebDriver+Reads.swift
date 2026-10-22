@@ -20,7 +20,7 @@ extension WebDriver {
             return try WebBrowser.truth("e.isConnected && e.checkVisibility({ visibilityProperty: true })", on: e).propValue
         case (.opacity, _): return try WebBrowser.number("Number(getComputedStyle(e).opacity)", on: e)?.propValue
         case (.tooltip, _): return try WebBrowser.evaluate("e.getAttribute('title')", on: e)?.propValue
-        case (.isShown, is WebPopoverView): return try WebBrowser.truth("e.matches(':popover-open')", on: e).propValue
+        case (.isPresented, is WebPopoverView): return try WebBrowser.truth("e.matches(':popover-open')", on: e).propValue
         case (.keyboardShortcut, _): return try shortcut(on: e)
         case (.showsMenuArrow, _):
             return try WebBrowser.truth("e.dataset.menu === 'opens' && !e.hasAttribute('data-bare')", on: e).propValue

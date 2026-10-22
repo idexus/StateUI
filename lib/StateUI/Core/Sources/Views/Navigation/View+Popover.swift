@@ -3,28 +3,62 @@
 
 extension View {
     /// Shows what `content` describes in the platform's popover by this view while the state holds true, both
-    /// ways: the user dismissing it - a tap beside it, Escape, the way back - writes false.
+    /// ways: the user dismissing it - a tap beside it, Escape, the way back - writes false, and so does this view
+    /// leaving.
     ///
     ///     @State private var filtering = false
     ///
     ///     Button("Filters")
     ///         .onClicked { filtering = true }
-    ///         .popover(isShown: $filtering) { FiltersPanel() }
+    ///         .popover(isPresented: $filtering) { FiltersPanel() }
     ///
-    /// A phone shows a popover as a sheet, as its platform does. The content sizes the popover, and stands with
-    /// the view whether it shows or not: its state lasts from one showing to the next.
+    /// The content sizes the popover, and stands with the view whether it shows or not: its state lasts from one
+    /// showing to the next. A view holds one popover: written again, it stands in.
     ///
     /// - Parameters:
-    ///   - state: whether the popover shows, written false as the user dismisses it.
+    ///   - state: whether the popover shows, written false as it closes.
     ///   - content: what the popover shows.
     /// - Returns: this view, with its popover.
     public func popover<Content: View>(
-        isShown state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content
+        isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content
     ) -> Modified {
-        let popover = PopoverElement(content: content).isShown(state)
-        return modified {
-            // After the view's own children, one; written again it stands in.
-            // Design: docs/design/views/modifiers.md#slot-children
+        showing(PopoverElement(content: { [content().node] }, presented: state))
+    }
+
+    /// Shows in the platform's popover by this view what `content` makes of the value the state holds, while it
+    /// holds one: the user dismissing it writes nil, and so does this view leaving. Another value shows what the
+    /// content makes of it in its place.
+    ///
+    ///     @State private var explained: String?
+    ///
+    ///     Button("Why?")
+    ///         .onClicked { explained = "Sync" }
+    ///         .popover(item: $explained) { topic in Text(topic) }
+    ///
+    /// - Parameters:
+    ///   - state: the value the popover shows, written nil as it closes.
+    ///   - content: what the popover shows of a value.
+    /// - Returns: this view, with its popover.
+    public func popover<Item: Hashable, Content: View>(
+        item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content
+    ) -> Modified {
+        let item = state.wrappedValue
+        let presented = Binding(get: { state.wrappedValue != nil }, set: { if !$0 { state.wrappedValue = nil } })
+        return showing(PopoverElement(
+            content: {
+                item.map { item in
+                    var shown = content(item).node
+                    shown.identify(item)
+                    return [shown]
+                } ?? []
+            },
+            presented: presented))
+    }
+
+    /// This view with `popover`, in the place of one written before.
+    /// Design: docs/design/views/modifiers.md#slot-children
+    private func showing(_ popover: PopoverElement) -> Modified {
+        modified {
             $0.children.removeAll { $0.type == PopoverContract.nodeType }
             $0.children.append(popover.node)
         }
@@ -35,14 +69,13 @@ extension View {
 struct PopoverElement: ElementView {
     var node = Node(contract: PopoverContract.self)
 
-    init<Content: View>(content: @escaping () -> Content) {
-        node.producer = { content().nodes }
-    }
-
-    /// Shown as the state says, the user's dismissal written back.
-    func isShown(_ state: Binding<Bool>) -> Self {
-        state.image == nil
-            ? described(PopoverContract.isShown.token, state, on: PopoverContract.isShownChanged.token)
-            : plain(PopoverContract.isShown.token, by: state, mode: .inOut)
+    /// What `content` makes, shown while `state` holds true, the user's dismissal written back; leaving the tree
+    /// writes false.
+    init(content: @escaping () -> [Node], presented state: Binding<Bool>) {
+        node.producer = content
+        self = state.image == nil
+            ? described(PopoverContract.isPresented.token, state, on: PopoverContract.isPresentedChanged.token)
+            : plain(PopoverContract.isPresented.token, by: state, mode: .inOut)
+        node.destroying.append { if state.wrappedValue { state.wrappedValue = false } }
     }
 }

@@ -277,7 +277,7 @@ final class GTKDriver: HostDriver {
         if let value = reads(property, on: element, view: view) { return value }
         switch (property, view) {
         case (.isOn, let toggle as GTKToggleView): return toggle.isOn.propValue
-        case (.isShown, let popover as GTKPopoverView): return popover.popoverShows.propValue
+        case (.isPresented, let popover as GTKPopoverView): return popover.popoverShows.propValue
         case (.value, let slider as GTKSliderView): return slider.value.propValue
         case (.minimum, let slider as GTKSliderView):
             return gtk_adjustment_get_lower(gtk_range_get_adjustment(slider.widget.of(GtkRange.self))).propValue

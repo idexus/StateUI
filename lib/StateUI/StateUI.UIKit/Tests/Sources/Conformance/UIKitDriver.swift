@@ -429,7 +429,7 @@ final class UIKitDriver: HostDriver {
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if element.type == .window { return try windowHolds(property, element) }
-        if element.type == .popover, property == .isShown {
+        if element.type == .popover, property == .isPresented {
             let controller = (element.native as? UIKitElement)?.shownPopover?.controller
             return (controller?.presentingViewController != nil && controller?.isBeingDismissed == false).propValue
         }

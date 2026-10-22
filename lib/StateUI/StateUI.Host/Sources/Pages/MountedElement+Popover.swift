@@ -19,7 +19,23 @@ extension MountedElement {
 
     /// Whether this popover asks to show.
     public var asksToShow: Bool {
-        value(.isShown)?.bool == true
+        value(.isPresented)?.bool == true
+    }
+
+    /// What this anchor shows is to be made anew - its view's branch flips: the popover it holds, shown, is on its way
+    /// to the new view until its host takes it again after the render, and a closing meanwhile - its old view
+    /// leaving - is nobody's.
+    func willShowAnew() {
+        guard type == .anchor, let popover, popover.asksToShow else { return }
+        popover.isMoving = true
+    }
+
+    /// What this anchor shows was made: the popover it holds, asking to show, is tried again after the render, as
+    /// one waiting for its window is - by the view the anchor shows now (`presenter`), which stood nowhere while
+    /// the anchor's children were being made.
+    func showsAnew() {
+        guard type == .anchor, let popover, popover.asksToShow else { return }
+        tree?.wait(popover)
     }
 
     /// Its host cannot show this popover yet - the window it stands in is not made: it is tried again once the
@@ -31,7 +47,7 @@ extension MountedElement {
     /// The platform took this popover away. While the tree asks for it, that is the user's dismissal - false onto
     /// the state, then the event; while it does not, the application's own, heard by nobody.
     public func reportDismissed(in runtime: HostRuntime) {
-        guard asksToShow else { return }
-        reportUserChange(.isShown, .isShownChanged, .bool(false), in: runtime)
+        guard asksToShow, !isMoving else { return }
+        reportUserChange(.isPresented, .isPresentedChanged, .bool(false), in: runtime)
     }
 }

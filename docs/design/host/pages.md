@@ -275,12 +275,12 @@ because nothing was overwritten.
 
 A view's popover is a slot of its own (`.popover`): its parent never lays it
 out, and its host shows it in the platform's popover by the view its parent
-shows (`presenter`) while `isShown` is true, taking it away when it turns false - AppKit's
-`NSPopover`, UIKit's popover presentation (a sheet on a phone), Android's
+shows (`presenter`) while `isPresented` is true, taking it away when it turns false - AppKit's
+`NSPopover`, UIKit's popover presentation (a popover on a phone too), Android's
 `PopupWindow`, WinUI's `Flyout`, GTK's `GtkPopover`, the browser's popover.
 What it holds is a tree laid out on its own and sized by its content.
 The platform taking it away while the tree asks for it is the user's
-dismissal - false onto the state, then `isShownChanged`; taken away while the
+dismissal - false onto the state, then `isPresentedChanged`; taken away while the
 tree no longer asks, it is the application's own write coming back, heard by
 nobody (`MountedElement.reportDismissed`).
 
@@ -291,6 +291,14 @@ wait (`waitForItsWindow`) and tries again after the render
 (`MountedTree.takeWaitingPopovers`), each waiting popover once a render, so
 one whose anchor stands nowhere costs nothing. Android, WinUI and GTK wait
 for the anchor themselves - attached, loaded, mapped.
+
+A popover written on a view whose branch flips stands on that view's anchor,
+and the view it shows by is made anew: the host layer hands the shown popover
+back after the render the same way (`showsAnew`), and every host shows it by
+the new view - AppKit showing it again there, UIKit moving its source view,
+Android updating its popup, GTK popping it down unheard and up on the new
+widget, WinUI showing the flyout at the new target, the browser placing it
+anew. Nothing of it is heard as the user's.
 
 ## The window's chrome
 

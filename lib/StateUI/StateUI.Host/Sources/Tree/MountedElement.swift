@@ -104,6 +104,9 @@
     private var created = false
     private var described = false
 
+    /// Whether this popover is on its way to a view made anew (`showsAnew`).
+    var isMoving = false
+
     init(_ patch: HostPatch, tree: MountedTree, parent: MountedElement?) {
         id = patch.id
         type = patch.type
@@ -131,8 +134,10 @@
         guard let tree else { return }
 
         let applying = received(patch, tree: tree)
+        if case .unchanged = patch.children {} else { willShowAnew() }
         childrenApplied(patch.children, tree: tree)
         settled(patch, applying, tree: tree)
+        if childrenChanged { showsAnew() }
     }
 
     /// What applying a patch carries from before the children to after them: when a scene began, the pages shown,

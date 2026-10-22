@@ -9,12 +9,12 @@ public enum PopoverContract: ElementContract {
     /// Every base host presents it with its native popover.
     public static let layer: ElementLayer = .native
 
-    /// Whether the popover shows: the application shows it, and the user's dismissal writes false.
-    public static let isShown = ElementProperty<Self, Bool>("isShown", layer: .native)
+    /// Whether the popover shows: the application presents it, and the user's dismissal writes false.
+    public static let isPresented = ElementProperty<Self, Bool>("isPresented", layer: .adaptive)
 
     /// The user dismissed the popover - a tap beside it, Escape, the way back.
-    public static let isShownChanged = ElementEvent<Self, Bool>("isShownChanged", layer: .native)
+    public static let isPresentedChanged = ElementEvent<Self, Bool>("isPresentedChanged", layer: .adaptive)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [isShown, isShownChanged]
+    public static let members: [any ContractMember] = [isPresented, isPresentedChanged]
 }

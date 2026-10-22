@@ -229,7 +229,9 @@
     /// Design: docs/design/host/pages.md#a-popover
     public func takeWaitingPopovers() -> [MountedElement] {
         defer { waitingPopovers = [:] }
-        return waitingPopovers.sorted { $0.key < $1.key }.compactMap(\.value.element)
+        let taken = waitingPopovers.sorted { $0.key < $1.key }.compactMap(\.value.element)
+        for popover in taken { popover.isMoving = false }
+        return taken
     }
 
     /// Whether the patches applied since the last take changed what the windows' chrome is made of; forgotten as

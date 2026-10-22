@@ -50,7 +50,7 @@ final class PopoverTests: XCTestCase {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged(shown.map { name, isShown in
             var popover = HostPatch(id: .manual(name + " popover"), type: .popover)
-            popover.properties = [.isShown: .bool(isShown)]
+            popover.properties = [.isPresented: .bool(isShown)]
             var button = HostPatch(id: .manual(name), type: .button)
             button.children = .arranged([popover])
             return button

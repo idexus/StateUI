@@ -17,6 +17,9 @@ final class StateUIPopover extends PopupWindow implements PopupWindow.OnDismissL
     private boolean wanted;
     private boolean closing;
 
+    /** The view the popover shows by. */
+    private View shownBy;
+
     StateUIPopover(View content, long view) {
         super(content.getContext());
         this.view = view;
@@ -30,8 +33,16 @@ final class StateUIPopover extends PopupWindow implements PopupWindow.OnDismissL
     /** Shows the popover by `anchor`, once the anchor stands in a window. */
     void show(View anchor) {
         wanted = true;
-        if (isShowing()) return;
+        if (isShowing()) {
+            // Shown by a view made anew - its branch flipped: it stands by the new one.
+            if (anchor != shownBy && anchor.isAttachedToWindow()) {
+                shownBy = anchor;
+                update(anchor, -1, -1);
+            }
+            return;
+        }
         if (anchor.isAttachedToWindow()) {
+            shownBy = anchor;
             showAsDropDown(anchor);
             return;
         }
@@ -40,7 +51,10 @@ final class StateUIPopover extends PopupWindow implements PopupWindow.OnDismissL
             public void onViewAttachedToWindow(View attached) {
                 attached.removeOnAttachStateChangeListener(this);
                 attached.post(() -> {
-                    if (wanted && !isShowing() && attached.isAttachedToWindow()) showAsDropDown(attached);
+                    if (wanted && !isShowing() && attached.isAttachedToWindow()) {
+                        shownBy = attached;
+                        showAsDropDown(attached);
+                    }
                 });
             }
 

@@ -206,6 +206,12 @@ beside it or Escape GTK's own. The host keeps whether it wants it shown:
 lets go of the panel and comes off the anchor's widget - the anchor leaves
 first, but its widget stands until its view goes.
 
+It pops up on idle, after the frame lays its view out: popped up by a view
+mapped but not yet laid out, it would never show. A view that goes lets go
+of the popovers standing by it - one whose view a flipped branch made anew -
+as GTK keeps no parent it lost; the host layer hears their closing as
+nobody's, and the popover comes up again by the new view after the render.
+
 ## The window's overlays
 
 What a window lays over everything it shows - the overlays the pages on its

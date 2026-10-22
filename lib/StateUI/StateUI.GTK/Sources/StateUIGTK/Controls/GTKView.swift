@@ -329,5 +329,13 @@ class GTKView {
         setFocusChanged(nil)
         contextMenu = nil
         offer(.none) { _ in }
+        // A popover standing by the view - one whose view is made anew - is let go: GTK keeps no parent it lost.
+        var child = gtk_widget_get_first_child(widget)
+        while let each = child {
+            child = gtk_widget_get_next_sibling(each)
+            if g_type_check_instance_is_a(each.of(GTypeInstance.self), gtk_popover_get_type()) != 0 {
+                gtk_widget_unparent(each)
+            }
+        }
     }
 }

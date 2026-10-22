@@ -123,7 +123,7 @@ final class UIKitElement: NativeElement {
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
-        if changed.contains(.isShown) { configurePopover() }
+        if changed.contains(.isPresented) { configurePopover() }
         if !changed.isDisjoint(with: MountedElement.sidebarMaterials), let split = controller as? UIKitSplitViewController {
             split.paintsSidebar = element.paintsSidebar
             split.showPageBackgrounds()

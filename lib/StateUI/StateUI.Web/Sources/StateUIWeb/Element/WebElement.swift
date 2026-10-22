@@ -86,7 +86,7 @@ final class WebElement: NativeElement {
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
-        if changed.contains(.isShown) { configurePopover() }
+        if changed.contains(.isPresented) { configurePopover() }
         if !changed.isDisjoint(with: MountedElement.sidebarMaterials), let split = view as? WebSplitView {
             split.ground(beside: element.sidebarMaterial(over: false), over: element.sidebarMaterial(over: true))
             host?.refreshChrome()

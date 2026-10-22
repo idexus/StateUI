@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 4.1
 Popover: ✅
-Popover.isShown: ✅
-Popover.isShownChanged: ✓ close on Popover: the flyout hidden as a click beside it hides it, no click sent
+Popover.isPresented: ✅
+Popover.isPresentedChanged: ✓ close on Popover: the flyout hidden as a click beside it hides it, no click sent

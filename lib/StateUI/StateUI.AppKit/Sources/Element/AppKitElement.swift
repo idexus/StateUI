@@ -219,7 +219,7 @@ final class AppKitElement: NSObject, NativeElement {
     /// Presents one display frame of this element's own changed properties.
     func presentFrame(_ properties: Set<Prop>) {
         applyProperties(changed: properties)
-        if properties.contains(.isShown) { configurePopover() }
+        if properties.contains(.isPresented) { configurePopover() }
     }
 
 }

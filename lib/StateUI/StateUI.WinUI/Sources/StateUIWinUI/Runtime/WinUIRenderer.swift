@@ -205,6 +205,7 @@ extension WinUIRenderer: HostPresenter {
             showWindows()
             refreshWindowChrome()
         }
+        for popover in runtime.tree.takeWaitingPopovers() { popover.winUI.configurePopover() }
         if let text = scenes.changed(root: runtime.tree.root) { WinUIPersistence.writeScenes(text) }
     }
 

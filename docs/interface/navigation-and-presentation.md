@@ -268,7 +268,7 @@ Closing a window takes away every sheet in it.
 
 ## Popovers
 
-A view shows what `.popover(isShown:)` describes in the platform's popover,
+A view shows what `.popover(isPresented:)` describes in the platform's popover,
 by the view, while the state holds true:
 
 ```swift
@@ -279,7 +279,7 @@ struct FiltersButton: View {
     var body: some View {
         Button("Filters")
             .onClicked { filtering = true }
-            .popover(isShown: $filtering) {
+            .popover(isPresented: $filtering) {
                 VStack {
                     Switch($unreadOnly).text("Unread only")
                     Button("Done").onClicked { filtering = false }
@@ -293,8 +293,33 @@ struct FiltersButton: View {
 
 Writing false takes it away. The user takes it away too - a tap or a click
 beside it, Escape, the way back - and that writes false to the state, so
-the state always says whether the popover shows. Its content sizes it. A
-phone shows it as a sheet, as its platform shows every popover.
+the state always says whether the popover shows; the view presenting it
+leaving the screen writes false as well. Its content sizes it, and a phone
+shows it as a popover too, by the view.
+
+A value shows what the content makes of it: nil takes the popover away, the
+user's dismissal writes nil, and another value shows another view in its
+place:
+
+```swift
+struct Explanations: View {
+    @State private var explained: String?
+
+    var body: some View {
+        HStack {
+            Button("Sync").onClicked { explained = "Sync keeps your mail the same everywhere." }
+            Button("Backup").onClicked { explained = "Backup saves a copy every night." }
+        }
+        .popover(item: $explained) { words in
+            Text(words).padding(16)
+        }
+    }
+}
+```
+
+A popover written on a composed view, a `Group` or an `if/else` stays as the
+view's body shows another branch, by the view it shows
+([What outlives a branch](composition-and-identity.md#what-outlives-a-branch)).
 
 ## Over every page
 

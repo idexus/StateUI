@@ -32,7 +32,7 @@ extension AndroidDriver {
         if let web = view as? AndroidWebView, let held = try Self.webHolds(property, web) { return held }
         switch (property, view) {
         case (.isOn, let toggle as AndroidToggleView): return toggle.isOn.propValue
-        case (.isShown, let popover as AndroidPopoverView): return popover.windowShows.propValue
+        case (.isPresented, let popover as AndroidPopoverView): return popover.windowShows.propValue
         case (.role, let button as AndroidButtonView): return button.role.map(\.propValue) ?? HostValue.nothing
         case (.showsMenuArrow, let button as AndroidButtonView):
             return Java.callStaticBool(Self.testMenus, Self.showsMenuArrow, .object(button.reference)).propValue

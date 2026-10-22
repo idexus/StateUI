@@ -176,7 +176,6 @@ extension NodeType {
     static let flyoutBackground = SplitViewContract.flyoutBackground.token
     static let sidebarOverlays = SplitViewContract.sidebarOverlays.token
     static let isReadOnly = TextInputContract.isReadOnly.token
-    static let isShown = PopoverContract.isShown.token
     static let isPresented = SheetContract.isPresented.token
     static let isRefreshEnabled = RefreshElementContract.isRefreshEnabled.token
     static let isRefreshing = RefreshElementContract.isRefreshing.token
@@ -315,7 +314,6 @@ extension NodeType {
     static let handMoved = LayoutEngineContract.handMoved.token
     static let handStepped = LayoutEngineContract.handStepped.token
     static let isFocusedChanged = FocusElementContract.isFocusedChanged.token
-    static let isShownChanged = PopoverContract.isShownChanged.token
     static let isPresentedChanged = SheetContract.isPresentedChanged.token
     static let itemMoved = LayoutEngineContract.itemMoved.token
     static let pinchMoved = LayoutEngineContract.pinchMoved.token

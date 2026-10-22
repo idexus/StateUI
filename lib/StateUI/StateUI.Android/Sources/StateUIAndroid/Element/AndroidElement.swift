@@ -74,7 +74,7 @@ final class AndroidElement: NativeElement {
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
-        if changed.contains(.isShown) { configurePopover() }
+        if changed.contains(.isPresented) { configurePopover() }
         if !changed.isDisjoint(with: MountedElement.sidebarMaterials) { groundSidebar() }
     }
 

@@ -427,6 +427,7 @@ extension AndroidRenderer: HostPresenter {
             showWindow()
             refreshBack()
         }
+        for popover in runtime.tree.takeWaitingPopovers() { popover.android.configurePopover() }
         if let text = scenes.changed(root: runtime.tree.root) {
             AndroidPersistence.writeScenes(text, context: context.reference)
         }

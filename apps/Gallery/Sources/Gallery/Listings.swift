@@ -3045,6 +3045,20 @@ enum Listings {
             }
         }
         """#,
+        "Explanations": #"""
+        // Sources/Samples/Navigation/PopoverSample.swift
+        @State private var explained: String?
+
+        var body: some View {
+            HStack {
+                Button("Sync").onClicked { explained = "Sync keeps your mail the same on every device." }
+                Button("Backup").onClicked { explained = "Backup saves a copy of your mail every night." }
+            }
+            .popover(item: $explained) { words in
+                Text(words).width(220).padding(16)
+            }
+        }
+        """#,
         "FilesSample": #"""
         // Sources/Samples/Navigation/FilesSample.swift
         @Environment(\.window) private var window
@@ -6550,7 +6564,7 @@ enum Listings {
             VStack {
                 Button("Filters")
                     .onClicked { filtering = true }
-                    .popover(isShown: $filtering) {
+                    .popover(isPresented: $filtering) {
                         VStack {
                             Switch($unreadOnly).text("Unread only")
                             Switch($flaggedOnly).text("Flagged only")

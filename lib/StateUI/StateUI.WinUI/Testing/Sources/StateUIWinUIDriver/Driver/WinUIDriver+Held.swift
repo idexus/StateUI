@@ -34,7 +34,7 @@ extension WinUIDriver {
             throw cannot
         case .page, .navigationStack, .splitView, .tabView:
             if let held = try pageHolds(property.name, element, view) { return held }
-        case .popover where property.name == "isShown":
+        case .popover where property.name == "isPresented":
             guard let popover = view as? WinUIPopoverView else { throw cannot }
             return popover.flyoutShows.propValue
         case .button where property.name == "icon":

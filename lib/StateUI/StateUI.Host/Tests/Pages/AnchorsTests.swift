@@ -69,6 +69,40 @@ final class AnchorsTests: XCTestCase {
         XCTAssertEqual(tabs.visiblePage?.id, .manual("root"))
     }
 
+    /// A popover shown on an anchor whose view is made anew - a branch flipped - is tried again after the render, to
+    /// stand by the new view.
+    func testAPopoverShownOnAnAnchorWhoseViewFlipsIsTriedAgain() throws {
+        func tree(_ shown: String) -> HostPatch {
+            node("window", .window, [node("page", .page, [
+                node("anchor", .anchor, [node(shown, .button), node("popover", .popover, [], [.isPresented: .bool(true)])]),
+            ])])
+        }
+        let (runtime, window) = try mounted(tree("narrow"))
+        _ = runtime.tree.takeWaitingPopovers()
+
+        runtime.tree.apply(tree("wide"), complete: true)
+
+        let popover = try XCTUnwrap(window.first(id: .manual("popover")))
+        XCTAssertTrue(popover.isMoving, "on its way to the new view")
+        popover.reportDismissed(in: runtime)
+        XCTAssertTrue(popover.asksToShow, "its old view's closing heard by nobody")
+
+        XCTAssertEqual(runtime.tree.takeWaitingPopovers().map(\.id), [.manual("popover")])
+        XCTAssertFalse(popover.isMoving, "taken again to stand by the new view")
+        XCTAssertEqual(popover.presenter?.id, .manual("wide"))
+    }
+
+    /// A popover an anchor holds, asking to show as it is made, is tried again after the render: its view stood
+    /// nowhere while the anchor's children were being made.
+    func testAPopoverMadeWithItsAnchorIsTriedOnceItsViewStands() throws {
+        let (runtime, window) = try mounted(node("window", .window, [node("page", .page, [
+            node("anchor", .anchor, [node("button", .button), node("popover", .popover, [], [.isPresented: .bool(true)])]),
+        ])]))
+
+        XCTAssertEqual(runtime.tree.takeWaitingPopovers().map(\.id), [.manual("popover")])
+        XCTAssertEqual(try XCTUnwrap(window.first(id: .manual("popover"))).presenter?.id, .manual("button"))
+    }
+
     /// A popover written on a composed view stands by the view the view's anchor shows.
     func testAPopoverOnAnAnchorStandsByTheViewItShows() throws {
         let (_, window) = try mounted(node("window", .window, [node("page", .page, [

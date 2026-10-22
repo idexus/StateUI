@@ -230,6 +230,7 @@ final class GTKRenderer {
 extension GTKRenderer: HostPresenter {
     func presentRendered(touchedChrome: Bool) {
         if touchedChrome { showWindows() } else { reportDisplayOnceRealized() }
+        for popover in runtime.tree.takeWaitingPopovers() { popover.gtk.configurePopover() }
         if let text = scenes.changed(root: runtime.tree.root) {
             GTKKeptValues.writeScenes(text, applicationID: applicationID)
         }

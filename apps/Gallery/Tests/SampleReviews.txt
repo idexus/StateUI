@@ -92,7 +92,7 @@ PinchSample.swift 8372d18af9a4f69e
 PlatformSupportSample.swift be5ddba643cf377c
 PointerSample.swift 3306b3b76379bc70
 PollSample.swift d8a149d4da3bffd8
-PopoverSample.swift a23d730a0a9f1f91
+PopoverSample.swift f99ccd42c29ecb14
 PositionIndicatorSample.swift 8d01bf0d34da3ca4
 ProgressBarSample.swift ab4452099069a51a
 PropertyReadsSample.swift e16e08fd0fa40d8a

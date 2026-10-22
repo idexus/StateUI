@@ -18,6 +18,8 @@ namespace {
 
         int64_t view;
         bool wanted = false;
+        /// Shown at a new target - its view made anew: the closing at the old one is nobody's.
+        bool moving = false;
     };
 
     /// The popover a flyout is, reached through an interface the popover implements itself.
@@ -32,9 +34,12 @@ extern "C" StateUIObjectRef stateui_winui_popover_make(int64_t view, StateUIObje
         flyout.Content(as<xaml::UIElement>(content));
         flyout.Closed(guarded("handling a popover's Closed", [](IInspectable const &sender, IInspectable const &) {
             auto closed = popover(sender.as<controls::Flyout>());
-            if (!closed->wanted) return;
+            if (!closed->wanted || closed->moving) return;
             closed->wanted = false;
             callbacks.presented(closed->view, false);
+        }));
+        flyout.Opened(guarded("handling a popover's Opened", [](IInspectable const &sender, IInspectable const &) {
+            popover(sender.as<controls::Flyout>())->moving = false;
         }));
         return detach(flyout);
     } catch (...) {
@@ -48,7 +53,14 @@ extern "C" void stateui_winui_popover_show(StateUIObjectRef handle, StateUIObjec
         auto flyout = borrow<controls::Flyout>(handle);
         auto anchor = as<xaml::FrameworkElement>(anchorHandle);
         popover(flyout)->wanted = true;
-        if (flyout.IsOpen()) return;
+        if (flyout.IsOpen()) {
+            // Shown by a view made anew - its branch flipped: it stands by the new one.
+            if (flyout.Target() != anchor && anchor.IsLoaded()) {
+                popover(flyout)->moving = true;
+                flyout.ShowAt(anchor);
+            }
+            return;
+        }
         if (anchor.IsLoaded()) return flyout.ShowAt(anchor);
         // An anchor not loaded yet has no root to show over: the popover shows once it is, if still wanted.
         auto token = std::make_shared<winrt::event_token>();

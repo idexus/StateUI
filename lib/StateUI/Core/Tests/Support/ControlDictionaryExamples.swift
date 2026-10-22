@@ -85,7 +85,7 @@ extension ControlDictionary {
 
             Button("Filters")
                 .onClicked { filtering = true }
-                .popover(isShown: $filtering) {
+                .popover(isPresented: $filtering) {
                     Text("Unread only").padding(12)
                 }
             """#),

@@ -32,12 +32,20 @@ final class GTKPopoverView: GTKSingleChildView {
         wanted = true
         let popover = self.popover ?? made()
         if gtk_widget_get_parent(popover) != anchor.widget {
+            // Shown by a view made anew - its branch flipped: down by the old one, unheard, up by the new one.
+            wanted = false
+            if popoverShows { gtk_popover_popdown(popover.of(GtkPopover.self)) }
             if gtk_widget_get_parent(popover) != nil { gtk_widget_unparent(popover) }
             gtk_widget_set_parent(popover, anchor.widget)
+            wanted = true
         }
         guard !popoverShows else { return }
         guard gtk_widget_get_mapped(anchor.widget) != 0 else { return waitForMap(of: anchor.widget) }
-        gtk_popover_popup(popover.of(GtkPopover.self))
+        // Up after the frame lays the anchor out, where the popover points at its place.
+        g_idle_add_full(G_PRIORITY_DEFAULT_IDLE, { data in
+            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKPopoverView)?.anchorMapped() }
+            return 0
+        }, UnsafeMutableRawPointer(bitPattern: Int(number)), nil)
     }
 
     func close() {

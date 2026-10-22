@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 4.1
 Popover: ✅
-Popover.isShown: ✓ read isShown of Popover: the host's own popover, held unshown where a test shows no window
-Popover.isShownChanged: ✓ close on Popover: the host's own close of a popover held unshown, as a test shows no window
+Popover.isPresented: ✅
+Popover.isPresentedChanged: ✓ close on Popover: the host's own close of a popover held unshown, as a test shows no window

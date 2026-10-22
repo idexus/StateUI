@@ -203,6 +203,7 @@ extension WebRenderer: HostPresenter {
         if touchedChrome { showWindows() } else { roster.controllers.first?.adaptSidebar() }
         // What a render wrote may move a view without resizing it, which no observer of the page tells.
         runtime.frames.laidOut()
+        for popover in runtime.tree.takeWaitingPopovers() { popover.web.configurePopover() }
         if let text = scenes.changed(root: runtime.tree.root) { WebKeptValues.writeScenes(text, application: applicationName) }
     }
 
