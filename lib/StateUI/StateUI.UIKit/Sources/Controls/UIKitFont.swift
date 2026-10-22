@@ -15,7 +15,7 @@ extension UIFont {
 
     /// The font a StateUI look asks for: its style's from UIKit's type ramp - the body's where it names none - the
     /// size and weight it gives over the style's, its family - the system's where it names none, or none such is
-    /// installed - italic as its slant says, and grown with the user's text size in `traits` as its style grows where
+    /// installed - italic as its slant says, its digits of one width as its attributes say, and grown with the user's text size in `traits` as its style grows where
     /// the look scales.
     /// Design: docs/design/platforms/uikit/controls.md#a-text-style
     static func stateUI(_ look: TextLook, in traits: UITraitCollection = .current) -> UIFont {
@@ -35,10 +35,15 @@ extension UIFont {
                 .traits: [UIFontDescriptor.TraitKey.weight: thickness],
             ]), size: points)
         } ?? UIFont.systemFont(ofSize: points, weight: thickness)
-        guard look.attributes.contains(.italic),
-              let descriptor = base.fontDescriptor.withSymbolicTraits(base.fontDescriptor.symbolicTraits.union(.traitItalic))
-        else { return base }
-        return UIFont(descriptor: descriptor, size: points)
+        var font = base
+        if look.attributes.contains(.italic),
+           let descriptor = font.fontDescriptor.withSymbolicTraits(font.fontDescriptor.symbolicTraits.union(.traitItalic)) {
+            font = UIFont(descriptor: descriptor, size: points)
+        }
+        guard look.attributes.contains(.monospacedDigits) else { return font }
+        return UIFont(descriptor: font.fontDescriptor.addingAttributes([.featureSettings: [[
+            UIFontDescriptor.FeatureKey.type: kNumberSpacingType, .selector: kMonospacedNumbersSelector,
+        ]]]), size: points)
     }
 
     /// How heavy the font's strokes are, as its descriptor says; regular where it says nothing.

@@ -30,6 +30,9 @@ extension TextLook {
         if attributes.contains(.italic) || attributesGiven {
             made.append(pango_attr_style_new(attributes.contains(.italic) ? PANGO_STYLE_ITALIC : PANGO_STYLE_NORMAL))
         }
+        if attributes.contains(.monospacedDigits) || attributesGiven {
+            made.append(pango_attr_font_features_new(attributes.contains(.monospacedDigits) ? "tnum 1" : "tnum 0"))
+        }
         if let family, !family.isEmpty { made.append(pango_attr_family_new(family)) }
         if let color = rgbaColor {
             let (red, green, blue, alpha) = Self.channels(color)

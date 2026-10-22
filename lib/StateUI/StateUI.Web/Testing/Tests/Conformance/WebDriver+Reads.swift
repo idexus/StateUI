@@ -241,8 +241,12 @@ extension WebDriver {
         case .fontWeight:
             return FontWeight(nearest: try WebBrowser.number("Number(\(style).fontWeight)", on: e) ?? 400).propValue
         case .fontAttributes:
-            let italic = try WebBrowser.truth("\(style).fontStyle === 'italic'", on: e)
-            return (italic ? FontAttributes.italic : .none).propValue
+            var attributes = FontAttributes.none
+            if try WebBrowser.truth("\(style).fontStyle === 'italic'", on: e) { attributes.insert(.italic) }
+            if try WebBrowser.truth("\(style).fontVariantNumeric.includes('tabular-nums')", on: e) {
+                attributes.insert(.monospacedDigits)
+            }
+            return attributes.propValue
         case .textDecorations:
             var decorations: TextDecorations = []
             let lines = try WebBrowser.evaluate("\(style).textDecorationLine", on: e) ?? ""

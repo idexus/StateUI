@@ -25,9 +25,7 @@ extension AppKitDriver {
         case .fontSize: return Double(font.pointSize).propValue
         case .fontFamily: return font.familyName.map { Name($0) }.propValue
         case .fontWeight: return FontWeight(appKit: font.weight).propValue
-        case .fontAttributes:
-            let italic = NSFontManager.shared.traits(of: font).contains(.italicFontMask)
-            return (italic ? FontAttributes.italic : .none).propValue
+        case .fontAttributes: return Self.attributes(of: font).propValue
         case .textColor: return (attributes[.foregroundColor] as? NSColor).map { Self.color($0).propValue }
         case .background: return (attributes[.backgroundColor] as? NSColor).map { Self.color($0).propValue }
         case .tracking: return Double((attributes[.kern] as? NSNumber)?.doubleValue ?? 0).propValue

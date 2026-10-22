@@ -10721,6 +10721,10 @@ enum Listings {
         /// The step a line stands at, moved by the buttons and handed to the line as a state.
         @State private var style = TextStyle.title
 
+        /// The seconds a countdown has left, and whether its digits are all as wide.
+        @State private var seconds = 20
+        @State private var monospaced = true
+
         var body: some View {
             VStack {
                 Text("Display").textStyle(.display)
@@ -10745,6 +10749,20 @@ enum Listings {
                     Button("Larger").onClicked { style = TextStyle(rawValue: style.rawValue - 1) ?? .display }
                     Button("Smaller").onClicked { style = TextStyle(rawValue: style.rawValue + 1) ?? .caption }
                 }
+
+                // With digits of their own width, the words after the number move as it counts.
+                HStack {
+                    Text("\(seconds) s left").fontAttributes(monospaced ? .monospacedDigits : .none)
+                    Button("Count down").onClicked(gate: .cancelPrevious) {
+                        seconds = 20
+                        while seconds > 0 {
+                            try await Task.sleep(for: .milliseconds(300))
+                            seconds -= 1
+                        }
+                    }
+                }
+
+                Switch($monospaced).text("Digits of one width")
             }
         }
         """#,

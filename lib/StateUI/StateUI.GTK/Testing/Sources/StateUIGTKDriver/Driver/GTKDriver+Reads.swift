@@ -204,10 +204,41 @@ extension GTKDriver {
         case .fontWeight:
             return FontWeight(nearest: Double(pango_font_description_get_weight(description).rawValue)).propValue
         case .fontAttributes:
-            let italic = pango_font_description_get_style(description) == PANGO_STYLE_ITALIC
-            return (italic ? FontAttributes.italic : .none).propValue
+            var attributes = FontAttributes.none
+            if pango_font_description_get_style(description) == PANGO_STYLE_ITALIC { attributes.insert(.italic) }
+            if Self.tabularDigits(widget) { attributes.insert(.monospacedDigits) }
+            return attributes.propValue
         default: return nil
         }
+    }
+
+    /// Whether `widget` draws every digit as wide as the others, where GTK lets it be read: a label's layout, which
+    /// takes its style's features; a field's words' own attributes; the tags over an editor's first words.
+    private static func tabularDigits(_ widget: GTKWidget) -> Bool {
+        if GTKTestHost.holds(widget, gtk_label_get_type()) {
+            return PangoRun(pango_layout_get_attributes(gtk_label_get_layout(widget.opaque)), at: 0).tabularDigits == true
+        }
+        if GTKTestHost.holds(widget, gtk_editable_get_type()) {
+            let words = UnsafeMutablePointer<GtkText>(gtk_editable_get_delegate(widget.opaque))
+            return PangoRun(gtk_text_get_attributes(words), at: 0).tabularDigits == true
+        }
+        guard GTKTestHost.holds(widget, gtk_text_view_get_type()),
+              let buffer = gtk_text_view_get_buffer(widget.of(GtkTextView.self))
+        else { return false }
+        var start = GtkTextIter()
+        gtk_text_buffer_get_start_iter(buffer, &start)
+        let tags = gtk_text_iter_get_tags(&start)
+        defer { g_slist_free(tags) }
+        var (each, tabular) = (tags, false)
+        while let node = each {
+            var features = GValue()
+            g_value_init(&features, g_type_from_name("gchararray"))
+            g_object_get_property(node.pointee.data.assumingMemoryBound(to: GObject.self), "font-features", &features)
+            if let said = g_value_get_string(&features), PangoRun.tabular(String(cString: said)) { tabular = true }
+            g_value_unset(&features)
+            each = node.pointee.next
+        }
+        return tabular
     }
 
     /// What a label holds: its runs' look over all its words, its lines and where they stand.
@@ -426,8 +457,11 @@ private struct PangoRun {
         case .fontWeight:
             return first(PANGO_ATTR_WEIGHT).map { FontWeight(nearest: Double(Self.number($0))).propValue }
         case .fontAttributes:
-            let italic = first(PANGO_ATTR_STYLE).map(Self.number) == Int32(PANGO_STYLE_ITALIC.rawValue)
-            return first(PANGO_ATTR_STYLE) == nil ? nil : (italic ? FontAttributes.italic : .none).propValue
+            guard first(PANGO_ATTR_STYLE) != nil || tabularDigits != nil else { return nil }
+            var attributes = FontAttributes.none
+            if first(PANGO_ATTR_STYLE).map(Self.number) == Int32(PANGO_STYLE_ITALIC.rawValue) { attributes.insert(.italic) }
+            if tabularDigits == true { attributes.insert(.monospacedDigits) }
+            return attributes.propValue
         case .textColor: return color(PANGO_ATTR_FOREGROUND, PANGO_ATTR_FOREGROUND_ALPHA)?.propValue
         case .background: return color(PANGO_ATTR_BACKGROUND, PANGO_ATTR_BACKGROUND_ALPHA).map { Material.color($0).propValue }
         case .tracking:
@@ -445,6 +479,27 @@ private struct PangoRun {
             return decorations.propValue
         default: return nil
         }
+    }
+
+    /// Whether the run's font features draw every digit as wide as the others; nil where none says.
+    var tabularDigits: Bool? {
+        first(PANGO_ATTR_FONT_FEATURES).map {
+            Self.tabular(String(cString: $0.withMemoryRebound(to: PangoAttrFontFeatures.self, capacity: 1) {
+                $0.pointee.features
+            }))
+        }
+    }
+
+    /// Whether `features` - as a run writes them, `tnum 1`, or as GTK's style does, `"tnum" 1` - leave `tnum` on:
+    /// its last mention, with no value or one other than 0 or off.
+    static func tabular(_ features: String) -> Bool {
+        var on = false
+        for feature in features.split(separator: ",") {
+            let words = feature.split(separator: " ").map { $0.filter { $0 != "\"" && $0 != "'" } }
+            guard words.first == "tnum" else { continue }
+            on = words.count < 2 || !["0", "off"].contains(words[1])
+        }
+        return on
     }
 
     private static func number(_ attribute: UnsafeMutablePointer<PangoAttribute>) -> Int32 {

@@ -29,9 +29,7 @@ extension UIKitDriver {
             }.propValue
         case .fontFamily: return Name(font.familyName).propValue
         case .fontWeight: return FontWeight(uiKit: font.weight).propValue
-        case .fontAttributes:
-            let italic = font.fontDescriptor.symbolicTraits.contains(.traitItalic)
-            return (italic ? FontAttributes.italic : .none).propValue
+        case .fontAttributes: return Self.attributes(of: font).propValue
         case .textColor: return Self.color(attributes[.foregroundColor] as? UIColor ?? label.textColor).propValue
         case .background: return (attributes[.backgroundColor] as? UIColor).map { Self.color($0).propValue }
         case .tracking: return ((attributes[.kern] as? NSNumber)?.doubleValue ?? 0).propValue

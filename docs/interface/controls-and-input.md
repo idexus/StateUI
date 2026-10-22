@@ -153,7 +153,9 @@ and the tier pages it links list each with its mark per host:
   `.caption`, each the platform's own size and weight - `fontSize` and
   `fontWeight` - `.regular`, `.medium`, `.semibold` or `.bold` - which stand
   over the style's, `fontFamily` - the name the application registered the
-  font under - `fontAttributes`, which is `.italic` or `.none`, and
+  font under - `fontAttributes`: `.italic`, `.monospacedDigits` - every
+  digit as wide as the others, so a countdown keeps its width - both, or
+  `.none` - and
   `isFontAutoScalingEnabled`,
   on unless said, which makes the text follow the user's text-size setting -
   iOS's text size, Android's font size, Windows' text size, GNOME's text
@@ -180,6 +182,9 @@ VStack {
 
     Text("Letters spaced out")
         .tracking(3)
+
+    Text("59 s left")
+        .fontAttributes(.monospacedDigits)
 
     Text("Two lines,\nlineHeight 2")
         .lineHeight(2)

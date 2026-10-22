@@ -36,7 +36,7 @@ appkit Button 2
 uikit Button 2
 winui Button 3
 MenuItemElement 5
-FontElement 3
+FontElement 4
 winui MenuItemElement 2
 winui PageElement 2
 DatePicker 5

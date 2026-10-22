@@ -94,7 +94,7 @@ class AndroidTextualView: AndroidView {
         Java.call(reference, JavaAPI.setLetterSpacing, .float(Float(look.letterSpacing(inEmsOf: size))))
     }
 
-    /// Draws the words in the family, weight and slant last set again - after anything that put back the
+    /// Draws the words in the family, weight, slant and digits last set again - after anything that put back the
     /// platform's typeface.
     func applyTypeface() {
         let italic = fontAttributes?.contains(.italic) == true
@@ -103,6 +103,9 @@ class AndroidTextualView: AndroidView {
         let style = fontWeight == nil && italic ? AndroidTypeface.italicStyle : 0
         Java.call(reference, JavaAPI.setTypeface, .object(face), .int(style))
         Java.release(local: face)
+        let features = AndroidTypeface.features(fontAttributes)
+        Java.call(reference, JavaAPI.setFontFeatureSettings, .object(features))
+        Java.release(local: features)
     }
 
     /// How the words break, and how many lines show: a line cut or truncated is one line, and only a

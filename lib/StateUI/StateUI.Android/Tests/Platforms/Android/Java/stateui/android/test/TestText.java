@@ -33,6 +33,12 @@ public final class TestText {
         return face == null ? Typeface.NORMAL : face.getStyle();
     }
 
+    /** Whether every digit is as wide as the others: the view's font features ask for tabular figures. */
+    public static boolean digits(TextView view) {
+        String features = view.getFontFeatureSettings();
+        return features != null && features.contains("tnum");
+    }
+
     /** How heavy the strokes are, 100 to 900: the typeface's weight. */
     public static int weight(TextView view) {
         Typeface face = view.getTypeface();

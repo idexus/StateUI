@@ -91,6 +91,11 @@ namespace {
         if (what == "italic") {
             return flag((text ? text.FontStyle() : control.FontStyle()) == winrt::Windows::UI::Text::FontStyle::Italic);
         }
+        if (what == "tabularDigits") {
+            auto alignment = text ? winrt::Microsoft::UI::Xaml::Documents::Typography::GetNumeralAlignment(text)
+                                  : winrt::Microsoft::UI::Xaml::Documents::Typography::GetNumeralAlignment(control);
+            return flag(alignment == xaml::FontNumeralAlignment::Tabular);
+        }
         if (what == "fontFamily") return narrow((text ? text.FontFamily() : control.FontFamily()).Source());
         if (what == "tracking") return number(text ? text.CharacterSpacing() : control.CharacterSpacing());
         if (what == "textScales") {

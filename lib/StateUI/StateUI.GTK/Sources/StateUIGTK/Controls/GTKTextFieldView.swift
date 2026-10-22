@@ -117,6 +117,15 @@ class GTKTextFieldView: GTKView, GTKTextInputView {
         swapClass(&wordsClass, to: name)
     }
 
+    func setTabularDigits(_ tabular: Bool) {
+        let words = UnsafeMutablePointer<GtkText>(gtk_editable_get_delegate(editable))
+        guard tabular else { return gtk_text_set_attributes(words, nil) }
+        let list = pango_attr_list_new()
+        defer { pango_attr_list_unref(list) }
+        pango_attr_list_insert(list, pango_attr_font_features_new("tnum 1"))
+        gtk_text_set_attributes(words, list)
+    }
+
     func select(start: Int, length: Int) {
         if ProgramWrite.isWriting { programCaret = (start, length) }
         let first = Int32(clamping: max(0, start))

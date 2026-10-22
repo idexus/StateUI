@@ -30,7 +30,11 @@ extension AndroidDriver {
             return try Self.scales(Java.callStaticInt(Self.testSpans, Self.spanScales, .object(reference), .int(start)))
         case .fontAttributes:
             let style = Java.callStaticInt(Self.testSpans, Self.spanStyle, .object(reference), .int(start))
-            return FontAttributes(rawValue: style & 2).propValue
+            var attributes = FontAttributes(rawValue: style & 2)
+            if Java.callStaticBool(Self.testSpans, Self.spanDigits, .object(reference), .int(start)) {
+                attributes.insert(.monospacedDigits)
+            }
+            return attributes.propValue
         case .fontWeight:
             let weight = Java.callStaticInt(Self.testSpans, Self.spanWeight, .object(reference), .int(start))
             return FontWeight(nearest: Double(weight)).propValue
@@ -56,6 +60,7 @@ extension AndroidDriver {
     static let spanPoints = Java.staticMethod(testSpans, "points", "(Landroid/widget/TextView;I)F")
     static let spanColor = Java.staticMethod(testSpans, "color", "(Landroid/widget/TextView;I)I")
     static let spanStyle = Java.staticMethod(testSpans, "style", "(Landroid/widget/TextView;I)I")
+    static let spanDigits = Java.staticMethod(testSpans, "digits", "(Landroid/widget/TextView;I)Z")
     static let spanWeight = Java.staticMethod(testSpans, "weight", "(Landroid/widget/TextView;I)I")
     static let spanScales = Java.staticMethod(testSpans, "scales", "(Landroid/widget/TextView;I)I")
     static let spanLines = Java.staticMethod(testSpans, "lines", "(Landroid/widget/TextView;I)I")

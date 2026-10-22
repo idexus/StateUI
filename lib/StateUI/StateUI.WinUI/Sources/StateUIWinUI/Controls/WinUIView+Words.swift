@@ -10,14 +10,15 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/controls.md#words
 extension WinUIView {
     /// The font a look gives (`TextMembers.look`): its style's size and weight on WinUI's type ramp under the size
-    /// and weight it gives, its slant and its family - the platform's where it says nothing. Answers the size the
+    /// and weight it gives, its slant, its digits and its family - the platform's where it says nothing. Answers the size the
     /// words stand at, nil for the platform's.
     /// Design: docs/design/platforms/winui/controls.md#a-text-style
     @discardableResult
     func setFont(_ look: TextLook) -> Double? {
         let (size, weight) = look.standing(styleSize: look.style?.winUISize, styleWeight: look.style?.winUIWeight)
         stateui_winui_set_font(
-            handle, size ?? 0, Int32(weight?.number ?? 0), look.attributes.contains(.italic), look.family ?? "")
+            handle, size ?? 0, Int32(weight?.number ?? 0), look.attributes.contains(.italic),
+            look.attributes.contains(.monospacedDigits), look.family ?? "")
         return size
     }
 

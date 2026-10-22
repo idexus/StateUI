@@ -75,9 +75,11 @@ extension GTKRegistrations {
             view.setBehavior(readOnly: values[TextInputContract.isReadOnly] ?? false, hints: hints, purpose: purpose)
         }
         if TextMembers.look(values) != nil || values.changed(TextInputContract.placeholderColor) {
+            let look = TextMembers.look(of: values)
             view.setWordsClass(GTKStyleSheet.words(
-                TextMembers.look(of: values),
-                placeholder: values[TextInputContract.placeholderColor].flatMap { GTKBrush.rgba($0.propValue) }))
+                look, placeholder: values[TextInputContract.placeholderColor].flatMap { GTKBrush.rgba($0.propValue) },
+                digits: false))
+            view.setTabularDigits(look.attributes.contains(.monospacedDigits))
         }
         if values.changed(TextAlignmentElementContract.horizontalTextAlignment) {
             view.setAlignment(values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start)

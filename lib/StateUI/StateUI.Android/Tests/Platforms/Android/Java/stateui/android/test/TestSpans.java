@@ -12,6 +12,7 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
 import android.text.style.TypefaceSpan;
+import stateui.android.StateUIDigitsSpan;
 import android.text.style.UnderlineSpan;
 import android.util.TypedValue;
 import android.widget.TextView;
@@ -49,6 +50,11 @@ public final class TestSpans {
     public static int color(TextView view, int at) {
         ForegroundColorSpan color = span(view, at, ForegroundColorSpan.class);
         return color != null ? color.getForegroundColor() : view.getCurrentTextColor();
+    }
+
+    /** Whether every digit at `at` is as wide as the others: a digits span there, else the view's features. */
+    public static boolean digits(TextView view, int at) {
+        return span(view, at, StateUIDigitsSpan.class) != null || TestText.digits(view);
     }
 
     /** Bold and italic at `at`, in the bits `Typeface` numbers them by. */

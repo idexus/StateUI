@@ -78,6 +78,9 @@ final class AndroidTextView: AndroidTextualView {
         if weight == nil, italic {
             spans.append(Java.new(JavaAPI.styleSpan, JavaAPI.newStyleSpan, .int(AndroidTypeface.italicStyle)))
         }
+        if look.attributes.contains(.monospacedDigits) {
+            spans.append(Java.new(JavaAPI.digitsSpan, JavaAPI.newDigitsSpan))
+        }
         if let argb = look.background.flatMap(Self.argb) {
             spans.append(Java.new(JavaAPI.backgroundSpan, JavaAPI.newBackgroundSpan, .int(argb)))
         }

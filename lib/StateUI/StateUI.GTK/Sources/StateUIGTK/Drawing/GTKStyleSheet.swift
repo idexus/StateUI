@@ -164,10 +164,11 @@ enum GTKStyleSheet {
         return name
     }
 
-    /// The class giving typed words their look - the font's size, weight, slant and family and the words' color -
+    /// The class giving typed words their look - the font's size, weight, slant, digits and family and the words' color -
     /// and the placeholder its color, in a field's own text or as an editor's label, or in its `part` - a selector
-    /// after the widget's own; nil where nothing is given.
-    static func words(_ look: TextLook, placeholder: GdkRGBA?, in part: String = "") -> String? {
+    /// after the widget's own; nil where nothing is given. The class says the digits where `digits` - words a user
+    /// types say them as their own attributes (`GTKTextInputView.setTabularDigits`).
+    static func words(_ look: TextLook, placeholder: GdkRGBA?, in part: String = "", digits: Bool = true) -> String? {
         var name = "stateui-words"
         var body = ""
         let (size, weight) = look.gtkStanding
@@ -183,6 +184,11 @@ enum GTKStyleSheet {
         if look.attributes.contains(.italic) || look.attributesGiven {
             name += look.attributes.contains(.italic) ? "-i" : "-u"
             body += look.attributes.contains(.italic) ? "font-style: italic; " : "font-style: normal; "
+        }
+        if digits, look.attributes.contains(.monospacedDigits) || look.attributesGiven {
+            let tabular = look.attributes.contains(.monospacedDigits)
+            name += tabular ? "-dt" : "-dp"
+            body += "font-feature-settings: \"tnum\" \(tabular ? 1 : 0); "
         }
         if let family = look.family, !family.isEmpty {
             name += "-f" + family.utf8.map { String($0, radix: 16) }.joined()

@@ -132,6 +132,8 @@ enum WebCSS {
         return [("font-size", look.scales ? size.map(rems) : pixels(size) ?? "var(--stateui-words-fixed)"),
                 ("font-weight", weight.map { String($0.number) }),
                 ("font-style", look.attributesGiven ? (look.attributes.contains(.italic) ? "italic" : "normal") : nil),
+                ("font-variant-numeric",
+                 look.attributesGiven ? (look.attributes.contains(.monospacedDigits) ? "tabular-nums" : "normal") : nil),
                 ("font-family", look.family.map(string)),
                 ("color", color(look.color))]
     }

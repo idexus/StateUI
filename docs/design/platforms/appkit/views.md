@@ -231,6 +231,7 @@ the first title, `.subtitle` the second, `.headline`, `.body` and `.caption`
 the first caption. The style's size and weight stand under the tree's
 (`TextLook.standing`), and the font is made again at the size and weight that
 stand - the system font, or the named family with that weight in its
-descriptor; italic is AppKit's italic trait. A weight is AppKit's
+descriptor; italic is AppKit's italic trait, and digits of one width the
+number-spacing feature in its descriptor (`kMonospacedNumbersSelector`). A weight is AppKit's
 `NSFont.Weight`, and a font's weight reads back from its descriptor's traits.
 A Mac gives an application no text size of the user's to follow.

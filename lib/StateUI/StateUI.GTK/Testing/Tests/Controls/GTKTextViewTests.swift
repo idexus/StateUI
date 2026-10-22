@@ -158,7 +158,8 @@ final class GTKTextViewTests: XCTestCase {
         }
     }
 
-    /// A label's spans are its words, run by run, each in its own color, size, weight, slant, lines and background.
+    /// A label's spans are its words, run by run, each in its own color, size, weight, slant, digits, lines and
+    /// background.
     func testATextsSpansAreItsWordsRunByRun() throws {
         try onUIThread {
             let host = GTKRenderer.running {
@@ -166,7 +167,7 @@ final class GTKTextViewTests: XCTestCase {
                     Text()
                         .spans {
                             TextSpan("let ").textColor(Color(hex: 0xFF0000))
-                            TextSpan("x").fontSize(20).fontWeight(.bold).fontAttributes(.italic)
+                            TextSpan("x").fontSize(20).fontWeight(.bold).fontAttributes([.italic, .monospacedDigits])
                             TextSpan(" = 1").textDecorations(.underline).background(Color(hex: 0xFFFF00))
                         }
                 }
@@ -176,7 +177,7 @@ final class GTKTextViewTests: XCTestCase {
             XCTAssertEqual(label.text, "let x = 1")
             XCTAssertEqual(label.ranged, [
                 "0-4 foreground 65535 0 0", "0-4 foreground-alpha 65535",
-                "4-5 points \(15 * PANGO_SCALE)", "4-5 style \(PANGO_STYLE_ITALIC.rawValue)",
+                "4-5 features tnum 1", "4-5 points \(15 * PANGO_SCALE)", "4-5 style \(PANGO_STYLE_ITALIC.rawValue)",
                 "4-5 weight \(PANGO_WEIGHT_BOLD.rawValue)",
                 "5-9 background 65535 65535 0", "5-9 background-alpha 65535",
                 "5-9 underline \(PANGO_UNDERLINE_SINGLE.rawValue)",
@@ -253,6 +254,7 @@ private extension GTKTextView {
         PANGO_ATTR_SIZE.rawValue: "points", PANGO_ATTR_ABSOLUTE_SIZE.rawValue: "pixels",
         PANGO_ATTR_WEIGHT.rawValue: "weight",
         PANGO_ATTR_STYLE.rawValue: "style", PANGO_ATTR_UNDERLINE.rawValue: "underline",
+        PANGO_ATTR_FONT_FEATURES.rawValue: "features",
     ]
 
     private static func describe(_ attribute: UnsafeMutablePointer<PangoAttribute>) -> String {
@@ -265,6 +267,8 @@ private extension GTKTextView {
         case PANGO_ATTR_FOREGROUND, PANGO_ATTR_BACKGROUND:
             let color = raw.assumingMemoryBound(to: PangoAttrColor.self).pointee.color
             return "\(color.red) \(color.green) \(color.blue)"
+        case PANGO_ATTR_FONT_FEATURES:
+            return String(cString: raw.assumingMemoryBound(to: PangoAttrFontFeatures.self).pointee.features)
         case PANGO_ATTR_LINE_HEIGHT:
             return "\(raw.assumingMemoryBound(to: PangoAttrFloat.self).pointee.value)"
         default:

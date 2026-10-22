@@ -36,6 +36,9 @@ protocol GTKTextInputView: GTKView {
     /// The class of the display-wide sheet giving the words their look.
     func setWordsClass(_ name: String?)
 
+    /// Whether every digit stands as wide as the others, as the words' own attribute.
+    func setTabularDigits(_ tabular: Bool)
+
     /// Puts the caret `start` characters in and selects `length` from it.
     func select(start: Int, length: Int)
 }

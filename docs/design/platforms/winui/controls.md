@@ -486,7 +486,9 @@ pages head with, in proportion to the other platforms' largest (26 to 34);
 WinUI's Display, 68, stands twice that. The size and weight the tree gives stand over the
 style's (`TextLook.standing`), and every element showing words - a text
 block, a button, a field - takes them as its `FontSize` and `FontWeight`; a
-weight of none clears the element's own back to the theme's.
+weight of none clears the element's own back to the theme's. Digits of one
+width are `Typography.NumeralAlignment` at `Tabular` on the element, on a
+button's caption and on a run.
 
 ## A picker's segments and radio buttons
 

@@ -343,7 +343,11 @@ style's weight stands at the theme's own number - 800 for the largest titles -
 where the tree gives none. The
 size and weight the tree gives stand over the style's (`TextLook.standing`),
 and both reach a label and a run as Pango attributes and a field as its words'
-class.
+class. Digits of one width are the font feature `tnum`: a Pango font-features
+attribute on a label and a run, `font-feature-settings` in a picker's class,
+and in words a user types - a field's, an editor's - the words' own attribute
+(`gtk_text_set_attributes`, a tag laid over an editor's words again as they
+change), as GTK keeps what its style gives typed words to itself.
 
 ## A picker's segments and radio buttons
 

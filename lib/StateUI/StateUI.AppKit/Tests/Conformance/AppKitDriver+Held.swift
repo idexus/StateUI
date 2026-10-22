@@ -109,6 +109,17 @@ extension AppKitDriver {
         }
     }
 
+    /// What `font` draws beyond its size, weight and family: its slant, and its digits of one width.
+    static func attributes(of font: NSFont) -> FontAttributes {
+        var attributes = FontAttributes.none
+        if NSFontManager.shared.traits(of: font).contains(.italicFontMask) { attributes.insert(.italic) }
+        let features = font.fontDescriptor.object(forKey: .featureSettings) as? [[NSFontDescriptor.FeatureKey: Int]]
+        if features?.contains(where: {
+            $0[.typeIdentifier] == kNumberSpacingType && $0[.selectorIdentifier] == kMonospacedNumbersSelector
+        }) == true { attributes.insert(.monospacedDigits) }
+        return attributes
+    }
+
     /// A control's words as AppKit draws them: their font's size, weight, slant and family, and their color.
     private static func words(_ property: Prop, _ view: NSView) throws -> HostValue? {
         // A label draws its words in the attributes of its text; a control, in its own font and color; a view
@@ -126,9 +137,7 @@ extension AppKitDriver {
         case .fontSize: return Double(font.pointSize).propValue
         case .fontFamily: return font.familyName.map { Name($0) }.propValue
         case .fontWeight: return FontWeight(appKit: font.weight).propValue
-        case .fontAttributes:
-            let italic = NSFontManager.shared.traits(of: font).contains(.italicFontMask)
-            return (italic ? FontAttributes.italic : .none).propValue
+        case .fontAttributes: return Self.attributes(of: font).propValue
         case .textColor:
             if let written = attributes?[.foregroundColor] as? NSColor { return color(written).propValue }
             if let field = control as? NSTextField, let written = field.textColor { return color(written).propValue }

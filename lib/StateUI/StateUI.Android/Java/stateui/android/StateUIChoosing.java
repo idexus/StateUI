@@ -15,7 +15,7 @@ interface StateUIChoosing {
 
     /**
      * The words' size in points - 0 for the theme's - and their unit, their color - 0 for the theme's - their face,
-     * and where they stand.
+     * their font features - null for none - and where they stand.
      */
-    void setLook(float size, int unit, int color, Typeface face, int alignment);
+    void setLook(float size, int unit, int color, Typeface face, String features, int alignment);
 }

@@ -28,6 +28,12 @@ enum AndroidTypeface {
 
     /// `Typeface.ITALIC`.
     static let italicStyle: Int32 = 2
+
+    /// A local reference to the font features `attributes` ask for - every digit as wide as the others - as a
+    /// `TextView` takes them; nil for none. The caller releases it.
+    static func features(_ attributes: FontAttributes?) -> jstring? {
+        attributes?.contains(.monospacedDigits) == true ? Java.string("tnum") : nil
+    }
 }
 
 extension TextStyle {

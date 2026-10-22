@@ -110,6 +110,39 @@ final class GTKTextEditorView: GTKView, GTKTextInputView {
         invalidateMeasure()
     }
 
+    func setTabularDigits(_ tabular: Bool) {
+        tabularDigits = tabular
+        coverDigits()
+    }
+
+    /// Whether every digit stands as wide as the others.
+    private var tabularDigits = false
+
+    /// The tag laying digits of one width over the words, made the first time they ask for it.
+    private var digitsTag: UnsafeMutablePointer<GtkTextTag>?
+
+    /// Lays the digits' tag over all the words, or takes it off them: words typed take no tag of their own, so it is
+    /// laid again as they change.
+    private func coverDigits() {
+        guard tabularDigits || digitsTag != nil else { return }
+        var (start, end) = (GtkTextIter(), GtkTextIter())
+        gtk_text_buffer_get_bounds(buffer, &start, &end)
+        guard tabularDigits else { return gtk_text_buffer_remove_tag(buffer, digitsTag, &start, &end) }
+        let tag = digitsTag ?? {
+            let made = gtk_text_tag_new("stateui-digits")
+            var features = GValue()
+            g_value_init(&features, g_type_from_name("gchararray"))
+            g_value_set_string(&features, "tnum 1")
+            g_object_set_property(UnsafeMutablePointer<GObject>(OpaquePointer(made)), "font-features", &features)
+            g_value_unset(&features)
+            _ = gtk_text_tag_table_add(gtk_text_buffer_get_tag_table(buffer), made)
+            g_object_unref(UnsafeMutableRawPointer(made))
+            digitsTag = made
+            return made
+        }()
+        gtk_text_buffer_apply_tag(buffer, tag, &start, &end)
+    }
+
     func select(start: Int, length: Int) {
         var from = GtkTextIter()
         var to = GtkTextIter()
@@ -150,6 +183,7 @@ final class GTKTextEditorView: GTKView, GTKTextInputView {
     /// The words changed: the placeholder shown only while there are none, and the words handed on.
     private func changed() {
         showPlaceholder()
+        coverDigits()
         onTextChanged?(text)
     }
 

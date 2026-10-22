@@ -143,6 +143,8 @@ system's at the size and weight that stand, or the named family with that
 weight in its descriptor. Where the words scale, the style's own metrics grow
 them with the user's text size (`UIFontMetrics(forTextStyle:)`), so a title
 grows as UIKit grows its titles; words with no style grow as the body does.
+Digits of one width are the number-spacing feature in the font's descriptor
+(`kMonospacedNumbersSelector`), which the grown font keeps.
 A day's and a time's picker draw their words in UIKit's own font and take no
 style.
 

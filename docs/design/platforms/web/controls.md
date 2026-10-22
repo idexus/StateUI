@@ -272,6 +272,7 @@ at the page's 15 in semibold, `.body` at the page's 15 and `.caption` at 12.
 The size and weight the tree gives stand over the style's
 (`TextLook.standing`); a size stands in rems where the words scale, so the
 browser's text size grows it, and a weight is CSS's `font-weight` number.
+Digits of one width are `font-variant-numeric: tabular-nums`.
 
 ## Selectable words
 

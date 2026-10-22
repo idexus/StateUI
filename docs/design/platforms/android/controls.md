@@ -398,4 +398,5 @@ gives stand over the style's (`TextLook.standing`). A weight is a typeface of
 the family - the platform's where it names none - at the weight's number
 (`Typeface.create(Typeface, int, boolean)`), which carries the slant; with no
 weight, the view's style bits slant the platform's face. A run's weight is a
-`TypefaceSpan` of such a typeface.
+`TypefaceSpan` of such a typeface. Digits of one width are the font feature
+`tnum`: a view's `setFontFeatureSettings`, a run's `StateUIDigitsSpan`.

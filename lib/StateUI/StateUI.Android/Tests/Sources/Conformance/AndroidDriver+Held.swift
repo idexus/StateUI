@@ -94,8 +94,7 @@ extension AndroidDriver {
         case (.isFontAutoScalingEnabled, let text as AndroidTextualView):
             return try Self.scales(Java.callStaticInt(Self.testText, Self.scales, .object(text.reference)))
         case (.fontAttributes, let text as AndroidTextualView):
-            return FontAttributes(rawValue: Java.callStaticInt(Self.testText, Self.style, .object(text.reference)) & 2)
-                .propValue
+            return Self.attributes(of: text.reference).propValue
         case (.fontWeight, let text as AndroidTextualView):
             return FontWeight(nearest: Double(Java.callStaticInt(Self.testText, Self.weight, .object(text.reference))))
                 .propValue
@@ -137,6 +136,13 @@ extension AndroidDriver {
         }
     }
 
+    /// The slant and the digits a text view draws: its typeface's italic bit, and its font features.
+    static func attributes(of view: jobject?) -> FontAttributes {
+        var attributes = FontAttributes(rawValue: Java.callStaticInt(testText, style, .object(view)) & 2)
+        if Java.callStaticBool(testText, digits, .object(view)) { attributes.insert(.monospacedDigits) }
+        return attributes
+    }
+
     /// The look of the words a picker's closed field shows: the row the spinner shows as chosen.
     private static func fieldHolds(_ property: Prop, of picker: AndroidPickerView) throws -> HostValue? {
         let held: HostValue?? = Java.frame {
@@ -145,8 +151,7 @@ extension AndroidDriver {
             case .fontSize: return Double(Java.callStaticFloat(testText, points, .object(row))).rounded().propValue
             case .isFontAutoScalingEnabled:
                 return try? Self.scales(Java.callStaticInt(testText, scales, .object(row)))
-            case .fontAttributes:
-                return FontAttributes(rawValue: Java.callStaticInt(testText, style, .object(row)) & 2).propValue
+            case .fontAttributes: return attributes(of: row).propValue
             case .fontWeight:
                 return FontWeight(nearest: Double(Java.callStaticInt(testText, weight, .object(row)))).propValue
             case .textColor: return color(UInt32(bitPattern: Java.callInt(row, getCurrentTextColor))).propValue
@@ -266,6 +271,7 @@ extension AndroidDriver {
     static let testText = Java.findClass("stateui/android/test/TestText")
     static let points = Java.staticMethod(testText, "points", "(Landroid/widget/TextView;)F")
     static let style = Java.staticMethod(testText, "style", "(Landroid/widget/TextView;)I")
+    static let digits = Java.staticMethod(testText, "digits", "(Landroid/widget/TextView;)Z")
     static let weight = Java.staticMethod(testText, "weight", "(Landroid/widget/TextView;)I")
     static let scales = Java.staticMethod(testText, "scales", "(Landroid/widget/TextView;)I")
     static let primaryWords = Java.staticMethod(testText, "primaryWords", "(Landroid/content/Context;)I")

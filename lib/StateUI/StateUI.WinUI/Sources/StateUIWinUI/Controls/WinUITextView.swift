@@ -62,6 +62,7 @@ final class WinUITextView: WinUITextualView {
                         text: texts[index], color: color ?? 0, background: background ?? 0, size: size ?? 0,
                         hasColor: color != nil, hasBackground: background != nil,
                         weight: Int32(weight?.number ?? 0), italic: look.attributes.contains(.italic),
+                        tabularDigits: look.attributes.contains(.monospacedDigits),
                         underline: look.decorations.contains(.underline),
                         strikethrough: look.decorations.contains(.strikethrough), family: families[index],
                         spacing: Int32((spacing * 1000).rounded()))

@@ -73,6 +73,16 @@ extension UIKitDriver {
         }
     }
 
+    /// What `font` draws beyond its size, weight and family: its slant, and its digits of one width.
+    static func attributes(of font: UIFont) -> FontAttributes {
+        var attributes = FontAttributes.none
+        if font.fontDescriptor.symbolicTraits.contains(.traitItalic) { attributes.insert(.italic) }
+        let features = font.fontDescriptor.object(forKey: .featureSettings) as? [[UIFontDescriptor.FeatureKey: Int]]
+        if features?.contains(where: { $0[.type] == kNumberSpacingType && $0[.selector] == kMonospacedNumbersSelector })
+            == true { attributes.insert(.monospacedDigits) }
+        return attributes
+    }
+
     /// A control's words as UIKit draws them: their font's size, bold and italic, family, and their color.
     private static func words(_ property: Prop, _ shown: UIView) throws -> HostValue? {
         // A switch's words are its label's.
@@ -94,9 +104,7 @@ extension UIKitDriver {
         case .fontSize: return Double(font.pointSize).propValue
         case .fontFamily: return Name(font.familyName).propValue
         case .fontWeight: return FontWeight(uiKit: font.weight).propValue
-        case .fontAttributes:
-            let italic = font.fontDescriptor.symbolicTraits.contains(.traitItalic)
-            return (italic ? FontAttributes.italic : .none).propValue
+        case .fontAttributes: return attributes(of: font).propValue
         case .textColor: return drawn.color.map { color($0).propValue }
         case .tracking:
             guard written != nil else { throw DriverCannot("read the spacing of a \(type(of: view))") }

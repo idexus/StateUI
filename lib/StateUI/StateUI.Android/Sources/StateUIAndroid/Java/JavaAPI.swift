@@ -112,6 +112,7 @@ enum JavaAPI {
     static let setTextColors = Java.method(
         textView, "setTextColor", "(Landroid/content/res/ColorStateList;)V")
     static let setTypeface = Java.method(textView, "setTypeface", "(Landroid/graphics/Typeface;I)V")
+    static let setFontFeatureSettings = Java.method(textView, "setFontFeatureSettings", "(Ljava/lang/String;)V")
     static let typeface = Java.findClass("android/graphics/Typeface")
     static let createTypeface = Java.staticMethod(
         typeface, "create", "(Ljava/lang/String;I)Landroid/graphics/Typeface;")
@@ -268,7 +269,8 @@ enum JavaAPI {
     static let newChoices = Java.method(choices, "<init>", "(Landroid/content/Context;JZ)V")
     static let choosing = Java.findClass("stateui/android/StateUIChoosing")
     static let setChoices = Java.method(choosing, "setChoices", "([Ljava/lang/String;Ljava/lang/String;IZ)V")
-    static let setPickerLook = Java.method(choosing, "setLook", "(FIILandroid/graphics/Typeface;I)V")
+    static let setPickerLook = Java.method(
+        choosing, "setLook", "(FIILandroid/graphics/Typeface;Ljava/lang/String;I)V")
     static let openList = Java.method(picker, "openList", "()V")
     static let setBackgroundTintList = Java.method(
         view, "setBackgroundTintList", "(Landroid/content/res/ColorStateList;)V")
@@ -380,6 +382,8 @@ enum JavaAPI {
     static let newStyleSpan = Java.method(styleSpan, "<init>", "(I)V")
     static let typefaceSpan = Java.findClass("android/text/style/TypefaceSpan")
     static let newTypefaceSpan = Java.method(typefaceSpan, "<init>", "(Landroid/graphics/Typeface;)V")
+    static let digitsSpan = Java.findClass("stateui/android/StateUIDigitsSpan")
+    static let newDigitsSpan = Java.method(digitsSpan, "<init>", "()V")
     static let underlineSpan = Java.findClass("android/text/style/UnderlineSpan")
     static let newUnderlineSpan = Java.method(underlineSpan, "<init>", "()V")
     static let strikethroughSpan = Java.findClass("android/text/style/StrikethroughSpan")

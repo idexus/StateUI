@@ -127,7 +127,7 @@ TextEditorSample.swift 9cc806f939101a0a
 TextFieldSample.swift 0dbc6d9285720c54
 TextSample.swift 96027a4daae86bbf
 TextSpanSample.swift d8a6a8c6c203ffa9
-TextStyleSample.swift 3dd262f829737d60
+TextStyleSample.swift 7d1bdf3f5f866e5b
 TickerSample.swift ecca16670e47a404
 TimePickerSample.swift dd3594dfb194e764
 ToolbarLayersSample.swift 570c23c8273a1253
