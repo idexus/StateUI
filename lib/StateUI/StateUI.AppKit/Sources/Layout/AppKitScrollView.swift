@@ -46,7 +46,34 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     /// The user's movement of this scroller, and its rest.
     private let movement = ScrollMovement()
 
-    var offset: NSPoint { reachable(contentView.bounds.origin) }
+    var offset: NSPoint { reachable(standing(contentView.bounds.origin)) }
+
+    /// What the scroller keeps clear on each edge - the bars a page's scroller reaches under - so its first and last
+    /// content scroll out from under them; its offsets are counted from its first content clear of them.
+    private var clearance = Clearance.none
+
+    /// Keeps `clearance` clear, the scroller standing where the tree has it.
+    /// Design: docs/design/host/layout.md#the-safe-area
+    func keepClear(_ clearance: Clearance) {
+        guard clearance != self.clearance else { return }
+        let standing = offset
+        self.clearance = clearance
+        automaticallyAdjustsContentInsets = false
+        contentInsets = NSEdgeInsets(top: clearance.top, left: clearance.left, bottom: clearance.bottom, right: clearance.right)
+        scrollClip(to: standing)
+    }
+
+    /// Where the clip view at `origin` stands the scroller, counted from its first content kept clear.
+    private func standing(_ origin: NSPoint) -> NSPoint {
+        let point = SafeAreaArithmetic.offset(native: Point(x: origin.x, y: origin.y), clearance: clearance)
+        return NSPoint(x: point.x, y: point.y)
+    }
+
+    /// The clip view's origin standing the scroller at `offset`.
+    private func native(_ offset: NSPoint) -> NSPoint {
+        let point = SafeAreaArithmetic.native(offset: Point(x: offset.x, y: offset.y), clearance: clearance)
+        return NSPoint(x: point.x, y: point.y)
+    }
     var usesStackWrapperForTesting: Bool { usesStackWrapper }
     var documentChildCountForTesting: Int {
         usesStackWrapper ? stackWrapper.items.count : (documentSurface.item == nil ? 0 : 1)
@@ -224,9 +251,10 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
 
         if let target = scrollerOffset.laidOutNow() {
             move(to: NSPoint(x: target.x, y: target.y))
-        } else if !movement.isMoving, reachable(normalized(contentView.bounds.origin)) != contentView.bounds.origin {
+        } else if !movement.isMoving, reachable(normalized(standing(contentView.bounds.origin)))
+            != standing(contentView.bounds.origin) {
             // Only a scroller the content left off its reach: a move stops a throw and cuts the stretch past an edge.
-            scrollClip(to: reachable(normalized(contentView.bounds.origin)))
+            scrollClip(to: reachable(normalized(standing(contentView.bounds.origin))))
         }
     }
 
@@ -312,7 +340,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     private func scrollClip(to target: NSPoint) {
         programmaticMovesForTesting += 1
         ProgramWrite.perform {
-            contentView.scroll(to: target)
+            contentView.scroll(to: native(target))
             reflectScrolledClipView(contentView)
         }
         scrollerOffset.programLanded(at: Point(offset))
@@ -348,8 +376,10 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     private func reachable(_ point: NSPoint) -> NSPoint {
         let documentSize = documentSurface.frame.size
         return NSPoint(
-            x: Self.reachable(point.x, content: documentSize.width, viewport: contentSize.width),
-            y: Self.reachable(point.y, content: documentSize.height, viewport: contentSize.height))
+            x: Self.reachable(
+                point.x, content: documentSize.width + clearance.left + clearance.right, viewport: contentSize.width),
+            y: Self.reachable(
+                point.y, content: documentSize.height + clearance.top + clearance.bottom, viewport: contentSize.height))
     }
 
     /// An offset inside measured content. Before either extent is known only
@@ -367,7 +397,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     }
 
     func moveAsUserForTesting(to point: NSPoint) {
-        contentView.scroll(to: reachable(normalized(point)))
+        contentView.scroll(to: native(reachable(normalized(point))))
         reflectScrolledClipView(contentView)
     }
 

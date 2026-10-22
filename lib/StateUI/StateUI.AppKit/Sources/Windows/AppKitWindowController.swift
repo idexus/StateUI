@@ -198,6 +198,7 @@ final class AppKitWindowController: NSWindowController {
         }
 
         let arrangement = presentation.arrangement
+        content.visiblePage = arrangement?.visiblePage
         content.set(
             page: arrangement?.appKit.presentableViews.first,
             overlays: presentation.overlays.compactMap { $0.children.first?.appKit.layoutItem },

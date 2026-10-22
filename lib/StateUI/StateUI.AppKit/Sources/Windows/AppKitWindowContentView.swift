@@ -109,6 +109,12 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
 
     override var isFlipped: Bool { true }
 
+    /// The page the user sees on the arrangement this view shows - the room its content stands in against the safe
+    /// area, and its scroller, are its own.
+    weak var visiblePage: MountedElement? {
+        didSet { needsLayout = true }
+    }
+
     func set(page: NSView?, overlays: [AppKitLayoutItem], spansTitleBar: Bool = false) {
         if pageSpansTitleBar != spansTitleBar {
             pageSpansTitleBar = spansTitleBar
@@ -152,10 +158,29 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
         band.frame = barBand
         band.layer?.backgroundColor = barColor?.cgColor
         band.isHidden = barColor == nil
-        page?.frame = pageSpansTitleBar ? bounds : safeAreaRect
+        if pageSpansTitleBar {
+            page?.frame = bounds
+        } else {
+            layPage()
+        }
         overlaySurface.frame = safeAreaRect
         overlaySurface.layoutSubtreeIfNeeded()
         layOutReporting(page)
+    }
+}
+
+extension AppKitWindowContentView {
+    /// Lays the page in the room its content stands in - clear of the toolbar, or under it where it says so - and
+    /// has its scroller keep clear what it reaches under (`SafeAreaArithmetic`).
+    /// Design: docs/design/host/layout.md#the-safe-area
+    private func layPage() {
+        let safe = Rect(x: safeAreaRect.minX, y: safeAreaRect.minY, width: safeAreaRect.width, height: safeAreaRect.height)
+        let room = SafeAreaArithmetic.room(
+            safe: safe, whole: Rect(x: 0, y: 0, width: bounds.width, height: bounds.height),
+            edges: visiblePage?.contentSafeArea, direction: visiblePage?.layoutDirection ?? .leftToRight)
+        page?.frame = NSRect(x: room.x, y: room.y, width: room.width, height: room.height)
+        (visiblePage?.pageScroller?.appKit.view as? AppKitScrollView)?.keepClear(
+            SafeAreaArithmetic.clearance(room: room, safe: safe))
     }
 }
 

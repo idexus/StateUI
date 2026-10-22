@@ -138,6 +138,65 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertEqual(navigation.frame, content.safeAreaRect)
     }
 
+    /// The toolbar is part of the safe area of the page under it: the page's content stands clear of it, and where
+    /// it lets itself under the bars it reaches the window's top edge, under the toolbar.
+    @MainActor
+    func testAPagesContentReachesUnderTheToolbarWhereItSaysSo() throws {
+        let under = State(wrappedValue: false)
+        let renderer = AppKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                ZStack {}.avoidsSafeArea(under.wrappedValue ? .none : .container).id("content").title("Under")
+            } destination: { _ in Text("Next") }
+        }
+        defer { renderer.closeForTesting() }
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
+        let page = try XCTUnwrap(renderer.viewForTesting(id: .manual("content")))
+        content.layoutSubtreeIfNeeded()
+        XCTAssertGreaterThan(content.safeAreaRect.minY, 0, "a toolbar over the page")
+        XCTAssertEqual(content.convert(page.bounds, from: page).minY, content.safeAreaRect.minY, "clear of it")
+
+        under.wrappedValue = true
+        renderer.runtime.pump.turn()
+        content.layoutSubtreeIfNeeded()
+        page.superview?.layoutSubtreeIfNeeded()
+        XCTAssertEqual(content.convert(page.bounds, from: page).minY, 0, "under it")
+    }
+
+    /// A page's scroller let under the toolbar scrolls under it and keeps the toolbar's depth clear at its start, so
+    /// its first row stands clear of it at the offset the tree calls nothing.
+    @MainActor
+    func testAPagesScrollerUnderTheToolbarKeepsItsFirstRowClear() throws {
+        let offset = State(wrappedValue: Point(0, 0))
+        let renderer = AppKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Grid { ScrollView { Text("rows").height(2000) }.scrollOffset(offset.projectedValue).id("scroll") }
+                    .avoidsSafeArea(.none)
+                    .title("Rows")
+            } destination: { _ in Text("Next") }
+        }
+        defer { renderer.closeForTesting() }
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
+        let scroll = try XCTUnwrap(renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
+        content.layoutSubtreeIfNeeded()
+        scroll.layoutSubtreeIfNeeded()
+        let top = content.safeAreaRect.minY
+        XCTAssertGreaterThan(top, 0, "a toolbar over the page")
+        XCTAssertEqual(scroll.contentInsets.top, top, "its depth kept clear")
+        XCTAssertEqual(scroll.contentView.bounds.origin.y, -top, accuracy: 0.5, "its first row clear of it")
+        XCTAssertEqual(offset.wrappedValue, Point(0, 0), "where the tree calls nothing")
+
+        offset.wrappedValue = Point(0, 100)
+        for _ in 0..<100 where abs(scroll.contentView.bounds.origin.y - (100 - top)) > 0.5 {
+            RunLoop.current.run(until: Date().addingTimeInterval(0.02))
+            renderer.runtime.pump.turn()
+            renderer.displayFrameForTesting()
+            scroll.layoutSubtreeIfNeeded()
+        }
+        XCTAssertEqual(scroll.contentView.bounds.origin.y, 100 - top, accuracy: 0.5, "counted from its first row")
+    }
+
     /// A split view declaring the bar keeps its sidebar, its stack and a scroll view in the stack inside the native
     /// content.
     @MainActor

@@ -25,7 +25,12 @@ shows comes from the host layer (`WindowPresentation`): its arrangement of
 pages is the window's content under one unified toolbar ([the window's
 chrome](../../host/pages.md#the-windows-chrome)), the pages its views
 present are sheets, and the page the user sees and the window made are told
-before the window first comes to the front. A new window with no place asked
+before the window first comes to the front. The content view runs under the
+toolbar (a full-size content view), so the toolbar is the top of the page's
+safe area ([the safe area](../../host/layout.md#the-safe-area)): the page's
+content stands clear of it, or under its glass where it says so, and a
+scroller let under keeps the toolbar's depth as its content inset, its offset
+counted from its first row clear. A sheet's window lays its page alike. A new window with no place asked
 stands centered, each after the first a step down and to the right.
 
 ## A window's frame
