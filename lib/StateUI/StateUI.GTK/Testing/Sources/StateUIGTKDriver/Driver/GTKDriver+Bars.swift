@@ -130,11 +130,12 @@ extension GTKDriver {
         return innermost
     }
 
-    /// Every page's frame the window shows: a page by itself, a stack's pages, a split view's panes.
+    /// Every page's frame the window shows: a page by itself, a stack's pages, a split view's panes, a sheet's page.
     func frames() -> [GTKPageFrame] {
         guard let renderer else { return [] }
         return (renderer.window?.pageFrame.map { [$0] } ?? []) + renderer.views(GTKNavigationView.self).flatMap(\.frames)
             + renderer.views(GTKSplitView.self).flatMap { [$0.sidebarFrame, $0.detailFrame].compactMap { $0 } }
+            + renderer.windows.flatMap { $0.sheets.compactMap(\.sheet.frame) }
     }
 }
 

@@ -665,8 +665,8 @@ final class PagesTests: XCTestCase {
 
     /// The bar a path declares is its nearest arrangement's, one value at a time: the window's page names the
     /// application, a stack further in paints its own bar and says its own line. A sidebar wears its own split view's
-    /// bar and nothing from around it, a sheet nothing from around it; an empty picture is none, and a page with
-    /// nothing declared shows no title area.
+    /// bar and nothing from around it; a sheet wears the colors of the modal stack showing it, and nothing else from
+    /// around it; an empty picture is none, and a page with nothing declared shows no title area.
     func testTheBarAPathDeclaresIsItsNearest() throws {
         let runtime = runtime(node("window", .window, children: [
             node("modal", .modalStack, [
@@ -696,9 +696,9 @@ final class PagesTests: XCTestCase {
         XCTAssertNil(menu.titleArea, "nothing from around the split view")
 
         let sheet = try XCTUnwrap(root.first(id: .manual("sheet")))
-        XCTAssertNil(sheet.titleArea)
-        XCTAssertNil(sheet.barColors.background)
-        XCTAssertNil(sheet.barColors.foreground)
+        XCTAssertNil(sheet.titleArea, "a sheet's bar names nothing from around it")
+        XCTAssertEqual(sheet.barColors.background, .string("window"), "the modal stack paints the sheets it shows")
+        XCTAssertNil(sheet.barColors.foreground, "and nothing from the split view beside the sheet")
 
         let bare = self.runtime(node("window", .window, children: [node("page", .page)])) { _ in }
         let bareRoot = try XCTUnwrap(bare.tree.root)

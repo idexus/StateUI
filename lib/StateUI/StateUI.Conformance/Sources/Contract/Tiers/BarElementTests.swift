@@ -5,7 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// `BarElementContract` on a host: the bar an arrangement declares holds the colors, the application's name, line
-/// and mark the tree gives it, and those the tree changes them to - on every element wearing the tier.
+/// and mark the tree gives it, and those the tree changes them to - on every element wearing the tier; a modal
+/// stack's colors paint the sheets it shows too.
 @_spi(Host) public enum BarElementTests: ConformanceFamily {
     public static let name = "BarElement"
 
@@ -19,7 +20,46 @@
                 holds(BarElementContract.barTitle, on: element, "Notes", then: "Drafts"),
                 holds(BarElementContract.barSubtitle, on: element, "Inbox", then: "Sent"),
                 holds(BarElementContract.barIcon, on: element, "test_dot.png", then: "test_wide.png"),
-            ]
+            ] + (element == "ModalStack" ? [colorsPaintTheSheets()] : [])
+        }
+    }
+
+    /// A modal stack's bar colors paint the bar of the sheet it shows, and those the tree changes them to.
+    @MainActor
+    static func colorsPaintTheSheets() -> ConformanceCase {
+        ConformanceCase("ModalStack.barColors.paintTheSheetsItShows", proves: [
+            Covered(BarElementContract.barBackgroundColor, on: "ModalStack"),
+            Covered(BarElementContract.barForegroundColor, on: "ModalStack"),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let painted = State(wrappedValue: false)
+            s.start {
+                ModalStack(State(wrappedValue: [1]).projectedValue) {
+                    VStack { Text("Page") }.title("Page")
+                } destination: { _ in
+                    VStack { Button("Change").onClicked { painted.wrappedValue = true }.id("change") }
+                        .title("Sheet")
+                        .id("sheet")
+                }
+                .barBackgroundColor(painted.wrappedValue ? .firebrick : .steelBlue)
+                .barForegroundColor(painted.wrappedValue ? .black : .white)
+            }
+            try s.settle { try s.isShown("sheet") }
+            var sheet = try s.element("sheet")
+            while sheet.type != .page, let parent = sheet.parent { sheet = parent }
+            let bar = { (member: ElementProperty<BarElementContract, Color>) in try s.held(member, on: sheet) }
+            // A color changing travels to the new one: both are waited for.
+            try s.settle {
+                try bar(BarElementContract.barBackgroundColor) == .steelBlue && bar(BarElementContract.barForegroundColor) == .white
+            }
+            s.expect(try bar(BarElementContract.barBackgroundColor), .steelBlue, "the stack's color on its sheet's bar")
+            s.expect(try bar(BarElementContract.barForegroundColor), .white, "and what stands on it in the stack's")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle {
+                try bar(BarElementContract.barBackgroundColor) == .firebrick && bar(BarElementContract.barForegroundColor) == .black
+            }
+            s.expect(try bar(BarElementContract.barBackgroundColor), .firebrick, "the color the tree changed it to")
+            s.expect(try bar(BarElementContract.barForegroundColor), .black, "and the words'")
         }
     }
 

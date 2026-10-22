@@ -228,8 +228,11 @@ paints its own bar and the window's page still names the application. The
 path is the declarations' (`arrangementsAround`), but for a split view's
 sidebar, which wears its own split view's bar - a split view's bar is both its
 panes', so its colors paint a sidebar's own bar where a platform draws one
-(`barArrangements`) - and nothing from around the split view; a sheet takes
-nothing from around it. The colors are `barColors`; the name, the line and
+(`barArrangements`) - and nothing from around the split view; a sheet's path
+stops at the modal stack showing it (`sheetsModalStack`), whose colors paint
+the sheets it shows as they paint the page it holds - one color for the
+stack's every bar - and nothing else from around it reaches the sheet. The
+colors are `barColors`; the name, the line and
 the mark are the title area (`titleArea`), none where none is declared, an
 empty line or picture none. A host shows the title area where its platform
 names the application - a desktop's window chrome - and the line under the

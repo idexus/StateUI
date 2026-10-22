@@ -18,7 +18,7 @@ final class WebWindowController {
     let presentation = WindowPresentation()
 
     /// A sheet for each page the window's modal stack presents, the last on top.
-    private var sheets: [(element: MountedElement, sheet: WebSheet)] = []
+    private(set) var sheets: [(element: MountedElement, sheet: WebSheet)] = []
 
     private unowned let runtime: HostRuntime
 

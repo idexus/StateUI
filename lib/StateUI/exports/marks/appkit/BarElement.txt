@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ModalStack.barBackgroundColor: ✅
 ModalStack.barForegroundColor: ☑️ Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color.
 ModalStack.barIcon: ✅

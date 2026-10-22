@@ -414,7 +414,8 @@ Every arrangement accepts a flat `barBackgroundColor` and a `barForegroundColor`
 for its title and native action affordances; a page's bar takes each from the
 nearest arrangement around it that declares one, so a stack further in paints
 its own - a sidebar takes only what its own split view declares, and a sheet
-takes nothing from around it. The
+takes the colors of the modal stack showing it and nothing else from around
+it; a Mac's sheet stands with no bar. The
 application's name, the line under the title and its mark are declared the same
 way ([The window's bar](application-and-sessions.md#the-windows-bar)). Native tab
 selectors keep their selected and unselected states, legible over a written

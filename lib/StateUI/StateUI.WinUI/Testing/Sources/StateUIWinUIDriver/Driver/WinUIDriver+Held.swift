@@ -424,6 +424,10 @@ extension WinUIDriver {
             return try (heading || !read(window().titleBar, "title").isEmpty).propValue
         // The window's title bar offers the way back of the page it shows.
         case ("showsBackButton", _): return (try read(window().titleBar, "back") == "1").propValue
+        // A sheet is a card under its title, with no bar of its own.
+        case (let member, _) where ["barBackgroundColor", "barForegroundColor"].contains(member)
+            && element.sheetsModalStack != nil:
+            throw DriverCannot("read the bar of a sheet")
         case ("barBackgroundColor", _): return try Self.color(read(window().titleBar, "background")).map { $0.propValue }
         case ("barForegroundColor", _): return try Self.color(read(window().titleBar, "foreground")).map { $0.propValue }
         // The title area its path declares stands in the title's place.

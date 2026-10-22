@@ -23,17 +23,22 @@ extension MountedElement {
     /// The arrangements around this element on its path, the outermost first: up to its window, a split view's
     /// sidebar and a sheet stopping at theirs.
     var arrangementsAround: [MountedElement] {
-        arrangements(sidebarWearsItsSplitView: false)
+        path(sidebarWearsItsSplitView: false).arrangements
+    }
+
+    /// The modal stack showing this element in a sheet, where its path stops; nil where it stands in none.
+    public var sheetsModalStack: MountedElement? {
+        path(sidebarWearsItsSplitView: false).sheetsModalStack
     }
 
     /// The arrangements whose bar this element's bar wears, the outermost first: those around it on its path, and a
     /// sidebar's own split view, whose bar is both its panes'.
     /// Design: docs/design/host/pages.md#the-bar-a-path-declares
     var barArrangements: [MountedElement] {
-        arrangements(sidebarWearsItsSplitView: true)
+        path(sidebarWearsItsSplitView: true).arrangements
     }
 
-    private func arrangements(sidebarWearsItsSplitView: Bool) -> [MountedElement] {
+    private func path(sidebarWearsItsSplitView: Bool) -> (arrangements: [MountedElement], sheetsModalStack: MountedElement?) {
         var arrangements: [MountedElement] = []
         var (child, each) = (self, parent)
         while let element = each, element.type != .window {
@@ -41,11 +46,11 @@ extension MountedElement {
                 if sidebarWearsItsSplitView { arrangements.insert(element, at: 0) }
                 break
             }
-            if element.type == .modalStack, element.children.first !== child { break }
+            if element.type == .modalStack, element.children.first !== child { return (arrangements, element) }
             if NodeType.pageTypes.contains(element.type) { arrangements.insert(element, at: 0) }
             (child, each) = (element, element.parent)
         }
-        return arrangements
+        return (arrangements, nil)
     }
 
     /// The elements of `sought` in this element's tree, in the tree's order, looking into none of them and into no

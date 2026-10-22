@@ -119,8 +119,8 @@ extension WebDriver {
                 .map { StandIns.material(painted: $0).propValue })
         case (_, .barTitle): return .some(try barWords(".stateui-bar-name"))
         case (_, .barSubtitle): return .some(try barWords(".stateui-bar-subtitle"))
-        case (_, .barBackgroundColor): return .some(try barColor("--stateui-bar-background"))
-        case (_, .barForegroundColor): return .some(try barColor("--stateui-bar-foreground"))
+        case (_, .barBackgroundColor): return .some(try barColor("--stateui-bar-background", over: element))
+        case (_, .barForegroundColor): return .some(try barColor("--stateui-bar-foreground", over: element))
         case (.page, .showsNavigationBar):
             guard let bar = try? bar(over: element) else { return nil }
             return try (!WebBrowser.truth("e.hidden", on: bar)).propValue
@@ -152,8 +152,15 @@ extension WebDriver {
     }
 
     /// The color the window's bar is painted with by its variable `variable`; nil for the page's own.
-    private func barColor(_ variable: String) throws -> HostValue? {
-        guard let bar = renderer?.roster.controllers.first?.window.bar else { throw DriverCannot("find the window's bar") }
+    /// A color of the bar `element` stands under: the bar of the sheet it stands in, else the window's.
+    private func barColor(_ variable: String, over element: MountedElement) throws -> HostValue? {
+        guard let controller = renderer?.roster.controllers.first else { throw DriverCannot("find the window's bar") }
+        let sheet = controller.sheets.last { shown in
+            var each: MountedElement? = element
+            while let found = each, found !== shown.element { each = found.parent }
+            return each != nil
+        }
+        let bar = sheet?.sheet.bar ?? controller.window.bar
         let painted = "getComputedStyle(e).getPropertyValue('\(variable)').trim() || null"
         guard try WebBrowser.evaluate(painted, on: bar.node) != nil else { return nil }
         return try color(painted, on: bar.node)?.propValue

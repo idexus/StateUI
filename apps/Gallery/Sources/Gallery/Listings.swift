@@ -6661,6 +6661,8 @@ enum Listings {
         } destination: { _ in
             ModalPage(nav: nav)
         }
+        // The sheets' bars wear the gallery's look as the panes' do.
+        .bars(look.bars, in: look.barColor, system: application.info.accentColor)
         """#,
         "MainPage.overlays": #"""
         // Sources/Gallery/MainPage.swift

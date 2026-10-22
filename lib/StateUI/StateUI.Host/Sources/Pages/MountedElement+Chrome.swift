@@ -32,10 +32,11 @@ extension MountedElement {
     }
 
     /// The colors this element's bar is painted in, and what stands on it in: each the nearest declared on its path,
-    /// itself included.
+    /// itself included - a sheet's path ending at the modal stack showing it.
     /// Design: docs/design/host/pages.md#the-bar-a-path-declares
     public var barColors: (background: HostValue?, foreground: HostValue?) {
-        (barValue(.barBackgroundColor), barValue(.barForegroundColor))
+        (barValue(.barBackgroundColor) ?? sheetsModalStack?.value(.barBackgroundColor),
+         barValue(.barForegroundColor) ?? sheetsModalStack?.value(.barForegroundColor))
     }
 
     /// The tabbed views this arrangement of pages shows, itself first where it is one, through its pages and the
