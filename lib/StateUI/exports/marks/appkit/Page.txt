@@ -8,6 +8,6 @@ Page.navigatedFrom: ✅
 Page.navigatedTo: ✅
 Page.navigatingFrom: ✅
 Page.showsBackButton: ✅
-Page.showsCloseButton: not realized
+Page.showsCloseButton: ✅
 Page.showsNavigationBar: cannot read showsNavigationBar of Page - AppKit's driver has no path for it yet
 Page.showsTitle: ✅

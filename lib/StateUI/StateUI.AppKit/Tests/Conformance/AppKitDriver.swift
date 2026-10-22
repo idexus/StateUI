@@ -226,6 +226,10 @@ final class AppKitDriver: HostDriver {
         if property == .showsBackButton, element.type == .page {
             return (try controller(of: element).toolbarForTesting.itemForTesting(AppKitWindowToolbar.back) != nil).propValue
         }
+        // Whether a page offers the close button: the toolbar of the sheet its stack stands in holds it.
+        if property == .showsCloseButton, element.type == .page {
+            return (try sheet(of: element).toolbarForTesting.itemForTesting(AppKitWindowToolbar.close) != nil).propValue
+        }
         let view = (element.native as? AppKitElement)?.view
         switch (property, view) {
         case (.layoutDirection, let view?):

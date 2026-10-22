@@ -150,6 +150,9 @@ extension AppKitDriver {
             tell(NSWindow.didDeminiaturizeNotification, window)
             comeToTheFront(window)
         case (.close, _) where element.type == .window: try window(of: element).close()
+        case (.close, _) where element.type == .page:
+            // The close button on the bar of the sheet the page's stack stands in, as the user presses it.
+            try sheet(of: element).toolbarForTesting.performForTesting(AppKitWindowToolbar.close)
         case (.close, _) where element.type == .popover:
             // The user closing it as a click beside it does, through the popover's own close.
             guard let popover = (element.native as? AppKitElement)?.shownPopover else {
@@ -229,6 +232,14 @@ extension AppKitDriver {
               let controller = renderer?.windowsForTesting.first(where: { $0.element === window })
         else { throw DriverCannot("find the window") }
         return controller
+    }
+
+    /// The sheet `element` stands in, on its window.
+    func sheet(of element: MountedElement) throws -> AppKitModalWindowController {
+        guard let presented = element.enclosing(type: .sheet)?.children.first,
+              let sheet = try controller(of: element).modalsForTesting.first(where: { $0.node.element === presented })
+        else { throw DriverCannot("find the sheet") }
+        return sheet
     }
 
     /// The native windows the host shows, in the tree's order.

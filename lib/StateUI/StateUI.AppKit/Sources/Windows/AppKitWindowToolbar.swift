@@ -31,8 +31,8 @@ struct AppKitToolbarAction {
 /// toolbar lays it out in one order: the sidebar toggle and the separator
 /// that tracks the sidebar, the way back, the page's title where a painted
 /// band hides the system's, the leading groups of actions, the center, the
-/// trailing groups and native overflow. A space stands between two groups,
-/// so each keeps a background of its own.
+/// trailing groups, native overflow and the button closing a sheet. A space
+/// stands between two groups, so each keeps a background of its own.
 @MainActor
 struct AppKitWindowChrome {
     var sidebar: NSSplitViewController?
@@ -42,6 +42,8 @@ struct AppKitWindowChrome {
     var center: NSView?
     var actions: [[AppKitToolbarAction]] = []
     var overflow: [AppKitToolbarAction] = []
+    /// The button closing the sheet a stack's bar stands in, at the trailing edge.
+    var close: AppKitToolbarAction?
 
     /// What the chrome's own controls say: the way back's glyph and the overflow.
     var words: ChromeWords
@@ -59,6 +61,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     static let title = NSToolbarItem.Identifier("StateUI.title")
     static let center = NSToolbarItem.Identifier("StateUI.center")
     static let overflow = NSToolbarItem.Identifier("StateUI.overflow")
+    static let close = NSToolbarItem.Identifier("StateUI.close")
 
     /// The system's own glyph for going back, saying `words`: one image for each.
     static func backImage(saying words: String) -> NSImage? {
@@ -147,6 +150,10 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         }
         place(chrome.actions)
         if !chrome.overflow.isEmpty { nextIdentifiers.append(Self.overflow) }
+        if let close = chrome.close {
+            nextIdentifiers.append(Self.close)
+            nextActions[Self.close] = close
+        }
 
         let sameItems = nextIdentifiers == identifiers
             && chrome.sidebar === sidebar
@@ -289,7 +296,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     var sidebarForTesting: NSSplitViewController? { sidebar }
 
     var actionTitlesForTesting: [String] {
-        identifiers.compactMap { $0 == Self.back ? nil : actions[$0]?.title }
+        identifiers.compactMap { $0 == Self.back || $0 == Self.close ? nil : actions[$0]?.title }
     }
 
     var overflowTitlesForTesting: [String] { overflowActions.map(\.title) }

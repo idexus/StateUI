@@ -70,7 +70,7 @@ extension AppKitWindowController {
     }
 
     /// A page's action as a toolbar item.
-    private static func action(_ item: MountedElement) -> AppKitToolbarAction {
+    static func action(_ item: MountedElement) -> AppKitToolbarAction {
         AppKitToolbarAction(
             identifier: NSToolbarItem.Identifier("StateUI.action.\(item.mount)"),
             title: item.value(.text)?.string ?? "",

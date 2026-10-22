@@ -1090,6 +1090,43 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(renderer.windowsForTesting.first?.modalCountForTesting, 0)
     }
 
+    /// A stack in a sheet brings its bar to the sheet: the top page names the sheet, the way back returns to the
+    /// page beneath, and the close button takes the sheet away, false onto its state.
+    @MainActor
+    func testAStackInASheetBringsItsBar() throws {
+        let (shows, path) = (State(wrappedValue: true), State(wrappedValue: [Int]()))
+        let renderer = AppKitRenderer.running {
+            Text("Beneath").sheet(isPresented: shows.projectedValue) {
+                NavigationStack(path.projectedValue) {
+                    Text("Root").title("Root")
+                } destination: { number in
+                    Text("Page \(number)").title("Pushed").id("pushed")
+                }
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let sheet = try XCTUnwrap(renderer.windowsForTesting.first?.modalsForTesting.first)
+        let toolbar = sheet.toolbarForTesting
+        XCTAssertTrue(sheet.window?.toolbar === toolbar.toolbar, "the stack's bar")
+        XCTAssertEqual(sheet.window?.title, "Root")
+        XCTAssertNil(toolbar.itemForTesting(AppKitWindowToolbar.back), "no way back from the root")
+        XCTAssertNotNil(toolbar.itemForTesting(AppKitWindowToolbar.close))
+
+        path.wrappedValue = [1]
+        renderer.runtime.pump.turn()
+        XCTAssertEqual(sheet.window?.title, "Pushed")
+        let pushed = try XCTUnwrap(renderer.viewForTesting(id: .manual("pushed")))
+        XCTAssertTrue(pushed.window === sheet.window && !pushed.isHiddenOrHasHiddenAncestor, "the pushed page shows")
+
+        toolbar.performForTesting(AppKitWindowToolbar.back)
+        renderer.runtime.pump.turn()
+        XCTAssertEqual(path.wrappedValue, [], "back to the root")
+
+        toolbar.performForTesting(AppKitWindowToolbar.close)
+        renderer.runtime.pump.turn()
+        XCTAssertFalse(shows.wrappedValue, "the sheet closed")
+    }
+
     /// A page that takes its way back away offers none in the window's
     /// toolbar, where the page beneath it offered one.
     @MainActor

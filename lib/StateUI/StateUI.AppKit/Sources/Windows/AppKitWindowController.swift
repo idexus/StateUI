@@ -77,6 +77,7 @@ final class AppKitWindowController: NSWindowController {
 
     var pageMenuItemsForTesting: [NSMenuItem] { AppKitMenus.items(pageMenus) }
     var modalCountForTesting: Int { modals.count }
+    var modalsForTesting: [AppKitModalWindowController] { modals }
     var hiddenBySceneForTesting: Bool { hiddenByScene }
     var toolbarForTesting: AppKitWindowToolbar { toolbar }
     var tabRowForTesting: AppKitTabRow { tabRow }

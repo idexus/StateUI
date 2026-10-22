@@ -118,6 +118,17 @@ title's place is the toolbar's own search item's field
 field: held as a plain item's view, a field in a macOS 26 toolbar is drawn
 with no field at all.
 
+## Sheets
+
+A page a view presents is a sheet on the window - over the top of its sheets
+- in an `NSWindow` of its own, which shows no bar of its own. A stack in it
+brings its bar as the window's toolbar shows a stack's: the sheet's toolbar
+holds the way back, the page's actions and, unless the page says not, the
+button closing the sheet at the trailing edge, AppKit's `xmark` symbol saying
+the library's word for close; it writes false onto the sheet's state, as the
+user's Escape does ([sheets](../../host/pages.md#sheets)). A sheet whose
+arrangement brings no bar has no toolbar at all.
+
 ## Acts
 
 The acts every host performs (`HostActs`) are AppKit's own calls: the time

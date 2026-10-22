@@ -140,6 +140,7 @@ enum AppKitRealization {
         .complete(PageContract.backButtonTitle),
         .complete(PageContract.disappearing),
         .complete(PageContract.showsBackButton),
+        .complete(PageContract.showsCloseButton),
         .complete(PageContract.showsNavigationBar),
         .complete(PageContract.showsTitle),
         // A page is no `VisualElement`: it wears `PageElement` alone, so the

@@ -37,6 +37,12 @@ extension AppKitWindowController {
         host?.runtime.goBack(.dismissSheets([modal.node.element]), in: element)
     }
 
+    /// Goes `way` back in the window - a way back a sheet's bar offers.
+    func goBack(_ way: WayBack) {
+        guard let element else { return }
+        host?.runtime.goBack(way, in: element)
+    }
+
     func dismissTopModalForTesting() {
         guard let modal = modals.last else { return }
         userDismissed(modal)
