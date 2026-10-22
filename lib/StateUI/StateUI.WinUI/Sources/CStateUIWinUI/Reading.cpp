@@ -364,6 +364,7 @@ namespace {
         if (what == "title") return narrow(head.Children().GetAt(1).as<controls::TextBlock>().Text());
         if (what == "back") return shows(0);
         if (what == "close") return shows(2);
+        if (what == "card") return number(card.ActualWidth()) + "," + number(card.ActualHeight());
         return std::nullopt;
     }
 

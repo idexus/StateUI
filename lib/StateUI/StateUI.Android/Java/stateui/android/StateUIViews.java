@@ -440,38 +440,92 @@ final class StateUIViews {
         return color != null ? color.getDefaultColor() & 0xFFFFFFFFL : Long.MIN_VALUE;
     }
 
-    /** A holder for a page presented over the window's page: filling it, on the theme's window background. */
-    static FrameLayout sheet(Context context, View page) {
-        FrameLayout holder = new FrameLayout(context);
-        TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.windowBackground});
-        holder.setBackground(theme.getDrawable(0));
-        theme.recycle();
-        holder.setClickable(true);
+    /**
+     * A holder for a page presented over the window's page: on a card in the middle of a wide window, `width` by
+     * `height` pixels, over the shade a dialog casts, which takes every touch beside it - as the platform's own dialog
+     * stands; filling a narrow one on the theme's window background, where `width` is 0.
+     */
+    static FrameLayout sheet(Context context, View page, int width, int height) {
         if (page.getParent() instanceof ViewGroup) ((ViewGroup) page.getParent()).removeView(page);
-        holder.addView(page, new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        FrameLayout holder = new FrameLayout(context);
+        holder.setClickable(true);
+        FrameLayout.LayoutParams whole = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        if (width <= 0) {
+            TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.windowBackground});
+            holder.setBackground(theme.getDrawable(0));
+            theme.recycle();
+            holder.addView(page, whole);
+            return holder;
+        }
+        TypedArray theme = context.obtainStyledAttributes(new int[] {
+                android.R.attr.colorBackground, android.R.attr.dialogCornerRadius, android.R.attr.backgroundDimAmount});
+        int ground = theme.getColor(0, Color.WHITE);
+        float corner = theme.getDimension(1, 0);
+        float dim = theme.getFloat(2, 0.6f);
+        theme.recycle();
+        holder.setBackgroundColor(Color.argb(Math.round(dim * 255), 0, 0, 0));
+        holder.setTag(CARD);
+        FrameLayout card = new FrameLayout(context);
+        GradientDrawable shape = new GradientDrawable();
+        shape.setColor(ground);
+        shape.setCornerRadius(corner);
+        card.setBackground(shape);
+        card.setClipToOutline(true);
+        card.setElevation(24 * context.getResources().getDisplayMetrics().density);
+        card.setClickable(true);
+        card.addView(page, whole);
+        holder.addView(card, new FrameLayout.LayoutParams(width, height, Gravity.CENTER));
         return holder;
     }
 
+    /** Stands the card of a sheet in a wide window at `width` by `height` pixels; nothing for one filling it. */
+    static void sizeSheet(View holder, int width, int height) {
+        if (!CARD.equals(holder.getTag()) || width <= 0) return;
+        View card = ((ViewGroup) holder).getChildAt(0);
+        ViewGroup.LayoutParams params = card.getLayoutParams();
+        if (params.width == width && params.height == height) return;
+        params.width = width;
+        params.height = height;
+        card.setLayoutParams(params);
+    }
+
+    /** The window's width, or its height where not `across`, in density-independent pixels. */
+    static int windowDp(Context context, boolean across) {
+        android.content.res.Configuration configuration = context.getResources().getConfiguration();
+        return across ? configuration.screenWidthDp : configuration.screenHeightDp;
+    }
+
+    /** What a sheet's holder standing a card in a wide window is tagged. */
+    private static final String CARD = "stateui.sheet.card";
+
     /**
-     * Brings a presented page up from the bottom of `parent` over `duration` milliseconds, or takes it down
-     * and out of `parent`; at no duration it stands or goes at once.
+     * Brings a presented page into `parent` over `duration` milliseconds - up from the bottom, or a card fading in -
+     * or takes it out the same way; at no duration it stands or goes at once.
      */
     static void rise(ViewGroup parent, View holder, boolean in, long duration) {
         holder.animate().cancel();
+        // A card fades in and out, as a dialog does; a page over the whole window rises and goes down.
+        boolean card = CARD.equals(holder.getTag());
         float away = parent.getHeight();
         if (in) {
             parent.addView(holder, new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             if (duration <= 0 || away <= 0) return;
-            holder.setTranslationY(away);
-            holder.animate().translationY(0).setDuration(duration).start();
+            if (card) {
+                holder.setAlpha(0);
+                holder.animate().alpha(1).setDuration(duration).start();
+            } else {
+                holder.setTranslationY(away);
+                holder.animate().translationY(0).setDuration(duration).start();
+            }
             return;
         }
         if (duration <= 0 || away <= 0) {
             parent.removeView(holder);
             return;
         }
-        holder.animate().translationY(away).setDuration(duration).withEndAction(() -> parent.removeView(holder)).start();
+        (card ? holder.animate().alpha(0) : holder.animate().translationY(away))
+                .setDuration(duration).withEndAction(() -> parent.removeView(holder)).start();
     }
 }

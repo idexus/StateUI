@@ -39,9 +39,11 @@ final class AndroidModals {
         for element in change.coming {
             guard let view = element.android.view else { continue }
             view.forgetPlace()
+            let card = Self.card(for: element, in: window)
             let holder = Java.frame {
                 Java.callStaticObject(
-                    JavaAPI.views, JavaAPI.sheet, .object(AndroidRenderer.context), .object(view.reference)
+                    JavaAPI.views, JavaAPI.sheet, .object(AndroidRenderer.context), .object(view.reference),
+                    .int(card.width), .int(card.height)
                 ).map(JavaObject.init)
             }
             guard let holder else { continue }
@@ -51,6 +53,36 @@ final class AndroidModals {
             shown.append(Shown(element: element, holder: holder))
         }
         return shown.count > change.kept
+    }
+
+    /// Stands each sheet's card in a wide window as large as its page asks now.
+    func standAtTheirSizes() {
+        for sheet in shown {
+            let card = Self.card(for: sheet.element, in: window)
+            Java.callStatic(JavaAPI.views, JavaAPI.sizeSheet, .object(sheet.holder.reference), .int(card.width), .int(card.height))
+        }
+    }
+
+    /// The window's size in points.
+    private var window: LayoutSize {
+        let context = AndroidRenderer.context
+        return LayoutSize(
+            width: Double(Java.callStaticInt(JavaAPI.views, JavaAPI.windowDp, .object(context), .bool(true))),
+            height: Double(Java.callStaticInt(JavaAPI.views, JavaAPI.windowDp, .object(context), .bool(false))))
+    }
+
+    /// The card a sheet stands on in a `window` wide from 600 points on, in pixels (`SheetSize`): at least 280 x 180
+    /// points, 560 x 640 for a page asking none, at most a dialog's 560 wide and the window less 24 a side; none in
+    /// a narrower one, where the sheet fills the window.
+    /// Design: docs/design/platforms/android/pages.md#sheets
+    static func card(for element: MountedElement, in window: LayoutSize) -> (width: Int32, height: Int32) {
+        guard window.width >= 600 else { return (0, 0) }
+        let room = SheetRoom(
+            least: LayoutSize(width: 280, height: 180), standard: LayoutSize(width: 560, height: 640),
+            most: LayoutSize(width: min(560, window.width - 48), height: window.height - 48))
+        let size = SheetSize.size(of: element, in: room) { element.android.layoutItem?.size(offered: $0) ?? room.least }
+        let density = AndroidRenderer.density
+        return (Int32((size.width * density).rounded()), Int32((size.height * density).rounded()))
     }
 
     /// Takes the page in front down, and the one under it shows again.

@@ -209,7 +209,11 @@ The pages a window's views present stand over
 everything the window shows, as WinUI presents a dialog: each on a card over a veil across the
 whole window - the chrome and the tabs too - the last on top. The card is a
 dialog's own - its background, outline and corners, no wider than a dialog
-and clear of the window's edges - and it enters as a dialog enters. A stack it
+and clear of the window's edges - and it enters as a dialog enters. It stands
+as large as its page asks ([a sheet's size](../../host/pages.md#a-sheets-size)):
+in the middle, at least 320 x 184 and at most a dialog's 548 wide; one whose
+page asks none - a stack among them - stretches to 548 x 640, which WinUI's
+layout holds within the window less the card's 48 a side. A stack it
 holds brings its bar to the card's head, above the page: the way back as WinUI
 draws one outside a navigation view (`NavigationBackButtonSmallStyle`), the
 top page's title, and - unless the page says not - the button closing the

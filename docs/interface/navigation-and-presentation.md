@@ -192,6 +192,12 @@ Escape, the system's way back - and that writes false, so the state always
 says whether the sheet shows. The view presenting it leaving the screen takes
 it away and writes false as well.
 
+On a wide screen a sheet stands as large as its page asks, within the
+platform's bounds; a page taller than they allow scrolls inside it. A sheet
+holding a stack, tabs or a split view - whose pages come and go - or a view
+that takes the room it is given, such as a list or a map, stands at the
+platform's standard size. On a phone a sheet rises from the bottom.
+
 A value presents a page made of it: nil takes it away, the user's dismissal
 writes nil, and another value presents another page in its place:
 

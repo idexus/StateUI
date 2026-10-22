@@ -162,6 +162,7 @@ final class WebWindowController {
             // A sheet has no bar of its own: a stack in it brings one, offering the close unless its page says not.
             sheet.bar.setShown(page.bringsABar)
             sheet.offersClose(page.offersClose)
+            sheet.fits(SheetSize.asks(page))
             if !named.isEmpty { title = named }
         }
         WebRelay.setTitle(Self.tab(page: title, site: WebRelay.siteName))

@@ -158,7 +158,11 @@ offers none.
 
 The pages a window's views present are UIKit's form sheets - a card in the
 middle of a wide screen, rising from the bottom of a narrow one; a page sheet
-would stand over nearly the whole of an iPad's screen - each presented over the one
+would stand over nearly the whole of an iPad's screen. A sheet asks UIKit for
+its page's size ([a sheet's size](../../host/pages.md#a-sheets-size)) by its
+`preferredContentSize` - at least 320 x 180, within the window less 32 points
+a side - which a wide screen keeps and a narrow one passes over; a page asking
+none asks nothing, and stands at UIKit's own size. Each is presented over the one
 before once that one stands - UIKit presents over a controller only then -
 and all of them only once the window stands on screen: a sheet presented
 before, UIKit takes away again at once and tells as the user's. Which stay

@@ -1090,6 +1090,31 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(renderer.windowsForTesting.first?.modalCountForTesting, 0)
     }
 
+    /// A sheet stands as large as its page asks, within the room AppKit's sheet has - here the least, its words few -
+    /// and one holding a stack, whose pages come and go, at the standard size, held within the window.
+    @MainActor
+    func testASheetStandsAsLargeAsItsPageAndAStacksAtTheStandardSize() throws {
+        let renderer = AppKitRenderer.running {
+            Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) { Text("A note") }
+        }
+        defer { renderer.closeForTesting() }
+        let sheet = try XCTUnwrap(renderer.windowsForTesting.first?.modalsForTesting.first?.window)
+        XCTAssertEqual(sheet.contentLayoutRect.size, NSSize(width: 320, height: 180))
+
+        let stacked = AppKitRenderer.running {
+            Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Text("Root") } destination: { _ in Text("Next") }
+            }
+        }
+        defer { stacked.closeForTesting() }
+        let stackSheet = try XCTUnwrap(stacked.windowsForTesting.first?.modalsForTesting.first?.window)
+        let around = try XCTUnwrap(stacked.windowsForTesting.first?.window).contentLayoutRect.size
+        XCTAssertEqual(
+            stackSheet.contentLayoutRect.size,
+            NSSize(width: min(560, around.width - 48), height: min(480, around.height - 48)),
+            "the standard size, within the window it hangs from")
+    }
+
     /// A stack in a sheet brings its bar to the sheet: the top page names the sheet, the way back returns to the
     /// page beneath, and the close button takes the sheet away, false onto its state.
     @MainActor

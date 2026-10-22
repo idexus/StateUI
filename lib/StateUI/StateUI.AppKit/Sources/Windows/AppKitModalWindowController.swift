@@ -31,7 +31,7 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
         toolbar = AppKitWindowToolbar(windowIdentifier: "Sheet.\(node.element.mount)")
 
         let window = AppKitWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 520, height: 380),
+            contentRect: NSRect(x: 0, y: 0, width: 560, height: 480),
             styleMask: [.titled, .closable, .resizable],
             backing: .buffered,
             defer: false)
@@ -64,6 +64,25 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
         let chrome = WindowChrome(window: element, arrangement: element)
         window.title = chrome.title ?? node.core.applicationName
         showBar(chrome, in: window)
+        standAtItsSize(node, in: window)
+    }
+
+    /// The size the sheet last stood at as its page asked: the user's resize stands until the page asks another.
+    private var asked: LayoutSize?
+
+    /// Stands the sheet as large as its page asks, within the room an AppKit sheet has - at least 320 x 180, 560 x 480
+    /// for a page asking none, at most the window it hangs from less 24 points a side (`SheetSize`).
+    /// Design: docs/design/platforms/appkit/runtime.md#sheets
+    private func standAtItsSize(_ node: AppKitElement, in window: NSWindow) {
+        guard let parent = window.sheetParent ?? stateUIOwner?.window else { return }
+        let around = parent.contentLayoutRect.size
+        let room = SheetRoom(
+            least: LayoutSize(width: 320, height: 180), standard: LayoutSize(width: 560, height: 480),
+            most: LayoutSize(width: Double(around.width) - 48, height: Double(around.height) - 48))
+        let size = SheetSize.size(of: element, in: room) { node.layoutItem?.size(offered: $0) ?? room.least }
+        guard size != asked else { return }
+        asked = size
+        window.setContentSize(NSSize(width: size.width, height: size.height))
     }
 
     /// The bar a stack in the sheet brings, as the window's toolbar shows a stack's: the way back, the page's

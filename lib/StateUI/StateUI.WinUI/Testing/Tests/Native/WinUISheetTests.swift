@@ -42,6 +42,34 @@ private struct SheetPage: View {
 }
 
 final class WinUISheetTests: XCTestCase {
+    /// A sheet's card stands as large as its page - here its least, its words few - and one holding a stack, whose
+    /// pages come and go, at a dialog's standard size, held within the window.
+    func testACardStandsAsLargeAsItsPageAndAStacksAtTheStandardSize() throws {
+        try onUIThread {
+            @MainActor func card(_ host: WinUIRenderer) throws -> [Double] {
+                let sheet = try XCTUnwrap(host.windows.first?.sheetsForTesting.first)
+                return try XCTUnwrap(WinUIStrings.read { stateui_winui_read(sheet.handle, "card", $0, $1) })
+                    .split(separator: ",").compactMap { Double($0) }
+            }
+            let host = WinUIRenderer.running {
+                Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) { Text("A note") }
+            }
+            host.settle { (try? card(host))?.first ?? 0 > 0 }
+            XCTAssertEqual(try card(host), [320, 184], "its least")
+
+            let stacked = WinUIRenderer.running {
+                Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Text("Root") } destination: { _ in Text("Next") }
+                }
+            }
+            stacked.settle { (try? card(stacked))?.first ?? 0 > 320 }
+            let room = try XCTUnwrap(stacked.window?.content).laidOutFrame
+            let standard = try card(stacked)
+            XCTAssertEqual(standard[0], min(548, room.width - 96), accuracy: 1, "the standard width within the window")
+            XCTAssertEqual(standard[1], min(640, room.height - 96), accuracy: 48, "the standard height within it")
+        }
+    }
+
     /// A stack in a sheet brings its bar to the card's head: the top page's title, the way back to the page beneath
     /// and the close button, which takes the sheet away, false onto its state.
     func testAStackInASheetBringsItsBarToTheCard() throws {

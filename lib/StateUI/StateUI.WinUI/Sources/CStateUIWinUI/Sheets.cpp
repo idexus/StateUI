@@ -8,6 +8,7 @@
 
 #include "Relay.h"
 
+#include <limits>
 #include <vector>
 
 #include <winrt/Microsoft.UI.Xaml.Automation.h>
@@ -61,12 +62,7 @@ extern "C" StateUIObjectRef stateui_winui_sheet_make(int64_t view) {
         card.BorderBrush(resource(L"ContentDialogBorderBrush").try_as<media::Brush>());
         card.BorderThickness(winrt::unbox_value_or<xaml::Thickness>(resource(L"ContentDialogBorderWidth"), {1, 1, 1, 1}));
         card.CornerRadius(winrt::unbox_value_or<xaml::CornerRadius>(resource(L"OverlayCornerRadius"), {8, 8, 8, 8}));
-        card.MinWidth(320);
-        card.MaxWidth(548);
-        card.MinHeight(184);
         card.Margin({48, 48, 48, 48});
-        card.HorizontalAlignment(xaml::HorizontalAlignment::Center);
-        card.VerticalAlignment(xaml::VerticalAlignment::Center);
         card.TabFocusNavigation(xaml::Input::KeyboardNavigationMode::Cycle);
 
         // The head of the bar a stack in the sheet brings: its way back, the page's title and the close button.
@@ -109,10 +105,17 @@ extern "C" StateUIObjectRef stateui_winui_sheet_make(int64_t view) {
 
 extern "C" void stateui_winui_sheet_set(
     StateUIObjectRef handle, char const *title, StateUIObjectRef page, bool back, bool close, char const *backWords,
-    char const *closeWords
+    char const *closeWords, bool fits, double const *room
 ) {
     try {
         auto card = borrow<controls::Grid>(handle).Children().GetAt(1).as<controls::Border>();
+        // As large as its page, in the middle; else stretched to the standard size, which the window's room holds.
+        card.MinWidth(room[0]);
+        card.MinHeight(room[1]);
+        card.MaxWidth(room[2]);
+        card.MaxHeight(fits ? std::numeric_limits<double>::infinity() : room[3]);
+        card.HorizontalAlignment(fits ? xaml::HorizontalAlignment::Center : xaml::HorizontalAlignment::Stretch);
+        card.VerticalAlignment(fits ? xaml::VerticalAlignment::Center : xaml::VerticalAlignment::Stretch);
         auto content = card.Child().as<controls::Grid>();
         auto head = content.Children().GetAt(0).as<controls::Grid>();
         auto shown = [](bool shows) { return shows ? xaml::Visibility::Visible : xaml::Visibility::Collapsed; };

@@ -319,6 +319,7 @@ final class AndroidRenderer {
             }
         }
         let rose = changes.sheets.map { modals.present($0) } ?? false
+        modals.standAtTheirSizes()
 
         // The overlays lie over everything, the first lowest, lifted over a page that rose after them; they take no
         // touch beside what they hold, which goes on to the page under them.

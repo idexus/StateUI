@@ -372,6 +372,33 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// A sheet asks libadwaita's dialog for its page's size - here the least, its words few - and one holding a
+    /// stack, whose pages come and go, the standard size, held within the window.
+    func testASheetAsksTheSizeOfItsPageAndAStackTheStandard() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) { Text("A note") }
+            }
+            let controller = try XCTUnwrap(host.windows.first)
+            host.settle { controller.sheets.count == 1 }
+            let dialog = try XCTUnwrap(controller.sheets.first?.sheet.dialog)
+            XCTAssertEqual([adw_dialog_get_content_width(dialog), adw_dialog_get_content_height(dialog)], [320, 180])
+
+            let stacked = GTKRenderer.running {
+                Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Text("Root") } destination: { _ in Text("Next") }
+                }
+            }
+            let stackController = try XCTUnwrap(stacked.windows.first)
+            stacked.settle { stackController.sheets.count == 1 }
+            let stackDialog = try XCTUnwrap(stackController.sheets.first?.sheet.dialog)
+            let window = stackController.window.widget
+            XCTAssertEqual(
+                [adw_dialog_get_content_width(stackDialog), adw_dialog_get_content_height(stackDialog)],
+                [min(560, gtk_widget_get_width(window) - 48), min(480, gtk_widget_get_height(window) - 48)])
+        }
+    }
+
     /// A sheet is libadwaita's dialog over the window, its page in a frame of its own; the user closing it - Escape,
     /// its close button - writes false onto its state, and the program's close tells nothing.
     func testASheetTheUserClosesWritesItsState() throws {

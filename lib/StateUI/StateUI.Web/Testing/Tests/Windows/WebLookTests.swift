@@ -75,6 +75,36 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(declared, "auto", "the page's height, not the browser's")
     }
 
+    /// A sheet stands as large as its page asks, within the dialog's room; one holding a stack, whose pages come and
+    /// go, at the dialog's standard size.
+    func testASheetStandsAsLargeAsItsPageAndAStacksAtTheStandardSize() throws {
+        let host = WebRenderer.running {
+            Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                VStack { Text("A short note"); Button("Done") }.padding(24)
+            }
+        }
+        let dialog = "document.querySelector('dialog.stateui-sheet[open]')"
+        host.settle { (try? WebBrowser.number("\(dialog) ? 1 : 0", on: 0)) == 1 }
+        let window = try XCTUnwrap(WebBrowser.evaluate("innerWidth + ',' + innerHeight", on: 0))
+            .split(separator: ",").compactMap { Double($0) }
+        let fitted = try XCTUnwrap(WebBrowser.evaluate(
+            "(() => { const r = \(dialog).getBoundingClientRect(); return r.width + ',' + r.height; })()", on: 0))
+            .split(separator: ",").compactMap { Double($0) }
+        XCTAssertLessThan(fitted[0], min(560, window[0] - 32), "as wide as its page")
+        XCTAssertLessThan(fitted[1], 300, "as tall as its page")
+
+        let stacked = WebRenderer.running {
+            Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Text("Root") } destination: { _ in Text("Next") }
+            }
+        }
+        stacked.settle { (try? WebBrowser.number("\(dialog) ? 1 : 0", on: 0)) == 1 }
+        let standard = try XCTUnwrap(WebBrowser.evaluate(
+            "(() => { const r = \(dialog).getBoundingClientRect(); return r.width + ',' + r.height; })()", on: 0))
+            .split(separator: ",").compactMap { Double($0) }
+        XCTAssertEqual(standard, [min(560, window[0] - 32), min(640, window[1] - 64)], "the standard size")
+    }
+
     func testAControlOverEveryPageWearsTheStylesheet() throws {
         let host = WebRenderer.running {
             Text("Beneath").overlays { VStack { Switch(true); Button("Over") } }

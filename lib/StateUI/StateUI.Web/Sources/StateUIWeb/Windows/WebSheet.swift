@@ -37,6 +37,11 @@ final class WebSheet {
         WebRelay.showModal(dialog.node)
     }
 
+    /// Stands the sheet as large as its page where it `fits`, at the dialog's standard size otherwise (`SheetSize`).
+    func fits(_ fits: Bool) {
+        dialog.attribute("data-fits", fits ? "" : nil)
+    }
+
     /// Shows the bar's close button where `offers`, which closes the sheet as the user's dismissal.
     func offersClose(_ offers: Bool) {
         bar.onClose = offers ? { [weak self] in self?.onClosedByUser() } : nil

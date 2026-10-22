@@ -83,8 +83,10 @@ final class WinUIWindowController {
     /// A sheet has no bar of its own: the card shows the head of the one a stack in it brings - the title, the way
     /// back and, where the page offers it, the close button.
     private func show(_ page: MountedElement, on sheet: WinUISheetView, in runtime: HostRuntime) {
+        let fits = SheetSize.asks(page)
         guard let element, page.bringsABar else {
-            return sheet.show(title: "", page: page.winUI.view, back: nil, close: nil, words: CoreLink().chromeWords)
+            return sheet.show(
+                title: "", page: page.winUI.view, back: nil, close: nil, words: CoreLink().chromeWords, fits: fits)
         }
         let chrome = WindowChrome(window: element, arrangement: page)
         sheet.show(
@@ -99,7 +101,7 @@ final class WinUIWindowController {
                     if let element, let page { runtime.goBack(.dismissSheets([page]), in: element) }
                 }
                 : nil,
-            words: CoreLink().chromeWords)
+            words: CoreLink().chromeWords, fits: fits)
     }
 
     /// The user took the top sheet away - Escape, its dismissing: the window is told how many remain.

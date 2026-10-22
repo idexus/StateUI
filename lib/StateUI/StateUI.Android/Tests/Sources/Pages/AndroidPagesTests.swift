@@ -33,6 +33,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testTabsOfStacksOnAStackStandUnderOneBar", testTabsOfStacksOnAStackStandUnderOneBar),
             ("testATabsAndAnActionsPicturesStandAtTheIconSize", testATabsAndAnActionsPicturesStandAtTheIconSize),
             ("testASheetPresentsOverThePageAndBackTakesItDown", testASheetPresentsOverThePageAndBackTakesItDown),
+            ("testASheetStandsOnACardAsLargeAsItsPageInAWideWindow", testASheetStandsOnACardAsLargeAsItsPageInAWideWindow),
             ("testThePageUnderPagesTheProgramTakesDownShowsAgain", testThePageUnderPagesTheProgramTakesDownShowsAgain),
             ("testAnArrangementTheWindowShowsInsteadAppears", testAnArrangementTheWindowShowsInsteadAppears),
             ("testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough", testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough),
@@ -657,6 +658,50 @@ extension AndroidPagesTests {
             XCTAssertFalse(first.wrappedValue)
             XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 1)
             XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Sheet 1 disappearing", "Page appearing"])
+        }
+    }
+
+    /// A sheet fills a window narrower than 600 points; in a wider one it stands on a card as large as its page asks
+    /// - here the least, its words few - and one holding a stack, whose pages come and go, at the standard size, two
+    /// pixels a point.
+    func testASheetStandsOnACardAsLargeAsItsPageInAWideWindow() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                VStack {
+                    Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) { Text("A note") }
+                    Text("Under").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                        NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Text("Root") } destination: { _ in
+                            Text("Next")
+                        }
+                    }
+                }
+            }
+            host.runtime.pump.turn()
+            let window = try XCTUnwrap(host.runtime.tree.root?.first(type: .window))
+            let sheets = host.runtime.tree.presentedSheets(in: window)
+            XCTAssertEqual(sheets.count, 2)
+            let (note, stack) = (sheets[0], sheets[1])
+            @MainActor func card(_ sheet: MountedElement, _ width: Double) -> [Int32] {
+                let card = AndroidModals.card(for: sheet, in: LayoutSize(width: width, height: 800))
+                return [card.width, card.height]
+            }
+
+            XCTAssertEqual(card(note, 599), [0, 0], "filling a narrow window")
+            XCTAssertEqual(card(note, 1000), [560, 360], "its least")
+            XCTAssertEqual(card(stack, 1000), [1120, 1280], "the standard size")
+
+            let page = TestJava.root()
+            let holder = try withExtendedLifetime(page) {
+                try XCTUnwrap(Java.callStaticObject(
+                    JavaAPI.views, JavaAPI.sheet, .object(AndroidRenderer.context), .object(page.reference),
+                    .int(600), .int(400)).map(JavaObject.init))
+            }
+            Java.call(holder.reference, JavaAPI.measure, .int(ViewConstants.spec(ViewConstants.exactly, 2000)),
+                      .int(ViewConstants.spec(ViewConstants.exactly, 1600)))
+            Java.call(holder.reference, JavaAPI.layout, .int(0), .int(0), .int(2000), .int(1600))
+            let shown = try XCTUnwrap(Java.callObject(holder.reference, TestJava.getChildAt, .int(0)).map(JavaObject.init))
+            XCTAssertEqual([Java.callInt(shown.reference, TestJava.getWidth), Java.callInt(shown.reference, TestJava.getHeight)],
+                           [600, 400], "a card in the middle")
         }
     }
 

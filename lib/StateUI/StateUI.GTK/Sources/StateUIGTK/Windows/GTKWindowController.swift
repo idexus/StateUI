@@ -58,6 +58,11 @@ final class GTKWindowController {
             }
         }
         if let pages = changes.sheets { showSheets(pages, in: runtime) }
+        for (page, sheet) in sheets {
+            sheet.stand(at: SheetSize.size(of: page, in: GTKSheet.room(in: window)) { width in
+                page.gtk.layoutItem?.size(offered: width) ?? LayoutSize(width: 0, height: 0)
+            })
+        }
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.gtk.view)) }
     }
 

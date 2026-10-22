@@ -100,6 +100,28 @@ final class UIKitSheetsTests: XCTestCase {
         XCTAssertNotNil(root.presentedViewController?.presentedViewController, "the second over the first")
     }
 
+    /// A sheet asks UIKit to stand as large as its page - here its least, the words being few - and one holding a
+    /// stack, whose pages come and go, at UIKit's own size.
+    @MainActor
+    func testASheetAsksTheSizeOfItsPageAndAStacksUIKitsOwn() throws {
+        let first = State(wrappedValue: true)
+        let host = UIKitRenderer.running(reducesMotion: true) { sheetsOver(first, State(wrappedValue: false)) }
+        defer { host.finish() }
+        let root = try XCTUnwrap(host.roster.windows.first?.1.window?.rootViewController)
+        host.settle { root.presentedViewController?.viewIfLoaded?.window != nil }
+        XCTAssertEqual(root.presentedViewController?.preferredContentSize, CGSize(width: 320, height: 180))
+
+        let stacked = UIKitRenderer.running(reducesMotion: true) {
+            Text("beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Text("Root") } destination: { _ in Text("Next") }
+            }
+        }
+        defer { stacked.finish() }
+        let stackRoot = try XCTUnwrap(stacked.roster.windows.first?.1.window?.rootViewController)
+        stacked.settle { stackRoot.presentedViewController?.viewIfLoaded?.window != nil }
+        XCTAssertEqual(stackRoot.presentedViewController?.preferredContentSize, .zero, "UIKit's own size")
+    }
+
     /// A sheet stands as the platform's own: a card in the middle of a wide screen - an iPad's - and rising from
     /// the bottom of a narrow one, never a page over the whole of a wide screen.
     @MainActor

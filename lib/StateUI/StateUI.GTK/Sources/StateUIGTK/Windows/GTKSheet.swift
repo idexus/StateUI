@@ -29,8 +29,24 @@ final class GTKSheet {
     /// Whether the dialog has closed, or is closing as the program closes it.
     private var isClosed = false
 
-    /// The size a sheet asks for, which libadwaita fits to the window - a sheet from the bottom where it is narrow.
-    private static let size = (width: Int32(560), height: Int32(480))
+    /// The room a sheet stands in on a wide window (`SheetSize`): at least 320 x 180, 560 x 480 for a page asking
+    /// none, at most the window less 24 pixels a side; libadwaita fits it to the window - from the bottom where it is
+    /// narrow.
+    static func room(in window: GTKWindow) -> SheetRoom {
+        // A window not laid out yet stands at the size it asks for.
+        var (width, height) = (gtk_widget_get_width(window.widget), gtk_widget_get_height(window.widget))
+        if width <= 0 || height <= 0 { gtk_window_get_default_size(window.widget.of(GtkWindow.self), &width, &height) }
+        return SheetRoom(
+            least: LayoutSize(width: 320, height: 180), standard: LayoutSize(width: 560, height: 480),
+            most: LayoutSize(width: Double(width) - 48, height: Double(height) - 48))
+    }
+
+    /// Asks the dialog for `size`, written only where it differs.
+    func stand(at size: LayoutSize) {
+        let (width, height) = (Int32(size.width.rounded()), Int32(size.height.rounded()))
+        if adw_dialog_get_content_width(dialog) != width { adw_dialog_set_content_width(dialog, width) }
+        if adw_dialog_get_content_height(dialog) != height { adw_dialog_set_content_height(dialog, height) }
+    }
 
     init(page: GTKView, framed: Bool) {
         self.page = page
@@ -38,8 +54,6 @@ final class GTKSheet {
         dialog = adw_dialog_new()!
         g_object_ref_sink(UnsafeMutableRawPointer(dialog))
         number = Self.shown.reserve()
-        adw_dialog_set_content_width(dialog, Self.size.width)
-        adw_dialog_set_content_height(dialog, Self.size.height)
         adw_dialog_set_child(dialog, frame?.widget ?? page.widget)
         connectSignal(UnsafeMutableRawPointer(dialog), "closed", number: number) { _, data in
             MainActor.assumeIsolated { GTKSheet.shown.take(viewNumber(data))?.closedByDialog() }

@@ -163,6 +163,20 @@ along, so the stack's last page is always the one on top. A host says only
 whether a sheet shown stands as asked - the same page, and on GTK and the Web
 the same native page - and presents and dismisses as its toolkit does.
 
+## A sheet's size
+
+On a wide screen a sheet stands as large as its page asks (`SheetSize`): the
+page's natural size for the most width the platform gives a sheet, held
+between the least and the most of that room (`SheetRoom`) - a page taller than
+the most scrolls inside it. A stack, tabs and a split view ask nothing, as
+their pages come and go and a sheet resizing with each would jump; nor does a
+page holding a view that takes the room it is given - a list, a layout engine,
+a map, a web view (`NodeType.roomTakingTypes`). Those stand at the room's
+standard size, no larger than its most. Each host gives only its room - the
+platform's dialog bounds and the window around the sheet - and its measure of
+the page; on a narrow screen a sheet rises from the bottom as the platform's
+own does, and the rule is not asked.
+
 ## An anchor stands as what it holds
 
 A composed view's anchor has no view of its own (`viewlessTypes`): what it

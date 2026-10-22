@@ -225,7 +225,9 @@ enum JavaAPI {
     static let groundSidebar = Java.staticMethod(views, "groundSidebar", "(Landroid/view/View;ZZI)V")
     static let groundPage = Java.staticMethod(views, "groundPage", "(Landroid/view/View;)V")
     static let sheet = Java.staticMethod(
-        views, "sheet", "(Landroid/content/Context;Landroid/view/View;)Landroid/widget/FrameLayout;")
+        views, "sheet", "(Landroid/content/Context;Landroid/view/View;II)Landroid/widget/FrameLayout;")
+    static let sizeSheet = Java.staticMethod(views, "sizeSheet", "(Landroid/view/View;II)V")
+    static let windowDp = Java.staticMethod(views, "windowDp", "(Landroid/content/Context;Z)I")
     static let rise = Java.staticMethod(views, "rise", "(Landroid/view/ViewGroup;Landroid/view/View;ZJ)V")
     static let divider = Java.staticMethod(views, "divider", "(Landroid/content/Context;)Landroid/view/View;")
     static let announceForAccessibility = Java.method(view, "announceForAccessibility", "(Ljava/lang/CharSequence;)V")

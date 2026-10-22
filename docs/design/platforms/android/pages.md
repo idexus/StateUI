@@ -126,10 +126,17 @@ bar's navigation button is the sheet's close - Material's cross - unless the
 page says it offers none.
 
 The pages a window's views present stand over its arrangement in the
-activity's root, in the order they showed, the top one in front, each in a holder on the
-theme's window background that takes every touch meant for the page beneath.
-A page rises from the bottom as it comes and goes down as it leaves - at once
-where the user asks for less motion. The page in front is the one presented:
+activity's root, in the order they showed, the top one in front, each in a holder that takes every touch meant for
+the page beneath. In a window narrower than 600 points the holder fills it on
+the theme's window background, the page rising from the bottom as it comes and
+going down as it leaves. In a wider one the page stands on a card in the
+middle as the platform's dialog does - the theme's background, its
+`dialogCornerRadius`, over the shade of its `backgroundDimAmount` - as large
+as its page asks ([a sheet's size](../../host/pages.md#a-sheets-size)): at
+least 280 x 180 points, 560 x 640 for a page asking none, at most a dialog's
+560 wide and the window less 24 a side; it fades in and out. Either moves at
+once where the user asks for less motion; the window's size is the
+configuration's, known before the root is laid out. The page in front is the one presented:
 the page beneath hears it disappear, and appear again when the one over it
 goes. Back is the page in front's own way first - a stack inside it pops -
 and then that page going down, false written onto its sheet's state.
