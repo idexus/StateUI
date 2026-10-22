@@ -144,12 +144,42 @@ final class WebLookTests: XCTestCase {
             "document.querySelector('.stateui-window > .stateui-bar').getBoundingClientRect().height", on: 0))
         let top: () throws -> Double? = { try WebBrowser.number("e.getBoundingClientRect().top", on: node) }
         XCTAssertEqual(try XCTUnwrap(top()), bar, accuracy: 0.5, "below the bar")
+        let window = try XCTUnwrap(WebBrowser.number("innerWidth", on: 0))
+        let barWidth = try XCTUnwrap(WebBrowser.number(
+            "document.querySelector('.stateui-window > .stateui-bar').getBoundingClientRect().width", on: 0))
+        let rowsWidth = try XCTUnwrap(WebBrowser.number("e.getBoundingClientRect().width", on: node))
+        XCTAssertEqual(barWidth, window, accuracy: 0.5, "the bar across the window")
+        XCTAssertEqual(rowsWidth, window, accuracy: 0.5, "the rows across it under the bar")
 
         under.wrappedValue = true
         host.settle { (try? top()) == 0 }
         XCTAssertEqual(try XCTUnwrap(top()), 0, accuracy: 0.5, "under it")
         let clear = try XCTUnwrap(WebBrowser.number("parseFloat(getComputedStyle(e).paddingTop)", on: node))
         XCTAssertEqual(clear, bar, accuracy: 0.5, "its first row clear of it")
+    }
+
+    /// A clear bar paints nothing and softens what scrolls under it: a blur under its words, fading out toward its
+    /// bottom edge. A bar of a color blurs behind its whole paint instead.
+    func testAClearBarSoftensWhatScrollsUnderIt() throws {
+        let clear = State(wrappedValue: true)
+        let host = WebRenderer.running {
+            TabView([0]) { tab in Text("Tab \(tab)").title("Tab \(tab)") }
+                .title("Clear")
+                .barBackgroundColor(clear.wrappedValue ? .transparent : .white)
+        }
+        let edge = { (property: String) in
+            try WebBrowser.evaluate(
+                "getComputedStyle(document.querySelector('.stateui-window > .stateui-bar'), '::before').\(property)",
+                on: 0)
+        }
+        host.settle { (try? self.look(".stateui-window > .stateui-bar", "backgroundColor")) == "rgba(0, 0, 0, 0)" }
+
+        XCTAssertEqual(try edge("backdropFilter")?.hasPrefix("blur("), true, "a blur")
+        XCTAssertEqual(try edge("maskImage")?.hasPrefix("linear-gradient("), true, "fading out")
+
+        clear.wrappedValue = false
+        host.settle { (try? self.look(".stateui-window > .stateui-bar", "backgroundColor")) == "rgb(255, 255, 255)" }
+        XCTAssertEqual(try edge("backdropFilter"), "none", "a bar of a color")
     }
 
     func testAControlOverEveryPageWearsTheStylesheet() throws {

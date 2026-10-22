@@ -98,6 +98,7 @@ body {
    its depth the top of the room's safe area, so a page's rows scroll under it where the page says so. */
 .stateui-window > .stateui-bar {
   grid-row: 1;
+  grid-column: 1;
   height: calc(var(--stateui-bar-height) + var(--stateui-over-top));
   padding: var(--stateui-over-top) calc(12px + var(--stateui-over-right)) 0 calc(12px + var(--stateui-over-left));
 }
@@ -137,6 +138,18 @@ body {
   color: var(--stateui-bar-foreground, var(--stateui-text));
   backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
   -webkit-backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
+}
+/* A clear bar softens what scrolls under it: blurred at the top, fading out toward its bottom edge. */
+.stateui-bar[data-clear]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  mask-image: linear-gradient(to bottom, #000 35%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, #000 35%, transparent);
 }
 .stateui-bar-lead, .stateui-bar-side, .stateui-bar-start { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .stateui-bar:not([data-sidebar]) .stateui-bar-title[data-repeats] { display: none; }
