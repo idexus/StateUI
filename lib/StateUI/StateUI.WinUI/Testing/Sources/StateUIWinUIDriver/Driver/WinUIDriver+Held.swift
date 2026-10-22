@@ -424,6 +424,8 @@ extension WinUIDriver {
             return try (heading || !read(window().titleBar, "title").isEmpty).propValue
         // The window's title bar offers the way back of the page it shows.
         case ("showsBackButton", _): return (try read(window().titleBar, "back") == "1").propValue
+        // The head of the card of the sheet its stack stands in offers the close button.
+        case ("showsCloseButton", _): return (try read(sheet(of: element), "close") == "1").propValue
         case ("barBackgroundColor", _): return try Self.color(read(window().titleBar, "background")).map { $0.propValue }
         case ("barForegroundColor", _): return try Self.color(read(window().titleBar, "foreground")).map { $0.propValue }
         // The title area its path declares stands in the title's place.

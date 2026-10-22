@@ -88,7 +88,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [MenuSeparator](MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [NavigationStack](NavigationStack.md) | 11 | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 7 ✅ · 4 – | 6 ✅ · 1 ☑️ · 4 – | 9 ✅ · 2 – | 5 ✅ · 6 – | 10 ✅ · 1 – |
 | [Overlay](Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
-| [Page](Page.md) | 13 | 10 ✅ | 13 ✅ | 12 ✅ · 1 – | 11 ✅ · 1 – | 10 ✅ · 2 – | 12 ✅ |
+| [Page](Page.md) | 13 | 10 ✅ | 13 ✅ | 12 ✅ · 1 – | 12 ✅ · 1 – | 10 ✅ · 2 – | 12 ✅ |
 | [Popover](Popover.md) | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [Sheet](Sheet.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
@@ -100,10 +100,10 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarItem](ToolbarItem.md) | 9 | 5 ✅ · 1 ✓ · 1 – | 7 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 9 ✅ | 7 ✅ · 1 ✓ · 1 – | 9 ✅ |
 | [ToolbarItemGroup](ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Window](Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 100 | 95 | 77 | 122 | 89 | 108 |
+| ✅ |  | 100 | 95 | 77 | 123 | 89 | 108 |
 | ✓ |  | 22 | 20 | 20 | 5 | 17 | 10 |
 | – |  | 10 | 21 | 31 | 9 | 32 | 18 |
-| **Met** | 146 | **132** | **136** | **128** | **136** | **138** | **136** |
+| **Met** | 146 | **132** | **136** | **128** | **137** | **138** | **136** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 

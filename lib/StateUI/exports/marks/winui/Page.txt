@@ -8,6 +8,6 @@ Page.navigatedFrom: ✅
 Page.navigatedTo: ✅
 Page.navigatingFrom: ✅
 Page.showsBackButton: ✅
-Page.showsCloseButton: not realized
+Page.showsCloseButton: ✅
 Page.showsNavigationBar: ✅
 Page.showsTitle: ✅

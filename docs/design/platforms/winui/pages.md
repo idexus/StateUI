@@ -209,8 +209,13 @@ The pages a window's views present stand over
 everything the window shows, as WinUI presents a dialog: each on a card over a veil across the
 whole window - the chrome and the tabs too - the last on top. The card is a
 dialog's own - its background, outline and corners, no wider than a dialog
-and clear of the window's edges - with the title of a stack it holds above the
-page, none over a page alone (`bringsABar`), and it enters as a dialog enters. The veil takes every click meant for
+and clear of the window's edges - and it enters as a dialog enters. A stack it
+holds brings its bar to the card's head, above the page: the way back as WinUI
+draws one outside a navigation view (`NavigationBackButtonSmallStyle`), the
+top page's title, and - unless the page says not - the button closing the
+sheet, an `AppBarButton` of the Cancel symbol at the trailing edge, which
+writes false onto the sheet's state as Escape does; a page alone shows no head
+(`bringsABar`). The veil takes every click meant for
 what is beneath, and the keyboard goes round inside the top card.
 
 The sheets stand in one layer of the window's root over its rows by their own

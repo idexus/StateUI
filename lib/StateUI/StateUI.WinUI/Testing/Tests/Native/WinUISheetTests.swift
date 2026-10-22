@@ -42,6 +42,42 @@ private struct SheetPage: View {
 }
 
 final class WinUISheetTests: XCTestCase {
+    /// A stack in a sheet brings its bar to the card's head: the top page's title, the way back to the page beneath
+    /// and the close button, which takes the sheet away, false onto its state.
+    func testAStackInASheetBringsItsBarToTheCard() throws {
+        try onUIThread {
+            let (shows, path) = (State(wrappedValue: true), State(wrappedValue: [Int]()))
+            let host = WinUIRenderer.running {
+                Text("Beneath").sheet(isPresented: shows.projectedValue) {
+                    NavigationStack(path.projectedValue) {
+                        Text("Root").title("Root")
+                    } destination: { number in
+                        Text("Page \(number)").title("Pushed")
+                    }
+                }
+            }
+            let window = try XCTUnwrap(host.window)
+            host.settle { stateui_winui_window_sheets(window.handle) == 1 }
+            let sheet = try XCTUnwrap(host.windows.first?.sheetsForTesting.first)
+            @MainActor func head(_ what: String) -> String? { WinUIStrings.read { stateui_winui_read(sheet.handle, what, $0, $1) } }
+            XCTAssertEqual(head("title"), "Root")
+            XCTAssertEqual(head("back"), "0", "no way back from the root")
+            XCTAssertEqual(head("close"), "1")
+
+            path.wrappedValue = [1]
+            host.settle { head("title") == "Pushed" }
+            XCTAssertEqual(head("back"), "1")
+
+            sheet.chose(-1)
+            host.settle { path.wrappedValue.isEmpty }
+            XCTAssertEqual(path.wrappedValue, [], "back to the root")
+
+            sheet.chose(-2)
+            host.settle { stateui_winui_window_sheets(window.handle) == 0 }
+            XCTAssertFalse(shows.wrappedValue, "the sheet closed")
+        }
+    }
+
     /// Escape takes the top sheet away and the way back of a sheet with none of its own takes it away too: each
     /// writes false onto its state, and the page beneath shows again.
     func testEscapeAndTheWayBackTakeTheTopSheetAway() throws {

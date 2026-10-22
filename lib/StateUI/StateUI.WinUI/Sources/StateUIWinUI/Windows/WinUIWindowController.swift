@@ -21,6 +21,8 @@ final class WinUIWindowController {
 
     /// The sheets the window shows, one for each page its views present, the last shown on top.
     private var sheets: [(element: MountedElement, sheet: WinUISheetView)] = []
+    var sheetsForTesting: [WinUISheetView] { sheets.map(\.sheet) }
+    func sheetForTesting(presenting page: MountedElement) -> WinUISheetView? { sheets.first { $0.element === page }?.sheet }
 
     /// The page or tab view heading its content with its title, while the chrome names the application in its
     /// place.
@@ -47,7 +49,7 @@ final class WinUIWindowController {
         let changes = presentation.show(element, in: runtime.lifecycle)
         stand(changes)
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.winUI.view) }
-        showSheets(presentation.sheets)
+        showSheets(presentation.sheets, in: runtime)
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.winUI.view)) }
     }
 
@@ -65,23 +67,39 @@ final class WinUIWindowController {
     /// leaves, the top first, and one new comes over those before it - each under its page's title, written again on
     /// every presentation.
     /// Design: docs/design/platforms/winui/pages.md#sheets
-    private func showSheets(_ pages: [MountedElement]) {
+    private func showSheets(_ pages: [MountedElement], in runtime: HostRuntime) {
         let change = SheetChange(from: sheets, to: pages) { $0.element === $1 }
         for _ in change.leaving { window.popSheet() }
         sheets.removeLast(sheets.count - change.kept)
-        for (page, sheet) in sheets { show(page, on: sheet) }
+        for (page, sheet) in sheets { show(page, on: sheet, in: runtime) }
         for page in change.coming {
             let sheet = WinUISheetView()
-            show(page, on: sheet)
+            show(page, on: sheet, in: runtime)
             window.pushSheet(sheet)
             sheets.append((page, sheet))
         }
     }
 
-    private func show(_ page: MountedElement, on sheet: WinUISheetView) {
-        // A sheet has no bar of its own: the card shows a title where a stack in it brings one.
-        let title = page.bringsABar ? page.visiblePage?.value(.title)?.string ?? "" : ""
-        sheet.show(title: title, page: page.winUI.view)
+    /// A sheet has no bar of its own: the card shows the head of the one a stack in it brings - the title, the way
+    /// back and, where the page offers it, the close button.
+    private func show(_ page: MountedElement, on sheet: WinUISheetView, in runtime: HostRuntime) {
+        guard let element, page.bringsABar else {
+            return sheet.show(title: "", page: page.winUI.view, back: nil, close: nil, words: CoreLink().chromeWords)
+        }
+        let chrome = WindowChrome(window: element, arrangement: page)
+        sheet.show(
+            title: chrome.showsTitle ? chrome.title ?? "" : "", page: page.winUI.view,
+            back: chrome.back.map { back in
+                { [weak element, weak stack = back.stack] in
+                    if let element, let stack { runtime.goBack(.pop(stack), in: element) }
+                }
+            },
+            close: page.offersClose
+                ? { [weak element, weak page] in
+                    if let element, let page { runtime.goBack(.dismissSheets([page]), in: element) }
+                }
+                : nil,
+            words: CoreLink().chromeWords)
     }
 
     /// The user took the top sheet away - Escape, its dismissing: the window is told how many remain.

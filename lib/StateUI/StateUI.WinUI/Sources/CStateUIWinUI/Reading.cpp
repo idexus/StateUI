@@ -356,10 +356,25 @@ namespace {
         return "0";
     }
 
+    /// What a sheet's head shows: its title, and whether it offers the way back and the close button.
+    std::optional<std::string> sheetHead(controls::Grid const &sheet, std::string_view what) {
+        auto card = sheet.Children().GetAt(1).as<controls::Border>();
+        auto head = card.Child().as<controls::Grid>().Children().GetAt(0).as<controls::Grid>();
+        auto shows = [&](uint32_t part) { return flag(head.Children().GetAt(part).Visibility() == xaml::Visibility::Visible); };
+        if (what == "title") return narrow(head.Children().GetAt(1).as<controls::TextBlock>().Text());
+        if (what == "back") return shows(0);
+        if (what == "close") return shows(2);
+        return std::nullopt;
+    }
+
     std::optional<std::string> read(IInspectable const &object, std::string_view what) {
         if (what == "tint") return tint(object);
         if (what == "scope") return scope(object);
         if (auto bar = object.try_as<controls::TitleBar>()) return chrome(bar, what);
+        if (auto sheet = object.try_as<controls::Grid>();
+            sheet && winrt::unbox_value_or<winrt::hstring>(sheet.Tag(), L"") == L"sheet") {
+            return sheetHead(sheet, what);
+        }
         if (auto split = object.try_as<controls::SplitView>(); split && what == "paneLength") {
             return number(split.OpenPaneLength());
         }

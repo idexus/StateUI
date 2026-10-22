@@ -787,11 +787,14 @@ void stateui_winui_set_tint(StateUIObjectRef control, uint32_t argb, bool tinted
 /// the control.
 int32_t stateui_winui_themes_read_again(void);
 
-/// A sheet: a card over a veil across its window, holding a presented page under its title; a window's sheets, a
-/// sheet pushed over those before it and taking the keyboard, the top one popped. Escape takes the top one away,
-/// chosen on the window's chrome as -3.
-StateUIObjectRef stateui_winui_sheet_make(void);
-void stateui_winui_sheet_set(StateUIObjectRef sheet, char const *title, StateUIObjectRef page);
+/// A sheet: a card over a veil across its window, holding a presented page under the head of the bar a stack in it
+/// brings - its way back (chosen on `view` as -1), its title and its close button (-2), each where shown; a window's
+/// sheets, a sheet pushed over those before it and taking the keyboard, the top one popped. Escape takes the top one
+/// away, chosen on the window's chrome as -3.
+StateUIObjectRef stateui_winui_sheet_make(int64_t view);
+void stateui_winui_sheet_set(
+    StateUIObjectRef sheet, char const *title, StateUIObjectRef page, bool back, bool close, char const *backWords,
+    char const *closeWords);
 void stateui_winui_window_push_sheet(StateUIObjectRef window, StateUIObjectRef sheet);
 void stateui_winui_window_pop_sheet(StateUIObjectRef window);
 

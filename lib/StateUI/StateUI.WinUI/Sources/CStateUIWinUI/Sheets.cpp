@@ -10,6 +10,7 @@
 
 #include <vector>
 
+#include <winrt/Microsoft.UI.Xaml.Automation.h>
 #include <winrt/Microsoft.UI.Xaml.Media.Animation.h>
 #include <winrt/Microsoft.UI.Xaml.Shapes.h>
 
@@ -45,10 +46,11 @@ namespace {
     }
 }
 
-extern "C" StateUIObjectRef stateui_winui_sheet_make(void) {
+extern "C" StateUIObjectRef stateui_winui_sheet_make(int64_t view) {
     try {
         // The veil: across the window, so nothing beneath it takes a click.
         controls::Grid sheet;
+        sheet.Tag(winrt::box_value(L"sheet"));
         winrt::Microsoft::UI::Xaml::Shapes::Rectangle veil;
         veil.Fill(resource(L"SmokeFillColorDefaultBrush").try_as<media::Brush>());
         sheet.Children().Append(veil);
@@ -67,13 +69,35 @@ extern "C" StateUIObjectRef stateui_winui_sheet_make(void) {
         card.VerticalAlignment(xaml::VerticalAlignment::Center);
         card.TabFocusNavigation(xaml::Input::KeyboardNavigationMode::Cycle);
 
+        // The head of the bar a stack in the sheet brings: its way back, the page's title and the close button.
         auto content = rows({true, false});
+        controls::Grid head;
+        for (auto width : {xaml::GridLengthHelper::Auto(), xaml::GridLengthHelper::FromValueAndType(1, xaml::GridUnitType::Star),
+                           xaml::GridLengthHelper::Auto()}) {
+            controls::ColumnDefinition column;
+            column.Width(width);
+            head.ColumnDefinitions().Append(column);
+        }
+        head.Padding({12, 12, 12, 0});
+        controls::Button back;
+        if (auto style = resource(L"NavigationBackButtonSmallStyle").try_as<xaml::Style>()) back.Style(style);
+        back.Click(guarded("handling a sheet's way back",
+            [view](IInspectable const &, xaml::RoutedEventArgs const &) { callbacks.chosen(view, -1); }));
         controls::TextBlock title;
         if (auto style = resource(L"SubtitleTextBlockStyle").try_as<xaml::Style>()) title.Style(style);
-        title.Margin({24, 20, 24, 8});
+        title.Margin({12, 8, 12, 8});
+        title.VerticalAlignment(xaml::VerticalAlignment::Center);
         title.TextTrimming(xaml::TextTrimming::CharacterEllipsis);
-        controls::Grid::SetRow(title, 0);
-        content.Children().Append(title);
+        controls::Grid::SetColumn(title, 1);
+        controls::AppBarButton close;
+        close.Icon(controls::SymbolIcon(controls::Symbol::Cancel));
+        close.LabelPosition(controls::CommandBarLabelPosition::Collapsed);
+        close.Click(guarded("handling a sheet's close button",
+            [view](IInspectable const &, xaml::RoutedEventArgs const &) { callbacks.chosen(view, -2); }));
+        controls::Grid::SetColumn(close, 2);
+        for (xaml::UIElement part : {back.as<xaml::UIElement>(), title.as<xaml::UIElement>(), close.as<xaml::UIElement>()})
+            head.Children().Append(part);
+        content.Children().Append(head);
         card.Child(content);
         sheet.Children().Append(card);
         return detach(sheet);
@@ -83,13 +107,24 @@ extern "C" StateUIObjectRef stateui_winui_sheet_make(void) {
     }
 }
 
-extern "C" void stateui_winui_sheet_set(StateUIObjectRef handle, char const *title, StateUIObjectRef page) {
+extern "C" void stateui_winui_sheet_set(
+    StateUIObjectRef handle, char const *title, StateUIObjectRef page, bool back, bool close, char const *backWords,
+    char const *closeWords
+) {
     try {
         auto card = borrow<controls::Grid>(handle).Children().GetAt(1).as<controls::Border>();
         auto content = card.Child().as<controls::Grid>();
-        auto words = content.Children().GetAt(0).as<controls::TextBlock>();
-        words.Text(text(title));
-        words.Visibility(text(title).empty() ? xaml::Visibility::Collapsed : xaml::Visibility::Visible);
+        auto head = content.Children().GetAt(0).as<controls::Grid>();
+        auto shown = [](bool shows) { return shows ? xaml::Visibility::Visible : xaml::Visibility::Collapsed; };
+        auto way = head.Children().GetAt(0).as<controls::Button>();
+        way.Visibility(shown(back));
+        xaml::Automation::AutomationProperties::SetName(way, text(backWords));
+        head.Children().GetAt(1).as<controls::TextBlock>().Text(text(title));
+        auto closing = head.Children().GetAt(2).as<controls::AppBarButton>();
+        closing.Visibility(shown(close));
+        closing.Label(text(closeWords));
+        controls::ToolTipService::SetToolTip(closing, winrt::box_value(text(closeWords)));
+        head.Visibility(shown(back || close || !text(title).empty()));
         standInRow(content, 1, page);
     } catch (...) {
         report("filling a sheet");

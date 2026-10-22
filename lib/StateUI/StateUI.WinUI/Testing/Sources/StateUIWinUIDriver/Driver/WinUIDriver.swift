@@ -226,6 +226,7 @@ final class WinUIDriver: HostDriver {
             guard let flyout = popover.flyout else { throw DriverCannot(act, on: element) }
             stateui_winui_popover_hide(flyout)
         case (.close, _) where element.type == .window: stateui_winui_window_close(try window(of: element).handle)
+        case (.close, _) where element.type == .page: try sheet(of: element).chose(-2)
         case (.minimize, _) where element.type == .window: try state(of: element, minimized: true, activated: false)
         case (.restore, _) where element.type == .window: try state(of: element, minimized: false, activated: true)
         case (.switchAway, _) where element.type == .window:
@@ -266,6 +267,14 @@ final class WinUIDriver: HostDriver {
     func window() throws -> WinUIWindow {
         guard let window = renderer?.window else { throw DriverCannot("find the window") }
         return window
+    }
+
+    /// The sheet `element` stands in, on its window.
+    func sheet(of element: MountedElement) throws -> WinUISheetView {
+        guard let presented = element.enclosing(type: .sheet)?.children.first,
+              let sheet = renderer?.controller(of: element)?.sheetForTesting(presenting: presented)
+        else { throw DriverCannot("find the sheet") }
+        return sheet
     }
 
     /// The window `element` stands in.
