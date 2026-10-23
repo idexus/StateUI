@@ -378,10 +378,12 @@ body {
   color: var(--stateui-text);
   box-shadow: var(--stateui-raised-shadow);
 }
-.stateui-sheet[open] { display: grid; grid-template-rows: auto minmax(0, 1fr); animation: stateui-rise 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
+/* The bar over the room, the room taking what the bar leaves: a column, as WebKit stretches a modal dialog laid out
+   as a grid over the window, whatever height it asks. */
+.stateui-sheet[open] { display: flex; flex-direction: column; animation: stateui-rise 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .stateui-sheet::backdrop { background: var(--stateui-shade); animation: stateui-fade-in 0.2s ease; }
-.stateui-sheet > .stateui-bar { border-radius: 0; }
-.stateui-sheet-room { display: grid; min-height: 0; min-width: 0; position: relative; }
+.stateui-sheet > .stateui-bar { border-radius: 0; flex: none; }
+.stateui-sheet-room { display: grid; flex: 1 1 auto; min-height: 0; min-width: 0; position: relative; }
 /* A page asking a size of its own stands as large as it is, within the dialog's room: its height the content's, as
    WebKit stretches a modal dialog of no height of its own over the window. */
 .stateui-sheet[data-fits] {

@@ -76,7 +76,8 @@ final class WebLookTests: XCTestCase {
     }
 
     /// A sheet stands as large as its page asks, within the dialog's room; one holding a stack, whose pages come and
-    /// go, at the dialog's standard size.
+    /// go, at the dialog's standard size. Its parts stand in a column: WebKit stretches a modal dialog laid out as a
+    /// grid over the window, whatever height it asks.
     func testASheetStandsAsLargeAsItsPageAndAStacksAtTheStandardSize() throws {
         let host = WebRenderer.running {
             Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
@@ -92,6 +93,7 @@ final class WebLookTests: XCTestCase {
             .split(separator: ",").compactMap { Double($0) }
         XCTAssertLessThan(fitted[0], min(560, window[0] - 32), "as wide as its page")
         XCTAssertLessThan(fitted[1], 300, "as tall as its page")
+        XCTAssertEqual(try WebBrowser.evaluate("getComputedStyle(\(dialog)).display", on: 0), "flex", "a column")
 
         let stacked = WebRenderer.running {
             Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
