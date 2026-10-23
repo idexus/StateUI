@@ -25,8 +25,16 @@ final class AndroidShapeViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    Rectangle().fill(.red).width(20).height(20).horizontalAlignment(.start)
-                    Ellipse().fill(.red).width(20).height(20).horizontalAlignment(.start)
+                    Rectangle()
+                        .fill(.red)
+                        .width(20)
+                        .height(20)
+                        .horizontalAlignment(.start)
+                    Ellipse()
+                        .fill(.red)
+                        .width(20)
+                        .height(20)
+                        .horizontalAlignment(.start)
                 }
             }
             host.layOut()
@@ -71,7 +79,11 @@ final class AndroidShapeViewTests: XCTestCase {
     func testAShapeAsksForNoRoom() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                VStack { Rectangle().fill(.red).horizontalAlignment(.start) }
+                VStack {
+                    Rectangle()
+                        .fill(.red)
+                        .horizontalAlignment(.start)
+                }
             }
             host.layOut()
             let rectangle = try XCTUnwrap(host.views(AndroidShapeView.self).first)
@@ -84,7 +96,8 @@ final class AndroidShapeViewTests: XCTestCase {
     func testARectangleDrawsWithinItsCornersOverItsBackground() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                Rectangle().fill(Color(hex: 0xFF0000))
+                Rectangle()
+                    .fill(Color(hex: 0xFF0000))
                     .cornerRadius(topLeft: 0, topRight: 0, bottomLeft: 20, bottomRight: 0)
                     .background(Color(hex: 0x00FF00))
                     .width(100)
@@ -106,7 +119,8 @@ final class AndroidShapeViewTests: XCTestCase {
     func testACornerRoundsNoMoreThanHalfTheShorterSide() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                Rectangle().fill(Color(hex: 0xFF0000))
+                Rectangle()
+                    .fill(Color(hex: 0xFF0000))
                     .cornerRadius(100)
                     .background(Color(hex: 0x00FF00))
                     .width(200)

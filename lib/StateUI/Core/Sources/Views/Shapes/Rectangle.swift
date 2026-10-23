@@ -3,7 +3,8 @@
 
 /// A rectangle, drawn as a shape - with square corners, or rounded ones.
 ///
-///     Rectangle().fill(.cornflowerBlue)
+///     Rectangle()
+///         .fill(.cornflowerBlue)
 ///         .cornerRadius(8)
 ///         .height(60)
 ///

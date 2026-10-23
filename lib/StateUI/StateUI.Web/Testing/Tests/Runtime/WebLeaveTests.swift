@@ -28,8 +28,14 @@ final class WebLeaveTests: XCTestCase {
         let gradient = Brush.linearGradient([GradientStop(.red, 0), GradientStop(.blue, 1)])
         let host = WebRenderer.running {
             VStack {
-                Rectangle().fill(.red).background(gradient).height(20)
-                Rectangle().fill(gradient).height(20).onFrameChanged { _ in }
+                Rectangle()
+                    .fill(.red)
+                    .background(gradient)
+                    .height(20)
+                Rectangle()
+                    .fill(gradient)
+                    .height(20)
+                    .onFrameChanged { _ in }
                 Canvas().height(20)
                 ItemsView(["one", "two", "three"]) { Text($0) }.height(80)
             }

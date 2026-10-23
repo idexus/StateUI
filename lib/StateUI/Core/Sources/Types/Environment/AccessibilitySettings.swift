@@ -7,7 +7,9 @@
 ///
 ///     @Environment(\.device) private var device
 ///
-///     Rectangle().fill(.silver).height(device.accessibility.prefersHigherContrast ? 2 : 1)
+///     Rectangle()
+///         .fill(.silver)
+///         .height(device.accessibility.prefersHigherContrast ? 2 : 1)
 ///
 /// A platform that cannot tell a setting leaves it as the system draws by default: `false`, and a scale of 1.
 @MainActor

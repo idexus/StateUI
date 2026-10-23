@@ -6,7 +6,8 @@
 
 /// One report from a pan - what `.onPanUpdated` hands its handler.
 ///
-///     Rectangle().fill(.cornflowerBlue)
+///     Rectangle()
+///         .fill(.cornflowerBlue)
 ///         .translationX(offsetX)
 ///         .onPanUpdated { pan in
 ///             if pan.phase == .changed { offsetX = pan.totalX }

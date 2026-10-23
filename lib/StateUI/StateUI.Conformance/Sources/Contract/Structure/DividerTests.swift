@@ -19,9 +19,15 @@
                 s.start {
                     VStack {
                         VStack {
-                            Rectangle().fill(.red).width(40).height(20)
+                            Rectangle()
+                                .fill(.red)
+                                .width(40)
+                                .height(20)
                             Divider().onEvent(ViewContract.frameChanged) { line.values.append($0) }
-                            Rectangle().fill(.blue).width(40).height(20)
+                            Rectangle()
+                                .fill(.blue)
+                                .width(40)
+                                .height(20)
                                 .onEvent(ViewContract.frameChanged) { below.values.append($0) }
                         }
                         .spacing(0)

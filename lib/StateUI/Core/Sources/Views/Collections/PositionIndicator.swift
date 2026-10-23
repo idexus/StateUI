@@ -74,7 +74,8 @@ public struct PositionIndicator: View {
         }
         let size = indicatorSize.current
         let color = current ? currentIndicatorColor.current : indicatorColor.current
-        let dot = Rectangle().fill(color)
+        let dot = Rectangle()
+            .fill(color)
             .cornerRadius(indicatorShape.current == .circle ? size / 2 : 0)
             .width(size)
             .height(size)

@@ -40,7 +40,8 @@ private struct PinchPage: View {
     var body: some View {
         VStack {
             Text("said \(said)")
-            Rectangle().fill(.steelBlue)
+            Rectangle()
+                .fill(.steelBlue)
                 .width(100)
                 .height(100)
                 .onPinchUpdated { pinch in said += "pinch \(pinch.scale); " }

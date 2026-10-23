@@ -376,10 +376,11 @@ a `Capsule` and an `Ellipse` are drawn for their fill, so they take it first,
 `.fill` says the same where a style or a later change does.
 
 ```swift
-Rectangle().fill(.linearGradient(
-    [GradientStop(.cornflowerBlue, 0), GradientStop(.indigo, 1)],
-    startPoint: Point(0, 0),
-    endPoint: Point(1, 0)))
+Rectangle()
+    .fill(.linearGradient(
+        [GradientStop(.cornflowerBlue, 0), GradientStop(.indigo, 1)],
+        startPoint: Point(0, 0),
+        endPoint: Point(1, 0)))
     .cornerRadius(14)
     .stroke(.solidColor(.white))
     .lineWidth(2)
@@ -395,7 +396,8 @@ its shorter side at every size, so it stays a pill however wide or tall its
 room - and a circle in a square one.
 
 ```swift
-Capsule().fill(.teal)
+Capsule()
+    .fill(.teal)
     .width(120)
     .height(32)
 ```
@@ -411,7 +413,10 @@ struct Level: View {
 
     var body: some View {
         VStack {
-            Rectangle().fill($tint).cornerRadius(6).height(12)
+            Rectangle()
+                .fill($tint)
+                .cornerRadius(6)
+                .height(12)
             Button("Warn").onClicked { tint = .orange }
         }
     }

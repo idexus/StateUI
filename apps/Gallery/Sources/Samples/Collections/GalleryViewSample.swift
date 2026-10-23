@@ -76,7 +76,8 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         // over, which a stack cannot give a child - and a gallery wants it all.
         Grid {
             Grid {
-                Rectangle().fill(Palette.raised)
+                Rectangle()
+                    .fill(Palette.raised)
                     .cornerRadius(14)
 
                 // THE WHOLE CONTROL: the run made below - one card per item, each
@@ -204,7 +205,10 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         // corners, which is why the view is the application's to give.
         // A quarter of the fade is left beside it, unless `.fade(_:)` says
         // otherwise.
-        return run.shade(Rectangle().fill(Color(hex: 0x000000)).cornerRadius(16))
+        return run.shade(
+            Rectangle()
+                .fill(Color(hex: 0x000000))
+                .cornerRadius(16))
     }
 
     /// One card's face - a picture and its name, and nothing at all about where

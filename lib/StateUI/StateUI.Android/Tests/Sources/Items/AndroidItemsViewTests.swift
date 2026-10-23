@@ -20,8 +20,16 @@ final class AndroidItemsViewTests: XCTestCase {
             let driver = AndroidDriver()
             _ = driver.start(clock: nil, reducesMotion: false) {
                 VStack {
-                    Rectangle().fill(.white).width(200).height(60)
-                    ItemsView(0..<100) { _ in Rectangle().fill(.firebrick).width(200).height(60) }
+                    Rectangle()
+                        .fill(.white)
+                        .width(200)
+                        .height(60)
+                    ItemsView(0..<100) { _ in
+                        Rectangle()
+                            .fill(.firebrick)
+                            .width(200)
+                            .height(60)
+                    }
                         .width(200).height(300)
                 }
                 .spacing(0)

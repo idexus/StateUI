@@ -56,7 +56,11 @@ final class WebShapeRoomTests: XCTestCase {
     }
 
     func testAShapeFillsTheRoomItsLayoutGivesIt() throws {
-        let host = WebRenderer.running { VStack { Rectangle().fill(.red).height(40) } }
+        let host = WebRenderer.running { VStack {
+            Rectangle()
+                .fill(.red)
+                .height(40)
+        } }
         host.step()
         let shape = try XCTUnwrap(host.views(WebShapeView.self).first)
 

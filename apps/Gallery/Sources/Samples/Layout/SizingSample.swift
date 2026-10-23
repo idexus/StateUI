@@ -11,24 +11,35 @@ struct SizingSample: SampleContent, ExampleContent {
         VStack {
             row("width(120)",
                 // A request, not an instruction: the layout has the last word.
-                Rectangle().fill(Palette.accent).width(120).height(24))
+                Rectangle()
+                    .fill(Palette.accent)
+                    .width(120)
+                    .height(24))
 
             row("maximumWidth(200)",
-                Rectangle().fill(Palette.accent).height(24).maximumWidth(200))
+                Rectangle()
+                    .fill(Palette.accent)
+                    .height(24)
+                    .maximumWidth(200))
 
             row("minimumWidth(160)",
-                Rectangle().fill(Palette.accent).height(24).minimumWidth(160))
+                Rectangle()
+                    .fill(Palette.accent)
+                    .height(24)
+                    .minimumWidth(160))
 
             // The pair is the point: both ask for 80 high, and only the one
             // without a ceiling on it is allowed to have it.
             row("height(80), then the same with maximumHeight(32)",
                 HStack {
-                    Rectangle().fill(Palette.outline)
+                    Rectangle()
+                        .fill(Palette.outline)
                         .width(60)
                         .height(80)
                         .verticalAlignment(.start)
 
-                    Rectangle().fill(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .width(60)
                         .height(80)
                         .maximumHeight(32)
@@ -39,7 +50,8 @@ struct SizingSample: SampleContent, ExampleContent {
             // A child drawn past the layout's edge, cut off at it.
             row("clipsContent(true)",
                 VStack {
-                    Rectangle().fill(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .height(24)
                         .translationX(60)
                 }
@@ -48,7 +60,8 @@ struct SizingSample: SampleContent, ExampleContent {
 
             row("clipsContent(false)",
                 VStack {
-                    Rectangle().fill(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .height(24)
                         .translationX(60)
                 }

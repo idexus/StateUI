@@ -194,7 +194,8 @@ final class DrivenPatchTests: XCTestCase {
         let entry = TextField("").placeholderColor(color.projectedValue)
 
         // And the one modifier that is a control's own rather than a tier's.
-        let box = Rectangle().fill(color.projectedValue)
+        let box = Rectangle()
+            .fill(color.projectedValue)
 
         let page = try page(VStack { card; shape; button; entry; box }.spacing(number.projectedValue).node)
 
@@ -310,7 +311,9 @@ final class DrivenPatchTests: XCTestCase {
     func testALayoutEngineRegistersOnTheLayoutAlone() throws {
         let page = try page(
             LayoutEngine(["a", "b"]) { Text($0) } placements: { _, _ in [] }
-                .shade(Rectangle().fill(.black))
+                .shade(
+                    Rectangle()
+                        .fill(.black))
                 .node)
         let layout = try XCTUnwrap(page.subtree.first { $0.type == .layoutEngine })
         let ties = layout.driven?.bindings ?? [:]

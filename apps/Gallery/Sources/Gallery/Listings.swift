@@ -218,7 +218,8 @@ enum Listings {
                 // margin(2x, 2y, 0, 0) shifts a centered view by (x, y).
                 ForEach(Array(Self.marks.enumerated()), id: \.offset) { pair in
                     let (x, y, wide, tall) = pair.element
-                    return Rectangle().fill(Palette.accent)
+                    return Rectangle()
+                        .fill(Palette.accent)
                         .opacity(wide == tall ? 0.5 : 1)
                         .width(wide)
                         .height(tall)
@@ -319,7 +320,8 @@ enum Listings {
             _ angle: Binding<Double>,
             length: Double, width: Double, color: Color
         ) -> some View {
-            Rectangle().fill(color)
+            Rectangle()
+                .fill(color)
                 .rotation(angle)
                 .width(width)
                 .height(length)
@@ -1049,7 +1051,8 @@ enum Listings {
                     .horizontalAlignment(.center)
 
                 // No `.motion` here: the panel takes the application's.
-                Rectangle().fill(wide ? Palette.accent : Palette.brand)
+                Rectangle()
+                    .fill(wide ? Palette.accent : Palette.brand)
                     .width(wide ? 300 : 120)
                     .height(60)
                     .horizontalAlignment(.center)
@@ -1071,11 +1074,13 @@ enum Listings {
                 // differ asks, so the only closure this switch rebuilds is that one.
                 ZStack {
                     // No area: the whole room, filled.
-                    Rectangle().fill(Palette.outline)
+                    Rectangle()
+                        .fill(Palette.outline)
 
                     // The panel fills the area it names: the right half of the
                     // room, or 120 by 60 at 16, 16 whatever the room's size.
-                    Rectangle().fill(Color(hex: 0x1E88E5))
+                    Rectangle()
+                        .fill(Color(hex: 0x1E88E5))
                         .area(proportional ? .proportional(0.5, 0, 0.5, 1) : .absolute(16, 16, 120, 60))
 
                     // Its natural size, where its alignments put it.
@@ -1416,7 +1421,8 @@ enum Listings {
 
                 SectionTitle("Along a line")
 
-                Rectangle().fill(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Self.ends[end].point))
+                Rectangle()
+                    .fill(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Self.ends[end].point))
                     .contentMode(.stretch)   // fills the room, proportions and all
                     .height(80)
 
@@ -1426,7 +1432,8 @@ enum Listings {
 
                 SectionTitle("Out from a point")
 
-                Ellipse().fill(.radialGradient(
+                Ellipse()
+                    .fill(.radialGradient(
                         [GradientStop(.white, 0), GradientStop(.steelBlue, 1)],
                         center: Point(0.35, 0.3),
                         radius: 0.75))
@@ -1838,11 +1845,13 @@ enum Listings {
         private func face(_ card: Card, large: Bool) -> some View {
             let disc = large ? 88.0 : 56.0
             return ZStack {
-                Rectangle().fill(card.color)
+                Rectangle()
+                    .fill(card.color)
 
                 VStack {
                     ZStack {
-                        Rectangle().fill(.white)
+                        Rectangle()
+                            .fill(.white)
                             .opacity(0.3)
 
                         Image(.icon(card.icon))
@@ -2000,7 +2009,8 @@ enum Listings {
                     VStack {
                         HStack {
                             ForEach(Array(bars.enumerated()), id: \.offset) { bar in
-                                Rectangle().fill(Palette.onAccent)
+                                Rectangle()
+                                    .fill(Palette.onAccent)
                                     .translationY(bar.element)
                                     .width(14)
                                     .height(46)
@@ -2838,11 +2848,13 @@ enum Listings {
 
                 ZStack {
                     Grid {
-                        Rectangle().fill($tint)
+                        Rectangle()
+                            .fill($tint)
                             .height(6)
                             .verticalAlignment(.center)
 
-                        Rectangle().fill(Palette.brand)
+                        Rectangle()
+                            .fill(Palette.brand)
                             .width(20)
                             .height(20)
                             .horizontalAlignment(.start)
@@ -3873,7 +3885,8 @@ enum Listings {
             // over, which a stack cannot give a child - and a gallery wants it all.
             Grid {
                 Grid {
-                    Rectangle().fill(Palette.raised)
+                    Rectangle()
+                        .fill(Palette.raised)
 
                     // THE WHOLE CONTROL: the run made below - one card per item, each
                     // named by its name - and one word for the shape they stand in.
@@ -3992,7 +4005,9 @@ enum Listings {
             // corners, which is why the view is the application's to give.
             // A quarter of the fade is left beside it, unless `.fade(_:)` says
             // otherwise.
-            return run.shade(Rectangle().fill(Color(hex: 0x000000)).cornerRadius(16))
+            return run.shade(
+                Rectangle()
+                    .fill(Color(hex: 0x000000)))
         }
 
         /// One card's face - a picture and its name, and nothing at all about where
@@ -4432,7 +4447,8 @@ enum Listings {
                 // THE DOTS wear the same phase - one state, so one motion: they go
                 // with the hand and with every throw, no body read of it.
                 LayoutEngine(Array(0..<boards)) { _ in
-                    Rectangle().fill(Palette.text)
+                    Rectangle()
+                        .fill(Palette.text)
                 } placements: { room, board in
                     (0..<boards).map { dot($0, of: boards, board, room) }
                 }
@@ -4518,9 +4534,11 @@ enum Listings {
             var body: some View {
                 VStack {
                     ZStack {
-                        Rectangle().fill(icon.color)
+                        Rectangle()
+                            .fill(icon.color)
 
-                        Rectangle().fill(.white)
+                        Rectangle()
+                            .fill(.white)
                             .opacity(0.3)
                             .width(42)
                             .height(42)
@@ -5126,7 +5144,8 @@ enum Listings {
                     ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
                         HStack {
                             ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
-                                Rectangle().fill(Palette.outline)
+                                Rectangle()
+                                    .fill(Palette.outline)
                                     .width(7)
                                     .height(14)
                                     .id(index)
@@ -5163,7 +5182,8 @@ enum Listings {
                     ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
                         HStack {
                             ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
-                                Rectangle().fill(Palette.outline)
+                                Rectangle()
+                                    .fill(Palette.outline)
                                     .width(7)
                                     .height(14)
                                     .id(index)
@@ -5268,13 +5288,15 @@ enum Listings {
                 // Left alone, the child written last is drawn on top; the higher
                 // zIndex is nearer the front, and nothing moves.
                 ZStack {
-                    Rectangle().fill(Color(hex: 0xE53935))
+                    Rectangle()
+                        .fill(Color(hex: 0xE53935))
                         .width(150)
                         .height(70)
                         .horizontalAlignment(.start)
                         .zIndex(redInFront ? 1 : 0)
 
-                    Rectangle().fill(Color(hex: 0x1E88E5))
+                    Rectangle()
+                        .fill(Color(hex: 0x1E88E5))
                         .width(150)
                         .height(70)
                         .horizontalAlignment(.end)
@@ -5367,7 +5389,8 @@ enum Listings {
             case .words(let strip):
                 Text(Self.declarations[strip])
             case .frame:
-                Rectangle().fill(Palette.field)
+                Rectangle()
+                    .fill(Palette.field)
             case .card(let strip, let index):
                 ZStack { Image(ImageSource(Self.pictures[(strip + index) % Self.pictures.count])).contentMode(.fill) }
                     .clipsContent(true)
@@ -5420,7 +5443,8 @@ enum Listings {
                 // Laid out the way `direction` says - at `.inherited`, the way the
                 // view above it is.
                 HStack {
-                    Rectangle().fill(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .width(60)
                         .height(20)
 
@@ -5565,7 +5589,8 @@ enum Listings {
                 case .card(let index):
                     face(Self.cards[index])
                 case .dot:
-                    Rectangle().fill(Palette.text)
+                    Rectangle()
+                        .fill(Palette.text)
                 }
             } placements: { room, phase in
                 // THE WHOLE LAYOUT, run on the display's own frames whenever the
@@ -5586,7 +5611,9 @@ enum Listings {
             // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
             // over every card, wearing the card's own corners - which is why it is
             // the application's to give and not the library's to draw.
-            .shade(Rectangle().fill(Color(hex: 0x000000)).cornerRadius(16))
+            .shade(
+                Rectangle()
+                    .fill(Color(hex: 0x000000)))
             .motion(.eased(.milliseconds(300), .cubicOut))
         }
 
@@ -5846,11 +5873,13 @@ enum Listings {
         /// One card's face: its color, its icon on a disc, and its name.
         private func face(_ card: Card) -> some View {
             ZStack {
-                Rectangle().fill(card.color)
+                Rectangle()
+                    .fill(card.color)
 
                 VStack {
                     ZStack {
-                        Rectangle().fill(.white)
+                        Rectangle()
+                            .fill(.white)
                             .opacity(0.3)
 
                         Image(.icon(card.icon))
@@ -5972,11 +6001,13 @@ enum Listings {
             let card = Self.cards[index]
 
             return ZStack {
-                Rectangle().fill(card.color)
+                Rectangle()
+                    .fill(card.color)
 
                 VStack {
                     ZStack {
-                        Rectangle().fill(.white)
+                        Rectangle()
+                            .fill(.white)
                             .opacity(0.3)
 
                         Image(.icon(card.icon))
@@ -6918,11 +6949,21 @@ enum Listings {
                 ZStack {
                     // Stripes of color behind the panels: what each lets through shows on them.
                     Grid {
-                        Rectangle().fill(.tomato).gridColumn(0)
-                        Rectangle().fill(.gold).gridColumn(1)
-                        Rectangle().fill(.steelBlue).gridColumn(2)
-                        Rectangle().fill(.white).gridColumn(3)
-                        Rectangle().fill(Palette.accent).gridColumn(4)
+                        Rectangle()
+                            .fill(.tomato)
+                            .gridColumn(0)
+                        Rectangle()
+                            .fill(.gold)
+                            .gridColumn(1)
+                        Rectangle()
+                            .fill(.steelBlue)
+                            .gridColumn(2)
+                        Rectangle()
+                            .fill(.white)
+                            .gridColumn(3)
+                        Rectangle()
+                            .fill(Palette.accent)
+                            .gridColumn(4)
                     }
                     .columns(.fill, .fill, .fill, .fill, .fill)
 
@@ -7278,7 +7319,8 @@ enum Listings {
                 Text("A move's own law, then the value's")
                     .tracking(1)
 
-                Rectangle().fill(Palette.brand)
+                Rectangle()
+                    .fill(Palette.brand)
                     .width($reach)
                     .height(24)
                     .horizontalAlignment(.start)
@@ -7297,7 +7339,8 @@ enum Listings {
         /// One panel, either traveling at the chosen law or arriving at once.
         private func panel(travels: Bool) -> some View {
             // `.motion` is per view: the chosen law, or `.none` to arrive at once.
-            Rectangle().fill(warm ? Palette.accent : Palette.brand)
+            Rectangle()
+                .fill(warm ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
                 .height(wide ? 110 : 56)
                 .horizontalAlignment(.start)
@@ -7308,7 +7351,8 @@ enum Listings {
         /// `.size` takes to be its width and its height - its corners are its
         /// shape, and travel with the rest.
         private func sized() -> some View {
-            Rectangle().fill(warm ? Palette.accent : Palette.brand)
+            Rectangle()
+                .fill(warm ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
                 .height(wide ? 110 : 56)
                 .horizontalAlignment(.start)
@@ -7865,7 +7909,8 @@ enum Listings {
                 // The box fills the ZStack; its corners are cut only while the
                 // ZStack clips what it holds.
                 ZStack {
-                    Rectangle().fill(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                 }
                 .shape(.roundedRectangle(24))
                 .clipsContent(clips)
@@ -7970,7 +8015,8 @@ enum Listings {
                 }
                 .samples($fade, into: $shown, .every(.milliseconds(100)))
 
-                Rectangle().fill(Palette.accent)
+                Rectangle()
+                    .fill(Palette.accent)
                     .height(60)
                     .opacity($fade)
 
@@ -8027,7 +8073,8 @@ enum Listings {
                 // A fixed box for it to move inside, so the layout does not follow
                 // the view about.
                 ZStack {
-                    Rectangle().fill(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .width(64)
                         .height(64)
                         .horizontalAlignment(.center)
@@ -8156,7 +8203,8 @@ enum Listings {
                     .text("Bold shade")
                     .onToggled { on in shade = on ? .bold : .quiet }
 
-                Rectangle().fill(shade == .bold ? Palette.accent : Palette.well)
+                Rectangle()
+                    .fill(shade == .bold ? Palette.accent : Palette.well)
                     .height(48)
             }
         }
@@ -8263,7 +8311,8 @@ enum Listings {
                 // moves. Putting both on one view is what stops a pinch after its
                 // first report - see the notes.
                 ZStack {
-                    Rectangle().fill(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .width(80)
                         .height(80)
                         .horizontalAlignment(.center)
@@ -9570,7 +9619,8 @@ enum Listings {
                 .horizontalAlignment(.center)
 
                 // A rule is decoration: a stop that would waste the user's time.
-                Rectangle().fill(Palette.outline)
+                Rectangle()
+                    .fill(Palette.outline)
                     .height(1)
                     .isAccessibilityHidden(true)
             }
@@ -9615,21 +9665,25 @@ enum Listings {
                 SectionTitle("Filled")
 
                 HStack {
-                    Rectangle().fill(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .width(56)
                         .height(56)
 
-                    Rectangle().fill(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .cornerRadius(14)
                         .width(56)
                         .height(56)
 
-                    Rectangle().fill(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .cornerRadius(topLeft: 22, topRight: 4, bottomLeft: 4, bottomRight: 22)
                         .width(56)
                         .height(56)
 
-                    Ellipse().fill(Palette.accent)
+                    Ellipse()
+                        .fill(Palette.accent)
                         .width(56)
                         .height(56)
                 }
@@ -9638,11 +9692,13 @@ enum Listings {
 
                 // A capsule's ends stay round at every size: wide, tall, or square.
                 HStack {
-                    Capsule().fill(Palette.accent)
+                    Capsule()
+                        .fill(Palette.accent)
                         .width(120)
                         .height(40)
 
-                    Capsule().fill(Palette.accent)
+                    Capsule()
+                        .fill(Palette.accent)
                         .width(40)
                         .height(80)
                 }
@@ -9699,7 +9755,8 @@ enum Listings {
                             .width(56)
                             .height(56)
 
-                        Rectangle().fill(Palette.accent)
+                        Rectangle()
+                            .fill(Palette.accent)
                             .cornerRadius(14)
                             .geometryTransform(.scaleX(0.6).skew(20, 0))
                             .width(56)
@@ -9869,24 +9926,35 @@ enum Listings {
             VStack {
                 row("width(120)",
                     // A request, not an instruction: the layout has the last word.
-                    Rectangle().fill(Palette.accent).width(120).height(24))
+                    Rectangle()
+                        .fill(Palette.accent)
+                        .width(120)
+                        .height(24))
 
                 row("maximumWidth(200)",
-                    Rectangle().fill(Palette.accent).height(24).maximumWidth(200))
+                    Rectangle()
+                        .fill(Palette.accent)
+                        .height(24)
+                        .maximumWidth(200))
 
                 row("minimumWidth(160)",
-                    Rectangle().fill(Palette.accent).height(24).minimumWidth(160))
+                    Rectangle()
+                        .fill(Palette.accent)
+                        .height(24)
+                        .minimumWidth(160))
 
                 // The pair is the point: both ask for 80 high, and only the one
                 // without a ceiling on it is allowed to have it.
                 row("height(80), then the same with maximumHeight(32)",
                     HStack {
-                        Rectangle().fill(Palette.outline)
+                        Rectangle()
+                            .fill(Palette.outline)
                             .width(60)
                             .height(80)
                             .verticalAlignment(.start)
 
-                        Rectangle().fill(Palette.accent)
+                        Rectangle()
+                            .fill(Palette.accent)
                             .width(60)
                             .height(80)
                             .maximumHeight(32)
@@ -9896,7 +9964,8 @@ enum Listings {
                 // A child drawn past the layout's edge, cut off at it.
                 row("clipsContent(true)",
                     VStack {
-                        Rectangle().fill(Palette.accent)
+                        Rectangle()
+                            .fill(Palette.accent)
                             .height(24)
                             .translationX(60)
                     }
@@ -9905,7 +9974,8 @@ enum Listings {
 
                 row("clipsContent(false)",
                     VStack {
-                        Rectangle().fill(Palette.accent)
+                        Rectangle()
+                            .fill(Palette.accent)
                             .height(24)
                             .translationX(60)
                     }
@@ -11133,7 +11203,8 @@ enum Listings {
                         .tooltip(detailed ? "Opens the stacks, grids and placement" : "Layout")
 
                     // Any view takes one, not only a control.
-                    Rectangle().fill(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .width(48)
                         .height(48)
                         .tooltip(detailed ? "The color the gallery marks things with" : "Accent")
@@ -11158,7 +11229,8 @@ enum Listings {
 
                 Grid {
                     // Underneath, and still reachable.
-                    Rectangle().fill(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .height(120)
                         .onTapped { below += 1 }
 
@@ -11343,7 +11415,8 @@ enum Listings {
         /// - Parameter color: which family this square belongs to.
         /// - Returns: the square, ready to be transformed.
         private func box(_ color: Color) -> Rectangle {
-            Rectangle().fill(color)
+            Rectangle()
+                .fill(color)
                 .width(44)
                 .height(44)
         }
@@ -11652,7 +11725,8 @@ enum Listings {
             @Environment(\.window) private var window
 
             var body: some View {
-                Rectangle().fill(Color(hex: 0x000000, opacity: 0))
+                Rectangle()
+                    .fill(Color(hex: 0x000000, opacity: 0))
                     .width(0)
                     .height(0)
                     .ignoresInput(true)

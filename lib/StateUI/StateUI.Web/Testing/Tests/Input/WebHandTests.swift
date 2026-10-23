@@ -108,7 +108,10 @@ final class WebHandTests: XCTestCase {
     /// page, which pans it, and calls the press off, no more.
     func testAFingerDraggedSlowlyAsksForNoMenu() throws {
         let host = WebRenderer.running {
-            Rectangle().fill(.blue).width(200).height(200)
+            Rectangle()
+                .fill(.blue)
+                .width(200)
+                .height(200)
                 .onPanUpdated { _ in }
                 .contextMenu { MenuItem("Copy") }
                 .id("shape")

@@ -24,7 +24,8 @@ struct TouchThroughSample: SampleContent, ExampleContent {
 
             Grid {
                 // Underneath, and still reachable.
-                Rectangle().fill(Palette.accent)
+                Rectangle()
+                    .fill(Palette.accent)
                     .height(120)
                     .onTapped { below += 1 }
 

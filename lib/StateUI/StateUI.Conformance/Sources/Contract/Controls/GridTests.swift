@@ -21,11 +21,24 @@
                 s.start {
                     VStack {
                         Grid {
-                            Rectangle().fill(.red).width(50).height(20).horizontalAlignment(.start)
+                            Rectangle()
+                                .fill(.red)
+                                .width(50)
+                                .height(20)
+                                .horizontalAlignment(.start)
                                 .onEvent(ViewContract.frameChanged) { a.values.append($0) }
-                            Rectangle().fill(.green).height(20).gridColumn(1)
+                            Rectangle()
+                                .fill(.green)
+                                .height(20)
+                                .gridColumn(1)
                                 .onEvent(ViewContract.frameChanged) { b.values.append($0) }
-                            Rectangle().fill(.blue).width(30).height(40).gridRow(1).gridColumnSpan(2).horizontalAlignment(.end)
+                            Rectangle()
+                                .fill(.blue)
+                                .width(30)
+                                .height(40)
+                                .gridRow(1)
+                                .gridColumnSpan(2)
+                                .horizontalAlignment(.end)
                                 .onEvent(ViewContract.frameChanged) { c.values.append($0) }
                         }
                         .columns(.fixed(100), .fill)
@@ -51,9 +64,17 @@
                 s.start {
                     VStack {
                         Grid {
-                            Rectangle().fill(.red).height(30)
-                            Rectangle().fill(.green).gridRow(1).onEvent(ViewContract.frameChanged) { box.values.append($0) }
-                            Rectangle().fill(.blue).height(20).gridRow(2)
+                            Rectangle()
+                                .fill(.red)
+                                .height(30)
+                            Rectangle()
+                                .fill(.green)
+                                .gridRow(1)
+                                .onEvent(ViewContract.frameChanged) { box.values.append($0) }
+                            Rectangle()
+                                .fill(.blue)
+                                .height(20)
+                                .gridRow(2)
                         }
                         .rows(.auto, .fill, .auto)
                         .width(100)
@@ -73,9 +94,19 @@
                 s.start {
                     VStack {
                         Grid {
-                            Rectangle().fill(.red).gridRowSpan(2).onEvent(ViewContract.frameChanged) { box.values.append($0) }
-                            Rectangle().fill(.green).height(20).gridColumn(1)
-                            Rectangle().fill(.blue).height(30).gridRow(1).gridColumn(1)
+                            Rectangle()
+                                .fill(.red)
+                                .gridRowSpan(2)
+                                .onEvent(ViewContract.frameChanged) { box.values.append($0) }
+                            Rectangle()
+                                .fill(.green)
+                                .height(20)
+                                .gridColumn(1)
+                            Rectangle()
+                                .fill(.blue)
+                                .height(30)
+                                .gridRow(1)
+                                .gridColumn(1)
                         }
                         .columns(.fixed(20), .fill)
                         .rows(.auto, .auto)
@@ -97,8 +128,16 @@
                 s.start {
                     VStack {
                         Grid {
-                            Rectangle().fill(.red).width(20).height(20)
-                            Rectangle().fill(.green).width(20).height(20).gridColumn(1).gridRow(1)
+                            Rectangle()
+                                .fill(.red)
+                                .width(20)
+                                .height(20)
+                            Rectangle()
+                                .fill(.green)
+                                .width(20)
+                                .height(20)
+                                .gridColumn(1)
+                                .gridRow(1)
                                 .onEvent(ViewContract.frameChanged) { box.values.append($0) }
                         }
                         .columns(.fixed(20), .fixed(20))
@@ -124,8 +163,13 @@
                 s.start {
                     VStack {
                         Grid {
-                            Rectangle().fill(.red)
-                            Rectangle().fill(.green).gridColumn(1).gridRow(1).onEvent(ViewContract.frameChanged) { box.values.append($0) }
+                            Rectangle()
+                                .fill(.red)
+                            Rectangle()
+                                .fill(.green)
+                                .gridColumn(1)
+                                .gridRow(1)
+                                .onEvent(ViewContract.frameChanged) { box.values.append($0) }
                         }
                         .columns(.fixed(wide.wrappedValue ? 60 : 30), .fixed(20))
                         .rows(.fixed(wide.wrappedValue ? 50 : 10), .fixed(20))

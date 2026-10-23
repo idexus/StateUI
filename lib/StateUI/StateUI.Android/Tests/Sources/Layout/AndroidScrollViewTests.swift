@@ -165,7 +165,9 @@ final class AndroidScrollViewTests: XCTestCase {
         try onMainActor {
             let host = AndroidRenderer.running {
                 ScrollView {
-                    Rectangle().fill(.red).height(400)
+                    Rectangle()
+                        .fill(.red)
+                        .height(400)
                 }
                 .padding(10)
                 .shape(.roundedRectangle(20))

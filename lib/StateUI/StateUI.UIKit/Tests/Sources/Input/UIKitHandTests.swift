@@ -22,7 +22,10 @@ final class UIKitHandTests: XCTestCase {
     func testAFirstMoveLeftToThePageIsNoHold() throws {
         let (clock, told) = (TestClock(), Told())
         let host = UIKitRenderer.running(clock: clock) {
-            LayoutEngine([0, 1, 2]) { _ in Rectangle().fill(.red) } placements: { _, at in
+            LayoutEngine([0, 1, 2]) { _ in
+                Rectangle()
+                    .fill(.red)
+            } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 100, 0, 80, 80)) }
             }
             .phase(State(wrappedValue: 0.0).projectedValue)

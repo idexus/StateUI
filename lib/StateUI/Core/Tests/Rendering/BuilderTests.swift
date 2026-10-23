@@ -220,7 +220,9 @@ final class BuilderTests: XCTestCase {
 
                 if showing {
                     ZStack {
-                        Rectangle().fill(Color(hex: 0x512BD4)).cornerRadius(10)
+                        Rectangle()
+                            .fill(Color(hex: 0x512BD4))
+                            .cornerRadius(10)
                     }
                     .gridRow(1)
                 } else {
@@ -316,7 +318,8 @@ final class BuilderTests: XCTestCase {
                     if turn == chosen {
                         Text("turn \(turn)")
                     } else {
-                        Rectangle().fill(Color(hex: 0xC8C8C8))
+                        Rectangle()
+                            .fill(Color(hex: 0xC8C8C8))
                     }
                 }
             }

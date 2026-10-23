@@ -36,9 +36,15 @@
                 VStack {
                     ScrollView {
                         VStack {
-                            Rectangle().fill(.red).width(120).height(60)
+                            Rectangle()
+                                .fill(.red)
+                                .width(120)
+                                .height(60)
                                 .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
-                            Rectangle().fill(.blue).width(120).height(2000)
+                            Rectangle()
+                                .fill(.blue)
+                                .width(120)
+                                .height(2000)
                         }
                         .horizontalAlignment(.start)
                     }
@@ -73,7 +79,10 @@
             s.start(clock: clock) {
                 VStack {
                     ItemsView(0..<100) { item in
-                        Rectangle().fill(item == 2 ? .red : .blue).width(120).height(60)
+                        Rectangle()
+                            .fill(item == 2 ? .red : .blue)
+                            .width(120)
+                            .height(60)
                             .onEvent(ViewContract.frameChanged) { if item == 2 { frames.values.append($0) } }
                     }
                     .width(200).height(300).id("list")
@@ -107,7 +116,10 @@
             s.start {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     VStack {
-                        Rectangle().fill(.red).width(120).height(60)
+                        Rectangle()
+                            .fill(.red)
+                            .width(120)
+                            .height(60)
                             .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
                     }
                     .horizontalAlignment(.start)
@@ -444,7 +456,11 @@
                         HearDone(ViewContract.dragStarting) { heard.values.append("starting") },
                         HearDone(ViewContract.dragEnded) { heard.values.append("completed") },
                     ])
-                    Rectangle().fill(.red).width(80).height(40).setValue(ViewContract.allowsDrop, true)
+                    Rectangle()
+                        .fill(.red)
+                        .width(80)
+                        .height(40)
+                        .setValue(ViewContract.allowsDrop, true)
                         .onEvent(ViewContract.drop) { heard.values.append("drop \($0)") }.id("target")
                 }
                 .horizontalAlignment(.start)
@@ -466,7 +482,11 @@
             let heard = Received<String>()
             s.start {
                 VStack {
-                    Rectangle().fill(.red).width(80).height(40).setValue(ViewContract.canDrag, true)
+                    Rectangle()
+                        .fill(.red)
+                        .width(80)
+                        .height(40)
+                        .setValue(ViewContract.canDrag, true)
                         .setValue(ViewContract.dragText, "words").id("source")
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),

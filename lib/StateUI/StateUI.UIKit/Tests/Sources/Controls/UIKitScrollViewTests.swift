@@ -17,7 +17,12 @@ final class UIKitScrollViewTests: XCTestCase {
         let offset = State(wrappedValue: Point(0, 0))
         let host = UIKitRenderer.running {
             VStack {
-                ScrollView { Rectangle().fill(.steelBlue).width(120).height(3000) }
+                ScrollView {
+                    Rectangle()
+                        .fill(.steelBlue)
+                        .width(120)
+                        .height(3000)
+                }
                     .scrollOffset(offset.projectedValue)
                     .height(400)
                 Text("\(Int(offset.projectedValue.journey.value.y)) down")

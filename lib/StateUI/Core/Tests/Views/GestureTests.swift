@@ -22,7 +22,8 @@ final class GestureTests: XCTestCase {
         var points: [Point] = []
 
         let patch = renders.render(
-            Rectangle().fill(.cornflowerBlue)
+            Rectangle()
+                .fill(.cornflowerBlue)
                 .onSwiped { swipes.append($0) }
                 .onPanUpdated { pans.append($0) }
                 .onPinchUpdated { pinches.append($0) }

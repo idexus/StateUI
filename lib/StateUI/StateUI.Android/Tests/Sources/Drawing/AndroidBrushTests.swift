@@ -30,9 +30,15 @@ final class AndroidBrushTests: XCTestCase {
             let host = AndroidRenderer.running {
                 VStack {
                     ZStack {}.background(Self.circle).width(200).height(100)
-                    Rectangle().fill(Self.circle).width(200).height(100)
+                    Rectangle()
+                        .fill(Self.circle)
+                        .width(200)
+                        .height(100)
                     ZStack {}.background(Self.circle).shape(.rectangle).width(100).height(200)
-                    Rectangle().fill(Self.circle).width(100).height(200)
+                    Rectangle()
+                        .fill(Self.circle)
+                        .width(100)
+                        .height(200)
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)

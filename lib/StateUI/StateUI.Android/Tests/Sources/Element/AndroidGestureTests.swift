@@ -167,8 +167,11 @@ final class AndroidGestureTests: XCTestCase {
             let heard = Received<String>()
             let host = AndroidRenderer.running {
                 ZStack {
-                    Rectangle().fill(.red).onTapped { heard.values.append("behind") }
-                    Rectangle().fill(.blue)
+                    Rectangle()
+                        .fill(.red)
+                        .onTapped { heard.values.append("behind") }
+                    Rectangle()
+                        .fill(.blue)
                 }
                 .width(100).height(100).horizontalAlignment(.start).verticalAlignment(.start)
             }
@@ -196,7 +199,9 @@ final class AndroidGestureTests: XCTestCase {
             let tapped = Received<Int>()
             let host = AndroidRenderer.running {
                 LayoutEngine([0, 1, 2, 3]) { card in
-                    Rectangle().fill(.red).onTapped { tapped.values.append(card) }
+                    Rectangle()
+                        .fill(.red)
+                        .onTapped { tapped.values.append(card) }
                 } placements: { _, phase in
                     (0..<4).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, 100)) }
                 }
@@ -226,7 +231,13 @@ final class AndroidGestureTests: XCTestCase {
     @MainActor
     private static func box(_ listens: @escaping @MainActor (Rectangle) -> any View) throws -> (AndroidRenderer, AndroidView) {
         let host = AndroidRenderer.running {
-            listens(Rectangle().fill(.red).width(100).height(100).horizontalAlignment(.start).verticalAlignment(.start))
+            listens(
+                Rectangle()
+                    .fill(.red)
+                    .width(100)
+                    .height(100)
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start))
         }
         host.layOut()
         return (host, try XCTUnwrap(host.views(AndroidShapeView.self).first))

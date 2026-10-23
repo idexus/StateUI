@@ -76,7 +76,9 @@ final class AndroidGridViewTests: XCTestCase {
             let host = AndroidRenderer.running {
                 Grid {
                     Text("head").height(30)
-                    Rectangle().fill(.red).gridRow(1)
+                    Rectangle()
+                        .fill(.red)
+                        .gridRow(1)
                     Text("foot").height(20).gridRow(2)
                 }
                 .rows(.auto, .fill, .auto)

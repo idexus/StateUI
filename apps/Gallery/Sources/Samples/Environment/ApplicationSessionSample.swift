@@ -44,7 +44,8 @@ struct ApplicationSessionSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
 
             // No `.motion` here: the panel takes the application's.
-            Rectangle().fill(wide ? Palette.accent : Palette.brand)
+            Rectangle()
+                .fill(wide ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
                 .height(60)
                 .cornerRadius(8)

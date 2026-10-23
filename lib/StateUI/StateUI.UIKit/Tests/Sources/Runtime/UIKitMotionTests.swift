@@ -126,9 +126,15 @@ final class UIKitMotionTests: XCTestCase {
         let host = UIKitRenderer.running(clock: clock) {
             VStack {
                 if joined.wrappedValue {
-                    Rectangle().fill(Color(red: 255, green: 0, blue: 0)).height(40).id("joining")
+                    Rectangle()
+                        .fill(Color(red: 255, green: 0, blue: 0))
+                        .height(40)
+                        .id("joining")
                 }
-                Rectangle().fill(Color(red: 0, green: 0, blue: 255)).height(40).id("below")
+                Rectangle()
+                    .fill(Color(red: 0, green: 0, blue: 255))
+                    .height(40)
+                    .id("below")
             }
             .motion(.eased(.milliseconds(1000), .linear))
         }
@@ -162,11 +168,19 @@ final class UIKitMotionTests: XCTestCase {
         let host = UIKitRenderer.running(clock: clock) {
             VStack {
                 VStack {
-                    Rectangle().fill(Color(red: 255, green: 0, blue: 0)).height(40).isVisible(shown.wrappedValue)
-                    Rectangle().fill(Color(red: 0, green: 255, blue: 0)).height(40)
+                    Rectangle()
+                        .fill(Color(red: 255, green: 0, blue: 0))
+                        .height(40)
+                        .isVisible(shown.wrappedValue)
+                    Rectangle()
+                        .fill(Color(red: 0, green: 255, blue: 0))
+                        .height(40)
                 }
                 .spacing(0)
-                Rectangle().fill(Color(red: 0, green: 0, blue: 255)).height(40).id("below")
+                Rectangle()
+                    .fill(Color(red: 0, green: 0, blue: 255))
+                    .height(40)
+                    .id("below")
             }
             .spacing(0)
             .motion(.eased(.milliseconds(1000), .linear))

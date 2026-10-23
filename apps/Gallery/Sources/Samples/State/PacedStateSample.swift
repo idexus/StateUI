@@ -57,7 +57,8 @@ struct PacedStateSample: SampleContent, ExampleContent {
             .background(Palette.well)
             .samples($fade, into: $shown, .every(.milliseconds(100)))
 
-            Rectangle().fill(Palette.accent)
+            Rectangle()
+                .fill(Palette.accent)
                 .height(60)
                 .cornerRadius(8)
                 .opacity($fade)

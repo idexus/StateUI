@@ -3,7 +3,8 @@
 
 /// A rectangle whose shorter sides round whole, filling the room it is given - a pill, a badge, a track.
 ///
-///     Capsule().fill(.teal)
+///     Capsule()
+///         .fill(.teal)
 ///         .width(120)
 ///         .height(32)
 ///

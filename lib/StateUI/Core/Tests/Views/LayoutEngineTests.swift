@@ -40,7 +40,10 @@ final class LayoutEngineTests: XCTestCase {
     /// stands, a new one takes a number never given, and naming one spells nothing.
     func testASlotIsItsItemsOwnIdentity() {
         let tags = [Tag(1), Tag(2)]
-        let engine = LayoutEngine(tags, id: \.self) { _ in Rectangle().fill(.red) } placements: { _, _ in [] }
+        let engine = LayoutEngine(tags, id: \.self) { _ in
+            Rectangle()
+                .fill(.red)
+        } placements: { _, _ in [] }
         let texts = Renderer.shared.texts
 
         let slots = engine.run.slots

@@ -15,7 +15,13 @@
             ConformanceCase("aRectangleFillsItsRoom", proves: [
                 Covered(RectangleContract.self),
             ], needs: [Covered(FilledShapeContract.fill, on: "Rectangle")]) { s in
-                s.start { VStack { Rectangle().fill(.red).width(100).height(60).id("shape") }.horizontalAlignment(.start) }
+                s.start { VStack {
+                    Rectangle()
+                        .fill(.red)
+                        .width(100)
+                        .height(60)
+                        .id("shape")
+                }.horizontalAlignment(.start) }
                 let shape = try s.element("shape")
 
                 try s.settle { try s.shows(.red, on: shape, at: Point(50, 30)) }
@@ -28,7 +34,12 @@
                 let square = State(wrappedValue: false)
                 s.start {
                     VStack {
-                        Rectangle().fill(.red).cornerRadius(square.wrappedValue ? 0 : 20).width(100).height(60).id("shape")
+                        Rectangle()
+                            .fill(.red)
+                            .cornerRadius(square.wrappedValue ? 0 : 20)
+                            .width(100)
+                            .height(60)
+                            .id("shape")
                         Button("Square").onClicked { square.wrappedValue = true }.id("change")
                     }
                     .horizontalAlignment(.start)
@@ -48,7 +59,11 @@
                 let color = State(wrappedValue: Color.red)
                 s.start {
                     VStack {
-                        Rectangle().fill(color.projectedValue).width(100).height(60).id("shape")
+                        Rectangle()
+                            .fill(color.projectedValue)
+                            .width(100)
+                            .height(60)
+                            .id("shape")
                         Button("Blue").onClicked { color.wrappedValue = .blue }.id("change")
                     }
                     .horizontalAlignment(.start)

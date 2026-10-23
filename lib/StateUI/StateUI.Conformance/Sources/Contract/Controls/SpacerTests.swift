@@ -24,9 +24,15 @@
                 VStack {
                     Stacked.stack(stack, spacing: 8) {
                         [
-                            Rectangle().fill(.red).width(20).height(20),
+                            Rectangle()
+                                .fill(.red)
+                                .width(20)
+                                .height(20),
                             Spacer(),
-                            Rectangle().fill(.blue).width(20).height(20)
+                            Rectangle()
+                                .fill(.blue)
+                                .width(20)
+                                .height(20)
                                 .onEvent(ViewContract.frameChanged) { last.values.append($0) },
                         ]
                     }

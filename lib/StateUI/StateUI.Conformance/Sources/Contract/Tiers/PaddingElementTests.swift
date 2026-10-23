@@ -33,7 +33,12 @@
             s.start {
                 VStack {
                     Padded.layout(element, padding: wide.wrappedValue ? Insets(start: 20, top: 12, end: 0, bottom: 0) : Insets(start: 10, top: 6, end: 0, bottom: 0)) {
-                        Rectangle().fill(.red).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
+                        Rectangle()
+                            .fill(.red)
+                            .width(20)
+                            .height(20)
+                            .horizontalAlignment(.start)
+                            .verticalAlignment(.start)
                             .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
                     }
                     Button("Wider").onClicked { wide.wrappedValue = true }.id("change")

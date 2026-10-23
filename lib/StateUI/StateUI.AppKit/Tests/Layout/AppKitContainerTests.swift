@@ -725,12 +725,24 @@ final class AppKitContainerTests: XCTestCase {
     func testALayoutThatClipsCutsWhatItHoldsToItsShape() throws {
         let renderer = AppKitRenderer.running {
             VStack {
-                ZStack { Rectangle().fill(Color(hex: 0xFF0000)) }.shape(.roundedRectangle(16)).clipsContent(true)
+                ZStack {
+                    Rectangle()
+                        .fill(Color(hex: 0xFF0000))
+                }.shape(.roundedRectangle(16)).clipsContent(true)
                     .width(100).height(100)
-                ZStack { Rectangle().fill(Color(hex: 0xFF0000)) }
+                ZStack {
+                    Rectangle()
+                        .fill(Color(hex: 0xFF0000))
+                }
                     .shape(.ellipse).clipsContent(true).width(100).height(60)
-                ZStack { Rectangle().fill(Color(hex: 0xFF0000)) }.clipsContent(true).width(100).height(40)
-                ZStack { Rectangle().fill(Color(hex: 0xFF0000)) }.shape(.roundedRectangle(16)).width(100).height(40)
+                ZStack {
+                    Rectangle()
+                        .fill(Color(hex: 0xFF0000))
+                }.clipsContent(true).width(100).height(40)
+                ZStack {
+                    Rectangle()
+                        .fill(Color(hex: 0xFF0000))
+                }.shape(.roundedRectangle(16)).width(100).height(40)
             }
         }
         defer { renderer.closeForTesting() }

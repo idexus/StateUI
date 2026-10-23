@@ -19,7 +19,8 @@
                 s.start {
                     VStack {
                         LayoutEngine([0, 1]) { index in
-                            Rectangle().fill(index == 0 ? .red : .blue)
+                            Rectangle()
+                                .fill(index == 0 ? .red : .blue)
                                 .onEvent(ViewContract.frameChanged) { (index == 0 ? first : second).values.append($0) }
                         } placements: { _, _ in
                             [Placement(Rect(0, 0, 20, 10)), Placement(Rect(30, 10, 20, 20))]
@@ -47,7 +48,10 @@
                 let width = State(wrappedValue: 60.0)
                 s.start {
                     VStack {
-                        LayoutEngine([0]) { _ in Rectangle().fill(.red) } placements: { room, _ in
+                        LayoutEngine([0]) { _ in
+                            Rectangle()
+                                .fill(.red)
+                        } placements: { room, _ in
                             rooms.values.append(room)
                             return [Placement(Rect(0, 0, 10, 10))]
                         }
@@ -68,11 +72,24 @@
                 let (above, below) = (Received<[Double]>(), Received<[Double]>())
                 s.start {
                     VStack {
-                        Rectangle().fill(.blue).width(20).height(10).onEvent(ViewContract.frameChanged) { above.values.append($0) }
-                        LayoutEngine([0]) { _ in Rectangle().fill(.red).width(40).height(40) } placements: { room, _ in
+                        Rectangle()
+                            .fill(.blue)
+                            .width(20)
+                            .height(10)
+                            .onEvent(ViewContract.frameChanged) { above.values.append($0) }
+                        LayoutEngine([0]) { _ in
+                            Rectangle()
+                                .fill(.red)
+                                .width(40)
+                                .height(40)
+                        } placements: { room, _ in
                             [Placement(room)]
                         }
-                        Rectangle().fill(.green).width(20).height(10).onEvent(ViewContract.frameChanged) { below.values.append($0) }
+                        Rectangle()
+                            .fill(.green)
+                            .width(20)
+                            .height(10)
+                            .onEvent(ViewContract.frameChanged) { below.values.append($0) }
                     }
                     .spacing(0)
                     .horizontalAlignment(.start)
@@ -98,7 +115,10 @@
                 let (handed, arrived) = (Received<Double>(), Received<Bool>())
                 s.start(clock: clock) {
                     VStack {
-                        LayoutEngine([0]) { _ in Rectangle().fill(.red) } placements: { _, phase in
+                        LayoutEngine([0]) { _ in
+                            Rectangle()
+                                .fill(.red)
+                        } placements: { _, phase in
                             handed.values.append(phase)
                             return [Placement(Rect(phase * 10, 0, 20, 20))]
                         }
@@ -135,7 +155,10 @@
                 let (handed, arrived) = (Received<Orbit>(), Received<Bool>())
                 s.start(clock: clock) {
                     VStack {
-                        LayoutEngine([0]) { _ in Rectangle().fill(.red) } placements: { _, phase in
+                        LayoutEngine([0]) { _ in
+                            Rectangle()
+                                .fill(.red)
+                        } placements: { _, phase in
                             handed.values.append(phase)
                             return [Placement(Rect(phase.turn * 10, 0, 20 * phase.zoom, 20))]
                         }
@@ -319,7 +342,10 @@ private func itemLayout(
 ) throws -> MountedElement {
     s.start(clock: clock) {
         VStack {
-            let layout = LayoutEngine([0, 1, 2]) { _ in Rectangle().fill(.red) } placements: { _, at in
+            let layout = LayoutEngine([0, 1, 2]) { _ in
+                Rectangle()
+                    .fill(.red)
+            } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 30, 10, 20, 20)) }
             }
             .phase(phase.projectedValue)
@@ -355,7 +381,10 @@ private struct Orbit: LayoutPhase {
 private func handLayout(_ s: Session, clock: TestClock, phase: State<Double>) throws -> MountedElement {
     s.start(clock: clock) {
         VStack {
-            LayoutEngine([0, 1, 2]) { _ in Rectangle().fill(.red) } placements: { _, at in
+            LayoutEngine([0, 1, 2]) { _ in
+                Rectangle()
+                    .fill(.red)
+            } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 50 + 40, 0, 20, 20)) }
             }
             .phase(phase.projectedValue)
@@ -384,7 +413,10 @@ private struct Square: LayoutPhase {
 private func panLayout(_ s: Session, clock: TestClock, square: State<Square>) throws -> MountedElement {
     s.start(clock: clock) {
         VStack {
-            LayoutEngine([0, 1, 2]) { _ in Rectangle().fill(.red) } placements: { _, at in
+            LayoutEngine([0, 1, 2]) { _ in
+                Rectangle()
+                    .fill(.red)
+            } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at.x) * 50 + 40, 60 - at.y * 50, 20, 20)) }
             }
             .phase(square.projectedValue)
@@ -408,7 +440,10 @@ private func fingersLayout(
 ) throws -> MountedElement {
     s.start(clock: clock) {
         VStack {
-            LayoutEngine([0, 1, 2]) { _ in Rectangle().fill(.red) } placements: { _, at in
+            LayoutEngine([0, 1, 2]) { _ in
+                Rectangle()
+                    .fill(.red)
+            } placements: { _, at in
                 (0..<3).map { Placement(Rect(Double($0) * 80 + 20, 60, 40 * at, 40)) }
             }
             .phase(phase.projectedValue)

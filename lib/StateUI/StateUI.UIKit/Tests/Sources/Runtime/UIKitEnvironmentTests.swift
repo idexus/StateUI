@@ -107,7 +107,10 @@ final class UIKitEnvironmentTests: XCTestCase {
         }
         let heard = Received<[Bool]>()
         let host = UIKitRenderer.running {
-            VStack { Rectangle().fill(.steelBlue) }
+            VStack {
+                Rectangle()
+                    .fill(.steelBlue)
+            }
                 .onFrameChanged { room in
                     heard.values.append([
                         room.width > room.height, StandardEnvironment.device.display.orientation == .landscape,

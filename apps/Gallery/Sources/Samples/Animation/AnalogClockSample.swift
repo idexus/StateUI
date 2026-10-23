@@ -66,7 +66,8 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             // margin(2x, 2y, 0, 0) shifts a centered view by (x, y).
             ForEach(Array(Self.marks.enumerated()), id: \.offset) { pair in
                 let (x, y, wide, tall) = pair.element
-                return Rectangle().fill(Palette.accent)
+                return Rectangle()
+                    .fill(Palette.accent)
                     .cornerRadius(min(wide, tall) / 2)
                     .opacity(wide == tall ? 0.5 : 1)
                     .width(wide)
@@ -213,7 +214,8 @@ struct AnalogClockSample: SampleContent, ExampleContent {
         _ angle: Binding<Double>,
         length: Double, width: Double, color: Color
     ) -> some View {
-        Rectangle().fill(color)
+        Rectangle()
+            .fill(color)
             .rotation(angle)
             .width(width)
             .height(length)

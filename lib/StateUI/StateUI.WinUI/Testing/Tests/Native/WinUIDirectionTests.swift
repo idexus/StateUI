@@ -49,8 +49,14 @@ final class WinUIDirectionTests: XCTestCase {
     func testARowRightToLeftFillsFromTheRight() throws {
         let colors = try drawnRightToLeft(at: [(90, 10), (70, 10), (10, 10)]) {
             HStack {
-                Rectangle().fill(Color(hex: 0xFF0000)).width(20).height(20)
-                Rectangle().fill(Color(hex: 0x0000FF)).width(20).height(20)
+                Rectangle()
+                    .fill(Color(hex: 0xFF0000))
+                    .width(20)
+                    .height(20)
+                Rectangle()
+                    .fill(Color(hex: 0x0000FF))
+                    .width(20)
+                    .height(20)
             }
             .spacing(0)
         }

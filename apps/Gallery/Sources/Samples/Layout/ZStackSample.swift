@@ -25,11 +25,13 @@ private struct Areas: ExampleContent {
             // differ asks, so the only closure this switch rebuilds is that one.
             ZStack {
                 // No area: the whole room, filled.
-                Rectangle().fill(Palette.outline)
+                Rectangle()
+                    .fill(Palette.outline)
 
                 // The panel fills the area it names: the right half of the
                 // room, or 120 by 60 at 16, 16 whatever the room's size.
-                Rectangle().fill(Color(hex: 0x1E88E5))
+                Rectangle()
+                    .fill(Color(hex: 0x1E88E5))
                     .area(proportional ? .proportional(0.5, 0, 0.5, 1) : .absolute(16, 16, 120, 60))
 
                 // Its natural size, where its alignments put it.
@@ -67,13 +69,15 @@ private struct Layers: ExampleContent {
             // Left alone, the child written last is drawn on top; the higher
             // zIndex is nearer the front, and nothing moves.
             ZStack {
-                Rectangle().fill(Color(hex: 0xE53935))
+                Rectangle()
+                    .fill(Color(hex: 0xE53935))
                     .width(150)
                     .height(70)
                     .horizontalAlignment(.start)
                     .zIndex(redInFront ? 1 : 0)
 
-                Rectangle().fill(Color(hex: 0x1E88E5))
+                Rectangle()
+                    .fill(Color(hex: 0x1E88E5))
                     .width(150)
                     .height(70)
                     .horizontalAlignment(.end)

@@ -192,21 +192,31 @@ struct ArrangedBeneath: View {
                     Text("Sections")
                 } detail: {
                     NavigationStack(path.projectedValue) {
-                        Rectangle().fill(Color(hex: 0x0F766E)).id("inbox")
+                        Rectangle()
+                            .fill(Color(hex: 0x0F766E))
+                            .id("inbox")
                     } destination: { _ in
-                        Rectangle().fill(Color(hex: 0xC2410C)).id("pushed")
+                        Rectangle()
+                            .fill(Color(hex: 0xC2410C))
+                            .id("pushed")
                     }
                 }
             } else {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                    Rectangle().fill(Color(hex: 0x374151)).id("first")
+                    Rectangle()
+                        .fill(Color(hex: 0x374151))
+                        .id("first")
                 } destination: { _ in
                     Text("Next")
                 }
             }
         }
         .sheet(isPresented: shows.projectedValue) {
-            Rectangle().fill(Color(hex: 0x512BD4)).width(240).height(160).id("sheet")
+            Rectangle()
+                .fill(Color(hex: 0x512BD4))
+                .width(240)
+                .height(160)
+                .id("sheet")
         }
     }
 }

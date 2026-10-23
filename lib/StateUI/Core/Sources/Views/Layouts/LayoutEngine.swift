@@ -10,7 +10,8 @@
 ///     @State private var turn = 0.0
 ///
 ///     LayoutEngine(planets, id: \.name) { planet in
-///         Ellipse().fill(planet.color)
+///         Ellipse()
+///             .fill(planet.color)
 ///     } placements: { room, phase in
 ///         planets.indices.map { index in
 ///             let angle = (Double(index) - phase) / Double(planets.count) * 2 * .pi
@@ -344,7 +345,10 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
 
     /// What to draw over a placed view to darken it, at the opacity its placement answers as `shade`.
     ///
-    ///     .shade(Rectangle().fill(.black).cornerRadius(14))
+    ///     .shade(
+    ///         Rectangle()
+    ///             .fill(.black)
+    ///             .cornerRadius(14))
     ///
     /// Give it the corners the views have. Where views overlap, a shade darkens a far view without showing the
     /// one behind it, as fading it would.

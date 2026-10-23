@@ -195,7 +195,9 @@
                 VStack {
                     ZStack {
                         Specimens.view(element, [Write(VisualElementContract.zIndex, depth.wrappedValue)])
-                        Rectangle().fill(.blue).id("cover")
+                        Rectangle()
+                            .fill(.blue)
+                            .id("cover")
                     }
                     .width(120).height(80).id("layers")
                     Button("Lower").onClicked { depth.wrappedValue = -1 }.id("change")
@@ -319,8 +321,16 @@
             let direction = State(wrappedValue: LayoutDirection.leftToRight)
             s.start {
                 VStack {
-                    Specimens.holding(layout, Rectangle().fill(.red).width(60).height(30).horizontalAlignment(.start)
-                        .verticalAlignment(.start).frame(room.projectedValue), [
+                    Specimens.holding(
+                        layout,
+                        Rectangle()
+                            .fill(.red)
+                            .width(60)
+                            .height(30)
+                            .horizontalAlignment(.start)
+                            .verticalAlignment(.start)
+                            .frame(room.projectedValue),
+                        [
                             Write(VisualElementContract.layoutDirection, direction.wrappedValue),
                             Write(VisualElementContract.width, 200), Write(VisualElementContract.height, 100),
                         ])

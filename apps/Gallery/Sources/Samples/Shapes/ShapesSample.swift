@@ -26,21 +26,25 @@ struct ShapesSample: SampleContent, ExampleContent {
             SectionTitle("Filled")
 
             HStack {
-                Rectangle().fill(Palette.accent)
+                Rectangle()
+                    .fill(Palette.accent)
                     .width(56)
                     .height(56)
 
-                Rectangle().fill(Palette.accent)
+                Rectangle()
+                    .fill(Palette.accent)
                     .cornerRadius(14)
                     .width(56)
                     .height(56)
 
-                Rectangle().fill(Palette.accent)
+                Rectangle()
+                    .fill(Palette.accent)
                     .cornerRadius(topLeft: 22, topRight: 4, bottomLeft: 4, bottomRight: 22)
                     .width(56)
                     .height(56)
 
-                Ellipse().fill(Palette.accent)
+                Ellipse()
+                    .fill(Palette.accent)
                     .width(56)
                     .height(56)
             }
@@ -49,11 +53,13 @@ struct ShapesSample: SampleContent, ExampleContent {
 
             // A capsule's ends stay round at every size: wide, tall, or square.
             HStack {
-                Capsule().fill(Palette.accent)
+                Capsule()
+                    .fill(Palette.accent)
                     .width(120)
                     .height(40)
 
-                Capsule().fill(Palette.accent)
+                Capsule()
+                    .fill(Palette.accent)
                     .width(40)
                     .height(80)
             }
@@ -110,7 +116,8 @@ struct ShapesSample: SampleContent, ExampleContent {
                         .width(56)
                         .height(56)
 
-                    Rectangle().fill(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .cornerRadius(14)
                         .geometryTransform(.scaleX(0.6).skew(20, 0))
                         .width(56)

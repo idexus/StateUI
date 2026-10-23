@@ -104,7 +104,8 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                 .text("Bold shade")
                 .onToggled { on in shade = on ? .bold : .quiet }
 
-            Rectangle().fill(shade == .bold ? Palette.accent : Palette.well)
+            Rectangle()
+                .fill(shade == .bold ? Palette.accent : Palette.well)
                 .height(48)
                 .cornerRadius(8)
         }

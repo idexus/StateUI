@@ -10,7 +10,8 @@ public protocol FilledShape: Shape, FilledShapeProperties {}
 extension FilledShapeProperties {
     /// What the inside of the shape is painted with.
     ///
-    ///     Ellipse().fill(.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)]))
+    ///     Ellipse()
+    ///         .fill(.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)]))
     public func fill(_ value: Brush) -> Modified { setValue(FilledShapeContract.fill, value) }
 
     /// The same, in one color - `.fill(.solidColor(color))` said shortly.

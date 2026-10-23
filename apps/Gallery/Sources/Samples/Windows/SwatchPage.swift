@@ -15,7 +15,8 @@ struct SwatchPage: View {
 
     var body: some View {
         VStack {
-            Rectangle().fill(SwatchPage.color(of: number))
+            Rectangle()
+                .fill(SwatchPage.color(of: number))
                 .height(150)
                 .cornerRadius(12)
 

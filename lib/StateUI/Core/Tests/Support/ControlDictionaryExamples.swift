@@ -111,13 +111,15 @@ extension ControlDictionary {
             """#),
 
         (EllipseContract.self, #"""
-            Ellipse().fill(.tomato)
+            Ellipse()
+                .fill(.tomato)
                 .width(48)
                 .height(48)
             """#),
 
         (CapsuleContract.self, #"""
-            Capsule().fill(.teal)
+            Capsule()
+                .fill(.teal)
                 .width(120)
                 .height(32)
             """#),
@@ -589,7 +591,8 @@ extension ControlDictionary {
 
         (ZStackContract.self, #"""
             ZStack {
-                Rectangle().fill(.cornflowerBlue)
+                Rectangle()
+                    .fill(.cornflowerBlue)
                 Text("Bottom right")
                     .horizontalAlignment(.end)
                     .verticalAlignment(.end)

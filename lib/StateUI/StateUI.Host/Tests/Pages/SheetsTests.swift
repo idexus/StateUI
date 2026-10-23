@@ -216,13 +216,19 @@ private struct GroupSheetPage: View {
     var body: some View {
         Group {
             if Sheets.picking.wrappedValue {
-                Rectangle().fill(.steelBlue).id("first")
+                Rectangle()
+                    .fill(.steelBlue)
+                    .id("first")
             } else {
                 Text("Other")
             }
         }
         .sheet(isPresented: Sheets.editing.projectedValue) {
-            Rectangle().fill(.firebrick).width(240).height(160).id("sheet")
+            Rectangle()
+                .fill(.firebrick)
+                .width(240)
+                .height(160)
+                .id("sheet")
         }
     }
 }

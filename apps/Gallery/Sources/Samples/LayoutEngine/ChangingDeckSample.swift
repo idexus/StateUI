@@ -185,12 +185,14 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
     private func face(_ card: Card, large: Bool) -> some View {
         let disc = large ? 88.0 : 56.0
         return ZStack {
-            Rectangle().fill(card.color)
+            Rectangle()
+                .fill(card.color)
                 .cornerRadius(20)
 
             VStack {
                 ZStack {
-                    Rectangle().fill(.white)
+                    Rectangle()
+                        .fill(.white)
                         .cornerRadius(disc / 2)
                         .opacity(0.3)
 

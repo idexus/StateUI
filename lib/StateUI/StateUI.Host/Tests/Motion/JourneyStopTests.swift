@@ -121,7 +121,8 @@ private struct StageView: View {
     var body: some View {
         VStack {
             Text(playing ? "playing" : "stopped")
-            Rectangle().fill(.white)
+            Rectangle()
+                .fill(.white)
                 .opacity($fade)
                 .background($wash)
         }

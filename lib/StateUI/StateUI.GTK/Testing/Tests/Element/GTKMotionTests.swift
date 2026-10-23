@@ -194,9 +194,19 @@ final class GTKMotionTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     ZStack {
-                        Rectangle().fill(.red).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
+                        Rectangle()
+                            .fill(.red)
+                            .width(20)
+                            .height(20)
+                            .horizontalAlignment(.start)
+                            .verticalAlignment(.start)
                             .translationX(30).translationY(30)
-                        Rectangle().fill(.blue).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
+                        Rectangle()
+                            .fill(.blue)
+                            .width(20)
+                            .height(20)
+                            .horizontalAlignment(.start)
+                            .verticalAlignment(.start)
                             .translationX(60).rotation(45)
                     }.width(100).height(100).id("room")
                 }.horizontalAlignment(.start).verticalAlignment(.start)

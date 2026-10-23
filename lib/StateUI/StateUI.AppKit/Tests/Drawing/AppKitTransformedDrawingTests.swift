@@ -17,7 +17,10 @@ final class AppKitTransformedDrawingTests: XCTestCase {
     func testAViewUnderATransformDrawsWhole() throws {
         let renderer = AppKitRenderer.running {
             ZStack {
-                LayoutEngine(["turned", "straight"]) { _ in Rectangle().fill(.red) } placements: { room, _ in
+                LayoutEngine(["turned", "straight"]) { _ in
+                    Rectangle()
+                        .fill(.red)
+                } placements: { room, _ in
                     [
                         Placement(Rect(room.width - 40, 10, 80, 80), transform: .rotate(30)),
                         Placement(Rect(room.width - 40, 110, 80, 80)),

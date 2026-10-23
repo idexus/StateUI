@@ -39,8 +39,12 @@ final class AppKitGestureTests: XCTestCase {
         let totals = Received<Double>()
         let renderer = AppKitRenderer.running {
             VStack {
-                Rectangle().fill(.red).onPanUpdated(touchCount: 1) { totals.values.append($0.totalX) }
-                Rectangle().fill(.blue).onPanUpdated(touchCount: 2) { totals.values.append($0.totalX) }
+                Rectangle()
+                    .fill(.red)
+                    .onPanUpdated(touchCount: 1) { totals.values.append($0.totalX) }
+                Rectangle()
+                    .fill(.blue)
+                    .onPanUpdated(touchCount: 2) { totals.values.append($0.totalX) }
             }
         }
         defer { renderer.closeForTesting() }

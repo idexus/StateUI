@@ -17,9 +17,18 @@ struct LayeredBoxes: View {
     var body: some View {
         VStack {
             ZStack {
-                Rectangle().fill(.red).width(10).zIndex(blueInFront ? 0 : 1)
-                Rectangle().fill(.blue).width(20).zIndex(blueInFront ? 1 : 0)
-                Rectangle().fill(.green).width(30).zIndex($green)
+                Rectangle()
+                    .fill(.red)
+                    .width(10)
+                    .zIndex(blueInFront ? 0 : 1)
+                Rectangle()
+                    .fill(.blue)
+                    .width(20)
+                    .zIndex(blueInFront ? 1 : 0)
+                Rectangle()
+                    .fill(.green)
+                    .width(30)
+                    .zIndex($green)
             }
             .width(40)
             .height(40)
@@ -45,7 +54,8 @@ final class WinUIZStackViewTests: XCTestCase {
             let host = WinUIRenderer.running(clock: clock) {
                 VStack {
                     LayoutEngine(["back", "front"]) { name in
-                        Rectangle().fill(name == "back" ? .red : .blue)
+                        Rectangle()
+                            .fill(name == "back" ? .red : .blue)
                     } placements: { room, phase in
                         phase < 1
                             ? [Placement(room), Placement(room)]
@@ -104,7 +114,10 @@ final class WinUIZStackViewTests: XCTestCase {
         onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
-                    ZStack { Rectangle().fill(.red) }
+                    ZStack {
+                        Rectangle()
+                            .fill(.red)
+                    }
                         .padding(10)
                         .background(Color(hex: 0x00FF00))
                         .stroke(Color(hex: 0x0000FF))
@@ -114,12 +127,18 @@ final class WinUIZStackViewTests: XCTestCase {
                         .width(100)
                         .height(80)
                         .horizontalAlignment(.start)
-                    ZStack { Rectangle().fill(.red) }
+                    ZStack {
+                        Rectangle()
+                            .fill(.red)
+                    }
                         .shape(.roundedRectangle(20))
                         .width(100)
                         .height(80)
                         .horizontalAlignment(.start)
-                    ZStack { Rectangle().fill(.red) }
+                    ZStack {
+                        Rectangle()
+                            .fill(.red)
+                    }
                         .shape(.roundedRectangle(20))
                         .clipsContent(true)
                         .width(100)

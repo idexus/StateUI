@@ -66,7 +66,8 @@ struct MotionSample: SampleContent, ExampleContent {
                 .tracking(1)
                 .textColor(Palette.subtle)
 
-            Rectangle().fill(Palette.brand)
+            Rectangle()
+                .fill(Palette.brand)
                 .width($reach)
                 .height(24)
                 .cornerRadius(6)
@@ -88,7 +89,8 @@ struct MotionSample: SampleContent, ExampleContent {
     /// One panel, either traveling at the chosen law or arriving at once.
     private func panel(travels: Bool) -> some View {
         // `.motion` is per view: the chosen law, or `.none` to arrive at once.
-        Rectangle().fill(warm ? Palette.accent : Palette.brand)
+        Rectangle()
+            .fill(warm ? Palette.accent : Palette.brand)
             .width(wide ? 300 : 120)
             .height(wide ? 110 : 56)
             .cornerRadius(wide ? 28 : 8)
@@ -100,7 +102,8 @@ struct MotionSample: SampleContent, ExampleContent {
     /// `.size` takes to be its width and its height - its corners are its
     /// shape, and travel with the rest.
     private func sized() -> some View {
-        Rectangle().fill(warm ? Palette.accent : Palette.brand)
+        Rectangle()
+            .fill(warm ? Palette.accent : Palette.brand)
             .width(wide ? 300 : 120)
             .height(wide ? 110 : 56)
             .cornerRadius(wide ? 28 : 8)

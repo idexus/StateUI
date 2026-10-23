@@ -41,7 +41,8 @@ private struct DragPage: View {
     var body: some View {
         VStack {
             Text("x \(Int(x)) \(said)")
-            Rectangle().fill(.steelBlue)
+            Rectangle()
+                .fill(.steelBlue)
                 .width(100)
                 .height(100)
                 .panX($x)

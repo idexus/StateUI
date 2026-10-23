@@ -33,7 +33,8 @@ final class LayoutShownTests: XCTestCase {
             .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
             .motion(.eased(.milliseconds(160), .linear))
 
-            Rectangle().fill(.red)
+            Rectangle()
+                .fill(.red)
                 .engine(following: phase.projectedValue) { _ in read.values.append(phase.projectedValue.journey.value) }
         }
         .node

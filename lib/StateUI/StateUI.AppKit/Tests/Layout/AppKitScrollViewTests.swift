@@ -487,7 +487,9 @@ private struct BoundStrip: View {
     var body: some View {
         VStack {
             ScrollView {
-                Rectangle().fill(Color(hex: 0x3366FF)).height(2_000)
+                Rectangle()
+                    .fill(Color(hex: 0x3366FF))
+                    .height(2_000)
             }
             .scrollOffset($offset)
             .height(300)

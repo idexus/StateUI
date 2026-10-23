@@ -14,7 +14,11 @@ final class WinUIPathViewTests: XCTestCase {
     /// A rectangle fills its room, its corners rounded away.
     func testARectangleFillsItsRoomItsCornersRounded() throws {
         let colors = try drawn(width: 100, height: 60, at: [(50, 30), (50, 1), (1, 1)]) {
-            Rectangle().fill(Color(hex: 0xFF0000)).cornerRadius(20).width(100).height(60)
+            Rectangle()
+                .fill(Color(hex: 0xFF0000))
+                .cornerRadius(20)
+                .width(100)
+                .height(60)
         }
         XCTAssertEqual(colors, [Self.red, Self.red, 0])
     }
@@ -23,7 +27,10 @@ final class WinUIPathViewTests: XCTestCase {
     /// an outline nobody sees (`BoxArithmetic.outlineWidth`).
     func testAShapeWithNoOutlineColorIsFilledToItsEdge() throws {
         let colors = try drawn(width: 100, height: 60, at: [(0.25, 30), (99.75, 30), (50, 0.25)]) {
-            Rectangle().fill(Color(hex: 0xFF0000)).width(100).height(60)
+            Rectangle()
+                .fill(Color(hex: 0xFF0000))
+                .width(100)
+                .height(60)
         }
         XCTAssertEqual(colors, [Self.red, Self.red, Self.red])
     }
@@ -31,7 +38,10 @@ final class WinUIPathViewTests: XCTestCase {
     /// An ellipse fills its room, and nothing beyond its curve.
     func testAnEllipseFillsItsRoom() throws {
         let colors = try drawn(width: 100, height: 60, at: [(50, 30), (5, 30), (3, 3)]) {
-            Ellipse().fill(Color(hex: 0xFF0000)).width(100).height(60)
+            Ellipse()
+                .fill(Color(hex: 0xFF0000))
+                .width(100)
+                .height(60)
         }
         XCTAssertEqual(colors, [Self.red, Self.red, 0])
     }
@@ -69,7 +79,11 @@ final class WinUIPathViewTests: XCTestCase {
     func testAFigureMovedPastItsRoomIsDrawnWhole() throws {
         let colors = try drawn(width: 80, height: 40, at: [(48, 36), (5, 36), (20, 4)]) {
             ZStack {
-                Rectangle().fill(Color(hex: 0xFF0000)).geometryTransform(.skew(20, 0)).width(40).height(40)
+                Rectangle()
+                    .fill(Color(hex: 0xFF0000))
+                    .geometryTransform(.skew(20, 0))
+                    .width(40)
+                    .height(40)
                     .horizontalAlignment(.start).verticalAlignment(.start)
             }
             .width(80).height(40)
@@ -81,7 +95,11 @@ final class WinUIPathViewTests: XCTestCase {
     /// come in from 0 and 100 to about 22 and 73, its middle still covered.
     func testATippedFigureIsSeenInPerspective() throws {
         let colors = try drawn(width: 100, height: 60, at: [(50, 30), (10, 30), (90, 30)]) {
-            Rectangle().fill(Color(hex: 0xFF0000)).rotationY(60).width(100).height(60)
+            Rectangle()
+                .fill(Color(hex: 0xFF0000))
+                .rotationY(60)
+                .width(100)
+                .height(60)
         }
         XCTAssertEqual(colors, [Self.red, 0, 0])
     }
@@ -89,9 +107,12 @@ final class WinUIPathViewTests: XCTestCase {
     /// A gradient runs across the shape it fills.
     func testAGradientRunsAcrossTheShape() throws {
         let colors = try drawn(width: 100, height: 20, at: [(1, 10), (99, 10)]) {
-            Rectangle().fill(.linearGradient(
-                [GradientStop(Color(hex: 0xFF0000), 0), GradientStop(Color(hex: 0x0000FF), 1)],
-                startPoint: Point(0, 0), endPoint: Point(1, 0))).width(100).height(20)
+            Rectangle()
+                .fill(.linearGradient(
+                    [GradientStop(Color(hex: 0xFF0000), 0), GradientStop(Color(hex: 0x0000FF), 1)],
+                    startPoint: Point(0, 0), endPoint: Point(1, 0)))
+                .width(100)
+                .height(20)
         }
         XCTAssertGreaterThan(colors[0] >> 16 & 0xFF, 0xE0, "red at the start")
         XCTAssertGreaterThan(colors[1] & 0xFF, 0xE0, "blue at the end")

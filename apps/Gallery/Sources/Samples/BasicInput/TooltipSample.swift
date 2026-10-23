@@ -41,7 +41,8 @@ struct TooltipSample: SampleContent, ExampleContent {
                     .tooltip(detailed ? "Opens the stacks, grids and placement" : "Layout")
 
                 // Any view takes one, not only a control.
-                Rectangle().fill(Palette.accent)
+                Rectangle()
+                    .fill(Palette.accent)
                     .width(48)
                     .height(48)
                     .tooltip(detailed ? "The color the gallery marks things with" : "Accent")

@@ -5,7 +5,8 @@
 An oval filling the room it is given - a circle when that room is square.
 
 ```swift
-Ellipse().fill(.tomato)
+Ellipse()
+    .fill(.tomato)
     .width(48)
     .height(48)
 ```

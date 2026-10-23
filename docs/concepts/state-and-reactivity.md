@@ -450,7 +450,8 @@ value travels:
 @State var width = 80.0
 
 VStack {
-    Rectangle().fill(.cornflowerBlue)
+    Rectangle()
+        .fill(.cornflowerBlue)
         .width($width)
         .height(24)
 
@@ -526,7 +527,8 @@ struct SpringDot: View {
 
     var body: some View {
         VStack {
-            Rectangle().fill(.cornflowerBlue)
+            Rectangle()
+                .fill(.cornflowerBlue)
                 .width(28)
                 .height(28)
                 .translationY($y)
