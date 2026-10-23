@@ -42,7 +42,11 @@ final class AndroidSplitView: AndroidLayoutView {
     private let scrim = AndroidView { _ in Java.new(JavaAPI.view, JavaAPI.newView, .object(AndroidRenderer.context)) }
     private var drawerWidth = 0.0
 
-    override init() {
+    /// Whether the user asks for less motion: the sidebar beside the detail then shows and hides at once.
+    private let reducesMotion: () -> Bool
+
+    init(reducesMotion: @escaping () -> Bool = { false }) {
+        self.reducesMotion = reducesMotion
         super.init()
         Java.call(scrim.reference, JavaAPI.setBackgroundColor, .int(0x6600_0000))
         Java.call(scrim.reference, JavaAPI.setAlpha, .float(0))
@@ -64,14 +68,40 @@ final class AndroidSplitView: AndroidLayoutView {
         drawer.forgetMeasurements()
     }
 
-    /// Shows or hides the sidebar, sliding where it slides over the detail.
+    /// Shows or hides the sidebar: sliding over the detail, or beside it moving in or out as the detail narrows or
+    /// widens.
     func present(_ presented: Bool) {
         guard presented != isPresented else { return }
 
         isPresented = presented
+        if !overlays { moveBeside() }
         showDrawer(animated: overlays)
         if !overlays { invalidateMeasurements() }
     }
+
+    /// Begins Android's transition over the change the next frame lays out: the sidebar sliding in from the edge
+    /// the language starts from or out toward it, the detail's bounds following, on one easing and length.
+    /// Design: docs/design/platforms/android/pages.md#a-split-view
+    private func moveBeside() {
+        guard !reducesMotion() else { return }
+        let transitions = Java.new(JavaAPI.transitionSet, JavaAPI.newTransitionSet)
+        let easing = Java.new(
+            JavaAPI.pathInterpolator, JavaAPI.newPathInterpolator, .float(0.4), .float(0), .float(0.2), .float(1))
+        Java.release(local: Java.callObject(
+            transitions.reference, JavaAPI.setTransitionsInterpolator, .object(easing.reference)))
+        Java.release(local: Java.callObject(transitions.reference, JavaAPI.setTransitionsDuration, .long(Self.slide)))
+        let slide = Java.new(JavaAPI.slide, JavaAPI.newSlide, .int(Self.start))
+        let bounds = Java.new(JavaAPI.changeBounds, JavaAPI.newChangeBounds)
+        for transition in [slide, bounds] {
+            Java.release(local: Java.callObject(
+                transitions.reference, JavaAPI.addTransition, .object(transition.reference)))
+        }
+        Java.callStatic(
+            JavaAPI.transitionManager, JavaAPI.beginDelayedTransition, .object(reference), .object(transitions.reference))
+    }
+
+    /// `Gravity.START`: the edge the sidebar slides from, turned over for a language written from the right.
+    private static let start: Int32 = 0x0080_0003
 
     override func contentSize(width: Double?) -> LayoutSize {
         SingleChildArithmetic.size(of: items.dropFirst().first, width: width)

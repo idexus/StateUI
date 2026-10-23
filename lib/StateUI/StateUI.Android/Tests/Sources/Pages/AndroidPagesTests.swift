@@ -20,6 +20,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testAPushAndAPopAreHeardByThePagesInOrder", testAPushAndAPopAreHeardByThePagesInOrder),
             ("testTheBarOpensTheSidebarAndBackClosesIt", testTheBarOpensTheSidebarAndBackClosesIt),
             ("testTheBarHidesAndShowsTheSidebarBesideTheDetail", testTheBarHidesAndShowsTheSidebarBesideTheDetail),
+            ("testTheSidebarBesideTheDetailSlidesAsItHides", testTheSidebarBesideTheDetailSlidesAsItHides),
             ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
             ("testASidebarWithNoPictureOpensFromTheMenuGlyph", testASidebarWithNoPictureOpensFromTheMenuGlyph),
             ("testAClosedDrawerStandsInvisible", testAClosedDrawerStandsInvisible),
@@ -315,6 +316,40 @@ final class AndroidPagesTests: XCTestCase {
             navigation.bar.clicked()
             XCTAssertTrue(open.wrappedValue)
             XCTAssertTrue(split.isPresented)
+        }
+    }
+
+    /// Beside the detail the sidebar slides out as it hides, the detail widening with it on the same move -
+    /// Android's own transition, in a window, where the window is wide enough for the sidebar beside the detail.
+    func testTheSidebarBesideTheDetailSlidesAsItHides() throws {
+        try onMainActor {
+            let open = State(wrappedValue: true)
+            let host = AndroidRenderer.running {
+                SplitView(open.projectedValue) { TitledPage(title: "Menu") } detail: { ZStack {}.id("detail") }
+            }
+            Java.call(TestContext.window.reference, AndroidDriver.setContentView, .object(host.root.reference))
+            TestWindow.run(for: 300)
+            let window = try XCTUnwrap(Java.callObject(host.root.reference, AndroidDriver.getParent))
+            let (width, height) = (Java.callInt(window, TestJava.getWidth), Java.callInt(window, TestJava.getHeight))
+            Java.release(local: window)
+            guard Double(width) / 2 >= AndroidSplitView.sideBySide else {
+                throw XCTSkip("the window is too narrow for the sidebar beside the detail")
+            }
+            host.layOut(width: width, height: height)
+            let detail = try XCTUnwrap(host.view(id: .manual("detail")))
+            let beside = detail.frame.width
+            XCTAssertLessThan(beside, width, "the detail beside the sidebar")
+
+            open.wrappedValue = false
+            host.runtime.pump.turn()
+            host.layOut(width: width, height: height)
+            TestWindow.run(for: 80)
+            let moving = detail.frame.width
+            TestWindow.run(for: 500)
+
+            XCTAssertGreaterThan(moving, beside, "widening")
+            XCTAssertLessThan(moving, width, "on its way")
+            XCTAssertEqual(detail.frame.width, width, "the whole width once the sidebar has gone")
         }
     }
 

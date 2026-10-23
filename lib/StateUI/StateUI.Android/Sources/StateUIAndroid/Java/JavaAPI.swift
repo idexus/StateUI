@@ -91,6 +91,10 @@ enum JavaAPI {
     static let setVisibilityMode = Java.method(slide, "setMode", "(I)V")
     static let setTransitionsInterpolator = Java.method(
         transitionSet, "setInterpolator", "(Landroid/animation/TimeInterpolator;)Landroid/transition/TransitionSet;")
+    static let setTransitionsDuration = Java.method(
+        transitionSet, "setDuration", "(J)Landroid/transition/TransitionSet;")
+    static let changeBounds = Java.findClass("android/transition/ChangeBounds")
+    static let newChangeBounds = Java.method(changeBounds, "<init>", "()V")
     static let pathInterpolator = Java.findClass("android/view/animation/PathInterpolator")
     static let newPathInterpolator = Java.method(pathInterpolator, "<init>", "(FFFF)V")
     static let addOnGlobalLayoutListener = Java.method(

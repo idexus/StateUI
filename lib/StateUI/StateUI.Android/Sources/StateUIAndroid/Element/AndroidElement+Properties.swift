@@ -43,7 +43,7 @@ extension AndroidElement {
             return AndroidNavigationView(reducesMotion: { [weak host] in host?.runtime.reducesMotion() ?? false })
 
         case .splitView:
-            return AndroidSplitView()
+            return AndroidSplitView(reducesMotion: { [weak host] in host?.runtime.reducesMotion() ?? false })
 
         case .tabView:
             return AndroidTabView()
