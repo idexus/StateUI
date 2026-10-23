@@ -29,6 +29,9 @@ final class AndroidBarView: AndroidView {
         var background: HostValue?
         var foreground: HostValue?
         var navigation = Navigation.none
+        /// What the button after the navigation button does: none, or the way back where the sidebar's toggle
+        /// takes the navigation button.
+        var afterNavigation = Navigation.none
         /// What the button at the bar's end does: none, or the sidebar's toggle.
         var endButton = Navigation.none
         var actions: [AndroidMenu.Item] = []
@@ -37,6 +40,9 @@ final class AndroidBarView: AndroidView {
 
     /// What the navigation button does when the user presses it.
     var onNavigation: (() -> Void)?
+
+    /// What the button after the navigation button does when the user presses it.
+    var onAfterNavigation: (() -> Void)?
 
     /// What the button at the bar's end does when the user presses it.
     var onEndButton: (() -> Void)?
@@ -74,34 +80,35 @@ final class AndroidBarView: AndroidView {
         }
     }
 
-    /// Shows `content`, writing only the parts that changed.
+    /// Shows `content`, writing only the parts that changed - every part on its first showing.
     func show(_ content: Content) {
         let previous = shown ? self.content : nil
         shown = true
         self.content = content
+        func changed<Part: Equatable>(_ part: (Content) -> Part) -> Bool {
+            previous.map { part($0) != part(content) } ?? true
+        }
+        let tint = content.foreground.flatMap(Self.argb) ?? 0
 
-        if previous?.title != content.title || previous?.subtitle != content.subtitle
-            || previous?.background != content.background || previous?.foreground != content.foreground {
+        if changed(\.title) || changed(\.subtitle) || changed(\.background) || changed(\.foreground) {
             let title = content.title.flatMap(Java.string)
             let subtitle = content.subtitle.flatMap(Java.string)
             Java.call(
                 reference, JavaAPI.showBar, .object(title), .object(subtitle),
-                .int(content.background.flatMap(Self.argb) ?? 0), .int(content.foreground.flatMap(Self.argb) ?? 0))
+                .int(content.background.flatMap(Self.argb) ?? 0), .int(tint))
             Java.release(local: title)
             Java.release(local: subtitle)
         }
-        if previous?.navigation != content.navigation || previous?.foreground != content.foreground {
-            showNavigation(content.navigation, tint: content.foreground.flatMap(Self.argb) ?? 0)
+        if changed(\.navigation) || changed(\.foreground) { showNavigation(content.navigation, tint: tint) }
+        if changed(\.afterNavigation) || changed(\.foreground) {
+            showAfterNavigation(content.afterNavigation, tint: tint)
         }
-        if previous?.endButton != content.endButton || previous?.foreground != content.foreground {
-            showEndButton(content.endButton, tint: content.foreground.flatMap(Self.argb) ?? 0)
-        }
-        if previous?.mark != content.mark {
+        if changed(\.endButton) || changed(\.foreground) { showEndButton(content.endButton, tint: tint) }
+        if changed(\.mark) {
             let bitmap = content.mark.flatMap(AndroidPictures.bitmap)
             withExtendedLifetime(bitmap) { Java.call(reference, JavaAPI.setBarMark, .object(bitmap?.reference)) }
         }
-        if previous?.actions != content.actions || previous?.menus != content.menus
-            || previous?.foreground != content.foreground {
+        if changed(\.actions) || changed(\.menus) || changed(\.foreground) {
             showActions(content.actions, menus: content.menus)
         }
     }
@@ -121,6 +128,19 @@ final class AndroidBarView: AndroidView {
                 reference, JavaAPI.setBarNavigation,
                 .int(kind.rawValue), .object(bitmap?.reference), .int(tint), .object(words))
         }
+        Java.release(local: words)
+    }
+
+    /// The way back after the navigation button, or none.
+    private func showAfterNavigation(_ button: Navigation, tint: Int32) {
+        let said = CoreLink().chromeWords
+        let (kind, description): (AndroidBarNavigation, String) = switch button {
+        case .back: (.back, said.back)
+        case .close: (.close, said.close)
+        case .none, .sidebar: (.none, "")
+        }
+        let words = Java.string(description)
+        Java.call(reference, JavaAPI.setBarAfterNavigation, .int(kind.rawValue), .int(tint), .object(words))
         Java.release(local: words)
     }
 
@@ -171,14 +191,19 @@ final class AndroidBarView: AndroidView {
         onNavigation?()
     }
 
-    /// The user pressed the button at the bar's end.
-    override func toggled(_ on: Bool) {
-        onEndButton?()
+    /// The user pressed one of the bar's own buttons apart from its navigation button.
+    override func chose(_ place: Int) {
+        switch AndroidBarButton(rawValue: Int32(place)) {
+        case .afterNavigation: onAfterNavigation?()
+        case .atEnd: onEndButton?()
+        case nil: break
+        }
     }
 
     override func detach() {
         super.detach()
         onNavigation = nil
+        onAfterNavigation = nil
         onEndButton = nil
         items = []
     }

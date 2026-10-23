@@ -154,12 +154,15 @@ extension AndroidElement {
         }
         var items = shown
         content.menus = Self.menuEntries(page?.chromeMenus.menus ?? [], items: &items)
-        if element.visibleBackStack === element {
-            content.navigation = .back
-        } else if element.offersClose {
-            content.navigation = .close
-        } else if let split = enclosingSplit, let sidebar = split.arranged.first, !split.sidebarStandsBeside {
+        // The sidebar's toggle first while the sidebar does not stand beside the detail shown, then the way back.
+        // Design: docs/design/platforms/android/pages.md#the-bar
+        let way: AndroidBarView.Navigation =
+            element.visibleBackStack === element ? .back : element.offersClose ? .close : .none
+        if let split = enclosingSplit, let sidebar = split.arranged.first, !split.sidebarStandsBeside {
             content.navigation = .sidebar(HostPicture(sidebar.value(.icon)))
+            content.afterNavigation = way
+        } else {
+            content.navigation = way
         }
 
         navigation.setShowsBar(element.arrangedChildren.last?.showsTheStacksBar ?? true)
@@ -171,15 +174,19 @@ extension AndroidElement {
             guard let bar, bar.items.indices.contains(index) else { return }
             bar.items[index].android.choose()
         }
-        bar.onNavigation = { [weak self] in
-            guard let self else { return }
-            switch content.navigation {
-            case .back: host?.goBack(.pop(element))
-            case .close: if let way = element.closingItsSheet { host?.goBack(way) }
-            default:
-                guard let split = enclosingSplit else { return }
-                split.changeSidebarVisibility(to: (split.view as? AndroidSplitView)?.isPresented != true)
-            }
+        bar.onNavigation = { [weak self] in self?.pressed(content.navigation) }
+        bar.onAfterNavigation = { [weak self] in self?.pressed(content.afterNavigation) }
+    }
+
+    /// The user pressed a stack's bar's button doing `what`: going back, closing the sheet, or showing the sidebar.
+    private func pressed(_ what: AndroidBarView.Navigation) {
+        switch what {
+        case .back: host?.goBack(.pop(element))
+        case .close: if let way = element.closingItsSheet { host?.goBack(way) }
+        case .sidebar:
+            guard let split = enclosingSplit else { return }
+            split.changeSidebarVisibility(to: (split.view as? AndroidSplitView)?.isPresented != true)
+        case .none: break
         }
     }
 

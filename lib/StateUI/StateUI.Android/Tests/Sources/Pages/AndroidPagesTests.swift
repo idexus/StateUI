@@ -21,6 +21,8 @@ final class AndroidPagesTests: XCTestCase {
             ("testTheBarOpensTheSidebarAndBackClosesIt", testTheBarOpensTheSidebarAndBackClosesIt),
             ("testTheSidebarsOwnBarHidesItAndTheDetailsShowsIt", testTheSidebarsOwnBarHidesItAndTheDetailsShowsIt),
             ("testTheSidebarBesideTheDetailSlidesAsItHides", testTheSidebarBesideTheDetailSlidesAsItHides),
+            ("testAPushedPageKeepsTheSidebarsToggleBeforeTheWayBack", testAPushedPageKeepsTheSidebarsToggleBeforeTheWayBack),
+            ("testTheSidebarsBarStandsAsHighAsTheDetails", testTheSidebarsBarStandsAsHighAsTheDetails),
             ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
             ("testASidebarWithNoPictureOpensFromTheMenuGlyph", testASidebarWithNoPictureOpensFromTheMenuGlyph),
             ("testAClosedDrawerStandsInvisible", testAClosedDrawerStandsInvisible),
@@ -315,7 +317,7 @@ final class AndroidPagesTests: XCTestCase {
             XCTAssertEqual(sidebar.content.endButton, .sidebar(.file("test_dot.png")))
             XCTAssertEqual(navigation.bar.content.navigation, .none, "the toggle on the sidebar's own bar")
 
-            sidebar.toggled(true)
+            sidebar.chose(Int(AndroidBarButton.atEnd.rawValue))
             XCTAssertFalse(open.wrappedValue)
             XCTAssertFalse(split.isPresented)
             XCTAssertEqual(navigation.bar.content.navigation, .sidebar(.file("test_dot.png")), "now on the detail's")
@@ -324,6 +326,89 @@ final class AndroidPagesTests: XCTestCase {
             XCTAssertTrue(open.wrappedValue)
             XCTAssertTrue(split.isPresented)
             XCTAssertEqual(navigation.bar.content.navigation, .none)
+        }
+    }
+
+    /// A page pushed in the detail keeps the sidebar's toggle while the sidebar does not show - over the detail on a
+    /// phone, hidden beside it on a tablet: the toggle first, then the way back; each does its own.
+    func testAPushedPageKeepsTheSidebarsToggleBeforeTheWayBack() throws {
+        try onMainActor {
+            for (width, height) in [(Int32(1080), Int32(1920)), (2000, 1600)] {
+                let open = State(wrappedValue: false)
+                let path = State(wrappedValue: [1])
+                let host = AndroidRenderer.running {
+                    SplitView(open.projectedValue) {
+                        TitledPage(title: "Menu", icon: "test_dot.png")
+                    } detail: {
+                        NavigationStack(path.projectedValue) {
+                            TitledPage(title: "Home")
+                        } destination: { _ in
+                            TitledPage(title: "Deeper")
+                        }
+                    }
+                }
+                host.layOut(width: width, height: height)
+                host.runtime.pump.turn()
+                // A first room wide enough shows the sidebar; the program hides it.
+                open.wrappedValue = false
+                host.runtime.pump.turn()
+                host.layOut(width: width, height: height)
+                let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
+                let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+                XCTAssertFalse(split.isPresented, "\(width)")
+                XCTAssertEqual(navigation.bar.content.navigation, .sidebar(.file("test_dot.png")), "\(width)")
+                XCTAssertEqual(navigation.bar.content.afterNavigation, .back, "\(width)")
+
+                navigation.bar.chose(Int(AndroidBarButton.afterNavigation.rawValue))
+                host.runtime.pump.turn()
+                XCTAssertEqual(path.wrappedValue, [], "back pops the page, \(width)")
+                XCTAssertEqual(navigation.bar.content.afterNavigation, .none, "\(width)")
+
+                navigation.bar.clicked()
+                XCTAssertTrue(open.wrappedValue, "the toggle shows the sidebar, \(width)")
+            }
+        }
+    }
+
+    /// The sidebar's bar and the detail's stand as one: at one height, their words on one line.
+    func testTheSidebarsBarStandsAsHighAsTheDetails() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                SplitView(State(wrappedValue: true).projectedValue) {
+                    TitledPage(title: "Menu", icon: "test_dot.png")
+                } detail: {
+                    NavigationStack(State(wrappedValue: [1]).projectedValue) {
+                        TitledPage(title: "Home")
+                    } destination: { _ in
+                        TitledPage(title: "Deeper", actions: [ToolbarButton("Save").icon("test_wide.png")])
+                    }
+                }
+                .barTitle("Notes")
+                .barIcon("test_wide.png")
+            }
+            host.insetsChanged(left: 0, top: 48, right: 0, bottom: 96, keyboard: 0)
+            // Laid out until the bars hold what the first room said of the sidebar, as a window's passes do.
+            for _ in 0..<3 {
+                host.layOut(width: 2000, height: 1600)
+                host.runtime.pump.turn()
+            }
+            let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
+            let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+            XCTAssertFalse(split.overlays)
+            XCTAssertEqual(split.drawer.bar.frame.height, navigation.bar.frame.height, "one height")
+            let beside = BarLines.middles(navigation.bar)
+            XCTAssertEqual(beside.count, 3, "the way back, the title, the action: \(beside)")
+            XCTAssertEqual(beside.max() ?? 0, beside.min() ?? 0, accuracy: 2, "on one line")
+            XCTAssertEqual(BarLines.middles(split.drawer.bar).first ?? 0, beside.first ?? 0, accuracy: 2, "both bars")
+
+            split.drawer.bar.chose(Int(AndroidBarButton.atEnd.rawValue))
+            for _ in 0..<3 {
+                host.runtime.pump.turn()
+                host.layOut(width: 2000, height: 1600)
+            }
+            let hidden = BarLines.middles(navigation.bar)
+            XCTAssertEqual(hidden.count, 4, "the toggle, the way back, the title, the action: \(hidden)")
+            XCTAssertEqual(hidden.max() ?? 0, hidden.min() ?? 0, accuracy: 2, "on one line")
         }
     }
 
@@ -1036,6 +1121,23 @@ private struct TitledPage: View {
     var body: some View {
         let words = Text(title).toolbar { actions }.title(title)
         return (icon.map { words.icon($0) } ?? words).loggingPhases(log, as: title)
+    }
+}
+
+/// Where the bar's buttons and words stand: `TestBars.java`.
+@MainActor
+private enum BarLines {
+    private static let owner = Java.findClass("stateui/android/test/TestBars")
+    private static let read = Java.staticMethod(owner, "middles", "(Landroid/widget/Toolbar;)Ljava/lang/String;")
+
+    /// The vertical middle, in pixels from the bar's top, of each button and line of words it shows - the bar laid
+    /// out again at its size first, as a window lays out a toolbar that asked for it.
+    static func middles(_ bar: AndroidView) -> [Double] {
+        bar.layOut(width: bar.frame.width, height: bar.frame.height)
+        let said = Java.frame {
+            Java.callStaticObject(owner, read, .object(bar.reference)).map { Java.text($0) } ?? ""
+        }
+        return said.split(separator: ",").compactMap { Double($0) }
     }
 }
 

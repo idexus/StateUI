@@ -324,8 +324,8 @@ class AndroidView {
         onTapped?()
     }
 
-    /// The user turned the view on or off.
-    func toggled(_ on: Bool) {}
+    /// The user chose the entry at `place` among the view's own: a picker's row, a bar's own button.
+    func chose(_ place: Int) {}
 
     /// The user held the view down long - the one place deciding what that does: the view's own (a button's menu),
     /// else its drag; whether it took it - else Android goes on to its context menu.

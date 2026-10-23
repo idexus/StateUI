@@ -7,13 +7,41 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
 /** What a test reads of a bar as Android holds it. */
 public final class TestBars {
     private TestBars() {}
+
+    /**
+     * The vertical middle, in pixels from the bar's top, of each button and line of words the bar shows - its own and
+     * those its rows and its actions hold - commas between them.
+     */
+    public static String middles(Toolbar bar) {
+        StringBuilder middles = new StringBuilder();
+        collect(bar, 0, middles);
+        return middles.toString();
+    }
+
+    private static void collect(View view, int top, StringBuilder middles) {
+        if (view.getVisibility() != View.VISIBLE || view.getWidth() == 0) return;
+        boolean words = view instanceof TextView && ((TextView) view).getText().length() > 0;
+        boolean picture = view instanceof ImageView && ((ImageView) view).getDrawable() != null;
+        boolean action = view instanceof TextView && !words && ((TextView) view).getCompoundDrawables()[0] != null;
+        if (words || picture || action) {
+            if (middles.length() > 0) middles.append(',');
+            middles.append(top + view.getTop() + view.getHeight() / 2);
+            return;
+        }
+        if (!(view instanceof ViewGroup)) return;
+        ViewGroup group = (ViewGroup) view;
+        int inner = view instanceof Toolbar ? 0 : top + view.getTop();
+        for (int index = 0; index < group.getChildCount(); index++) collect(group.getChildAt(index), inner, middles);
+    }
 
     /** Whether the bar shows a title, however few its words: it holds one in its title's place. */
     public static boolean titled(Toolbar bar) {

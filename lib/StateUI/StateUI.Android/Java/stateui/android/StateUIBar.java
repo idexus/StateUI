@@ -16,6 +16,8 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toolbar;
 
 /**
@@ -29,8 +31,8 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
 
     private final long view;
 
-    /** The page's title, shown while no view stands in for it. */
-    private String title = "";
+    /** The page's title, shown while no view stands in for it; null for none. */
+    private String title;
 
     /** The line under the title, shown with it; null for none. */
     private String subtitle;
@@ -43,20 +45,49 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
     // Swift: AndroidBarView.Words
     static final int PLATFORM = 0, LIGHT = 1, DARK = 2;
 
+    /** The bar's own buttons apart from its navigation button, by the place each tells the host. */
+    // Swift: AndroidBarButton
+    static final int AFTER_NAVIGATION = 0, AT_END = 1;
+
+    /** The button after the navigation button - the way back where the sidebar's toggle takes that button. */
+    private ImageButton afterNavigation;
+
+    /**
+     * The row after the navigation button while a button follows it: that button, then the title or the view
+     * standing in for it - the toolbar lays its own title out before any view it holds.
+     */
+    private LinearLayout titleRow;
+
+    /** The toolbar's own room before its title beside a navigation button, kept for when the row goes. */
+    private final int insetWithNavigation;
+
     /** A bar whose actions take their words from `words`: Android's overlay for a dark bar or a light one. */
     StateUIBar(Context context, long view, int words) {
         super(words == PLATFORM ? context : new ContextThemeWrapper(context, words == LIGHT
                 ? android.R.style.ThemeOverlay_Material_Dark_ActionBar
                 : android.R.style.ThemeOverlay_Material_ActionBar));
         this.view = view;
+        insetWithNavigation = getContentInsetStartWithNavigation();
+    }
+
+    /**
+     * The bar stands at least its style's height - the theme's bar height - under what it reaches beneath, actions
+     * or none, so a split view's two bars stand as one: the toolbar counts that least height with its padding, and
+     * aligns its title within it.
+     */
+    @Override
+    protected void onMeasure(int widthSpec, int heightSpec) {
+        super.onMeasure(widthSpec, heightSpec);
+        int least = getMinimumHeight() + getPaddingTop() + getPaddingBottom();
+        if (MeasureSpec.getMode(heightSpec) != MeasureSpec.EXACTLY && getMeasuredHeight() < least) {
+            setMeasuredDimension(getMeasuredWidth(), least);
+        }
     }
 
     /** The title, the line under it - null for none - and the bar's colors; a color of 0 leaves Android's own. */
     void show(String title, String subtitle, int background, int foreground) {
         this.title = title;
         this.subtitle = subtitle;
-        setTitle(titleView == null ? title : null);
-        setSubtitle(titleView == null ? subtitle : null);
         if (background != 0) setBackgroundColor(background); else setBackground(null);
         this.foreground = foreground;
         if (foreground != 0) {
@@ -65,6 +96,7 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
             Drawable overflow = getOverflowIcon();
             if (overflow != null) overflow.mutate().setTint(foreground);
         }
+        standTitle();
     }
 
     /**
@@ -73,15 +105,102 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
      */
     void setTitleView(View standing) {
         if (standing == titleView) return;
-        if (titleView != null && titleView.getParent() == this) removeView(titleView);
-        titleView = standing;
-        if (standing != null) {
-            if (standing.getParent() instanceof ViewGroup) ((ViewGroup) standing.getParent()).removeView(standing);
-            addView(standing, new Toolbar.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER_VERTICAL));
+        if (titleView != null && titleView.getParent() instanceof ViewGroup) {
+            ((ViewGroup) titleView.getParent()).removeView(titleView);
         }
-        setTitle(standing == null ? title : null);
-        setSubtitle(standing == null ? subtitle : null);
+        titleView = standing;
+        if (standing != null && standing.getParent() instanceof ViewGroup) {
+            ((ViewGroup) standing.getParent()).removeView(standing);
+        }
+        standTitle();
+    }
+
+    /**
+     * The button after the navigation button: none, or the way back - Android's up arrow or Material's cross - in
+     * `tint`, named `description`; pressing it tells the host its place.
+     */
+    void setAfterNavigation(int kind, int tint, String description) {
+        if (kind == NONE) {
+            afterNavigation = null;
+        } else {
+            if (afterNavigation == null) afterNavigation = ownButton(AFTER_NAVIGATION);
+            afterNavigation.setImageDrawable(kind == CLOSE ? closeGlyph(tint) : upArrow(tint));
+            afterNavigation.setContentDescription(description);
+        }
+        standTitle();
+    }
+
+    /**
+     * Stands the title where the bar's buttons leave room for it: the toolbar's own after its navigation button,
+     * or, while a button follows that one, in the row after it - its words in the appearances the toolbar's style
+     * names for its own, or the view standing in for them.
+     */
+    private void standTitle() {
+        boolean row = afterNavigation != null;
+        setTitle(row || titleView != null ? null : title);
+        setSubtitle(row || titleView != null ? null : subtitle);
+        if (titleRow != null) {
+            titleRow.removeAllViews();
+            removeView(titleRow);
+            titleRow = null;
+        }
+        if (titleView != null && titleView.getParent() == this) removeView(titleView);
+        setContentInsetStartWithNavigation(row ? 0 : insetWithNavigation);
+        if (!row) {
+            if (titleView != null) {
+                addView(titleView, new Toolbar.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER_VERTICAL));
+            }
+            return;
+        }
+        titleRow = new LinearLayout(getContext());
+        titleRow.setGravity(Gravity.CENTER_VERTICAL);
+        titleRow.addView(afterNavigation);
+        View words = titleView != null ? titleView : titleWords();
+        LinearLayout.LayoutParams place = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+        place.setMarginStart(getTitleMarginStart());
+        titleRow.addView(words, place);
+        addView(titleRow, new Toolbar.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                Gravity.START | Gravity.CENTER_VERTICAL));
+    }
+
+    /** The title and the line under it, as the toolbar writes its own: in the appearances its style names. */
+    private View titleWords() {
+        LinearLayout words = new LinearLayout(getContext());
+        words.setOrientation(LinearLayout.VERTICAL);
+        words.addView(line(title, android.R.attr.titleTextAppearance));
+        if (subtitle != null) words.addView(line(subtitle, android.R.attr.subtitleTextAppearance));
+        return words;
+    }
+
+    private TextView line(String words, int appearance) {
+        TypedArray style = getContext().obtainStyledAttributes(
+                null, new int[] { appearance }, android.R.attr.toolbarStyle, 0);
+        TextView line = new TextView(getContext());
+        line.setTextAppearance(style.getResourceId(0, 0));
+        style.recycle();
+        line.setSingleLine(true);
+        line.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        line.setText(words);
+        if (foreground != 0) line.setTextColor(foreground);
+        return line;
+    }
+
+    /** A button of the bar's own, in the style of its action buttons, telling the host its place when pressed. */
+    private ImageButton ownButton(int place) {
+        ImageButton button = new ImageButton(getContext(), null, android.R.attr.actionButtonStyle);
+        button.setOnClickListener(pressed -> StateUIHost.chose(view, place));
+        return button;
+    }
+
+    /** Android's up arrow, the theme's own, in `tint` where it is not 0. */
+    private Drawable upArrow(int tint) {
+        TypedArray attributes = getContext().obtainStyledAttributes(new int[] { android.R.attr.homeAsUpIndicator });
+        Drawable icon = attributes.getDrawable(0);
+        attributes.recycle();
+        if (icon != null && tint != 0) icon.mutate().setTint(tint);
+        return icon;
     }
 
     /**
@@ -91,10 +210,7 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
     void setNavigation(int kind, Bitmap picture, int tint, String description) {
         Drawable icon = null;
         if (kind == BACK) {
-            TypedArray attributes = getContext().obtainStyledAttributes(new int[] { android.R.attr.homeAsUpIndicator });
-            icon = attributes.getDrawable(0);
-            attributes.recycle();
-            if (icon != null && tint != 0) icon.mutate().setTint(tint);
+            icon = upArrow(tint);
         } else if (kind == SIDEBAR) {
             icon = picture != null ? StateUIViews.glyph(getContext(), picture) : menuGlyph(tint);
             if (picture != null && tint != 0 && StateUIViews.isMask(picture)) icon.setTint(tint);
@@ -116,7 +232,7 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
 
     /**
      * The sidebar's toggle at the bar's end - the sidebar's own picture, or Android's menu glyph in `tint` - which
-     * tells the host it was pressed; a null `description` takes it away.
+     * tells the host its place when pressed; a null `description` takes it away.
      */
     void setEndToggle(Bitmap picture, int tint, String description) {
         if (description == null) {
@@ -125,8 +241,7 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
             return;
         }
         if (endToggle == null) {
-            endToggle = new ImageButton(getContext(), null, android.R.attr.actionButtonStyle);
-            endToggle.setOnClickListener(pressed -> StateUIHost.toggled(view, false));
+            endToggle = ownButton(AT_END);
             addView(endToggle, new Toolbar.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
                     Gravity.END | Gravity.CENTER_VERTICAL));

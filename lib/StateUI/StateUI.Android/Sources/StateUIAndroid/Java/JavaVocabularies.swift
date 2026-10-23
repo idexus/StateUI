@@ -46,6 +46,11 @@ enum AndroidBarNavigation: Int32 {
     case none = 0, back = 1, sidebar = 2, close = 3
 }
 
+/// A bar's own button apart from its navigation button, by the place it tells the host (`StateUIBar`).
+enum AndroidBarButton: Int32 {
+    case afterNavigation = 0, atEnd = 1
+}
+
 /// An entry of a list (`StateUIItemsView`).
 enum AndroidItemKind: Int32 {
     case item = 0, edge = 1

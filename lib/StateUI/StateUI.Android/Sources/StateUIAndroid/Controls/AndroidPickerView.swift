@@ -98,6 +98,10 @@ final class AndroidPickerView: AndroidView {
         if opening.heard(open: true) { onOpened?() }
     }
 
+    override func chose(_ place: Int) {
+        onChosen?(place)
+    }
+
     override func closed() {
         listShows = false
         if opening.heard(open: false) { onClosed?() }
