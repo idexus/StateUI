@@ -559,7 +559,7 @@ body {
   -webkit-backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
   box-shadow: inset 0 -1px 0 var(--stateui-line);
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-tab-strip > button {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-tab-strip > button {
   min-height: 44px;
   padding: 0 14px;
   border: 0;
@@ -571,10 +571,10 @@ body {
   white-space: nowrap;
   filter: none;
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-tab-strip > button { display: inline-flex; align-items: center; gap: 6px; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-tab-strip > button > img { width: 18px; height: 18px; contain: none; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-tab-strip > button:hover { color: var(--stateui-text); }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-tab-strip > button[aria-selected="true"] { color: var(--stateui-accent); border-bottom-color: var(--stateui-accent); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-tab-strip > button { display: inline-flex; align-items: center; gap: 6px; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-tab-strip > button > img { width: 18px; height: 18px; contain: none; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-tab-strip > button:hover { color: var(--stateui-text); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-tab-strip > button[aria-selected="true"] { color: var(--stateui-accent); border-bottom-color: var(--stateui-accent); }
 /* A covered tab is laid out unseen, so a page sized by its own frame knows it before it shows. */
 .stateui-tab-pages > [data-covered] { visibility: hidden !important; overflow: clip; }
 .stateui-stack > [data-arriving] { animation: stateui-arrive 0.22s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -591,7 +591,7 @@ body {
 .stateui-scroller[data-bars="never"]::-webkit-scrollbar { display: none; }
 
 /* Controls, where the application gives them no look of their own. */
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) button {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) button {
   font: inherit;
   font-weight: 550;
   min-height: 36px;
@@ -604,10 +604,10 @@ body {
   transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
 /* A button's role: the main action in the accent, a destructive one in the color a question's has. */
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-button[data-role="primary"] {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-button[data-role="primary"] {
   background: var(--stateui-accent); border-color: transparent; color: white;
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-button[data-role="destructive"] { color: #d92d20; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-button[data-role="destructive"] { color: #d92d20; }
 /* A button's picture stands beside its words, the two in its middle; alone, it fills the button. */
 .stateui-button { display: inline-flex; align-items: center; justify-content: center; }
 .stateui-button > span { min-width: 0; }
@@ -625,10 +625,10 @@ body {
   border-inline-start: 1px solid color-mix(in srgb, currentColor 35%, transparent);
 }
 .stateui-split-arrow::before { content: "▾"; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) button:hover { filter: brightness(0.97); border-color: color-mix(in srgb, currentColor 30%, transparent); }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) button:active { filter: brightness(0.92); }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) button:disabled { opacity: 0.45; cursor: default; filter: none; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input:not([type="checkbox"], [type="radio"], [type="range"]), :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) textarea, :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) select {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) button:hover { filter: brightness(0.97); border-color: color-mix(in srgb, currentColor 30%, transparent); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) button:active { filter: brightness(0.92); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) button:disabled { opacity: 0.45; cursor: default; filter: none; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input:not([type="checkbox"], [type="radio"], [type="range"]), :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea, :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) select {
   font: inherit;
   min-height: 38px;
   padding: 8px 12px;
@@ -639,15 +639,15 @@ body {
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 /* A field is as wide as its words or its placeholder, not twenty characters. */
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input.stateui-field { field-sizing: content; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input::placeholder, :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) textarea::placeholder { color: var(--stateui-placeholder, var(--stateui-muted)); }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) textarea { min-height: 88px; line-height: 1.45; resize: vertical; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-field { field-sizing: content; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input::placeholder, :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea::placeholder { color: var(--stateui-placeholder, var(--stateui-muted)); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea { min-height: 88px; line-height: 1.45; resize: vertical; }
 /* An editor growing with its words is as tall as they are, from one line. */
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) textarea[data-grows] { min-height: 0; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea[data-grows] { min-height: 0; }
 /* A select's and a search field's padding - 12 and 34 points either side - yields to a narrower room the layout gives
    it (--stateui-width), each side in its share, so the field stands as wide as its room. */
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) :is(select, input[type="search"]) { --stateui-field-room: calc(var(--stateui-width, 100vw) - 2px); }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input[type="search"] {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) :is(select, input[type="search"]) { --stateui-field-room: calc(var(--stateui-width, 100vw) - 2px); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input[type="search"] {
   padding-inline-start: min(34px, calc(var(--stateui-field-room) * 0.7391));
   padding-inline-end: min(12px, calc(var(--stateui-field-room) * 0.2609));
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M16 16l4 4'/%3E%3C/svg%3E");
@@ -655,16 +655,16 @@ body {
   background-position: 11px center;
   background-size: 16px;
 }
-[dir="rtl"] :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input[type="search"] { background-position: right 11px center; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) :is(button, input, textarea, select):focus-visible {
+[dir="rtl"] :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input[type="search"] { background-position: right 11px center; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) :is(button, input, textarea, select):focus-visible {
   outline: none;
   border-color: var(--stateui-accent);
   box-shadow: var(--stateui-focus);
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) :is(input[type="checkbox"], input[type="radio"], input[type="range"], progress) { accent-color: var(--stateui-accent); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) :is(input[type="checkbox"], input[type="radio"], input[type="range"], progress) { accent-color: var(--stateui-accent); }
 /* A bar of work done, a ring while work goes on, a radio button with its caption, a choice from a list. */
 .stateui-progress { display: grid; align-items: center; min-width: 80px; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) progress {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) progress {
   appearance: none;
   -webkit-appearance: none;
   width: 100%;
@@ -675,9 +675,9 @@ body {
   background: var(--stateui-line-strong);
   color: var(--stateui-on, var(--stateui-accent));
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) progress::-webkit-progress-bar { background: var(--stateui-line-strong); border-radius: 999px; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) progress::-webkit-progress-value { background: var(--stateui-on, var(--stateui-accent)); border-radius: 999px; transition: width 0.2s ease; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) progress::-moz-progress-bar { background: var(--stateui-on, var(--stateui-accent)); border-radius: 999px; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) progress::-webkit-progress-bar { background: var(--stateui-line-strong); border-radius: 999px; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) progress::-webkit-progress-value { background: var(--stateui-on, var(--stateui-accent)); border-radius: 999px; transition: width 0.2s ease; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) progress::-moz-progress-bar { background: var(--stateui-on, var(--stateui-accent)); border-radius: 999px; }
 .stateui-activity {
   width: 22px;
   height: 22px;
@@ -707,7 +707,7 @@ body {
 .stateui-radios { display: inline-flex; flex-direction: column; gap: 6px; }
 .stateui-radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; -webkit-user-select: none; }
 .stateui-radio[aria-disabled] { opacity: 0.45; cursor: default; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) select {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) select {
   appearance: none;
   -webkit-appearance: none;
   padding-inline-start: min(12px, calc(var(--stateui-field-room) * 0.2609));
@@ -718,10 +718,10 @@ body {
   background-position: right 10px center;
   background-size: 16px;
 }
-[dir="rtl"] :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) select { background-position: left 10px center; }
+[dir="rtl"] :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) select { background-position: left 10px center; }
 
 /* A switch drawn as one, a slider across its room, a stepper's field between its buttons. */
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input.stateui-switch {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-switch {
   appearance: none;
   -webkit-appearance: none;
   position: relative;
@@ -734,7 +734,7 @@ body {
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input.stateui-switch::before {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-switch::before {
   content: "";
   position: absolute;
   top: 3px;
@@ -746,12 +746,12 @@ body {
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
   transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input.stateui-switch:checked { background: var(--stateui-on, var(--stateui-accent)); }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input.stateui-switch:checked::before { transform: translateX(18px); }
-[dir="rtl"] :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input.stateui-switch:checked::before { transform: translateX(-18px); }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input.stateui-switch:disabled { opacity: 0.45; cursor: default; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input[type="checkbox"]:not(.stateui-switch), :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input[type="radio"] { width: 18px; height: 18px; margin: 0; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input[type="range"] { min-width: 120px; margin: 0; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-switch:checked { background: var(--stateui-on, var(--stateui-accent)); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-switch:checked::before { transform: translateX(18px); }
+[dir="rtl"] :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-switch:checked::before { transform: translateX(-18px); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-switch:disabled { opacity: 0.45; cursor: default; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input[type="checkbox"]:not(.stateui-switch), :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input[type="radio"] { width: 18px; height: 18px; margin: 0; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input[type="range"] { min-width: 120px; margin: 0; }
 .stateui-stepper {
   display: inline-flex;
   align-items: stretch;
@@ -760,7 +760,7 @@ body {
   overflow: hidden;
   background: var(--stateui-surface);
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-stepper button {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-stepper button {
   min-width: 38px;
   padding: 0 10px;
   border: 0;
@@ -768,7 +768,7 @@ body {
   font-size: 18px;
   line-height: 1;
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-stepper input {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-stepper input {
   width: 76px;
   border: 0;
   border-inline: 1px solid var(--stateui-line);
@@ -778,11 +778,11 @@ body {
   -moz-appearance: textfield;
 }
 .stateui-stepper input::-webkit-inner-spin-button, .stateui-stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-stepper:focus-within { border-color: var(--stateui-accent); box-shadow: var(--stateui-focus); }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-stepper :focus-visible { box-shadow: none; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-stepper:focus-within { border-color: var(--stateui-accent); box-shadow: var(--stateui-focus); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-stepper :focus-visible { box-shadow: none; }
 
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) [data-taps] { cursor: pointer; user-select: none; -webkit-user-select: none; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) [data-taps]:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) [data-taps] { cursor: pointer; user-select: none; -webkit-user-select: none; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) [data-taps]:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
 [data-lets-through] { pointer-events: none; }
 [data-lets-through] > :not([data-lets-through]) { pointer-events: auto; }
 
@@ -812,7 +812,7 @@ body {
 .stateui-announcer { position: fixed; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 /* A control answers every tap: a second one soon after the first is its own, never the page's zoom. */
-:is(.stateui-window, .stateui-sheet, .stateui-question, .stateui-menu) :is(button, input, select, textarea, label, [data-taps]) {
+:is(.stateui-window, .stateui-sheet, .stateui-popover, .stateui-question, .stateui-menu) :is(button, input, select, textarea, label, [data-taps]) {
   touch-action: manipulation;
 }
 

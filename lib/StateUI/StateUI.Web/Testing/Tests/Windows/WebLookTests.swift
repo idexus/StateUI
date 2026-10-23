@@ -6,8 +6,9 @@
 @testable import StateUIWeb
 import XCTest
 
-/// A control wears the page's stylesheet wherever it stands - in the window's room, on a sheet, over every page - and
-/// takes a tap at once there. The browser draws, so the suite runs it in a browser (`test-web.sh --browser`).
+/// A control wears the page's stylesheet wherever it stands - in the window's room, on a sheet, over every page, in a
+/// popover - and takes a tap at once there. The browser draws, so the suite runs it in a browser
+/// (`test-web.sh --browser`).
 @MainActor
 final class WebLookTests: XCTestCase {
     override func setUp() async throws {
@@ -24,6 +25,18 @@ final class WebLookTests: XCTestCase {
 
         XCTAssertEqual(try look("dialog[open] input.stateui-switch", "appearance"), "none", "the page's switch")
         XCTAssertEqual(try look("dialog[open] .stateui-sheet-room button", "touchAction"), "manipulation", "a tap at once")
+    }
+
+    func testAControlInAPopoverWearsTheStylesheet() throws {
+        let host = WebRenderer.running {
+            Button("Filters").popover(isPresented: State(wrappedValue: true).projectedValue) {
+                VStack { Switch(true); Button("Done") }
+            }
+        }
+        host.settle { (try? WebBrowser.number("document.querySelectorAll('.stateui-popover input').length", on: 0)) == 1 }
+
+        XCTAssertEqual(try look(".stateui-popover input.stateui-switch", "appearance"), "none", "the page's switch")
+        XCTAssertEqual(try look(".stateui-popover button", "touchAction"), "manipulation", "a tap at once")
     }
 
     /// A question stands as tall as what it says, its buttons side by side at their own height - also where the
