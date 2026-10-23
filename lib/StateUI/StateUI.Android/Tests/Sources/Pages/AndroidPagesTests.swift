@@ -35,6 +35,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testASheetPresentsOverThePageAndBackTakesItDown", testASheetPresentsOverThePageAndBackTakesItDown),
             ("testASheetStandsOnACardAsLargeAsItsPageInAWideWindow", testASheetStandsOnACardAsLargeAsItsPageInAWideWindow),
             ("testAPageStandsClearOfTheSystemsBarsUnlessItSaysSo", testAPageStandsClearOfTheSystemsBarsUnlessItSaysSo),
+            ("testARootDrawnEdgeToEdgeHearsTheStatusBar", testARootDrawnEdgeToEdgeHearsTheStatusBar),
             ("testAStacksBarReachesUnderTheStatusBar", testAStacksBarReachesUnderTheStatusBar),
             ("testAPagesScrollerUnderTheNavigationBarKeepsItsLastRowClear", testAPagesScrollerUnderTheNavigationBarKeepsItsLastRowClear),
             ("testThePageUnderPagesTheProgramTakesDownShowsAgain", testThePageUnderPagesTheProgramTakesDownShowsAgain),
@@ -707,6 +708,26 @@ extension AndroidPagesTests {
                            [600, 400], "a card in the middle")
         }
     }
+
+    /// The activity's root drawn edge to edge, as an application's is, hears what stands over it in its window: the
+    /// status bar at the top.
+    func testARootDrawnEdgeToEdgeHearsTheStatusBar() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running(reducesMotion: true) { ZStack {} }
+            let (window, root) = (TestContext.window.reference, host.root.reference)
+            Java.call(window, AndroidDriver.setContentView, .object(root))
+            Java.callStatic(JavaAPI.views, Self.edgeToEdge, .object(window), .object(root), .bool(true))
+            defer { Java.callStatic(Self.systemBars, Self.fitted, .object(window), .object(root)) }
+            TestWindow.run(for: 300)
+            XCTAssertGreaterThan(host.windowInsets.top, 0, "the status bar")
+        }
+    }
+
+    @MainActor private static let edgeToEdge = Java.staticMethod(
+        JavaAPI.views, "edgeToEdge", "(Landroid/app/Activity;Landroid/view/View;Z)V")
+    @MainActor private static let systemBars = Java.findClass("stateui/android/test/TestSystemBars")
+    @MainActor private static let fitted = Java.staticMethod(
+        systemBars, "fitted", "(Landroid/app/Activity;Landroid/view/View;)V")
 
     /// Drawn edge to edge, a page's content stands clear of what stands over the window - the status bar, the
     /// navigation bar - and where it lets itself under the bars it reaches the window's edges; two pixels a point.

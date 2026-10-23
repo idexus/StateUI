@@ -533,16 +533,18 @@ final class StateUIViews {
                 int keyboard = insets.getInsets(WindowInsets.Type.ime()).bottom;
                 StateUIHost.insets(over.left, over.top, over.right, over.bottom, keyboard);
             } else {
+                // Under LAYOUT_STABLE the window's insets hold the bars as if shown, the keyboard at the bottom where
+                // taller; the stable ones reach a view as none on Android 9.
                 DisplayCutout cutout = insets.getDisplayCutout();
-                int left = insets.getStableInsetLeft(), top = insets.getStableInsetTop();
-                int right = insets.getStableInsetRight(), bottom = insets.getStableInsetBottom();
+                int left = insets.getSystemWindowInsetLeft(), top = insets.getSystemWindowInsetTop();
+                int right = insets.getSystemWindowInsetRight(), bottom = insets.getSystemWindowInsetBottom();
                 if (cutout != null) {
                     left = Math.max(left, cutout.getSafeInsetLeft());
                     top = Math.max(top, cutout.getSafeInsetTop());
                     right = Math.max(right, cutout.getSafeInsetRight());
                     bottom = Math.max(bottom, cutout.getSafeInsetBottom());
                 }
-                StateUIHost.insets(left, top, right, bottom, insets.getSystemWindowInsetBottom());
+                StateUIHost.insets(left, top, right, bottom, 0);
             }
             return insets;
         });
