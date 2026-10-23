@@ -311,6 +311,7 @@ namespace {
             if (!button) return std::nullopt;
             auto held = rest.substr(space + 1);
             if (held == "icon") return winrt::to_string(iconFile(button.Icon()));
+            if (held == "iconOpacity") return button.Icon() ? std::to_string(button.Icon().Opacity()) : std::string();
             if (held == "wordsShown") return flag(button.LabelPosition() != controls::CommandBarLabelPosition::Collapsed);
             if (held == "destructive") return flag(isDestructive(button, L"AppBarButtonForeground"));
             if (held == "identifier") return narrow(xaml::Automation::AutomationProperties::GetAutomationId(button));

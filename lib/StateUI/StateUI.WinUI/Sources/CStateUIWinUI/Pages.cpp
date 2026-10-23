@@ -8,6 +8,8 @@
 
 #include "Relay.h"
 
+#include <algorithm>
+
 #include <winrt/Microsoft.UI.Xaml.Automation.h>
 #include <winrt/Windows.UI.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
@@ -137,6 +139,17 @@ namespace {
         return resources.TryLookup(winrt::box_value(name)).try_as<media::Brush>();
     }
 
+    /// How far the bar's theme fades a disabled action's words: its disabled brush's alpha over its own. WinUI fades
+    /// a glyph with them; a picture of the application's own it leaves as drawn.
+    /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
+    double disabledShare(controls::TitleBar const &bar) {
+        auto alpha = [&](wchar_t const *name) {
+            auto brush = themeBrush(bar, name).try_as<media::SolidColorBrush>();
+            return brush ? brush.Color().A * brush.Opacity() : 255.0;
+        };
+        return std::clamp(alpha(L"AppBarButtonForegroundDisabled") / alpha(L"AppBarButtonForeground"), 0.0, 1.0);
+    }
+
     /// Stands the split as its place says - the pane beside the detail, the card's edge along the top and the pane's
     /// side and its corner rounded where they meet, or over it, the edge along the top alone - and the pane on its
     /// ground for that place: the split's own, else WinUI's navigation pane's.
@@ -249,6 +262,7 @@ extern "C" void stateui_winui_title_bar_set_actions(
             // An action with a picture shows its words beside it only where it says so; else they name it to
             // Narrator and in its tip.
             if (auto icon = pictureIcon(icons[index])) {
+                if (!enabled[index] && icon.try_as<controls::ImageIcon>()) icon.Opacity(disabledShare(bar));
                 button.Icon(icon);
                 if (!words[index]) {
                     button.LabelPosition(controls::CommandBarLabelPosition::Collapsed);

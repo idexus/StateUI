@@ -37,7 +37,10 @@ for - a tab chosen, the sidebar shown:
   right where it `showsText`, the command bar's own place for them, and
   otherwise the picture alone, its words naming it to Narrator and in its
   tip (`MountedElement.showsActionWords`); a destructive one stands in the theme's critical color
-  ([a destructive entry](#a-destructive-entry));
+  ([a destructive entry](#a-destructive-entry)); one that cannot be chosen
+  fades its picture as far as the theme fades its words - the bar's
+  disabled brush's alpha over its own - since WinUI fades a glyph with the
+  words and leaves the application's own picture as drawn;
 - the page's title view stands at the chrome's center, where an application
   puts its search;
 - the title area the path declares - the application's name, the line under

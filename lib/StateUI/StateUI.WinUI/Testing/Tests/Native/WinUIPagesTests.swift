@@ -456,6 +456,27 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// An action that cannot be chosen fades its picture as its words fade: WinUI fades a glyph with the words, and
+    /// leaves a picture of the application's own as drawn.
+    func testADisabledActionsPictureFadesAsItsWords() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Notes", actions: [
+                        ToolbarButton("Add").icon("test_wide.png").isEnabled(false),
+                        ToolbarButton("Scan").icon("test_wide.png"),
+                    ])
+                } destination: { _ in Text("Pushed") }
+            }
+            let bar = try XCTUnwrap(host.window).titleBar
+            host.settle { Self.words(bar, "actions") == "|!Add;Scan|" }
+            let faded = try XCTUnwrap(Double(Self.words(bar, "action 0 iconOpacity")))
+            XCTAssertEqual(Double(Self.words(bar, "action 1 iconOpacity")), 1, "one that can be chosen as drawn")
+            XCTAssertLessThan(faded, 0.6, "faded")
+            XCTAssertGreaterThan(faded, 0.2, "still seen")
+        }
+    }
+
     /// The keys a window takes - Alt+Left, the Back key, Escape - show in no tip: its content holds them, and a tip
     /// saying them would stand under the pointer over everything the window shows.
     func testTheKeysAWindowTakesShowInNoTip() throws {
