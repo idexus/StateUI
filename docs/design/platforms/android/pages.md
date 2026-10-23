@@ -77,7 +77,9 @@ name, the line under it and its mark (`titleArea`), else the sidebar page's
 title - in the colors that path declares, and at its end the sidebar's
 toggle, the sidebar page's picture or Android's menu glyph, which hides the
 sidebar. The bar reaches under what stands over the top, the sidebar page
-below it (`AndroidSidebarView`).
+below it (`AndroidSidebarView`). Beside the detail the column stands apart
+from it by the theme's line between panes (`dividerVertical`) down its edge
+toward the detail; a drawer over the detail stands on its own edge.
 
 Where the room is narrower than 720 points - a phone, a tablet upright - the
 sidebar is a drawer sliding over the detail from the leading edge, the

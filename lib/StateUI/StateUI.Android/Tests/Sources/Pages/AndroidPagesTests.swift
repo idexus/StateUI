@@ -23,6 +23,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testTheSidebarBesideTheDetailSlidesAsItHides", testTheSidebarBesideTheDetailSlidesAsItHides),
             ("testAPushedPageKeepsTheSidebarsToggleBeforeTheWayBack", testAPushedPageKeepsTheSidebarsToggleBeforeTheWayBack),
             ("testTheSidebarsBarStandsAsHighAsTheDetails", testTheSidebarsBarStandsAsHighAsTheDetails),
+            ("testTheSidebarBesideTheDetailStandsApartByALine", testTheSidebarBesideTheDetailStandsApartByALine),
             ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
             ("testASidebarWithNoPictureOpensFromTheMenuGlyph", testASidebarWithNoPictureOpensFromTheMenuGlyph),
             ("testAClosedDrawerStandsInvisible", testAClosedDrawerStandsInvisible),
@@ -409,6 +410,30 @@ final class AndroidPagesTests: XCTestCase {
             let hidden = BarLines.middles(navigation.bar)
             XCTAssertEqual(hidden.count, 4, "the toggle, the way back, the title, the action: \(hidden)")
             XCTAssertEqual(hidden.max() ?? 0, hidden.min() ?? 0, accuracy: 2, "on one line")
+        }
+    }
+
+    /// Beside the detail the sidebar stands apart from it by the theme's line down its edge toward the detail; as a
+    /// drawer over the detail it stands on its own edge, with no line.
+    func testTheSidebarBesideTheDetailStandsApartByALine() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                SplitView(State(wrappedValue: true).projectedValue) { TitledPage(title: "Menu") } detail: { ZStack {} }
+            }
+            for _ in 0..<2 {
+                host.layOut(width: 2000, height: 1600)
+                host.runtime.pump.turn()
+            }
+            let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
+            let column = split.drawer
+            XCTAssertTrue(column.heldViews().contains { $0 === column.edge }, "beside the detail")
+            let line = column.edge.frame
+            XCTAssertGreaterThan(line.width, 0)
+            XCTAssertEqual(line.x + line.width, column.frame.width, "at the edge toward the detail")
+            XCTAssertEqual(line.height, column.frame.height, "down the whole edge")
+
+            host.layOut(width: 1080, height: 1920)
+            XCTAssertFalse(column.heldViews().contains { $0 === column.edge }, "a drawer over the detail")
         }
     }
 

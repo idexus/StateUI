@@ -128,8 +128,10 @@ final class AndroidSplitView: AndroidLayoutView {
         // The drawer stands at the edge the language starts from, the detail beside it.
         let leading = direction == .leftToRight
 
-        // The sidebar and the detail each stand in the whole height, under what stands over the room.
+        // The sidebar and the detail each stand in the whole height, under what stands over the room; the sidebar
+        // beside the detail stands apart from it by the theme's line.
         drawer.roomInsets = roomInsets
+        drawer.showsEdge = !overlays
         if let detail = items.dropFirst().first {
             (detail.view as? AndroidLayoutView)?.roomInsets = roomInsets
             let room = Rect(x: leading ? beside : 0, y: 0, width: bounds.width - beside, height: bounds.height)

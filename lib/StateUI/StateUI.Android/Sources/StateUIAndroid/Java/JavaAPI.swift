@@ -228,6 +228,7 @@ enum JavaAPI {
 
     static let focus = Java.staticMethod(views, "focus", "(Landroid/view/View;Z)Z")
     static let groundSidebar = Java.staticMethod(views, "groundSidebar", "(Landroid/view/View;ZZI)V")
+    static let divideView = Java.staticMethod(views, "divide", "(Landroid/view/View;)I")
     static let groundPage = Java.staticMethod(views, "groundPage", "(Landroid/view/View;)V")
     static let sheet = Java.staticMethod(
         views, "sheet", "(Landroid/content/Context;Landroid/view/View;II)Landroid/widget/FrameLayout;")

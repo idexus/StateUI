@@ -389,6 +389,18 @@ final class StateUIViews {
     }
 
     /**
+     * Paints `line` as the theme's line between panes side by side (`dividerVertical`), and answers how wide the
+     * theme draws it, in pixels - at least one.
+     */
+    static int divide(View line) {
+        TypedArray theme = line.getContext().obtainStyledAttributes(new int[] { android.R.attr.dividerVertical });
+        Drawable divider = theme.getDrawable(0);
+        theme.recycle();
+        line.setBackground(divider);
+        return divider == null ? 1 : Math.max(1, divider.getIntrinsicWidth());
+    }
+
+    /**
      * Grounds a split view's sidebar: over the detail in `argb` where `painted`, else on the theme's floating
      * surface - a drawer's, its end corners rounded; beside the detail in `argb` where `painted`, else on nothing,
      * the window showing through.

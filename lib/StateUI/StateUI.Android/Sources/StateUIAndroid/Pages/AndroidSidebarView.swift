@@ -5,11 +5,20 @@
 @_spi(Host) import StateUIHost
 
 /// A split view's sidebar column: the sidebar's own bar - the application's name and mark, the toggle at its end -
-/// over the sidebar page, in the drawer over the detail or beside it.
+/// over the sidebar page, in the drawer over the detail or beside it, apart from it then by the theme's line.
 /// Design: docs/design/platforms/android/pages.md#a-split-view
 @MainActor
 final class AndroidSidebarView: AndroidLayoutView {
     private(set) var bar = AndroidBarView()
+
+    /// The theme's line down the column's edge toward the detail, and how wide the theme draws it, in pixels.
+    let edge = AndroidView { _ in Java.new(JavaAPI.view, JavaAPI.newView, .object(AndroidRenderer.context)) }
+    private lazy var edgePixels = Double(Java.callStaticInt(JavaAPI.views, JavaAPI.divideView, .object(edge.reference)))
+
+    /// Whether the column stands apart from the detail by its line: while it stands beside the detail.
+    var showsEdge = false {
+        didSet { if showsEdge != oldValue { holdChildren() } }
+    }
 
     /// The bar whose words are `words`: the one standing, or one made in their theme in its place - a view's theme
     /// is fixed as it is made.
@@ -24,7 +33,7 @@ final class AndroidSidebarView: AndroidLayoutView {
     }
 
     override func heldViews() -> [AndroidView] {
-        [bar] + (items.first.map { [$0.view] } ?? [])
+        [bar] + (items.first.map { [$0.view] } ?? []) + (showsEdge ? [edge] : [])
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
@@ -36,6 +45,11 @@ final class AndroidSidebarView: AndroidLayoutView {
     /// (`Clearance.underABarAtTheTop`).
     /// Design: docs/design/platforms/android/pages.md#the-safe-area
     override func arrange(in bounds: Rect) {
+        if showsEdge {
+            let width = edgePixels / density
+            edge.layout(Rect(
+                x: direction == .leftToRight ? bounds.width - width : 0, y: 0, width: width, height: bounds.height))
+        }
         let (barInsets, pageInsets) = roomInsets.underABarAtTheTop
         bar.pad(barInsets)
         let height = bar.height(width: bounds.width)
