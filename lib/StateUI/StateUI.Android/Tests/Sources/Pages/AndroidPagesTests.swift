@@ -916,8 +916,8 @@ extension AndroidPagesTests {
 
     /// The activity's root drawn edge to edge, as an application's is, hears what stands over it in its window: the
     /// status bar at the top.
-    func testARootDrawnEdgeToEdgeHearsTheStatusBar() throws {
-        try onMainActor {
+    func testARootDrawnEdgeToEdgeHearsTheStatusBar() {
+        onMainActor {
             let host = AndroidRenderer.running(reducesMotion: true) { ZStack {} }
             let (window, root) = (TestContext.window.reference, host.root.reference)
             Java.call(window, AndroidDriver.setContentView, .object(root))
