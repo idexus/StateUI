@@ -3171,23 +3171,14 @@ enum Listings {
 
                 SectionTitle("Made of")
 
-                ZStack {
-                    // Stripes, each filler an equal share of its row.
-                    HStack {
-                        Filler(.tomato)
-                        Filler(.gold)
-                        Filler(.steelBlue)
-                        Filler(.white)
-                    }
-
-                    Grid {
-                        tile("Color", Filler(Palette.accent)).gridColumn(0)
-                        tile("Gradient", Filler(Palette.identity)).gridColumn(1)
-                        tile("Blur", Filler(.blur(.regular))).gridColumn(2)
-                        tile("Glass", Filler(.glass(.regular))).gridColumn(3)
-                    }
-                    .columns(.fill, .fill, .fill, .fill)
+                // Each over a stripe of color, so what it lets through shows.
+                Grid {
+                    tile("Color", Filler(Palette.accent), over: .tomato).gridColumn(0)
+                    tile("Gradient", Filler(Palette.identity), over: .gold).gridColumn(1)
+                    tile("Blur", Filler(.blur(.regular)), over: .steelBlue).gridColumn(2)
+                    tile("Glass", Filler(.glass(.regular)), over: .white).gridColumn(3)
                 }
+                .columns(.fill, .fill, .fill, .fill)
                 .height(110)
                 .clipsContent(true)
 
@@ -3207,9 +3198,10 @@ enum Listings {
             }
         }
 
-        /// A rounded filler with its name in its middle.
-        private func tile(_ name: String, _ filler: Filler) -> ZStack {
+        /// A rounded filler with its name in its middle, standing alike on every side in a stripe of `stripe`.
+        private func tile(_ name: String, _ filler: Filler, over stripe: Color) -> ZStack {
             ZStack {
+                Filler(stripe)
                 filler
                 Text(name)
                     .fontWeight(.bold)
