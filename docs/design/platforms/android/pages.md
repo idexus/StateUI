@@ -44,9 +44,10 @@ actions - the rest behind the toolbar's overflow - each an entry of the
 toolbar's menu, written as
 [menus](menus.md) says, and the menus the path declares behind the overflow
 after them. Its navigation button is the way back on a pushed page
-whose back button is not taken away; at the root of a split view's detail,
-where the sidebar slides over it, it is the sidebar page's picture - Android's
-menu glyph where the page has none - and opens the sidebar. The bar's words'
+whose back button is not taken away; at the root of a split view's detail
+it is the sidebar page's picture - Android's menu glyph where the page has
+none - and shows the sidebar where it is hidden and hides it where it shows,
+over the detail or beside it. The bar's words'
 color - the one written, or white or black against a written background -
 is its title's, its overflow button's, its actions' pictures' and its back
 arrow's or menu glyph's; a sidebar page's own picture keeps its colors.

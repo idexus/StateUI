@@ -151,8 +151,7 @@ extension AndroidElement {
             content.navigation = .back
         } else if element.offersClose {
             content.navigation = .close
-        } else if let split = enclosingSplit, let sidebar = split.arranged.first,
-                  (split.view as? AndroidSplitView)?.overlays == true {
+        } else if let sidebar = enclosingSplit?.arranged.first {
             content.navigation = .sidebar(HostPicture(sidebar.value(.icon)))
         }
 
@@ -170,7 +169,9 @@ extension AndroidElement {
             switch content.navigation {
             case .back: host?.goBack(.pop(element))
             case .close: if let way = element.closingItsSheet { host?.goBack(way) }
-            default: enclosingSplit?.changeSidebarVisibility(to: true)
+            default:
+                guard let split = enclosingSplit else { return }
+                split.changeSidebarVisibility(to: (split.view as? AndroidSplitView)?.isPresented != true)
             }
         }
     }

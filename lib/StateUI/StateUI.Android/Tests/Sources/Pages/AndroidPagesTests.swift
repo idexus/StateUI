@@ -19,6 +19,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testABarsColorTravelsOnTheDisplaysFrames", testABarsColorTravelsOnTheDisplaysFrames),
             ("testAPushAndAPopAreHeardByThePagesInOrder", testAPushAndAPopAreHeardByThePagesInOrder),
             ("testTheBarOpensTheSidebarAndBackClosesIt", testTheBarOpensTheSidebarAndBackClosesIt),
+            ("testTheBarHidesAndShowsTheSidebarBesideTheDetail", testTheBarHidesAndShowsTheSidebarBesideTheDetail),
             ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
             ("testASidebarWithNoPictureOpensFromTheMenuGlyph", testASidebarWithNoPictureOpensFromTheMenuGlyph),
             ("testAClosedDrawerStandsInvisible", testAClosedDrawerStandsInvisible),
@@ -281,6 +282,39 @@ final class AndroidPagesTests: XCTestCase {
             XCTAssertTrue(host.goBack())
             XCTAssertFalse(open.wrappedValue)
             XCTAssertFalse(split.isPresented)
+        }
+    }
+
+    /// On a tablet the sidebar stands beside the detail: the detail's bar still shows the sidebar's picture, and
+    /// pressing it hides the sidebar, then shows it again, saying so each time.
+    func testTheBarHidesAndShowsTheSidebarBesideTheDetail() throws {
+        try onMainActor {
+            let open = State(wrappedValue: true)
+            let host = AndroidRenderer.running {
+                SplitView(open.projectedValue) {
+                    TitledPage(title: "Menu", icon: "test_dot.png")
+                } detail: {
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                        TitledPage(title: "Home")
+                    } destination: { _ in
+                        TitledPage(title: "Deeper")
+                    }
+                }
+            }
+            host.layOut(width: 2000, height: 1600)
+            host.runtime.pump.turn()
+            let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
+            let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+            XCTAssertFalse(split.overlays, "beside the detail")
+            XCTAssertEqual(navigation.bar.content.navigation, .sidebar(.file("test_dot.png")))
+
+            navigation.bar.clicked()
+            XCTAssertFalse(open.wrappedValue)
+            XCTAssertFalse(split.isPresented)
+
+            navigation.bar.clicked()
+            XCTAssertTrue(open.wrappedValue)
+            XCTAssertTrue(split.isPresented)
         }
     }
 
