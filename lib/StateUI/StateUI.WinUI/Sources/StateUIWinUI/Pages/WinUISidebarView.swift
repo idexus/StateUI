@@ -34,6 +34,13 @@ final class WinUISidebarView: WinUIView {
         stateui_winui_split_slide(handle, pane, width)
     }
 
+    /// Asks WinUI to measure the pane and everything in it again: it applies an arrange inside the pane only to what
+    /// it measured in that pass, so the sidebar's page follows a new height only measured again.
+    /// Design: docs/design/platforms/winui/pages.md#a-split-view
+    func measurePaneAgain() {
+        stateui_winui_split_measure_pane_again(handle)
+    }
+
     override func presented(_ open: Bool) {
         guard !ProgramWrite.isWriting else { return }
         onPresented?(open)

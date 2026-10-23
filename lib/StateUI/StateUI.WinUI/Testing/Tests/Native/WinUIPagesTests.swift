@@ -159,6 +159,39 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// The sidebar's page follows the window's height: a window made shorter keeps the footer under a scroller of many
+    /// rows inside it.
+    func testTheSidebarsFooterStaysInAWindowMadeShorter() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
+                SplitView(State(wrappedValue: true).projectedValue) {
+                    Grid {
+                        ScrollView {
+                            VStack { ForEach(0..<60, id: \.self) { Text("row \($0)") } }
+                        }
+                        Text("footer").gridRow(1)
+                    }
+                    .rows(.fill, .auto)
+                } detail: {
+                    Text("detail")
+                }
+            }
+            for _ in 0..<20 { host.step() }
+            host.layOut()
+            let window = try XCTUnwrap(host.window)
+            window.request(WindowFrame(width: WinUITestHost.wideRoom.width, height: 400))
+            for _ in 0..<20 { host.step() }
+            host.layOut()
+
+            let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
+            let footer = try XCTUnwrap(host.views(WinUITextView.self).first { $0.text == "footer" })
+            XCTAssertLessThan(split.frame.height, 450, "the window made shorter")
+            XCTAssertLessThanOrEqual(
+                footer.origin.y + footer.frame.height, split.origin.y + split.frame.height + 1,
+                "the footer stands below the window")
+        }
+    }
+
     /// A row of tabs marks the tab the view shows as the tabs change, and what the program changes is no choice of the
     /// user's.
     func testTheRowMarksTheTabShownAsTheTabsChange() throws {

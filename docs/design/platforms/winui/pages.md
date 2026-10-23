@@ -119,7 +119,11 @@ it (`Overlay`). `SplitView` places by no width of itself, so the host places
 it by the host layer's rule (`SidebarAdaptation.place`), and a sidebar beside
 the detail closes as the window narrows it over, as WinUI's own navigation
 panes do. The pane holds the sidebar page at its whole height, so a sidebar's
-scroller scrolls and a footer stands at the pane's foot. The view shows none
+scroller scrolls and a footer stands at the pane's foot. As the window's
+height changes, everything in the pane is measured again
+(`stateui_winui_split_measure_pane_again`): WinUI applies an arrange inside
+the pane only to what it measured in that pass, and a footer would keep its
+place in the taller window, below the shorter one. The view shows none
 of its own buttons, which the window's chrome carries. A closed pane would
 keep what it holds where the keyboard's Tab and Narrator still reach it - a
 sign-out button among them - so the sidebar is collapsed while its pane is

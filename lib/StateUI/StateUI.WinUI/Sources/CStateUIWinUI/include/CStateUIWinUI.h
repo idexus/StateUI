@@ -1180,6 +1180,10 @@ double stateui_winui_split_pane_width(StateUIObjectRef split);
 /// edge at the pane's.
 void stateui_winui_split_slide(StateUIObjectRef split, double pane, double width);
 
+/// Asks WinUI to measure a split view's pane and everything in it again, as its height changes: WinUI applies an
+/// arrange inside the pane only to what it measured in that pass.
+void stateui_winui_split_measure_pane_again(StateUIObjectRef split);
+
 /// Stands a split view's pane on a ground for each place: beside the detail and over it - a color `argb`, or the
 /// in-app acrylic in it, its luminosity hiding `opacity` of what is behind it and its tint `tintOpacity`.
 void stateui_winui_split_set_pane_grounds(StateUIObjectRef split, StateUIGround besideKind, uint32_t besideArgb,

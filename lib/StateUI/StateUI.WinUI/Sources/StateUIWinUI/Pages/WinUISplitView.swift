@@ -133,6 +133,7 @@ final class WinUISplitView: WinUILayoutView {
     override func arrange(in bounds: Rect) {
         let size = LayoutSize(width: bounds.width, height: bounds.height)
         if size != arranged {
+            if let arranged, arranged.height != size.height { sidebar.measurePaneAgain() }
             arranged = size
             asked = sidebar.measure(width: size.width, height: size.height)
         }

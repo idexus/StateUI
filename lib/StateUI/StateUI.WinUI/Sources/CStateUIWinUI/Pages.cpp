@@ -139,6 +139,13 @@ namespace {
         return resources.TryLookup(winrt::box_value(name)).try_as<media::Brush>();
     }
 
+    /// Asks WinUI to measure `element` and everything in it again.
+    void measureAgain(xaml::DependencyObject const &element) {
+        if (auto each = element.try_as<xaml::UIElement>()) each.InvalidateMeasure();
+        for (int32_t index = 0, count = media::VisualTreeHelper::GetChildrenCount(element); index < count; ++index)
+            measureAgain(media::VisualTreeHelper::GetChild(element, index));
+    }
+
     /// How far the bar's theme fades a disabled action's words: its disabled brush's alpha over its own. WinUI fades
     /// a glyph with them; a picture of the application's own it leaves as drawn.
     /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
@@ -383,6 +390,14 @@ extern "C" void stateui_winui_split_slide(StateUIObjectRef handle, double pane, 
         }
     } catch (...) {
         report("sliding a split view's pane");
+    }
+}
+
+extern "C" void stateui_winui_split_measure_pane_again(StateUIObjectRef handle) {
+    try {
+        if (auto pane = borrow<controls::SplitView>(handle).Pane()) measureAgain(pane);
+    } catch (...) {
+        report("measuring a split view's pane again");
     }
 }
 
