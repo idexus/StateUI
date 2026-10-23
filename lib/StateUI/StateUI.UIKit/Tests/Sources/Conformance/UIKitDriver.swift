@@ -38,6 +38,7 @@ final class UIKitDriver: HostDriver {
                     "StateUI places and moves a shape's figure into its layer's path, which holds no \(member); its drawing proves it"
             }
         }
+        none["read shape of Filler"] = "UIKit holds a filler's outline as its layer's path, no shape; its drawing proves it"
         for layout in ["Grid", "HStack", "VStack", "ZStack", "ScrollView"] {
             none["read shape of \(layout)"] =
                 "UIKit holds a layout's outline as its layer's path, no shape; its drawing proves it"

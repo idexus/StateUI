@@ -66,7 +66,7 @@
     /// The part of a ZStack's room the child stands in; the whole room where it names none.
     public var area: Area?
 
-    /// Whether the child grows along its stack into the room the others leave - a spacer.
+    /// Whether the child grows along its stack into the room the others leave - a spacer, a filler.
     public var grows = false
 
     /// Values with every part at its default.

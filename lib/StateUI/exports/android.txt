@@ -72,6 +72,11 @@ Ellipse
   lineCap
   lineWidth
   stroke
+Filler
+  ignoresInput
+  lineWidth
+  shape
+  stroke
 Grid
   clipsContent
   columnSpacing

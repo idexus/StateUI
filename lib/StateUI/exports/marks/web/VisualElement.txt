@@ -1,4 +1,4 @@
-# revision 17.1
+# revision 18.1
 ActivityIndicator.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
 ActivityIndicator.accessibilityActions: – ARIA offers no action of an application's own words.
 ActivityIndicator.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
@@ -287,6 +287,42 @@ Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform
 Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Ellipse.width: ✅
 Ellipse.zIndex: ✅
+Filler.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Filler.accessibilityActions: – ARIA offers no action of an application's own words.
+Filler.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
+Filler.accessibilityHeading: ✅
+Filler.accessibilityHint: ✅
+Filler.accessibilityLabel: ✅
+Filler.accessibilityRole: ✅
+Filler.accessibilityValue: ✅
+Filler.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
+Filler.frame: ✅
+Filler.height: ✅
+Filler.hidesChildrenFromAccessibility: ✅
+Filler.ignoresInput: ✅
+Filler.isAccessibilityHidden: ✅
+Filler.isEnabled: ✅
+Filler.isVisible: ✅
+Filler.layoutDirection: ✅
+Filler.maximumHeight: ✅
+Filler.maximumWidth: ✅
+Filler.minimumHeight: ✅
+Filler.minimumWidth: ✅
+Filler.opacity: ✅
+Filler.pivotX: ✓ read pivotX of Filler: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Filler.pivotY: ✓ read pivotY of Filler: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Filler.rotation: ✓ read rotation of Filler: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Filler.rotationX: ✓ read rotationX of Filler: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Filler.rotationY: ✓ read rotationY of Filler: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Filler.scale: ✓ read scale of Filler: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Filler.scaleX: ✓ read scaleX of Filler: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Filler.scaleY: ✓ read scaleY of Filler: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Filler.style: ✅
+Filler.tooltip: ✅
+Filler.translationX: ✓ read translationX of Filler: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Filler.translationY: ✓ read translationY of Filler: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Filler.width: ✅
+Filler.zIndex: ✅
 Grid.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
 Grid.accessibilityActions: – ARIA offers no action of an application's own words.
 Grid.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.

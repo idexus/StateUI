@@ -140,6 +140,8 @@ enum WebRealization {
             missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
         .partial(VisualElementContract.background, on: ZStackContract.self,
             missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
+        .partial(VisualElementContract.background, on: FillerContract.self,
+            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
         .partial(VisualElementContract.background, on: LayoutEngineContract.self,
             missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
         .complete(LayoutEngineContract.handAxis),

@@ -485,6 +485,22 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(Self.names(tree.root?.children), ["a", "b", "c", "d"], "a stack keeps the order written")
     }
 
+    /// A filler grows along its stack into the room the others leave, as a spacer does; a layout holding nothing
+    /// does not.
+    @MainActor
+    func testAFillerGrowsAlongItsStackAsASpacerDoes() {
+        let (tree, _) = Self.tree()
+        var column = HostPatch(id: .manual("column"), type: .vStack)
+        column.children = .arranged([
+            HostPatch(id: .manual("filler"), type: .filler),
+            HostPatch(id: .manual("spacer"), type: .spacer),
+            HostPatch(id: .manual("layers"), type: .zStack),
+        ])
+        tree.apply(column, complete: true)
+
+        XCTAssertEqual(tree.root?.children.map(\.layoutValues.grows), [true, true, false])
+    }
+
     /// The area a child names reaches its ZStack's arithmetic as it was written, and a child naming none
     /// has none.
     @MainActor

@@ -44,7 +44,7 @@ Swift protocols behind them refine each other.
 
 ```text
   View               ActivityIndicator, Button, Canvas, CheckBox,
-                     DatePicker, Divider, Image, Text, Map, Picker,
+                     DatePicker, Divider, Filler, Image, Text, Map, Picker,
                      ProgressBar, ScrollView, Slider, Spacer, Stepper,
                      Switch, TimePicker, WebView, ItemsView
   Layout             Grid, LayoutEngine, ZStack

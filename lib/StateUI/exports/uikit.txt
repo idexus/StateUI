@@ -61,6 +61,11 @@ Ellipse
   lineCap
   lineWidth
   stroke
+Filler
+  background
+  lineWidth
+  shape
+  stroke
 Grid
   background
   clipsContent

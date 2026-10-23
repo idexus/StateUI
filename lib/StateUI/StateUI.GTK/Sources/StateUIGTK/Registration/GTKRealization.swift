@@ -112,6 +112,7 @@ enum GTKRealization {
             + "recolor the track, not lie under it."),
         .complete(VisualElementContract.background, on: VStackContract.self),
         .complete(VisualElementContract.background, on: ZStackContract.self),
+        .complete(VisualElementContract.background, on: FillerContract.self),
         .complete(VisualElementContract.background, on: LayoutEngineContract.self),
         .complete(LayoutEngineContract.handAxis),
         .complete(LayoutEngineContract.handMoved),

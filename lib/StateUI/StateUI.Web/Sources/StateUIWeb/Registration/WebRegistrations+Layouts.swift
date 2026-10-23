@@ -46,6 +46,12 @@ extension WebRegistrations {
             layers.applies(LayoutMembers.boxMembers) { view, values in applyBox(view, values) }
             layers.property(LayoutContract.letsInputThrough) { view, lets in view.setLetsInputThrough(lets ?? false) }
         }
+        // A filler is a box of its own that holds nothing, drawn as a layout's box.
+        // Design: docs/design/host/layout.md#a-filler
+        registry.add(FillerContract.self, create: { _ in WebLayoutView(arrangement: .layers) }) { filler in
+            filler.applies(LayoutMembers.fillerMembers) { view, values in applyBox(view, values) }
+        }
+
         // A layout engine stands on the layers: its children where its run of placements puts them. It has no size
         // of its own, which CSS's size containment says.
         // Design: docs/design/host/layout.md#a-layout-engine

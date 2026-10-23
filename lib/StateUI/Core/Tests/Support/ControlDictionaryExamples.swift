@@ -391,6 +391,16 @@ extension ControlDictionary {
             }
             """#),
 
+        (FillerContract.self, #"""
+            ZStack {
+                Filler(.blur(.regular))
+                    .shape(.roundedRectangle(16))
+
+                Text("Over the blur")
+            }
+            .height(120)
+            """#),
+
         (SliderContract.self, #"""
             @State var volume = 50.0
 

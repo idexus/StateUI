@@ -1,4 +1,4 @@
-# revision 7.1
+# revision 8.1
 ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ActivityIndicator.area: ✅
 ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the views' drag listeners' reports told by the driver, no drag started
@@ -271,6 +271,40 @@ Ellipse.swiped: ✅
 Ellipse.tapCount: ✅
 Ellipse.tapped: ✅
 Ellipse.verticalAlignment: ✅
+Filler.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Filler.area: ✅
+Filler.canDrag: ✓ dragAndDrop on Filler: the views' drag listeners' reports told by the driver, no drag started
+Filler.dragEnded: ✓ dragAndDrop on Filler: the views' drag listeners' reports told by the driver, no drag started
+Filler.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Filler.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Filler.dragStarting: ✓ dragAndDrop on Filler: the views' drag listeners' reports told by the driver, no drag started
+Filler.dragText: ✓ dragAndDrop on Filler: the views' drag listeners' reports told by the driver, no drag started
+Filler.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Filler.droppedFileTypes: ✓ dropFiles on Filler: the view's drag listener's report told the driver's documents, no drag started
+Filler.filesDropped: ✓ dropFiles on Filler: the view's drag listener's report told the driver's documents, no drag started
+Filler.frameChanged: ✅
+Filler.gridColumn: ✅
+Filler.gridColumnSpan: ✅
+Filler.gridRow: ✅
+Filler.gridRowSpan: ✅
+Filler.horizontalAlignment: ✅
+Filler.margin: ✅
+Filler.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+Filler.panUpdated: ✅
+Filler.panXChannel: ✅
+Filler.panYChannel: ✅
+Filler.pinchUpdated: ✅
+Filler.pointerEntered: ✅
+Filler.pointerExited: ✅
+Filler.pointerMoved: ✅
+Filler.pointerPressed: ✅
+Filler.pointerReleased: ✅
+Filler.swipeDirection: ✅
+Filler.swipeThreshold: ✅
+Filler.swiped: ✅
+Filler.tapCount: ✅
+Filler.tapped: ✅
+Filler.verticalAlignment: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Grid.area: ✅
 Grid.canDrag: ✓ dragAndDrop on Grid: the views' drag listeners' reports told by the driver, no drag started

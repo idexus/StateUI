@@ -144,8 +144,44 @@ VStack {
 A spacer asks for no room of its own, so a stack only as long as its children
 leaves it none; a spacer given a length along the axis - `.width(12)` in an
 `HStack` - is a gap of exactly that length, and `.minimumWidth` or
-`.maximumWidth` bound one that grows. A line between a menu's entries is a
-`MenuSeparator`.
+`.maximumWidth` bound one that grows. A spacer is a gap; a region made of a
+material, shaped or outlined, is a `Filler`. A line between a menu's entries
+is a `MenuSeparator`.
+
+### Filler
+
+A `Filler` is a region that takes the room it is given: in a stack, the room
+the other children leave, shared alike with the spacers; in a `ZStack`, a
+grid's cell or a page, the whole room. It is made of what its initializer
+gives it - a color, a gradient, a blur or glass (*Materials*, in *Styles and
+drawing*) - in its box's shape, outlined where it says so:
+
+```swift
+VStack {
+    Text("Inbox")
+    Filler(.cornflowerBlue)
+    Filler(.gray)
+        .height(1)
+    Text("Archive")
+}
+.height(200)
+
+ZStack {
+    Text("Behind the glass")
+    Filler(.glass(.clear))
+        .shape(.capsule)
+        .stroke(.white)
+    Text("Over it")
+}
+.height(120)
+```
+
+A length along the stack stops it growing, so `Filler(.gray).height(1)` is a
+rule and the blue filler takes the rest. What a filler is made of is its
+background, so a later `.background` replaces it. `Filler()` is clear and
+still takes the user's touch, a region for a gesture. A figure - its line
+dashed or joined, its corners rounded one by one - is a shape: a `Rectangle`,
+a `Capsule`, a `Path`.
 
 ## Grid
 

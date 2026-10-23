@@ -1,4 +1,4 @@
-# revision 17.2
+# revision 18.2
 ActivityIndicator.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 ActivityIndicator.translationX: ✅
 Button.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
@@ -13,59 +13,61 @@ CheckBox.rotationX: ✓ read rotationX of CheckBox: the host's own tip, checked 
 CheckBox.style: ✅
 DatePicker.accessibilityHint: ✅
 DatePicker.scaleY: ✅
-Divider.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Divider.tooltip: ✅
 Ellipse.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-Grid.isAccessibilityHidden: ✅
-Grid.isVisible: ✅
-HStack.accessibilityHeading: ✅
+Filler.isAccessibilityHidden: ✅
+Filler.isVisible: ✅
+Grid.hidesChildrenFromAccessibility: ✅
+Grid.opacity: ✅
 HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-Image.tooltip: ✅
-ItemsView.hidesChildrenFromAccessibility: ✅
-ItemsView.opacity: ✅
-LayoutEngine.rotationY: ✓ read rotationY of LayoutEngine: the host's own tip, checked against the projection it laid on the element
-LayoutEngine.zIndex: ✅
-Line.rotationY: ✓ read rotationY of Line: the host's own tip, checked against the projection it laid on the element
-Line.zIndex: ✅
-Map.accessibilityHint: 🧩
-Map.scaleY: 🧩
-Path.hidesChildrenFromAccessibility: ✅
-Path.opacity: ✅
-Picker.maximumHeight: ✅
-Picker.maximumWidth: ✅
-Picker.minimumHeight: ✅
-Picker.minimumWidth: ✅
-Picker.pivotX: ✅
-Polygon.rotationY: ✓ read rotationY of Polygon: the host's own tip, checked against the projection it laid on the element
-Polygon.zIndex: ✅
-Polyline.accessibilityHint: ✅
-Polyline.scaleY: ✅
-ProgressBar.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-ProgressBar.accessibilityActions: – UI Automation offers no action of an application's own words.
-ProgressBar.isEnabled: ✅
-Rectangle.accessibilityHeading: ✅
-ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-ScrollView.isEnabled: ✅
-SearchField.height: ✅
-SearchField.layoutDirection: ✅
-SearchField.width: ✅
-Slider.rotationX: ✓ read rotationX of Slider: the host's own tip, checked against the projection it laid on the element
-Slider.style: ✅
-Spacer.accessibilityHint: ✅
-Spacer.scaleY: ✅
-Stepper.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Switch.hidesChildrenFromAccessibility: ✅
-Switch.opacity: ✅
-Text.ignoresInput: ✅
-Text.pivotY: ✅
-TextEditor.ignoresInput: ✅
-TextEditor.pivotY: ✅
-TextField.accessibilityHeading: ✅
-TextField.scale: ✅
-TimePicker.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-TimePicker.translationY: ✅
-VStack.accessibilityHeading: ✅
+HStack.isAccessibilityHidden: ✅
+HStack.isVisible: ✅
+Image.accessibilityHeading: ✅
+ItemsView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+ItemsView.isEnabled: ✅
+LayoutEngine.accessibilityHeading: ✅
+LayoutEngine.scale: ✅
+Line.accessibilityHeading: ✅
+Line.scale: ✅
+Map.accessibilityRole: 🧩
+Map.translationX: 🧩
+Path.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Path.isEnabled: does not apply - read isEnabled of Path - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Picker.ignoresInput: ✅
+Picker.pivotY: ✅
+Polygon.accessibilityHeading: ✅
+Polygon.scale: ✅
+Polyline.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+Polyline.translationX: ✅
+ProgressBar.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Rectangle.isAccessibilityHidden: ✅
+Rectangle.isVisible: ✅
+ScrollView.height: ✅
+ScrollView.layoutDirection: ✓ read layoutDirection of ScrollView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ScrollView.width: ✅
+SearchField.maximumHeight: ✅
+SearchField.maximumWidth: ✅
+SearchField.minimumHeight: ✅
+SearchField.minimumWidth: ✅
+SearchField.pivotX: ✅
+Slider.rotationY: ✓ read rotationY of Slider: the host's own tip, checked against the projection it laid on the element
+Slider.zIndex: ✅
+Spacer.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+Spacer.translationX: ✅
+Stepper.tooltip: ✅
+Switch.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Switch.isEnabled: ✅
+Text.frame: ✅
+Text.rotation: ✅
+TextEditor.frame: ✅
+TextEditor.rotation: ✅
+TextField.accessibilityLabel: ✅
+TextField.scaleX: ✅
+TimePicker.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+TimePicker.accessibilityActions: – UI Automation offers no action of an application's own words.
 VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-WebView.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-ZStack.hidesChildrenFromAccessibility: ✅
-ZStack.opacity: ✅
+VStack.isAccessibilityHidden: ✅
+VStack.isVisible: ✅
+WebView.tooltip: ✅
+ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it

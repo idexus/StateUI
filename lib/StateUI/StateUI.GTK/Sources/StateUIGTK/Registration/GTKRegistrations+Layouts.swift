@@ -46,6 +46,12 @@ extension GTKRegistrations {
             layout.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
+        // A filler is a box of its own that holds nothing, drawn as a layout's box.
+        // Design: docs/design/host/layout.md#a-filler
+        registry.add(FillerContract.self, create: { _ in GTKZStackView() }) { filler in
+            filler.applies(LayoutMembers.fillerMembers) { view, values in applyBox(view, values) }
+        }
+
         // A layout engine stands on the ZStack: its children where its run of placements puts them.
         registry.add(LayoutEngineContract.self, create: { _ in
             let layout = GTKZStackView()

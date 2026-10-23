@@ -1,4 +1,4 @@
-# revision 17.1
+# revision 18.1
 ActivityIndicator.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
 ActivityIndicator.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
 ActivityIndicator.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
@@ -287,6 +287,42 @@ Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform
 Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.width: ✅
 Ellipse.zIndex: ✅
+Filler.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Filler.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Filler.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
+Filler.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
+Filler.accessibilityHint: ✅
+Filler.accessibilityLabel: ✅
+Filler.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Filler.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
+Filler.background: ✅
+Filler.frame: ✅
+Filler.height: ✅
+Filler.hidesChildrenFromAccessibility: ✅
+Filler.ignoresInput: ✅
+Filler.isAccessibilityHidden: ✅
+Filler.isEnabled: ✅
+Filler.isVisible: ✅
+Filler.layoutDirection: ✅
+Filler.maximumHeight: ✅
+Filler.maximumWidth: ✅
+Filler.minimumHeight: ✅
+Filler.minimumWidth: ✅
+Filler.opacity: ✅
+Filler.pivotX: ✓ read pivotX of Filler: the host's own transform: GTK reads back no part of one
+Filler.pivotY: ✓ read pivotY of Filler: the host's own transform: GTK reads back no part of one
+Filler.rotation: ✓ read rotation of Filler: the host's own transform: GTK reads back no part of one
+Filler.rotationX: ✓ read rotationX of Filler: the host's own transform: GTK reads back no part of one
+Filler.rotationY: ✓ read rotationY of Filler: the host's own transform: GTK reads back no part of one
+Filler.scale: ✓ read scale of Filler: the host's own transform: GTK reads back no part of one
+Filler.scaleX: ✓ read scaleX of Filler: the host's own transform: GTK reads back no part of one
+Filler.scaleY: ✓ read scaleY of Filler: the host's own transform: GTK reads back no part of one
+Filler.style: ✅
+Filler.tooltip: ✅
+Filler.translationX: ✓ read translationX of Filler: the host's own transform: GTK reads back no part of one
+Filler.translationY: ✓ read translationY of Filler: the host's own transform: GTK reads back no part of one
+Filler.width: ✅
+Filler.zIndex: ✅
 Grid.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
 Grid.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
 Grid.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.

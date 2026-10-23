@@ -26,6 +26,11 @@ extension AppKitRegistrations {
             }
         }
 
+        // A filler is a box of its own that holds nothing: its material, outline and shape the box's decoration
+        // draws, as a layout's.
+        // Design: docs/design/host/layout.md#a-filler
+        registry.add(FillerContract.self, create: { _ in AppKitZStackView() })
+
         // A spacer is empty room the stack's arithmetic sizes; a divider in a stack is the toolkit's line.
         // Design: docs/design/host/layout.md#a-spacer
         registry.add(SpacerContract.self, create: { _ in NSView() })

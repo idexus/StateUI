@@ -65,6 +65,7 @@ Ellipse
   lineCap
   lineWidth
   stroke
+Filler
 Grid
   columnSpacing
   columns

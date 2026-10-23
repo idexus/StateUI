@@ -53,12 +53,12 @@
     /// The views whose only answer to the hand is the View tier's gestures: what disabling one stops is what it hears
     /// of them.
     static let answeringByGestures: Set<String> = [
-        "ActivityIndicator", "Capsule", "Ellipse", "Grid", "HStack", "Image", "Line", "Path", "Polygon", "Polyline",
-        "ProgressBar", "Rectangle", "Text", "VStack", "ZStack",
+        "ActivityIndicator", "Capsule", "Ellipse", "Filler", "Grid", "HStack", "Image", "Line", "Path", "Polygon",
+        "Polyline", "ProgressBar", "Rectangle", "Text", "VStack", "ZStack",
     ]
 
-    /// The layouts drawing their own box, whose background may be a blur or glass.
-    static let boxes: Set<String> = ["Grid", "HStack", "LayoutEngine", "VStack", "ZStack"]
+    /// The layouts and the filler drawing their own box, whose background may be a blur or glass.
+    static let boxes: Set<String> = ["Filler", "Grid", "HStack", "LayoutEngine", "VStack", "ZStack"]
 
     /// A box's background is the blur the tree gives it and then the glass it changes it to - or what stands in for
     /// the glass, the blur as clear as it is, whose color a host that blurs nothing paints.

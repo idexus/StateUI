@@ -234,6 +234,10 @@ final class ContractRoadsTests: XCTestCase {
             closed: "_ = Line().x2(40).fill(.red)",
             open: "_ = Polyline([Point(0, 0), Point(40, 0)]).fill(.red)"),
         Road(
+            name: "an outline around a spacer, a gap",
+            closed: "_ = Spacer().stroke(.red)",
+            open: "_ = Filler().stroke(.red)"),
+        Road(
             name: "a corner's join on an ellipse",
             closed: "_ = Ellipse().lineJoin(.round)",
             open: "_ = Rectangle().lineJoin(.round)"),

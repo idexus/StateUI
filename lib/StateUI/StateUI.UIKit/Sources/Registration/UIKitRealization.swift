@@ -86,6 +86,7 @@ enum UIKitRealization {
             reason: "UIKit's time picker keeps no background color: one written reads back as none."),
         .complete(VisualElementContract.background, on: VStackContract.self),
         .complete(VisualElementContract.background, on: ZStackContract.self),
+        .complete(VisualElementContract.background, on: FillerContract.self),
         .complete(VisualElementContract.background, on: LayoutEngineContract.self),
         .complete(LayoutEngineContract.handAxis),
         .complete(LayoutEngineContract.handMoved),

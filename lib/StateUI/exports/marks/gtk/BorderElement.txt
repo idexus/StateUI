@@ -1,7 +1,10 @@
-# revision 10.1
+# revision 11.1
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
+Filler.lineWidth: ✅
+Filler.shape: ✅
+Filler.stroke: ✅
 Grid.lineWidth: ✅
 Grid.shape: ✅
 Grid.stroke: ✅

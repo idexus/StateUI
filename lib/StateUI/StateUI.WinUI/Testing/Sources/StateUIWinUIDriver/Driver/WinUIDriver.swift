@@ -35,6 +35,7 @@ final class WinUIDriver: HostDriver {
         "read isEnabled of Capsule": WinUIDriver.noEnabledState,
         "read isEnabled of Divider": WinUIDriver.noEnabledState,
         "read isEnabled of Ellipse": WinUIDriver.noEnabledState,
+        "read isEnabled of Filler": WinUIDriver.noEnabledState,
         "read isEnabled of Grid": WinUIDriver.noEnabledState,
         "read isEnabled of HStack": WinUIDriver.noEnabledState,
         "read isEnabled of Image": WinUIDriver.noEnabledState,

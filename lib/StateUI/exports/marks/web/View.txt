@@ -1,4 +1,4 @@
-# revision 7.1
+# revision 8.1
 ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ActivityIndicator.area: ✅
 ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -271,6 +271,40 @@ Ellipse.swiped: ✅
 Ellipse.tapCount: ✅
 Ellipse.tapped: ✅
 Ellipse.verticalAlignment: ✅
+Filler.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Filler.area: ✅
+Filler.canDrag: ✓ dragAndDrop on Filler: the DOM's drag events dispatched by the driver, no drag the browser began
+Filler.dragEnded: ✓ dragAndDrop on Filler: the DOM's drag events dispatched by the driver, no drag the browser began
+Filler.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Filler.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Filler.dragStarting: ✓ dragAndDrop on Filler: the DOM's drag events dispatched by the driver, no drag the browser began
+Filler.dragText: ✓ dragAndDrop on Filler: the DOM's drag events dispatched by the driver, no drag the browser began
+Filler.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Filler.droppedFileTypes: ✓ dropFiles on Filler: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Filler.filesDropped: ✓ dropFiles on Filler: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Filler.frameChanged: ✅
+Filler.gridColumn: ✅
+Filler.gridColumnSpan: ✅
+Filler.gridRow: ✅
+Filler.gridRowSpan: ✅
+Filler.horizontalAlignment: ✅
+Filler.margin: ✅
+Filler.panTouchCount: ✅
+Filler.panUpdated: ✅
+Filler.panXChannel: ✅
+Filler.panYChannel: ✅
+Filler.pinchUpdated: ✅
+Filler.pointerEntered: ✅
+Filler.pointerExited: ✅
+Filler.pointerMoved: ✅
+Filler.pointerPressed: ✅
+Filler.pointerReleased: ✅
+Filler.swipeDirection: ✅
+Filler.swipeThreshold: ✅
+Filler.swiped: ✅
+Filler.tapCount: ✅
+Filler.tapped: ✅
+Filler.verticalAlignment: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Grid.area: ✅
 Grid.canDrag: ✓ dragAndDrop on Grid: the DOM's drag events dispatched by the driver, no drag the browser began

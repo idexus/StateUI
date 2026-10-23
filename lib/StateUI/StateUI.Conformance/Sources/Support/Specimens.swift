@@ -38,6 +38,7 @@
         case "Polyline": return dressing.dress(Polyline())
         case "ProgressBar": return dressing.dress(ProgressBar())
         case "Rectangle": return dressing.dress(Rectangle())
+        case "Filler": return dressing.dress(Filler())
         case "ScrollView": return dressing.dress(ScrollView())
         case "SearchField": return dressing.dress(SearchField())
         case "Slider": return dressing.dress(Slider())

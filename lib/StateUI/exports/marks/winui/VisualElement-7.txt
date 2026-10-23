@@ -1,4 +1,4 @@
-# revision 17.2
+# revision 18.2
 ActivityIndicator.frame: ✅
 ActivityIndicator.rotation: ✅
 Button.accessibilityHeading: ✅
@@ -10,57 +10,67 @@ CheckBox.hidesChildrenFromAccessibility: ✅
 CheckBox.opacity: ✅
 DatePicker.ignoresInput: ✅
 DatePicker.pivotY: ✅
-Divider.accessibilityHeading: ✅
-Divider.scale: ✅
+Divider.accessibilityLabel: ✅
+Divider.scaleX: ✅
 Ellipse.accessibilityHeading: ✅
 Ellipse.scale: ✅
-Grid.accessibilityRole: ✅
-Grid.translationX: ✅
-HStack.accessibilityHint: ✅
-HStack.scaleY: ✅
-Image.accessibilityLabel: ✅
-Image.scaleX: ✅
-ItemsView.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-ItemsView.translationY: ✅
-LayoutEngine.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-LayoutEngine.isEnabled: does not apply - read isEnabled of LayoutEngine - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Line.background: – A WinUI shape is its figure alone: it paints no ground around it.
-Line.isEnabled: does not apply - read isEnabled of Line - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Map.ignoresInput: 🧩
-Map.pivotY: 🧩
-Path.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-Path.translationY: ✅
-Picker.tooltip: ✅
-Polygon.background: – A WinUI shape is its figure alone: it paints no ground around it.
-Polygon.isEnabled: does not apply - read isEnabled of Polygon - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Polyline.ignoresInput: ✅
-Polyline.pivotY: ✅
-ProgressBar.rotationY: ✓ read rotationY of ProgressBar: the host's own tip, checked against the projection it laid on the element
-ProgressBar.zIndex: ✅
-Rectangle.accessibilityHint: ✅
-Rectangle.scaleY: ✅
-ScrollView.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-ScrollView.accessibilityActions: – UI Automation offers no action of an application's own words.
-ScrollView.isEnabled: ✅
-SearchField.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Slider.hidesChildrenFromAccessibility: ✅
-Slider.opacity: ✅
-Spacer.ignoresInput: ✅
-Spacer.pivotY: ✅
-Stepper.accessibilityHeading: ✅
-Stepper.scale: ✅
-Switch.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-Switch.translationY: ✅
-Text.accessibilityHeading: ✅
-TextEditor.accessibilityHeading: ✅
-TextField.height: ✅
-TextField.layoutDirection: ✅
-TextField.width: ✅
-TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own tip, checked against the projection it laid on the element
-TimePicker.style: ✅
-VStack.accessibilityHint: ✅
-VStack.scaleY: ✅
-WebView.accessibilityHeading: ✅
-WebView.scale: ✅
-ZStack.accessibilityValue: ✅
-ZStack.translationY: ✅
+Filler.accessibilityRole: ✅
+Filler.translationX: ✅
+Grid.accessibilityValue: ✅
+Grid.translationY: ✅
+HStack.accessibilityRole: ✅
+HStack.translationX: ✅
+Image.accessibilityHint: ✅
+Image.scaleY: ✅
+ItemsView.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+ItemsView.accessibilityActions: – UI Automation offers no action of an application's own words.
+LayoutEngine.height: ✅
+LayoutEngine.layoutDirection: ✓ read layoutDirection of LayoutEngine: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+LayoutEngine.width: ✅
+Line.height: ✅
+Line.layoutDirection: ✓ read layoutDirection of Line: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Line.width: ✅
+Map.frame: 🧩
+Map.rotation: 🧩
+Path.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+Path.accessibilityActions: – UI Automation offers no action of an application's own words.
+Path.isEnabled: ✅
+Picker.accessibilityHeading: ✅
+Polygon.height: ✅
+Polygon.layoutDirection: ✓ read layoutDirection of Polygon: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Polygon.width: ✅
+Polyline.frame: ✅
+Polyline.rotation: ✅
+ProgressBar.accessibilityHeading: ✅
+ProgressBar.scale: ✅
+Rectangle.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+Rectangle.translationX: ✅
+ScrollView.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+ScrollView.layoutDirection: ✅
+SearchField.tooltip: ✅
+Slider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Slider.isEnabled: ✅
+Spacer.frame: ✅
+Spacer.rotation: ✅
+Stepper.accessibilityLabel: ✅
+Stepper.scaleX: ✅
+Switch.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+Switch.accessibilityActions: – UI Automation offers no action of an application's own words.
+Text.isAccessibilityHidden: ✅
+Text.isVisible: ✅
+TextEditor.isAccessibilityHidden: ✅
+TextEditor.isVisible: ✅
+TextField.maximumHeight: ✅
+TextField.maximumWidth: ✅
+TextField.minimumHeight: ✅
+TextField.minimumWidth: ✅
+TextField.pivotX: ✅
+TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own tip, checked against the projection it laid on the element
+TimePicker.zIndex: ✅
+VStack.accessibilityRole: ✅
+VStack.translationX: ✅
+WebView.accessibilityLabel: ✅
+WebView.scaleX: ✅
+ZStack.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+ZStack.accessibilityActions: – UI Automation offers no action of an application's own words.
+ZStack.isEnabled: ✅

@@ -127,7 +127,21 @@ like any other (`LayoutValues.grows(along:)`). Every host stands an empty view
 there; the arithmetic is the host layer's, so the room a spacer takes is the
 same on every host. The Web hands its stacks to the browser, so there the same
 rule is written as CSS: a spacer is a flex item growing from nothing
-(`flex: 1 1 0`), which the browser shares alike.
+(`flex: 1 1 0`), which the browser shares alike. A spacer is a gap and is
+never painted: its background is never planned on any host
+(`HostRegister.everyHost`), so it stays an empty view.
+
+## A filler
+
+A filler is a region that holds nothing and takes the room it is given. In a
+stack it grows as a spacer does (`LayoutValues.grows`), shared alike with the
+spacers, and a length it states along the axis stops it; in a ZStack, a
+grid's cell or a page it fills the room, as every child whose alignment
+fills. Each host stands it in the view its `ZStack` stands in and draws its
+background, its outline and its shape there as a layout's box
+(`LayoutMembers.fillerMembers`, a layout's box without the cut, as nothing
+stands inside to cut), so a blur or glass is drawn where the platform draws
+one; it takes no padding. On the Web it is the same flex item as a spacer.
 
 ## A divider in a stack
 

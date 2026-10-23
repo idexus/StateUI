@@ -8,8 +8,10 @@
 /// and the shape the outline follows. A button's own face may stand inside an outline, a layout's nothing.
 /// Design: docs/design/host/conformance.md#a-drawing-read-by-its-colors
 extension BorderElementTests {
-    /// The layouts, whose box StateUI draws, and a button.
-    static let drawnBoxes: Set<String> = ["Button", "Grid", "HStack", "LayoutEngine", "ScrollView", "VStack", "ZStack"]
+    /// The layouts and a filler, whose box StateUI draws, and a button.
+    static let drawnBoxes: Set<String> = [
+        "Button", "Filler", "Grid", "HStack", "LayoutEngine", "ScrollView", "VStack", "ZStack",
+    ]
 
     /// Whether `color`, inside `element`'s outline, is none of the outline: nothing at all in a layout, anything but
     /// the outline's red where a button's own face stands.

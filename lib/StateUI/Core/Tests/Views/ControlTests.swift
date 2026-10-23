@@ -250,6 +250,13 @@ final class ControlTests: XCTestCase {
                 Spacer()
                     .minimumWidth(8)),
 
+            // A filler: a region made of its material, here a blur, in its box's shape and outlined.
+            ControlCase("Filler", source: "Filler.swift",
+                Filler(.blur(.regular))
+                    .shape(.capsule)
+                    .stroke(.white)
+                    .lineWidth(1)),
+
             ControlCase("Divider", source: "Divider.swift", Divider()),
 
             ControlCase("Grid", source: "Grid.swift",

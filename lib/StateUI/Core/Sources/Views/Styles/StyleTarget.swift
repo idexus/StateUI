@@ -40,6 +40,7 @@ extension ProgressBar: StyleTarget {}
 extension Image: StyleTarget {}
 extension Divider: StyleTarget {}
 extension Spacer: StyleTarget {}
+extension Filler: StyleTarget {}
 extension Grid: StyleTarget {}
 extension ScrollView: StyleTarget {}
 extension VStack: StyleTarget {}

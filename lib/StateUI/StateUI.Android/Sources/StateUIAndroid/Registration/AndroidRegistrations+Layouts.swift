@@ -45,6 +45,13 @@ extension AndroidRegistrations {
             layout.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
+        // A filler is a box of its own that holds nothing, drawn as a layout's box.
+        // Design: docs/design/host/layout.md#a-filler
+        registry.add(FillerContract.self, create: { _ in AndroidZStackView() }) { filler in
+            filler.applies(outlineMembers) { view, values in applyBox(view, values) }
+            filler.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
+        }
+
         // A layout engine stands on the ZStack: its children where its run of placements puts them.
         registry.add(LayoutEngineContract.self, create: { _ in
             let layout = AndroidZStackView()
@@ -86,6 +93,10 @@ extension AndroidRegistrations {
             scroll.raises(RefreshElementContract.refreshRequested)
         }
     }
+
+    /// What a filler takes of its box: its outline and its shape - it holds nothing to cut.
+    private static let outlineMembers = PropertyList(
+        BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape)
 
     /// What every layout takes of its own box: its outline, its shape and its cut.
     private static let boxMembers = PropertyList(

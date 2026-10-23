@@ -1,4 +1,4 @@
-# revision 17.2
+# revision 18.2
 ActivityIndicator.rotationY: ✓ read rotationY of ActivityIndicator: the host's own tip, checked against the projection it laid on the element
 ActivityIndicator.zIndex: ✅
 Button.accessibilityHint: ✅
@@ -12,66 +12,64 @@ CheckBox.layoutDirection: ✅
 CheckBox.width: ✅
 DatePicker.rotationX: ✓ read rotationX of DatePicker: the host's own tip, checked against the projection it laid on the element
 DatePicker.style: ✅
-Divider.accessibilityHint: ✅
-Divider.scaleY: ✅
+Divider.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+Divider.translationX: ✅
 Ellipse.accessibilityHint: ✅
 Ellipse.scaleY: ✅
-Grid.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-Grid.accessibilityActions: – UI Automation offers no action of an application's own words.
+Filler.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+Filler.accessibilityActions: – UI Automation offers no action of an application's own words.
+Filler.isEnabled: ✅
+Grid.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Grid.isEnabled: ✅
-HStack.accessibilityValue: ✅
-HStack.translationY: ✅
-Image.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
-Image.translationX: ✅
-ItemsView.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-LayoutEngine.maximumHeight: ✅
-LayoutEngine.maximumWidth: ✅
-LayoutEngine.minimumHeight: ✅
-LayoutEngine.minimumWidth: ✅
-LayoutEngine.pivotX: ✅
-Line.maximumHeight: ✅
-Line.maximumWidth: ✅
-Line.minimumHeight: ✅
-Line.minimumWidth: ✅
-Line.pivotX: ✅
-Map.rotationX: 🧩
-Map.style: 🧩
-Path.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Picker.isAccessibilityHidden: ✅
-Picker.isVisible: ✅
-Polygon.maximumHeight: ✅
-Polygon.maximumWidth: ✅
-Polygon.minimumHeight: ✅
-Polygon.minimumWidth: ✅
-Polygon.pivotX: ✅
-Polyline.rotationX: ✓ read rotationX of Polyline: the host's own tip, checked against the projection it laid on the element
-Polyline.style: ✅
-ProgressBar.accessibilityLabel: ✅
-ProgressBar.scaleX: ✅
-Rectangle.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-Rectangle.translationY: ✅
-ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-ScrollView.tooltip: ✅
-SearchField.accessibilityHeading: ✅
-Slider.height: ✅
-Slider.layoutDirection: ✅
-Slider.width: ✅
-Spacer.rotationX: ✓ read rotationX of Spacer: the host's own tip, checked against the projection it laid on the element
-Spacer.style: ✅
-Stepper.accessibilityHint: ✅
-Stepper.scaleY: ✅
-Switch.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Text.hidesChildrenFromAccessibility: ✅
-Text.opacity: ✅
-TextEditor.hidesChildrenFromAccessibility: ✅
-TextEditor.opacity: ✅
-TextField.ignoresInput: ✅
-TextField.pivotY: ✅
-TimePicker.accessibilityHeading: ✅
-TimePicker.scale: ✅
-VStack.accessibilityValue: ✅
-VStack.translationY: ✅
-WebView.accessibilityHint: ✅
-WebView.scaleY: ✅
-ZStack.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-ZStack.isEnabled: ✅
+HStack.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+HStack.accessibilityActions: – UI Automation offers no action of an application's own words.
+HStack.isEnabled: ✅
+Image.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+Image.translationY: ✅
+ItemsView.tooltip: ✅
+LayoutEngine.ignoresInput: ✅
+LayoutEngine.pivotY: ✅
+Line.ignoresInput: ✅
+Line.pivotY: ✅
+Map.rotationY: 🧩
+Map.zIndex: 🧩
+Path.tooltip: ✅
+Picker.hidesChildrenFromAccessibility: ✅
+Picker.opacity: ✅
+Polygon.ignoresInput: ✅
+Polygon.pivotY: ✅
+Polyline.rotationY: ✓ read rotationY of Polyline: the host's own tip, checked against the projection it laid on the element
+Polyline.zIndex: ✅
+ProgressBar.accessibilityHint: ✅
+ProgressBar.scaleY: ✅
+Rectangle.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+Rectangle.accessibilityActions: – UI Automation offers no action of an application's own words.
+Rectangle.isEnabled: ✅
+ScrollView.accessibilityHeading: ✅
+SearchField.isAccessibilityHidden: ✅
+SearchField.isVisible: ✅
+Slider.maximumHeight: ✅
+Slider.maximumWidth: ✅
+Slider.minimumHeight: ✅
+Slider.minimumWidth: ✅
+Slider.pivotX: ✅
+Spacer.rotationY: ✓ read rotationY of Spacer: the host's own tip, checked against the projection it laid on the element
+Spacer.zIndex: ✅
+Stepper.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+Stepper.translationX: ✅
+Switch.tooltip: ✅
+Text.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Text.isEnabled: does not apply - read isEnabled of Text - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+TextEditor.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+TextEditor.isEnabled: ✅
+TextField.frame: ✅
+TextField.rotation: ✅
+TimePicker.accessibilityLabel: ✅
+TimePicker.scaleX: ✅
+VStack.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+VStack.accessibilityActions: – UI Automation offers no action of an application's own words.
+VStack.isEnabled: ✅
+WebView.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+WebView.translationX: ✅
+ZStack.layoutDirection: ✅
+ZStack.tooltip: ✅

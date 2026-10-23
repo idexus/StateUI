@@ -89,10 +89,12 @@ enum WinUIRealization {
         .complete(VisualElementContract.accessibilityRole, on: VStackContract.self),
         .complete(VisualElementContract.accessibilityRole, on: HStackContract.self),
         .complete(VisualElementContract.accessibilityRole, on: ZStackContract.self),
+        .complete(VisualElementContract.accessibilityRole, on: FillerContract.self),
         .complete(VisualElementContract.accessibilityRole, on: GridContract.self),
         .complete(VisualElementContract.accessibilityValue, on: VStackContract.self),
         .complete(VisualElementContract.accessibilityValue, on: HStackContract.self),
         .complete(VisualElementContract.accessibilityValue, on: ZStackContract.self),
+        .complete(VisualElementContract.accessibilityValue, on: FillerContract.self),
         .complete(VisualElementContract.accessibilityValue, on: GridContract.self),
         .partial(TextInputContract.inputPurpose,
             missing: "Filling in: WinUI's text box keeps no saved names, passwords or codes to fill it in from; a "

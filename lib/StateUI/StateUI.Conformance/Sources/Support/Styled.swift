@@ -40,6 +40,7 @@ enum Styled {
             dimmed(SearchField.self)
             dimmed(Slider.self)
             dimmed(Spacer.self)
+            dimmed(Filler.self)
             dimmed(Stepper.self)
             dimmed(Switch.self)
             dimmed(TextEditor.self)
