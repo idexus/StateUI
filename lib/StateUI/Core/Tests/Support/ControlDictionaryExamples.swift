@@ -494,34 +494,38 @@ extension ControlDictionary {
                 }
             """#),
 
-        (ToolbarItemContract.self, #"""
+        (ToolbarButtonContract.self, #"""
             @State var count = 0
 
             Text("\(count) items")
                 .toolbar {
-                    ToolbarItem("Add")
+                    ToolbarButton("Add")
                         .icon("add.png")
                         .showsText(true)
                         .onClicked { count += 1 }
-                    ToolbarItem("Clear")
-                        .placement(.overflow)
+                    ToolbarButton("Clear")
+                        .placement(at: .overflow)
                         .role(.destructive)
                         .onClicked { count = 0 }
                 }
             """#),
 
-        (ToolbarItemGroupContract.self, #"""
+        (ToolbarGroupContract.self, #"""
             @State var edited = false
 
             TextEditor()
                 .onTextChanged { _ in edited = true }
-                .toolbar(.start) {
-                    ToolbarItem("New")
-                }
                 .toolbar {
-                    ToolbarItem("Save")
-                        .isEnabled(edited)
-                        .onClicked { edited = false }
+                    ToolbarButton("New").placement(at: .start)
+                    ToolbarGroup {
+                        ToolbarButton("Save")
+                            .isEnabled(edited)
+                            .onClicked { edited = false }
+                        ToolbarButton("Revert")
+                            .isEnabled(edited)
+                            .onClicked { edited = false }
+                    }
+                    .placement(order: 1)
                 }
             """#),
 
@@ -788,7 +792,7 @@ extension ControlDictionary {
 
             Text(saved ? "Saved" : "Draft")
                 .toolbar {
-                    ToolbarItem("Save")
+                    ToolbarButton("Save")
                         .icon("save.png")
                         .isEnabled(!saved)
                         .onClicked { saved = true }

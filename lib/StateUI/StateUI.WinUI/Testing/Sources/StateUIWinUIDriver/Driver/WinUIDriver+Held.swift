@@ -26,7 +26,7 @@ extension WinUIDriver {
         case .menuItem, .menu:
             if let held = try menuHolds(property.name, element) { return held }
             throw cannot
-        case .toolbarItem:
+        case .toolbarButton:
             if let held = try actionHolds(property.name, element) { return held }
             throw cannot
         case .window:
@@ -553,7 +553,6 @@ extension WinUIDriver {
         switch name {
         case "text": return .string(titleBar.drawn[place].title)
         case "isEnabled": return said.enabled.propValue
-        case "placement": return (said.edge == .overflow ? ToolbarItemPlacement.overflow : .bar).propValue
         case "icon": return Self.picture(try action("icon"), named: element)
         case "role": return (try action("destructive") == "1" ? ActionRole.destructive : .normal).propValue
         case "showsText": return (try action("wordsShown") == "1").propValue

@@ -209,7 +209,7 @@ final class ContractTests: XCTestCase {
             MarkerType(rawValue: 1)!, ContentMode(rawValue: 1)!, LayoutDirection(rawValue: 1)!,
             AccessibilityHeadingLevel(rawValue: 1)!, AccessibilityRole.adjustable, ScrollIndicatorVisibility(rawValue: 1)!,
             LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,
-            FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarItemPlacement(rawValue: 1)!, ToolbarSide.start,
+            FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarPosition.overflow, ToolbarPart.sidebar,
             SafeAreaEdges.top, IconPosition(rawValue: 1)!, ButtonRole.cancel, ActionRole.destructive, DateStyle.medium,
             [Key.escape, "a"], MapType(rawValue: 1)!,
             WebNavigationType(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.changed,

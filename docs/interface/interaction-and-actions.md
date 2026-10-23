@@ -537,7 +537,7 @@ struct Document: View {
                 .id(StandardMenu.file)
             }
             .toolbar {
-                ToolbarItem("Mark")
+                ToolbarButton("Mark")
                     .keyboardShortcut("m")
                     .onClicked { exported += 1 }
             }

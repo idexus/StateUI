@@ -6,7 +6,7 @@ the views here show it.
 
 ## What it shows
 
-An application offers the inspector in one line: `ToolbarItem.inspector(window)`
+An application offers the inspector in one line: `ToolbarButton.inspector(window)`
 in a page's toolbar items, `InspectorButton()` anywhere a view goes, or, for a
 scene that may show it in a window of its own,
 `Window(.debugInspector) { DebugInspector() }`.

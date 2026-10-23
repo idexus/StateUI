@@ -24,8 +24,8 @@ for - a tab chosen, the sidebar shown:
   top page can go back;
 - a split view adds the chrome's pane toggle, which shows and hides its
   sidebar;
-- the groups of actions the visible path declares
-  ([the actions of a path](../../host/pages.md#the-actions-of-a-path)) stand
+- the groups of actions the visible page declares
+  ([a page's actions](../../host/pages.md#a-pages-actions)) stand
   on a command bar at the chrome's edge they declare - the leading one in its
   left header, after the way back and the toggle, shown only while it holds
   an action; the trailing one in its right header - each group apart from the

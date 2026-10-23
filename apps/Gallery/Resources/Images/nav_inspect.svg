@@ -3,7 +3,7 @@
   <!-- A circled i: the button that shows what every render cost.
 
        THE RING IS 3 OF THESE 48 UNITS, AND THE MARK 36, both taken off the bar
-       rather than chosen. A ToolbarItem has no font of its own, so the
+       rather than chosen. A ToolbarButton has no font of its own, so the
        library's own ⓘ is drawn at whatever the bar's caption font says - 14 px
        across, measured - while an icon is given the bar's own 22 px slot: 36
        units of this box draw 16.5 there, which is the bigger mark that was

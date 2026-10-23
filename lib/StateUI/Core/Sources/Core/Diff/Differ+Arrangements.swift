@@ -1,14 +1,19 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// An arrangement stands where a page stands, every element keeps what its contract declares, and a place is a
-// layout's own; anything else is left out or said, once.
+// An arrangement stands where a page stands and a stack or tabs declare no toolbar, every element keeps what its
+// contract declares, and a place is a layout's own; anything else is left out or said, once.
 // Design: docs/design/views/pages.md#an-arrangement-is-a-view
 // Design: docs/design/contracts/README.md#what-an-element-does-not-wear
 
 extension Differ {
-    /// Whether `child` may stand under `parent`, which `placesPages` or not: an arrangement only where a page stands.
+    /// Whether `child` may stand under `parent`, which `placesPages` or not: an arrangement only where a page stands,
+    /// and a toolbar on no stack or tabs - a page owns its bar's actions.
     func standsWhereItMay(_ child: RenderedNode, under parent: NodeType, placesPages: Bool) -> Bool {
+        if child.type == ToolbarGroupContract.nodeType, parent == .navigationStack || parent == .tabView {
+            complain("\(parent.name) takes no toolbar - a page owns its bar's actions: it was left out")
+            return false
+        }
         guard NodeType.arrangements.contains(child.type), !placesPages else { return true }
 
         complain(

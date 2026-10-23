@@ -38,7 +38,7 @@ extension AppKitDriver {
             return "the host's response called with the driver's files, no panel shown"
         case "goBack":
             return "the host's toolbar or sheet entry called, no toolbar item or sheet touched"
-        case "activate" where element == "ToolbarItem":
+        case "activate" where element == "ToolbarButton":
             return "the host's toolbar entry called, no toolbar item touched"
         case "switchAway", "switchBack", "bringToFront", "minimize", "restore":
             return "the notification AppKit would post, posted by the driver; the window does not move"
@@ -51,7 +51,7 @@ extension AppKitDriver {
         case "read isAnimating of ActivityIndicator": return "the host's own flag; the indicator holds none to read"
         case "read inputPurpose of TextField", "read inputPurpose of SearchField", "read inputPurpose of TextEditor":
             return "the traits the host keeps; a Mac shows no keys a purpose picks"
-        case "read keyboardShortcut of ToolbarItem": return "the host's own record; AppKit holds no shortcut on a toolbar's item"
+        case "read keyboardShortcut of ToolbarButton": return "the host's own record; AppKit holds no shortcut on a toolbar's item"
         case "read windowType of Window", "read windowValue of Window": return "the host's restoration record"
         case "read the menu of Window": return "menu items built from the tree at the read, not the main menu"
         case "read what the screen reader said": return "the host's own list of what it announced"

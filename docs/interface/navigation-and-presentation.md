@@ -414,49 +414,76 @@ A page's actions are declared where the state they follow lives, with
 ```swift quote
 VStack { … }
     .toolbar {
-        ToolbarItem("Save")
+        ToolbarButton("Save")
             .id("save")
             .isEnabled(hasChanges)
             .onClicked(gate: .ignoreWhileRunning) { try await save() }
-        ToolbarItem("Delete")
+        ToolbarButton("Delete")
             .id("delete")
-            .placement(.overflow)
+            .placement(at: .overflow)
             .role(.destructive)
             .onClicked(gate: .ignoreWhileRunning) { try await delete() }
     }
 ```
 
-The group is built with the body declaring it, so an item follows the state it
-reads - Save enables itself as `hasChanges` moves, with nothing written by hand.
-It stands on the bar while its page is shown, and when the page goes, its
-actions go with it.
+The items are built with the body declaring them, so an item follows the state
+it reads - Save enables itself as `hasChanges` moves, with nothing written by
+hand. They stand on the bar while their page is shown, and when the page goes
+its actions go with it: a page pushed onto a stack shows its own and none of
+the page under it, and a `NavigationStack` or a `TabView` declares none -
+`.toolbar` written on one is left out, and said once.
 
-One declaration is one group: its actions share one background where the
-platform groups a bar's actions, as macOS and iOS draw them on one piece of
-glass. A second group is a second declaration. A group stands at the bar's
-end unless `.toolbar(.start)` puts it at its start.
-
-A window's page and an arrangement declare actions for every page shown in
-them. The actions declared further in join them nearer the title, so the
-outer ones keep their place at the edge from page to page:
+Each item says where it stands with `.placement` - at the bar's `.start`, its
+`.end`, unsaid, or behind its `.overflow` menu - and an `order` among the
+others there, lower first; at the same order a page's views further out stand
+at the edge and those further in nearer the title. A `ToolbarGroup` stands its
+items together on one background where the platform groups a bar's actions, as
+macOS and iOS draw them on one piece of glass, and behind the overflow it is a
+section of the menu; an item standing alone is a group of one, and an item in
+a group stands where its group does:
 
 ```swift quote
-NavigationStack($path) {
-    Library(path: $path)
-} destination: { book in
-    BookPage(book: book)
-}
-.toolbar(id: "library") {
-    ToolbarItem("Account").onClicked { showAccount() }
+VStack { … }
+    .toolbar {
+        ToolbarGroup {
+            ToolbarButton("Bold").onClicked { bold() }
+            ToolbarButton("Italic").onClicked { italic() }
+        }
+        .placement(at: .start)
+        ToolbarButton("Share").onClicked { share() }
+    }
+```
+
+A split view stands under one bar in two parts, over its sidebar and over its
+detail. A page's items stand in its own column's part, and a split view's own
+over every page of the part they name - the detail's, unsaid - beside the
+page's own, at the edge. An item naming the other part stands there, and one
+whose part changes moves to it. While the sidebar is not shown its part's items
+stand at the start of the detail's, or hide with it where they say
+`hidesWithSidebar(true)`:
+
+```swift
+import StateUI
+
+struct Library: View {
+    @State private var showsFolders = true
+
+    var body: some View {
+        SplitView($showsFolders) {
+            Text("Folders").title("Library")
+        } detail: {
+            Text("Books").title("All books")
+        }
+        .toolbar {
+            ToolbarButton("Add folder").placement(.sidebar).hidesWithSidebar(true).onClicked {}
+            ToolbarButton("Account").onClicked {}
+        }
+    }
 }
 ```
 
-`order` moves a group earlier or later among the others at its edge, lower
-first. `.toolbar(id:)` adds a page's actions to the group of that id instead of
-starting one of its own, and an item with the `.id` of one declared further out
-stands in that item's place while its page is shown. `placement` keeps an
-action on the bar or behind the native overflow. Give stable identities to
-items whose list can change.
+A part said on a page that stands in no split view changes nothing. Give stable
+identities to items whose list can change.
 
 An item given an `icon` shows the picture alone on the bar; its words stay its
 name to assistive technology and its tip. `showsText(true)` asks for the words
@@ -469,7 +496,7 @@ always shows its words.
 ```swift quote
 VStack { … }
     .toolbar {
-        ToolbarItem("Add")
+        ToolbarButton("Add")
             .icon("add.png")
             .showsText(true)
             .onClicked { add() }

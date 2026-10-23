@@ -112,7 +112,7 @@ private struct BarAndPage: View {
             Button("Say").onClicked { said += 1 }
         }
         .title("Page")
-        .toolbar { ToolbarItem("Said \(said)").onClicked {} }
+        .toolbar { ToolbarButton("Said \(said)").onClicked {} }
     }
 }
 

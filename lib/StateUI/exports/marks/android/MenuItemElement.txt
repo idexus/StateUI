@@ -5,9 +5,9 @@ MenuItem.isEnabled: ✅
 MenuItem.keyboardShortcut: ✅
 MenuItem.role: ✅
 MenuItem.text: ✅
-ToolbarItem.clicked: ✅
-ToolbarItem.icon: does not apply - read a picture's name - Android's item keeps its picture, not its name
-ToolbarItem.isEnabled: ✅
-ToolbarItem.keyboardShortcut: ✅
-ToolbarItem.role: ✅
-ToolbarItem.text: ✅
+ToolbarButton.clicked: ✅
+ToolbarButton.icon: does not apply - read a picture's name - Android's item keeps its picture, not its name
+ToolbarButton.isEnabled: ✅
+ToolbarButton.keyboardShortcut: ✅
+ToolbarButton.role: ✅
+ToolbarButton.text: ✅

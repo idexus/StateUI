@@ -7,7 +7,7 @@
 ///
 /// Written on the item, in any order, before or after its own modifiers:
 ///
-///     ToolbarItem("Delete")
+///     ToolbarButton("Delete")
 ///         .icon("trash.png")
 ///         .role(.destructive)
 ///         .onClicked { delete() }
@@ -44,7 +44,7 @@ extension MenuItemElement {
     /// context menu's entry shows them beside its words.
     ///
     ///     MenuItem("Save").keyboardShortcut("s")
-    ///     ToolbarItem("Share").keyboardShortcut("s", modifiers: [.primary, .shift])
+    ///     ToolbarButton("Share").keyboardShortcut("s", modifiers: [.primary, .shift])
     public func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Modified {
         setValue(MenuItemElementContract.keyboardShortcut, KeyboardShortcut(key, modifiers: modifiers))
     }

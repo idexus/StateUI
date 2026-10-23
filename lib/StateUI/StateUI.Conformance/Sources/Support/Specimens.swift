@@ -102,9 +102,9 @@
             return VStack {
                 Beside([Text("Row").contextMenu { dressing.wear(MenuItem("Copy")).id(dressing.id) }.id("row")] + others)
             }
-        case "ToolbarItem":
+        case "ToolbarButton":
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                DeclaringPage(beside: others, key: "\(worn)") { [dressing.wear(ToolbarItem("Save")).id(dressing.id)] }
+                DeclaringPage(beside: others, key: "\(worn)") { [dressing.wear(ToolbarButton("Save")).id(dressing.id)] }
             } destination: { _ in Text("Pushed") }
         case "NavigationStack":
             return dressing.wear(NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
@@ -168,42 +168,28 @@ public struct DeclaringPage: View {
     /// What it declares, said as words: a change in them builds it again.
     let key: String
 
-    /// The edge of the bar its group stands at.
-    let side: ToolbarSide
-
-    /// Where its group stands among the others at its edge.
-    let order: Int
-
-    /// The id of the group its items join or start; nil for a group of its own.
-    let group: String?
-
     /// The view it declares in its title's place; nil for none.
     let title: (any View)?
 
-    /// Its group's items.
-    let items: @MainActor () -> [ToolbarItem]
+    /// Its items, each standing where its own placement says.
+    let items: @MainActor () -> [ToolbarButton]
 
-    /// A page declaring `items` at `side` in `order` - joining `group` where one is named - and `title`, `beside` its
-    /// words.
+    /// A page declaring `items` and `title`, `beside` its words.
     public init(
-        beside: [any View] = [], key: String = "", side: ToolbarSide = .end, order: Int = 0, group: String? = nil,
-        title: (any View)? = nil, _ items: @escaping @MainActor () -> [ToolbarItem] = { [] }
+        beside: [any View] = [], key: String = "", title: (any View)? = nil,
+        _ items: @escaping @MainActor () -> [ToolbarButton] = { [] }
     ) {
         self.beside = beside
         self.key = key
-        self.side = side
-        self.order = order
-        self.group = group
         self.title = title
         self.items = items
     }
 
     public var body: some View {
         let (items, words) = (self.items, VStack { Beside([Text("Page")] + beside) })
-        let grouped = group.map { words.toolbar(side, id: $0, order: order) { items() } }
-            ?? words.toolbar(side, order: order) { items() }
-        guard let title else { return grouped }
-        return grouped.titleView { AnyView(title) }
+        let declared = words.toolbar { items() }
+        guard let title else { return declared }
+        return declared.titleView { AnyView(title) }
     }
 }
 

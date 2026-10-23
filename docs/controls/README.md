@@ -97,13 +97,13 @@ The scene, the window and the page an application is made of, the arrangements a
 | [TextSpan](TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ToolbarItem](ToolbarItem.md) | 9 | 5 ✅ · 1 ✓ · 1 – | 7 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 9 ✅ | 7 ✅ · 1 ✓ · 1 – | 9 ✅ |
-| [ToolbarItemGroup](ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
+| [ToolbarButton](ToolbarButton.md) | 8 | 4 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 ✓ · 1 – | 5 ✅ · 1 – | 8 ✅ | 6 ✅ · 1 ✓ · 1 – | 8 ✅ |
+| [ToolbarGroup](ToolbarGroup.md) | 5 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [Window](Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
 | ✅ |  | 100 | 95 | 77 | 123 | 89 | 108 |
 | ✓ |  | 22 | 20 | 20 | 5 | 17 | 10 |
-| – |  | 10 | 21 | 31 | 9 | 32 | 18 |
-| **Met** | 146 | **132** | **136** | **128** | **137** | **138** | **136** |
+| – |  | 10 | 21 | 30 | 9 | 32 | 18 |
+| **Met** | 148 | **132** | **136** | **127** | **137** | **138** | **136** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 

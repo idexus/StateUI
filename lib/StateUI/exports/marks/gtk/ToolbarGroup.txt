@@ -1,0 +1,7 @@
+# revision 4.1
+ToolbarGroup: ✅
+ToolbarGroup.hidesWithSidebar: not realized
+ToolbarGroup.isEnabled: ✅
+ToolbarGroup.order: ✅
+ToolbarGroup.part: not realized
+ToolbarGroup.position: ✅

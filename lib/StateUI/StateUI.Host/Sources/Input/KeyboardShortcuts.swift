@@ -11,7 +11,7 @@
     /// whose shortcut the platform only shows beside it.
     public static func acts(_ element: MountedElement) -> Bool {
         switch element.type {
-        case .button, .toolbarItem: true
+        case .button, .toolbarButton: true
         case .menuItem: element.enclosing(type: .contextMenu) == nil
         default: false
         }

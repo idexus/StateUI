@@ -26,8 +26,8 @@ every render, and written on the header bar of each page shown:
   its title view in its place, where an application puts its search. A
   header bar names its page: the application's own name and mark
   (`barTitle`, `barIcon`) stand on no GNOME header bar;
-- the groups of actions its path declares, composed by the host layer
-  ([the actions of a path](../../host/pages.md#the-actions-of-a-path)): the
+- the groups of actions its page declares, composed by the host layer
+  ([a page's actions](../../host/pages.md#a-pages-actions)): the
   leading groups at the bar's start, after the sidebar's toggle, the
   trailing ones at its end, each group a box of its own, apart from the
   next by twice the room between two buttons of a group - a header bar

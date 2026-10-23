@@ -94,7 +94,7 @@ final class GTKDriver: HostDriver {
     private static let recordedMembers = ["padding", "background", "stroke", "lineWidth", "shape", "placeholderColor"]
 
     private static let byHostReasons = [
-        "read keyboardShortcut of ToolbarItem": "the host's own record: a header bar's button shows no shortcut",
+        "read keyboardShortcut of ToolbarButton": "the host's own record: a header bar's button shows no shortcut",
         "close on Popover": "the popover popped down as a click beside it pops it down, no click sent",
         "read sidebarBackground of SplitView":
             "the class of the host's style sheet the sidebar wears: GTK reads back no background",
@@ -162,7 +162,7 @@ final class GTKDriver: HostDriver {
     }
 
     func perform(_ act: UserAct, on element: MountedElement) throws {
-        if case .pressKeys(let shortcut) = act, [.toolbarItem, .menuItem].contains(element.type) {
+        if case .pressKeys(let shortcut) = act, [.toolbarButton, .menuItem].contains(element.type) {
             // The window's shortcut for the keys, run as its controller runs it for them.
             guard let window = renderer?.windows.first(where: { window in
                 window.element.map { owner in element.enclosing(type: .window) === owner } == true
@@ -199,7 +199,7 @@ final class GTKDriver: HostDriver {
             guard let files = renderer?.fileToolkit, files.held != nil else { throw DriverCannot(act, on: element) }
             return files.chooseForTesting(names.map { Self.files + "/" + $0 })
         }
-        if act == .activate, element.type == .toolbarItem { return try chooseAction(element) }
+        if act == .activate, element.type == .toolbarButton { return try chooseAction(element) }
         if act == .activate, element.type == .menuItem { return try chooseMenuItem(element) }
         if act == .close, element.type == .window { return try close(element) }
         if act == .close, element.type == .page {
@@ -264,7 +264,7 @@ final class GTKDriver: HostDriver {
     }
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
-        if element.type == .toolbarItem { return try actionHolds(property, element) }
+        if element.type == .toolbarButton { return try actionHolds(property, element) }
         if element.type == .window { return try windowHolds(property, element) }
         if element.type == .menuItem { return try menuItemHolds(property, element) }
         if [.barBackgroundColor, .barForegroundColor, .barSubtitle].contains(property) {

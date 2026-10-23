@@ -35,7 +35,7 @@ struct ToolbarLayersSample: SampleContent, ExampleContent {
         }
         .spacing(12)
         .toolbar {
-            ToolbarItem("Refresh")
+            ToolbarButton("Refresh")
                 .id("layers.refresh")
                 .accessibilityIdentifier("layers.refresh")
                 .onClicked { refreshed += 1 }
@@ -45,14 +45,13 @@ struct ToolbarLayersSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("Every page declares its own actions where their state lives; the gallery "
-                + "declares Inspector and Home once, around every page.")
+            Text("Every page declares its own actions where their state lives; the gallery's "
+                + "split view declares Inspector and Home once, over every page of its detail.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("A pushed page's actions stand nearer the title and the gallery's keep their "
-                + "place at the edge; going back takes the page's away, and nothing is restored "
-                + "because nothing was overwritten.")
+            Text("A pushed page shows its own actions, none of the page under it, nearer the "
+                + "title than the gallery's at the edge; going back takes them away with it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

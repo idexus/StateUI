@@ -157,8 +157,12 @@ final class ContractRoadsTests: XCTestCase {
             open: #"_ = Button("Save").visualState(.pointerOver) { $0.opacity(0.5) }"#),
         Road(
             name: "an action standing in a stack",
-            closed: #"_ = VStack { ToolbarItem("Save") }"#,
-            open: #"_ = VStack { Text("Notes") }.toolbar { ToolbarItem("Save") }"#),
+            closed: #"_ = VStack { ToolbarButton("Save") }"#,
+            open: #"_ = VStack { Text("Notes") }.toolbar { ToolbarButton("Save") }"#),
+        Road(
+            name: "a group inside a group",
+            closed: #"_ = Text("Notes").toolbar { ToolbarGroup { ToolbarGroup { ToolbarButton("Bold") } } }"#,
+            open: #"_ = Text("Notes").toolbar { ToolbarGroup { ToolbarButton("Bold") } }"#),
         Road(
             name: "a run of text standing in a stack",
             closed: #"_ = VStack { TextSpan("Hi") }"#,

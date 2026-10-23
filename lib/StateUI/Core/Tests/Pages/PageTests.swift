@@ -32,13 +32,14 @@ private struct EveryPropertyPage: View {
             // being no control case for one.
             .titleView { Text("stack title") }
             .toolbar {
-                ToolbarItem("Save")
+                ToolbarButton("Save")
                     .accessibilityIdentifier("bar.save")
                     .icon(ImageSource("mark.png"))
-                    .placement(.overflow)
                     .showsText(true)
                     .role(.destructive)
                     .isEnabled(false)
+                    .placement(.sidebar, at: .overflow, order: 2)
+                    .hidesWithSidebar(true)
                     .onClicked {}
             }
             // Its menus, every entry saying all it can.
@@ -455,6 +456,27 @@ final class PageTests: XCTestCase {
         XCTAssertNotNil(patch.props["barBackgroundColor"])
     }
 
+    /// A page owns its bar's actions: a toolbar reaching a stack through a composed view's body is left out, said
+    /// once, and the stack's pages keep their own.
+    func testAToolbarOnAStackIsLeftOut() {
+        struct Arranged: View {
+            let path: State<[Int]>
+            var body: some View {
+                NavigationStack(path.projectedValue) {
+                    Text("root").toolbar { ToolbarButton("Own") }
+                } destination: { _ in Plain() }
+            }
+        }
+        let group = ToolbarGroupContract.nodeType
+
+        let patch = Renders().render(Node.page(Arranged(path: State<[Int]>([])).toolbar { ToolbarButton("Shared") }))
+
+        XCTAssertEqual(patch.type, .navigationStack)
+        XCTAssertFalse(patch.children.contains { $0.type == group }, "none on the stack")
+        XCTAssertEqual(patch.subtree.filter { $0.type == group }.count, 1, "the root page's own")
+        XCTAssertTrue(hasComplained("NavigationStack takes no toolbar - a page owns its bar's actions"))
+    }
+
     // MARK: - The guards
 
     /// Every member a page's contracts declare - its own and its item tier's, values and events - is carried by
@@ -506,7 +528,7 @@ final class PageTests: XCTestCase {
     func testEveryPropertyAPagesItemsDeclareIsCarried() throws {
         let sent = Self.keys(in: Self.arrived(EveryPropertyPage()))
 
-        for source in ["ToolbarItem.swift", "Menu.swift", "MenuItem.swift", "MenuItemElement.swift"] {
+        for source in ["ToolbarButton.swift", "Menu.swift", "MenuItem.swift", "MenuItemElement.swift"] {
             let declared = try SourceTree.propertyKeys(in: source)
 
             XCTAssertFalse(declared.isEmpty, "the scan found nothing \(source) writes")
@@ -534,7 +556,7 @@ final class PageTests: XCTestCase {
         let page = Self.arrived(EveryPropertyPage())
 
         XCTAssertEqual(page.children.map { $0.type.name }, ["Text"], "the content alone")
-        XCTAssertEqual(page.children[0].children.map { $0.type.name }, ["TitleView", "ToolbarItemGroup", "MenuBar"])
+        XCTAssertEqual(page.children[0].children.map { $0.type.name }, ["TitleView", "ToolbarGroup", "MenuBar"])
     }
 
     // MARK: - What the values look like
@@ -637,13 +659,17 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(page.eventNames, HostPatch.pageEvents)
         XCTAssertEqual(page.children.map(\.type), [.text])
         let content = page.children[0]
-        XCTAssertEqual(content.children.map(\.type), [.titleView, .toolbarItemGroup, .menuBar])
+        XCTAssertEqual(content.children.map(\.type), [.titleView, .toolbarGroup, .menuBar])
 
-        let item = try XCTUnwrap(content.children[1].children.first)
+        let group = content.children[1]
+        XCTAssertEqual(group.props, [
+            "hidesWithSidebar": .bool(true), "order": .number(2), "part": ToolbarPart.sidebar.propValue,
+            "position": ToolbarPosition.overflow.propValue,
+        ])
+        let item = try XCTUnwrap(group.children.first)
         XCTAssertEqual(item.props, [
             "accessibilityIdentifier": .string("bar.save"), "icon": .string("mark.png"),
-            "isEnabled": .bool(false),
-            "placement": ToolbarItemPlacement.overflow.propValue, "role": ActionRole.destructive.propValue,
+            "isEnabled": .bool(false), "role": ActionRole.destructive.propValue,
             "showsText": .bool(true), "text": .string("Save"),
         ])
         XCTAssertEqual(item.eventNames, ["clicked"])

@@ -14,9 +14,6 @@ struct ToolbarSample: SampleContent, ExampleContent {
     /// Whether the sample's group stands after the gallery's, by its order.
     @State private var afterGallery = false
 
-    /// Whether the sample's actions join the gallery's own group, by its id.
-    @State private var inGallery = false
-
     /// Whether the sample's group stands at the bar's start.
     @State private var atStart = false
 
@@ -53,7 +50,6 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 SectionTitle("Where the actions stand")
 
                 switchRow($afterGallery, "After the gallery's actions", id: "toolbar.afterGallery")
-                switchRow($inGallery, "In the gallery's group", id: "toolbar.inGallery")
                 switchRow($atStart, "At the start", id: "toolbar.atStart")
 
                 SectionTitle("A picture and its words")
@@ -63,25 +59,28 @@ struct ToolbarSample: SampleContent, ExampleContent {
             .spacing(12)
             // The page's actions, declared where their state lives: they follow
             // it as the body builds - `saved` decides whether Clear can be pressed,
-            // `addWords` Add's words, the three switches where the group stands.
-            .toolbar(atStart ? .start : .end, id: inGallery ? "gallery" : "sample", order: afterGallery ? 1 : 0) {
-                ToolbarItem("Save")
-                    .id("save")
-                    .onClicked { saved += 1 }
+            // `addWords` Add's words, the two switches where the group stands.
+            .toolbar {
+                ToolbarGroup {
+                    ToolbarButton("Save")
+                        .id("save")
+                        .onClicked { saved += 1 }
 
-                // A picture alone, unless it asks for its words beside it.
-                ToolbarItem("Add")
-                    .id("add")
-                    .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
-                    .showsText(addWords)
-                    .onClicked {
-                        added += 1
-                        recent.append("file\(added).txt")
-                    }
+                    // A picture alone, unless it asks for its words beside it.
+                    ToolbarButton("Add")
+                        .id("add")
+                        .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
+                        .showsText(addWords)
+                        .onClicked {
+                            added += 1
+                            recent.append("file\(added).txt")
+                        }
+                }
+                .placement(at: atStart ? .start : .end, order: afterGallery ? 1 : 0)
 
-                ToolbarItem("Clear")
+                ToolbarButton("Clear")
                     .id("clear")
-                    .placement(.overflow)
+                    .placement(at: .overflow)
                     .role(.destructive)
                     .isEnabled(saved > 0)
                     .onClicked { saved = 0 }
@@ -133,8 +132,8 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("The gallery's own actions stand at the edge on every page; the sample's "
-                + "come in from the title's side. `order: 1` moves its group after them, "
-                + "`id: \"gallery\"` joins their group, `.start` takes it to the other edge.")
+                + "group comes in from the title's side. `order: 1` moves it after them, "
+                + "`.start` takes it to the other edge.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

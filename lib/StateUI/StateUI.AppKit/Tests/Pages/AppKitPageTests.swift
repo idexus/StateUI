@@ -56,9 +56,10 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        var delete = HostPatch(id: .manual("delete"), type: .toolbarItem)
-        delete.properties = [.text: .string("Delete"), .placement: .enumeration(2)]
-        var group = HostPatch(id: .manual("later"), type: .toolbarItemGroup)
+        var delete = HostPatch(id: .manual("delete"), type: .toolbarButton)
+        delete.properties = [.text: .string("Delete")]
+        var group = HostPatch(id: .manual("later"), type: .toolbarGroup)
+        group.properties = [.position: ToolbarPosition.overflow.propValue]
         group.children = .arranged([delete])
         var details = page("details", title: "Details")
         details.children = .arranged(details.children.arrangedForTesting + [group])
@@ -891,10 +892,10 @@ final class AppKitPageTests: XCTestCase {
         var titleSlot = HostPatch(id: .manual("title-slot"), type: .titleView)
         titleSlot.children = .arranged([title])
 
-        var save = HostPatch(id: .manual("save"), type: .toolbarItem)
+        var save = HostPatch(id: .manual("save"), type: .toolbarButton)
         save.properties[.text] = .string("Save")
         save.events = .replace([.clicked: 50])
-        var toolbar = HostPatch(id: .manual("toolbar"), type: .toolbarItemGroup)
+        var toolbar = HostPatch(id: .manual("toolbar"), type: .toolbarGroup)
         toolbar.children = .arranged([save])
 
         var details = page("details", title: "Ignored", events: 200)
@@ -963,39 +964,37 @@ final class AppKitPageTests: XCTestCase {
             presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        func toolbarItem(
+        func toolbarButton(
             _ id: String,
             title: String,
-            placement: Int32 = 0,
             enabled: Bool = true,
             destructive: Bool = false,
             icon: String? = nil
         ) -> HostPatch {
-            var item = HostPatch(id: .manual(id), type: .toolbarItem)
+            var item = HostPatch(id: .manual(id), type: .toolbarButton)
             item.properties = [
                 .text: .string(title),
-                .placement: .enumeration(placement),
                 .isEnabled: .bool(enabled),
                 .role: (destructive ? ActionRole.destructive : ActionRole.normal).propValue,
             ]
             if let icon { item.properties[.icon] = .string(icon) }
             return item
         }
-        func group(_ id: String, order: Double, side: ToolbarSide = .end, _ items: [HostPatch]) -> HostPatch {
-            var group = HostPatch(id: .manual(id), type: .toolbarItemGroup)
-            group.properties = [.order: .number(order), .side: .enumeration(side.rawValue)]
+        func group(
+            _ id: String, order: Double, at position: ToolbarPosition = .end, _ items: [HostPatch]
+        ) -> HostPatch {
+            var group = HostPatch(id: .manual(id), type: .toolbarGroup)
+            group.properties = [.order: .number(order), .position: .enumeration(position.rawValue)]
             group.children = .arranged(items)
             return group
         }
 
         var details = page("details", title: "Details", events: 200)
         details.children = .arranged(details.children.arrangedForTesting + [
-            group("later", order: 1, [
-                toolbarItem("save", title: "Save", enabled: false, icon: "save.png"),
-                toolbarItem("delete", title: "Delete", placement: 2, destructive: true),
-            ]),
-            group("first", order: 0, [toolbarItem("earlier", title: "Earlier")]),
-            group("start", order: 0, side: .start, [toolbarItem("compose", title: "Compose")]),
+            group("later", order: 1, [toolbarButton("save", title: "Save", enabled: false, icon: "save.png")]),
+            group("tucked", order: 0, at: .overflow, [toolbarButton("delete", title: "Delete", destructive: true)]),
+            group("first", order: 0, [toolbarButton("earlier", title: "Earlier")]),
+            group("start", order: 0, at: .start, [toolbarButton("compose", title: "Compose")]),
         ])
         var stack = navigation([
             page("home", title: "Home", events: 100),
@@ -1217,7 +1216,7 @@ private struct ChromePage: View {
     let route: ChromeRoute
 
     var body: some View {
-        Text("Pushed").toolbar { ToolbarItem("Save") }
+        Text("Pushed").toolbar { ToolbarButton("Save") }
             .showsBackButton(route != .withoutBackButton)
             .showsNavigationBar(route != .withoutNavigationBar)
     }

@@ -91,9 +91,9 @@ final class GTKPagesTests: XCTestCase {
             let host = GTKRenderer.running {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     TitledPage(title: "Notes", actions: [
-                        ToolbarItem("Delete").placement(.overflow).onClicked { heard.values.append("delete") },
-                        ToolbarItem("Add").isEnabled(false).onClicked { heard.values.append("add") },
-                        ToolbarItem("Save").onClicked { heard.values.append("save") },
+                        ToolbarButton("Delete").placement(at: .overflow).onClicked { heard.values.append("delete") },
+                        ToolbarButton("Add").isEnabled(false).onClicked { heard.values.append("add") },
+                        ToolbarButton("Save").onClicked { heard.values.append("save") },
                     ])
                 } destination: { _ in
                     TitledPage(title: "Note")
@@ -170,8 +170,8 @@ final class GTKPagesTests: XCTestCase {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     Text("Notes")
                         .toolbar {
-                            ToolbarItem("Later").placement(.overflow)
-                            if more.wrappedValue { ToolbarItem("Sooner").placement(.overflow) }
+                            ToolbarButton("Later").placement(at: .overflow)
+                            if more.wrappedValue { ToolbarButton("Sooner").placement(at: .overflow) }
                         }
                         .menuBar { Menu("File") { MenuItem("Open") } }
                         .title("Notes")
@@ -194,9 +194,9 @@ final class GTKPagesTests: XCTestCase {
         try onUIThread {
             let host = GTKRenderer.running {
                 TitledPage(title: "Notes", actions: [
-                    ToolbarItem("Wide").icon("test_wide.png"),
-                    ToolbarItem("Lost").icon("missing.png"),
-                    ToolbarItem("Later").icon("test_wide.png").placement(.overflow),
+                    ToolbarButton("Wide").icon("test_wide.png"),
+                    ToolbarButton("Lost").icon("missing.png"),
+                    ToolbarButton("Later").icon("test_wide.png").placement(at: .overflow),
                 ])
             }
             let frame = try XCTUnwrap(host.window?.pageFrame)
@@ -218,9 +218,9 @@ final class GTKPagesTests: XCTestCase {
         try onUIThread {
             let host = GTKRenderer.running {
                 TitledPage(title: "Notes", actions: [
-                    ToolbarItem("Remove").role(.destructive),
-                    ToolbarItem("Clear").role(.destructive).placement(.overflow),
-                    ToolbarItem("Later").placement(.overflow),
+                    ToolbarButton("Remove").role(.destructive),
+                    ToolbarButton("Clear").role(.destructive).placement(at: .overflow),
+                    ToolbarButton("Later").placement(at: .overflow),
                 ])
             }
             let frame = try XCTUnwrap(host.window?.pageFrame)
@@ -563,7 +563,7 @@ final class GTKPagesTests: XCTestCase {
                 NavigationStack(State(wrappedValue: [1]).projectedValue) {
                     TitledPage(title: "Root")
                 } destination: { _ in
-                    TitledPage(title: "Bare", actions: [ToolbarItem("Save")], hidesBar: true)
+                    TitledPage(title: "Bare", actions: [ToolbarButton("Save")], hidesBar: true)
                 }
             }
             let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
@@ -578,7 +578,7 @@ final class GTKPagesTests: XCTestCase {
 struct TitledPage: View {
     let title: String
     var log: Received<String>? = nil
-    var actions: [ToolbarItem] = []
+    var actions: [ToolbarButton] = []
     var hidesBar = false
     var hidesBack = false
 

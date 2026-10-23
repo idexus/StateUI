@@ -9,7 +9,7 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 Text(saved ? "Saved" : "Draft")
     .toolbar {
-        ToolbarItem("Save")
+        ToolbarButton("Save")
             .icon("save.png")
             .isEnabled(!saved)
             .onClicked { saved = true }
@@ -18,7 +18,7 @@ Text(saved ? "Saved" : "Draft")
 
 Wears: [AutomationElement](AutomationElement.md)
 
-Worn by: [MenuItem](../MenuItem.md) · [ToolbarItem](../ToolbarItem.md)
+Worn by: [MenuItem](../MenuItem.md) · [ToolbarButton](../ToolbarButton.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/MenuItemElementContract.swift`.
 

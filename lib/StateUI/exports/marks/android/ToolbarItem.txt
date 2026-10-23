@@ -1,4 +1,0 @@
-# revision 4.1
-ToolbarItem: ✅
-ToolbarItem.placement: ✅
-ToolbarItem.showsText: does not apply - read an action's words beside its picture - Android shows them on a screen 480 points wide or more, and this one is narrower

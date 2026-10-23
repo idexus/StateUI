@@ -6606,23 +6606,27 @@ enum Listings {
         """#,
         "MainPage.bar": #"""
         // Sources/Gallery/MainPage.swift
-        // The gallery's own actions, declared once around every page: a page's
-        // own stand nearer the title, and these keep their place at the edge.
-        // Each wears an icon, which keeps its size on the bar steady; its
-        // caption stays for accessibility and for bars that show words.
-        .toolbar(id: "gallery") {
-            ToolbarItem.inspector(window)
-                .text("Inspector")
-                .icon(ImageSource(light: "nav_inspect.png", dark: "nav_inspect_dark.png"))
+        // The gallery's own actions, declared once over every page of the
+        // detail - the part a split view's own stand in unless they say
+        // another - together on one background: a page's own stand nearer
+        // the title, and these keep their place at the edge. Each wears an
+        // icon, which keeps its size on the bar steady; its caption stays
+        // for accessibility and for bars that show words.
+        .toolbar {
+            ToolbarGroup {
+                ToolbarButton.inspector(window)
+                    .text("Inspector")
+                    .icon(ImageSource(light: "nav_inspect.png", dark: "nav_inspect_dark.png"))
 
-            if !nav.showing(.home) {
-                ToolbarItem.home(nav)
-            }
+                if !nav.showing(.home) {
+                    ToolbarButton.home(nav)
+                }
 
-            if bar.showsSurprise {
-                ToolbarItem("Surprise me")
-                    .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
-                    .onClicked { nav.surprise(from: catalog, on: device) }
+                if bar.showsSurprise {
+                    ToolbarButton("Surprise me")
+                        .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
+                        .onClicked { nav.surprise(from: catalog, on: device) }
+                }
             }
         }
         // What the window's bar says of the gallery: its name and mark,
@@ -9873,7 +9877,7 @@ enum Listings {
                 .id(StandardMenu.file)
             }
             .toolbar {
-                ToolbarItem("Mark")
+                ToolbarButton("Mark")
                     .keyboardShortcut("2", modifiers: [])
                     .onClicked { pressed("Mark") }
             }
@@ -10982,11 +10986,11 @@ enum Listings {
                     Text("Go back and this page's actions leave with it.")
                 }
                 .toolbar {
-                    ToolbarItem("Share")
+                    ToolbarButton("Share")
                         .id("layer.share")
                         .onClicked { shared += 1 }
 
-                    ToolbarItem("Deeper")
+                    ToolbarButton("Deeper")
                         .id("layer.deeper")
                         .onClicked { path.append(.layer(depth + 1)) }
                 }
@@ -11014,7 +11018,7 @@ enum Listings {
                     .onClicked { nav.push(.layer(1)) }
             }
             .toolbar {
-                ToolbarItem("Refresh")
+                ToolbarButton("Refresh")
                     .id("layers.refresh")
                     .onClicked { refreshed += 1 }
             }
@@ -11032,9 +11036,6 @@ enum Listings {
 
         /// Whether the sample's group stands after the gallery's, by its order.
         @State private var afterGallery = false
-
-        /// Whether the sample's actions join the gallery's own group, by its id.
-        @State private var inGallery = false
 
         /// Whether the sample's group stands at the bar's start.
         @State private var atStart = false
@@ -11061,7 +11062,6 @@ enum Listings {
                     SectionTitle("Where the actions stand")
 
                     switchRow($afterGallery, "After the gallery's actions", id: "toolbar.afterGallery")
-                    switchRow($inGallery, "In the gallery's group", id: "toolbar.inGallery")
                     switchRow($atStart, "At the start", id: "toolbar.atStart")
 
                     SectionTitle("A picture and its words")
@@ -11070,25 +11070,28 @@ enum Listings {
                 }
                 // The page's actions, declared where their state lives: they follow
                 // it as the body builds - `saved` decides whether Clear can be pressed,
-                // `addWords` Add's words, the three switches where the group stands.
-                .toolbar(atStart ? .start : .end, id: inGallery ? "gallery" : "sample", order: afterGallery ? 1 : 0) {
-                    ToolbarItem("Save")
-                        .id("save")
-                        .onClicked { saved += 1 }
+                // `addWords` Add's words, the two switches where the group stands.
+                .toolbar {
+                    ToolbarGroup {
+                        ToolbarButton("Save")
+                            .id("save")
+                            .onClicked { saved += 1 }
 
-                    // A picture alone, unless it asks for its words beside it.
-                    ToolbarItem("Add")
-                        .id("add")
-                        .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
-                        .showsText(addWords)
-                        .onClicked {
-                            added += 1
-                            recent.append("file\(added).txt")
-                        }
+                        // A picture alone, unless it asks for its words beside it.
+                        ToolbarButton("Add")
+                            .id("add")
+                            .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
+                            .showsText(addWords)
+                            .onClicked {
+                                added += 1
+                                recent.append("file\(added).txt")
+                            }
+                    }
+                    .placement(at: atStart ? .start : .end, order: afterGallery ? 1 : 0)
 
-                    ToolbarItem("Clear")
+                    ToolbarButton("Clear")
                         .id("clear")
-                        .placement(.overflow)
+                        .placement(at: .overflow)
                         .role(.destructive)
                         .isEnabled(saved > 0)
                         .onClicked { saved = 0 }

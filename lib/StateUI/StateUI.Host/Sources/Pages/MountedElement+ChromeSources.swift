@@ -64,7 +64,7 @@ extension MountedElement {
     }
 
     /// The declarations the chrome takes from a page's path: its actions, its title view, its menus, its overlays.
-    private static let declarationTypes: Set<NodeType> = [.toolbarItemGroup, .titleView, .menuBar, .overlay]
+    private static let declarationTypes: Set<NodeType> = [.toolbarGroup, .titleView, .menuBar, .overlay]
 
     /// The elements the chrome is made of by their type.
     private static let chromeTypes = declarationTypes.union(NodeType.pageTypes).union([.application, .scene, .window, .sheet])

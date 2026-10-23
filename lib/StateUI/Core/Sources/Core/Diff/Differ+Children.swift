@@ -29,7 +29,8 @@ extension Differ {
             let (child, childPatch) = element(
                 id: next.id, rendered: next.match, node: next.node, sizesArrive: sizesArrive)
 
-            // An arrangement anywhere a page does not stand is left out (Differ+Arrangements.swift).
+            // An arrangement where no page stands, and a toolbar on a stack or tabs, is left out
+            // (Differ+Arrangements.swift).
             guard standsWhereItMay(child, under: node.type, placesPages: placesPages) else {
                 forget(child)
                 continue

@@ -134,7 +134,7 @@ turns the nodes into the patch.
   are arrangements: views standing where a page stands, which key the pages
   they hold, whose stack, chosen tab and sidebar are state; `.sheet`
   presents a page while a state says so. `Menu`,
-  `MenuItem`, `MenuSeparator` and `ToolbarItem` (`Menus/`) are a menu's
+  `MenuItem`, `MenuSeparator` and `ToolbarButton` (`Menus/`) are a menu's
   entries and a page's actions, collected without keys. *Application.*
   ([An arrangement is a view](../design/views/pages.md#an-arrangement-is-a-view),
   [menus](../design/views/builders.md#menus-collect-without-keys);
@@ -210,7 +210,7 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
 | `Gestures/` | `GesturePhase`, `PanUpdate`, `PinchUpdate`, `SwipeDirection` | [gestures](../design/types/gestures.md) |
 | `Environment/` | what the host knows - `Device` (`DeviceInfo`, `DeviceDisplay`, `Battery`, `Connectivity`), `LocaleInfo`, `ApplicationInfo` - their vocabularies and `ColorScheme`; `StandardEnvironment`, internal | [the standard environment](../design/types/environment.md); [environment](../concepts/environment.md) |
 | `Sessions/` | `ApplicationSession`, `SceneSession`, `WindowSession`, their phases | [sessions](../design/types/sessions.md); [applications and sessions](../interface/application-and-sessions.md) |
-| `Controls/` | the vocabularies one control takes: `ScrollOrientation`, `ToolbarItemPlacement`, `MarkerType` and their kin | [closed vocabularies](../design/types/vocabularies.md) |
+| `Controls/` | the vocabularies one control takes: `ScrollOrientation`, `ToolbarPosition`, `ToolbarPart`, `MarkerType` and their kin | [closed vocabularies](../design/types/vocabularies.md) |
 | `Collections/` | what an `ItemsView` takes: `ItemsEntries`, `ItemsLayout`, `ScrollAnchor`, `SelectionMode` | [items](../design/views/items.md), [closed vocabularies](../design/types/vocabularies.md) |
 | `Files/` | `ChosenFile`, `FileType`: the files the dialogs open and save | [files](../design/core/acts.md#files) |
 

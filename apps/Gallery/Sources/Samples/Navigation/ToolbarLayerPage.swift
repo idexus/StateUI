@@ -33,12 +33,12 @@ struct ToolbarLayerPage: View {
         .spacing(12)
         .padding(24)
         .toolbar {
-            ToolbarItem("Share")
+            ToolbarButton("Share")
                 .id("layer.share")
                 .accessibilityIdentifier("layer.share")
                 .onClicked { shared += 1 }
 
-            ToolbarItem("Deeper")
+            ToolbarButton("Deeper")
                 .id("layer.deeper")
                 .accessibilityIdentifier("layer.deeper")
                 .onClicked { path.append(.layer(depth + 1)) }

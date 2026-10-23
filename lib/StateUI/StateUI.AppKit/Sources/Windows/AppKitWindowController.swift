@@ -344,7 +344,7 @@ extension AppKitWindowController {
         guard let element, let runtime = host?.runtime,
               let shortcut = AppKitKeys.shortcut(
                 key: event.charactersIgnoringModifiers ?? "", modifiers: event.modifierFlags),
-              let target = KeyboardShortcuts.target(of: shortcut, under: element), target.type == .toolbarItem
+              let target = KeyboardShortcuts.target(of: shortcut, under: element), target.type == .toolbarButton
         else { return false }
         if window?.firstResponder is NSText, KeyboardShortcuts.givesWayToTyping(shortcut) { return false }
         target.chosen(in: runtime)

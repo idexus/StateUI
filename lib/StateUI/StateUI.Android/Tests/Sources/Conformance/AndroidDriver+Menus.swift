@@ -70,22 +70,19 @@ extension AndroidDriver {
 
     /// What a menu's entry or a bar's action holds, as Android's item holds it.
     func itemHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
-        if property == .placement || property == .showsText {
+        if property == .showsText {
             var root = element
             while let parent = root.parent { root = parent }
             guard let bar = Self.bars(in: root).first(where: { $0.items.contains { $0 === element } }),
                   let place = (element.native as? AndroidElement)?.menuPlace,
                   let entry = Self.laidOut(bar).first(where: { $0.id == Int32(place + 1) })
             else { throw DriverCannot(reading: property, of: element) }
-            if property == .showsText {
-                if !entry.words, element.value(.icon) != nil, Self.screenWidth() < 480 {
-                    throw DriverCannot(
-                        "read an action's words beside its picture",
-                        because: "Android shows them on a screen 480 points wide or more, and this one is narrower")
-                }
-                return entry.words.propValue
+            if !entry.words, element.value(.icon) != nil, Self.screenWidth() < 480 {
+                throw DriverCannot(
+                    "read an action's words beside its picture",
+                    because: "Android shows them on a screen 480 points wide or more, and this one is narrower")
             }
-            return (entry.onBar ? ToolbarItemPlacement.bar : .overflow).propValue
+            return entry.words.propValue
         }
         let (menu, id) = try nativeItem(element)
         let held = Java.frame {

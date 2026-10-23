@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// The window's one bar, over the page the user sees: the sidebar's toggle, the way back, the application's name,
-/// the page's title - or the view the page declares in its place - the actions its path declares and a menu of those behind it and of its menus - the
+/// the page's title - or the view the page declares in its place - the actions it declares and a menu of those behind it and of its menus - the
 /// host layer's `WindowChrome`. Beside a sidebar shown, the bar stands in two parts: the name and the toggle over the
 /// sidebar, the rest over the detail.
 /// Design: docs/design/platforms/web/pages.md#the-windows-bar

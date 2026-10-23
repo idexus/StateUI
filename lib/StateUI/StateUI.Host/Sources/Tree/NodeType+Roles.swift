@@ -15,7 +15,7 @@
 
     /// The entries that have no view of their own: structure, and the parts of another's view.
     public static let viewlessTypes: Set<NodeType> = [
-        .application, .scene, .window, .anchor, .sheet, .titleView, .toolbarItemGroup, .toolbarItem, .menuBar, .contextMenu,
+        .application, .scene, .window, .anchor, .sheet, .titleView, .toolbarGroup, .toolbarButton, .menuBar, .contextMenu,
         .menu, .menuItem, .menuSeparator, .buttonMenu, .textSpans, .textSpan,
     ]
 
@@ -24,7 +24,7 @@
 
     /// What is declared on an element to furnish the chrome or the window rather than stand in its room.
     public static let slotTypes: Set<NodeType> = [
-        .toolbarItemGroup, .titleView, .menuBar, .contextMenu, .buttonMenu, .overlay, .popover, .sheet,
+        .toolbarGroup, .titleView, .menuBar, .contextMenu, .buttonMenu, .overlay, .popover, .sheet,
     ]
 
     /// The elements that lay words out in their room - a label, a button: one whose place travels stands at the size

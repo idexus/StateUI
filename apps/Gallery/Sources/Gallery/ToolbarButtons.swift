@@ -9,12 +9,11 @@ import StateUI
 /// The gallery's home button - the StateUI type, given one more way to make
 /// itself. It is declared here rather than in the library because there is
 /// nothing general about it: it knows this app's state and this app's icon.
-extension ToolbarItem {
-    /// Back to the home page, in the gallery's group `MainPage` declares
-    /// around every page.
+extension ToolbarButton {
+    /// Back to the home page, in the gallery's group `MainPage`'s split view
+    /// declares over every page of its detail.
     ///
-    /// A page's own actions join that group's page rather than replacing it, so
-    /// a sample that declares actions of its own keeps this one - and it stands
+    /// A sample that declares actions of its own keeps this one beside them -
     /// at the edge, where it stays from page to page while a page's actions
     /// come in from the title's side.
     ///
@@ -24,8 +23,8 @@ extension ToolbarItem {
     /// **One assignment.** `nav.home()` sets the section and empties the path,
     /// and there is no other stack anywhere to go stale - the page the user
     /// was looking at does not linger under the group it came from.
-    static func home(_ nav: Navigation) -> ToolbarItem {
-        ToolbarItem("Home")
+    static func home(_ nav: Navigation) -> ToolbarButton {
+        ToolbarButton("Home")
             .id("home")
             // THE ONE CONTROL ON EVERY PAGE, and the only way back from a
             // sample that does not go through the sidebar - so it is the handle

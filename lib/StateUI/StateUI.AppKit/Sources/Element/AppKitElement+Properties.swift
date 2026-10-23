@@ -37,7 +37,7 @@ extension AppKitElement {
             page.translatesAutoresizingMaskIntoConstraints = true
             return page
 
-        case .sheet, .overlay, .titleView, .toolbarItemGroup, .menuBar, .contextMenu,
+        case .sheet, .overlay, .titleView, .toolbarGroup, .menuBar, .contextMenu,
              .menu, .menuItem,
              .textSpans, .textSpan:
             return nil
@@ -78,7 +78,7 @@ extension AppKitElement {
         case .text:
             return AppKitTextView()
 
-        case .toolbarItem:
+        case .toolbarButton:
             // The window's toolbar makes the native item; see refreshVisiblePageChrome.
             return nil
 

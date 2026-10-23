@@ -36,7 +36,7 @@ travels, and what a page says of the bar from a state - its title, its way
 back, the bar itself - land on a frame, where nothing arranges the stack:
 where the host layer says the frame moved the window's chrome
 ([one frame](../../host/runtime.md#one-frame)), every bar the window and its
-sheets show is shown again. The bar carries the actions the page's path declares: the ones on the bar
+sheets show is shown again. The bar carries the actions the page declares: the ones on the bar
 beside the title, as the host layer composes them - the leading groups
 first, the bar having no leading edge beside its navigation button, each group
 a group of the toolbar's menu, drawn in one row as Android's toolbar draws its

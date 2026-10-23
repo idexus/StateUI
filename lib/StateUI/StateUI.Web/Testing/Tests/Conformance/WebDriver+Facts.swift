@@ -221,7 +221,6 @@ extension WebDriver {
         if let button = try barButtons().first(where: { $0.item === element }) {
             let e = button.node
             switch property {
-            case .placement: return ToolbarItemPlacement.bar.propValue
             case .showsText: return try WebBrowser.truth("!e.querySelector('span').hidden", on: e).propValue
             case .text: return try WebBrowser.evaluate("e.getAttribute('aria-label')", on: e)?.propValue
             case .isEnabled: return try (!WebBrowser.truth("e.disabled", on: e)).propValue
@@ -234,10 +233,7 @@ extension WebDriver {
             default: return nil
             }
         }
-        guard property == .placement else { return nil }
-        guard try behindTheBar(element) != nil else { return nil }
-        press("Escape")
-        return ToolbarItemPlacement.overflow.propValue
+        return nil
     }
 
     /// The bar as the user meets it: each edge's groups of actions, then those behind the bar's More.
@@ -286,7 +282,7 @@ extension WebDriver {
     /// Every toolbar item under `element`, its slots included.
     private func toolbarItems(in element: MountedElement?) -> [MountedElement] {
         guard let element else { return [] }
-        let own = element.type == .toolbarItem ? [element] : []
+        let own = element.type == .toolbarButton ? [element] : []
         return own + (element.children + element.slots).flatMap { toolbarItems(in: $0) }
     }
 

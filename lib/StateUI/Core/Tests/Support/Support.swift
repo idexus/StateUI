@@ -772,7 +772,7 @@ enum SourceTree {
 
     /// Node types described under Views/ that are not VIEWS.
     ///
-    /// A ToolbarItem and the menu types are items - a caption, a picture and
+    /// A ToolbarButton and the menu types are items - a caption, a picture and
     /// something to run - and they belong to a PAGE rather than sitting in
     /// one, so they have no case and no style. Their modifiers are exercised
     /// by `PageBarTests`, which is where a page is described.
@@ -794,7 +794,7 @@ enum SourceTree {
     /// Map case, which builds both.
     static let notViews: Set<String> = [
         "TextSpans", "TextSpan",
-        "ToolbarItemGroup", "ToolbarItem", "TitleView", "MenuBar", "Menu", "Overlay",
+        "ToolbarGroup", "ToolbarButton", "TitleView", "MenuBar", "Menu", "Overlay",
         "MenuItem", "MenuSeparator", "ButtonMenu",
         "ContextMenu", "Popover", "Sheet",
         "Marker",

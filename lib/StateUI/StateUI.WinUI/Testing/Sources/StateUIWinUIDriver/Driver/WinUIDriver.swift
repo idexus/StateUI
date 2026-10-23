@@ -304,7 +304,7 @@ final class WinUIDriver: HostDriver {
             stateui_winui_menus_choose(owner.handle, Int32(index))
             return
         }
-        if element.type == .toolbarItem, let index = try actionPlace(of: element) {
+        if element.type == .toolbarButton, let index = try actionPlace(of: element) {
             try window().titleBar.chose(index)
             return
         }

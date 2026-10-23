@@ -416,7 +416,7 @@ final class WinUIPagesTests: XCTestCase {
             for (written, words) in [(Color(red: 255, green: 230, blue: 0) as Color?, "#FFFFE600"), (nil, "#FFFFFFFF")] {
                 let host = WinUIRenderer.running {
                     let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                        TitledPage(title: "Notes", actions: [ToolbarItem("Scan")])
+                        TitledPage(title: "Notes", actions: [ToolbarButton("Scan")])
                     } destination: { _ in Text("Pushed") }
                         .barBackgroundColor(navy)
                     return written.map { stack.barForegroundColor($0) } ?? stack
@@ -437,7 +437,7 @@ final class WinUIPagesTests: XCTestCase {
                 let host = WinUIRenderer.running {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         TitledPage(
-                            title: "Notes", actions: [ToolbarItem("Scan"), ToolbarItem("Delete").role(.destructive)])
+                            title: "Notes", actions: [ToolbarButton("Scan"), ToolbarButton("Delete").role(.destructive)])
                     } destination: { _ in Text("Pushed") }
                         .barBackgroundColor(background)
                         .barForegroundColor(Color(red: 255, green: 230, blue: 0))
@@ -473,7 +473,7 @@ final class WinUIPagesTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                    TitledPage(title: "Home", actions: [ToolbarItem("Inspector")])
+                    TitledPage(title: "Home", actions: [ToolbarButton("Inspector")])
                 } destination: { _ in Text("Pushed") }
             }
             let bar = try XCTUnwrap(host.window).titleBar
@@ -664,7 +664,7 @@ private struct AimedFieldPage: View {
 private struct TitledPage: View {
     let title: String
     var log: Received<String>? = nil
-    var actions: [ToolbarItem] = []
+    var actions: [ToolbarButton] = []
     var hidesBar = false
 
     var body: some View {

@@ -150,7 +150,7 @@ host's shared machinery realizes becomes one: it serves each view the host
 makes. Where an element wearing the tier does not take such a member - a
 toolbar item AppKit holds as no view - the element's own record says so,
 `.unrealized(AutomationElementContract.accessibilityIdentifier, on:
-ToolbarItemContract.self, why:)`, and stands over the tier's: the member's
+ToolbarButtonContract.self, why:)`, and stands over the tier's: the member's
 case does not run there and its cell stays empty. Only an element's record
 says unrealized, which its type keeps. A text span has no view of its own on
 any host - it is a run of its label's words - so no tier's record reaches it

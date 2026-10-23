@@ -226,21 +226,23 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(heard.values, [1], "the entry chosen")
     }
 
-    /// The groups a page's path declares stand on its navigation item as the host layer composes them: each a
-    /// `UIBarButtonItemGroup` of its own - a background of its own - the page's nearer the title and the stack's at
-    /// the edge, a leading group beside the way back.
+    /// The groups a page declares stand on its navigation item as the host layer composes them: each a
+    /// `UIBarButtonItemGroup` of its own - a background of its own - in reading order, a leading group beside the
+    /// way back.
     @MainActor
-    func testTheBarsGroupsStandAsThePathComposesThem() throws {
+    func testTheBarsGroupsStandAsThePageDeclaresThem() throws {
         let host = UIKitRenderer.running(reducesMotion: true) {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Text("Root")
                     .toolbar {
-                        ToolbarItem("Save").accessibilityIdentifier("save")
-                        ToolbarItem("Add").accessibilityIdentifier("add")
+                        ToolbarGroup {
+                            ToolbarButton("Save").accessibilityIdentifier("save")
+                            ToolbarButton("Add").accessibilityIdentifier("add")
+                        }
+                        ToolbarButton("Filter").accessibilityIdentifier("filter").placement(at: .start)
+                        ToolbarButton("Home").accessibilityIdentifier("home")
                     }
-                    .toolbar(.start) { ToolbarItem("Filter").accessibilityIdentifier("filter") }
             } destination: { _ in Text("Pushed") }
-            .toolbar { ToolbarItem("Home").accessibilityIdentifier("home") }
         }
         defer { host.finish() }
         let item = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller?.navigationItem }
@@ -259,8 +261,8 @@ final class UIKitPagesTests: XCTestCase {
         let host = UIKitRenderer.running(reducesMotion: true) {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Text("Root").toolbar {
-                    ToolbarItem("Save").accessibilityIdentifier("save")
-                    ToolbarItem("Delete").role(.destructive).accessibilityIdentifier("delete")
+                    ToolbarButton("Save").accessibilityIdentifier("save")
+                    ToolbarButton("Delete").role(.destructive).accessibilityIdentifier("delete")
                 }
             } destination: { _ in Text("Pushed") }
             .barBackgroundColor(Color(red: 0, green: 0, blue: 128))
@@ -286,7 +288,7 @@ final class UIKitPagesTests: XCTestCase {
         let host = UIKitRenderer.running(reducesMotion: true) {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Text("Root").title(title.wrappedValue).toolbar {
-                    ToolbarItem("Save").accessibilityIdentifier("save")
+                    ToolbarButton("Save").accessibilityIdentifier("save")
                 }
             } destination: { _ in Text("Pushed") }
             .barBackgroundColor(dark.wrappedValue ? Color(red: 0, green: 0, blue: 128) : Color(red: 255, green: 230, blue: 0))

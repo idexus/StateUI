@@ -10,7 +10,7 @@
 ///     @Environment(\.window) private var window
 ///
 ///     VStack { … }
-///         .toolbar { ToolbarItem.inspector(window) }
+///         .toolbar { ToolbarButton.inspector(window) }
 ///
 /// A window opens, closes and moves its scene's inspector:
 /// `window.openInspector(_:)`, `closeInspector()`, `toggleInspector()`.

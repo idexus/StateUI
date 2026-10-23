@@ -54,9 +54,9 @@ Swift protocols behind them refine each other.
                      Rectangle
   FilledShape        Capsule, Ellipse, Path, Polygon, Polyline, Rectangle
   CorneredShape      Path, Polygon, Polyline, Rectangle
-  AutomationElement  every View, MenuItem, ToolbarItem, NavigationStack,
+  AutomationElement  every View, MenuItem, ToolbarButton, NavigationStack,
                      TabView, SplitView
-  MenuItemElement    MenuItem, ToolbarItem
+  MenuItemElement    MenuItem, ToolbarButton
   TrackingElement    Text, Button, TextSpan
   LineHeightElement  Text
   KeyboardElement    every Layout and every FocusElement

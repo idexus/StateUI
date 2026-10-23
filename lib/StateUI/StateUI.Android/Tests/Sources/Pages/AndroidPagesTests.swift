@@ -419,20 +419,21 @@ final class AndroidPagesTests: XCTestCase {
         }
     }
 
-    /// What a page puts on the bar: its actions in their order, the overflow's last in a group of their own, each with its
-    /// picture and whether it can be chosen - the picture of one that cannot be dimmed - a destructive one in
-    /// the theme's error color; choosing one runs its handler, and one that cannot be chosen runs nothing.
+    /// What a page puts on the bar: its actions in their order, each standing alone a group of its own and the
+    /// overflow's last, each with its picture and whether it can be chosen - the picture of one that cannot be
+    /// dimmed - a destructive one in the theme's error color; choosing one runs its handler, and one that cannot be
+    /// chosen runs nothing.
     func testAPagesToolbarItemsAreTheBarsActions() throws {
         try onMainActor {
             let heard = Received<String>()
             let host = AndroidRenderer.running {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     TitledPage(title: "Notes", actions: [
-                        ToolbarItem("Delete").placement(.overflow).role(.destructive)
+                        ToolbarButton("Delete").placement(at: .overflow).role(.destructive)
                             .onClicked { heard.values.append("delete") },
-                        ToolbarItem("Add").icon("test_wide.png").isEnabled(false)
+                        ToolbarButton("Add").icon("test_wide.png").isEnabled(false)
                             .onClicked { heard.values.append("add") },
-                        ToolbarItem("Save").icon("test_wide.png").onClicked { heard.values.append("save") },
+                        ToolbarButton("Save").icon("test_wide.png").onClicked { heard.values.append("save") },
                     ])
                 } destination: { _ in
                     TitledPage(title: "Note")
@@ -442,7 +443,7 @@ final class AndroidPagesTests: XCTestCase {
             XCTAssertEqual(navigation.bar.content.actions.map(\.onBar), [true, true, false])
 
             let menu = JavaObject(try XCTUnwrap(Java.callObject(navigation.bar.reference, TestMenus.getMenu)))
-            XCTAssertEqual(TestMenus.describe(menu), "Add (off) (dimmed picture), Save (picture) | Delete (red)")
+            XCTAssertEqual(TestMenus.describe(menu), "Add (off) (dimmed picture) | Save (picture) | Delete (red)")
             for words in ["Add", "Save", "Delete"] { TestMenus.choose(menu, words) }
             host.runtime.pump.turn()
             XCTAssertEqual(heard.values, ["save", "delete"])
@@ -451,17 +452,16 @@ final class AndroidPagesTests: XCTestCase {
 }
 
 extension AndroidPagesTests {
-    /// A bar with no leading edge beside its navigation button: a leading group the stack declares stands first
-    /// among the actions, the page's own after it.
+    /// A bar with no leading edge beside its navigation button: a leading group stands first among the actions, the
+    /// trailing ones after it.
     func testALeadingGroupStandsFirstAmongTheActions() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                    TitledPage(title: "Notes", actions: [ToolbarItem("Save")])
+                    TitledPage(title: "Notes", actions: [ToolbarButton("Save"), ToolbarButton("Filter").placement(at: .start)])
                 } destination: { _ in
                     TitledPage(title: "Note")
                 }
-                .toolbar(.start) { ToolbarItem("Filter") }
             }
             let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
             XCTAssertEqual(navigation.bar.content.actions.map(\.text), ["Filter", "Save"])
@@ -477,8 +477,8 @@ extension AndroidPagesTests {
             let host = AndroidRenderer.running(reducesMotion: true) {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     TitledPage(title: "Notes", actions: [
-                        ToolbarItem("Scan"),
-                        ToolbarItem("Save").icon("test_wide.png"),
+                        ToolbarButton("Scan"),
+                        ToolbarButton("Save").icon("test_wide.png"),
                     ])
                 } destination: { _ in
                     TitledPage(title: "Note")
@@ -602,7 +602,7 @@ extension AndroidPagesTests {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         TitledPage(
                             title: "Tab \(number)",
-                            actions: [ToolbarItem("Dot").icon("test_dot.png"), ToolbarItem("Wide").icon("test_wide.png")])
+                            actions: [ToolbarButton("Dot").icon("test_dot.png"), ToolbarButton("Wide").icon("test_wide.png")])
                     } destination: { _ in
                         TitledPage(title: "Pushed")
                     }
@@ -933,7 +933,7 @@ private struct TitledPage: View {
     let title: String
     var icon: ImageSource? = nil
     var log: Received<String>? = nil
-    var actions: [ToolbarItem] = []
+    var actions: [ToolbarButton] = []
 
     var body: some View {
         let words = Text(title).toolbar { actions }.title(title)

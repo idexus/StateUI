@@ -16,7 +16,7 @@ extension MountedElement {
         for (level, arrangement) in arrangements.enumerated() {
             found += arrangement.slots.filter { $0.type == sought }.map { ($0, level) }
         }
-        found += declarations(sought).map { ($0, arrangements.count) }
+        found += declarations(sought).map { ($0.element, arrangements.count) }
         return found
     }
 
@@ -47,13 +47,13 @@ extension MountedElement {
         return arrangements
     }
 
-    /// The elements of `sought` in this element's tree, in the tree's order, looking into none of them and into no
-    /// collection's items.
-    private func declarations(_ sought: NodeType) -> [MountedElement] {
-        children.flatMap { child -> [MountedElement] in
-            if child.type == sought { return [child] }
+    /// The elements of `sought` in this element's tree, in the tree's order, each with its depth - how many
+    /// elements stand between this one and it - looking into none of them and into no collection's items.
+    func declarations(_ sought: NodeType, depth: Int = 0) -> [(element: MountedElement, depth: Int)] {
+        children.flatMap { child -> [(element: MountedElement, depth: Int)] in
+            if child.type == sought { return [(child, depth)] }
             if NodeType.slotTypes.contains(child.type) || child.type == .itemsView { return [] }
-            return child.declarations(sought)
+            return child.declarations(sought, depth: depth + 1)
         }
     }
 }

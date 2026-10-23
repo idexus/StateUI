@@ -209,7 +209,8 @@ page's room.
 
 ## The visible path
 
-A page's chrome takes what is declared on its path (`declared`): the slots of
+A page's chrome takes what is declared on its path (`declared`), but for its
+actions, which are its own ([a page's actions](#a-pages-actions)): the slots of
 each arrangement around the page, from the outermost in, then what the
 page's own tree declares, in the tree's order. Each carries its level - the
 outermost arrangement's 0, the page's own last. The path ends at the window
@@ -219,25 +220,33 @@ collection's items belong to no page. A page that goes takes its
 declarations with it, and what the levels around it declare stands as it
 stood: nothing is restored, because nothing was overwritten.
 
-## The actions of a path
+## A page's actions
 
-One toolbar group is one declaration: its items share one background where
-the platform groups a bar's actions. A group whose `.id` was declared further
-out joins that group, which stands where its outermost declaration put it.
-At each edge the groups stand by their `order`, then with the outer ones in
-place at the edge - first at the leading edge, last at the trailing - so an
-action of the window keeps its place from page to page and a page's own come
-in from the title's side; then as declared. The same key orders the
-declarations inside a joined group. An item whose `.id` an item further out
-has stands in that item's place, which the others of that id leave; a group
-left with nothing is none. The items placed in the overflow leave their
-groups for it, in the order composed (`ChromeActions`). A bar that draws no
-groups takes the trailing actions in reading order (`primary`).
+A page owns its bar's actions: the groups its own tree declares
+(`declarations`), none from the arrangements around it - a page pushed onto a
+stack carries none of the page under it; the core declares none on a stack or
+tabs. Under a split view the page stands under one part of the split view's one
+bar (`splitBarPart`), which holds the split view's groups naming that part, the
+page's own and those the other column's shown page names for it; a group's part
+unsaid is its declarer's - a sidebar page's the sidebar's, a detail page's and
+the split view's the detail's. While the sidebar is not shown, its part's
+groups stand at the start of the detail's - behind its overflow those that
+stood behind the sidebar's - or are gone where they hide with it
+(`hidesWithSidebar`); a part said off any split view changes nothing.
+
+One group is one background where the platform groups a bar's actions; an item
+standing alone is a group of one. At each position - the start, the end, the
+overflow - the groups stand by their `order`, then the outer at the edge -
+first at the start and in the overflow, last at the end - by how far out their
+declarer stands, the split view's furthest, a page's by its depth in the page's
+tree (`ChromeActions`), then as declared. Each group behind the overflow is a
+section of it (`overflowSections`). A bar that draws no groups takes the
+trailing actions in reading order (`primary`).
 
 ## The menus of a path
 
 The menu bar a page's window shows is composed from the menu bars its path
-declares (`ChromeMenus`), by the rule the actions follow. A menu whose `.id`
+declares (`ChromeMenus`). A menu whose `.id`
 was declared further out joins that menu, which its outermost declaration
 heads - its caption, whether it opens - and places. The menus and the
 sections inside a joined one stand by their declaration's `order`, then the

@@ -140,12 +140,12 @@ final class HostRealizationTests: XCTestCase {
         XCTAssertTrue(hasComplained("`Slider.tint` is not realized on this host"))
     }
 
-    /// What the library writes itself where its author says nothing - a group's side, whether a window floats or
+    /// What the library writes itself where its author says nothing - a group's position, whether a window floats or
     /// hides - is no description: a host leaving those members unrealized says nothing of them. What the author
     /// says is said.
     func testWhatTheAuthorLeftUnsaidIsNeverSaid() {
         HostBoundary.setRegister(HostRegister(records: [
-            .notPlanned(ToolbarItemGroupContract.side, reason: "the bar has no leading edge."),
+            .notPlanned(ToolbarGroupContract.position, reason: "the bar has no leading edge."),
             .notPlanned(WindowContract.floatsOnTop, reason: "no window floats."),
             .notPlanned(WindowContract.hidesWhenInactive, reason: "no window hides."),
         ]))
@@ -155,14 +155,14 @@ final class HostRealizationTests: XCTestCase {
 
         _ = Renderer.shared.renderHost(baseline: 0)
 
-        for member in ["ToolbarItemGroup.side", "Window.floatsOnTop", "Window.hidesWhenInactive"] {
+        for member in ["ToolbarGroup.position", "Window.floatsOnTop", "Window.hidesWhenInactive"] {
             XCTAssertFalse(hasComplained("`\(member)`"), "\(member) said, its author having said nothing")
         }
 
         Renderer.shared.setApplication(LeadingApp())
         _ = Renderer.shared.renderHost(baseline: 0)
 
-        XCTAssertTrue(hasComplained("`ToolbarItemGroup.side` is never realized"), "a side the author chose is said")
+        XCTAssertTrue(hasComplained("`ToolbarGroup.position` is never realized"), "a position the author chose is said")
     }
 
     // MARK: - Support
@@ -173,14 +173,14 @@ final class HostRealizationTests: XCTestCase {
         members: [HostRealizedMember(element: "Application", owner: "Test", member: "Test.BatteryChanged")])
 }
 
-/// A window whose page has a toolbar, saying nothing of its side or of the window's behavior.
+/// A window whose page has a toolbar, saying nothing of its position or of the window's behavior.
 private struct UnsaidApp: Application {
-    var body: some Scene { WindowGroup { Text("Parcels").toolbar { ToolbarItem("Reader") } } }
+    var body: some Scene { WindowGroup { Text("Parcels").toolbar { ToolbarButton("Reader") } } }
 }
 
 /// The same, its toolbar at the leading edge.
 private struct LeadingApp: Application {
-    var body: some Scene { WindowGroup { Text("Parcels").toolbar(.start) { ToolbarItem("Reader") } } }
+    var body: some Scene { WindowGroup { Text("Parcels").toolbar { ToolbarButton("Reader").placement(at: .start) } } }
 }
 
 /// The application's events these tests name, declared the way an application

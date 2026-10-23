@@ -7,13 +7,40 @@
 /// its own: its actions, its title view, its menus, and its bar's colors and title area.
 /// Design: docs/design/host/pages.md#the-windows-chrome
 extension MountedElement {
-    /// This page's actions for its chrome: the groups declared on its path, composed; none where the page hides
-    /// its bar.
-    /// Design: docs/design/host/pages.md#the-actions-of-a-path
+    /// This page's actions for its chrome: its own groups, and under a split view its part of the split view's one
+    /// bar - the split view's groups and the other column's page's standing there; none where the page hides its bar.
+    /// Design: docs/design/host/pages.md#a-pages-actions
     public var chromeActions: ChromeActions {
         guard value(.showsNavigationBar)?.bool != false else { return ChromeActions() }
 
-        return ChromeActions(declared(.toolbarItemGroup))
+        guard let (split, part) = splitBarPart else {
+            return ChromeActions(ownGroups(as: .detail), part: nil, sidebarShown: true)
+        }
+        let other = (part == .sidebar ? split.arrangedChildren.dropFirst().first : split.arrangedChildren.first)?
+            .visiblePage
+        let around = split.slots.filter { $0.type == .toolbarGroup }.map {
+            ChromeActions.Declared($0, depth: -1, declarersPart: .detail)
+        }
+        let others = other?.ownGroups(as: part == .sidebar ? .detail : .sidebar) ?? []
+        return ChromeActions(around + ownGroups(as: part) + others, part: part, sidebarShown: split.sidebarIsVisible)
+    }
+
+    /// The groups this page's own tree declares, their part unsaid being `part`.
+    private func ownGroups(as part: ToolbarPart) -> [ChromeActions.Declared] {
+        declarations(.toolbarGroup).map { ChromeActions.Declared($0.element, depth: $0.depth, declarersPart: part) }
+    }
+
+    /// The split view whose bar this page stands under, and its part: the nearest around it up to its window or
+    /// sheet, the sidebar's part for a page of its sidebar; nil where none stands around it.
+    var splitBarPart: (split: MountedElement, part: ToolbarPart)? {
+        var (child, each) = (self, parent)
+        while let element = each, element.type != .window, element.type != .sheet {
+            if element.type == .splitView {
+                return (element, element.arrangedChildren.first === child ? .sidebar : .detail)
+            }
+            (child, each) = (element, element.parent)
+        }
+        return nil
     }
 
     /// What stands in this page's title place: the title view declared innermost on its path; nil where none.

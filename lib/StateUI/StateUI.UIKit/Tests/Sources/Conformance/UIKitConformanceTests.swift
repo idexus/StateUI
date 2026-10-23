@@ -66,8 +66,8 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testSplitView() { conform(SplitViewTests.self) }
     @MainActor func testTabView() { conform(TabViewTests.self) }
     @MainActor func testTitleView() { conform(TitleViewTests.self) }
-    @MainActor func testToolbarItem() { conform(ToolbarItemTests.self) }
-    @MainActor func testToolbarItemGroup() { conform(ToolbarItemGroupTests.self) }
+    @MainActor func testToolbarButton() { conform(ToolbarButtonTests.self) }
+    @MainActor func testToolbarGroup() { conform(ToolbarGroupTests.self) }
     @MainActor func testWindow() { conform(WindowTests.self) }
     @MainActor func testAutomationElement() { conform(AutomationElementTests.self) }
     @MainActor func testVisualElement1() { conform(VisualElementTests.self, part: Conformance.Part(1, of: 24)) }

@@ -1,0 +1,3 @@
+# revision 5.1
+ToolbarButton: ✅
+ToolbarButton.showsText: – A UIKit bar button shows its picture or its words, never both.

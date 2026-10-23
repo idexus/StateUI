@@ -18,6 +18,6 @@ final class UnsupportedTests: XCTestCase {
         XCTAssertFalse(registry.showsUnsupported(.page), "a page")
         XCTAssertFalse(registry.showsUnsupported(.navigationStack), "an arrangement of pages")
         XCTAssertFalse(registry.showsUnsupported(.overlay))
-        XCTAssertFalse(registry.showsUnsupported(.toolbarItem), "presented with no view of its own")
+        XCTAssertFalse(registry.showsUnsupported(.toolbarButton), "presented with no view of its own")
     }
 }

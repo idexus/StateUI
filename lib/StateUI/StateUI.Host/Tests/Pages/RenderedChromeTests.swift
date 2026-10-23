@@ -32,9 +32,9 @@ final class RenderedChromeTests: XCTestCase {
 
         var words = HostPatch(id: .manual("action words"), type: .text)
         words.properties[.text] = .string("Send")
-        var action = HostPatch(id: .manual("action"), type: .toolbarItem)
+        var action = HostPatch(id: .manual("action"), type: .toolbarButton)
         action.children = .changed([words])
-        var group = HostPatch(id: .manual("group"), type: .toolbarItemGroup)
+        var group = HostPatch(id: .manual("group"), type: .toolbarGroup)
         group.children = .changed([action])
         XCTAssertTrue(touches(Self.content(.changed([Self.holder(.changed([group]))]))), "an action's words")
     }
@@ -116,9 +116,9 @@ final class RenderedChromeTests: XCTestCase {
     }
 
     private static func group() -> HostPatch {
-        var action = HostPatch(id: .manual("action"), type: .toolbarItem)
+        var action = HostPatch(id: .manual("action"), type: .toolbarButton)
         action.children = .arranged([HostPatch(id: .manual("action words"), type: .text)])
-        var group = HostPatch(id: .manual("group"), type: .toolbarItemGroup)
+        var group = HostPatch(id: .manual("group"), type: .toolbarGroup)
         group.children = .arranged([action])
         return group
     }

@@ -541,7 +541,7 @@ struct EditorPage: View {
     var body: some View {
         TextEditor()
             .toolbar {
-                ToolbarItem("Save")
+                ToolbarButton("Save")
                     .isEnabled(dirty)
                     .onClicked { save() }
             }
@@ -598,11 +598,9 @@ struct NotesPage: View {
         .titleView {
             SearchField($query)
         }
-        .toolbar(.start) {
-            ToolbarItem("New folder")
-        }
         .toolbar {
-            ToolbarItem("Account")
+            ToolbarButton("New folder").placement(.sidebar, at: .start)
+            ToolbarButton("Account")
         }
     }
 }
@@ -615,8 +613,8 @@ the nearest arrangement on the visible path that declares it, so a stack
 further in paints its own bar or says its own line while it is shown; a
 sidebar takes only what its own split view declares, and a sheet takes nothing
 from around it. What stands on the bar is
-declared the same way: actions with `.toolbar`, `.toolbar(.start)` at the
-start, and a view in the title's place with `.titleView`
+declared the same way: actions with `.toolbar`, each saying where it stands
+with `.placement`, and a view in the title's place with `.titleView`
 ([Toolbars](navigation-and-presentation.md#toolbars)).
 
 AppKit and WinUI show the name, the line and the mark where their platform

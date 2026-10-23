@@ -217,8 +217,10 @@ enum PatchDump {
             return spelled(member, as: ScrollOrientation.self)
         case Prop.horizontalScrollIndicator.name, Prop.verticalScrollIndicator.name:
             return spelled(member, as: ScrollIndicatorVisibility.self)
-        case Prop.placement.name:
-            return spelled(member, as: ToolbarItemPlacement.self)
+        case Prop.position.name:
+            return spelled(member, as: ToolbarPosition.self)
+        case Prop.part.name:
+            return spelled(member, as: ToolbarPart.self)
 
         // The shapes and the map.
         case Prop.lineCap.name:

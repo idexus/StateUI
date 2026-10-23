@@ -180,15 +180,7 @@ extension AppKitDriver {
             default: break
             }
         }
-        if element.type == .toolbarItem, property == .placement {
-            let toolbar = try controller(of: element).toolbarForTesting
-            let identifier = NSToolbarItem.Identifier("StateUI.action.\(element.mount)")
-            if toolbar.overflowForTesting.contains(where: { $0.identifier == identifier }) {
-                return ToolbarItemPlacement.overflow.propValue
-            }
-            if toolbar.identifiersForTesting.contains(identifier) { return ToolbarItemPlacement.bar.propValue }
-        }
-        if element.type == .toolbarItem,
+        if element.type == .toolbarButton,
            let item = try controller(of: element).toolbarForTesting
                .itemForTesting(NSToolbarItem.Identifier("StateUI.action.\(element.mount)")) {
             switch property {

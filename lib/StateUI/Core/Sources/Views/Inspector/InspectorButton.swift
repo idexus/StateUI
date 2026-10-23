@@ -3,7 +3,7 @@
 
 /// The button that shows its scene's inspector docked in its window and hides
 /// it again, for anywhere a view goes. See `Inspector`; in a bar,
-/// `ToolbarItem.inspector`.
+/// `ToolbarButton.inspector`.
 ///
 ///     VStack { InspectorButton() }
 public struct InspectorButton: View {

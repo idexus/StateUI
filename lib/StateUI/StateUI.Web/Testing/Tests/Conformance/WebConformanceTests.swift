@@ -67,8 +67,8 @@ final class WebConformanceTests: XCTestCase {
     func testSplitView() { conform(SplitViewTests.self) }
     func testTabView() { conform(TabViewTests.self) }
     func testTitleView() { conform(TitleViewTests.self) }
-    func testToolbarItem() { conform(ToolbarItemTests.self) }
-    func testToolbarItemGroup() { conform(ToolbarItemGroupTests.self) }
+    func testToolbarButton() { conform(ToolbarButtonTests.self) }
+    func testToolbarGroup() { conform(ToolbarGroupTests.self) }
     func testWindow() { conform(WindowTests.self) }
     func testAutomationElement() { conform(AutomationElementTests.self) }
     func testVisualElement() { conform(VisualElementTests.self) }

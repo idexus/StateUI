@@ -345,11 +345,31 @@ bar offers the sheet's close button unless the page it shows says not
   its own padding.
 - No builder of tab pages: a builder hands back an anonymous list whose only
   identity is position.
+- No toolbar on a stack or tabs: a page owns its bar's actions - each page of a
+  stack or of tabs its own, a pushed page none of the page under it. `.toolbar`
+  written on a `NavigationStack` or a `TabView` is left out and said once
+  (`complain`): every view offers `.toolbar`, and Swift calls an unavailable
+  overload on the arrangement's type no closer than the view's own, so no type
+  refuses it. A split view declares its own, for the parts of its bar ([a split
+  view's bar](#a-split-views-bar)).
 - No sidebar item type, template, header or footer: the sidebar is a page, and
   a header is a view at its top. No way to keep a split view with its sidebar
   turned off for good: an application with nothing for a sidebar does not use
   one. No shared overlay or split policy: that belongs to a platform's own
   container, and the host adapts its presentation.
+
+## A split view's bar
+
+A split view stands under one bar in two parts - over its sidebar and over its
+detail. A page's actions stand in its own column's part, and a split view's own
+over every page of the part each names. Where an action stands, it says
+itself: `.placement(part, at:, order:)`, each only where said - the part
+unsaid being its declarer's (a sidebar page's the sidebar's, a detail page's
+and the split view's the detail's), the position the bar's end. The
+`ToolbarButton` keeps what it says of where it stands beside its node (`alone`)
+and stands in a group of its own built from it; in a `ToolbarGroup` the group
+says it, and an item's own is left out and said once. So a host meets the
+placement on groups alone (`ToolbarGroupContract`), never on an item.
 
 ## The application is named once
 

@@ -18,7 +18,7 @@ optional, several statements `Statements`, repetition a `ForEach`, and a list
 of `any View` an array. Everything a container holds is `Views`: every view is
 one, and so is each of these. A composed view's `body` and a one-view slot
 take a `View`, so two statements or an `if` with no `else` there do not compile,
-and neither does `VStack { ToolbarItem("Save") }`: an action, a run of text
+and neither does `VStack { ToolbarButton("Save") }`: an action, a run of text
 and a marker each go where they belong; an arrangement of pages compiles there
 but is left out, and said once (pages.md). A modifier on a view
 gives back a view (`View where Modified: View`), so a chain goes on on
@@ -144,7 +144,7 @@ does not. It records no path. An entry is matched by its `.id()` and otherwise
 by its position, so an `if` whose entry comes and goes re-matches every entry
 below it against a different one. An entry standing beside a conditional, and
 each of a list of entries that changes, wants an id. `MenuBarBuilder`, `ToolbarBuilder`, `TextSpanBuilder` and `MarkerBuilder`
-collect one type each - a `Menu`, a `ToolbarItem`, a `TextSpan`, a `Marker` - the
+collect one type each - a `Menu`, a `ToolbarButton`, a `TextSpan`, a `Marker` - the
 same way, an array of them standing for a loop.
 
 ## Scenes and styles

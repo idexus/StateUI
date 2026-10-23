@@ -144,14 +144,14 @@ enum Shortcuts {
                 .id("row")
             }
         }
-        if element == "ToolbarItem" {
+        if element == "ToolbarButton" {
             let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 content.toolbar {
-                    ToolbarItem("Save").keyboardShortcut("s", modifiers: [.primary, .shift])
+                    ToolbarButton("Save").keyboardShortcut("s", modifiers: [.primary, .shift])
                         .onClicked { heard.values.append("save") }.id("save")
-                    ToolbarItem("Open").keyboardShortcut("o").isEnabled(false)
+                    ToolbarButton("Open").keyboardShortcut("o").isEnabled(false)
                         .onClicked { heard.values.append("open") }.id("open")
-                    ToolbarItem("One").keyboardShortcut("1", modifiers: [])
+                    ToolbarButton("One").keyboardShortcut("1", modifiers: [])
                         .onClicked { heard.values.append("one") }.id("one")
                 }
             } destination: { _ in Text("Pushed") }
@@ -189,12 +189,12 @@ enum Chosen {
         _ element: String, _ item: @escaping @MainActor (Bool) -> (String, @MainActor () -> Void)
     ) -> any View {
         let (on, off) = (item(true), item(false))
-        if element == "ToolbarItem" {
+        if element == "ToolbarButton" {
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 DeclaringPage {
                     [
-                        ToolbarItem(on.0).onClicked { on.1() }.id(on.0),
-                        ToolbarItem(off.0).isEnabled(false).onClicked { off.1() }.id(off.0),
+                        ToolbarButton(on.0).onClicked { on.1() }.id(on.0),
+                        ToolbarButton(off.0).isEnabled(false).onClicked { off.1() }.id(off.0),
                     ]
                 }
             } destination: { _ in Text("Pushed") }
@@ -212,11 +212,11 @@ enum Chosen {
     static func branch(
         _ element: String, enabled: Bool, beside: some View, _ heard: @escaping @MainActor () -> Void
     ) -> AnyView {
-        let branch: any View = element == "ToolbarItem"
-            ? VStack { Text("Branch") }.toolbar { ToolbarItem("Item").onClicked { heard() }.id("item") }
+        let branch: any View = element == "ToolbarButton"
+            ? VStack { Text("Branch") }.toolbar { ToolbarButton("Item").onClicked { heard() }.id("item") }
             : VStack { Text("Row").contextMenu { MenuItem("Item").onClicked { heard() }.id("item") }.id("row") }
         let page = VStack { Beside([Text("Page"), AnyView(branch).isEnabled(enabled), beside]) }
-        guard element == "ToolbarItem" else { return AnyView(page) }
+        guard element == "ToolbarButton" else { return AnyView(page) }
         // An item on a bar stands on a page in a navigation stack.
         let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) { page } destination: { _ in Text("Pushed") }
         return AnyView(stack)

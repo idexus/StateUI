@@ -529,7 +529,7 @@ final class StyleTests: XCTestCase {
     /// pair on the node - written into a page's session from a handler, it is
     /// still the differ that picks which one is shown.
     func testAPagesPictureIsWrittenAsBothAndShownAsOne() {
-        let item = ToolbarItem("Save")
+        let item = ToolbarButton("Save")
             .icon(ImageSource(light: "tab_list.png", dark: "tab_list_dark.png"))
 
         XCTAssertEqual(

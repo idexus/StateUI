@@ -19,7 +19,7 @@
     /// The stack whose top page the way back takes, and the way back's words.
     public var back: (stack: MountedElement, title: String)?
 
-    /// The actions the visible page's path declares, composed.
+    /// The actions the visible page declares, composed.
     public var actions = ChromeActions()
 
     /// What stands in the title's place: the title view the visible page's path declares.

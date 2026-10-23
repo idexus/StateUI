@@ -370,11 +370,11 @@ final class PagesTests: XCTestCase {
     /// An action's words stand on the bar beside its picture only where it says so, and always where it has none.
     func testAnActionShowsItsWordsBesideItsPictureWhereItSaysSo() throws {
         let runtime = runtime(node("page", .page, children: [
-            node("items", .toolbarItemGroup, children: [
-                node("words", .toolbarItem, [.text: .string("Words")]),
-                node("picture", .toolbarItem, [.text: .string("Picture"), .icon: .string("add")]),
-                node("both", .toolbarItem, [.text: .string("Both"), .icon: .string("add"), .showsText: .bool(true)]),
-                node("hidden", .toolbarItem, [.text: .string("Hidden"), .showsText: .bool(false)]),
+            node("items", .toolbarGroup, children: [
+                node("words", .toolbarButton, [.text: .string("Words")]),
+                node("picture", .toolbarButton, [.text: .string("Picture"), .icon: .string("add")]),
+                node("both", .toolbarButton, [.text: .string("Both"), .icon: .string("add"), .showsText: .bool(true)]),
+                node("hidden", .toolbarButton, [.text: .string("Hidden"), .showsText: .bool(false)]),
             ]),
         ])) { _ in }
         let page = try XCTUnwrap(runtime.tree.root)
@@ -434,16 +434,12 @@ final class PagesTests: XCTestCase {
     /// The chrome takes the visible path's actions, the overflow apart, the way back's words from the page beneath,
     /// the page's title view, and the stack's color.
     func testTheChromeIsComposedFromWhatTheWindowShows() throws {
-        let item = { (id: String, overflow: Bool) in
-            self.node(id, .toolbarItem, [
-                .placement: .enumeration(overflow ? ToolbarItemPlacement.overflow.rawValue : 0),
-            ])
-        }
         let runtime = runtime(node("window", .window, children: [
             node("stack", .navigationStack, [.barBackgroundColor: .string("stack")], children: [
                 node("home", .page, [.backButtonTitle: .string("Home")]),
                 node("detail", .page, [.title: .string("Detail")], children: [
-                    node("items", .toolbarItemGroup, children: [item("first", false), item("more", true), item("next", false)]),
+                    toolbarGroup("items", [toolbarAction("first"), toolbarAction("next")]),
+                    toolbarGroup("tucked", [toolbarAction("more")], at: .overflow),
                     node("view", .titleView, children: [node("words", .text)]),
                 ]),
             ]),
@@ -462,14 +458,18 @@ final class PagesTests: XCTestCase {
 
     /// A toolbar group of `items`, at `side`, in `order`.
     private func toolbarGroup(
-        _ id: String, _ items: [HostPatch], side: ToolbarSide = .end, order: Double = 0
+        _ id: String, _ items: [HostPatch], at position: ToolbarPosition = .end, order: Double = 0,
+        part: ToolbarPart? = nil, hidesWithSidebar: Bool = false
     ) -> HostPatch {
-        node(id, .toolbarItemGroup, [.side: .enumeration(side.rawValue), .order: .number(order)], children: items)
+        var properties: [Prop: HostValue] = [.position: .enumeration(position.rawValue), .order: .number(order)]
+        if let part { properties[.part] = .enumeration(part.rawValue) }
+        if hidesWithSidebar { properties[.hidesWithSidebar] = .bool(true) }
+        return node(id, .toolbarGroup, properties, children: items)
     }
 
     /// An action captioned `text`, where one is said.
     private func toolbarAction(_ id: String, _ text: String? = nil) -> HostPatch {
-        node(id, .toolbarItem, text.map { [.text: .string($0)] } ?? [:])
+        node(id, .toolbarButton, text.map { [.text: .string($0)] } ?? [:])
     }
 
     /// A window's split view declaring `outer` around a stack whose top page's content declares `inner`.
@@ -485,61 +485,149 @@ final class PagesTests: XCTestCase {
         ])
     }
 
-    /// Each declaration is a group; the page's own stand nearer the title and the outer ones keep their place at the
-    /// edge - last at the trailing edge, first at the leading - and a group's order moves it.
-    func testTheActionsOfAPathStandInGroups() throws {
-        let runtime = runtime(pathWindow(
+    /// A window's split view whose detail is a stack, its top page's content declaring `outer` and a view deeper in
+    /// it `inner`, its sidebar's page `sidebar`; `split` declared on the split view, and `stacked` on the stack, as
+    /// no core sends but a host bears; the sidebar shown or not.
+    private func pageWindow(
+        outer: [HostPatch] = [], inner: [HostPatch] = [], sidebar: [HostPatch] = [], split: [HostPatch] = [],
+        stacked: [HostPatch] = [], sidebarShown: Bool = true
+    ) -> HostPatch {
+        node("window", .window, children: [
+            node("split", .splitView, [.showsSidebar: .bool(sidebarShown)], children: [
+                node("menu", .page, children: [node("menu.content", .vStack, children: sidebar)]),
+                node("stack", .navigationStack, children: [
+                    node("home", .page),
+                    node("detail", .page, children: [
+                        node("content", .vStack, children: [node("deeper", .vStack, children: [node("words", .text)] + inner)]
+                            + outer),
+                    ]),
+                ] + stacked),
+            ] + split),
+        ])
+    }
+
+    /// The ids of what the page `id` shows: each group at the start, "|", at the end, "|", the overflow's sections.
+    private func bar(_ id: String, in runtime: HostRuntime) -> String {
+        guard let actions = runtime.tree.root?.first(id: .manual(id))?.chromeActions else { return "none" }
+        let groups = { (groups: [[MountedElement]]) in
+            groups.map { "[" + $0.map { Self.said($0.id) }.joined(separator: " ") + "]" }.joined(separator: " ")
+        }
+        return groups(actions.start) + "|" + groups(actions.end) + "|" + groups(actions.overflowSections)
+    }
+
+    /// An id as a test wrote it.
+    private static func said(_ id: ElementID) -> String {
+        if case .manual(let words) = id { return words }
+        return "?"
+    }
+
+    /// Each declaration is a group; the page's views further in stand nearer the title and those further out keep
+    /// their place at the edge - last at the trailing edge, first at the leading - and a group's order moves it.
+    func testAPagesActionsStandInGroups() throws {
+        let runtime = runtime(pageWindow(
             outer: [
-                toolbarGroup("window", [toolbarAction("inspector"), toolbarAction("home")]),
-                toolbarGroup("start", [toolbarAction("compose")], side: .start),
+                toolbarGroup("shared", [toolbarAction("inspector"), toolbarAction("home")]),
+                toolbarGroup("start", [toolbarAction("compose")], at: .start),
             ],
             inner: [
                 toolbarGroup("page", [toolbarAction("save"), toolbarAction("add")]),
                 toolbarGroup("later", [toolbarAction("share")], order: 1),
-                toolbarGroup("near", [toolbarAction("filter")], side: .start),
+                toolbarGroup("near", [toolbarAction("filter")], at: .start),
             ])) { _ in }
-        let page = try XCTUnwrap(runtime.tree.root?.first(id: .manual("detail")))
 
-        let actions = page.chromeActions
-        XCTAssertEqual(actions.end.map { $0.map(\.id) }, [
-            [.manual("save"), .manual("add")], [.manual("inspector"), .manual("home")], [.manual("share")],
-        ])
-        XCTAssertEqual(actions.start.map { $0.map(\.id) }, [[.manual("compose")], [.manual("filter")]])
-        XCTAssertEqual(actions.primary.map(\.id), [
+        XCTAssertEqual(bar("detail", in: runtime), "[compose] [filter]|[save add] [inspector home] [share]|")
+        let page = try XCTUnwrap(runtime.tree.root?.first(id: .manual("detail")))
+        XCTAssertEqual(page.chromeActions.primary.map(\.id), [
             .manual("save"), .manual("add"), .manual("inspector"), .manual("home"), .manual("share"),
         ])
     }
 
-    /// A group of an id declared further in joins the one around it, nearer the title; an action of an id declared
-    /// further in stands in the place of the outer one, which leaves; and a group left with nothing is none.
-    func testAGroupJoinsTheOneOfItsIdAndAnActionStandsInItsPlace() throws {
-        let runtime = runtime(pathWindow(
-            outer: [toolbarGroup("window", [toolbarAction("inspector"), toolbarAction("save", "Save")])],
-            inner: [
-                toolbarGroup("window", [toolbarAction("help")]),
-                toolbarGroup("own", [toolbarAction("save", "Save this page")]),
-            ])) { _ in }
-        let page = try XCTUnwrap(runtime.tree.root?.first(id: .manual("detail")))
+    /// The groups behind the overflow are its sections, in reading order, the outer first.
+    func testTheOverflowsGroupsAreItsSections() throws {
+        let runtime = runtime(pageWindow(
+            outer: [toolbarGroup("outer", [toolbarAction("export")], at: .overflow)],
+            inner: [toolbarGroup("inner", [toolbarAction("clear"), toolbarAction("reset")], at: .overflow)])) { _ in }
 
-        let actions = page.chromeActions
-        XCTAssertEqual(actions.end.map { $0.map(\.id) }, [[.manual("help"), .manual("inspector"), .manual("save")]])
-        XCTAssertEqual(actions.primary.last?.value(.text)?.string, "Save this page")
+        XCTAssertEqual(bar("detail", in: runtime), "||[export] [clear reset]")
     }
 
-    /// A page hiding its bar shows no actions; a sheet's page takes nothing from the window it stands over.
-    func testAHiddenBarAndASheetTakeNothingFromAround() throws {
+    /// A page owns its bar's actions, and a split view's stand beside them in their part - by default the detail's -
+    /// at the edge; a group standing on a stack, which no core sends, stands on no bar.
+    func testEachPageShowsItsOwnAndItsSplitViewsPart() throws {
+        let runtime = runtime(pageWindow(
+            outer: [toolbarGroup("page", [toolbarAction("more")])],
+            sidebar: [toolbarGroup("menu.group", [toolbarAction("folder")])],
+            split: [
+                toolbarGroup("toSidebar", [toolbarAction("add")], part: .sidebar),
+                toolbarGroup("toDetail", [toolbarAction("inspector")]),
+            ],
+            stacked: [toolbarGroup("stacked", [toolbarAction("lost")])])) { _ in }
+
+        XCTAssertEqual(bar("detail", in: runtime), "|[more] [inspector]|", "the detail's own, then its part's")
+        XCTAssertEqual(bar("menu", in: runtime), "|[folder] [add]|", "the sidebar's own, then its part's")
+        XCTAssertEqual(bar("home", in: runtime), "|[inspector]|", "a page under the top: its part's alone")
+    }
+
+    /// A page's group naming the other part stands there, beside that part's own.
+    func testAPagesGroupNamingTheOtherPartStandsThere() throws {
+        let runtime = runtime(pageWindow(
+            outer: [toolbarGroup("pinned", [toolbarAction("pin")], part: .sidebar)],
+            sidebar: [toolbarGroup("menu.group", [toolbarAction("folder")])])) { _ in }
+
+        XCTAssertEqual(bar("menu", in: runtime), "|[folder] [pin]|")
+        XCTAssertEqual(bar("detail", in: runtime), "||")
+    }
+
+    /// While the sidebar is not shown its part's groups stand at the start of the detail's, the overflow's in its
+    /// overflow, or hide with it where they say so.
+    func testTheSidebarsGroupsMoveToTheDetailOrHideWithIt() throws {
+        let window = { (shown: Bool) in
+            self.pageWindow(
+                outer: [self.toolbarGroup("page", [self.toolbarAction("more")])],
+                split: [
+                    self.toolbarGroup("toggle", [self.toolbarAction("add")], part: .sidebar),
+                    self.toolbarGroup("tucked", [self.toolbarAction("sort")], at: .overflow, part: .sidebar),
+                    self.toolbarGroup("hiding", [self.toolbarAction("filter")], part: .sidebar, hidesWithSidebar: true),
+                ],
+                sidebarShown: shown)
+        }
+        let runtime = runtime(window(true)) { _ in }
+        XCTAssertEqual(bar("detail", in: runtime), "|[more]|")
+        XCTAssertEqual(bar("menu", in: runtime), "|[add] [filter]|[sort]")
+
+        runtime.tree.apply(window(false), complete: false)
+        XCTAssertEqual(bar("detail", in: runtime), "[add]|[more]|[sort]", "moved, the hiding one gone")
+    }
+
+    /// An action whose part changes stands in the other part, the same element.
+    func testAnActionWhosePartChangesStandsInTheOther() throws {
+        let window = { (part: ToolbarPart) in
+            self.pageWindow(split: [self.toolbarGroup("pin.group", [self.toolbarAction("pin")], part: part)])
+        }
+        let runtime = runtime(window(.sidebar)) { _ in }
+        let pin = try XCTUnwrap(runtime.tree.root?.first(id: .manual("pin")))
+        XCTAssertEqual(bar("menu", in: runtime), "|[pin]|")
+        XCTAssertEqual(bar("detail", in: runtime), "||")
+
+        runtime.tree.apply(window(.detail), complete: false)
+        XCTAssertEqual(bar("menu", in: runtime), "||")
+        XCTAssertEqual(bar("detail", in: runtime), "|[pin]|")
+        XCTAssertTrue(runtime.tree.root?.first(id: .manual("pin")) === pin, "one element moving")
+    }
+
+    /// A page hiding its bar shows no actions; a sheet's page shows its own, and the page it stands over its own.
+    func testAHiddenBarAndASheetShowTheirOwn() throws {
         let runtime = runtime(node("window", .window, children: [
             node("stack", .navigationStack, children: [
                 node("home", .page, children: [
                     presenting(node("sheet", .page, children: [toolbarGroup("mine", [toolbarAction("done")])])),
+                    toolbarGroup("home.group", [toolbarAction("inspector")]),
                 ]),
-                toolbarGroup("window", [toolbarAction("inspector")]),
             ]),
         ])) { _ in }
-        let root = try XCTUnwrap(runtime.tree.root)
 
-        XCTAssertEqual(try XCTUnwrap(root.first(id: .manual("sheet"))).chromeActions.primary.map(\.id), [.manual("done")])
-        XCTAssertEqual(try XCTUnwrap(root.first(id: .manual("home"))).chromeActions.primary.map(\.id), [.manual("inspector")])
+        XCTAssertEqual(bar("sheet", in: runtime), "|[done]|")
+        XCTAssertEqual(bar("home", in: runtime), "|[inspector]|")
 
         let bare = self.runtime(node("page", .page, [.showsNavigationBar: .bool(false)], children: [
             toolbarGroup("mine", [toolbarAction("done")]),
@@ -547,8 +635,8 @@ final class PagesTests: XCTestCase {
         XCTAssertTrue(try XCTUnwrap(bare.tree.root).chromeActions.primary.isEmpty)
     }
 
-    /// A stack declaring `outer` over `pages`, each page's content declaring its own group.
-    private func stackWindow(outer: [HostPatch], pages: [(id: String, group: [HostPatch])]) -> HostPatch {
+    /// A stack over `pages`, each page's content declaring its own group.
+    private func stackWindow(pages: [(id: String, group: [HostPatch])]) -> HostPatch {
         node("window", .window, children: [
             node("stack", .navigationStack, children: pages.map { page in
                 node(page.id, .page, children: [
@@ -556,96 +644,89 @@ final class PagesTests: XCTestCase {
                         toolbarGroup("\(page.id).group", page.group),
                     ]),
                 ])
-            } + outer),
+            }),
         ])
     }
 
-    /// A page pushed onto a stack brings its actions nearer the title, and taken away takes them with it: the stack's
-    /// own stand as they stood - nothing restored, nothing left behind.
+    /// A page pushed onto a stack shows its own actions and none of the page under it; taken away, it takes them
+    /// with it, and the page under it shows its own again.
     func testAPushedPagesActionsComeAndGoWithIt() throws {
-        let outer = [toolbarGroup("shared", [toolbarAction("home")])]
-        let runtime = runtime(stackWindow(outer: outer, pages: [("first", [toolbarAction("add")])])) { _ in }
+        let runtime = runtime(stackWindow(pages: [("first", [toolbarAction("add")])])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
         let top = { WindowChrome(window: root, arrangement: root.first(id: .manual("stack"))).actions.primary.map(\.id) }
-        XCTAssertEqual(top(), [.manual("add"), .manual("home")])
+        XCTAssertEqual(top(), [.manual("add")])
 
-        runtime.tree.apply(stackWindow(outer: outer, pages: [
+        runtime.tree.apply(stackWindow(pages: [
             ("first", [toolbarAction("add")]), ("second", [toolbarAction("share")]),
         ]), complete: false)
-        XCTAssertEqual(top(), [.manual("share"), .manual("home")], "the pushed page's own, the stack's in place")
+        XCTAssertEqual(top(), [.manual("share")], "the pushed page's own alone")
 
-        runtime.tree.apply(stackWindow(outer: outer, pages: [("first", [toolbarAction("add")])]), complete: false)
-        XCTAssertEqual(top(), [.manual("add"), .manual("home")], "as it was before the push")
+        runtime.tree.apply(stackWindow(pages: [("first", [toolbarAction("add")])]), complete: false)
+        XCTAssertEqual(top(), [.manual("add")], "as it was before the push")
         XCTAssertNil(root.first(id: .manual("share")), "the popped page's action left the tree")
     }
 
-    /// An action changed, added or removed - on the page or on the stack around it - and a group taken away are
-    /// composed again from what stands.
+    /// An action changed, added or removed and a group taken away are composed again from what stands.
     func testAChangedAddedOrRemovedActionIsComposedAgain() throws {
-        let runtime = runtime(stackWindow(
-            outer: [toolbarGroup("shared", [toolbarAction("home", "Home")])],
-            pages: [("page", [toolbarAction("add", "Add")])])) { _ in }
-        let root = try XCTUnwrap(runtime.tree.root)
-        let page = try XCTUnwrap(root.first(id: .manual("page")))
+        let runtime = runtime(stackWindow(pages: [("page", [toolbarAction("add", "Add")])])) { _ in }
+        let page = try XCTUnwrap(runtime.tree.root?.first(id: .manual("page")))
         let words = { page.chromeActions.primary.map { $0.value(.text)?.string ?? "" } }
-        XCTAssertEqual(words(), ["Add", "Home"])
+        XCTAssertEqual(words(), ["Add"])
 
-        runtime.tree.apply(stackWindow(
-            outer: [toolbarGroup("shared", [toolbarAction("home", "Start")])],
-            pages: [("page", [toolbarAction("add", "Add"), toolbarAction("share", "Share")])]), complete: false)
-        XCTAssertEqual(words(), ["Add", "Share", "Start"], "one added on the page, one renamed on the stack")
+        runtime.tree.apply(stackWindow(pages: [
+            ("page", [toolbarAction("add", "Plus"), toolbarAction("share", "Share")]),
+        ]), complete: false)
+        XCTAssertEqual(words(), ["Plus", "Share"], "one added, one renamed")
 
-        runtime.tree.apply(stackWindow(
-            outer: [toolbarGroup("shared", [toolbarAction("home", "Start")])],
-            pages: [("page", [toolbarAction("share", "Share")])]), complete: false)
-        XCTAssertEqual(words(), ["Share", "Start"], "one removed from the page")
+        runtime.tree.apply(stackWindow(pages: [("page", [toolbarAction("share", "Share")])]), complete: false)
+        XCTAssertEqual(words(), ["Share"], "one removed")
 
-        runtime.tree.apply(stackWindow(outer: [], pages: [("page", [toolbarAction("share", "Share")])]), complete: false)
-        XCTAssertEqual(words(), ["Share"], "the stack's group taken away")
-        XCTAssertTrue(try XCTUnwrap(root.first(id: .manual("stack"))).slots.isEmpty)
+        runtime.tree.apply(stackWindow(pages: [("page", [])]), complete: false)
+        XCTAssertEqual(words(), [], "the group taken away")
     }
 
     /// A sparse patch naming an arrangement's slot reaches it where it stands, apart from the pages.
     func testASparsePatchReachesAnArrangementsSlot() throws {
-        let runtime = runtime(stackWindow(
-            outer: [toolbarGroup("shared", [toolbarAction("home", "Home")])], pages: [("page", [])])) { _ in }
+        let runtime = runtime(node("window", .window, children: [
+            node("stack", .navigationStack, children: [
+                node("page", .page),
+                node("title", .titleView, children: [node("words", .text, [.text: .string("Home")])]),
+            ]),
+        ])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
 
         var window = HostPatch(id: .manual("window"), type: .window)
         var stack = HostPatch(id: .manual("stack"), type: .navigationStack)
-        var group = HostPatch(id: .manual("shared"), type: .toolbarItemGroup)
-        var home = HostPatch(id: .manual("home"), type: .toolbarItem)
-        home.properties = [.text: .string("Start")]
-        group.children = .changed([home])
-        stack.children = .changed([group])
+        var title = HostPatch(id: .manual("title"), type: .titleView)
+        var words = HostPatch(id: .manual("words"), type: .text)
+        words.properties = [.text: .string("Start")]
+        title.children = .changed([words])
+        stack.children = .changed([title])
         window.children = .changed([stack])
         runtime.tree.apply(window, complete: false)
 
         let page = try XCTUnwrap(root.first(id: .manual("page")))
-        XCTAssertEqual(page.chromeActions.primary.map { $0.value(.text)?.string }, ["Start"])
+        XCTAssertEqual(page.chromeTitleView?.value(.text)?.string, "Start")
         XCTAssertEqual(try XCTUnwrap(root.first(id: .manual("stack"))).children.map(\.id), [.manual("page")])
     }
 
-    /// Tabs: the chosen tab's actions stand with those the tabbed view declares around every tab, and choosing
-    /// another tab composes the chrome from it.
-    func testTheChosenTabsActionsStandWithTheTabs() throws {
+    /// Tabs: the chosen tab's page shows its own actions, and choosing another tab composes the chrome from it.
+    func testTheChosenTabsActionsAreItsOwn() throws {
         let tabs = { (chosen: Double) in
             self.node("window", .window, children: [
                 self.node("tabs", .tabView, [.selectedTab: .number(chosen)], children: [
                     self.node("one", .page, children: [self.toolbarGroup("one.group", [self.toolbarAction("first")])]),
                     self.node("two", .page, children: [self.toolbarGroup("two.group", [self.toolbarAction("second")])]),
-                    self.toolbarGroup("all", [self.toolbarAction("everywhere")]),
                 ]),
             ])
         }
         let runtime = runtime(tabs(0)) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
         let shown = { WindowChrome(window: root, arrangement: root.first(id: .manual("tabs"))).actions.primary.map(\.id) }
-        XCTAssertEqual(shown(), [.manual("first"), .manual("everywhere")])
+        XCTAssertEqual(shown(), [.manual("first")])
 
         runtime.tree.apply(tabs(1), complete: false)
-        XCTAssertEqual(shown(), [.manual("second"), .manual("everywhere")])
-        XCTAssertEqual(try XCTUnwrap(root.first(id: .manual("tabs"))).children.count, 2, "two tabs, no third")
+        XCTAssertEqual(shown(), [.manual("second")])
     }
 
     /// A split view's sidebar stands on its flyout's material over the detail and on its own beside it; one it does
@@ -672,16 +753,6 @@ final class PagesTests: XCTestCase {
 
         XCTAssertTrue(try XCTUnwrap(runtime.tree.root?.first(id: .manual("painted"))).paintsSidebar)
         XCTAssertFalse(try XCTUnwrap(runtime.tree.root?.first(id: .manual("own"))).paintsSidebar)
-    }
-
-    /// A split view's sidebar starts a path of its own: what the split view and the arrangements around it declare
-    /// stands on the detail's bar, never on the sidebar's.
-    func testASidebarTakesNothingFromAroundItsSplitView() throws {
-        let runtime = runtime(pathWindow(outer: [toolbarGroup("window", [toolbarAction("inspector")])], inner: [])) { _ in }
-        let root = try XCTUnwrap(runtime.tree.root)
-
-        XCTAssertEqual(try XCTUnwrap(root.first(id: .manual("home"))).chromeActions.primary.map(\.id), [.manual("inspector")])
-        XCTAssertTrue(try XCTUnwrap(root.first(id: .manual("menu"))).chromeActions.primary.isEmpty, "the sidebar's bar")
     }
 
     /// The title view declared innermost on a page's path stands in its title's place: the page's own, else the one
@@ -953,7 +1024,7 @@ final class PagesTests: XCTestCase {
     func testAnArrangementsDeclarationsAreNotItsPages() throws {
         let runtime = runtime(stackWindow([
             node("a", .page), node("b", .page),
-            node("items", .toolbarItemGroup, children: [node("save", .toolbarItem)]),
+            node("items", .toolbarGroup, children: [node("save", .toolbarButton)]),
         ])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
         let stack = try XCTUnwrap(root.first(id: .manual("stack")))
@@ -969,7 +1040,7 @@ final class PagesTests: XCTestCase {
     func testNoElementPlacesWhatIsDeclaredOnIt() throws {
         for type in [NodeType.page, .vStack] {
             let runtime = runtime(node("declarer", type, children: [
-                node("items", .toolbarItemGroup),
+                node("items", .toolbarGroup),
                 node("view", .titleView, children: [node("field", .textField)]),
                 node("words", .text),
             ])) { _ in }

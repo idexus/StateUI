@@ -110,7 +110,7 @@ private struct BranchPage: View {
                 Text("Inner").onTapped { @MainActor in heard.append("inner tapped") }.id("inner")
                     .onPointerEntered { @MainActor in heard.append("inner entered") }
                     .contextMenu { MenuItem("Copy").id("copy") }
-                    .toolbar { ToolbarItem("Save").id("save") }
+                    .toolbar { ToolbarButton("Save").id("save") }
             }
             .isEnabled(open)
             .id("branch")

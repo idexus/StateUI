@@ -81,14 +81,14 @@ final class HostRegisterTests: XCTestCase {
     func testAnElementsUnrealizedRecordStandsOverItsTiers() {
         let register = HostRegister(records: [
             .complete(AutomationElementContract.accessibilityIdentifier),
-            .unrealized(AutomationElementContract.accessibilityIdentifier, on: ToolbarItemContract.self,
+            .unrealized(AutomationElementContract.accessibilityIdentifier, on: ToolbarButtonContract.self,
                 why: "The toolbar item holds none."),
         ])
 
         XCTAssertEqual(
-            register.judgment(of: "accessibilityIdentifier", on: "ToolbarItem", from: "AutomationElement"),
+            register.judgment(of: "accessibilityIdentifier", on: "ToolbarButton", from: "AutomationElement"),
             .unrealized(why: "The toolbar item holds none."))
-        XCTAssertFalse(register.realizes("accessibilityIdentifier", on: "ToolbarItem", from: "AutomationElement"))
+        XCTAssertFalse(register.realizes("accessibilityIdentifier", on: "ToolbarButton", from: "AutomationElement"))
         XCTAssertTrue(register.realizes("accessibilityIdentifier", on: "Button", from: "AutomationElement"))
     }
 

@@ -1,0 +1,7 @@
+# revision 4.1
+ToolbarGroup: ✅
+ToolbarGroup.hidesWithSidebar: not realized
+ToolbarGroup.isEnabled: ✅
+ToolbarGroup.order: ✅
+ToolbarGroup.part: not realized
+ToolbarGroup.position: ☑️ Android's bar has no leading edge beside its navigation button: a leading group stands first among the actions.

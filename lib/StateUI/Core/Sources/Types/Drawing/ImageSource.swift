@@ -8,7 +8,7 @@
 /// platform's own, or an encoded picture's bytes.
 ///
 ///     Image("tab_list.png")
-///     ToolbarItem("Media").icon("tab_list.png")
+///     ToolbarButton("Media").icon("tab_list.png")
 ///     Image(ImageSource(light: "tab_list.png", dark: "tab_list_dark.png"))
 ///     Image(.icon(.share))
 ///     Image(ImageSource(bytes: downloaded))

@@ -52,7 +52,7 @@ window builds.
 
 A page's menus hang off the element declaring them as one node holding the
 collection, `MenuBar`, and each toolbar group off the element declaring it as
-one `ToolbarItemGroup` node, rather than as one node each. The host has a list
+one `ToolbarGroup` node, rather than as one node each. The host has a list
 to keep in step, and a list needs a parent of its own to be matched against.
 
 ## Scenes and windows are read not held

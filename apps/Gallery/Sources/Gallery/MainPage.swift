@@ -87,23 +87,27 @@ struct MainPage: View {
         .sidebarOverlays(nav.$menuOverlays)
         // listing: end
         // listing: MainPage.bar
-        // The gallery's own actions, declared once around every page: a page's
-        // own stand nearer the title, and these keep their place at the edge.
-        // Each wears an icon, which keeps its size on the bar steady; its
-        // caption stays for accessibility and for bars that show words.
-        .toolbar(id: "gallery") {
-            ToolbarItem.inspector(window)
-                .text("Inspector")
-                .icon(ImageSource(light: "nav_inspect.png", dark: "nav_inspect_dark.png"))
+        // The gallery's own actions, declared once over every page of the
+        // detail - the part a split view's own stand in unless they say
+        // another - together on one background: a page's own stand nearer
+        // the title, and these keep their place at the edge. Each wears an
+        // icon, which keeps its size on the bar steady; its caption stays
+        // for accessibility and for bars that show words.
+        .toolbar {
+            ToolbarGroup {
+                ToolbarButton.inspector(window)
+                    .text("Inspector")
+                    .icon(ImageSource(light: "nav_inspect.png", dark: "nav_inspect_dark.png"))
 
-            if !nav.showing(.home) {
-                ToolbarItem.home(nav)
-            }
+                if !nav.showing(.home) {
+                    ToolbarButton.home(nav)
+                }
 
-            if bar.showsSurprise {
-                ToolbarItem("Surprise me")
-                    .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
-                    .onClicked { nav.surprise(from: catalog, on: device) }
+                if bar.showsSurprise {
+                    ToolbarButton("Surprise me")
+                        .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
+                        .onClicked { nav.surprise(from: catalog, on: device) }
+                }
             }
         }
         // What the window's bar says of the gallery: its name and mark,

@@ -721,7 +721,7 @@ final class ControlTests: XCTestCase {
     /// weaker and is the one the other guard's own message asks: is this
     /// property carried by SOME case, or built by some test? Proof is taken
     /// from wherever it comes, exactly as `testEveryEventModifierIsExercised`
-    /// takes it. A `ToolbarItem` is the case for the second: it is not a view,
+    /// takes it. A `ToolbarButton` is the case for the second: it is not a view,
     /// so it has no case here, and PageTests is where it is built with
     /// everything it can do.
     func testEveryModifierOfATierIsExercisedSomewhere() throws {
@@ -836,7 +836,8 @@ final class ControlTests: XCTestCase {
         // declaration's: no view wears them. The driven text goes per control, its direction differing (bindings.md,
         // driven text): the tier holds the value form.
         let tiersNoViewWears = [
-            "Views/Mixins/MenuItemElement.swift", "Views/Menus/ToolbarItem.swift", "Views/Menus/Menu.swift",
+            "Views/Mixins/MenuItemElement.swift", "Views/Menus/ToolbarButton.swift", "Views/Menus/ToolbarGroup.swift",
+            "Views/Menus/Menu.swift",
             "Views/Structure/Window.swift", "Views/Structure/WindowGroup.swift",
         ]
         // A map's markers are rebuilt with the map; a composed view's configuration changes what it builds, which a
@@ -1225,14 +1226,14 @@ final class ControlTests: XCTestCase {
     /// The same promise on the non-view items, which each carry their typed
     /// event modifier by hand: one that ASSIGNED the handler would let a
     /// second silently replace the first while "every typed event modifier
-    /// composes" stood written on Button. A ToolbarItem and a Marker
+    /// composes" stood written on Button. A ToolbarButton and a Marker
     /// stand for the family - MenuItem is the same two lines.
     func testASecondHandlerOnAnItemRunsBesideTheFirst() {
         var seen: [String] = []
 
         let renders = Renders()
         let bar = renders.render(
-            ToolbarItem("Save")
+            ToolbarButton("Save")
                 .onClicked { seen.append("first") }
                 .onClicked { seen.append("second") }
                 .node)

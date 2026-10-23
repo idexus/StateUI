@@ -61,13 +61,13 @@ final class ModifierShapeTests: XCTestCase {
 
     private static let composed = "a composed view: its modifiers configure the view, which builds its own content"
     private static let scene = "a scene's declaration, which carries no properties"
-    private static let entry = "an entry of a menu or a map that wears no tier, so has no `Modified`"
+    private static let entry = "an entry of a menu, a bar or a map that wears no tier, so has no `Modified`"
 
     private static let configuresItself: [String: String] = [
         "GalleryView": composed, "ItemsView": composed, "LayoutEngine": composed, "PositionIndicator": composed,
         "Section": "a list's group, which is no view",
         "Window": scene, "WindowGroup": scene,
-        "Menu": entry, "MenuSeparator": entry, "Marker": entry,
+        "Menu": entry, "MenuSeparator": entry, "Marker": entry, "ToolbarGroup": entry,
     ]
 
     /// The sources under `Views`.

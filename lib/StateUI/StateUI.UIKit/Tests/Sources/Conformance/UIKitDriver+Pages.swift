@@ -23,26 +23,6 @@ extension UIKitDriver {
         }
     }
 
-    /// Where a bar's action stands: on the bar as an item of its own, or in the overflow's menu - read off the
-    /// navigation item of the page it stands on; nil where no page's bar holds it.
-    static func placement(of action: UIAction, under element: MountedElement) -> HostValue? {
-        var each = element.parent
-        while let page = each {
-            if let item = (page.native as? UIKitElement)?.controller?.navigationItem {
-                let items = (item.leadingItemGroups + item.trailingItemGroups).flatMap(\.barButtonItems)
-                if items.contains(where: { $0.primaryAction?.identifier == action.identifier }) {
-                    return ToolbarItemPlacement.bar.propValue
-                }
-                let overflow = items.filter { $0.primaryAction == nil }.flatMap { $0.menu?.children ?? [] }
-                if overflow.contains(where: { ($0 as? UIAction)?.identifier == action.identifier }) {
-                    return ToolbarItemPlacement.overflow.propValue
-                }
-            }
-            each = page.parent
-        }
-        return nil
-    }
-
     /// What a page or an arrangement of pages holds: its tab's title and picture where it stands on a tab, its bar,
     /// a tabbed view's tab and a split view's sidebar; nil for any other element.
     func pageHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
@@ -58,16 +38,15 @@ extension UIKitDriver {
             default: break
             }
         }
-        if element.type == .menuItem || element.type == .toolbarItem, let action = menuAction(of: element) {
+        if element.type == .menuItem || element.type == .toolbarButton, let action = menuAction(of: element) {
             switch property {
-            case .keyboardShortcut where element.type == .toolbarItem: return element.value(.keyboardShortcut)
+            case .keyboardShortcut where element.type == .toolbarButton: return element.value(.keyboardShortcut)
             case .text: return action.title.propValue
             case .icon: return action.image?.accessibilityIdentifier.map { .string($0) }
             case .isEnabled: return (!action.attributes.contains(.disabled)).propValue
             case .role: return (action.attributes.contains(.destructive) ? ActionRole.destructive : .normal).propValue
             case .isOn: return (action.state == .on).propValue
             case .accessibilityIdentifier: return action.accessibilityIdentifier.map { .string($0) }
-            case .placement: return Self.placement(of: action, under: element)
             default: break
             }
         }

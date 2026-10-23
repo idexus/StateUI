@@ -72,8 +72,8 @@ extension NodeType {
     static let `switch` = SwitchContract.nodeType
     static let tabView = TabViewContract.nodeType
     static let timePicker = TimePickerContract.nodeType
-    static let toolbarItem = ToolbarItemContract.nodeType
-    static let toolbarItemGroup = ToolbarItemGroupContract.nodeType
+    static let toolbarButton = ToolbarButtonContract.nodeType
+    static let toolbarGroup = ToolbarGroupContract.nodeType
     static let vStack = VStackContract.nodeType
     static let webView = WebViewContract.nodeType
     static let window = WindowContract.nodeType
@@ -120,7 +120,7 @@ extension NodeType {
     static let selectionMode = ItemsViewContract.selectionMode.token
     static let shape = BorderElementContract.shape.token
     static let showsClearButton = TextFieldContract.showsClearButton.token
-    static let showsText = ToolbarItemContract.showsText.token
+    static let showsText = ToolbarButtonContract.showsText.token
     static let columns = GridContract.columns.token
     static let columnSpacing = GridContract.columnSpacing.token
     static let iconPosition = ButtonContract.iconPosition.token
@@ -213,8 +213,9 @@ extension NodeType {
     static let showsNavigationBar = PageContract.showsNavigationBar.token
     static let showsTitle = PageContract.showsTitle.token
     static let opacity = VisualElementContract.opacity.token
-    static let order = ToolbarItemGroupContract.order.token
-    static let placement = ToolbarItemContract.placement.token
+    static let order = ToolbarGroupContract.order.token
+    static let part = ToolbarGroupContract.part.token
+    static let position = ToolbarGroupContract.position.token
     static let orientation = ScrollViewContract.orientation.token
     static let padding = PaddingElementContract.padding.token
     static let panTouchCount = ViewContract.panTouchCount.token
@@ -239,7 +240,7 @@ extension NodeType {
     static let scrollOffset = ScrollViewContract.scrollOffset.token
     static let selectedIndex = PickerContract.selectedIndex.token
     static let selectionLength = TextInputContract.selectionLength.token
-    static let side = ToolbarItemGroupContract.side.token
+    static let hidesWithSidebar = ToolbarGroupContract.hidesWithSidebar.token
     static let source = ImageContract.source.token
     static let spacing = StackContract.spacing.token
     static let stroke = ShapeContract.stroke.token

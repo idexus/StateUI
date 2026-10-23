@@ -60,7 +60,7 @@ struct ShortcutSample: SampleContent, ExampleContent {
             .id(StandardMenu.file)
         }
         .toolbar {
-            ToolbarItem("Mark")
+            ToolbarButton("Mark")
                 .keyboardShortcut("2", modifiers: [])
                 .onClicked { pressed("Mark") }
         }

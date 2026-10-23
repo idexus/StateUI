@@ -27,7 +27,7 @@ extension WebDriver {
     }
 
     func perform(_ act: UserAct, on element: MountedElement) throws {
-        if element.type == .toolbarItem, act == .activate { return try chooseAction(element) }
+        if element.type == .toolbarButton, act == .activate { return try chooseAction(element) }
         if element.type == .menuItem, act == .activate { return try choose(element) }
         if let page = Self.pageState(after: act) { return try running().pageChanged(page) }
         if act == .close, element.type == .window { return try running().runtime.ending() }

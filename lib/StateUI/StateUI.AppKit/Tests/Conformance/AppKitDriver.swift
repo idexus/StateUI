@@ -201,7 +201,7 @@ final class AppKitDriver: HostDriver {
         if element.type == .popover, property == .isPresented {
             return ((element.native as? AppKitElement)?.shownPopover?.isShown ?? false).propValue
         }
-        if element.type == .menuItem || element.type == .toolbarItem { return try itemHolds(property, element) }
+        if element.type == .menuItem || element.type == .toolbarButton { return try itemHolds(property, element) }
         if element.type == .marker { return try markerHolds(property, element) }
         if element.type == .textSpan { return try spanHolds(property, on: element) }
         if property == .title, let tabs = element.parent, tabs.type == .tabView { return try tabTitle(of: element, in: tabs) }

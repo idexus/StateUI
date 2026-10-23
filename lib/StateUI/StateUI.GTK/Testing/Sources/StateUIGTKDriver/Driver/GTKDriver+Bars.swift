@@ -53,7 +53,6 @@ extension GTKDriver {
         case .role:
             let destructive = gtk_widget_has_css_class(button.widget, "destructive-action") != 0
             return (destructive ? ActionRole.destructive : .normal).propValue
-        case .placement: return (inOverflow ? ToolbarItemPlacement.overflow : .bar).propValue
         case .icon:
             // The file its image shows, standing for the name the tree gave where it is one of that name's files.
             guard let image = child.flatMap({ child in

@@ -1064,8 +1064,9 @@ final class CatalogTests: XCTestCase {
         XCTAssertNotNil(flyout.events["showsSidebarChanged"],
                         "a native presentation change would not reach the binding")
 
-        XCTAssertEqual(flyout.children.compactMap { $0.id }, ["sidebar", "detail", "gallery"],
-                       "the two halves, then the gallery's own actions declared around every page")
+        XCTAssertEqual(flyout.children.compactMap { $0.id }, ["sidebar", "detail"], "the two halves")
+        XCTAssertEqual(flyout.children.filter { $0.type == "ToolbarGroup" }.count, 1,
+                       "then the gallery's own actions, for every page of its detail")
         XCTAssertEqual(flyout.children.map(\.type).filter { $0 == .overlay || $0 == .menuBar }, [.overlay],
                        "and its notice; a menu stands only where a sample declares one")
 
@@ -1287,7 +1288,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
         place.path.wrappedValue = [.group("layout"), .sample("grid"), .level(1)]
 
-        let home = try XCTUnwrap(ToolbarItem.home(place.nav).node.events["clicked"])
+        let home = try XCTUnwrap(ToolbarButton.home(place.nav).node.events["clicked"])
         Renderer.shared.start(EventRegistration(home))
 
         XCTAssertEqual(place.section.wrappedValue, .home)
@@ -1513,7 +1514,7 @@ final class CatalogTests: XCTestCase {
 
     /// The words of the actions an element declares on the bar.
     private func actions(on patch: HostPatch) -> [String] {
-        patch.children.filter { $0.type == .toolbarItemGroup }
+        patch.children.filter { $0.type == .toolbarGroup }
             .flatMap(\.children)
             .compactMap { $0.properties[.text]?.string }
     }

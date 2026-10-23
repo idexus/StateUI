@@ -67,8 +67,8 @@ final class AndroidConformanceTests: XCTestCase {
             ("testSplitView", testSplitView),
             ("testTabView", testTabView),
             ("testTitleView", testTitleView),
-            ("testToolbarItem", testToolbarItem),
-            ("testToolbarItemGroup", testToolbarItemGroup),
+            ("testToolbarButton", testToolbarButton),
+            ("testToolbarGroup", testToolbarGroup),
             ("testWindow", testWindow),
             ("testAutomationElement", testAutomationElement),
             ("testVisualElement", testVisualElement),
@@ -154,8 +154,8 @@ final class AndroidConformanceTests: XCTestCase {
     func testSplitView() throws { try conform(SplitViewTests.self) }
     func testTabView() throws { try conform(TabViewTests.self) }
     func testTitleView() throws { try conform(TitleViewTests.self) }
-    func testToolbarItem() throws { try conform(ToolbarItemTests.self) }
-    func testToolbarItemGroup() throws { try conform(ToolbarItemGroupTests.self) }
+    func testToolbarButton() throws { try conform(ToolbarButtonTests.self) }
+    func testToolbarGroup() throws { try conform(ToolbarGroupTests.self) }
     func testWindow() throws { try conform(WindowTests.self) }
     func testAutomationElement() throws { try conform(AutomationElementTests.self) }
     func testVisualElement() throws { try conform(VisualElementTests.self) }
