@@ -32,7 +32,8 @@ struct AppKitToolbarAction {
 /// that tracks the sidebar, the way back, the page's title where a painted
 /// band hides the system's, the leading groups of actions, the center, the
 /// trailing groups, native overflow and the button closing a sheet. A space
-/// stands between two groups, so each keeps a background of its own.
+/// stands between two groups, and before the overflow, so each keeps a
+/// background of its own.
 @MainActor
 struct AppKitWindowChrome {
     var sidebar: NSSplitViewController?
@@ -149,7 +150,10 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             nextViews[Self.center] = center
         }
         place(chrome.actions)
-        if !chrome.overflow.isEmpty { nextIdentifiers.append(Self.overflow) }
+        if !chrome.overflow.isEmpty {
+            if !chrome.actions.isEmpty { nextIdentifiers.append(.space) }
+            nextIdentifiers.append(Self.overflow)
+        }
         if let close = chrome.close {
             nextIdentifiers.append(Self.close)
             nextActions[Self.close] = close

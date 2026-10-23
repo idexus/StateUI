@@ -110,9 +110,11 @@ says.
 ## The toolbar
 
 A window's toolbar holds the chrome its arrangement composes: each group of
-actions a run of items with a space between it and the next, so each keeps a
-background of its own, the leading groups before the flexible space and the
-trailing ones after it. A layout the
+actions a run of items with a space between it and the next, and the
+overflow's button apart after the last, so each keeps a background of its
+own, the leading groups before the flexible space and the trailing ones
+after it. macOS shares a background only among items with a picture: an
+item of words alone stands in one of its own. A layout the
 tree stands in it - a page's title view - is held in a slot at the size
 StateUI measures it at: AppKit
 measures a toolbar item's view by its constraints and warns of any it

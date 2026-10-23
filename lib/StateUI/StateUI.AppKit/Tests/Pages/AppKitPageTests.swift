@@ -956,7 +956,8 @@ final class AppKitPageTests: XCTestCase {
 
     /// The page's actions are native toolbar items: each group by its order,
     /// a space between two groups, a leading group before the flexible space,
-    /// and the overflow's behind the toolbar's own overflow menu.
+    /// and the overflow's behind the toolbar's own overflow menu, apart from
+    /// the group before it.
     @MainActor
     func testThePagesGroupsStandInTheToolbarByTheirOrder() throws {
         let renderer = testRenderer(
@@ -1019,7 +1020,8 @@ final class AppKitPageTests: XCTestCase {
         let to = try XCTUnwrap(identifiers.firstIndex(of: save.itemIdentifier))
         XCTAssertEqual(identifiers[from...to].filter { $0 == .space }.count, 1, "a space between two groups")
         XCTAssertNil(chrome.itemForTesting(titled: "Delete"))
-        XCTAssertNotNil(chrome.itemForTesting(AppKitWindowToolbar.overflow))
+        let overflow = try XCTUnwrap(identifiers.firstIndex(of: AppKitWindowToolbar.overflow))
+        XCTAssertEqual(identifiers[overflow - 1], .space, "the overflow apart from the group before it")
         XCTAssertFalse(save.isEnabled)
         XCTAssertNotNil(save.image)
         XCTAssertTrue(save.isBordered)
