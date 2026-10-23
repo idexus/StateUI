@@ -77,6 +77,24 @@ final class StateUIViews {
                 .withEndAction(() -> view.setVisibility(visibility)).start();
     }
 
+    /**
+     * Slides the view across from `from` to `to` pixels over `duration` milliseconds on the standard easing, shown
+     * as it starts and stood as `visibility` says once it ends; at no duration it stands there at once.
+     */
+    static void slideAcross(View view, float from, float to, long duration, int visibility) {
+        view.animate().cancel();
+        if (duration <= 0) {
+            view.setTranslationX(to);
+            view.setVisibility(visibility);
+            return;
+        }
+        view.setVisibility(View.VISIBLE);
+        view.setTranslationX(from);
+        view.animate().translationX(to).setDuration(duration)
+                .setInterpolator(new android.view.animation.PathInterpolator(0.4f, 0f, 0.2f, 1f))
+                .withEndAction(() -> view.setVisibility(visibility)).start();
+    }
+
     /** Moves, turns and scales the view about its pivot, in pixels; a pivot of NaN is its center. */
     static void transform(View view, float translationX, float translationY, float rotation,
             float rotationX, float rotationY, float scaleX, float scaleY, float pivotX, float pivotY) {

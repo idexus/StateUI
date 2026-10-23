@@ -77,34 +77,29 @@ final class AndroidSplitView: AndroidLayoutView {
         guard presented != isPresented else { return }
 
         isPresented = presented
-        if !overlays { moveBeside() }
-        showDrawer(animated: overlays)
+        if !overlays { moveDetail() }
+        showDrawer(animated: overlays || !reducesMotion())
         if !overlays { invalidateMeasurements() }
     }
 
-    /// Begins Android's transition over the change the next frame lays out: the sidebar sliding in from the edge
-    /// the language starts from or out toward it, the detail's bounds following, on one easing and length.
+    /// Begins Android's transition over the detail's bounds the next frame lays out, on the easing and length the
+    /// sidebar beside it slides on - the detail's own: its bar changes in place.
     /// Design: docs/design/platforms/android/pages.md#a-split-view
-    private func moveBeside() {
-        guard !reducesMotion() else { return }
+    private func moveDetail() {
+        guard !reducesMotion(), let detail = items.dropFirst().first?.view else { return }
         let transitions = Java.new(JavaAPI.transitionSet, JavaAPI.newTransitionSet)
         let easing = Java.new(
             JavaAPI.pathInterpolator, JavaAPI.newPathInterpolator, .float(0.4), .float(0), .float(0.2), .float(1))
         Java.release(local: Java.callObject(
             transitions.reference, JavaAPI.setTransitionsInterpolator, .object(easing.reference)))
         Java.release(local: Java.callObject(transitions.reference, JavaAPI.setTransitionsDuration, .long(Self.slide)))
-        let slide = Java.new(JavaAPI.slide, JavaAPI.newSlide, .int(Self.start))
         let bounds = Java.new(JavaAPI.changeBounds, JavaAPI.newChangeBounds)
-        for transition in [slide, bounds] {
-            Java.release(local: Java.callObject(
-                transitions.reference, JavaAPI.addTransition, .object(transition.reference)))
-        }
+        Java.release(local: Java.callObject(transitions.reference, JavaAPI.addTransition, .object(bounds.reference)))
+        Java.release(local: Java.callObject(
+            transitions.reference, JavaAPI.addTransitionTarget, .object(detail.outermost)))
         Java.callStatic(
             JavaAPI.transitionManager, JavaAPI.beginDelayedTransition, .object(reference), .object(transitions.reference))
     }
-
-    /// `Gravity.START`: the edge the sidebar slides from, turned over for a language written from the right.
-    private static let start: Int32 = 0x0080_0003
 
     override func contentSize(width: Double?) -> LayoutSize {
         SingleChildArithmetic.size(of: items.dropFirst().first, width: width)
@@ -151,9 +146,19 @@ final class AndroidSplitView: AndroidLayoutView {
     private func showDrawer(animated: Bool) {
         let duration = animated ? Self.slide : 0
         ground()
-        let visibility = isPresented ? ViewConstants.visible : overlays ? ViewConstants.invisible : ViewConstants.gone
         let away = direction == .leftToRight ? -drawerWidth : drawerWidth
-        slide(drawer, to: overlays && !isPresented ? away : 0, alpha: 1, visibility: visibility, duration: duration)
+        if overlays {
+            let visibility = isPresented ? ViewConstants.visible : ViewConstants.invisible
+            slide(drawer, to: isPresented ? 0 : away, alpha: 1, visibility: visibility, duration: duration)
+        } else {
+            // Beside the detail it comes in from its leading edge by its own width, or goes out there, as the
+            // detail's bounds move.
+            let (from, to) = isPresented ? (away, 0.0) : (0.0, away)
+            Java.callStatic(
+                JavaAPI.views, JavaAPI.slideViewAcross, .object(drawer.reference), .float(Float(from * density)),
+                .float(Float(to * density)), .long(duration),
+                .int(isPresented ? ViewConstants.visible : ViewConstants.gone))
+        }
 
         let shaded = overlays && isPresented
         slide(scrim, to: 0, alpha: shaded ? 1 : 0, visibility: ViewConstants.visible, duration: duration)

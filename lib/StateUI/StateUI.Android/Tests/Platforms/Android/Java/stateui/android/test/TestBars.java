@@ -17,6 +17,19 @@ import android.widget.Toolbar;
 public final class TestBars {
     private TestBars() {}
 
+    /** How many views `view` holds - itself not counted - stand shifted across, as a slide moves them. */
+    public static int shifted(View view) {
+        if (!(view instanceof ViewGroup)) return 0;
+        ViewGroup group = (ViewGroup) view;
+        int shifted = 0;
+        for (int index = 0; index < group.getChildCount(); index++) {
+            View child = group.getChildAt(index);
+            if (child.getTranslationX() != 0) shifted++;
+            shifted += shifted(child);
+        }
+        return shifted;
+    }
+
     /**
      * The vertical middle, in pixels from the bar's top, of each button and line of words the bar shows - its own and
      * those its rows and its actions hold - commas between them.

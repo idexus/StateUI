@@ -20,7 +20,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testAPushAndAPopAreHeardByThePagesInOrder", testAPushAndAPopAreHeardByThePagesInOrder),
             ("testTheBarOpensTheSidebarAndBackClosesIt", testTheBarOpensTheSidebarAndBackClosesIt),
             ("testTheSidebarsOwnBarHidesItAndTheDetailsShowsIt", testTheSidebarsOwnBarHidesItAndTheDetailsShowsIt),
-            ("testTheSidebarBesideTheDetailSlidesAsItHides", testTheSidebarBesideTheDetailSlidesAsItHides),
+            ("testTheSidebarBesideTheDetailMovesWithIt", testTheSidebarBesideTheDetailMovesWithIt),
             ("testAPushedPageKeepsTheSidebarsToggleBeforeTheWayBack", testAPushedPageKeepsTheSidebarsToggleBeforeTheWayBack),
             ("testTheSidebarsBarStandsAsHighAsTheDetails", testTheSidebarsBarStandsAsHighAsTheDetails),
             ("testTheSidebarBesideTheDetailStandsApartByALine", testTheSidebarBesideTheDetailStandsApartByALine),
@@ -437,13 +437,23 @@ final class AndroidPagesTests: XCTestCase {
         }
     }
 
-    /// Beside the detail the sidebar slides out as it hides, the detail widening with it on the same move -
-    /// Android's own transition, in a window, where the window is wide enough for the sidebar beside the detail.
-    func testTheSidebarBesideTheDetailSlidesAsItHides() throws {
+    /// Beside the detail the sidebar moves as one with it - Android's own transition, in a window wide enough for
+    /// the sidebar beside the detail: hiding, it slides out by its own width as the detail widens, and showing, in
+    /// by it as the detail narrows; the detail's bar changes in place, nothing on it sliding.
+    func testTheSidebarBesideTheDetailMovesWithIt() throws {
         try onMainActor {
             let open = State(wrappedValue: true)
             let host = AndroidRenderer.running {
-                SplitView(open.projectedValue) { TitledPage(title: "Menu") } detail: { ZStack {}.id("detail") }
+                SplitView(open.projectedValue) {
+                    TitledPage(title: "Menu")
+                } detail: {
+                    NavigationStack(State(wrappedValue: [1]).projectedValue) {
+                        TitledPage(title: "Home")
+                    } destination: { _ in
+                        TitledPage(title: "Deeper")
+                    }
+                    .id("detail")
+                }
             }
             Java.call(TestContext.window.reference, AndroidDriver.setContentView, .object(host.root.reference))
             TestWindow.run(for: 300)
@@ -454,20 +464,28 @@ final class AndroidPagesTests: XCTestCase {
                 throw XCTSkip("the window is too narrow for the sidebar beside the detail")
             }
             host.layOut(width: width, height: height)
-            let detail = try XCTUnwrap(host.view(id: .manual("detail")))
+            TestWindow.run(for: 300)
+            let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
+            let detail = try XCTUnwrap(host.view(id: .manual("detail")) as? AndroidNavigationView)
             let beside = detail.frame.width
+            let column = Float(split.drawer.frame.width)
             XCTAssertLessThan(beside, width, "the detail beside the sidebar")
 
-            open.wrappedValue = false
-            host.runtime.pump.turn()
-            host.layOut(width: width, height: height)
-            TestWindow.run(for: 80)
-            let moving = detail.frame.width
-            TestWindow.run(for: 500)
+            for (shows, from, to) in [(false, beside, width), (true, width, beside)] {
+                open.wrappedValue = shows
+                host.runtime.pump.turn()
+                host.layOut(width: width, height: height)
+                TestWindow.run(for: 80)
+                let moving = detail.frame.width
+                let across = Java.callFloat(split.drawer.outermost, TestJava.getTranslationX)
+                let shifted = BarLines.shifted(detail.bar)
+                TestWindow.run(for: 500)
 
-            XCTAssertGreaterThan(moving, beside, "widening")
-            XCTAssertLessThan(moving, width, "on its way")
-            XCTAssertEqual(detail.frame.width, width, "the whole width once the sidebar has gone")
+                XCTAssertTrue((min(from, to) + 1..<max(from, to)).contains(moving), "the detail on its way: \(moving)")
+                XCTAssertTrue((-column + 1..<0).contains(across), "the sidebar moving by its own width: \(across)")
+                XCTAssertEqual(shifted, 0, "nothing on the detail's bar slides")
+                XCTAssertEqual(detail.frame.width, to, "where the move ends")
+            }
         }
     }
 
@@ -1152,6 +1170,14 @@ private struct TitledPage: View {
 /// Where the bar's buttons and words stand: `TestBars.java`.
 @MainActor
 private enum BarLines {
+    private static let shiftedViews = Java.staticMethod(
+        Java.findClass("stateui/android/test/TestBars"), "shifted", "(Landroid/view/View;)I")
+
+    /// How many views `bar` holds stand shifted across, as a slide moves them.
+    static func shifted(_ bar: AndroidView) -> Int {
+        Int(Java.callStaticInt(Java.findClass("stateui/android/test/TestBars"), shiftedViews, .object(bar.reference)))
+    }
+
     private static let owner = Java.findClass("stateui/android/test/TestBars")
     private static let read = Java.staticMethod(owner, "middles", "(Landroid/widget/Toolbar;)Ljava/lang/String;")
 

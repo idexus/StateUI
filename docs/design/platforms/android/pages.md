@@ -90,9 +90,12 @@ never on the window's, which a clear window would leave clear. Where the room
 is wider, the sidebar stands beside the detail while it shows, on the split
 view's sidebar material, else on nothing: the window shows through
 ([a sidebar's material](../../host/pages.md#a-sidebars-material)); it moves
-in from the leading edge as it shows and out as it hides, the detail
-narrowing and widening with it - Android's own transition (`Slide` and
-`ChangeBounds` on one easing), at once where the user asks for less motion. Android
+in from the leading edge by its own width as it shows and out as it hides,
+the detail narrowing and widening with it by Android's own transition
+(`ChangeBounds`, the detail's alone, on the sidebar's easing and length) - a
+`Slide` would travel the whole split's width and take whatever appears with
+it, the detail's bar's new title among them - and the detail's bar changes in
+place; at once where the user asks for less motion. Android
 blurs nothing behind a view, so a blur stands as its color. The
 slide is Android's own animation, so the system's "remove animations" setting takes
 it away. Opening the drawer lays the page out again - the bar changes - and a

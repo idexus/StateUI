@@ -95,6 +95,8 @@ enum JavaAPI {
         transitionSet, "setDuration", "(J)Landroid/transition/TransitionSet;")
     static let changeBounds = Java.findClass("android/transition/ChangeBounds")
     static let newChangeBounds = Java.method(changeBounds, "<init>", "()V")
+    static let addTransitionTarget = Java.method(
+        transitionSet, "addTarget", "(Landroid/view/View;)Landroid/transition/TransitionSet;")
     static let pathInterpolator = Java.findClass("android/view/animation/PathInterpolator")
     static let newPathInterpolator = Java.method(pathInterpolator, "<init>", "(FFFF)V")
     static let addOnGlobalLayoutListener = Java.method(
@@ -561,6 +563,7 @@ enum JavaAPI {
         views, "picture", "(Landroid/content/Context;Landroid/graphics/Bitmap;)Landroid/graphics/drawable/BitmapDrawable;")
     static let transformView = Java.staticMethod(views, "transform", "(Landroid/view/View;FFFFFFFFF)V")
     static let slideView = Java.staticMethod(views, "slide", "(Landroid/view/View;FFJI)V")
+    static let slideViewAcross = Java.staticMethod(views, "slideAcross", "(Landroid/view/View;FFJI)V")
 
     static let tabs = Java.findClass("stateui/android/StateUITabs")
     static let newTabs = Java.method(tabs, "<init>", "(Landroid/content/Context;J)V")
