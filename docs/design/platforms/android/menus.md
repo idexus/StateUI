@@ -10,7 +10,9 @@ menus, written from the host layer's walk of the same entries (`MenuEntry`). Wha
 A menu is written into Android's `Menu` in one call, whatever its size: each
 entry is an int of its kind - an item, a submenu, its end, a line - and its
 flags, and each item and submenu takes the next words and picture. A line
-starts a new group, and Android draws a line between groups from Android 9.
+starts a new group, and Android draws a line above each group's first row
+from Android 10. Android 9 lays that line beside the row's words, which it
+pushes out of the row, so there the groups stand without one.
 An item that cannot be undone has its words, and its picture, in the theme's
 error color. One that cannot be chosen runs nothing and keeps the platform's
 disabled color, which a color of its own would hide, and its picture is

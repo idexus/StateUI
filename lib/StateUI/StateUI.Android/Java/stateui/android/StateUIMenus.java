@@ -148,9 +148,12 @@ final class StateUIMenus {
         return colored;
     }
 
-    /** A line between groups, where Android draws one - from Android 9. */
+    /**
+     * A line between groups, where Android draws one above the group's first row - from Android 10. Android 9
+     * lays it beside the row's words, which it pushes out of the row.
+     */
     private static void divideGroups(Menu menu) {
-        if (Build.VERSION.SDK_INT >= 28) menu.setGroupDividerEnabled(true);
+        if (Build.VERSION.SDK_INT >= 29) menu.setGroupDividerEnabled(true);
     }
 
     /** The theme's color for what cannot be undone. */

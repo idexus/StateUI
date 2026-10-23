@@ -3,6 +3,7 @@
 
 package stateui.android.test;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -11,15 +12,19 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inspector.WindowInspector;
 import android.widget.ActionMenuView;
+import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +44,75 @@ public final class TestMenus {
     /** An empty menu of Android's own, as a context menu is before its view writes it. */
     public static Menu empty(Context context) {
         return new PopupMenu(context, new View(context)).getMenu();
+    }
+
+    /** A menu popping up below the top corner of `activity`'s window, empty until a test writes it. */
+    public static PopupMenu over(Activity activity) {
+        View corner = new View(activity);
+        ((ViewGroup) activity.getWindow().getDecorView()).addView(corner, new ViewGroup.LayoutParams(1, 1));
+        PopupMenu menu = new PopupMenu(activity, corner);
+        menu.setOnDismissListener(gone -> ((ViewGroup) corner.getParent()).removeView(corner));
+        return menu;
+    }
+
+    /**
+     * The words each row of the menu showing in a window of its own shows within the row, as the user reads them -
+     * ", " between rows, "(none)" for a row showing none, "(no menu)" where none shows - after which the menu goes.
+     */
+    public static String shownRows(PopupMenu shown) throws ReflectiveOperationException {
+        ListView rows = null;
+        for (View window : windows()) {
+            ListView found = listIn(window);
+            if (found != null) rows = found;
+        }
+        if (rows == null) return "(no menu)";
+        List<String> words = new ArrayList<>();
+        for (int index = 0; index < rows.getChildCount(); index++) {
+            String row = wordsShown(rows.getChildAt(index));
+            words.add(row.isEmpty() ? "(none)" : row);
+        }
+        shown.dismiss();
+        return String.join(", ", words);
+    }
+
+    /** The root view of every window the process shows: Android's own list from Android 10, its manager's before. */
+    @SuppressWarnings("unchecked")
+    private static List<View> windows() throws ReflectiveOperationException {
+        if (Build.VERSION.SDK_INT >= 29) return WindowInspector.getGlobalWindowViews();
+        Class<?> global = Class.forName("android.view.WindowManagerGlobal");
+        Object manager = global.getMethod("getInstance").invoke(null);
+        Field views = global.getDeclaredField("mViews");
+        views.setAccessible(true);
+        return new ArrayList<>((List<View>) views.get(manager));
+    }
+
+    private static ListView listIn(View view) {
+        if (view instanceof ListView) return (ListView) view;
+        if (!(view instanceof ViewGroup)) return null;
+        ViewGroup group = (ViewGroup) view;
+        for (int index = 0; index < group.getChildCount(); index++) {
+            ListView found = listIn(group.getChildAt(index));
+            if (found != null) return found;
+        }
+        return null;
+    }
+
+    /** The words of the text views `view` shows on screen, some of each standing in its own bounds. */
+    private static String wordsShown(View view) {
+        if (view instanceof TextView) {
+            TextView text = (TextView) view;
+            return text.isShown() && text.getText().length() > 0 && text.getGlobalVisibleRect(new Rect())
+                    ? text.getText().toString() : "";
+        }
+        if (!(view instanceof ViewGroup)) return "";
+        ViewGroup group = (ViewGroup) view;
+        StringBuilder words = new StringBuilder();
+        for (int index = 0; index < group.getChildCount(); index++) {
+            String inner = wordsShown(group.getChildAt(index));
+            if (!inner.isEmpty() && words.length() > 0) words.append(' ');
+            words.append(inner);
+        }
+        return words.toString();
     }
 
     /**

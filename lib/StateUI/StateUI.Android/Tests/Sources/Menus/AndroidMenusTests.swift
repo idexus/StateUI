@@ -12,6 +12,7 @@ final class AndroidMenusTests: XCTestCase {
         [
             ("testAContextMenuIsWrittenAsTheUserAsksAndItsItemsRun", testAContextMenuIsWrittenAsTheUserAsksAndItsItemsRun),
             ("testAViewWhoseMenuGoesOffersNone", testAViewWhoseMenuGoesOffersNone),
+            ("testEveryRowOfAShownMenuShowsItsWords", testEveryRowOfAShownMenuShowsItsWords),
         ]
     }
 
@@ -64,6 +65,26 @@ final class AndroidMenusTests: XCTestCase {
             XCTAssertEqual(TestMenus.describe(menu), "")
         }
     }
+
+    /// A menu shown with lines between its groups shows every row's words, the first row of a group included.
+    func testEveryRowOfAShownMenuShowsItsWords() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running { Text("Row") }
+            let label = try XCTUnwrap(host.views(AndroidTextView.self).first)
+            let popup = TestMenus.over(TestContext.window)
+            Java.frame {
+                let menu = Java.callObject(popup.reference, JavaAPI.popupMenuItems)!
+                AndroidMenu.fill(menu, view: label, [
+                    .item(AndroidMenu.Item(text: "Duplicate")), .separator,
+                    .menu("File", isEnabled: true, [.item(AndroidMenu.Item(text: "Open"))]), .separator,
+                    .item(AndroidMenu.Item(text: "Remove")),
+                ])
+            }
+            Java.call(popup.reference, JavaAPI.showPopupMenu)
+            TestWindow.run(for: 300)
+            XCTAssertEqual(TestMenus.shownRows(popup), "Duplicate, File, Remove")
+        }
+    }
 }
 
 /// Android's own menus, read back as words and chosen from by their words: `TestMenus.java`.
@@ -81,6 +102,21 @@ enum TestMenus {
     /// "dark", or "picture" and the color it is drawn in, as ARGB in hexadecimal.
     static func onBar(_ bar: AndroidView) -> String {
         Java.frame { Java.callStaticObject(owner, barActions, .object(bar.reference)).map { Java.text($0) } ?? "" }
+    }
+
+    private static let overWindow = Java.staticMethod(
+        owner, "over", "(Landroid/app/Activity;)Landroid/widget/PopupMenu;")
+    private static let rowsShown = Java.staticMethod(owner, "shownRows", "(Landroid/widget/PopupMenu;)Ljava/lang/String;")
+
+    /// A menu popping up over the activity's window, empty until a test writes it.
+    static func over(_ activity: JavaObject) -> JavaObject {
+        JavaObject(Java.callStaticObject(owner, overWindow, .object(activity.reference))!)
+    }
+
+    /// The words each row of the shown menu shows within the row, ", " between rows, "(none)" for a row showing
+    /// none; the menu goes.
+    static func shownRows(_ popup: JavaObject) -> String {
+        Java.frame { Java.callStaticObject(owner, rowsShown, .object(popup.reference)).map { Java.text($0) } ?? "" }
     }
 
     /// An empty menu, as a context menu is before its view writes it.
