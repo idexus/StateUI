@@ -192,9 +192,15 @@ final class WebRenderer {
         roster.controllers.first?.refreshChrome()
     }
 
-    /// Where the window's room - its content, clear of its bar - stands on the page.
+    /// Where a page's content may stand on the page: the window's room below its bar, which stands over the room's
+    /// top - as deep as the room keeps its content clear of it - or the whole room where no bar shows.
+    /// Design: docs/design/platforms/web/pages.md#the-safe-area
     var contentBox: Rect {
-        roster.controllers.first.map { WebRelay.box(of: $0.window.room.node) } ?? Rect(x: 0, y: 0, width: 0, height: 0)
+        guard let window = roster.controllers.first?.window else { return Rect(x: 0, y: 0, width: 0, height: 0) }
+        let room = WebRelay.box(of: window.room.node)
+        let bar = WebRelay.box(of: window.bar.node)
+        let top = max(room.y, bar.height > 0 ? bar.y + bar.height : room.y)
+        return Rect(x: room.x, y: top, width: room.width, height: max(0, room.y + room.height - top))
     }
 }
 
