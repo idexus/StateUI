@@ -28,11 +28,16 @@ extension AndroidElement {
         case .splitView:
             guard let split = view as? AndroidSplitView else { return }
             split.onScrimTapped = { [weak self] in self?.changeSidebarVisibility(to: false) }
-            split.onAdapted = { [weak self] in self?.sidebarShown(true) }
+            split.onAdapted = { [weak self] in
+                self?.sidebarShown(true)
+                self?.refreshBars()
+            }
+            split.onPlaced = { [weak self] in self?.refreshBars() }
             if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }
             groundSidebar()
-            // The detail's bars show the sidebar's button: they are told once the split holds both its pages.
-            arranged.dropFirst().first?.refreshBars()
+            // The sidebar's bar, and the detail's bars showing the sidebar's toggle where it does not show beside
+            // them: they are told once the split holds both its pages.
+            refreshBars()
         default:
             break
         }
@@ -105,6 +110,7 @@ extension AndroidElement {
 
         split.present(presented)
         sidebarShown(presented)
+        refreshBars()
     }
 
     /// The sidebar showed or hid: the host layer tells its page and the state.
@@ -120,6 +126,7 @@ extension AndroidElement {
     /// back or to the sidebar, the page's actions in their order, and the menus its path declares behind the overflow.
     /// Design: docs/design/platforms/android/pages.md#the-bar
     func refreshBar() {
+        if type == .splitView { return refreshSidebarBar() }
         guard type == .navigationStack, let navigation = view as? AndroidNavigationView else { return }
         let page = element.visiblePage
         // No place at the leading edge beside the navigation button: those groups stand first.
@@ -151,7 +158,7 @@ extension AndroidElement {
             content.navigation = .back
         } else if element.offersClose {
             content.navigation = .close
-        } else if let sidebar = enclosingSplit?.arranged.first {
+        } else if let split = enclosingSplit, let sidebar = split.arranged.first, !split.sidebarStandsBeside {
             content.navigation = .sidebar(HostPicture(sidebar.value(.icon)))
         }
 
@@ -174,6 +181,32 @@ extension AndroidElement {
                 split.changeSidebarVisibility(to: (split.view as? AndroidSplitView)?.isPresented != true)
             }
         }
+    }
+
+    /// Shows on a split view's sidebar its own bar: what the application says of itself on the sidebar page's path -
+    /// its name, the line under it and its mark, else the sidebar page's title - in the colors that path declares,
+    /// and at its end the toggle hiding the sidebar.
+    /// Design: docs/design/platforms/android/pages.md#a-split-view
+    private func refreshSidebarBar() {
+        guard let split = view as? AndroidSplitView, let sidebar = arranged.first else { return }
+        let area = sidebar.element.titleArea
+        let colors = sidebar.element.barColors
+
+        var content = AndroidBarView.Content()
+        content.title = area?.title ?? sidebar.value(.title)?.string ?? ""
+        content.subtitle = area?.subtitle
+        content.mark = area?.icon
+        content.background = colors.background
+        content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
+        content.endButton = .sidebar(HostPicture(sidebar.value(.icon)))
+        let bar = split.drawer.bar(taking: AndroidBarView.Words(on: colors.background))
+        bar.show(content)
+        bar.onEndButton = { [weak self] in self?.changeSidebarVisibility(to: false) }
+    }
+
+    /// Whether this split view's sidebar shows beside its detail, its toggle on its own bar.
+    private var sidebarStandsBeside: Bool {
+        (view as? AndroidSplitView).map { !$0.overlays && $0.isPresented } ?? false
     }
 
     /// Refreshes the bar of every stack and the row of every tabbed view in this arrangement of pages.

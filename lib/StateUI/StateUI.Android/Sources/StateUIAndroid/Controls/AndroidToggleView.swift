@@ -25,6 +25,10 @@ class AndroidToggleView: AndroidTextualView {
         Java.call(reference, JavaAPI.setChecked, .bool(on))
     }
 
+    override func toggled(_ on: Bool) {
+        onToggled?(on)
+    }
+
     override func detach() {
         super.detach()
         onToggled = nil

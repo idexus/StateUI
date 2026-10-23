@@ -15,6 +15,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.Toolbar;
 
 /**
@@ -103,6 +104,37 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
         setNavigationIcon(icon);
         setNavigationContentDescription(icon == null ? null : description);
         setNavigationOnClickListener(icon == null ? null : this);
+    }
+
+    /** The application's mark before the title, at Android's icon size, in its own colors; null for none. */
+    void setMark(Bitmap picture) {
+        setLogo(picture == null ? null : StateUIViews.glyph(getContext(), picture));
+    }
+
+    /** The sidebar's toggle at the bar's end, in the style of the bar's own action buttons; null while none shows. */
+    private ImageButton endToggle;
+
+    /**
+     * The sidebar's toggle at the bar's end - the sidebar's own picture, or Android's menu glyph in `tint` - which
+     * tells the host it was pressed; a null `description` takes it away.
+     */
+    void setEndToggle(Bitmap picture, int tint, String description) {
+        if (description == null) {
+            if (endToggle != null) removeView(endToggle);
+            endToggle = null;
+            return;
+        }
+        if (endToggle == null) {
+            endToggle = new ImageButton(getContext(), null, android.R.attr.actionButtonStyle);
+            endToggle.setOnClickListener(pressed -> StateUIHost.toggled(view, false));
+            addView(endToggle, new Toolbar.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                    Gravity.END | Gravity.CENTER_VERTICAL));
+        }
+        Drawable icon = picture != null ? StateUIViews.glyph(getContext(), picture) : menuGlyph(tint);
+        if (picture != null && tint != 0 && StateUIViews.isMask(picture)) icon.setTint(tint);
+        endToggle.setImageDrawable(icon);
+        endToggle.setContentDescription(description);
     }
 
     /** Android's menu glyph - three lines on its 24 dp icon grid - in `tint`, or at 0 the theme's for controls. */

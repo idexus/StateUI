@@ -19,7 +19,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testABarsColorTravelsOnTheDisplaysFrames", testABarsColorTravelsOnTheDisplaysFrames),
             ("testAPushAndAPopAreHeardByThePagesInOrder", testAPushAndAPopAreHeardByThePagesInOrder),
             ("testTheBarOpensTheSidebarAndBackClosesIt", testTheBarOpensTheSidebarAndBackClosesIt),
-            ("testTheBarHidesAndShowsTheSidebarBesideTheDetail", testTheBarHidesAndShowsTheSidebarBesideTheDetail),
+            ("testTheSidebarsOwnBarHidesItAndTheDetailsShowsIt", testTheSidebarsOwnBarHidesItAndTheDetailsShowsIt),
             ("testTheSidebarBesideTheDetailSlidesAsItHides", testTheSidebarBesideTheDetailSlidesAsItHides),
             ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
             ("testASidebarWithNoPictureOpensFromTheMenuGlyph", testASidebarWithNoPictureOpensFromTheMenuGlyph),
@@ -286,9 +286,9 @@ final class AndroidPagesTests: XCTestCase {
         }
     }
 
-    /// On a tablet the sidebar stands beside the detail: the detail's bar still shows the sidebar's picture, and
-    /// pressing it hides the sidebar, then shows it again, saying so each time.
-    func testTheBarHidesAndShowsTheSidebarBesideTheDetail() throws {
+    /// On a tablet the sidebar stands beside the detail under a bar of its own - the application's name and mark,
+    /// and at its end the toggle hiding the sidebar; hidden, the detail's bar shows the toggle, which shows it again.
+    func testTheSidebarsOwnBarHidesItAndTheDetailsShowsIt() throws {
         try onMainActor {
             let open = State(wrappedValue: true)
             let host = AndroidRenderer.running {
@@ -301,21 +301,29 @@ final class AndroidPagesTests: XCTestCase {
                         TitledPage(title: "Deeper")
                     }
                 }
+                .barTitle("Notes")
+                .barIcon("test_wide.png")
             }
             host.layOut(width: 2000, height: 1600)
             host.runtime.pump.turn()
             let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
             let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+            let sidebar = split.drawer.bar
             XCTAssertFalse(split.overlays, "beside the detail")
-            XCTAssertEqual(navigation.bar.content.navigation, .sidebar(.file("test_dot.png")))
+            XCTAssertEqual(sidebar.content.title, "Notes")
+            XCTAssertEqual(sidebar.content.mark, .file("test_wide.png"))
+            XCTAssertEqual(sidebar.content.endButton, .sidebar(.file("test_dot.png")))
+            XCTAssertEqual(navigation.bar.content.navigation, .none, "the toggle on the sidebar's own bar")
 
-            navigation.bar.clicked()
+            sidebar.toggled(true)
             XCTAssertFalse(open.wrappedValue)
             XCTAssertFalse(split.isPresented)
+            XCTAssertEqual(navigation.bar.content.navigation, .sidebar(.file("test_dot.png")), "now on the detail's")
 
             navigation.bar.clicked()
             XCTAssertTrue(open.wrappedValue)
             XCTAssertTrue(split.isPresented)
+            XCTAssertEqual(navigation.bar.content.navigation, .none)
         }
     }
 

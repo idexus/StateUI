@@ -20,10 +20,13 @@ import StateUI
 /// chrome says - which is what lets a test build the whole arrangement without
 /// reaching into a running application.
 struct MainPage: View {
-    /// The gallery's mark on the window's bar: none on Windows, where a mark on the title bar reads as a button.
+    /// The gallery's mark on the window's bar: none on Windows, where a mark on the title bar reads as a button;
+    /// the violet one on Android's sidebar bar, which stands on the theme's light or dark ground.
     private static var mark: ImageSource {
         #if WINUI
         ""
+        #elseif ANDROID
+        ImageSource(light: "stateui_mark_violet.png", dark: "stateui_mark_violet_dark.png")
         #else
         "stateui_mark.png"
         #endif

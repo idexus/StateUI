@@ -7076,46 +7076,21 @@ enum Listings {
 
             var body: some View {
                 Grid {
-                    // The name over the menu where the platform says it nowhere else:
-                    // Android's drawer has no bar of its own. Everywhere else the
-                    // window's chrome or the sidebar's bar names the gallery already.
-                    #if ANDROID
-                    header
-                    #endif
-
                     ScrollView {
                         rows
                     }
-                    .gridRow(1)
 
                     footer
 
                     WindowPhaseLog(log: log)
                 }
-                // Three rows: the header and the footer keep their height, and the
-                // rows take what is left and scroll between them.
-                .rows(.auto, .fill, .auto)
+                // Two rows: the footer keeps its height, and the rows take what is
+                // left and scroll above it.
+                .rows(.fill, .auto)
                 .title("StateUI")
                 // The picture on the button that opens the menu, where the host draws
                 // that button from this page.
                 .icon(ImageSource(light: "nav_menu.png", dark: "nav_menu_dark.png"))
-            }
-
-            /// The mark and the name, on the pane the platform draws - where nothing
-            /// else names the gallery over its menu.
-            private var header: some View {
-                HStack {
-                    Image(ImageSource(light: "stateui_mark_violet.png", dark: "stateui_mark_violet_dark.png"))
-                        .width(28)
-                        .height(28)
-                        .verticalAlignment(.center)
-
-                    Text("StateUI")
-                        .fontWeight(.bold)
-                        .tracking(-0.3)
-                        .verticalAlignment(.center)
-                }
-                .padding(start: 20, top: 12, end: 20, bottom: 8)
             }
 
             /// Home, one row per group, the row that is not always listed, and the one
@@ -7159,7 +7134,7 @@ enum Listings {
                 Text("native: \(stateUIPlatform()) · \(device.info.formFactor)\nStateUI \(stateUIVersion())")
                     .padding(12)
                     // The footer's own row, written on the footer.
-                    .gridRow(2)
+                    .gridRow(1)
             }
         }
         """#,

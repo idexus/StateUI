@@ -28,6 +28,9 @@ final class AndroidSplitView: AndroidLayoutView {
     /// What the split does when its first room shows the sidebar, said as the user's.
     var onAdapted: (() -> Void)?
 
+    /// What the split does when a new room stands the sidebar over the detail rather than beside it, or back.
+    var onPlaced: (() -> Void)?
+
     /// The colors the sidebar stands on beside the detail and over it, as the split view says them; nil for the
     /// platform's own.
     var grounds: (beside: Int32?, over: Int32?) = (nil, nil) {
@@ -37,8 +40,8 @@ final class AndroidSplitView: AndroidLayoutView {
     /// The split's one adaptation, by the host layer's rule.
     private var adaptation = SidebarAdaptation()
 
-    /// The drawer holding the sidebar page, and the shade over the detail while it is open.
-    let drawer = AndroidSingleChildView()
+    /// The sidebar's column - its bar over its page - and the shade over the detail while it is open over it.
+    let drawer = AndroidSidebarView()
     private let scrim = AndroidView { _ in Java.new(JavaAPI.view, JavaAPI.newView, .object(AndroidRenderer.context)) }
     private var drawerWidth = 0.0
 
@@ -118,6 +121,7 @@ final class AndroidSplitView: AndroidLayoutView {
         let overlaid = bounds.width < Self.sideBySide
         let width = min(320, bounds.width * (overlaid ? 0.84 : 0.4))
         let newRoom = overlaid != overlays || width != drawerWidth
+        let replaced = overlaid != overlays
         overlays = overlaid
         drawerWidth = width
         let beside = !overlays && isPresented ? drawerWidth : 0
@@ -135,6 +139,7 @@ final class AndroidSplitView: AndroidLayoutView {
         scrim.layout(Rect(x: 0, y: 0, width: bounds.width, height: bounds.height))
         drawer.layout(Rect(x: leading ? 0 : bounds.width - drawerWidth, y: 0, width: drawerWidth, height: bounds.height))
         if newRoom { showDrawer(animated: false) }
+        if replaced { onPlaced?() }
     }
 
     /// Stands the drawer and the shade where the sidebar's state puts them. A closed drawer holds nothing the
@@ -172,5 +177,6 @@ final class AndroidSplitView: AndroidLayoutView {
         super.detach()
         onScrimTapped = nil
         onAdapted = nil
+        onPlaced = nil
     }
 }

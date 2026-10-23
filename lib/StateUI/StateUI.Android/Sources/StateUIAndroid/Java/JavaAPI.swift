@@ -512,6 +512,9 @@ enum JavaAPI {
     static let setBarNavigation = Java.method(
         bar, "setNavigation", "(ILandroid/graphics/Bitmap;ILjava/lang/String;)V")
     static let setBarTitleView = Java.method(bar, "setTitleView", "(Landroid/view/View;)V")
+    static let setBarMark = Java.method(bar, "setMark", "(Landroid/graphics/Bitmap;)V")
+    static let setBarEndToggle = Java.method(
+        bar, "setEndToggle", "(Landroid/graphics/Bitmap;ILjava/lang/String;)V")
     static let setBarActions = Java.method(
         bar, "setActions", "([I[Ljava/lang/String;[Landroid/graphics/Bitmap;)V")
 

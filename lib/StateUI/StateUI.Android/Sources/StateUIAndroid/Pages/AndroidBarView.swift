@@ -19,21 +19,27 @@ final class AndroidBarView: AndroidView {
         case close
     }
 
-    /// What the bar says and shows: its title and the line under it, its colors, its actions, and the page's menus
-    /// behind its overflow.
+    /// What the bar says and shows: its title, the line under it and the mark before them, its colors, its
+    /// actions, and the page's menus behind its overflow.
     struct Content: Equatable {
         /// The title; nil where the page shows none, which leaves the bar's place for it empty.
         var title: String? = ""
         var subtitle: String?
+        var mark: HostPicture?
         var background: HostValue?
         var foreground: HostValue?
         var navigation = Navigation.none
+        /// What the button at the bar's end does: none, or the sidebar's toggle.
+        var endButton = Navigation.none
         var actions: [AndroidMenu.Item] = []
         var menus: [AndroidMenu.Entry] = []
     }
 
     /// What the navigation button does when the user presses it.
     var onNavigation: (() -> Void)?
+
+    /// What the button at the bar's end does when the user presses it.
+    var onEndButton: (() -> Void)?
 
     /// The elements the bar's items stand for, in the order its menu numbers them: the actions, then the menus'
     /// items.
@@ -87,6 +93,13 @@ final class AndroidBarView: AndroidView {
         if previous?.navigation != content.navigation || previous?.foreground != content.foreground {
             showNavigation(content.navigation, tint: content.foreground.flatMap(Self.argb) ?? 0)
         }
+        if previous?.endButton != content.endButton || previous?.foreground != content.foreground {
+            showEndButton(content.endButton, tint: content.foreground.flatMap(Self.argb) ?? 0)
+        }
+        if previous?.mark != content.mark {
+            let bitmap = content.mark.flatMap(AndroidPictures.bitmap)
+            withExtendedLifetime(bitmap) { Java.call(reference, JavaAPI.setBarMark, .object(bitmap?.reference)) }
+        }
         if previous?.actions != content.actions || previous?.menus != content.menus
             || previous?.foreground != content.foreground {
             showActions(content.actions, menus: content.menus)
@@ -111,6 +124,19 @@ final class AndroidBarView: AndroidView {
         Java.release(local: words)
     }
 
+    /// The sidebar's toggle at the bar's end, in the sidebar's picture or the platform's glyph, or none.
+    private func showEndButton(_ button: Navigation, tint: Int32) {
+        guard case .sidebar(let picture) = button else {
+            return Java.call(reference, JavaAPI.setBarEndToggle, .object(nil), .int(tint), .object(nil))
+        }
+        let bitmap = picture.flatMap(AndroidPictures.bitmap)
+        let words = Java.string(CoreLink().chromeWords.sidebar)
+        withExtendedLifetime(bitmap) {
+            Java.call(reference, JavaAPI.setBarEndToggle, .object(bitmap?.reference), .int(tint), .object(words))
+        }
+        Java.release(local: words)
+    }
+
     /// The actions as the bar's menu, each of the bar's groups a group of Android's menu, then the menus as its
     /// submenus behind the overflow, after a line where actions stand there too; an item chosen reaches
     /// `onMenuChose` by its place among the items.
@@ -123,6 +149,12 @@ final class AndroidBarView: AndroidView {
         AndroidMenu.encoded(entries) { kinds, texts, pictures in
             Java.call(reference, JavaAPI.setBarActions, .object(kinds), .object(texts), .object(pictures))
         }
+    }
+
+    /// The bar's own height for `width` points - unbounded where nil - in points.
+    func height(width: Double?) -> Double {
+        let widthSpec = width.map { ViewConstants.spec(ViewConstants.exactly, pixels($0)) } ?? ViewConstants.unspecified
+        return Double(measure(width: widthSpec, height: ViewConstants.unspecified).height) / density
     }
 
     /// Shows `view` in place of the title - across the room between the navigation button and the actions -
@@ -139,9 +171,15 @@ final class AndroidBarView: AndroidView {
         onNavigation?()
     }
 
+    /// The user pressed the button at the bar's end.
+    override func toggled(_ on: Bool) {
+        onEndButton?()
+    }
+
     override func detach() {
         super.detach()
         onNavigation = nil
+        onEndButton = nil
         items = []
     }
 }

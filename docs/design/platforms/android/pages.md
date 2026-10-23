@@ -44,10 +44,10 @@ actions - the rest behind the toolbar's overflow - each an entry of the
 toolbar's menu, written as
 [menus](menus.md) says, and the menus the path declares behind the overflow
 after them. Its navigation button is the way back on a pushed page
-whose back button is not taken away; at the root of a split view's detail
-it is the sidebar page's picture - Android's menu glyph where the page has
-none - and shows the sidebar where it is hidden and hides it where it shows,
-over the detail or beside it. The bar's words'
+whose back button is not taken away; at the root of a split view's detail,
+while the sidebar does not stand beside it shown, it is the sidebar page's
+picture - Android's menu glyph where the page has none - and shows the
+sidebar. The bar's words'
 color - the one written, or white or black against a written background -
 is its title's, its overflow button's, its actions' pictures' and its back
 arrow's or menu glyph's; a sidebar page's own picture keeps its colors.
@@ -65,6 +65,14 @@ size the picture is drawn at elsewhere: the platform draws its own at that
 size, and a picture at its own size would stand twice as tall as theirs.
 
 ## A split view
+
+The sidebar stands under a bar of its own, Android's toolbar as a stack's
+is: what the application says of itself on the sidebar page's path - its
+name, the line under it and its mark (`titleArea`), else the sidebar page's
+title - in the colors that path declares, and at its end the sidebar's
+toggle, the sidebar page's picture or Android's menu glyph, which hides the
+sidebar. The bar reaches under what stands over the top, the sidebar page
+below it (`AndroidSidebarView`).
 
 Where the room is narrower than 720 points - a phone, a tablet upright - the
 sidebar is a drawer sliding over the detail from the leading edge, the

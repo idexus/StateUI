@@ -180,7 +180,7 @@ enum JavaNatives {
         }
         let toggled: @convention(c) (Environment, jclass?, jlong, jboolean) -> Void = { _, _, number, on in
             MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidToggleView)?.onToggled?(on != 0)
+                AndroidView.find(number)?.toggled(on != 0)
             }
         }
         let moved: @convention(c) (Environment, jclass?, jlong, jint) -> Void = { _, _, number, progress in

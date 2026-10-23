@@ -108,9 +108,6 @@ final class AndroidNavigationView: AndroidLayoutView {
 
     /// The bar's own height for `width` points, in points; none while it is hidden.
     private func barHeight(width: Double?) -> Double {
-        guard showsBar else { return 0 }
-
-        let widthSpec = width.map { ViewConstants.spec(ViewConstants.exactly, pixels($0)) } ?? ViewConstants.unspecified
-        return Double(bar.measure(width: widthSpec, height: ViewConstants.unspecified).height) / density
+        showsBar ? bar.height(width: width) : 0
     }
 }
