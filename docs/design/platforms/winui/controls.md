@@ -58,7 +58,10 @@ as the button is placed - to the room its place leaves inside the padding
 and the outline, less the words' line where it stands above or below them -
 and the words stand whole ([no room asked](layout.md#no-room-asked)). With no words the picture stands alone in a `Viewbox`
 filling the room inside the padding as its aspect says - fitted, covering it,
-stretched across it, or at its own size in the middle. Only the words
+stretched across it, or at its own size in the middle. A `Viewbox` grows to
+any room it is measured in, so a button showing its picture alone is measured
+with no room asked: where the tree states no size it stands at its picture's
+own, and filling a stated one, it fills it as placed. Only the words
 changing writes them again in their place.
 
 A button drawn in the application's colors keeps them under the pointer and

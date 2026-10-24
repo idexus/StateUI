@@ -113,6 +113,14 @@ final class WinUIButtonView: WinUIView {
             next.aspect.rawValue, next.lineBreak?.wraps ?? false, next.lineBreak?.truncates ?? false)
     }
 
+    /// A picture alone stands at its own size, whatever the room offered: the box filling the button with it would
+    /// grow to any room it is measured in.
+    /// Design: docs/design/platforms/winui/controls.md#a-button
+    override func measure(width: Double?, height: Double?) -> LayoutSize {
+        guard let shown, !shown.hasWords, !shown.icon.isEmpty else { return super.measure(width: width, height: height) }
+        return super.measure(width: nil, height: nil)
+    }
+
     /// A picture beside the words stands no taller than the button's place leaves it.
     /// Design: docs/design/platforms/winui/controls.md#a-button
     override func layout(_ place: Rect) {

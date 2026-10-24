@@ -115,6 +115,20 @@ final class WinUIButtonViewTests: XCTestCase {
         }
     }
 
+    /// A picture standing alone stands at its own size where the tree states none: the button stays a button's size,
+    /// however much room its layout offers.
+    func testAPictureAloneStandsAtItsOwnSize() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                VStack { Button("Go").icon("test_wide.png").showsText(false).horizontalAlignment(.start) }
+            }
+            let button = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+            host.settle { button.frame.width > 0 }
+            XCTAssertLessThan(button.frame.width, 150, "\(button.frame)")
+            XCTAssertLessThan(button.frame.height, 60, "\(button.frame)")
+        }
+    }
+
     /// A button placed lower than the picture beside its words shows its words whole: the picture stands no taller
     /// than the room the place leaves it. WinUI arranges a button at no less than it measured, and StateUI measures
     /// it with no bound on its height.
