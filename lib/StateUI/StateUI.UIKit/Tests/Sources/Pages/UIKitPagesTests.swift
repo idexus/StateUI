@@ -255,6 +255,23 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertTrue(bar.leftItemsSupplementBackButton, "the leading group beside the way back")
     }
 
+    /// The overflow's button, a picture on the bar, is named More: UIKit's own menu of the items a narrow bar has no
+    /// room for, and VoiceOver, say its title.
+    @MainActor
+    func testTheOverflowIsNamedMore() throws {
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").toolbar { ToolbarButton("Clear").placement(at: .overflow) }
+            } destination: { _ in Text("Pushed") }
+        }
+        defer { host.finish() }
+        let item = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller?.navigationItem }
+        host.settle { item().map { !$0.trailingItemGroups.isEmpty } ?? false }
+        let more = try XCTUnwrap(item()?.trailingItemGroups.flatMap(\.barButtonItems).first { $0.menu != nil })
+
+        XCTAssertEqual(more.title, CoreLink().chromeWords.more)
+    }
+
     /// On a painted bar an action wears the bar's words' color, and one that destroys something stays red.
     @MainActor
     func testADestructiveActionStaysRedOnAPaintedBar() throws {
