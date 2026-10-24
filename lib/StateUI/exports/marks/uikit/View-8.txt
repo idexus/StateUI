@@ -1,5 +1,4 @@
-# revision 9.1
-ActivityIndicator.panYChannel: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
+# revision 10.1
 Button.frameChanged: ✅
 Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅
@@ -17,9 +16,6 @@ CheckBox.panXChannel: ✓ pan on CheckBox: the view's listening handed the recog
 DatePicker.frameChanged: ✅
 DatePicker.gridColumn: ✅
 DatePicker.gridRow: ✅
-Divider.frameChanged: ✅
-Divider.gridColumn: ✅
-Divider.gridRow: ✅
 Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the drag and drop interactions' handlers called, no drag session
 Ellipse.dragEnded: ✓ dragAndDrop on Ellipse: the drag and drop interactions' handlers called, no drag session
 Ellipse.dragStarting: ✓ dragAndDrop on Ellipse: the drag and drop interactions' handlers called, no drag session
@@ -84,10 +80,14 @@ SearchField.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' 
 SearchField.frameChanged: ✅
 SearchField.horizontalAlignment: ✅
 SearchField.verticalAlignment: ✅
+Separator.frameChanged: ✅
+Separator.gridColumn: ✅
+Separator.gridRow: ✅
 Slider.pinchUpdated: ✓ pinch on Slider: the view's listening handed the recognizer's states, no touch sent
 Space.panTouchCount: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
 Space.panUpdated: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
 Space.panXChannel: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
+Spinner.panYChannel: ✓ pan on Spinner: the view's listening handed the recognizer's states, no touch sent
 Stepper.frameChanged: ✅
 Stepper.gridColumn: ✅
 Stepper.gridRow: ✅

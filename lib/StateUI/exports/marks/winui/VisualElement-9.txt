@@ -1,6 +1,4 @@
-# revision 19.2
-ActivityIndicator.rotationY: ✓ read rotationY of ActivityIndicator: the host's own tip, checked against the projection it laid on the element
-ActivityIndicator.zIndex: ✅
+# revision 20.2
 Button.accessibilityHint: ✅
 Button.scaleY: ✅
 Canvas.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
@@ -12,8 +10,6 @@ CheckBox.layoutDirection: ✅
 CheckBox.width: ✅
 DatePicker.rotationX: ✓ read rotationX of DatePicker: the host's own tip, checked against the projection it laid on the element
 DatePicker.style: ✅
-Divider.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
-Divider.translationX: ✅
 Ellipse.accessibilityHint: ✅
 Ellipse.scaleY: ✅
 Fill.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
@@ -48,6 +44,8 @@ Rectangle.isEnabled: ✅
 ScrollView.accessibilityHeading: ✅
 SearchField.isAccessibilityHidden: ✅
 SearchField.isVisible: ✅
+Separator.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+Separator.translationX: ✅
 Slider.maximumHeight: ✅
 Slider.maximumWidth: ✅
 Slider.minimumHeight: ✅
@@ -55,6 +53,8 @@ Slider.minimumWidth: ✅
 Slider.pivotX: ✅
 Space.rotationY: ✓ read rotationY of Space: the host's own tip, checked against the projection it laid on the element
 Space.zIndex: ✅
+Spinner.rotationY: ✓ read rotationY of Spinner: the host's own tip, checked against the projection it laid on the element
+Spinner.zIndex: ✅
 Stepper.accessibilityHeading: ✅
 Stepper.scale: ✅
 Switch.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.

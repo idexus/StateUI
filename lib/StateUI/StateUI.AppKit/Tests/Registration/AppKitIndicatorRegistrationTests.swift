@@ -9,7 +9,7 @@ import AppKit
 import XCTest
 
 /// The indicators, realized through the registry: a progress bar and an
-/// activity indicator made by their registrations, their members reaching the
+/// spinner made by their registrations, their members reaching the
 /// native views, and what the registry says it realizes.
 @MainActor
 final class AppKitIndicatorRegistrationTests: XCTestCase {
@@ -18,11 +18,11 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
     func testTheRegistryRealizesTheIndicators() {
         let realization = AppKitRegistrations.registry.realization
 
-        XCTAssertTrue(realization.elements.isSuperset(of: ["ProgressBar", "ActivityIndicator"]))
+        XCTAssertTrue(realization.elements.isSuperset(of: ["ProgressBar", "Spinner"]))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "ProgressBar", owner: "ProgressBar", member: "progress")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "ActivityIndicator", owner: "ActivityIndicator", member: "isAnimating")))
+            HostRealizedMember(element: "Spinner", owner: "Spinner", member: "isAnimating")))
     }
 
     /// A progress bar is made by its registration, shows the fraction it is
@@ -46,22 +46,22 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
         XCTAssertEqual(native.doubleValue, 0)
     }
 
-    /// An activity indicator is made by its registration and spins exactly
+    /// A spinner is made by its registration and spins exactly
     /// while it is told it runs.
     @MainActor
-    func testAnActivityIndicatorSpinsWhileItRuns() throws {
+    func testASpinnerSpinsWhileItRuns() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        var running = HostPatch(id: .manual("activity"), type: .activityIndicator)
+        var running = HostPatch(id: .manual("activity"), type: .spinner)
         running.properties[.isAnimating] = .bool(true)
         renderer.applyForTesting(tree(running))
 
         let native = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("activity")) as? AppKitActivityIndicatorView)
+            renderer.viewForTesting(id: .manual("activity")) as? AppKitSpinnerView)
         XCTAssertTrue(native.isSpinning)
 
-        var stopped = HostPatch(id: .manual("activity"), type: .activityIndicator)
+        var stopped = HostPatch(id: .manual("activity"), type: .spinner)
         stopped.properties[.isAnimating] = .bool(false)
         renderer.applyForTesting(changedTree(stopped))
 
@@ -77,19 +77,19 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        renderer.applyForTesting(tree(HostPatch(id: .manual("activity"), type: .activityIndicator)))
+        renderer.applyForTesting(tree(HostPatch(id: .manual("activity"), type: .spinner)))
 
         let native = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("activity")) as? AppKitActivityIndicatorView)
+            renderer.viewForTesting(id: .manual("activity")) as? AppKitSpinnerView)
         XCTAssertFalse(native.isSpinning, "nothing described, nothing spinning")
 
-        var checking = HostPatch(id: .manual("activity"), type: .activityIndicator)
+        var checking = HostPatch(id: .manual("activity"), type: .spinner)
         checking.properties[.isAnimating] = .bool(true)
         renderer.applyForTesting(changedTree(checking))
 
         XCTAssertTrue(native.isSpinning)
 
-        var done = HostPatch(id: .manual("activity"), type: .activityIndicator)
+        var done = HostPatch(id: .manual("activity"), type: .spinner)
         done.properties[.isAnimating] = .bool(false)
         renderer.applyForTesting(changedTree(done))
 

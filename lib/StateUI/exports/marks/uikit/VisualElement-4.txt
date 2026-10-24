@@ -1,14 +1,10 @@
-# revision 19.1
-ActivityIndicator.height: ✅
-ActivityIndicator.scale: ✓ read scale of ActivityIndicator: the host's own transform, checked against the layer it composed itself
-ActivityIndicator.width: ✅
+# revision 20.1
 Button.isAccessibilityHidden: ✅
 Canvas.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Capsule.opacity: ✅
 Capsule.rotationX: ✓ read rotationX of Capsule: the host's own transform, checked against the layer it composed itself
 CheckBox.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 DatePicker.zIndex: ✅
-Divider.hidesChildrenFromAccessibility: ✅
 Ellipse.isVisible: ✅
 Ellipse.rotation: ✓ read rotation of Ellipse: the host's own transform, checked against the layer it composed itself
 Fill.accessibilityAdjusted: ✅
@@ -38,10 +34,14 @@ Rectangle.accessibilityAdjusted: ✅
 ScrollView.frame: ✅
 ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.hidesChildrenFromAccessibility: ✅
+Separator.hidesChildrenFromAccessibility: ✅
 Slider.accessibilityHint: ✅
 Space.height: ✅
 Space.scale: ✓ read scale of Space: the host's own transform, checked against the layer it composed itself
 Space.width: ✅
+Spinner.height: ✅
+Spinner.scale: ✓ read scale of Spinner: the host's own transform, checked against the layer it composed itself
+Spinner.width: ✅
 Stepper.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Switch.zIndex: ✅
 Text.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.

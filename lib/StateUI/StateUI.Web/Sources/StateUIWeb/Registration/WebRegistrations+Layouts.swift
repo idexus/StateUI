@@ -20,15 +20,15 @@ extension WebRegistrations {
             stack.property(LayoutContract.letsInputThrough) { view, lets in view.setLetsInputThrough(lets ?? false) }
         }
 
-        // A space is a box of its own its stack's flexbox grows, drawn as a layout's box; a divider in a stack is the
+        // A space is a box of its own its stack's flexbox grows, drawn as a layout's box; a separator in a stack is the
         // document's own rule.
         // Design: docs/design/host/layout.md#a-space
         registry.add(SpaceContract.self, create: { _ in WebLayoutView(arrangement: .layers) }) { space in
             space.applies(LayoutMembers.regionMembers) { view, values in applyBox(view, values) }
         }
-        registry.add(DividerContract.self, create: { _ in
+        registry.add(SeparatorContract.self, create: { _ in
             let rule = WebDOMView(tag: "hr")
-            rule.attribute("class", "stateui-divider")
+            rule.attribute("class", "stateui-separator")
             return rule
         })
 

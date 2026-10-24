@@ -1,6 +1,4 @@
-# revision 19.2
-ActivityIndicator.frame: ✅
-ActivityIndicator.rotation: ✅
+# revision 20.2
 Button.accessibilityHeading: ✅
 Button.scale: ✅
 Canvas.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
@@ -10,8 +8,6 @@ CheckBox.hidesChildrenFromAccessibility: ✅
 CheckBox.opacity: ✅
 DatePicker.ignoresInput: ✅
 DatePicker.pivotY: ✅
-Divider.accessibilityLabel: ✅
-Divider.scaleX: ✅
 Ellipse.accessibilityHeading: ✅
 Ellipse.scale: ✅
 Fill.accessibilityRole: ✅
@@ -48,10 +44,14 @@ Rectangle.translationX: ✅
 ScrollView.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 ScrollView.layoutDirection: ✅
 SearchField.tooltip: ✅
+Separator.accessibilityLabel: ✅
+Separator.scaleX: ✅
 Slider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Slider.isEnabled: ✅
 Space.frame: ✅
 Space.rotation: ✅
+Spinner.frame: ✅
+Spinner.rotation: ✅
 Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked against the projection it laid on the element
 Stepper.style: ✅
 Switch.accessibilityHint: ✅

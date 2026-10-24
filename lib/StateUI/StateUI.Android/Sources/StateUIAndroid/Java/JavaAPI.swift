@@ -237,7 +237,7 @@ enum JavaAPI {
     static let sizeSheet = Java.staticMethod(views, "sizeSheet", "(Landroid/view/View;II)V")
     static let windowDp = Java.staticMethod(views, "windowDp", "(Landroid/content/Context;Z)I")
     static let rise = Java.staticMethod(views, "rise", "(Landroid/view/ViewGroup;Landroid/view/View;ZJ)V")
-    static let divider = Java.staticMethod(views, "divider", "(Landroid/content/Context;)Landroid/view/View;")
+    static let separator = Java.staticMethod(views, "separator", "(Landroid/content/Context;)Landroid/view/View;")
     static let announceForAccessibility = Java.method(view, "announceForAccessibility", "(Ljava/lang/CharSequence;)V")
 
     static let dateField = Java.findClass("stateui/android/StateUIDateField")

@@ -1,40 +1,4 @@
-# revision 19.1
-ActivityIndicator.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
-ActivityIndicator.accessibilityActions: – ARIA offers no action of an application's own words.
-ActivityIndicator.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
-ActivityIndicator.accessibilityHeading: ✅
-ActivityIndicator.accessibilityHint: ✅
-ActivityIndicator.accessibilityLabel: ✅
-ActivityIndicator.accessibilityRole: ✅
-ActivityIndicator.accessibilityValue: ✅
-ActivityIndicator.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
-ActivityIndicator.frame: ✅
-ActivityIndicator.height: ✅
-ActivityIndicator.hidesChildrenFromAccessibility: ✅
-ActivityIndicator.ignoresInput: ✅
-ActivityIndicator.isAccessibilityHidden: ✅
-ActivityIndicator.isEnabled: ✅
-ActivityIndicator.isVisible: ✅
-ActivityIndicator.layoutDirection: ✅
-ActivityIndicator.maximumHeight: ✅
-ActivityIndicator.maximumWidth: ✅
-ActivityIndicator.minimumHeight: ✅
-ActivityIndicator.minimumWidth: ✅
-ActivityIndicator.opacity: ✅
-ActivityIndicator.pivotX: ✓ read pivotX of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.pivotY: ✓ read pivotY of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.rotation: ✓ read rotation of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.rotationX: ✓ read rotationX of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.rotationY: ✓ read rotationY of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.scale: ✓ read scale of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.scaleX: ✓ read scaleX of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.scaleY: ✓ read scaleY of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.style: ✅
-ActivityIndicator.tooltip: ✅
-ActivityIndicator.translationX: ✓ read translationX of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.translationY: ✓ read translationY of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.width: ✅
-ActivityIndicator.zIndex: ✅
+# revision 20.1
 Button.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
 Button.accessibilityActions: – ARIA offers no action of an application's own words.
 Button.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
@@ -215,42 +179,6 @@ DatePicker.translationX: ✓ read translationX of DatePicker: the host's own tra
 DatePicker.translationY: ✓ read translationY of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 DatePicker.width: ✅
 DatePicker.zIndex: ✅
-Divider.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
-Divider.accessibilityActions: – ARIA offers no action of an application's own words.
-Divider.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
-Divider.accessibilityHeading: ✅
-Divider.accessibilityHint: ✅
-Divider.accessibilityLabel: ✅
-Divider.accessibilityRole: ✅
-Divider.accessibilityValue: ✅
-Divider.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
-Divider.frame: ✅
-Divider.height: ✅
-Divider.hidesChildrenFromAccessibility: ✅
-Divider.ignoresInput: ✅
-Divider.isAccessibilityHidden: ✅
-Divider.isEnabled: ✅
-Divider.isVisible: ✅
-Divider.layoutDirection: ✅
-Divider.maximumHeight: ✅
-Divider.maximumWidth: ✅
-Divider.minimumHeight: ✅
-Divider.minimumWidth: ✅
-Divider.opacity: ✅
-Divider.pivotX: ✓ read pivotX of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.pivotY: ✓ read pivotY of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.rotation: ✓ read rotation of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.rotationX: ✓ read rotationX of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.rotationY: ✓ read rotationY of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.scale: ✓ read scale of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.scaleX: ✓ read scaleX of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.scaleY: ✓ read scaleY of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.style: ✅
-Divider.tooltip: ✅
-Divider.translationX: ✓ read translationX of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.translationY: ✓ read translationY of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.width: ✅
-Divider.zIndex: ✅
 Ellipse.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
 Ellipse.accessibilityActions: – ARIA offers no action of an application's own words.
 Ellipse.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
@@ -863,6 +791,42 @@ SearchField.translationX: ✓ read translationX of SearchField: the host's own t
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 SearchField.width: ✅
 SearchField.zIndex: ✅
+Separator.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Separator.accessibilityActions: – ARIA offers no action of an application's own words.
+Separator.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
+Separator.accessibilityHeading: ✅
+Separator.accessibilityHint: ✅
+Separator.accessibilityLabel: ✅
+Separator.accessibilityRole: ✅
+Separator.accessibilityValue: ✅
+Separator.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Separator.frame: ✅
+Separator.height: ✅
+Separator.hidesChildrenFromAccessibility: ✅
+Separator.ignoresInput: ✅
+Separator.isAccessibilityHidden: ✅
+Separator.isEnabled: ✅
+Separator.isVisible: ✅
+Separator.layoutDirection: ✅
+Separator.maximumHeight: ✅
+Separator.maximumWidth: ✅
+Separator.minimumHeight: ✅
+Separator.minimumWidth: ✅
+Separator.opacity: ✅
+Separator.pivotX: ✓ read pivotX of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.pivotY: ✓ read pivotY of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.rotation: ✓ read rotation of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.rotationX: ✓ read rotationX of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.rotationY: ✓ read rotationY of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.scale: ✓ read scale of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.scaleX: ✓ read scaleX of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.scaleY: ✓ read scaleY of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.style: ✅
+Separator.tooltip: ✅
+Separator.translationX: ✓ read translationX of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.translationY: ✓ read translationY of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.width: ✅
+Separator.zIndex: ✅
 Slider.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
 Slider.accessibilityActions: – ARIA offers no action of an application's own words.
 Slider.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
@@ -935,6 +899,42 @@ Space.translationX: ✓ read translationX of Space: the host's own transform: th
 Space.translationY: ✓ read translationY of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Space.width: ✅
 Space.zIndex: ✅
+Spinner.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Spinner.accessibilityActions: – ARIA offers no action of an application's own words.
+Spinner.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
+Spinner.accessibilityHeading: ✅
+Spinner.accessibilityHint: ✅
+Spinner.accessibilityLabel: ✅
+Spinner.accessibilityRole: ✅
+Spinner.accessibilityValue: ✅
+Spinner.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Spinner.frame: ✅
+Spinner.height: ✅
+Spinner.hidesChildrenFromAccessibility: ✅
+Spinner.ignoresInput: ✅
+Spinner.isAccessibilityHidden: ✅
+Spinner.isEnabled: ✅
+Spinner.isVisible: ✅
+Spinner.layoutDirection: ✅
+Spinner.maximumHeight: ✅
+Spinner.maximumWidth: ✅
+Spinner.minimumHeight: ✅
+Spinner.minimumWidth: ✅
+Spinner.opacity: ✅
+Spinner.pivotX: ✓ read pivotX of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.pivotY: ✓ read pivotY of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.rotation: ✓ read rotation of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.rotationX: ✓ read rotationX of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.rotationY: ✓ read rotationY of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.scale: ✓ read scale of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.scaleX: ✓ read scaleX of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.scaleY: ✓ read scaleY of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.style: ✅
+Spinner.tooltip: ✅
+Spinner.translationX: ✓ read translationX of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.translationY: ✓ read translationY of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.width: ✅
+Spinner.zIndex: ✅
 Stepper.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
 Stepper.accessibilityActions: – ARIA offers no action of an application's own words.
 Stepper.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.

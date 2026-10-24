@@ -10,7 +10,7 @@
 ///     }
 ///
 /// It has no caption, nothing to click and nothing to change: the platform draws its own separator. A line
-/// across a stack is a `Divider`.
+/// across a stack is a `Separator`.
 public struct MenuSeparator: Element {
     /// The node this separator describes.
     public var node: Node

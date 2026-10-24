@@ -188,7 +188,7 @@ final class Catalog {
                 Sample(StepperSample()),
                 Sample(PickerSample()),
                 Sample(ProgressBarSample()),
-                Sample(ActivityIndicatorSample()),
+                Sample(SpinnerSample()),
                 Sample(SemanticsSample()),
                 Sample(TooltipSample()),
                 Sample(ShortcutSample()),
@@ -330,7 +330,7 @@ final class Catalog {
                 Sample(RefreshSample()),
                 Sample(ItemActionsSample()),
                 Sample(GalleryViewSample()),
-                Sample(PositionIndicatorSample()),
+                Sample(PositionDotsSample()),
             ])
     }
 

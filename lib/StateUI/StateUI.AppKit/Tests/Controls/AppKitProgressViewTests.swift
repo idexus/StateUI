@@ -14,28 +14,28 @@ final class AppKitProgressViewTests: XCTestCase {
     /// later patch reaches it: running is the spinner's, visibility the
     /// view's, and neither writes the other.
     @MainActor
-    func testAnActivityIndicatorIsShownOnlyWhileVisibleAndRunning() throws {
+    func testASpinnerIsShownOnlyWhileVisibleAndRunning() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var stopped = HostPatch(id: .manual("activity"), type: .activityIndicator)
+        var stopped = HostPatch(id: .manual("activity"), type: .spinner)
         stopped.properties[.isAnimating] = .bool(false)
         renderer.applyForTesting(tree(stopped))
         let native = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("activity")) as? AppKitActivityIndicatorView)
+            renderer.viewForTesting(id: .manual("activity")) as? AppKitSpinnerView)
         XCTAssertFalse(shows(native))
 
-        var margin = HostPatch(id: .manual("activity"), type: .activityIndicator)
+        var margin = HostPatch(id: .manual("activity"), type: .spinner)
         margin.properties[.margin] = .numbers([4, 4, 4, 4])
         renderer.applyForTesting(changedTree(margin))
         XCTAssertFalse(shows(native))
 
-        var runningButInvisible = HostPatch(id: .manual("activity"), type: .activityIndicator)
+        var runningButInvisible = HostPatch(id: .manual("activity"), type: .spinner)
         runningButInvisible.properties[.isAnimating] = .bool(true)
         runningButInvisible.properties[.isVisible] = .bool(false)
         renderer.applyForTesting(changedTree(runningButInvisible))
         XCTAssertFalse(shows(native))
 
-        var shown = HostPatch(id: .manual("activity"), type: .activityIndicator)
+        var shown = HostPatch(id: .manual("activity"), type: .spinner)
         shown.properties[.isVisible] = .bool(true)
         renderer.applyForTesting(changedTree(shown))
         XCTAssertTrue(shows(native))
@@ -43,7 +43,7 @@ final class AppKitProgressViewTests: XCTestCase {
 
     /// What the user sees: a view that is not hidden and draws a spinner.
     @MainActor
-    private func shows(_ indicator: AppKitActivityIndicatorView) -> Bool {
+    private func shows(_ indicator: AppKitSpinnerView) -> Bool {
         !indicator.isHidden && (indicator.isSpinning || indicator.isDisplayedWhenStopped)
     }
 
@@ -72,8 +72,8 @@ final class AppKitProgressViewTests: XCTestCase {
     }
 
     @MainActor
-    func testActivityIndicatorStartsAndStopsWithoutChangingItsKind() {
-        let activity = AppKitActivityIndicatorView()
+    func testSpinnerStartsAndStopsWithoutChangingItsKind() {
+        let activity = AppKitSpinnerView()
 
         activity.apply(running: true)
         XCTAssertTrue(activity.isSpinning)

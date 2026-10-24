@@ -91,7 +91,6 @@ of its members each meets, and why a cell is empty.
 <!-- creation:begin -->
 | Element | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](controls/ActivityIndicator.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Anchor](controls/Anchor.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Application](controls/Application.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Button](controls/Button.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -101,7 +100,6 @@ of its members each meets, and why a cell is empty.
 | [CheckBox](controls/CheckBox.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ContextMenu](controls/ContextMenu.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [DatePicker](controls/DatePicker.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Divider](controls/Divider.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Ellipse](controls/Ellipse.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Fill](controls/Fill.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Grid](controls/Grid.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -129,9 +127,11 @@ of its members each meets, and why a cell is empty.
 | [Scene](controls/Scene.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ScrollView](controls/ScrollView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [SearchField](controls/SearchField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [Separator](controls/Separator.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Sheet](controls/Sheet.md) | adaptive | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 | [Slider](controls/Slider.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Space](controls/Space.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [Spinner](controls/Spinner.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [SplitView](controls/SplitView.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Stepper](controls/Stepper.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Switch](controls/Switch.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -215,7 +215,7 @@ contract.
 | `Popover` | `NSPopover` | `UIPopoverPresentationController`, a popover on a phone too | `PopupWindow` | `Flyout` | `GtkPopover` | `<div popover>` |
 | `ContextMenu`, `MenuBar`, `Menu`, `MenuItem` | `NSMenu` / `NSMenuItem` | `UIMenu` / `UIAction`; `UIContextMenuInteraction`; `UIMenuBuilder` menu bar | `ContextMenu` / `SubMenu` / `MenuItem`; a menu bar's menus in the `Toolbar` overflow | `MenuFlyout` / `MenuBar` | `GMenu` in a `GtkPopoverMenu`; a menu bar as a `GtkMenuButton` main menu | ARIA `menu` in a `popover`; a menu bar's menus under the bar's More button |
 | `ButtonMenu` | `NSComboButton`, unified or split | `UIButton.menu`, opened by a tap or held | `PopupMenu` at the button, opened by a click or held | `DropDownButton`, `SplitButton` | `GtkMenuButton`, `AdwSplitButton` | `aria-haspopup` button opening an ARIA `menu`, or held for it |
-| `Divider` | an `NSBox` separator | a hairline `UIView` in the separator color | a `View` in the theme's list divider | a line in `DividerStrokeColorDefaultBrush` | a `GtkSeparator` | `<hr>` |
+| `Separator` | an `NSBox` separator | a hairline `UIView` in the separator color | a `View` in the theme's list divider | a line in `DividerStrokeColorDefaultBrush` | a `GtkSeparator` | `<hr>` |
 | `MenuSeparator` | a separator `NSMenuItem` | a group break in a `UIMenu` | a group divider in a menu | `MenuFlyoutSeparator` | a section break in a `GMenu` | `role=separator` in an ARIA `menu` |
 | `ToolbarGroup` / `ToolbarButton` | `NSToolbarItem`; `NSMenuToolbarItem` overflow | `UIBarButtonItemGroup` / `UIBarButtonItem` | `Toolbar` `MenuItem` | `CommandBar` `AppBarButton` in the `TitleBar` | `GtkButton` in an `AdwHeaderBar` | `<button>` in an ARIA `toolbar` |
 | `ZStack` / `LayoutEngine` / `Fill` / `Space` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid, one shared cell |
@@ -228,7 +228,7 @@ contract.
 | `TextField` | `NSTextField` / `NSSecureTextField` | `UITextField` | `EditText` | `TextBox` / `PasswordBox` | `GtkEntry` | `<input type=text>` / `<input type=password>` |
 | `TextEditor` | `NSTextView` in an `NSScrollView` | `UITextView` | multi-line `EditText` | multi-line `TextBox` | `GtkTextView` in a `GtkScrolledWindow` | `<textarea>` |
 | `SearchField` | `NSSearchField` | `UISearchTextField` | one-line `EditText` with a search key | `AutoSuggestBox` | `GtkSearchEntry` | `<input type=search>` |
-| `Picker` | `NSPopUpButton` | pop-up `UIButton` menu | `Spinner` | `ComboBox` | `GtkDropDown` | `<select>` |
+| `Picker` | `NSPopUpButton` | pop-up `UIButton` menu | `android.widget.Spinner` | `ComboBox` | `GtkDropDown` | `<select>` |
 | `DatePicker` | `NSDatePicker` | `UIDatePicker` | `TextView` opening a `DatePickerDialog` | `CalendarDatePicker` | `GtkCalendar` in a `GtkMenuButton`'s `GtkPopover` | `<input type=date>` |
 | `TimePicker` | `NSDatePicker` showing hour and minute | `UIDatePicker` in time mode | `TextView` opening a `TimePickerDialog` | `TimePicker` | an hour's and a minute's `GtkSpinButton` in a `GtkMenuButton`'s `GtkPopover` | `<input type=time>` |
 | `Switch` | `NSSwitch` beside an `NSTextField` | `UISwitch` beside a `UILabel` | `Switch` | `ToggleSwitch` | `GtkSwitch` beside a `GtkLabel` | checkbox `<input>` with `role=switch` in a `<label>` |
@@ -236,7 +236,7 @@ contract.
 | `Slider` | `NSSlider` | `UISlider` | `SeekBar` | `Slider` | `GtkScale` | `<input type=range>` |
 | `Stepper` | `NSStepper` | `UIStepper` | custom `LinearLayout` of two `Button`s | `NumberBox` | `GtkSpinButton` | `<input role=spinbutton>` between two `<button>`s |
 | `ProgressBar` | `NSProgressIndicator` bar | `UIProgressView` | horizontal `ProgressBar` | `ProgressBar` | `GtkProgressBar` | `<progress>` |
-| `ActivityIndicator` | spinning `NSProgressIndicator` | `UIActivityIndicatorView` | indeterminate `ProgressBar` | `ProgressRing` | `GtkSpinner` | CSS ring with `role=progressbar` |
+| `Spinner` | spinning `NSProgressIndicator` | `UIActivityIndicatorView` | indeterminate `ProgressBar` | `ProgressRing` | `GtkSpinner` | CSS ring with `role=progressbar` |
 | `Canvas` | custom `NSView` drawing | custom `UIView` `draw(_:)` | custom `View` `onDraw(Canvas)` | custom `Panel` painting a Direct2D `SurfaceImageSource` | custom `GtkWidget` snapshot | `<canvas>` |
 | `Rectangle` / `Capsule` / `Ellipse` | custom `NSView` drawing `NSBezierPath` | custom `UIView` masked by a `CAShapeLayer` | custom `View` drawing `Path` | `Shapes.Path` in a custom `Grid` | `GskPath` in a snapshot | inline SVG `<path>` |
 | `Line` / `Path` / `Polygon` / `Polyline` | custom `NSView` drawing `NSBezierPath` | custom `UIView` masked by a `CAShapeLayer` | custom `View` drawing `Path` | `Shapes.Path` in a custom `Grid` | `GskPath` in a snapshot | inline SVG `<path>` |
@@ -265,7 +265,7 @@ These surfaces lack an honest native counterpart on at least one target:
 - `DatePicker`: GTK 4 has `GtkCalendar` but no date field.
 - `TimePicker`: GTK 4 has no time picker; its host sets a time as GNOME's applications do, with spin buttons.
 - `Switch`: Web has no switch element; AppKit's, UIKit's and GTK 4's switch says no words, so their hosts set its words beside it.
-- `ActivityIndicator`: Web has no spinner - an indeterminate `<progress>` draws a bar - so its host draws a ring.
+- `Spinner`: Web has no spinner - an indeterminate `<progress>` draws a bar - so its host draws a ring.
 - `Map` / `Marker`: Android Views, WinUI 3, GTK 4 and Web have no map of the platform's own - Google Play services, Azure Maps and libshumate each need a provider and its key, and the DOM has no map element - so the application registers its own with the host, the pins as the map's children.
 - `ItemsView`: Android Views depends on AndroidX `RecyclerView`; Web has no native virtualized list.
 - `WebView`: WinUI 3 and GTK 4 depend on an engine their toolkit does not ship - the WebView2 runtime, WebKitGTK - so their web view is a backend the application registers (`lib/Backends`); Web cannot observe navigation or set a user agent in a cross-origin `<iframe>`.
@@ -462,13 +462,11 @@ Every control, and every part an application, its windows and its pages are made
 
 | Control | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](controls/ActivityIndicator.md) | 73 | 33 ✅ · 2 ☑️ · 36 ✓ · 2 – | 34 ✅ · 2 ☑️ · 35 ✓ · 2 – | 57 ✅ · 5 ☑️ · 10 ✓ | 51 ✅ · 1 ☑️ · 14 ✓ · 6 – | 44 ✅ · 1 ☑️ · 22 ✓ · 6 – | 49 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Button](controls/Button.md) | 102 | 58 ✅ · 2 ☑️ · 37 ✓ · 3 – | 56 ✅ · 1 ☑️ · 39 ✓ · 5 – | 73 ✅ · 5 ☑️ · 14 ✓ · 4 – | 83 ✅ · 1 ☑️ · 13 ✓ · 5 – | 68 ✅ · 2 ☑️ · 26 ✓ · 6 – | 78 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Canvas](controls/Canvas.md) | 75 | 35 ✅ · 2 ☑️ · 38 ✓ | 34 ✅ · 2 ☑️ · 38 ✓ · 1 – | 59 ✅ · 5 ☑️ · 10 ✓ | 54 ✅ · 15 ✓ · 5 – | 46 ✅ · 1 ☑️ · 22 ✓ · 6 – | 51 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Capsule](controls/Capsule.md) | 79 | 42 ✅ · 2 ☑️ · 35 ✓ | 41 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 5 ☑️ · 10 ✓ | 59 ✅ · 14 ✓ · 6 – | 50 ✅ · 1 ☑️ · 22 ✓ · 6 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [CheckBox](controls/CheckBox.md) | 82 | 44 ✅ · 2 ☑️ · 35 ✓ · 1 – | 37 ✅ · 2 ☑️ · 38 ✓ · 5 – | 61 ✅ · 5 ☑️ · 12 ✓ · 3 – | 63 ✅ · 1 ☑️ · 13 ✓ · 5 – | 50 ✅ · 1 ☑️ · 25 ✓ · 6 – | 58 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [DatePicker](controls/DatePicker.md) | 91 | 46 ✅ · 2 ☑️ · 36 ✓ · 7 – | 36 ✅ · 1 ☑️ · 37 ✓ · 13 – | 66 ✅ · 5 ☑️ · 15 ✓ · 3 – | 70 ✅ · 3 ☑️ · 13 ✓ · 5 – | 57 ✅ · 2 ☑️ · 26 ✓ · 6 – | 62 ✅ · 1 ☑️ · 20 ✓ · 7 – |
-| [Divider](controls/Divider.md) | 71 | 33 ✅ · 2 ☑️ · 35 ✓ · 1 – | 32 ✅ · 2 ☑️ · 35 ✓ · 2 – | 55 ✅ · 5 ☑️ · 10 ✓ | 50 ✅ · 1 ☑️ · 14 ✓ · 5 – | 42 ✅ · 1 ☑️ · 22 ✓ · 6 – | 47 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Ellipse](controls/Ellipse.md) | 79 | 42 ✅ · 2 ☑️ · 35 ✓ | 41 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 5 ☑️ · 10 ✓ | 59 ✅ · 14 ✓ · 6 – | 50 ✅ · 1 ☑️ · 22 ✓ · 6 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Fill](controls/Fill.md) | 74 | 38 ✅ · 1 ☑️ · 35 ✓ | 37 ✅ · 1 ☑️ · 35 ✓ · 1 – | 58 ✅ · 5 ☑️ · 10 ✓ | 56 ✅ · 1 ☑️ · 14 ✓ · 3 – | 46 ✅ · 1 ☑️ · 21 ✓ · 6 – | 50 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Grid](controls/Grid.md) | 84 | 46 ✅ · 1 ☑️ · 35 ✓ | 43 ✅ · 1 ☑️ · 37 ✓ · 1 – | 64 ✅ · 5 ☑️ · 12 ✓ | 65 ✅ · 1 ☑️ · 13 ✓ · 4 – | 53 ✅ · 1 ☑️ · 23 ✓ · 7 – | 59 ✅ · 1 ☑️ · 20 ✓ · 3 – |
@@ -486,8 +484,10 @@ Every control, and every part an application, its windows and its pages are made
 | [Rectangle](controls/Rectangle.md) | 82 | 45 ✅ · 2 ☑️ · 35 ✓ | 44 ✅ · 2 ☑️ · 35 ✓ · 1 – | 66 ✅ · 5 ☑️ · 10 ✓ | 62 ✅ · 14 ✓ · 6 – | 53 ✅ · 1 ☑️ · 22 ✓ · 6 – | 58 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [ScrollView](controls/ScrollView.md) | 88 | 42 ✅ · 3 ☑️ · 36 ✓ · 7 – | 44 ✅ · 1 ☑️ · 37 ✓ · 4 – | 66 ✅ · 5 ☑️ · 13 ✓ · 3 – | 66 ✅ · 1 ☑️ · 13 ✓ · 8 – | 55 ✅ · 1 ☑️ · 23 ✓ · 9 – | 58 ✅ · 1 ☑️ · 20 ✓ · 9 – |
 | [SearchField](controls/SearchField.md) | 98 | 54 ✅ · 4 ☑️ · 35 ✓ · 2 – | 57 ✅ · 2 ☑️ · 37 ✓ · 2 – | 78 ✅ · 5 ☑️ · 12 ✓ · 1 – | 73 ✅ · 5 ☑️ · 13 ✓ · 7 – | 64 ✅ · 3 ☑️ · 25 ✓ · 6 – | 74 ✅ · 1 ☑️ · 20 ✓ · 3 – |
+| [Separator](controls/Separator.md) | 71 | 33 ✅ · 2 ☑️ · 35 ✓ · 1 – | 32 ✅ · 2 ☑️ · 35 ✓ · 2 – | 55 ✅ · 5 ☑️ · 10 ✓ | 50 ✅ · 1 ☑️ · 14 ✓ · 5 – | 42 ✅ · 1 ☑️ · 22 ✓ · 6 – | 47 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Slider](controls/Slider.md) | 83 | 42 ✅ · 2 ☑️ · 35 ✓ · 2 – | 37 ✅ · 2 ☑️ · 39 ✓ · 5 – | 62 ✅ · 5 ☑️ · 12 ✓ · 3 – | 62 ✅ · 1 ☑️ · 13 ✓ · 5 – | 49 ✅ · 1 ☑️ · 25 ✓ · 8 – | 59 ✅ · 20 ✓ · 4 – |
 | [Space](controls/Space.md) | 74 | 38 ✅ · 1 ☑️ · 35 ✓ | 37 ✅ · 1 ☑️ · 35 ✓ · 1 – | 58 ✅ · 5 ☑️ · 10 ✓ | 56 ✅ · 1 ☑️ · 14 ✓ · 3 – | 46 ✅ · 1 ☑️ · 21 ✓ · 6 – | 50 ✅ · 1 ☑️ · 20 ✓ · 3 – |
+| [Spinner](controls/Spinner.md) | 73 | 33 ✅ · 2 ☑️ · 36 ✓ · 2 – | 34 ✅ · 2 ☑️ · 35 ✓ · 2 – | 57 ✅ · 5 ☑️ · 10 ✓ | 51 ✅ · 1 ☑️ · 14 ✓ · 6 – | 44 ✅ · 1 ☑️ · 22 ✓ · 6 – | 49 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Stepper](controls/Stepper.md) | 81 | 43 ✅ · 2 ☑️ · 35 ✓ · 1 – | 37 ✅ · 2 ☑️ · 37 ✓ · 5 – | 60 ✅ · 5 ☑️ · 12 ✓ · 3 – | 61 ✅ · 2 ☑️ · 13 ✓ · 5 – | 50 ✅ · 1 ☑️ · 24 ✓ · 6 – | 57 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Switch](controls/Switch.md) | 82 | 43 ✅ · 2 ☑️ · 35 ✓ · 2 – | 38 ✅ · 2 ☑️ · 37 ✓ · 5 – | 60 ✅ · 5 ☑️ · 12 ✓ · 3 – | 63 ✅ · 1 ☑️ · 13 ✓ · 5 – | 50 ✅ · 1 ☑️ · 24 ✓ · 7 – | 58 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Text](controls/Text.md) | 89 | 50 ✅ · 2 ☑️ · 35 ✓ · 1 – | 51 ✅ · 1 ☑️ · 35 ✓ · 1 – | 72 ✅ · 5 ☑️ · 10 ✓ | 70 ✅ · 1 ☑️ · 13 ✓ · 5 – | 59 ✅ · 1 ☑️ · 23 ✓ · 6 – | 65 ✅ · 1 ☑️ · 20 ✓ · 3 – |
@@ -583,7 +583,6 @@ its layer are on the element's page in [the control dictionary](controls/README.
 
 | Element | Members | Count | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](controls/ActivityIndicator.md) | `isAnimating` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `keyboardShortcut`, `lineBreak`, `menuKind`, `onPressed` (`pressed`), `onReleased` (`released`), `role`, `showsMenuArrow` | 11 | 8 ✅ · 2 ✓ · 1 – | 9 ✅ · 2 ✓ | 6 ✅ · 2 ✓ | 11 ✅ | 10 ✅ · 1 ✓ | 11 ✅ |
 | [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawing`, `onPressed` (`pressed`), `onReleased` (`released`) | 4 | 1 ✅ · 3 ✓ | 1 ✅ · 3 ✓ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
@@ -612,6 +611,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [SearchField](controls/SearchField.md) | `submitLabel`, `onSubmitted` (`submitted`) | 2 | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 1 ✅ · 1 ☑️ | 1 ✅ · 1 ☑️ | 2 ✅ |
 | [Sheet](controls/Sheet.md) | `isPresented`, `isPresentedChanged` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Slider](controls/Slider.md) | `onReleased` (`released`), `onPressed` (`pressed`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 4 ✅ · 2 ✓ | 6 ✅ | 4 ✅ | 4 ✅ · 2 – | 6 ✅ |
+| [Spinner](controls/Spinner.md) | `isAnimating` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [SplitView](controls/SplitView.md) | `showsSidebar`, `showsSidebarChanged`, `sidebarBackground`, `flyoutBackground`, `sidebarOverlays` | 5 | 4 ✅ · 1 – | 4 ✅ · 1 ✓ | 1 ☑️ · 4 ✓ | 3 ✅ · 2 ☑️ | 3 ✅ · 2 ✓ | 3 ✅ · 2 ☑️ |
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
@@ -642,14 +642,14 @@ realizes the element and each of its members.
 <!-- vocabulary:begin -->
 ### Controls and structural nodes
 
-`ActivityIndicator`, `Anchor`, `Application`, `Button`, `ButtonMenu`, `Canvas`,
-`Capsule`, `CheckBox`, `ContextMenu`, `DatePicker`, `Divider`, `Ellipse`,
-`Fill`, `Grid`, `HStack`, `Image`, `ItemsView`, `LayoutEngine`, `Line`, `Map`,
-`Marker`, `Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`, `NavigationStack`,
-`Overlay`, `Page`, `Path`, `Picker`, `Polygon`, `Polyline`, `Popover`,
-`ProgressBar`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`, `Sheet`,
-`Slider`, `Space`, `SplitView`, `Stepper`, `Switch`, `TabView`, `Text`,
-`TextEditor`, `TextField`, `TextSpan`, `TextSpans`, `TimePicker`, `TitleView`,
+`Anchor`, `Application`, `Button`, `ButtonMenu`, `Canvas`, `Capsule`,
+`CheckBox`, `ContextMenu`, `DatePicker`, `Ellipse`, `Fill`, `Grid`, `HStack`,
+`Image`, `ItemsView`, `LayoutEngine`, `Line`, `Map`, `Marker`, `Menu`,
+`MenuBar`, `MenuItem`, `MenuSeparator`, `NavigationStack`, `Overlay`, `Page`,
+`Path`, `Picker`, `Polygon`, `Polyline`, `Popover`, `ProgressBar`, `Rectangle`,
+`Scene`, `ScrollView`, `SearchField`, `Separator`, `Sheet`, `Slider`, `Space`,
+`Spinner`, `SplitView`, `Stepper`, `Switch`, `TabView`, `Text`, `TextEditor`,
+`TextField`, `TextSpan`, `TextSpans`, `TimePicker`, `TitleView`,
 `ToolbarButton`, `ToolbarGroup`, `VStack`, `WebView`, `Window`, `ZStack`.
 
 ### Properties

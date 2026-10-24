@@ -40,7 +40,7 @@ and a scroller's offset stand apart. A picker's `isOpen($x)` goes both ways
 through its events: `opening(_:by:opened:closed:)` is the twin with the
 picker's `opened` and `closed` writing the state, which every host raises.
 A composed view's twins read the state in its content instead: a
-`PositionIndicator`'s row is built again as the state changes.
+`PositionDots`'s row is built again as the state changes.
 `twin` takes a `LaneValue` and `words` a `String`, so text cannot take the
 door for numbers ([what a host reads lanes as](../core/state.md#what-a-host-reads-lanes-as)).
 `testEveryValueModifierHasABindingTwin` holds the two forms together, file by

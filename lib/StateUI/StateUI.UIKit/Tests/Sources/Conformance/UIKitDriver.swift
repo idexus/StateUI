@@ -480,9 +480,9 @@ final class UIKitDriver: HostDriver {
         case (.maximum, let stepper as UIKitStepperView): return stepper.maximumValue.propValue
         case (.step, let stepper as UIKitStepperView): return stepper.stepValue.propValue
         case (.progress, let bar as UIKitProgressBarView): return Double(bar.bar.progress).propValue
-        case (.isAnimating, let spinner as UIKitActivityIndicatorView): return spinner.isAnimating.propValue
+        case (.isAnimating, let spinner as UIKitSpinnerView): return spinner.isAnimating.propValue
         case (.tint, let bar as UIKitProgressBarView): return bar.bar.progressTintColor.map { Self.color($0).propValue }
-        case (.tint, let spinner as UIKitActivityIndicatorView): return spinner.color.map { Self.color($0).propValue }
+        case (.tint, let spinner as UIKitSpinnerView): return spinner.color.map { Self.color($0).propValue }
         case (.tint, let slider as UIKitSliderView): return slider.minimumTrackTintColor.map { Self.color($0).propValue }
         case (.tint, let toggle as UIKitSwitchView): return toggle.control.onTintColor.map { Self.color($0).propValue }
         case (.tint, let box as UIKitCheckView): return Self.color(box.tintColor).propValue

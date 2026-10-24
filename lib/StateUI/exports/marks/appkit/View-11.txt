@@ -1,9 +1,4 @@
-# revision 9.1
-ActivityIndicator.pointerEntered: ✓ hover on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
-ActivityIndicator.pointerExited: ✓ hover on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
-ActivityIndicator.pointerMoved: ✓ hover on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
-ActivityIndicator.pointerPressed: ✓ hover on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
-ActivityIndicator.pointerReleased: ✓ hover on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
+# revision 10.1
 Button.panYChannel: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.frameChanged: ✅
 Canvas.gridColumnSpan: ✅
@@ -19,9 +14,6 @@ CheckBox.pinchUpdated: ✓ pinch on CheckBox: handed to the host's recognizer or
 DatePicker.panTouchCount: ✓ pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.panUpdated: ✓ pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.panXChannel: ✓ pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
-Divider.panTouchCount: ✓ pan on Divider: handed to the host's recognizer or handler, no NSEvent sent
-Divider.panUpdated: ✓ pan on Divider: handed to the host's recognizer or handler, no NSEvent sent
-Divider.panXChannel: ✓ pan on Divider: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.frameChanged: ✅
 Ellipse.gridColumn: ✅
 Ellipse.gridRow: ✅
@@ -83,6 +75,9 @@ ScrollView.panYChannel: ✓ pan on ScrollView: handed to the host's recognizer o
 SearchField.frameChanged: ✅
 SearchField.gridColumnSpan: ✅
 SearchField.gridRowSpan: ✅
+Separator.panTouchCount: ✓ pan on Separator: handed to the host's recognizer or handler, no NSEvent sent
+Separator.panUpdated: ✓ pan on Separator: handed to the host's recognizer or handler, no NSEvent sent
+Separator.panXChannel: ✓ pan on Separator: handed to the host's recognizer or handler, no NSEvent sent
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Slider.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Slider.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
@@ -91,6 +86,11 @@ Slider.frameChanged: ✅
 Slider.horizontalAlignment: ✅
 Slider.verticalAlignment: ✅
 Space.pinchUpdated: ✓ pinch on Space: handed to the host's recognizer or handler, no NSEvent sent
+Spinner.pointerEntered: ✓ hover on Spinner: handed to the host's recognizer or handler, no NSEvent sent
+Spinner.pointerExited: ✓ hover on Spinner: handed to the host's recognizer or handler, no NSEvent sent
+Spinner.pointerMoved: ✓ hover on Spinner: handed to the host's recognizer or handler, no NSEvent sent
+Spinner.pointerPressed: ✓ hover on Spinner: handed to the host's recognizer or handler, no NSEvent sent
+Spinner.pointerReleased: ✓ hover on Spinner: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.panTouchCount: ✓ pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.panUpdated: ✓ pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.panXChannel: ✓ pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent

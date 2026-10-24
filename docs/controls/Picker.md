@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 <thead><tr><th>Host</th><th>Created</th><th>Members (93)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>50 ✅ · 2 ☑️ · 36 ✓ · 2 –</td><td><code>NSPopUpButton</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>42 ✅ · 3 ☑️ · 40 ✓ · 5 –</td><td>pop-up <code>UIButton</code> menu</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>66 ✅ · 6 ☑️ · 13 ✓ · 3 –</td><td><code>Spinner</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>66 ✅ · 6 ☑️ · 13 ✓ · 3 –</td><td><code>android.widget.Spinner</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>74 ✅ · 1 ☑️ · 13 ✓ · 5 –</td><td><code>ComboBox</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 24 ✓ · 12 –</td><td><code>GtkDropDown</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>64 ✅ · 1 ☑️ · 20 ✓ · 6 –</td><td><code>&lt;select&gt;</code></td></tr></tbody>

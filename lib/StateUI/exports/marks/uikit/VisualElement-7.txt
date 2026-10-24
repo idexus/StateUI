@@ -1,6 +1,4 @@
-# revision 19.1
-ActivityIndicator.frame: ✅
-ActivityIndicator.translationX: ✓ read translationX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
+# revision 20.1
 Button.layoutDirection: ✅
 Canvas.accessibilityRole: ✅
 Capsule.maximumHeight: ✅
@@ -10,7 +8,6 @@ Capsule.minimumWidth: ✅
 Capsule.scaleX: ✓ read scaleX of Capsule: the host's own transform, checked against the layer it composed itself
 CheckBox.hidesChildrenFromAccessibility: ✅
 DatePicker.accessibilityHint: ✅
-Divider.pivotX: ✓ read pivotX of Divider: the host's own transform, checked against the layer it composed itself
 Ellipse.height: ✅
 Ellipse.scale: ✓ read scale of Ellipse: the host's own transform, checked against the layer it composed itself
 Ellipse.width: ✅
@@ -40,10 +37,13 @@ Rectangle.isAccessibilityHidden: ✅
 ScrollView.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 ScrollView.layoutDirection: ✅
 SearchField.pivotX: ✓ read pivotX of SearchField: the host's own transform, checked against the layer it composed itself
+Separator.pivotX: ✓ read pivotX of Separator: the host's own transform, checked against the layer it composed itself
 Slider.accessibilityActionPerformed: ✅
 Slider.accessibilityActions: ✅
 Space.frame: ✅
 Space.translationX: ✓ read translationX of Space: the host's own transform, checked against the layer it composed itself
+Spinner.frame: ✅
+Spinner.translationX: ✓ read translationX of Spinner: the host's own transform, checked against the layer it composed itself
 Stepper.hidesChildrenFromAccessibility: ✅
 Switch.accessibilityHint: ✅
 Text.accessibilityRole: ✅

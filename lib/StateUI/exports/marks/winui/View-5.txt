@@ -1,11 +1,4 @@
-# revision 9.1
-ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-ActivityIndicator.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-ActivityIndicator.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-ActivityIndicator.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-ActivityIndicator.frameChanged: ✅
-ActivityIndicator.gridColumnSpan: ✅
-ActivityIndicator.gridRowSpan: ✅
+# revision 10.1
 Button.panTouchCount: ✅
 Button.panUpdated: ✅
 Button.panXChannel: ✅
@@ -31,13 +24,6 @@ CheckBox.gridRowSpan: ✅
 DatePicker.panTouchCount: ✅
 DatePicker.panUpdated: ✅
 DatePicker.panXChannel: ✅
-Divider.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Divider.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Divider.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Divider.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Divider.frameChanged: ✅
-Divider.gridColumnSpan: ✅
-Divider.gridRowSpan: ✅
 Ellipse.frameChanged: ✅
 Ellipse.margin: ✅
 Ellipse.swipeDirection: ✅
@@ -131,6 +117,13 @@ SearchField.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by
 SearchField.frameChanged: ✅
 SearchField.gridColumnSpan: ✅
 SearchField.gridRowSpan: ✅
+Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Separator.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Separator.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Separator.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Separator.frameChanged: ✅
+Separator.gridColumnSpan: ✅
+Separator.gridRowSpan: ✅
 Slider.panTouchCount: ✅
 Slider.panUpdated: ✅
 Slider.panXChannel: ✅
@@ -139,6 +132,13 @@ Space.margin: ✅
 Space.swipeDirection: ✅
 Space.swipeThreshold: ✅
 Space.swiped: ✅
+Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Spinner.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Spinner.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Spinner.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Spinner.frameChanged: ✅
+Spinner.gridColumnSpan: ✅
+Spinner.gridRowSpan: ✅
 Stepper.area: ✅
 Stepper.frameChanged: ✅
 Stepper.pointerEntered: ✅

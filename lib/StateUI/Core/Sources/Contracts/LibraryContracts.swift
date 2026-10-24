@@ -38,14 +38,14 @@
 
     /// Every element: one contract per node type the library declares.
     public static let elements: [any ElementContract.Type] = [
-        ActivityIndicatorContract.self, AnchorContract.self, ApplicationContract.self,
+        SpinnerContract.self, AnchorContract.self, ApplicationContract.self,
         ButtonContract.self, ButtonMenuContract.self, CanvasContract.self, CapsuleContract.self, CheckBoxContract.self,
         ContextMenuContract.self, DatePickerContract.self,
         EllipseContract.self, FillContract.self, GridContract.self, HStackContract.self, ImageContract.self,
         ItemsViewContract.self,
         TextContract.self,
         LayoutEngineContract.self, LineContract.self, MapContract.self, MenuBarContract.self,
-        MenuContract.self, MenuItemContract.self, MenuSeparatorContract.self, DividerContract.self,
+        MenuContract.self, MenuItemContract.self, MenuSeparatorContract.self, SeparatorContract.self,
         NavigationStackContract.self, OverlayContract.self, PageContract.self, PathContract.self,
         PickerContract.self, PopoverContract.self, SheetContract.self, MarkerContract.self, PolygonContract.self, PolylineContract.self,
         ProgressBarContract.self,

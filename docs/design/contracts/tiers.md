@@ -43,8 +43,8 @@ Swift protocols behind them refine each other.
 ## Who wears what
 
 ```text
-  View               ActivityIndicator, Button, Canvas, CheckBox,
-                     DatePicker, Divider, Fill, Image, Text, Map, Picker,
+  View               Spinner, Button, Canvas, CheckBox,
+                     DatePicker, Separator, Fill, Image, Text, Map, Picker,
                      ProgressBar, ScrollView, Slider, Space, Stepper,
                      Switch, TimePicker, WebView, ItemsView
   Layout             Grid, LayoutEngine, ZStack

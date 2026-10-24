@@ -1,5 +1,4 @@
-# revision 19.1
-ActivityIndicator.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+# revision 20.1
 Button.isVisible: ✅
 Button.rotation: ✓ read rotation of Button: the host's own transform, checked against the layer it composed itself
 Canvas.accessibilityAdjusted: ✅
@@ -8,8 +7,6 @@ Capsule.translationY: ✓ read translationY of Capsule: the host's own transform
 CheckBox.pivotX: ✓ read pivotX of CheckBox: the host's own transform, checked against the layer it composed itself
 DatePicker.accessibilityActionPerformed: ✅
 DatePicker.accessibilityActions: ✅
-Divider.opacity: ✅
-Divider.rotationX: ✓ read rotationX of Divider: the host's own transform, checked against the layer it composed itself
 Ellipse.frame: ✅
 Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform, checked against the layer it composed itself
 Fill.layoutDirection: ✅
@@ -34,9 +31,12 @@ Rectangle.layoutDirection: ✅
 ScrollView.accessibilityRole: ✅
 SearchField.opacity: ✅
 SearchField.rotationX: ✓ read rotationX of SearchField: the host's own transform, checked against the layer it composed itself
+Separator.opacity: ✅
+Separator.rotationX: ✓ read rotationX of Separator: the host's own transform, checked against the layer it composed itself
 Slider.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 Space.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Space.background: ✅
+Spinner.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Stepper.pivotX: ✓ read pivotX of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.accessibilityActionPerformed: ✅
 Switch.accessibilityActions: ✅

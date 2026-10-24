@@ -1,38 +1,4 @@
-# revision 9.1
-ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-ActivityIndicator.area: ✅
-ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the views' drag listeners' reports told by the driver, no drag started
-ActivityIndicator.dragEnded: ✓ dragAndDrop on ActivityIndicator: the views' drag listeners' reports told by the driver, no drag started
-ActivityIndicator.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-ActivityIndicator.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-ActivityIndicator.dragStarting: ✓ dragAndDrop on ActivityIndicator: the views' drag listeners' reports told by the driver, no drag started
-ActivityIndicator.dragText: ✓ dragAndDrop on ActivityIndicator: the views' drag listeners' reports told by the driver, no drag started
-ActivityIndicator.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-ActivityIndicator.droppedFileTypes: ✓ dropFiles on ActivityIndicator: the view's drag listener's report told the driver's documents, no drag started
-ActivityIndicator.filesDropped: ✓ dropFiles on ActivityIndicator: the view's drag listener's report told the driver's documents, no drag started
-ActivityIndicator.frameChanged: ✅
-ActivityIndicator.gridColumn: ✅
-ActivityIndicator.gridColumnSpan: ✅
-ActivityIndicator.gridRow: ✅
-ActivityIndicator.gridRowSpan: ✅
-ActivityIndicator.horizontalAlignment: ✅
-ActivityIndicator.margin: ✅
-ActivityIndicator.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
-ActivityIndicator.panUpdated: ✅
-ActivityIndicator.panXChannel: ✅
-ActivityIndicator.panYChannel: ✅
-ActivityIndicator.pinchUpdated: ✅
-ActivityIndicator.pointerEntered: ✅
-ActivityIndicator.pointerExited: ✅
-ActivityIndicator.pointerMoved: ✅
-ActivityIndicator.pointerPressed: ✅
-ActivityIndicator.pointerReleased: ✅
-ActivityIndicator.swipeDirection: ✅
-ActivityIndicator.swipeThreshold: ✅
-ActivityIndicator.swiped: ✅
-ActivityIndicator.tapCount: ✅
-ActivityIndicator.tapped: ✅
-ActivityIndicator.verticalAlignment: ✅
+# revision 10.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started
@@ -203,40 +169,6 @@ DatePicker.swiped: ✅
 DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
 DatePicker.verticalAlignment: ✅
-Divider.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Divider.area: ✅
-Divider.canDrag: ✓ dragAndDrop on Divider: the views' drag listeners' reports told by the driver, no drag started
-Divider.dragEnded: ✓ dragAndDrop on Divider: the views' drag listeners' reports told by the driver, no drag started
-Divider.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Divider.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Divider.dragStarting: ✓ dragAndDrop on Divider: the views' drag listeners' reports told by the driver, no drag started
-Divider.dragText: ✓ dragAndDrop on Divider: the views' drag listeners' reports told by the driver, no drag started
-Divider.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Divider.droppedFileTypes: ✓ dropFiles on Divider: the view's drag listener's report told the driver's documents, no drag started
-Divider.filesDropped: ✓ dropFiles on Divider: the view's drag listener's report told the driver's documents, no drag started
-Divider.frameChanged: ✅
-Divider.gridColumn: ✅
-Divider.gridColumnSpan: ✅
-Divider.gridRow: ✅
-Divider.gridRowSpan: ✅
-Divider.horizontalAlignment: ✅
-Divider.margin: ✅
-Divider.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
-Divider.panUpdated: ✅
-Divider.panXChannel: ✅
-Divider.panYChannel: ✅
-Divider.pinchUpdated: ✅
-Divider.pointerEntered: ✅
-Divider.pointerExited: ✅
-Divider.pointerMoved: ✅
-Divider.pointerPressed: ✅
-Divider.pointerReleased: ✅
-Divider.swipeDirection: ✅
-Divider.swipeThreshold: ✅
-Divider.swiped: ✅
-Divider.tapCount: ✅
-Divider.tapped: ✅
-Divider.verticalAlignment: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Ellipse.area: ✅
 Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the views' drag listeners' reports told by the driver, no drag started
@@ -815,6 +747,40 @@ SearchField.swiped: ✅
 SearchField.tapCount: ✅
 SearchField.tapped: ✅
 SearchField.verticalAlignment: ✅
+Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Separator.area: ✅
+Separator.canDrag: ✓ dragAndDrop on Separator: the views' drag listeners' reports told by the driver, no drag started
+Separator.dragEnded: ✓ dragAndDrop on Separator: the views' drag listeners' reports told by the driver, no drag started
+Separator.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Separator.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Separator.dragStarting: ✓ dragAndDrop on Separator: the views' drag listeners' reports told by the driver, no drag started
+Separator.dragText: ✓ dragAndDrop on Separator: the views' drag listeners' reports told by the driver, no drag started
+Separator.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Separator.droppedFileTypes: ✓ dropFiles on Separator: the view's drag listener's report told the driver's documents, no drag started
+Separator.filesDropped: ✓ dropFiles on Separator: the view's drag listener's report told the driver's documents, no drag started
+Separator.frameChanged: ✅
+Separator.gridColumn: ✅
+Separator.gridColumnSpan: ✅
+Separator.gridRow: ✅
+Separator.gridRowSpan: ✅
+Separator.horizontalAlignment: ✅
+Separator.margin: ✅
+Separator.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+Separator.panUpdated: ✅
+Separator.panXChannel: ✅
+Separator.panYChannel: ✅
+Separator.pinchUpdated: ✅
+Separator.pointerEntered: ✅
+Separator.pointerExited: ✅
+Separator.pointerMoved: ✅
+Separator.pointerPressed: ✅
+Separator.pointerReleased: ✅
+Separator.swipeDirection: ✅
+Separator.swipeThreshold: ✅
+Separator.swiped: ✅
+Separator.tapCount: ✅
+Separator.tapped: ✅
+Separator.verticalAlignment: ✅
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Slider.area: ✅
 Slider.canDrag: ✓ dragAndDrop on Slider: the views' drag listeners' reports told by the driver, no drag started
@@ -883,6 +849,40 @@ Space.swiped: ✅
 Space.tapCount: ✅
 Space.tapped: ✅
 Space.verticalAlignment: ✅
+Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Spinner.area: ✅
+Spinner.canDrag: ✓ dragAndDrop on Spinner: the views' drag listeners' reports told by the driver, no drag started
+Spinner.dragEnded: ✓ dragAndDrop on Spinner: the views' drag listeners' reports told by the driver, no drag started
+Spinner.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Spinner.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Spinner.dragStarting: ✓ dragAndDrop on Spinner: the views' drag listeners' reports told by the driver, no drag started
+Spinner.dragText: ✓ dragAndDrop on Spinner: the views' drag listeners' reports told by the driver, no drag started
+Spinner.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Spinner.droppedFileTypes: ✓ dropFiles on Spinner: the view's drag listener's report told the driver's documents, no drag started
+Spinner.filesDropped: ✓ dropFiles on Spinner: the view's drag listener's report told the driver's documents, no drag started
+Spinner.frameChanged: ✅
+Spinner.gridColumn: ✅
+Spinner.gridColumnSpan: ✅
+Spinner.gridRow: ✅
+Spinner.gridRowSpan: ✅
+Spinner.horizontalAlignment: ✅
+Spinner.margin: ✅
+Spinner.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+Spinner.panUpdated: ✅
+Spinner.panXChannel: ✅
+Spinner.panYChannel: ✅
+Spinner.pinchUpdated: ✅
+Spinner.pointerEntered: ✅
+Spinner.pointerExited: ✅
+Spinner.pointerMoved: ✅
+Spinner.pointerPressed: ✅
+Spinner.pointerReleased: ✅
+Spinner.swipeDirection: ✅
+Spinner.swipeThreshold: ✅
+Spinner.swiped: ✅
+Spinner.tapCount: ✅
+Spinner.tapped: ✅
+Spinner.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Stepper.area: ✅
 Stepper.canDrag: ✓ dragAndDrop on Stepper: the views' drag listeners' reports told by the driver, no drag started

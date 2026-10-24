@@ -1,11 +1,4 @@
-# revision 9.1
-ActivityIndicator.area: ✅
-ActivityIndicator.frameChanged: ✅
-ActivityIndicator.pointerEntered: ✅
-ActivityIndicator.pointerExited: ✅
-ActivityIndicator.pointerMoved: ✅
-ActivityIndicator.pointerPressed: ✅
-ActivityIndicator.pointerReleased: ✅
+# revision 10.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -35,13 +28,6 @@ DatePicker.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by 
 DatePicker.frameChanged: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRowSpan: ✅
-Divider.area: ✅
-Divider.frameChanged: ✅
-Divider.pointerEntered: ✅
-Divider.pointerExited: ✅
-Divider.pointerMoved: ✅
-Divider.pointerPressed: ✅
-Divider.pointerReleased: ✅
 Ellipse.panTouchCount: ✅
 Ellipse.panUpdated: ✅
 Ellipse.panXChannel: ✅
@@ -132,6 +118,13 @@ SearchField.pointerExited: ✅
 SearchField.pointerMoved: ✅
 SearchField.pointerPressed: ✅
 SearchField.pointerReleased: ✅
+Separator.area: ✅
+Separator.frameChanged: ✅
+Separator.pointerEntered: ✅
+Separator.pointerExited: ✅
+Separator.pointerMoved: ✅
+Separator.pointerPressed: ✅
+Separator.pointerReleased: ✅
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Slider.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Slider.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -142,6 +135,13 @@ Slider.gridRowSpan: ✅
 Space.panTouchCount: ✅
 Space.panUpdated: ✅
 Space.panXChannel: ✅
+Spinner.area: ✅
+Spinner.frameChanged: ✅
+Spinner.pointerEntered: ✅
+Spinner.pointerExited: ✅
+Spinner.pointerMoved: ✅
+Spinner.pointerPressed: ✅
+Spinner.pointerReleased: ✅
 Stepper.frameChanged: ✅
 Stepper.margin: ✅
 Stepper.swipeDirection: ✅

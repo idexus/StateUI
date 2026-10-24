@@ -1,8 +1,4 @@
-# revision 9.1
-ActivityIndicator.frameChanged: ✅
-ActivityIndicator.horizontalAlignment: ✅
-ActivityIndicator.pinchUpdated: ✓ pinch on ActivityIndicator: the relay's report of the manipulation handed to the host, no touch sent
-ActivityIndicator.verticalAlignment: ✅
+# revision 10.1
 Button.canDrag: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragEnded: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragStarting: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
@@ -26,10 +22,6 @@ DatePicker.dragText: ✓ dragAndDrop on DatePicker: the relay's drag reports tol
 DatePicker.frameChanged: ✅
 DatePicker.gridColumn: ✅
 DatePicker.gridRow: ✅
-Divider.frameChanged: ✅
-Divider.horizontalAlignment: ✅
-Divider.pinchUpdated: ✓ pinch on Divider: the relay's report of the manipulation handed to the host, no touch sent
-Divider.verticalAlignment: ✅
 Ellipse.droppedFileTypes: ✓ dropFiles on Ellipse: the relay's drop report told the driver's files, no drag WinUI began
 Ellipse.filesDropped: ✓ dropFiles on Ellipse: the relay's drop report told the driver's files, no drag WinUI began
 Ellipse.tapCount: ✅
@@ -95,6 +87,10 @@ SearchField.frameChanged: ✅
 SearchField.horizontalAlignment: ✅
 SearchField.pinchUpdated: ✓ pinch on SearchField: the relay's report of the manipulation handed to the host, no touch sent
 SearchField.verticalAlignment: ✅
+Separator.frameChanged: ✅
+Separator.horizontalAlignment: ✅
+Separator.pinchUpdated: ✓ pinch on Separator: the relay's report of the manipulation handed to the host, no touch sent
+Separator.verticalAlignment: ✅
 Slider.canDrag: ✓ dragAndDrop on Slider: the relay's drag reports told by the driver, no drag WinUI began
 Slider.dragEnded: ✓ dragAndDrop on Slider: the relay's drag reports told by the driver, no drag WinUI began
 Slider.dragStarting: ✓ dragAndDrop on Slider: the relay's drag reports told by the driver, no drag WinUI began
@@ -106,6 +102,10 @@ Space.droppedFileTypes: ✓ dropFiles on Space: the relay's drop report told the
 Space.filesDropped: ✓ dropFiles on Space: the relay's drop report told the driver's files, no drag WinUI began
 Space.tapCount: ✅
 Space.tapped: ✅
+Spinner.frameChanged: ✅
+Spinner.horizontalAlignment: ✅
+Spinner.pinchUpdated: ✓ pinch on Spinner: the relay's report of the manipulation handed to the host, no touch sent
+Spinner.verticalAlignment: ✅
 Stepper.panYChannel: ✅
 Switch.frameChanged: ✅
 Switch.horizontalAlignment: ✅

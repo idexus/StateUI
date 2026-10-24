@@ -1,6 +1,4 @@
-# revision 19.2
-ActivityIndicator.accessibilityHeading: ✅
-ActivityIndicator.scale: ✅
+# revision 20.2
 Button.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Button.translationX: ✅
 Canvas.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
@@ -13,8 +11,6 @@ CheckBox.minimumWidth: ✅
 CheckBox.pivotX: ✅
 DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own tip, checked against the projection it laid on the element
 DatePicker.zIndex: ✅
-Divider.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-Divider.translationY: ✅
 Ellipse.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Ellipse.translationX: ✅
 Fill.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
@@ -47,10 +43,14 @@ ScrollView.isAccessibilityHidden: ✅
 ScrollView.isVisible: ✅
 SearchField.hidesChildrenFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 SearchField.opacity: ✅
+Separator.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+Separator.translationY: ✅
 Slider.ignoresInput: ✅
 Slider.pivotY: ✅
 Space.accessibilityHeading: ✅
 Space.scale: ✅
+Spinner.accessibilityHeading: ✅
+Spinner.scale: ✅
 Stepper.accessibilityLabel: ✅
 Stepper.scaleX: ✅
 Switch.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.

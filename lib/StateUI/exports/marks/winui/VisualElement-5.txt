@@ -1,9 +1,4 @@
-# revision 19.2
-ActivityIndicator.maximumHeight: ✅
-ActivityIndicator.maximumWidth: ✅
-ActivityIndicator.minimumHeight: ✅
-ActivityIndicator.minimumWidth: ✅
-ActivityIndicator.pivotX: ✅
+# revision 20.2
 Button.rotationX: ✓ read rotationX of Button: the host's own tip, checked against the projection it laid on the element
 Button.style: ✅
 Canvas.accessibilityLabel: ✅
@@ -15,8 +10,6 @@ CheckBox.accessibilityHeading: ✅
 DatePicker.height: ✅
 DatePicker.layoutDirection: ✅
 DatePicker.width: ✅
-Divider.rotationY: ✓ read rotationY of Divider: the host's own tip, checked against the projection it laid on the element
-Divider.zIndex: ✅
 Ellipse.rotationX: ✓ read rotationX of Ellipse: the host's own tip, checked against the projection it laid on the element
 Ellipse.style: ✅
 Fill.accessibilityLabel: ✅
@@ -56,6 +49,8 @@ ScrollView.accessibilityValue: – A WinUI control says its own value to assisti
 ScrollView.translationY: ✅
 SearchField.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 SearchField.accessibilityActions: – UI Automation offers no action of an application's own words.
+Separator.rotationY: ✓ read rotationY of Separator: the host's own tip, checked against the projection it laid on the element
+Separator.zIndex: ✅
 Slider.isAccessibilityHidden: ✅
 Slider.isVisible: ✅
 Space.maximumHeight: ✅
@@ -63,6 +58,11 @@ Space.maximumWidth: ✅
 Space.minimumHeight: ✅
 Space.minimumWidth: ✅
 Space.pivotX: ✅
+Spinner.maximumHeight: ✅
+Spinner.maximumWidth: ✅
+Spinner.minimumHeight: ✅
+Spinner.minimumWidth: ✅
+Spinner.pivotX: ✅
 Stepper.ignoresInput: ✅
 Stepper.pivotY: ✅
 Switch.accessibilityHeading: ✅

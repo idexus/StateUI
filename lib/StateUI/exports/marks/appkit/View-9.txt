@@ -1,7 +1,4 @@
-# revision 9.1
-ActivityIndicator.swipeDirection: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
-ActivityIndicator.swipeThreshold: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
-ActivityIndicator.swiped: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
+# revision 10.1
 Button.tapCount: ✓ tap on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.tapped: ✓ tap on Button: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.area: ✅
@@ -17,9 +14,6 @@ CheckBox.panYChannel: ✓ pan on CheckBox: handed to the host's recognizer or ha
 DatePicker.frameChanged: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRowSpan: ✅
-Divider.frameChanged: ✅
-Divider.gridColumnSpan: ✅
-Divider.gridRowSpan: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Ellipse.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Ellipse.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
@@ -83,12 +77,18 @@ SearchField.area: ✅
 SearchField.droppedFileTypes: ✓ dropFiles on SearchField: the window's drop routing told the driver's files, no dragging session
 SearchField.filesDropped: ✓ dropFiles on SearchField: the window's drop routing told the driver's files, no dragging session
 SearchField.frameChanged: ✅
+Separator.frameChanged: ✅
+Separator.gridColumnSpan: ✅
+Separator.gridRowSpan: ✅
 Slider.pointerEntered: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.pointerExited: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.pointerMoved: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.pointerPressed: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.pointerReleased: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Space.panYChannel: ✓ pan on Space: handed to the host's recognizer or handler, no NSEvent sent
+Spinner.swipeDirection: ✓ pan on Spinner: handed to the host's recognizer or handler, no NSEvent sent
+Spinner.swipeThreshold: ✓ pan on Spinner: handed to the host's recognizer or handler, no NSEvent sent
+Spinner.swiped: ✓ pan on Spinner: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.frameChanged: ✅
 Stepper.gridColumnSpan: ✅
 Stepper.gridRowSpan: ✅

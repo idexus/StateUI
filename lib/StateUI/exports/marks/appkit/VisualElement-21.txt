@@ -1,5 +1,4 @@
-# revision 19.1
-ActivityIndicator.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
+# revision 20.1
 Button.accessibilityHint: ✅
 Canvas.isEnabled: ✅
 Canvas.rotationY: ✓ read rotationY of Canvas: the host's own transform, checked against the layer it composed itself
@@ -7,7 +6,6 @@ Capsule.isAccessibilityHidden: ✅
 CheckBox.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 DatePicker.opacity: ✅
 DatePicker.rotationX: ✓ read rotationX of DatePicker: the host's own transform, checked against the layer it composed itself
-Divider.accessibilityRole: ✅
 Ellipse.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 Fill.isEnabled: ✓ tap on Fill: handed to the host's recognizer or handler, no NSEvent sent
 Fill.zIndex: ✅
@@ -34,12 +32,14 @@ Rectangle.isEnabled: ✓ tap on Rectangle: handed to the host's recognizer or ha
 Rectangle.zIndex: ✅
 ScrollView.pivotY: ✓ read pivotY of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.accessibilityRole: ✅
+Separator.accessibilityRole: ✅
 Slider.maximumHeight: ✅
 Slider.maximumWidth: ✅
 Slider.minimumHeight: ✅
 Slider.minimumWidth: ✅
 Slider.scaleX: ✓ read scaleX of Slider: the host's own transform, checked against the layer it composed itself
 Space.background: ✅
+Spinner.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Stepper.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Switch.opacity: ✅
 Switch.rotationX: ✓ read rotationX of Switch: the host's own transform, checked against the layer it composed itself

@@ -1,11 +1,4 @@
-# revision 9.1
-ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-ActivityIndicator.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-ActivityIndicator.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-ActivityIndicator.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-ActivityIndicator.frameChanged: ✅
-ActivityIndicator.horizontalAlignment: ✅
-ActivityIndicator.verticalAlignment: ✅
+# revision 10.1
 Button.pinchUpdated: ✓ pinch on Button: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.panTouchCount: ✓ pan on Canvas: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.panUpdated: ✓ pan on Canvas: handed to the host's recognizer or handler, no NSEvent sent
@@ -22,9 +15,6 @@ CheckBox.margin: ✅
 DatePicker.swipeDirection: ✓ pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.swipeThreshold: ✓ pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.swiped: ✓ pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
-Divider.swipeDirection: ✓ pan on Divider: handed to the host's recognizer or handler, no NSEvent sent
-Divider.swipeThreshold: ✓ pan on Divider: handed to the host's recognizer or handler, no NSEvent sent
-Divider.swiped: ✓ pan on Divider: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.tapCount: ✓ tap on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.tapped: ✓ tap on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Fill.area: ✅
@@ -85,6 +75,9 @@ ScrollView.pinchUpdated: ✓ pinch on ScrollView: handed to the host's recognize
 SearchField.panTouchCount: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.panUpdated: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.panXChannel: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
+Separator.swipeDirection: ✓ pan on Separator: handed to the host's recognizer or handler, no NSEvent sent
+Separator.swipeThreshold: ✓ pan on Separator: handed to the host's recognizer or handler, no NSEvent sent
+Separator.swiped: ✓ pan on Separator: handed to the host's recognizer or handler, no NSEvent sent
 Slider.frameChanged: ✅
 Slider.gridColumn: ✅
 Slider.gridRow: ✅
@@ -94,6 +87,13 @@ Space.dragStarting: ✓ dragAndDrop on Space: the drag source and the window's d
 Space.dragText: ✓ dragAndDrop on Space: the drag source and the window's drop routing told by the driver, no dragging session
 Space.frameChanged: ✅
 Space.margin: ✅
+Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Spinner.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Spinner.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Spinner.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Spinner.frameChanged: ✅
+Spinner.horizontalAlignment: ✅
+Spinner.verticalAlignment: ✅
 Stepper.swipeDirection: ✓ pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.swipeThreshold: ✓ pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.swiped: ✓ pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent

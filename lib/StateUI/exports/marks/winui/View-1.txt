@@ -1,9 +1,4 @@
-# revision 9.1
-ActivityIndicator.frameChanged: ✅
-ActivityIndicator.margin: ✅
-ActivityIndicator.swipeDirection: ✅
-ActivityIndicator.swipeThreshold: ✅
-ActivityIndicator.swiped: ✅
+# revision 10.1
 Button.area: ✅
 Button.frameChanged: ✅
 Button.pointerEntered: ✅
@@ -33,11 +28,6 @@ DatePicker.pointerExited: ✅
 DatePicker.pointerMoved: ✅
 DatePicker.pointerPressed: ✅
 DatePicker.pointerReleased: ✅
-Divider.frameChanged: ✅
-Divider.margin: ✅
-Divider.swipeDirection: ✅
-Divider.swipeThreshold: ✅
-Divider.swiped: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Ellipse.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Ellipse.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -131,6 +121,11 @@ SearchField.margin: ✅
 SearchField.swipeDirection: ✅
 SearchField.swipeThreshold: ✅
 SearchField.swiped: ✅
+Separator.frameChanged: ✅
+Separator.margin: ✅
+Separator.swipeDirection: ✅
+Separator.swipeThreshold: ✅
+Separator.swiped: ✅
 Slider.area: ✅
 Slider.frameChanged: ✅
 Slider.pointerEntered: ✅
@@ -145,6 +140,11 @@ Space.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the d
 Space.frameChanged: ✅
 Space.gridColumnSpan: ✅
 Space.gridRowSpan: ✅
+Spinner.frameChanged: ✅
+Spinner.margin: ✅
+Spinner.swipeDirection: ✅
+Spinner.swipeThreshold: ✅
+Spinner.swiped: ✅
 Stepper.panTouchCount: ✅
 Stepper.panUpdated: ✅
 Stepper.panXChannel: ✅

@@ -13,7 +13,7 @@ import XCTest
 final class AndroidConformanceTests: XCTestCase {
     static var allTests: [(String, (AndroidConformanceTests) -> () throws -> Void)] {
         [
-            ("testActivityIndicator", testActivityIndicator),
+            ("testSpinner", testSpinner),
             ("testButton", testButton),
             ("testCanvas", testCanvas),
             ("testCapsule", testCapsule),
@@ -54,7 +54,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testMenu", testMenu),
             ("testMenuBar", testMenuBar),
             ("testMenuItem", testMenuItem),
-            ("testDivider", testDivider),
+            ("testSeparator", testSeparator),
             ("testMenuSeparator", testMenuSeparator),
             ("testAnchor", testAnchor),
             ("testSheet", testSheet),
@@ -101,7 +101,7 @@ final class AndroidConformanceTests: XCTestCase {
         ]
     }
 
-    func testActivityIndicator() throws { try conform(ActivityIndicatorTests.self) }
+    func testSpinner() throws { try conform(SpinnerTests.self) }
     func testButton() throws { try conform(ButtonTests.self) }
     func testCanvas() throws { try conform(CanvasTests.self) }
     func testCapsule() throws { try conform(CapsuleTests.self) }
@@ -142,7 +142,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testMenu() throws { try conform(MenuTests.self) }
     func testMenuBar() throws { try conform(MenuBarTests.self) }
     func testMenuItem() throws { try conform(MenuItemTests.self) }
-    func testDivider() throws { try conform(DividerTests.self) }
+    func testSeparator() throws { try conform(SeparatorTests.self) }
     func testMenuSeparator() throws { try conform(MenuSeparatorTests.self) }
     func testAnchor() throws { try conform(AnchorTests.self) }
     func testSheet() throws { try conform(SheetTests.self) }

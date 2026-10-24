@@ -80,26 +80,6 @@ enum Listings {
             }
         }
         """#,
-        "ActivityIndicatorSample": #"""
-        // Sources/Samples/BasicInput/ActivityIndicatorSample.swift
-        @State private var loading = true
-
-        var body: some View {
-            VStack {
-                // The flag is read here, so starting and stopping builds this
-                // closure - the spinner itself costs nothing to keep running.
-                DebugInfoLabel()
-
-                ActivityIndicator(loading)
-                    .height(48)
-
-                Switch($loading)
-                    .text("Working")
-                    .horizontalAlignment(.center)
-
-            }
-        }
-        """#,
         "AimSample": #"""
         // Sources/Samples/State/AimSample.swift
         @State private var text = ""
@@ -3988,11 +3968,11 @@ enum Listings {
                     // to the middle, not on every frame of the movement.
                     DebugInfoLabel()
 
-                    PositionIndicator()
+                    PositionDots()
                         .count(cards.count)
                         .position(shown)
-                        .indicatorColor(Palette.outline)
-                        .currentIndicatorColor(Palette.accent)
+                        .dotColor(Palette.outline)
+                        .currentDotColor(Palette.accent)
                         .horizontalAlignment(.center)
 
                     Text("\(cards[front].name) · card \(shown + 1) of \(cards.count) · \(opened) · moved \(moves)")
@@ -8514,7 +8494,7 @@ enum Listings {
 
                 Text("\(rounds) round(s)")
 
-                ActivityIndicator(checking)
+                Spinner(checking)
                     .height(28)
 
                 Button(poll.isRunning || checking ? "Stop" : "Start")
@@ -8566,8 +8546,8 @@ enum Listings {
             }
         }
         """#,
-        "PositionIndicatorSample": #"""
-        // Sources/Samples/Collections/PositionIndicatorSample.swift
+        "PositionDotsSample": #"""
+        // Sources/Samples/Collections/PositionDotsSample.swift
         @State private var step = 0
         @State private var cap = 5.0
 
@@ -8582,20 +8562,20 @@ enum Listings {
                 Text(Self.steps[step])
                     .fontWeight(.bold)
 
-                PositionIndicator()
+                PositionDots()
                     .count(Self.steps.count)
                     .position(step)
-                    .indicatorColor(Palette.outline)
-                    .currentIndicatorColor(Palette.accent)
+                    .dotColor(Palette.outline)
+                    .currentDotColor(Palette.accent)
                     .horizontalAlignment(.center)
 
-                PositionIndicator()
+                PositionDots()
                     .count(Self.steps.count)
                     .position(step)
-                    .indicatorShape(.square)
-                    .indicatorSize(10)
-                    .indicatorColor(Palette.outline)
-                    .currentIndicatorColor(Palette.accent)
+                    .dotShape(.square)
+                    .dotSize(10)
+                    .dotColor(Palette.outline)
+                    .currentDotColor(Palette.accent)
                     .horizontalAlignment(.center)
 
                 HStack {
@@ -8616,23 +8596,23 @@ enum Listings {
                 Text("Twelve items, maximumVisible(12)")
                     .horizontalAlignment(.center)
 
-                PositionIndicator()
+                PositionDots()
                     .count(12)
                     .position(step)
                     .maximumVisible(12)
-                    .indicatorColor(Palette.outline)
-                    .currentIndicatorColor(Palette.accent)
+                    .dotColor(Palette.outline)
+                    .currentDotColor(Palette.accent)
                     .horizontalAlignment(.center)
 
                 Text("The same twelve, maximumVisible(\(Int(cap)))")
                     .horizontalAlignment(.center)
 
-                PositionIndicator()
+                PositionDots()
                     .count(12)
                     .position(step)
                     .maximumVisible(Int(cap))
-                    .indicatorColor(Palette.outline)
-                    .currentIndicatorColor(Palette.accent)
+                    .dotColor(Palette.outline)
+                    .currentDotColor(Palette.accent)
                     .horizontalAlignment(.center)
 
                 Stepper($cap)
@@ -8648,24 +8628,24 @@ enum Listings {
                     VStack {
                         Text("hidesForSinglePage(true)")
 
-                        PositionIndicator()
+                        PositionDots()
                             .count(1)
                             .position(0)
                             .hidesForSinglePage(true)
-                            .indicatorColor(Palette.outline)
-                            .currentIndicatorColor(Palette.accent)
+                            .dotColor(Palette.outline)
+                            .currentDotColor(Palette.accent)
                             .horizontalAlignment(.center)
                     }
 
                     VStack {
                         Text("hidesForSinglePage(false)")
 
-                        PositionIndicator()
+                        PositionDots()
                             .count(1)
                             .position(0)
                             .hidesForSinglePage(false)
-                            .indicatorColor(Palette.outline)
-                            .currentIndicatorColor(Palette.accent)
+                            .dotColor(Palette.outline)
+                            .currentDotColor(Palette.accent)
                             .horizontalAlignment(.center)
                     }
                 }
@@ -9303,7 +9283,7 @@ enum Listings {
 
                 HStack {
                     if document.isBusy {
-                        ActivityIndicator(true)
+                        Spinner(true)
                     }
                     Text(said)
                 }
@@ -10092,6 +10072,26 @@ enum Listings {
             }
         }
         """#,
+        "SpinnerSample": #"""
+        // Sources/Samples/BasicInput/SpinnerSample.swift
+        @State private var loading = true
+
+        var body: some View {
+            VStack {
+                // The flag is read here, so starting and stopping builds this
+                // closure - the spinner itself costs nothing to keep running.
+                DebugInfoLabel()
+
+                Spinner(loading)
+                    .height(48)
+
+                Switch($loading)
+                    .text("Working")
+                    .horizontalAlignment(.center)
+
+            }
+        }
+        """#,
         "SplitViewSample": #"""
         // Sources/Samples/Navigation/SplitViewSample.swift
         /// Where the gallery is: this sample opens and closes the menu, and sends
@@ -10176,19 +10176,19 @@ enum Listings {
                 Switch($spaced)
                     .text("Space")
 
-                SectionTitle("Divider")
+                SectionTitle("Separator")
 
                 // The platform's own line, across its stack.
                 VStack {
                     Text("Inbox")
-                    Divider()
+                    Separator()
                     Text("Archive")
                 }
 
                 HStack {
                     Text("Bold")
                         .fontWeight(.bold)
-                    Divider()
+                    Separator()
                     Text("Italic")
                 }
             }

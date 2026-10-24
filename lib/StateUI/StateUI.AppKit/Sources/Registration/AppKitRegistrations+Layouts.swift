@@ -31,11 +31,11 @@ extension AppKitRegistrations {
         // Design: docs/design/host/layout.md#a-fill
         registry.add(FillContract.self, create: { _ in AppKitZStackView() })
 
-        // A space is a box of its own the stack's arithmetic sizes, drawn as a layout's box; a divider in a stack is
+        // A space is a box of its own the stack's arithmetic sizes, drawn as a layout's box; a separator in a stack is
         // the toolkit's line.
         // Design: docs/design/host/layout.md#a-space
         registry.add(SpaceContract.self, create: { _ in AppKitZStackView() })
-        registry.add(DividerContract.self, create: { _ in AppKitDividerView() })
+        registry.add(SeparatorContract.self, create: { _ in AppKitSeparatorView() })
 
         // The host makes the scroll view; its registration takes the members alone.
         // Design: docs/design/platforms/appkit/registrations.md#the-scroll-view

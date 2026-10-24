@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// An ActivityIndicator: a ring turning while work goes on, at its own size in the middle of the view's frame - a
+/// An Spinner: a ring turning while work goes on, at its own size in the middle of the view's frame - a
 /// busy progress bar for assistive technology; stopped, it shows nothing and keeps its room.
 /// Design: docs/design/platforms/web/controls.md#indicators
 @MainActor

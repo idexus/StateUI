@@ -1,6 +1,4 @@
-# revision 19.2
-ActivityIndicator.accessibilityLabel: ✅
-ActivityIndicator.scaleX: ✅
+# revision 20.2
 Button.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Button.translationY: ✅
 Canvas.tooltip: ✅
@@ -10,8 +8,6 @@ CheckBox.ignoresInput: ✅
 CheckBox.pivotY: ✅
 DatePicker.accessibilityHeading: ✅
 DatePicker.scale: ✅
-Divider.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-Divider.accessibilityActions: – UI Automation offers no action of an application's own words.
 Ellipse.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Ellipse.translationY: ✅
 Fill.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
@@ -45,10 +41,14 @@ ScrollView.hidesChildrenFromAccessibility: ✅
 ScrollView.opacity: ✅
 SearchField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 SearchField.isEnabled: ✅
+Separator.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+Separator.accessibilityActions: – UI Automation offers no action of an application's own words.
 Slider.frame: ✅
 Slider.rotation: ✅
 Space.accessibilityLabel: ✅
 Space.scaleX: ✅
+Spinner.accessibilityLabel: ✅
+Spinner.scaleX: ✅
 Stepper.accessibilityHint: ✅
 Stepper.scaleY: ✅
 Switch.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.

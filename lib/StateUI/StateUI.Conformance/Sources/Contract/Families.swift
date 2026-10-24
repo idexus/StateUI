@@ -7,7 +7,7 @@
 @_spi(Host) public enum Families {
     /// Every family, section by section as the dictionary has them.
     public static let all: [any ConformanceFamily.Type] = [
-        ActivityIndicatorTests.self,
+        SpinnerTests.self,
         ButtonTests.self,
         CanvasTests.self,
         CapsuleTests.self,
@@ -49,7 +49,7 @@
         MenuTests.self,
         MenuBarTests.self,
         MenuItemTests.self,
-        DividerTests.self,
+        SeparatorTests.self,
         MenuSeparatorTests.self,
         SheetTests.self,
         NavigationStackTests.self,

@@ -22,13 +22,13 @@ extension UIKitRegistrations {
             stack.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
-        // A space is a box of its own the stack's arithmetic sizes, drawn as a layout's box; a divider in a stack is
+        // A space is a box of its own the stack's arithmetic sizes, drawn as a layout's box; a separator in a stack is
         // a separator line.
         // Design: docs/design/host/layout.md#a-space
         registry.add(SpaceContract.self, create: { _ in UIKitZStackView() }) { space in
             space.applies(LayoutMembers.regionMembers) { view, values in applyBox(view, values) }
         }
-        registry.add(DividerContract.self, create: { _ in UIKitDividerView() })
+        registry.add(SeparatorContract.self, create: { _ in UIKitSeparatorView() })
 
         registry.add(GridContract.self, create: { _ in UIKitGridView() }) { grid in
             grid.applies(

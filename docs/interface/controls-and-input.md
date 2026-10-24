@@ -415,15 +415,15 @@ animated presentation values.
 
 ## Activity and progress
 
-`ActivityIndicator` is the spinner for work with no measurable length;
-`ProgressBar` says how far along measurable work is:
+`Spinner` turns while work with no measurable length runs; `ProgressBar`
+says how far along measurable work is:
 
 ```swift
 @State var loading = true
 @State var done = 3.0
 
 VStack {
-    ActivityIndicator(loading)
+    Spinner(loading)
         .height(48)
 
     Switch($loading)
@@ -439,9 +439,9 @@ VStack {
 }
 ```
 
-`isAnimating`, the indicator's one property, says whether it spins. A still
-indicator is invisible on most platforms, so `ActivityIndicator(loading)` shows
-it only while the work runs. `progress` is a fraction from 0 to 1, not a
+`isAnimating`, the spinner's one property, says whether it turns. A still
+spinner is invisible on most platforms, so `Spinner(loading)` shows it only
+while the work runs. `progress` is a fraction from 0 to 1, not a
 percentage or a count: work counted in steps divides by their total itself, and
 the host clamps a value outside that range. The initializer's argument is the
 same property as the modifier: `ProgressBar().progress(0.4)` sets what
@@ -522,17 +522,17 @@ screen reader, so it carries a `accessibilityLabel`.
 
 ## A place in a sequence
 
-`PositionIndicator` is a row of dots saying how many there are and which one
+`PositionDots` is a row of dots saying how many there are and which one
 is current - the dots under a run of cards, the steps of a short sequence:
 
 ```swift
 @State var step = 0
 
 VStack {
-    PositionIndicator()
+    PositionDots()
         .count(4)
         .position(step)
-        .currentIndicatorColor(.cornflowerBlue)
+        .currentDotColor(.cornflowerBlue)
 
     Button("Next")
         .onClicked { step = (step + 1) % 4 }
@@ -542,8 +542,8 @@ VStack {
 StateUI composes it of rectangles in a row, so it looks and behaves the same
 on every platform. `maximumVisible` caps the dots, the current one kept among
 them; one lone dot is hidden unless `hidesForSinglePage(false)` asks for it;
-`indicatorShape(.square)` draws squares. Given items,
-`PositionIndicator(items) { … }` shows each item's own mark, the current one
+`dotShape(.square)` draws squares. Given items,
+`PositionDots(items) { … }` shows each item's own mark, the current one
 whole and the others faded. Its look is written on it: being StateUI's own
 composition, it takes no `Style`.
 

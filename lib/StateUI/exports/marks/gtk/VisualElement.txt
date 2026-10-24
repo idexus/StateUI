@@ -1,40 +1,4 @@
-# revision 19.1
-ActivityIndicator.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
-ActivityIndicator.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
-ActivityIndicator.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
-ActivityIndicator.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
-ActivityIndicator.accessibilityHint: ✅
-ActivityIndicator.accessibilityLabel: ✅
-ActivityIndicator.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
-ActivityIndicator.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-ActivityIndicator.background: ✓ read background of ActivityIndicator: the class of the host's style sheet the widget wears: GTK reads back no background
-ActivityIndicator.frame: ✅
-ActivityIndicator.height: ✅
-ActivityIndicator.hidesChildrenFromAccessibility: ✅
-ActivityIndicator.ignoresInput: ✅
-ActivityIndicator.isAccessibilityHidden: ✅
-ActivityIndicator.isEnabled: ✅
-ActivityIndicator.isVisible: ✅
-ActivityIndicator.layoutDirection: ✅
-ActivityIndicator.maximumHeight: ✅
-ActivityIndicator.maximumWidth: ✅
-ActivityIndicator.minimumHeight: ✅
-ActivityIndicator.minimumWidth: ✅
-ActivityIndicator.opacity: ✅
-ActivityIndicator.pivotX: ✓ read pivotX of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.pivotY: ✓ read pivotY of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.rotation: ✓ read rotation of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.rotationX: ✓ read rotationX of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.rotationY: ✓ read rotationY of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.scale: ✓ read scale of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.scaleX: ✓ read scaleX of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.scaleY: ✓ read scaleY of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.style: ✅
-ActivityIndicator.tooltip: ✅
-ActivityIndicator.translationX: ✓ read translationX of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.translationY: ✓ read translationY of ActivityIndicator: the host's own transform: GTK reads back no part of one
-ActivityIndicator.width: ✅
-ActivityIndicator.zIndex: ✅
+# revision 20.1
 Button.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
 Button.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
 Button.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
@@ -215,42 +179,6 @@ DatePicker.translationX: ✓ read translationX of DatePicker: the host's own tra
 DatePicker.translationY: ✓ read translationY of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.width: ✅
 DatePicker.zIndex: ✅
-Divider.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
-Divider.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
-Divider.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
-Divider.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
-Divider.accessibilityHint: ✅
-Divider.accessibilityLabel: ✅
-Divider.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
-Divider.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Divider.background: ✓ read background of Divider: the class of the host's style sheet the widget wears: GTK reads back no background
-Divider.frame: ✅
-Divider.height: ✅
-Divider.hidesChildrenFromAccessibility: ✅
-Divider.ignoresInput: ✅
-Divider.isAccessibilityHidden: ✅
-Divider.isEnabled: ✅
-Divider.isVisible: ✅
-Divider.layoutDirection: ✅
-Divider.maximumHeight: ✅
-Divider.maximumWidth: ✅
-Divider.minimumHeight: ✅
-Divider.minimumWidth: ✅
-Divider.opacity: ✅
-Divider.pivotX: ✓ read pivotX of Divider: the host's own transform: GTK reads back no part of one
-Divider.pivotY: ✓ read pivotY of Divider: the host's own transform: GTK reads back no part of one
-Divider.rotation: ✓ read rotation of Divider: the host's own transform: GTK reads back no part of one
-Divider.rotationX: ✓ read rotationX of Divider: the host's own transform: GTK reads back no part of one
-Divider.rotationY: ✓ read rotationY of Divider: the host's own transform: GTK reads back no part of one
-Divider.scale: ✓ read scale of Divider: the host's own transform: GTK reads back no part of one
-Divider.scaleX: ✓ read scaleX of Divider: the host's own transform: GTK reads back no part of one
-Divider.scaleY: ✓ read scaleY of Divider: the host's own transform: GTK reads back no part of one
-Divider.style: ✅
-Divider.tooltip: ✅
-Divider.translationX: ✓ read translationX of Divider: the host's own transform: GTK reads back no part of one
-Divider.translationY: ✓ read translationY of Divider: the host's own transform: GTK reads back no part of one
-Divider.width: ✅
-Divider.zIndex: ✅
 Ellipse.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
 Ellipse.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
 Ellipse.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
@@ -863,6 +791,42 @@ SearchField.translationX: ✓ read translationX of SearchField: the host's own t
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.width: ✅
 SearchField.zIndex: ✅
+Separator.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Separator.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Separator.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
+Separator.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
+Separator.accessibilityHint: ✅
+Separator.accessibilityLabel: ✅
+Separator.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Separator.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
+Separator.background: ✓ read background of Separator: the class of the host's style sheet the widget wears: GTK reads back no background
+Separator.frame: ✅
+Separator.height: ✅
+Separator.hidesChildrenFromAccessibility: ✅
+Separator.ignoresInput: ✅
+Separator.isAccessibilityHidden: ✅
+Separator.isEnabled: ✅
+Separator.isVisible: ✅
+Separator.layoutDirection: ✅
+Separator.maximumHeight: ✅
+Separator.maximumWidth: ✅
+Separator.minimumHeight: ✅
+Separator.minimumWidth: ✅
+Separator.opacity: ✅
+Separator.pivotX: ✓ read pivotX of Separator: the host's own transform: GTK reads back no part of one
+Separator.pivotY: ✓ read pivotY of Separator: the host's own transform: GTK reads back no part of one
+Separator.rotation: ✓ read rotation of Separator: the host's own transform: GTK reads back no part of one
+Separator.rotationX: ✓ read rotationX of Separator: the host's own transform: GTK reads back no part of one
+Separator.rotationY: ✓ read rotationY of Separator: the host's own transform: GTK reads back no part of one
+Separator.scale: ✓ read scale of Separator: the host's own transform: GTK reads back no part of one
+Separator.scaleX: ✓ read scaleX of Separator: the host's own transform: GTK reads back no part of one
+Separator.scaleY: ✓ read scaleY of Separator: the host's own transform: GTK reads back no part of one
+Separator.style: ✅
+Separator.tooltip: ✅
+Separator.translationX: ✓ read translationX of Separator: the host's own transform: GTK reads back no part of one
+Separator.translationY: ✓ read translationY of Separator: the host's own transform: GTK reads back no part of one
+Separator.width: ✅
+Separator.zIndex: ✅
 Slider.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
 Slider.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
 Slider.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
@@ -935,6 +899,42 @@ Space.translationX: ✓ read translationX of Space: the host's own transform: GT
 Space.translationY: ✓ read translationY of Space: the host's own transform: GTK reads back no part of one
 Space.width: ✅
 Space.zIndex: ✅
+Spinner.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Spinner.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Spinner.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
+Spinner.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
+Spinner.accessibilityHint: ✅
+Spinner.accessibilityLabel: ✅
+Spinner.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Spinner.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
+Spinner.background: ✓ read background of Spinner: the class of the host's style sheet the widget wears: GTK reads back no background
+Spinner.frame: ✅
+Spinner.height: ✅
+Spinner.hidesChildrenFromAccessibility: ✅
+Spinner.ignoresInput: ✅
+Spinner.isAccessibilityHidden: ✅
+Spinner.isEnabled: ✅
+Spinner.isVisible: ✅
+Spinner.layoutDirection: ✅
+Spinner.maximumHeight: ✅
+Spinner.maximumWidth: ✅
+Spinner.minimumHeight: ✅
+Spinner.minimumWidth: ✅
+Spinner.opacity: ✅
+Spinner.pivotX: ✓ read pivotX of Spinner: the host's own transform: GTK reads back no part of one
+Spinner.pivotY: ✓ read pivotY of Spinner: the host's own transform: GTK reads back no part of one
+Spinner.rotation: ✓ read rotation of Spinner: the host's own transform: GTK reads back no part of one
+Spinner.rotationX: ✓ read rotationX of Spinner: the host's own transform: GTK reads back no part of one
+Spinner.rotationY: ✓ read rotationY of Spinner: the host's own transform: GTK reads back no part of one
+Spinner.scale: ✓ read scale of Spinner: the host's own transform: GTK reads back no part of one
+Spinner.scaleX: ✓ read scaleX of Spinner: the host's own transform: GTK reads back no part of one
+Spinner.scaleY: ✓ read scaleY of Spinner: the host's own transform: GTK reads back no part of one
+Spinner.style: ✅
+Spinner.tooltip: ✅
+Spinner.translationX: ✓ read translationX of Spinner: the host's own transform: GTK reads back no part of one
+Spinner.translationY: ✓ read translationY of Spinner: the host's own transform: GTK reads back no part of one
+Spinner.width: ✅
+Spinner.zIndex: ✅
 Stepper.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
 Stepper.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
 Stepper.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.

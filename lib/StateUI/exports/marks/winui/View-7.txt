@@ -1,7 +1,4 @@
-# revision 9.1
-ActivityIndicator.panTouchCount: ✅
-ActivityIndicator.panUpdated: ✅
-ActivityIndicator.panXChannel: ✅
+# revision 10.1
 Button.frameChanged: ✅
 Button.margin: ✅
 Button.swipeDirection: ✅
@@ -29,9 +26,6 @@ DatePicker.margin: ✅
 DatePicker.swipeDirection: ✅
 DatePicker.swipeThreshold: ✅
 DatePicker.swiped: ✅
-Divider.panTouchCount: ✅
-Divider.panUpdated: ✅
-Divider.panXChannel: ✅
 Ellipse.area: ✅
 Ellipse.frameChanged: ✅
 Ellipse.pointerEntered: ✅
@@ -131,6 +125,9 @@ ScrollView.gridRowSpan: ✅
 SearchField.panTouchCount: ✅
 SearchField.panUpdated: ✅
 SearchField.panXChannel: ✅
+Separator.panTouchCount: ✅
+Separator.panUpdated: ✅
+Separator.panXChannel: ✅
 Slider.frameChanged: ✅
 Slider.margin: ✅
 Slider.swipeDirection: ✅
@@ -143,6 +140,9 @@ Space.pointerExited: ✅
 Space.pointerMoved: ✅
 Space.pointerPressed: ✅
 Space.pointerReleased: ✅
+Spinner.panTouchCount: ✅
+Spinner.panUpdated: ✅
+Spinner.panXChannel: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began

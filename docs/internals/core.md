@@ -171,7 +171,7 @@ turns the nodes into the patch.
   ([Controls](../design/views/controls.md);
   [controls and input](../interface/controls-and-input.md), [layout](../interface/layout.md))
 - **The composed layouts** - `GeometryReader` and `LayoutEngine` (`Layouts/`),
-  `GalleryView` and `PositionIndicator` (`Collections/`) - are StateUI's
+  `GalleryView` and `PositionDots` (`Collections/`) - are StateUI's
   composition over measurement, placement and scrolling, which no host builds
   again. *Application.*
   ([Measured layouts](../design/views/measured-layouts.md);
@@ -617,7 +617,7 @@ never against a stored copy
 | `Contracts/` | the contracts and the library's list, closed vocabularies, payloads, the whole contract against every name the library uses, the registry, declarations, realizations, the register and its verdicts, and the rendered dictionary (`ControlDictionaryTests`) |
 | `Pages/` | scenes, windows, pages and their bars, the navigation stack, tabs, the split view, sheets, the environment a host writes, a window's value as text (`ValueTextTests`) |
 | `Acts/` | act calls and their shape, aims, host events |
-| `Views/` | controls, styles and visual states, colors and brushes, gestures, the frame reader, the gallery view, the position indicator (`PositionIndicatorTests`), the items view (`ItemsViewTests`), context menus, drawing transforms |
+| `Views/` | controls, styles and visual states, colors and brushes, gestures, the frame reader, the gallery view, the position dots (`PositionDotsTests`), the items view (`ItemsViewTests`), context menus, drawing transforms |
 | `Threading/` | the UI thread's executor and the doorbell, the jobs kept for later (`TimetableTests`), posts, the gates a handler or a task passes through and what a superseded run changes, acts sent from child tasks, no promise the compiler cannot check, every async function on its caller's executor, and the library's four rules: no Foundation, no `DispatchQueue.main` but the one drain, no `Timer` or `RunLoop`, no `strdup` |
 | `Project/` | the guards below |
 | `Support/` | what the tests share: a differ to talk to, a patch printed readably, the dictionary's rendering, the applications' sources as files |

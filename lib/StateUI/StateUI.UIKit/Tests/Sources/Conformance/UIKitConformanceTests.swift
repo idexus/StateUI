@@ -12,7 +12,7 @@ import XCTest
 /// dictionary.
 @MainActor
 final class UIKitConformanceTests: XCTestCase {
-    @MainActor func testActivityIndicator() { conform(ActivityIndicatorTests.self) }
+    @MainActor func testSpinner() { conform(SpinnerTests.self) }
     @MainActor func testButton() { conform(ButtonTests.self) }
     @MainActor func testCanvas() { conform(CanvasTests.self) }
     @MainActor func testCapsule() { conform(CapsuleTests.self) }
@@ -53,7 +53,7 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testMenu() { conform(MenuTests.self) }
     @MainActor func testMenuBar() { conform(MenuBarTests.self) }
     @MainActor func testMenuItem() { conform(MenuItemTests.self) }
-    @MainActor func testDivider() { conform(DividerTests.self) }
+    @MainActor func testSeparator() { conform(SeparatorTests.self) }
     @MainActor func testMenuSeparator() { conform(MenuSeparatorTests.self) }
     @MainActor func testAnchor() { conform(AnchorTests.self) }
     @MainActor func testSheet() { conform(SheetTests.self) }

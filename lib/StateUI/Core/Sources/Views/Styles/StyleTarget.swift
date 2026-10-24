@@ -35,10 +35,10 @@ extension CheckBox: StyleTarget {}
 extension Slider: StyleTarget {}
 extension Stepper: StyleTarget {}
 extension SearchField: StyleTarget {}
-extension ActivityIndicator: StyleTarget {}
+extension Spinner: StyleTarget {}
 extension ProgressBar: StyleTarget {}
 extension Image: StyleTarget {}
-extension Divider: StyleTarget {}
+extension Separator: StyleTarget {}
 extension Space: StyleTarget {}
 extension Fill: StyleTarget {}
 extension Grid: StyleTarget {}

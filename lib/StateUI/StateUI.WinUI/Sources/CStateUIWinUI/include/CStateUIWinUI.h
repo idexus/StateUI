@@ -658,9 +658,9 @@ void stateui_winui_panel_set_children(StateUIObjectRef panel, StateUIObjectRef c
 /// How a child the panel is given enters: WinUI's entrance from `offset` DIPs across, toward its place; 0 for none.
 void stateui_winui_panel_set_entrance(StateUIObjectRef panel, double offset);
 
-/// What stands in a stack beside its controls: a divider, a panel holding a line in the theme's divider stroke, one
+/// What stands in a stack beside its controls: a separator, a panel holding a line in the theme's divider stroke, one
 /// pixel thick both ways.
-StateUIObjectRef stateui_winui_divider_make(void);
+StateUIObjectRef stateui_winui_separator_make(void);
 
 /// How words look on a text block or any control showing them: the font - a size of 0 or less, a weight of 0 and
 /// an empty family are the platform's, a weight 100 to 900, `tabularDigits` every digit as wide as the others - the

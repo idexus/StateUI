@@ -1,6 +1,4 @@
-# revision 19.2
-ActivityIndicator.isAccessibilityHidden: ✅
-ActivityIndicator.isVisible: ✅
+# revision 20.2
 Button.height: ✅
 Button.layoutDirection: ✅
 Button.width: ✅
@@ -11,11 +9,6 @@ Capsule.scaleX: ✅
 CheckBox.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 CheckBox.translationY: ✅
 DatePicker.accessibilityHeading: ✅
-Divider.maximumHeight: ✅
-Divider.maximumWidth: ✅
-Divider.minimumHeight: ✅
-Divider.minimumWidth: ✅
-Divider.pivotX: ✅
 Ellipse.height: ✅
 Ellipse.layoutDirection: ✓ read layoutDirection of Ellipse: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Ellipse.width: ✅
@@ -50,10 +43,17 @@ ScrollView.accessibilityHeading: ✅
 ScrollView.scale: ✅
 SearchField.accessibilityLabel: ✅
 SearchField.scaleX: ✅
+Separator.maximumHeight: ✅
+Separator.maximumWidth: ✅
+Separator.minimumHeight: ✅
+Separator.minimumWidth: ✅
+Separator.pivotX: ✅
 Slider.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 Slider.accessibilityActions: – UI Automation offers no action of an application's own words.
 Space.isAccessibilityHidden: ✅
 Space.isVisible: ✅
+Spinner.isAccessibilityHidden: ✅
+Spinner.isVisible: ✅
 Stepper.hidesChildrenFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 Stepper.opacity: ✅
 Switch.ignoresInput: ✅

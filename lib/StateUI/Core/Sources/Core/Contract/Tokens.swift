@@ -21,7 +21,7 @@ extension NodeType {
 }
 
 @_spi(Host) public extension NodeType {
-    static let activityIndicator = ActivityIndicatorContract.nodeType
+    static let spinner = SpinnerContract.nodeType
     static let anchor = AnchorContract.nodeType
     static let application = ApplicationContract.nodeType
     static let button = ButtonContract.nodeType
@@ -47,7 +47,7 @@ extension NodeType {
     static let menu = MenuContract.nodeType
     static let menuBar = MenuBarContract.nodeType
     static let menuItem = MenuItemContract.nodeType
-    static let divider = DividerContract.nodeType
+    static let separator = SeparatorContract.nodeType
     static let menuSeparator = MenuSeparatorContract.nodeType
     static let buttonMenu = ButtonMenuContract.nodeType
     static let space = SpaceContract.nodeType

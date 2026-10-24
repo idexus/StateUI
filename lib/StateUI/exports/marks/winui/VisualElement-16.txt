@@ -1,5 +1,4 @@
-# revision 19.2
-ActivityIndicator.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+# revision 20.2
 Button.isAccessibilityHidden: ✅
 Button.isVisible: ✅
 Canvas.height: ✅
@@ -11,8 +10,6 @@ CheckBox.accessibilityLabel: ✅
 CheckBox.scaleX: ✅
 DatePicker.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 DatePicker.accessibilityActions: – UI Automation offers no action of an application's own words.
-Divider.hidesChildrenFromAccessibility: ✅
-Divider.opacity: ✅
 Ellipse.isAccessibilityHidden: ✅
 Ellipse.isVisible: ✅
 Fill.height: ✅
@@ -51,10 +48,13 @@ ScrollView.frame: ✅
 ScrollView.rotation: ✅
 SearchField.rotationX: ✓ read rotationX of SearchField: the host's own tip, checked against the projection it laid on the element
 SearchField.style: ✅
+Separator.hidesChildrenFromAccessibility: ✅
+Separator.opacity: ✅
 Slider.accessibilityHint: ✅
 Slider.scaleY: ✅
 Space.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Space.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Spinner.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Stepper.tooltip: ✅
 Switch.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Switch.isEnabled: ✅

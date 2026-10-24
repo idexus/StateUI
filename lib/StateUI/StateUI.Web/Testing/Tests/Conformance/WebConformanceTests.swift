@@ -13,7 +13,7 @@ final class WebConformanceTests: XCTestCase {
         WebTestLoop.started
     }
 
-    func testActivityIndicator() { conform(ActivityIndicatorTests.self) }
+    func testSpinner() { conform(SpinnerTests.self) }
     func testButton() { conform(ButtonTests.self) }
     func testCanvas() { conform(CanvasTests.self) }
     func testCapsule() { conform(CapsuleTests.self) }
@@ -54,7 +54,7 @@ final class WebConformanceTests: XCTestCase {
     func testMenu() { conform(MenuTests.self) }
     func testMenuBar() { conform(MenuBarTests.self) }
     func testMenuItem() { conform(MenuItemTests.self) }
-    func testDivider() { conform(DividerTests.self) }
+    func testSeparator() { conform(SeparatorTests.self) }
     func testMenuSeparator() { conform(MenuSeparatorTests.self) }
     func testAnchor() { conform(AnchorTests.self) }
     func testSheet() { conform(SheetTests.self) }

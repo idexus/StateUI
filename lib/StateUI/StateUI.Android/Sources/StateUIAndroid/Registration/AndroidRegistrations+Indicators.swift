@@ -12,8 +12,8 @@ extension AndroidRegistrations {
             bar.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
         }
 
-        registry.add(ActivityIndicatorContract.self, create: { _ in AndroidActivityIndicatorView() }) { activity in
-            activity.property(ActivityIndicatorContract.isAnimating) { view, running in view.setRunning(running ?? false) }
+        registry.add(SpinnerContract.self, create: { _ in AndroidSpinnerView() }) { activity in
+            activity.property(SpinnerContract.isAnimating) { view, running in view.setRunning(running ?? false) }
             activity.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
         }
     }

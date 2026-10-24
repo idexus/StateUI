@@ -107,12 +107,12 @@ enum WinUIRealization {
         .partial(TextFieldContract.submitLabel,
             missing: "The return key's word: WinUI gives a text box no word for the return key of the keyboard on the screen; Next "
             + "hands the keyboard on all the same."),
-        .notPlanned(VisualElementContract.background, on: ActivityIndicatorContract.self,
+        .notPlanned(VisualElementContract.background, on: SpinnerContract.self,
             reason: "WinUI's progress ring paints its Background as its "
             + "track, no ground under its frame."),
         .partial(VisualElementContract.background, on: CanvasContract.self,
             missing: "A brush fills the canvas with its first color alone."),
-        .partial(VisualElementContract.hidesChildrenFromAccessibility, on: ActivityIndicatorContract.self,
+        .partial(VisualElementContract.hidesChildrenFromAccessibility, on: SpinnerContract.self,
             missing: Self.partsStayMet),
         .partial(VisualElementContract.hidesChildrenFromAccessibility, on: DatePickerContract.self,
             missing: Self.partsStayMet),
@@ -137,7 +137,7 @@ enum WinUIRealization {
         .unrealized(VisualElementContract.background, on: WebViewContract.self,
             why: "WebView2 is no control and takes no Background: what shows "
             + "where its page paints nothing is its DefaultBackgroundColor, which the backend does not set yet."),
-        .unrealized(VisualElementContract.ignoresInput, on: ActivityIndicatorContract.self, why: hitOnlyWherePainted),
+        .unrealized(VisualElementContract.ignoresInput, on: SpinnerContract.self, why: hitOnlyWherePainted),
         .partial(DatePickerContract.format,
             missing: "WinUI writes the long and the short day in the user's own way, and the medium as the short."),
         .unrealized(VisualElementContract.style, on: ItemsViewContract.self,

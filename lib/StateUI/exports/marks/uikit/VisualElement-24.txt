@@ -1,5 +1,4 @@
-# revision 19.1
-ActivityIndicator.pivotY: ✓ read pivotY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
+# revision 20.1
 Button.accessibilityActionPerformed: ✅
 Button.accessibilityActions: ✅
 Canvas.ignoresInput: ✅
@@ -11,7 +10,6 @@ DatePicker.maximumWidth: ✅
 DatePicker.minimumHeight: ✅
 DatePicker.minimumWidth: ✅
 DatePicker.scaleX: ✓ read scaleX of DatePicker: the host's own transform, checked against the layer it composed itself
-Divider.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
 Ellipse.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Fill.accessibilityHint: ✅
 Grid.isVisible: ✅
@@ -36,9 +34,11 @@ Rectangle.accessibilityHint: ✅
 ScrollView.isEnabled: ✅
 ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
+Separator.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
 Slider.style: ✅
 Slider.translationY: ✓ read translationY of Slider: the host's own transform, checked against the layer it composed itself
 Space.pivotY: ✓ read pivotY of Space: the host's own transform, checked against the layer it composed itself
+Spinner.pivotY: ✓ read pivotY of Spinner: the host's own transform, checked against the layer it composed itself
 Stepper.accessibilityRole: ✅
 Switch.maximumHeight: ✅
 Switch.maximumWidth: ✅

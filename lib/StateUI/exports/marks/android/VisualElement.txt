@@ -1,40 +1,4 @@
-# revision 19.1
-ActivityIndicator.accessibilityActionPerformed: ✅
-ActivityIndicator.accessibilityActions: ✅
-ActivityIndicator.accessibilityAdjusted: ✅
-ActivityIndicator.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
-ActivityIndicator.accessibilityHint: ✅
-ActivityIndicator.accessibilityLabel: ✅
-ActivityIndicator.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
-ActivityIndicator.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-ActivityIndicator.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
-ActivityIndicator.frame: ✅
-ActivityIndicator.height: ✅
-ActivityIndicator.hidesChildrenFromAccessibility: ✅
-ActivityIndicator.ignoresInput: not realized
-ActivityIndicator.isAccessibilityHidden: ✅
-ActivityIndicator.isEnabled: ✅
-ActivityIndicator.isVisible: ✅
-ActivityIndicator.layoutDirection: ✅
-ActivityIndicator.maximumHeight: ✅
-ActivityIndicator.maximumWidth: ✅
-ActivityIndicator.minimumHeight: ✅
-ActivityIndicator.minimumWidth: ✅
-ActivityIndicator.opacity: ✅
-ActivityIndicator.pivotX: ✅
-ActivityIndicator.pivotY: ✅
-ActivityIndicator.rotation: ✅
-ActivityIndicator.rotationX: ✅
-ActivityIndicator.rotationY: ✅
-ActivityIndicator.scale: ✅
-ActivityIndicator.scaleX: ✅
-ActivityIndicator.scaleY: ✅
-ActivityIndicator.style: ✅
-ActivityIndicator.tooltip: ✅
-ActivityIndicator.translationX: ✅
-ActivityIndicator.translationY: ✅
-ActivityIndicator.width: ✅
-ActivityIndicator.zIndex: ✅
+# revision 20.1
 Button.accessibilityActionPerformed: ✅
 Button.accessibilityActions: ✅
 Button.accessibilityAdjusted: ✅
@@ -215,42 +179,6 @@ DatePicker.translationX: ✅
 DatePicker.translationY: ✅
 DatePicker.width: ✅
 DatePicker.zIndex: ✅
-Divider.accessibilityActionPerformed: ✅
-Divider.accessibilityActions: ✅
-Divider.accessibilityAdjusted: ✅
-Divider.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
-Divider.accessibilityHint: ✅
-Divider.accessibilityLabel: ✅
-Divider.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
-Divider.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Divider.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
-Divider.frame: ✅
-Divider.height: ✅
-Divider.hidesChildrenFromAccessibility: ✅
-Divider.ignoresInput: not realized
-Divider.isAccessibilityHidden: ✅
-Divider.isEnabled: ✅
-Divider.isVisible: ✅
-Divider.layoutDirection: ✅
-Divider.maximumHeight: ✅
-Divider.maximumWidth: ✅
-Divider.minimumHeight: ✅
-Divider.minimumWidth: ✅
-Divider.opacity: ✅
-Divider.pivotX: ✅
-Divider.pivotY: ✅
-Divider.rotation: ✅
-Divider.rotationX: ✅
-Divider.rotationY: ✅
-Divider.scale: ✅
-Divider.scaleX: ✅
-Divider.scaleY: ✅
-Divider.style: ✅
-Divider.tooltip: ✅
-Divider.translationX: ✅
-Divider.translationY: ✅
-Divider.width: ✅
-Divider.zIndex: ✅
 Ellipse.accessibilityActionPerformed: ✅
 Ellipse.accessibilityActions: ✅
 Ellipse.accessibilityAdjusted: ✅
@@ -863,6 +791,42 @@ SearchField.translationX: ✅
 SearchField.translationY: ✅
 SearchField.width: ✅
 SearchField.zIndex: ✅
+Separator.accessibilityActionPerformed: ✅
+Separator.accessibilityActions: ✅
+Separator.accessibilityAdjusted: ✅
+Separator.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+Separator.accessibilityHint: ✅
+Separator.accessibilityLabel: ✅
+Separator.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Separator.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Separator.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Separator.frame: ✅
+Separator.height: ✅
+Separator.hidesChildrenFromAccessibility: ✅
+Separator.ignoresInput: not realized
+Separator.isAccessibilityHidden: ✅
+Separator.isEnabled: ✅
+Separator.isVisible: ✅
+Separator.layoutDirection: ✅
+Separator.maximumHeight: ✅
+Separator.maximumWidth: ✅
+Separator.minimumHeight: ✅
+Separator.minimumWidth: ✅
+Separator.opacity: ✅
+Separator.pivotX: ✅
+Separator.pivotY: ✅
+Separator.rotation: ✅
+Separator.rotationX: ✅
+Separator.rotationY: ✅
+Separator.scale: ✅
+Separator.scaleX: ✅
+Separator.scaleY: ✅
+Separator.style: ✅
+Separator.tooltip: ✅
+Separator.translationX: ✅
+Separator.translationY: ✅
+Separator.width: ✅
+Separator.zIndex: ✅
 Slider.accessibilityActionPerformed: ✅
 Slider.accessibilityActions: ✅
 Slider.accessibilityAdjusted: ✅
@@ -935,6 +899,42 @@ Space.translationX: ✅
 Space.translationY: ✅
 Space.width: ✅
 Space.zIndex: ✅
+Spinner.accessibilityActionPerformed: ✅
+Spinner.accessibilityActions: ✅
+Spinner.accessibilityAdjusted: ✅
+Spinner.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+Spinner.accessibilityHint: ✅
+Spinner.accessibilityLabel: ✅
+Spinner.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Spinner.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Spinner.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Spinner.frame: ✅
+Spinner.height: ✅
+Spinner.hidesChildrenFromAccessibility: ✅
+Spinner.ignoresInput: not realized
+Spinner.isAccessibilityHidden: ✅
+Spinner.isEnabled: ✅
+Spinner.isVisible: ✅
+Spinner.layoutDirection: ✅
+Spinner.maximumHeight: ✅
+Spinner.maximumWidth: ✅
+Spinner.minimumHeight: ✅
+Spinner.minimumWidth: ✅
+Spinner.opacity: ✅
+Spinner.pivotX: ✅
+Spinner.pivotY: ✅
+Spinner.rotation: ✅
+Spinner.rotationX: ✅
+Spinner.rotationY: ✅
+Spinner.scale: ✅
+Spinner.scaleX: ✅
+Spinner.scaleY: ✅
+Spinner.style: ✅
+Spinner.tooltip: ✅
+Spinner.translationX: ✅
+Spinner.translationY: ✅
+Spinner.width: ✅
+Spinner.zIndex: ✅
 Stepper.accessibilityActionPerformed: ✅
 Stepper.accessibilityActions: ✅
 Stepper.accessibilityAdjusted: ✅

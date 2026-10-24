@@ -22,7 +22,7 @@ extension ProgressBarProperties {
 ///
 /// A fraction, not a percentage and not a count: 0.4 is four tenths of the
 /// way through, so a job counting files divides by the total itself. For work with no measurable length, use an
-/// `ActivityIndicator`.
+/// `Spinner`.
 ///
 /// `.progress($done)` carries it from a state, animated to each new value.
 public struct ProgressBar: ElementView, TintElement, ProgressBarProperties {

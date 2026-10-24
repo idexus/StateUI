@@ -1,5 +1,4 @@
-# revision 19.1
-ActivityIndicator.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+# revision 20.1
 Button.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Button.zIndex: ✅
 Canvas.pivotY: ✓ read pivotY of Canvas: the host's own transform, checked against the layer it composed itself
@@ -7,7 +6,6 @@ Capsule.accessibilityAdjusted: ✅
 CheckBox.frame: ✅
 CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transform, checked against the layer it composed itself
 DatePicker.pivotX: ✓ read pivotX of DatePicker: the host's own transform, checked against the layer it composed itself
-Divider.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Ellipse.accessibilityActionPerformed: ✅
 Ellipse.accessibilityActions: ✅
 Fill.ignoresInput: ✅
@@ -35,9 +33,11 @@ Rectangle.ignoresInput: ✅
 Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform, checked against the layer it composed itself
 ScrollView.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 SearchField.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+Separator.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Slider.opacity: ✅
 Slider.rotationX: ✓ read rotationX of Slider: the host's own transform, checked against the layer it composed itself
 Space.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+Spinner.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 Stepper.frame: ✅
 Stepper.translationX: ✓ read translationX of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.pivotX: ✓ read pivotX of Switch: the host's own transform, checked against the layer it composed itself

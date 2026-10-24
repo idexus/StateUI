@@ -1,5 +1,4 @@
-# revision 19.1
-ActivityIndicator.layoutDirection: ✅
+# revision 20.1
 Button.accessibilityRole: ✅
 Canvas.height: ✅
 Canvas.scale: ✓ read scale of Canvas: the host's own transform, checked against the layer it composed itself
@@ -8,7 +7,6 @@ Capsule.hidesChildrenFromAccessibility: ✅
 CheckBox.accessibilityLabel: ✅
 DatePicker.isEnabled: ✅
 DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own transform, checked against the layer it composed itself
-Divider.accessibilityValue: ✅
 Ellipse.isAccessibilityHidden: ✅
 Fill.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Fill.background: ✅
@@ -33,9 +31,11 @@ Rectangle.accessibilityHeading: ☑️ UIKit marks a heading, not its level: eve
 ScrollView.isVisible: ✅
 ScrollView.rotation: ✓ read rotation of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.accessibilityValue: ✅
+Separator.accessibilityValue: ✅
 Slider.ignoresInput: ✅
 Slider.scaleY: ✓ read scaleY of Slider: the host's own transform, checked against the layer it composed itself
 Space.layoutDirection: ✅
+Spinner.layoutDirection: ✅
 Stepper.accessibilityLabel: ✅
 Switch.isEnabled: ✅
 Switch.rotationY: ✓ read rotationY of Switch: the host's own transform, checked against the layer it composed itself

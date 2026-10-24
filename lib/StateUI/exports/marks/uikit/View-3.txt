@@ -1,8 +1,4 @@
-# revision 9.1
-ActivityIndicator.area: ✅
-ActivityIndicator.droppedFileTypes: ✓ dropFiles on ActivityIndicator: the drop interaction's handler told the driver's files, no drag session
-ActivityIndicator.filesDropped: ✓ dropFiles on ActivityIndicator: the drop interaction's handler told the driver's files, no drag session
-ActivityIndicator.frameChanged: ✅
+# revision 10.1
 Button.pointerEntered: ✓ hover on Button: the view's listening handed the recognizer's states, no touch sent
 Button.pointerExited: ✓ hover on Button: the view's listening handed the recognizer's states, no touch sent
 Button.pointerMoved: ✓ hover on Button: the view's listening handed the recognizer's states, no touch sent
@@ -20,7 +16,6 @@ CheckBox.frameChanged: ✅
 CheckBox.horizontalAlignment: ✅
 CheckBox.verticalAlignment: ✅
 DatePicker.pinchUpdated: ✓ pinch on DatePicker: the view's listening handed the recognizer's states, no touch sent
-Divider.pinchUpdated: ✓ pinch on Divider: the view's listening handed the recognizer's states, no touch sent
 Ellipse.panTouchCount: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.panUpdated: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.panXChannel: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
@@ -80,6 +75,7 @@ ScrollView.pointerMoved: ✓ hover on ScrollView: the view's listening handed th
 ScrollView.pointerPressed: ✓ hover on ScrollView: the view's listening handed the recognizer's states, no touch sent
 ScrollView.pointerReleased: ✓ hover on ScrollView: the view's listening handed the recognizer's states, no touch sent
 SearchField.panYChannel: ✓ pan on SearchField: the view's listening handed the recognizer's states, no touch sent
+Separator.pinchUpdated: ✓ pinch on Separator: the view's listening handed the recognizer's states, no touch sent
 Slider.frameChanged: ✅
 Slider.gridColumnSpan: ✅
 Slider.gridRowSpan: ✅
@@ -90,6 +86,10 @@ Space.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handle
 Space.frameChanged: ✅
 Space.horizontalAlignment: ✅
 Space.verticalAlignment: ✅
+Spinner.area: ✅
+Spinner.droppedFileTypes: ✓ dropFiles on Spinner: the drop interaction's handler told the driver's files, no drag session
+Spinner.filesDropped: ✓ dropFiles on Spinner: the drop interaction's handler told the driver's files, no drag session
+Spinner.frameChanged: ✅
 Stepper.pinchUpdated: ✓ pinch on Stepper: the view's listening handed the recognizer's states, no touch sent
 Switch.panTouchCount: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.panUpdated: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent

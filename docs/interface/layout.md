@@ -119,10 +119,10 @@ container's children. A state read inside that closure belongs to the
 container's description scope, which can keep invalidation narrower than a
 read in an outer composed view.
 
-### Space, Fill and Divider
+### Space, Fill and Separator
 
 A `Space` pushes: it takes the room its stack's other children leave along
-the stack's axis, shared alike when there are several. A `Divider` is the
+the stack's axis, shared alike when there are several. A `Separator` is the
 platform's own separator line, drawn across its stack:
 
 ```swift
@@ -133,7 +133,7 @@ VStack {
         Button("Send")
     }
 
-    Divider()
+    Separator()
 
     Text("Sent a minute ago")
 }

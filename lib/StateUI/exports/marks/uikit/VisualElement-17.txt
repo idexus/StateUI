@@ -1,5 +1,4 @@
-# revision 19.1
-ActivityIndicator.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+# revision 20.1
 Button.style: ✅
 Button.translationY: ✓ read translationY of Button: the host's own transform, checked against the layer it composed itself
 Canvas.pivotX: ✓ read pivotX of Canvas: the host's own transform, checked against the layer it composed itself
@@ -8,7 +7,6 @@ Capsule.accessibilityActions: ✅
 CheckBox.ignoresInput: ✅
 CheckBox.scaleY: ✓ read scaleY of CheckBox: the host's own transform, checked against the layer it composed itself
 DatePicker.layoutDirection: ✅
-Divider.zIndex: ✅
 Ellipse.accessibilityValue: ✅
 Fill.maximumHeight: ✅
 Fill.maximumWidth: ✅
@@ -42,9 +40,11 @@ Rectangle.minimumWidth: ✅
 Rectangle.scaleX: ✓ read scaleX of Rectangle: the host's own transform, checked against the layer it composed itself
 ScrollView.hidesChildrenFromAccessibility: ✅
 SearchField.zIndex: ✅
+Separator.zIndex: ✅
 Slider.isVisible: ✅
 Slider.rotation: ✓ read rotation of Slider: the host's own transform, checked against the layer it composed itself
 Space.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+Spinner.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Stepper.ignoresInput: ✅
 Stepper.scaleY: ✓ read scaleY of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.layoutDirection: ✅

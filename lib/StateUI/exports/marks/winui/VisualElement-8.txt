@@ -1,6 +1,4 @@
-# revision 19.2
-ActivityIndicator.rotationX: ✓ read rotationX of ActivityIndicator: the host's own tip, checked against the projection it laid on the element
-ActivityIndicator.style: ✅
+# revision 20.2
 Button.accessibilityLabel: ✅
 Button.scaleX: ✅
 Canvas.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
@@ -10,8 +8,6 @@ CheckBox.background: ☑️ An element's acrylic is not drawn yet: a blur or gla
 CheckBox.isEnabled: ✅
 DatePicker.frame: ✅
 DatePicker.rotation: ✅
-Divider.accessibilityHint: ✅
-Divider.scaleY: ✅
 Ellipse.accessibilityLabel: ✅
 Ellipse.scaleX: ✅
 Fill.accessibilityValue: ✅
@@ -53,11 +49,15 @@ Rectangle.translationY: ✅
 ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 ScrollView.tooltip: ✅
 SearchField.accessibilityHeading: ✅
+Separator.accessibilityHint: ✅
+Separator.scaleY: ✅
 Slider.height: ✅
 Slider.layoutDirection: ✅
 Slider.width: ✅
 Space.rotationX: ✓ read rotationX of Space: the host's own tip, checked against the projection it laid on the element
 Space.style: ✅
+Spinner.rotationX: ✓ read rotationX of Spinner: the host's own tip, checked against the projection it laid on the element
+Spinner.style: ✅
 Stepper.rotationY: ✓ read rotationY of Stepper: the host's own tip, checked against the projection it laid on the element
 Stepper.zIndex: ✅
 Switch.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.

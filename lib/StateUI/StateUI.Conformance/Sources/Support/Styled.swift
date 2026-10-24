@@ -16,13 +16,13 @@ enum Styled {
     /// Every kind's style.
     static var sheet: StyleSheet {
         StyleSheet {
-            dimmed(ActivityIndicator.self)
+            dimmed(Spinner.self)
             dimmed(Button.self)
             dimmed(Canvas.self)
             dimmed(Capsule.self)
             dimmed(CheckBox.self)
             dimmed(DatePicker.self)
-            dimmed(Divider.self)
+            dimmed(Separator.self)
             dimmed(Ellipse.self)
             dimmed(Grid.self)
             dimmed(HStack.self)

@@ -30,12 +30,12 @@ final class AndroidIndicatorViewTests: XCTestCase {
             let running = State(wrappedValue: false)
             let host = AndroidRenderer.running(reducesMotion: true) {
                 VStack {
-                    ActivityIndicator().isAnimating(running.wrappedValue)
+                    Spinner().isAnimating(running.wrappedValue)
                     Button("Run").onClicked { running.wrappedValue = true }
                 }
             }
             host.layOut()
-            let indicator = try XCTUnwrap(host.views(AndroidActivityIndicatorView.self).first)
+            let indicator = try XCTUnwrap(host.views(AndroidSpinnerView.self).first)
 
             XCTAssertEqual(Java.callInt(indicator.reference, JavaAPI.getVisibility), ViewConstants.invisible)
             XCTAssertGreaterThan(indicator.frame.height, 0)

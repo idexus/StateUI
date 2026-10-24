@@ -9,10 +9,10 @@ extension ControlDictionary {
     static let examples: [(contract: any Contract.Type, code: String)] = [
         // MARK: - Elements
 
-        (ActivityIndicatorContract.self, #"""
+        (SpinnerContract.self, #"""
             @State var loading = true
 
-            ActivityIndicator(loading)
+            Spinner(loading)
                 .tint(.firebrick)
             """#),
 
@@ -226,10 +226,10 @@ extension ControlDictionary {
                 }
             """#),
 
-        (DividerContract.self, #"""
+        (SeparatorContract.self, #"""
             VStack {
                 Text("Inbox")
-                Divider()
+                Separator()
                 Text("Archive")
             }
             """#),

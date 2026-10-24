@@ -1,7 +1,4 @@
-# revision 9.1
-ActivityIndicator.frameChanged: ✅
-ActivityIndicator.gridColumn: ✅
-ActivityIndicator.gridRow: ✅
+# revision 10.1
 Button.canDrag: ✓ dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session
 Button.dragEnded: ✓ dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session
 Button.dragStarting: ✓ dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session
@@ -22,11 +19,6 @@ DatePicker.pointerExited: ✓ hover on DatePicker: the view's listening handed t
 DatePicker.pointerMoved: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.pointerPressed: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.pointerReleased: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
-Divider.pointerEntered: ✓ hover on Divider: the view's listening handed the recognizer's states, no touch sent
-Divider.pointerExited: ✓ hover on Divider: the view's listening handed the recognizer's states, no touch sent
-Divider.pointerMoved: ✓ hover on Divider: the view's listening handed the recognizer's states, no touch sent
-Divider.pointerPressed: ✓ hover on Divider: the view's listening handed the recognizer's states, no touch sent
-Divider.pointerReleased: ✓ hover on Divider: the view's listening handed the recognizer's states, no touch sent
 Ellipse.panYChannel: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Fill.frameChanged: ✅
 Fill.gridColumnSpan: ✅
@@ -81,12 +73,20 @@ ScrollView.margin: ✅
 SearchField.swipeDirection: ✓ pan on SearchField: the view's listening handed the recognizer's states, no touch sent
 SearchField.swipeThreshold: ✓ pan on SearchField: the view's listening handed the recognizer's states, no touch sent
 SearchField.swiped: ✓ pan on SearchField: the view's listening handed the recognizer's states, no touch sent
+Separator.pointerEntered: ✓ hover on Separator: the view's listening handed the recognizer's states, no touch sent
+Separator.pointerExited: ✓ hover on Separator: the view's listening handed the recognizer's states, no touch sent
+Separator.pointerMoved: ✓ hover on Separator: the view's listening handed the recognizer's states, no touch sent
+Separator.pointerPressed: ✓ hover on Separator: the view's listening handed the recognizer's states, no touch sent
+Separator.pointerReleased: ✓ hover on Separator: the view's listening handed the recognizer's states, no touch sent
 Slider.tapCount: ✓ tap on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.tapped: ✓ tap on Slider: the view's listening handed the recognizer's states, no touch sent
 Space.area: ✅
 Space.droppedFileTypes: ✓ dropFiles on Space: the drop interaction's handler told the driver's files, no drag session
 Space.filesDropped: ✓ dropFiles on Space: the drop interaction's handler told the driver's files, no drag session
 Space.frameChanged: ✅
+Spinner.frameChanged: ✅
+Spinner.gridColumn: ✅
+Spinner.gridRow: ✅
 Stepper.pointerEntered: ✓ hover on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.pointerExited: ✓ hover on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.pointerMoved: ✓ hover on Stepper: the view's listening handed the recognizer's states, no touch sent

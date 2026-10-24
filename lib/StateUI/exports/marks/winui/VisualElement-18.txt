@@ -1,5 +1,4 @@
-# revision 19.2
-ActivityIndicator.accessibilityHeading: ✅
+# revision 20.2
 Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Button.isEnabled: ✅
 Canvas.ignoresInput: ✅
@@ -9,9 +8,6 @@ Capsule.scale: ✅
 CheckBox.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 CheckBox.translationX: ✅
 DatePicker.tooltip: ✅
-Divider.height: ✅
-Divider.layoutDirection: ✓ read layoutDirection of Divider: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Divider.width: ✅
 Ellipse.background: – A WinUI shape is its figure alone: it paints no ground around it.
 Ellipse.isEnabled: does not apply - read isEnabled of Ellipse - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Fill.ignoresInput: ✅
@@ -50,9 +46,13 @@ ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own tip, chec
 ScrollView.zIndex: ✅
 SearchField.accessibilityHeading: ✅
 SearchField.scale: ✅
+Separator.height: ✅
+Separator.layoutDirection: ✓ read layoutDirection of Separator: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Separator.width: ✅
 Slider.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Slider.translationY: ✅
 Space.accessibilityHeading: ✅
+Spinner.accessibilityHeading: ✅
 Stepper.isAccessibilityHidden: ✅
 Stepper.isVisible: ✅
 Switch.maximumHeight: ✅

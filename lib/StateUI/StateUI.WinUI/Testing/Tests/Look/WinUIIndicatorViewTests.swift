@@ -13,7 +13,7 @@ private struct SpinnerPage: View {
 
     var body: some View {
         VStack {
-            ActivityIndicator(running)
+            Spinner(running)
             Button("Stop").onClicked { running = false }
         }
     }

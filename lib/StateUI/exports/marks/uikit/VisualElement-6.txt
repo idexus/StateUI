@@ -1,6 +1,4 @@
-# revision 19.1
-ActivityIndicator.ignoresInput: ✅
-ActivityIndicator.scaleY: ✓ read scaleY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
+# revision 20.1
 Button.background: ✅
 Canvas.accessibilityHint: ✅
 Capsule.height: ✅
@@ -8,7 +6,6 @@ Capsule.scale: ✓ read scale of Capsule: the host's own transform, checked agai
 Capsule.width: ✅
 CheckBox.isAccessibilityHidden: ✅
 DatePicker.accessibilityLabel: ✅
-Divider.layoutDirection: ✅
 Ellipse.isEnabled: ✅
 Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own transform, checked against the layer it composed itself
 Fill.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
@@ -41,9 +38,12 @@ Rectangle.accessibilityHeading: does not apply - read a heading's level - UIKit 
 ScrollView.isEnabled: ✅
 ScrollView.zIndex: ✅
 SearchField.layoutDirection: ✅
+Separator.layoutDirection: ✅
 Slider.accessibilityValue: ✅
 Space.ignoresInput: ✅
 Space.scaleY: ✓ read scaleY of Space: the host's own transform, checked against the layer it composed itself
+Spinner.ignoresInput: ✅
+Spinner.scaleY: ✓ read scaleY of Spinner: the host's own transform, checked against the layer it composed itself
 Stepper.isAccessibilityHidden: ✅
 Switch.accessibilityLabel: ✅
 Text.accessibilityHint: ✅

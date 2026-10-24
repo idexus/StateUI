@@ -1,6 +1,4 @@
-# revision 19.2
-ActivityIndicator.background: – WinUI's progress ring paints its Background as its track, no ground under its frame.
-ActivityIndicator.isEnabled: ✅
+# revision 20.2
 Button.ignoresInput: ✅
 Button.pivotY: ✅
 Canvas.rotationY: ✓ read rotationY of Canvas: the host's own tip, checked against the projection it laid on the element
@@ -10,8 +8,6 @@ Capsule.translationX: ✅
 CheckBox.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 DatePicker.hidesChildrenFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 DatePicker.opacity: ✅
-Divider.frame: ✅
-Divider.rotation: ✅
 Ellipse.ignoresInput: ✅
 Ellipse.pivotY: ✅
 Fill.rotationY: ✓ read rotationY of Fill: the host's own tip, checked against the projection it laid on the element
@@ -44,9 +40,13 @@ ScrollView.accessibilityHint: ✅
 ScrollView.scaleY: ✅
 SearchField.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 SearchField.translationX: ✅
+Separator.frame: ✅
+Separator.rotation: ✅
 Slider.tooltip: ✅
 Space.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Space.isEnabled: does not apply - read isEnabled of Space - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Spinner.background: – WinUI's progress ring paints its Background as its track, no ground under its frame.
+Spinner.isEnabled: ✅
 Stepper.height: ✅
 Stepper.layoutDirection: ✅
 Stepper.width: ✅

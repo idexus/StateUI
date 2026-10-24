@@ -236,8 +236,8 @@ final class ControlTests: XCTestCase {
                     .onTextChanged { _ in }
                     .onSubmitted {}),
 
-            ControlCase("ActivityIndicator", source: "ActivityIndicator.swift",
-                ActivityIndicator(true)
+            ControlCase("Spinner", source: "Spinner.swift",
+                Spinner(true)
                     .isAnimating(true)
                     .tint(.cornflowerBlue)),
 
@@ -260,7 +260,7 @@ final class ControlTests: XCTestCase {
                     .stroke(.white)
                     .lineWidth(1)),
 
-            ControlCase("Divider", source: "Divider.swift", Divider()),
+            ControlCase("Separator", source: "Separator.swift", Separator()),
 
             ControlCase("Grid", source: "Grid.swift",
                 Grid {

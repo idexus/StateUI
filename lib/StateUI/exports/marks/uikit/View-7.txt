@@ -1,7 +1,4 @@
-# revision 9.1
-ActivityIndicator.panTouchCount: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
-ActivityIndicator.panUpdated: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
-ActivityIndicator.panXChannel: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
+# revision 10.1
 Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridRow: ✅
@@ -20,10 +17,6 @@ DatePicker.area: ✅
 DatePicker.droppedFileTypes: ✓ dropFiles on DatePicker: the drop interaction's handler told the driver's files, no drag session
 DatePicker.filesDropped: ✓ dropFiles on DatePicker: the drop interaction's handler told the driver's files, no drag session
 DatePicker.frameChanged: ✅
-Divider.area: ✅
-Divider.droppedFileTypes: ✓ dropFiles on Divider: the drop interaction's handler told the driver's files, no drag session
-Divider.filesDropped: ✓ dropFiles on Divider: the drop interaction's handler told the driver's files, no drag session
-Divider.frameChanged: ✅
 Ellipse.pointerEntered: ✓ hover on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.pointerExited: ✓ hover on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.pointerMoved: ✓ hover on Ellipse: the view's listening handed the recognizer's states, no touch sent
@@ -85,11 +78,18 @@ SearchField.dragStarting: ✓ dragAndDrop on SearchField: the drag and drop inte
 SearchField.dragText: ✓ dragAndDrop on SearchField: the drag and drop interactions' handlers called, no drag session
 SearchField.frameChanged: ✅
 SearchField.margin: ✅
+Separator.area: ✅
+Separator.droppedFileTypes: ✓ dropFiles on Separator: the drop interaction's handler told the driver's files, no drag session
+Separator.filesDropped: ✓ dropFiles on Separator: the drop interaction's handler told the driver's files, no drag session
+Separator.frameChanged: ✅
 Slider.swipeDirection: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.swipeThreshold: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.swiped: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Space.tapCount: ✓ tap on Space: the view's listening handed the recognizer's states, no touch sent
 Space.tapped: ✓ tap on Space: the view's listening handed the recognizer's states, no touch sent
+Spinner.panTouchCount: ✓ pan on Spinner: the view's listening handed the recognizer's states, no touch sent
+Spinner.panUpdated: ✓ pan on Spinner: the view's listening handed the recognizer's states, no touch sent
+Spinner.panXChannel: ✓ pan on Spinner: the view's listening handed the recognizer's states, no touch sent
 Stepper.area: ✅
 Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the drop interaction's handler told the driver's files, no drag session
 Stepper.filesDropped: ✓ dropFiles on Stepper: the drop interaction's handler told the driver's files, no drag session

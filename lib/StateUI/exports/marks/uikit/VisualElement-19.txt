@@ -1,5 +1,4 @@
-# revision 19.1
-ActivityIndicator.isAccessibilityHidden: ✅
+# revision 20.1
 Button.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Canvas.isVisible: ✅
 Canvas.rotation: ✓ read rotation of Canvas: the host's own transform, checked against the layer it composed itself
@@ -7,7 +6,6 @@ Capsule.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an 
 CheckBox.style: ✅
 CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transform, checked against the layer it composed itself
 DatePicker.pivotY: ✓ read pivotY of DatePicker: the host's own transform, checked against the layer it composed itself
-Divider.accessibilityLabel: ✅
 Ellipse.accessibilityAdjusted: ✅
 Fill.frame: ✅
 Fill.translationX: ✓ read translationX of Fill: the host's own transform, checked against the layer it composed itself
@@ -32,9 +30,11 @@ Rectangle.frame: ✅
 Rectangle.translationX: ✓ read translationX of Rectangle: the host's own transform, checked against the layer it composed itself
 ScrollView.layoutDirection: ✅
 SearchField.accessibilityLabel: ✅
+Separator.accessibilityLabel: ✅
 Slider.isEnabled: ✅
 Slider.rotationY: ✓ read rotationY of Slider: the host's own transform, checked against the layer it composed itself
 Space.isAccessibilityHidden: ✅
+Spinner.isAccessibilityHidden: ✅
 Stepper.style: ✅
 Stepper.translationY: ✓ read translationY of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.pivotY: ✓ read pivotY of Switch: the host's own transform, checked against the layer it composed itself

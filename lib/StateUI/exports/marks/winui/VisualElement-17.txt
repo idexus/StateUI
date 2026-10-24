@@ -1,5 +1,4 @@
-# revision 19.2
-ActivityIndicator.tooltip: ✅
+# revision 20.2
 Button.hidesChildrenFromAccessibility: ✅
 Button.opacity: ✅
 Canvas.maximumHeight: ✅
@@ -12,8 +11,6 @@ Capsule.zIndex: ✅
 CheckBox.accessibilityHint: ✅
 CheckBox.scaleY: ✅
 DatePicker.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Divider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-Divider.isEnabled: does not apply - read isEnabled of Divider - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Ellipse.hidesChildrenFromAccessibility: ✅
 Ellipse.opacity: ✅
 Fill.maximumHeight: ✅
@@ -56,10 +53,13 @@ ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own tip, chec
 ScrollView.style: ✅
 SearchField.rotationY: ✓ read rotationY of SearchField: the host's own tip, checked against the projection it laid on the element
 SearchField.zIndex: ✅
+Separator.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Separator.isEnabled: does not apply - read isEnabled of Separator - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Slider.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Slider.translationX: ✅
 Space.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Space.tooltip: ✅
+Spinner.tooltip: ✅
 Stepper.accessibilityHeading: ✅
 Switch.height: ✅
 Switch.layoutDirection: ✅

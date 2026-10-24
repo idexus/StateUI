@@ -2,7 +2,6 @@
 # notes were last read against them. SampleReviewTests compares; only after the reading,
 # STATEUI_UPDATE_SAMPLES=1 records.
 AccessibilitySettingsSample.swift fa38044121b2ffbd
-ActivityIndicatorSample.swift 097a91a8164620dd
 AimSample.swift 571f9842156877ea
 AnalogClockSample.swift 6fa4f5693b1a66d7
 AnimatedInputSample.swift 3edb37bd77bcc397
@@ -44,8 +43,8 @@ EnvironmentSample.swift cb3fd389ce8ef814
 FilesSample.swift 9593e9f35f0a5b03
 FillSample.swift accba8ffa08ff102
 FoundationProbeSample.swift 53fe7a3368cb73e8
-GalleryViewSample.swift e54a3c1f9e059608
-GateSample.swift 0eb1cb01a376dac3
+GalleryViewSample.swift 24d0e4b546dcbadc
+GateSample.swift 14cf494627b75318
 GeometryReaderSample.swift 4e6226814b27d935
 GridSample.swift c82a3d386f4dc2a6
 HTTPRequestSample.swift 2bcc8ed36ca0c594
@@ -92,9 +91,9 @@ PickerSample.swift 86c5cbb290e05823
 PinchSample.swift 6aa4a07113d9cf10
 PlatformSupportSample.swift 24107a58da1308fc
 PointerSample.swift 3306b3b76379bc70
-PollSample.swift d8a149d4da3bffd8
+PollSample.swift 29d40feb24ecaa77
 PopoverSample.swift 9066bd443c9189ec
-PositionIndicatorSample.swift 8d01bf0d34da3ca4
+PositionDotsSample.swift 85b6d17adabdccb8
 ProgressBarSample.swift ab4452099069a51a
 PropertyReadsSample.swift e16e08fd0fa40d8a
 ReaderSample.swift 778670ce97ad7532
@@ -114,8 +113,9 @@ ShareSample.swift ca23e3ade29db45a
 ShortcutSample.swift 613e9bc5911f4fc5
 SizingSample.swift 505216705d5b9909
 SliderSample.swift de5c388891de8278
+SpinnerSample.swift e38153fa2576bf0f
 SplitViewSample.swift f390ec3213bfa156
-StackLayoutSample.swift d3a0a57633542c04
+StackLayoutSample.swift 36f89694c3b71b08
 StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
 StepperSample.swift a1eb96147d1526c6

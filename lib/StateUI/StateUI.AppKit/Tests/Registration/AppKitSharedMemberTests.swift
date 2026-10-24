@@ -131,7 +131,7 @@ final class AppKitSharedMemberTests: XCTestCase {
     @MainActor
     func testABackgroundColorPaintsEveryView() throws {
         let layered: [NodeType] = [
-            .activityIndicator, .button, .canvas, .checkBox, .datePicker,
+            .spinner, .button, .canvas, .checkBox, .datePicker,
             .ellipse, .grid, .hStack, .image, .text, .line, .path, .picker, .polygon,
             .polyline, .progressBar, .rectangle, .scrollView,
             .slider, .stepper, .switch, .timePicker, .vStack, .zStack,

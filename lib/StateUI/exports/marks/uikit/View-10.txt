@@ -1,5 +1,4 @@
-# revision 9.1
-ActivityIndicator.pinchUpdated: ✓ pinch on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
+# revision 10.1
 Button.panTouchCount: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Button.panUpdated: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Button.panXChannel: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
@@ -17,8 +16,6 @@ CheckBox.swipeThreshold: ✓ pan on CheckBox: the view's listening handed the re
 CheckBox.swiped: ✓ pan on CheckBox: the view's listening handed the recognizer's states, no touch sent
 DatePicker.tapCount: ✓ tap on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.tapped: ✓ tap on DatePicker: the view's listening handed the recognizer's states, no touch sent
-Divider.tapCount: ✓ tap on Divider: the view's listening handed the recognizer's states, no touch sent
-Divider.tapped: ✓ tap on Divider: the view's listening handed the recognizer's states, no touch sent
 Ellipse.area: ✅
 Ellipse.droppedFileTypes: ✓ dropFiles on Ellipse: the drop interaction's handler told the driver's files, no drag session
 Ellipse.filesDropped: ✓ dropFiles on Ellipse: the drop interaction's handler told the driver's files, no drag session
@@ -79,6 +76,8 @@ ScrollView.panXChannel: ✓ pan on ScrollView: the view's listening handed the r
 SearchField.frameChanged: ✅
 SearchField.gridColumn: ✅
 SearchField.gridRow: ✅
+Separator.tapCount: ✓ tap on Separator: the view's listening handed the recognizer's states, no touch sent
+Separator.tapped: ✓ tap on Separator: the view's listening handed the recognizer's states, no touch sent
 Slider.canDrag: ✓ dragAndDrop on Slider: the drag and drop interactions' handlers called, no drag session
 Slider.dragEnded: ✓ dragAndDrop on Slider: the drag and drop interactions' handlers called, no drag session
 Slider.dragStarting: ✓ dragAndDrop on Slider: the drag and drop interactions' handlers called, no drag session
@@ -88,6 +87,7 @@ Slider.margin: ✅
 Space.swipeDirection: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
 Space.swipeThreshold: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
 Space.swiped: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
+Spinner.pinchUpdated: ✓ pinch on Spinner: the view's listening handed the recognizer's states, no touch sent
 Stepper.tapCount: ✓ tap on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.tapped: ✓ tap on Stepper: the view's listening handed the recognizer's states, no touch sent
 Switch.area: ✅

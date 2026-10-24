@@ -78,7 +78,7 @@ growing, which is StateUI's measuring - the driver says WinUI holds none of it
 effect proves the member.
 
 A running ring's automation peer says it is busy before the name its element
-holds, so the driver reads an activity indicator's label from the element.
+holds, so the driver reads a spinner's label from the element.
 
 What was said to the screen reader is the relay's own list of what it handed
 UI Automation to announce, and what was launched the host's record of what it

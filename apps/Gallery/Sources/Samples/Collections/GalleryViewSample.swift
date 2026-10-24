@@ -105,11 +105,11 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 // to the middle, not on every frame of the movement.
                 DebugInfoLabel()
 
-                PositionIndicator()
+                PositionDots()
                     .count(cards.count)
                     .position(shown)
-                    .indicatorColor(Palette.outline)
-                    .currentIndicatorColor(Palette.accent)
+                    .dotColor(Palette.outline)
+                    .currentDotColor(Palette.accent)
                     .horizontalAlignment(.center)
 
                 Text("\(cards[front].name) · card \(shown + 1) of \(cards.count) · \(opened) · moved \(moves)")
@@ -251,7 +251,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 + "card it is nearest - in the deck, the card in front goes out under your "
                 + "finger and under the next. `.position($shown)` is which one, written "
                 + "as the user moves and glided to when it is assigned - which is what "
-                + "Back and Next do. The dots are a `PositionIndicator` reading the same "
+                + "Back and Next do. The dots are a `PositionDots` reading the same "
                 + "`@State`: one number joins the two controls.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

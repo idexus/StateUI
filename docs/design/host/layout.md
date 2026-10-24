@@ -142,9 +142,9 @@ shape there as a layout's box (`LayoutMembers.regionMembers`, a layout's box
 without the cut, as nothing stands inside to cut), so a blur or glass is drawn
 where the platform draws one; it takes no padding.
 
-## A divider in a stack
+## A separator in a stack
 
-A `Divider` is a view: the toolkit's own line, across its stack and as thick
+A `Separator` is a view: the toolkit's own line, across its stack and as thick
 as the toolkit draws one. A line between a menu's entries is a
 `MenuSeparator`, one of the entries a menu draws itself
 (`NodeType.viewlessTypes`), so it never gets a view.

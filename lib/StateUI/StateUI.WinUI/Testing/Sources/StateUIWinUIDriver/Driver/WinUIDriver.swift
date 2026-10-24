@@ -33,7 +33,7 @@ final class WinUIDriver: HostDriver {
         "read submitLabel of SearchField": WinUIDriver.noReturnWord,
         "read isEnabled of Canvas": WinUIDriver.noEnabledState,
         "read isEnabled of Capsule": WinUIDriver.noEnabledState,
-        "read isEnabled of Divider": WinUIDriver.noEnabledState,
+        "read isEnabled of Separator": WinUIDriver.noEnabledState,
         "read isEnabled of Ellipse": WinUIDriver.noEnabledState,
         "read isEnabled of Fill": WinUIDriver.noEnabledState,
         "read isEnabled of Grid": WinUIDriver.noEnabledState,

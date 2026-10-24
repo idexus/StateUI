@@ -298,7 +298,7 @@ field that leaves closes its dialog.
 ## Work under way
 
 A progress bar is Android's horizontal bar, the share done in 10 000 steps.
-An activity indicator is Android's turning bar: it is drawn only while it
+A spinner is Android's turning bar: it is drawn only while it
 runs, and keeps its room while it does not, so starting the work moves
 nothing around it; hidden, it takes no room.
 

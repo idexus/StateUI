@@ -1,5 +1,4 @@
-# revision 19.1
-ActivityIndicator.accessibilityRole: ✅
+# revision 20.1
 Button.height: ✅
 Button.scale: ✓ read scale of Button: the host's own transform, checked against the layer it composed itself
 Button.width: ✅
@@ -8,11 +7,6 @@ Capsule.accessibilityLabel: ✅
 CheckBox.opacity: ✅
 CheckBox.rotationX: ✓ read rotationX of CheckBox: the host's own transform, checked against the layer it composed itself
 DatePicker.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-Divider.maximumHeight: ✅
-Divider.maximumWidth: ✅
-Divider.minimumHeight: ✅
-Divider.minimumWidth: ✅
-Divider.scaleX: ✓ read scaleX of Divider: the host's own transform, checked against the layer it composed itself
 Ellipse.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Fill.isVisible: ✅
 Fill.rotation: ✓ read rotation of Fill: the host's own transform, checked against the layer it composed itself
@@ -41,8 +35,14 @@ SearchField.maximumWidth: ✅
 SearchField.minimumHeight: ✅
 SearchField.minimumWidth: ✅
 SearchField.scaleX: ✓ read scaleX of SearchField: the host's own transform, checked against the layer it composed itself
+Separator.maximumHeight: ✅
+Separator.maximumWidth: ✅
+Separator.minimumHeight: ✅
+Separator.minimumWidth: ✅
+Separator.scaleX: ✓ read scaleX of Separator: the host's own transform, checked against the layer it composed itself
 Slider.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Space.accessibilityRole: ✅
+Spinner.accessibilityRole: ✅
 Stepper.opacity: ✅
 Stepper.rotationX: ✓ read rotationX of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level

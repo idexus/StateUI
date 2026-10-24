@@ -1,5 +1,4 @@
-# revision 19.1
-ActivityIndicator.accessibilityLabel: ✅
+# revision 20.1
 Button.opacity: ✅
 Button.rotationX: ✓ read rotationX of Button: the host's own transform, checked against the layer it composed itself
 Canvas.tooltip: ✅
@@ -7,8 +6,6 @@ Capsule.isEnabled: ✓ tap on Capsule: handed to the host's recognizer or handle
 Capsule.zIndex: ✅
 CheckBox.pivotY: ✓ read pivotY of CheckBox: the host's own transform, checked against the layer it composed itself
 DatePicker.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
-Divider.isEnabled: ✅
-Divider.rotationY: ✓ read rotationY of Divider: the host's own transform, checked against the layer it composed itself
 Ellipse.style: ✅
 Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform, checked against the layer it composed itself
 Fill.pivotX: ✓ read pivotX of Fill: the host's own transform, checked against the layer it composed itself
@@ -33,9 +30,12 @@ Rectangle.pivotX: ✓ read pivotX of Rectangle: the host's own transform, checke
 ScrollView.accessibilityValue: ✅
 SearchField.isEnabled: ✅
 SearchField.rotationY: ✓ read rotationY of SearchField: the host's own transform, checked against the layer it composed itself
+Separator.isEnabled: ✅
+Separator.rotationY: ✓ read rotationY of Separator: the host's own transform, checked against the layer it composed itself
 Slider.isAccessibilityHidden: ✅
 Space.accessibilityLabel: ✅
 Space.background: ✅
+Spinner.accessibilityLabel: ✅
 Stepper.pivotY: ✓ read pivotY of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
 Text.tooltip: ✅

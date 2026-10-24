@@ -53,7 +53,7 @@
     /// The views whose only answer to the hand is the View tier's gestures: what disabling one stops is what it hears
     /// of them.
     static let answeringByGestures: Set<String> = [
-        "ActivityIndicator", "Capsule", "Ellipse", "Fill", "Grid", "HStack", "Image", "Line", "Path", "Polygon",
+        "Spinner", "Capsule", "Ellipse", "Fill", "Grid", "HStack", "Image", "Line", "Path", "Polygon",
         "Polyline", "ProgressBar", "Rectangle", "Space", "Text", "VStack", "ZStack",
     ]
 

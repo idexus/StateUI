@@ -1,11 +1,4 @@
-# revision 9.1
-ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the relay's drag reports told by the driver, no drag WinUI began
-ActivityIndicator.dragEnded: ✓ dragAndDrop on ActivityIndicator: the relay's drag reports told by the driver, no drag WinUI began
-ActivityIndicator.dragStarting: ✓ dragAndDrop on ActivityIndicator: the relay's drag reports told by the driver, no drag WinUI began
-ActivityIndicator.dragText: ✓ dragAndDrop on ActivityIndicator: the relay's drag reports told by the driver, no drag WinUI began
-ActivityIndicator.frameChanged: ✅
-ActivityIndicator.gridColumn: ✅
-ActivityIndicator.gridRow: ✅
+# revision 10.1
 Button.droppedFileTypes: ✓ dropFiles on Button: the relay's drop report told the driver's files, no drag WinUI began
 Button.filesDropped: ✓ dropFiles on Button: the relay's drop report told the driver's files, no drag WinUI began
 Button.tapCount: ✅
@@ -26,13 +19,6 @@ DatePicker.droppedFileTypes: ✓ dropFiles on DatePicker: the relay's drop repor
 DatePicker.filesDropped: ✓ dropFiles on DatePicker: the relay's drop report told the driver's files, no drag WinUI began
 DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
-Divider.canDrag: ✓ dragAndDrop on Divider: the relay's drag reports told by the driver, no drag WinUI began
-Divider.dragEnded: ✓ dragAndDrop on Divider: the relay's drag reports told by the driver, no drag WinUI began
-Divider.dragStarting: ✓ dragAndDrop on Divider: the relay's drag reports told by the driver, no drag WinUI began
-Divider.dragText: ✓ dragAndDrop on Divider: the relay's drag reports told by the driver, no drag WinUI began
-Divider.frameChanged: ✅
-Divider.gridColumn: ✅
-Divider.gridRow: ✅
 Ellipse.panYChannel: ✅
 Fill.frameChanged: ✅
 Fill.horizontalAlignment: ✅
@@ -96,11 +82,25 @@ SearchField.dragText: ✓ dragAndDrop on SearchField: the relay's drag reports t
 SearchField.frameChanged: ✅
 SearchField.gridColumn: ✅
 SearchField.gridRow: ✅
+Separator.canDrag: ✓ dragAndDrop on Separator: the relay's drag reports told by the driver, no drag WinUI began
+Separator.dragEnded: ✓ dragAndDrop on Separator: the relay's drag reports told by the driver, no drag WinUI began
+Separator.dragStarting: ✓ dragAndDrop on Separator: the relay's drag reports told by the driver, no drag WinUI began
+Separator.dragText: ✓ dragAndDrop on Separator: the relay's drag reports told by the driver, no drag WinUI began
+Separator.frameChanged: ✅
+Separator.gridColumn: ✅
+Separator.gridRow: ✅
 Slider.droppedFileTypes: ✓ dropFiles on Slider: the relay's drop report told the driver's files, no drag WinUI began
 Slider.filesDropped: ✓ dropFiles on Slider: the relay's drop report told the driver's files, no drag WinUI began
 Slider.tapCount: ✅
 Slider.tapped: ✅
 Space.panYChannel: ✅
+Spinner.canDrag: ✓ dragAndDrop on Spinner: the relay's drag reports told by the driver, no drag WinUI began
+Spinner.dragEnded: ✓ dragAndDrop on Spinner: the relay's drag reports told by the driver, no drag WinUI began
+Spinner.dragStarting: ✓ dragAndDrop on Spinner: the relay's drag reports told by the driver, no drag WinUI began
+Spinner.dragText: ✓ dragAndDrop on Spinner: the relay's drag reports told by the driver, no drag WinUI began
+Spinner.frameChanged: ✅
+Spinner.gridColumn: ✅
+Spinner.gridRow: ✅
 Stepper.frameChanged: ✅
 Stepper.horizontalAlignment: ✅
 Stepper.pinchUpdated: ✓ pinch on Stepper: the relay's report of the manipulation handed to the host, no touch sent

@@ -1,6 +1,4 @@
-# revision 19.1
-ActivityIndicator.opacity: ✅
-ActivityIndicator.rotationX: ✓ read rotationX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
+# revision 20.1
 Button.tooltip: ✅
 Canvas.style: ✅
 Canvas.translationY: ✓ read translationY of Canvas: the host's own transform, checked against the layer it composed itself
@@ -9,7 +7,6 @@ CheckBox.accessibilityActionPerformed: ✅
 CheckBox.accessibilityActions: ✅
 DatePicker.frame: ✅
 DatePicker.translationX: ✓ read translationX of DatePicker: the host's own transform, checked against the layer it composed itself
-Divider.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 Ellipse.pivotX: ✓ read pivotX of Ellipse: the host's own transform, checked against the layer it composed itself
 Fill.accessibilityValue: ✅
 Grid.isEnabled: ✅
@@ -36,9 +33,12 @@ ScrollView.minimumHeight: ✅
 ScrollView.minimumWidth: ✅
 ScrollView.scaleX: ✓ read scaleX of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+Separator.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 Slider.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Space.opacity: ✅
 Space.rotationX: ✓ read rotationX of Space: the host's own transform, checked against the layer it composed itself
+Spinner.opacity: ✅
+Spinner.rotationX: ✓ read rotationX of Spinner: the host's own transform, checked against the layer it composed itself
 Stepper.accessibilityActionPerformed: ✅
 Stepper.accessibilityActions: ✅
 Switch.frame: ✅

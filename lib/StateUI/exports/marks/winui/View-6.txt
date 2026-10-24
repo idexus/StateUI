@@ -1,8 +1,4 @@
-# revision 9.1
-ActivityIndicator.droppedFileTypes: ✓ dropFiles on ActivityIndicator: the relay's drop report told the driver's files, no drag WinUI began
-ActivityIndicator.filesDropped: ✓ dropFiles on ActivityIndicator: the relay's drop report told the driver's files, no drag WinUI began
-ActivityIndicator.tapCount: ✅
-ActivityIndicator.tapped: ✅
+# revision 10.1
 Button.panYChannel: ✅
 Canvas.frameChanged: ✅
 Canvas.horizontalAlignment: ✅
@@ -20,10 +16,6 @@ CheckBox.filesDropped: ✓ dropFiles on CheckBox: the relay's drop report told t
 CheckBox.tapCount: ✅
 CheckBox.tapped: ✅
 DatePicker.panYChannel: ✅
-Divider.droppedFileTypes: ✓ dropFiles on Divider: the relay's drop report told the driver's files, no drag WinUI began
-Divider.filesDropped: ✓ dropFiles on Divider: the relay's drop report told the driver's files, no drag WinUI began
-Divider.tapCount: ✅
-Divider.tapped: ✅
 Ellipse.frameChanged: ✅
 Ellipse.horizontalAlignment: ✅
 Ellipse.pinchUpdated: ✓ pinch on Ellipse: the relay's report of the manipulation handed to the host, no touch sent
@@ -95,11 +87,19 @@ SearchField.droppedFileTypes: ✓ dropFiles on SearchField: the relay's drop rep
 SearchField.filesDropped: ✓ dropFiles on SearchField: the relay's drop report told the driver's files, no drag WinUI began
 SearchField.tapCount: ✅
 SearchField.tapped: ✅
+Separator.droppedFileTypes: ✓ dropFiles on Separator: the relay's drop report told the driver's files, no drag WinUI began
+Separator.filesDropped: ✓ dropFiles on Separator: the relay's drop report told the driver's files, no drag WinUI began
+Separator.tapCount: ✅
+Separator.tapped: ✅
 Slider.panYChannel: ✅
 Space.frameChanged: ✅
 Space.horizontalAlignment: ✅
 Space.pinchUpdated: ✓ pinch on Space: the relay's report of the manipulation handed to the host, no touch sent
 Space.verticalAlignment: ✅
+Spinner.droppedFileTypes: ✓ dropFiles on Spinner: the relay's drop report told the driver's files, no drag WinUI began
+Spinner.filesDropped: ✓ dropFiles on Spinner: the relay's drop report told the driver's files, no drag WinUI began
+Spinner.tapCount: ✅
+Spinner.tapped: ✅
 Stepper.canDrag: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.dragStarting: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began

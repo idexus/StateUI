@@ -300,8 +300,8 @@ final class StateUIViews {
         return mask;
     }
 
-    /** A divider in a stack: a plain view drawn with the theme's list divider, as thick as that line both ways. */
-    static View divider(Context context) {
+    /** A separator in a stack: a plain view drawn with the theme's list divider, as thick as that line both ways. */
+    static View separator(Context context) {
         TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.listDivider});
         Drawable line = theme.getDrawable(0);
         theme.recycle();

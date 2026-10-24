@@ -1,6 +1,4 @@
-# revision 19.2
-ActivityIndicator.hidesChildrenFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
-ActivityIndicator.opacity: ✅
+# revision 20.2
 Button.maximumHeight: ✅
 Button.maximumWidth: ✅
 Button.minimumHeight: ✅
@@ -14,8 +12,6 @@ CheckBox.accessibilityActionPerformed: – UI Automation offers no action of an 
 CheckBox.accessibilityActions: – UI Automation offers no action of an application's own words.
 DatePicker.isAccessibilityHidden: ✅
 DatePicker.isVisible: ✅
-Divider.ignoresInput: ✅
-Divider.pivotY: ✅
 Ellipse.maximumHeight: ✅
 Ellipse.maximumWidth: ✅
 Ellipse.minimumHeight: ✅
@@ -54,9 +50,13 @@ ScrollView.accessibilityLabel: ✅
 ScrollView.scaleX: ✅
 SearchField.accessibilityHint: ✅
 SearchField.scaleY: ✅
+Separator.ignoresInput: ✅
+Separator.pivotY: ✅
 Slider.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Space.hidesChildrenFromAccessibility: ✅
 Space.opacity: ✅
+Spinner.hidesChildrenFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
+Spinner.opacity: ✅
 Stepper.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Stepper.isEnabled: ✅
 Switch.frame: ✅

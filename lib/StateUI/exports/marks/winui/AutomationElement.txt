@@ -1,11 +1,9 @@
-# revision 5.1
-ActivityIndicator.accessibilityIdentifier: ✅
+# revision 6.1
 Button.accessibilityIdentifier: ✅
 Canvas.accessibilityIdentifier: ✅
 Capsule.accessibilityIdentifier: ✅
 CheckBox.accessibilityIdentifier: ✅
 DatePicker.accessibilityIdentifier: ✅
-Divider.accessibilityIdentifier: ✅
 Ellipse.accessibilityIdentifier: ✅
 Fill.accessibilityIdentifier: ✅
 Grid.accessibilityIdentifier: ✅
@@ -25,8 +23,10 @@ ProgressBar.accessibilityIdentifier: ✅
 Rectangle.accessibilityIdentifier: ✅
 ScrollView.accessibilityIdentifier: ✅
 SearchField.accessibilityIdentifier: ✅
+Separator.accessibilityIdentifier: ✅
 Slider.accessibilityIdentifier: ✅
 Space.accessibilityIdentifier: ✅
+Spinner.accessibilityIdentifier: ✅
 SplitView.accessibilityIdentifier: ✅
 Stepper.accessibilityIdentifier: ✅
 Switch.accessibilityIdentifier: ✅

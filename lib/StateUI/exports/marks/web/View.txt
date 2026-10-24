@@ -1,38 +1,4 @@
-# revision 9.1
-ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-ActivityIndicator.area: ✅
-ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the DOM's drag events dispatched by the driver, no drag the browser began
-ActivityIndicator.dragEnded: ✓ dragAndDrop on ActivityIndicator: the DOM's drag events dispatched by the driver, no drag the browser began
-ActivityIndicator.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-ActivityIndicator.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-ActivityIndicator.dragStarting: ✓ dragAndDrop on ActivityIndicator: the DOM's drag events dispatched by the driver, no drag the browser began
-ActivityIndicator.dragText: ✓ dragAndDrop on ActivityIndicator: the DOM's drag events dispatched by the driver, no drag the browser began
-ActivityIndicator.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-ActivityIndicator.droppedFileTypes: ✓ dropFiles on ActivityIndicator: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-ActivityIndicator.filesDropped: ✓ dropFiles on ActivityIndicator: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-ActivityIndicator.frameChanged: ✅
-ActivityIndicator.gridColumn: ✅
-ActivityIndicator.gridColumnSpan: ✅
-ActivityIndicator.gridRow: ✅
-ActivityIndicator.gridRowSpan: ✅
-ActivityIndicator.horizontalAlignment: ✅
-ActivityIndicator.margin: ✅
-ActivityIndicator.panTouchCount: ✅
-ActivityIndicator.panUpdated: ✅
-ActivityIndicator.panXChannel: ✅
-ActivityIndicator.panYChannel: ✅
-ActivityIndicator.pinchUpdated: ✅
-ActivityIndicator.pointerEntered: ✅
-ActivityIndicator.pointerExited: ✅
-ActivityIndicator.pointerMoved: ✅
-ActivityIndicator.pointerPressed: ✅
-ActivityIndicator.pointerReleased: ✅
-ActivityIndicator.swipeDirection: ✅
-ActivityIndicator.swipeThreshold: ✅
-ActivityIndicator.swiped: ✅
-ActivityIndicator.tapCount: ✅
-ActivityIndicator.tapped: ✅
-ActivityIndicator.verticalAlignment: ✅
+# revision 10.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -203,40 +169,6 @@ DatePicker.swiped: ✅
 DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
 DatePicker.verticalAlignment: ✅
-Divider.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Divider.area: ✅
-Divider.canDrag: ✓ dragAndDrop on Divider: the DOM's drag events dispatched by the driver, no drag the browser began
-Divider.dragEnded: ✓ dragAndDrop on Divider: the DOM's drag events dispatched by the driver, no drag the browser began
-Divider.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Divider.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Divider.dragStarting: ✓ dragAndDrop on Divider: the DOM's drag events dispatched by the driver, no drag the browser began
-Divider.dragText: ✓ dragAndDrop on Divider: the DOM's drag events dispatched by the driver, no drag the browser began
-Divider.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Divider.droppedFileTypes: ✓ dropFiles on Divider: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-Divider.filesDropped: ✓ dropFiles on Divider: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-Divider.frameChanged: ✅
-Divider.gridColumn: ✅
-Divider.gridColumnSpan: ✅
-Divider.gridRow: ✅
-Divider.gridRowSpan: ✅
-Divider.horizontalAlignment: ✅
-Divider.margin: ✅
-Divider.panTouchCount: ✅
-Divider.panUpdated: ✅
-Divider.panXChannel: ✅
-Divider.panYChannel: ✅
-Divider.pinchUpdated: ✅
-Divider.pointerEntered: ✅
-Divider.pointerExited: ✅
-Divider.pointerMoved: ✅
-Divider.pointerPressed: ✅
-Divider.pointerReleased: ✅
-Divider.swipeDirection: ✅
-Divider.swipeThreshold: ✅
-Divider.swiped: ✅
-Divider.tapCount: ✅
-Divider.tapped: ✅
-Divider.verticalAlignment: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Ellipse.area: ✅
 Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -815,6 +747,40 @@ SearchField.swiped: ✅
 SearchField.tapCount: ✅
 SearchField.tapped: ✅
 SearchField.verticalAlignment: ✅
+Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.area: ✅
+Separator.canDrag: ✓ dragAndDrop on Separator: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.dragEnded: ✓ dragAndDrop on Separator: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.dragStarting: ✓ dragAndDrop on Separator: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.dragText: ✓ dragAndDrop on Separator: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.droppedFileTypes: ✓ dropFiles on Separator: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Separator.filesDropped: ✓ dropFiles on Separator: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Separator.frameChanged: ✅
+Separator.gridColumn: ✅
+Separator.gridColumnSpan: ✅
+Separator.gridRow: ✅
+Separator.gridRowSpan: ✅
+Separator.horizontalAlignment: ✅
+Separator.margin: ✅
+Separator.panTouchCount: ✅
+Separator.panUpdated: ✅
+Separator.panXChannel: ✅
+Separator.panYChannel: ✅
+Separator.pinchUpdated: ✅
+Separator.pointerEntered: ✅
+Separator.pointerExited: ✅
+Separator.pointerMoved: ✅
+Separator.pointerPressed: ✅
+Separator.pointerReleased: ✅
+Separator.swipeDirection: ✅
+Separator.swipeThreshold: ✅
+Separator.swiped: ✅
+Separator.tapCount: ✅
+Separator.tapped: ✅
+Separator.verticalAlignment: ✅
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Slider.area: ✅
 Slider.canDrag: ✓ dragAndDrop on Slider: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -883,6 +849,40 @@ Space.swiped: ✅
 Space.tapCount: ✅
 Space.tapped: ✅
 Space.verticalAlignment: ✅
+Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.area: ✅
+Spinner.canDrag: ✓ dragAndDrop on Spinner: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.dragEnded: ✓ dragAndDrop on Spinner: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.dragStarting: ✓ dragAndDrop on Spinner: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.dragText: ✓ dragAndDrop on Spinner: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.droppedFileTypes: ✓ dropFiles on Spinner: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Spinner.filesDropped: ✓ dropFiles on Spinner: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Spinner.frameChanged: ✅
+Spinner.gridColumn: ✅
+Spinner.gridColumnSpan: ✅
+Spinner.gridRow: ✅
+Spinner.gridRowSpan: ✅
+Spinner.horizontalAlignment: ✅
+Spinner.margin: ✅
+Spinner.panTouchCount: ✅
+Spinner.panUpdated: ✅
+Spinner.panXChannel: ✅
+Spinner.panYChannel: ✅
+Spinner.pinchUpdated: ✅
+Spinner.pointerEntered: ✅
+Spinner.pointerExited: ✅
+Spinner.pointerMoved: ✅
+Spinner.pointerPressed: ✅
+Spinner.pointerReleased: ✅
+Spinner.swipeDirection: ✅
+Spinner.swipeThreshold: ✅
+Spinner.swiped: ✅
+Spinner.tapCount: ✅
+Spinner.tapped: ✅
+Spinner.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Stepper.area: ✅
 Stepper.canDrag: ✓ dragAndDrop on Stepper: the DOM's drag events dispatched by the driver, no drag the browser began

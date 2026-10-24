@@ -27,7 +27,7 @@ extension StyleBag: TextInputProperties where Target: TextInput {}
 
 // And each control's own properties.
 
-extension StyleBag: ActivityIndicatorProperties where Target == ActivityIndicator {}
+extension StyleBag: SpinnerProperties where Target == Spinner {}
 extension StyleBag: ButtonProperties where Target == Button {}
 extension StyleBag: CheckBoxProperties where Target == CheckBox {}
 extension StyleBag: DatePickerProperties where Target == DatePicker {}

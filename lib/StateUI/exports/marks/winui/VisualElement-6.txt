@@ -1,6 +1,4 @@
-# revision 19.2
-ActivityIndicator.ignoresInput: not realized
-ActivityIndicator.pivotY: ✅
+# revision 20.2
 Button.rotationY: ✓ read rotationY of Button: the host's own tip, checked against the projection it laid on the element
 Button.zIndex: ✅
 Canvas.accessibilityHint: ✅
@@ -13,8 +11,6 @@ DatePicker.maximumWidth: ✅
 DatePicker.minimumHeight: ✅
 DatePicker.minimumWidth: ✅
 DatePicker.pivotX: ✅
-Divider.accessibilityHeading: ✅
-Divider.scale: ✅
 Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own tip, checked against the projection it laid on the element
 Ellipse.zIndex: ✅
 Fill.accessibilityHint: ✅
@@ -48,10 +44,14 @@ ScrollView.accessibilityActionPerformed: – UI Automation offers no action of a
 ScrollView.accessibilityActions: – UI Automation offers no action of an application's own words.
 ScrollView.isEnabled: ✅
 SearchField.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Separator.accessibilityHeading: ✅
+Separator.scale: ✅
 Slider.hidesChildrenFromAccessibility: ✅
 Slider.opacity: ✅
 Space.ignoresInput: ✅
 Space.pivotY: ✅
+Spinner.ignoresInput: not realized
+Spinner.pivotY: ✅
 Stepper.frame: ✅
 Stepper.rotation: ✅
 Switch.accessibilityLabel: ✅

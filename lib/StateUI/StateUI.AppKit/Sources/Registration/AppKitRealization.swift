@@ -66,11 +66,11 @@ enum AppKitRealization {
             reason: "macOS gives an application no text size of the user's to follow."),
 
         // MARK: Entries - a control's or a part's own, and where it differs from its tier
-        .notPlanned(VisualElementContract.accessibilityAdjusted, on: ActivityIndicatorContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: SpinnerContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: ButtonContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: CheckBoxContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: DatePickerContract.self, reason: Self.ownSteps),
-        .notPlanned(VisualElementContract.accessibilityAdjusted, on: DividerContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: SeparatorContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: ItemsViewContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: MapContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: PickerContract.self, reason: Self.ownSteps),
@@ -252,7 +252,7 @@ enum AppKitRealization {
         .complete(LayoutEngineContract.rotates),
         .complete(LayoutEngineContract.pinchMoved),
         .complete(LayoutEngineContract.itemMoved),
-        .notPlanned(TintElementContract.tint, on: ActivityIndicatorContract.self, reason: accentColored),
+        .notPlanned(TintElementContract.tint, on: SpinnerContract.self, reason: accentColored),
         .notPlanned(TintElementContract.tint, on: ProgressBarContract.self, reason: accentColored),
         .notPlanned(TintElementContract.tint, on: SwitchContract.self, reason: accentColored),
         .notPlanned(ButtonContract.iconSpacing,

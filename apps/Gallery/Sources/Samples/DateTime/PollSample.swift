@@ -35,7 +35,7 @@ struct PollSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
 
-            ActivityIndicator(checking)
+            Spinner(checking)
                 .tint(Palette.accent)
                 .height(28)
 

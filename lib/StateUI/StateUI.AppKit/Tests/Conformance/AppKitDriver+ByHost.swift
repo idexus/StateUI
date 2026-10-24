@@ -48,7 +48,7 @@ extension AppKitDriver {
         }
         switch ability {
         case "read selectedTab of TabView": return "the host's tab choice, not the tab view's"
-        case "read isAnimating of ActivityIndicator": return "the host's own flag; the indicator holds none to read"
+        case "read isAnimating of Spinner": return "the host's own flag; the indicator holds none to read"
         case "read inputPurpose of TextField", "read inputPurpose of SearchField", "read inputPurpose of TextEditor":
             return "the traits the host keeps; a Mac shows no keys a purpose picks"
         case "read keyboardShortcut of ToolbarButton": return "the host's own record; AppKit holds no shortcut on a toolbar's item"

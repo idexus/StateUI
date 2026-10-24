@@ -1,5 +1,4 @@
-# revision 19.1
-ActivityIndicator.accessibilityValue: ✅
+# revision 20.1
 Button.maximumHeight: ✅
 Button.maximumWidth: ✅
 Button.minimumHeight: ✅
@@ -10,8 +9,6 @@ Capsule.accessibilityHint: ✅
 CheckBox.isEnabled: ✅
 CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own transform, checked against the layer it composed itself
 DatePicker.isAccessibilityHidden: ✅
-Divider.ignoresInput: ✅
-Divider.scaleY: ✓ read scaleY of Divider: the host's own transform, checked against the layer it composed itself
 Ellipse.accessibilityLabel: ✅
 Fill.opacity: ✅
 Fill.rotationX: ✓ read rotationX of Fill: the host's own transform, checked against the layer it composed itself
@@ -41,8 +38,11 @@ Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own transform, 
 ScrollView.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 SearchField.ignoresInput: ✅
 SearchField.scaleY: ✓ read scaleY of SearchField: the host's own transform, checked against the layer it composed itself
+Separator.ignoresInput: ✅
+Separator.scaleY: ✓ read scaleY of Separator: the host's own transform, checked against the layer it composed itself
 Slider.layoutDirection: ✅
 Space.accessibilityValue: ✅
+Spinner.accessibilityValue: ✅
 Stepper.isEnabled: ✅
 Stepper.rotationY: ✓ read rotationY of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.isAccessibilityHidden: ✅

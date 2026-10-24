@@ -292,7 +292,7 @@ final class GTKDriver: HostDriver {
             return gtk_adjustment_get_upper(gtk_range_get_adjustment(slider.widget.of(GtkRange.self))).propValue
         case (.value, let stepper as GTKStepperView): return stepper.value.propValue
         case (.progress, let bar as GTKProgressBarView): return bar.progress.propValue
-        case (.isAnimating, let spinner as GTKActivityIndicatorView): return spinner.isAnimating.propValue
+        case (.isAnimating, let spinner as GTKSpinnerView): return spinner.isAnimating.propValue
         case (.text, let label as GTKTextualView): return label.text.propValue
         case (.text, let field as GTKTextFieldView): return field.text.propValue
         case (.text, let editor as GTKTextEditorView): return editor.text.propValue
@@ -305,7 +305,7 @@ final class GTKDriver: HostDriver {
             return button.pictureAndCaption.map { Double(gtk_box_get_spacing($0.of(GtkBox.self))).propValue }
         case (.lineBreak, let button as GTKButtonView): return button.captionLabel.map { Self.lineBreak(of: $0).propValue }
         case (.contentMode, let button as GTKButtonView): return button.picture?.aspect.propValue
-        case (.tint, let spinner as GTKActivityIndicatorView): return Self.color(of: spinner.widget).propValue
+        case (.tint, let spinner as GTKSpinnerView): return Self.color(of: spinner.widget).propValue
         case (.tint, let view?): return view.tint.map { Self.color($0).propValue }
         case (.source, let image as GTKImageView): return image.found ? image.picture?.value : nil
         case (.contentMode, let image as GTKImageView): return image.aspect.propValue

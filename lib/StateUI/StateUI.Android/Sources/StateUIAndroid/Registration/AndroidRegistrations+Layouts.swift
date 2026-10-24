@@ -20,14 +20,14 @@ extension AndroidRegistrations {
             stack.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
-        // A space is a box of its own the stack's arithmetic sizes, drawn as a layout's box; a divider in a stack is
+        // A space is a box of its own the stack's arithmetic sizes, drawn as a layout's box; a separator in a stack is
         // the theme's line.
         // Design: docs/design/host/layout.md#a-space
         registry.add(SpaceContract.self, create: { _ in AndroidZStackView() }) { space in
             space.applies(outlineMembers) { view, values in applyBox(view, values) }
             space.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
-        registry.add(DividerContract.self, create: { _ in AndroidDividerView() })
+        registry.add(SeparatorContract.self, create: { _ in AndroidSeparatorView() })
 
         registry.add(GridContract.self, create: { _ in AndroidGridView() }) { grid in
             grid.applies(

@@ -1,5 +1,4 @@
-# revision 19.1
-ActivityIndicator.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
+# revision 20.1
 Button.frame: ✅
 Button.translationX: ✓ read translationX of Button: the host's own transform, checked against the layer it composed itself
 Canvas.layoutDirection: ✅
@@ -10,8 +9,6 @@ CheckBox.minimumHeight: ✅
 CheckBox.minimumWidth: ✅
 CheckBox.scaleX: ✓ read scaleX of CheckBox: the host's own transform, checked against the layer it composed itself
 DatePicker.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
-Divider.style: ✅
-Divider.translationY: ✓ read translationY of Divider: the host's own transform, checked against the layer it composed itself
 Ellipse.accessibilityRole: ✅
 Fill.height: ✅
 Fill.scale: ✓ read scale of Fill: the host's own transform, checked against the layer it composed itself
@@ -41,8 +38,11 @@ Rectangle.width: ✅
 ScrollView.isAccessibilityHidden: ✅
 SearchField.style: ✅
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform, checked against the layer it composed itself
+Separator.style: ✅
+Separator.translationY: ✓ read translationY of Separator: the host's own transform, checked against the layer it composed itself
 Slider.pivotY: ✓ read pivotY of Slider: the host's own transform, checked against the layer it composed itself
 Space.accessibilityAdjusted: ✅
+Spinner.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
 Stepper.maximumHeight: ✅
 Stepper.maximumWidth: ✅
 Stepper.minimumHeight: ✅

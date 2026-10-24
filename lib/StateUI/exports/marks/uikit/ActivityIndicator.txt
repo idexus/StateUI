@@ -1,3 +1,0 @@
-# revision 2.1
-ActivityIndicator: ✅
-ActivityIndicator.isAnimating: ✅

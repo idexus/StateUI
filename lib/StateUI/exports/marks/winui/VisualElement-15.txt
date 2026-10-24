@@ -1,7 +1,4 @@
-# revision 19.2
-ActivityIndicator.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-ActivityIndicator.accessibilityActions: – UI Automation offers no action of an application's own words.
-ActivityIndicator.isEnabled: ✅
+# revision 20.2
 Button.accessibilityHeading: ✅
 Canvas.background: ✓ read background of Canvas: the color the host's canvas clears its surface to under its drawing, which WinUI keeps as no brush
 Canvas.isEnabled: does not apply - read isEnabled of Canvas - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
@@ -11,8 +8,6 @@ CheckBox.accessibilityHeading: ✅
 CheckBox.scale: ✅
 DatePicker.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 DatePicker.translationY: ✅
-Divider.isAccessibilityHidden: ✅
-Divider.isVisible: ✅
 Ellipse.accessibilityHeading: ✅
 Fill.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Fill.isEnabled: does not apply - read isEnabled of Fill - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
@@ -53,11 +48,16 @@ ScrollView.ignoresInput: ✅
 ScrollView.pivotY: ✅
 SearchField.frame: ✅
 SearchField.rotation: ✅
+Separator.isAccessibilityHidden: ✅
+Separator.isVisible: ✅
 Slider.accessibilityLabel: ✅
 Slider.scaleX: ✅
 Space.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 Space.accessibilityActions: – UI Automation offers no action of an application's own words.
 Space.isEnabled: ✅
+Spinner.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+Spinner.accessibilityActions: – UI Automation offers no action of an application's own words.
+Spinner.isEnabled: ✅
 Stepper.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Switch.hidesChildrenFromAccessibility: ✅
 Switch.opacity: ✅

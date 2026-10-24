@@ -1,7 +1,4 @@
-# revision 9.1
-ActivityIndicator.swipeDirection: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
-ActivityIndicator.swipeThreshold: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
-ActivityIndicator.swiped: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
+# revision 10.1
 Button.tapCount: ✓ tap on Button: the view's listening handed the recognizer's states, no touch sent
 Button.tapped: ✓ tap on Button: the view's listening handed the recognizer's states, no touch sent
 Canvas.area: ✅
@@ -17,9 +14,6 @@ CheckBox.panYChannel: ✓ pan on CheckBox: the view's listening handed the recog
 DatePicker.frameChanged: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRowSpan: ✅
-Divider.frameChanged: ✅
-Divider.gridColumnSpan: ✅
-Divider.gridRowSpan: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Ellipse.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Ellipse.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -83,12 +77,18 @@ SearchField.area: ✅
 SearchField.droppedFileTypes: ✓ dropFiles on SearchField: the drop interaction's handler told the driver's files, no drag session
 SearchField.filesDropped: ✓ dropFiles on SearchField: the drop interaction's handler told the driver's files, no drag session
 SearchField.frameChanged: ✅
+Separator.frameChanged: ✅
+Separator.gridColumnSpan: ✅
+Separator.gridRowSpan: ✅
 Slider.pointerEntered: ✓ hover on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.pointerExited: ✓ hover on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.pointerMoved: ✓ hover on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.pointerPressed: ✓ hover on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.pointerReleased: ✓ hover on Slider: the view's listening handed the recognizer's states, no touch sent
 Space.panYChannel: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
+Spinner.swipeDirection: ✓ pan on Spinner: the view's listening handed the recognizer's states, no touch sent
+Spinner.swipeThreshold: ✓ pan on Spinner: the view's listening handed the recognizer's states, no touch sent
+Spinner.swiped: ✓ pan on Spinner: the view's listening handed the recognizer's states, no touch sent
 Stepper.frameChanged: ✅
 Stepper.gridColumnSpan: ✅
 Stepper.gridRowSpan: ✅

@@ -1,5 +1,4 @@
-# revision 9.1
-ActivityIndicator.panYChannel: ✅
+# revision 10.1
 Button.frameChanged: ✅
 Button.horizontalAlignment: ✅
 Button.pinchUpdated: ✓ pinch on Button: the relay's report of the manipulation handed to the host, no touch sent
@@ -20,7 +19,6 @@ DatePicker.frameChanged: ✅
 DatePicker.horizontalAlignment: ✅
 DatePicker.pinchUpdated: ✓ pinch on DatePicker: the relay's report of the manipulation handed to the host, no touch sent
 DatePicker.verticalAlignment: ✅
-Divider.panYChannel: ✅
 Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the relay's drag reports told by the driver, no drag WinUI began
 Ellipse.dragEnded: ✓ dragAndDrop on Ellipse: the relay's drag reports told by the driver, no drag WinUI began
 Ellipse.dragStarting: ✓ dragAndDrop on Ellipse: the relay's drag reports told by the driver, no drag WinUI began
@@ -95,6 +93,7 @@ ScrollView.filesDropped: ✓ dropFiles on ScrollView: the relay's drop report to
 ScrollView.tapCount: ✅
 ScrollView.tapped: ✅
 SearchField.panYChannel: ✅
+Separator.panYChannel: ✅
 Slider.frameChanged: ✅
 Slider.horizontalAlignment: ✅
 Slider.pinchUpdated: ✓ pinch on Slider: the relay's report of the manipulation handed to the host, no touch sent
@@ -106,6 +105,7 @@ Space.dragText: ✓ dragAndDrop on Space: the relay's drag reports told by the d
 Space.frameChanged: ✅
 Space.gridColumn: ✅
 Space.gridRow: ✅
+Spinner.panYChannel: ✅
 Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the relay's drop report told the driver's files, no drag WinUI began
 Stepper.filesDropped: ✓ dropFiles on Stepper: the relay's drop report told the driver's files, no drag WinUI began
 Stepper.tapCount: ✅

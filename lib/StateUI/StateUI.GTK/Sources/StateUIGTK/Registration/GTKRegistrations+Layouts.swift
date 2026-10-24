@@ -34,13 +34,13 @@ extension GTKRegistrations {
             grid.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
-        // A space is a box of its own the stack's arithmetic sizes, drawn as a layout's box; a divider in a stack is
+        // A space is a box of its own the stack's arithmetic sizes, drawn as a layout's box; a separator in a stack is
         // GTK's separator, which the host makes across its stack.
         // Design: docs/design/host/layout.md#a-space
         registry.add(SpaceContract.self, create: { _ in GTKZStackView() }) { space in
             space.applies(LayoutMembers.regionMembers) { view, values in applyBox(view, values) }
         }
-        registry.add(DividerContract.self, madeByHost: GTKDividerView.self) { _ in }
+        registry.add(SeparatorContract.self, madeByHost: GTKSeparatorView.self) { _ in }
 
         registry.add(ZStackContract.self, create: { _ in GTKZStackView() }) { layout in
             layout.property(PaddingElementContract.padding) { view, padding in view.padding = padding ?? Insets(0) }

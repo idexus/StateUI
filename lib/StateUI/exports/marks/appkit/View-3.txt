@@ -1,8 +1,4 @@
-# revision 9.1
-ActivityIndicator.area: ✅
-ActivityIndicator.droppedFileTypes: ✓ dropFiles on ActivityIndicator: the window's drop routing told the driver's files, no dragging session
-ActivityIndicator.filesDropped: ✓ dropFiles on ActivityIndicator: the window's drop routing told the driver's files, no dragging session
-ActivityIndicator.frameChanged: ✅
+# revision 10.1
 Button.pointerEntered: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.pointerExited: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.pointerMoved: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
@@ -20,7 +16,6 @@ CheckBox.frameChanged: ✅
 CheckBox.horizontalAlignment: ✅
 CheckBox.verticalAlignment: ✅
 DatePicker.pinchUpdated: ✓ pinch on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
-Divider.pinchUpdated: ✓ pinch on Divider: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.panTouchCount: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.panUpdated: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.panXChannel: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
@@ -80,6 +75,7 @@ ScrollView.pointerMoved: ✓ hover on ScrollView: handed to the host's recognize
 ScrollView.pointerPressed: ✓ hover on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.pointerReleased: ✓ hover on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.panYChannel: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
+Separator.pinchUpdated: ✓ pinch on Separator: handed to the host's recognizer or handler, no NSEvent sent
 Slider.frameChanged: ✅
 Slider.gridColumnSpan: ✅
 Slider.gridRowSpan: ✅
@@ -90,6 +86,10 @@ Space.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop 
 Space.frameChanged: ✅
 Space.horizontalAlignment: ✅
 Space.verticalAlignment: ✅
+Spinner.area: ✅
+Spinner.droppedFileTypes: ✓ dropFiles on Spinner: the window's drop routing told the driver's files, no dragging session
+Spinner.filesDropped: ✓ dropFiles on Spinner: the window's drop routing told the driver's files, no dragging session
+Spinner.frameChanged: ✅
 Stepper.pinchUpdated: ✓ pinch on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Switch.panTouchCount: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.panUpdated: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent

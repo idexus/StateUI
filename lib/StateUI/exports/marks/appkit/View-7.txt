@@ -1,7 +1,4 @@
-# revision 9.1
-ActivityIndicator.panTouchCount: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
-ActivityIndicator.panUpdated: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
-ActivityIndicator.panXChannel: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
+# revision 10.1
 Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridRow: ✅
@@ -20,10 +17,6 @@ DatePicker.area: ✅
 DatePicker.droppedFileTypes: ✓ dropFiles on DatePicker: the window's drop routing told the driver's files, no dragging session
 DatePicker.filesDropped: ✓ dropFiles on DatePicker: the window's drop routing told the driver's files, no dragging session
 DatePicker.frameChanged: ✅
-Divider.area: ✅
-Divider.droppedFileTypes: ✓ dropFiles on Divider: the window's drop routing told the driver's files, no dragging session
-Divider.filesDropped: ✓ dropFiles on Divider: the window's drop routing told the driver's files, no dragging session
-Divider.frameChanged: ✅
 Ellipse.pointerEntered: ✓ hover on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.pointerExited: ✓ hover on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.pointerMoved: ✓ hover on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
@@ -85,11 +78,18 @@ SearchField.dragStarting: ✓ dragAndDrop on SearchField: the drag source and th
 SearchField.dragText: ✓ dragAndDrop on SearchField: the drag source and the window's drop routing told by the driver, no dragging session
 SearchField.frameChanged: ✅
 SearchField.margin: ✅
+Separator.area: ✅
+Separator.droppedFileTypes: ✓ dropFiles on Separator: the window's drop routing told the driver's files, no dragging session
+Separator.filesDropped: ✓ dropFiles on Separator: the window's drop routing told the driver's files, no dragging session
+Separator.frameChanged: ✅
 Slider.swipeDirection: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.swipeThreshold: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.swiped: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Space.tapCount: ✓ tap on Space: handed to the host's recognizer or handler, no NSEvent sent
 Space.tapped: ✓ tap on Space: handed to the host's recognizer or handler, no NSEvent sent
+Spinner.panTouchCount: ✓ pan on Spinner: handed to the host's recognizer or handler, no NSEvent sent
+Spinner.panUpdated: ✓ pan on Spinner: handed to the host's recognizer or handler, no NSEvent sent
+Spinner.panXChannel: ✓ pan on Spinner: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.area: ✅
 Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the window's drop routing told the driver's files, no dragging session
 Stepper.filesDropped: ✓ dropFiles on Stepper: the window's drop routing told the driver's files, no dragging session

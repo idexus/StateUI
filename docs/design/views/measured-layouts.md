@@ -167,9 +167,9 @@ complaint rather than refused, so a gallery still being written keeps working.
 The wheel's turn is drawn flat, `ViewTransform.turn`, the same picture on every
 platform (modifiers.md, turning out of the screen plane).
 
-## Position indicator
+## Position dots
 
-`PositionIndicator` is StateUI's composition of rectangles in a row, which
+`PositionDots` is StateUI's composition of rectangles in a row, which
 no host receives as a control of its own: UIKit and WinUI have a page
 indicator, AppKit and Android's framework none, and GTK has none outside
 libadwaita's carousel, so one composition serves all of them alike. Its count,
@@ -177,7 +177,7 @@ its position and its look are values of the composed view, and a value given
 from a state is read in its content, so the row is built again when it
 changes - a row of a few boxes, where a host-carried value would buy nothing.
 The dots past `maximumVisible` are a run of that many holding the position as
-near its middle as the ends allow (`PositionIndicator.shown`), so the current
+near its middle as the ends allow (`PositionDots.shown`), so the current
 dot is always drawn, and the run stands still only near the ends of the
 sequence. A dot is a box as wide as it is tall, its corners half its size for
 a circle, the gap between two dots the size of one. Being a composition, it

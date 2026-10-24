@@ -6,7 +6,7 @@ them.
 ## Toggles, values and indicators
 
 A Switch is UIKit's switch; a Slider, a Stepper, a ProgressBar and an
-ActivityIndicator are UIKit's own too, an indicator standing still - shown -
+Spinner are UIKit's own too, an indicator standing still - shown -
 while its work does not run. UIKit has no check box, so a CheckBox is a
 button of its own showing the system's symbol for a box, ticked or not,
 before its words: a tap turns it either way. A switch's color is its color

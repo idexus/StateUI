@@ -63,12 +63,12 @@ struct StackLayoutSample: SampleContent, ExampleContent {
                 .text("Space")
                 .accessibilityIdentifier("stackLayout.spaced")
 
-            SectionTitle("Divider")
+            SectionTitle("Separator")
 
             // The platform's own line, across its stack.
             VStack {
                 Text("Inbox")
-                Divider()
+                Separator()
                 Text("Archive")
             }
             .spacing(8)
@@ -76,7 +76,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
             HStack {
                 Text("Bold")
                     .fontWeight(.bold)
-                Divider()
+                Separator()
                 Text("Italic")
                     .fontAttributes(.italic)
             }
@@ -88,7 +88,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         Text("`.horizontalAlignment` places a child across the room its stack gives it. A `Space` takes the room "
-            + "its siblings leave; a `Divider` draws the platform's line across its stack.")
+            + "its siblings leave; a `Separator` draws the platform's line across its stack.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

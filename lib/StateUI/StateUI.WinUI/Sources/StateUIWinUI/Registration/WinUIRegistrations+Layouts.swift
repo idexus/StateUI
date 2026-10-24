@@ -18,13 +18,13 @@ extension WinUIRegistrations {
             stack.applies(LayoutMembers.boxMembers) { view, values in applyBox(view, values) }
         }
 
-        // A space is a box of its own the stack's arithmetic sizes, drawn as a layout's box; a divider in a stack is
+        // A space is a box of its own the stack's arithmetic sizes, drawn as a layout's box; a separator in a stack is
         // the theme's line.
         // Design: docs/design/host/layout.md#a-space
         registry.add(SpaceContract.self, create: { _ in WinUIZStackView() }) { space in
             space.applies(LayoutMembers.regionMembers) { view, values in applyBox(view, values) }
         }
-        registry.add(DividerContract.self, create: { _ in WinUIStackPartView.divider() })
+        registry.add(SeparatorContract.self, create: { _ in WinUIStackPartView.separator() })
 
         registry.add(GridContract.self, create: { _ in WinUIGridView() }) { grid in
             grid.applies(

@@ -1,16 +1,10 @@
-# revision 19.1
-ActivityIndicator.maximumHeight: ✅
-ActivityIndicator.maximumWidth: ✅
-ActivityIndicator.minimumHeight: ✅
-ActivityIndicator.minimumWidth: ✅
-ActivityIndicator.scaleX: ✓ read scaleX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
+# revision 20.1
 Button.hidesChildrenFromAccessibility: ✅
 Canvas.accessibilityLabel: ✅
 Capsule.isEnabled: ✅
 Capsule.rotationY: ✓ read rotationY of Capsule: the host's own transform, checked against the layer it composed itself
 CheckBox.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 DatePicker.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-Divider.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Ellipse.opacity: ✅
 Ellipse.rotationX: ✓ read rotationX of Ellipse: the host's own transform, checked against the layer it composed itself
 Fill.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
@@ -41,12 +35,18 @@ Rectangle.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: a
 ScrollView.style: ✅
 ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
+Separator.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Slider.accessibilityRole: ✅
 Space.maximumHeight: ✅
 Space.maximumWidth: ✅
 Space.minimumHeight: ✅
 Space.minimumWidth: ✅
 Space.scaleX: ✓ read scaleX of Space: the host's own transform, checked against the layer it composed itself
+Spinner.maximumHeight: ✅
+Spinner.maximumWidth: ✅
+Spinner.minimumHeight: ✅
+Spinner.minimumWidth: ✅
+Spinner.scaleX: ✓ read scaleX of Spinner: the host's own transform, checked against the layer it composed itself
 Stepper.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 Switch.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Text.accessibilityLabel: ✅

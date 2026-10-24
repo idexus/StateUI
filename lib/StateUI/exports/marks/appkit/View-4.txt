@@ -1,7 +1,4 @@
-# revision 9.1
-ActivityIndicator.frameChanged: ✅
-ActivityIndicator.gridColumn: ✅
-ActivityIndicator.gridRow: ✅
+# revision 10.1
 Button.canDrag: ✓ dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session
 Button.dragEnded: ✓ dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session
 Button.dragStarting: ✓ dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session
@@ -22,11 +19,6 @@ DatePicker.pointerExited: ✓ hover on DatePicker: handed to the host's recogniz
 DatePicker.pointerMoved: ✓ hover on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.pointerPressed: ✓ hover on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.pointerReleased: ✓ hover on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
-Divider.pointerEntered: ✓ hover on Divider: handed to the host's recognizer or handler, no NSEvent sent
-Divider.pointerExited: ✓ hover on Divider: handed to the host's recognizer or handler, no NSEvent sent
-Divider.pointerMoved: ✓ hover on Divider: handed to the host's recognizer or handler, no NSEvent sent
-Divider.pointerPressed: ✓ hover on Divider: handed to the host's recognizer or handler, no NSEvent sent
-Divider.pointerReleased: ✓ hover on Divider: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.panYChannel: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Fill.frameChanged: ✅
 Fill.gridColumnSpan: ✅
@@ -81,12 +73,20 @@ ScrollView.margin: ✅
 SearchField.swipeDirection: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.swipeThreshold: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.swiped: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
+Separator.pointerEntered: ✓ hover on Separator: handed to the host's recognizer or handler, no NSEvent sent
+Separator.pointerExited: ✓ hover on Separator: handed to the host's recognizer or handler, no NSEvent sent
+Separator.pointerMoved: ✓ hover on Separator: handed to the host's recognizer or handler, no NSEvent sent
+Separator.pointerPressed: ✓ hover on Separator: handed to the host's recognizer or handler, no NSEvent sent
+Separator.pointerReleased: ✓ hover on Separator: handed to the host's recognizer or handler, no NSEvent sent
 Slider.tapCount: ✓ tap on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.tapped: ✓ tap on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Space.area: ✅
 Space.droppedFileTypes: ✓ dropFiles on Space: the window's drop routing told the driver's files, no dragging session
 Space.filesDropped: ✓ dropFiles on Space: the window's drop routing told the driver's files, no dragging session
 Space.frameChanged: ✅
+Spinner.frameChanged: ✅
+Spinner.gridColumn: ✅
+Spinner.gridRow: ✅
 Stepper.pointerEntered: ✓ hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.pointerExited: ✓ hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.pointerMoved: ✓ hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent

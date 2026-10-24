@@ -1,9 +1,4 @@
-# revision 9.1
-ActivityIndicator.pointerEntered: ✓ hover on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
-ActivityIndicator.pointerExited: ✓ hover on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
-ActivityIndicator.pointerMoved: ✓ hover on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
-ActivityIndicator.pointerPressed: ✓ hover on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
-ActivityIndicator.pointerReleased: ✓ hover on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
+# revision 10.1
 Button.panYChannel: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Canvas.frameChanged: ✅
 Canvas.gridColumnSpan: ✅
@@ -19,9 +14,6 @@ CheckBox.pinchUpdated: ✓ pinch on CheckBox: the view's listening handed the re
 DatePicker.panTouchCount: ✓ pan on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.panUpdated: ✓ pan on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.panXChannel: ✓ pan on DatePicker: the view's listening handed the recognizer's states, no touch sent
-Divider.panTouchCount: ✓ pan on Divider: the view's listening handed the recognizer's states, no touch sent
-Divider.panUpdated: ✓ pan on Divider: the view's listening handed the recognizer's states, no touch sent
-Divider.panXChannel: ✓ pan on Divider: the view's listening handed the recognizer's states, no touch sent
 Ellipse.frameChanged: ✅
 Ellipse.gridColumn: ✅
 Ellipse.gridRow: ✅
@@ -83,6 +75,9 @@ ScrollView.panYChannel: ✓ pan on ScrollView: the view's listening handed the r
 SearchField.frameChanged: ✅
 SearchField.gridColumnSpan: ✅
 SearchField.gridRowSpan: ✅
+Separator.panTouchCount: ✓ pan on Separator: the view's listening handed the recognizer's states, no touch sent
+Separator.panUpdated: ✓ pan on Separator: the view's listening handed the recognizer's states, no touch sent
+Separator.panXChannel: ✓ pan on Separator: the view's listening handed the recognizer's states, no touch sent
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Slider.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Slider.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -91,6 +86,11 @@ Slider.frameChanged: ✅
 Slider.horizontalAlignment: ✅
 Slider.verticalAlignment: ✅
 Space.pinchUpdated: ✓ pinch on Space: the view's listening handed the recognizer's states, no touch sent
+Spinner.pointerEntered: ✓ hover on Spinner: the view's listening handed the recognizer's states, no touch sent
+Spinner.pointerExited: ✓ hover on Spinner: the view's listening handed the recognizer's states, no touch sent
+Spinner.pointerMoved: ✓ hover on Spinner: the view's listening handed the recognizer's states, no touch sent
+Spinner.pointerPressed: ✓ hover on Spinner: the view's listening handed the recognizer's states, no touch sent
+Spinner.pointerReleased: ✓ hover on Spinner: the view's listening handed the recognizer's states, no touch sent
 Stepper.panTouchCount: ✓ pan on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.panUpdated: ✓ pan on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.panXChannel: ✓ pan on Stepper: the view's listening handed the recognizer's states, no touch sent

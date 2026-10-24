@@ -265,7 +265,7 @@ format is not read.
 ## What shows work
 
 A progress bar is a `GtkProgressBar` over the range 0 to 1, a fraction past
-either end standing at that end; an activity indicator is a `GtkSpinner`,
+either end standing at that end; a spinner is a `GtkSpinner`,
 turning while its work runs and drawing nothing while it does not.
 
 ## A control's accent

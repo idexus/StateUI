@@ -1,0 +1,225 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+/// The row of dots under a run of cards, saying how many there are and which
+/// one is showing.
+///
+///     PositionDots()
+///         .count(cards.count)
+///         .position(shown)
+///         .dotColor(.lightGray)
+///         .currentDotColor(.cornflowerBlue)
+///
+/// It is joined to a `GalleryView` by shared state: the gallery's
+/// `.position($shown)` writes it as the user swipes, and `.position(shown)`
+/// here reads it. It serves anything with a place in a sequence.
+///
+/// StateUI composes it of rectangles in a row, the same on every platform.
+/// Design: docs/design/views/measured-layouts.md#position-dots
+public struct PositionDots: View {
+    /// Each item's own mark, where the items were given; nil for dots.
+    private let marks: Marks?
+
+    private var count: Given<Int> = .value(0)
+    private var position: Given<Int> = .value(0)
+    private var dotColor: Given<Color> = .value(Self.restingColor)
+    private var currentDotColor: Given<Color> = .value(Self.currentColor)
+    private var dotSize: Given<Double> = .value(7)
+    private var maximumVisible: Given<Int> = .value(.max)
+    private var dotShape: Given<DotShape> = .value(.circle)
+    private var hidesForSinglePage: Given<Bool> = .value(true)
+
+    /// A row with no dots yet - `count` gives it some.
+    public init() {
+        marks = nil
+    }
+
+    /// Each dot is described as a view of its own and built from the supplied
+    /// content closure.
+    ///
+    ///     PositionDots(cards) { _ in
+    ///         Image("diamond.png")
+    ///     }
+    ///     .position(shown)
+    ///
+    /// The items take the place of `count`, which is derived from them; the
+    /// current item's mark stands whole, the others faded.
+    public init<Items: RandomAccessCollection, Content: View>(
+        _ items: Items,
+        @ViewBuilder content: (Items.Element) -> Content
+    ) {
+        marks = Marks(items.map { content($0).node })
+    }
+
+    /// The marks in a row, centered in the room the row is given.
+    public var body: some View {
+        let shown = Self.shown(
+            count: marks?.nodes.count ?? count.current, position: position.current,
+            maximumVisible: maximumVisible.current, hidesSingle: hidesForSinglePage.current)
+        let current = position.current
+        return HStack {
+            ForEach(shown) { place in
+                mark(at: place, current: place == current)
+            }
+        }
+        .spacing(dotSize.current)
+        .horizontalAlignment(.center)
+    }
+
+    /// The mark at `place`: the item's own, or a dot in the color its being
+    /// current or not gives it.
+    private func mark(at place: Int, current: Bool) -> Mark {
+        if let marks {
+            return Mark(node: marks.nodes[place]).opacity(current ? 1 : Self.faded)
+        }
+        let size = dotSize.current
+        let color = current ? currentDotColor.current : dotColor.current
+        let dot = Rectangle()
+            .fill(color)
+            .cornerRadius(dotShape.current == .circle ? size / 2 : 0)
+            .width(size)
+            .height(size)
+        return Mark(node: dot.node)
+    }
+
+    /// The places of the marks shown: none for a lone one hidden; every place
+    /// up to `maximumVisible`, and past it a run of that many holding the
+    /// position as near its middle as the ends allow.
+    static func shown(count: Int, position: Int, maximumVisible: Int, hidesSingle: Bool) -> Range<Int> {
+        guard count > 0, !(count == 1 && hidesSingle) else { return 0..<0 }
+        let most = min(count, max(1, maximumVisible))
+        let first = min(max(0, position - most / 2), count - most)
+        return first..<(first + most)
+    }
+
+    /// A dot's color and the current one's, on a light and a dark page.
+    static let restingColor = Color(light: Color(hex: 0xC4C4C4), dark: Color(hex: 0x5C5C5C))
+    static let currentColor = Color(light: Color(hex: 0x3C3C3C), dark: Color(hex: 0xE6E6E6))
+
+    /// How strongly a mark that is not the current one is drawn.
+    static let faded = 0.4
+}
+
+extension PositionDots {
+    /// How many dots there are.
+    ///
+    /// The other way to say it is `PositionDots(items) { … }`, which counts
+    /// its items itself - one or the other, never both.
+    public func count(_ value: Int) -> Self {
+        with { $0.count = .value(value) }
+    }
+
+    /// Which dot is the current one, counting from 0 - usually the state a
+    /// gallery's `position($shown)` writes.
+    public func position(_ value: Int) -> Self {
+        with { $0.position = .value(value) }
+    }
+
+    /// The color of a dot that is not the current one.
+    public func dotColor(_ value: Color) -> Self {
+        with { $0.dotColor = .value(value) }
+    }
+
+    /// And of the one that is.
+    public func currentDotColor(_ value: Color) -> Self {
+        with { $0.currentDotColor = .value(value) }
+    }
+
+    /// How big each dot is, in device units, and how far apart.
+    public func dotSize(_ value: Double) -> Self {
+        with { $0.dotSize = .value(value) }
+    }
+
+    /// The most dots to draw, however many items there are.
+    public func maximumVisible(_ value: Int) -> Self {
+        with { $0.maximumVisible = .value(value) }
+    }
+
+    /// A dot or a square, for every dot.
+    public func dotShape(_ value: DotShape) -> Self {
+        with { $0.dotShape = .value(value) }
+    }
+
+    /// Whether one lonely dot is hidden rather than drawn. True by default.
+    public func hidesForSinglePage(_ value: Bool) -> Self {
+        with { $0.hidesForSinglePage = .value(value) }
+    }
+
+    /// `count` from a state, `$x`: the row is built again as it changes.
+    public func count(_ state: Binding<Int>) -> Self {
+        with { $0.count = .state(state) }
+    }
+
+    /// `position` from a state, `$x`: the row is built again as it changes.
+    public func position(_ state: Binding<Int>) -> Self {
+        with { $0.position = .state(state) }
+    }
+
+    /// `hidesForSinglePage` from a state, `$x`: the row is built again as it changes.
+    public func hidesForSinglePage(_ state: Binding<Bool>) -> Self {
+        with { $0.hidesForSinglePage = .state(state) }
+    }
+
+    /// `dotColor` from a state, `$x`: the row is built again as it
+    /// changes, and the dots travel to the new color.
+    public func dotColor(_ state: Binding<Color>) -> Self {
+        with { $0.dotColor = .state(state) }
+    }
+
+    /// `dotSize` from a state, `$x`: the row is built again as it changes.
+    public func dotSize(_ state: Binding<Double>) -> Self {
+        with { $0.dotSize = .state(state) }
+    }
+
+    /// `dotShape` from a state, `$x`: the row is built again as it
+    /// changes.
+    public func dotShape(_ state: Binding<DotShape>) -> Self {
+        with { $0.dotShape = .state(state) }
+    }
+
+    /// `maximumVisible` from a state, `$x`: the row is built again as it
+    /// changes.
+    public func maximumVisible(_ state: Binding<Int>) -> Self {
+        with { $0.maximumVisible = .state(state) }
+    }
+
+    /// `currentDotColor` from a state, `$x`: the row is built again as
+    /// it changes, and the current dot travels to the new color.
+    public func currentDotColor(_ state: Binding<Color>) -> Self {
+        with { $0.currentDotColor = .state(state) }
+    }
+
+    private func with(_ change: (inout Self) -> Void) -> Self {
+        var copy = self
+        change(&copy)
+        return copy
+    }
+}
+
+/// A value the tree gives as it stands, or from a state the row reads.
+@MainActor
+private enum Given<Value> {
+    case value(Value)
+    case state(Binding<Value>)
+
+    var current: Value {
+        switch self {
+        case .value(let value): value
+        case .state(let state): state.wrappedValue
+        }
+    }
+}
+
+/// The items' own marks, behind a class so the walk for state stops here.
+private final class Marks {
+    let nodes: [Node]
+
+    init(_ nodes: [Node]) {
+        self.nodes = nodes
+    }
+}
+
+/// One mark of the row, as its node.
+private struct Mark: ElementView {
+    var node: Node
+}

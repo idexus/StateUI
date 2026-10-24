@@ -5,14 +5,14 @@
 @_spi(Host) import StateUIHost
 
 extension WebRegistrations {
-    /// A ProgressBar and an ActivityIndicator: the share of the work done, whether work goes on, and their color.
+    /// A ProgressBar and an Spinner: the share of the work done, whether work goes on, and their color.
     static func indicators(_ registry: Registry<WebDOMView>) {
         registry.add(ProgressBarContract.self, create: { _ in WebProgressView() }) { bar in
             bar.property(ProgressBarContract.progress) { view, progress in view.setProgress(progress ?? 0) }
             bar.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
         }
-        registry.add(ActivityIndicatorContract.self, create: { _ in WebActivityView() }) { activity in
-            activity.property(ActivityIndicatorContract.isAnimating) { view, running in view.setRunning(running ?? false) }
+        registry.add(SpinnerContract.self, create: { _ in WebActivityView() }) { activity in
+            activity.property(SpinnerContract.isAnimating) { view, running in view.setRunning(running ?? false) }
             activity.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
         }
     }

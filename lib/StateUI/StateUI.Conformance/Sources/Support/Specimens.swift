@@ -15,13 +15,13 @@
     /// nowhere in a stack.
     public static func make(_ element: String, _ dressing: Dressing) -> (any View)? {
         switch element {
-        case "ActivityIndicator": return dressing.dress(ActivityIndicator(true))
+        case "Spinner": return dressing.dress(Spinner(true))
         case "Button": return dressing.dress(Button())
         case "Canvas": return dressing.dress(Canvas())
         case "Capsule": return dressing.dress(Capsule())
         case "CheckBox": return dressing.dress(CheckBox())
         case "DatePicker": return dressing.dress(DatePicker())
-        case "Divider": return dressing.dress(Divider())
+        case "Separator": return dressing.dress(Separator())
         case "Ellipse": return dressing.dress(Ellipse())
         case "Grid": return dressing.dress(Grid())
         case "HStack": return dressing.dress(HStack())

@@ -1,6 +1,4 @@
-# revision 19.1
-ActivityIndicator.isVisible: ✅
-ActivityIndicator.rotation: ✓ read rotation of ActivityIndicator: the host's own transform, checked against the layer it composed itself
+# revision 20.1
 Button.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
 Canvas.frame: ✅
 Canvas.translationX: ✓ read translationX of Canvas: the host's own transform, checked against the layer it composed itself
@@ -8,7 +6,6 @@ Capsule.pivotX: ✓ read pivotX of Capsule: the host's own transform, checked ag
 CheckBox.accessibilityValue: ✅
 DatePicker.ignoresInput: ✅
 DatePicker.scaleY: ✓ read scaleY of DatePicker: the host's own transform, checked against the layer it composed itself
-Divider.tooltip: ✅
 Ellipse.layoutDirection: ✅
 Fill.accessibilityRole: ✅
 Grid.opacity: ✅
@@ -34,9 +31,12 @@ ScrollView.height: ✅
 ScrollView.scale: ✓ read scale of ScrollView: the host's own transform, checked against the layer it composed itself
 ScrollView.width: ✅
 SearchField.tooltip: ✅
+Separator.tooltip: ✅
 Slider.zIndex: ✅
 Space.isVisible: ✅
 Space.rotation: ✓ read rotation of Space: the host's own transform, checked against the layer it composed itself
+Spinner.isVisible: ✅
+Spinner.rotation: ✓ read rotation of Spinner: the host's own transform, checked against the layer it composed itself
 Stepper.accessibilityValue: ✅
 Switch.ignoresInput: ✅
 Switch.scaleY: ✓ read scaleY of Switch: the host's own transform, checked against the layer it composed itself

@@ -1,6 +1,4 @@
-# revision 19.1
-ActivityIndicator.isEnabled: ✅
-ActivityIndicator.rotationY: ✓ read rotationY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
+# revision 20.1
 Button.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 Canvas.zIndex: ✅
 Capsule.isVisible: ✅
@@ -8,7 +6,6 @@ Capsule.rotation: ✓ read rotation of Capsule: the host's own transform, checke
 CheckBox.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
 DatePicker.style: ✅
 DatePicker.translationY: ✓ read translationY of DatePicker: the host's own transform, checked against the layer it composed itself
-Divider.isAccessibilityHidden: ✅
 Ellipse.pivotY: ✓ read pivotY of Ellipse: the host's own transform, checked against the layer it composed itself
 Fill.accessibilityActionPerformed: ✅
 Fill.accessibilityActions: ✅
@@ -36,9 +33,12 @@ Rectangle.accessibilityActions: ✅
 ScrollView.ignoresInput: ✅
 ScrollView.scaleY: ✓ read scaleY of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.isAccessibilityHidden: ✅
+Separator.isAccessibilityHidden: ✅
 Slider.accessibilityLabel: ✅
 Space.isEnabled: ✅
 Space.rotationY: ✓ read rotationY of Space: the host's own transform, checked against the layer it composed itself
+Spinner.isEnabled: ✅
+Spinner.rotationY: ✓ read rotationY of Spinner: the host's own transform, checked against the layer it composed itself
 Stepper.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
 Switch.style: ✅
 Switch.translationY: ✓ read translationY of Switch: the host's own transform, checked against the layer it composed itself

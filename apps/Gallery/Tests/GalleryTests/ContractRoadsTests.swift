@@ -267,12 +267,12 @@ final class ContractRoadsTests: XCTestCase {
             open: #"_ = Button("Small").stroke(.gray)"#),
         Road(
             name: "a stack's line in a menu",
-            closed: #"_ = Menu("File") { MenuItem("New"); Divider() }"#,
+            closed: #"_ = Menu("File") { MenuItem("New"); Separator() }"#,
             open: #"_ = Menu("File") { MenuItem("New"); MenuSeparator() }"#),
         Road(
             name: "a menu's separator in a stack",
             closed: "_ = VStack { MenuSeparator() }",
-            open: "_ = VStack { Divider() }"),
+            open: "_ = VStack { Separator() }"),
         Road(
             name: "an event among the properties a view takes together",
             closed: """

@@ -72,9 +72,9 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(fixed[1]?.width, 12, "a length it states wins over growing")
     }
 
-    /// A divider is a stack's view; a menu's separator, like its entries, is one the menu draws.
-    func testAMenusSeparatorIsViewlessAndADividerIsAView() {
-        XCTAssertFalse(NodeType.viewlessTypes.contains(.divider))
+    /// A separator is a stack's view; a menu's separator, like its entries, is one the menu draws.
+    func testAMenusSeparatorIsViewlessAndASeparatorIsAView() {
+        XCTAssertFalse(NodeType.viewlessTypes.contains(.separator))
         XCTAssertTrue(NodeType.viewlessTypes.contains(.menuSeparator))
         XCTAssertTrue(NodeType.menuTypes.contains(.menuSeparator))
         XCTAssertTrue(NodeType.viewlessTypes.contains(.menuItem))

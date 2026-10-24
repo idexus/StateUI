@@ -138,7 +138,7 @@ private struct SaveAndDelete: ExampleContent {
 
             HStack {
                 if document.isBusy {
-                    ActivityIndicator(true)
+                    Spinner(true)
                 }
                 Text(said)
                     .textColor(Palette.accent)

@@ -1,6 +1,4 @@
-# revision 19.1
-ActivityIndicator.ignoresInput: ✅
-ActivityIndicator.scaleY: ✓ read scaleY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
+# revision 20.1
 Button.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Canvas.accessibilityHint: ✅
 Capsule.height: ✅
@@ -8,7 +6,6 @@ Capsule.scale: ✓ read scale of Capsule: the host's own transform, checked agai
 Capsule.width: ✅
 CheckBox.isAccessibilityHidden: ✅
 DatePicker.accessibilityLabel: ✅
-Divider.layoutDirection: ✅
 Ellipse.isEnabled: ✅
 Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own transform, checked against the layer it composed itself
 Fill.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
@@ -41,9 +38,12 @@ Rectangle.accessibilityHeading: does not apply - read a heading's level - AppKit
 ScrollView.isEnabled: ✅
 ScrollView.zIndex: ✅
 SearchField.layoutDirection: ✅
+Separator.layoutDirection: ✅
 Slider.accessibilityValue: – AppKit's slider says its own number to assistive technology, over any value given.
 Space.ignoresInput: ✅
 Space.scaleY: ✓ read scaleY of Space: the host's own transform, checked against the layer it composed itself
+Spinner.ignoresInput: ✅
+Spinner.scaleY: ✓ read scaleY of Spinner: the host's own transform, checked against the layer it composed itself
 Stepper.isAccessibilityHidden: ✅
 Switch.accessibilityLabel: ✅
 Text.accessibilityHint: ✅

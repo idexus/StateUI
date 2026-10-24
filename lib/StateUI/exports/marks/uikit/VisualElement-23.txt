@@ -1,5 +1,4 @@
-# revision 19.1
-ActivityIndicator.pivotX: ✓ read pivotX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
+# revision 20.1
 Button.accessibilityValue: ✅
 Canvas.maximumHeight: ✅
 Canvas.maximumWidth: ✅
@@ -11,8 +10,6 @@ CheckBox.accessibilityHint: ✅
 DatePicker.height: ✅
 DatePicker.scale: ✓ read scale of DatePicker: the host's own transform, checked against the layer it composed itself
 DatePicker.width: ✅
-Divider.accessibilityActionPerformed: ✅
-Divider.accessibilityActions: ✅
 Ellipse.hidesChildrenFromAccessibility: ✅
 Fill.accessibilityLabel: ✅
 Fill.background: ✅
@@ -40,9 +37,12 @@ ScrollView.opacity: ✅
 ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.accessibilityActionPerformed: ✅
 SearchField.accessibilityActions: ✅
+Separator.accessibilityActionPerformed: ✅
+Separator.accessibilityActions: ✅
 Slider.frame: ✅
 Slider.translationX: ✓ read translationX of Slider: the host's own transform, checked against the layer it composed itself
 Space.pivotX: ✓ read pivotX of Space: the host's own transform, checked against the layer it composed itself
+Spinner.pivotX: ✓ read pivotX of Spinner: the host's own transform, checked against the layer it composed itself
 Stepper.accessibilityHint: ✅
 Switch.height: ✅
 Switch.scale: ✓ read scale of Switch: the host's own transform, checked against the layer it composed itself

@@ -1,7 +1,4 @@
-# revision 9.1
-ActivityIndicator.frameChanged: ✅
-ActivityIndicator.gridColumnSpan: ✅
-ActivityIndicator.gridRowSpan: ✅
+# revision 10.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Button.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Button.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -22,12 +19,6 @@ DatePicker.dragStarting: ✓ dragAndDrop on DatePicker: the drag and drop intera
 DatePicker.dragText: ✓ dragAndDrop on DatePicker: the drag and drop interactions' handlers called, no drag session
 DatePicker.frameChanged: ✅
 DatePicker.margin: ✅
-Divider.canDrag: ✓ dragAndDrop on Divider: the drag and drop interactions' handlers called, no drag session
-Divider.dragEnded: ✓ dragAndDrop on Divider: the drag and drop interactions' handlers called, no drag session
-Divider.dragStarting: ✓ dragAndDrop on Divider: the drag and drop interactions' handlers called, no drag session
-Divider.dragText: ✓ dragAndDrop on Divider: the drag and drop interactions' handlers called, no drag session
-Divider.frameChanged: ✅
-Divider.margin: ✅
 Ellipse.swipeDirection: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.swipeThreshold: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.swiped: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
@@ -79,12 +70,21 @@ ScrollView.frameChanged: ✅
 ScrollView.horizontalAlignment: ✅
 ScrollView.verticalAlignment: ✅
 SearchField.pinchUpdated: ✓ pinch on SearchField: the view's listening handed the recognizer's states, no touch sent
+Separator.canDrag: ✓ dragAndDrop on Separator: the drag and drop interactions' handlers called, no drag session
+Separator.dragEnded: ✓ dragAndDrop on Separator: the drag and drop interactions' handlers called, no drag session
+Separator.dragStarting: ✓ dragAndDrop on Separator: the drag and drop interactions' handlers called, no drag session
+Separator.dragText: ✓ dragAndDrop on Separator: the drag and drop interactions' handlers called, no drag session
+Separator.frameChanged: ✅
+Separator.margin: ✅
 Slider.panTouchCount: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.panUpdated: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.panXChannel: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Space.frameChanged: ✅
 Space.gridColumn: ✅
 Space.gridRow: ✅
+Spinner.frameChanged: ✅
+Spinner.gridColumnSpan: ✅
+Spinner.gridRowSpan: ✅
 Stepper.canDrag: ✓ dragAndDrop on Stepper: the drag and drop interactions' handlers called, no drag session
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the drag and drop interactions' handlers called, no drag session
 Stepper.dragStarting: ✓ dragAndDrop on Stepper: the drag and drop interactions' handlers called, no drag session
