@@ -33,7 +33,8 @@ every render, and written on the header bar of each page shown:
   next by twice the room between two buttons of a group - a header bar
   draws no shared background, a setting a `GtkToggleButton` pressed in
   while on - and the actions placed in overflow behind
-  the bar's menu at its end, before the main menu. An action with a picture stands on the
+  the bar's menu at its end, before the main menu, its tooltip - and its
+  name to assistive technology - More, as the main menu's is its own. An action with a picture stands on the
   bar as an icon, the way a header bar's buttons stand, its title its
   tooltip and its name to assistive technology; one that shows its words
   stands with its picture before them, as libadwaita's button content

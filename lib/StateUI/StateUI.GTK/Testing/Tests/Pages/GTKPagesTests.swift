@@ -188,6 +188,19 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// The overflow's button, a picture alone, is named More - its tip, which a screen reader says - as the main
+    /// menu's is named.
+    func testTheOverflowIsNamedMore() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                TitledPage(title: "Notes", actions: [ToolbarButton("Later").placement(at: .overflow)])
+            }
+            let frame = try XCTUnwrap(host.window?.pageFrame)
+            let more = try XCTUnwrap(gtk_widget_get_last_child(frame.endBox))
+            XCTAssertEqual(gtk_widget_get_tooltip_text(more).map { String(cString: $0) }, CoreLink().chromeWords.more)
+        }
+    }
+
     /// An action with a picture stands on the header bar as an icon named by its title; one whose picture the
     /// application does not hold shows its title, and the overflow's menu shows titles.
     func testAnActionWithAPictureStandsAsAnIcon() throws {

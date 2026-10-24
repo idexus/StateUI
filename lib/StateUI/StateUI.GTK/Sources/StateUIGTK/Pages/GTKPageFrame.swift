@@ -224,6 +224,7 @@ final class GTKPageFrame {
         gtk_popover_set_child(popover.of(GtkPopover.self), list)
         let menu = gtk_menu_button_new()!
         gtk_menu_button_set_icon_name(menu.opaque, "view-more-symbolic")
+        gtk_widget_set_tooltip_text(menu, CoreLink().chromeWords.more)
         gtk_menu_button_set_popover(menu.opaque, popover)
         // Before the main menu, which stands at the very end whichever of them was made last.
         if let mainMenu {
