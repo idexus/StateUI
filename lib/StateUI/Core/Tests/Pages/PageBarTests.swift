@@ -37,6 +37,13 @@ private struct BarredPage: View {
                     .id("undo")
                     .placement(.sidebar, at: .start, order: 1)
                     .hidesWithSidebar(true)
+
+                ToolbarToggle("Ruler", isOn: true)
+                    .id("ruler")
+                    .icon("ruler.png", on: "ruler_on.png")
+                    .showsText(true)
+                    .placement(at: .start)
+                    .onToggled { _ in }
             }
             .menuBar(order: 1) {
                 Menu("File") {
@@ -80,7 +87,7 @@ final class PageBarTests: XCTestCase {
 
         XCTAssertEqual(page.children.map { $0.type }, ["Text"])
         let label = page.children[0]
-        XCTAssertEqual(label.children.map { $0.type }, ["ToolbarGroup", "ToolbarGroup", "MenuBar"])
+        XCTAssertEqual(label.children.map { $0.type }, ["ToolbarGroup", "ToolbarGroup", "ToolbarGroup", "MenuBar"])
 
         let toolbar = label.children[0]
         XCTAssertEqual(toolbar.props["position"], .enumeration(2), "ToolbarPosition.overflow")
@@ -99,6 +106,12 @@ final class PageBarTests: XCTestCase {
         XCTAssertEqual(undo.children.map { $0.id }, [.manual("undo")])
         XCTAssertNil(undo.children[0].props["position"], "the item says nothing of where it stands")
 
+        let ruler = try XCTUnwrap(label.children[2].children.first)
+        XCTAssertEqual(ruler.type, "ToolbarToggle")
+        XCTAssertEqual(ruler.props["isOn"], .bool(true))
+        XCTAssertEqual(ruler.props["onIcon"], .string("ruler_on.png"))
+        XCTAssertNotNil(ruler.events?["toggled"])
+
         let menus = try XCTUnwrap(label.children.first { $0.type == "MenuBar" })
         XCTAssertEqual(menus.props["order"], .number(1))
         let file = menus.children[0]
@@ -116,8 +129,8 @@ final class PageBarTests: XCTestCase {
         let sent = Self.keys(in: Self.arrived())
 
         for source in [
-            "ToolbarButton.swift", "ToolbarGroup.swift", "Menu.swift", "MenuItem.swift", "MenuToggle.swift",
-            "View+MenuBar.swift",
+            "ToolbarButton.swift", "ToolbarGroup.swift", "ToolbarToggle.swift", "Menu.swift", "MenuItem.swift",
+            "MenuToggle.swift", "View+MenuBar.swift",
         ] {
             let declared = try SourceTree.propertyKeys(in: source)
 

@@ -1,0 +1,6 @@
+# revision 1.1
+ToolbarToggle: ✅
+ToolbarToggle.isOn: ☑️ An Android bar shows a setting's state by its on picture alone; behind the overflow, by its check.
+ToolbarToggle.onIcon: ✅
+ToolbarToggle.showsText: does not apply - read an action's words beside its picture - Android shows them on a screen 480 points wide or more, and this one is narrower
+ToolbarToggle.toggled: ✅

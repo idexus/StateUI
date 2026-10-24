@@ -109,6 +109,12 @@
                     Text("Row").contextMenu { dressing.wear(MenuToggle("Ruler", isOn: false)).id(dressing.id) }.id("row"),
                 ] + others)
             }
+        case "ToolbarToggle":
+            return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                DeclaringPage(beside: others, key: "\(worn)", toggles: {
+                    [dressing.wear(ToolbarToggle("Ruler", isOn: false)).id(dressing.id)]
+                })
+            } destination: { _ in Text("Pushed") }
         case "ToolbarButton":
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 DeclaringPage(beside: others, key: "\(worn)") { [dressing.wear(ToolbarButton("Save")).id(dressing.id)] }
@@ -181,20 +187,28 @@ public struct DeclaringPage: View {
     /// Its items, each standing where its own placement says.
     let items: @MainActor () -> [ToolbarButton]
 
-    /// A page declaring `items` and `title`, `beside` its words.
+    /// Its settings, after its items.
+    let toggles: @MainActor () -> [ToolbarToggle]
+
+    /// A page declaring `items`, `toggles` and `title`, `beside` its words.
     public init(
         beside: [any View] = [], key: String = "", title: (any View)? = nil,
-        _ items: @escaping @MainActor () -> [ToolbarButton] = { [] }
+        _ items: @escaping @MainActor () -> [ToolbarButton] = { [] },
+        toggles: @escaping @MainActor () -> [ToolbarToggle] = { [] }
     ) {
         self.beside = beside
         self.key = key
         self.title = title
+        self.toggles = toggles
         self.items = items
     }
 
     public var body: some View {
-        let (items, words) = (self.items, VStack { Beside([Text("Page")] + beside) })
-        let declared = words.toolbar { items() }
+        let (items, toggles, words) = (self.items, self.toggles, VStack { Beside([Text("Page")] + beside) })
+        let declared = words.toolbar {
+            items()
+            toggles()
+        }
         guard let title else { return declared }
         return declared.titleView { AnyView(title) }
     }

@@ -170,6 +170,33 @@ namespace {
         split.PaneBackground(own ? own : themeBrush(split, beside ? L"NavigationViewExpandedPaneBackground"
                                                                     : L"NavigationViewDefaultPaneBackground"));
     }
+
+    /// Dresses the button of the action at `index` - an action's or a setting's: its place in the list, which a press
+    /// tells and a reader names it by, its words, whether it can be chosen, its identifier, its picture with its words
+    /// beside it only where it says so - else they name it to Narrator and in its tip - and its keys.
+    template <typename Button>
+    void dressAction(
+        Button const &button, controls::TitleBar const &bar, int64_t view, int32_t index, char const *words,
+        char const *identifier, char const *icon, bool showsWords, bool enabled, int32_t key, int32_t modifiers,
+        bool givesWay
+    ) {
+        button.Tag(winrt::box_value(index));
+        button.Label(text(words));
+        button.IsEnabled(enabled);
+        if (identifier && *identifier) xaml::Automation::AutomationProperties::SetAutomationId(button, text(identifier));
+        if (auto picture = pictureIcon(icon)) {
+            if (!enabled && picture.try_as<controls::ImageIcon>()) picture.Opacity(disabledShare(bar));
+            button.Icon(picture);
+            if (!showsWords) {
+                button.LabelPosition(controls::CommandBarLabelPosition::Collapsed);
+                controls::ToolTipService::SetToolTip(button, winrt::box_value(text(words)));
+            }
+        }
+        if (key != 0) button.KeyboardAccelerators().Append(accelerator(key, modifiers, givesWay));
+        button.Click(guarded("handling Click", [view, index](IInspectable const &, xaml::RoutedEventArgs const &) {
+            callbacks.chosen(view, index);
+        }));
+    }
 }
 
 extern "C" StateUIObjectRef stateui_winui_title_bar_make(int64_t view) {
@@ -247,7 +274,7 @@ extern "C" int32_t stateui_winui_title_bar_theme(StateUIObjectRef handle) {
 extern "C" void stateui_winui_title_bar_set_actions(
     StateUIObjectRef handle, char const *const *texts, char const *const *identifiers, char const *const *icons,
     bool const *words, bool const *destructive, int32_t const *groups, int32_t leadingGroups, bool const *enabled,
-    int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t count
+    int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t const *states, int32_t count
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
@@ -258,31 +285,23 @@ extern "C" void stateui_winui_title_bar_set_actions(
             actions.SecondaryCommands().Clear();
         }
         for (int32_t index = 0; index < count; ++index) {
-            controls::AppBarButton button;
-            // Its place in the list, which a press tells and a reader names it by.
-            button.Tag(winrt::box_value(index));
-            button.Label(text(texts[index]));
-            button.IsEnabled(enabled[index]);
-            if (identifiers[index] && *identifiers[index]) {
-                xaml::Automation::AutomationProperties::SetAutomationId(button, text(identifiers[index]));
+            // A setting is WinUI's two-state button, checked while on; an action, its button.
+            controls::ICommandBarElement button{nullptr};
+            if (states[index] >= 0) {
+                controls::AppBarToggleButton toggle;
+                toggle.IsChecked(states[index] == 1);
+                dressAction(toggle, bar, view, index, texts[index], identifiers[index], icons[index], words[index],
+                            enabled[index], keys[index], modifiers[index], givesWay[index]);
+                button = toggle;
+            } else {
+                controls::AppBarButton action;
+                dressAction(action, bar, view, index, texts[index], identifiers[index], icons[index], words[index],
+                            enabled[index], keys[index], modifiers[index], givesWay[index]);
+                if (destructive[index])
+                    markDestructive(action, {L"AppBarButtonForeground", L"AppBarButtonForegroundPointerOver",
+                                             L"AppBarButtonForegroundPressed"});
+                button = action;
             }
-            // An action with a picture shows its words beside it only where it says so; else they name it to
-            // Narrator and in its tip.
-            if (auto icon = pictureIcon(icons[index])) {
-                if (!enabled[index] && icon.try_as<controls::ImageIcon>()) icon.Opacity(disabledShare(bar));
-                button.Icon(icon);
-                if (!words[index]) {
-                    button.LabelPosition(controls::CommandBarLabelPosition::Collapsed);
-                    controls::ToolTipService::SetToolTip(button, winrt::box_value(text(texts[index])));
-                }
-            }
-            if (destructive[index])
-                markDestructive(button, {L"AppBarButtonForeground", L"AppBarButtonForegroundPointerOver",
-                                         L"AppBarButtonForegroundPressed"});
-            if (keys[index] != 0) button.KeyboardAccelerators().Append(accelerator(keys[index], modifiers[index], givesWay[index]));
-            button.Click(guarded("handling Click", [view, index](IInspectable const &, xaml::RoutedEventArgs const &) {
-                callbacks.chosen(view, index);
-            }));
             if (groups[index] < 0) {
                 trailing.SecondaryCommands().Append(button);
                 continue;

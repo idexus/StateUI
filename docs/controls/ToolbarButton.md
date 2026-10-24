@@ -45,7 +45,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td rowspan="2">AppKit</td><td align="center">✓</td><td>4 ✅ · 1 ✓ · 1 –</td><td><code>NSToolbarItem</code>; <code>NSMenuToolbarItem</code> overflow</td></tr>
 <tr><td colspan="3">only through the host's own: activate on ToolbarButton: the host's toolbar entry called, no toolbar item touched</td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>6 ✅ · 1 ✓ · 1 –</td><td><code>UIBarButtonItemGroup</code> / <code>UIBarButtonItem</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>5 ✅ · 1 –</td><td><code>Toolbar</code> <code>MenuItem</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 1 –</td><td><code>Toolbar</code> <code>MenuItem</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>8 ✅</td><td><code>CommandBar</code> <code>AppBarButton</code> in the <code>TitleBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>6 ✅ · 1 ✓ · 1 –</td><td><code>GtkButton</code> in an <code>AdwHeaderBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>8 ✅</td><td><code>&lt;button&gt;</code> in an ARIA <code>toolbar</code></td></tr></tbody>
@@ -77,8 +77,7 @@ What every item a user chooses from says - a menu's entry, a toolbar's item, an 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">Android Views: cannot read a picture's name - Android's item keeps its picture, not its name</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>keyboardShortcut</code></td><td>property</td><td><code>KeyboardShortcut</code></td><td>native</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: only through the host's own: pressKeys on ToolbarButton: the window's or the main menu's key command performed, no key pressed<br>GTK 4: only through the host's own: pressKeys on ToolbarButton: the shortcut controller's action run, no key event</td></tr></tbody>

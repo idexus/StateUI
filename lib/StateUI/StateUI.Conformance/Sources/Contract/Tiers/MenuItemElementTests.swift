@@ -29,8 +29,11 @@
 
     /// What tells an item of `element`'s kind was chosen: an action's click, a setting's turn.
     static func choosing(_ element: String) -> Covered {
-        element == "MenuToggle"
-            ? Covered(MenuToggleContract.toggled) : Covered(ActionElementContract.clicked, on: element)
+        switch element {
+        case "MenuToggle": Covered(MenuToggleContract.toggled)
+        case "ToolbarToggle": Covered(ToolbarToggleContract.toggled)
+        default: Covered(ActionElementContract.clicked, on: element)
+        }
     }
 
     /// An item chosen runs its handler; out of reach, it runs nothing.
@@ -156,6 +159,19 @@ enum Shortcuts {
                 .id("row")
             }
         }
+        if element == "ToolbarToggle" {
+            let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                content.toolbar {
+                    ToolbarToggle("Save", isOn: false).keyboardShortcut("s", modifiers: [.primary, .shift])
+                        .onToggled { _ in heard.values.append("save") }.id("save")
+                    ToolbarToggle("Open", isOn: false).keyboardShortcut("o").isEnabled(false)
+                        .onToggled { _ in heard.values.append("open") }.id("open")
+                    ToolbarToggle("One", isOn: false).keyboardShortcut("1", modifiers: [])
+                        .onToggled { _ in heard.values.append("one") }.id("one")
+                }
+            } destination: { _ in Text("Pushed") }
+            return AnyView(stack)
+        }
         if element == "ToolbarButton" {
             let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 content.toolbar {
@@ -211,6 +227,16 @@ enum Chosen {
         _ element: String, _ item: @escaping @MainActor (Bool) -> (String, @MainActor () -> Void)
     ) -> any View {
         let (on, off) = (item(true), item(false))
+        if element == "ToolbarToggle" {
+            return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                DeclaringPage(toggles: {
+                    [
+                        ToolbarToggle(on.0, isOn: false).onToggled { _ in on.1() }.id(on.0),
+                        ToolbarToggle(off.0, isOn: false).isEnabled(false).onToggled { _ in off.1() }.id(off.0),
+                    ]
+                })
+            } destination: { _ in Text("Pushed") }
+        }
         if element == "ToolbarButton" {
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 DeclaringPage {
@@ -249,11 +275,13 @@ enum Chosen {
             VStack {
                 Text("Row").contextMenu { MenuToggle("Item", isOn: false).onToggled { _ in heard() }.id("item") }.id("row")
             }
+        case "ToolbarToggle":
+            VStack { Text("Branch") }.toolbar { ToolbarToggle("Item", isOn: false).onToggled { _ in heard() }.id("item") }
         default:
             VStack { Text("Row").contextMenu { MenuItem("Item").onClicked { heard() }.id("item") }.id("row") }
         }
         let page = VStack { Beside([Text("Page"), AnyView(branch).isEnabled(enabled), beside]) }
-        guard element == "ToolbarButton" else { return AnyView(page) }
+        guard element.hasPrefix("Toolbar") else { return AnyView(page) }
         // An item on a bar stands on a page in a navigation stack.
         let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) { page } destination: { _ in Text("Pushed") }
         return AnyView(stack)

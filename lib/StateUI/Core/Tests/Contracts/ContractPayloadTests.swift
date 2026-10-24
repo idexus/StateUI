@@ -76,6 +76,7 @@ final class ContractPayloadTests: XCTestCase {
         check(PickerContract.selectedIndexChanged, [.number(-1)])
         check(MarkerContract.selected)
         check(MenuToggleContract.toggled, [.bool(true)])
+        check(ToolbarToggleContract.toggled, [.bool(true)])
         check(MarkerContract.detailsClicked)
         check(SheetContract.isPresentedChanged, [.bool(false)])
         check(PopoverContract.isPresentedChanged, [.bool(false)])

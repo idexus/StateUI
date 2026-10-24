@@ -49,6 +49,9 @@ extension GTKDriver {
             if let label { return String(cString: gtk_label_get_text(label.opaque)).propValue }
             return gtk_widget_get_tooltip_text(button.widget).map { String(cString: $0).propValue }
         case .isEnabled: return (gtk_widget_get_sensitive(button.widget) != 0).propValue
+        case .isOn:
+            guard GTKTestHost.holds(button.widget, gtk_toggle_button_get_type()) else { return nil }
+            return (gtk_toggle_button_get_active(button.widget.of(GtkToggleButton.self)) != 0).propValue
         case .keyboardShortcut: return element.value(.keyboardShortcut)
         case .role:
             let destructive = gtk_widget_has_css_class(button.widget, "destructive-action") != 0
@@ -64,8 +67,9 @@ extension GTKDriver {
             else { return nil }
             defer { g_free(name) }
             let shown = String(cString: name)
-            let named = element.value(.icon)?.string ?? ""
-            return ImageSource(PictureArithmetic.files(for: named).contains(shown) ? named : shown).propValue
+            // Its own picture, or a setting's on picture.
+            let names = [element.value(.icon), element.value(.onIcon)].compactMap { $0?.string }
+            return ImageSource(names.first { PictureArithmetic.files(for: $0).contains(shown) } ?? shown).propValue
         case .showsText:
             let shown = child.map { GTKTestHost.descendants(of: $0) } ?? []
             let picture = shown.contains { GTKTestHost.holds($0, gtk_image_get_type()) }

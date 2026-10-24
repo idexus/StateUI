@@ -19,7 +19,9 @@ at its own size, the same view for as long as it is declared - and the
 trailing actions and the overflow at its end, each group of actions together
 on a glass of its own, apart from the next. Each action is a button with
 its picture, its words beside it where it shows them, its name for assistive
-technology and its tooltip. The bar's own buttons - the toggle, the way
+technology and its tooltip; a setting is a two-state button
+(`aria-pressed`), tinted in the accent while on, and a
+`menuitemcheckbox` behind the overflow. The bar's own buttons - the toggle, the way
 back, a sheet's close, the overflow - are named in the library's words, in
 the user's language (`ChromeWords`). The bar's colors are the arrangement's, written
 as CSS variables the stylesheet paints it with; without them the bar is the

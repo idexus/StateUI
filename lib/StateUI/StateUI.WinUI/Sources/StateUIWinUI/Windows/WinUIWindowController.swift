@@ -179,7 +179,8 @@ final class WinUIWindowController {
             title: entry.title, isEnabled: entry.isEnabled, identifier: entry.identifier,
             icon: WinUIPictures.lines(entry.icon), isDestructive: entry.isDestructive,
             showsWords: item.showsActionWords, shortcut: entry.keyboardShortcut, mount: item.mount,
-            perform: { [weak item] in item?.winUI.choose() })
+            perform: { [weak item] in item?.winUI.choose() },
+            isOn: item.type == .toolbarToggle ? entry.isOn == true : nil)
     }
 
     /// The tabs the window shows - the visible tabbed view's, where its tabs stand in the window and no heading

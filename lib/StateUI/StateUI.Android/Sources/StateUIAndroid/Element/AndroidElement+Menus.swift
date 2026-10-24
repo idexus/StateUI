@@ -12,7 +12,7 @@ extension AndroidElement {
         let entry = MenuEntry.entry(of: element)
         return AndroidMenu.Item(
             text: entry.title, picture: entry.icon, isEnabled: entry.isEnabled, isDestructive: entry.isDestructive,
-            shortcut: entry.keyboardShortcut)
+            isOn: entry.isOn, shortcut: entry.keyboardShortcut)
     }
 
     /// Offers the view's context menu while it carries a menu slot: the slot's entries, written as the user

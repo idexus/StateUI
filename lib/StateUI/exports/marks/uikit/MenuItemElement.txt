@@ -11,3 +11,7 @@ ToolbarButton.icon: ✅
 ToolbarButton.isEnabled: ✅
 ToolbarButton.keyboardShortcut: ✓ pressKeys on ToolbarButton: the window's or the main menu's key command performed, no key pressed
 ToolbarButton.text: ✅
+ToolbarToggle.icon: ✅
+ToolbarToggle.isEnabled: ✅
+ToolbarToggle.keyboardShortcut: ✅
+ToolbarToggle.text: ✅

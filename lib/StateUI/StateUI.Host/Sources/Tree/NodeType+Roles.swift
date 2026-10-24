@@ -15,8 +15,8 @@
 
     /// The entries that have no view of their own: structure, and the parts of another's view.
     public static let viewlessTypes: Set<NodeType> = [
-        .application, .scene, .window, .anchor, .sheet, .titleView, .toolbarGroup, .toolbarButton, .menuBar, .contextMenu,
-        .menu, .menuItem, .menuToggle, .menuSeparator, .buttonMenu, .textSpans, .textSpan,
+        .application, .scene, .window, .anchor, .sheet, .titleView, .toolbarGroup, .toolbarButton, .toolbarToggle,
+        .menuBar, .contextMenu, .menu, .menuItem, .menuToggle, .menuSeparator, .buttonMenu, .textSpans, .textSpan,
     ]
 
     /// The entries a menu draws itself.

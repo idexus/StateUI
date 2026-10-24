@@ -11,3 +11,7 @@ ToolbarButton.icon: ✅
 ToolbarButton.isEnabled: ✅
 ToolbarButton.keyboardShortcut: ✓ pressKeys on ToolbarButton: the shortcut controller's action run, no key event
 ToolbarButton.text: ✅
+ToolbarToggle.icon: ✅
+ToolbarToggle.isEnabled: ✅
+ToolbarToggle.keyboardShortcut: ✅
+ToolbarToggle.text: ✅

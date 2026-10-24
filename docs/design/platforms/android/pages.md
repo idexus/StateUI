@@ -24,7 +24,9 @@ would not mix.
 
 ## The bar
 
-A stack's bar is Android's own toolbar. It carries the title of the page the
+A stack's bar is Android's own toolbar - a setting among its actions a
+checkable item, its state shown on the bar by its on picture alone and by
+its check behind the overflow. It carries the title of the page the
 window is named by ([the window's chrome](../../host/pages.md#the-windows-chrome)):
 tabs pushed onto a stack by their own title, else by the page beneath. A page
 with a title view shows that view instead, across the room between the

@@ -97,6 +97,14 @@
         }
     }
 
+    /// The picture `element` shows: a bar's setting its `on:` picture while it stands on, else its own.
+    /// Design: docs/design/host/pages.md#a-checked-entry
+    static func picture(of element: MountedElement?) -> HostValue? {
+        guard let element else { return nil }
+        if element.type == .toolbarToggle, element.value(.isOn)?.bool == true, let on = element.value(.onIcon) { return on }
+        return element.value(.icon)
+    }
+
     /// A line between two sections.
     public static var separator: MenuEntry { MenuEntry(nil, kind: .separator, entries: []) }
 
@@ -131,7 +139,7 @@
         self.kind = kind
         self.element = element
         title = element?.value(.text)?.string ?? ""
-        icon = HostPicture(element?.value(.icon))
+        icon = HostPicture(Self.picture(of: element))
         isEnabled = element?.isEffectivelyEnabled ?? true
         isDestructive = element?.value(.role).flatMap(ActionRole.init(propValue:)) == .destructive
         identifier = element?.value(.accessibilityIdentifier)?.string

@@ -18,7 +18,7 @@ Text(saved ? "Saved" : "Draft")
 
 Wears: [AutomationElement](AutomationElement.md)
 
-Worn by: [MenuItem](../MenuItem.md) · [MenuToggle](../MenuToggle.md) · [ToolbarButton](../ToolbarButton.md)
+Worn by: [MenuItem](../MenuItem.md) · [MenuToggle](../MenuToggle.md) · [ToolbarButton](../ToolbarButton.md) · [ToolbarToggle](../ToolbarToggle.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/MenuItemElementContract.swift`.
 

@@ -255,6 +255,11 @@ body {
 .stateui-bar button:active { background: color-mix(in srgb, currentColor 27%, transparent); }
 .stateui-bar button:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
 .stateui-bar button:disabled { opacity: 0.4; cursor: default; }
+/* A setting on the bar standing on: tinted in the accent, as a two-state button pressed. */
+.stateui-bar button[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--stateui-accent) 24%, transparent);
+  color: var(--stateui-accent);
+}
 .stateui-bar button img { width: 22px; height: 22px; }
 /* Plain buttons: no background at rest, one under the pointer - the Web's own look for a bar's buttons. */
 .stateui-bar[data-toolbar-style="plain"] :is(button, .stateui-bar-group, .stateui-bar-actions > button) {

@@ -20,6 +20,8 @@ struct GTKToolbarAction {
 
     /// Whether the action destroys something: libadwaita's `destructive-action` colors its button.
     let isDestructive: Bool
+    /// A setting's state - its button a toggle button, pressed in while on; nil for an action.
+    let isOn: Bool?
 
     /// The action of `item` as its bar's button shows it, read as a menu's entry is (`MenuEntry`).
     init(_ item: MountedElement) {
@@ -30,6 +32,7 @@ struct GTKToolbarAction {
         showsTitle = item.showsActionWords
         isEnabled = entry.isEnabled
         isDestructive = entry.isDestructive
+        isOn = item.type == .toolbarToggle ? entry.isOn == true : nil
     }
 
     /// Tells the item it was chosen.
@@ -40,7 +43,7 @@ struct GTKToolbarAction {
     /// Whether two actions draw the same button. The item an action stands for is taken again on every composition.
     func draws(like other: GTKToolbarAction) -> Bool {
         title == other.title && icon == other.icon && showsTitle == other.showsTitle && isEnabled == other.isEnabled
-            && isDestructive == other.isDestructive
+            && isDestructive == other.isDestructive && isOn == other.isOn
     }
 }
 

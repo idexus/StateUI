@@ -52,7 +52,7 @@
             }
             let standing = placed.filter { $0.position == position }.sorted { key($0) < key($1) }
             for each in standing {
-                let items = each.group.element.children.filter { $0.type == .toolbarButton }
+                let items = each.group.element.children.filter { [.toolbarButton, .toolbarToggle].contains($0.type) }
                 guard !items.isEmpty else { continue }
                 switch position {
                 case .start: start.append(items)

@@ -11222,6 +11222,10 @@ enum Listings {
         /// Whether Add shows its words beside its picture on the bar.
         @State private var addWords = false
 
+        /// Whether the page is a favorite: a setting on the bar and in the File
+        /// menu, one state for both.
+        @State private var favorite = false
+
         /// Whether the branch declaring the actions is disabled.
         @State private var locked = false
 
@@ -11236,7 +11240,9 @@ enum Listings {
 
                     Text(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
 
-                    Text("Press Save and Add on the bar; Clear is in its overflow.")
+                    Text(favorite ? "A favorite" : "Not a favorite")
+
+                    Text("Press Save, Add and the star on the bar; Clear is in its overflow.")
 
                     SectionTitle("Where the actions stand")
 
@@ -11268,6 +11274,13 @@ enum Listings {
                     }
                     .placement(at: atStart ? .start : .end, order: afterGallery ? 1 : 0)
 
+                    // A setting: on and off, its filled star while on.
+                    ToolbarToggle("Favorite", isOn: $favorite)
+                        .id("favorite")
+                        .icon(
+                            ImageSource(light: "menu_star.png", dark: "menu_star_dark.png"),
+                            on: ImageSource(light: "menu_star_on.png", dark: "menu_star_on_dark.png"))
+
                     ToolbarButton("Clear")
                         .id("clear")
                         .placement(at: .overflow)
@@ -11282,6 +11295,10 @@ enum Listings {
                         MenuItem("Save")
                             .id("save")
                             .onClicked { saved += 1 }
+
+                        // The bar's setting again, checked as the state is.
+                        MenuToggle("Favorite", isOn: $favorite)
+                            .id("favorite")
 
                         Menu("Recent") {
                             recent.map { file in

@@ -1,0 +1,6 @@
+# revision 1.1
+ToolbarToggle: ✅
+ToolbarToggle.isOn: ✅
+ToolbarToggle.onIcon: ✅
+ToolbarToggle.showsText: – A Mac shows a toolbar's words as its user sets the whole toolbar, not item by item.
+ToolbarToggle.toggled: ✅

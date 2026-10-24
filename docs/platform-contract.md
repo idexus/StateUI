@@ -146,6 +146,7 @@ of its members each meets, and why a cell is empty.
 | [TitleView](controls/TitleView.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ToolbarButton](controls/ToolbarButton.md) | structure | ✓ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ToolbarGroup](controls/ToolbarGroup.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [ToolbarToggle](controls/ToolbarToggle.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [VStack](controls/VStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [WebView](controls/WebView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Window](controls/Window.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -220,6 +221,7 @@ contract.
 | `Separator` | an `NSBox` separator | a hairline `UIView` in the separator color | a `View` in the theme's list divider | a line in `DividerStrokeColorDefaultBrush` | a `GtkSeparator` | `<hr>` |
 | `MenuSeparator` | a separator `NSMenuItem` | a group break in a `UIMenu` | a group divider in a menu | `MenuFlyoutSeparator` | a section break in a `GMenu` | `role=separator` in an ARIA `menu` |
 | `ToolbarGroup` / `ToolbarButton` | `NSToolbarItem`; `NSMenuToolbarItem` overflow | `UIBarButtonItemGroup` / `UIBarButtonItem` | `Toolbar` `MenuItem` | `CommandBar` `AppBarButton` in the `TitleBar` | `GtkButton` in an `AdwHeaderBar` | `<button>` in an ARIA `toolbar` |
+| `ToolbarToggle` | an `NSToolbarItem` showing its on picture, prominent while on with none; a checked `NSMenuItem` in the overflow | a `UIBarButtonItem` with `changesSelectionAsPrimaryAction`, `isSelected` while on | a checkable `Toolbar` `MenuItem`, its state on the bar by its on picture | `AppBarToggleButton` in the `TitleBar` | `GtkToggleButton` in an `AdwHeaderBar` | `<button aria-pressed>` in an ARIA `toolbar` |
 | `ZStack` / `LayoutEngine` / `Fill` / `Space` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid, one shared cell |
 | `VStack` / `HStack` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | flexbox |
 | `Grid` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid |
@@ -530,13 +532,14 @@ Every control, and every part an application, its windows and its pages are made
 | [TextSpan](controls/TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ToolbarButton](controls/ToolbarButton.md) | 8 | 4 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 ✓ · 1 – | 5 ✅ · 1 – | 8 ✅ | 6 ✅ · 1 ✓ · 1 – | 8 ✅ |
+| [ToolbarButton](controls/ToolbarButton.md) | 8 | 4 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 8 ✅ | 6 ✅ · 1 ✓ · 1 – | 8 ✅ |
 | [ToolbarGroup](controls/ToolbarGroup.md) | 5 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
+| [ToolbarToggle](controls/ToolbarToggle.md) | 9 | 7 ✅ · 1 – | 8 ✅ · 1 – | 6 ✅ · 1 ☑️ · 1 – | 9 ✅ | 8 ✅ · 1 – | 9 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 105 | 99 | 83 | 129 | 93 | 114 |
+| ✅ |  | 112 | 107 | 90 | 138 | 101 | 123 |
 | ✓ |  | 22 | 21 | 20 | 5 | 17 | 10 |
-| – |  | 10 | 21 | 30 | 9 | 34 | 18 |
-| **Met** | 154 | **137** | **141** | **133** | **143** | **144** | **142** |
+| – |  | 11 | 22 | 31 | 9 | 35 | 18 |
+| **Met** | 163 | **145** | **150** | **141** | **152** | **153** | **151** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -627,6 +630,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ · 1 ✓ · 4 – | 2 ✅ | 5 ✅ · 1 ✓ | 2 ✅ | 4 ✅ · 1 ✓ | 2 ✅ · 3 – |
 | [ToolbarButton](controls/ToolbarButton.md) | `showsText` | 1 | 1 – | 1 – |  | 1 ✅ | 1 ✅ | 1 ✅ |
 | [ToolbarGroup](controls/ToolbarGroup.md) | `hidesWithSidebar`, `isEnabled`, `order`, `part`, `position` | 5 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
+| [ToolbarToggle](controls/ToolbarToggle.md) | `isOn`, `onIcon`, `showsText`, `onToggled` (`toggled`) | 4 | 3 ✅ · 1 – | 3 ✅ · 1 – | 2 ✅ · 1 ☑️ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 ✅ | 7 ✅ | 7 ✅ | 5 ✅ |
 | [Window](controls/Window.md) | `activated`, `background`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
 <!-- members:end -->
@@ -654,8 +658,8 @@ realizes the element and each of its members.
 `ProgressBar`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`, `Separator`,
 `Sheet`, `Slider`, `Space`, `Spinner`, `SplitView`, `Stepper`, `Switch`,
 `TabView`, `Text`, `TextEditor`, `TextField`, `TextSpan`, `TextSpans`,
-`TimePicker`, `TitleView`, `ToolbarButton`, `ToolbarGroup`, `VStack`, `WebView`,
-`Window`, `ZStack`.
+`TimePicker`, `TitleView`, `ToolbarButton`, `ToolbarGroup`, `ToolbarToggle`,
+`VStack`, `WebView`, `Window`, `ZStack`.
 
 ### Properties
 
@@ -682,13 +686,13 @@ realizes the element and each of its members.
 `lineCap`, `lineHeight`, `lineJoin`, `lineWidth`, `location`, `magnifies`,
 `mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`, `maximumLength`,
 `maximumLines`, `maximumWidth`, `menuKind`, `minimum`, `minimumDate`,
-`minimumHeight`, `minimumWidth`, `miterLimit`, `opacity`, `options`, `order`,
-`orientation`, `padding`, `pans`, `panTouchCount`, `panXChannel`, `panYChannel`,
-`part`, `phase`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`,
-`points`, `position`, `presentation`, `progress`, `region`, `role`, `rotates`,
-`rotation`, `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`,
-`scaleY`, `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
-`selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
+`minimumHeight`, `minimumWidth`, `miterLimit`, `onIcon`, `opacity`, `options`,
+`order`, `orientation`, `padding`, `pans`, `panTouchCount`, `panXChannel`,
+`panYChannel`, `part`, `phase`, `pivotX`, `pivotY`, `placeholder`,
+`placeholderColor`, `points`, `position`, `presentation`, `progress`, `region`,
+`role`, `rotates`, `rotation`, `rotationX`, `rotationY`, `rows`, `rowSpacing`,
+`scale`, `scaleX`, `scaleY`, `scrollOffset`, `selectedIndex`, `selectedItems`,
+`selectedTab`, `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
 `showsClearButton`, `showsCloseButton`, `showsMenuArrow`, `showsNavigationBar`,
 `showsSidebar`, `showsSidebarToggle`, `showsText`, `showsTitle`, `showsTraffic`,
 `showsUserLocation`, `sidebarBackground`, `sidebarOverlays`, `source`,

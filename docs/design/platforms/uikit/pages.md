@@ -42,7 +42,9 @@ what it holds as it comes, and a layout again at every render; a control -
 a search field - keeps the width the bar gives it, since a fit to its words
 at every render would cut it as the user types and the bar would widen it
 again. An action that destroys something is marked destructive in the menu
-and tinted red on the bar. A clear bar is UIKit's transparent bar: nothing
+and tinted red on the bar. A setting is UIKit's two-state bar button
+(`changesSelectionAsPrimaryAction`), selected while on, and checked
+(`UIAction.state`) behind the overflow. A clear bar is UIKit's transparent bar: nothing
 under it and no line - an opaque bar of a clear color would draw its line
 under nothing. A tabbed view's bar is its chosen tab's page's, but for its
 title: the page the window is named by ([the window's

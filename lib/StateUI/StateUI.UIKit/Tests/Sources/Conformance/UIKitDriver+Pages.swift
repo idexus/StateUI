@@ -38,9 +38,14 @@ extension UIKitDriver {
             default: break
             }
         }
-        if [.menuItem, .menuToggle, .toolbarButton].contains(element.type), let action = menuAction(of: element) {
+        if [.menuItem, .menuToggle, .toolbarButton, .toolbarToggle].contains(element.type),
+           let action = menuAction(of: element) {
             switch property {
-            case .keyboardShortcut where element.type == .toolbarButton: return element.value(.keyboardShortcut)
+            case .keyboardShortcut where [.toolbarButton, .toolbarToggle].contains(element.type):
+                return element.value(.keyboardShortcut)
+            // A setting on the bar stands selected; one behind the overflow, checked.
+            case .isOn where element.type == .toolbarToggle:
+                return (barButton(answering: action)?.isSelected ?? (action.state == .on)).propValue
             case .text: return action.title.propValue
             case .icon: return action.image?.accessibilityIdentifier.map { .string($0) }
             case .isEnabled: return (!action.attributes.contains(.disabled)).propValue
@@ -203,6 +208,17 @@ extension UIKitDriver {
         var top = root.presentedViewController
         while let next = top?.presentedViewController { top = next }
         return top
+    }
+
+    /// The bar's button whose action is `action`; nil for one behind an overflow.
+    private func barButton(answering action: UIAction) -> UIBarButtonItem? {
+        guard let window = renderer?.roster.windows.first?.1.window else { return nil }
+        func search(_ controller: UIViewController) -> UIBarButtonItem? {
+            let groups = controller.navigationItem.leadingItemGroups + controller.navigationItem.trailingItemGroups
+            if let item = groups.flatMap(\.barButtonItems).first(where: { $0.primaryAction === action }) { return item }
+            return controller.children.lazy.compactMap(search).first
+        }
+        return window.rootViewController.flatMap(search)
     }
 
     /// Every action on the bars the window shows - its buttons', and its overflow menus' entries - and whether the

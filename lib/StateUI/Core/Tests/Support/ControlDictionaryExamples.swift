@@ -226,6 +226,16 @@ extension ControlDictionary {
                 }
             """#),
 
+        (ToolbarToggleContract.self, #"""
+            @State var showsInspector = false
+
+            Text("Draft")
+                .toolbar {
+                    ToolbarToggle("Inspector", isOn: $showsInspector)
+                        .icon("sidebar.png", on: "sidebar_filled.png")
+                }
+            """#),
+
         (MenuToggleContract.self, #"""
             @State var showsRuler = false
 

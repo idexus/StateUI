@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What stands on a bar: a `ToolbarButton` - an action, a menu or both - standing alone or in a `ToolbarGroup`.
+/// What stands on a bar: a `ToolbarButton` - an action, a menu or both - or a `ToolbarToggle`, a setting, standing
+/// alone or in a `ToolbarGroup`.
 ///
 ///     .toolbar {
 ///         ToolbarButton("Save").onClicked { save() }

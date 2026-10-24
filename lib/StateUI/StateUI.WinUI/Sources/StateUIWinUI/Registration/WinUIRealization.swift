@@ -210,6 +210,10 @@ enum WinUIRealization {
         .complete(ToolbarGroupContract.isEnabled),
         .complete(ToolbarGroupContract.position),
         .complete(ToolbarButtonContract.showsText),
+        .complete(ToolbarToggleContract.isOn),
+        .complete(ToolbarToggleContract.onIcon),
+        .complete(ToolbarToggleContract.showsText),
+        .complete(ToolbarToggleContract.toggled),
         .notPlanned(VisualElementContract.isEnabled, on: WebViewContract.self,
             reason: "WinUI's WebView2 is no control: it keeps no enabled state, and "
             + "its page takes the user's hand whatever the tree says."),

@@ -32,6 +32,31 @@ final class MenuChoiceTests: XCTestCase {
         XCTAssertEqual(MenuEntry.entries(of: entries).map(\.isOn), [true, false, nil])
     }
 
+    /// A setting on a bar turns as a menu's does, and shows its `on:` picture while it stands on - in its overflow's
+    /// entry too - its own while off or where it gives none.
+    func testABarsSettingTurnsAndShowsItsOnPictureWhileOn() throws {
+        let runtime = HostRuntime.still()
+        func toggle(_ id: String, on: Bool, onIcon: Bool) -> HostPatch {
+            var toggle = HostPatch(id: .manual(id), type: .toolbarToggle)
+            toggle.properties = [.isOn: .bool(on), .icon: .string("off.png")]
+            if onIcon { toggle.properties[.onIcon] = .string("on.png") }
+            return toggle
+        }
+        var group = HostPatch(id: .manual("group"), type: .toolbarGroup)
+        group.children = .arranged([
+            toggle("on", on: true, onIcon: true), toggle("off", on: false, onIcon: true),
+            toggle("plain", on: true, onIcon: false),
+        ])
+        var root = HostPatch(id: .manual("root"), type: .page)
+        root.children = .arranged([group])
+        runtime.tree.apply(root, complete: true)
+        let items = try XCTUnwrap(runtime.tree.root?.first(id: .manual("group"))).children
+
+        XCTAssertEqual(items.map(\.turnsWhenChosen), [false, true, false])
+        XCTAssertEqual(items.map { MenuEntry.entry(of: $0).icon }, [.file("on.png"), .file("off.png"), .file("off.png")])
+        XCTAssertEqual(items.map { MenuEntry.entry(of: $0).isOn }, [true, false, true])
+    }
+
     /// An entry carries the shortcut its item states, for a host to show beside its words; a submenu and a line carry
     /// none.
     func testAnEntryCarriesItsItemsShortcut() throws {

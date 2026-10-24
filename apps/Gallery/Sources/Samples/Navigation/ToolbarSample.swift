@@ -20,6 +20,10 @@ struct ToolbarSample: SampleContent, ExampleContent {
     /// Whether Add shows its words beside its picture on the bar.
     @State private var addWords = false
 
+    /// Whether the page is a favorite: a setting on the bar and in the File
+    /// menu, one state for both.
+    @State private var favorite = false
+
     /// Whether the branch declaring the actions is disabled.
     @State private var locked = false
     // listing: end
@@ -43,7 +47,11 @@ struct ToolbarSample: SampleContent, ExampleContent {
                     .fontSize(13)
                     .textColor(Palette.subtle)
 
-                Text("Press Save and Add on the bar; Clear is in its overflow.")
+                Text(favorite ? "A favorite" : "Not a favorite")
+                    .fontSize(13)
+                    .textColor(Palette.subtle)
+
+                Text("Press Save, Add and the star on the bar; Clear is in its overflow.")
                     .fontSize(12)
                     .textColor(Palette.subtle)
 
@@ -78,6 +86,13 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 }
                 .placement(at: atStart ? .start : .end, order: afterGallery ? 1 : 0)
 
+                // A setting: on and off, its filled star while on.
+                ToolbarToggle("Favorite", isOn: $favorite)
+                    .id("favorite")
+                    .icon(
+                        ImageSource(light: "menu_star.png", dark: "menu_star_dark.png"),
+                        on: ImageSource(light: "menu_star_on.png", dark: "menu_star_on_dark.png"))
+
                 ToolbarButton("Clear")
                     .id("clear")
                     .placement(at: .overflow)
@@ -92,6 +107,10 @@ struct ToolbarSample: SampleContent, ExampleContent {
                     MenuItem("Save")
                         .id("save")
                         .onClicked { saved += 1 }
+
+                    // The bar's setting again, checked as the state is.
+                    MenuToggle("Favorite", isOn: $favorite)
+                        .id("favorite")
 
                     Menu("Recent") {
                         recent.map { file in
@@ -142,6 +161,11 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
+            Text("The star is a `ToolbarToggle`: the platform's two-state button, its filled "
+                + "picture while on. The File menu's `MenuToggle` holds the same state.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Text("Recent files live in the desktop File menu, after Save: "
                 + "Add puts one there, choosing one removes it, and the submenu is disabled "
                 + "while it is empty.")
@@ -149,7 +173,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("Lock disables the view declaring the actions: its switches go out of reach, "
-                + "and Save, Add, Clear and the File menu's items with them. The gallery's own "
+                + "and Save, Add, the star, Clear and the File menu's items with them. The gallery's own "
                 + "actions, declared around it, stay.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

@@ -182,7 +182,7 @@ extension AppKitDriver {
                 menu.performActionForItem(at: menu.index(of: item))
                 return
             }
-            if element.type == .toolbarButton {
+            if [.toolbarButton, .toolbarToggle].contains(element.type) {
                 let identifier = NSToolbarItem.Identifier("StateUI.action.\(element.mount)")
                 try controller(of: element).toolbarForTesting.performForTesting(identifier)
                 return

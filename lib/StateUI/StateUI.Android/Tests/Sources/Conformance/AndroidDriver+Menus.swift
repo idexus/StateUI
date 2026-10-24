@@ -101,7 +101,14 @@ extension AndroidDriver {
         case .keyboardShortcut:
             guard let key = Int32(lines[5]), key != 0, let meta = Int32(lines[6]) else { return HostValue.nothing }
             return AndroidKeys.shortcut(code: 0, character: key, meta: meta)?.propValue
-        case .icon: throw DriverCannot("read a picture's name", because: "Android's item keeps its picture, not its name")
+        case .icon:
+            // The picture whose pixels the item shows, of those the cases give; nil for none of them.
+            let shown = Self.pictures.first { name in
+                guard let picture = AndroidPictures.bitmap(.file(name)) else { return false }
+                return Java.callStaticBool(
+                    Self.testMenus, Self.showsPicture, .object(menu.reference), .int(id), .object(picture.reference))
+            }
+            return shown.map { .string($0) }
         default: throw DriverCannot(reading: property, of: element)
         }
     }
@@ -193,6 +200,8 @@ extension AndroidDriver {
     private static let laidOutBar = Java.staticMethod(
         testMenus, "laidOut", "(Landroid/view/ViewGroup;Landroid/view/Menu;)Ljava/lang/String;")
     private static let chooseById = Java.staticMethod(testMenus, "choose", "(Landroid/view/Menu;I)Z")
+    private static let showsPicture = Java.staticMethod(
+        testMenus, "shows", "(Landroid/view/Menu;ILandroid/graphics/Bitmap;)Z")
     private static let heldById = Java.staticMethod(
         testMenus, "held", "(Landroid/content/Context;Landroid/view/Menu;I)Ljava/lang/String;")
 }

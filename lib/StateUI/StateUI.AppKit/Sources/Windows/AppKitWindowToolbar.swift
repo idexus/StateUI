@@ -14,6 +14,10 @@ struct AppKitToolbarAction {
     let image: NSImage?
     let isEnabled: Bool
     let perform: () -> Void
+    /// A setting's state, on or off; nil for an action.
+    var isOn: Bool? = nil
+    /// Whether the item stands out on the bar: a setting on that shows no picture of its own for it.
+    var standsOut = false
 
     /// Whether two actions draw the same toolbar item. What an action
     /// performs is taken again on every composition.
@@ -22,6 +26,8 @@ struct AppKitToolbarAction {
             && title == other.title
             && image === other.image
             && isEnabled == other.isEnabled
+            && isOn == other.isOn
+            && standsOut == other.standsOut
     }
 }
 
@@ -271,6 +277,17 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         item.action = #selector(performAction(_:))
         item.autovalidates = false
         item.isEnabled = action.isEnabled
+        item.style = action.standsOut ? .prominent : .plain
+        // A setting's state as AppKit holds it on an item: the menu item it shows as words alone or in the overflow.
+        item.menuFormRepresentation = action.isOn.map { isOn in
+            let form = NSMenuItem(title: action.title, action: #selector(performForm(_:)), keyEquivalent: "")
+            form.target = self
+            form.representedObject = identifier
+            form.image = action.image
+            form.state = isOn ? .on : .off
+            form.isEnabled = action.isEnabled
+            return form
+        }
     }
 
     private func overflowMenu() -> NSMenu {
@@ -285,6 +302,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             item.tag = index
             item.image = action.image
             item.isEnabled = action.isEnabled
+            item.state = action.isOn == true ? .on : .off
             menu.addItem(item)
         }
         return menu
@@ -292,6 +310,10 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
 
     @objc private func performAction(_ sender: NSToolbarItem) {
         actions[sender.itemIdentifier]?.perform()
+    }
+
+    @objc private func performForm(_ sender: NSMenuItem) {
+        (sender.representedObject as? NSToolbarItem.Identifier).flatMap { actions[$0] }?.perform()
     }
 
     @objc private func performOverflow(_ sender: NSMenuItem) {

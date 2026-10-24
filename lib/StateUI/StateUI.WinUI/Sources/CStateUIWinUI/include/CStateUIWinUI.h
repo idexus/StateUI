@@ -1147,13 +1147,14 @@ void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, char c
 /// by (empty for none), the files its picture may stand in - each ended by a line feed, empty for none - whether its
 /// words stand beside its picture, whether choosing it destroys something, its group's place - the first
 /// `leadingGroups` at the bar's leading edge, the others at its trailing edge, -1 behind "more" - whether it
-/// can be chosen, and its shortcut's key and modifiers (`stateui_winui_set_shortcut`), key 0 for none. A group stands
-/// apart from the one before it; a press tells the action's place in the list.
+/// can be chosen, its shortcut's key and modifiers (`stateui_winui_set_shortcut`), key 0 for none, and a setting's
+/// state - 1 on, 0 off, -1 for an action - which makes its button a two-state one. A group stands apart from the one
+/// before it; a press tells the action's place in the list.
 void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const *texts,
                                          char const *const *identifiers, char const *const *icons, bool const *words,
                                          bool const *destructive, int32_t const *groups, int32_t leadingGroups,
                                          bool const *enabled, int32_t const *keys, int32_t const *modifiers,
-                                         bool const *givesWay, int32_t count);
+                                         bool const *givesWay, int32_t const *states, int32_t count);
 
 /// What a test reads: the theme a title bar stands in, a `StateUIColorScheme`.
 int32_t stateui_winui_title_bar_theme(StateUIObjectRef bar);

@@ -524,6 +524,25 @@ VStack { … }
     }
 ```
 
+A setting on the bar is a `ToolbarToggle`: on or off as its `isOn` says, and
+given a binding, choosing it turns the state over. It stands as the
+platform's two-state button - selected on iOS, an `AppBarToggleButton` on
+Windows, a toggle button in GNOME's header bar, a pressed button on the Web -
+and shows its `on:` picture while it is on; behind the overflow it stands
+checked or not, as a `MenuToggle` does in a menu. A Mac's toolbar item holds
+no state of its own: it shows the on picture, and one with none stands out
+while on; Android's bar shows the state by the on picture alone.
+
+```swift quote
+@State private var showsInspector = false
+
+VStack { … }
+    .toolbar {
+        ToolbarToggle("Inspector", isOn: $showsInspector)
+            .icon("sidebar.png", on: "sidebar_filled.png")
+    }
+```
+
 On AppKit a page's furniture is its window's toolbar: the top page's title
 names the window, the way back is the system's back item, the actions are
 toolbar items - a space between two groups, a group at the start before the

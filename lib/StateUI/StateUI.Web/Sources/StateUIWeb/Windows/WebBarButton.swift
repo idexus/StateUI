@@ -40,6 +40,8 @@ final class WebBarButton: WebDOMView {
         attribute("data-destructive", entry.isDestructive ? "" : nil)
         attribute("data-identifier", entry.identifier)
         attribute("aria-haspopup", item.type == .menu ? "menu" : nil)
+        // A setting is a two-state button: pressed while on.
+        attribute("aria-pressed", item.type == .toolbarToggle ? (entry.isOn == true ? "true" : "false") : nil)
         attribute("aria-keyshortcuts", entry.keyboardShortcut.map { WebKeys.spelled($0, onApple: WebRelay.onApple) })
     }
 

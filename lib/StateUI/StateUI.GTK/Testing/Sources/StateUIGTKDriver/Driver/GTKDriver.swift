@@ -170,7 +170,7 @@ final class GTKDriver: HostDriver {
     }
 
     func perform(_ act: UserAct, on element: MountedElement) throws {
-        if case .pressKeys(let shortcut) = act, [.toolbarButton, .menuItem, .menuToggle].contains(element.type) {
+        if case .pressKeys(let shortcut) = act, [.toolbarButton, .toolbarToggle, .menuItem, .menuToggle].contains(element.type) {
             // The window's shortcut for the keys, run as its controller runs it for them.
             guard let window = renderer?.windows.first(where: { window in
                 window.element.map { owner in element.enclosing(type: .window) === owner } == true
@@ -207,7 +207,7 @@ final class GTKDriver: HostDriver {
             guard let files = renderer?.fileToolkit, files.held != nil else { throw DriverCannot(act, on: element) }
             return files.chooseForTesting(names.map { Self.files + "/" + $0 })
         }
-        if act == .activate, element.type == .toolbarButton { return try chooseAction(element) }
+        if act == .activate, [.toolbarButton, .toolbarToggle].contains(element.type) { return try chooseAction(element) }
         if act == .activate, [.menuItem, .menuToggle].contains(element.type) { return try chooseMenuItem(element) }
         if act == .close, element.type == .window { return try close(element) }
         if act == .close, element.type == .page {
@@ -272,7 +272,7 @@ final class GTKDriver: HostDriver {
     }
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
-        if element.type == .toolbarButton { return try actionHolds(property, element) }
+        if [.toolbarButton, .toolbarToggle].contains(element.type) { return try actionHolds(property, element) }
         if element.type == .window { return try windowHolds(property, element) }
         if [.menuItem, .menuToggle].contains(element.type) { return try menuItemHolds(property, element) }
         if [.barBackgroundColor, .barForegroundColor, .barSubtitle].contains(property) {

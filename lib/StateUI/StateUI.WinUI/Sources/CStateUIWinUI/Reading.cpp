@@ -243,15 +243,26 @@ namespace {
     }
 
     /// The page's action at `place` in the list the chrome was given, at either edge or behind "more".
-    controls::AppBarButton action(controls::TitleBar const &bar, int32_t place) {
+    controls::ICommandBarElement action(controls::TitleBar const &bar, int32_t place) {
         for (auto const &commands :
              {leadingActions(bar).PrimaryCommands(), trailingActions(bar).PrimaryCommands(),
               trailingActions(bar).SecondaryCommands()})
             for (auto const &command : commands)
-                if (auto button = command.try_as<controls::AppBarButton>();
-                    button && winrt::unbox_value_or<int32_t>(button.Tag(), -1) == place)
-                    return button;
+                if (auto element = command.try_as<xaml::FrameworkElement>();
+                    element && !command.try_as<controls::AppBarSeparator>()
+                    && winrt::unbox_value_or<int32_t>(element.Tag(), -1) == place)
+                    return command;
         return nullptr;
+    }
+
+    /// What `said` answers of the action `command` - an action's button or a setting's two-state one; nothing for any
+    /// other command.
+    template <typename Said>
+    auto ofAction(controls::ICommandBarElement const &command, Said said)
+        -> std::optional<decltype(said(controls::AppBarButton{nullptr}))> {
+        if (auto button = command.try_as<controls::AppBarButton>()) return said(button);
+        if (auto toggle = command.try_as<controls::AppBarToggleButton>()) return said(toggle);
+        return std::nullopt;
     }
 
     /// The actions at the leading edge, "|", those at the trailing edge, "|", those behind "more" - each by `said`,
@@ -266,11 +277,13 @@ namespace {
                     parted = true;
                     continue;
                 }
-                auto button = command.template try_as<controls::AppBarButton>();
-                if (!button) continue;
+                auto shown = ofAction(command, [&](auto const &button) {
+                    return std::string(button.IsEnabled() ? "" : "!") + said(button);
+                });
+                if (!shown) continue;
                 if (!words.empty()) words += parted ? apart : among;
                 parted = false;
-                words += std::string(button.IsEnabled() ? "" : "!") + said(button);
+                words += *shown;
             }
             return words;
         };
@@ -299,29 +312,37 @@ namespace {
             std::string colors;
             for (auto const &actions : {leadingActions(bar), trailingActions(bar)})
                 for (auto const &command : actions.PrimaryCommands())
-                    if (auto button = command.try_as<controls::AppBarButton>())
-                        colors += (colors.empty() ? "" : ";") + color(button.Foreground());
+                    if (auto foreground = ofAction(command, [](auto const &button) { return color(button.Foreground()); }))
+                        colors += (colors.empty() ? "" : ";") + *foreground;
             return colors;
         }
         if (what.starts_with("action ")) {
             auto rest = what.substr(7);
             auto space = rest.find(' ');
             if (space == std::string_view::npos) return std::nullopt;
-            auto button = action(bar, std::stoi(std::string(rest.substr(0, space))));
-            if (!button) return std::nullopt;
+            auto command = action(bar, std::stoi(std::string(rest.substr(0, space))));
+            if (!command) return std::nullopt;
             auto held = rest.substr(space + 1);
-            if (held == "icon") return winrt::to_string(iconFile(button.Icon()));
-            if (held == "iconOpacity") return button.Icon() ? std::to_string(button.Icon().Opacity()) : std::string();
-            if (held == "wordsShown") return flag(button.LabelPosition() != controls::CommandBarLabelPosition::Collapsed);
-            if (held == "destructive") return flag(isDestructive(button, L"AppBarButtonForeground"));
-            if (held == "identifier") return narrow(xaml::Automation::AutomationProperties::GetAutomationId(button));
-            if (held == "shortcut") {
-                if (button.KeyboardAccelerators().Size() == 0) return std::string();
-                auto first = button.KeyboardAccelerators().GetAt(0);
-                return std::to_string(static_cast<int32_t>(first.Key())) + ","
-                    + std::to_string(static_cast<int32_t>(first.Modifiers()));
+            // A setting's state: whether its two-state button stands checked; an action has none.
+            if (held == "checked") {
+                auto toggle = command.try_as<controls::AppBarToggleButton>();
+                if (!toggle) return std::nullopt;
+                return flag(toggle.IsChecked() && toggle.IsChecked().Value());
             }
-            return std::nullopt;
+            return ofAction(command, [&](auto const &button) -> std::optional<std::string> {
+                if (held == "icon") return winrt::to_string(iconFile(button.Icon()));
+                if (held == "iconOpacity") return button.Icon() ? std::to_string(button.Icon().Opacity()) : std::string();
+                if (held == "wordsShown") return flag(button.LabelPosition() != controls::CommandBarLabelPosition::Collapsed);
+                if (held == "destructive") return flag(isDestructive(button, L"AppBarButtonForeground"));
+                if (held == "identifier") return narrow(xaml::Automation::AutomationProperties::GetAutomationId(button));
+                if (held == "shortcut") {
+                    if (button.KeyboardAccelerators().Size() == 0) return std::string();
+                    auto first = button.KeyboardAccelerators().GetAt(0);
+                    return std::to_string(static_cast<int32_t>(first.Key())) + ","
+                        + std::to_string(static_cast<int32_t>(first.Modifiers()));
+                }
+                return std::nullopt;
+            }).value_or(std::nullopt);
         }
         return std::nullopt;
     }

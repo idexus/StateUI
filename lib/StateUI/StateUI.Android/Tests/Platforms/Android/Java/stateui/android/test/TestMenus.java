@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
@@ -185,6 +186,13 @@ public final class TestMenus {
         return title + "\n" + (item.isEnabled() ? 1 : 0) + "\n" + (color(title) == error ? 1 : 0)
                 + "\n" + (item.getIcon() != null ? 1 : 0) + "\n" + (item.isChecked() ? 1 : 0)
                 + "\n" + (int) key + "\n" + (key == 0 ? 0 : modifiers);
+    }
+
+    /** Whether the item of `id` shows `picture`: the very pixels of it. */
+    public static boolean shows(Menu menu, int id, Bitmap picture) {
+        MenuItem item = menu.findItem(id);
+        Drawable icon = item == null ? null : item.getIcon();
+        return icon instanceof BitmapDrawable && ((BitmapDrawable) icon).getBitmap().sameAs(picture);
     }
 
     /** Chooses the item whose words are `text`, in `menu` or a submenu of it, as a touch does; whether it ran. */

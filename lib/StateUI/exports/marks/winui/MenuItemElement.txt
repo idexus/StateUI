@@ -11,3 +11,7 @@ ToolbarButton.icon: ✅
 ToolbarButton.isEnabled: ✅
 ToolbarButton.keyboardShortcut: ✅
 ToolbarButton.text: ✅
+ToolbarToggle.icon: ✅
+ToolbarToggle.isEnabled: ✅
+ToolbarToggle.keyboardShortcut: ✅
+ToolbarToggle.text: ✅

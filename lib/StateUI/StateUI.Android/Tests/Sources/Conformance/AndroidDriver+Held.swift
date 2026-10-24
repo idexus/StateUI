@@ -13,7 +13,7 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/conformance.md#what-the-driver-reads
 extension AndroidDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
-        if [.menuItem, .menuToggle, .toolbarButton].contains(element.type) { return try itemHolds(property, element) }
+        if [.menuItem, .menuToggle, .toolbarButton, .toolbarToggle].contains(element.type) { return try itemHolds(property, element) }
         if [.barTitle, .barSubtitle, .barIcon, .barBackgroundColor, .barForegroundColor].contains(property) {
             return Self.barHolds(property, of: element)
         }

@@ -7,7 +7,11 @@ MenuToggle.icon: – Android's menus - a view's context menu, a bar's overflow a
 MenuToggle.isEnabled: ✅
 MenuToggle.keyboardShortcut: ✅
 MenuToggle.text: ✅
-ToolbarButton.icon: does not apply - read a picture's name - Android's item keeps its picture, not its name
+ToolbarButton.icon: ✅
 ToolbarButton.isEnabled: ✅
 ToolbarButton.keyboardShortcut: ✅
 ToolbarButton.text: ✅
+ToolbarToggle.icon: ✅
+ToolbarToggle.isEnabled: ✅
+ToolbarToggle.keyboardShortcut: ✅
+ToolbarToggle.text: ✅

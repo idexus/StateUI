@@ -20,6 +20,9 @@ struct UIKitBarAction {
     /// The element of the item, which keeps the action UIKit was last handed.
     let element: UIKitElement?
 
+    /// A setting's state, on or off; nil for an action.
+    var isOn: Bool? = nil
+
     /// How tall a picture stands on a bar - the size a glass circle holds its symbol at, room around it - and on a
     /// bar made low by a phone on its side.
     static let glyphHeight = 20.0
@@ -38,12 +41,13 @@ struct UIKitBarAction {
         let isDestructive: Bool
         let identifier: String?
         let mount: UInt64?
+        let isOn: Bool?
     }
 
     var said: Said {
         Said(
             title: title, icon: icon, isEnabled: isEnabled, isDestructive: isDestructive, identifier: identifier,
-            mount: element?.element.mount)
+            mount: element?.element.mount, isOn: isOn)
     }
 
     /// A button of the bar, in `tint` - a painted bar's words, nil for the bar's own - or red where it destroys
@@ -54,6 +58,11 @@ struct UIKitBarAction {
         item.isEnabled = isEnabled
         item.accessibilityIdentifier = identifier
         item.tintColor = self.tint(tint)
+        // A setting is UIKit's two-state button: selected while on, turned over as it is chosen.
+        if let isOn {
+            item.changesSelectionAsPrimaryAction = true
+            item.isSelected = isOn
+        }
         return item
     }
 
@@ -69,6 +78,7 @@ struct UIKitBarAction {
         if !isEnabled { attributes.insert(.disabled) }
         if isDestructive { attributes.insert(.destructive) }
         action.attributes = attributes
+        if let isOn { action.state = isOn ? .on : .off }
         action.accessibilityIdentifier = identifier
         element?.menuAction = action
         return action

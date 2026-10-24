@@ -222,6 +222,7 @@ extension WebDriver {
             let e = button.node
             switch property {
             case .showsText: return try WebBrowser.truth("!e.querySelector('span').hidden", on: e).propValue
+            case .isOn: return try WebBrowser.truth("e.getAttribute('aria-pressed') === 'true'", on: e).propValue
             case .text: return try WebBrowser.evaluate("e.getAttribute('aria-label')", on: e)?.propValue
             case .isEnabled: return try (!WebBrowser.truth("e.disabled", on: e)).propValue
             case .role:
@@ -282,7 +283,7 @@ extension WebDriver {
     /// Every toolbar item under `element`, its slots included.
     private func toolbarItems(in element: MountedElement?) -> [MountedElement] {
         guard let element else { return [] }
-        let own = element.type == .toolbarButton ? [element] : []
+        let own = [.toolbarButton, .toolbarToggle].contains(element.type) ? [element] : []
         return own + (element.children + element.slots).flatMap { toolbarItems(in: $0) }
     }
 

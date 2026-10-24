@@ -180,7 +180,7 @@ extension AppKitDriver {
             default: break
             }
         }
-        if element.type == .toolbarButton,
+        if [.toolbarButton, .toolbarToggle].contains(element.type),
            let item = try controller(of: element).toolbarForTesting
                .itemForTesting(NSToolbarItem.Identifier("StateUI.action.\(element.mount)")) {
             switch property {
@@ -188,6 +188,7 @@ extension AppKitDriver {
             case .isEnabled: return item.isEnabled.propValue
             case .icon: return pictureName(item.image)
             case .keyboardShortcut: return element.value(.keyboardShortcut)
+            case .isOn: return item.menuFormRepresentation.map { ($0.state == .on).propValue }
             default: break
             }
         }

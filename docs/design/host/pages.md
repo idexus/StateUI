@@ -408,7 +408,10 @@ A setting's entry - a `MenuToggle` - stands checked or not
 setting: a check beside it. Choosing an entry is one rule on every host
 (`MountedElement.chosen`): a setting's turns the other way - `toggled` with
 the way it turned to, written through a binding - and a `MenuItem`, which
-acts and shows no mark, is clicked.
+acts and shows no mark, is clicked. A setting on a bar - a `ToolbarToggle` -
+turns by the same rule, and the picture it shows on the bar and behind its
+overflow is its `on:` picture while it stands on, else its own
+(`MountedElement.itemPicture`, which every host's entry reads).
 
 A menu is walked from the tree, never a channel of its own, so the two-way
 `MenuToggle(_:isOn: $state)` reads its state where the menu is built: the state turning

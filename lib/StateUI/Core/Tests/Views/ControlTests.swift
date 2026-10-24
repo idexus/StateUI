@@ -850,7 +850,7 @@ final class ControlTests: XCTestCase {
         // driven text): the tier holds the value form.
         let tiersNoViewWears = [
             "Views/Mixins/MenuItemElement.swift", "Views/Menus/ToolbarButton.swift", "Views/Menus/ToolbarGroup.swift",
-            "Views/Menus/Menu.swift",
+            "Views/Menus/ToolbarToggle.swift", "Views/Menus/Menu.swift",
             "Views/Structure/Window.swift", "Views/Structure/WindowGroup.swift",
         ]
         // A map's markers are rebuilt with the map; a composed view's configuration changes what it builds, which a

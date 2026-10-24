@@ -1,0 +1,6 @@
+# revision 1.1
+ToolbarToggle: ✅
+ToolbarToggle.isOn: ✅
+ToolbarToggle.onIcon: ✅
+ToolbarToggle.showsText: ✅
+ToolbarToggle.toggled: ✅

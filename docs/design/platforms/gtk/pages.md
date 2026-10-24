@@ -31,7 +31,8 @@ every render, and written on the header bar of each page shown:
   leading groups at the bar's start, after the sidebar's toggle, the
   trailing ones at its end, each group a box of its own, apart from the
   next by twice the room between two buttons of a group - a header bar
-  draws no shared background - and the actions placed in overflow behind
+  draws no shared background, a setting a `GtkToggleButton` pressed in
+  while on - and the actions placed in overflow behind
   the bar's menu at its end, before the main menu. An action with a picture stands on the
   bar as an icon, the way a header bar's buttons stand, its title its
   tooltip and its name to assistive technology; one that shows its words

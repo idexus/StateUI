@@ -75,6 +75,7 @@ extension NodeType {
     static let tabView = TabViewContract.nodeType
     static let timePicker = TimePickerContract.nodeType
     static let toolbarButton = ToolbarButtonContract.nodeType
+    static let toolbarToggle = ToolbarToggleContract.nodeType
     static let toolbarGroup = ToolbarGroupContract.nodeType
     static let vStack = VStackContract.nodeType
     static let webView = WebViewContract.nodeType
@@ -163,6 +164,7 @@ extension NodeType {
     static let horizontalScrollIndicator = ScrollViewContract.horizontalScrollIndicator.token
     static let horizontalTextAlignment = TextAlignmentElementContract.horizontalTextAlignment.token
     static let icon = MenuItemElementContract.icon.token
+    static let onIcon = ToolbarToggleContract.onIcon.token
     static let step = StepperContract.step.token
     static let ignoresInput = VisualElementContract.ignoresInput.token
     static let isAnimating = ImageContract.isAnimating.token

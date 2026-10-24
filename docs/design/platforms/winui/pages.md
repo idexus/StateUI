@@ -30,6 +30,7 @@ for - a tab chosen, the sidebar shown:
   left header, after the way back and the toggle, shown only while it holds
   an action; the trailing one in its right header - each group apart from the
   one before it by WinUI's own line between commands (`AppBarSeparator`),
+  a setting WinUI's two-state `AppBarToggleButton`, checked while on,
   and those placed in overflow behind the trailing bar's own "more"; an
   action with a picture - the first of the files its
   name stands for that the application's pictures hold

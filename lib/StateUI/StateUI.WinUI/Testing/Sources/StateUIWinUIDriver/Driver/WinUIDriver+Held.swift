@@ -26,7 +26,7 @@ extension WinUIDriver {
         case .menuItem, .menuToggle, .menu:
             if let held = try menuHolds(property.name, element) { return held }
             throw cannot
-        case .toolbarButton:
+        case .toolbarButton, .toolbarToggle:
             if let held = try actionHolds(property.name, element) { return held }
             throw cannot
         case .window:
@@ -554,7 +554,13 @@ extension WinUIDriver {
         switch name {
         case "text": return .string(titleBar.drawn[place].title)
         case "isEnabled": return said.enabled.propValue
-        case "icon": return Self.picture(try action("icon"), named: element)
+        case "icon":
+            // Its own picture, or a setting's on picture.
+            let shown = try action("icon")
+            let on = element.value(.onIcon)?.string ?? ""
+            return PictureArithmetic.files(for: on).contains(shown) ? ImageSource(on).propValue
+                : Self.picture(shown, named: element)
+        case "isOn": return (try action("checked") == "1").propValue
         case "role": return (try action("destructive") == "1" ? ActionRole.destructive : .normal).propValue
         case "showsText": return (try action("wordsShown") == "1").propValue
         case "accessibilityIdentifier": return .string(try action("identifier"))

@@ -72,7 +72,8 @@ extension UIKitElement {
         let entry = MenuEntry.entry(of: item)
         return UIKitBarAction(
             title: entry.title, icon: entry.icon, isEnabled: entry.isEnabled, isDestructive: entry.isDestructive,
-            identifier: entry.identifier, perform: { [weak item] in item?.uiKit.choose() }, element: item.uiKit)
+            identifier: entry.identifier, perform: { [weak item] in item?.uiKit.choose() }, element: item.uiKit,
+            isOn: item.type == .toolbarToggle ? entry.isOn == true : nil)
     }
 
     /// Writes the bar of every page in this arrangement and every one it holds.

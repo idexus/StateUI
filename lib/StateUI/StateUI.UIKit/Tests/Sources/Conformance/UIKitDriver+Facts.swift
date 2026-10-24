@@ -68,7 +68,7 @@ extension UIKitDriver {
 
     /// Every toolbar item under `root`, the arrangements' slots included.
     private static func toolbarItems(in root: MountedElement) -> [MountedElement] {
-        (root.type == .toolbarButton ? [root] : []) + (root.children + root.slots).flatMap { toolbarItems(in: $0) }
+        ([.toolbarButton, .toolbarToggle].contains(root.type) ? [root] : []) + (root.children + root.slots).flatMap { toolbarItems(in: $0) }
     }
 
     /// A view's context menu, or a window's menus on the menu bar, as UIKit is handed them.

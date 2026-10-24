@@ -36,7 +36,8 @@ struct UIKitPageChrome {
 
     /// What the close button says among the bar's buttons, and the identifier of its action.
     private static let closeSaid = UIKitBarAction.Said(
-        title: "", icon: nil, isEnabled: true, isDestructive: false, identifier: closeIdentifier.rawValue, mount: nil)
+        title: "", icon: nil, isEnabled: true, isDestructive: false, identifier: closeIdentifier.rawValue, mount: nil,
+        isOn: nil)
     static let closeIdentifier = UIAction.Identifier("stateui.close")
 
     /// Puts it on `item`, the bar a navigation controller shows for the page - its buttons made again only where

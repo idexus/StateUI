@@ -72,12 +72,15 @@ extension AppKitWindowController {
 
     /// A page's action as a toolbar item.
     static func action(_ item: MountedElement) -> AppKitToolbarAction {
-        AppKitToolbarAction(
+        let isOn = item.type == .toolbarToggle ? item.value(.isOn)?.bool == true : nil
+        return AppKitToolbarAction(
             identifier: NSToolbarItem.Identifier("StateUI.action.\(item.mount)"),
             title: item.value(.text)?.string ?? "",
-            image: item.appKit.image(.icon),
+            image: item.itemPicture.flatMap { item.appKit.host?.image($0) },
             isEnabled: item.isEffectivelyEnabled,
-            perform: { [weak item] in item?.appKit.clicked(nil) })
+            perform: { [weak item] in item?.appKit.clicked(nil) },
+            isOn: isOn,
+            standsOut: isOn == true && item.value(.onIcon) == nil)
     }
 
     /// The tabs the window shows - the visible tabbed view's, where its tabs stand in the window - and the split view

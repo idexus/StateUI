@@ -59,7 +59,7 @@ final class WinUITitleBarView: WinUIView {
                             handle, titles, identifiers, icons, actions.map(\.showsWords), actions.map(\.isDestructive),
                             places, leading, actions.map(\.isEnabled), spelled.map(\.key), spelled.map(\.modifiers),
                             actions.map { $0.shortcut.map(KeyboardShortcuts.givesWayToTyping) ?? false },
-                            Int32(actions.count))
+                            actions.map { $0.isOn.map { $0 ? 1 : 0 } ?? -1 }, Int32(actions.count))
                     }
                 }
             }

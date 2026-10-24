@@ -133,7 +133,7 @@ TextStyleSample.swift 7d1bdf3f5f866e5b
 TickerSample.swift ecca16670e47a404
 TimePickerSample.swift dd3594dfb194e764
 ToolbarLayersSample.swift 1149577eca98f9e5
-ToolbarSample.swift 653e0e36aa8c1fb4
+ToolbarSample.swift 99b8fb79dfca5dbc
 TooltipSample.swift 39cf79ca0fdc2b4d
 TouchThroughSample.swift 2f49a42898ac5f63
 TransformSample.swift 42f89ce8b8c4c513

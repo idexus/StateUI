@@ -19,10 +19,13 @@ struct WinUIToolbarAction {
     /// The mount of the toolbar item it stands for; none for the way back.
     var mount: UInt64?
     let perform: () -> Void
+    /// A setting's state - its button a two-state one, checked while on; nil for an action.
+    var isOn: Bool? = nil
 
     /// Whether two actions draw the same button. What an action performs is taken again on every composition.
     func draws(like other: WinUIToolbarAction) -> Bool {
         title == other.title && isEnabled == other.isEnabled && identifier == other.identifier && icon == other.icon
             && isDestructive == other.isDestructive && showsWords == other.showsWords && shortcut == other.shortcut
+            && isOn == other.isOn
     }
 }
