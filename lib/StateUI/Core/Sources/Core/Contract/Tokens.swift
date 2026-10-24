@@ -173,6 +173,7 @@ extension NodeType {
     static let isOpen = DatePickerContract.isOpen.token
     static let isPassword = TextFieldContract.isPassword.token
     static let showsSidebar = SplitViewContract.showsSidebar.token
+    static let showsSidebarToggle = SplitViewContract.showsSidebarToggle.token
     static let sidebarBackground = SplitViewContract.sidebarBackground.token
     static let flyoutBackground = SplitViewContract.flyoutBackground.token
     static let sidebarOverlays = SplitViewContract.sidebarOverlays.token

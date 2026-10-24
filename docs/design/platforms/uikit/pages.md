@@ -114,7 +114,9 @@ own bar. It is never one column. In a narrow room - a phone, upright or on
 its side - the sidebar slides over the detail from the leading edge, the
 detail shaded behind it, opened by the sidebar button UIKit puts on the
 detail's bar or a swipe from the edge and closed by a tap on the shade; in a
-wide room it stands beside the detail. The split view says it is wide
+wide room it stands beside the detail. UIKit shows that button unless the
+split view offers none (`displayModeButtonVisibility` `.never`); the swipe
+stays. The split view says it is wide
 whatever the room (`traitOverrides`), so UIKit never folds it into one
 column, and each column says the room's own width, so the tabs, sheets and
 bars inside stand as a phone's.

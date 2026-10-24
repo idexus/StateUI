@@ -128,6 +128,7 @@ extension UIKitElement {
             split.onPresentationChanged = { [weak self] presented in self?.sidebarChanged(to: presented) }
             if let host { split.slide(on: host.runtime.sidebarSlide, mount: element.mount) }
             if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }
+            offerSidebarToggle()
             if !changed.isDisjoint(with: MountedElement.sidebarMaterials) {
                 split.paintsSidebar = element.paintsSidebar
                 split.showPageBackgrounds()
@@ -135,6 +136,13 @@ extension UIKitElement {
         default:
             break
         }
+    }
+
+    /// Offers UIKit's own sidebar button on the split view's bars, unless the split view says it offers none.
+    func offerSidebarToggle() {
+        guard let split = controller as? UIKitSplitViewController else { return }
+        let toggle: UISplitViewController.DisplayModeButtonVisibility = element.offersSidebarToggle ? .automatic : .never
+        if split.displayModeButtonVisibility != toggle { split.displayModeButtonVisibility = toggle }
     }
 
     /// Lets the arrangement's controller say nothing more, as the element leaves the tree.

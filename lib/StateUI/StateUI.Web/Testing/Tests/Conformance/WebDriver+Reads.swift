@@ -77,6 +77,10 @@ extension WebDriver {
              (.contentMode, is WebButtonView), (.lineBreak, is WebButtonView):
             return try buttonHolds(property, e)
         case (.showsSidebar, is WebSplitView): return try WebBrowser.truth("e.dataset.sidebar === 'shown'", on: e).propValue
+        case (.showsSidebarToggle, is WebSplitView):
+            // The bar's sidebar button, standing in no hidden part of it.
+            let shown = "!!e.querySelector('button:has(> [data-glyph=sidebar]):not([hidden] *, [hidden])')"
+            return try WebBrowser.truth(shown, on: try bar(over: element)).propValue
         case (.sidebarOverlays, is WebSplitView):
             // The sidebar out of the split's columns, over the detail, as the style sheet stands it.
             let over = "getComputedStyle(e.querySelector(':scope > .stateui-sidebar')).position === 'absolute'"

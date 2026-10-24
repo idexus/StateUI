@@ -19,6 +19,10 @@ public enum SplitViewContract: ElementContract {
     /// Whether the sidebar is showing.
     public static let showsSidebar = ElementProperty<Self, Bool>("showsSidebar", layer: .native)
 
+    /// Whether the split view's bar offers the user its toggle, showing and hiding the sidebar; offered where
+    /// unwritten.
+    public static let showsSidebarToggle = ElementProperty<Self, Bool>("showsSidebarToggle", layer: .adaptive)
+
     /// The user showed or hid the sidebar, to the value it carries.
     public static let showsSidebarChanged = ElementEvent<Self, Bool>(
         "showsSidebarChanged", layer: .adaptive)
@@ -37,6 +41,6 @@ public enum SplitViewContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        showsSidebar, showsSidebarChanged, sidebarBackground, flyoutBackground, sidebarOverlays,
+        showsSidebar, showsSidebarToggle, showsSidebarChanged, sidebarBackground, flyoutBackground, sidebarOverlays,
     ]
 }

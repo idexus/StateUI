@@ -186,6 +186,7 @@ enum GTKRealization {
         .complete(DecorableTextElementContract.textDecorations, on: TextSpanContract.self),
         .complete(SplitViewContract.showsSidebar),
         .complete(SplitViewContract.showsSidebarChanged),
+        .complete(SplitViewContract.showsSidebarToggle),
         .partial(SplitViewContract.sidebarBackground,
             missing: "GTK blurs nothing inside a window: a blur or glass shows its color."),
         .partial(SplitViewContract.flyoutBackground,

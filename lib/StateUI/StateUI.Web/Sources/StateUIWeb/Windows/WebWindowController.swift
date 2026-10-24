@@ -149,7 +149,7 @@ final class WebWindowController {
         guard let element else { return }
         let chrome = WindowChrome(window: element, arrangement: presentation.arrangement)
         var title = chrome.title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string ?? ""
-        let split = chrome.sidebarToggle?.web.view as? WebSplitView
+        let split = chrome.splitView?.web.view as? WebSplitView
         window.bar.show(chrome, title: title, sidebar: split?.isPresented, split: split)
         // The page the user sees may stand with no bar over it.
         window.bar.setShown(presentation.arrangement?.visiblePage?.value(.showsNavigationBar)?.bool != false)
@@ -187,7 +187,7 @@ final class WebWindowController {
 
     /// Shows or hides the sidebar of the split view the window shows, as the user does.
     private func toggleSidebar() {
-        guard let split = WindowChrome(window: element!, arrangement: presentation.arrangement).sidebarToggle,
+        guard let split = WindowChrome(window: element!, arrangement: presentation.arrangement).splitView,
               let view = split.web.view as? WebSplitView
         else { return }
         view.userPresents(!view.isPresented)

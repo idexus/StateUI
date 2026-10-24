@@ -196,6 +196,7 @@ enum WinUIRealization {
         .complete(DecorableTextElementContract.textDecorations, on: TextSpanContract.self),
         .complete(SplitViewContract.showsSidebar),
         .complete(SplitViewContract.showsSidebarChanged),
+        .complete(SplitViewContract.showsSidebarToggle),
         .partial(SplitViewContract.sidebarBackground, missing: Self.paneHasNoGlass),
         .partial(SplitViewContract.flyoutBackground, missing: Self.paneHasNoGlass),
         .complete(SplitViewContract.sidebarOverlays),

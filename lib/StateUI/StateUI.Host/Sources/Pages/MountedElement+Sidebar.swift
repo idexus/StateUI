@@ -35,6 +35,12 @@ extension MountedElement {
         !sidebarMaterial(over: false).isEmpty || !sidebarMaterial(over: true).isEmpty
     }
 
+    /// Whether this split view's bar offers the toggle showing and hiding its sidebar: unless it says it offers none.
+    /// Design: docs/design/host/pages.md#the-windows-chrome
+    @MainActor public var offersSidebarToggle: Bool {
+        value(.showsSidebarToggle)?.bool != false
+    }
+
     /// The words this page's own bar shows as its title: its title, or - a sidebar's page that says none - the
     /// application's name, as a sidebar stands under it; nothing for any other page that says none.
     /// Design: docs/design/host/pages.md#a-sidebars-title

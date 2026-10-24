@@ -126,6 +126,11 @@ final class Navigation {
     /// platform places the menu for the room.
     @State var menuOverlays = false
 
+    /// Whether the split view's bar offers the button showing and hiding the
+    /// menu - see `SplitViewSample`, which is where the switch that writes
+    /// it lives.
+    @State var showsMenuButton = true
+
     /// Whether the menu lists the row that is hidden by default - see
     /// `SplitViewSample`, which is where the switch that writes it lives.
     @State var listsHiddenRow = false

@@ -101,6 +101,27 @@ public struct SplitView: ElementView, Arrangement, BarElement, AutomationElement
 }
 
 extension SplitView {
+    /// Whether the split view's bar offers the toggle that shows and hides
+    /// the sidebar - offered unless this says not. A value from a state keeps
+    /// it to some pages, as to the root of the detail's stack:
+    ///
+    ///     SplitView($menu) { MenuPage() } detail: {
+    ///         NavigationStack($path) { InboxPage() } destination: { MailPage(id: $0) }
+    ///     }
+    ///     .showsSidebarToggle(path.isEmpty)
+    ///
+    /// With no toggle the sidebar shows and hides by the binding, and by an
+    /// edge swipe where the platform has one.
+    public func showsSidebarToggle(_ value: Bool) -> Modified {
+        setValue(SplitViewContract.showsSidebarToggle, value)
+    }
+
+    /// `showsSidebarToggle` from a state, `$x`: the host shows or hides the
+    /// toggle as the state changes, and no view is rebuilt for it.
+    public func showsSidebarToggle(_ state: Binding<Bool>) -> Modified {
+        twin(SplitViewContract.showsSidebarToggle, by: state)
+    }
+
     /// What the sidebar stands on while it stands beside the detail.
     ///
     ///     SplitView($showsMenu) { MenuPage() } detail: { NotesPage() }

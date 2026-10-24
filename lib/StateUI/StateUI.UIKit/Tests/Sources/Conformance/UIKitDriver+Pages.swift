@@ -74,6 +74,9 @@ extension UIKitDriver {
         case .showsSidebar:
             guard let split = controller as? UISplitViewController else { return nil }
             return (split.displayMode != .secondaryOnly).propValue
+        case .showsSidebarToggle:
+            guard let split = controller as? UISplitViewController else { return nil }
+            return (split.displayModeButtonVisibility != .never).propValue
         case .sidebarOverlays:
             guard let split = controller as? UISplitViewController else { return nil }
             return (split.splitBehavior == .overlay).propValue

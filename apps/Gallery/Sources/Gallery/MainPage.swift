@@ -88,6 +88,9 @@ struct MainPage: View {
         // Where the platform places it for the room: a choice closes it
         // over the page and leaves it open beside it.
         .sidebarOverlays(nav.$menuOverlays)
+        // Whether the bar offers the menu's button - the Split view
+        // sample's switch takes it away.
+        .showsSidebarToggle(nav.$showsMenuButton)
         // listing: end
         // listing: MainPage.bar
         // The gallery's own actions, declared once over every page of the

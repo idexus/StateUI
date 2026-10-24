@@ -98,7 +98,7 @@ final class WebWindowBar: WebDOMView {
         attribute("data-sidebar", sidebar.map { $0 ? "shown" : "hidden" })
         // The part over a sidebar beside the page stands on the sidebar's own ground, as one column with it.
         for name in ["--stateui-sidebar-ground", "--stateui-sidebar-filter"] { style(name, split?.styled(name)) }
-        toggle.setShown(chrome.sidebarToggle != nil)
+        toggle.setShown(chrome.showsSidebarToggle)
         back.setShown(chrome.back != nil)
         back.attribute("title", chrome.back?.title)
 

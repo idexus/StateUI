@@ -109,7 +109,10 @@ says.
 
 ## The toolbar
 
-A window's toolbar holds the chrome its arrangement composes: each group of
+A window's toolbar holds the chrome its arrangement composes - over a split
+view the system's sidebar button where the split view offers it, then the
+sidebar's tracking separator either way, so the detail's items start past
+the sidebar - each group of
 actions a run of items with a space between it and the next, and the
 overflow's button apart after the last, so each keeps a background of its
 own, the leading groups before the flexible space and the trailing ones

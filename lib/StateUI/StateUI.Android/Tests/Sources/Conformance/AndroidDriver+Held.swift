@@ -14,7 +14,7 @@ import CStateUIAndroid
 extension AndroidDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if element.type == .menuItem || element.type == .toolbarButton { return try itemHolds(property, element) }
-        if [.barSubtitle, .barBackgroundColor, .barForegroundColor].contains(property) {
+        if [.barTitle, .barSubtitle, .barIcon, .barBackgroundColor, .barForegroundColor].contains(property) {
             return Self.barHolds(property, of: element)
         }
         if element.type == .page,
@@ -60,6 +60,7 @@ extension AndroidDriver {
         case (.selectedTab, let tabs as AndroidTabView): return Self.selectedTab(of: tabs)?.propValue
         case (.progress, let bar as AndroidProgressBarView): return bar.progress.propValue
         case (.showsSidebar, let split as AndroidSplitView): return split.isPresented.propValue
+        case (.showsSidebarToggle, let split as AndroidSplitView): return Self.sidebarBarOffersToggle(split).propValue
         case (.sidebarOverlays, let split as AndroidSplitView): return split.overlays.propValue
         case (.sidebarBackground, let split as AndroidSplitView):
             return split.grounds.beside.map { Self.material(argb: Int64(UInt32(bitPattern: $0))) }

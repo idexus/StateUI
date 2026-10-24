@@ -12,7 +12,7 @@
 # cases, or what every host decides alike - and a host's own where that host's
 # change alone does. A change that proves nothing new raises nothing.
 TextEditor 3
-SplitView 6
+SplitView 7
 android TextAlignmentElement 2
 appkit TextInput 3
 android TextInput 2

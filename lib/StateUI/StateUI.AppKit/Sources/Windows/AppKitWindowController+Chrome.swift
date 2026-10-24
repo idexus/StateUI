@@ -40,10 +40,11 @@ extension AppKitWindowController {
             return bandTitle
         }
 
-        let split = chrome.sidebarToggle?.appKit.view as? AppKitSplitView
+        let split = chrome.splitView?.appKit.view as? AppKitSplitView
         let words = element.appKit.core.chromeWords
         toolbar.apply(AppKitWindowChrome(
             sidebar: split?.splitController,
+            showsSidebarToggle: chrome.showsSidebarToggle,
             back: chrome.back.map { back in
                 AppKitToolbarAction(
                     identifier: AppKitWindowToolbar.back, title: back.title,

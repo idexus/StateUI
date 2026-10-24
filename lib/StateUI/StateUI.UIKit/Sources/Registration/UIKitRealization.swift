@@ -152,6 +152,7 @@ enum UIKitRealization {
         .complete(TrackingElementContract.tracking, on: TextSpanContract.self),
         .complete(SplitViewContract.showsSidebar),
         .complete(SplitViewContract.showsSidebarChanged),
+        .complete(SplitViewContract.showsSidebarToggle),
         .complete(SplitViewContract.sidebarBackground),
         .complete(SplitViewContract.flyoutBackground),
         .complete(SplitViewContract.sidebarOverlays),

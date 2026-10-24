@@ -136,8 +136,8 @@ final class WinUIWindowController {
                 if let element, let stack { runtime.goBack(.pop(stack), in: element) }
             })
         }
-        chrome.sidebarToggle = composed.sidebarToggle.map { split in
-            { [weak split] in
+        if composed.showsSidebarToggle, let split = composed.splitView {
+            chrome.sidebarToggle = { [weak split] in
                 guard let split else { return }
                 split.winUI.changeSidebarVisibility(to: !split.sidebarIsVisible)
             }

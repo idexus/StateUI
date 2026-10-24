@@ -322,6 +322,8 @@ final class GTKDriver: HostDriver {
         case (.text, let check as GTKCheckView): return check.text.propValue
         case (.text, let toggle as GTKSwitchView): return toggle.text.propValue
         case (.showsSidebar, let split as GTKSplitView): return split.showsSidebar.propValue
+        // The toggle at the start of the bar over a detail standing in no stack of its own.
+        case (.showsSidebarToggle, let split as GTKSplitView): return (split.detailFrame?.sidebarToggle != nil).propValue
         case (.sidebarOverlays, let split as GTKSplitView): return split.isCollapsed.propValue
         case (.sidebarBackground, let split as GTKSplitView), (.flyoutBackground, let split as GTKSplitView):
             // The sidebar's class in the place it stands; the other place's color as the split keeps it.

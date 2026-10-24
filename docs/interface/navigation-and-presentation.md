@@ -145,6 +145,27 @@ if overlays { showsSidebar = false }
 Nothing the application writes into the state reaches the host; it is the
 platform's report alone.
 
+The split view's bar offers the platform's toggle for the sidebar - the
+toolbar's sidebar button on a Mac, the navigation button in a Windows title
+bar, ☰ at the start of a phone's bar - unless `.showsSidebarToggle(false)`
+takes it away. A value from a state keeps it to some pages, as to the root
+of the detail's stack, leaving a page pushed over it the way back alone:
+
+```swift quote
+@State private var path: [Route] = []
+
+SplitView($menuOpen, sidebar: {
+    MenuPage(showsSidebar: $menuOpen)
+}, detail: {
+    NavigationStack($path) { InboxPage() } destination: { MailPage($0) }
+})
+.showsSidebarToggle(path.isEmpty)
+```
+
+With no toggle the sidebar shows and hides by its binding - and by an edge
+swipe where the platform has one, as iOS does; elsewhere the application's
+own button is then the way in.
+
 What the sidebar stands on is the split view's to say, for each of the two
 places, as a `Material` - a color, a gradient, a blur, glass:
 

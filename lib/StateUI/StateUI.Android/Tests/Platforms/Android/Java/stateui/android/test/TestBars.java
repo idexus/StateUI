@@ -3,9 +3,12 @@
 
 package stateui.android.test;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -61,6 +64,18 @@ public final class TestBars {
         return bar.getTitle() != null;
     }
 
+    /** The bar's title; null for none. */
+    public static String title(Toolbar bar) {
+        CharSequence words = bar.getTitle();
+        return words == null ? null : words.toString();
+    }
+
+    /** Whether the bar shows `picture` as its mark before the title: the very pixels of it. */
+    public static boolean marks(Toolbar bar, Bitmap picture) {
+        Drawable logo = bar.getLogo();
+        return logo instanceof BitmapDrawable && ((BitmapDrawable) logo).getBitmap().sameAs(picture);
+    }
+
     /** The line under the bar's title; null for none. */
     public static String subtitle(Toolbar bar) {
         CharSequence words = bar.getSubtitle();
@@ -81,6 +96,18 @@ public final class TestBars {
             View child = bar.getChildAt(at);
             boolean said = words.equals(child.getContentDescription());
             if (child instanceof ImageButton && said) return child.performClick();
+        }
+        return false;
+    }
+
+    /** Whether the bar shows a button of its own at its end - a sidebar's own bar, its toggle. */
+    public static boolean endButton(Toolbar bar) {
+        for (int at = 0; at < bar.getChildCount(); at++) {
+            View child = bar.getChildAt(at);
+            ViewGroup.LayoutParams params = child.getLayoutParams();
+            if (child instanceof ImageButton && child.getVisibility() == View.VISIBLE
+                    && params instanceof Toolbar.LayoutParams
+                    && (((Toolbar.LayoutParams) params).gravity & Gravity.END) == Gravity.END) return true;
         }
         return false;
     }

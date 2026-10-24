@@ -5,7 +5,8 @@
 
 /// The one chrome a window composes from what it shows, the same on every host: its title, the way back, and what its
 /// visible path declares - the actions, what stands in the title's place, the title area, the bars' colors, the
-/// menus - with the sidebar's toggle: elements and values a host turns into its toolkit's chrome.
+/// menus - with the split view it stands over and its sidebar's toggle: elements and values a host turns into its
+/// toolkit's chrome.
 /// Design: docs/design/host/pages.md#the-windows-chrome
 @_spi(Host) @MainActor public struct WindowChrome {
     /// The title of the page that names the window (`titledPage`), else the window's; nil where neither names one,
@@ -43,8 +44,12 @@
     /// The menus the visible page's path declares, composed.
     public var menus = ChromeMenus()
 
-    /// The split view whose sidebar the chrome's toggle shows and hides: the one the window shows.
-    public var sidebarToggle: MountedElement?
+    /// The split view the window shows, whose bar the chrome is: its sidebar's part beside the detail's.
+    public var splitView: MountedElement?
+
+    /// Whether the chrome offers the toggle showing and hiding the split view's sidebar: where the window shows one
+    /// that does not say it offers none.
+    public var showsSidebarToggle = false
 
     /// The chrome of `window` showing `arrangement`.
     public init(window: MountedElement, arrangement: MountedElement?) {
@@ -61,7 +66,8 @@
         buttonBackground = page?.barButtonBackground
         toolbarStyle = page?.toolbarStyle ?? .system
         if let page { menus = page.chromeMenus }
-        sidebarToggle = arrangement?.type == .splitView ? arrangement : nil
+        splitView = arrangement?.type == .splitView ? arrangement : nil
+        showsSidebarToggle = splitView?.offersSidebarToggle ?? false
     }
 
     /// What the application says of itself in the bar: its name, the line under it, and its mark by name.

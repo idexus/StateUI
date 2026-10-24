@@ -52,7 +52,8 @@ final class AnchorsTests: XCTestCase {
         XCTAssertEqual(shown.arrangement?.shown?.id, .manual("split"))
         let chrome = WindowChrome(window: window, arrangement: shown.arrangement?.shown)
         XCTAssertEqual(chrome.title, "Inbox")
-        XCTAssertEqual(chrome.sidebarToggle?.id, .manual("split"))
+        XCTAssertEqual(chrome.splitView?.id, .manual("split"))
+        XCTAssertTrue(chrome.showsSidebarToggle)
     }
 
     /// A tab an anchor holds is the tab: chosen, its stack's top page is the page shown.

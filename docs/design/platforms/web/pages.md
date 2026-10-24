@@ -10,7 +10,8 @@ beneath it. What the bar shows is the host layer's `WindowChrome`
 The bar is a `<header>` with the role of a toolbar, over the window's room -
 none where the page the user sees stands with no bar (`showsNavigationBar`),
 the room then the window's whole height. It
-leads with the split view's toggle where the window shows a split view, the
+leads with the split view's toggle where the window shows a split view that
+offers it (`showsSidebarToggle`), the
 way back where the visible stack offers it, and the leading actions the
 visible page's path declares; the page's title stands in its middle - or the
 view the page, or else its stack, declares in its place (`chromeTitleView`),

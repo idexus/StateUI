@@ -273,6 +273,8 @@ final class AppKitDriver: HostDriver {
         case (.time, let picker as AppKitTimePickerView): return picker.time.propValue
         case (.selectedTab, let tabs as AppKitTabView): return tabs.selectedIndexForTesting.propValue
         case (.showsSidebar, let split as AppKitSplitView): return split.isEffectivelyPresentedForTesting.propValue
+        case (.showsSidebarToggle, let split as AppKitSplitView):
+            return (split.window?.toolbar?.items.contains { $0.itemIdentifier == .toggleSidebar } == true).propValue
         case (.sidebarBackground, let split as AppKitSplitView): return Self.ground(of: split)
         case (.sidebarOverlays, let split as AppKitSplitView): return split.sidebarOverlaysForTesting.propValue
         // Shown: in a window, and neither it nor any view it stands in hidden.

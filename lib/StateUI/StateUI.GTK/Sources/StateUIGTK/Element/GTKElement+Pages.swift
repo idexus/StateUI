@@ -90,9 +90,10 @@ extension GTKElement {
             guard let split = view as? GTKSplitView else { return }
             groundSidebar()
             let shows = element.sidebarIsVisible
-            let showing: (shows: Bool, toggle: () -> Void) = (shows, { [weak self] in
-                self?.changeSidebarVisibility(to: !shows)
-            })
+            // The sidebar's toggle on the detail's bar, where the split view offers it.
+            let showing: (shows: Bool, toggle: () -> Void)? = element.offersSidebarToggle
+                ? (shows, { [weak self] in self?.changeSidebarVisibility(to: !shows) })
+                : nil
             if let sidebar = arranged.first {
                 split.sidebarFrame?.show(sidebar.chrome)
                 sidebar.composeChrome()

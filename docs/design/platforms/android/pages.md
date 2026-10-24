@@ -45,7 +45,8 @@ toolbar's menu, written as
 [menus](menus.md) says, and the menus the path declares behind the overflow
 after them. Its navigation button is the way back on a pushed page
 whose back button is not taken away. On every page of a split view's detail,
-while the sidebar does not stand beside it shown, the navigation button is
+while the sidebar does not stand beside it shown and the split view offers its
+toggle (`offersSidebarToggle`), the navigation button is
 the sidebar's toggle - the sidebar page's picture, Android's menu glyph where
 the page has none - which shows the sidebar, and the way back stands right
 after it: the toolbar lays its own title out before any view it holds, so

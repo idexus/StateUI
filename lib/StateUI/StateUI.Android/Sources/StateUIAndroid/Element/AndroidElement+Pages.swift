@@ -154,11 +154,13 @@ extension AndroidElement {
         }
         var items = shown
         content.menus = Self.menuEntries(page?.chromeMenus.menus ?? [], items: &items)
-        // The sidebar's toggle first while the sidebar does not stand beside the detail shown, then the way back.
+        // The sidebar's toggle first while the sidebar does not stand beside the detail shown, then the way back -
+        // where the split view offers the toggle.
         // Design: docs/design/platforms/android/pages.md#the-bar
         let way: AndroidBarView.Navigation =
             element.visibleBackStack === element ? .back : element.offersClose ? .close : .none
-        if let split = enclosingSplit, let sidebar = split.arranged.first, !split.sidebarStandsBeside {
+        if let split = enclosingSplit, let sidebar = split.arranged.first, !split.sidebarStandsBeside,
+           split.element.offersSidebarToggle {
             content.navigation = .sidebar(HostPicture(sidebar.value(.icon)))
             content.afterNavigation = way
         } else {
@@ -192,7 +194,7 @@ extension AndroidElement {
 
     /// Shows on a split view's sidebar its own bar: what the application says of itself on the sidebar page's path -
     /// its name, the line under it and its mark, else the sidebar page's title - in the colors that path declares,
-    /// and at its end the toggle hiding the sidebar.
+    /// and at its end the toggle hiding the sidebar, where the split view offers it.
     /// Design: docs/design/platforms/android/pages.md#a-split-view
     private func refreshSidebarBar() {
         guard let split = view as? AndroidSplitView, let sidebar = arranged.first else { return }
@@ -205,7 +207,7 @@ extension AndroidElement {
         content.mark = area?.icon
         content.background = colors.background
         content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
-        content.endButton = .sidebar(HostPicture(sidebar.value(.icon)))
+        content.endButton = element.offersSidebarToggle ? .sidebar(HostPicture(sidebar.value(.icon))) : .none
         let bar = split.drawer.bar(taking: AndroidBarView.Words(on: colors.background))
         bar.show(content)
         bar.onEndButton = { [weak self] in self?.changeSidebarVisibility(to: false) }

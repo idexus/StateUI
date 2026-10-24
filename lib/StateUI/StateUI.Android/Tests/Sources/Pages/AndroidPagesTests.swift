@@ -22,6 +22,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testTheSidebarsOwnBarHidesItAndTheDetailsShowsIt", testTheSidebarsOwnBarHidesItAndTheDetailsShowsIt),
             ("testTheSidebarBesideTheDetailMovesWithIt", testTheSidebarBesideTheDetailMovesWithIt),
             ("testAPushedPageKeepsTheSidebarsToggleBeforeTheWayBack", testAPushedPageKeepsTheSidebarsToggleBeforeTheWayBack),
+            ("testAPushedPageShowsOnlyTheWayBackWhereTheSplitViewOffersNoToggle", testAPushedPageShowsOnlyTheWayBackWhereTheSplitViewOffersNoToggle),
             ("testTheSidebarsBarStandsAsHighAsTheDetails", testTheSidebarsBarStandsAsHighAsTheDetails),
             ("testTheSidebarBesideTheDetailStandsApartByALine", testTheSidebarBesideTheDetailStandsApartByALine),
             ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
@@ -368,6 +369,39 @@ final class AndroidPagesTests: XCTestCase {
                 navigation.bar.clicked()
                 XCTAssertTrue(open.wrappedValue, "the toggle shows the sidebar, \(width)")
             }
+        }
+    }
+
+    /// A split view offering its toggle at the detail's root alone - a value from the path - leaves a pushed page
+    /// the way back first, and the root the toggle; the sidebar's own bar shows it as the split view says.
+    func testAPushedPageShowsOnlyTheWayBackWhereTheSplitViewOffersNoToggle() throws {
+        try onMainActor {
+            let path = State(wrappedValue: [1])
+            let host = AndroidRenderer.running {
+                SplitView(State(wrappedValue: false).projectedValue) {
+                    TitledPage(title: "Menu")
+                } detail: {
+                    NavigationStack(path.projectedValue) {
+                        TitledPage(title: "Home")
+                    } destination: { _ in
+                        TitledPage(title: "Deeper")
+                    }
+                }
+                .showsSidebarToggle(path.wrappedValue.isEmpty)
+            }
+            host.layOut(width: 1080, height: 1920)
+            host.runtime.pump.turn()
+            let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
+            let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+            XCTAssertEqual(navigation.bar.content.navigation, .back, "the way back alone")
+            XCTAssertEqual(navigation.bar.content.afterNavigation, .none)
+            XCTAssertEqual(split.drawer.bar.content.endButton, .none, "no toggle on the sidebar's own bar")
+
+            navigation.bar.clicked()
+            host.runtime.pump.turn()
+            XCTAssertEqual(path.wrappedValue, [], "back pops the page")
+            XCTAssertEqual(navigation.bar.content.navigation, .sidebar(nil), "the root offers the toggle")
+            XCTAssertEqual(split.drawer.bar.content.endButton, .sidebar(nil))
         }
     }
 

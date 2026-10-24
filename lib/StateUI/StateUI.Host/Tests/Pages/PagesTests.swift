@@ -453,7 +453,26 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(chrome.actions.overflow.map(\.id), [.manual("more")])
         XCTAssertEqual(chrome.center?.id, .manual("words"), "the page's title view")
         XCTAssertEqual(chrome.background, .string("stack"))
-        XCTAssertNil(chrome.sidebarToggle)
+        XCTAssertNil(chrome.splitView)
+        XCTAssertFalse(chrome.showsSidebarToggle)
+    }
+
+    /// A split view the window shows stands under the chrome, and the chrome offers its sidebar's toggle unless the
+    /// split view says it offers none.
+    func testASplitViewOffersItsToggleUnlessItSaysNot() throws {
+        for (said, offered) in [(nil, true), (.bool(true), true), (.bool(false), false)] as [(HostValue?, Bool)] {
+            let runtime = runtime(node("window", .window, children: [
+                node("split", .splitView, said.map { [.showsSidebarToggle: $0] } ?? [:], children: [
+                    node("sidebar", .page), node("detail", .page),
+                ]),
+            ])) { _ in }
+            let root = try XCTUnwrap(runtime.tree.root)
+
+            let chrome = WindowChrome(window: root, arrangement: root.first(id: .manual("split")))
+            XCTAssertEqual(chrome.splitView?.id, .manual("split"), "\(said as Any)")
+            XCTAssertEqual(chrome.showsSidebarToggle, offered, "\(said as Any)")
+            XCTAssertEqual(chrome.splitView?.offersSidebarToggle, offered, "a host drawing its own bars asks it alike")
+        }
     }
 
     /// A toolbar group of `items`, at `side`, in `order`.

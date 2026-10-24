@@ -76,6 +76,7 @@ final class AndroidElement: NativeElement {
         applyProperties(changed: changed)
         if changed.contains(.isPresented) { configurePopover() }
         if !changed.isDisjoint(with: MountedElement.sidebarMaterials) { groundSidebar() }
+        if changed.contains(.showsSidebarToggle) { refreshBars() }
     }
 
     func leave() {

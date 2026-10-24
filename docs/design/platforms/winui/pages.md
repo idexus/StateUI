@@ -23,7 +23,7 @@ for - a tab chosen, the sidebar shown:
 - the way back is the chrome's own back button, while the visible stack's
   top page can go back;
 - a split view adds the chrome's pane toggle, which shows and hides its
-  sidebar;
+  sidebar, unless it offers none (`showsSidebarToggle`);
 - the groups of actions the visible page declares
   ([a page's actions](../../host/pages.md#a-pages-actions)) stand
   on a command bar at the chrome's edge they declare - the leading one in its

@@ -48,7 +48,8 @@ every render, and written on the header bar of each page shown:
   page has one below it and the page does not refuse it;
 - no bar at all, for a page that hides its navigation bar;
 - a split view's sidebar toggle, at the start of the bar of the page the user
-  sees in its detail, pressed in while the sidebar shows;
+  sees in its detail, pressed in while the sidebar shows - where the split view
+  offers it (`offersSidebarToggle`);
 - for a tabbed view, its switcher beneath the bar, under the chosen tab's
   page's chrome;
 - the bar's colors: a page's header bar is painted in the colors its path

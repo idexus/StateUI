@@ -13,6 +13,11 @@ import CStateUIAndroid
 extension AndroidDriver {
     /// `property` of the bar the page `element` shows stands under; nil where no stack gives that page a bar.
     static func barHolds(_ property: Prop, of element: MountedElement) -> HostValue? {
+        // A split view's name and mark stand on its sidebar's own bar.
+        if element.type == .splitView, [.barTitle, .barIcon].contains(property),
+           let split = (element.native as? AndroidElement)?.view as? AndroidSplitView {
+            return sidebarBarHolds(property, split.drawer.bar)
+        }
         var each = element.visiblePage
         while let found = each, found.type != .navigationStack { each = found.parent }
         guard let bar = ((each?.native as? AndroidElement)?.view as? AndroidNavigationView)?.bar else { return nil }
@@ -59,7 +64,30 @@ extension AndroidDriver {
         }
     }
 
+    /// The application's name or mark on a sidebar's own `bar`: its title, the picture whose pixels its mark shows.
+    private static func sidebarBarHolds(_ property: Prop, _ bar: AndroidBarView) -> HostValue? {
+        if property == .barTitle {
+            return Java.frame {
+                Java.callStaticObject(testBars, barTitle, .object(bar.reference)).map { .string(Java.text($0)) }
+            }
+        }
+        let shown = pictures.first { name in
+            guard let picture = AndroidPictures.bitmap(.file(name)) else { return false }
+            return Java.callStaticBool(testBars, barMarks, .object(bar.reference), .object(picture.reference))
+        }
+        return shown.map { .string($0) }
+    }
+
+    /// Whether the split view's sidebar's own bar shows the toggle at its end.
+    static func sidebarBarOffersToggle(_ split: AndroidSplitView) -> Bool {
+        Java.callStaticBool(testBars, barEndButton, .object(split.drawer.bar.reference))
+    }
+
     private static let testBars = Java.findClass("stateui/android/test/TestBars")
+    private static let barEndButton = Java.staticMethod(testBars, "endButton", "(Landroid/widget/Toolbar;)Z")
+    private static let barTitle = Java.staticMethod(testBars, "title", "(Landroid/widget/Toolbar;)Ljava/lang/String;")
+    private static let barMarks = Java.staticMethod(
+        testBars, "marks", "(Landroid/widget/Toolbar;Landroid/graphics/Bitmap;)Z")
     private static let barNavigation = Java.staticMethod(
         testBars, "navigation", "(Landroid/widget/Toolbar;)Ljava/lang/String;")
     private static let barShown = Java.staticMethod(testBars, "shown", "(Landroid/widget/Toolbar;)Z")

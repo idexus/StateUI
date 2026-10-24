@@ -83,6 +83,7 @@ enum WebRealization {
         .complete(PopoverContract.isPresentedChanged),
         .complete(SplitViewContract.showsSidebar),
         .complete(SplitViewContract.showsSidebarChanged),
+        .complete(SplitViewContract.showsSidebarToggle),
         .partial(SplitViewContract.sidebarBackground,
             missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
         .partial(SplitViewContract.flyoutBackground,

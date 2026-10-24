@@ -168,6 +168,7 @@ enum AppKitRealization {
         .complete(DecorableTextElementContract.textDecorations, on: TextSpanContract.self),
         .complete(TrackingElementContract.tracking, on: TextSpanContract.self),
         .complete(SplitViewContract.showsSidebarChanged),
+        .complete(SplitViewContract.showsSidebarToggle),
         .complete(SplitViewContract.sidebarOverlays),
         .notPlanned(SplitViewContract.flyoutBackground,
             reason: "A Mac sidebar always stands beside the detail: a window too narrow for both hides it."),

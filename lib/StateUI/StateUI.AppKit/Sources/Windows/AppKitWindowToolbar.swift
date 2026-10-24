@@ -37,6 +37,8 @@ struct AppKitToolbarAction {
 @MainActor
 struct AppKitWindowChrome {
     var sidebar: NSSplitViewController?
+    /// Whether the sidebar's toggle stands at the toolbar's start; the sidebar's part stays apart without it.
+    var showsSidebarToggle = true
     var back: AppKitToolbarAction?
     var title: NSView?
     var leadingActions: [[AppKitToolbarAction]] = []
@@ -124,7 +126,8 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         var nextActions: [NSToolbarItem.Identifier: AppKitToolbarAction] = [:]
 
         if chrome.sidebar != nil {
-            nextIdentifiers += [.toggleSidebar, .sidebarTrackingSeparator]
+            if chrome.showsSidebarToggle { nextIdentifiers.append(.toggleSidebar) }
+            nextIdentifiers.append(.sidebarTrackingSeparator)
         }
         if let back = chrome.back {
             nextIdentifiers.append(Self.back)

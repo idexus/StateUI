@@ -6850,6 +6850,9 @@ enum Listings {
         // Where the platform places it for the room: a choice closes it
         // over the page and leaves it open beside it.
         .sidebarOverlays(nav.$menuOverlays)
+        // Whether the bar offers the menu's button - the Split view
+        // sample's switch takes it away.
+        .showsSidebarToggle(nav.$showsMenuButton)
         """#,
         "MainPage.tabs": #"""
         // Sources/Gallery/MainPage.swift
@@ -10162,6 +10165,9 @@ enum Listings {
                 Text("Open the menu - every row in it a view - and narrow the window to lay it over the page.")
 
                 SwitchRow("Menu open", nav.$menuOpen)
+                    .horizontalAlignment(.center)
+
+                SwitchRow("Menu button", nav.$showsMenuButton)
                     .horizontalAlignment(.center)
 
                 // Where the platform places the menu for the room, as the split

@@ -88,9 +88,39 @@
             follows(SplitViewContract.flyoutBackground, "theSidebarFollowsAMaterialStateOverTheDetail") {
                 $0.flyoutBackground($1)
             },
+            offersItsToggle(fromAState: false, "theBarOffersTheSidebarsToggleAsTheTreeSays"),
+            offersItsToggle(fromAState: true, "theBarOffersTheSidebarsToggleAsAStateSays"),
             placeIsHeard(startingOver: true, "theSidebarsPlaceIsHeardOnAStateSayingOver"),
             placeIsHeard(startingOver: false, "theSidebarsPlaceIsHeardOnAStateSayingBeside"),
         ]
+    }
+
+    /// The split view's bar offers no toggle for the sidebar while the split view says so, and offers it once it says
+    /// otherwise - as the tree says it, or from a state handed on as `$x`.
+    @MainActor
+    private static func offersItsToggle(fromAState: Bool, _ name: String) -> ConformanceCase {
+        ConformanceCase(name, proves: [Covered(SplitViewContract.showsSidebarToggle)], needs: [
+            Covered(ButtonContract.clicked),
+        ]) { s in
+            let offered = State(wrappedValue: false)
+            s.start {
+                let split = SplitView(State(wrappedValue: true).projectedValue) {
+                    Text("Sidebar")
+                } detail: {
+                    WideDetail(VStack { Button("Offer").onClicked { offered.wrappedValue = true }.id("offer") })
+                }
+                return fromAState
+                    ? split.showsSidebarToggle(offered.projectedValue)
+                    : split.showsSidebarToggle(offered.wrappedValue)
+            }
+            let split = try s.element(ofType: SplitViewContract.nodeType)
+            try s.settle { try s.held(SplitViewContract.showsSidebarToggle, on: split) == false }
+            s.expect(try s.held(SplitViewContract.showsSidebarToggle, on: split), false, "no toggle while it offers none")
+
+            try s.perform(.activate, on: s.element("offer"))
+            try s.settle { try s.held(SplitViewContract.showsSidebarToggle, on: split) == true }
+            s.expect(try s.held(SplitViewContract.showsSidebarToggle, on: split), true, "the toggle once it offers it")
+        }
     }
 
     /// Where the host stands the sidebar - over the detail or beside it - is heard on the state its place drives,
