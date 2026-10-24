@@ -429,6 +429,7 @@ enum JavaAPI {
     static let colorStateList = Java.findClass("android/content/res/ColorStateList")
     static let colorStateListOf = Java.staticMethod(
         colorStateList, "valueOf", "(I)Landroid/content/res/ColorStateList;")
+    static let getDefaultColor = Java.method(colorStateList, "getDefaultColor", "()I")
 
     // MARK: - java.lang
 

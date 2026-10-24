@@ -16,8 +16,13 @@ final class AndroidLinkView: AndroidTextualView {
     init() {
         super.init { _ in
             let link = Java.new(JavaAPI.textView, JavaAPI.newTextView, .object(AndroidRenderer.context))
-            // Its words in the theme's link colors, which the view then keeps as its own.
-            if let colors = Java.callObject(link.reference, JavaAPI.getLinkTextColors) {
+            // Its words in the theme's link color, dimmed while the link cannot be chosen - the theme's link colors
+            // dim nothing - which the view then keeps as its own.
+            if let theme = Java.callObject(link.reference, JavaAPI.getLinkTextColors) {
+                let argb = Java.callInt(theme, JavaAPI.getDefaultColor)
+                Java.release(local: theme)
+                let colors = Java.callStaticObject(
+                    JavaAPI.views, JavaAPI.textColors, .object(AndroidRenderer.context), .int(argb))
                 Java.call(link.reference, JavaAPI.setTextColors, .object(colors))
                 Java.release(local: colors)
             }

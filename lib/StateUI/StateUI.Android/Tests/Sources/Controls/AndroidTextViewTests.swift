@@ -10,6 +10,7 @@ final class AndroidTextViewTests: XCTestCase {
     static var allTests: [(String, (AndroidTextViewTests) -> () throws -> Void)] {
         [
             ("testATextsSpansAreRunsOfItsWords", testATextsSpansAreRunsOfItsWords),
+            ("testALinkThatCannotBeChosenIsDimmed", testALinkThatCannotBeChosenIsDimmed),
             ("testATextShowsAsManyLinesAsItsBreakAllows", testATextShowsAsManyLinesAsItsBreakAllows),
             ("testWrappedWordsHeldToSomeLinesEndWithAnEllipsis", testWrappedWordsHeldToSomeLinesEndWithAnEllipsis),
             ("testATextsCaseAndLetterSpacingAreItsOwn", testATextsCaseAndLetterSpacingAreItsOwn),
@@ -44,6 +45,25 @@ final class AndroidTextViewTests: XCTestCase {
             rightToLeft.wrappedValue = true
             host.runtime.pump.turn()
             XCTAssertEqual(views.map(sides), [[end, start], [end, start]], "the start at the right")
+        }
+    }
+
+    /// A link that cannot be chosen shows its words dimmed, as the theme dims what cannot be chosen.
+    func testALinkThatCannotBeChosenIsDimmed() {
+        onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    Link("On", destination: "https://www.swift.org")
+                    Link("Off", destination: "https://www.swift.org").isEnabled(false)
+                }
+            }
+            host.layOut()
+            let links = host.views(AndroidLinkView.self)
+            XCTAssertEqual(links.count, 2)
+            let alpha = links.map { UInt32(bitPattern: Java.callInt($0.reference, AndroidDriver.getCurrentTextColor)) >> 24 }
+
+            XCTAssertEqual(alpha[0], 255)
+            XCTAssertLessThan(alpha[1], 200, "the disabled one's words dimmed")
         }
     }
 
