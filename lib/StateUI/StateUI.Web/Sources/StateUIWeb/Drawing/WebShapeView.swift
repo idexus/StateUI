@@ -22,12 +22,10 @@ final class WebShapeView: WebDOMView {
     private let brushes = WebDOMView(vector: "defs")
     private var shown: [WebDOMView] = []
 
-    /// The blur the figure is made of - a box of the page's blur under its color - cut to the figure by a clip path of
-    /// its own geometry; nil where the fill is a paint.
+    /// The blur the figure is made of - a box of the page's blur under its color - cut to the figure by a mask of its
+    /// own path; nil where the fill is a paint.
     /// Design: docs/design/platforms/web/drawing.md#a-figure-made-of-a-material
     private var backdrop: WebDOMView?
-    private let clip = WebDOMView(vector: "clipPath")
-    private let clipPath = WebDOMView(vector: "path")
     private var material = HostMaterial(nil)
 
     private var geometry: Geometry?
@@ -101,7 +99,7 @@ final class WebShapeView: WebDOMView {
         }
         path.attribute("fill-rule", rule)
         path.attribute("transform", placed.flatMap(WebVector.matrix))
-        showBackdrop(drawn, rule: rule, transform: placed.flatMap(WebVector.matrix), size: LayoutSize(width: width, height: height))
+        showBackdrop(drawn, rule: rule, transform: placed.flatMap(WebVector.matrix), width: width, height: height)
         let painted = Rect(x: -lineWidth, y: -lineWidth, width: width + lineWidth * 2, height: height + lineWidth * 2)
         let undone = placed.flatMap(WebVector.inverse).flatMap(WebVector.matrix)
         for gone in shown { gone.release() }
@@ -110,9 +108,9 @@ final class WebShapeView: WebDOMView {
         path.attribute("stroke", outlined ? brush(stroke, "stroke", over: painted, undoing: undone) : "none")
     }
 
-    /// Shows the fill's blur under the figure, cut to the path as it is drawn now; takes it away where the fill is a
-    /// paint.
-    private func showBackdrop(_ drawn: String, rule: String?, transform: String?, size: LayoutSize) {
+    /// Shows the fill's blur under the figure, cut by a mask of the path as it is drawn now - a backdrop filter keeps
+    /// to a mask, and not to a clip path; takes it away where the fill is a paint.
+    private func showBackdrop(_ drawn: String, rule: String?, transform: String?, width: Double, height: Double) {
         guard material.blur != nil else {
             backdrop?.release()
             backdrop = nil
@@ -122,19 +120,18 @@ final class WebShapeView: WebDOMView {
         if backdrop == nil {
             shown.attribute("class", "stateui-shape-backdrop")
             WebRelay.insert(shown.node, into: node, at: 0)
-            clip.attribute("id", "stateui-\(serial)-clip")
-            clip.attribute("clipPathUnits", "userSpaceOnUse")
-            WebRelay.insert(clip.node, into: surface.node, at: 0)
-            WebRelay.insert(clipPath.node, into: clip.node, at: 0)
             backdrop = shown
         }
-        clipPath.attribute("d", drawn)
-        clipPath.attribute("clip-rule", rule)
-        clipPath.attribute("transform", transform)
-        for (name, value) in WebBox(fill: material.paint, material: material).styles(size: size) {
+        for (name, value) in WebBox(fill: material.paint, material: material).styles(
+            size: LayoutSize(width: width, height: height)) {
             shown.style(name, value)
         }
-        shown.style("clip-path", "url(#stateui-\(serial)-clip)")
+        let figure = "<svg xmlns='http://www.w3.org/2000/svg' width='\(WebCSS.number(width))' "
+            + "height='\(WebCSS.number(height))'><path d='\(drawn)'"
+            + (transform.map { " transform='\($0)'" } ?? "") + " fill-rule='\(rule ?? "nonzero")'/></svg>"
+        let mask = "url(\"data:image/svg+xml," + figure.replacing("<", with: "%3C").replacing(">", with: "%3E") + "\")"
+        for name in ["mask-image", "-webkit-mask-image"] { shown.style(name, mask) }
+        for name in ["mask-size", "-webkit-mask-size"] { shown.style(name, "100% 100%") }
     }
 
     /// A brush as SVG paints it over `painted`: a color, or a gradient of its own, its geometry in that room.
@@ -160,8 +157,6 @@ final class WebShapeView: WebDOMView {
 
     override func release() {
         backdrop?.release()
-        clipPath.release()
-        clip.release()
         for each in shown { each.release() }
         path.release()
         brushes.release()

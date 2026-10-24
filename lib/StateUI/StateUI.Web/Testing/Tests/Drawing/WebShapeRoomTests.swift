@@ -50,6 +50,35 @@ final class WebShapeRoomTests: XCTestCase {
         XCTAssertGreaterThan(right[2], right[0], "blue at the right edge: \(right)")
     }
 
+    /// A figure made of a blur is cut to the figure, the filter's blur with it: over a page of one color, the corner of
+    /// an oval's box - outside the oval - shows that color unchanged.
+    func testAFigureMadeOfABlurIsCutToItsFigure() throws {
+        let host = WebRenderer.running {
+            ZStack {
+                Fill(.steelBlue)
+                Ellipse()
+                    .fill(.blur(.thin))
+                    .width(80)
+                    .height(80)
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+            }
+            .width(200)
+            .height(120)
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        host.step()
+        let shape = try XCTUnwrap(host.views(WebShapeView.self).first)
+        let box = (try WebBrowser.evaluate("stateui.box(e).join(',')", on: shape.node) ?? "")
+            .split(separator: ",").compactMap { Double($0) }
+        XCTAssertEqual(box.count, 4)
+
+        let page = pixel(x: box[0] + 150, y: box[1] + 60)
+        XCTAssertEqual(pixel(x: box[0] + 3, y: box[1] + 3), page, "the corner outside the oval: the page's own color")
+        XCTAssertNotEqual(pixel(x: box[0] + 40, y: box[1] + 40), page, "the oval's middle: the blur's color over it")
+    }
+
     /// The window picture's channels at a point of the page.
     private func pixel(x: Double, y: Double) -> [Int] {
         (WebBrowser.ask([("pixel", .points([Point(x: x, y: y)]))]) ?? "").split(separator: ",").compactMap { Int($0) }

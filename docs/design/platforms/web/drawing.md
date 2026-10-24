@@ -73,11 +73,12 @@ blur.
 
 A shape whose fill is a blur stands, under its `<svg>`, a box of the page's
 blur - a `backdrop-filter` under the blur's color and its tint, as a layout's
-box draws one (`WebBox`) - cut to the figure by `clip-path: url(#…)`, which
-names a `<clipPath>` in the shape's own `<svg>` holding the figure's path and
-its transform, so the browser places the cut as it places the path. The path
-then fills nothing; its outline stands over the blur. A page has no glass:
-glass is drawn as the blur as clear as it is.
+box draws one (`WebBox`) - cut to the figure by a mask: an SVG image of the
+figure's path, its transform and its fill rule, the box's own size. A clip
+path does not do: the browser cuts the box's color to it and leaves the
+filter's blur over the whole box. The path then fills nothing; its outline
+stands over the blur. A page has no glass: glass is drawn as the blur as clear
+as it is.
 
 ## A canvas
 
