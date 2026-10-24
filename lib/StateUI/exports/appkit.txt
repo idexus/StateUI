@@ -12,6 +12,7 @@ Button
   lineWidth
   role
   shape
+  showsText
   stroke
   text
   textCase

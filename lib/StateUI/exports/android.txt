@@ -13,6 +13,7 @@ Button
   padding
   role
   shape
+  showsText
   stroke
   text
   textCase
