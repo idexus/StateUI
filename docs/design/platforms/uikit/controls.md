@@ -114,9 +114,11 @@ so its words never run under the arrow, which takes the words' color.
 ## A link
 
 UIKit has no link control of its own. A link is a plain `UIButton`, its title
-in the link color - or the tree's - and underlined, with the link trait, which
-VoiceOver names by its words. Its tap is the button's; the host layer opens
-the address (`host/runtime.md#a-link-chosen`).
+underlined in the configuration's foreground - the link color, or the tree's -
+with the link trait, which VoiceOver names by its words. The color stays the
+configuration's, not the title's own, so the button grays it while the link
+cannot be chosen. Its tap is the button's; the host layer opens the address
+(`host/runtime.md#a-link-chosen`).
 
 ## Accessibility
 

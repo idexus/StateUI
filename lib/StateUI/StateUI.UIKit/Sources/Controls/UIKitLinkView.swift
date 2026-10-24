@@ -32,14 +32,15 @@ final class UIKitLinkView: UIButton {
         fatalError("UIKitLinkView is made in code")
     }
 
-    /// Its words, in `color` - the system's link color where nil - underlined.
+    /// Its words, in `color` - the system's link color where nil - underlined; grayed by the button while it cannot
+    /// be chosen.
     func show(_ text: String, color: UIColor?) {
         words = text
         self.color = color
         var title = AttributedString(text)
-        title.foregroundColor = color ?? .link
         title.uiKit.underlineStyle = .single
         configuration?.attributedTitle = title
+        configuration?.baseForegroundColor = color ?? .link
         accessibilityLabel = text
     }
 
