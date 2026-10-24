@@ -31,11 +31,14 @@ extension UIKitRegistrations {
                 view.setLook { $0.letterSpacing = spacing ?? 0 }
             }
             button.applies(
-                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing) { view, values in
+                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
+                TextAndIconElementContract.showsText) { view, values in
+                let icon = HostPicture(values[ButtonContract.icon], dark: false).flatMap(UIKitRenderer.image)
                 view.setIcon(
-                    HostPicture(values[ButtonContract.icon], dark: false).flatMap(UIKitRenderer.image),
-                    position: values[ButtonContract.iconPosition] ?? .start,
-                    spacing: values[ButtonContract.iconSpacing])
+                    icon, position: values[ButtonContract.iconPosition] ?? .start,
+                    spacing: values[ButtonContract.iconSpacing],
+                    showsText: TextAndIcon.showsText(
+                        values[TextAndIconElementContract.showsText], hasPicture: icon != nil, byDefault: true))
             }
             // The box, and the role's look where the tree draws nothing of its own: the main action filled in the
             // tint, a destructive one's words in the system's red.

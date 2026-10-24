@@ -16,7 +16,7 @@ Text("Draft")
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [MenuItemElement](tiers/MenuItemElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [MenuItemElement](tiers/MenuItemElement.md) · [TextAndIconElement](tiers/TextAndIconElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -53,8 +53,6 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarToggleCont
 <tbody><tr></tr><tr><td rowspan="2"><code>isOn</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: An Android bar shows a setting's state by its on picture alone; behind the overflow, by its check.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>onIcon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>showsText</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">–</td><td align="center">–</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: A Mac shows a toolbar's words as its user sets the whole toolbar, not item by item.<br>UIKit: A UIKit bar button shows its picture or its words, never both.<br>Android Views: cannot read an action's words beside its picture - Android shows them on a screen 480 points wide or more, and this one is narrower</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>onToggled</code> (<code>toggled</code>)</td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
@@ -78,4 +76,14 @@ What every item a user chooses from says - a menu's entry, a toolbar's item, an 
 <tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>keyboardShortcut</code></td><td>property</td><td><code>KeyboardShortcut</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [TextAndIconElement](tiers/TextAndIconElement.md)
+
+What an element showing words and a picture has - a button, a bar's item: whether its words stand beside its picture.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>showsText</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">–</td><td align="center">–</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: A Mac shows a toolbar's words as its user sets the whole toolbar, not item by item.<br>UIKit: A UIKit bar button shows its picture or its words, never both.<br>Android Views: cannot read an action's words beside its picture - Android shows them on a screen 480 points wide or more, and this one is narrower</td></tr></tbody>
 </table>

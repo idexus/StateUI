@@ -10,7 +10,7 @@ public enum ToolbarToggleContract: ElementContract {
     public static let layer: ElementLayer = .structure
 
     /// A setting on the bar is an item a user chooses.
-    public static let tiers: [any Contract.Type] = [MenuItemElementContract.self]
+    public static let tiers: [any Contract.Type] = [MenuItemElementContract.self, TextAndIconElementContract.self]
 
     /// Whether it stands on.
     public static let isOn = ElementProperty<Self, Bool>("isOn", layer: .native)
@@ -18,14 +18,9 @@ public enum ToolbarToggleContract: ElementContract {
     /// The picture it shows while on, in place of its own; unwritten, its own picture both ways.
     public static let onIcon = ElementProperty<Self, ImageSource>("onIcon", layer: .adaptive)
 
-    /// Whether its words stand beside its picture on the bar; an item with no picture shows its words whatever
-    /// this says.
-    public static let showsText = ElementProperty<Self, Bool>(
-        "showsText", layer: .adaptive, travels: false, cleared: false)
-
     /// The user chose it, turning it the other way: the way it turned to.
     public static let toggled = ElementEvent<Self, Bool>("toggled", layer: .native)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [isOn, onIcon, showsText, toggled]
+    public static let members: [any ContractMember] = [isOn, onIcon, toggled]
 }

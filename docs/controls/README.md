@@ -29,7 +29,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 <!-- controls:begin -->
 | Control | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Button](Button.md) | 102 | 58 ✅ · 2 ☑️ · 37 ✓ · 3 – | 56 ✅ · 1 ☑️ · 39 ✓ · 5 – | 73 ✅ · 5 ☑️ · 14 ✓ · 4 – | 83 ✅ · 1 ☑️ · 13 ✓ · 5 – | 68 ✅ · 2 ☑️ · 26 ✓ · 6 – | 78 ✅ · 1 ☑️ · 20 ✓ · 3 – |
+| [Button](Button.md) | 103 | 59 ✅ · 2 ☑️ · 37 ✓ · 3 – | 57 ✅ · 1 ☑️ · 39 ✓ · 5 – | 74 ✅ · 5 ☑️ · 14 ✓ · 4 – | 84 ✅ · 1 ☑️ · 13 ✓ · 5 – | 69 ✅ · 2 ☑️ · 26 ✓ · 6 – | 79 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Canvas](Canvas.md) | 75 | 35 ✅ · 2 ☑️ · 38 ✓ | 34 ✅ · 2 ☑️ · 38 ✓ · 1 – | 59 ✅ · 5 ☑️ · 10 ✓ | 54 ✅ · 15 ✓ · 5 – | 46 ✅ · 1 ☑️ · 22 ✓ · 6 – | 51 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Capsule](Capsule.md) | 79 | 42 ✅ · 2 ☑️ · 35 ✓ | 40 ✅ · 3 ☑️ · 35 ✓ · 1 – | 62 ✅ · 6 ☑️ · 10 ✓ | 58 ✅ · 1 ☑️ · 14 ✓ · 6 – | 49 ✅ · 2 ☑️ · 22 ✓ · 6 – | 54 ✅ · 2 ☑️ · 20 ✓ · 3 – |
 | [CheckBox](CheckBox.md) | 82 | 44 ✅ · 2 ☑️ · 35 ✓ · 1 – | 37 ✅ · 2 ☑️ · 38 ✓ · 5 – | 61 ✅ · 5 ☑️ · 12 ✓ · 3 – | 63 ✅ · 1 ☑️ · 13 ✓ · 5 – | 50 ✅ · 1 ☑️ · 25 ✓ · 6 – | 58 ✅ · 1 ☑️ · 20 ✓ · 3 – |
@@ -64,10 +64,10 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 81 | 43 ✅ · 1 ☑️ · 35 ✓ | 40 ✅ · 2 ☑️ · 36 ✓ · 1 – | 62 ✅ · 5 ☑️ · 11 ✓ | 62 ✅ · 1 ☑️ · 13 ✓ · 4 – | 51 ✅ · 1 ☑️ · 22 ✓ · 7 – | 56 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [WebView](WebView.md) | 87 | 48 ✅ · 2 ☑️ · 36 ✓ · 1 – | 45 ✅ · 2 ☑️ · 38 ✓ · 2 – | 66 ✅ · 5 ☑️ · 12 ✓ · 3 – | 49 ✅ · 13 ✓ · 24 – | 56 ✅ · 1 ☑️ · 24 ✓ · 6 – | 57 ✅ · 1 ☑️ · 20 ✓ · 6 – |
 | [ZStack](ZStack.md) | 80 | 42 ✅ · 1 ☑️ · 35 ✓ | 38 ✅ · 2 ☑️ · 37 ✓ · 1 – | 60 ✅ · 5 ☑️ · 12 ✓ | 61 ✅ · 1 ☑️ · 13 ✓ · 4 – | 49 ✅ · 1 ☑️ · 23 ✓ · 7 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
-| ✅ |  | 1529 | 1444 | 2181 | 2120 | 1773 | 1983 |
+| ✅ |  | 1530 | 1445 | 2182 | 2121 | 1774 | 1984 |
 | ✓ |  | 1250 | 1288 | 390 | 469 | 795 | 685 |
 | – |  | 52 | 96 | 36 | 202 | 226 | 127 |
-| **Met** | 2930 | **2831** | **2828** | **2607** | **2791** | **2794** | **2795** |
+| **Met** | 2931 | **2832** | **2829** | **2608** | **2792** | **2795** | **2796** |
 | 🧩 |  | 0 | 0 | 79 | 79 | 79 | 79 |
 <!-- controls:end -->
 
@@ -142,6 +142,7 @@ Members many elements share, declared once.
 - [MenuItemElement](tiers/MenuItemElement.md) - What every item a user chooses from says - a menu's entry, a toolbar's item, an action or a setting: a caption, a picture, whether it can be chosen, and the keys that choose it.
 - [ActionElement](tiers/ActionElement.md) - What an item that acts has - a menu's entry, a toolbar's button: what choosing it does, and how the platform marks it.
 - [ButtonMenuElement](tiers/ButtonMenuElement.md) - What a button that holds a menu has - a button's, a toolbar button's: how its menu opens, and whether the arrow saying so shows.
+- [TextAndIconElement](tiers/TextAndIconElement.md) - What an element showing words and a picture has - a button, a bar's item: whether its words stand beside its picture.
 - [PageElement](tiers/PageElement.md) - What a page shows about itself where another container presents it as an item - a title and a picture.
 <!-- tiers:end -->
 

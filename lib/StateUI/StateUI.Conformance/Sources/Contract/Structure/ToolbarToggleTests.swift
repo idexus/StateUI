@@ -77,23 +77,6 @@
                 try s.settle { try s.held(MenuItemElementContract.icon, on: s.element("ruler")) == "test_wide.png" }
                 s.expect(try s.held(MenuItemElementContract.icon, on: s.element("ruler")), "test_wide.png", "on, its on picture")
             },
-            ConformanceCase("anItemsWordsStandBesideItsPictureWhereItSaysSo", proves: [
-                Covered(ToolbarToggleContract.showsText),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let words = State(wrappedValue: true)
-                s.start {
-                    Self.page(beside: [Button("Picture alone").onClicked { words.wrappedValue = false }.id("change")],
-                              key: "\(words.wrappedValue)") {
-                        [ToolbarToggle("Ruler", isOn: false).icon("test_dot.png").showsText(words.wrappedValue).id("ruler")]
-                    }
-                }
-                try s.settle { try s.held(ToolbarToggleContract.showsText, on: s.element("ruler")) == true }
-                s.expect(try s.held(ToolbarToggleContract.showsText, on: s.element("ruler")), true)
-
-                try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.held(ToolbarToggleContract.showsText, on: s.element("ruler")) == false }
-                s.expect(try s.held(ToolbarToggleContract.showsText, on: s.element("ruler")), false)
-            },
         ]
     }
 

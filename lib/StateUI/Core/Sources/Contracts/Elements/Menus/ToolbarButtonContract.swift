@@ -12,13 +12,9 @@ public enum ToolbarButtonContract: ElementContract {
     /// A toolbar button is an item a user chooses, and it acts, opens a menu, or both.
     public static let tiers: [any Contract.Type] = [
         MenuItemElementContract.self, ActionElementContract.self, ButtonMenuElementContract.self,
+        TextAndIconElementContract.self,
     ]
 
-    /// Whether its words stand beside its picture on the bar; an item with no picture shows its words whatever
-    /// this says.
-    public static let showsText = ElementProperty<Self, Bool>(
-        "showsText", layer: .adaptive, travels: false, cleared: false)
-
     /// The element's own members.
-    public static let members: [any ContractMember] = [showsText]
+    public static let members: [any ContractMember] = []
 }

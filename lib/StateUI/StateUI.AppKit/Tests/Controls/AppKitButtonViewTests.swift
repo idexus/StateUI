@@ -165,7 +165,7 @@ final class AppKitButtonViewTests: XCTestCase {
     func testAButtonsPaddingKeepsItsPictureClearOfItsEdges() throws {
         stateUIUseApp(OneWindowApplication(page: {
             VStack {
-                Button(icon: ImageSource("test_wide.svg")).contentMode(.fit).width(64).height(64).padding(12)
+                Button().icon(ImageSource("test_wide.svg")).contentMode(.fit).width(64).height(64).padding(12)
                     .background(Color(hex: 0xFFFFFF)).shape(.roundedRectangle(12))
             }
             .horizontalAlignment(.start)
@@ -200,7 +200,7 @@ final class AppKitButtonViewTests: XCTestCase {
     func testATallButtonsBezelIsAsTallAsTheButton() throws {
         let renderer = AppKitRenderer.running {
             VStack {
-                Button(icon: ImageSource("save.png")).width(48).height(48).padding(10)
+                Button().icon(ImageSource("save.png")).width(48).height(48).padding(10)
                 Button("Save")
             }
             .horizontalAlignment(.start)
@@ -434,7 +434,7 @@ final class AppKitButtonViewTests: XCTestCase {
     @MainActor
     func testAnIconAloneIsNeverDrawnLarger() throws {
         let renderer = AppKitRenderer.running {
-            HStack { Button(icon: .icon(.settings)).accessibilityLabel("Settings") }
+            HStack { Button().icon(.icon(.settings)).accessibilityLabel("Settings") }
         }
         defer { renderer.closeForTesting() }
         let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)

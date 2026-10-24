@@ -761,9 +761,10 @@ extension ControlDictionary {
             """#),
 
         (ImageElementContract.self, #"""
-            Button(icon: "trash.png")
+            Button("Delete")
+                .icon("trash.png")
+                .showsText(false)
                 .contentMode(.fit)
-                .accessibilityLabel("Delete")
             """#),
 
         (TintElementContract.self, #"""
@@ -843,6 +844,14 @@ extension ControlDictionary {
                             MenuItem("By date").onClicked { sorted = "By date" }
                         }
                 }
+            """#),
+
+        (TextAndIconElementContract.self, #"""
+            @State var wordsShown = false
+
+            Button("Delete")
+                .icon("trash.png")
+                .showsText($wordsShown)
             """#),
 
         (MenuItemElementContract.self, #"""

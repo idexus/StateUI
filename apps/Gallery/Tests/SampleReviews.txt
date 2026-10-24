@@ -16,7 +16,7 @@ BindingReaderSample.swift 1239ebd325c706fa
 BoundPropertiesSample.swift 52240d3e367abe61
 BrushSample.swift 9bcd94f7f88fe7af
 BuilderSample.swift eda47ffd0dda692b
-ButtonMenuSample.swift 3d0df8a3a98458b5
+ButtonMenuSample.swift d4e17af0531f4452
 ButtonRoleSample.swift 36d33f316a462966
 ButtonSample.swift 07e87a36914e4779
 CanvasSample.swift 52db70adead39b9b
@@ -50,8 +50,8 @@ GridSample.swift c82a3d386f4dc2a6
 HTTPRequestSample.swift 2bcc8ed36ca0c594
 HomeScreenSample.swift 4e9f7b450d84723e
 HostTimeSample.swift 869b30037733de10
-IconButtonSample.swift dd46b2089e13f0cb
-IconSample.swift 4fcdfd60e61dfb97
+IconButtonSample.swift 3becb5bca84feb1e
+IconSample.swift b1a55d5d263b6a6e
 IdentitySample.swift 3161e5c1e7445fbf
 ImageSample.swift 798ac3475ce4ff0a
 InteropActsSample.swift 0db4d28344cff3c4
@@ -107,7 +107,7 @@ ScrollViewSample.swift cf26f19b3729064f
 SearchFieldSample.swift 32903a70f555dea0
 SearchSample.swift 679d1baa31dfcd8b
 SelectableTextSample.swift 32194d184067f26d
-SemanticsSample.swift 11463f1024116848
+SemanticsSample.swift ecf67174aa107fc0
 ShapesSample.swift 5e84d9ac211facd6
 ShareSample.swift ca23e3ade29db45a
 ShortcutSample.swift 613e9bc5911f4fc5
@@ -134,7 +134,7 @@ TickerSample.swift ecca16670e47a404
 TimePickerSample.swift dd3594dfb194e764
 ToolbarLayersSample.swift 1149577eca98f9e5
 ToolbarSample.swift bd590e6516eced9d
-TooltipSample.swift 39cf79ca0fdc2b4d
+TooltipSample.swift 2482095fe75dc4cf
 TouchThroughSample.swift 2f49a42898ac5f63
 TransformSample.swift 42f89ce8b8c4c513
 TwoFingersSample.swift 47512444b7046f28

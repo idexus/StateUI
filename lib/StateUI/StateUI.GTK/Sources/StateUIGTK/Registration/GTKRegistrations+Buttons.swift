@@ -30,11 +30,13 @@ extension GTKRegistrations {
             }
             button.applies(
                 ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
-                ImageElementContract.contentMode) { view, values in
+                ImageElementContract.contentMode, TextAndIconElementContract.showsText) { view, values in
+                let picture = HostPicture(values[ButtonContract.icon], dark: false)
                 view.setPicture(
-                    HostPicture(values[ButtonContract.icon], dark: false),
-                    position: values[ButtonContract.iconPosition] ?? .start,
-                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
+                    picture, position: values[ButtonContract.iconPosition] ?? .start,
+                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit,
+                    showsText: TextAndIcon.showsText(
+                        values[TextAndIconElementContract.showsText], hasPicture: picture != nil, byDefault: true))
             }
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
             // GTK's own shortcut - the one stated, else the role's - and the role's look, libadwaita's classes for the

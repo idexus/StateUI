@@ -23,8 +23,13 @@ final class AndroidButtonView: AndroidTextualView {
     /// The icon, where it stands, how it fills the room, and the picture held for it.
     private var icon = Icon()
 
-    /// Whether the button has words: without them its icon stands alone in the middle.
+    /// Whether the button has words in sight: without them its icon stands alone in the middle.
     private var hasWords = false
+
+    /// The button's words, and whether they stand beside its icon: out of sight, they name it to TalkBack through
+    /// the host layer's words (`AccessibilityWords`).
+    private var words = ""
+    private var showsWords = true
 
     /// What the icon was last shown as, so an unchanged one is not sent again.
     private var shownIcon: Icon.Shown?
@@ -225,7 +230,11 @@ final class AndroidButtonView: AndroidTextualView {
 
     /// The picture beside the words `spacing` points away - the platform's gap for nil - or alone where
     /// there are none, filling its room as `aspect` says.
-    func setIcon(_ source: HostPicture?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
+    func setIcon(_ source: HostPicture?, position: IconPosition, spacing: Double?, aspect: ContentMode, showsText: Bool) {
+        if showsText != showsWords {
+            showsWords = showsText
+            showWords()
+        }
         if source != icon.source {
             letGoOfIcon()
             icon.source = source
@@ -240,8 +249,15 @@ final class AndroidButtonView: AndroidTextualView {
 
     /// The words decide where the icon goes: beside them, or alone in the middle.
     override func setText(_ text: String) {
-        super.setText(text)
-        hasWords = !text.isEmpty
+        words = text
+        showWords()
+    }
+
+    /// The words in sight where they show, else none.
+    private func showWords() {
+        let shown = showsWords ? words : ""
+        super.setText(shown)
+        hasWords = !shown.isEmpty
         showIcon(room: placedSize)
     }
 

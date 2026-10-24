@@ -258,6 +258,16 @@ overflow, a button holding a menu is a submenu under its words
 (`ButtonMenu.inOverflow`): its own action first where its click is its own,
 a line, then its menu's entries.
 
+## Words beside a picture
+
+A button and a bar's item show words and may show a picture
+(`TextAndIconElement`); whether the words stand beside the picture is one
+rule on every host (`TextAndIcon.showsText`): always where there is no
+picture, else as the element says - unsaid, a button's words show and a bar's
+item's do not, as each platform's bar shows its items' pictures alone. Words
+left out still name the element to assistive technology, and a bar's item's
+stand in its tip.
+
 ## The menus of a path
 
 The menu bar a page's window shows is composed from the menu bars its path

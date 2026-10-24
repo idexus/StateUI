@@ -100,6 +100,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testMenuItemElement", testMenuItemElement),
             ("testActionElement", testActionElement),
             ("testButtonMenuElement", testButtonMenuElement),
+            ("testTextAndIconElement", testTextAndIconElement),
             ("testPageElement", testPageElement),
             ("testAWindowsPhaseIsTheHostsOwnOnAWindowAlone", testAWindowsPhaseIsTheHostsOwnOnAWindowAlone),
         ]
@@ -192,6 +193,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testMenuItemElement() throws { try conform(MenuItemElementTests.self) }
     func testActionElement() throws { try conform(ActionElementTests.self) }
     func testButtonMenuElement() throws { try conform(ButtonMenuElementTests.self) }
+    func testTextAndIconElement() throws { try conform(TextAndIconElementTests.self) }
     func testPageElement() throws { try conform(PageElementTests.self) }
 
     /// The host tells a window its activity's phase: closing or minimizing anything else is Android's own.

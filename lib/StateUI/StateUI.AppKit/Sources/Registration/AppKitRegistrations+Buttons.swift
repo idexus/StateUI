@@ -32,7 +32,7 @@ extension AppKitRegistrations {
                 BorderElementContract.stroke, BorderElementContract.lineWidth, VisualElementContract.isEnabled,
                 FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
                 FontElementContract.fontWeight, FontElementContract.textStyle, TrackingElementContract.tracking,
-                ButtonContract.role) { view, values in
+                ButtonContract.role, TextAndIconElementContract.showsText) { view, values in
                 // Each value is read into a name of its own: twelve arguments
                 // of `flatMap` and `??` in one call is more than the type
                 // checker will take.
@@ -40,13 +40,16 @@ extension AppKitRegistrations {
                     .applied(to: values[TextualElementContract.text] ?? "")
                 let source = values[ButtonContract.icon].flatMap { HostPicture($0.propValue) }
                 let icon: NSImage? = source.flatMap { view.picture?($0) }
-                let position: NSControl.ImagePosition = caption.isEmpty
+                // Words left out of sight stay the title, which names the button to assistive technology.
+                let alone = caption.isEmpty || !TextAndIcon.showsText(
+                    values[TextAndIconElementContract.showsText], hasPicture: icon != nil, byDefault: true)
+                let position: NSControl.ImagePosition = alone
                     ? .imageOnly
                     : Self.imagePosition(values[ButtonContract.iconPosition] ?? .start)
                 // Beside words a picture stands at its own size, smaller where the button is; so does an icon alone.
-                let scaling: NSImageScaling = if caption.isEmpty, case .icon? = source {
+                let scaling: NSImageScaling = if alone, case .icon? = source {
                     .scaleProportionallyDown
-                } else if caption.isEmpty {
+                } else if alone {
                     Self.imageScaling(values[ImageElementContract.contentMode] ?? .fit)
                 } else {
                     .scaleProportionallyDown

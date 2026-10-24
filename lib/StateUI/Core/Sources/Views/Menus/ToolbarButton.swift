@@ -34,7 +34,7 @@
 /// it has no `.onClicked`, else from an arrow of its own or held. Standing
 /// alone it says where it stands with `.placement`; in a `ToolbarGroup` it
 /// stands where its group does.
-public struct ToolbarButton: PlacedToolbarItem, MenuItemElement, ActionElement, ButtonMenuElement {
+public struct ToolbarButton: PlacedToolbarItem, MenuItemElement, ActionElement, ButtonMenuElement, TextAndIconElement {
     /// The node this item describes.
     public var node: Node
 
@@ -87,13 +87,6 @@ public struct ToolbarButton: PlacedToolbarItem, MenuItemElement, ActionElement, 
         copy.alone.write(ToolbarGroupContract.hidesWithSidebar, value)
         return copy
     }
-
-    /// Whether the item shows its words beside its picture on the bar.
-    ///
-    /// Without it, an item given an `icon` shows the picture alone, its words
-    /// in its tip and to assistive technology; an item with no picture always
-    /// shows its words.
-    public func showsText(_ value: Bool) -> Modified { setValue(ToolbarButtonContract.showsText, value) }
 
 }
 

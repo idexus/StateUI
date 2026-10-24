@@ -79,7 +79,7 @@ extension WinUIElement {
             }
         }
         if !own.isDisjoint(with: MountedElement.transformProperties) { view.setTransform(element.drawingTransform) }
-        if !own.isDisjoint(with: MountedElement.accessibilityProperties) {
+        if element.changesAccessibility(own) {
             view.setAccessibility(element.accessibilityWords)
         }
         if let layers = view as? WinUIZStackView { layers.placement = element.placement }

@@ -48,9 +48,10 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
             .spacing(12)
 
             HStack {
-                Button(icon: .icon(.more))
+                Button("More")
+                    .icon(.icon(.more))
+                    .showsText(false)
                     .style(look)
-                    .accessibilityLabel("More")
                     .menu {
                         MenuItem("Rename").onClicked { last = "Renamed" }
                         MenuItem("Delete").onClicked { last = "Deleted" }

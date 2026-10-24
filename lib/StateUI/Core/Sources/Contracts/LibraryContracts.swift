@@ -35,6 +35,7 @@
         MenuItemElementContract.self,
         ActionElementContract.self,
         ButtonMenuElementContract.self,
+        TextAndIconElementContract.self,
         PageElementContract.self,
     ]
 

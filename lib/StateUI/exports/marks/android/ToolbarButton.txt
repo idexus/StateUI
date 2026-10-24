@@ -1,3 +1,2 @@
-# revision 5.1
+# revision 6.1
 ToolbarButton: ✅
-ToolbarButton.showsText: does not apply - read an action's words beside its picture - Android shows them on a screen 480 points wide or more, and this one is narrower

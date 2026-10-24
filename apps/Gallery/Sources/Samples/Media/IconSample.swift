@@ -43,8 +43,9 @@ struct IconSample: SampleContent, ExampleContent {
                     .icon(.icon(.delete))
                     .role(.destructive)
 
-                Button(icon: .icon(.settings))
-                    .accessibilityLabel("Settings")
+                Button("Settings")
+                    .icon(.icon(.settings))
+                    .showsText(false)
             }
             .spacing(12)
 

@@ -12,7 +12,7 @@
 /// Its words are always its name - to assistive technology, in its tip and
 /// in the overflow, where it stands checked or not. An item that acts is a
 /// `ToolbarButton`.
-public struct ToolbarToggle: PlacedToolbarItem, MenuItemElement {
+public struct ToolbarToggle: PlacedToolbarItem, MenuItemElement, TextAndIconElement {
     /// The node this item describes.
     public var node: Node
 
@@ -82,7 +82,4 @@ public struct ToolbarToggle: PlacedToolbarItem, MenuItemElement {
         return copy
     }
 
-    /// Whether the item shows its words beside its picture on the bar; an
-    /// item given an `icon` shows the picture alone without it.
-    public func showsText(_ value: Bool) -> Modified { setValue(ToolbarToggleContract.showsText, value) }
 }

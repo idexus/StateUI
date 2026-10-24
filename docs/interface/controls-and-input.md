@@ -12,7 +12,6 @@ The value that gives a control its purpose belongs in its initializer:
 ```swift
 Text("Account")
 Button("Save")
-Button(icon: "trash.png")
 Image("avatar.png")
 ```
 
@@ -500,13 +499,15 @@ Button("Share")
 Image(ImageSource(bytes: downloaded))
 ```
 
-A button carries a picture in one of two ways. When the picture is its whole
-purpose, it goes in the initializer: `Button(icon:)`. Beside a caption it is the
-`icon` modifier, placed by `iconPosition` and set apart by `iconSpacing`:
+A button's picture is its `icon`, beside its words, placed by `iconPosition` and
+set apart by `iconSpacing`. A button standing for its picture alone keeps its
+words and leaves them out of sight with `showsText(false)` - they still name it
+to a screen reader:
 
 ```swift
-Button(icon: "trash.png")
-    .accessibilityLabel("Delete")
+Button("Delete")
+    .icon("trash.png")
+    .showsText(false)
 
 Button("Surprise me")
     .icon("nav_surprise.png")
@@ -515,10 +516,10 @@ Button("Surprise me")
 ```
 
 `.start`, the default, is the side a line of text starts from, so the icon
-follows the layout direction. A button with only an icon is the same control as
-one with a caption - the same outline, shape and pressed state - with
-`contentMode` for how its picture fills it. A picture alone gives it no name for a
-screen reader, so it carries a `accessibilityLabel`.
+follows the layout direction. A button showing its picture alone is the same
+control as one with words beside it - the same outline, shape and pressed
+state - with `contentMode` for how its picture fills it. `showsText` takes a
+state too, `.showsText($wordsShown)`.
 
 ## A place in a sequence
 

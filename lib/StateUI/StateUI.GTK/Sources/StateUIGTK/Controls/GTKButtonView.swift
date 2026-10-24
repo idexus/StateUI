@@ -197,19 +197,26 @@ final class GTKButtonView: GTKView {
 
     /// The box holding the picture and the caption; nil where the button shows one alone.
     var pictureAndCaption: GTKWidget? {
-        guard picture != nil, !caption.isEmpty else { return nil }
+        guard picture != nil, wordsInSight else { return nil }
         return child
     }
 
+    /// Whether the caption stands beside the picture: out of sight, it names the button to assistive technology
+    /// through the host layer's words (`AccessibilityWords`).
+    private var showsWords = true
+
+    /// Whether the button shows its caption beside its picture.
+    private var wordsInSight: Bool { !caption.isEmpty && showsWords }
+
     /// The caption.
     func setText(_ text: String) {
-        let hadWords = !caption.isEmpty
+        let hadWords = wordsInSight
         caption = text
         guard picture != nil else {
             setLabel(text)
             return writeWords()
         }
-        if hadWords == text.isEmpty { return compose() }
+        if hadWords != wordsInSight { return compose() }
         if let label = captionLabel { gtk_label_set_text(label, text) }
     }
 
@@ -228,7 +235,10 @@ final class GTKButtonView: GTKView {
     /// The picture `source` names beside the caption - before it, after it, above or below it, `spacing` apart,
     /// libadwaita's 6 where it is nil - or in its place where there are no words, filling the room as `aspect`
     /// says; none shows the caption alone.
-    func setPicture(_ source: HostPicture?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
+    func setPicture(
+        _ source: HostPicture?, position: IconPosition, spacing: Double?, aspect: ContentMode, showsText: Bool = true
+    ) {
+        showsWords = showsText
         guard let source else {
             guard picture != nil else { return }
             picture = nil
@@ -248,7 +258,7 @@ final class GTKButtonView: GTKView {
     private func compose() {
         guard let picture else { return }
         setChild(nil)
-        let alone = caption.isEmpty
+        let alone = !wordsInSight
         gtk_widget_remove_css_class(widget, alone ? "image-text-button" : "image-button")
         gtk_widget_add_css_class(widget, alone ? "image-button" : "image-text-button")
         guard !alone else {

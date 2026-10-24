@@ -7,7 +7,7 @@
 extension VisualElementProperties {
     /// What a screen reader says this view is.
     ///
-    ///     Button(icon: "bin.png").accessibilityLabel("Delete")
+    ///     Image("bin.png").accessibilityLabel("Bin")
     ///
     /// For a control whose meaning is carried by a picture, a color or where
     /// it sits. On a control that shows its own words it replaces them.

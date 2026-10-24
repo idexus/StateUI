@@ -100,6 +100,7 @@ final class WebConformanceTests: XCTestCase {
     func testMenuItemElement() { conform(MenuItemElementTests.self) }
     func testActionElement() { conform(ActionElementTests.self) }
     func testButtonMenuElement() { conform(ButtonMenuElementTests.self) }
+    func testTextAndIconElement() { conform(TextAndIconElementTests.self) }
     func testPageElement() { conform(PageElementTests.self) }
 
     /// Runs `family` on the Web, and holds its verdicts to the family's file of the Web's marks.

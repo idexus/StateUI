@@ -11,10 +11,11 @@ extension ButtonProperties {
     }
 
     /// The picture beside the caption - a file among the application's image
-    /// resources, by name; see `Image`. A button with an icon and no caption is
-    /// `Button(icon:)`.
+    /// resources, by name; see `Image`. A button standing for its picture
+    /// alone keeps its words, which name it to assistive technology:
     ///
     ///     Button("Surprise me").icon("nav_surprise.png")
+    ///     Button("Delete").icon("trash.png").showsText(false)
     public func icon(_ value: ImageSource) -> Modified {
         setValue(ButtonContract.icon, value)
     }
@@ -61,26 +62,13 @@ extension ButtonProperties where Self: View {
 /// `.onClicked(gate: .ignoreWhileRunning) { items = try await load() }` - and
 /// the interface goes on updating while it is suspended.
 public struct Button: ElementView, TextualElement, TrackingElement, FontElement, PaddingElement, BorderElement,
-    ImageElement, ButtonProperties, ButtonMenuElement, FocusElement {
+    ImageElement, ButtonProperties, ButtonMenuElement, TextAndIconElement, FocusElement {
     /// The node this control describes.
     public var node: Node
 
     /// An empty one - what a `Style<Button>` is written against.
     public init() {
         node = Node(contract: ButtonContract.self)
-    }
-
-    /// A button whose content is an icon, with no caption: the picture is what
-    /// gives it its purpose.
-    ///
-    ///     Button(icon: "trash.png")
-    ///     Button(icon: ImageSource(light: "trash.png", dark: "trash_dark.png"))
-    ///
-    /// The same button as one with a caption - the same outline, shape and
-    /// pressed state - with `.contentMode` for how its picture fills it.
-    public init(icon: ImageSource) {
-        node = Node(contract: ButtonContract.self)
-        node.write(ButtonContract.icon, icon)
     }
 
     /// A button captioned `text`.

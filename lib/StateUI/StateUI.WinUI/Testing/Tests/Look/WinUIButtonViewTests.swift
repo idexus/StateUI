@@ -177,7 +177,7 @@ final class WinUIButtonViewTests: XCTestCase {
             ] {
                 let host = WinUIRenderer.running {
                     HStack {
-                        Button(icon: "test_wide.png")
+                        Button().icon("test_wide.png")
                             .contentMode(aspect)
                             .background(.transparent)
                             .lineWidth(0)

@@ -94,6 +94,7 @@
         MenuItemElementTests.self,
         ActionElementTests.self,
         ButtonMenuElementTests.self,
+        TextAndIconElementTests.self,
         PageElementTests.self,
     ]
 }

@@ -28,6 +28,7 @@ extension AppKitDriver {
             throw DriverCannot("read a heading's level", because: "AppKit marks a heading, not its level")
         case .tooltip: return view.toolTip.propValue
         case .isSelectable where view is AppKitTextView: return (view as! AppKitTextView).isSelectable.propValue
+        case .showsText where view is NSButton: return ((view as! NSButton).imagePosition != .imageOnly).propValue
         case .keyboardShortcut where view is NSButton:
             let button = view as! NSButton
             return AppKitKeys.shortcut(key: button.keyEquivalent, modifiers: button.keyEquivalentModifierMask)?.propValue

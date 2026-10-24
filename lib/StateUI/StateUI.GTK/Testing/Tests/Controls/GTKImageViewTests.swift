@@ -187,7 +187,7 @@ final class GTKImageViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     Button("Share").icon(.icon(.share)).textColor(Color(hex: 0xFF0000))
-                    Button(icon: .icon(.settings)).textColor(Color(hex: 0xFF0000))
+                    Button().icon(.icon(.settings)).textColor(Color(hex: 0xFF0000))
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)

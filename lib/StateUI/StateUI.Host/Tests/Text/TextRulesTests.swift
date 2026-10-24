@@ -9,6 +9,16 @@ import XCTest
 /// letters, words typed past their bound, a selection in a toolkit's units, and a picker's choice.
 @MainActor
 final class TextRulesTests: XCTestCase {
+    /// Words stand beside a picture as the element says - unsaid, a button's do and a bar's item's do not - and
+    /// always where there is no picture.
+    func testWordsStandBesideAPictureAsTheElementSays() {
+        XCTAssertTrue(TextAndIcon.showsText(nil, hasPicture: true, byDefault: true), "a button's words, unsaid")
+        XCTAssertFalse(TextAndIcon.showsText(nil, hasPicture: true, byDefault: false), "a bar's item's, unsaid")
+        XCTAssertFalse(TextAndIcon.showsText(false, hasPicture: true, byDefault: true))
+        XCTAssertTrue(TextAndIcon.showsText(true, hasPicture: true, byDefault: false))
+        XCTAssertTrue(TextAndIcon.showsText(false, hasPicture: false, byDefault: true), "no picture to stand alone")
+    }
+
     /// The words are given in their case where the words or the case changed, and the look where the font or the
     /// color did; nothing where nothing of them changed - though the whole look is there to read.
     func testAnElementsWordsAndLookAreReadWhereTheyChanged() throws {

@@ -31,23 +31,6 @@
                 s.settle { heard.values.count == 2 }
                 s.expect(heard.values, ["save", "delete"], "on the bar and in its overflow alike")
             },
-            ConformanceCase("anItemsWordsStandBesideItsPictureWhereItSaysSo", proves: [
-                Covered(ToolbarButtonContract.showsText),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let words = State(wrappedValue: true)
-                s.start {
-                    Self.page(beside: [Button("Picture alone").onClicked { words.wrappedValue = false }.id("change")],
-                              key: "\(words.wrappedValue)") {
-                        [ToolbarButton("Save").icon("test_dot.png").showsText(words.wrappedValue).id("save")]
-                    }
-                }
-                try s.settle { try s.held(ToolbarButtonContract.showsText, on: s.element("save")) == true }
-                s.expect(try s.held(ToolbarButtonContract.showsText, on: s.element("save")), true)
-
-                try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.held(ToolbarButtonContract.showsText, on: s.element("save")) == false }
-                s.expect(try s.held(ToolbarButtonContract.showsText, on: s.element("save")), false)
-            },
         ]
     }
 

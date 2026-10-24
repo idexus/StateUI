@@ -659,6 +659,38 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertNil(presence("plain"), "as its view stands of itself")
     }
 
+    /// A button whose words stand out of sight beside its picture is named by them, unless the author names it; its
+    /// words, its picture and whether they show put its words for assistive technology on its view again.
+    @MainActor
+    func testWordsOutOfSightNameTheButton() throws {
+        let (tree, _) = Self.tree()
+        func button(_ id: String, _ properties: [Prop: HostValue]) -> HostPatch {
+            var button = HostPatch(id: .manual(id), type: .button)
+            button.properties = properties
+            return button
+        }
+        var root = HostPatch(id: .manual("root"), type: .vStack)
+        root.children = .arranged([
+            button("alone", [.text: .string("Delete"), .icon: .string("trash.png"), .showsText: .bool(false)]),
+            button("named", [
+                .text: .string("Delete"), .icon: .string("trash.png"), .showsText: .bool(false),
+                .accessibilityLabel: .string("Bin"),
+            ]),
+            button("beside", [.text: .string("Delete"), .icon: .string("trash.png")]),
+            button("bare", [.text: .string("Delete"), .showsText: .bool(false)]),
+        ])
+        tree.apply(root, complete: true)
+        func element(_ id: String) throws -> MountedElement { try XCTUnwrap(tree.root?.first(id: .manual(id))) }
+
+        XCTAssertEqual(try element("alone").accessibilityWords.label, "Delete")
+        XCTAssertEqual(try element("named").accessibilityWords.label, "Bin", "the author's words first")
+        XCTAssertNil(try element("beside").accessibilityWords.label, "words in sight name it themselves")
+        XCTAssertNil(try element("bare").accessibilityWords.label, "with no picture its words show")
+        XCTAssertTrue(try element("alone").changesAccessibility([.text]))
+        XCTAssertTrue(try element("beside").changesAccessibility([.showsText]))
+        XCTAssertFalse(try element("beside").changesAccessibility([.text]), "words in sight change nothing of it")
+    }
+
     /// Whether a view is an element to assistive technology: as its presence says, else as the view stood of itself
     /// before any word reached it - never as the last word left it.
     func testAViewIsAnElementAsItsPresenceSaysElseAsItStoodOfItself() {

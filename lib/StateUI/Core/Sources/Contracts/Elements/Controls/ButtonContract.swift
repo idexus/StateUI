@@ -14,7 +14,7 @@ public enum ButtonContract: ElementContract {
     public static let tiers: [any Contract.Type] = [
         ViewContract.self, TextualElementContract.self, TrackingElementContract.self, FontElementContract.self,
         PaddingElementContract.self, BorderElementContract.self, ImageElementContract.self, FocusElementContract.self,
-        ButtonMenuElementContract.self,
+        ButtonMenuElementContract.self, TextAndIconElementContract.self,
     ]
 
     /// The button was pressed and released on it.

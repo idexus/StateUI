@@ -37,6 +37,7 @@ extension AndroidDriver {
         case (.isOn, let toggle as AndroidToggleView): return toggle.isOn.propValue
         case (.isPresented, let popover as AndroidPopoverView): return popover.windowShows.propValue
         case (.role, let button as AndroidButtonView): return button.role.map(\.propValue) ?? HostValue.nothing
+        case (.showsText, let button as AndroidButtonView): return (!button.text.isEmpty).propValue
         case (.showsMenuArrow, let button as AndroidButtonView):
             return Java.callStaticBool(Self.testMenus, Self.showsMenuArrow, .object(button.reference)).propValue
         case (.value, let slider as AndroidSliderView): return slider.value.propValue

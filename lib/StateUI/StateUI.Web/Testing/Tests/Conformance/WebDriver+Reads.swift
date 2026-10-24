@@ -24,6 +24,9 @@ extension WebDriver {
         case (.keyboardShortcut, _): return try shortcut(on: e)
         case (.showsMenuArrow, _):
             return try WebBrowser.truth("e.dataset.menu === 'opens' && !e.hasAttribute('data-bare')", on: e).propValue
+        case (.showsText, is WebButtonView):
+            let shown = "((s) => !!s && getComputedStyle(s).display !== 'none')(e.querySelector(':scope > span'))"
+            return try WebBrowser.truth(shown, on: e).propValue
         case (.role, _):
             let roles: [String: ButtonRole] = ["primary": .primary, "cancel": .cancel, "destructive": .destructive]
             return try WebBrowser.evaluate("e.dataset.role ?? null", on: e).flatMap { roles[$0] }?.propValue

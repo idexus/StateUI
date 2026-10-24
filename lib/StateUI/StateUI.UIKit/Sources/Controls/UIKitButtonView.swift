@@ -50,11 +50,24 @@ final class UIKitButtonView: UIButton {
         fatalError("UIKitButtonView is made in code")
     }
 
+    /// The button's words, and whether they stand beside its picture: out of sight, they name it to VoiceOver
+    /// through the host layer's words (`AccessibilityWords`).
+    private var words = ""
+    private var showsWords = true
+
     /// The button's words.
     func setText(_ text: String) {
-        configuration?.title = text.isEmpty ? nil : text
+        words = text
+        showWords()
         showLook()
     }
+
+    private func showWords() {
+        configuration?.title = words.isEmpty || !showsWords ? nil : words
+    }
+
+    /// Whether the words stand in sight.
+    var showsWordsForTesting: Bool { configuration?.title != nil }
 
     /// Changes the words' look; what it leaves unsaid is the button's own.
     func setLook(_ change: (inout TextLook) -> Void) {
@@ -62,9 +75,11 @@ final class UIKitButtonView: UIButton {
         showLook()
     }
 
-    /// The icon, where it stands beside the words, and the room between them.
-    func setIcon(_ icon: UIImage?, position: IconPosition, spacing: Double?) {
+    /// The icon, where it stands beside the words, the room between them, and whether the words stand beside it.
+    func setIcon(_ icon: UIImage?, position: IconPosition, spacing: Double?, showsText: Bool) {
         configuration?.image = icon
+        showsWords = showsText
+        showWords()
         configuration?.imagePlacement = switch position {
         case .start: .leading
         case .top: .top

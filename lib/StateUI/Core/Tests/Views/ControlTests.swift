@@ -145,7 +145,9 @@ final class ControlTests: XCTestCase {
                     .showsMenuArrow(false)),
 
             ControlCase("IconButton", source: "Button.swift",
-                Button(icon: "tab_list.png")
+                Button("List")
+                    .icon("tab_list.png")
+                    .showsText(false)
                     .contentMode(.fit)
                     .onClicked {}),
 

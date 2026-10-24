@@ -35,9 +35,10 @@ struct SemanticsSample: SampleContent, ExampleContent {
 
             HStack {
                 VStack {
-                    // A picture and nothing else. To anybody not looking at it,
+                    // A picture and no words. To anybody not looking at it,
                     // this control has no name at all.
-                    Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                    Button()
+                        .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                         .style(.iconButton)
                         .accessibilityIdentifier("semantics.bare")
                         .contentMode(.fit)
@@ -216,7 +217,8 @@ struct SemanticsSample: SampleContent, ExampleContent {
     /// makes a modifier written under a condition cost the property and not
     /// the control.
     private var describedButton: some View {
-        let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+        let button = Button()
+            .icon(ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
             .style(.iconButton)
             .accessibilityIdentifier("semantics.described")
             .contentMode(.fit)

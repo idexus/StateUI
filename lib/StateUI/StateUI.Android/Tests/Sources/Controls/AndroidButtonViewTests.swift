@@ -55,7 +55,7 @@ final class AndroidButtonViewTests: XCTestCase {
     func testAnIconAloneFitsTheRoomInsideThePadding() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                Button(icon: "test_wide.png").width(40).height(40).padding(8).horizontalAlignment(.start)
+                Button().icon("test_wide.png").width(40).height(40).padding(8).horizontalAlignment(.start)
             }
             host.layOut()
             let button = try XCTUnwrap(host.views(AndroidButtonView.self).first)
@@ -275,7 +275,7 @@ final class AndroidButtonViewTests: XCTestCase {
             let host = AndroidRenderer.running(reducesMotion: true) {
                 HStack {
                     Button("Share").menu { MenuItem("Mail") }.padding(horizontal: 16, vertical: 8)
-                    Button(icon: .icon(.more)).menu { MenuItem("Mail") }.padding(horizontal: 16, vertical: 8)
+                    Button().icon(.icon(.more)).menu { MenuItem("Mail") }.padding(horizontal: 16, vertical: 8)
                 }
                 .horizontalAlignment(.start)
             }
@@ -424,7 +424,7 @@ final class AndroidButtonViewTests: XCTestCase {
     func testAnIconAloneIsDrawnInTheWordsColor() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                Button(icon: .icon(.settings)).textColor(Color(hex: 0xFF0000))
+                Button().icon(.icon(.settings)).textColor(Color(hex: 0xFF0000))
                     .horizontalAlignment(.start).verticalAlignment(.start)
             }
             host.layOut()

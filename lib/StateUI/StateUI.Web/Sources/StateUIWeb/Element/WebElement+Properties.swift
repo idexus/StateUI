@@ -62,7 +62,7 @@ extension WebElement {
             }
         }
         if !own.isDisjoint(with: MountedElement.transformProperties) { view.setTransform(element.drawingTransform) }
-        if !own.isDisjoint(with: MountedElement.accessibilityProperties) { view.setAccessibility(element.accessibilityWords) }
+        if element.changesAccessibility(own) { view.setAccessibility(element.accessibilityWords) }
         if let layers = view as? WebLayoutView, layers.arrangement == .layers { layers.setPlacement(element.placement) }
     }
 

@@ -75,9 +75,15 @@ final class WinUIButtonView: WinUIView {
         show()
     }
 
+    /// Whether the caption stands beside the picture: out of sight, it names the button to Narrator through the host
+    /// layer's words (`AccessibilityWords`).
+    private var showsWords = true
+
     /// The picture beside the caption - the files it may stand in (`PictureArithmetic.files`), none for none -
-    /// where it stands, how far from the words (nil for WinUI's own gap), and how it fills the button alone.
-    func setIcon(_ icon: [String], position: IconPosition, spacing: Double?, aspect: ContentMode) {
+    /// where it stands, how far from the words (nil for WinUI's own gap), how it fills the button alone, and whether
+    /// the caption stands beside it.
+    func setIcon(_ icon: [String], position: IconPosition, spacing: Double?, aspect: ContentMode, showsText: Bool) {
+        showsWords = showsText
         look.icon = icon
         look.position = position
         look.spacing = spacing
@@ -93,16 +99,17 @@ final class WinUIButtonView: WinUIView {
 
     /// Writes what the button shows: all of it where its shape changed, else the words in their place.
     private func show() {
+        let inSight = showsWords ? words : ""
         var next = look
-        next.hasWords = !words.isEmpty
+        next.hasWords = !inSight.isEmpty
         guard next != shown else {
-            stateui_winui_button_set_words(handle, words)
+            stateui_winui_button_set_words(handle, inSight)
             return
         }
         shown = next
         bounded = nil
         stateui_winui_button_set_content(
-            handle, words, WinUIStrings.lines(next.icon), next.position.rawValue, next.spacing ?? -1,
+            handle, inSight, WinUIStrings.lines(next.icon), next.position.rawValue, next.spacing ?? -1,
             next.aspect.rawValue, next.lineBreak?.wraps ?? false, next.lineBreak?.truncates ?? false)
     }
 

@@ -18,11 +18,13 @@ extension AndroidRegistrations {
             button.property(TrackingElementContract.tracking) { view, spacing in view.setLetterSpacing(spacing ?? 0) }
             button.applies(
                 ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
-                ImageElementContract.contentMode) { view, values in
+                ImageElementContract.contentMode, TextAndIconElementContract.showsText) { view, values in
+                let icon = HostPicture(values[ButtonContract.icon], dark: false)
                 view.setIcon(
-                    HostPicture(values[ButtonContract.icon], dark: false),
-                    position: values[ButtonContract.iconPosition] ?? .start,
-                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
+                    icon, position: values[ButtonContract.iconPosition] ?? .start,
+                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit,
+                    showsText: TextAndIcon.showsText(
+                        values[TextAndIconElementContract.showsText], hasPicture: icon != nil, byDefault: true))
             }
             button.applies(
                 BorderElementContract.shape, BorderElementContract.stroke,

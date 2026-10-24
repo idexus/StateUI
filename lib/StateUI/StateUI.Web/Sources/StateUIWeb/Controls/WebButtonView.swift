@@ -39,10 +39,19 @@ final class WebButtonView: WebDOMView, WebWordsView {
         attribute("data-bare", shows ? nil : "")
     }
 
+    /// Whether the words stand beside the picture; out of sight, they name the button through the host layer's
+    /// words (`AccessibilityWords`).
+    private var showsWords = true
+
     func setText(_ text: String) {
         self.text = text
         WebRelay.setText(words.node, text)
-        attribute("data-alone", text.isEmpty && picture != nil ? "" : nil)
+        showAlone()
+    }
+
+    /// The picture alone where there is one and the words show not.
+    private func showAlone() {
+        attribute("data-alone", picture != nil && (text.isEmpty || !showsWords) ? "" : nil)
     }
 
     /// How the words break across lines and where they stop; nil for one line, the browser's own.
@@ -52,12 +61,13 @@ final class WebButtonView: WebDOMView, WebWordsView {
     }
 
     /// The picture beside the words - before them, after, above or below, `spacing` apart, 8 where nil - or alone,
-    /// filling the button as `aspect` says; none shows the words alone.
-    func setIcon(_ source: ImageSource?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
+    /// filling the button as `aspect` says, where the words show not; none shows the words alone.
+    func setIcon(_ source: ImageSource?, position: IconPosition, spacing: Double?, aspect: ContentMode, showsText: Bool) {
+        showsWords = showsText
         guard let source = HostPicture(source, dark: false) else {
             picture?.release()
             picture = nil
-            attribute("data-alone", nil)
+            showAlone()
             return
         }
         let shown = picture ?? WebImageView()
@@ -72,7 +82,7 @@ final class WebButtonView: WebDOMView, WebWordsView {
         }
         style("flex-direction", direction)
         style("gap", WebCSS.pixels(spacing ?? 8))
-        attribute("data-alone", text.isEmpty ? "" : nil)
+        showAlone()
     }
 
     /// A button is a button of itself.

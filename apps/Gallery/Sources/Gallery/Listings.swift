@@ -1534,7 +1534,9 @@ enum Listings {
                 }
 
                 HStack {
-                    Button(icon: .icon(.more))
+                    Button("More")
+                        .icon(.icon(.more))
+                        .showsText(false)
                         .style(look)
                         .menu {
                             MenuItem("Rename").onClicked { last = "Renamed" }
@@ -4727,6 +4729,7 @@ enum Listings {
         @State private var side = IconPosition.start
         @State private var gap = 8.0
         @State private var wide = false
+        @State private var words = true
 
         static let sides: [IconPosition] = [.start, .top, .end, .bottom]
 
@@ -4736,7 +4739,10 @@ enum Listings {
                 DebugInfoLabel()
 
                 HStack {
-                    Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                    // Its words name it to a screen reader; the picture stands alone.
+                    Button("Media")
+                        .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                        .showsText(false)
                         .style(.iconButton)
                         .contentMode(.fit)
                         .width(64)
@@ -4747,7 +4753,9 @@ enum Listings {
                         .onPressed { pressed = true }
                         .onReleased { pressed = false }
 
-                    Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+                    Button("Layout")
+                        .icon(ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+                        .showsText(false)
                         .style(.iconButton)
                         .contentMode(.fit)
                         .width(64)
@@ -4763,6 +4771,7 @@ enum Listings {
                 // between them as the slider says - together, however wide.
                 Button("Media")
                     .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                    .showsText($words)
                     .iconPosition(side)
                     .iconSpacing(gap)
                     .horizontalAlignment(wide ? .fill : .center)
@@ -4777,6 +4786,7 @@ enum Listings {
                     .maximum(24)
 
                 SwitchRow("Full width", $wide)
+                SwitchRow("Its words", $words)
             }
         }
         """#,
@@ -4815,7 +4825,9 @@ enum Listings {
                         .icon(.icon(.delete))
                         .role(.destructive)
 
-                    Button(icon: .icon(.settings))
+                    Button("Settings")
+                        .icon(.icon(.settings))
+                        .showsText(false)
                 }
 
                 SectionTitle("Made as bytes")
@@ -9568,9 +9580,10 @@ enum Listings {
 
                 HStack {
                     VStack {
-                        // A picture and nothing else. To anybody not looking at it,
+                        // A picture and no words. To anybody not looking at it,
                         // this control has no name at all.
-                        Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                        Button()
+                            .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                             .style(.iconButton)
                             .contentMode(.fit)
                             .width(64)
@@ -9701,7 +9714,8 @@ enum Listings {
         /// makes a modifier written under a condition cost the property and not
         /// the control.
         private var describedButton: some View {
-            let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+            let button = Button()
+                .icon(ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
                 .style(.iconButton)
                 .contentMode(.fit)
                 .width(64)
@@ -11371,14 +11385,18 @@ enum Listings {
                 HStack {
                     // A button that is only a picture says what it does
                     // to the eye under the pointer.
-                    Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                    Button("Media")
+                        .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                        .showsText(false)
                         .style(.iconButton)
                         .contentMode(.fit)
                         .width(48)
                         .height(48)
                         .tooltip(detailed ? "Opens the pictures, films and sounds" : "Media")
 
-                    Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+                    Button("Layout")
+                        .icon(ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+                        .showsText(false)
                         .style(.iconButton)
                         .contentMode(.fit)
                         .width(48)

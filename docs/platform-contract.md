@@ -466,7 +466,7 @@ Every control, and every part an application, its windows and its pages are made
 
 | Control | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Button](controls/Button.md) | 102 | 58 ✅ · 2 ☑️ · 37 ✓ · 3 – | 56 ✅ · 1 ☑️ · 39 ✓ · 5 – | 73 ✅ · 5 ☑️ · 14 ✓ · 4 – | 83 ✅ · 1 ☑️ · 13 ✓ · 5 – | 68 ✅ · 2 ☑️ · 26 ✓ · 6 – | 78 ✅ · 1 ☑️ · 20 ✓ · 3 – |
+| [Button](controls/Button.md) | 103 | 59 ✅ · 2 ☑️ · 37 ✓ · 3 – | 57 ✅ · 1 ☑️ · 39 ✓ · 5 – | 74 ✅ · 5 ☑️ · 14 ✓ · 4 – | 84 ✅ · 1 ☑️ · 13 ✓ · 5 – | 69 ✅ · 2 ☑️ · 26 ✓ · 6 – | 79 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Canvas](controls/Canvas.md) | 75 | 35 ✅ · 2 ☑️ · 38 ✓ | 34 ✅ · 2 ☑️ · 38 ✓ · 1 – | 59 ✅ · 5 ☑️ · 10 ✓ | 54 ✅ · 15 ✓ · 5 – | 46 ✅ · 1 ☑️ · 22 ✓ · 6 – | 51 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Capsule](controls/Capsule.md) | 79 | 42 ✅ · 2 ☑️ · 35 ✓ | 40 ✅ · 3 ☑️ · 35 ✓ · 1 – | 62 ✅ · 6 ☑️ · 10 ✓ | 58 ✅ · 1 ☑️ · 14 ✓ · 6 – | 49 ✅ · 2 ☑️ · 22 ✓ · 6 – | 54 ✅ · 2 ☑️ · 20 ✓ · 3 – |
 | [CheckBox](controls/CheckBox.md) | 82 | 44 ✅ · 2 ☑️ · 35 ✓ · 1 – | 37 ✅ · 2 ☑️ · 38 ✓ · 5 – | 61 ✅ · 5 ☑️ · 12 ✓ · 3 – | 63 ✅ · 1 ☑️ · 13 ✓ · 5 – | 50 ✅ · 1 ☑️ · 25 ✓ · 6 – | 58 ✅ · 1 ☑️ · 20 ✓ · 3 – |
@@ -501,10 +501,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 81 | 43 ✅ · 1 ☑️ · 35 ✓ | 40 ✅ · 2 ☑️ · 36 ✓ · 1 – | 62 ✅ · 5 ☑️ · 11 ✓ | 62 ✅ · 1 ☑️ · 13 ✓ · 4 – | 51 ✅ · 1 ☑️ · 22 ✓ · 7 – | 56 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [WebView](controls/WebView.md) | 87 | 48 ✅ · 2 ☑️ · 36 ✓ · 1 – | 45 ✅ · 2 ☑️ · 38 ✓ · 2 – | 66 ✅ · 5 ☑️ · 12 ✓ · 3 – | 49 ✅ · 13 ✓ · 24 – | 56 ✅ · 1 ☑️ · 24 ✓ · 6 – | 57 ✅ · 1 ☑️ · 20 ✓ · 6 – |
 | [ZStack](controls/ZStack.md) | 80 | 42 ✅ · 1 ☑️ · 35 ✓ | 38 ✅ · 2 ☑️ · 37 ✓ · 1 – | 60 ✅ · 5 ☑️ · 12 ✓ | 61 ✅ · 1 ☑️ · 13 ✓ · 4 – | 49 ✅ · 1 ☑️ · 23 ✓ · 7 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
-| ✅ |  | 1529 | 1444 | 2181 | 2120 | 1773 | 1983 |
+| ✅ |  | 1530 | 1445 | 2182 | 2121 | 1774 | 1984 |
 | ✓ |  | 1250 | 1288 | 390 | 469 | 795 | 685 |
 | – |  | 52 | 96 | 36 | 202 | 226 | 127 |
-| **Met** | 2930 | **2831** | **2828** | **2607** | **2791** | **2794** | **2795** |
+| **Met** | 2931 | **2832** | **2829** | **2608** | **2792** | **2795** | **2796** |
 | 🧩 |  | 0 | 0 | 79 | 79 | 79 | 79 |
 
 ### Application structure
@@ -585,6 +585,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [MenuItemElement](controls/tiers/MenuItemElement.md) | `icon`, `isEnabled`, `keyboardShortcut`, `text` | 4 |
 | [ActionElement](controls/tiers/ActionElement.md) | `onClicked` (`clicked`), `role` | 2 |
 | [ButtonMenuElement](controls/tiers/ButtonMenuElement.md) | `menuKind`, `showsMenuArrow` | 2 |
+| [TextAndIconElement](controls/tiers/TextAndIconElement.md) | `showsText` | 1 |
 | [PageElement](controls/tiers/PageElement.md) | `icon`, `title` | 2 |
 
 ### Elements
@@ -629,9 +630,8 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TextField](controls/TextField.md) | `isPassword`, `submitLabel`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ · 1 ☑️ · 1 – | 4 ✅ | 3 ✅ · 1 – | 1 ✅ · 2 ☑️ | 2 ✅ · 1 ☑️ · 1 – | 3 ✅ |
 | [TextSpan](controls/TextSpan.md) | `background` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ · 1 ✓ · 4 – | 2 ✅ | 5 ✅ · 1 ✓ | 2 ✅ | 4 ✅ · 1 ✓ | 2 ✅ · 3 – |
-| [ToolbarButton](controls/ToolbarButton.md) | `showsText` | 1 | 1 – | 1 – |  | 1 ✅ | 1 ✅ | 1 ✅ |
 | [ToolbarGroup](controls/ToolbarGroup.md) | `hidesWithSidebar`, `isEnabled`, `order`, `part`, `position` | 5 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
-| [ToolbarToggle](controls/ToolbarToggle.md) | `isOn`, `onIcon`, `showsText`, `onToggled` (`toggled`) | 4 | 3 ✅ · 1 – | 3 ✅ · 1 – | 2 ✅ · 1 ☑️ | 4 ✅ | 4 ✅ | 4 ✅ |
+| [ToolbarToggle](controls/ToolbarToggle.md) | `isOn`, `onIcon`, `onToggled` (`toggled`) | 3 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 ✅ | 7 ✅ | 7 ✅ | 5 ✅ |
 | [Window](controls/Window.md) | `activated`, `background`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
 <!-- members:end -->

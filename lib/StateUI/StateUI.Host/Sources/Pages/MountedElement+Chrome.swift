@@ -55,7 +55,7 @@ extension MountedElement {
 
     /// Whether this action's words stand on its bar: beside its picture where it says so, and always where it has none.
     public var showsActionWords: Bool {
-        HostPicture(value(.icon)) == nil || value(.showsText)?.bool == true
+        TextAndIcon.showsText(value(.showsText)?.bool, hasPicture: HostPicture(value(.icon)) != nil, byDefault: false)
     }
 
     /// The colors this element's bar is painted in, and what stands on it in: each the nearest declared on its path,

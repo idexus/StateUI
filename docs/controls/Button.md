@@ -13,7 +13,7 @@ Button("Pressed \(count) times")
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextualElement](tiers/TextualElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TrackingElement](tiers/TrackingElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [ImageElement](tiers/ImageElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md) · [ButtonMenuElement](tiers/ButtonMenuElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextualElement](tiers/TextualElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TrackingElement](tiers/TrackingElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [ImageElement](tiers/ImageElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md) · [ButtonMenuElement](tiers/ButtonMenuElement.md) · [TextAndIconElement](tiers/TextAndIconElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -32,13 +32,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (102)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>58 ✅ · 2 ☑️ · 37 ✓ · 3 –</td><td><code>NSButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 39 ✓ · 5 –</td><td><code>UIButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>73 ✅ · 5 ☑️ · 14 ✓ · 4 –</td><td><code>Button</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>83 ✅ · 1 ☑️ · 13 ✓ · 5 –</td><td><code>Button</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>68 ✅ · 2 ☑️ · 26 ✓ · 6 –</td><td><code>GtkButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>78 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;button&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (103)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>59 ✅ · 2 ☑️ · 37 ✓ · 3 –</td><td><code>NSButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>57 ✅ · 1 ☑️ · 39 ✓ · 5 –</td><td><code>UIButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>74 ✅ · 5 ☑️ · 14 ✓ · 4 –</td><td><code>Button</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>84 ✅ · 1 ☑️ · 13 ✓ · 5 –</td><td><code>Button</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>69 ✅ · 2 ☑️ · 26 ✓ · 6 –</td><td><code>GtkButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>79 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;button&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ButtonContract.swift`.
@@ -315,4 +315,13 @@ What a button that holds a menu has - a button's, a toolbar button's: how its me
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>menuKind</code></td><td>property</td><td><code>ButtonMenuKind</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>showsMenuArrow</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [TextAndIconElement](tiers/TextAndIconElement.md)
+
+What an element showing words and a picture has - a button, a bar's item: whether its words stand beside its picture.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>showsText</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>

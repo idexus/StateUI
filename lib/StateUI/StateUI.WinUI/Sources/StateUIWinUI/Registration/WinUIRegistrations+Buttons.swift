@@ -31,11 +31,13 @@ extension WinUIRegistrations {
             }
             button.applies(
                 ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
-                ImageElementContract.contentMode) { view, values in
+                ImageElementContract.contentMode, TextAndIconElementContract.showsText) { view, values in
+                let picture = HostPicture(values[ButtonContract.icon], dark: false)
                 view.setIcon(
-                    WinUIPictures.lines(HostPicture(values[ButtonContract.icon], dark: false)),
-                    position: values[ButtonContract.iconPosition] ?? .start,
-                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
+                    WinUIPictures.lines(picture), position: values[ButtonContract.iconPosition] ?? .start,
+                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit,
+                    showsText: TextAndIcon.showsText(
+                        values[TextAndIconElementContract.showsText], hasPicture: picture != nil, byDefault: true))
             }
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
             // WinUI's own accelerator - the one stated, else the role's - pressing the button while its window is in

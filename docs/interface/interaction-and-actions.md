@@ -671,16 +671,16 @@ Down. `.onKeyPressed(.escape, gate:
 rests on it:
 
 ```swift
-Button(icon: "trash.png")
-    .accessibilityLabel("Delete")
+Button("Delete")
+    .icon("trash.png")
+    .showsText(false)
     .tooltip("Moves the file to the bin")
 ```
 
 The Mac, Windows, Linux and the Web show it after their own delay, and Android
 after a long press too. An iPhone and an iPad show none, so nothing a view
 needs to be used is said only in its tooltip. A tooltip is no
-accessible name: a button that is only a picture still carries an
-`accessibilityLabel`.
+accessible name: a button showing its picture alone is named by its words.
 
 ## Accessibility and automation
 

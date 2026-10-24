@@ -20,7 +20,8 @@
     /// The identifier whatever drives the application finds the element by; nil where it gives none.
     public var identifier: String?
 
-    /// What the element is called; nil for its view's own words.
+    /// What the element is called - as the author says, else the words it leaves out of sight beside its picture;
+    /// nil for its view's own words.
     public var label: String?
 
     /// What the element does, said after its label; nil where it says nothing.
@@ -76,7 +77,7 @@ extension MountedElement {
     /// kind, a value, an action, a heading - or answers a tap; else as its view stands of itself.
     /// Design: docs/design/host/tree.md#what-assistive-technology-meets
     public var accessibilityWords: AccessibilityWords {
-        let (label, hint) = (string(.accessibilityLabel), string(.accessibilityHint))
+        let (label, hint) = (string(.accessibilityLabel) ?? wordsOutOfSight, string(.accessibilityHint))
         let (role, said) = (value(.accessibilityRole).flatMap(AccessibilityRole.init(propValue:)), string(.accessibilityValue))
         let actions = value(.accessibilityActions).flatMap([String].init(propValue:)) ?? []
         let headingLevel = max(0, value(.accessibilityHeading)?.enumeration ?? 0)
@@ -93,6 +94,23 @@ extension MountedElement {
         return AccessibilityWords(
             identifier: string(.accessibilityIdentifier), label: label, hint: hint, role: role, value: said,
             actions: actions, headingLevel: headingLevel, presence: presence)
+    }
+
+    /// The words an element showing words and a picture leaves out of sight (`TextAndIcon`), which name it; nil where
+    /// they show, or it has none.
+    var wordsOutOfSight: String? {
+        guard value(.showsText)?.bool == false, HostPicture(value(.icon)) != nil, let words = string(.text),
+              !words.isEmpty
+        else { return nil }
+        return words
+    }
+
+    /// Whether a change to `changed` puts the element's words for assistive technology on its view again: to one of
+    /// them, to whether its words show beside its picture, or - its words out of sight naming it - to its words or
+    /// its picture.
+    public func changesAccessibility(_ changed: Set<Prop>) -> Bool {
+        !changed.isDisjoint(with: Self.accessibilityProperties) || changed.contains(.showsText)
+            || (value(.showsText)?.bool == false && !changed.isDisjoint(with: [.text, .icon]))
     }
 
     /// What assistive technology says for this element and all it holds, in reading order - the name of a row a

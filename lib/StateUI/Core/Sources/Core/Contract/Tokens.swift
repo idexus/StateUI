@@ -123,7 +123,7 @@ extension NodeType {
     static let selectionMode = ItemsViewContract.selectionMode.token
     static let shape = BorderElementContract.shape.token
     static let showsClearButton = TextFieldContract.showsClearButton.token
-    static let showsText = ToolbarButtonContract.showsText.token
+    static let showsText = TextAndIconElementContract.showsText.token
     static let columns = GridContract.columns.token
     static let columnSpacing = GridContract.columnSpacing.token
     static let iconPosition = ButtonContract.iconPosition.token

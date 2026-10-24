@@ -22,7 +22,7 @@ Text("\(count) items")
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [MenuItemElement](tiers/MenuItemElement.md) · [ActionElement](tiers/ActionElement.md) · [ButtonMenuElement](tiers/ButtonMenuElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [MenuItemElement](tiers/MenuItemElement.md) · [ActionElement](tiers/ActionElement.md) · [ButtonMenuElement](tiers/ButtonMenuElement.md) · [TextAndIconElement](tiers/TextAndIconElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -55,11 +55,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarButtonCont
 
 ## ToolbarButton's own members
 
-<table>
-<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>showsText</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">–</td><td align="center">–</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: A Mac shows a toolbar's words as its user sets the whole toolbar, not item by item.<br>UIKit: A UIKit bar button shows its picture or its words, never both.<br>Android Views: cannot read an action's words beside its picture - Android shows them on a screen 480 points wide or more, and this one is narrower</td></tr></tbody>
-</table>
+ToolbarButton declares no members of its own.
 
 ## From [AutomationElement](tiers/AutomationElement.md)
 
@@ -106,4 +102,14 @@ What a button that holds a menu has - a button's, a toolbar button's: how its me
 <tr><td colspan="9">AppKit: only through the host's own: activate on ToolbarButton: the host's toolbar entry called, no toolbar item touched<br>UIKit: UIKit's bar offers no arrow part: a split bar button opens its menu held.<br>Android Views: An Android bar's split or held button stands as its action, its menu behind the overflow.<br>WinUI 3: A WinUI command bar's button has no arrow part: a split one opens its menu held.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>showsMenuArrow</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: A UIKit bar button shows no arrow: its menu opens from its tap or its hold.<br>Android Views: An Android bar's action shows no arrow: its menu opens from its touch.<br>WinUI 3: A WinUI command bar's button shows no arrow: its flyout opens from its click.</td></tr></tbody>
+</table>
+
+## From [TextAndIconElement](tiers/TextAndIconElement.md)
+
+What an element showing words and a picture has - a button, a bar's item: whether its words stand beside its picture.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>showsText</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">–</td><td align="center">–</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: A Mac shows a toolbar's words as its user sets the whole toolbar, not item by item.<br>UIKit: A UIKit bar button shows its picture or its words, never both.<br>Android Views: cannot read an action's words beside its picture - Android shows them on a screen 480 points wide or more, and this one is narrower</td></tr></tbody>
 </table>

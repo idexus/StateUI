@@ -129,6 +129,7 @@ extension UIKitDriver {
         case .icon: return configuration.image?.accessibilityIdentifier.map { .string($0) }
         case .lineBreak: return lineBreak(configuration.titleLineBreakMode).propValue
         case .showsMenuArrow: return button.showsMenuMark.propValue
+        case .showsText: return button.showsWordsForTesting.propValue
         case .role:
             let roles: [UIButton.Role: ButtonRole] = [.primary: .primary, .cancel: .cancel, .destructive: .destructive]
             return roles[button.role].map(\.propValue) ?? HostValue.nothing
