@@ -8,10 +8,10 @@ CheckBox.layoutDirection: ✅
 DatePicker.accessibilityValue: ✅
 Ellipse.ignoresInput: ✅
 Ellipse.scaleY: ✓ read scaleY of Ellipse: the host's own transform, checked against the layer it composed itself
-Fill.background: ✅
+Fill.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 Grid.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Grid.isEnabled: ✅
-HStack.background: ✅
+HStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 Image.style: ✅
 Image.translationY: ✓ read translationY of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.pivotX: ✓ read pivotX of ItemsView: the host's own transform, checked against the layer it composed itself

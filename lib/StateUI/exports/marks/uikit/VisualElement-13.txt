@@ -55,4 +55,4 @@ VStack.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every 
 VStack.isEnabled: ✅
 WebView.hidesChildrenFromAccessibility: ✅
 ZStack.accessibilityHint: ✅
-ZStack.background: ✅
+ZStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.

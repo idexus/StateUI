@@ -37,7 +37,7 @@ ProgressBar.minimumWidth: ✅
 ProgressBar.scaleX: ✓ read scaleX of ProgressBar: the host's own transform, checked against the layer it composed itself
 Rectangle.hidesChildrenFromAccessibility: ✅
 ScrollView.accessibilityLabel: ✅
-ScrollView.background: ✅
+ScrollView.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 SearchField.pivotY: ✓ read pivotY of SearchField: the host's own transform, checked against the layer it composed itself
 Separator.pivotY: ✓ read pivotY of Separator: the host's own transform, checked against the layer it composed itself
 Slider.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.

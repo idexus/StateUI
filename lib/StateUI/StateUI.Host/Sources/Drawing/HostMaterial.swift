@@ -50,6 +50,16 @@
         }
     }
 
+    /// The material as a host draws it where its glass cannot stand: the blur standing in for the glass, its tint
+    /// laid over it; any other material is itself.
+    public var withoutGlass: HostMaterial {
+        HostMaterial(paint: paint, blur: blur, glass: nil, standIn: standIn)
+    }
+
+    private init(paint: HostValue?, blur: Blur.Thickness?, glass: Glass?, standIn: HostValue?) {
+        (self.paint, self.blur, self.glass, self.standIn) = (paint, blur, glass, standIn)
+    }
+
     /// Whether the tree says nothing: the platform's own, or no background.
     public var isEmpty: Bool {
         paint == nil && blur == nil

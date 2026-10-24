@@ -10,7 +10,7 @@ Ellipse.isEnabled: ✓ tap on Ellipse: the view's listening handed the recognize
 Ellipse.zIndex: ✅
 Fill.pivotY: ✓ read pivotY of Fill: the host's own transform, checked against the layer it composed itself
 Grid.accessibilityRole: ✅
-Grid.background: ✅
+Grid.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 HStack.pivotY: ✓ read pivotY of HStack: the host's own transform, checked against the layer it composed itself
 Image.accessibilityLabel: ✅
 ItemsView.opacity: ✅

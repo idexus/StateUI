@@ -31,7 +31,7 @@ ProgressBar.accessibilityActionPerformed: ✅
 ProgressBar.accessibilityActions: ✅
 Rectangle.ignoresInput: ✅
 Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.background: ✅
+ScrollView.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 SearchField.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Separator.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Slider.opacity: ✅

@@ -21,7 +21,7 @@ ItemsView.height: ✅
 ItemsView.scale: ✓ read scale of ItemsView: the host's own transform, checked against the layer it composed itself
 ItemsView.width: ✅
 LayoutEngine.accessibilityLabel: ✅
-LayoutEngine.background: ✅
+LayoutEngine.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 Line.pivotX: ✓ read pivotX of Line: the host's own transform, checked against the layer it composed itself
 Map.accessibilityValue: ✅
 Path.layoutDirection: ✅
@@ -55,4 +55,4 @@ VStack.accessibilityLabel: ✅
 VStack.layoutDirection: ✅
 WebView.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 ZStack.accessibilityRole: ✅
-ZStack.background: ✅
+ZStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.

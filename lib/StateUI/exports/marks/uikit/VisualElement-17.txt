@@ -54,6 +54,6 @@ TextField.ignoresInput: ✅
 TextField.scaleY: ✓ read scaleY of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.layoutDirection: ✅
 VStack.accessibilityValue: ✅
-VStack.background: ✅
+VStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 WebView.pivotY: ✓ read pivotY of WebView: the host's own transform, checked against the layer it composed itself
 ZStack.accessibilityAdjusted: ✅

@@ -278,7 +278,10 @@ host, never a capsule, though a toolkit's control rounds only corners; a
 `Capsule` shape is a rectangle drawn with `BoxArithmetic.capsule`, a radius
 past any room - in a display's pixels too - which the rectangle's own drawing
 fits to half its shorter side, so its ends round whole at every size without
-a host asking its size; and the
+a host asking its size; an outline is a rounded rectangle, its corners
+clockwise (`BoxArithmetic.roundedCorners`), but for an oval of two lengths -
+a circle is one, half its side round - which a toolkit shaping a view by its
+corners alone, as glass is, cannot draw; and the
 outline is drawn one wide where the tree gives it a color and no width, and
 not at all without a color. A fill is read as the tree
 sends it (`HostBrush`): a bare color is one color, a gradient's stops stand

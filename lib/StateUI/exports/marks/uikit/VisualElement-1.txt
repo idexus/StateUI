@@ -11,7 +11,7 @@ Fill.accessibilityRole: ✅
 Grid.opacity: ✅
 Grid.rotationX: ✓ read rotationX of Grid: the host's own transform, checked against the layer it composed itself
 HStack.accessibilityRole: ✅
-HStack.background: ✅
+HStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 Image.pivotY: ✓ read pivotY of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.accessibilityActionPerformed: ✅
 ItemsView.accessibilityActions: ✅

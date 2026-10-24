@@ -54,8 +54,12 @@ struct UIKitBox {
             let shown = backdropView ?? UIKitBackdropView()
             if backdropView == nil { view.insertSubview(shown, at: 0) }
             backdropView = shown
-            shown.show(material)
-            shown.lay(material.glass == nil ? fill : UIKitBrush(), stroke: stroke, width: width, over: bounds, cut: outline)
+            shown.frame = bounds
+            let corners = BoxArithmetic.roundedCorners(of: outline, width: bounds.width, height: bounds.height)
+            shown.show(material, as: corners.map { .rounded($0) }
+                ?? .cut(outline.path(in: CGRect(origin: .zero, size: bounds.size)), evenOdd: false))
+            let wash = shown.showsGlass ? UIKitBrush() : fill
+            shown.lay(wash, stroke: stroke, width: width, over: bounds, along: outline)
         } else {
             backdropView?.removeFromSuperview()
             backdropView = nil

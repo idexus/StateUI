@@ -142,7 +142,9 @@ the stand-in, taking a pair a typed member encoded again as the half of the
 theme in force (`HostThemes.current`). Each host draws the first its toolkit
 has - glass, the blur, the color - and one that blurs nothing paints the
 paint laid over the stand-in as a color with an alpha lies over another
-(`painted`). A view's background is cut to its shape; a window's lies under
+(`painted`); where a figure is one its glass cannot take, a host draws the
+material without its glass (`withoutGlass`) - the blur standing in for it,
+its tint over it. A view's background is cut to its shape; a window's lies under
 everything it draws, the desktop showing through it where the host can show
 it.
 

@@ -65,8 +65,7 @@ final class UIKitShapeView: UIView, UIKitSteppable {
     func paint(fill material: HostMaterial, stroke: UIKitBrush, outline: Outline) {
         var outline = outline
         outline.width = ShapeArithmetic.lineWidth(outline.width)
-        // A blur's tint is painted over it; a glass's is the glass's own.
-        let fill = UIKitBrush(material.glass == nil ? material.paint : nil)
+        let fill = UIKitBrush(material.paint)
         guard material != self.material || fill != self.fill || stroke != self.stroke || outline != self.outline
         else { return }
         (self.material, self.fill, self.stroke, self.outline) = (material, fill, stroke, outline)
@@ -92,15 +91,19 @@ final class UIKitShapeView: UIView, UIKitSteppable {
         defer { CATransaction.commit() }
 
         let outlined = !stroke.isEmpty && outline.width > 0
-        let shaped = path(outlined: outlined)
-        showBackdrop(cut: shaped)
-        fillLayer = paint(fill, over: shaped, stroked: false, reusing: fillLayer)
+        let room = room(outlined: outlined)
+        let shaped = path(in: room)
+        showBackdrop(cut: shaped, in: room)
+        // A blur's tint is painted over it; a glass's is the glass's own.
+        let wash = backdrop?.showsGlass == true ? UIKitBrush() : fill
+        fillLayer = paint(wash, over: shaped, stroked: false, reusing: fillLayer)
         strokeLayer = paint(outlined ? stroke : UIKitBrush(), over: shaped, stroked: true, reusing: strokeLayer)
     }
 
-    /// The fill's blur or glass under the figure, cut to its path; none where the fill is a paint.
+    /// The fill's blur or glass under the figure drawn in `room` - glass the rounded rectangle the figure is, a blur
+    /// and any other glass cut to its path; none where the fill is a paint.
     /// Design: docs/design/platforms/uikit/drawing.md#a-figure-made-of-a-material
-    private func showBackdrop(cut shaped: (path: CGPath, evenOdd: Bool)?) {
+    private func showBackdrop(cut shaped: (path: CGPath, evenOdd: Bool)?, in room: CGRect) {
         guard let shaped, material.blur != nil else {
             backdrop?.removeFromSuperview()
             backdrop = nil
@@ -109,13 +112,25 @@ final class UIKitShapeView: UIView, UIKitSteppable {
         let shown = backdrop ?? UIKitBackdropView()
         if backdrop == nil { insertSubview(shown, at: 0) }
         backdrop = shown
-        shown.show(material)
-        shown.frame = bounds
-        let cut = shown.layer.mask as? CAShapeLayer ?? CAShapeLayer()
-        cut.frame = CGRect(origin: .zero, size: bounds.size)
-        cut.path = shaped.path
-        cut.fillRule = shaped.evenOdd ? .evenOdd : .nonZero
-        shown.layer.mask = cut
+        let corners = material.glass == nil ? nil : rounded(in: room)
+        shown.frame = corners == nil ? bounds : room
+        shown.show(material, as: corners.map { .rounded($0) } ?? .cut(shaped.path, evenOdd: shaped.evenOdd))
+    }
+
+    /// The corners, clockwise from the top left, of the rounded rectangle the figure is in `room`: a rectangle's,
+    /// an oval's where it is a circle; nil for an oval of two lengths, a geometry of its own, or a turned figure.
+    private func rounded(in room: CGRect) -> [Double]? {
+        switch geometry {
+        case .rectangle(let radii, transform: nil): Self.corners(radii, in: room)
+        case .ellipse(transform: nil):
+            BoxArithmetic.roundedCorners(of: .ellipse, width: room.width, height: room.height)
+        default: nil
+        }
+    }
+
+    /// A rectangle's radii in `room`: none past half its shorter side.
+    private static func corners(_ radii: [Double], in room: CGRect) -> [Double] {
+        radii.map { BoxArithmetic.fitted($0.isFinite ? max(0, $0) : 0, width: room.width, height: room.height) }
     }
 
     /// The layer painting `brush` over the path - inside it, or along it - made anew or kept.
@@ -162,18 +177,18 @@ final class UIKitShapeView: UIView, UIKitSteppable {
         return painted
     }
 
-    /// The path for the view's room: a rectangle and an ellipse fill it, half their outline in from its edges; a
-    /// geometry of the shape's own is placed in it. Whether it fills by the even-odd rule.
-    private func path(outlined: Bool) -> (path: CGPath, evenOdd: Bool)? {
+    /// The room a rectangle and an ellipse fill: the view's, half their outline in from its edges.
+    private func room(outlined: Bool) -> CGRect {
         let inset = outlined ? outline.width / 2 : 0
-        let room = bounds.insetBy(dx: min(inset, bounds.width / 2), dy: min(inset, bounds.height / 2))
+        return bounds.insetBy(dx: min(inset, bounds.width / 2), dy: min(inset, bounds.height / 2))
+    }
+
+    /// The path for the view: a rectangle and an ellipse fill `room`; a geometry of the shape's own is placed in the
+    /// view. Whether it fills by the even-odd rule.
+    private func path(in room: CGRect) -> (path: CGPath, evenOdd: Bool)? {
         switch geometry {
         case .rectangle(let radii, let transform):
-            let limit = min(room.width, room.height) / 2
-            let corners = radii.map { radius in
-                let kept = min(radius.isFinite ? max(0, radius) : 0, limit)
-                return CGSize(width: kept, height: kept)
-            }
+            let corners = Self.corners(radii, in: room).map { CGSize(width: $0, height: $0) }
             return (Self.moved(.rounded(room, corners: corners), by: transform), false)
         case .ellipse(let transform):
             return (Self.moved(CGPath(ellipseIn: room, transform: nil), by: transform), false)

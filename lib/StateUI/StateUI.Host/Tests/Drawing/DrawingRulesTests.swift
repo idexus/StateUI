@@ -56,6 +56,20 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertNil(clear.paint)
     }
 
+    /// Glass taken for the blur standing in for it keeps its tint and its stand-in, as the tree's own reading of it
+    /// does; any other material is itself.
+    @MainActor
+    func testGlassStandsInAsItsBlur() throws {
+        let glass = Material.glass(.clear.tint(Color(red: 0, green: 0, blue: 255)))
+        let blur = HostMaterial(glass.propValue.resolvingTheme()).withoutGlass
+
+        XCTAssertNil(blur.glass)
+        XCTAssertEqual(blur.blur, .ultraThin)
+        XCTAssertEqual(blur.paint, blue)
+        XCTAssertEqual(blur, HostMaterial(glass.withoutGlass.propValue.resolvingTheme()))
+        XCTAssertEqual(HostMaterial(red).withoutGlass, HostMaterial(red))
+    }
+
     /// A host that blurs nothing paints the paint laid over the stand-in: a color with an alpha tints it, an
     /// opaque one covers it, and no paint leaves the stand-in alone.
     @MainActor
@@ -154,6 +168,17 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(BoxArithmetic.cornerRadius(of: .capsule, width: 100, height: 60), 30, "it follows the size")
         XCTAssertEqual(BoxArithmetic.cornerRadius(of: .capsule, width: 30, height: 80), 15, "a tall one's ends")
         XCTAssertEqual(BoxArithmetic.cornerRadius(of: .ellipse, width: 100, height: 20), 0, "an oval, no capsule")
+    }
+
+    /// An outline is a rounded rectangle, its corners clockwise from the top left, as far as it rounds them - a
+    /// circle's half its side - and an oval of two lengths none at all.
+    func testAnOutlineIsTheRoundedRectangleItRounds() {
+        XCTAssertEqual(BoxArithmetic.roundedCorners(of: .rectangle, width: 100, height: 20), [0, 0, 0, 0])
+        XCTAssertEqual(
+            BoxArithmetic.roundedCorners(of: .roundedRectangle(30), width: 100, height: 20), [10, 10, 10, 10])
+        XCTAssertEqual(BoxArithmetic.roundedCorners(of: .capsule, width: 30, height: 80), [15, 15, 15, 15])
+        XCTAssertEqual(BoxArithmetic.roundedCorners(of: .ellipse, width: 64, height: 64), [32, 32, 32, 32], "a circle")
+        XCTAssertNil(BoxArithmetic.roundedCorners(of: .ellipse, width: 96, height: 48), "an oval of two lengths")
     }
 
     /// An outline is a rectangle where the tree asks none, a rounded one's radius never below nothing; it is drawn

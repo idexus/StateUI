@@ -9,7 +9,7 @@ DatePicker.isEnabled: ✅
 DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own transform, checked against the layer it composed itself
 Ellipse.isAccessibilityHidden: ✅
 Fill.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-Fill.background: ✅
+Fill.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 Grid.pivotX: ✓ read pivotX of Grid: the host's own transform, checked against the layer it composed itself
 HStack.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 HStack.isEnabled: ✅
@@ -52,4 +52,4 @@ WebView.maximumWidth: ✅
 WebView.minimumHeight: ✅
 WebView.minimumWidth: ✅
 WebView.scaleX: ✓ read scaleX of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.background: ✅
+ZStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.

@@ -12,7 +12,7 @@ DatePicker.scale: ✓ read scale of DatePicker: the host's own transform, checke
 DatePicker.width: ✅
 Ellipse.hidesChildrenFromAccessibility: ✅
 Fill.accessibilityLabel: ✅
-Fill.background: ✅
+Fill.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 Grid.pivotY: ✓ read pivotY of Grid: the host's own transform, checked against the layer it composed itself
 HStack.accessibilityLabel: ✅
 HStack.layoutDirection: ✅

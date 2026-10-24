@@ -58,7 +58,7 @@ TextField.minimumWidth: ✅
 TextField.scaleX: ✓ read scaleX of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.background: – UIKit's time picker keeps no background color: one written reads back as none.
 VStack.accessibilityRole: ✅
-VStack.background: ✅
+VStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 WebView.pivotX: ✓ read pivotX of WebView: the host's own transform, checked against the layer it composed itself
 ZStack.accessibilityActionPerformed: ✅
 ZStack.accessibilityActions: ✅

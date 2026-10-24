@@ -86,15 +86,16 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
         let shown = ground?.view ?? UIKitBackdropView()
         if ground == nil { view.insertSubview(shown, at: 0) }
         ground = (shown, material)
-        shown.show(material)
         layGround()
     }
 
     /// The ground across the page's whole view, as large as it now stands.
     private func layGround() {
         guard let (shown, material) = ground else { return }
-        let wash = material.glass == nil ? UIKitBrush(material.paint) : UIKitBrush()
-        shown.lay(wash, stroke: UIKitBrush(), width: 0, over: view.bounds, cut: .rectangle)
+        shown.frame = view.bounds
+        shown.show(material, as: .rounded([0, 0, 0, 0]))
+        let wash = shown.showsGlass ? UIKitBrush() : UIKitBrush(material.paint)
+        shown.lay(wash, stroke: UIKitBrush(), width: 0, over: view.bounds, along: .rectangle)
     }
 
     override func viewIsAppearing(_ animated: Bool) {

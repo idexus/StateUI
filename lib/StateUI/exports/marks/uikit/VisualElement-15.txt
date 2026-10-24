@@ -20,7 +20,7 @@ ItemsView.minimumHeight: ✅
 ItemsView.minimumWidth: ✅
 ItemsView.scaleX: ✓ read scaleX of ItemsView: the host's own transform, checked against the layer it composed itself
 LayoutEngine.accessibilityHint: ✅
-LayoutEngine.background: ✅
+LayoutEngine.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 Line.pivotY: ✓ read pivotY of Line: the host's own transform, checked against the layer it composed itself
 Map.accessibilityActionPerformed: ✅
 Map.accessibilityActions: ✅
@@ -53,6 +53,6 @@ TextField.scale: ✓ read scale of TextField: the host's own transform, checked 
 TextField.width: ✅
 TimePicker.hidesChildrenFromAccessibility: ✅
 VStack.accessibilityHint: ✅
-VStack.background: ✅
+VStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 WebView.layoutDirection: ✅
 ZStack.accessibilityValue: ✅

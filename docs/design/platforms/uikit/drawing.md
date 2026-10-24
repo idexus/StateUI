@@ -36,10 +36,25 @@ subviews, beneath the children: `UIGlassEffect` - regular or clear, its tint,
 interactive where asked - or `UIBlurEffect` of UIKit's own four materials
 (`systemUltraThinMaterial` to `systemThickMaterial`, and `systemChromeMaterial` for the thickest). Over it a blur's tint
 and the box's outline move into the effect's content, so the tint lies over
-the blur, and the effect is cut to the box's shape (continuous corners, an
-oval by a mask). It takes no touch unless its glass is interactive. UIKit
-reads no material's style back, so the driver reads the effect the host gave
-(✓).
+the blur, and the effect takes the box's shape as the next section says. It
+takes no touch unless its glass is interactive.
+UIKit reads no material's style back, so the driver reads the effect the host
+gave (✓).
+
+## Glass takes its corners
+
+UIKit's glass keeps to no mask: an effect view of `UIGlassEffect` under a
+`CAShapeLayer` mask, or a mask view, is glass across its whole frame, its rim
+showing around the figure. It is shaped by its `cornerConfiguration` alone. So
+a backdrop stands as a figure one of two ways. A rounded rectangle - a box's
+outline, a rectangle, a capsule or a circle of glass, as the host layer reads
+the corners (`BoxArithmetic.roundedCorners`) - takes its corners, a capsule's
+ends round whole (`.capsule()`), any other corner as UIKit rounds it. Any
+other figure - an oval of two lengths, a figure of its own, a turned one, and
+a shape's blur, which a mask keeps to its drawn path exactly - is cut by a
+mask and shows its blur, glass's the one standing in for it
+(`HostMaterial.withoutGlass`), its tint painted over it as a blur's. The
+register records the oval layout's and the figure's glass as partial.
 
 ## The shapes
 
@@ -56,10 +71,12 @@ asks for no room of its own.
 ## A figure made of a material
 
 A shape whose fill is a blur or glass stands a `UIKitBackdropView` - the same
-effect view a layout's box shows - lowest in the shape's view, cut to the
-figure by a `CAShapeLayer` mask, as a layout's oval is. A blur's tint is the
-fill layer's paint over it, cut to the figure as any fill; a glass's tint is
-the glass's own. The outline's layer stands over both.
+effect view a layout's box shows - lowest in the shape's view, standing as the
+figure as glass takes its corners: glass across the figure's room where the
+figure is a rounded rectangle; a blur, and any other glass, across the view,
+cut by the figure's path. A blur's tint is the fill layer's paint over it,
+cut to the figure as any fill; a glass's tint is the glass's own. The
+outline's layer stands over both.
 
 ## A canvas
 

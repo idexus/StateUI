@@ -20,6 +20,10 @@ enum UIKitRealization {
     static let ownSteps = "VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps "
         + "as its own kind does, or not at all; a view StateUI draws takes a reader's steps."
 
+    /// What UIKit's glass cannot be, as it is shaped by its corners alone.
+    private static let ovalGlass = "UIKit's glass is shaped by its corners alone: an oval of two lengths stands on "
+        + "the blur as clear as the glass is."
+
     /// Every record, beside what the registry's export says.
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
@@ -48,6 +52,8 @@ enum UIKitRealization {
         .complete(PageElementContract.title),
         .partial(VisualElementContract.accessibilityHeading,
             missing: "UIKit marks a heading, not its level: every level is a heading."),
+        .partial(FilledShapeContract.fill, missing: "UIKit's glass is shaped by its corners alone: an oval of two "
+            + "lengths, a figure of its own and a turned one are made of the blur as clear as the glass is."),
         .partial(VisualElementContract.background,
             missing: "UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in."),
         .complete(VisualElementContract.ignoresInput),
@@ -77,17 +83,17 @@ enum UIKitRealization {
         .complete(VisualElementContract.background, on: ButtonContract.self),
         .notPlanned(VisualElementContract.background, on: DatePickerContract.self,
             reason: "UIKit's date picker keeps no background color: one written reads back as none."),
-        .complete(VisualElementContract.background, on: GridContract.self),
-        .complete(VisualElementContract.background, on: HStackContract.self),
-        .complete(VisualElementContract.background, on: ScrollViewContract.self),
+        .partial(VisualElementContract.background, on: GridContract.self, missing: Self.ovalGlass),
+        .partial(VisualElementContract.background, on: HStackContract.self, missing: Self.ovalGlass),
+        .partial(VisualElementContract.background, on: ScrollViewContract.self, missing: Self.ovalGlass),
         .complete(VisualElementContract.background, on: TextContract.self),
         .notPlanned(VisualElementContract.background, on: TimePickerContract.self,
             reason: "UIKit's time picker keeps no background color: one written reads back as none."),
-        .complete(VisualElementContract.background, on: VStackContract.self),
-        .complete(VisualElementContract.background, on: ZStackContract.self),
-        .complete(VisualElementContract.background, on: FillContract.self),
-        .complete(VisualElementContract.background, on: SpaceContract.self),
-        .complete(VisualElementContract.background, on: LayoutEngineContract.self),
+        .partial(VisualElementContract.background, on: VStackContract.self, missing: Self.ovalGlass),
+        .partial(VisualElementContract.background, on: ZStackContract.self, missing: Self.ovalGlass),
+        .partial(VisualElementContract.background, on: FillContract.self, missing: Self.ovalGlass),
+        .partial(VisualElementContract.background, on: SpaceContract.self, missing: Self.ovalGlass),
+        .partial(VisualElementContract.background, on: LayoutEngineContract.self, missing: Self.ovalGlass),
         .complete(LayoutEngineContract.handAxis),
         .complete(LayoutEngineContract.handMoved),
         .complete(LayoutEngineContract.handStepped),

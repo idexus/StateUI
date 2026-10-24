@@ -40,8 +40,44 @@ final class UIKitBackdropView: UIVisualEffectView {
         fatalError("UIKitBackdropView is made in code")
     }
 
+    /// Whether it shows glass, whose tint is its own; a blur's is laid over it.
+    var showsGlass: Bool { shown?.glass != nil }
+
+    /// The figure a backdrop stands as across its frame: a rounded rectangle, its corners clockwise from the top
+    /// left, or any other, cut by a path.
+    enum Figure {
+        case rounded([Double])
+        case cut(CGPath, evenOdd: Bool)
+    }
+
+    /// Shows `material` as `figure`: a rounded rectangle of its glass in its tint, or of its blur, by the view's own
+    /// corners - a capsule's ends round whole; any other figure of its blur - glass's the one standing in for it,
+    /// as glass keeps to no mask - cut by a mask.
+    /// Design: docs/design/platforms/uikit/drawing.md#glass-takes-its-corners
+    func show(_ material: HostMaterial, as figure: Figure) {
+        switch figure {
+        case .rounded(let corners) where corners.count == 4:
+            showEffect(material)
+            layer.mask = nil
+            let half = min(bounds.width, bounds.height) / 2
+            cornerConfiguration = corners.allSatisfy({ abs($0 - half) < 0.01 }) ? .capsule() : .corners(
+                topLeftRadius: .fixed(corners[0]), topRightRadius: .fixed(corners[1]),
+                bottomLeftRadius: .fixed(corners[3]), bottomRightRadius: .fixed(corners[2]))
+        case .rounded:
+            show(material, as: .rounded([0, 0, 0, 0]))
+        case .cut(let path, let evenOdd):
+            showEffect(material.withoutGlass)
+            cornerConfiguration = .corners(radius: .fixed(0))
+            let mask = layer.mask as? CAShapeLayer ?? CAShapeLayer()
+            mask.frame = CGRect(origin: .zero, size: bounds.size)
+            mask.path = path
+            mask.fillRule = evenOdd ? .evenOdd : .nonZero
+            layer.mask = mask
+        }
+    }
+
     /// Shows `material` - glass, in its tint, where it asks for glass, else its blur - where it changed.
-    func show(_ material: HostMaterial) {
+    private func showEffect(_ material: HostMaterial) {
         guard material != shown, let thickness = material.blur else { return }
         shown = material
         if let glass = material.glass {
@@ -56,13 +92,11 @@ final class UIKitBackdropView: UIVisualEffectView {
         isUserInteractionEnabled = material.glass?.isInteractive == true
     }
 
-    /// Lays `fill` over the backdrop across `bounds` and `stroke`'s outline `width` wide over both, cut to `outline`
+    /// Lays `fill` over the backdrop across `bounds` and `stroke`'s outline `width` wide over both, along `outline`
     /// - nothing where they paint nothing.
     func lay(
-        _ fill: UIKitBrush, stroke: UIKitBrush, width: Double, over bounds: CGRect, cut outline: ContainerShape
+        _ fill: UIKitBrush, stroke: UIKitBrush, width: Double, over bounds: CGRect, along outline: ContainerShape
     ) {
-        frame = bounds
-        let path = outline.path(in: CGRect(origin: .zero, size: bounds.size))
         if width > 0, let color = stroke.lineColor {
             let drawn = line ?? CAShapeLayer()
             if line == nil { contentView.layer.addSublayer(drawn) }
@@ -82,18 +116,6 @@ final class UIKitBackdropView: UIVisualEffectView {
             if let painted { contentView.layer.insertSublayer(painted, at: 0) }
         }
         wash = painted
-        switch outline {
-        case .rectangle, .roundedRectangle, .capsule:
-            layer.cornerRadius = BoxArithmetic.cornerRadius(of: outline, width: bounds.width, height: bounds.height)
-            layer.cornerCurve = .continuous
-            layer.mask = nil
-        case .ellipse:
-            layer.cornerRadius = 0
-            let mask = layer.mask as? CAShapeLayer ?? CAShapeLayer()
-            mask.frame = CGRect(origin: .zero, size: bounds.size)
-            mask.path = path
-            layer.mask = mask
-        }
     }
 }
 #endif

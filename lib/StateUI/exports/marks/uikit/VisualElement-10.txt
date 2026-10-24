@@ -35,7 +35,7 @@ Separator.opacity: ✅
 Separator.rotationX: ✓ read rotationX of Separator: the host's own transform, checked against the layer it composed itself
 Slider.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 Space.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-Space.background: ✅
+Space.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 Spinner.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Stepper.pivotX: ✓ read pivotX of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.accessibilityActionPerformed: ✅

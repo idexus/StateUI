@@ -42,6 +42,18 @@
         }
     }
 
+    /// The corners, clockwise from the top left, of the rounded rectangle `outline` is in a room `width` by
+    /// `height` - each as `cornerRadius` rounds it, a circle's half its side; nil for an oval of two lengths, which
+    /// no rounded rectangle is. What a toolkit shaping a view by its corners alone - glass - takes.
+    /// Design: docs/design/host/layout.md#a-box
+    public static func roundedCorners(of outline: ContainerShape, width: Double, height: Double) -> [Double]? {
+        let radius = switch outline {
+        case .ellipse: abs(width - height) < 0.5 ? min(width, height) / 2 : nil
+        default: Optional(cornerRadius(of: outline, width: width, height: height))
+        }
+        return radius.map { Array(repeating: $0, count: 4) }
+    }
+
     /// The outline the tree's `value` asks for: a rectangle where it asks none, a rounded one's radius never below
     /// nothing.
     public static func outline(_ value: HostValue?) -> ContainerShape {

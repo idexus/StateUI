@@ -15,10 +15,10 @@ Fill.accessibilityHint: ✅
 Grid.isVisible: ✅
 Grid.rotation: ✓ read rotation of Grid: the host's own transform, checked against the layer it composed itself
 HStack.accessibilityHint: ✅
-HStack.background: ✅
+HStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 Image.pivotX: ✓ read pivotX of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.accessibilityValue: ✅
-LayoutEngine.background: ✅
+LayoutEngine.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 Line.isEnabled: ✓ tap on Line: the view's listening handed the recognizer's states, no touch sent
 Line.zIndex: ✅
 Map.pivotY: ✓ read pivotY of Map: the host's own transform, checked against the layer it composed itself
@@ -54,7 +54,7 @@ TimePicker.maximumWidth: ✅
 TimePicker.minimumHeight: ✅
 TimePicker.minimumWidth: ✅
 TimePicker.scaleX: ✓ read scaleX of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.background: ✅
+VStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 WebView.frame: ✅
 WebView.translationX: ✓ read translationX of WebView: the host's own transform, checked against the layer it composed itself
 ZStack.pivotX: ✓ read pivotX of ZStack: the host's own transform, checked against the layer it composed itself
