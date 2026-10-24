@@ -168,6 +168,11 @@ body {
   text-overflow: ellipsis;
 }
 .stateui-bar > .stateui-bar-actions { grid-column: 3; justify-self: end; }
+/* A bar whose actions crowd its title in the middle: the title takes the room they leave, its words in the middle
+   of it - hidden where less is left than a few letters - and the actions that still do not fit stand behind More. */
+.stateui-bar[data-crowded] { grid-template-columns: auto minmax(0, 1fr) auto; }
+.stateui-bar[data-crowded] .stateui-bar-title { text-align: center; }
+.stateui-bar-title[data-squeezed] { visibility: hidden; }
 
 /* With a split view, five columns whose widths move with its sidebar: the part over the sidebar - the toggle alone
    while the sidebar is hidden - what leads the detail, the title, the trailing actions, and a last part as wide as
@@ -198,9 +203,13 @@ body {
 .stateui-bar[data-sidebar] .stateui-bar-start { transition: padding var(--stateui-slide); }
 .stateui-bar[data-sidebar] .stateui-bar-title { grid-column: 3; padding-inline: 10px; }
 .stateui-bar[data-sidebar] > .stateui-bar-actions { grid-column: 4 / 6; margin-inline-end: 12px; }
+.stateui-bar[data-sidebar][data-crowded] { grid-template-columns: var(--stateui-bar-side) auto minmax(0, 1fr) auto 0px; }
 @media (min-width: 900px) {
   .stateui-bar[data-sidebar="shown"] {
     grid-template-columns: var(--stateui-sidebar-width) minmax(0, 1fr) auto minmax(0, 1fr) 0px;
+  }
+  .stateui-bar[data-sidebar="shown"][data-crowded] {
+    grid-template-columns: var(--stateui-sidebar-width) auto minmax(0, 1fr) auto 0px;
   }
   .stateui-bar[data-sidebar="shown"] .stateui-bar-brand { opacity: 1; visibility: visible; transition: opacity 0.3s ease 0.1s; }
   /* Over a sidebar beside the page the bar stands on the sidebar's ground: one column, the bar and the sidebar. */

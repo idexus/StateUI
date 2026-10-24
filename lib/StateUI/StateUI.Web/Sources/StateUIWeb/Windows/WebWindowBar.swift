@@ -51,6 +51,12 @@ final class WebWindowBar: WebDOMView {
     private let more = WebDOMView(tag: "button")
     private var behind: [MenuEntry] = []
 
+    /// The items of each group shown, in reading order as `groups` stands; those placed behind the bar; and the
+    /// menus the page's path declares - what More offers besides the groups that leave the bar.
+    private var runs: [[MountedElement]] = []
+    private var placed: [MountedElement] = []
+    private var menus: [MenuEntry] = []
+
     init() {
         super.init(tag: "header")
         attribute("class", "stateui-bar")
@@ -81,6 +87,10 @@ final class WebWindowBar: WebDOMView {
         WebRelay.insert(heading.node, into: brand.node, at: 0)
         WebRelay.insert(name.node, into: heading.node, at: 0)
         WebRelay.insert(subtitle.node, into: heading.node, at: 1)
+        // The window's width, and the part before the title as a split view's sidebar comes and goes, change what
+        // fits.
+        followSize { [weak self] in self?.fit() }
+        start.followSize { [weak self] in self?.fit() }
     }
 
     /// The look of the bar's buttons `style` asks for, as the bar's `data-toolbar-style` says it; nil for glass.
@@ -150,16 +160,42 @@ final class WebWindowBar: WebDOMView {
         buttons = kept
         groups = made
         // The bar ends with the actions behind it, then - a sheet's - the button closing it.
-        behind = chrome.actions.overflow.map(ButtonMenu.overflowEntry(of:))
+        runs = chrome.actions.start + ending
+        placed = chrome.actions.overflow
         // A page keeps no Edit menu of its own: one the page joins holds the field's undoing, clipboard and selection.
-        let menus = chrome.menus
-            .editing(CoreLink().editWords, redo: KeyboardShortcut("z", modifiers: [.primary, .shift]))
-        if !behind.isEmpty, !menus.menus.isEmpty { behind.append(.separator) }
-        behind += menus.menus
-        more.setShown(!behind.isEmpty)
+        menus = chrome.menus
+            .editing(CoreLink().editWords, redo: KeyboardShortcut("z", modifiers: [.primary, .shift])).menus
         WebRelay.insert(more.node, into: trailing.node, at: ending.count)
         WebRelay.insert(closer.node, into: trailing.node, at: ending.count + 1)
+        fit()
     }
+
+    /// Stands as many groups on the bar as fit beside its title - the first in reading order - and the rest behind
+    /// More (`BarFit`); a title left less room than a few letters stands hidden, as an ellipsis alone says nothing.
+    /// Design: docs/design/platforms/web/pages.md#a-bar-with-no-room
+    private func fit() {
+        title.attribute("data-squeezed", nil)
+        let standing = BarFit.standing(groups: groups.count) { trial in
+            stand(trial)
+            return !WebRelay.crowded(node)
+        }
+        stand(standing)
+        let squeezed = standing.title == .between && WebRelay.size(of: title.node).width < Self.leastTitle
+        title.attribute("data-squeezed", squeezed ? "" : nil)
+    }
+
+    /// The groups `standing` keeps on the bar shown, the others' items behind More, and the title as it stands.
+    private func stand(_ standing: BarFit.Standing) {
+        for (index, group) in groups.enumerated() { group.setShown(index < standing.groups) }
+        attribute("data-crowded", standing.title == .between ? "" : nil)
+        behind = BarFit.behind(left: Array(runs.dropFirst(standing.groups)), placed: placed)
+        if !behind.isEmpty, !menus.isEmpty { behind.append(.separator) }
+        behind += menus
+        more.setShown(!behind.isEmpty)
+    }
+
+    /// The least room a title stands in: a few letters and an ellipsis, which say what the page is.
+    private static let leastTitle = 72.0
 
     /// The title's words, or `view` in their place where the page declares one.
     private func showTitle(_ words: String, or view: WebDOMView?, repeating name: String?) {

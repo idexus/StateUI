@@ -398,6 +398,11 @@ enum WebRelay {
         stateui_web_stands_over(element) != 0
     }
 
+    /// Whether a bar's buttons and title stand over one another or beyond its edges.
+    static func crowded(_ element: Int32) -> Bool {
+        stateui_web_crowded(element) != 0
+    }
+
     /// The element's box on the page, from the page's top left.
     static func box(of element: Int32) -> Rect {
         let read = numbers(4) { stateui_web_read_box(element, $0) }

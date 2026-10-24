@@ -49,6 +49,18 @@ in words, and the browser's tab shows the site's own icon.
 The page is one window: an application's second window has no place of its
 own in it.
 
+## A bar with no room
+
+The bar measures itself ([a bar with no room](../../host/pages.md#a-bar-with-no-room)):
+each standing `BarFit` tries is laid out on it, and the relay says whether its
+buttons and title stand over one another or beyond its edges (`crowded`). A
+title between the actions takes the bar's middle column, the columns around it
+as wide as what they hold (`data-crowded`), its words in the middle of it; one
+left less than a few letters' room - 72 pixels - stands hidden
+(`data-squeezed`), as an ellipsis alone says nothing. The bar stands its groups
+again as the window's width changes, and as the part before the title moves
+with a split view's sidebar.
+
 ## The safe area
 
 The page is drawn under a phone's status bar, notch and home indicator

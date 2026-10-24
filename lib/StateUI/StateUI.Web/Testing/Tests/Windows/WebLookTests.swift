@@ -173,6 +173,65 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(clear, bar, accuracy: 0.5, "its first row clear of it")
     }
 
+    /// On a window as narrow as a phone the bar's parts overlap nothing and stand within it: the first actions in
+    /// reading order stay on the bar, and those that do not fit stand behind More.
+    func testABarOnANarrowWindowOverlapsNothing() throws {
+        WebBrowser.ask([("density", .number(3)), ("width", .number(430))])
+        defer { WebBrowser.ask([("density", .number(1))]) }
+        let host = WebRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").title("Toolbar and menus").toolbar {
+                    ToolbarGroup {
+                        ToolbarButton("Save")
+                        ToolbarButton("Add")
+                    }
+                    ToolbarButton("Sort")
+                    ToolbarButton("Favorite")
+                    ToolbarGroup {
+                        ToolbarButton("Inspector")
+                        ToolbarButton("Home")
+                    }
+                    ToolbarButton("Share")
+                    ToolbarButton("Duplicate")
+                }
+            } destination: { _ in Text("Pushed") }
+        }
+        // The bar's buttons and title as they stand, a crossing counted for each part beyond the bar's edges or
+        // over the part before it.
+        let crossings = """
+            (() => {
+              const bar = document.querySelector('.stateui-window > .stateui-bar');
+              const seen = (e) => { const r = e.getBoundingClientRect(); return r.width > 0 && !e.closest('[hidden]')
+                && getComputedStyle(e).visibility !== 'hidden'; };
+              const parts = [...bar.querySelectorAll('button, .stateui-bar-title')]
+                .filter((e) => seen(e) && !e.parentElement.closest('button')).map((e) => e.getBoundingClientRect())
+                .sort((a, b) => a.left - b.left);
+              const box = bar.getBoundingClientRect();
+              return parts.filter((r, i) => r.left < box.left - 0.5 || r.right > box.right + 0.5
+                || (i > 0 && r.left < parts[i - 1].right - 0.5)).length;
+            })()
+            """
+        let words = "document.querySelector('.stateui-window > .stateui-bar').innerText"
+        host.settle { (try? WebBrowser.evaluate(words, on: 0))?.contains("Save") == true }
+        host.settle { (try? WebBrowser.number(crossings, on: 0)) == 0 }
+
+        XCTAssertEqual(try WebBrowser.number(crossings, on: 0), 0, "nothing overlaps or leaves the bar")
+        let shown = """
+            [...document.querySelectorAll('.stateui-window > .stateui-bar .stateui-bar-group button')]
+              .filter((b) => !b.closest('[hidden]')).map((b) => b.innerText.trim()).join(',')
+            """
+        let standing = try XCTUnwrap(WebBrowser.evaluate(shown, on: 0)).split(separator: ",").map(String.init)
+        XCTAssertEqual(standing.first, "Save", "the first action stays on the bar")
+        let left = ["Save", "Add", "Sort", "Favorite", "Inspector", "Home", "Share", "Duplicate"]
+            .filter { !standing.contains($0) }
+        XCTAssertEqual(left.last, "Duplicate", "a phone's bar has no room for all eight: the last leaves first")
+        try WebBrowser.run("document.querySelector('.stateui-window > .stateui-bar button[aria-label=More]').click()")
+        let behind = try XCTUnwrap(WebBrowser.evaluate(
+            "[...document.querySelectorAll('.stateui-menu')].filter((m) => m.matches(':popover-open'))"
+                + ".map((m) => m.innerText).join('\\n')", on: 0))
+        for action in left { XCTAssertTrue(behind.contains(action), "\(action) behind More: \(behind)") }
+    }
+
     /// A clear bar paints nothing and softens what scrolls under it: a blur under its words, fading out toward its
     /// bottom edge. A bar of a color blurs behind its whole paint instead.
     func testAClearBarSoftensWhatScrollsUnderIt() throws {

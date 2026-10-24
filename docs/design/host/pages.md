@@ -258,6 +258,18 @@ overflow, a button holding a menu is a submenu under its words
 (`ButtonMenu.inOverflow`): its own action first where its click is its own,
 a line, then its menu's entries.
 
+## A bar with no room
+
+Where a platform's bar keeps its own items from crowding - UIKit's, Android's,
+WinUI's command bar - it decides itself; a host that measures its bar itself
+stands its groups by one rule (`BarFit`). Every group stands where they all
+fit around the title in the bar's middle; else around a title taking the room
+they leave; else the first groups in reading order, the leading ones first,
+while they fit, and the rest behind the bar's More - each group's items apart,
+ahead of what is placed there anyway - as the platforms' own bars keep their
+first items on a phone. The host tries each standing on its bar in that order
+and keeps the first that crowds nothing.
+
 ## Words beside a picture
 
 A button and a bar's item show words and may show a picture
