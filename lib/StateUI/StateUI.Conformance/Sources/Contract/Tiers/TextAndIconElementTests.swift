@@ -5,12 +5,26 @@
 @_spi(Host) import StateUIHost
 
 /// `TextAndIconElementContract` on a host: an element showing words and a picture - a button, a bar's item - stands
-/// its words beside its picture as the tree says; each case made for every element wearing the tier.
+/// its words beside its picture as the tree says, each case made for every element wearing the tier; a button's
+/// words out of sight name it.
 @_spi(Host) public enum TextAndIconElementTests: ConformanceFamily {
     public static let name = "TextAndIconElement"
 
     public static var cases: [ConformanceCase] {
-        Specimens.wearing(TextAndIconElementContract.self).map(besidePicture)
+        // A bar's item is named by its title on every platform; a button standing for its picture by its words.
+        Specimens.wearing(TextAndIconElementContract.self).map(besidePicture) + [outOfSightNaming("Button")]
+    }
+
+    /// Its words out of sight name it to assistive technology.
+    @MainActor
+    static func outOfSightNaming(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).itsWordsOutOfSightNameIt", proves: [
+            Covered(TextAndIconElementContract.showsText, on: element),
+        ], needs: [Covered(VisualElementContract.accessibilityLabel, on: element)]) { s in
+            s.start { standing(element, showsText: false, beside: []) }
+            try s.settle { try s.held(VisualElementContract.accessibilityLabel, on: s.element("save")) == "Save" }
+            s.expect(try s.held(VisualElementContract.accessibilityLabel, on: s.element("save")), "Save", "its words name it")
+        }
     }
 
     /// Its words stand beside its picture, then the picture stands alone.

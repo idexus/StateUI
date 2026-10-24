@@ -399,8 +399,9 @@ extension GTKDriver {
         case .accessibilityLabel, .accessibilityHint:
             let property = property == .accessibilityLabel ? GTK_ACCESSIBLE_PROPERTY_LABEL : GTK_ACCESSIBLE_PROPERTY_DESCRIPTION
             guard gtk_test_accessible_has_property(accessible, property) != 0 else { return .some(nil) }
-            let given = element.value(property == GTK_ACCESSIBLE_PROPERTY_LABEL ? .accessibilityLabel : .accessibilityHint)?
-                .string ?? ""
+            // The words the host layer gives: the author's, or a button's words out of sight.
+            let words = element.accessibilityWords
+            let given = (property == GTK_ACCESSIBLE_PROPERTY_LABEL ? words.label : words.hint) ?? ""
             return differs(stateui_test_accessible_property_is_words(UnsafeMutableRawPointer(accessible), Int32(property.rawValue), given))
                 ? "(GTK holds other words)".propValue : given.propValue
         case .accessibilityHeading:

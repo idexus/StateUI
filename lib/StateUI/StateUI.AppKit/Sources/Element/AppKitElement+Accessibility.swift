@@ -18,12 +18,14 @@ extension AppKitElement {
                 role: target.accessibilityRole())
         }
         guard let defaults = accessibilityDefaults else { return }
+        let words = element.accessibilityWords
 
         target.setAccessibilityIdentifier(string(.accessibilityIdentifier))
         if let toggle = view as? AppKitSwitchView {
-            toggle.authoredLabel = string(.accessibilityLabel)
+            toggle.authoredLabel = words.label
         } else {
-            target.setAccessibilityLabel(string(.accessibilityLabel))
+            // The author's label, else the words a button leaves out of sight beside its picture.
+            target.setAccessibilityLabel(words.label)
         }
         target.setAccessibilityHelp(string(.accessibilityHint))
         // A value said stands over the control's own; unsaid again, the control's own comes back.
@@ -41,7 +43,6 @@ extension AppKitElement {
         }
 
         // Met as the host layer says - by the author, or by words of its own or a tap - else as the view is.
-        let words = element.accessibilityWords
         target.setAccessibilityElement(words.isElement(standing: defaults.isElement))
         // An element that answers a tap is a button to assistive technology,
         // pressed by the handler a click runs. See `AppKitHitTestView`.

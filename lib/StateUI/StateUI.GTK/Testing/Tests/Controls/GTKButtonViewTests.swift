@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import CGTKTesting
 import CStateUIGTK
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
@@ -189,6 +190,30 @@ final class GTKButtonViewTests: XCTestCase {
             let middle = Double(left.origin.x + right.origin.x + right.size.width) / 2
             let room = Double(gtk_widget_get_width(button.widget))
             XCTAssertEqual(middle, room / 2, accuracy: 1, "the picture \(left) and the words \(right) across \(room)")
+        }
+    }
+
+    /// A button with a picture is named by its words, shown or out of sight: no label GTK made for its words before
+    /// the picture came still names it.
+    func testAButtonWithAPictureIsNamedByItsWords() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                VStack {
+                    Button("Media").icon(ImageSource("test_dot.png")).showsText(false)
+                    Button("Layout").icon(ImageSource("test_dot.png"))
+                }
+            }
+            let buttons = host.views(GTKButtonView.self)
+            XCTAssertEqual(buttons.count, 2)
+            for button in buttons {
+                XCTAssertEqual(
+                    gtk_test_accessible_has_relation(button.widget.opaque, GTK_ACCESSIBLE_RELATION_LABELLED_BY), 0,
+                    "no label let go names \(button.text)")
+            }
+            let alone = stateui_test_accessible_property_is_words(
+                UnsafeMutableRawPointer(buttons[0].widget.opaque), Int32(GTK_ACCESSIBLE_PROPERTY_LABEL.rawValue), "Media")
+            XCTAssertNil(alone.map { String(cString: $0) }, "the picture alone named by its words out of sight")
+            g_free(alone)
         }
     }
 

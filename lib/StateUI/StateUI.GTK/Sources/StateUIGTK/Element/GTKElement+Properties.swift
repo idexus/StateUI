@@ -63,7 +63,7 @@ extension GTKElement {
             }
         }
         if !own.isDisjoint(with: MountedElement.transformProperties) { view.setTransform(element.drawingTransform) }
-        if element.changesAccessibility(own) {
+        if element.changesAccessibility(changed) {
             view.setAccessibility(element.accessibilityWords)
         }
         if let layers = view as? GTKZStackView { layers.placement = element.placement }

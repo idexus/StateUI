@@ -149,6 +149,10 @@ final class GTKButtonView: GTKView {
         case .click: gtk_menu_button_set_child(widget.opaque, child)
         case .arrow: adw_split_button_set_child(widget.opaque, child)
         }
+        // GTK names a button by the label it makes for words alone, and keeps naming it by that label once it goes:
+        // a child of the host's names it by its words, or by the element's.
+        // Design: docs/design/platforms/gtk/controls.md#a-buttons-picture
+        gtk_accessible_reset_relation(widget.opaque, GTK_ACCESSIBLE_RELATION_LABELLED_BY)
     }
 
     /// Words alone: GTK's own label for a button, a label of the host's on one holding a menu.

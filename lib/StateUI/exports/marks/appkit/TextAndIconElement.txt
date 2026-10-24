@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 Button.showsText: ✅
 ToolbarButton.showsText: – A Mac shows a toolbar's words as its user sets the whole toolbar, not item by item.
 ToolbarToggle.showsText: – A Mac shows a toolbar's words as its user sets the whole toolbar, not item by item.

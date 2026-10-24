@@ -105,9 +105,9 @@ extension MountedElement {
         return words
     }
 
-    /// Whether a change to `changed` puts the element's words for assistive technology on its view again: to one of
-    /// them, to whether its words show beside its picture, or - its words out of sight naming it - to its words or
-    /// its picture.
+    /// Whether a change to `changed` - everything that changed, what a registration took included - puts the
+    /// element's words for assistive technology on its view again: to one of them, to whether its words show beside
+    /// its picture, or - its words out of sight naming it - to its words or its picture.
     public func changesAccessibility(_ changed: Set<Prop>) -> Bool {
         !changed.isDisjoint(with: Self.accessibilityProperties) || changed.contains(.showsText)
             || (value(.showsText)?.bool == false && !changed.isDisjoint(with: [.text, .icon]))

@@ -79,6 +79,13 @@ button wears GTK's own classes for each, `image-text-button` and
 `image-button`. Its words break as a label's do where the tree says how, and
 stand on one line where it says nothing, as GTK's own buttons stand.
 
+GTK names a button by the label it makes for words alone through a
+`labelled-by` relation, and keeps it when that label leaves the button:
+named by a label no longer there, the button says nothing. A child of the
+host's - the picture, or the box - drops the relation, and the button is
+named by its words in sight, or by the words the host layer gives it
+([words out of sight](../../host/pages.md#words-beside-a-picture)).
+
 A press is heard as it goes down and as it ends, wherever the pointer ends
 up: a drag gesture of the button's own, which claims nothing, so the button
 still clicks.

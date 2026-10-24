@@ -266,7 +266,10 @@ rule on every host (`TextAndIcon.showsText`): always where there is no
 picture, else as the element says - unsaid, a button's words show and a bar's
 item's do not, as each platform's bar shows its items' pictures alone. Words
 left out still name the element to assistive technology, and a bar's item's
-stand in its tip.
+stand in its tip. A host puts the words on again where
+`MountedElement.changesAccessibility` says, asking it of everything that
+changed: the words, the picture and `showsText` are its registration's to
+show, and asked of what is left over they never name the button.
 
 ## The menus of a path
 
