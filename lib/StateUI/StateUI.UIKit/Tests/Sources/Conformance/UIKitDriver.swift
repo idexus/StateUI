@@ -255,8 +255,9 @@ final class UIKitDriver: HostDriver {
             items.activateForTesting(identity)
         case (.choose(let place), let items as UIKitItemsView): items.chooseForTesting(place)
         case (.scroll(let target), let items as UIKitItemsView): items.scrollForTesting(to: target)
-        case (.activate, let button as UIKitButtonView): button.sendActions(for: .primaryActionTriggered)
-        case (.activate, let link as UIKitLinkView): link.sendActions(for: .primaryActionTriggered)
+        // UIKit lets a touch reach no control that is not enabled.
+        case (.activate, let button as UIKitButtonView): if button.isEnabled { button.sendActions(for: .primaryActionTriggered) }
+        case (.activate, let link as UIKitLinkView): if link.isEnabled { link.sendActions(for: .primaryActionTriggered) }
         case (.type(let words), let editor as UIKitTextEditorView):
             // UIKit asks the editor's delegate before any change a key makes.
             let whole = NSRange(location: 0, length: editor.text.utf16.count)

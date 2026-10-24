@@ -32,8 +32,9 @@ extension AndroidDriver {
         case (.scroll(let target), let items as AndroidItemsView): items.scrollForTesting(to: target)
         case (.endContent, let web as AndroidWebView): try Self.endContent(of: web)
         case (.activate, _) where [.menuItem, .menuToggle, .toolbarButton, .toolbarToggle].contains(element.type): try choose(element)
-        case (.activate, let button as AndroidButtonView): button.click()
-        case (.activate, let link as AndroidLinkView): link.click()
+        // A touch clicks no view that is not enabled; `performClick` would.
+        case (.activate, let button as AndroidButtonView): if Java.callBool(button.reference, JavaAPI.isEnabled) { button.click() }
+        case (.activate, let link as AndroidLinkView): if Java.callBool(link.reference, JavaAPI.isEnabled) { link.click() }
         case (.toggle, let toggle as AndroidToggleView): toggle.click()
         case (.toggle, let split as AndroidSplitView):
             // The scrim's tap hides the sidebar, the bar's button shows it: both the host's own entry.

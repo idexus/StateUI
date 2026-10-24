@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// `LinkContract` on a host: a link the user chooses opens its address as a launched one opens, and its handler runs
-/// once - the address a state holds too, as it stands when chosen.
+/// once - the address a state holds too, as it stands when chosen; a disabled one does neither.
 @_spi(Host) public enum LinkTests: ConformanceFamily {
     public static let name = "Link"
 
@@ -34,6 +34,27 @@
                 try s.perform(.activate, on: s.element("link"))
                 try s.settle { try s.launched() == ["https://www.swift.org/about"] }
                 s.expect(try s.launched(), ["https://www.swift.org/about"], "its address opened")
+            },
+            ConformanceCase("aDisabledLinkOpensNothing", proves: [
+                Covered(LinkContract.clicked), Covered(LinkContract.destination),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let heard = Received<Bool>()
+                s.start {
+                    VStack {
+                        Link("Swift", destination: "https://www.swift.org/about")
+                            .isEnabled(false)
+                            .onClicked { heard.values.append(true) }
+                            .id("link")
+                        Button("After").onClicked { heard.values.append(false) }.id("after")
+                    }
+                }
+
+                try s.perform(.activate, on: s.element("link"))
+                // A click on the button after it lands in order: once it is heard, the link's had its turn.
+                try s.perform(.activate, on: s.element("after"))
+                s.settle { !heard.values.isEmpty }
+                s.expect(heard.values, [false], "the disabled link's handler never ran")
+                s.expect(try s.launched(), [], "and its address never opened")
             },
             ConformanceCase("aLinkOpensTheAddressItsStateHolds", proves: [
                 Covered(LinkContract.destination),

@@ -13,6 +13,10 @@ final class WebLinkView: WebDOMView {
     /// What a click does: the host layer opens the link's address.
     var onClicked: (() -> Void)?
 
+    /// The address the tree gives it, and whether it can be chosen.
+    private var address: String?
+    private var enabled = true
+
     init() {
         super.init(tag: "a")
         attribute("class", "stateui-link")
@@ -20,13 +24,28 @@ final class WebLinkView: WebDOMView {
         attribute("draggable", "false")
         listen("click") { [weak self] in
             WebRelay.takeEvent()
-            self?.onClicked?()
+            guard let self, enabled else { return }
+            onClicked?()
         }
     }
 
-    /// The address it stands for, where the page may open it; none leaves it no address, and no stop of Tab's.
+    /// The address it stands for.
     func setDestination(_ address: String?) {
-        attribute("href", address.flatMap { WebFileToolkit.launches($0) ? $0 : nil })
+        self.address = address
+        showAddress()
+    }
+
+    /// A link that cannot be chosen keeps its words, grayed, and no address.
+    override func setEnabled(_ enabled: Bool) {
+        self.enabled = enabled
+        super.setEnabled(enabled)
+        showAddress()
+    }
+
+    /// The address where the link can be chosen and the page may open it; none leaves it no address, and no stop of
+    /// Tab's.
+    private func showAddress() {
+        attribute("href", enabled ? address.flatMap { WebFileToolkit.launches($0) ? $0 : nil } : nil)
     }
 
     /// Its words.

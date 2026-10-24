@@ -99,7 +99,10 @@ address as its `href` only where the page launches addresses, so the browser's
 own reading of a link - its address shown, copied - stays; its click's
 default is taken, and the host layer opens the address
 (`host/runtime.md#a-link-chosen`). It is not draggable: a press dragged over
-it moves what the hand moves, not the address.
+it moves what the hand moves, not the address. An `<a>` has no disabled state
+of its own: one that cannot be chosen is `aria-disabled`, grayed, holds no
+`href` - nothing for the browser to follow or Tab to stop at - and its click
+opens nothing.
 
 ## A field
 
