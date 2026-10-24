@@ -5,7 +5,7 @@
 @_spi(Host) @testable import StateUIHost
 import XCTest
 
-/// How every host takes a menu's entry chosen: one standing checked or not turns the other way, any other is only
+/// How every host takes a menu's entry chosen: a setting's turns the other way from how it stands, one that acts is
 /// clicked.
 @MainActor
 final class MenuChoiceTests: XCTestCase {
@@ -18,7 +18,7 @@ final class MenuChoiceTests: XCTestCase {
         }
         var menu = HostPatch(id: .manual("menu"), type: .contextMenu)
         menu.children = .arranged([
-            entry("checked", .menuItem, on: true), entry("unchecked", .menuItem, on: false),
+            entry("checked", .menuToggle, on: true), entry("unchecked", .menuToggle, on: false),
             entry("plain", .menuItem, on: nil),
         ])
         var root = HostPatch(id: .manual("root"), type: .text)
@@ -28,7 +28,7 @@ final class MenuChoiceTests: XCTestCase {
 
         XCTAssertEqual(entries.first(id: .manual("checked"))?.turnsWhenChosen, false)
         XCTAssertEqual(entries.first(id: .manual("unchecked"))?.turnsWhenChosen, true)
-        XCTAssertNil(entries.first(id: .manual("plain"))?.turnsWhenChosen, "an entry standing neither way is only clicked")
+        XCTAssertNil(entries.first(id: .manual("plain"))?.turnsWhenChosen, "an entry that acts is clicked")
         XCTAssertEqual(MenuEntry.entries(of: entries).map(\.isOn), [true, false, nil])
     }
 

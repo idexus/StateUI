@@ -1,13 +1,13 @@
-# revision 5.1
-MenuItem.clicked: ✅
+# revision 6.1
 MenuItem.icon: ✅
 MenuItem.isEnabled: ✅
 MenuItem.keyboardShortcut: ✅
-MenuItem.role: ✅
 MenuItem.text: ✅
-ToolbarButton.clicked: ✅
+MenuToggle.icon: ✅
+MenuToggle.isEnabled: ✅
+MenuToggle.keyboardShortcut: ✅
+MenuToggle.text: ✅
 ToolbarButton.icon: ✅
 ToolbarButton.isEnabled: ✅
 ToolbarButton.keyboardShortcut: ✅
-ToolbarButton.role: ✅
 ToolbarButton.text: ✅

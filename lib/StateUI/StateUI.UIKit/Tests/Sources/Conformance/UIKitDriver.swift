@@ -367,7 +367,7 @@ final class UIKitDriver: HostDriver {
         case (.toggle, _) where element.type == .splitView:
             try performOnPages(act, on: element)
         case (.activate, _) where element.type == .toolbarButton: try performOnPages(act, on: element)
-        case (.activate, _) where element.type == .menuItem:
+        case (.activate, _) where [.menuItem, .menuToggle].contains(element.type):
             // The item as the menu UIKit is handed shows it, taken where it can be: a key command up the responder
             // chain to the window's root, an action to its handler.
             if let command = menuCommand(of: element) {

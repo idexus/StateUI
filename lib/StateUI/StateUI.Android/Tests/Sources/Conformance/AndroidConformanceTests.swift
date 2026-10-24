@@ -54,6 +54,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testMenu", testMenu),
             ("testMenuBar", testMenuBar),
             ("testMenuItem", testMenuItem),
+            ("testMenuToggle", testMenuToggle),
             ("testSeparator", testSeparator),
             ("testMenuSeparator", testMenuSeparator),
             ("testAnchor", testAnchor),
@@ -96,6 +97,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testRefreshElement", testRefreshElement),
             ("testBarElement", testBarElement),
             ("testMenuItemElement", testMenuItemElement),
+            ("testActionElement", testActionElement),
             ("testPageElement", testPageElement),
             ("testAWindowsPhaseIsTheHostsOwnOnAWindowAlone", testAWindowsPhaseIsTheHostsOwnOnAWindowAlone),
         ]
@@ -142,6 +144,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testMenu() throws { try conform(MenuTests.self) }
     func testMenuBar() throws { try conform(MenuBarTests.self) }
     func testMenuItem() throws { try conform(MenuItemTests.self) }
+    func testMenuToggle() throws { try conform(MenuToggleTests.self) }
     func testSeparator() throws { try conform(SeparatorTests.self) }
     func testMenuSeparator() throws { try conform(MenuSeparatorTests.self) }
     func testAnchor() throws { try conform(AnchorTests.self) }
@@ -184,6 +187,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testRefreshElement() throws { try conform(RefreshElementTests.self) }
     func testBarElement() throws { try conform(BarElementTests.self) }
     func testMenuItemElement() throws { try conform(MenuItemElementTests.self) }
+    func testActionElement() throws { try conform(ActionElementTests.self) }
     func testPageElement() throws { try conform(PageElementTests.self) }
 
     /// The host tells a window its activity's phase: closing or minimizing anything else is Android's own.

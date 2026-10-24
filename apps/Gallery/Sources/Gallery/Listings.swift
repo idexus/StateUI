@@ -2225,7 +2225,7 @@ enum Listings {
 
                                 // A setting: its check follows the state, and
                                 // choosing it turns the state over.
-                                MenuItem("Large text").isOn($large)
+                                MenuToggle("Large text", isOn: $large)
 
                                 MenuSeparator()
 

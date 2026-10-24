@@ -146,7 +146,7 @@ extension WinUIDriver {
         var menu = element
         while let parent = menu.parent, ![.contextMenu, .buttonMenu, .page].contains(parent.type) { menu = parent }
         guard let top = menu.parent else { return nil }
-        let items = Self.flat(top).filter { $0.type == .menuItem }
+        let items = Self.flat(top).filter { Self.menuEntries.contains($0.type) }
         let index = items.firstIndex { $0 === element } ?? 0
         if top.type == .contextMenu || top.type == .buttonMenu, let owner = (top.parent?.native as? WinUIElement)?.view {
             return (owner, index)
@@ -164,8 +164,12 @@ extension WinUIDriver {
     static func place(of element: MountedElement, among kind: NodeType) -> Int {
         var top = element
         while let parent = top.parent, ![.contextMenu, .buttonMenu, .page].contains(parent.type) { top = parent }
-        return flat(top.parent ?? top).filter { $0.type == kind }.firstIndex { $0 === element } ?? 0
+        let alike: Set<NodeType> = menuEntries.contains(kind) ? menuEntries : [kind]
+        return flat(top.parent ?? top).filter { alike.contains($0.type) }.firstIndex { $0 === element } ?? 0
     }
+
+    /// The kinds of a menu's entries WinUI lists as its items: an action's and a setting's.
+    static let menuEntries: Set<NodeType> = [.menuItem, .menuToggle]
 
     /// A menu's entries as WinUI's reader writes them - "Copy;-;!Paste;Share[Mail]" - each by its caption, whether
     /// it can be chosen and whether it opens a submenu; separators left out.

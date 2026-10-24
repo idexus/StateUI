@@ -49,9 +49,12 @@ private struct EveryPropertyPage: View {
                         .icon(ImageSource("mark.png"))
                         .role(.destructive)
                         .isEnabled(false)
-                        .isOn(true)
                         .keyboardShortcut("o")
                         .onClicked {}
+
+                    MenuToggle("Ruler", isOn: true)
+                        .keyboardShortcut("r")
+                        .onToggled { _ in }
 
                     Menu("Recent") {
                         MenuItem("Notes.txt")
@@ -674,10 +677,10 @@ final class PageTests: XCTestCase {
         ])
         XCTAssertEqual(item.eventNames, ["clicked"])
 
-        // A menu at any depth: the bar's File holds an entry, a menu of its own and a line.
+        // A menu at any depth: the bar's File holds an entry, a setting's entry, a menu of its own and a line.
         let file = try XCTUnwrap(content.children.last?.children.first)
-        XCTAssertEqual(file.children.map(\.type), [.menuItem, .menu, .menuSeparator])
-        XCTAssertEqual(file.children[1].children.first?.props, ["text": .string("Notes.txt")])
+        XCTAssertEqual(file.children.map(\.type), [.menuItem, .menuToggle, .menu, .menuSeparator])
+        XCTAssertEqual(file.children[2].children.first?.props, ["text": .string("Notes.txt")])
     }
 
     /// The window arrives whole too: every property its session can say, its handlers and the page it holds.

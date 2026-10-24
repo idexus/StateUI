@@ -113,7 +113,7 @@ extension WebDriver {
     private func captions(to element: MountedElement) -> [String] {
         var path: [String] = []
         var current: MountedElement? = element
-        while let each = current, each.type == .menuItem || each.type == .menu {
+        while let each = current, [.menuItem, .menuToggle, .menu].contains(each.type) {
             path.insert(each.value(.text)?.string ?? "", at: 0)
             current = each.parent
         }

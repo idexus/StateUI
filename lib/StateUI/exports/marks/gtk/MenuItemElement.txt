@@ -1,13 +1,13 @@
-# revision 5.1
-MenuItem.clicked: ✅
+# revision 6.1
 MenuItem.icon: – GNOME's menus show words alone, no picture beside them.
 MenuItem.isEnabled: ✅
 MenuItem.keyboardShortcut: ✅
-MenuItem.role: – GNOME's menus mark no entry as destroying something.
 MenuItem.text: ✅
-ToolbarButton.clicked: ✅
+MenuToggle.icon: – GNOME's menus show words alone, no picture beside them.
+MenuToggle.isEnabled: ✅
+MenuToggle.keyboardShortcut: ✅
+MenuToggle.text: ✅
 ToolbarButton.icon: ✅
 ToolbarButton.isEnabled: ✅
 ToolbarButton.keyboardShortcut: ✓ pressKeys on ToolbarButton: the shortcut controller's action run, no key event
-ToolbarButton.role: ✅
 ToolbarButton.text: ✅

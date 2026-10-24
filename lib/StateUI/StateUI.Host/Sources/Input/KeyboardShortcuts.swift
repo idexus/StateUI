@@ -12,7 +12,7 @@
     public static func acts(_ element: MountedElement) -> Bool {
         switch element.type {
         case .button, .toolbarButton: true
-        case .menuItem: element.enclosing(type: .contextMenu) == nil
+        case .menuItem, .menuToggle: element.enclosing(type: .contextMenu) == nil
         default: false
         }
     }

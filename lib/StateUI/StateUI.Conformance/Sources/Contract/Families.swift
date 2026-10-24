@@ -49,6 +49,7 @@
         MenuTests.self,
         MenuBarTests.self,
         MenuItemTests.self,
+        MenuToggleTests.self,
         SeparatorTests.self,
         MenuSeparatorTests.self,
         SheetTests.self,
@@ -90,6 +91,7 @@
         RefreshElementTests.self,
         BarElementTests.self,
         MenuItemElementTests.self,
+        ActionElementTests.self,
         PageElementTests.self,
     ]
 }

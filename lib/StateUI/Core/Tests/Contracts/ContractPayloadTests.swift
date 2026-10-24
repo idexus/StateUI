@@ -47,7 +47,7 @@ final class ContractPayloadTests: XCTestCase {
         check(VisualElementContract.accessibilityAdjusted, [AccessibilityAdjustment.decrement.propValue])
         check(ViewContract.tapped)
         check(TextInputContract.textChanged, [.string("typed")])
-        check(MenuItemElementContract.clicked)
+        check(ActionElementContract.clicked)
 
         // The elements.
         check(ButtonContract.clicked)
@@ -75,7 +75,7 @@ final class ContractPayloadTests: XCTestCase {
         check(PickerContract.opened)
         check(PickerContract.selectedIndexChanged, [.number(-1)])
         check(MarkerContract.selected)
-        check(MenuItemContract.toggled, [.bool(true)])
+        check(MenuToggleContract.toggled, [.bool(true)])
         check(MarkerContract.detailsClicked)
         check(SheetContract.isPresentedChanged, [.bool(false)])
         check(PopoverContract.isPresentedChanged, [.bool(false)])

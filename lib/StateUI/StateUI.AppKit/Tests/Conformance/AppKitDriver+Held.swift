@@ -163,7 +163,7 @@ extension AppKitDriver {
 
     /// What a menu's entry or a toolbar's item holds, as its NSMenuItem or NSToolbarItem holds it.
     func itemHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
-        if element.type == .menuItem, let item = (element.native as? AppKitElement)?.platformMenuItem {
+        if [.menuItem, .menuToggle].contains(element.type), let item = (element.native as? AppKitElement)?.platformMenuItem {
             switch property {
             case .text: return item.title.propValue
             case .isEnabled: return item.isEnabled.propValue

@@ -795,7 +795,7 @@ enum SourceTree {
     static let notViews: Set<String> = [
         "TextSpans", "TextSpan",
         "ToolbarGroup", "ToolbarButton", "TitleView", "MenuBar", "Menu", "Overlay",
-        "MenuItem", "MenuSeparator", "ButtonMenu",
+        "MenuItem", "MenuToggle", "MenuSeparator", "ButtonMenu",
         "ContextMenu", "Popover", "Sheet",
         "Marker",
     ]

@@ -1,13 +1,13 @@
-# revision 5.1
-MenuItem.clicked: ✅
+# revision 6.1
 MenuItem.icon: ✅
 MenuItem.isEnabled: ✅
 MenuItem.keyboardShortcut: ☑️ UIKit shows a shortcut in the main menu alone, none in a context menu.
-MenuItem.role: ✅
 MenuItem.text: ✅
-ToolbarButton.clicked: ✅
+MenuToggle.icon: ✅
+MenuToggle.isEnabled: ✅
+MenuToggle.keyboardShortcut: ☑️ UIKit shows a shortcut in the main menu alone, none in a context menu.
+MenuToggle.text: ✅
 ToolbarButton.icon: ✅
 ToolbarButton.isEnabled: ✅
 ToolbarButton.keyboardShortcut: ✓ pressKeys on ToolbarButton: the window's or the main menu's key command performed, no key pressed
-ToolbarButton.role: ✅
 ToolbarButton.text: ✅

@@ -87,7 +87,7 @@ final class WebKeyboardTests: XCTestCase {
                     MenuItem("Copy")
                     MenuItem("Cut").isEnabled(false)
                     MenuItem("Paste")
-                    MenuItem("Ruler").isOn(true)
+                    MenuToggle("Ruler", isOn: true)
                 }
             }
         }

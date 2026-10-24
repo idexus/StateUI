@@ -13,7 +13,7 @@
         [
             ConformanceCase("anItemChosenRunsItsHandler", proves: [
                 Covered(ToolbarButtonContract.self),
-            ], needs: [Covered(MenuItemElementContract.clicked, on: "ToolbarButton")]) { s in
+            ], needs: [Covered(ActionElementContract.clicked, on: "ToolbarButton")]) { s in
                 let heard = Received<String>()
                 s.start {
                     Self.page {

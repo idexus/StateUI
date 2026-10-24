@@ -16,11 +16,13 @@
     /// The entries that have no view of their own: structure, and the parts of another's view.
     public static let viewlessTypes: Set<NodeType> = [
         .application, .scene, .window, .anchor, .sheet, .titleView, .toolbarGroup, .toolbarButton, .menuBar, .contextMenu,
-        .menu, .menuItem, .menuSeparator, .buttonMenu, .textSpans, .textSpan,
+        .menu, .menuItem, .menuToggle, .menuSeparator, .buttonMenu, .textSpans, .textSpan,
     ]
 
     /// The entries a menu draws itself.
-    public static let menuTypes: Set<NodeType> = [.menuBar, .contextMenu, .buttonMenu, .menu, .menuItem, .menuSeparator]
+    public static let menuTypes: Set<NodeType> = [
+        .menuBar, .contextMenu, .buttonMenu, .menu, .menuItem, .menuToggle, .menuSeparator,
+    ]
 
     /// What is declared on an element to furnish the chrome or the window rather than stand in its room.
     public static let slotTypes: Set<NodeType> = [

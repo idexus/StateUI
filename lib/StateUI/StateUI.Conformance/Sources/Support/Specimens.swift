@@ -103,6 +103,12 @@
             return VStack {
                 Beside([Text("Row").contextMenu { dressing.wear(MenuItem("Copy")).id(dressing.id) }.id("row")] + others)
             }
+        case "MenuToggle":
+            return VStack {
+                Beside([
+                    Text("Row").contextMenu { dressing.wear(MenuToggle("Ruler", isOn: false)).id(dressing.id) }.id("row"),
+                ] + others)
+            }
         case "ToolbarButton":
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 DeclaringPage(beside: others, key: "\(worn)") { [dressing.wear(ToolbarButton("Save")).id(dressing.id)] }

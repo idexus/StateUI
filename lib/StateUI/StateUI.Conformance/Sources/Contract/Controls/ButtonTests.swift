@@ -117,7 +117,7 @@
             },
             ConformanceCase("aHeldButtonsClickIsItsOwnItsMenuApart", proves: [
                 Covered(ButtonContract.menuKind),
-            ], needs: [Covered(ButtonContract.clicked), Covered(MenuItemElementContract.clicked, on: "MenuItem")]) { s in
+            ], needs: [Covered(ButtonContract.clicked), Covered(ActionElementContract.clicked, on: "MenuItem")]) { s in
                 let heard = Received<String>()
                 s.start {
                     VStack {

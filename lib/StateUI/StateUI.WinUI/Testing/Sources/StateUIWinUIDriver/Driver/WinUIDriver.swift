@@ -301,7 +301,7 @@ final class WinUIDriver: HostDriver {
             return
         default: break
         }
-        if element.type == .menuItem, let (owner, index) = menuPlace(of: element) {
+        if Self.menuEntries.contains(element.type), let (owner, index) = menuPlace(of: element) {
             stateui_winui_menus_choose(owner.handle, Int32(index))
             return
         }

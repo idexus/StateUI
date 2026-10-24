@@ -57,6 +57,7 @@ final class GTKConformanceTests: XCTestCase {
     func testMenu() { conform(MenuTests.self) }
     func testMenuBar() { conform(MenuBarTests.self) }
     func testMenuItem() { conform(MenuItemTests.self) }
+    func testMenuToggle() { conform(MenuToggleTests.self) }
     func testSeparator() { conform(SeparatorTests.self) }
     func testMenuSeparator() { conform(MenuSeparatorTests.self) }
     func testAnchor() { conform(AnchorTests.self) }
@@ -99,6 +100,7 @@ final class GTKConformanceTests: XCTestCase {
     func testRefreshElement() { conform(RefreshElementTests.self) }
     func testBarElement() { conform(BarElementTests.self) }
     func testMenuItemElement() { conform(MenuItemElementTests.self) }
+    func testActionElement() { conform(ActionElementTests.self) }
     func testPageElement() { conform(PageElementTests.self) }
 
     /// Runs `family` on GTK, and holds its verdicts to the family's file of GTK's marks.

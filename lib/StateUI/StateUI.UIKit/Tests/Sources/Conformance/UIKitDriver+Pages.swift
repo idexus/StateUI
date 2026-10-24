@@ -26,7 +26,7 @@ extension UIKitDriver {
     /// What a page or an arrangement of pages holds: its tab's title and picture where it stands on a tab, its bar,
     /// a tabbed view's tab and a split view's sidebar; nil for any other element.
     func pageHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
-        if element.type == .menuItem, let command = menuCommand(of: element) {
+        if [.menuItem, .menuToggle].contains(element.type), let command = menuCommand(of: element) {
             switch property {
             case .text: return command.title.propValue
             case .icon: return command.image?.accessibilityIdentifier.map { .string($0) }
@@ -38,7 +38,7 @@ extension UIKitDriver {
             default: break
             }
         }
-        if element.type == .menuItem || element.type == .toolbarButton, let action = menuAction(of: element) {
+        if [.menuItem, .menuToggle, .toolbarButton].contains(element.type), let action = menuAction(of: element) {
             switch property {
             case .keyboardShortcut where element.type == .toolbarButton: return element.value(.keyboardShortcut)
             case .text: return action.title.propValue

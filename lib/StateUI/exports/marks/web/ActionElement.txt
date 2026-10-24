@@ -1,0 +1,5 @@
+# revision 1.1
+MenuItem.clicked: ✅
+MenuItem.role: ✅
+ToolbarButton.clicked: ✅
+ToolbarButton.role: ✅

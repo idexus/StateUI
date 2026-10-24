@@ -46,9 +46,10 @@ private struct BarredPage: View {
                         .icon("nav_media.png")
                         .role(.normal)
                         .isEnabled(true)
-                        .isOn(false)
-                        .onToggled { _ in }
                         .onClicked {}
+                    MenuToggle("Ruler", isOn: false)
+                        .id("ruler")
+                        .onToggled { _ in }
                     MenuSeparator().id("sep")
                     Menu("Recent") {
                         MenuItem("a.txt").id("a")
@@ -104,8 +105,8 @@ final class PageBarTests: XCTestCase {
 
         XCTAssertEqual(file.type, "Menu")
         XCTAssertEqual(file.children.map { $0.type },
-                       ["MenuItem", "MenuSeparator", "Menu"])
-        XCTAssertEqual(file.children[2].children[0].props["text"], .string("a.txt"))
+                       ["MenuItem", "MenuToggle", "MenuSeparator", "Menu"])
+        XCTAssertEqual(file.children[3].children[0].props["text"], .string("a.txt"))
     }
 
     /// The same guarantee `testEveryModifierIsExercised` gives a control, for
@@ -115,7 +116,8 @@ final class PageBarTests: XCTestCase {
         let sent = Self.keys(in: Self.arrived())
 
         for source in [
-            "ToolbarButton.swift", "ToolbarGroup.swift", "Menu.swift", "MenuItem.swift", "View+MenuBar.swift",
+            "ToolbarButton.swift", "ToolbarGroup.swift", "Menu.swift", "MenuItem.swift", "MenuToggle.swift",
+            "View+MenuBar.swift",
         ] {
             let declared = try SourceTree.propertyKeys(in: source)
 

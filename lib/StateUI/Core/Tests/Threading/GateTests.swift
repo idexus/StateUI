@@ -37,13 +37,16 @@ final class GateTests: XCTestCase {
         try await waitUntil { landed.wrappedValue == 2 }
     }
 
-    /// A menu item's toggle that awaits goes through its gate as a button's click does.
-    func testAMenuItemsToggleGoesThroughItsGate() async throws {
+    /// A setting's entry whose toggle awaits goes through its gate as a button's click does.
+    func testAMenuTogglesTurnGoesThroughItsGate() async throws {
         let latch = Latch()
         var heard: [Bool] = []
         let renders = Renders()
         let patch = renders.render(
-            MenuItem("Sync").onToggled(gate: .ignoreWhileRunning) { on in heard.append(on); await latch.wait() }.node)
+            MenuToggle("Sync", isOn: false).onToggled(gate: .ignoreWhileRunning) { on in
+                heard.append(on)
+                await latch.wait()
+            }.node)
         let toggled = try XCTUnwrap(patch.events?["toggled"])
 
         renders.fire(toggled, with: [.bool(true)])

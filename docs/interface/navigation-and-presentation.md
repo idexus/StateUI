@@ -660,9 +660,8 @@ Text(document.title)
     }
 ```
 
-An item may stand for a setting: given `isOn`, it shows the platform's check,
-and given a binding, choosing it turns the state over before its `onClicked`
-runs:
+A setting's entry is a `MenuToggle`: it shows the platform's check as its
+`isOn` says, and given a binding, choosing it turns the state over:
 
 ```swift
 struct Page: View {
@@ -671,14 +670,14 @@ struct Page: View {
     var body: some View {
         Text("Draft")
             .contextMenu {
-                MenuItem("Show Ruler").isOn($showsRuler)
+                MenuToggle("Show Ruler", isOn: $showsRuler)
             }
     }
 }
 ```
 
-`.onToggled` hears each turn with the way it turned to. An item that says
-neither way shows no check and is only clicked.
+`.onToggled` hears each turn with the way it turned to. A `MenuItem` acts:
+it shows no check, and choosing it runs its `onClicked`.
 
 On an item of an `ItemsView` the context menu is the item's actions, declared
 once: a platform that swipes a list's items - UIKit - offers its items the

@@ -38,7 +38,7 @@ extension AppKitElement {
             return page
 
         case .sheet, .overlay, .titleView, .toolbarGroup, .menuBar, .contextMenu,
-             .menu, .menuItem,
+             .menu, .menuItem, .menuToggle,
              .textSpans, .textSpan:
             return nil
 

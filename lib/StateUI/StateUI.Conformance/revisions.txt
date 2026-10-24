@@ -20,7 +20,7 @@ ToolbarButton 5
 ToolbarGroup 4
 TitleView 3
 MenuBar 3
-MenuItem 3
+MenuItem 4
 Window 6
 Scene 3
 Overlay 5
@@ -33,7 +33,7 @@ Button 8
 appkit Button 2
 uikit Button 2
 winui Button 3
-MenuItemElement 5
+MenuItemElement 6
 FontElement 4
 winui MenuItemElement 2
 winui PageElement 2

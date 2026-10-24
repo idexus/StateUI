@@ -14,6 +14,7 @@ LayoutEngine.accessibilityIdentifier: ✅
 Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: 🧩
 MenuItem.accessibilityIdentifier: – An Android menu entry holds no identifier: automation finds it by its title.
+MenuToggle.accessibilityIdentifier: – An Android menu entry holds no identifier: automation finds it by its title.
 NavigationStack.accessibilityIdentifier: ✅
 Path.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅

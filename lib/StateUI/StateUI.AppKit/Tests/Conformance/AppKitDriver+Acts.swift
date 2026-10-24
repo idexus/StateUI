@@ -177,7 +177,7 @@ extension AppKitDriver {
         case let button as AppKitButtonView: button.performClick(nil)
         case let pressed as AppKitHitTestView where pressed.pressAction != nil: _ = pressed.accessibilityPerformPress()
         default:
-            if element.type == .menuItem, let item = (element.native as? AppKitElement)?.platformMenuItem,
+            if [.menuItem, .menuToggle].contains(element.type), let item = (element.native as? AppKitElement)?.platformMenuItem,
                let menu = item.menu {
                 menu.performActionForItem(at: menu.index(of: item))
                 return

@@ -116,7 +116,7 @@ final class WebDriver: HostDriver {
     }
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
-        if [.menuItem, .menu].contains(element.type), let value = try menuItemHolds(property, on: element) { return value }
+        if [.menuItem, .menuToggle, .menu].contains(element.type), let value = try menuItemHolds(property, on: element) { return value }
         if element.type == .toolbarButton, let value = try toolbarItemHolds(property, on: element) { return value }
         if element.type == .textSpan, let value = try spanHolds(property, on: element) { return value }
         if let value = try structureHolds(property, on: element) { return value }

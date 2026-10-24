@@ -1,15 +1,14 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What a toolbar item and a menu entry share: `text`,
-/// `icon`, `role`, `isEnabled` - and `onClicked`, what
-/// choosing one does.
+/// What every toolbar item and menu entry says - an action's or a
+/// setting's: `text`, `icon`, `isEnabled` and `keyboardShortcut`.
 ///
 /// Written on the item, in any order, before or after its own modifiers:
 ///
 ///     ToolbarButton("Delete")
 ///         .icon("trash.png")
-///         .role(.destructive)
+///         .keyboardShortcut(.delete)
 ///         .onClicked { delete() }
 public protocol MenuItemElement: AutomationElement {}
 
@@ -22,13 +21,6 @@ extension MenuItemElement {
     /// The picture on it, resolved from the application's image resources.
     public func icon(_ value: ImageSource) -> Modified {
         setValue(MenuItemElementContract.icon, value)
-    }
-
-    /// What choosing it does beyond its words: `.destructive` is drawn as an
-    /// action that destroys something, as a button's role is. The look only: a
-    /// confirmation is still the handler's to put up.
-    public func role(_ role: ActionRole) -> Modified {
-        setValue(MenuItemElementContract.role, role)
     }
 
     /// Whether it responds to selection. A disabled item stays visible, so the
@@ -47,19 +39,5 @@ extension MenuItemElement {
     ///     ToolbarButton("Share").keyboardShortcut("s", modifiers: [.primary, .shift])
     public func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Modified {
         setValue(MenuItemElementContract.keyboardShortcut, KeyboardShortcut(key, modifiers: modifiers))
-    }
-}
-
-extension MenuItemElement where Modified == Self {
-    /// What it does - run when the item is chosen, clicked or tapped. A second
-    /// `.onClicked` runs beside the first, like every typed event modifier.
-    public func onClicked(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        modified { $0.addHandler(MenuItemElementContract.clicked.token, handler) }
-    }
-
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
-    /// again while a run is under way.
-    public func onClicked(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
-        modified { $0.addHandler(MenuItemElementContract.clicked.token, gate: gate, handler) }
     }
 }

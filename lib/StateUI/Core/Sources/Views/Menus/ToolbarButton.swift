@@ -24,7 +24,7 @@
 /// and an item given an `icon` shows the picture alone unless `showsText`
 /// says otherwise. Standing alone it says where it stands with `.placement`;
 /// in a `ToolbarGroup` it stands where its group does.
-public struct ToolbarButton: PlacedToolbarItem, MenuItemElement {
+public struct ToolbarButton: PlacedToolbarItem, MenuItemElement, ActionElement {
     /// The node this item describes.
     public var node: Node
 

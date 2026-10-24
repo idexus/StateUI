@@ -150,7 +150,7 @@ final class UIKitPagesTests: XCTestCase {
     func testTheMenuBarIsBuiltAgainWhenAnEntryTurns() throws {
         let on = State(wrappedValue: false)
         let host = UIKitRenderer.running(reducesMotion: true) {
-            Text("Document").menuBar { Menu("View") { MenuItem("Grid").isOn(on.wrappedValue) }.id("view") }
+            Text("Document").menuBar { Menu("View") { MenuToggle("Grid", isOn: on.wrappedValue) }.id("view") }
         }
         defer { host.finish() }
         host.settle { !host.menuBar.isEmpty }

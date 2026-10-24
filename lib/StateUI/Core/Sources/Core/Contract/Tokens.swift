@@ -47,6 +47,7 @@ extension NodeType {
     static let menu = MenuContract.nodeType
     static let menuBar = MenuBarContract.nodeType
     static let menuItem = MenuItemContract.nodeType
+    static let menuToggle = MenuToggleContract.nodeType
     static let separator = SeparatorContract.nodeType
     static let menuSeparator = MenuSeparatorContract.nodeType
     static let buttonMenu = ButtonMenuContract.nodeType
@@ -291,7 +292,7 @@ extension NodeType {
     static let appearing = PageContract.appearing.token
     static let canGoBackChanged = WebViewContract.canGoBackChanged.token
     static let canGoForwardChanged = WebViewContract.canGoForwardChanged.token
-    static let clicked = MenuItemElementContract.clicked.token
+    static let clicked = ActionElementContract.clicked.token
     static let closed = DatePickerContract.closed.token
     static let dateChanged = DatePickerContract.dateChanged.token
     static let endReached = ItemsViewContract.endReached.token

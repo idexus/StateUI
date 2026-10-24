@@ -382,19 +382,20 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(page.chromeActions.primary.map(\.showsActionWords), [true, false, true, true])
     }
 
-    /// Choosing a checked entry turns it and clicks it in one transaction of the user's: one render shows both.
+    /// Choosing a setting's entry turns it in one transaction of the user's: its state and its own handler's write
+    /// show in one render.
     func testChoosingACheckedEntryRendersOnce() throws {
         stateUIUseApp(CheckedApplication())
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()
-        let entry = try XCTUnwrap(runtime.tree.root?.first(type: .menuItem))
+        let entry = try XCTUnwrap(runtime.tree.root?.first(type: .menuToggle))
         let renders = runtime.core.tally.renders
 
         entry.chosen(in: runtime)
 
-        XCTAssertEqual(runtime.core.tally.renders, renders + 1, "the turn and the click render together")
-        XCTAssertEqual(runtime.tree.root?.first(type: .text)?.value(.text), .string("clicks 1, bold true"))
+        XCTAssertEqual(runtime.core.tally.renders, renders + 1, "the turn and its handler render together")
+        XCTAssertEqual(runtime.tree.root?.first(type: .text)?.value(.text), .string("turns 1, bold true"))
     }
 
     /// The back button's words, where the page below says none, are the library's own in the system's language.
@@ -1113,18 +1114,18 @@ private final class TabsReading: NativeElement {
     func leave() {}
 }
 
-/// A page whose text's context menu holds a checked entry that also counts its clicks.
+/// A page whose text's context menu holds a setting's entry that also counts its turns.
 private struct CheckedApplication: Application {
     var body: some Scene { WindowGroup { CheckedPage() } }
 }
 
 private struct CheckedPage: View {
     @State private var bold = false
-    @State private var clicks = 0
+    @State private var turns = 0
 
     var body: some View {
-        Text("clicks \(clicks), bold \(bold)").contextMenu {
-            MenuItem("Bold").isOn($bold).onClicked { clicks += 1 }
+        Text("turns \(turns), bold \(bold)").contextMenu {
+            MenuToggle("Bold", isOn: $bold).onToggled { _ in turns += 1 }
         }
     }
 }

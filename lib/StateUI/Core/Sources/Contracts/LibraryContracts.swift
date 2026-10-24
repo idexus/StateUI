@@ -33,6 +33,7 @@
         RefreshElementContract.self,
         BarElementContract.self,
         MenuItemElementContract.self,
+        ActionElementContract.self,
         PageElementContract.self,
     ]
 
@@ -45,7 +46,7 @@
         ItemsViewContract.self,
         TextContract.self,
         LayoutEngineContract.self, LineContract.self, MapContract.self, MenuBarContract.self,
-        MenuContract.self, MenuItemContract.self, MenuSeparatorContract.self, SeparatorContract.self,
+        MenuContract.self, MenuItemContract.self, MenuToggleContract.self, MenuSeparatorContract.self, SeparatorContract.self,
         NavigationStackContract.self, OverlayContract.self, PageContract.self, PathContract.self,
         PickerContract.self, PopoverContract.self, SheetContract.self, MarkerContract.self, PolygonContract.self, PolylineContract.self,
         ProgressBarContract.self,

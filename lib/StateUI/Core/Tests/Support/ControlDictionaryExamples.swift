@@ -226,6 +226,16 @@ extension ControlDictionary {
                 }
             """#),
 
+        (MenuToggleContract.self, #"""
+            @State var showsRuler = false
+
+            Text("Draft")
+                .contextMenu {
+                    MenuToggle("Show Ruler", isOn: $showsRuler)
+                        .keyboardShortcut("r")
+                }
+            """#),
+
         (SeparatorContract.self, #"""
             VStack {
                 Text("Inbox")
@@ -798,6 +808,17 @@ extension ControlDictionary {
                     .barForegroundColor(.white)
                 }
             }
+            """#),
+
+        (ActionElementContract.self, #"""
+            @State var deleted = false
+
+            Text(deleted ? "Deleted" : "Report.pdf")
+                .contextMenu {
+                    MenuItem("Delete")
+                        .role(.destructive)
+                        .onClicked { deleted = true }
+                }
             """#),
 
         (MenuItemElementContract.self, #"""

@@ -13,7 +13,7 @@
         [
             ConformanceCase("aButtonsMenuOffersItsEntries", proves: [
                 Covered(ButtonMenuContract.self),
-            ], needs: [Covered(MenuItemElementContract.clicked, on: "MenuItem")]) { s in
+            ], needs: [Covered(ActionElementContract.clicked, on: "MenuItem")]) { s in
                 let heard = Received<String>()
                 s.start {
                     VStack {
@@ -32,7 +32,7 @@
             },
             ConformanceCase("aButtonWithAClickOfItsOwnSplits", proves: [
                 Covered(ButtonMenuContract.self),
-            ], needs: [Covered(ButtonContract.clicked), Covered(MenuItemElementContract.clicked, on: "MenuItem")]) { s in
+            ], needs: [Covered(ButtonContract.clicked), Covered(ActionElementContract.clicked, on: "MenuItem")]) { s in
                 let heard = Received<String>()
                 s.start {
                     VStack {

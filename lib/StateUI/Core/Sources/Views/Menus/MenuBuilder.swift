@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// Collects the entries of a menu written as consecutive statements: a
-/// `MenuItem`, a `Menu` opening one level down and a `MenuSeparator`.
+/// `MenuItem`, a `MenuToggle`, a `Menu` opening one level down and a
+/// `MenuSeparator`.
 ///
 ///     Menu("View") {
 ///         MenuItem("Zoom in").onClicked { zoom(+1) }
@@ -24,6 +25,11 @@ public enum MenuBuilder {
         MenuEntries([expression.node])
     }
 
+    /// A setting's entry, standing checked or not.
+    public static func buildExpression(_ expression: MenuToggle) -> MenuEntries {
+        MenuEntries([expression.node])
+    }
+
     /// A menu opening one level down.
     public static func buildExpression(_ expression: Menu) -> MenuEntries {
         MenuEntries([expression.node])
@@ -36,6 +42,11 @@ public enum MenuBuilder {
 
     /// Several entries, from something that already produced a list.
     public static func buildExpression(_ expression: [MenuItem]) -> MenuEntries {
+        MenuEntries(expression.map(\.node))
+    }
+
+    /// Several settings' entries, from something that already produced a list.
+    public static func buildExpression(_ expression: [MenuToggle]) -> MenuEntries {
         MenuEntries(expression.map(\.node))
     }
 

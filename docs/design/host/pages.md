@@ -403,14 +403,14 @@ the entry acts. A window with no such field does nothing.
 
 ## A checked entry
 
-An item may stand checked or not (`MenuItemContract.isOn`), which each host
-shows as its toolkit marks a setting - a check beside it. Choosing such an
-item is one rule on every host (`MountedElement.chosen`): it turns the other
-way first - `toggled` with the way it turned to, written through a binding -
-and then it is clicked. An item that says neither way is only clicked, and
-shows no mark.
+A setting's entry - a `MenuToggle` - stands checked or not
+(`MenuToggleContract.isOn`), which each host shows as its toolkit marks a
+setting: a check beside it. Choosing an entry is one rule on every host
+(`MountedElement.chosen`): a setting's turns the other way - `toggled` with
+the way it turned to, written through a binding - and a `MenuItem`, which
+acts and shows no mark, is clicked.
 
 A menu is walked from the tree, never a channel of its own, so the two-way
-`isOn($state)` reads its state where the menu is built: the state turning
+`MenuToggle(_:isOn: $state)` reads its state where the menu is built: the state turning
 builds that body again, and the walk shows the new mark on every host the
 same way a caption changing does.

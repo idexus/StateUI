@@ -1,17 +1,15 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What every item a user chooses from has - a menu's entry, a toolbar's
-/// item: a caption, a picture, and something to run.
+/// What every item a user chooses from says - a menu's entry, a toolbar's
+/// item, an action or a setting: a caption, a picture, whether it can be
+/// chosen, and the keys that choose it.
 public enum MenuItemElementContract: Contract {
     /// The tier's name.
     public static let name = "MenuItemElement"
 
     /// An item is found by automation.
     public static let tiers: [any Contract.Type] = [AutomationElementContract.self]
-
-    /// The item was chosen.
-    public static let clicked = ElementEvent<Self, Void>("clicked", layer: .native)
 
     /// The picture shown with the caption.
     public static let icon = ElementProperty<Self, ImageSource>("icon", layer: .adaptive)
@@ -23,13 +21,9 @@ public enum MenuItemElementContract: Contract {
     /// entry shows them beside its words.
     public static let keyboardShortcut = ElementProperty<Self, KeyboardShortcut>("keyboardShortcut", layer: .native)
 
-    /// What choosing the item does beyond its words: an ordinary action, or one that destroys something, which the
-    /// platform marks.
-    public static let role = ElementProperty<Self, ActionRole>("role", layer: .adaptive)
-
     /// The caption.
     public static let text = ElementProperty<Self, String>("text", layer: .native)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [clicked, icon, isEnabled, keyboardShortcut, role, text]
+    public static let members: [any ContractMember] = [icon, isEnabled, keyboardShortcut, text]
 }

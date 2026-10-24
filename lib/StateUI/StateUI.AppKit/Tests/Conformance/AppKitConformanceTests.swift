@@ -54,6 +54,7 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testMenu() { conform(MenuTests.self) }
     @MainActor func testMenuBar() { conform(MenuBarTests.self) }
     @MainActor func testMenuItem() { conform(MenuItemTests.self) }
+    @MainActor func testMenuToggle() { conform(MenuToggleTests.self) }
     @MainActor func testSeparator() { conform(SeparatorTests.self) }
     @MainActor func testMenuSeparator() { conform(MenuSeparatorTests.self) }
     @MainActor func testAnchor() { conform(AnchorTests.self) }
@@ -131,6 +132,7 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testRefreshElement() { conform(RefreshElementTests.self) }
     @MainActor func testBarElement() { conform(BarElementTests.self) }
     @MainActor func testMenuItemElement() { conform(MenuItemElementTests.self) }
+    @MainActor func testActionElement() { conform(ActionElementTests.self) }
     @MainActor func testPageElement() { conform(PageElementTests.self) }
 
     /// Runs `family` - or `part` of it - on AppKit, and holds its verdicts to its file of AppKit's marks. A long

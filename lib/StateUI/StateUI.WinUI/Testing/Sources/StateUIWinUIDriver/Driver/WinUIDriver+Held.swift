@@ -23,7 +23,7 @@ extension WinUIDriver {
         case .textSpan:
             if let held = try spanHolds(property.name, element) { return held }
             throw cannot
-        case .menuItem, .menu:
+        case .menuItem, .menuToggle, .menu:
             if let held = try menuHolds(property.name, element) { return held }
             throw cannot
         case .toolbarButton:
@@ -525,7 +525,7 @@ extension WinUIDriver {
         case "text": return .string(shown[place].caption)
         case "isEnabled": return shown[place].enabled.propValue
         case "accessibilityIdentifier", "icon", "role", "isOn", "keyboardShortcut":
-            guard kind == .menuItem else { return nil }
+            guard kind != .menu else { return nil }
             let what = ["icon": "icon", "role": "destructive", "isOn": "checked", "keyboardShortcut": "shortcut"][name]
                 ?? "identifier"
             let items = WinUIStrings.read { stateui_winui_menus_items(owner.handle, what, $0, $1) }
