@@ -483,17 +483,18 @@
     @MainActor
     static func painted(_ element: String) -> [any Worn] {
         let red = Brush.solidColor(.red)
+        let redFill = Material.color(.red)
         let figure = [Point(20, 5), Point(60, 5), Point(60, 35), Point(20, 35)]
         let atItsSize = Write(ShapeContract.contentMode, ContentMode.center)
         return switch element {
-        case "Rectangle", "Ellipse", "Capsule": [Write(FilledShapeContract.fill, red)]
+        case "Rectangle", "Ellipse", "Capsule": [Write(FilledShapeContract.fill, redFill)]
         case "Line": [
             Write(LineContract.x1, 0), Write(LineContract.y1, 20), Write(LineContract.x2, 80), Write(LineContract.y2, 20),
             Write(ShapeContract.stroke, red), Write(ShapeContract.lineWidth, 8),
         ]
-        case "Polygon": [Write(PolygonContract.points, figure), Write(FilledShapeContract.fill, red), atItsSize]
-        case "Polyline": [Write(PolylineContract.points, figure + [figure[0]]), Write(FilledShapeContract.fill, red), atItsSize]
-        case "Path": [Write(PathContract.data, "M 20 5 L 60 5 L 60 35 L 20 35 Z"), Write(FilledShapeContract.fill, red), atItsSize]
+        case "Polygon": [Write(PolygonContract.points, figure), Write(FilledShapeContract.fill, redFill), atItsSize]
+        case "Polyline": [Write(PolylineContract.points, figure + [figure[0]]), Write(FilledShapeContract.fill, redFill), atItsSize]
+        case "Path": [Write(PathContract.data, "M 20 5 L 60 5 L 60 35 L 20 35 Z"), Write(FilledShapeContract.fill, redFill), atItsSize]
         case "Image": [Write(ImageContract.source, ImageSource("test_dot.png"))]
         default: []
         }

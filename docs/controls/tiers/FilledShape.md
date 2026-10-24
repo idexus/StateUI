@@ -22,4 +22,4 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `fill` | property | `Brush` | stateUI |
+| `fill` | property | `Material` | stateUI |

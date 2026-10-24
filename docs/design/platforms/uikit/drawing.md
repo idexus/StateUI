@@ -53,6 +53,14 @@ brush - a color, or a gradient over the room - the stroke with its dashes,
 ends, joins and miter limit, its dashes and gaps in stroke widths. A shape
 asks for no room of its own.
 
+## A figure made of a material
+
+A shape whose fill is a blur or glass stands a `UIKitBackdropView` - the same
+effect view a layout's box shows - lowest in the shape's view, cut to the
+figure by a `CAShapeLayer` mask, as a layout's oval is. A blur's tint is the
+fill layer's paint over it, cut to the figure as any fill; a glass's tint is
+the glass's own. The outline's layer stands over both.
+
 ## A canvas
 
 A Canvas replays its drawing in order on Core Graphics within its own

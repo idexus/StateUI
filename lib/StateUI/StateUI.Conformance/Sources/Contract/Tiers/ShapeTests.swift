@@ -56,7 +56,7 @@
             let stretched = State(wrappedValue: false)
             let paint: [any Worn] = element == "Line" || element == "Polyline"
                 ? [Write(ShapeContract.stroke, Brush.solidColor(.red)), Write(ShapeContract.lineWidth, 4)]
-                : [Write(FilledShapeContract.fill, Brush.solidColor(.red))]
+                : [Write(FilledShapeContract.fill, Material.color(.red))]
             s.start {
                 Specimens.page(element, small(element) + paint + [
                     Write(ShapeContract.contentMode, stretched.wrappedValue ? ContentMode.stretch : .fit),
@@ -93,7 +93,7 @@
             let line = element == "Line"
             let paint: [any Worn] = line
                 ? [Write(ShapeContract.stroke, Brush.solidColor(.red)), Write(ShapeContract.lineWidth, 4)]
-                : [Write(FilledShapeContract.fill, Brush.solidColor(.red))]
+                : [Write(FilledShapeContract.fill, Material.color(.red))]
             s.start {
                 Specimens.page(element, figure(element) + paint + [
                     Write(ShapeContract.geometryTransform, moved.wrappedValue

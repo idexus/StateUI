@@ -37,7 +37,7 @@ final class AppKitDriver: HostDriver {
             none["read submitLabel of \(field)"] = "a Mac has no keyboard on the screen whose return key says anything"
         }
         let shapePaint = [
-            "contentMode", "geometryTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
+            "contentMode", "geometryTransform", "stroke", "lineWidth", "dashPhase", "dash",
             "lineCap", "lineJoin", "miterLimit",
         ]
         for shape in ["Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
@@ -204,6 +204,12 @@ final class AppKitDriver: HostDriver {
         if element.type == .menuItem || element.type == .toolbarButton { return try itemHolds(property, element) }
         if element.type == .marker { return try markerHolds(property, element) }
         if element.type == .textSpan { return try spanHolds(property, on: element) }
+        if property == .fill, let shape = (element.native as? AppKitElement)?.view as? AppKitShapeView {
+            // A figure made of a blur or glass shows AppKit's own view of it; a painted one, what it draws.
+            if let surface = shape.surface { return Self.material(surface)?.propValue }
+            let middle = Point(Double(shape.bounds.midX), Double(shape.bounds.midY))
+            return try color(of: element, at: middle).map { Material.color($0).propValue }
+        }
         if property == .title, let tabs = element.parent, tabs.type == .tabView { return try tabTitle(of: element, in: tabs) }
         if let map = (element.native as? AppKitElement)?.view as? AppKitMapView, let held = mapHolds(property, map) {
             return held

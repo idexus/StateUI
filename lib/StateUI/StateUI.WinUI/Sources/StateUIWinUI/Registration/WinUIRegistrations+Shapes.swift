@@ -68,7 +68,7 @@ extension WinUIRegistrations {
 
     private static func paint<Realized: ElementContract>(_ view: WinUIPathView, _ values: ElementValues<Realized>) {
         view.paint(
-            fill: WinUIBrush(values[FilledShapeContract.fill]?.propValue),
+            fill: WinUIBrush(HostMaterial(values[FilledShapeContract.fill]?.propValue).painted),
             stroke: WinUIBrush(values[ShapeContract.stroke]?.propValue),
             width: values[ShapeContract.lineWidth] ?? 1,
             outline: BoxArithmetic.outlineWidth(

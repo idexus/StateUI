@@ -84,6 +84,7 @@ enum GTKRealization {
         .partial(VisualElementContract.accessibilityHeading,
             missing: "GTK fixes a widget's role once it is shown: a view "
             + "becomes a heading, or stops being one, only as it is made; its level changes."),
+        .partial(FilledShapeContract.fill, missing: "GTK blurs nothing behind a figure: a blur or glass shows the theme's color standing in, its tint over it."),
         .partial(VisualElementContract.background,
             missing: "A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it."),
         .complete(VisualElementContract.layoutDirection),

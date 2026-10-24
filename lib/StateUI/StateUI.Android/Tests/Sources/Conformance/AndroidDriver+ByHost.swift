@@ -8,6 +8,7 @@
 /// Design: docs/design/platforms/android/conformance.md#what-goes-past-android
 extension AndroidDriver {
     func byHost(_ ability: String) -> String? {
+        if ability.hasPrefix("read fill of ") { return "the color the host draws the figure with: Android reads back no drawing" }
         switch Ability(ability).act {
         case "sweep":
             return "the listener's report of the hand handed to the host, no touch sent"

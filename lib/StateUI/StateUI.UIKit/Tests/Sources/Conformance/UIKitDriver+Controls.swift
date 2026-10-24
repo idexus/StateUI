@@ -86,7 +86,9 @@ extension UIKitDriver {
         if line == nil, outlines.contains(property) { throw DriverCannot("read the line of a shape drawing no outline") }
         let width = Double(line?.lineWidth ?? 0)
         switch property {
-        case .fill: return fill?.backgroundColor.map { Brush.solidColor(color(UIColor(cgColor: $0))).propValue }
+        case .fill:
+            if let shown = shape.backdropForTesting?.shown { return material(shown).propValue }
+            return fill?.backgroundColor.map { Material.color(color(UIColor(cgColor: $0))).propValue }
         case .stroke: return stroke?.backgroundColor.map { Brush.solidColor(color(UIColor(cgColor: $0))).propValue }
         case .lineWidth: return width.propValue
         case .dash:

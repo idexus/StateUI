@@ -69,6 +69,16 @@ second background layer. Glass is drawn as the blur as clear as it is, which
 the register records as missing (☑️). The driver reads the filter back to its
 blur.
 
+## A figure made of a material
+
+A shape whose fill is a blur stands, under its `<svg>`, a box of the page's
+blur - a `backdrop-filter` under the blur's color and its tint, as a layout's
+box draws one (`WebBox`) - cut to the figure by `clip-path: url(#…)`, which
+names a `<clipPath>` in the shape's own `<svg>` holding the figure's path and
+its transform, so the browser places the cut as it places the path. The path
+then fills nothing; its outline stands over the blur. A page has no glass:
+glass is drawn as the blur as clear as it is.
+
 ## A canvas
 
 A Canvas is a `<div>` taking the room its layout gives it, with a `<canvas>`

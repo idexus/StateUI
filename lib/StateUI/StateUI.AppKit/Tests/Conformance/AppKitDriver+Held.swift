@@ -64,7 +64,7 @@ extension AppKitDriver {
 
     /// The material a layout's box shows: its glass - how clear, its tint, whether it answers the user - or its
     /// blur, by the role standing for its thickness, in the color laid over it.
-    private static func material(_ surface: any AppKitBoxSurface) -> Material? {
+    static func material(_ surface: any AppKitBoxSurface) -> Material? {
         if let glass = surface as? AppKitGlassView {
             var shown: Glass = glass.style == .clear ? .clear : .regular
             if let tint = glass.tint { shown = shown.tint(color(tint)) }

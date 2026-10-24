@@ -79,6 +79,18 @@ clears its color and outline, so the scroller puts them back each time it
 updates its layer. An oval scroller's outline is a shape layer over what it
 shows: under the oval's mask a layer's border would show only as slivers.
 
+## A figure made of a material
+
+A shape whose fill is a blur or glass (`HostMaterial`) stands AppKit's own
+view of it - an `NSVisualEffectView` in the blur's role, its tint washed over
+it, or an `NSGlassEffectView` - lowest in the shape's view, its layer cut by a
+`CAShapeLayer` mask holding the figure's path; the mask's path is flipped for a
+surface that is not flipped, as an effect view is not. The shape's own drawing
+lies under its subviews, so it paints nothing then, and its outline -
+dashes, caps and joins as ever - is drawn by `AppKitShapeOutline`, a view over
+the surface that takes no click. A fill of a color or a gradient is drawn as
+it always was, with no surface.
+
 ## A sidebar's material
 
 A split view's sidebar is AppKit's own sidebar item, on the system's sidebar

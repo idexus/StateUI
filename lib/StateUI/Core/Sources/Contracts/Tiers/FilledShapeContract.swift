@@ -9,8 +9,9 @@ public enum FilledShapeContract: Contract {
     /// A filled shape is a shape.
     public static let tiers: [any Contract.Type] = [ShapeContract.self]
 
-    /// What the inside of the shape is painted with.
-    public static let fill = ElementProperty<Self, Brush>("fill", layer: .stateUI)
+    /// What the inside of the shape is made of: a color, a gradient, a blur of what lies behind it, or the platform's
+    /// glass.
+    public static let fill = ElementProperty<Self, Material>("fill", layer: .stateUI)
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [fill]

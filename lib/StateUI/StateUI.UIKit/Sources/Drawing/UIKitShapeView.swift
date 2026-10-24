@@ -44,7 +44,12 @@ final class UIKitShapeView: UIView, UIKitSteppable {
     private var fillLayer: CALayer?
     private var strokeLayer: CALayer?
 
+    /// What the fill is made of, by the host layer's reading of it; its blur or glass stands under the figure.
+    private var material = HostMaterial(nil)
+    private var backdrop: UIKitBackdropView?
+
     var fillForTesting: UIKitBrush { fill }
+    var backdropForTesting: UIKitBackdropView? { backdrop }
 
     init() {
         super.init(frame: .zero)
@@ -56,12 +61,15 @@ final class UIKitShapeView: UIView, UIKitSteppable {
         fatalError("UIKitShapeView is made in code")
     }
 
-    /// How the shape is filled and outlined.
-    func paint(fill: UIKitBrush, stroke: UIKitBrush, outline: Outline) {
+    /// How the shape is filled - a paint, or a blur or glass with its tint - and outlined.
+    func paint(fill material: HostMaterial, stroke: UIKitBrush, outline: Outline) {
         var outline = outline
         outline.width = ShapeArithmetic.lineWidth(outline.width)
-        guard fill != self.fill || stroke != self.stroke || outline != self.outline else { return }
-        (self.fill, self.stroke, self.outline) = (fill, stroke, outline)
+        // A blur's tint is painted over it; a glass's is the glass's own.
+        let fill = UIKitBrush(material.glass == nil ? material.paint : nil)
+        guard material != self.material || fill != self.fill || stroke != self.stroke || outline != self.outline
+        else { return }
+        (self.material, self.fill, self.stroke, self.outline) = (material, fill, stroke, outline)
         setNeedsLayout()
     }
 
@@ -85,8 +93,29 @@ final class UIKitShapeView: UIView, UIKitSteppable {
 
         let outlined = !stroke.isEmpty && outline.width > 0
         let shaped = path(outlined: outlined)
+        showBackdrop(cut: shaped)
         fillLayer = paint(fill, over: shaped, stroked: false, reusing: fillLayer)
         strokeLayer = paint(outlined ? stroke : UIKitBrush(), over: shaped, stroked: true, reusing: strokeLayer)
+    }
+
+    /// The fill's blur or glass under the figure, cut to its path; none where the fill is a paint.
+    /// Design: docs/design/platforms/uikit/drawing.md#a-figure-made-of-a-material
+    private func showBackdrop(cut shaped: (path: CGPath, evenOdd: Bool)?) {
+        guard let shaped, material.blur != nil else {
+            backdrop?.removeFromSuperview()
+            backdrop = nil
+            return
+        }
+        let shown = backdrop ?? UIKitBackdropView()
+        if backdrop == nil { insertSubview(shown, at: 0) }
+        backdrop = shown
+        shown.show(material)
+        shown.frame = bounds
+        let cut = shown.layer.mask as? CAShapeLayer ?? CAShapeLayer()
+        cut.frame = CGRect(origin: .zero, size: bounds.size)
+        cut.path = shaped.path
+        cut.fillRule = shaped.evenOdd ? .evenOdd : .nonZero
+        shown.layer.mask = cut
     }
 
     /// The layer painting `brush` over the path - inside it, or along it - made anew or kept.

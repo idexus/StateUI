@@ -60,7 +60,7 @@ extension AndroidRegistrations {
         let transform = values[ShapeContract.geometryTransform]?.propValue.values?.compactMap(\.number)
         view.draw(
             geometry,
-            fill: values[FilledShapeContract.fill]?.propValue,
+            fill: HostMaterial(values[FilledShapeContract.fill]?.propValue).painted,
             stroke: values[ShapeContract.stroke]?.propValue,
             lineWidth: values[ShapeContract.lineWidth] ?? 1,
             dashes: values[ShapeContract.dash] ?? [],

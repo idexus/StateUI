@@ -313,7 +313,7 @@ extension WinUIDriver {
     private func shapeHolds(_ name: String, _ view: WinUIView) throws -> HostValue? {
         guard view is WinUIPathView else { return nil }
         switch name {
-        case "fill": return try Self.color(read(view, "fill")).map { Brush.solidColor($0).propValue }
+        case "fill": return try Self.color(read(view, "fill")).map { StandIns.material(painted: $0).propValue }
         case "stroke": return try Self.color(read(view, "stroke")).map { Brush.solidColor($0).propValue }
         case "lineWidth": return Double(try read(view, "strokeThickness"))?.propValue
         case "dash":

@@ -56,6 +56,7 @@ enum WinUIRealization {
             reason: "A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another."),
         .notPlanned(VisualElementContract.accessibilityValue,
             reason: "A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another."),
+        .partial(FilledShapeContract.fill, missing: "A figure's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it."),
         .partial(VisualElementContract.background,
             missing: "An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it."),
         .complete(BarElementContract.barBackgroundColor),

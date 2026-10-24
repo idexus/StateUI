@@ -34,6 +34,12 @@ final class AppKitShapeView: AppKitHitTestView {
     let kind: AppKitShapeKind
 
     private var fill = AppKitBrush()
+    /// What the fill is made of, by the host layer's reading of it: a paint, or a blur or glass with its tint.
+    private var material = HostMaterial(nil)
+    /// The blur or glass the figure is made of, cut to it; nil where the figure is painted.
+    private(set) var surface: (any AppKitBoxSurface)?
+    /// The outline drawn over the surface, where there is one.
+    private var outline: AppKitShapeOutline?
     private var stroke = AppKitBrush()
     private var lineWidth: CGFloat = 1
     private var dash: [Double] = []
@@ -78,7 +84,8 @@ final class AppKitShapeView: AppKitHitTestView {
         geometryTransform: [Double]?,
         geometry: AppKitShapeGeometry
     ) {
-        self.fill = AppKitBrush(fill)
+        material = HostMaterial(fill)
+        self.fill = AppKitBrush(material.paint)
         self.stroke = AppKitBrush(stroke)
         self.lineWidth = CGFloat(BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth))
         self.dash = dash
@@ -89,7 +96,71 @@ final class AppKitShapeView: AppKitHitTestView {
         self.aspect = aspect
         self.geometryTransform = geometryTransform
         self.geometry = geometry
+        showSurface()
         needsDisplay = true
+        outline?.needsDisplay = true
+    }
+
+    /// Lays the fill's glass - in its tint - or its blur - its tint over it - under the figure's outline, cut to the
+    /// figure; takes it away where the fill is a paint.
+    /// Design: docs/design/platforms/appkit/views.md#a-figure-made-of-a-material
+    private func showSurface() {
+        if let glass = material.glass {
+            let shown = surface as? AppKitGlassView ?? place(AppKitGlassView())
+            shown.show(glass, tint: material.paint.flatMap(nsColor))
+        } else if let thickness = material.blur {
+            let shown = surface as? AppKitMaterialView ?? place(AppKitMaterialView(thickness, behindWindow: false))
+            shown.material = AppKitMaterialView.role(thickness)
+            shown.wash.fill = fill
+        } else {
+            surface?.removeFromSuperview()
+            outline?.removeFromSuperview()
+            (surface, outline) = (nil, nil)
+            return
+        }
+        if outline == nil {
+            let made = AppKitShapeOutline(self)
+            addSubview(made, positioned: .above, relativeTo: surface)
+            outline = made
+        }
+        cutSurface()
+    }
+
+    /// Lays `made` lowest in the view, in place of the surface it held.
+    private func place<Surface: AppKitBoxSurface>(_ made: Surface) -> Surface {
+        surface?.removeFromSuperview()
+        made.wantsLayer = true
+        addSubview(made, positioned: .below, relativeTo: nil)
+        surface = made
+        return made
+    }
+
+    /// Fits the surface to the figure: the view's whole room, cut by the figure's path.
+    private func cutSurface() {
+        guard let surface else { return }
+        surface.frame = bounds
+        outline?.frame = bounds
+        guard let layer = surface.layer else { return }
+        var path = pathForTesting(in: bounds).cgPath
+        if !surface.isFlipped {
+            var flip = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: bounds.height)
+            path = path.copy(using: &flip) ?? path
+        }
+        let mask = layer.mask as? CAShapeLayer ?? CAShapeLayer()
+        mask.frame = CGRect(origin: .zero, size: bounds.size)
+        mask.fillRule = pathForTesting(in: bounds).windingRule == .evenOdd ? .evenOdd : .nonZero
+        mask.path = path
+        layer.mask = mask
+    }
+
+    override func setFrameSize(_ newSize: NSSize) {
+        super.setFrameSize(newSize)
+        cutSurface()
+    }
+
+    /// Strokes the figure's outline within `bounds` - over its surface, from the outline drawn above it.
+    func strokeOutline(in bounds: NSRect) {
+        stroke.stroke(pathForTesting(in: bounds), width: lineWidth)
     }
 
     /// The whole of the view under a transform, which AppKit leaves out of what it takes for visible.
@@ -97,6 +168,7 @@ final class AppKitShapeView: AppKitHitTestView {
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
+        guard surface == nil else { return }
         let path = pathForTesting(in: bounds)
         fill.draw(in: path, bounds: bounds)
         stroke.stroke(path, width: lineWidth)

@@ -67,7 +67,7 @@ extension GTKRegistrations {
 
     private static func paint<Realized: ElementContract>(_ view: GTKShapeView, _ values: ElementValues<Realized>) {
         view.paint(
-            fill: GTKBrush(values[FilledShapeContract.fill]?.propValue),
+            fill: GTKBrush(HostMaterial(values[FilledShapeContract.fill]?.propValue).painted),
             stroke: GTKBrush(values[ShapeContract.stroke]?.propValue),
             width: values[ShapeContract.lineWidth] ?? 1,
             dashes: values[ShapeContract.dash] ?? [],

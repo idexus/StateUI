@@ -31,6 +31,9 @@ extension AndroidDriver {
         if let field = view as? AndroidDateFieldView, let held = try Self.dateFieldHolds(property, field) { return held }
         if let web = view as? AndroidWebView, let held = try Self.webHolds(property, web) { return held }
         switch (property, view) {
+        case (.fill, let shape as AndroidShapeView):
+            // The color the figure is drawn with - Android blurs nothing, so a blur's stand-in is that color.
+            return shape.fillForTesting.flatMap(Color.init(propValue:)).map { StandIns.material(painted: $0).propValue }
         case (.isOn, let toggle as AndroidToggleView): return toggle.isOn.propValue
         case (.isPresented, let popover as AndroidPopoverView): return popover.windowShows.propValue
         case (.role, let button as AndroidButtonView): return button.role.map(\.propValue) ?? HostValue.nothing

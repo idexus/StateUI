@@ -26,6 +26,7 @@ enum AndroidRealization {
     /// Every record, the tiers' first.
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
+        .partial(FilledShapeContract.fill, missing: "Android blurs nothing behind a figure: a blur or glass shows the theme's color standing in, its tint over it."),
         .partial(VisualElementContract.background,
             missing: "Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it."),
         .complete(BarElementContract.barBackgroundColor),

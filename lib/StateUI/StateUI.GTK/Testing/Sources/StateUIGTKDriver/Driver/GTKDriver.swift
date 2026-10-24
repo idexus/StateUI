@@ -40,7 +40,7 @@ final class GTKDriver: HostDriver {
         }
         let shapes = ["Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"]
         let shapePaint = [
-            "contentMode", "geometryTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
+            "contentMode", "geometryTransform", "stroke", "lineWidth", "dashPhase", "dash",
             "lineCap", "lineJoin", "miterLimit",
         ]
         for shape in shapes {
@@ -85,6 +85,7 @@ final class GTKDriver: HostDriver {
         if Ability(ability).act == "sweep" { return "the hand handed to the host's entry with its speed, no event" }
         if Ability(ability).act == "notch" { return "a wheel's notches handed to the host's entry, no event" }
         if Ability(ability).readsATransform { return "the host's own transform: GTK reads back no part of one" }
+        if ability.hasPrefix("read fill of ") { return "the brush the host draws the figure with: GTK reads back no drawing" }
         if ability.hasPrefix("read background of "),
            ["Fill", "Grid", "HStack", "Space", "VStack", "ZStack"].contains(Ability(ability).element) {
             return "the brush the host draws the box with: GTK reads back no drawing"
@@ -283,6 +284,15 @@ final class GTKDriver: HostDriver {
         if let value = try recorded(property, on: element, view: view) { return value }
         if let value = reads(property, on: element, view: view) { return value }
         switch (property, view) {
+        case (.fill, let shape as GTKShapeView):
+            // The brush the figure is drawn with - GTK blurs nothing, so a blur's stand-in is that brush.
+            return shape.fillForTesting.firstColor.map { rgba in
+                let channel = { (value: Double) in Int((value * 255).rounded()) }
+                let drawn = Color(
+                    red: channel(Double(rgba.red)), green: channel(Double(rgba.green)), blue: channel(Double(rgba.blue)),
+                    alpha: channel(Double(rgba.alpha)))
+                return StandIns.material(painted: drawn).propValue
+            }
         case (.isOn, let toggle as GTKToggleView): return toggle.isOn.propValue
         case (.isPresented, let popover as GTKPopoverView): return popover.popoverShows.propValue
         case (.value, let slider as GTKSliderView): return slider.value.propValue

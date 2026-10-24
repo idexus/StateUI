@@ -32,7 +32,7 @@ final class PositionDotsTests: XCTestCase {
             .dotSize(10))
 
         XCTAssertEqual(row.count, 5)
-        XCTAssertEqual(row.map { $0.properties[.fill] }, [Color.gray, .gray, .red, .gray, .gray].map { Brush.solidColor($0).propValue })
+        XCTAssertEqual(row.map { $0.properties[.fill] }, [Color.gray, .gray, .red, .gray, .gray].map { Material.color($0).propValue })
         XCTAssertEqual(row.map { $0.properties[.width] }, Array(repeating: .number(10), count: 5))
         XCTAssertEqual(row.map { $0.properties[.height] }, Array(repeating: .number(10), count: 5))
     }
@@ -50,7 +50,7 @@ final class PositionDotsTests: XCTestCase {
 
         let row = dots(PositionDots().count(12).position(6).maximumVisible(5).currentDotColor(.red))
         XCTAssertEqual(row.count, 5)
-        XCTAssertEqual(row.firstIndex { $0.properties[.fill] == Brush.solidColor(.red).propValue }, 2)
+        XCTAssertEqual(row.firstIndex { $0.properties[.fill] == Material.color(.red).propValue }, 2)
     }
 
     /// One lonely dot is hidden unless the row asks for it; no items, no dots.

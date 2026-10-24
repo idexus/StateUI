@@ -1,7 +1,7 @@
-# revision 2.1
-Capsule.fill: ✅
-Ellipse.fill: ✅
-Path.fill: ✅
-Polygon.fill: ✅
-Polyline.fill: ✅
-Rectangle.fill: ✅
+# revision 3.1
+Capsule.fill: ☑️ A figure's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Ellipse.fill: ☑️ A figure's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Path.fill: ☑️ A figure's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Polygon.fill: ☑️ A figure's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Polyline.fill: ☑️ A figure's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Rectangle.fill: ☑️ A figure's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.

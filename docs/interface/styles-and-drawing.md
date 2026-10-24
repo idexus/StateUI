@@ -374,7 +374,8 @@ shape but `Line` - takes `fill`, and a shape whose outline turns corners -
 `fill` does not compile. Geometry-specific modifiers such as a rectangle's
 corner radius or line endpoints remain on the matching shape. A `Rectangle`,
 a `Capsule` and an `Ellipse` are drawn for their fill, so they take it first,
-`Rectangle().fill(.cornflowerBlue)` - a color, a brush or a color's state;
+`Rectangle().fill(.cornflowerBlue)` - a color, a brush, a material - a blur
+or glass cut to the figure, `Capsule().fill(.blur(.thin))` - or a state;
 `.fill` says the same where a style or a later change does.
 
 ```swift

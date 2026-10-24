@@ -56,6 +56,9 @@ extension UIKitDriver {
         default: break
         }
         if taken.readsATransform { return "the host's own transform, checked against the layer it composed itself" }
+        if ability.hasPrefix("read fill of ") {
+            return "a figure's blur or glass as the host gave its effect, which UIKit reads no style of"
+        }
         if ability.hasPrefix("read background of "), ["Fill", "Grid", "HStack", "Space", "VStack", "ZStack"].contains(taken.element) {
             return "a blur's or glass's effect as the host gave it, which UIKit reads no style of"
         }

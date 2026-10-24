@@ -369,11 +369,21 @@ extension WebDriver {
         let attribute = { (name: String) in try WebBrowser.evaluate("\(path).getAttribute('\(name)')", on: shape.node) }
         let width = Double(try attribute("stroke-width") ?? "") ?? 1
         switch property {
-        case .fill, .stroke:
-            let painted = try attribute(property == .fill ? "fill" : "stroke") ?? "none"
+        case .fill:
+            // A figure made of a blur is the page's blur under its color, cut to it; a painted one, its path's fill.
+            let behind = "getComputedStyle(e.querySelector('.stateui-shape-backdrop') ?? e).backdropFilter"
+            let blur = try WebBrowser.number(
+                "parseFloat((\(behind).match(/blur\\(([\\d.]+)px\\)/) || [])[1]) || 0", on: shape.node) ?? 0
+            if let thickness = Blur.Thickness.allCases.first(where: { WebBox.blur($0) == blur }) {
+                return .some(Material.blur(Blur(thickness)).propValue)
+            }
+            let painted = try attribute("fill") ?? "none"
             guard !painted.hasPrefix("url(") else { throw DriverCannot("read a gradient a shape is painted with") }
-            return .some(try color("\(path).getAttribute('\(property == .fill ? "fill" : "stroke")')", on: shape.node)
-                .map { Brush.solidColor($0).propValue })
+            return .some(try color("\(path).getAttribute('fill')", on: shape.node).map { Material.color($0).propValue })
+        case .stroke:
+            let painted = try attribute("stroke") ?? "none"
+            guard !painted.hasPrefix("url(") else { throw DriverCannot("read a gradient a shape is painted with") }
+            return .some(try color("\(path).getAttribute('stroke')", on: shape.node).map { Brush.solidColor($0).propValue })
         case .lineWidth: return width.propValue
         case .miterLimit: return (Double(try attribute("stroke-miterlimit") ?? "") ?? 4).propValue
         case .lineCap:

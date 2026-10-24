@@ -85,7 +85,7 @@ extension UIKitRegistrations {
 
     private static func paint<Realized: ElementContract>(_ view: UIKitShapeView, _ values: ElementValues<Realized>) {
         view.paint(
-            fill: UIKitBrush(values[FilledShapeContract.fill]?.propValue),
+            fill: HostMaterial(values[FilledShapeContract.fill]?.propValue),
             stroke: UIKitBrush(values[ShapeContract.stroke]?.propValue),
             outline: UIKitShapeView.Outline(
                 width: values[ShapeContract.lineWidth] ?? 1,

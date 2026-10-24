@@ -9880,6 +9880,48 @@ enum Listings {
 
                 SwitchRow("Even-odd fill", $evenOdd)
                     .horizontalAlignment(.center)
+
+                SectionTitle("Made of a material")
+
+                // Over stripes, so what each figure lets through shows.
+                ZStack {
+                    HStack {
+                        Space()
+                            .background(.tomato)
+                        Space()
+                            .background(.gold)
+                        Space()
+                            .background(.steelBlue)
+                        Space()
+                            .background(Palette.accent)
+                    }
+
+                    HStack {
+                        Capsule()
+                            .fill(.blur(.regular))
+                            .width(120)
+                            .height(48)
+
+                        Ellipse()
+                            .fill(.glass(.clear))
+                            .stroke(.white)
+                            .width(64)
+                            .height(64)
+
+                        Polygon(Self.star)
+                            .fill(.blur(.thin))
+                            .fillRule(evenOdd ? .evenOdd : .nonzero)
+                            .stroke(.white)
+                            .width(64)
+                            .height(64)
+                    }
+                    .spacing(16)
+                    .horizontalAlignment(.center)
+                    .verticalAlignment(.center)
+                }
+                .height(100)
+                .shape(.roundedRectangle(14))
+                .clipsContent(true)
             }
             .spacing(12)
         }
