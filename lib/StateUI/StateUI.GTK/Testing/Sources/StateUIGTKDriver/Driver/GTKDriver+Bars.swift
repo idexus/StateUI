@@ -32,14 +32,14 @@ extension GTKDriver {
     /// Chooses the toolbar item `element` as the user does: its button clicked, on the bar or in the overflow's menu -
     /// which GTK lets reach no button that cannot be chosen.
     func chooseAction(_ element: MountedElement) throws {
-        guard let (button, _) = try actionButton(of: element) else { throw DriverCannot(.activate, on: element) }
+        guard let button = try actionButton(of: element) else { throw DriverCannot(.activate, on: element) }
         if gtk_widget_is_sensitive(button.widget) != 0 { button.click() }
     }
 
     /// What the button of the toolbar item `element` shows: its words, whether it can be chosen, where it stands,
     /// and whether its words stand beside its picture.
     func actionHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
-        guard let (button, inOverflow) = try actionButton(of: element) else { return nil }
+        guard let button = try actionButton(of: element) else { return nil }
         let child = gtk_button_get_child(button.widget.of(GtkButton.self))
         switch property {
         case .text:
@@ -109,16 +109,15 @@ extension GTKDriver {
         }
     }
 
-    /// The button of the toolbar item `element`, and whether it stands in the overflow's menu; nil where no bar shows
-    /// it.
-    func actionButton(of element: MountedElement) throws -> (GTKButtonView, inOverflow: Bool)? {
+    /// The button of the toolbar item `element`, on the bar or in the overflow's menu; nil where no bar shows it.
+    func actionButton(of element: MountedElement) throws -> GTKButtonView? {
         for frame in frames() {
             let onBar = (frame.chrome.leading + frame.chrome.trailing).flatMap { $0 }
             if let at = onBar.firstIndex(where: { $0.item === element }), at < frame.buttons.count {
-                return (frame.buttons[at], false)
+                return frame.buttons[at]
             }
             if let at = frame.chrome.overflow.firstIndex(where: { $0.item === element }), at < frame.overflowButtons.count {
-                return (frame.overflowButtons[at], true)
+                return frame.overflowButtons[at]
             }
         }
         return nil

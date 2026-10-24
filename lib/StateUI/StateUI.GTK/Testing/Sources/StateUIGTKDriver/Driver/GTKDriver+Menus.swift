@@ -36,7 +36,7 @@ extension GTKDriver {
     /// it.
     func buttonMenu(of button: MountedElement) throws -> String {
         let shown = button.type == .toolbarButton
-            ? try actionButton(of: button)?.0 : (button.native as? GTKElement)?.view as? GTKButtonView
+            ? try actionButton(of: button) : (button.native as? GTKElement)?.view as? GTKButtonView
         guard let view = shown, view.opening != .none else {
             throw DriverCannot("read the menu \(button.type.name) opens")
         }
