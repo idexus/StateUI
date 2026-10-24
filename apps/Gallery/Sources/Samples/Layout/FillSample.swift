@@ -14,12 +14,13 @@ struct FillSample: SampleContent, ExampleContent {
     static let title = "Fill and space"
     static let summary = "Room made of a color, a gradient, a blur or glass: the room offered, or the room left."
 
-    // listing: FillSample
+    // listing: FillSample keep
     var body: some View {
         VStack {
             SectionTitle("Offered or left")
 
-            // Along a stack a fill is as long as it says - nothing here; a space pushes, taking the rest.
+            // Along a stack a fill is as long as it says: the one between the words says nothing, so it gets no
+            // room and is gone; the one at the foot says 24 and stands 24 tall. A space pushes, taking the rest.
             VStack {
                 Text("Top")
                 if spaced {
@@ -31,6 +32,9 @@ struct FillSample: SampleContent, ExampleContent {
                         .shape(.roundedRectangle(10))
                 }
                 Text("Bottom")
+                Fill(Palette.brand)
+                    .height(24)
+                    .shape(.roundedRectangle(6))
             }
             .spacing(8)
             .height(160)

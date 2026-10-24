@@ -3126,16 +3126,24 @@ enum Listings {
             VStack {
                 SectionTitle("Offered or left")
 
-                // Along a stack a fill is as long as it says - nothing here; a space pushes, taking the rest.
+                // Along a stack a fill is as long as it says: the one between the words says nothing, so it gets no
+                // room and is gone; the one at the foot says 24 and stands 24 tall. A space pushes, taking the rest.
                 VStack {
                     Text("Top")
                     if spaced {
                         Space()
+                            .background(Palette.accent)
+                            .shape(.roundedRectangle(10))
                     } else {
                         Fill(Palette.accent)
+                            .shape(.roundedRectangle(10))
                     }
                     Text("Bottom")
+                    Fill(Palette.brand)
+                        .height(24)
+                        .shape(.roundedRectangle(6))
                 }
+                .spacing(8)
                 .height(160)
 
                 Switch($spaced)
@@ -3148,7 +3156,10 @@ enum Listings {
                     Fill(Palette.accent)
                         .width(4)
                     Text("Take the room you are given.")
+                        .fontAttributes(.italic)
+                        .padding(horizontal: 0, vertical: 8)
                 }
+                .spacing(10)
 
                 SectionTitle("Made of")
 
@@ -3161,6 +3172,7 @@ enum Listings {
                 }
                 .columns(.fill, .fill, .fill, .fill)
                 .height(110)
+                .shape(.roundedRectangle(14))
                 .clipsContent(true)
 
                 SectionTitle("For the hand")
@@ -3171,12 +3183,14 @@ enum Listings {
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)
                     Fill()
+                        .shape(.roundedRectangle(14))
                         .stroke(Palette.outline)
                         .lineWidth(1)
                         .onTapped { taps += 1 }
                 }
                 .height(80)
             }
+            .spacing(12)
         }
 
         /// A rounded fill with its name in its middle, standing alike on every side in a stripe of `stripe`.
@@ -3184,7 +3198,10 @@ enum Listings {
             ZStack {
                 Fill(stripe)
                 fill
+                    .shape(.roundedRectangle(10))
+                    .margin(12)
                 Text(name)
+                    .fontSize(12)
                     .fontWeight(.bold)
                     .horizontalAlignment(.center)
                     .verticalAlignment(.center)
