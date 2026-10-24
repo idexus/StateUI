@@ -1,4 +1,4 @@
-# revision 18.2
+# revision 19.2
 ActivityIndicator.frame: ✅
 ActivityIndicator.rotation: ✅
 Button.accessibilityHeading: ✅
@@ -14,8 +14,8 @@ Divider.accessibilityLabel: ✅
 Divider.scaleX: ✅
 Ellipse.accessibilityHeading: ✅
 Ellipse.scale: ✅
-Filler.accessibilityRole: ✅
-Filler.translationX: ✅
+Fill.accessibilityRole: ✅
+Fill.translationX: ✅
 Grid.accessibilityValue: ✅
 Grid.translationY: ✅
 HStack.accessibilityRole: ✅
@@ -50,27 +50,22 @@ ScrollView.layoutDirection: ✅
 SearchField.tooltip: ✅
 Slider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Slider.isEnabled: ✅
-Spacer.frame: ✅
-Spacer.rotation: ✅
-Stepper.accessibilityLabel: ✅
-Stepper.scaleX: ✅
-Switch.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-Switch.accessibilityActions: – UI Automation offers no action of an application's own words.
+Space.frame: ✅
+Space.rotation: ✅
+Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked against the projection it laid on the element
+Stepper.style: ✅
+Switch.accessibilityHint: ✅
+Switch.scaleY: ✅
 Text.isAccessibilityHidden: ✅
 Text.isVisible: ✅
-TextEditor.isAccessibilityHidden: ✅
-TextEditor.isVisible: ✅
-TextField.maximumHeight: ✅
-TextField.maximumWidth: ✅
-TextField.minimumHeight: ✅
-TextField.minimumWidth: ✅
-TextField.pivotX: ✅
-TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own tip, checked against the projection it laid on the element
-TimePicker.zIndex: ✅
-VStack.accessibilityRole: ✅
-VStack.translationX: ✅
-WebView.accessibilityLabel: ✅
-WebView.scaleX: ✅
-ZStack.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-ZStack.accessibilityActions: – UI Automation offers no action of an application's own words.
-ZStack.isEnabled: ✅
+TextEditor.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+TextField.hidesChildrenFromAccessibility: ✅
+TextField.opacity: ✅
+TimePicker.ignoresInput: ✅
+TimePicker.pivotY: ✅
+VStack.accessibilityHeading: ✅
+VStack.scale: ✅
+WebView.rotationX: ✓ read rotationX of WebView: the host's own tip, checked against the projection it laid on the element
+WebView.style: ✅
+ZStack.accessibilityHint: ✅
+ZStack.scaleY: ✅

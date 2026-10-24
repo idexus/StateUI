@@ -20,9 +20,13 @@ extension AndroidRegistrations {
             stack.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
-        // A spacer is empty room the stack's arithmetic sizes; a divider in a stack is the theme's line.
-        // Design: docs/design/host/layout.md#a-spacer
-        registry.add(SpacerContract.self, create: { _ in AndroidSpacerView() })
+        // A space is a box of its own the stack's arithmetic sizes, drawn as a layout's box; a divider in a stack is
+        // the theme's line.
+        // Design: docs/design/host/layout.md#a-space
+        registry.add(SpaceContract.self, create: { _ in AndroidZStackView() }) { space in
+            space.applies(outlineMembers) { view, values in applyBox(view, values) }
+            space.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
+        }
         registry.add(DividerContract.self, create: { _ in AndroidDividerView() })
 
         registry.add(GridContract.self, create: { _ in AndroidGridView() }) { grid in
@@ -45,11 +49,11 @@ extension AndroidRegistrations {
             layout.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
-        // A filler is a box of its own that holds nothing, drawn as a layout's box.
-        // Design: docs/design/host/layout.md#a-filler
-        registry.add(FillerContract.self, create: { _ in AndroidZStackView() }) { filler in
-            filler.applies(outlineMembers) { view, values in applyBox(view, values) }
-            filler.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
+        // A fill is a box of its own that holds nothing, drawn as a layout's box.
+        // Design: docs/design/host/layout.md#a-fill
+        registry.add(FillContract.self, create: { _ in AndroidZStackView() }) { fill in
+            fill.applies(outlineMembers) { view, values in applyBox(view, values) }
+            fill.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
         // A layout engine stands on the ZStack: its children where its run of placements puts them.
@@ -94,7 +98,7 @@ extension AndroidRegistrations {
         }
     }
 
-    /// What a filler takes of its box: its outline and its shape - it holds nothing to cut.
+    /// What a space or a fill takes of its box: its outline and its shape - it holds nothing to cut.
     private static let outlineMembers = PropertyList(
         BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape)
 

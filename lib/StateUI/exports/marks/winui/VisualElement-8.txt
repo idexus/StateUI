@@ -1,4 +1,4 @@
-# revision 18.2
+# revision 19.2
 ActivityIndicator.rotationX: ✓ read rotationX of ActivityIndicator: the host's own tip, checked against the projection it laid on the element
 ActivityIndicator.style: ✅
 Button.accessibilityLabel: ✅
@@ -14,8 +14,8 @@ Divider.accessibilityHint: ✅
 Divider.scaleY: ✅
 Ellipse.accessibilityLabel: ✅
 Ellipse.scaleX: ✅
-Filler.accessibilityValue: ✅
-Filler.translationY: ✅
+Fill.accessibilityValue: ✅
+Fill.translationY: ✅
 Grid.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 Grid.accessibilityActions: – UI Automation offers no action of an application's own words.
 Grid.isEnabled: ✅
@@ -56,22 +56,22 @@ SearchField.accessibilityHeading: ✅
 Slider.height: ✅
 Slider.layoutDirection: ✅
 Slider.width: ✅
-Spacer.rotationX: ✓ read rotationX of Spacer: the host's own tip, checked against the projection it laid on the element
-Spacer.style: ✅
-Stepper.accessibilityHint: ✅
-Stepper.scaleY: ✅
-Switch.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Space.rotationX: ✓ read rotationX of Space: the host's own tip, checked against the projection it laid on the element
+Space.style: ✅
+Stepper.rotationY: ✓ read rotationY of Stepper: the host's own tip, checked against the projection it laid on the element
+Stepper.zIndex: ✅
+Switch.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+Switch.translationX: ✅
 Text.hidesChildrenFromAccessibility: ✅
 Text.opacity: ✅
-TextEditor.hidesChildrenFromAccessibility: ✅
-TextEditor.opacity: ✅
-TextField.ignoresInput: ✅
-TextField.pivotY: ✅
-TimePicker.accessibilityHeading: ✅
-TimePicker.scale: ✅
-VStack.accessibilityValue: ✅
-VStack.translationY: ✅
-WebView.accessibilityHint: ✅
-WebView.scaleY: ✅
-ZStack.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-ZStack.isEnabled: ✅
+TextEditor.tooltip: ✅
+TextField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+TextField.isEnabled: ✅
+TimePicker.frame: ✅
+TimePicker.rotation: ✅
+VStack.accessibilityLabel: ✅
+VStack.scaleX: ✅
+WebView.rotationY: ✓ read rotationY of WebView: the host's own tip, checked against the projection it laid on the element
+WebView.zIndex: ✅
+ZStack.accessibilityRole: ✅
+ZStack.translationX: ✅

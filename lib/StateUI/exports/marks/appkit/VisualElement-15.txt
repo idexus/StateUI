@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.accessibilityActionPerformed: ✅
 ActivityIndicator.accessibilityActions: ✅
 Button.ignoresInput: ✅
@@ -12,8 +12,8 @@ DatePicker.hidesChildrenFromAccessibility: ✅
 Divider.frame: ✅
 Divider.translationX: ✓ read translationX of Divider: the host's own transform, checked against the layer it composed itself
 Ellipse.accessibilityHint: ✅
-Filler.isEnabled: ✅
-Filler.rotationY: ✓ read rotationY of Filler: the host's own transform, checked against the layer it composed itself
+Fill.isEnabled: ✅
+Fill.rotationY: ✓ read rotationY of Fill: the host's own transform, checked against the layer it composed itself
 Grid.accessibilityAdjusted: ✅
 HStack.isEnabled: ✅
 HStack.rotationY: ✓ read rotationY of HStack: the host's own transform, checked against the layer it composed itself
@@ -40,19 +40,19 @@ ScrollView.accessibilityHeading: does not apply - read a heading's level - AppKi
 SearchField.frame: ✅
 SearchField.translationX: ✓ read translationX of SearchField: the host's own transform, checked against the layer it composed itself
 Slider.pivotX: ✓ read pivotX of Slider: the host's own transform, checked against the layer it composed itself
-Spacer.accessibilityActionPerformed: ✅
-Spacer.accessibilityActions: ✅
-Stepper.frame: ✅
-Stepper.translationX: ✓ read translationX of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.pivotX: ✓ read pivotX of Switch: the host's own transform, checked against the layer it composed itself
+Space.accessibilityActionPerformed: ✅
+Space.accessibilityActions: ✅
+Stepper.height: ✅
+Stepper.scale: ✓ read scale of Stepper: the host's own transform, checked against the layer it composed itself
+Stepper.width: ✅
+Switch.hidesChildrenFromAccessibility: ✅
 Text.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
-TextEditor.accessibilityActionPerformed: ✅
-TextEditor.accessibilityActions: ✅
-TextField.frame: ✅
-TextField.translationX: ✓ read translationX of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.pivotX: ✓ read pivotX of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.accessibilityActionPerformed: ✅
-VStack.accessibilityActions: ✅
-WebView.isVisible: ✅
-WebView.rotation: ✓ read rotation of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.tooltip: ✅
+TextEditor.accessibilityHint: ✅
+TextField.height: ✅
+TextField.scale: ✓ read scale of TextField: the host's own transform, checked against the layer it composed itself
+TextField.width: ✅
+TimePicker.hidesChildrenFromAccessibility: ✅
+VStack.accessibilityHint: ✅
+VStack.background: ✅
+WebView.layoutDirection: ✅
+ZStack.accessibilityValue: ✅

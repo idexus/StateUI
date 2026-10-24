@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.maximumHeight: ✅
 ActivityIndicator.maximumWidth: ✅
 ActivityIndicator.minimumHeight: ✅
@@ -13,7 +13,7 @@ DatePicker.accessibilityHeading: ☑️ UIKit marks a heading, not its level: ev
 Divider.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Ellipse.opacity: ✅
 Ellipse.rotationX: ✓ read rotationX of Ellipse: the host's own transform, checked against the layer it composed itself
-Filler.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+Fill.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Grid.ignoresInput: ✅
 Grid.scaleY: ✓ read scaleY of Grid: the host's own transform, checked against the layer it composed itself
 HStack.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
@@ -42,27 +42,21 @@ ScrollView.style: ✅
 ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Slider.accessibilityRole: ✅
-Spacer.maximumHeight: ✅
-Spacer.maximumWidth: ✅
-Spacer.minimumHeight: ✅
-Spacer.minimumWidth: ✅
-Spacer.scaleX: ✓ read scaleX of Spacer: the host's own transform, checked against the layer it composed itself
-Stepper.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
-Switch.accessibilityRole: ✅
+Space.maximumHeight: ✅
+Space.maximumWidth: ✅
+Space.minimumHeight: ✅
+Space.minimumWidth: ✅
+Space.scaleX: ✓ read scaleX of Space: the host's own transform, checked against the layer it composed itself
+Stepper.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+Switch.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Text.accessibilityLabel: ✅
-TextEditor.maximumHeight: ✅
-TextEditor.maximumWidth: ✅
-TextEditor.minimumHeight: ✅
-TextEditor.minimumWidth: ✅
-TextEditor.scaleX: ✓ read scaleX of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
-TimePicker.accessibilityRole: ✅
-VStack.maximumHeight: ✅
-VStack.maximumWidth: ✅
-VStack.minimumHeight: ✅
-VStack.minimumWidth: ✅
-VStack.scaleX: ✓ read scaleX of VStack: the host's own transform, checked against the layer it composed itself
-WebView.accessibilityActionPerformed: ✅
-WebView.accessibilityActions: ✅
-ZStack.frame: ✅
-ZStack.translationX: ✓ read translationX of ZStack: the host's own transform, checked against the layer it composed itself
+TextEditor.opacity: ✅
+TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+TimePicker.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+VStack.opacity: ✅
+VStack.rotationX: ✓ read rotationX of VStack: the host's own transform, checked against the layer it composed itself
+WebView.accessibilityHint: ✅
+ZStack.height: ✅
+ZStack.scale: ✓ read scale of ZStack: the host's own transform, checked against the layer it composed itself
+ZStack.width: ✅

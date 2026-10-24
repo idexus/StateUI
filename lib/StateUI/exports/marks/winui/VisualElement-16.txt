@@ -1,4 +1,4 @@
-# revision 18.2
+# revision 19.2
 ActivityIndicator.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Button.isAccessibilityHidden: ✅
 Button.isVisible: ✅
@@ -15,9 +15,9 @@ Divider.hidesChildrenFromAccessibility: ✅
 Divider.opacity: ✅
 Ellipse.isAccessibilityHidden: ✅
 Ellipse.isVisible: ✅
-Filler.height: ✅
-Filler.layoutDirection: ✓ read layoutDirection of Filler: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Filler.width: ✅
+Fill.height: ✅
+Fill.layoutDirection: ✓ read layoutDirection of Fill: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Fill.width: ✅
 Grid.maximumHeight: ✅
 Grid.maximumWidth: ✅
 Grid.minimumHeight: ✅
@@ -53,22 +53,22 @@ SearchField.rotationX: ✓ read rotationX of SearchField: the host's own tip, ch
 SearchField.style: ✅
 Slider.accessibilityHint: ✅
 Slider.scaleY: ✅
-Spacer.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Stepper.hidesChildrenFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
-Stepper.opacity: ✅
-Switch.ignoresInput: ✅
-Switch.pivotY: ✅
+Space.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Space.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Stepper.tooltip: ✅
+Switch.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Switch.isEnabled: ✅
 Text.accessibilityHeading: ✅
 Text.scale: ✅
-TextEditor.accessibilityHeading: ✅
-TextEditor.scale: ✅
-TextField.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-TextField.translationY: ✅
-TimePicker.accessibilityHeading: ✅
-VStack.height: ✅
-VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-VStack.width: ✅
-WebView.hidesChildrenFromAccessibility: ✅
-WebView.opacity: ✅
-ZStack.ignoresInput: ✅
-ZStack.pivotY: ✅
+TextEditor.frame: ✅
+TextEditor.rotation: ✅
+TextField.accessibilityLabel: ✅
+TextField.scaleX: ✅
+TimePicker.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+TimePicker.accessibilityActions: – UI Automation offers no action of an application's own words.
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+VStack.isAccessibilityHidden: ✅
+VStack.isVisible: ✅
+WebView.tooltip: ✅
+ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it

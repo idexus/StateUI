@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.ignoresInput: ✅
 ActivityIndicator.scaleY: ✓ read scaleY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
@@ -11,7 +11,7 @@ DatePicker.accessibilityLabel: ✅
 Divider.layoutDirection: ✅
 Ellipse.isEnabled: ✅
 Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own transform, checked against the layer it composed itself
-Filler.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+Fill.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 Grid.frame: ✅
 Grid.translationX: ✓ read translationX of Grid: the host's own transform, checked against the layer it composed itself
 HStack.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
@@ -42,17 +42,20 @@ ScrollView.isEnabled: ✅
 ScrollView.zIndex: ✅
 SearchField.layoutDirection: ✅
 Slider.accessibilityValue: – AppKit's slider says its own number to assistive technology, over any value given.
-Spacer.ignoresInput: ✅
-Spacer.scaleY: ✓ read scaleY of Spacer: the host's own transform, checked against the layer it composed itself
-Stepper.layoutDirection: ✅
-Switch.accessibilityValue: ✅
+Space.ignoresInput: ✅
+Space.scaleY: ✓ read scaleY of Space: the host's own transform, checked against the layer it composed itself
+Stepper.isAccessibilityHidden: ✅
+Switch.accessibilityLabel: ✅
 Text.accessibilityHint: ✅
-TextEditor.ignoresInput: ✅
-TextEditor.scaleY: ✓ read scaleY of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.layoutDirection: ✅
-TimePicker.accessibilityValue: – AppKit's date picker says its own time to assistive technology, over any value given.
-VStack.ignoresInput: ✅
-VStack.scaleY: ✓ read scaleY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
-ZStack.style: ✅
-ZStack.translationY: ✓ read translationY of ZStack: the host's own transform, checked against the layer it composed itself
+TextEditor.isEnabled: ✅
+TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.isAccessibilityHidden: ✅
+TimePicker.accessibilityLabel: ✅
+VStack.isEnabled: ✅
+VStack.rotationY: ✓ read rotationY of VStack: the host's own transform, checked against the layer it composed itself
+WebView.accessibilityRole: ✅
+ZStack.maximumHeight: ✅
+ZStack.maximumWidth: ✅
+ZStack.minimumHeight: ✅
+ZStack.minimumWidth: ✅
+ZStack.scaleX: ✓ read scaleX of ZStack: the host's own transform, checked against the layer it composed itself

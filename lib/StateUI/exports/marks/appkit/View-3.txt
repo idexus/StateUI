@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.area: ✅
 ActivityIndicator.droppedFileTypes: ✓ dropFiles on ActivityIndicator: the window's drop routing told the driver's files, no dragging session
 ActivityIndicator.filesDropped: ✓ dropFiles on ActivityIndicator: the window's drop routing told the driver's files, no dragging session
@@ -24,9 +24,9 @@ Divider.pinchUpdated: ✓ pinch on Divider: handed to the host's recognizer or h
 Ellipse.panTouchCount: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.panUpdated: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.panXChannel: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
-Filler.frameChanged: ✅
-Filler.gridColumn: ✅
-Filler.gridRow: ✅
+Fill.frameChanged: ✅
+Fill.gridColumn: ✅
+Fill.gridRow: ✅
 Grid.canDrag: ✓ dragAndDrop on Grid: the drag source and the window's drop routing told by the driver, no dragging session
 Grid.dragEnded: ✓ dragAndDrop on Grid: the drag source and the window's drop routing told by the driver, no dragging session
 Grid.dragStarting: ✓ dragAndDrop on Grid: the drag source and the window's drop routing told by the driver, no dragging session
@@ -83,13 +83,13 @@ SearchField.panYChannel: ✓ pan on SearchField: handed to the host's recognizer
 Slider.frameChanged: ✅
 Slider.gridColumnSpan: ✅
 Slider.gridRowSpan: ✅
-Spacer.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Spacer.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Spacer.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Spacer.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Spacer.frameChanged: ✅
-Spacer.horizontalAlignment: ✅
-Spacer.verticalAlignment: ✅
+Space.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Space.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Space.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Space.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Space.frameChanged: ✅
+Space.horizontalAlignment: ✅
+Space.verticalAlignment: ✅
 Stepper.pinchUpdated: ✓ pinch on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Switch.panTouchCount: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.panUpdated: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent

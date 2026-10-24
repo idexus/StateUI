@@ -22,9 +22,12 @@ extension UIKitRegistrations {
             stack.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
-        // A spacer is empty room the stack's arithmetic sizes; a divider in a stack is a separator line.
-        // Design: docs/design/host/layout.md#a-spacer
-        registry.add(SpacerContract.self, create: { _ in UIKitSpacerView() })
+        // A space is a box of its own the stack's arithmetic sizes, drawn as a layout's box; a divider in a stack is
+        // a separator line.
+        // Design: docs/design/host/layout.md#a-space
+        registry.add(SpaceContract.self, create: { _ in UIKitZStackView() }) { space in
+            space.applies(LayoutMembers.regionMembers) { view, values in applyBox(view, values) }
+        }
         registry.add(DividerContract.self, create: { _ in UIKitDividerView() })
 
         registry.add(GridContract.self, create: { _ in UIKitGridView() }) { grid in
@@ -47,10 +50,10 @@ extension UIKitRegistrations {
             layout.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
-        // A filler is a box of its own that holds nothing, drawn as a layout's box.
-        // Design: docs/design/host/layout.md#a-filler
-        registry.add(FillerContract.self, create: { _ in UIKitZStackView() }) { filler in
-            filler.applies(LayoutMembers.fillerMembers) { view, values in applyBox(view, values) }
+        // A fill is a box of its own that holds nothing, drawn as a layout's box.
+        // Design: docs/design/host/layout.md#a-fill
+        registry.add(FillContract.self, create: { _ in UIKitZStackView() }) { fill in
+            fill.applies(LayoutMembers.regionMembers) { view, values in applyBox(view, values) }
         }
 
         // A layout engine stands on the ZStack: its children where its run of placements puts them.

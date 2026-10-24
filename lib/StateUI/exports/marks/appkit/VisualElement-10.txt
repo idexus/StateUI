@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Button.isVisible: ✅
 Button.rotation: ✓ read rotation of Button: the host's own transform, checked against the layer it composed itself
@@ -12,7 +12,7 @@ Divider.opacity: ✅
 Divider.rotationX: ✓ read rotationX of Divider: the host's own transform, checked against the layer it composed itself
 Ellipse.frame: ✅
 Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform, checked against the layer it composed itself
-Filler.layoutDirection: ✅
+Fill.layoutDirection: ✅
 Grid.accessibilityLabel: ✅
 Grid.layoutDirection: ✅
 HStack.layoutDirection: ✅
@@ -35,17 +35,19 @@ ScrollView.accessibilityRole: ✅
 SearchField.opacity: ✅
 SearchField.rotationX: ✓ read rotationX of SearchField: the host's own transform, checked against the layer it composed itself
 Slider.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-Spacer.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-Stepper.opacity: ✅
-Stepper.rotationX: ✓ read rotationX of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+Space.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+Space.background: ✅
+Stepper.pivotX: ✓ read pivotX of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.accessibilityActionPerformed: ✅
+Switch.accessibilityActions: ✅
 Text.accessibilityAdjusted: ✅
-TextEditor.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-TextField.opacity: ✅
-TextField.rotationX: ✓ read rotationX of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-VStack.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-VStack.isEnabled: ✅
-WebView.hidesChildrenFromAccessibility: ✅
-ZStack.accessibilityHint: ✅
-ZStack.background: ✅
+TextEditor.frame: ✅
+TextEditor.translationX: ✓ read translationX of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.pivotX: ✓ read pivotX of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.accessibilityActionPerformed: ✅
+TimePicker.accessibilityActions: ✅
+VStack.frame: ✅
+VStack.translationX: ✓ read translationX of VStack: the host's own transform, checked against the layer it composed itself
+WebView.tooltip: ✅
+ZStack.isEnabled: ✓ tap on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+ZStack.zIndex: ✅

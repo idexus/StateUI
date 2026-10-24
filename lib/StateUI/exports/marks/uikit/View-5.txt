@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.gridColumnSpan: ✅
 ActivityIndicator.gridRowSpan: ✅
@@ -31,8 +31,8 @@ Divider.margin: ✅
 Ellipse.swipeDirection: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.swipeThreshold: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.swiped: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
-Filler.tapCount: ✓ tap on Filler: the view's listening handed the recognizer's states, no touch sent
-Filler.tapped: ✓ tap on Filler: the view's listening handed the recognizer's states, no touch sent
+Fill.tapCount: ✓ tap on Fill: the view's listening handed the recognizer's states, no touch sent
+Fill.tapped: ✓ tap on Fill: the view's listening handed the recognizer's states, no touch sent
 Grid.area: ✅
 Grid.droppedFileTypes: ✓ dropFiles on Grid: the drop interaction's handler told the driver's files, no drag session
 Grid.filesDropped: ✓ dropFiles on Grid: the drop interaction's handler told the driver's files, no drag session
@@ -82,9 +82,9 @@ SearchField.pinchUpdated: ✓ pinch on SearchField: the view's listening handed 
 Slider.panTouchCount: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.panUpdated: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.panXChannel: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
-Spacer.frameChanged: ✅
-Spacer.gridColumn: ✅
-Spacer.gridRow: ✅
+Space.frameChanged: ✅
+Space.gridColumn: ✅
+Space.gridRow: ✅
 Stepper.canDrag: ✓ dragAndDrop on Stepper: the drag and drop interactions' handlers called, no drag session
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the drag and drop interactions' handlers called, no drag session
 Stepper.dragStarting: ✓ dragAndDrop on Stepper: the drag and drop interactions' handlers called, no drag session

@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.panTouchCount: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.panUpdated: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.panXChannel: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
@@ -29,7 +29,7 @@ Ellipse.pointerExited: ✓ hover on Ellipse: the view's listening handed the rec
 Ellipse.pointerMoved: ✓ hover on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.pointerPressed: ✓ hover on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.pointerReleased: ✓ hover on Ellipse: the view's listening handed the recognizer's states, no touch sent
-Filler.panYChannel: ✓ pan on Filler: the view's listening handed the recognizer's states, no touch sent
+Fill.panYChannel: ✓ pan on Fill: the view's listening handed the recognizer's states, no touch sent
 Grid.frameChanged: ✅
 Grid.gridColumnSpan: ✅
 Grid.gridRowSpan: ✅
@@ -88,8 +88,8 @@ SearchField.margin: ✅
 Slider.swipeDirection: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.swipeThreshold: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.swiped: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
-Spacer.tapCount: ✓ tap on Spacer: the view's listening handed the recognizer's states, no touch sent
-Spacer.tapped: ✓ tap on Spacer: the view's listening handed the recognizer's states, no touch sent
+Space.tapCount: ✓ tap on Space: the view's listening handed the recognizer's states, no touch sent
+Space.tapped: ✓ tap on Space: the view's listening handed the recognizer's states, no touch sent
 Stepper.area: ✅
 Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the drop interaction's handler told the driver's files, no drag session
 Stepper.filesDropped: ✓ dropFiles on Stepper: the drop interaction's handler told the driver's files, no drag session

@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.height: ✅
 ActivityIndicator.scale: ✓ read scale of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 ActivityIndicator.width: ✅
@@ -11,7 +11,7 @@ DatePicker.zIndex: ✅
 Divider.hidesChildrenFromAccessibility: ✅
 Ellipse.isVisible: ✅
 Ellipse.rotation: ✓ read rotation of Ellipse: the host's own transform, checked against the layer it composed itself
-Filler.accessibilityAdjusted: ✅
+Fill.accessibilityAdjusted: ✅
 Grid.maximumHeight: ✅
 Grid.maximumWidth: ✅
 Grid.minimumHeight: ✅
@@ -39,20 +39,18 @@ ScrollView.frame: ✅
 ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.hidesChildrenFromAccessibility: ✅
 Slider.accessibilityHint: ✅
-Spacer.height: ✅
-Spacer.scale: ✓ read scale of Spacer: the host's own transform, checked against the layer it composed itself
-Spacer.width: ✅
-Stepper.hidesChildrenFromAccessibility: ✅
-Switch.accessibilityHint: ✅
+Space.height: ✅
+Space.scale: ✓ read scale of Space: the host's own transform, checked against the layer it composed itself
+Space.width: ✅
+Stepper.tooltip: ✅
+Switch.zIndex: ✅
 Text.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-TextEditor.height: ✅
-TextEditor.scale: ✓ read scale of TextEditor: the host's own transform, checked against the layer it composed itself
-TextEditor.width: ✅
-TextField.hidesChildrenFromAccessibility: ✅
-TimePicker.accessibilityHint: ✅
-VStack.height: ✅
-VStack.scale: ✓ read scale of VStack: the host's own transform, checked against the layer it composed itself
-VStack.width: ✅
-WebView.accessibilityValue: ✅
-ZStack.ignoresInput: ✅
-ZStack.scaleY: ✓ read scaleY of ZStack: the host's own transform, checked against the layer it composed itself
+TextEditor.isVisible: ✅
+TextEditor.rotation: ✓ read rotation of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.tooltip: ✅
+TimePicker.zIndex: ✅
+VStack.isVisible: ✅
+VStack.rotation: ✓ read rotation of VStack: the host's own transform, checked against the layer it composed itself
+WebView.accessibilityLabel: ✅
+ZStack.isEnabled: ✅
+ZStack.rotationY: ✓ read rotationY of ZStack: the host's own transform, checked against the layer it composed itself

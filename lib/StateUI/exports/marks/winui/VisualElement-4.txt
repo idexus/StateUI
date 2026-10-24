@@ -1,4 +1,4 @@
-# revision 18.2
+# revision 19.2
 ActivityIndicator.height: ✅
 ActivityIndicator.layoutDirection: ✓ read layoutDirection of ActivityIndicator: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 ActivityIndicator.width: ✅
@@ -15,8 +15,8 @@ Divider.rotationX: ✓ read rotationX of Divider: the host's own tip, checked ag
 Divider.style: ✅
 Ellipse.frame: ✅
 Ellipse.rotation: ✅
-Filler.accessibilityHeading: ✅
-Filler.scale: ✅
+Fill.accessibilityHeading: ✅
+Fill.scale: ✅
 Grid.accessibilityLabel: ✅
 Grid.scaleX: ✅
 HStack.accessibilityHeading: ✅
@@ -50,22 +50,28 @@ ScrollView.translationX: ✅
 SearchField.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 SearchField.translationY: ✅
 Slider.accessibilityHeading: ✅
-Spacer.height: ✅
-Spacer.layoutDirection: ✓ read layoutDirection of Spacer: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Spacer.width: ✅
-Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked against the projection it laid on the element
-Stepper.style: ✅
-Switch.accessibilityHint: ✅
-Switch.scaleY: ✅
+Space.height: ✅
+Space.layoutDirection: ✓ read layoutDirection of Space: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Space.width: ✅
+Stepper.maximumHeight: ✅
+Stepper.maximumWidth: ✅
+Stepper.minimumHeight: ✅
+Stepper.minimumWidth: ✅
+Stepper.pivotX: ✅
+Switch.rotationY: ✓ read rotationY of Switch: the host's own tip, checked against the projection it laid on the element
+Switch.zIndex: ✅
 Text.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-TextEditor.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-TextField.hidesChildrenFromAccessibility: ✅
-TextField.opacity: ✅
-TimePicker.ignoresInput: ✅
-TimePicker.pivotY: ✅
-VStack.accessibilityHeading: ✅
-VStack.scale: ✅
-WebView.rotationX: ✓ read rotationX of WebView: the host's own tip, checked against the projection it laid on the element
-WebView.style: ✅
-ZStack.accessibilityHint: ✅
-ZStack.scaleY: ✅
+TextEditor.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+TextEditor.translationX: ✅
+TextField.tooltip: ✅
+TimePicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+TimePicker.isEnabled: ✅
+VStack.frame: ✅
+VStack.rotation: ✅
+WebView.maximumHeight: ✅
+WebView.maximumWidth: ✅
+WebView.minimumHeight: ✅
+WebView.minimumWidth: ✅
+WebView.pivotX: ✅
+ZStack.rotationY: ✓ read rotationY of ZStack: the host's own tip, checked against the projection it laid on the element
+ZStack.zIndex: ✅

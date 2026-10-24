@@ -28,7 +28,7 @@ struct PlatformSupportSample: SampleContent, ExampleContent {
             Text(words)
                 .fontSize(15)
 
-            Spacer()
+            Space()
 
             Text(honored ? "honored" : "not here")
                 .fontSize(15)

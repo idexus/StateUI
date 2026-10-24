@@ -697,7 +697,7 @@
         values.rowSpan = max(whole(.gridRowSpan) ?? 1, 1)
         values.columnSpan = max(whole(.gridColumnSpan) ?? 1, 1)
         values.area = value(.area).flatMap(Area.init(propValue:))
-        values.grows = type == .spacer || type == .filler
+        values.grows = type == .space
         return values
     }
 

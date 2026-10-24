@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.margin: ✅
 ActivityIndicator.swipeDirection: ✅
@@ -45,9 +45,9 @@ Ellipse.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the
 Ellipse.frameChanged: ✅
 Ellipse.gridColumnSpan: ✅
 Ellipse.gridRowSpan: ✅
-Filler.panTouchCount: ✅
-Filler.panUpdated: ✅
-Filler.panXChannel: ✅
+Fill.panTouchCount: ✅
+Fill.panUpdated: ✅
+Fill.panXChannel: ✅
 Grid.frameChanged: ✅
 Grid.margin: ✅
 Grid.swipeDirection: ✅
@@ -138,13 +138,13 @@ Slider.pointerExited: ✅
 Slider.pointerMoved: ✅
 Slider.pointerPressed: ✅
 Slider.pointerReleased: ✅
-Spacer.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Spacer.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Spacer.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Spacer.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Spacer.frameChanged: ✅
-Spacer.gridColumnSpan: ✅
-Spacer.gridRowSpan: ✅
+Space.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Space.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Space.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Space.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Space.frameChanged: ✅
+Space.gridColumnSpan: ✅
+Space.gridRowSpan: ✅
 Stepper.panTouchCount: ✅
 Stepper.panUpdated: ✅
 Stepper.panXChannel: ✅

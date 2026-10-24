@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.droppedFileTypes: ✓ dropFiles on ActivityIndicator: the relay's drop report told the driver's files, no drag WinUI began
 ActivityIndicator.filesDropped: ✓ dropFiles on ActivityIndicator: the relay's drop report told the driver's files, no drag WinUI began
 ActivityIndicator.tapCount: ✅
@@ -28,13 +28,13 @@ Ellipse.frameChanged: ✅
 Ellipse.horizontalAlignment: ✅
 Ellipse.pinchUpdated: ✓ pinch on Ellipse: the relay's report of the manipulation handed to the host, no touch sent
 Ellipse.verticalAlignment: ✅
-Filler.canDrag: ✓ dragAndDrop on Filler: the relay's drag reports told by the driver, no drag WinUI began
-Filler.dragEnded: ✓ dragAndDrop on Filler: the relay's drag reports told by the driver, no drag WinUI began
-Filler.dragStarting: ✓ dragAndDrop on Filler: the relay's drag reports told by the driver, no drag WinUI began
-Filler.dragText: ✓ dragAndDrop on Filler: the relay's drag reports told by the driver, no drag WinUI began
-Filler.frameChanged: ✅
-Filler.gridColumn: ✅
-Filler.gridRow: ✅
+Fill.canDrag: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
+Fill.dragEnded: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
+Fill.dragStarting: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
+Fill.dragText: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
+Fill.frameChanged: ✅
+Fill.gridColumn: ✅
+Fill.gridRow: ✅
 Grid.droppedFileTypes: ✓ dropFiles on Grid: the relay's drop report told the driver's files, no drag WinUI began
 Grid.filesDropped: ✓ dropFiles on Grid: the relay's drop report told the driver's files, no drag WinUI began
 Grid.tapCount: ✅
@@ -96,10 +96,10 @@ SearchField.filesDropped: ✓ dropFiles on SearchField: the relay's drop report 
 SearchField.tapCount: ✅
 SearchField.tapped: ✅
 Slider.panYChannel: ✅
-Spacer.frameChanged: ✅
-Spacer.horizontalAlignment: ✅
-Spacer.pinchUpdated: ✓ pinch on Spacer: the relay's report of the manipulation handed to the host, no touch sent
-Spacer.verticalAlignment: ✅
+Space.frameChanged: ✅
+Space.horizontalAlignment: ✅
+Space.pinchUpdated: ✓ pinch on Space: the relay's report of the manipulation handed to the host, no touch sent
+Space.verticalAlignment: ✅
 Stepper.canDrag: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.dragStarting: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began

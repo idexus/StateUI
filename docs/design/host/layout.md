@@ -115,33 +115,32 @@ wrapped text is measured at the width it will have; a horizontal stack offers
 none, because the width is what the children decide. A hidden child takes no
 room and no spacing.
 
-## A spacer
+## A space
 
-A child that grows - a `Spacer` - takes the room the stack's shown children
+A child that grows - a `Space` - takes the room the stack's shown children
 leave along its axis: the stack's length less their natural lengths, their
-margins and the spacing, shared alike among the spacers, none where nothing is
+margins and the spacing, shared alike among the spaces, none where nothing is
 left. It measures as no room of its own, so a stack sized by its children
-leaves it none, and its least and most lengths still bound it. A spacer that
+leaves it none, and its least and most lengths still bound it. A space that
 states its length along the axis grows no more: it is a child of that length
-like any other (`LayoutValues.grows(along:)`). Every host stands an empty view
-there; the arithmetic is the host layer's, so the room a spacer takes is the
-same on every host. The Web hands its stacks to the browser, so there the same
-rule is written as CSS: a spacer is a flex item growing from nothing
-(`flex: 1 1 0`), which the browser shares alike. A spacer is a gap and is
-never painted: its background is never planned on any host
-(`HostRegister.everyHost`), so it stays an empty view.
+like any other (`LayoutValues.grows(along:)`). The arithmetic is the host
+layer's, so the room a space takes is the same on every host. The Web hands
+its stacks to the browser, so there the same rule is written as CSS: a space
+is a flex item growing from nothing (`flex: 1 1 0`), which the browser shares
+alike. Each host stands a space in the view its `ZStack` stands in, so what it
+is made of, its outline and its shape are drawn as a fill's are.
 
-## A filler
+## A fill
 
-A filler is a region that holds nothing and takes the room it is given. In a
-stack it grows as a spacer does (`LayoutValues.grows`), shared alike with the
-spacers, and a length it states along the axis stops it; in a ZStack, a
-grid's cell or a page it fills the room, as every child whose alignment
-fills. Each host stands it in the view its `ZStack` stands in and draws its
-background, its outline and its shape there as a layout's box
-(`LayoutMembers.fillerMembers`, a layout's box without the cut, as nothing
-stands inside to cut), so a blur or glass is drawn where the platform draws
-one; it takes no padding. On the Web it is the same flex item as a spacer.
+A fill is a region that holds nothing and takes the room it is offered: in a
+ZStack, a grid's cell or a page the whole room, and across a stack its
+breadth, as every child whose alignment fills. Along a stack it measures as no
+room of its own and grows no more than any other child does, so it is as long
+as it states, and none where it states nothing. Each host stands it in the
+view its `ZStack` stands in and draws its background, its outline and its
+shape there as a layout's box (`LayoutMembers.regionMembers`, a layout's box
+without the cut, as nothing stands inside to cut), so a blur or glass is drawn
+where the platform draws one; it takes no padding.
 
 ## A divider in a stack
 

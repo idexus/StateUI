@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.gridColumn: ✅
 ActivityIndicator.gridRow: ✅
@@ -28,9 +28,9 @@ Divider.pointerMoved: ✓ hover on Divider: handed to the host's recognizer or h
 Divider.pointerPressed: ✓ hover on Divider: handed to the host's recognizer or handler, no NSEvent sent
 Divider.pointerReleased: ✓ hover on Divider: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.panYChannel: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
-Filler.frameChanged: ✅
-Filler.gridColumnSpan: ✅
-Filler.gridRowSpan: ✅
+Fill.frameChanged: ✅
+Fill.gridColumnSpan: ✅
+Fill.gridRowSpan: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Grid.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Grid.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
@@ -83,10 +83,10 @@ SearchField.swipeThreshold: ✓ pan on SearchField: handed to the host's recogni
 SearchField.swiped: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 Slider.tapCount: ✓ tap on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.tapped: ✓ tap on Slider: handed to the host's recognizer or handler, no NSEvent sent
-Spacer.area: ✅
-Spacer.droppedFileTypes: ✓ dropFiles on Spacer: the window's drop routing told the driver's files, no dragging session
-Spacer.filesDropped: ✓ dropFiles on Spacer: the window's drop routing told the driver's files, no dragging session
-Spacer.frameChanged: ✅
+Space.area: ✅
+Space.droppedFileTypes: ✓ dropFiles on Space: the window's drop routing told the driver's files, no dragging session
+Space.filesDropped: ✓ dropFiles on Space: the window's drop routing told the driver's files, no dragging session
+Space.frameChanged: ✅
 Stepper.pointerEntered: ✓ hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.pointerExited: ✓ hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.pointerMoved: ✓ hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent

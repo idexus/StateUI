@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.isVisible: ✅
 ActivityIndicator.rotation: ✓ read rotation of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
@@ -10,7 +10,7 @@ DatePicker.ignoresInput: ✅
 DatePicker.scaleY: ✓ read scaleY of DatePicker: the host's own transform, checked against the layer it composed itself
 Divider.tooltip: ✅
 Ellipse.layoutDirection: ✅
-Filler.accessibilityRole: ✅
+Fill.accessibilityRole: ✅
 Grid.opacity: ✅
 Grid.rotationX: ✓ read rotationX of Grid: the host's own transform, checked against the layer it composed itself
 HStack.accessibilityRole: ✅
@@ -35,18 +35,18 @@ ScrollView.scale: ✓ read scale of ScrollView: the host's own transform, checke
 ScrollView.width: ✅
 SearchField.tooltip: ✅
 Slider.zIndex: ✅
-Spacer.isVisible: ✅
-Spacer.rotation: ✓ read rotation of Spacer: the host's own transform, checked against the layer it composed itself
-Stepper.tooltip: ✅
-Switch.zIndex: ✅
+Space.isVisible: ✅
+Space.rotation: ✓ read rotation of Space: the host's own transform, checked against the layer it composed itself
+Stepper.accessibilityValue: ✅
+Switch.ignoresInput: ✅
+Switch.scaleY: ✓ read scaleY of Switch: the host's own transform, checked against the layer it composed itself
 Text.frame: ✅
 Text.translationX: ✓ read translationX of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.isVisible: ✅
-TextEditor.rotation: ✓ read rotation of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.tooltip: ✅
-TimePicker.zIndex: ✅
-VStack.isVisible: ✅
-VStack.rotation: ✓ read rotation of VStack: the host's own transform, checked against the layer it composed itself
-WebView.accessibilityLabel: ✅
-ZStack.isEnabled: ✅
-ZStack.rotationY: ✓ read rotationY of ZStack: the host's own transform, checked against the layer it composed itself
+TextEditor.layoutDirection: ✅
+TextField.accessibilityValue: ✅
+TimePicker.ignoresInput: ✅
+TimePicker.scaleY: ✓ read scaleY of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.layoutDirection: ✅
+WebView.style: ✅
+WebView.translationY: ✓ read translationY of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.pivotY: ✓ read pivotY of ZStack: the host's own transform, checked against the layer it composed itself

@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ActivityIndicator.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ActivityIndicator.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -27,10 +27,10 @@ Divider.swipeThreshold: ✓ pan on Divider: the view's listening handed the reco
 Divider.swiped: ✓ pan on Divider: the view's listening handed the recognizer's states, no touch sent
 Ellipse.tapCount: ✓ tap on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.tapped: ✓ tap on Ellipse: the view's listening handed the recognizer's states, no touch sent
-Filler.area: ✅
-Filler.droppedFileTypes: ✓ dropFiles on Filler: the drop interaction's handler told the driver's files, no drag session
-Filler.filesDropped: ✓ dropFiles on Filler: the drop interaction's handler told the driver's files, no drag session
-Filler.frameChanged: ✅
+Fill.area: ✅
+Fill.droppedFileTypes: ✓ dropFiles on Fill: the drop interaction's handler told the driver's files, no drag session
+Fill.filesDropped: ✓ dropFiles on Fill: the drop interaction's handler told the driver's files, no drag session
+Fill.frameChanged: ✅
 Grid.pointerEntered: ✓ hover on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.pointerExited: ✓ hover on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.pointerMoved: ✓ hover on Grid: the view's listening handed the recognizer's states, no touch sent
@@ -88,12 +88,12 @@ SearchField.panXChannel: ✓ pan on SearchField: the view's listening handed the
 Slider.frameChanged: ✅
 Slider.gridColumn: ✅
 Slider.gridRow: ✅
-Spacer.canDrag: ✓ dragAndDrop on Spacer: the drag and drop interactions' handlers called, no drag session
-Spacer.dragEnded: ✓ dragAndDrop on Spacer: the drag and drop interactions' handlers called, no drag session
-Spacer.dragStarting: ✓ dragAndDrop on Spacer: the drag and drop interactions' handlers called, no drag session
-Spacer.dragText: ✓ dragAndDrop on Spacer: the drag and drop interactions' handlers called, no drag session
-Spacer.frameChanged: ✅
-Spacer.margin: ✅
+Space.canDrag: ✓ dragAndDrop on Space: the drag and drop interactions' handlers called, no drag session
+Space.dragEnded: ✓ dragAndDrop on Space: the drag and drop interactions' handlers called, no drag session
+Space.dragStarting: ✓ dragAndDrop on Space: the drag and drop interactions' handlers called, no drag session
+Space.dragText: ✓ dragAndDrop on Space: the drag and drop interactions' handlers called, no drag session
+Space.frameChanged: ✅
+Space.margin: ✅
 Stepper.swipeDirection: ✓ pan on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.swipeThreshold: ✓ pan on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.swiped: ✓ pan on Stepper: the view's listening handed the recognizer's states, no touch sent

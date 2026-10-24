@@ -35,7 +35,7 @@
         case .zStack:
             return property == .padding || layoutBoxProperties.contains(property)
 
-        case .layoutEngine, .filler:
+        case .layoutEngine, .fill, .space:
             return layoutBoxProperties.contains(property)
 
         case .scrollView:
@@ -95,7 +95,7 @@
         .grid, .hStack, .image, .itemsView, .text, .line,
         .path, .picker, .polygon, .polyline, .progressBar,
         .rectangle, .scrollView, .searchField, .slider,
-        .stepper, .switch, .timePicker, .vStack, .zStack, .layoutEngine, .filler,
+        .stepper, .switch, .timePicker, .vStack, .zStack, .layoutEngine, .fill, .space,
     ]
 
     private static let shapeTypes: Set<NodeType> = [
@@ -115,7 +115,7 @@
 
     private static let stackProperties: Set<Prop> = [.padding, .spacing]
 
-    /// What a layout, or a filler, draws of its own box.
+    /// What a layout, a space or a fill draws of its own box.
     private static let layoutBoxProperties: Set<Prop> = [.background, .stroke, .lineWidth, .shape]
 
     private static let gridProperties: Set<Prop> = [

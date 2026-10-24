@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.area: ✅
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.pointerEntered: ✅
@@ -45,11 +45,11 @@ Divider.pointerReleased: ✅
 Ellipse.panTouchCount: ✅
 Ellipse.panUpdated: ✅
 Ellipse.panXChannel: ✅
-Filler.frameChanged: ✅
-Filler.margin: ✅
-Filler.swipeDirection: ✅
-Filler.swipeThreshold: ✅
-Filler.swiped: ✅
+Fill.frameChanged: ✅
+Fill.margin: ✅
+Fill.swipeDirection: ✅
+Fill.swipeThreshold: ✅
+Fill.swiped: ✅
 Grid.area: ✅
 Grid.frameChanged: ✅
 Grid.pointerEntered: ✅
@@ -139,9 +139,9 @@ Slider.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the 
 Slider.frameChanged: ✅
 Slider.gridColumnSpan: ✅
 Slider.gridRowSpan: ✅
-Spacer.panTouchCount: ✅
-Spacer.panUpdated: ✅
-Spacer.panXChannel: ✅
+Space.panTouchCount: ✅
+Space.panUpdated: ✅
+Space.panXChannel: ✅
 Stepper.frameChanged: ✅
 Stepper.margin: ✅
 Stepper.swipeDirection: ✅

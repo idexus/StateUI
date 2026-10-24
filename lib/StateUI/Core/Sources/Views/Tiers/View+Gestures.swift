@@ -104,8 +104,7 @@ extension View {
     ///
     ///     @State private var turn = 0.0
     ///
-    ///     Rectangle()
-    ///         .fill(.transparent)
+    ///     Fill()
     ///         .panX($turn)
     ///
     /// The distance `onPanUpdated` reports, for an `.engine(following:)` to
@@ -121,8 +120,7 @@ extension View {
     /// Writes how far the view has been dragged down into a state, with no view
     /// rebuilt as it moves; see `panX(_:)`.
     ///
-    ///     Rectangle()
-    ///         .fill(.transparent)
+    ///     Fill()
     ///         .panY($turn)
     ///
     /// - Parameter state: the state the distance is written into.

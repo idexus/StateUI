@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.pivotX: ✓ read pivotX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.accessibilityValue: ✅
 Canvas.maximumHeight: ✅
@@ -14,8 +14,8 @@ DatePicker.width: ✅
 Divider.accessibilityActionPerformed: ✅
 Divider.accessibilityActions: ✅
 Ellipse.hidesChildrenFromAccessibility: ✅
-Filler.accessibilityLabel: ✅
-Filler.background: ✅
+Fill.accessibilityLabel: ✅
+Fill.background: ✅
 Grid.pivotY: ✓ read pivotY of Grid: the host's own transform, checked against the layer it composed itself
 HStack.accessibilityLabel: ✅
 HStack.layoutDirection: ✅
@@ -42,22 +42,22 @@ SearchField.accessibilityActionPerformed: ✅
 SearchField.accessibilityActions: ✅
 Slider.frame: ✅
 Slider.translationX: ✓ read translationX of Slider: the host's own transform, checked against the layer it composed itself
-Spacer.pivotX: ✓ read pivotX of Spacer: the host's own transform, checked against the layer it composed itself
-Stepper.accessibilityActionPerformed: ✅
-Stepper.accessibilityActions: ✅
-Switch.frame: ✅
-Switch.translationX: ✓ read translationX of Switch: the host's own transform, checked against the layer it composed itself
+Space.pivotX: ✓ read pivotX of Space: the host's own transform, checked against the layer it composed itself
+Stepper.accessibilityHint: ✅
+Switch.height: ✅
+Switch.scale: ✓ read scale of Switch: the host's own transform, checked against the layer it composed itself
+Switch.width: ✅
 Text.maximumHeight: ✅
 Text.maximumWidth: ✅
 Text.minimumHeight: ✅
 Text.minimumWidth: ✅
 Text.scaleX: ✓ read scaleX of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.pivotX: ✓ read pivotX of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.accessibilityActionPerformed: ✅
-TextField.accessibilityActions: ✅
-TimePicker.frame: ✅
-TimePicker.translationX: ✓ read translationX of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.pivotX: ✓ read pivotX of VStack: the host's own transform, checked against the layer it composed itself
-WebView.zIndex: ✅
-ZStack.isVisible: ✅
-ZStack.rotation: ✓ read rotation of ZStack: the host's own transform, checked against the layer it composed itself
+TextEditor.hidesChildrenFromAccessibility: ✅
+TextField.accessibilityHint: ✅
+TimePicker.height: ✅
+TimePicker.scale: ✓ read scale of TimePicker: the host's own transform, checked against the layer it composed itself
+TimePicker.width: ✅
+VStack.hidesChildrenFromAccessibility: ✅
+WebView.ignoresInput: ✅
+WebView.scaleY: ✓ read scaleY of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.layoutDirection: ✅

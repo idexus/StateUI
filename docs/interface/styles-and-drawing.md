@@ -243,8 +243,8 @@ the state as it stands, and no body is built again for it; a pair in it
 follows the theme. A color's channel walks the color instead:
 `.background($color)` animates it as the state moves. A window's background
 is a material too (`window.background`, in *Application and sessions*). A
-region that is only its material, holding nothing, is a `Filler` -
-`Filler(.blur(.regular))` - which takes the room it is given (*Layout*).
+region that is only its material, holding nothing, is a `Fill` -
+`Fill(.blur(.regular))` - which takes the room it is offered (*Layout*).
 
 ## Visual states
 

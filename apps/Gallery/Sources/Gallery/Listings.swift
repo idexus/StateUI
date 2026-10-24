@@ -1074,13 +1074,11 @@ enum Listings {
                 // differ asks, so the only closure this switch rebuilds is that one.
                 ZStack {
                     // No area: the whole room, filled.
-                    Rectangle()
-                        .fill(Palette.outline)
+                    Fill(Palette.outline)
 
                     // The panel fills the area it names: the right half of the
                     // room, or 120 by 60 at 16, 16 whatever the room's size.
-                    Rectangle()
-                        .fill(Color(hex: 0x1E88E5))
+                    Fill(Color(hex: 0x1E88E5))
                         .area(proportional ? .proportional(0.5, 0, 0.5, 1) : .absolute(16, 16, 120, 60))
 
                     // Its natural size, where its alignments put it.
@@ -3136,35 +3134,38 @@ enum Listings {
             }
         }
         """#,
-        "FillerSample": #"""
-        // Sources/Samples/Layout/FillerSample.swift
-        /// Whether a spacer stands beside the filler, sharing the room left.
-        @State private var shared = false
+        "FillSample": #"""
+        // Sources/Samples/Layout/FillSample.swift
+        /// Whether the room between the words is a space rather than a fill.
+        @State private var spaced = false
 
-        /// How many taps the clear filler heard.
+        /// How many taps the clear fill heard.
         @State private var taps = 0
 
         var body: some View {
             VStack {
-                SectionTitle("The room left")
+                SectionTitle("Offered or left")
 
-                // The filler takes what the words leave; a spacer beside it shares that alike.
+                // Along a stack a fill is as long as it says - nothing here; a space pushes, taking the rest.
                 VStack {
                     Text("Top")
-                    Filler(Palette.accent)
-                    if shared { Spacer() }
+                    if spaced {
+                        Space()
+                    } else {
+                        Fill(Palette.accent)
+                    }
                     Text("Bottom")
                 }
                 .height(160)
 
-                Switch($shared)
-                    .text("Spacer beside it")
+                Switch($spaced)
+                    .text("A space, not a fill")
 
                 SectionTitle("Across")
 
-                // As wide as it says, as tall as its row.
+                // As wide as it says, as tall as its row offers.
                 HStack {
-                    Filler(Palette.accent)
+                    Fill(Palette.accent)
                         .width(4)
                     Text("Take the room you are given.")
                 }
@@ -3173,10 +3174,10 @@ enum Listings {
 
                 // Each over a stripe of color, so what it lets through shows.
                 Grid {
-                    tile("Color", Filler(Palette.accent), over: .tomato).gridColumn(0)
-                    tile("Gradient", Filler(Palette.identity), over: .gold).gridColumn(1)
-                    tile("Blur", Filler(.blur(.regular)), over: .steelBlue).gridColumn(2)
-                    tile("Glass", Filler(.glass(.regular)), over: .white).gridColumn(3)
+                    tile("Color", Fill(Palette.accent), over: .tomato).gridColumn(0)
+                    tile("Gradient", Fill(Palette.identity), over: .gold).gridColumn(1)
+                    tile("Blur", Fill(.blur(.regular)), over: .steelBlue).gridColumn(2)
+                    tile("Glass", Fill(.glass(.regular)), over: .white).gridColumn(3)
                 }
                 .columns(.fill, .fill, .fill, .fill)
                 .height(110)
@@ -3189,7 +3190,7 @@ enum Listings {
                     Text(taps == 0 ? "Tap anywhere here" : taps == 1 ? "Tapped once" : "Tapped \(taps) times")
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)
-                    Filler()
+                    Fill()
                         .stroke(Palette.outline)
                         .lineWidth(1)
                         .onTapped { taps += 1 }
@@ -3198,11 +3199,11 @@ enum Listings {
             }
         }
 
-        /// A rounded filler with its name in its middle, standing alike on every side in a stripe of `stripe`.
-        private func tile(_ name: String, _ filler: Filler, over stripe: Color) -> ZStack {
+        /// A rounded fill with its name in its middle, standing alike on every side in a stripe of `stripe`.
+        private func tile(_ name: String, _ fill: Fill, over stripe: Color) -> ZStack {
             ZStack {
-                Filler(stripe)
-                filler
+                Fill(stripe)
+                fill
                 Text(name)
                     .fontWeight(.bold)
                     .horizontalAlignment(.center)
@@ -7023,20 +7024,15 @@ enum Listings {
                 ZStack {
                     // Stripes of color behind the panels: what each lets through shows on them.
                     Grid {
-                        Rectangle()
-                            .fill(.tomato)
+                        Fill(.tomato)
                             .gridColumn(0)
-                        Rectangle()
-                            .fill(.gold)
+                        Fill(.gold)
                             .gridColumn(1)
-                        Rectangle()
-                            .fill(.steelBlue)
+                        Fill(.steelBlue)
                             .gridColumn(2)
-                        Rectangle()
-                            .fill(.white)
+                        Fill(.white)
                             .gridColumn(3)
-                        Rectangle()
-                            .fill(Palette.accent)
+                        Fill(Palette.accent)
                             .gridColumn(4)
                     }
                     .columns(.fill, .fill, .fill, .fill, .fill)
@@ -8442,7 +8438,7 @@ enum Listings {
             HStack {
                 Text(words)
 
-                Spacer()
+                Space()
 
                 Text(honored ? "honored" : "not here")
             }
@@ -9693,8 +9689,7 @@ enum Listings {
                 .horizontalAlignment(.center)
 
                 // A rule is decoration: a stop that would waste the user's time.
-                Rectangle()
-                    .fill(Palette.outline)
+                Fill(Palette.outline)
                     .height(1)
                     .isAccessibilityHidden(true)
             }
@@ -10169,17 +10164,17 @@ enum Listings {
                         .horizontalAlignment(.fill)
                 }
 
-                SectionTitle("Spacer")
+                SectionTitle("Space")
 
-                // A spacer takes the room the other children leave.
+                // A space takes the room the other children leave.
                 HStack {
                     StackCell(text: "Draft")
-                    if spaced { Spacer() }
+                    if spaced { Space() }
                     StackCell(text: "Send")
                 }
 
                 Switch($spaced)
-                    .text("Spacer")
+                    .text("Space")
 
                 SectionTitle("Divider")
 

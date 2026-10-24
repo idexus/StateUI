@@ -1,4 +1,4 @@
-# revision 18.2
+# revision 19.2
 ActivityIndicator.ignoresInput: not realized
 ActivityIndicator.pivotY: ✅
 Button.rotationY: ✓ read rotationY of Button: the host's own tip, checked against the projection it laid on the element
@@ -17,8 +17,8 @@ Divider.accessibilityHeading: ✅
 Divider.scale: ✅
 Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own tip, checked against the projection it laid on the element
 Ellipse.zIndex: ✅
-Filler.accessibilityHint: ✅
-Filler.scaleY: ✅
+Fill.accessibilityHint: ✅
+Fill.scaleY: ✅
 Grid.accessibilityRole: ✅
 Grid.translationX: ✅
 HStack.accessibilityHint: ✅
@@ -50,22 +50,25 @@ ScrollView.isEnabled: ✅
 SearchField.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Slider.hidesChildrenFromAccessibility: ✅
 Slider.opacity: ✅
-Spacer.ignoresInput: ✅
-Spacer.pivotY: ✅
-Stepper.accessibilityHeading: ✅
-Stepper.scale: ✅
-Switch.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-Switch.translationY: ✅
+Space.ignoresInput: ✅
+Space.pivotY: ✅
+Stepper.frame: ✅
+Stepper.rotation: ✅
+Switch.accessibilityLabel: ✅
+Switch.scaleX: ✅
 Text.accessibilityHeading: ✅
-TextEditor.accessibilityHeading: ✅
-TextField.height: ✅
-TextField.layoutDirection: ✅
-TextField.width: ✅
-TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own tip, checked against the projection it laid on the element
-TimePicker.style: ✅
-VStack.accessibilityHint: ✅
-VStack.scaleY: ✅
-WebView.accessibilityHeading: ✅
-WebView.scale: ✅
-ZStack.accessibilityValue: ✅
-ZStack.translationY: ✅
+TextEditor.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+TextEditor.accessibilityActions: – UI Automation offers no action of an application's own words.
+TextField.isAccessibilityHidden: ✅
+TextField.isVisible: ✅
+TimePicker.maximumHeight: ✅
+TimePicker.maximumWidth: ✅
+TimePicker.minimumHeight: ✅
+TimePicker.minimumWidth: ✅
+TimePicker.pivotX: ✅
+VStack.rotationY: ✓ read rotationY of VStack: the host's own tip, checked against the projection it laid on the element
+VStack.zIndex: ✅
+WebView.frame: ✅
+WebView.rotation: ✅
+ZStack.accessibilityLabel: ✅
+ZStack.scaleX: ✅

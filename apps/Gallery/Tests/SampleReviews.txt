@@ -42,7 +42,7 @@ DrivenSample.swift 077b276f07020261
 EngineSample.swift d5a3e7207bb60bac
 EnvironmentSample.swift cb3fd389ce8ef814
 FilesSample.swift 9593e9f35f0a5b03
-FillerSample.swift e40d813a330e8702
+FillSample.swift accba8ffa08ff102
 FoundationProbeSample.swift 53fe7a3368cb73e8
 GalleryViewSample.swift e54a3c1f9e059608
 GateSample.swift 0eb1cb01a376dac3
@@ -76,7 +76,7 @@ LocaleInfoSample.swift 53a7aa3516ee574a
 LocalizationSample.swift 1636a0f168875c65
 MainQueueSample.swift 142b7947497fae78
 MapSample.swift 66e057528637bc65
-MaterialsSample.swift 7538a277ea2199fe
+MaterialsSample.swift 0074507d1ab40b46
 MenuBarSample.swift feaefec006cc6607
 ModalSample.swift 2fde3fe2204bd2dd
 MotionSample.swift 37c6f1ae5c962e49
@@ -90,7 +90,7 @@ PanSample.swift 8db15bbfd3c2b4b7
 PersistentStateSample.swift 4be06bf5d5e98ef8
 PickerSample.swift 86c5cbb290e05823
 PinchSample.swift 6aa4a07113d9cf10
-PlatformSupportSample.swift be5ddba643cf377c
+PlatformSupportSample.swift 24107a58da1308fc
 PointerSample.swift 3306b3b76379bc70
 PollSample.swift d8a149d4da3bffd8
 PopoverSample.swift 9066bd443c9189ec
@@ -108,14 +108,14 @@ ScrollViewSample.swift cf26f19b3729064f
 SearchFieldSample.swift 32903a70f555dea0
 SearchSample.swift 679d1baa31dfcd8b
 SelectableTextSample.swift 32194d184067f26d
-SemanticsSample.swift eb627c958efdd1c0
+SemanticsSample.swift 11463f1024116848
 ShapesSample.swift 7aa1ada83e962b82
 ShareSample.swift ca23e3ade29db45a
 ShortcutSample.swift 613e9bc5911f4fc5
 SizingSample.swift 505216705d5b9909
 SliderSample.swift de5c388891de8278
 SplitViewSample.swift f390ec3213bfa156
-StackLayoutSample.swift 8b0abf1c364f7ac8
+StackLayoutSample.swift d3a0a57633542c04
 StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
 StepperSample.swift a1eb96147d1526c6
@@ -145,4 +145,4 @@ WindowBarSample.swift d63db11a4fa743e5
 WindowOverlaySample.swift ac3db258608786ca
 WindowPhaseSample.swift 17d57d2502b6ba90
 WindowSample.swift 5d08c1aa776a8dcb
-ZStackSample.swift 210671ffae133ab7
+ZStackSample.swift 4c2667bc234487b1

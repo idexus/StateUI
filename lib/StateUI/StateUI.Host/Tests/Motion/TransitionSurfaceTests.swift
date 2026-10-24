@@ -27,13 +27,15 @@ final class TransitionSurfaceTests: XCTestCase {
         XCTAssertFalse(TransitionSurface.presents(Prop("custom"), on: .text))
     }
 
-    /// A filler's box travels as a layout's does - what it is made of, its outline, its shape, its size - and it holds
-    /// no padding to move.
-    func testAFillersBoxTravelsAsALayoutsDoes() {
-        for property: Prop in [.background, .stroke, .lineWidth, .shape, .opacity, .width, .rotation] {
-            XCTAssertTrue(TransitionSurface.presents(property, on: .filler), property.name)
+    /// A space's or a fill's box travels as a layout's does - what it is made of, its outline, its shape, its size -
+    /// and it holds no padding to move.
+    func testASpacesAndAFillsBoxTravelAsALayoutsDoes() {
+        for type: NodeType in [.space, .fill] {
+            for property: Prop in [.background, .stroke, .lineWidth, .shape, .opacity, .width, .rotation] {
+                XCTAssertTrue(TransitionSurface.presents(property, on: type), "\(type) \(property.name)")
+            }
+            XCTAssertFalse(TransitionSurface.presents(.padding, on: type), "\(type)")
         }
-        XCTAssertFalse(TransitionSurface.presents(.padding, on: .filler))
     }
 
     /// Every turn, scale and shift of a view's drawing travels - a tip about a flat view's axis as a turn in its

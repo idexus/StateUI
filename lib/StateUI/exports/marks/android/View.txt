@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ActivityIndicator.area: ✅
 ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the views' drag listeners' reports told by the driver, no drag started
@@ -271,40 +271,40 @@ Ellipse.swiped: ✅
 Ellipse.tapCount: ✅
 Ellipse.tapped: ✅
 Ellipse.verticalAlignment: ✅
-Filler.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Filler.area: ✅
-Filler.canDrag: ✓ dragAndDrop on Filler: the views' drag listeners' reports told by the driver, no drag started
-Filler.dragEnded: ✓ dragAndDrop on Filler: the views' drag listeners' reports told by the driver, no drag started
-Filler.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Filler.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Filler.dragStarting: ✓ dragAndDrop on Filler: the views' drag listeners' reports told by the driver, no drag started
-Filler.dragText: ✓ dragAndDrop on Filler: the views' drag listeners' reports told by the driver, no drag started
-Filler.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Filler.droppedFileTypes: ✓ dropFiles on Filler: the view's drag listener's report told the driver's documents, no drag started
-Filler.filesDropped: ✓ dropFiles on Filler: the view's drag listener's report told the driver's documents, no drag started
-Filler.frameChanged: ✅
-Filler.gridColumn: ✅
-Filler.gridColumnSpan: ✅
-Filler.gridRow: ✅
-Filler.gridRowSpan: ✅
-Filler.horizontalAlignment: ✅
-Filler.margin: ✅
-Filler.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
-Filler.panUpdated: ✅
-Filler.panXChannel: ✅
-Filler.panYChannel: ✅
-Filler.pinchUpdated: ✅
-Filler.pointerEntered: ✅
-Filler.pointerExited: ✅
-Filler.pointerMoved: ✅
-Filler.pointerPressed: ✅
-Filler.pointerReleased: ✅
-Filler.swipeDirection: ✅
-Filler.swipeThreshold: ✅
-Filler.swiped: ✅
-Filler.tapCount: ✅
-Filler.tapped: ✅
-Filler.verticalAlignment: ✅
+Fill.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Fill.area: ✅
+Fill.canDrag: ✓ dragAndDrop on Fill: the views' drag listeners' reports told by the driver, no drag started
+Fill.dragEnded: ✓ dragAndDrop on Fill: the views' drag listeners' reports told by the driver, no drag started
+Fill.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Fill.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Fill.dragStarting: ✓ dragAndDrop on Fill: the views' drag listeners' reports told by the driver, no drag started
+Fill.dragText: ✓ dragAndDrop on Fill: the views' drag listeners' reports told by the driver, no drag started
+Fill.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Fill.droppedFileTypes: ✓ dropFiles on Fill: the view's drag listener's report told the driver's documents, no drag started
+Fill.filesDropped: ✓ dropFiles on Fill: the view's drag listener's report told the driver's documents, no drag started
+Fill.frameChanged: ✅
+Fill.gridColumn: ✅
+Fill.gridColumnSpan: ✅
+Fill.gridRow: ✅
+Fill.gridRowSpan: ✅
+Fill.horizontalAlignment: ✅
+Fill.margin: ✅
+Fill.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+Fill.panUpdated: ✅
+Fill.panXChannel: ✅
+Fill.panYChannel: ✅
+Fill.pinchUpdated: ✅
+Fill.pointerEntered: ✅
+Fill.pointerExited: ✅
+Fill.pointerMoved: ✅
+Fill.pointerPressed: ✅
+Fill.pointerReleased: ✅
+Fill.swipeDirection: ✅
+Fill.swipeThreshold: ✅
+Fill.swiped: ✅
+Fill.tapCount: ✅
+Fill.tapped: ✅
+Fill.verticalAlignment: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Grid.area: ✅
 Grid.canDrag: ✓ dragAndDrop on Grid: the views' drag listeners' reports told by the driver, no drag started
@@ -849,40 +849,40 @@ Slider.swiped: ✅
 Slider.tapCount: ✅
 Slider.tapped: ✅
 Slider.verticalAlignment: ✅
-Spacer.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Spacer.area: ✅
-Spacer.canDrag: ✓ dragAndDrop on Spacer: the views' drag listeners' reports told by the driver, no drag started
-Spacer.dragEnded: ✓ dragAndDrop on Spacer: the views' drag listeners' reports told by the driver, no drag started
-Spacer.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Spacer.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Spacer.dragStarting: ✓ dragAndDrop on Spacer: the views' drag listeners' reports told by the driver, no drag started
-Spacer.dragText: ✓ dragAndDrop on Spacer: the views' drag listeners' reports told by the driver, no drag started
-Spacer.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Spacer.droppedFileTypes: ✓ dropFiles on Spacer: the view's drag listener's report told the driver's documents, no drag started
-Spacer.filesDropped: ✓ dropFiles on Spacer: the view's drag listener's report told the driver's documents, no drag started
-Spacer.frameChanged: ✅
-Spacer.gridColumn: ✅
-Spacer.gridColumnSpan: ✅
-Spacer.gridRow: ✅
-Spacer.gridRowSpan: ✅
-Spacer.horizontalAlignment: ✅
-Spacer.margin: ✅
-Spacer.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
-Spacer.panUpdated: ✅
-Spacer.panXChannel: ✅
-Spacer.panYChannel: ✅
-Spacer.pinchUpdated: ✅
-Spacer.pointerEntered: ✅
-Spacer.pointerExited: ✅
-Spacer.pointerMoved: ✅
-Spacer.pointerPressed: ✅
-Spacer.pointerReleased: ✅
-Spacer.swipeDirection: ✅
-Spacer.swipeThreshold: ✅
-Spacer.swiped: ✅
-Spacer.tapCount: ✅
-Spacer.tapped: ✅
-Spacer.verticalAlignment: ✅
+Space.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Space.area: ✅
+Space.canDrag: ✓ dragAndDrop on Space: the views' drag listeners' reports told by the driver, no drag started
+Space.dragEnded: ✓ dragAndDrop on Space: the views' drag listeners' reports told by the driver, no drag started
+Space.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Space.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Space.dragStarting: ✓ dragAndDrop on Space: the views' drag listeners' reports told by the driver, no drag started
+Space.dragText: ✓ dragAndDrop on Space: the views' drag listeners' reports told by the driver, no drag started
+Space.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Space.droppedFileTypes: ✓ dropFiles on Space: the view's drag listener's report told the driver's documents, no drag started
+Space.filesDropped: ✓ dropFiles on Space: the view's drag listener's report told the driver's documents, no drag started
+Space.frameChanged: ✅
+Space.gridColumn: ✅
+Space.gridColumnSpan: ✅
+Space.gridRow: ✅
+Space.gridRowSpan: ✅
+Space.horizontalAlignment: ✅
+Space.margin: ✅
+Space.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+Space.panUpdated: ✅
+Space.panXChannel: ✅
+Space.panYChannel: ✅
+Space.pinchUpdated: ✅
+Space.pointerEntered: ✅
+Space.pointerExited: ✅
+Space.pointerMoved: ✅
+Space.pointerPressed: ✅
+Space.pointerReleased: ✅
+Space.swipeDirection: ✅
+Space.swipeThreshold: ✅
+Space.swiped: ✅
+Space.tapCount: ✅
+Space.tapped: ✅
+Space.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Stepper.area: ✅
 Stepper.canDrag: ✓ dragAndDrop on Stepper: the views' drag listeners' reports told by the driver, no drag started

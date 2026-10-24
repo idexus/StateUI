@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.pointerEntered: ✓ hover on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.pointerExited: ✓ hover on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.pointerMoved: ✓ hover on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
@@ -25,12 +25,12 @@ Divider.panXChannel: ✓ pan on Divider: the view's listening handed the recogni
 Ellipse.frameChanged: ✅
 Ellipse.gridColumn: ✅
 Ellipse.gridRow: ✅
-Filler.canDrag: ✓ dragAndDrop on Filler: the drag and drop interactions' handlers called, no drag session
-Filler.dragEnded: ✓ dragAndDrop on Filler: the drag and drop interactions' handlers called, no drag session
-Filler.dragStarting: ✓ dragAndDrop on Filler: the drag and drop interactions' handlers called, no drag session
-Filler.dragText: ✓ dragAndDrop on Filler: the drag and drop interactions' handlers called, no drag session
-Filler.frameChanged: ✅
-Filler.margin: ✅
+Fill.canDrag: ✓ dragAndDrop on Fill: the drag and drop interactions' handlers called, no drag session
+Fill.dragEnded: ✓ dragAndDrop on Fill: the drag and drop interactions' handlers called, no drag session
+Fill.dragStarting: ✓ dragAndDrop on Fill: the drag and drop interactions' handlers called, no drag session
+Fill.dragText: ✓ dragAndDrop on Fill: the drag and drop interactions' handlers called, no drag session
+Fill.frameChanged: ✅
+Fill.margin: ✅
 Grid.swipeDirection: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.swipeThreshold: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.swiped: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
@@ -90,7 +90,7 @@ Slider.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handl
 Slider.frameChanged: ✅
 Slider.horizontalAlignment: ✅
 Slider.verticalAlignment: ✅
-Spacer.pinchUpdated: ✓ pinch on Spacer: the view's listening handed the recognizer's states, no touch sent
+Space.pinchUpdated: ✓ pinch on Space: the view's listening handed the recognizer's states, no touch sent
 Stepper.panTouchCount: ✓ pan on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.panUpdated: ✓ pan on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.panXChannel: ✓ pan on Stepper: the view's listening handed the recognizer's states, no touch sent

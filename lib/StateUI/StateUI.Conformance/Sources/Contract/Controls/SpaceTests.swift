@@ -4,20 +4,20 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `SpacerContract` on a host: a spacer takes the room its stack's other children leave, so the child after it
+/// `SpaceContract` on a host: a space takes the room its stack's other children leave, so the child after it
 /// stands at the stack's far end - each case made for both stacks.
-@_spi(Host) public enum SpacerTests: ConformanceFamily {
-    public static let name = "Spacer"
+@_spi(Host) public enum SpaceTests: ConformanceFamily {
+    public static let name = "Space"
 
     public static var cases: [ConformanceCase] {
-        [Aspects.standsAlone("Spacer"), takesTheRoomLeft("HStack"), takesTheRoomLeft("VStack")]
+        [Aspects.standsAlone("Space"), takesTheRoomLeft("HStack"), takesTheRoomLeft("VStack")]
     }
 
-    /// In a stack 200 long, two boxes of 20 and a spacer between them: the second box stands at 180.
+    /// In a stack 200 long, two boxes of 20 and a space between them: the second box stands at 180.
     @MainActor
     static func takesTheRoomLeft(_ stack: String) -> ConformanceCase {
-        ConformanceCase("\(stack).aSpacerTakesTheRoomItsStackLeaves", proves: [
-            Covered(SpacerContract.self),
+        ConformanceCase("\(stack).aSpaceTakesTheRoomItsStackLeaves", proves: [
+            Covered(SpaceContract.self),
         ], needs: [Covered(ViewContract.frameChanged, on: "Rectangle")]) { s in
             let last = Received<[Double]>()
             s.start {
@@ -28,7 +28,7 @@
                                 .fill(.red)
                                 .width(20)
                                 .height(20),
-                            Spacer(),
+                            Space(),
                             Rectangle()
                                 .fill(.blue)
                                 .width(20)

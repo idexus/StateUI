@@ -1,10 +1,10 @@
-# revision 11.1
+# revision 12.1
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
-Filler.lineWidth: ✅
-Filler.shape: ✅
-Filler.stroke: ✅
+Fill.lineWidth: ✅
+Fill.shape: ✅
+Fill.stroke: ✅
 Grid.lineWidth: ✅
 Grid.shape: ✅
 Grid.stroke: ✅
@@ -17,6 +17,9 @@ LayoutEngine.stroke: ◐ cannot read stroke of LayoutEngine - AppKit's driver ha
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ☑️ AppKit outlines a scroller in one color: a gradient draws none.
+Space.lineWidth: ✅
+Space.shape: ✅
+Space.stroke: ✅
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅

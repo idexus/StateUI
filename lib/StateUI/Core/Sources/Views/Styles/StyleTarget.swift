@@ -39,8 +39,8 @@ extension ActivityIndicator: StyleTarget {}
 extension ProgressBar: StyleTarget {}
 extension Image: StyleTarget {}
 extension Divider: StyleTarget {}
-extension Spacer: StyleTarget {}
-extension Filler: StyleTarget {}
+extension Space: StyleTarget {}
+extension Fill: StyleTarget {}
 extension Grid: StyleTarget {}
 extension ScrollView: StyleTarget {}
 extension VStack: StyleTarget {}

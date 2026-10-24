@@ -25,13 +25,11 @@ private struct Areas: ExampleContent {
             // differ asks, so the only closure this switch rebuilds is that one.
             ZStack {
                 // No area: the whole room, filled.
-                Rectangle()
-                    .fill(Palette.outline)
+                Fill(Palette.outline)
 
                 // The panel fills the area it names: the right half of the
                 // room, or 120 by 60 at 16, 16 whatever the room's size.
-                Rectangle()
-                    .fill(Color(hex: 0x1E88E5))
+                Fill(Color(hex: 0x1E88E5))
                     .area(proportional ? .proportional(0.5, 0, 0.5, 1) : .absolute(16, 16, 120, 60))
 
                 // Its natural size, where its alignments put it.

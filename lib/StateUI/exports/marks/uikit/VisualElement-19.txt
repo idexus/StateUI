@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.isAccessibilityHidden: ✅
 Button.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Canvas.isVisible: ✅
@@ -9,8 +9,8 @@ CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transfo
 DatePicker.pivotY: ✓ read pivotY of DatePicker: the host's own transform, checked against the layer it composed itself
 Divider.accessibilityLabel: ✅
 Ellipse.accessibilityAdjusted: ✅
-Filler.frame: ✅
-Filler.translationX: ✓ read translationX of Filler: the host's own transform, checked against the layer it composed itself
+Fill.frame: ✅
+Fill.translationX: ✓ read translationX of Fill: the host's own transform, checked against the layer it composed itself
 Grid.hidesChildrenFromAccessibility: ✅
 HStack.frame: ✅
 HStack.translationX: ✓ read translationX of HStack: the host's own transform, checked against the layer it composed itself
@@ -34,20 +34,17 @@ ScrollView.layoutDirection: ✅
 SearchField.accessibilityLabel: ✅
 Slider.isEnabled: ✅
 Slider.rotationY: ✓ read rotationY of Slider: the host's own transform, checked against the layer it composed itself
-Spacer.isAccessibilityHidden: ✅
-Stepper.accessibilityLabel: ✅
-Switch.isEnabled: ✅
-Switch.rotationY: ✓ read rotationY of Switch: the host's own transform, checked against the layer it composed itself
+Space.isAccessibilityHidden: ✅
+Stepper.style: ✅
+Stepper.translationY: ✓ read translationY of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.pivotY: ✓ read pivotY of Switch: the host's own transform, checked against the layer it composed itself
 Text.isVisible: ✅
 Text.rotation: ✓ read rotation of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.isAccessibilityHidden: ✅
-TextField.accessibilityLabel: ✅
-TimePicker.isEnabled: ✅
-TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.isAccessibilityHidden: ✅
-WebView.maximumHeight: ✅
-WebView.maximumWidth: ✅
-WebView.minimumHeight: ✅
-WebView.minimumWidth: ✅
-WebView.scaleX: ✓ read scaleX of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.background: ✅
+TextEditor.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
+TextField.style: ✅
+TextField.translationY: ✓ read translationY of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.pivotY: ✓ read pivotY of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.accessibilityAdjusted: ✅
+WebView.opacity: ✅
+WebView.rotationX: ✓ read rotationX of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level

@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.panYChannel: ✅
 Button.frameChanged: ✅
 Button.horizontalAlignment: ✅
@@ -28,10 +28,10 @@ Ellipse.dragText: ✓ dragAndDrop on Ellipse: the relay's drag reports told by t
 Ellipse.frameChanged: ✅
 Ellipse.gridColumn: ✅
 Ellipse.gridRow: ✅
-Filler.droppedFileTypes: ✓ dropFiles on Filler: the relay's drop report told the driver's files, no drag WinUI began
-Filler.filesDropped: ✓ dropFiles on Filler: the relay's drop report told the driver's files, no drag WinUI began
-Filler.tapCount: ✅
-Filler.tapped: ✅
+Fill.droppedFileTypes: ✓ dropFiles on Fill: the relay's drop report told the driver's files, no drag WinUI began
+Fill.filesDropped: ✓ dropFiles on Fill: the relay's drop report told the driver's files, no drag WinUI began
+Fill.tapCount: ✅
+Fill.tapped: ✅
 Grid.panYChannel: ✅
 HStack.frameChanged: ✅
 HStack.horizontalAlignment: ✅
@@ -99,13 +99,13 @@ Slider.frameChanged: ✅
 Slider.horizontalAlignment: ✅
 Slider.pinchUpdated: ✓ pinch on Slider: the relay's report of the manipulation handed to the host, no touch sent
 Slider.verticalAlignment: ✅
-Spacer.canDrag: ✓ dragAndDrop on Spacer: the relay's drag reports told by the driver, no drag WinUI began
-Spacer.dragEnded: ✓ dragAndDrop on Spacer: the relay's drag reports told by the driver, no drag WinUI began
-Spacer.dragStarting: ✓ dragAndDrop on Spacer: the relay's drag reports told by the driver, no drag WinUI began
-Spacer.dragText: ✓ dragAndDrop on Spacer: the relay's drag reports told by the driver, no drag WinUI began
-Spacer.frameChanged: ✅
-Spacer.gridColumn: ✅
-Spacer.gridRow: ✅
+Space.canDrag: ✓ dragAndDrop on Space: the relay's drag reports told by the driver, no drag WinUI began
+Space.dragEnded: ✓ dragAndDrop on Space: the relay's drag reports told by the driver, no drag WinUI began
+Space.dragStarting: ✓ dragAndDrop on Space: the relay's drag reports told by the driver, no drag WinUI began
+Space.dragText: ✓ dragAndDrop on Space: the relay's drag reports told by the driver, no drag WinUI began
+Space.frameChanged: ✅
+Space.gridColumn: ✅
+Space.gridRow: ✅
 Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the relay's drop report told the driver's files, no drag WinUI began
 Stepper.filesDropped: ✓ dropFiles on Stepper: the relay's drop report told the driver's files, no drag WinUI began
 Stepper.tapCount: ✅

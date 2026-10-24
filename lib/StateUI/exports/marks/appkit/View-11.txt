@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.pointerEntered: ✓ hover on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.pointerExited: ✓ hover on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.pointerMoved: ✓ hover on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
@@ -25,12 +25,12 @@ Divider.panXChannel: ✓ pan on Divider: handed to the host's recognizer or hand
 Ellipse.frameChanged: ✅
 Ellipse.gridColumn: ✅
 Ellipse.gridRow: ✅
-Filler.canDrag: ✓ dragAndDrop on Filler: the drag source and the window's drop routing told by the driver, no dragging session
-Filler.dragEnded: ✓ dragAndDrop on Filler: the drag source and the window's drop routing told by the driver, no dragging session
-Filler.dragStarting: ✓ dragAndDrop on Filler: the drag source and the window's drop routing told by the driver, no dragging session
-Filler.dragText: ✓ dragAndDrop on Filler: the drag source and the window's drop routing told by the driver, no dragging session
-Filler.frameChanged: ✅
-Filler.margin: ✅
+Fill.canDrag: ✓ dragAndDrop on Fill: the drag source and the window's drop routing told by the driver, no dragging session
+Fill.dragEnded: ✓ dragAndDrop on Fill: the drag source and the window's drop routing told by the driver, no dragging session
+Fill.dragStarting: ✓ dragAndDrop on Fill: the drag source and the window's drop routing told by the driver, no dragging session
+Fill.dragText: ✓ dragAndDrop on Fill: the drag source and the window's drop routing told by the driver, no dragging session
+Fill.frameChanged: ✅
+Fill.margin: ✅
 Grid.swipeDirection: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.swipeThreshold: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.swiped: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
@@ -90,7 +90,7 @@ Slider.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop
 Slider.frameChanged: ✅
 Slider.horizontalAlignment: ✅
 Slider.verticalAlignment: ✅
-Spacer.pinchUpdated: ✓ pinch on Spacer: handed to the host's recognizer or handler, no NSEvent sent
+Space.pinchUpdated: ✓ pinch on Space: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.panTouchCount: ✓ pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.panUpdated: ✓ pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.panXChannel: ✓ pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent

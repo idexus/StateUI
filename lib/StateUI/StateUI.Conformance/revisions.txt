@@ -43,10 +43,10 @@ Picker 4
 Image 3
 Page 7
 PageElement 2
-View 8
-VisualElement 18
+View 9
+VisualElement 19
 Shape 5
-BorderElement 11
+BorderElement 12
 TextInput 7
 Application 12
 TextSpan 4
@@ -68,7 +68,7 @@ TextField 3
 SearchField 3
 Polyline 3
 FilledShape 2
-AutomationElement 4
+AutomationElement 5
 Layout 2
 PaddingElement 2
 LayoutEngine 11
@@ -88,7 +88,6 @@ Map 2
 Path 2
 Polygon 2
 ProgressBar 3
-Spacer 2
 TabView 2
 VStack 3
 WebView 3

@@ -3,10 +3,12 @@
 
 @_spi(Host) import StateUI
 
-/// What a layout takes of its own box and its children's spacing, and a filler of its box, the same on every host.
+/// What a layout takes of its own box and its children's spacing, and a space or a fill of its box, the same on
+/// every host.
 @_spi(Host) public enum LayoutMembers {
-    /// What a filler takes of its box: what it is made of, its outline and its shape - it holds nothing to cut.
-    public static let fillerMembers = PropertyList(
+    /// What a space or a fill takes of its box: what it is made of, its outline and its shape - it holds nothing to
+    /// cut.
+    public static let regionMembers = PropertyList(
         VisualElementContract.background,
         BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape)
 

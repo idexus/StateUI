@@ -1,4 +1,4 @@
-# revision 18.2
+# revision 19.2
 ActivityIndicator.hidesChildrenFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 ActivityIndicator.opacity: ✅
 Button.maximumHeight: ✅
@@ -21,8 +21,8 @@ Ellipse.maximumWidth: ✅
 Ellipse.minimumHeight: ✅
 Ellipse.minimumWidth: ✅
 Ellipse.pivotX: ✅
-Filler.rotationX: ✓ read rotationX of Filler: the host's own tip, checked against the projection it laid on the element
-Filler.style: ✅
+Fill.rotationX: ✓ read rotationX of Fill: the host's own tip, checked against the projection it laid on the element
+Fill.style: ✅
 Grid.rotationY: ✓ read rotationY of Grid: the host's own tip, checked against the projection it laid on the element
 Grid.zIndex: ✅
 HStack.rotationX: ✓ read rotationX of HStack: the host's own tip, checked against the projection it laid on the element
@@ -55,23 +55,26 @@ ScrollView.scaleX: ✅
 SearchField.accessibilityHint: ✅
 SearchField.scaleY: ✅
 Slider.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Spacer.hidesChildrenFromAccessibility: ✅
-Spacer.opacity: ✅
-Stepper.ignoresInput: ✅
-Stepper.pivotY: ✅
-Switch.accessibilityHeading: ✅
-Switch.scale: ✅
+Space.hidesChildrenFromAccessibility: ✅
+Space.opacity: ✅
+Stepper.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Stepper.isEnabled: ✅
+Switch.frame: ✅
+Switch.rotation: ✅
 Text.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Text.translationY: ✅
-TextEditor.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-TextEditor.translationY: ✅
-TextField.accessibilityHeading: ✅
-TimePicker.height: ✅
-TimePicker.layoutDirection: ✅
-TimePicker.width: ✅
-VStack.rotationX: ✓ read rotationX of VStack: the host's own tip, checked against the projection it laid on the element
-VStack.style: ✅
-WebView.ignoresInput: ✅
-WebView.pivotY: ✅
-ZStack.accessibilityHeading: ✅
-ZStack.scale: ✅
+TextEditor.accessibilityLabel: ✅
+TextEditor.scaleX: ✅
+TextField.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+TextField.accessibilityActions: – UI Automation offers no action of an application's own words.
+TimePicker.isAccessibilityHidden: ✅
+TimePicker.isVisible: ✅
+VStack.maximumHeight: ✅
+VStack.maximumWidth: ✅
+VStack.minimumHeight: ✅
+VStack.minimumWidth: ✅
+VStack.pivotX: ✅
+WebView.background: not realized
+WebView.isEnabled: – WinUI's WebView2 is no control: it keeps no enabled state, and its page takes the user's hand whatever the tree says.
+ZStack.frame: ✅
+ZStack.rotation: ✅

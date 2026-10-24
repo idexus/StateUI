@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.hidesChildrenFromAccessibility: ✅
 Button.accessibilityLabel: ✅
 Canvas.opacity: ✅
@@ -9,8 +9,8 @@ DatePicker.isVisible: ✅
 DatePicker.rotation: ✓ read rotation of DatePicker: the host's own transform, checked against the layer it composed itself
 Divider.accessibilityHint: ✅
 Ellipse.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-Filler.style: ✅
-Filler.translationY: ✓ read translationY of Filler: the host's own transform, checked against the layer it composed itself
+Fill.style: ✅
+Fill.translationY: ✓ read translationY of Fill: the host's own transform, checked against the layer it composed itself
 Grid.background: ✅
 HStack.style: ✅
 HStack.translationY: ✓ read translationY of HStack: the host's own transform, checked against the layer it composed itself
@@ -38,19 +38,17 @@ SearchField.accessibilityHint: ✅
 Slider.height: ✅
 Slider.scale: ✓ read scale of Slider: the host's own transform, checked against the layer it composed itself
 Slider.width: ✅
-Spacer.hidesChildrenFromAccessibility: ✅
-Stepper.accessibilityHint: ✅
-Switch.height: ✅
-Switch.scale: ✓ read scale of Switch: the host's own transform, checked against the layer it composed itself
-Switch.width: ✅
+Space.hidesChildrenFromAccessibility: ✅
+Stepper.zIndex: ✅
+Switch.isVisible: ✅
+Switch.rotation: ✓ read rotation of Switch: the host's own transform, checked against the layer it composed itself
 Text.opacity: ✅
 Text.rotationX: ✓ read rotationX of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.hidesChildrenFromAccessibility: ✅
-TextField.accessibilityHint: ✅
-TimePicker.height: ✅
-TimePicker.scale: ✓ read scale of TimePicker: the host's own transform, checked against the layer it composed itself
-TimePicker.width: ✅
-VStack.hidesChildrenFromAccessibility: ✅
-WebView.ignoresInput: ✅
-WebView.scaleY: ✓ read scaleY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.layoutDirection: ✅
+TextEditor.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+TextField.zIndex: ✅
+TimePicker.isVisible: ✅
+TimePicker.rotation: ✓ read rotation of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+WebView.isEnabled: ✅
+WebView.rotationY: ✓ read rotationY of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.isAccessibilityHidden: ✅

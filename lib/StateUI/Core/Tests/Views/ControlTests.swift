@@ -246,13 +246,16 @@ final class ControlTests: XCTestCase {
                     .progress(0.4)
                     .tint(.cornflowerBlue)),
 
-            ControlCase("Spacer", source: "Spacer.swift",
-                Spacer()
-                    .minimumWidth(8)),
+            // A space: room that pushes, at least 8 long, here drawn as a blur in a capsule.
+            ControlCase("Space", source: "Space.swift",
+                Space()
+                    .minimumWidth(8)
+                    .background(.blur(.thin))
+                    .shape(.capsule)),
 
-            // A filler: a region made of its material, here a blur, in its box's shape and outlined.
-            ControlCase("Filler", source: "Filler.swift",
-                Filler(.blur(.regular))
+            // A fill: the room it is offered made of its material, here a blur, in its box's shape and outlined.
+            ControlCase("Fill", source: "Fill.swift",
+                Fill(.blur(.regular))
                     .shape(.capsule)
                     .stroke(.white)
                     .lineWidth(1)),

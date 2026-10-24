@@ -103,7 +103,7 @@ of its members each meets, and why a cell is empty.
 | [DatePicker](controls/DatePicker.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Divider](controls/Divider.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Ellipse](controls/Ellipse.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Filler](controls/Filler.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [Fill](controls/Fill.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Grid](controls/Grid.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [HStack](controls/HStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Image](controls/Image.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -131,7 +131,7 @@ of its members each meets, and why a cell is empty.
 | [SearchField](controls/SearchField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Sheet](controls/Sheet.md) | adaptive | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 | [Slider](controls/Slider.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Spacer](controls/Spacer.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [Space](controls/Space.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [SplitView](controls/SplitView.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Stepper](controls/Stepper.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Switch](controls/Switch.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -218,10 +218,9 @@ contract.
 | `Divider` | an `NSBox` separator | a hairline `UIView` in the separator color | a `View` in the theme's list divider | a line in `DividerStrokeColorDefaultBrush` | a `GtkSeparator` | `<hr>` |
 | `MenuSeparator` | a separator `NSMenuItem` | a group break in a `UIMenu` | a group divider in a menu | `MenuFlyoutSeparator` | a section break in a `GMenu` | `role=separator` in an ARIA `menu` |
 | `ToolbarGroup` / `ToolbarButton` | `NSToolbarItem`; `NSMenuToolbarItem` overflow | `UIBarButtonItemGroup` / `UIBarButtonItem` | `Toolbar` `MenuItem` | `CommandBar` `AppBarButton` in the `TitleBar` | `GtkButton` in an `AdwHeaderBar` | `<button>` in an ARIA `toolbar` |
-| `ZStack` / `LayoutEngine` / `Filler` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid, one shared cell |
+| `ZStack` / `LayoutEngine` / `Fill` / `Space` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid, one shared cell |
 | `VStack` / `HStack` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | flexbox |
 | `Grid` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid |
-| `Spacer` | empty `NSView` the stack's arithmetic sizes | empty `UIView` | empty `View` | empty `Grid` | empty `GtkWidget` | empty `<div>` |
 | `ScrollView` | `NSScrollView` | `UIScrollView` | `ScrollView` / `HorizontalScrollView` | `ScrollViewer` | `GtkScrolledWindow` | `overflow: auto` |
 | `Text` / `TextSpans` / `TextSpan` | `NSTextField` label; `NSAttributedString` runs | `UILabel`; `NSAttributedString` runs | `TextView`; `SpannableStringBuilder` spans | `TextBlock`; `Run` inlines | `GtkLabel`; `PangoAttrList` runs | `<span>`; `<span>` runs |
 | `Button` | `NSButton` | `UIButton` | `Button` | `Button` | `GtkButton` | `<button>` |
@@ -471,7 +470,7 @@ Every control, and every part an application, its windows and its pages are made
 | [DatePicker](controls/DatePicker.md) | 91 | 46 ✅ · 2 ☑️ · 36 ✓ · 7 – | 36 ✅ · 1 ☑️ · 37 ✓ · 13 – | 66 ✅ · 5 ☑️ · 15 ✓ · 3 – | 70 ✅ · 3 ☑️ · 13 ✓ · 5 – | 57 ✅ · 2 ☑️ · 26 ✓ · 6 – | 62 ✅ · 1 ☑️ · 20 ✓ · 7 – |
 | [Divider](controls/Divider.md) | 71 | 33 ✅ · 2 ☑️ · 35 ✓ · 1 – | 32 ✅ · 2 ☑️ · 35 ✓ · 2 – | 55 ✅ · 5 ☑️ · 10 ✓ | 50 ✅ · 1 ☑️ · 14 ✓ · 5 – | 42 ✅ · 1 ☑️ · 22 ✓ · 6 – | 47 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Ellipse](controls/Ellipse.md) | 79 | 42 ✅ · 2 ☑️ · 35 ✓ | 41 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 5 ☑️ · 10 ✓ | 59 ✅ · 14 ✓ · 6 – | 50 ✅ · 1 ☑️ · 22 ✓ · 6 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
-| [Filler](controls/Filler.md) | 74 | 38 ✅ · 1 ☑️ · 35 ✓ | 37 ✅ · 1 ☑️ · 35 ✓ · 1 – | 58 ✅ · 5 ☑️ · 10 ✓ | 56 ✅ · 1 ☑️ · 14 ✓ · 3 – | 46 ✅ · 1 ☑️ · 21 ✓ · 6 – | 50 ✅ · 1 ☑️ · 20 ✓ · 3 – |
+| [Fill](controls/Fill.md) | 74 | 38 ✅ · 1 ☑️ · 35 ✓ | 37 ✅ · 1 ☑️ · 35 ✓ · 1 – | 58 ✅ · 5 ☑️ · 10 ✓ | 56 ✅ · 1 ☑️ · 14 ✓ · 3 – | 46 ✅ · 1 ☑️ · 21 ✓ · 6 – | 50 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Grid](controls/Grid.md) | 84 | 46 ✅ · 1 ☑️ · 35 ✓ | 43 ✅ · 1 ☑️ · 37 ✓ · 1 – | 64 ✅ · 5 ☑️ · 12 ✓ | 65 ✅ · 1 ☑️ · 13 ✓ · 4 – | 53 ✅ · 1 ☑️ · 23 ✓ · 7 – | 59 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [HStack](controls/HStack.md) | 81 | 43 ✅ · 1 ☑️ · 35 ✓ | 40 ✅ · 1 ☑️ · 37 ✓ · 1 – | 61 ✅ · 5 ☑️ · 12 ✓ | 62 ✅ · 1 ☑️ · 13 ✓ · 4 – | 50 ✅ · 1 ☑️ · 23 ✓ · 7 – | 56 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Image](controls/Image.md) | 74 | 36 ✅ · 2 ☑️ · 35 ✓ | 35 ✅ · 2 ☑️ · 35 ✓ · 1 – | 56 ✅ · 5 ☑️ · 10 ✓ | 53 ✅ · 14 ✓ · 6 – | 44 ✅ · 1 ☑️ · 22 ✓ · 6 – | 49 ✅ · 1 ☑️ · 20 ✓ · 3 – |
@@ -488,7 +487,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ScrollView](controls/ScrollView.md) | 88 | 42 ✅ · 3 ☑️ · 36 ✓ · 7 – | 44 ✅ · 1 ☑️ · 37 ✓ · 4 – | 66 ✅ · 5 ☑️ · 13 ✓ · 3 – | 66 ✅ · 1 ☑️ · 13 ✓ · 8 – | 55 ✅ · 1 ☑️ · 23 ✓ · 9 – | 58 ✅ · 1 ☑️ · 20 ✓ · 9 – |
 | [SearchField](controls/SearchField.md) | 98 | 54 ✅ · 4 ☑️ · 35 ✓ · 2 – | 57 ✅ · 2 ☑️ · 37 ✓ · 2 – | 78 ✅ · 5 ☑️ · 12 ✓ · 1 – | 73 ✅ · 5 ☑️ · 13 ✓ · 7 – | 64 ✅ · 3 ☑️ · 25 ✓ · 6 – | 74 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Slider](controls/Slider.md) | 83 | 42 ✅ · 2 ☑️ · 35 ✓ · 2 – | 37 ✅ · 2 ☑️ · 39 ✓ · 5 – | 62 ✅ · 5 ☑️ · 12 ✓ · 3 – | 62 ✅ · 1 ☑️ · 13 ✓ · 5 – | 49 ✅ · 1 ☑️ · 25 ✓ · 8 – | 59 ✅ · 20 ✓ · 4 – |
-| [Spacer](controls/Spacer.md) | 71 | 33 ✅ · 2 ☑️ · 35 ✓ · 1 – | 32 ✅ · 2 ☑️ · 35 ✓ · 2 – | 55 ✅ · 5 ☑️ · 10 ✓ | 50 ✅ · 1 ☑️ · 14 ✓ · 5 – | 42 ✅ · 1 ☑️ · 22 ✓ · 6 – | 47 ✅ · 1 ☑️ · 20 ✓ · 3 – |
+| [Space](controls/Space.md) | 74 | 38 ✅ · 1 ☑️ · 35 ✓ | 37 ✅ · 1 ☑️ · 35 ✓ · 1 – | 58 ✅ · 5 ☑️ · 10 ✓ | 56 ✅ · 1 ☑️ · 14 ✓ · 3 – | 46 ✅ · 1 ☑️ · 21 ✓ · 6 – | 50 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Stepper](controls/Stepper.md) | 81 | 43 ✅ · 2 ☑️ · 35 ✓ · 1 – | 37 ✅ · 2 ☑️ · 37 ✓ · 5 – | 60 ✅ · 5 ☑️ · 12 ✓ · 3 – | 61 ✅ · 2 ☑️ · 13 ✓ · 5 – | 50 ✅ · 1 ☑️ · 24 ✓ · 6 – | 57 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Switch](controls/Switch.md) | 82 | 43 ✅ · 2 ☑️ · 35 ✓ · 2 – | 38 ✅ · 2 ☑️ · 37 ✓ · 5 – | 60 ✅ · 5 ☑️ · 12 ✓ · 3 – | 63 ✅ · 1 ☑️ · 13 ✓ · 5 – | 50 ✅ · 1 ☑️ · 24 ✓ · 7 – | 58 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Text](controls/Text.md) | 89 | 50 ✅ · 2 ☑️ · 35 ✓ · 1 – | 51 ✅ · 1 ☑️ · 35 ✓ · 1 – | 72 ✅ · 5 ☑️ · 10 ✓ | 70 ✅ · 1 ☑️ · 13 ✓ · 5 – | 59 ✅ · 1 ☑️ · 23 ✓ · 6 – | 65 ✅ · 1 ☑️ · 20 ✓ · 3 – |
@@ -498,10 +497,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 81 | 43 ✅ · 1 ☑️ · 35 ✓ | 41 ✅ · 1 ☑️ · 36 ✓ · 1 – | 62 ✅ · 5 ☑️ · 11 ✓ | 62 ✅ · 1 ☑️ · 13 ✓ · 4 – | 51 ✅ · 1 ☑️ · 22 ✓ · 7 – | 56 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [WebView](controls/WebView.md) | 87 | 48 ✅ · 2 ☑️ · 36 ✓ · 1 – | 45 ✅ · 2 ☑️ · 38 ✓ · 2 – | 66 ✅ · 5 ☑️ · 12 ✓ · 3 – | 49 ✅ · 13 ✓ · 24 – | 56 ✅ · 1 ☑️ · 24 ✓ · 6 – | 57 ✅ · 1 ☑️ · 20 ✓ · 6 – |
 | [ZStack](controls/ZStack.md) | 80 | 42 ✅ · 1 ☑️ · 35 ✓ | 39 ✅ · 1 ☑️ · 37 ✓ · 1 – | 60 ✅ · 5 ☑️ · 12 ✓ | 61 ✅ · 1 ☑️ · 13 ✓ · 4 – | 49 ✅ · 1 ☑️ · 23 ✓ · 7 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
-| ✅ |  | 1524 | 1453 | 2184 | 2120 | 1775 | 1986 |
-| ✓ |  | 1250 | 1288 | 390 | 469 | 796 | 685 |
-| – |  | 53 | 97 | 36 | 204 | 226 | 127 |
-| **Met** | 2927 | **2827** | **2838** | **2610** | **2793** | **2797** | **2798** |
+| ✅ |  | 1529 | 1458 | 2187 | 2126 | 1779 | 1989 |
+| ✓ |  | 1250 | 1288 | 390 | 469 | 795 | 685 |
+| – |  | 52 | 96 | 36 | 202 | 226 | 127 |
+| **Met** | 2930 | **2831** | **2842** | **2613** | **2797** | **2800** | **2801** |
 | 🧩 |  | 0 | 0 | 79 | 79 | 79 | 79 |
 
 ### Application structure
@@ -645,11 +644,11 @@ realizes the element and each of its members.
 
 `ActivityIndicator`, `Anchor`, `Application`, `Button`, `ButtonMenu`, `Canvas`,
 `Capsule`, `CheckBox`, `ContextMenu`, `DatePicker`, `Divider`, `Ellipse`,
-`Filler`, `Grid`, `HStack`, `Image`, `ItemsView`, `LayoutEngine`, `Line`, `Map`,
+`Fill`, `Grid`, `HStack`, `Image`, `ItemsView`, `LayoutEngine`, `Line`, `Map`,
 `Marker`, `Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`, `NavigationStack`,
 `Overlay`, `Page`, `Path`, `Picker`, `Polygon`, `Polyline`, `Popover`,
 `ProgressBar`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`, `Sheet`,
-`Slider`, `Spacer`, `SplitView`, `Stepper`, `Switch`, `TabView`, `Text`,
+`Slider`, `Space`, `SplitView`, `Stepper`, `Switch`, `TabView`, `Text`,
 `TextEditor`, `TextField`, `TextSpan`, `TextSpans`, `TimePicker`, `TitleView`,
 `ToolbarButton`, `ToolbarGroup`, `VStack`, `WebView`, `Window`, `ZStack`.
 

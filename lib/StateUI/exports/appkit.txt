@@ -65,7 +65,7 @@ Ellipse
   lineCap
   lineWidth
   stroke
-Filler
+Fill
 Grid
   columnSpacing
   columns
@@ -223,7 +223,7 @@ Slider
   pressed()
   released()
   valueChanged()
-Spacer
+Space
 SplitView
   showsSidebar
   sidebarBackground

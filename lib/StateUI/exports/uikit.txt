@@ -61,7 +61,7 @@ Ellipse
   lineCap
   lineWidth
   stroke
-Filler
+Fill
   background
   lineWidth
   shape
@@ -251,7 +251,11 @@ Slider
   pressed()
   released()
   valueChanged()
-Spacer
+Space
+  background
+  lineWidth
+  shape
+  stroke
 Stepper
   maximum
   minimum

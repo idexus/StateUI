@@ -17,10 +17,10 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testButton() { conform(ButtonTests.self) }
     @MainActor func testCanvas() { conform(CanvasTests.self) }
     @MainActor func testCapsule() { conform(CapsuleTests.self) }
-    @MainActor func testFiller() { conform(FillerTests.self) }
+    @MainActor func testFill() { conform(FillTests.self) }
     @MainActor func testLayoutEngine() { conform(LayoutEngineTests.self) }
     @MainActor func testCheckBox() { conform(CheckBoxTests.self) }
-    @MainActor func testSpacer() { conform(SpacerTests.self) }
+    @MainActor func testSpace() { conform(SpaceTests.self) }
     @MainActor func testDatePicker() { conform(DatePickerTests.self) }
     @MainActor func testEllipse() { conform(EllipseTests.self) }
     @MainActor func testGrid() { conform(GridTests.self) }

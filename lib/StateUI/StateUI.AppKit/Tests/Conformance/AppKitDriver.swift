@@ -46,7 +46,7 @@ final class AppKitDriver: HostDriver {
                     "StateUI draws a shape in its view's draw(_:), which holds none of its \(member); its drawing proves it"
             }
         }
-        for box in ["Filler", "Grid", "HStack", "VStack", "ZStack"] {
+        for box in ["Fill", "Grid", "HStack", "Space", "VStack", "ZStack"] {
             for member in ["stroke", "lineWidth", "shape"] {
                 none["read \(member) of \(box)"] =
                     "StateUI draws a box in its view's draw(_:), which holds none of its \(member); its drawing proves it"

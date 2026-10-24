@@ -119,17 +119,17 @@ container's children. A state read inside that closure belongs to the
 container's description scope, which can keep invalidation narrower than a
 read in an outer composed view.
 
-### Spacer and Divider
+### Space, Fill and Divider
 
-A `Spacer` takes the room its stack's other children leave along the stack's
-axis, shared alike when there are several; a `Divider` is the platform's own
-separator line, drawn across its stack:
+A `Space` pushes: it takes the room its stack's other children leave along
+the stack's axis, shared alike when there are several. A `Divider` is the
+platform's own separator line, drawn across its stack:
 
 ```swift
 VStack {
     HStack {
         Text("Draft")
-        Spacer()
+        Space()
         Button("Send")
     }
 
@@ -141,34 +141,32 @@ VStack {
 .padding(16)
 ```
 
-A spacer asks for no room of its own, so a stack only as long as its children
-leaves it none; a spacer given a length along the axis - `.width(12)` in an
+A space asks for no room of its own, so a stack only as long as its children
+leaves it none; a space given a length along the axis - `.width(12)` in an
 `HStack` - is a gap of exactly that length, and `.minimumWidth` or
-`.maximumWidth` bound one that grows. A spacer is a gap; a region made of a
-material, shaped or outlined, is a `Filler`. A line between a menu's entries
-is a `MenuSeparator`.
+`.maximumWidth` bound one that grows. A line between a menu's entries is a
+`MenuSeparator`.
 
-### Filler
-
-A `Filler` is a region that takes the room it is given: in a stack, the room
-the other children leave, shared alike with the spacers; in a `ZStack`, a
-grid's cell or a page, the whole room. It is made of what its initializer
-gives it - a color, a gradient, a blur or glass (*Materials*, in *Styles and
-drawing*) - in its box's shape, outlined where it says so:
+A `Fill` takes the room it is offered: in a `ZStack`, a grid's cell or a page
+the whole room, across a stack its breadth - and along a stack only the length
+it states. It is made of what its initializer gives it - a color, a gradient,
+a blur or glass (*Materials*, in *Styles and drawing*) - in its box's shape,
+outlined where it says so. A space is room too, and is drawn alike:
 
 ```swift
 VStack {
     Text("Inbox")
-    Filler(.cornflowerBlue)
-    Filler(.gray)
+    Fill(.gray)
         .height(1)
+    Space()
+        .background(.cornflowerBlue)
     Text("Archive")
 }
 .height(200)
 
 ZStack {
     Text("Behind the glass")
-    Filler(.glass(.clear))
+    Fill(.glass(.clear))
         .shape(.capsule)
         .stroke(.white)
     Text("Over it")
@@ -176,12 +174,12 @@ ZStack {
 .height(120)
 ```
 
-A length along the stack stops it growing, so `Filler(.gray).height(1)` is a
-rule and the blue filler takes the rest. What a filler is made of is its
-background, so a later `.background` replaces it. `Filler()` is clear and
-still takes the user's touch, a region for a gesture. A figure - its line
-dashed or joined, its corners rounded one by one - is a shape: a `Rectangle`,
-a `Capsule`, a `Path`.
+`Fill(.gray).height(1)` is a rule; a fill stating no length along a stack
+stands none long there, while the blue space takes the rest. What a fill is
+made of is its background, so a later `.background` replaces it. `Fill()` is
+clear and still takes the user's touch, a region for a gesture. A figure - its
+line dashed or joined, its corners rounded one by one - is a shape: a
+`Rectangle`, a `Capsule`, a `Path`.
 
 ## Grid
 

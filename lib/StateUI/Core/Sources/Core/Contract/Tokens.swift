@@ -50,8 +50,8 @@ extension NodeType {
     static let divider = DividerContract.nodeType
     static let menuSeparator = MenuSeparatorContract.nodeType
     static let buttonMenu = ButtonMenuContract.nodeType
-    static let spacer = SpacerContract.nodeType
-    static let filler = FillerContract.nodeType
+    static let space = SpaceContract.nodeType
+    static let fill = FillContract.nodeType
     static let navigationStack = NavigationStackContract.nodeType
     static let titleView = TitleViewContract.nodeType
     static let overlay = OverlayContract.nodeType

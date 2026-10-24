@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.swipeDirection: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.swipeThreshold: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.swiped: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
@@ -27,7 +27,7 @@ Ellipse.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's dro
 Ellipse.frameChanged: ✅
 Ellipse.horizontalAlignment: ✅
 Ellipse.verticalAlignment: ✅
-Filler.pinchUpdated: ✓ pinch on Filler: handed to the host's recognizer or handler, no NSEvent sent
+Fill.pinchUpdated: ✓ pinch on Fill: handed to the host's recognizer or handler, no NSEvent sent
 Grid.panTouchCount: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.panUpdated: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.panXChannel: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
@@ -88,7 +88,7 @@ Slider.pointerExited: ✓ hover on Slider: handed to the host's recognizer or ha
 Slider.pointerMoved: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.pointerPressed: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.pointerReleased: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
-Spacer.panYChannel: ✓ pan on Spacer: handed to the host's recognizer or handler, no NSEvent sent
+Space.panYChannel: ✓ pan on Space: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.frameChanged: ✅
 Stepper.gridColumnSpan: ✅
 Stepper.gridRowSpan: ✅

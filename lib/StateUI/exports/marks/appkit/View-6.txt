@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.tapCount: ✓ tap on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.tapped: ✓ tap on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 Button.area: ✅
@@ -29,9 +29,9 @@ Divider.frameChanged: ✅
 Divider.horizontalAlignment: ✅
 Divider.verticalAlignment: ✅
 Ellipse.pinchUpdated: ✓ pinch on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
-Filler.panTouchCount: ✓ pan on Filler: handed to the host's recognizer or handler, no NSEvent sent
-Filler.panUpdated: ✓ pan on Filler: handed to the host's recognizer or handler, no NSEvent sent
-Filler.panXChannel: ✓ pan on Filler: handed to the host's recognizer or handler, no NSEvent sent
+Fill.panTouchCount: ✓ pan on Fill: handed to the host's recognizer or handler, no NSEvent sent
+Fill.panUpdated: ✓ pan on Fill: handed to the host's recognizer or handler, no NSEvent sent
+Fill.panXChannel: ✓ pan on Fill: handed to the host's recognizer or handler, no NSEvent sent
 Grid.frameChanged: ✅
 Grid.gridColumn: ✅
 Grid.gridRow: ✅
@@ -83,9 +83,9 @@ SearchField.pointerMoved: ✓ hover on SearchField: handed to the host's recogni
 SearchField.pointerPressed: ✓ hover on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.pointerReleased: ✓ hover on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 Slider.panYChannel: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
-Spacer.frameChanged: ✅
-Spacer.gridColumnSpan: ✅
-Spacer.gridRowSpan: ✅
+Space.frameChanged: ✅
+Space.gridColumnSpan: ✅
+Space.gridRowSpan: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Stepper.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Stepper.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session

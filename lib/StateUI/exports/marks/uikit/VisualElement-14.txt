@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.accessibilityValue: ✅
 Button.maximumHeight: ✅
 Button.maximumWidth: ✅
@@ -13,8 +13,8 @@ DatePicker.isAccessibilityHidden: ✅
 Divider.ignoresInput: ✅
 Divider.scaleY: ✓ read scaleY of Divider: the host's own transform, checked against the layer it composed itself
 Ellipse.accessibilityLabel: ✅
-Filler.opacity: ✅
-Filler.rotationX: ✓ read rotationX of Filler: the host's own transform, checked against the layer it composed itself
+Fill.opacity: ✅
+Fill.rotationX: ✓ read rotationX of Fill: the host's own transform, checked against the layer it composed itself
 Grid.accessibilityActionPerformed: ✅
 Grid.accessibilityActions: ✅
 HStack.opacity: ✅
@@ -42,16 +42,17 @@ ScrollView.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: 
 SearchField.ignoresInput: ✅
 SearchField.scaleY: ✓ read scaleY of SearchField: the host's own transform, checked against the layer it composed itself
 Slider.layoutDirection: ✅
-Spacer.accessibilityValue: ✅
-Stepper.ignoresInput: ✅
-Stepper.scaleY: ✓ read scaleY of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.layoutDirection: ✅
+Space.accessibilityValue: ✅
+Stepper.isEnabled: ✅
+Stepper.rotationY: ✓ read rotationY of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.isAccessibilityHidden: ✅
 Text.hidesChildrenFromAccessibility: ✅
-TextEditor.accessibilityValue: ✅
-TextField.ignoresInput: ✅
-TextField.scaleY: ✓ read scaleY of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.layoutDirection: ✅
-VStack.accessibilityValue: ✅
-VStack.background: ✅
-WebView.pivotY: ✓ read pivotY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.accessibilityAdjusted: ✅
+TextEditor.accessibilityLabel: ✅
+TextField.isEnabled: ✅
+TextField.rotationY: ✓ read rotationY of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.isAccessibilityHidden: ✅
+VStack.accessibilityLabel: ✅
+VStack.layoutDirection: ✅
+WebView.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
+ZStack.accessibilityRole: ✅
+ZStack.background: ✅

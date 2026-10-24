@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.panYChannel: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 Button.frameChanged: ✅
 Button.gridColumnSpan: ✅
@@ -26,9 +26,9 @@ Ellipse.dragStarting: ✓ dragAndDrop on Ellipse: the drag and drop interactions
 Ellipse.dragText: ✓ dragAndDrop on Ellipse: the drag and drop interactions' handlers called, no drag session
 Ellipse.frameChanged: ✅
 Ellipse.margin: ✅
-Filler.swipeDirection: ✓ pan on Filler: the view's listening handed the recognizer's states, no touch sent
-Filler.swipeThreshold: ✓ pan on Filler: the view's listening handed the recognizer's states, no touch sent
-Filler.swiped: ✓ pan on Filler: the view's listening handed the recognizer's states, no touch sent
+Fill.swipeDirection: ✓ pan on Fill: the view's listening handed the recognizer's states, no touch sent
+Fill.swipeThreshold: ✓ pan on Fill: the view's listening handed the recognizer's states, no touch sent
+Fill.swiped: ✓ pan on Fill: the view's listening handed the recognizer's states, no touch sent
 Grid.tapCount: ✓ tap on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.tapped: ✓ tap on Grid: the view's listening handed the recognizer's states, no touch sent
 HStack.area: ✅
@@ -85,9 +85,9 @@ SearchField.frameChanged: ✅
 SearchField.horizontalAlignment: ✅
 SearchField.verticalAlignment: ✅
 Slider.pinchUpdated: ✓ pinch on Slider: the view's listening handed the recognizer's states, no touch sent
-Spacer.panTouchCount: ✓ pan on Spacer: the view's listening handed the recognizer's states, no touch sent
-Spacer.panUpdated: ✓ pan on Spacer: the view's listening handed the recognizer's states, no touch sent
-Spacer.panXChannel: ✓ pan on Spacer: the view's listening handed the recognizer's states, no touch sent
+Space.panTouchCount: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
+Space.panUpdated: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
+Space.panXChannel: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
 Stepper.frameChanged: ✅
 Stepper.gridColumn: ✅
 Stepper.gridRow: ✅

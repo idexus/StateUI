@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.gridColumn: ✅
 ActivityIndicator.gridRow: ✅
@@ -28,9 +28,9 @@ Divider.pointerMoved: ✓ hover on Divider: the view's listening handed the reco
 Divider.pointerPressed: ✓ hover on Divider: the view's listening handed the recognizer's states, no touch sent
 Divider.pointerReleased: ✓ hover on Divider: the view's listening handed the recognizer's states, no touch sent
 Ellipse.panYChannel: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
-Filler.frameChanged: ✅
-Filler.gridColumnSpan: ✅
-Filler.gridRowSpan: ✅
+Fill.frameChanged: ✅
+Fill.gridColumnSpan: ✅
+Fill.gridRowSpan: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Grid.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Grid.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -83,10 +83,10 @@ SearchField.swipeThreshold: ✓ pan on SearchField: the view's listening handed 
 SearchField.swiped: ✓ pan on SearchField: the view's listening handed the recognizer's states, no touch sent
 Slider.tapCount: ✓ tap on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.tapped: ✓ tap on Slider: the view's listening handed the recognizer's states, no touch sent
-Spacer.area: ✅
-Spacer.droppedFileTypes: ✓ dropFiles on Spacer: the drop interaction's handler told the driver's files, no drag session
-Spacer.filesDropped: ✓ dropFiles on Spacer: the drop interaction's handler told the driver's files, no drag session
-Spacer.frameChanged: ✅
+Space.area: ✅
+Space.droppedFileTypes: ✓ dropFiles on Space: the drop interaction's handler told the driver's files, no drag session
+Space.filesDropped: ✓ dropFiles on Space: the drop interaction's handler told the driver's files, no drag session
+Space.frameChanged: ✅
 Stepper.pointerEntered: ✓ hover on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.pointerExited: ✓ hover on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.pointerMoved: ✓ hover on Stepper: the view's listening handed the recognizer's states, no touch sent

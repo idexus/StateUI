@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.accessibilityActionPerformed: ✅
 ActivityIndicator.accessibilityActions: ✅
 ActivityIndicator.accessibilityAdjusted: ✅
@@ -287,42 +287,42 @@ Ellipse.translationX: ✅
 Ellipse.translationY: ✅
 Ellipse.width: ✅
 Ellipse.zIndex: ✅
-Filler.accessibilityActionPerformed: ✅
-Filler.accessibilityActions: ✅
-Filler.accessibilityAdjusted: ✅
-Filler.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
-Filler.accessibilityHint: ✅
-Filler.accessibilityLabel: ✅
-Filler.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
-Filler.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Filler.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
-Filler.frame: ✅
-Filler.height: ✅
-Filler.hidesChildrenFromAccessibility: ✅
-Filler.ignoresInput: cannot read what reaches Filler - Android's driver has no path for it yet
-Filler.isAccessibilityHidden: ✅
-Filler.isEnabled: ✅
-Filler.isVisible: ✅
-Filler.layoutDirection: ✅
-Filler.maximumHeight: ✅
-Filler.maximumWidth: ✅
-Filler.minimumHeight: ✅
-Filler.minimumWidth: ✅
-Filler.opacity: ✅
-Filler.pivotX: ✅
-Filler.pivotY: ✅
-Filler.rotation: ✅
-Filler.rotationX: ✅
-Filler.rotationY: ✅
-Filler.scale: ✅
-Filler.scaleX: ✅
-Filler.scaleY: ✅
-Filler.style: ✅
-Filler.tooltip: ✅
-Filler.translationX: ✅
-Filler.translationY: ✅
-Filler.width: ✅
-Filler.zIndex: ✅
+Fill.accessibilityActionPerformed: ✅
+Fill.accessibilityActions: ✅
+Fill.accessibilityAdjusted: ✅
+Fill.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+Fill.accessibilityHint: ✅
+Fill.accessibilityLabel: ✅
+Fill.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Fill.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Fill.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Fill.frame: ✅
+Fill.height: ✅
+Fill.hidesChildrenFromAccessibility: ✅
+Fill.ignoresInput: cannot read what reaches Fill - Android's driver has no path for it yet
+Fill.isAccessibilityHidden: ✅
+Fill.isEnabled: ✅
+Fill.isVisible: ✅
+Fill.layoutDirection: ✅
+Fill.maximumHeight: ✅
+Fill.maximumWidth: ✅
+Fill.minimumHeight: ✅
+Fill.minimumWidth: ✅
+Fill.opacity: ✅
+Fill.pivotX: ✅
+Fill.pivotY: ✅
+Fill.rotation: ✅
+Fill.rotationX: ✅
+Fill.rotationY: ✅
+Fill.scale: ✅
+Fill.scaleX: ✅
+Fill.scaleY: ✅
+Fill.style: ✅
+Fill.tooltip: ✅
+Fill.translationX: ✅
+Fill.translationY: ✅
+Fill.width: ✅
+Fill.zIndex: ✅
 Grid.accessibilityActionPerformed: ✅
 Grid.accessibilityActions: ✅
 Grid.accessibilityAdjusted: ✅
@@ -899,42 +899,42 @@ Slider.translationX: ✅
 Slider.translationY: ✅
 Slider.width: ✅
 Slider.zIndex: ✅
-Spacer.accessibilityActionPerformed: ✅
-Spacer.accessibilityActions: ✅
-Spacer.accessibilityAdjusted: ✅
-Spacer.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
-Spacer.accessibilityHint: ✅
-Spacer.accessibilityLabel: ✅
-Spacer.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
-Spacer.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Spacer.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
-Spacer.frame: ✅
-Spacer.height: ✅
-Spacer.hidesChildrenFromAccessibility: ✅
-Spacer.ignoresInput: not realized
-Spacer.isAccessibilityHidden: ✅
-Spacer.isEnabled: ✅
-Spacer.isVisible: ✅
-Spacer.layoutDirection: ✅
-Spacer.maximumHeight: ✅
-Spacer.maximumWidth: ✅
-Spacer.minimumHeight: ✅
-Spacer.minimumWidth: ✅
-Spacer.opacity: ✅
-Spacer.pivotX: ✅
-Spacer.pivotY: ✅
-Spacer.rotation: ✅
-Spacer.rotationX: ✅
-Spacer.rotationY: ✅
-Spacer.scale: ✅
-Spacer.scaleX: ✅
-Spacer.scaleY: ✅
-Spacer.style: ✅
-Spacer.tooltip: ✅
-Spacer.translationX: ✅
-Spacer.translationY: ✅
-Spacer.width: ✅
-Spacer.zIndex: ✅
+Space.accessibilityActionPerformed: ✅
+Space.accessibilityActions: ✅
+Space.accessibilityAdjusted: ✅
+Space.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+Space.accessibilityHint: ✅
+Space.accessibilityLabel: ✅
+Space.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Space.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Space.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Space.frame: ✅
+Space.height: ✅
+Space.hidesChildrenFromAccessibility: ✅
+Space.ignoresInput: cannot read what reaches Space - Android's driver has no path for it yet
+Space.isAccessibilityHidden: ✅
+Space.isEnabled: ✅
+Space.isVisible: ✅
+Space.layoutDirection: ✅
+Space.maximumHeight: ✅
+Space.maximumWidth: ✅
+Space.minimumHeight: ✅
+Space.minimumWidth: ✅
+Space.opacity: ✅
+Space.pivotX: ✅
+Space.pivotY: ✅
+Space.rotation: ✅
+Space.rotationX: ✅
+Space.rotationY: ✅
+Space.scale: ✅
+Space.scaleX: ✅
+Space.scaleY: ✅
+Space.style: ✅
+Space.tooltip: ✅
+Space.translationX: ✅
+Space.translationY: ✅
+Space.width: ✅
+Space.zIndex: ✅
 Stepper.accessibilityActionPerformed: ✅
 Stepper.accessibilityActions: ✅
 Stepper.accessibilityAdjusted: ✅

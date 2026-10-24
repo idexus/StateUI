@@ -42,8 +42,10 @@ final class AndroidDriver: HostDriver {
             }
         }
         for member in ["stroke", "lineWidth", "shape"] {
-            none["read \(member) of Filler"] =
-                "StateUI draws a filler's box in a drawable of its own, which holds none of its \(member); its drawing proves it"
+            for region in ["Fill", "Space"] {
+                none["read \(member) of \(region)"] =
+                    "StateUI draws a box in a drawable of its own, which holds none of its \(member); its drawing proves it"
+            }
         }
         for layout in ["Grid", "HStack", "VStack", "ZStack", "ScrollView"] {
             for member in ["stroke", "lineWidth", "shape"] {

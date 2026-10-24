@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.style: ✅
 ActivityIndicator.translationY: ✓ read translationY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.pivotX: ✓ read pivotX of Button: the host's own transform, checked against the layer it composed itself
@@ -13,7 +13,7 @@ Ellipse.maximumWidth: ✅
 Ellipse.minimumHeight: ✅
 Ellipse.minimumWidth: ✅
 Ellipse.scaleX: ✓ read scaleX of Ellipse: the host's own transform, checked against the layer it composed itself
-Filler.hidesChildrenFromAccessibility: ✅
+Fill.hidesChildrenFromAccessibility: ✅
 Grid.isEnabled: ✓ tap on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.zIndex: ✅
 HStack.hidesChildrenFromAccessibility: ✅
@@ -43,17 +43,24 @@ ScrollView.accessibilityLabel: ✅
 ScrollView.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 SearchField.pivotY: ✓ read pivotY of SearchField: the host's own transform, checked against the layer it composed itself
 Slider.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
-Spacer.style: ✅
-Spacer.translationY: ✓ read translationY of Spacer: the host's own transform, checked against the layer it composed itself
-Stepper.pivotY: ✓ read pivotY of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
+Space.style: ✅
+Space.translationY: ✓ read translationY of Space: the host's own transform, checked against the layer it composed itself
+Stepper.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
+Switch.accessibilityRole: ✅
 Text.accessibilityValue: ✅
-TextEditor.style: ✅
-TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.pivotY: ✓ read pivotY of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
-VStack.style: ✅
-VStack.translationY: ✓ read translationY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-ZStack.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-ZStack.isEnabled: ✅
+TextEditor.maximumHeight: ✅
+TextEditor.maximumWidth: ✅
+TextEditor.minimumHeight: ✅
+TextEditor.minimumWidth: ✅
+TextEditor.scaleX: ✓ read scaleX of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
+TimePicker.accessibilityRole: ✅
+VStack.maximumHeight: ✅
+VStack.maximumWidth: ✅
+VStack.minimumHeight: ✅
+VStack.minimumWidth: ✅
+VStack.scaleX: ✓ read scaleX of VStack: the host's own transform, checked against the layer it composed itself
+WebView.accessibilityActionPerformed: ✅
+WebView.accessibilityActions: ✅
+ZStack.frame: ✅
+ZStack.translationX: ✓ read translationX of ZStack: the host's own transform, checked against the layer it composed itself

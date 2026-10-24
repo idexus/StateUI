@@ -64,7 +64,7 @@
 
     /// The places as a layout written left to right has them: each child measured once, a growing one given its
     /// share of the room the others leave.
-    /// Design: docs/design/host/layout.md#a-spacer
+    /// Design: docs/design/host/layout.md#a-space
     @MainActor
     private static func leftToRight<Child: LayoutChild>(
         of items: [Child], axis: Axis, spacing: Double, padding: Insets, in bounds: Rect

@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.panYChannel: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 Button.frameChanged: ✅
 Button.gridColumnSpan: ✅
@@ -26,9 +26,9 @@ Ellipse.dragStarting: ✓ dragAndDrop on Ellipse: the drag source and the window
 Ellipse.dragText: ✓ dragAndDrop on Ellipse: the drag source and the window's drop routing told by the driver, no dragging session
 Ellipse.frameChanged: ✅
 Ellipse.margin: ✅
-Filler.swipeDirection: ✓ pan on Filler: handed to the host's recognizer or handler, no NSEvent sent
-Filler.swipeThreshold: ✓ pan on Filler: handed to the host's recognizer or handler, no NSEvent sent
-Filler.swiped: ✓ pan on Filler: handed to the host's recognizer or handler, no NSEvent sent
+Fill.swipeDirection: ✓ pan on Fill: handed to the host's recognizer or handler, no NSEvent sent
+Fill.swipeThreshold: ✓ pan on Fill: handed to the host's recognizer or handler, no NSEvent sent
+Fill.swiped: ✓ pan on Fill: handed to the host's recognizer or handler, no NSEvent sent
 Grid.tapCount: ✓ tap on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.tapped: ✓ tap on Grid: handed to the host's recognizer or handler, no NSEvent sent
 HStack.area: ✅
@@ -85,9 +85,9 @@ SearchField.frameChanged: ✅
 SearchField.horizontalAlignment: ✅
 SearchField.verticalAlignment: ✅
 Slider.pinchUpdated: ✓ pinch on Slider: handed to the host's recognizer or handler, no NSEvent sent
-Spacer.panTouchCount: ✓ pan on Spacer: handed to the host's recognizer or handler, no NSEvent sent
-Spacer.panUpdated: ✓ pan on Spacer: handed to the host's recognizer or handler, no NSEvent sent
-Spacer.panXChannel: ✓ pan on Spacer: handed to the host's recognizer or handler, no NSEvent sent
+Space.panTouchCount: ✓ pan on Space: handed to the host's recognizer or handler, no NSEvent sent
+Space.panUpdated: ✓ pan on Space: handed to the host's recognizer or handler, no NSEvent sent
+Space.panXChannel: ✓ pan on Space: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.frameChanged: ✅
 Stepper.gridColumn: ✅
 Stepper.gridRow: ✅

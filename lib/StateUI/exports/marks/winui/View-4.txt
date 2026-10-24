@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the relay's drag reports told by the driver, no drag WinUI began
 ActivityIndicator.dragEnded: ✓ dragAndDrop on ActivityIndicator: the relay's drag reports told by the driver, no drag WinUI began
 ActivityIndicator.dragStarting: ✓ dragAndDrop on ActivityIndicator: the relay's drag reports told by the driver, no drag WinUI began
@@ -34,10 +34,10 @@ Divider.frameChanged: ✅
 Divider.gridColumn: ✅
 Divider.gridRow: ✅
 Ellipse.panYChannel: ✅
-Filler.frameChanged: ✅
-Filler.horizontalAlignment: ✅
-Filler.pinchUpdated: ✓ pinch on Filler: the relay's report of the manipulation handed to the host, no touch sent
-Filler.verticalAlignment: ✅
+Fill.frameChanged: ✅
+Fill.horizontalAlignment: ✅
+Fill.pinchUpdated: ✓ pinch on Fill: the relay's report of the manipulation handed to the host, no touch sent
+Fill.verticalAlignment: ✅
 Grid.canDrag: ✓ dragAndDrop on Grid: the relay's drag reports told by the driver, no drag WinUI began
 Grid.dragEnded: ✓ dragAndDrop on Grid: the relay's drag reports told by the driver, no drag WinUI began
 Grid.dragStarting: ✓ dragAndDrop on Grid: the relay's drag reports told by the driver, no drag WinUI began
@@ -100,7 +100,7 @@ Slider.droppedFileTypes: ✓ dropFiles on Slider: the relay's drop report told t
 Slider.filesDropped: ✓ dropFiles on Slider: the relay's drop report told the driver's files, no drag WinUI began
 Slider.tapCount: ✅
 Slider.tapped: ✅
-Spacer.panYChannel: ✅
+Space.panYChannel: ✅
 Stepper.frameChanged: ✅
 Stepper.horizontalAlignment: ✅
 Stepper.pinchUpdated: ✓ pinch on Stepper: the relay's report of the manipulation handed to the host, no touch sent

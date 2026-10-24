@@ -226,7 +226,7 @@ class WebLayoutView: WebDOMView {
         view.style("min-height", WebCSS.pixels(values.minimumHeight) ?? (yieldsDown ? "0" : nil))
         switch arrangement {
         case .stack(let axis):
-            // A spacer or a filler takes an equal share of the room its siblings leave.
+            // A space takes an equal share of the room its siblings leave.
             view.style("flex", values.grows(along: axis) ? "1 1 0" : "none")
             view.style("justify-self", nil)
             view.style("align-self", axis == .vertical ? across : down)

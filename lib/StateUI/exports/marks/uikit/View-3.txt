@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.area: ✅
 ActivityIndicator.droppedFileTypes: ✓ dropFiles on ActivityIndicator: the drop interaction's handler told the driver's files, no drag session
 ActivityIndicator.filesDropped: ✓ dropFiles on ActivityIndicator: the drop interaction's handler told the driver's files, no drag session
@@ -24,9 +24,9 @@ Divider.pinchUpdated: ✓ pinch on Divider: the view's listening handed the reco
 Ellipse.panTouchCount: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.panUpdated: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.panXChannel: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
-Filler.frameChanged: ✅
-Filler.gridColumn: ✅
-Filler.gridRow: ✅
+Fill.frameChanged: ✅
+Fill.gridColumn: ✅
+Fill.gridRow: ✅
 Grid.canDrag: ✓ dragAndDrop on Grid: the drag and drop interactions' handlers called, no drag session
 Grid.dragEnded: ✓ dragAndDrop on Grid: the drag and drop interactions' handlers called, no drag session
 Grid.dragStarting: ✓ dragAndDrop on Grid: the drag and drop interactions' handlers called, no drag session
@@ -83,13 +83,13 @@ SearchField.panYChannel: ✓ pan on SearchField: the view's listening handed the
 Slider.frameChanged: ✅
 Slider.gridColumnSpan: ✅
 Slider.gridRowSpan: ✅
-Spacer.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Spacer.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Spacer.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Spacer.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Spacer.frameChanged: ✅
-Spacer.horizontalAlignment: ✅
-Spacer.verticalAlignment: ✅
+Space.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Space.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Space.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Space.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Space.frameChanged: ✅
+Space.horizontalAlignment: ✅
+Space.verticalAlignment: ✅
 Stepper.pinchUpdated: ✓ pinch on Stepper: the view's listening handed the recognizer's states, no touch sent
 Switch.panTouchCount: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.panUpdated: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent

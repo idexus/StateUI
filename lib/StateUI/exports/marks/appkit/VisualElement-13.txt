@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.accessibilityRole: ✅
 Button.height: ✅
 Button.scale: ✓ read scale of Button: the host's own transform, checked against the layer it composed itself
@@ -14,8 +14,8 @@ Divider.minimumHeight: ✅
 Divider.minimumWidth: ✅
 Divider.scaleX: ✓ read scaleX of Divider: the host's own transform, checked against the layer it composed itself
 Ellipse.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-Filler.isVisible: ✅
-Filler.rotation: ✓ read rotation of Filler: the host's own transform, checked against the layer it composed itself
+Fill.isVisible: ✅
+Fill.rotation: ✓ read rotation of Fill: the host's own transform, checked against the layer it composed itself
 Grid.accessibilityValue: ✅
 HStack.isVisible: ✅
 HStack.rotation: ✓ read rotation of HStack: the host's own transform, checked against the layer it composed itself
@@ -42,23 +42,17 @@ SearchField.minimumHeight: ✅
 SearchField.minimumWidth: ✅
 SearchField.scaleX: ✓ read scaleX of SearchField: the host's own transform, checked against the layer it composed itself
 Slider.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
-Spacer.accessibilityRole: ✅
-Stepper.maximumHeight: ✅
-Stepper.maximumWidth: ✅
-Stepper.minimumHeight: ✅
-Stepper.minimumWidth: ✅
-Stepper.scaleX: ✓ read scaleX of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
+Space.accessibilityRole: ✅
+Stepper.opacity: ✅
+Stepper.rotationX: ✓ read rotationX of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 Text.isAccessibilityHidden: ✅
-TextEditor.accessibilityRole: ✅
-TextField.maximumHeight: ✅
-TextField.maximumWidth: ✅
-TextField.minimumHeight: ✅
-TextField.minimumWidth: ✅
-TextField.scaleX: ✓ read scaleX of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
-VStack.accessibilityRole: ✅
-VStack.background: ✅
-WebView.pivotX: ✓ read pivotX of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.accessibilityActionPerformed: ✅
-ZStack.accessibilityActions: ✅
+TextEditor.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+TextField.opacity: ✅
+TextField.rotationX: ✓ read rotationX of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+VStack.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+VStack.isEnabled: ✅
+WebView.hidesChildrenFromAccessibility: ✅
+ZStack.accessibilityHint: ✅
+ZStack.background: ✅

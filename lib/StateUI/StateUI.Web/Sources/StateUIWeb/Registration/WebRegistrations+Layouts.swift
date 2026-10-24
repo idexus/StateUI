@@ -20,9 +20,12 @@ extension WebRegistrations {
             stack.property(LayoutContract.letsInputThrough) { view, lets in view.setLetsInputThrough(lets ?? false) }
         }
 
-        // A spacer is empty room its stack's flexbox grows; a divider in a stack is the document's own rule.
-        // Design: docs/design/host/layout.md#a-spacer
-        registry.add(SpacerContract.self, create: { _ in WebDOMView(tag: "div") })
+        // A space is a box of its own its stack's flexbox grows, drawn as a layout's box; a divider in a stack is the
+        // document's own rule.
+        // Design: docs/design/host/layout.md#a-space
+        registry.add(SpaceContract.self, create: { _ in WebLayoutView(arrangement: .layers) }) { space in
+            space.applies(LayoutMembers.regionMembers) { view, values in applyBox(view, values) }
+        }
         registry.add(DividerContract.self, create: { _ in
             let rule = WebDOMView(tag: "hr")
             rule.attribute("class", "stateui-divider")
@@ -46,10 +49,10 @@ extension WebRegistrations {
             layers.applies(LayoutMembers.boxMembers) { view, values in applyBox(view, values) }
             layers.property(LayoutContract.letsInputThrough) { view, lets in view.setLetsInputThrough(lets ?? false) }
         }
-        // A filler is a box of its own that holds nothing, drawn as a layout's box.
-        // Design: docs/design/host/layout.md#a-filler
-        registry.add(FillerContract.self, create: { _ in WebLayoutView(arrangement: .layers) }) { filler in
-            filler.applies(LayoutMembers.fillerMembers) { view, values in applyBox(view, values) }
+        // A fill is a box of its own that holds nothing, drawn as a layout's box.
+        // Design: docs/design/host/layout.md#a-fill
+        registry.add(FillContract.self, create: { _ in WebLayoutView(arrangement: .layers) }) { fill in
+            fill.applies(LayoutMembers.regionMembers) { view, values in applyBox(view, values) }
         }
 
         // A layout engine stands on the layers: its children where its run of placements puts them. It has no size

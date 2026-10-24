@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.gridColumnSpan: ✅
 ActivityIndicator.gridRowSpan: ✅
@@ -31,8 +31,8 @@ Divider.margin: ✅
 Ellipse.swipeDirection: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.swipeThreshold: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.swiped: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
-Filler.tapCount: ✓ tap on Filler: handed to the host's recognizer or handler, no NSEvent sent
-Filler.tapped: ✓ tap on Filler: handed to the host's recognizer or handler, no NSEvent sent
+Fill.tapCount: ✓ tap on Fill: handed to the host's recognizer or handler, no NSEvent sent
+Fill.tapped: ✓ tap on Fill: handed to the host's recognizer or handler, no NSEvent sent
 Grid.area: ✅
 Grid.droppedFileTypes: ✓ dropFiles on Grid: the window's drop routing told the driver's files, no dragging session
 Grid.filesDropped: ✓ dropFiles on Grid: the window's drop routing told the driver's files, no dragging session
@@ -82,9 +82,9 @@ SearchField.pinchUpdated: ✓ pinch on SearchField: handed to the host's recogni
 Slider.panTouchCount: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.panUpdated: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.panXChannel: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
-Spacer.frameChanged: ✅
-Spacer.gridColumn: ✅
-Spacer.gridRow: ✅
+Space.frameChanged: ✅
+Space.gridColumn: ✅
+Space.gridRow: ✅
 Stepper.canDrag: ✓ dragAndDrop on Stepper: the drag source and the window's drop routing told by the driver, no dragging session
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the drag source and the window's drop routing told by the driver, no dragging session
 Stepper.dragStarting: ✓ dragAndDrop on Stepper: the drag source and the window's drop routing told by the driver, no dragging session

@@ -233,7 +233,7 @@ final class Catalog {
             card: ImageSource("cat_layout.png"),
             samples: [
                 Sample(StackLayoutSample()),
-                Sample(FillerSample()),
+                Sample(FillSample()),
                 Sample(GridSample()),
                 Sample(ZStackSample()),
                 Sample(ScrollViewSample()),

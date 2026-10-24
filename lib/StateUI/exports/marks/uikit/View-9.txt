@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.swipeDirection: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.swipeThreshold: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.swiped: ✓ pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
@@ -27,7 +27,7 @@ Ellipse.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' hand
 Ellipse.frameChanged: ✅
 Ellipse.horizontalAlignment: ✅
 Ellipse.verticalAlignment: ✅
-Filler.pinchUpdated: ✓ pinch on Filler: the view's listening handed the recognizer's states, no touch sent
+Fill.pinchUpdated: ✓ pinch on Fill: the view's listening handed the recognizer's states, no touch sent
 Grid.panTouchCount: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.panUpdated: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.panXChannel: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
@@ -88,7 +88,7 @@ Slider.pointerExited: ✓ hover on Slider: the view's listening handed the recog
 Slider.pointerMoved: ✓ hover on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.pointerPressed: ✓ hover on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.pointerReleased: ✓ hover on Slider: the view's listening handed the recognizer's states, no touch sent
-Spacer.panYChannel: ✓ pan on Spacer: the view's listening handed the recognizer's states, no touch sent
+Space.panYChannel: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
 Stepper.frameChanged: ✅
 Stepper.gridColumnSpan: ✅
 Stepper.gridRowSpan: ✅

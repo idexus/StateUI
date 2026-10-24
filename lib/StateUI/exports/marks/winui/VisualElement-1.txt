@@ -1,4 +1,4 @@
-# revision 18.2
+# revision 19.2
 ActivityIndicator.isAccessibilityHidden: ✅
 ActivityIndicator.isVisible: ✅
 Button.height: ✅
@@ -19,8 +19,8 @@ Divider.pivotX: ✅
 Ellipse.height: ✅
 Ellipse.layoutDirection: ✓ read layoutDirection of Ellipse: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Ellipse.width: ✅
-Filler.frame: ✅
-Filler.rotation: ✅
+Fill.frame: ✅
+Fill.rotation: ✅
 Grid.rotationX: ✓ read rotationX of Grid: the host's own tip, checked against the projection it laid on the element
 Grid.style: ✅
 HStack.frame: ✅
@@ -52,28 +52,23 @@ SearchField.accessibilityLabel: ✅
 SearchField.scaleX: ✅
 Slider.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 Slider.accessibilityActions: – UI Automation offers no action of an application's own words.
-Spacer.isAccessibilityHidden: ✅
-Spacer.isVisible: ✅
-Stepper.maximumHeight: ✅
-Stepper.maximumWidth: ✅
-Stepper.minimumHeight: ✅
-Stepper.minimumWidth: ✅
-Stepper.pivotX: ✅
-Switch.rotationY: ✓ read rotationY of Switch: the host's own tip, checked against the projection it laid on the element
-Switch.zIndex: ✅
+Space.isAccessibilityHidden: ✅
+Space.isVisible: ✅
+Stepper.hidesChildrenFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
+Stepper.opacity: ✅
+Switch.ignoresInput: ✅
+Switch.pivotY: ✅
 Text.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Text.translationX: ✅
-TextEditor.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
-TextEditor.translationX: ✅
-TextField.tooltip: ✅
-TimePicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-TimePicker.isEnabled: ✅
-VStack.frame: ✅
-VStack.rotation: ✅
-WebView.maximumHeight: ✅
-WebView.maximumWidth: ✅
-WebView.minimumHeight: ✅
-WebView.minimumWidth: ✅
-WebView.pivotX: ✅
-ZStack.rotationY: ✓ read rotationY of ZStack: the host's own tip, checked against the projection it laid on the element
-ZStack.zIndex: ✅
+TextEditor.accessibilityHeading: ✅
+TextEditor.scale: ✅
+TextField.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+TextField.translationY: ✅
+TimePicker.accessibilityHeading: ✅
+VStack.height: ✅
+VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+VStack.width: ✅
+WebView.hidesChildrenFromAccessibility: ✅
+WebView.opacity: ✅
+ZStack.ignoresInput: ✅
+ZStack.pivotY: ✅

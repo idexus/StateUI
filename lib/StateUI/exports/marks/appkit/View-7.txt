@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.panTouchCount: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.panUpdated: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.panXChannel: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
@@ -29,7 +29,7 @@ Ellipse.pointerExited: ✓ hover on Ellipse: handed to the host's recognizer or 
 Ellipse.pointerMoved: ✓ hover on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.pointerPressed: ✓ hover on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.pointerReleased: ✓ hover on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
-Filler.panYChannel: ✓ pan on Filler: handed to the host's recognizer or handler, no NSEvent sent
+Fill.panYChannel: ✓ pan on Fill: handed to the host's recognizer or handler, no NSEvent sent
 Grid.frameChanged: ✅
 Grid.gridColumnSpan: ✅
 Grid.gridRowSpan: ✅
@@ -88,8 +88,8 @@ SearchField.margin: ✅
 Slider.swipeDirection: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.swipeThreshold: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.swiped: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
-Spacer.tapCount: ✓ tap on Spacer: handed to the host's recognizer or handler, no NSEvent sent
-Spacer.tapped: ✓ tap on Spacer: handed to the host's recognizer or handler, no NSEvent sent
+Space.tapCount: ✓ tap on Space: handed to the host's recognizer or handler, no NSEvent sent
+Space.tapped: ✓ tap on Space: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.area: ✅
 Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the window's drop routing told the driver's files, no dragging session
 Stepper.filesDropped: ✓ dropFiles on Stepper: the window's drop routing told the driver's files, no dragging session

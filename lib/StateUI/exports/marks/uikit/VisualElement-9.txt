@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.isEnabled: ✓ tap on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.zIndex: ✅
 Button.pivotY: ✓ read pivotY of Button: the host's own transform, checked against the layer it composed itself
@@ -12,7 +12,7 @@ Divider.isVisible: ✅
 Divider.rotation: ✓ read rotation of Divider: the host's own transform, checked against the layer it composed itself
 Ellipse.ignoresInput: ✅
 Ellipse.scaleY: ✓ read scaleY of Ellipse: the host's own transform, checked against the layer it composed itself
-Filler.background: ✅
+Fill.background: ✅
 Grid.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Grid.isEnabled: ✅
 HStack.background: ✅
@@ -36,18 +36,18 @@ ScrollView.accessibilityHint: ✅
 SearchField.isVisible: ✅
 SearchField.rotation: ✓ read rotation of SearchField: the host's own transform, checked against the layer it composed itself
 Slider.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-Spacer.zIndex: ✅
-Stepper.isVisible: ✅
-Stepper.rotation: ✓ read rotation of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+Space.isEnabled: ✓ tap on Space: the view's listening handed the recognizer's states, no touch sent
+Space.zIndex: ✅
+Stepper.layoutDirection: ✅
+Switch.accessibilityValue: ✅
 Text.accessibilityActionPerformed: ✅
 Text.accessibilityActions: ✅
-TextEditor.zIndex: ✅
-TextField.isVisible: ✅
-TextField.rotation: ✓ read rotation of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-VStack.isEnabled: ✓ tap on VStack: the view's listening handed the recognizer's states, no touch sent
-VStack.zIndex: ✅
-WebView.isAccessibilityHidden: ✅
-ZStack.accessibilityLabel: ✅
-ZStack.layoutDirection: ✅
+TextEditor.ignoresInput: ✅
+TextEditor.scaleY: ✓ read scaleY of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.layoutDirection: ✅
+TimePicker.accessibilityValue: ✅
+VStack.ignoresInput: ✅
+VStack.scaleY: ✓ read scaleY of VStack: the host's own transform, checked against the layer it composed itself
+WebView.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
+ZStack.style: ✅
+ZStack.translationY: ✓ read translationY of ZStack: the host's own transform, checked against the layer it composed itself

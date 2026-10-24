@@ -73,7 +73,7 @@ Ellipse
   lineCap
   lineWidth
   stroke
-Filler
+Fill
   lineWidth
   shape
   stroke
@@ -229,7 +229,10 @@ Slider
   tint
   value
   valueChanged()
-Spacer
+Space
+  lineWidth
+  shape
+  stroke
 Stepper
   maximum
   minimum

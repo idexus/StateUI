@@ -383,17 +383,17 @@ extension ControlDictionary {
                 }
             """#),
 
-        (SpacerContract.self, #"""
+        (SpaceContract.self, #"""
             HStack {
                 Text("Draft")
-                Spacer()
+                Space()
                 Button("Send")
             }
             """#),
 
-        (FillerContract.self, #"""
+        (FillContract.self, #"""
             ZStack {
-                Filler(.blur(.regular))
+                Fill(.blur(.regular))
                     .shape(.roundedRectangle(16))
 
                 Text("Over the blur")

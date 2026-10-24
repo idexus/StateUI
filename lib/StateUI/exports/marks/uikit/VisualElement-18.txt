@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 Button.background: ✅
 Button.zIndex: ✅
@@ -10,8 +10,8 @@ DatePicker.pivotX: ✓ read pivotX of DatePicker: the host's own transform, chec
 Divider.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Ellipse.accessibilityActionPerformed: ✅
 Ellipse.accessibilityActions: ✅
-Filler.ignoresInput: ✅
-Filler.scaleY: ✓ read scaleY of Filler: the host's own transform, checked against the layer it composed itself
+Fill.ignoresInput: ✅
+Fill.scaleY: ✓ read scaleY of Fill: the host's own transform, checked against the layer it composed itself
 Grid.isAccessibilityHidden: ✅
 HStack.ignoresInput: ✅
 HStack.scaleY: ✓ read scaleY of HStack: the host's own transform, checked against the layer it composed itself
@@ -37,17 +37,18 @@ ScrollView.background: ✅
 SearchField.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Slider.opacity: ✅
 Slider.rotationX: ✓ read rotationX of Slider: the host's own transform, checked against the layer it composed itself
-Spacer.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-Stepper.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-Switch.opacity: ✅
-Switch.rotationX: ✓ read rotationX of Switch: the host's own transform, checked against the layer it composed itself
+Space.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+Stepper.frame: ✅
+Stepper.translationX: ✓ read translationX of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.pivotX: ✓ read pivotX of Switch: the host's own transform, checked against the layer it composed itself
 Text.pivotY: ✓ read pivotY of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-TextField.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-TimePicker.opacity: ✅
-TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-WebView.height: ✅
-WebView.scale: ✓ read scale of WebView: the host's own transform, checked against the layer it composed itself
-WebView.width: ✅
-ZStack.hidesChildrenFromAccessibility: ✅
+TextEditor.accessibilityActionPerformed: ✅
+TextEditor.accessibilityActions: ✅
+TextField.frame: ✅
+TextField.translationX: ✓ read translationX of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.pivotX: ✓ read pivotX of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.accessibilityActionPerformed: ✅
+VStack.accessibilityActions: ✅
+WebView.isVisible: ✅
+WebView.rotation: ✓ read rotation of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.

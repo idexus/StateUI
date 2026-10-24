@@ -53,7 +53,7 @@ private struct Row: View {
     var body: some View {
         HStack {
             Text("Row \(number)")
-            Spacer()
+            Space()
             Text("\(number * 3)")
         }
     }

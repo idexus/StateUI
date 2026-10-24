@@ -62,8 +62,10 @@ final class GTKDriver: HostDriver {
                 "GTK's panel places its children where StateUI's layout says; their frames prove it"
         }
         for member in ["background", "stroke", "lineWidth", "shape"] {
-            none["read \(member) of Filler"] =
-                "StateUI draws a filler's box on GTK's snapshot, which holds none of its \(member); its drawing proves it"
+            for region in ["Fill", "Space"] {
+                none["read \(member) of \(region)"] =
+                    "StateUI draws a \(region.lowercased())'s box on GTK's snapshot, which holds none of its \(member); its drawing proves it"
+            }
         }
         for stack in ["HStack", "VStack"] {
             none["read spacing of \(stack)"] = "GTK's panel places its children where StateUI's layout says; their frames prove it"
@@ -84,7 +86,7 @@ final class GTKDriver: HostDriver {
         if Ability(ability).act == "notch" { return "a wheel's notches handed to the host's entry, no event" }
         if Ability(ability).readsATransform { return "the host's own transform: GTK reads back no part of one" }
         if ability.hasPrefix("read background of "),
-           ["Filler", "Grid", "HStack", "VStack", "ZStack"].contains(Ability(ability).element) {
+           ["Fill", "Grid", "HStack", "Space", "VStack", "ZStack"].contains(Ability(ability).element) {
             return "the brush the host draws the box with: GTK reads back no drawing"
         }
         // A span's look is its run's Pango attributes, which GTK reads back.

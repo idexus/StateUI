@@ -26,14 +26,15 @@ extension AppKitRegistrations {
             }
         }
 
-        // A filler is a box of its own that holds nothing: its material, outline and shape the box's decoration
-        // draws, as a layout's.
-        // Design: docs/design/host/layout.md#a-filler
-        registry.add(FillerContract.self, create: { _ in AppKitZStackView() })
+        // A fill is a box of its own that holds nothing: its material, outline and shape the box's decoration draws,
+        // as a layout's.
+        // Design: docs/design/host/layout.md#a-fill
+        registry.add(FillContract.self, create: { _ in AppKitZStackView() })
 
-        // A spacer is empty room the stack's arithmetic sizes; a divider in a stack is the toolkit's line.
-        // Design: docs/design/host/layout.md#a-spacer
-        registry.add(SpacerContract.self, create: { _ in NSView() })
+        // A space is a box of its own the stack's arithmetic sizes, drawn as a layout's box; a divider in a stack is
+        // the toolkit's line.
+        // Design: docs/design/host/layout.md#a-space
+        registry.add(SpaceContract.self, create: { _ in AppKitZStackView() })
         registry.add(DividerContract.self, create: { _ in AppKitDividerView() })
 
         // The host makes the scroll view; its registration takes the members alone.

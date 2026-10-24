@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Button.accessibilityHint: ✅
 Canvas.isEnabled: ✅
@@ -9,8 +9,8 @@ DatePicker.opacity: ✅
 DatePicker.rotationX: ✓ read rotationX of DatePicker: the host's own transform, checked against the layer it composed itself
 Divider.accessibilityRole: ✅
 Ellipse.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-Filler.isEnabled: ✓ tap on Filler: handed to the host's recognizer or handler, no NSEvent sent
-Filler.zIndex: ✅
+Fill.isEnabled: ✓ tap on Fill: handed to the host's recognizer or handler, no NSEvent sent
+Fill.zIndex: ✅
 Grid.layoutDirection: ✅
 HStack.isEnabled: ✓ tap on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.zIndex: ✅
@@ -39,23 +39,18 @@ Slider.maximumWidth: ✅
 Slider.minimumHeight: ✅
 Slider.minimumWidth: ✅
 Slider.scaleX: ✓ read scaleX of Slider: the host's own transform, checked against the layer it composed itself
-Spacer.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
-Stepper.accessibilityRole: ✅
-Switch.maximumHeight: ✅
-Switch.maximumWidth: ✅
-Switch.minimumHeight: ✅
-Switch.minimumWidth: ✅
-Switch.scaleX: ✓ read scaleX of Switch: the host's own transform, checked against the layer it composed itself
+Space.background: ✅
+Stepper.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+Switch.opacity: ✅
+Switch.rotationX: ✓ read rotationX of Switch: the host's own transform, checked against the layer it composed itself
 Text.isEnabled: ✅
 Text.rotationY: ✓ read rotationY of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
-TextField.accessibilityRole: ✅
-TimePicker.maximumHeight: ✅
-TimePicker.maximumWidth: ✅
-TimePicker.minimumHeight: ✅
-TimePicker.minimumWidth: ✅
-TimePicker.scaleX: ✓ read scaleX of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.background: ✅
-WebView.frame: ✅
-WebView.translationX: ✓ read translationX of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.pivotX: ✓ read pivotX of ZStack: the host's own transform, checked against the layer it composed itself
+TextEditor.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+TextField.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+TimePicker.opacity: ✅
+TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+WebView.height: ✅
+WebView.scale: ✓ read scale of WebView: the host's own transform, checked against the layer it composed itself
+WebView.width: ✅
+ZStack.hidesChildrenFromAccessibility: ✅

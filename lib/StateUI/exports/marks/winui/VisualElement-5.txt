@@ -1,4 +1,4 @@
-# revision 18.2
+# revision 19.2
 ActivityIndicator.maximumHeight: ✅
 ActivityIndicator.maximumWidth: ✅
 ActivityIndicator.minimumHeight: ✅
@@ -19,8 +19,8 @@ Divider.rotationY: ✓ read rotationY of Divider: the host's own tip, checked ag
 Divider.zIndex: ✅
 Ellipse.rotationX: ✓ read rotationX of Ellipse: the host's own tip, checked against the projection it laid on the element
 Ellipse.style: ✅
-Filler.accessibilityLabel: ✅
-Filler.scaleX: ✅
+Fill.accessibilityLabel: ✅
+Fill.scaleX: ✅
 Grid.accessibilityHint: ✅
 Grid.scaleY: ✅
 HStack.accessibilityLabel: ✅
@@ -58,24 +58,25 @@ SearchField.accessibilityActionPerformed: – UI Automation offers no action of 
 SearchField.accessibilityActions: – UI Automation offers no action of an application's own words.
 Slider.isAccessibilityHidden: ✅
 Slider.isVisible: ✅
-Spacer.maximumHeight: ✅
-Spacer.maximumWidth: ✅
-Spacer.minimumHeight: ✅
-Spacer.minimumWidth: ✅
-Spacer.pivotX: ✅
-Stepper.rotationY: ✓ read rotationY of Stepper: the host's own tip, checked against the projection it laid on the element
-Stepper.zIndex: ✅
-Switch.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
-Switch.translationX: ✅
+Space.maximumHeight: ✅
+Space.maximumWidth: ✅
+Space.minimumHeight: ✅
+Space.minimumWidth: ✅
+Space.pivotX: ✅
+Stepper.ignoresInput: ✅
+Stepper.pivotY: ✅
+Switch.accessibilityHeading: ✅
+Switch.scale: ✅
 Text.tooltip: ✅
-TextEditor.tooltip: ✅
-TextField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-TextField.isEnabled: ✅
-TimePicker.frame: ✅
-TimePicker.rotation: ✅
-VStack.accessibilityLabel: ✅
-VStack.scaleX: ✅
-WebView.rotationY: ✓ read rotationY of WebView: the host's own tip, checked against the projection it laid on the element
-WebView.zIndex: ✅
-ZStack.accessibilityRole: ✅
-ZStack.translationX: ✅
+TextEditor.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+TextEditor.translationY: ✅
+TextField.accessibilityHeading: ✅
+TimePicker.height: ✅
+TimePicker.layoutDirection: ✅
+TimePicker.width: ✅
+VStack.rotationX: ✓ read rotationX of VStack: the host's own tip, checked against the projection it laid on the element
+VStack.style: ✅
+WebView.ignoresInput: ✅
+WebView.pivotY: ✅
+ZStack.accessibilityHeading: ✅
+ZStack.scale: ✅

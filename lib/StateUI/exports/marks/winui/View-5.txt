@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ActivityIndicator.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ActivityIndicator.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -43,13 +43,13 @@ Ellipse.margin: ✅
 Ellipse.swipeDirection: ✅
 Ellipse.swipeThreshold: ✅
 Ellipse.swiped: ✅
-Filler.area: ✅
-Filler.frameChanged: ✅
-Filler.pointerEntered: ✅
-Filler.pointerExited: ✅
-Filler.pointerMoved: ✅
-Filler.pointerPressed: ✅
-Filler.pointerReleased: ✅
+Fill.area: ✅
+Fill.frameChanged: ✅
+Fill.pointerEntered: ✅
+Fill.pointerExited: ✅
+Fill.pointerMoved: ✅
+Fill.pointerPressed: ✅
+Fill.pointerReleased: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Grid.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Grid.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -134,11 +134,11 @@ SearchField.gridRowSpan: ✅
 Slider.panTouchCount: ✅
 Slider.panUpdated: ✅
 Slider.panXChannel: ✅
-Spacer.frameChanged: ✅
-Spacer.margin: ✅
-Spacer.swipeDirection: ✅
-Spacer.swipeThreshold: ✅
-Spacer.swiped: ✅
+Space.frameChanged: ✅
+Space.margin: ✅
+Space.swipeDirection: ✅
+Space.swipeThreshold: ✅
+Space.swiped: ✅
 Stepper.area: ✅
 Stepper.frameChanged: ✅
 Stepper.pointerEntered: ✅

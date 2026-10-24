@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.accessibilityHint: ✅
 Button.isEnabled: ✅
 Button.rotationY: ✓ read rotationY of Button: the host's own transform, checked against the layer it composed itself
@@ -12,7 +12,7 @@ Divider.scale: ✓ read scale of Divider: the host's own transform, checked agai
 Divider.width: ✅
 Ellipse.isEnabled: ✓ tap on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.zIndex: ✅
-Filler.pivotY: ✓ read pivotY of Filler: the host's own transform, checked against the layer it composed itself
+Fill.pivotY: ✓ read pivotY of Fill: the host's own transform, checked against the layer it composed itself
 Grid.accessibilityRole: ✅
 Grid.background: ✅
 HStack.pivotY: ✓ read pivotY of HStack: the host's own transform, checked against the layer it composed itself
@@ -37,18 +37,17 @@ SearchField.height: ✅
 SearchField.scale: ✓ read scale of SearchField: the host's own transform, checked against the layer it composed itself
 SearchField.width: ✅
 Slider.hidesChildrenFromAccessibility: ✅
-Spacer.accessibilityHint: ✅
-Stepper.height: ✅
-Stepper.scale: ✓ read scale of Stepper: the host's own transform, checked against the layer it composed itself
-Stepper.width: ✅
-Switch.hidesChildrenFromAccessibility: ✅
+Space.accessibilityHint: ✅
+Stepper.isVisible: ✅
+Stepper.rotation: ✓ read rotation of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Text.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-TextEditor.accessibilityHint: ✅
-TextField.height: ✅
-TextField.scale: ✓ read scale of TextField: the host's own transform, checked against the layer it composed itself
-TextField.width: ✅
-TimePicker.hidesChildrenFromAccessibility: ✅
-VStack.accessibilityHint: ✅
-VStack.background: ✅
-WebView.layoutDirection: ✅
-ZStack.accessibilityValue: ✅
+TextEditor.zIndex: ✅
+TextField.isVisible: ✅
+TextField.rotation: ✓ read rotation of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+VStack.isEnabled: ✓ tap on VStack: the view's listening handed the recognizer's states, no touch sent
+VStack.zIndex: ✅
+WebView.isAccessibilityHidden: ✅
+ZStack.accessibilityLabel: ✅
+ZStack.layoutDirection: ✅

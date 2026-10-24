@@ -1,4 +1,4 @@
-# revision 18.2
+# revision 19.2
 ActivityIndicator.tooltip: ✅
 Button.hidesChildrenFromAccessibility: ✅
 Button.opacity: ✅
@@ -16,11 +16,11 @@ Divider.background: ☑️ An element's acrylic is not drawn yet: a blur or glas
 Divider.isEnabled: does not apply - read isEnabled of Divider - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Ellipse.hidesChildrenFromAccessibility: ✅
 Ellipse.opacity: ✅
-Filler.maximumHeight: ✅
-Filler.maximumWidth: ✅
-Filler.minimumHeight: ✅
-Filler.minimumWidth: ✅
-Filler.pivotX: ✅
+Fill.maximumHeight: ✅
+Fill.maximumWidth: ✅
+Fill.minimumHeight: ✅
+Fill.minimumWidth: ✅
+Fill.pivotX: ✅
 Grid.ignoresInput: ✅
 Grid.pivotY: ✅
 HStack.maximumHeight: ✅
@@ -58,25 +58,23 @@ SearchField.rotationY: ✓ read rotationY of SearchField: the host's own tip, ch
 SearchField.zIndex: ✅
 Slider.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Slider.translationX: ✅
-Spacer.tooltip: ✅
-Stepper.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-Stepper.isEnabled: ✅
-Switch.frame: ✅
-Switch.rotation: ✅
+Space.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Space.tooltip: ✅
+Stepper.accessibilityHeading: ✅
+Switch.height: ✅
+Switch.layoutDirection: ✅
+Switch.width: ✅
 Text.accessibilityLabel: ✅
 Text.scaleX: ✅
-TextEditor.accessibilityLabel: ✅
-TextEditor.scaleX: ✅
-TextField.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-TextField.accessibilityActions: – UI Automation offers no action of an application's own words.
-TimePicker.isAccessibilityHidden: ✅
-TimePicker.isVisible: ✅
-VStack.maximumHeight: ✅
-VStack.maximumWidth: ✅
-VStack.minimumHeight: ✅
-VStack.minimumWidth: ✅
-VStack.pivotX: ✅
-WebView.background: not realized
-WebView.isEnabled: – WinUI's WebView2 is no control: it keeps no enabled state, and its page takes the user's hand whatever the tree says.
-ZStack.frame: ✅
-ZStack.rotation: ✅
+TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
+TextEditor.style: ✅
+TextField.accessibilityHint: ✅
+TextField.scaleY: ✅
+TimePicker.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+VStack.hidesChildrenFromAccessibility: ✅
+VStack.opacity: ✅
+WebView.accessibilityHeading: ✅
+ZStack.height: ✅
+ZStack.layoutDirection: ✓ read layoutDirection of ZStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ZStack.width: ✅

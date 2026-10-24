@@ -49,18 +49,18 @@ struct StackLayoutSample: SampleContent, ExampleContent {
             }
             .spacing(8)
 
-            SectionTitle("Spacer")
+            SectionTitle("Space")
 
-            // A spacer takes the room the other children leave.
+            // A space takes the room the other children leave.
             HStack {
                 StackCell(text: "Draft")
-                if spaced { Spacer() }
+                if spaced { Space() }
                 StackCell(text: "Send")
             }
             .spacing(8)
 
             Switch($spaced)
-                .text("Spacer")
+                .text("Space")
                 .accessibilityIdentifier("stackLayout.spaced")
 
             SectionTitle("Divider")
@@ -87,7 +87,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("`.horizontalAlignment` places a child across the room its stack gives it. A `Spacer` takes the room "
+        Text("`.horizontalAlignment` places a child across the room its stack gives it. A `Space` takes the room "
             + "its siblings leave; a `Divider` draws the platform's line across its stack.")
             .fontSize(12)
             .textColor(Palette.subtle)

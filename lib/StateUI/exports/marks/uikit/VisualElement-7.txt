@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.frame: ✅
 ActivityIndicator.translationX: ✓ read translationX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.layoutDirection: ✅
@@ -14,7 +14,7 @@ Divider.pivotX: ✓ read pivotX of Divider: the host's own transform, checked ag
 Ellipse.height: ✅
 Ellipse.scale: ✓ read scale of Ellipse: the host's own transform, checked against the layer it composed itself
 Ellipse.width: ✅
-Filler.isAccessibilityHidden: ✅
+Fill.isAccessibilityHidden: ✅
 Grid.style: ✅
 Grid.translationY: ✓ read translationY of Grid: the host's own transform, checked against the layer it composed itself
 HStack.isAccessibilityHidden: ✅
@@ -42,19 +42,19 @@ ScrollView.layoutDirection: ✅
 SearchField.pivotX: ✓ read pivotX of SearchField: the host's own transform, checked against the layer it composed itself
 Slider.accessibilityActionPerformed: ✅
 Slider.accessibilityActions: ✅
-Spacer.frame: ✅
-Spacer.translationX: ✓ read translationX of Spacer: the host's own transform, checked against the layer it composed itself
-Stepper.pivotX: ✓ read pivotX of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.accessibilityActionPerformed: ✅
-Switch.accessibilityActions: ✅
+Space.frame: ✅
+Space.translationX: ✓ read translationX of Space: the host's own transform, checked against the layer it composed itself
+Stepper.hidesChildrenFromAccessibility: ✅
+Switch.accessibilityHint: ✅
 Text.accessibilityRole: ✅
-TextEditor.frame: ✅
-TextEditor.translationX: ✓ read translationX of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.pivotX: ✓ read pivotX of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.accessibilityActionPerformed: ✅
-TimePicker.accessibilityActions: ✅
-VStack.frame: ✅
-VStack.translationX: ✓ read translationX of VStack: the host's own transform, checked against the layer it composed itself
-WebView.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-ZStack.isEnabled: ✓ tap on ZStack: the view's listening handed the recognizer's states, no touch sent
-ZStack.zIndex: ✅
+TextEditor.height: ✅
+TextEditor.scale: ✓ read scale of TextEditor: the host's own transform, checked against the layer it composed itself
+TextEditor.width: ✅
+TextField.hidesChildrenFromAccessibility: ✅
+TimePicker.accessibilityHint: ✅
+VStack.height: ✅
+VStack.scale: ✓ read scale of VStack: the host's own transform, checked against the layer it composed itself
+VStack.width: ✅
+WebView.accessibilityValue: ✅
+ZStack.ignoresInput: ✅
+ZStack.scaleY: ✓ read scaleY of ZStack: the host's own transform, checked against the layer it composed itself

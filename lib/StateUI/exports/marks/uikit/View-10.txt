@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.pinchUpdated: ✓ pinch on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 Button.panTouchCount: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Button.panUpdated: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
@@ -23,11 +23,11 @@ Ellipse.area: ✅
 Ellipse.droppedFileTypes: ✓ dropFiles on Ellipse: the drop interaction's handler told the driver's files, no drag session
 Ellipse.filesDropped: ✓ dropFiles on Ellipse: the drop interaction's handler told the driver's files, no drag session
 Ellipse.frameChanged: ✅
-Filler.pointerEntered: ✓ hover on Filler: the view's listening handed the recognizer's states, no touch sent
-Filler.pointerExited: ✓ hover on Filler: the view's listening handed the recognizer's states, no touch sent
-Filler.pointerMoved: ✓ hover on Filler: the view's listening handed the recognizer's states, no touch sent
-Filler.pointerPressed: ✓ hover on Filler: the view's listening handed the recognizer's states, no touch sent
-Filler.pointerReleased: ✓ hover on Filler: the view's listening handed the recognizer's states, no touch sent
+Fill.pointerEntered: ✓ hover on Fill: the view's listening handed the recognizer's states, no touch sent
+Fill.pointerExited: ✓ hover on Fill: the view's listening handed the recognizer's states, no touch sent
+Fill.pointerMoved: ✓ hover on Fill: the view's listening handed the recognizer's states, no touch sent
+Fill.pointerPressed: ✓ hover on Fill: the view's listening handed the recognizer's states, no touch sent
+Fill.pointerReleased: ✓ hover on Fill: the view's listening handed the recognizer's states, no touch sent
 Grid.panYChannel: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
 HStack.frameChanged: ✅
 HStack.gridColumnSpan: ✅
@@ -85,9 +85,9 @@ Slider.dragStarting: ✓ dragAndDrop on Slider: the drag and drop interactions' 
 Slider.dragText: ✓ dragAndDrop on Slider: the drag and drop interactions' handlers called, no drag session
 Slider.frameChanged: ✅
 Slider.margin: ✅
-Spacer.swipeDirection: ✓ pan on Spacer: the view's listening handed the recognizer's states, no touch sent
-Spacer.swipeThreshold: ✓ pan on Spacer: the view's listening handed the recognizer's states, no touch sent
-Spacer.swiped: ✓ pan on Spacer: the view's listening handed the recognizer's states, no touch sent
+Space.swipeDirection: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
+Space.swipeThreshold: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
+Space.swiped: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
 Stepper.tapCount: ✓ tap on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.tapped: ✓ tap on Stepper: the view's listening handed the recognizer's states, no touch sent
 Switch.area: ✅

@@ -43,20 +43,15 @@ struct MaterialsSample: SampleContent, ExampleContent {
             ZStack {
                 // Stripes of color behind the panels: what each lets through shows on them.
                 Grid {
-                    Rectangle()
-                        .fill(.tomato)
+                    Fill(.tomato)
                         .gridColumn(0)
-                    Rectangle()
-                        .fill(.gold)
+                    Fill(.gold)
                         .gridColumn(1)
-                    Rectangle()
-                        .fill(.steelBlue)
+                    Fill(.steelBlue)
                         .gridColumn(2)
-                    Rectangle()
-                        .fill(.white)
+                    Fill(.white)
                         .gridColumn(3)
-                    Rectangle()
-                        .fill(Palette.accent)
+                    Fill(Palette.accent)
                         .gridColumn(4)
                 }
                 .columns(.fill, .fill, .fill, .fill, .fill)

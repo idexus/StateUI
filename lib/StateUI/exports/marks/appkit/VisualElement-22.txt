@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 ActivityIndicator.layoutDirection: ✅
 Button.accessibilityRole: ✅
 Canvas.height: ✅
@@ -10,8 +10,8 @@ DatePicker.isEnabled: ✅
 DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own transform, checked against the layer it composed itself
 Divider.accessibilityValue: ✅
 Ellipse.isAccessibilityHidden: ✅
-Filler.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-Filler.background: ✅
+Fill.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+Fill.background: ✅
 Grid.pivotX: ✓ read pivotX of Grid: the host's own transform, checked against the layer it composed itself
 HStack.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 HStack.isEnabled: ✅
@@ -35,18 +35,21 @@ ScrollView.rotation: ✓ read rotation of ScrollView: the host's own transform, 
 SearchField.accessibilityValue: ✅
 Slider.ignoresInput: ✅
 Slider.scaleY: ✓ read scaleY of Slider: the host's own transform, checked against the layer it composed itself
-Spacer.layoutDirection: ✅
-Stepper.accessibilityValue: ✅
-Switch.ignoresInput: ✅
-Switch.scaleY: ✓ read scaleY of Switch: the host's own transform, checked against the layer it composed itself
+Space.layoutDirection: ✅
+Stepper.accessibilityLabel: ✅
+Switch.isEnabled: ✅
+Switch.rotationY: ✓ read rotationY of Switch: the host's own transform, checked against the layer it composed itself
 Text.height: ✅
 Text.scale: ✓ read scale of Text: the host's own transform, checked against the layer it composed itself
 Text.width: ✅
-TextEditor.layoutDirection: ✅
-TextField.accessibilityValue: ✅
-TimePicker.ignoresInput: ✅
-TimePicker.scaleY: ✓ read scaleY of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.layoutDirection: ✅
-WebView.style: ✅
-WebView.translationY: ✓ read translationY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.pivotY: ✓ read pivotY of ZStack: the host's own transform, checked against the layer it composed itself
+TextEditor.isAccessibilityHidden: ✅
+TextField.accessibilityLabel: ✅
+TimePicker.isEnabled: ✅
+TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.isAccessibilityHidden: ✅
+WebView.maximumHeight: ✅
+WebView.maximumWidth: ✅
+WebView.minimumHeight: ✅
+WebView.minimumWidth: ✅
+WebView.scaleX: ✓ read scaleX of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.background: ✅
