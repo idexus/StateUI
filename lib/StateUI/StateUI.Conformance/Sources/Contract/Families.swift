@@ -93,6 +93,7 @@
         BarElementTests.self,
         MenuItemElementTests.self,
         ActionElementTests.self,
+        ButtonMenuElementTests.self,
         PageElementTests.self,
     ]
 }

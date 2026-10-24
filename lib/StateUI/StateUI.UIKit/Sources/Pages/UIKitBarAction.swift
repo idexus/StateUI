@@ -23,6 +23,17 @@ struct UIKitBarAction {
     /// A setting's state, on or off; nil for an action.
     var isOn: Bool? = nil
 
+    /// The menu its button opens; nil for an action holding none.
+    var menu: Menu? = nil
+
+    /// The menu a bar's button opens: how it opens, its entries, and what it offers behind the overflow
+    /// (`ButtonMenu`).
+    struct Menu {
+        let opening: ButtonMenuOpening
+        let entries: [MenuEntry]
+        let inOverflow: [MenuEntry]
+    }
+
     /// How tall a picture stands on a bar - the size a glass circle holds its symbol at, room around it - and on a
     /// bar made low by a phone on its side.
     static let glyphHeight = 20.0
@@ -42,18 +53,33 @@ struct UIKitBarAction {
         let identifier: String?
         let mount: UInt64?
         let isOn: Bool?
+        var opening: ButtonMenuOpening = .none
+        var menu: [MenuEntry.Said] = []
+        var inOverflow: [MenuEntry.Said] = []
     }
 
     var said: Said {
         Said(
             title: title, icon: icon, isEnabled: isEnabled, isDestructive: isDestructive, identifier: identifier,
-            mount: element?.element.mount, isOn: isOn)
+            mount: element?.element.mount, isOn: isOn, opening: menu?.opening ?? .none,
+            menu: menu?.entries.map(\.said) ?? [], inOverflow: menu?.inOverflow.map(\.said) ?? [])
     }
 
     /// A button of the bar, in `tint` - a painted bar's words, nil for the bar's own - or red where it destroys
     /// something.
     func barItem(tint: UIColor?) -> UIBarButtonItem {
-        let item = UIBarButtonItem(primaryAction: menuAction)
+        let item: UIBarButtonItem
+        if let menu {
+            // Its tap opens the menu where the button has no click of its own, else holding it does: UIKit's bar
+            // offers no arrow part, so a split stands as held.
+            // Design: docs/design/platforms/uikit/pages.md#the-bar
+            let opened = UIKitMenus.menu(menu.entries, identifier: element?.menuIdentifier)
+            item = menu.opening == .click
+                ? UIBarButtonItem(title: title, image: image, primaryAction: nil, menu: opened)
+                : UIBarButtonItem(primaryAction: menuAction, menu: opened)
+        } else {
+            item = UIBarButtonItem(primaryAction: menuAction)
+        }
         item.landscapeImagePhone = icon.flatMap { UIKitRenderer.glyph($0, height: Self.lowGlyphHeight) }
         item.isEnabled = isEnabled
         item.accessibilityIdentifier = identifier
@@ -69,6 +95,11 @@ struct UIKitBarAction {
     /// The color its button stands in: red where it destroys something, else `tint`.
     func tint(_ tint: UIColor?) -> UIColor? {
         isDestructive ? .systemRed : tint
+    }
+
+    /// Its entry behind the bar's overflow: its action, or, holding a menu, a submenu under its words.
+    var overflowEntry: UIMenuElement {
+        menu.map { UIKitMenus.menu($0.inOverflow, title: title) } ?? menuAction
     }
 
     /// An entry of a menu.

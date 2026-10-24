@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// An action on its page's bar - or, declared on a split view, on the part of its bar it names.
+/// An action on its page's bar - or, declared on a split view, on the part of its bar it names - a menu it opens,
+/// or both.
 ///
 ///     struct NotesPage: View {
 ///         var body: some View {
@@ -9,6 +10,13 @@
 ///                 .toolbar {
 ///                     ToolbarButton("Save")
 ///                         .onClicked { save() }
+///
+///                     ToolbarButton("Sort")
+///                         .icon("sort.png")
+///                         .menu {
+///                             MenuItem("By name").onClicked { sort(.name) }
+///                             MenuItem("By date").onClicked { sort(.date) }
+///                         }
 ///
 ///                     ToolbarButton("Delete")
 ///                         .role(.destructive)
@@ -22,9 +30,11 @@
 /// A toolbar button is page furniture rather than a layout view. Its words are
 /// always its name - to assistive technology, in its tip and in the overflow -
 /// and an item given an `icon` shows the picture alone unless `showsText`
-/// says otherwise. Standing alone it says where it stands with `.placement`;
-/// in a `ToolbarGroup` it stands where its group does.
-public struct ToolbarButton: PlacedToolbarItem, MenuItemElement, ActionElement {
+/// says otherwise. Its `.menu` opens as a button's does: by its click where
+/// it has no `.onClicked`, else from an arrow of its own or held. Standing
+/// alone it says where it stands with `.placement`; in a `ToolbarGroup` it
+/// stands where its group does.
+public struct ToolbarButton: PlacedToolbarItem, MenuItemElement, ActionElement, ButtonMenuElement {
     /// The node this item describes.
     public var node: Node
 

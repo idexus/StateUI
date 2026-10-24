@@ -211,6 +211,19 @@ extension UIKitDriver {
     }
 
     /// The bar's button whose action is `action`; nil for one behind an overflow.
+    /// The menu a button on the bars the window shows opens, by its identifier.
+    func barMenu(identified identifier: UIMenu.Identifier) -> UIMenu? {
+        guard let window = renderer?.roster.windows.first?.1.window else { return nil }
+        func search(_ controller: UIViewController) -> UIMenu? {
+            let groups = controller.navigationItem.leadingItemGroups + controller.navigationItem.trailingItemGroups
+            if let menu = groups.flatMap(\.barButtonItems).compactMap(\.menu).first(where: { $0.identifier == identifier }) {
+                return menu
+            }
+            return controller.children.lazy.compactMap(search).first
+        }
+        return window.rootViewController.flatMap(search)
+    }
+
     private func barButton(answering action: UIAction) -> UIBarButtonItem? {
         guard let window = renderer?.roster.windows.first?.1.window else { return nil }
         func search(_ controller: UIViewController) -> UIBarButtonItem? {

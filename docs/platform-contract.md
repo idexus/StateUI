@@ -532,14 +532,14 @@ Every control, and every part an application, its windows and its pages are made
 | [TextSpan](controls/TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ToolbarButton](controls/ToolbarButton.md) | 8 | 4 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 8 ✅ | 6 ✅ · 1 ✓ · 1 – | 8 ✅ |
+| [ToolbarButton](controls/ToolbarButton.md) | 10 | 5 ✅ · 2 ✓ · 1 – | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 8 ✅ · 1 ☑️ · 1 – | 8 ✅ · 1 ✓ · 1 – | 10 ✅ |
 | [ToolbarGroup](controls/ToolbarGroup.md) | 5 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 9 | 7 ✅ · 1 – | 8 ✅ · 1 – | 6 ✅ · 1 ☑️ · 1 – | 9 ✅ | 8 ✅ · 1 – | 9 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 112 | 107 | 90 | 138 | 101 | 123 |
-| ✓ |  | 22 | 21 | 20 | 5 | 17 | 10 |
-| – |  | 11 | 22 | 31 | 9 | 35 | 18 |
-| **Met** | 163 | **145** | **150** | **141** | **152** | **153** | **151** |
+| ✅ |  | 113 | 107 | 90 | 138 | 103 | 125 |
+| ✓ |  | 23 | 21 | 20 | 5 | 17 | 10 |
+| – |  | 11 | 23 | 32 | 10 | 35 | 18 |
+| **Met** | 165 | **147** | **151** | **142** | **153** | **155** | **153** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -584,13 +584,14 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor`, `barButtonBackgroundColor`, `barForegroundColor`, `barIcon`, `barSubtitle`, `barTitle`, `toolbarStyle` | 7 |
 | [MenuItemElement](controls/tiers/MenuItemElement.md) | `icon`, `isEnabled`, `keyboardShortcut`, `text` | 4 |
 | [ActionElement](controls/tiers/ActionElement.md) | `onClicked` (`clicked`), `role` | 2 |
+| [ButtonMenuElement](controls/tiers/ButtonMenuElement.md) | `menuKind`, `showsMenuArrow` | 2 |
 | [PageElement](controls/tiers/PageElement.md) | `icon`, `title` | 2 |
 
 ### Elements
 
 | Element | Members | Count | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `keyboardShortcut`, `lineBreak`, `menuKind`, `onPressed` (`pressed`), `onReleased` (`released`), `role`, `showsMenuArrow` | 11 | 8 ✅ · 2 ✓ · 1 – | 9 ✅ · 2 ✓ | 6 ✅ · 2 ✓ | 11 ✅ | 10 ✅ · 1 ✓ | 11 ✅ |
+| [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `keyboardShortcut`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`), `role` | 9 | 6 ✅ · 2 ✓ · 1 – | 7 ✅ · 2 ✓ | 4 ✅ · 2 ✓ | 9 ✅ | 8 ✅ · 1 ✓ | 9 ✅ |
 | [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawing`, `onPressed` (`pressed`), `onReleased` (`released`) | 4 | 1 ✅ · 3 ✓ | 1 ✅ · 3 ✓ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 | 3 ✅ · 1 ✓ · 4 – | 4 ✅ | 5 ✅ · 3 ✓ | 7 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ · 2 ✓ | 4 ✅ · 3 – |

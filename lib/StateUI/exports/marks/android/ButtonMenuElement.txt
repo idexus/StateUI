@@ -1,0 +1,5 @@
+# revision 1.1
+Button.menuKind: ✅
+Button.showsMenuArrow: ✅
+ToolbarButton.menuKind: ☑️ An Android bar's split or held button stands as its action, its menu behind the overflow.
+ToolbarButton.showsMenuArrow: – An Android bar's action shows no arrow: its menu opens from its touch.

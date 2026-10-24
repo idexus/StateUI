@@ -23,6 +23,9 @@ struct GTKToolbarAction {
     /// A setting's state - its button a toggle button, pressed in while on; nil for an action.
     let isOn: Bool?
 
+    /// The menu its button opens; nil for an action holding none.
+    let menu: GTKToolbarMenu?
+
     /// The action of `item` as its bar's button shows it, read as a menu's entry is (`MenuEntry`).
     init(_ item: MountedElement) {
         let entry = MenuEntry.entry(of: item)
@@ -33,6 +36,10 @@ struct GTKToolbarAction {
         isEnabled = entry.isEnabled
         isDestructive = entry.isDestructive
         isOn = item.type == .toolbarToggle ? entry.isOn == true : nil
+        let opening = ButtonMenu.opening(of: item)
+        menu = opening == .none ? nil : GTKToolbarMenu(
+            opening: opening, showsArrow: ButtonMenu.showsArrow(item), entries: ButtonMenu.entries(of: item),
+            inOverflow: ButtonMenu.inOverflow(item))
     }
 
     /// Tells the item it was chosen.
@@ -43,7 +50,30 @@ struct GTKToolbarAction {
     /// Whether two actions draw the same button. The item an action stands for is taken again on every composition.
     func draws(like other: GTKToolbarAction) -> Bool {
         title == other.title && icon == other.icon && showsTitle == other.showsTitle && isEnabled == other.isEnabled
-            && isDestructive == other.isDestructive && isOn == other.isOn
+            && isDestructive == other.isDestructive && isOn == other.isOn && menu?.said == other.menu?.said
+    }
+}
+
+/// The menu a bar's button opens: how it opens, whether its arrow shows, its entries, and what it offers behind the
+/// bar's overflow (`ButtonMenu`).
+@MainActor
+struct GTKToolbarMenu {
+    let opening: ButtonMenuOpening
+    let showsArrow: Bool
+    let entries: [MenuEntry]
+    let inOverflow: [MenuEntry]
+
+    /// Everything the menu shows: a bar keeps its button while it says the same.
+    struct Said: Equatable {
+        let opening: ButtonMenuOpening
+        let showsArrow: Bool
+        let entries: [MenuEntry.Said]
+        let inOverflow: [MenuEntry.Said]
+    }
+
+    var said: Said {
+        Said(
+            opening: opening, showsArrow: showsArrow, entries: entries.map(\.said), inOverflow: inOverflow.map(\.said))
     }
 }
 

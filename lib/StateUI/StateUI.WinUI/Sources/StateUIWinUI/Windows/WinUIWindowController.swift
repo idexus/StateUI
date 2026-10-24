@@ -180,7 +180,15 @@ final class WinUIWindowController {
             icon: WinUIPictures.lines(entry.icon), isDestructive: entry.isDestructive,
             showsWords: item.showsActionWords, shortcut: entry.keyboardShortcut, mount: item.mount,
             perform: { [weak item] in item?.winUI.choose() },
-            isOn: item.type == .toolbarToggle ? entry.isOn == true : nil)
+            isOn: item.type == .toolbarToggle ? entry.isOn == true : nil, menu: menu(of: item))
+    }
+
+    /// The menu a bar's button opens, read as a button's is (`ButtonMenu`); nil for one holding none.
+    private static func menu(of item: MountedElement) -> WinUIToolbarMenu? {
+        let opening = ButtonMenu.opening(of: item)
+        guard opening != .none else { return nil }
+        return WinUIToolbarMenu(
+            opening: opening, entries: ButtonMenu.entries(of: item), inOverflow: ButtonMenu.inOverflow(item))
     }
 
     /// The tabs the window shows - the visible tabbed view's, where its tabs stand in the window and no heading

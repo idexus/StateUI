@@ -28,8 +28,24 @@ extension AndroidDriver {
         return Self.said(menu, menusOnly: false)
     }
 
-    /// The menu Android's button standing for `button` pops up, written as it opens.
+    /// The menu Android's button standing for `button` pops up, written as it opens - a bar's button, the submenu of
+    /// its bar's menu holding its entries.
     func buttonMenu(of button: MountedElement) throws -> String {
+        if button.type == .toolbarButton {
+            var root = button
+            while let parent = root.parent { root = parent }
+            guard let bar = Self.bars(in: root).first(where: { $0.items.contains { $0 === button } }),
+                  let place = ButtonMenu.entries(of: button).lazy
+                      .compactMap({ ($0.element?.native as? AndroidElement)?.menuPlace }).first
+            else { throw DriverCannot("read the menu \(button.type.name) opens") }
+            let menu = Self.menu(of: bar)
+            return withExtendedLifetime(menu) {
+                Java.frame {
+                    Java.callStaticObject(Self.testMenus, Self.saidHolding, .object(menu.reference), .int(Int32(place + 1)))
+                        .map { Java.text($0) }
+                }
+            } ?? ""
+        }
         guard let view = (button.native as? AndroidElement)?.view as? AndroidButtonView, let write = view.writeMenu
         else { throw DriverCannot("read the menu \(button.type.name) opens") }
         let menu = TestMenus.empty()
@@ -197,6 +213,8 @@ extension AndroidDriver {
     static let testMenus = Java.findClass("stateui/android/test/TestMenus")
     static let showsMenuArrow = Java.staticMethod(testMenus, "showsMenuArrow", "(Landroid/view/View;)Z")
     private static let saidMenu = Java.staticMethod(testMenus, "said", "(Landroid/view/Menu;Z)Ljava/lang/String;")
+    private static let saidHolding = Java.staticMethod(
+        testMenus, "saidHolding", "(Landroid/view/Menu;I)Ljava/lang/String;")
     private static let laidOutBar = Java.staticMethod(
         testMenus, "laidOut", "(Landroid/view/ViewGroup;Landroid/view/Menu;)Ljava/lang/String;")
     private static let chooseById = Java.staticMethod(testMenus, "choose", "(Landroid/view/Menu;I)Z")

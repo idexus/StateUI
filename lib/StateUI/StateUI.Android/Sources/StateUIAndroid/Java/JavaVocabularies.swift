@@ -73,7 +73,7 @@ enum AndroidMenuEntry: Int32 {
 
 /// A menu entry's marks (`StateUIMenus`).
 enum AndroidMenuMark: Int32 {
-    case disabled = 4, destructive = 8, onBar = 16, withText = 32, checkable = 64, checked = 128
+    case disabled = 4, destructive = 8, onBar = 16, withText = 32, checkable = 64, checked = 128, counted = 2048
 }
 
 /// The modifiers an item's shortcut holds (`StateUIMenus`).

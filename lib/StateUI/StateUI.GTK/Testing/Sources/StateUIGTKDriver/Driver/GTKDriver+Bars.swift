@@ -49,6 +49,7 @@ extension GTKDriver {
             if let label { return String(cString: gtk_label_get_text(label.opaque)).propValue }
             return gtk_widget_get_tooltip_text(button.widget).map { String(cString: $0).propValue }
         case .isEnabled: return (gtk_widget_get_sensitive(button.widget) != 0).propValue
+        case .showsMenuArrow: return button.showsArrow.propValue
         case .isOn:
             guard GTKTestHost.holds(button.widget, gtk_toggle_button_get_type()) else { return nil }
             return (gtk_toggle_button_get_active(button.widget.of(GtkToggleButton.self)) != 0).propValue
@@ -110,7 +111,7 @@ extension GTKDriver {
 
     /// The button of the toolbar item `element`, and whether it stands in the overflow's menu; nil where no bar shows
     /// it.
-    private func actionButton(of element: MountedElement) throws -> (GTKButtonView, inOverflow: Bool)? {
+    func actionButton(of element: MountedElement) throws -> (GTKButtonView, inOverflow: Bool)? {
         for frame in frames() {
             let onBar = (frame.chrome.leading + frame.chrome.trailing).flatMap { $0 }
             if let at = onBar.firstIndex(where: { $0.item === element }), at < frame.buttons.count {

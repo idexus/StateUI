@@ -9,8 +9,10 @@ public enum ToolbarButtonContract: ElementContract {
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure
 
-    /// A toolbar button is an item a user chooses, and it acts.
-    public static let tiers: [any Contract.Type] = [MenuItemElementContract.self, ActionElementContract.self]
+    /// A toolbar button is an item a user chooses, and it acts, opens a menu, or both.
+    public static let tiers: [any Contract.Type] = [
+        MenuItemElementContract.self, ActionElementContract.self, ButtonMenuElementContract.self,
+    ]
 
     /// Whether its words stand beside its picture on the bar; an item with no picture shows its words whatever
     /// this says.

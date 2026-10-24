@@ -831,6 +831,20 @@ extension ControlDictionary {
                 }
             """#),
 
+        (ButtonMenuElementContract.self, #"""
+            @State var sorted = "By name"
+
+            Text(sorted)
+                .toolbar {
+                    ToolbarButton("Sort")
+                        .icon("sort.png")
+                        .menu {
+                            MenuItem("By name").onClicked { sorted = "By name" }
+                            MenuItem("By date").onClicked { sorted = "By date" }
+                        }
+                }
+            """#),
+
         (MenuItemElementContract.self, #"""
             @State var saved = false
 

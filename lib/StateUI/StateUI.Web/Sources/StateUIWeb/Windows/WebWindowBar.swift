@@ -133,7 +133,11 @@ final class WebWindowBar: WebDOMView {
                 group.attribute("role", "group")
                 WebRelay.insert(group.node, into: edge.node, at: place)
                 for (index, item) in items.enumerated() {
-                    let button = buttons[ObjectIdentifier(item)] ?? WebBarButton()
+                    // A button opens its item's menu one way for good: an item opening it another way is another.
+                    let opening = ButtonMenu.opening(of: item)
+                    let standing = buttons.removeValue(forKey: ObjectIdentifier(item))
+                    if let standing, standing.opening != opening { standing.release() }
+                    let button = standing.flatMap { $0.opening == opening ? $0 : nil } ?? WebBarButton(opening: opening)
                     button.show(item)
                     WebRelay.insert(button.node, into: group.node, at: index)
                     kept[ObjectIdentifier(item)] = button
@@ -146,7 +150,7 @@ final class WebWindowBar: WebDOMView {
         buttons = kept
         groups = made
         // The bar ends with the actions behind it, then - a sheet's - the button closing it.
-        behind = chrome.actions.overflow.map(MenuEntry.entry(of:))
+        behind = chrome.actions.overflow.map(ButtonMenu.overflowEntry(of:))
         // A page keeps no Edit menu of its own: one the page joins holds the field's undoing, clipboard and selection.
         let menus = chrome.menus
             .editing(CoreLink().editWords, redo: KeyboardShortcut("z", modifiers: [.primary, .shift]))

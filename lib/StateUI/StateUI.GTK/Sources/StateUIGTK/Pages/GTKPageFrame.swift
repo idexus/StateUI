@@ -266,10 +266,16 @@ extension GTKPageFrame {
 extension GTKButtonView {
     /// A button performing `action`: on the header bar its picture as an icon - its title beside it where it says
     /// so - else its title; in the overflow's menu its title, flat; colored where it destroys something; a setting's
-    /// a toggle button, pressed in while on.
+    /// a toggle button, pressed in while on; one holding a menu, the button a button's menu makes - in the overflow's
+    /// menu a menu button opening what it offers there.
     /// Design: docs/design/platforms/gtk/pages.md#the-chrome
     static func action(_ action: GTKToolbarAction, inMenu: Bool = false) -> GTKButtonView {
-        let button = GTKButtonView(toggles: action.isOn != nil)
+        let opening = action.menu.map { inMenu ? .click : $0.opening } ?? .none
+        let button = GTKButtonView(toggles: action.isOn != nil, menu: opening)
+        if let menu = action.menu {
+            button.setMenu(GTKMenu(inMenu ? menu.inOverflow : menu.entries, at: .button))
+            button.showsArrow = inMenu || menu.showsArrow
+        }
         if let isOn = action.isOn { gtk_toggle_button_set_active(button.widget.of(GtkToggleButton.self), isOn ? 1 : 0) }
         let pictured = !inMenu && action.icon.map {
             button.setIcon($0, size: 16, caption: action.title, showsCaption: action.showsTitle)

@@ -80,6 +80,12 @@ The title view's place is a content control, which Tab stops at by default
 though it shows nothing of its own: it is no stop, so Tab walks the chrome's
 buttons and what the place holds, and never lands where nothing shows.
 
+A bar's button holding a menu is an `AppBarButton`: its click opens its
+`Flyout` where it has no click of its own, else its `ContextFlyout` opens as it
+is held - a command bar's button has no arrow part, so one that splits stands
+as held. Every menu on the bar answers through the title bar's one view, so
+each menu's items are counted on from where the menu before it ends.
+
 ## A navigation stack
 
 A navigation stack shows its top page across its whole frame; the pages below

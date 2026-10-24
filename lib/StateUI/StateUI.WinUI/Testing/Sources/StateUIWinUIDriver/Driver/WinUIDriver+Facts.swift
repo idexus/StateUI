@@ -23,8 +23,14 @@ extension WinUIDriver {
         return view.menus
     }
 
-    /// The flyout the WinUI button standing for `button` opens, or the context menu it holds.
+    /// The flyout the WinUI button standing for `button` opens, or the context menu it holds - a bar's button, its
+    /// button's on the title bar.
     func buttonMenu(of button: MountedElement) throws -> String {
+        if button.type == .toolbarButton {
+            let titleBar = try window(of: button).titleBar
+            guard let place = try actionPlace(of: button) else { throw DriverCannot("read the menu \(button.type.name) opens") }
+            return WinUIStrings.read { stateui_winui_title_bar_action_menu(titleBar.handle, Int32(place), $0, $1) }
+        }
         guard let view = (button.native as? WinUIElement)?.view as? WinUIButtonView, view.opening != .none else {
             throw DriverCannot("read the menu \(button.type.name) opens")
         }
@@ -153,6 +159,18 @@ extension WinUIDriver {
         }
         guard let bar = renderer?.window?.menuBar else { return nil }
         return (bar, index)
+    }
+
+    /// The bar's button whose menu holds a menu's item, and the item's place among that menu's items.
+    func barMenuPlace(of element: MountedElement) -> (button: MountedElement, index: Int)? {
+        var menu = element
+        while let parent = menu.parent, parent.type != .buttonMenu {
+            guard parent.type == .menu else { return nil }
+            menu = parent
+        }
+        guard let slot = menu.parent, let button = slot.parent, button.type == .toolbarButton else { return nil }
+        let items = Self.flat(slot).filter { Self.menuEntries.contains($0.type) }
+        return items.firstIndex { $0 === element }.map { (button, $0) }
     }
 
     /// `element` and everything under it, in the order a menu lists them.

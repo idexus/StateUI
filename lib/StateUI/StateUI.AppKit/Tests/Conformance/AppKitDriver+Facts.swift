@@ -20,8 +20,15 @@ extension AppKitDriver {
         return Self.said(view.menu?.items ?? [])
     }
 
-    /// The menu the button standing for `button` opens.
+    /// The menu the button standing for `button` opens - a toolbar's button, the menu of its toolbar item.
     func buttonMenu(of button: MountedElement) throws -> String {
+        if button.type == .toolbarButton {
+            let identifier = NSToolbarItem.Identifier("StateUI.action.\(button.mount)")
+            guard let item = try controller(of: button).toolbarForTesting.itemForTesting(identifier)
+                as? NSMenuToolbarItem
+            else { throw DriverCannot("read the menu \(button.type.name) opens: its toolbar item opens none") }
+            return Self.said(item.menu.items)
+        }
         guard let view = (button.native as? AppKitElement)?.view as? AppKitButtonView, view.opening != .none else {
             throw DriverCannot("read the menu \(button.type.name) opens")
         }

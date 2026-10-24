@@ -18,6 +18,8 @@ struct AppKitToolbarAction {
     var isOn: Bool? = nil
     /// Whether the item stands out on the bar: a setting on that shows no picture of its own for it.
     var standsOut = false
+    /// The menu it opens; nil for an action holding none.
+    var menu: AppKitToolbarMenu? = nil
 
     /// Whether two actions draw the same toolbar item. What an action
     /// performs is taken again on every composition.
@@ -28,6 +30,30 @@ struct AppKitToolbarAction {
             && isEnabled == other.isEnabled
             && isOn == other.isOn
             && standsOut == other.standsOut
+            && menu?.said == other.menu?.said
+    }
+}
+
+/// The menu a toolbar's button opens: how it opens, whether its arrow shows, its entries, and what it offers behind
+/// the toolbar's overflow (`ButtonMenu`).
+@MainActor
+struct AppKitToolbarMenu {
+    let opening: ButtonMenuOpening
+    let showsArrow: Bool
+    let entries: [MenuEntry]
+    let inOverflow: [MenuEntry]
+
+    /// Everything the menu shows: a toolbar keeps its item while it says the same.
+    struct Said: Equatable {
+        let opening: ButtonMenuOpening
+        let showsArrow: Bool
+        let entries: [MenuEntry.Said]
+        let inOverflow: [MenuEntry.Said]
+    }
+
+    var said: Said {
+        Said(
+            opening: opening, showsArrow: showsArrow, entries: entries.map(\.said), inOverflow: inOverflow.map(\.said))
     }
 }
 
@@ -89,6 +115,8 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     private var views: [NSToolbarItem.Identifier: NSView] = [:]
     private var actions: [NSToolbarItem.Identifier: AppKitToolbarAction] = [:]
     private var overflowActions: [AppKitToolbarAction] = []
+    /// The menu each item opening one shows, kept so its entries stand in one menu across compositions.
+    private var menus: [NSToolbarItem.Identifier: NSMenu] = [:]
     private var words: ChromeWords?
 
     /// The chrome last shown, shown again as a slot comes to hold something or nothing.
@@ -168,7 +196,9 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             nextActions[Self.close] = close
         }
 
+        // An item opening a menu is another kind of toolbar item.
         let sameItems = nextIdentifiers == identifiers
+            && nextActions.allSatisfy { (actions[$0.key]?.menu == nil) == ($0.value.menu == nil) }
             && chrome.sidebar === sidebar
             && nextViews.count == views.count
             && nextViews.allSatisfy { views[$0.key] === $0.value }
@@ -180,6 +210,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             && chrome.words == words
 
         identifiers = nextIdentifiers
+        menus = menus.filter { nextActions[$0.key]?.menu != nil }
         sidebar = chrome.sidebar
         views = nextViews
         actions = nextActions
@@ -234,7 +265,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         // A search field stands as the toolbar's own search item, which draws it as AppKit's rounded field: a
         // field the toolbar holds as a plain item's view stands there with no field drawn at all.
         // Design: docs/design/platforms/appkit/runtime.md#the-toolbar
-        let item: NSToolbarItem = if itemIdentifier == Self.overflow {
+        let item: NSToolbarItem = if itemIdentifier == Self.overflow || actions[itemIdentifier]?.menu != nil {
             NSMenuToolbarItem(itemIdentifier: itemIdentifier)
         } else if views[itemIdentifier] is NSSearchField {
             NSSearchToolbarItem(itemIdentifier: itemIdentifier)
@@ -278,6 +309,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         item.autovalidates = false
         item.isEnabled = action.isEnabled
         item.style = action.standsOut ? .prominent : .plain
+        if let menu = action.menu, let menuItem = item as? NSMenuToolbarItem { show(menu, on: menuItem) }
         // A setting's state as AppKit holds it on an item: the menu item it shows as words alone or in the overflow.
         item.menuFormRepresentation = action.isOn.map { isOn in
             let form = NSMenuItem(title: action.title, action: #selector(performForm(_:)), keyEquivalent: "")
@@ -290,6 +322,35 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         }
     }
 
+    /// An item opening `menu`: its click opens it where the button has none of its own - an arrow saying so as the
+    /// tree says - else AppKit's arrow beside the button opens it, or, with no arrow, the button held.
+    /// Design: docs/design/platforms/appkit/runtime.md#the-toolbar
+    private func show(_ menu: AppKitToolbarMenu, on item: NSMenuToolbarItem) {
+        let shown = menus[item.itemIdentifier] ?? NSMenu()
+        menus[item.itemIdentifier] = shown
+        Self.fill(shown, with: AppKitMenus.items(menu.entries))
+        item.menu = shown
+        switch menu.opening {
+        case .click:
+            item.target = nil
+            item.action = nil
+            item.showsIndicator = menu.showsArrow
+        case .arrow, .none: item.showsIndicator = true
+        case .hold: item.showsIndicator = false
+        }
+    }
+
+    /// `menu` holding `items` alone, each taken out of the menu it stood in before.
+    private static func fill(_ menu: NSMenu, with items: [NSMenuItem]) {
+        menu.autoenablesItems = false
+        menu.removeAllItems()
+        for item in items {
+            item.menu?.removeItem(item)
+            menu.addItem(item)
+        }
+    }
+
+    /// The overflow's menu: each action an item, an action opening a menu a submenu under its words.
     private func overflowMenu() -> NSMenu {
         let menu = NSMenu()
         menu.autoenablesItems = false
@@ -303,6 +364,13 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             item.image = action.image
             item.isEnabled = action.isEnabled
             item.state = action.isOn == true ? .on : .off
+            if let opened = action.menu {
+                item.target = nil
+                item.action = nil
+                let submenu = NSMenu(title: action.title)
+                Self.fill(submenu, with: AppKitMenus.items(opened.inOverflow))
+                item.submenu = submenu
+            }
             menu.addItem(item)
         }
         return menu

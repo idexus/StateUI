@@ -31,12 +31,6 @@ extension ButtonProperties {
         setValue(ButtonContract.iconPosition, value)
     }
 
-    /// Whether a button whose click opens its menu shows the arrow saying so - true unless said; a button standing
-    /// for its picture alone may leave it out. A split button's arrow is its menu's, and a held one has none.
-    public func showsMenuArrow(_ value: Bool) -> Modified {
-        setValue(ButtonContract.showsMenuArrow, value)
-    }
-
     /// The gap between the icon and the caption, in device units.
     public func iconSpacing(_ value: Double) -> Modified {
         setValue(ButtonContract.iconSpacing, value)
@@ -67,7 +61,7 @@ extension ButtonProperties where Self: View {
 /// `.onClicked(gate: .ignoreWhileRunning) { items = try await load() }` - and
 /// the interface goes on updating while it is suspended.
 public struct Button: ElementView, TextualElement, TrackingElement, FontElement, PaddingElement, BorderElement,
-    ImageElement, ButtonProperties, FocusElement {
+    ImageElement, ButtonProperties, ButtonMenuElement, FocusElement {
     /// The node this control describes.
     public var node: Node
 
@@ -122,31 +116,6 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     ///     Button("Save").role(.primary)
     public func role(_ role: ButtonRole) -> Modified {
         setValue(ButtonContract.role, role)
-    }
-
-    /// A menu the button opens, holding what a menu holds - `MenuItem`, `Menu`, `MenuSeparator` - as `kind` says.
-    /// With no `.onClicked` a click opens it, an arrow pointing down saying so; with one the button splits: its click
-    /// is its own action, and its menu opens from an arrow of its own. `.held` keeps the click the button's own and
-    /// opens the menu as the button is held, with no arrow.
-    ///
-    ///     Button("Share").menu {
-    ///         MenuItem("Mail").onClicked { mail() }
-    ///         MenuItem("Message").onClicked { message() }
-    ///     }
-    ///
-    ///     Button("Save")
-    ///         .onClicked { save() }
-    ///         .menu { MenuItem("Save as…").onClicked { saveAs() } }
-    public func menu(_ kind: ButtonMenuKind = .automatic, @MenuBuilder _ entries: () -> MenuEntries) -> Modified {
-        let menu = modified {
-            // The button's one menu, after its own children; written again, it stands in for the last.
-            // Design: docs/design/views/modifiers.md#slot-children
-            $0.children.removeAll { $0.type == .buttonMenu }
-            $0.children.append(Node(contract: ButtonMenuContract.self, children: entries().nodes))
-            // Its kind with it: a menu saying none takes no kind an earlier one said.
-            $0.props[ButtonContract.menuKind.token] = nil
-        }
-        return kind == .automatic ? menu : menu.setValue(ButtonContract.menuKind, kind)
     }
 
     // MARK: Events

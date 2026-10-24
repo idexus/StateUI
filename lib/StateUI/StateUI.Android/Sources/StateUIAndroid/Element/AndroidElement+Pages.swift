@@ -144,16 +144,34 @@ extension AndroidElement {
         content.subtitle = (page ?? element).titleArea?.subtitle
         content.background = colors.background
         content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
-        content.actions = shown.enumerated().map { place, item in
-            item.android.menuPlace = place
+        // Each item's place - its menu item's id less one - in the order the bar's menu is written: an action, the
+        // entries of a menu it opens there, and then the menus behind the overflow.
+        var items: [MountedElement] = []
+        var splits: [MountedElement] = []
+        content.actions = shown.map { item in
+            item.android.menuPlace = items.count
+            items.append(item)
             var action = item.android.menuItem
             action.onBar = onBar.contains { $0 === item }
             action.withText = action.onBar && item.showsActionWords
             action.group = groups.firstIndex { $0.contains { $0 === item } } ?? groups.count
+            // A bar's button holding a menu: on the bar, its menu where its click opens it, else its action there and
+            // its menu behind the overflow; behind the overflow, a submenu of what it offers there.
+            // Design: docs/design/platforms/android/pages.md#the-bar
+            switch ButtonMenu.opening(of: item) {
+            case .none: break
+            case .click where action.onBar: action.entries = Self.menuEntries(ButtonMenu.entries(of: item), items: &items)
+            case _ where !action.onBar: action.entries = Self.menuEntries(ButtonMenu.inOverflow(item), items: &items)
+            default: splits.append(item)
+            }
             return action
         }
-        var items = shown
-        content.menus = Self.menuEntries(page?.chromeMenus.menus ?? [], items: &items)
+        let splitMenus = splits.map { item in
+            AndroidMenu.Entry.menu(
+                item.value(.text)?.string ?? "", isEnabled: item.isEffectivelyEnabled,
+                Self.menuEntries(ButtonMenu.entries(of: item), items: &items))
+        }
+        content.menus = splitMenus + Self.menuEntries(page?.chromeMenus.menus ?? [], items: &items)
         // The sidebar's toggle first while the sidebar does not stand beside the detail shown, then the way back -
         // where the split view offers the toggle.
         // Design: docs/design/platforms/android/pages.md#the-bar

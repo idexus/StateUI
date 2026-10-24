@@ -189,6 +189,7 @@ extension AppKitDriver {
             case .icon: return pictureName(item.image)
             case .keyboardShortcut: return element.value(.keyboardShortcut)
             case .isOn: return item.menuFormRepresentation.map { ($0.state == .on).propValue }
+            case .showsMenuArrow: return ((item as? NSMenuToolbarItem)?.showsIndicator == true).propValue
             default: break
             }
         }

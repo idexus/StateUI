@@ -22,7 +22,7 @@ Text("\(count) items")
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [MenuItemElement](tiers/MenuItemElement.md) · [ActionElement](tiers/ActionElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [MenuItemElement](tiers/MenuItemElement.md) · [ActionElement](tiers/ActionElement.md) · [ButtonMenuElement](tiers/ButtonMenuElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -41,14 +41,14 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [MenuItemElement](t
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (8)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2">AppKit</td><td align="center">✓</td><td>4 ✅ · 1 ✓ · 1 –</td><td><code>NSToolbarItem</code>; <code>NSMenuToolbarItem</code> overflow</td></tr>
+<thead><tr><th>Host</th><th>Created</th><th>Members (10)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2">AppKit</td><td align="center">✓</td><td>5 ✅ · 2 ✓ · 1 –</td><td><code>NSToolbarItem</code>; <code>NSMenuToolbarItem</code> overflow</td></tr>
 <tr><td colspan="3">only through the host's own: activate on ToolbarButton: the host's toolbar entry called, no toolbar item touched</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>6 ✅ · 1 ✓ · 1 –</td><td><code>UIBarButtonItemGroup</code> / <code>UIBarButtonItem</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 1 –</td><td><code>Toolbar</code> <code>MenuItem</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>8 ✅</td><td><code>CommandBar</code> <code>AppBarButton</code> in the <code>TitleBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>6 ✅ · 1 ✓ · 1 –</td><td><code>GtkButton</code> in an <code>AdwHeaderBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>8 ✅</td><td><code>&lt;button&gt;</code> in an ARIA <code>toolbar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 1 ✓ · 2 –</td><td><code>UIBarButtonItemGroup</code> / <code>UIBarButtonItem</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 2 –</td><td><code>Toolbar</code> <code>MenuItem</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>8 ✅ · 1 ☑️ · 1 –</td><td><code>CommandBar</code> <code>AppBarButton</code> in the <code>TitleBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 1 ✓ · 1 –</td><td><code>GtkButton</code> in an <code>AdwHeaderBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>10 ✅</td><td><code>&lt;button&gt;</code> in an ARIA <code>toolbar</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarButtonContract.swift`.
@@ -94,4 +94,16 @@ What an item that acts has - a menu's entry, a toolbar's button: what choosing i
 <tr><td colspan="9">AppKit: only through the host's own: activate on ToolbarButton: the host's toolbar entry called, no toolbar item touched</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>role</code></td><td>property</td><td><code>ActionRole</code></td><td>adaptive</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+</table>
+
+## From [ButtonMenuElement](tiers/ButtonMenuElement.md)
+
+What a button that holds a menu has - a button's, a toolbar button's: how its menu opens, and whether the arrow saying so shows.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>menuKind</code></td><td>property</td><td><code>ButtonMenuKind</code></td><td>adaptive</td><td align="center">✓</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: activate on ToolbarButton: the host's toolbar entry called, no toolbar item touched<br>UIKit: UIKit's bar offers no arrow part: a split bar button opens its menu held.<br>Android Views: An Android bar's split or held button stands as its action, its menu behind the overflow.<br>WinUI 3: A WinUI command bar's button has no arrow part: a split one opens its menu held.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>showsMenuArrow</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: A UIKit bar button shows no arrow: its menu opens from its tap or its hold.<br>Android Views: An Android bar's action shows no arrow: its menu opens from its touch.<br>WinUI 3: A WinUI command bar's button shows no arrow: its flyout opens from its click.</td></tr></tbody>
 </table>

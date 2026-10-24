@@ -14,13 +14,27 @@ final class WebBarButton: WebDOMView {
     /// The item the button stands for, which hears it chosen.
     private(set) weak var item: MountedElement?
 
-    init() {
+    /// How the button opens the menu its item holds; nil for an item holding none.
+    private var menu: WebButtonMenu?
+
+    /// How the button opens its item's menu, its own for good: an item opening it otherwise is another button.
+    let opening: ButtonMenuOpening
+
+    /// A button for an item opening a menu as `opening` says.
+    init(opening: ButtonMenuOpening = .none) {
+        self.opening = opening
         super.init(tag: "button")
         attribute("type", "button")
         WebRelay.insert(picture.node, into: node, at: 0)
         WebRelay.insert(words.node, into: node, at: 1)
+        if opening != .none {
+            menu = WebButtonMenu(on: self, opening) { [weak self] in
+                guard let self, let item else { return }
+                WebMenu(ButtonMenu.entries(of: item)).show(under: self)
+            }
+        }
         listen("click") { [weak self] in
-            guard let self, let item, let element = item.native as? WebElement else { return }
+            guard let self, menu?.takes() != true, let item, let element = item.native as? WebElement else { return }
             guard item.type == .menu else { return element.choose() }
             WebMenu(MenuEntry.entries(of: item)).show(under: self)
         }
@@ -39,13 +53,16 @@ final class WebBarButton: WebDOMView {
         attribute("disabled", entry.isEnabled ? nil : "")
         attribute("data-destructive", entry.isDestructive ? "" : nil)
         attribute("data-identifier", entry.identifier)
-        attribute("aria-haspopup", item.type == .menu ? "menu" : nil)
+        if opening == .none { attribute("aria-haspopup", item.type == .menu ? "menu" : nil) }
+        // A button whose click opens its menu says so by its arrow, unless the tree says it shows none.
+        attribute("data-bare", opening == .click && !ButtonMenu.showsArrow(item) ? "" : nil)
         // A setting is a two-state button: pressed while on.
         attribute("aria-pressed", item.type == .toolbarToggle ? (entry.isOn == true ? "true" : "false") : nil)
         attribute("aria-keyshortcuts", entry.keyboardShortcut.map { WebKeys.spelled($0, onApple: WebRelay.onApple) })
     }
 
     override func release() {
+        menu?.release()
         picture.release()
         words.release()
         super.release()

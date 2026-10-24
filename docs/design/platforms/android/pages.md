@@ -72,6 +72,14 @@ stands at Android's icon size, 24 dp tall and as wide as its shape, whatever
 size the picture is drawn at elsewhere: the platform draws its own at that
 size, and a picture at its own size would stand twice as tall as theirs.
 
+A bar's button holding a menu its click opens stands on the bar as a
+submenu - Android's action item opening its menu - counted among the items,
+its id its place plus one. One that splits or is held stands as its action,
+its menu behind the overflow under its words: the bar has no arrow part and no
+hold of its own. Android numbers the items in the order the menu is written,
+so each item's place is given in that order: an action, the entries of a menu
+it opens there, and the overflow's menus after every action.
+
 ## A split view
 
 The sidebar stands under a bar of its own, Android's toolbar as a stack's

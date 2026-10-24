@@ -11226,6 +11226,13 @@ enum Listings {
         /// menu, one state for both.
         @State private var favorite = false
 
+        /// Whether Save's menu opens as the button is held rather than from an
+        /// arrow of its own.
+        @State private var saveHeld = false
+
+        /// Whether Sort shows the arrow saying its click opens a menu.
+        @State private var sortArrow = true
+
         /// Whether the branch declaring the actions is disabled.
         @State private var locked = false
 
@@ -11242,7 +11249,7 @@ enum Listings {
 
                     Text(favorite ? "A favorite" : "Not a favorite")
 
-                    Text("Press Save, Add and the star on the bar; Clear is in its overflow.")
+                    Text("Press Save, Add and the star; Sort and Save's arrow open menus; Clear is in the overflow.")
 
                     SectionTitle("Where the actions stand")
 
@@ -11252,15 +11259,31 @@ enum Listings {
                     SectionTitle("A picture and its words")
 
                     switchRow($addWords, "Add's words beside its picture", id: "toolbar.addWords")
+
+                    SectionTitle("A button's menu")
+
+                    switchRow($saveHeld, "Save's menu held", id: "toolbar.saveHeld")
+                    switchRow($sortArrow, "Sort's arrow", id: "toolbar.sortArrow")
                 }
                 // The page's actions, declared where their state lives: they follow
                 // it as the body builds - `saved` decides whether Clear can be pressed,
                 // `addWords` Add's words, the two switches where the group stands.
                 .toolbar {
                     ToolbarGroup {
+                        // Its click its own, its menu apart: from an arrow of its
+                        // own, or held.
                         ToolbarButton("Save")
                             .id("save")
                             .onClicked { saved += 1 }
+                            .menu(saveHeld ? .held : .split) {
+                                MenuItem("Save a copy")
+                                    .id("saveCopy")
+                                    .onClicked {
+                                        saved += 1
+                                        added += 1
+                                        recent.append("copy\(added).txt")
+                                    }
+                            }
 
                         // A picture alone, unless it asks for its words beside it.
                         ToolbarButton("Add")
@@ -11273,6 +11296,15 @@ enum Listings {
                             }
                     }
                     .placement(at: atStart ? .start : .end, order: afterGallery ? 1 : 0)
+
+                    // A menu its click opens, an arrow saying so.
+                    ToolbarButton("Sort")
+                        .id("sort")
+                        .showsMenuArrow(sortArrow)
+                        .menu {
+                            MenuItem("A to Z").id("sort.up").onClicked { recent.sort() }
+                            MenuItem("Z to A").id("sort.down").onClicked { recent.sort(by: >) }
+                        }
 
                     // A setting: on and off, its filled star while on.
                     ToolbarToggle("Favorite", isOn: $favorite)

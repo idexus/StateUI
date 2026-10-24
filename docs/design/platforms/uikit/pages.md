@@ -53,6 +53,11 @@ by their own title, else by the page beneath - which names the window's
 scene too. Every bar in the window is written again as the window is shown,
 so a bar always says what its page says now.
 
+A bar's button holding a menu is a bar button with a menu: its tap opens it
+where the button has no click of its own, else holding it does - UIKit's bar
+offers no arrow part, so a split stands as held. The menu carries its
+element's identifier, as an action does.
+
 ## Pictures on the bars
 
 A picture on a bar - an action's - stands 20 points tall, as a symbol stands

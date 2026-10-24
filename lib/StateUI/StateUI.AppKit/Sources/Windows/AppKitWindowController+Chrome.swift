@@ -80,7 +80,17 @@ extension AppKitWindowController {
             isEnabled: item.isEffectivelyEnabled,
             perform: { [weak item] in item?.appKit.clicked(nil) },
             isOn: isOn,
-            standsOut: isOn == true && item.value(.onIcon) == nil)
+            standsOut: isOn == true && item.value(.onIcon) == nil,
+            menu: menu(of: item))
+    }
+
+    /// The menu a toolbar's button opens, read as a button's is (`ButtonMenu`); nil for one holding none.
+    private static func menu(of item: MountedElement) -> AppKitToolbarMenu? {
+        let opening = ButtonMenu.opening(of: item)
+        guard opening != .none else { return nil }
+        return AppKitToolbarMenu(
+            opening: opening, showsArrow: ButtonMenu.showsArrow(item), entries: ButtonMenu.entries(of: item),
+            inOverflow: ButtonMenu.inOverflow(item))
     }
 
     /// The tabs the window shows - the visible tabbed view's, where its tabs stand in the window - and the split view

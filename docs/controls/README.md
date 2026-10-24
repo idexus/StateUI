@@ -99,14 +99,14 @@ The scene, the window and the page an application is made of, the arrangements a
 | [TextSpan](TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ToolbarButton](ToolbarButton.md) | 8 | 4 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 8 ✅ | 6 ✅ · 1 ✓ · 1 – | 8 ✅ |
+| [ToolbarButton](ToolbarButton.md) | 10 | 5 ✅ · 2 ✓ · 1 – | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 8 ✅ · 1 ☑️ · 1 – | 8 ✅ · 1 ✓ · 1 – | 10 ✅ |
 | [ToolbarGroup](ToolbarGroup.md) | 5 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [ToolbarToggle](ToolbarToggle.md) | 9 | 7 ✅ · 1 – | 8 ✅ · 1 – | 6 ✅ · 1 ☑️ · 1 – | 9 ✅ | 8 ✅ · 1 – | 9 ✅ |
 | [Window](Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 112 | 107 | 90 | 138 | 101 | 123 |
-| ✓ |  | 22 | 21 | 20 | 5 | 17 | 10 |
-| – |  | 11 | 22 | 31 | 9 | 35 | 18 |
-| **Met** | 163 | **145** | **150** | **141** | **152** | **153** | **151** |
+| ✅ |  | 113 | 107 | 90 | 138 | 103 | 125 |
+| ✓ |  | 23 | 21 | 20 | 5 | 17 | 10 |
+| – |  | 11 | 23 | 32 | 10 | 35 | 18 |
+| **Met** | 165 | **147** | **151** | **142** | **153** | **155** | **153** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 
@@ -141,6 +141,7 @@ Members many elements share, declared once.
 - [BarElement](tiers/BarElement.md) - What an arrangement declares of the bar while it stands on the visible path: its colors, and the application's name, line and mark in the bar.
 - [MenuItemElement](tiers/MenuItemElement.md) - What every item a user chooses from says - a menu's entry, a toolbar's item, an action or a setting: a caption, a picture, whether it can be chosen, and the keys that choose it.
 - [ActionElement](tiers/ActionElement.md) - What an item that acts has - a menu's entry, a toolbar's button: what choosing it does, and how the platform marks it.
+- [ButtonMenuElement](tiers/ButtonMenuElement.md) - What a button that holds a menu has - a button's, a toolbar button's: how its menu opens, and whether the arrow saying so shows.
 - [PageElement](tiers/PageElement.md) - What a page shows about itself where another container presents it as an item - a title and a picture.
 <!-- tiers:end -->
 

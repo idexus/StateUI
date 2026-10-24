@@ -130,6 +130,13 @@ title's place is the toolbar's own search item's field
 field: held as a plain item's view, a field in a macOS 26 toolbar is drawn
 with no field at all.
 
+A toolbar's button holding a menu is AppKit's menu item: with no action its
+click opens the menu, an indicator saying so as the tree says; with an action
+AppKit splits it, its indicator opening the menu; with an action and no
+indicator, the menu opens as it is held. Each item keeps one menu, and an
+entry is taken out of the menu it stood in before it is added - AppKit refuses
+an item standing in two menus.
+
 ## Sheets
 
 A page a view presents is a sheet on the window - over the top of its sheets

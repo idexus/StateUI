@@ -624,7 +624,8 @@ struct Document: View {
   and in a browser, as the user asks for any menu there: a finger held still or
   the mouse's other button. It shows no arrow.
 
-A button holding a menu offers no context menu of its own.
+A button holding a menu offers no context menu of its own. A `ToolbarButton`
+holds one the same way ([Toolbars](navigation-and-presentation.md#toolbars)).
 
 ### A view's keys
 

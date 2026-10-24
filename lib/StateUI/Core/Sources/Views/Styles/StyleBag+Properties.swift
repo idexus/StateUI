@@ -23,6 +23,7 @@ extension StyleBag: TrackingElement where Target: TrackingElement {}
 extension StyleBag: DecorableTextElement where Target: DecorableTextElement {}
 extension StyleBag: BorderElement where Target: BorderElement {}
 extension StyleBag: ImageElement where Target: ImageElement {}
+extension StyleBag: ButtonMenuElement where Target: ButtonMenuElement {}
 extension StyleBag: TextInputProperties where Target: TextInput {}
 
 // And each control's own properties.

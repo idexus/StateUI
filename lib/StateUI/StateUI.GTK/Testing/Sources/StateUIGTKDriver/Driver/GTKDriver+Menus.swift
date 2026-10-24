@@ -32,9 +32,12 @@ extension GTKDriver {
         return Self.said(model, actions: shown.menu.actions)
     }
 
-    /// The menu the button standing for `button` opens, as its model holds it.
+    /// The menu the button standing for `button` opens - a bar's button, its button on the bar - as its model holds
+    /// it.
     func buttonMenu(of button: MountedElement) throws -> String {
-        guard let view = (button.native as? GTKElement)?.view as? GTKButtonView, view.opening != .none else {
+        let shown = button.type == .toolbarButton
+            ? try actionButton(of: button)?.0 : (button.native as? GTKElement)?.view as? GTKButtonView
+        guard let view = shown, view.opening != .none else {
             throw DriverCannot("read the menu \(button.type.name) opens")
         }
         guard let menu = view.menu else { return "" }
@@ -86,11 +89,12 @@ extension GTKDriver {
     }
 
     /// The widget whose menu shows the item `element` - a view its context menu, a main menu's button, a button its
-    /// own menu - the menu, and the name of its action.
+    /// own menu, a bar's button on the bar or behind its overflow - the menu, and the name of its action.
     private func menuItem(_ element: MountedElement) -> (GTKWidget, GTKMenu, String)? {
         let shown: [(GTKWidget, GTKMenu)] = frames().compactMap { frame in frame.mainMenu.map { ($0.button, $0.menu) } }
             + (renderer?.views(GTKView.self) ?? []).compactMap { view in view.contextMenu.map { (view.widget, $0.menu) } }
-            + (renderer?.views(GTKButtonView.self) ?? []).compactMap { button in button.menu.map { (button.widget, $0) } }
+            + ((renderer?.views(GTKButtonView.self) ?? []) + frames().flatMap { $0.buttons + $0.overflowButtons })
+                .compactMap { button in button.menu.map { (button.widget, $0) } }
         for (widget, menu) in shown {
             if let name = menu.items.first(where: { $0.value() === element })?.key { return (widget, menu, name) }
         }

@@ -243,6 +243,21 @@ tree (`ChromeActions`), then as declared. Each group behind the overflow is a
 section of it (`overflowSections`). A bar that draws no groups takes the
 trailing actions in reading order (`primary`).
 
+## A bar button's menu
+
+A `ToolbarButton` holds a menu as a `Button` does (`ButtonMenuElement`), and
+the host layer reads both alike (`ButtonMenu`): how it opens - its click
+where it has no click of its own, else an arrow of its own or held - whether
+the arrow shows, and its entries. Each host makes the bar item its toolkit
+makes for a menu: a menu item on AppKit's toolbar, a bar button with a menu
+on UIKit - where a split stands as held, the bar offering no arrow part - a
+submenu on Android's bar where the click opens it, else the action on the bar
+and its menu behind the overflow, a flyout on WinUI's command bar, a menu
+button on GTK's header bar, a menu button on the Web's bar. Behind the
+overflow, a button holding a menu is a submenu under its words
+(`ButtonMenu.inOverflow`): its own action first where its click is its own,
+a line, then its menu's entries.
+
 ## The menus of a path
 
 The menu bar a page's window shows is composed from the menu bars its path

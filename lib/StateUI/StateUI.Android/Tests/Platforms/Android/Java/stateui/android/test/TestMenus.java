@@ -162,6 +162,23 @@ public final class TestMenus {
         return String.join(";", parts);
     }
 
+    /**
+     * The menu - `menu` or a submenu of it - holding the item of `id` among its own entries, as `said` writes it;
+     * null where none does.
+     */
+    public static String saidHolding(Menu menu, int id) {
+        for (int index = 0; index < menu.size(); index++) {
+            if (menu.getItem(index).getItemId() == id) return said(menu, false);
+        }
+        for (int index = 0; index < menu.size(); index++) {
+            MenuItem item = menu.getItem(index);
+            if (!item.hasSubMenu()) continue;
+            String found = saidHolding(item.getSubMenu(), id);
+            if (found != null) return found;
+        }
+        return null;
+    }
+
     /** Chooses the item of `id`, in `menu` or a submenu of it, as a touch does; whether it ran. */
     public static boolean choose(Menu menu, int id) {
         return menu.performIdentifierAction(id, 0);

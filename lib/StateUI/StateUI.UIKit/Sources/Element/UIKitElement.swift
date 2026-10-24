@@ -63,6 +63,9 @@ final class UIKitElement: NativeElement {
     /// What every action made for this element is identified by: UIKit keeps it in the copies it makes of an action.
     var actionIdentifier: UIAction.Identifier { UIAction.Identifier("stateui.action.\(element.mount)") }
 
+    /// What the menu a bar's button made for this element opens is identified by.
+    var menuIdentifier: UIMenu.Identifier { UIMenu.Identifier("stateui.menu.\(element.mount)") }
+
     init(_ element: MountedElement, host: UIKitRenderer) {
         self.element = element
         self.host = host

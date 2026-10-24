@@ -65,10 +65,38 @@ final class WinUITitleBarView: WinUIView {
             }
             drawnPlaces = places
             drawnLeading = leading
+            showMenus(of: actions, places: places)
         }
         drawn = actions
+        menuActions = Self.menus(of: actions, places: places).flatMap { $0.menu.actions }
 
         if previous.center !== chrome.center { stateui_winui_title_bar_set_title_view(handle, chrome.center?.handle) }
+    }
+
+    /// The menus the actions' buttons open, each with its action's place, whether it is held, and its items told from
+    /// where the items of those before it end: on the bar, its menu - held where it splits or is held, as a command
+    /// bar's button has no arrow part; behind "more", what it offers there, its click opening it.
+    /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
+    private static func menus(
+        of actions: [WinUIToolbarAction], places: [Int32]
+    ) -> [(place: Int32, held: Bool, first: Int32, menu: WinUIMenu)] {
+        var first: Int32 = 0
+        return zip(actions.indices, actions).compactMap { place, action in
+            guard let opened = action.menu else { return nil }
+            let behind = places[place] < 0
+            let menu = WinUIMenu(entries: behind ? opened.inOverflow : opened.entries)
+            defer { first += Int32(menu.actions.count) }
+            return (Int32(place), !behind && opened.opening != .click, first, menu)
+        }
+    }
+
+    /// Gives each action's button holding a menu its menu.
+    private func showMenus(of actions: [WinUIToolbarAction], places: [Int32]) {
+        for (place, held, first, menu) in Self.menus(of: actions, places: places) {
+            menu.relayed {
+                stateui_winui_title_bar_set_action_menu(handle, place, held, first, $0, $1, $2, $3, $4, $5, $6, $7, $8, $9)
+            }
+        }
     }
 
     /// A key went down in the window, before the element holding the focus has it: whether a view took it.

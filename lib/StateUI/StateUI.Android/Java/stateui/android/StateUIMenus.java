@@ -23,7 +23,8 @@ import java.util.ArrayDeque;
  * A menu's entries - a bar's actions, a view's context menu - written into Android's own menu in one call
  * from the Swift host's description. Each entry is an int - its kind and its flags - and each item and
  * submenu takes the next text and picture; an item chosen is reported by its place among the items, and
- * its id is that place plus one - a submenu's is none.
+ * its id is that place plus one - a submenu's is none, unless it stands for an item: a bar's button opening it,
+ * counted among the items, its id its place plus one, standing on the bar or behind the overflow as an item does.
  */
 final class StateUIMenus {
     /** An entry's kind, in its lowest bits - the bits `KIND` masks. */
@@ -34,10 +35,12 @@ final class StateUIMenus {
 
     /**
      * An entry's flags: not enabled, destructive, standing on the bar beside the title where room allows, showing
-     * its words there beside its picture where room allows, standing checked or not, and checked.
+     * its words there beside its picture where room allows, standing checked or not, checked, and - a submenu -
+     * standing for an item, counted among the items.
      */
     // Swift: AndroidMenuMark
-    static final int DISABLED = 4, DESTRUCTIVE = 8, ON_BAR = 16, WITH_TEXT = 32, CHECKABLE = 64, CHECKED = 128;
+    static final int DISABLED = 4, DESTRUCTIVE = 8, ON_BAR = 16, WITH_TEXT = 32, CHECKABLE = 64, CHECKED = 128,
+            COUNTED = 2048;
 
     /** An item's shortcut: the modifiers held with its key, whose character stands in the entry's upper half. */
     // Swift: AndroidMenuModifier
@@ -73,17 +76,7 @@ final class StateUIMenus {
                     MenuItem added = current.add(group, item + 1, Menu.NONE, words(texts[text], entry, error));
                     Bitmap picture = pictures == null ? null : pictures[text];
                     text++;
-                    if (picture != null) {
-                        BitmapDrawable drawable = StateUIViews.glyph(context, picture);
-                        boolean destructive = (entry & DESTRUCTIVE) != 0 && (entry & DISABLED) == 0;
-                        if (destructive) {
-                            drawable.setTint(error);
-                        } else if (bar != 0 && (entry & ON_BAR) != 0) {
-                            drawable.setTint(bar);
-                        }
-                        if ((entry & DISABLED) != 0) drawable.setAlpha(dimmed);
-                        added.setIcon(drawable);
-                    }
+                    showPicture(context, added, picture, entry, error, dimmed, bar);
                     added.setEnabled((entry & DISABLED) == 0);
                     if ((entry & CHECKABLE) != 0) {
                         added.setCheckable(true);
@@ -101,8 +94,20 @@ final class StateUIMenus {
                     break;
                 }
                 case MENU: {
-                    SubMenu inner = current.addSubMenu(group, Menu.NONE, Menu.NONE, words(texts[text++], entry, error));
-                    inner.getItem().setEnabled((entry & DISABLED) == 0);
+                    // A submenu standing for an item - a bar's button opening it - is counted among the items.
+                    boolean counted = (entry & COUNTED) != 0;
+                    int id = counted ? ++item : Menu.NONE;
+                    SubMenu inner = current.addSubMenu(group, id, Menu.NONE, words(texts[text], entry, error));
+                    Bitmap picture = pictures == null ? null : pictures[text];
+                    text++;
+                    MenuItem head = inner.getItem();
+                    head.setEnabled((entry & DISABLED) == 0);
+                    if (counted) {
+                        showPicture(context, head, picture, entry, error, dimmed, bar);
+                        int withText = (entry & WITH_TEXT) != 0 ? MenuItem.SHOW_AS_ACTION_WITH_TEXT : 0;
+                        head.setShowAsAction(
+                                (entry & ON_BAR) != 0 ? MenuItem.SHOW_AS_ACTION_IF_ROOM | withText : MenuItem.SHOW_AS_ACTION_NEVER);
+                    }
                     divideGroups(inner);
                     outerMenus.push(current);
                     outerGroups.push(group);
@@ -118,6 +123,24 @@ final class StateUIMenus {
                     group++;
             }
         }
+    }
+
+    /**
+     * Shows `picture` on `item`: in the error color where it destroys something, in the bar's words' color where it
+     * stands on the bar, faded where it cannot be chosen.
+     */
+    private static void showPicture(
+            Context context, MenuItem item, Bitmap picture, int entry, int error, int dimmed, int bar) {
+        if (picture == null) return;
+        BitmapDrawable drawable = StateUIViews.glyph(context, picture);
+        boolean destructive = (entry & DESTRUCTIVE) != 0 && (entry & DISABLED) == 0;
+        if (destructive) {
+            drawable.setTint(error);
+        } else if (bar != 0 && (entry & ON_BAR) != 0) {
+            drawable.setTint(bar);
+        }
+        if ((entry & DISABLED) != 0) drawable.setAlpha(dimmed);
+        item.setIcon(drawable);
     }
 
     /**

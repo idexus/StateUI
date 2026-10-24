@@ -1156,6 +1156,22 @@ void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const
                                          bool const *enabled, int32_t const *keys, int32_t const *modifiers,
                                          bool const *givesWay, int32_t const *states, int32_t count);
 
+/// The menu of the title bar's action at `place`, written as a context menu is (`stateui_winui_set_context_menu`), its
+/// items' choices told from `first` on: the flyout its click opens, or - `held` - its context menu, press and hold or
+/// the mouse's other button opening it.
+void stateui_winui_title_bar_set_action_menu(StateUIObjectRef bar, int32_t place, bool held, int32_t first,
+                                             int32_t const *kinds, char const *const *titles, bool const *enabled,
+                                             char const *const *identifiers, char const *const *icons,
+                                             bool const *destructive, int32_t const *keys, int32_t const *modifiers,
+                                             bool const *givesWay, int32_t count);
+
+/// What a test reads: the menu of the title bar's action at `place`, as `stateui_winui_menus` writes one, in UTF-8;
+/// the length it needs.
+int32_t stateui_winui_title_bar_action_menu(StateUIObjectRef bar, int32_t place, char *utf8, int32_t capacity);
+
+/// Chooses the item at `index` of the menu of the title bar's action at `place`, as assistive technology does.
+void stateui_winui_title_bar_action_menu_choose(StateUIObjectRef bar, int32_t place, int32_t index);
+
 /// What a test reads: the theme a title bar stands in, a `StateUIColorScheme`.
 int32_t stateui_winui_title_bar_theme(StateUIObjectRef bar);
 

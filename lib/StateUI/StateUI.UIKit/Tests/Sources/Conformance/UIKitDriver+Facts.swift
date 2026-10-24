@@ -80,8 +80,14 @@ extension UIKitDriver {
         return UIKitMenus.said(native.builtContextMenu?.children ?? [])
     }
 
-    /// The menu UIKit's button standing for `button` holds.
+    /// The menu UIKit's button standing for `button` holds - a bar's button, the menu of its bar button.
     func buttonMenu(of button: MountedElement) throws -> String {
+        if button.type == .toolbarButton {
+            guard let identifier = (button.native as? UIKitElement)?.menuIdentifier,
+                  let menu = barMenu(identified: identifier)
+            else { throw DriverCannot("read the menu \(button.type.name) opens: its bar button opens none") }
+            return UIKitMenus.said(menu.children)
+        }
         guard let view = (button.native as? UIKitElement)?.view as? UIKitButtonView, let menu = view.offeredMenu else {
             throw DriverCannot("read the menu \(button.type.name) opens")
         }

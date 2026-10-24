@@ -65,6 +65,10 @@ every render, and written on the header bar of each page shown:
 The page the user sees names the window, for the desktop's switcher and dock;
 a page with no title leaves the window's own.
 
+A bar's button holding a menu is the button a button's menu makes - GTK's
+menu button, libadwaita's split button, or held - and behind the overflow a
+flat menu button opening what it offers there.
+
 ## A navigation stack
 
 A navigation stack is libadwaita's `AdwNavigationView`, each page in a

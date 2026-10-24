@@ -102,6 +102,7 @@ final class GTKConformanceTests: XCTestCase {
     func testBarElement() { conform(BarElementTests.self) }
     func testMenuItemElement() { conform(MenuItemElementTests.self) }
     func testActionElement() { conform(ActionElementTests.self) }
+    func testButtonMenuElement() { conform(ButtonMenuElementTests.self) }
     func testPageElement() { conform(PageElementTests.self) }
 
     /// Runs `family` on GTK, and holds its verdicts to the family's file of GTK's marks.

@@ -92,8 +92,10 @@ enum GTKRealization {
         .complete(VisualElementContract.style),
 
         // MARK: Entries - a control's or a part's own
-        .complete(ButtonContract.menuKind),
-        .complete(ButtonContract.showsMenuArrow),
+        .complete(ButtonMenuElementContract.menuKind, on: ButtonContract.self),
+        .complete(ButtonMenuElementContract.menuKind, on: ToolbarButtonContract.self),
+        .complete(ButtonMenuElementContract.showsMenuArrow, on: ButtonContract.self),
+        .complete(ButtonMenuElementContract.showsMenuArrow, on: ToolbarButtonContract.self),
         .notPlanned(PageContract.backButtonTitle, reason: "GNOME's way back in the bar is an arrow, with no words."),
         .partial(SearchFieldContract.submitLabel,
             missing: "The return key's word: GTK gives an entry no word for the return key of a keyboard on the screen; Next "

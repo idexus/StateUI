@@ -87,11 +87,20 @@ extension WebDriver {
         if element.type == .window {
             return try click(try bar(over: element), part: "button:has(> [data-glyph=more])")
         }
-        if button, ButtonMenu.opening(of: element) == .arrow {
-            return try click(try self.view(of: element, reading: .frame).node, part: ".stateui-split-arrow")
+        // A bar's button stands on the bar, a button among views as its own view.
+        let node: Int32
+        if element.type == .toolbarButton {
+            guard let shown = try barButtons().first(where: { $0.item === element }) else {
+                throw DriverCannot("open the menu \(element.type.name) opens: no button stands for it on the bar")
+            }
+            node = shown.node
+        } else {
+            node = try self.view(of: element, reading: .frame).node
         }
-        let view = try self.view(of: element, reading: .frame)
-        let box = try box(of: view.node)
+        if button, ButtonMenu.opening(of: element) == .arrow {
+            return try click(node, part: ".stateui-split-arrow")
+        }
+        let box = try box(of: node)
         let middle = Point(x: box.width / 2, y: box.height / 2)
         let pressed = button && ButtonMenu.opening(of: element) == .click ? "left" : "right"
         mouse("mousePressed", at: middle, in: box, button: pressed)

@@ -223,6 +223,9 @@ extension WebDriver {
             switch property {
             case .showsText: return try WebBrowser.truth("!e.querySelector('span').hidden", on: e).propValue
             case .isOn: return try WebBrowser.truth("e.getAttribute('aria-pressed') === 'true'", on: e).propValue
+            case .showsMenuArrow:
+                let shows = "e.dataset.menu === 'opens' && !e.hasAttribute('data-bare')"
+                return try WebBrowser.truth(shows, on: e).propValue
             case .text: return try WebBrowser.evaluate("e.getAttribute('aria-label')", on: e)?.propValue
             case .isEnabled: return try (!WebBrowser.truth("e.disabled", on: e)).propValue
             case .role:

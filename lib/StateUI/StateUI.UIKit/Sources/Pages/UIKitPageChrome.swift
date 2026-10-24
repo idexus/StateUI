@@ -70,7 +70,7 @@ struct UIKitPageChrome {
             standing = buttonsSaid
             item.leadingItemGroups = leadingActions.map { Self.group($0.map { $0.barItem(tint: foreground) }) }
             let menu = overflow.isEmpty ? [] : [[UIBarButtonItem(
-                image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: overflow.map(\.menuAction)))]]
+                image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: overflow.map(\.overflowEntry)))]]
             menu.joined().forEach { $0.tintColor = foreground }
             // The sheet's close at the trailing edge, UIKit's own button.
             let close = closes.map { closes in

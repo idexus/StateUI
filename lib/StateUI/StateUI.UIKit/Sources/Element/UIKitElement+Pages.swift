@@ -73,7 +73,15 @@ extension UIKitElement {
         return UIKitBarAction(
             title: entry.title, icon: entry.icon, isEnabled: entry.isEnabled, isDestructive: entry.isDestructive,
             identifier: entry.identifier, perform: { [weak item] in item?.uiKit.choose() }, element: item.uiKit,
-            isOn: item.type == .toolbarToggle ? entry.isOn == true : nil)
+            isOn: item.type == .toolbarToggle ? entry.isOn == true : nil, menu: menu(of: item))
+    }
+
+    /// The menu a bar's button opens, read as a button's is (`ButtonMenu`); nil for one holding none.
+    private static func menu(of item: MountedElement) -> UIKitBarAction.Menu? {
+        let opening = ButtonMenu.opening(of: item)
+        guard opening != .none else { return nil }
+        return UIKitBarAction.Menu(
+            opening: opening, entries: ButtonMenu.entries(of: item), inOverflow: ButtonMenu.inOverflow(item))
     }
 
     /// Writes the bar of every page in this arrangement and every one it holds.

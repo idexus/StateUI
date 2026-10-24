@@ -133,6 +133,7 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testBarElement() { conform(BarElementTests.self) }
     @MainActor func testMenuItemElement() { conform(MenuItemElementTests.self) }
     @MainActor func testActionElement() { conform(ActionElementTests.self) }
+    @MainActor func testButtonMenuElement() { conform(ButtonMenuElementTests.self) }
     @MainActor func testPageElement() { conform(PageElementTests.self) }
 
     /// Runs `family` - or `part` of it - on UIKit, and holds its verdicts to its file of UIKit's marks. A long family

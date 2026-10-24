@@ -127,6 +127,7 @@ final class WinUIConformanceTests: XCTestCase {
     func testBarElement() { conform(BarElementTests.self) }
     func testMenuItemElement() { conform(MenuItemElementTests.self) }
     func testActionElement() { conform(ActionElementTests.self) }
+    func testButtonMenuElement() { conform(ButtonMenuElementTests.self) }
     func testPageElement() { conform(PageElementTests.self) }
 
     /// Runs `family` - or `part` of it - on WinUI, and holds its verdicts to its file of WinUI's marks. A test runs

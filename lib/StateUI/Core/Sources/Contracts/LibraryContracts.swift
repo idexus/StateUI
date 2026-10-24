@@ -34,6 +34,7 @@
         BarElementContract.self,
         MenuItemElementContract.self,
         ActionElementContract.self,
+        ButtonMenuElementContract.self,
         PageElementContract.self,
     ]
 

@@ -88,7 +88,9 @@ A button opening a menu says so (`aria-haspopup`) and wears a `▾` after its
 words. The browser draws no split button, so a split button is one `<button>`
 whose last part, its arrow - a `▾` set off by a line - opens the menu; a click
 there is the arrow's, never the button's. A right click or a finger held opens
-the menu too, as on any view offering one.
+the menu too, as on any view offering one. A bar's button holding a menu opens
+it the same way - one opener for both - and is made again where its item comes
+to open its menu another way.
 
 ## A field
 
