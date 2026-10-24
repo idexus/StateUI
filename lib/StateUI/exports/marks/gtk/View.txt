@@ -1,4 +1,4 @@
-# revision 10.1
+# revision 11.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -441,6 +441,40 @@ Line.swiped: ✅
 Line.tapCount: ✅
 Line.tapped: ✅
 Line.verticalAlignment: ✅
+Link.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.area: ✅
+Link.canDrag: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.dragEnded: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.dragStarting: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.dragText: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.droppedFileTypes: ✓ dropFiles on Link: the drop target's signal told the driver's files, no drag GTK began
+Link.filesDropped: ✓ dropFiles on Link: the drop target's signal told the driver's files, no drag GTK began
+Link.frameChanged: ✅
+Link.gridColumn: ✅
+Link.gridColumnSpan: ✅
+Link.gridRow: ✅
+Link.gridRowSpan: ✅
+Link.horizontalAlignment: ✅
+Link.margin: ✅
+Link.panTouchCount: ✅
+Link.panUpdated: ✅
+Link.panXChannel: ✅
+Link.panYChannel: ✅
+Link.pinchUpdated: ✓ pinch on Link: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+Link.pointerEntered: ✅
+Link.pointerExited: ✅
+Link.pointerMoved: ✅
+Link.pointerPressed: ✅
+Link.pointerReleased: ✅
+Link.swipeDirection: ✅
+Link.swipeThreshold: ✅
+Link.swiped: ✅
+Link.tapCount: ✅
+Link.tapped: ✅
+Link.verticalAlignment: ✅
 Map.allowsDrop: 🧩
 Map.area: 🧩
 Map.canDrag: 🧩

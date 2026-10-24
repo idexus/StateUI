@@ -113,6 +113,7 @@ final class SheetsTests: XCTestCase {
         func presentRendered(touchedChrome: Bool) { sheets.append(count()) }
         func presentFrame(movedChrome: Bool) {}
         func perform(_ call: HostActCall) {}
+        func open(link address: String) {}
         func focus(_ element: MountedElement) {}
     }
 

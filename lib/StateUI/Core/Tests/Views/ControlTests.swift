@@ -215,6 +215,13 @@ final class ControlTests: XCTestCase {
                     .tint(.firebrick)
                     .onToggled { _ in }),
 
+            ControlCase("Link", source: "Link.swift",
+                Link("Terms", destination: "https://www.swift.org/legal")
+                    .text("Terms of use")
+                    .textCase(.uppercase)
+                    .textColor(.firebrick)
+                    .onClicked {}),
+
             ControlCase("Slider", source: "Slider.swift",
                 Slider(40)
                     .minimum(0)

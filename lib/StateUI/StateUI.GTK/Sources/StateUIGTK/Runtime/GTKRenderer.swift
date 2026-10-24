@@ -245,6 +245,10 @@ extension GTKRenderer: HostPresenter {
         acts.perform(call)
     }
 
+    func open(link address: String) {
+        acts.open(link: address)
+    }
+
     func focus(_ element: MountedElement) {
         acts.focus(element)
     }

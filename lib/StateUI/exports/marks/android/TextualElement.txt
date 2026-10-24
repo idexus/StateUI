@@ -1,8 +1,10 @@
-# revision 1.1
+# revision 2.1
 Button.text: ✅
 Button.textCase: ✅
 CheckBox.text: ✅
 CheckBox.textCase: ✅
+Link.text: ✅
+Link.textCase: ✅
 SearchField.text: ✅
 SearchField.textCase: ✅
 Switch.text: ✅

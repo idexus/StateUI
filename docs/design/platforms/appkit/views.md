@@ -197,6 +197,14 @@ by it, and its cell sets its words and picture in the rest, its bezel the whole
 button's. Assistive technology asking for the menu of any of them opens it; a
 split button's arrow part, a view inside a button, is not met on its own.
 
+## A link
+
+AppKit has no link control of its own. A link is a borderless `NSButton`, its
+words in the system's link color - or the tree's - and underlined, the
+pointing hand over it, and its role to assistive technology a link, which
+VoiceOver names by its words. Its click is the button's; the host layer opens
+the address (`host/runtime.md#a-link-chosen`).
+
 ## A switch's words
 
 A check box's words are its button's title, beside its box, as AppKit draws

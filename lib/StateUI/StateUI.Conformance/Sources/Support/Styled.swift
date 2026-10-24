@@ -29,6 +29,7 @@ enum Styled {
             dimmed(Image.self)
             dimmed(Text.self)
             dimmed(Line.self)
+            dimmed(Link.self)
             dimmed(Map.self)
             dimmed(Path.self)
             dimmed(Picker.self)

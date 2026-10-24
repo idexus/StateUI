@@ -537,6 +537,17 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(answers.replies[2], [[ChosenFile]().propValue], "nothing chosen")
     }
 
+    /// A link the user chose opens its address as a launched one opens, and answers no one.
+    func testALinksAddressOpensAsALaunchedOne() {
+        let (files, answers) = (Files(), Answers())
+        let acts = HostActPerformer(toolkit: Toolkit(), files: files, answers: answers, tree: { nil })
+
+        acts.open(link: "https://www.swift.org/about")
+
+        XCTAssertEqual(files.launched, ["https://www.swift.org/about"])
+        XCTAssertTrue(answers.replies.isEmpty && answers.failures.isEmpty, "no caller to answer")
+    }
+
     /// A file is read and launched, and an address launched, as the toolkit answers.
     func testAFileIsReadAndLaunchedAndAnAddressLaunched() {
         let (files, answers) = (Files(), Answers())

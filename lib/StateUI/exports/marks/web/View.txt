@@ -1,4 +1,4 @@
-# revision 10.1
+# revision 11.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -441,6 +441,40 @@ Line.swiped: ✅
 Line.tapCount: ✅
 Line.tapped: ✅
 Line.verticalAlignment: ✅
+Link.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.area: ✅
+Link.canDrag: ✓ dragAndDrop on Link: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.dragEnded: ✓ dragAndDrop on Link: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.dragStarting: ✓ dragAndDrop on Link: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.dragText: ✓ dragAndDrop on Link: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.droppedFileTypes: ✓ dropFiles on Link: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Link.filesDropped: ✓ dropFiles on Link: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Link.frameChanged: ✅
+Link.gridColumn: ✅
+Link.gridColumnSpan: ✅
+Link.gridRow: ✅
+Link.gridRowSpan: ✅
+Link.horizontalAlignment: ✅
+Link.margin: ✅
+Link.panTouchCount: ✅
+Link.panUpdated: ✅
+Link.panXChannel: ✅
+Link.panYChannel: ✅
+Link.pinchUpdated: ✅
+Link.pointerEntered: ✅
+Link.pointerExited: ✅
+Link.pointerMoved: ✅
+Link.pointerPressed: ✅
+Link.pointerReleased: ✅
+Link.swipeDirection: ✅
+Link.swipeThreshold: ✅
+Link.swiped: ✅
+Link.tapCount: ✅
+Link.tapped: ✅
+Link.verticalAlignment: ✅
 Map.allowsDrop: 🧩
 Map.area: 🧩
 Map.canDrag: 🧩

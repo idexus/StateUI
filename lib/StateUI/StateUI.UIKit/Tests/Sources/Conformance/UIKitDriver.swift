@@ -256,6 +256,7 @@ final class UIKitDriver: HostDriver {
         case (.choose(let place), let items as UIKitItemsView): items.chooseForTesting(place)
         case (.scroll(let target), let items as UIKitItemsView): items.scrollForTesting(to: target)
         case (.activate, let button as UIKitButtonView): button.sendActions(for: .primaryActionTriggered)
+        case (.activate, let link as UIKitLinkView): link.sendActions(for: .primaryActionTriggered)
         case (.type(let words), let editor as UIKitTextEditorView):
             // UIKit asks the editor's delegate before any change a key makes.
             let whole = NSRange(location: 0, length: editor.text.utf16.count)
@@ -447,6 +448,7 @@ final class UIKitDriver: HostDriver {
         case (.selectedItems, let items as UIKitItemsView): return .strings(items.selectedForTesting)
         case (.selectionMode, let items as UIKitItemsView): return items.modeForTesting.propValue
         case (.text, let label as UIKitTextView): return (label.text ?? "").propValue
+        case (.text, let link as UIKitLinkView): return (link.configuration?.attributedTitle.map { String($0.characters) } ?? "").propValue
         case (.text, let label as UIKitSelectableTextView): return (label.text ?? "").propValue
         // A label selects nothing; selectable words stand in a text view.
         case (.isSelectable, is UIKitTextView): return false.propValue

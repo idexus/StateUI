@@ -1,4 +1,4 @@
-# revision 20.2
+# revision 21.2
 Button.rotationX: ✓ read rotationX of Button: the host's own tip, checked against the projection it laid on the element
 Button.style: ✅
 Canvas.accessibilityLabel: ✅
@@ -26,57 +26,56 @@ LayoutEngine.hidesChildrenFromAccessibility: ✅
 LayoutEngine.opacity: ✅
 Line.hidesChildrenFromAccessibility: ✅
 Line.opacity: ✅
-Map.maximumHeight: 🧩
-Map.maximumWidth: 🧩
-Map.minimumHeight: 🧩
-Map.minimumWidth: 🧩
-Map.pivotX: 🧩
-Path.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
-Path.translationX: ✅
-Picker.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Polygon.hidesChildrenFromAccessibility: ✅
-Polygon.opacity: ✅
-Polyline.maximumHeight: ✅
-Polyline.maximumWidth: ✅
-Polyline.minimumHeight: ✅
-Polyline.minimumWidth: ✅
-Polyline.pivotX: ✅
-ProgressBar.rotationX: ✓ read rotationX of ProgressBar: the host's own tip, checked against the projection it laid on the element
-ProgressBar.style: ✅
-Rectangle.accessibilityLabel: ✅
-Rectangle.scaleX: ✅
-ScrollView.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-ScrollView.translationY: ✅
-SearchField.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-SearchField.accessibilityActions: – UI Automation offers no action of an application's own words.
-Separator.rotationY: ✓ read rotationY of Separator: the host's own tip, checked against the projection it laid on the element
-Separator.zIndex: ✅
-Slider.isAccessibilityHidden: ✅
-Slider.isVisible: ✅
-Space.maximumHeight: ✅
-Space.maximumWidth: ✅
-Space.minimumHeight: ✅
-Space.minimumWidth: ✅
-Space.pivotX: ✅
+Link.maximumHeight: ✅
+Link.maximumWidth: ✅
+Link.minimumHeight: ✅
+Link.minimumWidth: ✅
+Link.pivotX: ✅
+Map.rotationY: 🧩
+Map.zIndex: 🧩
+Path.tooltip: ✅
+Picker.hidesChildrenFromAccessibility: ✅
+Picker.opacity: ✅
+Polygon.ignoresInput: ✅
+Polygon.pivotY: ✅
+Polyline.rotationY: ✓ read rotationY of Polyline: the host's own tip, checked against the projection it laid on the element
+Polyline.zIndex: ✅
+ProgressBar.accessibilityHint: ✅
+ProgressBar.scaleY: ✅
+Rectangle.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+Rectangle.accessibilityActions: – UI Automation offers no action of an application's own words.
+Rectangle.isEnabled: ✅
+ScrollView.accessibilityHeading: ✅
+SearchField.isAccessibilityHidden: ✅
+SearchField.isVisible: ✅
+Separator.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+Separator.translationX: ✅
+Slider.maximumHeight: ✅
+Slider.maximumWidth: ✅
+Slider.minimumHeight: ✅
+Slider.minimumWidth: ✅
+Slider.pivotX: ✅
+Space.rotationY: ✓ read rotationY of Space: the host's own tip, checked against the projection it laid on the element
+Space.zIndex: ✅
 Spinner.maximumHeight: ✅
 Spinner.maximumWidth: ✅
 Spinner.minimumHeight: ✅
 Spinner.minimumWidth: ✅
 Spinner.pivotX: ✅
-Stepper.ignoresInput: ✅
-Stepper.pivotY: ✅
-Switch.accessibilityHeading: ✅
-Switch.scale: ✅
+Stepper.accessibilityHeading: ✅
+Stepper.scale: ✅
+Switch.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+Switch.translationY: ✅
 Text.tooltip: ✅
-TextEditor.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-TextEditor.translationY: ✅
-TextField.accessibilityHeading: ✅
-TimePicker.height: ✅
-TimePicker.layoutDirection: ✅
-TimePicker.width: ✅
-VStack.rotationX: ✓ read rotationX of VStack: the host's own tip, checked against the projection it laid on the element
-VStack.style: ✅
-WebView.ignoresInput: ✅
-WebView.pivotY: ✅
-ZStack.accessibilityHeading: ✅
-ZStack.scale: ✅
+TextEditor.accessibilityHeading: ✅
+TextField.height: ✅
+TextField.layoutDirection: ✅
+TextField.width: ✅
+TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own tip, checked against the projection it laid on the element
+TimePicker.style: ✅
+VStack.accessibilityHint: ✅
+VStack.scaleY: ✅
+WebView.accessibilityHeading: ✅
+WebView.scale: ✅
+ZStack.accessibilityValue: ✅
+ZStack.translationY: ✅

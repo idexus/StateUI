@@ -1,4 +1,4 @@
-# revision 20.1
+# revision 21.1
 Button.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
 Button.accessibilityActions: – ARIA offers no action of an application's own words.
 Button.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
@@ -467,6 +467,42 @@ Line.translationX: ✓ read translationX of Line: the host's own transform: the 
 Line.translationY: ✓ read translationY of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Line.width: ✅
 Line.zIndex: ✅
+Link.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Link.accessibilityActions: – ARIA offers no action of an application's own words.
+Link.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
+Link.accessibilityHeading: ✅
+Link.accessibilityHint: ✅
+Link.accessibilityLabel: ✅
+Link.accessibilityRole: ✅
+Link.accessibilityValue: ✅
+Link.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Link.frame: ✅
+Link.height: ✅
+Link.hidesChildrenFromAccessibility: ✅
+Link.ignoresInput: ✅
+Link.isAccessibilityHidden: ✅
+Link.isEnabled: ✅
+Link.isVisible: ✅
+Link.layoutDirection: ✅
+Link.maximumHeight: ✅
+Link.maximumWidth: ✅
+Link.minimumHeight: ✅
+Link.minimumWidth: ✅
+Link.opacity: ✅
+Link.pivotX: ✓ read pivotX of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.pivotY: ✓ read pivotY of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.rotation: ✓ read rotation of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.rotationX: ✓ read rotationX of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.rotationY: ✓ read rotationY of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.scale: ✓ read scale of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.scaleX: ✓ read scaleX of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.scaleY: ✓ read scaleY of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.style: ✅
+Link.tooltip: ✅
+Link.translationX: ✓ read translationX of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.translationY: ✓ read translationY of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.width: ✅
+Link.zIndex: ✅
 Map.accessibilityActionPerformed: 🧩
 Map.accessibilityActions: 🧩
 Map.accessibilityAdjusted: 🧩

@@ -1,4 +1,4 @@
-# revision 10.1
+# revision 11.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started
@@ -441,6 +441,40 @@ Line.swiped: ✅
 Line.tapCount: ✅
 Line.tapped: ✅
 Line.verticalAlignment: ✅
+Link.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Link.area: ✅
+Link.canDrag: ✓ dragAndDrop on Link: the views' drag listeners' reports told by the driver, no drag started
+Link.dragEnded: ✓ dragAndDrop on Link: the views' drag listeners' reports told by the driver, no drag started
+Link.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Link.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Link.dragStarting: ✓ dragAndDrop on Link: the views' drag listeners' reports told by the driver, no drag started
+Link.dragText: ✓ dragAndDrop on Link: the views' drag listeners' reports told by the driver, no drag started
+Link.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Link.droppedFileTypes: ✓ dropFiles on Link: the view's drag listener's report told the driver's documents, no drag started
+Link.filesDropped: ✓ dropFiles on Link: the view's drag listener's report told the driver's documents, no drag started
+Link.frameChanged: ✅
+Link.gridColumn: ✅
+Link.gridColumnSpan: ✅
+Link.gridRow: ✅
+Link.gridRowSpan: ✅
+Link.horizontalAlignment: ✅
+Link.margin: ✅
+Link.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+Link.panUpdated: ✅
+Link.panXChannel: ✅
+Link.panYChannel: ✅
+Link.pinchUpdated: ✅
+Link.pointerEntered: ✅
+Link.pointerExited: ✅
+Link.pointerMoved: ✅
+Link.pointerPressed: ✅
+Link.pointerReleased: ✅
+Link.swipeDirection: ✅
+Link.swipeThreshold: ✅
+Link.swiped: ✅
+Link.tapCount: ✅
+Link.tapped: ✅
+Link.verticalAlignment: ✅
 Map.allowsDrop: 🧩
 Map.area: 🧩
 Map.canDrag: 🧩

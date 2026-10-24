@@ -83,6 +83,14 @@ A press is heard as it goes down and as it ends, wherever the pointer ends
 up: a drag gesture of the button's own, which claims nothing, so the button
 still clicks.
 
+## A link
+
+A link is GTK's `GtkLinkButton` holding an empty address, its words in the
+theme's link color or, by Pango attributes, the tree's. Its `activate-link`
+is the host's and answers that it took the link, so GTK opens nothing and
+marks nothing visited; the host layer opens the address
+(`host/runtime.md#a-link-chosen`).
+
 ## Runs of words
 
 A label's spans are its words, run by run: the label's text is their words

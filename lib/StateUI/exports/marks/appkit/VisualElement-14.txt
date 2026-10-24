@@ -1,4 +1,4 @@
-# revision 20.1
+# revision 21.1
 Button.maximumHeight: ✅
 Button.maximumWidth: ✅
 Button.minimumHeight: ✅
@@ -23,36 +23,40 @@ ItemsView.width: ✅
 LayoutEngine.accessibilityLabel: ✅
 LayoutEngine.background: ✅
 Line.pivotX: ✓ read pivotX of Line: the host's own transform, checked against the layer it composed itself
-Map.accessibilityValue: ✅
-Path.layoutDirection: ✅
-Picker.accessibilityRole: ✅
-Polygon.maximumHeight: ✅
-Polygon.maximumWidth: ✅
-Polygon.minimumHeight: ✅
-Polygon.minimumWidth: ✅
-Polygon.scaleX: ✓ read scaleX of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.hidesChildrenFromAccessibility: ✅
-ProgressBar.accessibilityLabel: ✅
-Rectangle.opacity: ✅
-Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.tooltip: ✅
-SearchField.ignoresInput: ✅
-SearchField.scaleY: ✓ read scaleY of SearchField: the host's own transform, checked against the layer it composed itself
-Separator.ignoresInput: ✅
-Separator.scaleY: ✓ read scaleY of Separator: the host's own transform, checked against the layer it composed itself
-Slider.layoutDirection: ✅
-Space.accessibilityValue: ✅
+Link.accessibilityValue: ✅
+Map.ignoresInput: ✅
+Map.scaleY: ✓ read scaleY of Map: the host's own transform, checked against the layer it composed itself
+Path.accessibilityValue: ✅
+Picker.maximumHeight: ✅
+Picker.maximumWidth: ✅
+Picker.minimumHeight: ✅
+Picker.minimumWidth: ✅
+Picker.scaleX: ✓ read scaleX of Picker: the host's own transform, checked against the layer it composed itself
+Polygon.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
+Polyline.accessibilityHint: ✅
+ProgressBar.isEnabled: ✅
+ProgressBar.rotationY: ✓ read rotationY of ProgressBar: the host's own transform, checked against the layer it composed itself
+Rectangle.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+ScrollView.isEnabled: ✅
+ScrollView.zIndex: ✅
+SearchField.layoutDirection: ✅
+Separator.layoutDirection: ✅
+Slider.accessibilityValue: – AppKit's slider says its own number to assistive technology, over any value given.
+Space.ignoresInput: ✅
+Space.scaleY: ✓ read scaleY of Space: the host's own transform, checked against the layer it composed itself
 Spinner.accessibilityValue: ✅
-Stepper.isEnabled: ✅
-Stepper.rotationY: ✓ read rotationY of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.isAccessibilityHidden: ✅
+Stepper.isAccessibilityHidden: ✅
+Switch.accessibilityLabel: ✅
 Text.hidesChildrenFromAccessibility: ✅
-TextEditor.accessibilityLabel: ✅
-TextField.isEnabled: ✅
-TextField.rotationY: ✓ read rotationY of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.isAccessibilityHidden: ✅
-VStack.accessibilityLabel: ✅
-VStack.layoutDirection: ✅
-WebView.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
-ZStack.accessibilityRole: ✅
-ZStack.background: ✅
+TextEditor.isEnabled: ✅
+TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.isAccessibilityHidden: ✅
+TimePicker.accessibilityLabel: ✅
+VStack.isEnabled: ✅
+VStack.rotationY: ✓ read rotationY of VStack: the host's own transform, checked against the layer it composed itself
+WebView.accessibilityRole: ✅
+ZStack.maximumHeight: ✅
+ZStack.maximumWidth: ✅
+ZStack.minimumHeight: ✅
+ZStack.minimumWidth: ✅
+ZStack.scaleX: ✓ read scaleX of ZStack: the host's own transform, checked against the layer it composed itself

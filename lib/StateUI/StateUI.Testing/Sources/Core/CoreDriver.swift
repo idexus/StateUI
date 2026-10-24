@@ -89,6 +89,8 @@ extension CoreDriver: HostPresenter {
         if let completion = call.completion { runtime?.core.fail(completion, reason: "a test's window performs no act") }
     }
 
+    func open(link address: String) {}
+
     func focus(_ element: MountedElement) {}
 }
 

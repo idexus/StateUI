@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 Button.keyPressed: ✓ pressKeys on Button: the shortcut controller's action run, no key event
 Button.keysTaken: ✓ pressKeys on Button: the shortcut controller's action run, no key event
 CheckBox.keyPressed: ✓ pressKeys on CheckBox: the shortcut controller's action run, no key event
@@ -13,6 +13,8 @@ ItemsView.keyPressed: ✓ pressKeys on ItemsView: the shortcut controller's acti
 ItemsView.keysTaken: ✓ pressKeys on ItemsView: the shortcut controller's action run, no key event
 LayoutEngine.keyPressed: ✓ pressKeys on LayoutEngine: the shortcut controller's action run, no key event
 LayoutEngine.keysTaken: ✓ pressKeys on LayoutEngine: the shortcut controller's action run, no key event
+Link.keyPressed: ✓ pressKeys on Link: the shortcut controller's action run, no key event
+Link.keysTaken: ✓ pressKeys on Link: the shortcut controller's action run, no key event
 Picker.keyPressed: ✓ pressKeys on Picker: the shortcut controller's action run, no key event
 Picker.keysTaken: ✓ pressKeys on Picker: the shortcut controller's action run, no key event
 ScrollView.keyPressed: ✓ pressKeys on ScrollView: the shortcut controller's action run, no key event

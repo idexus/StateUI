@@ -1,4 +1,4 @@
-# revision 20.2
+# revision 21.2
 Button.accessibilityHeading: ✅
 Button.scale: ✅
 Canvas.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
@@ -26,46 +26,48 @@ LayoutEngine.width: ✅
 Line.height: ✅
 Line.layoutDirection: ✓ read layoutDirection of Line: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Line.width: ✅
-Map.frame: 🧩
-Map.rotation: 🧩
-Path.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-Path.accessibilityActions: – UI Automation offers no action of an application's own words.
-Path.isEnabled: ✅
-Picker.accessibilityHeading: ✅
-Polygon.height: ✅
-Polygon.layoutDirection: ✓ read layoutDirection of Polygon: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Polygon.width: ✅
-Polyline.frame: ✅
-Polyline.rotation: ✅
-ProgressBar.accessibilityHeading: ✅
-ProgressBar.scale: ✅
-Rectangle.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
-Rectangle.translationX: ✅
-ScrollView.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-ScrollView.layoutDirection: ✅
-SearchField.tooltip: ✅
-Separator.accessibilityLabel: ✅
-Separator.scaleX: ✅
-Slider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-Slider.isEnabled: ✅
-Space.frame: ✅
-Space.rotation: ✅
+Link.frame: ✅
+Link.rotation: ✅
+Map.accessibilityLabel: 🧩
+Map.scaleX: 🧩
+Path.isAccessibilityHidden: ✅
+Path.isVisible: ✅
+Picker.height: ✅
+Picker.layoutDirection: ✅
+Picker.width: ✅
+Polygon.rotationX: ✓ read rotationX of Polygon: the host's own tip, checked against the projection it laid on the element
+Polygon.style: ✅
+Polyline.accessibilityLabel: ✅
+Polyline.scaleX: ✅
+ProgressBar.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+ProgressBar.translationY: ✅
+Rectangle.tooltip: ✅
+ScrollView.hidesChildrenFromAccessibility: ✅
+ScrollView.opacity: ✅
+SearchField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+SearchField.isEnabled: ✅
+Separator.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+Separator.accessibilityActions: – UI Automation offers no action of an application's own words.
+Slider.frame: ✅
+Slider.rotation: ✅
+Space.accessibilityLabel: ✅
+Space.scaleX: ✅
 Spinner.frame: ✅
 Spinner.rotation: ✅
-Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked against the projection it laid on the element
-Stepper.style: ✅
-Switch.accessibilityHint: ✅
-Switch.scaleY: ✅
+Stepper.accessibilityHint: ✅
+Stepper.scaleY: ✅
+Switch.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Text.isAccessibilityHidden: ✅
 Text.isVisible: ✅
-TextEditor.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-TextField.hidesChildrenFromAccessibility: ✅
-TextField.opacity: ✅
-TimePicker.ignoresInput: ✅
-TimePicker.pivotY: ✅
-VStack.accessibilityHeading: ✅
-VStack.scale: ✅
-WebView.rotationX: ✓ read rotationX of WebView: the host's own tip, checked against the projection it laid on the element
-WebView.style: ✅
-ZStack.accessibilityHint: ✅
-ZStack.scaleY: ✅
+TextEditor.hidesChildrenFromAccessibility: ✅
+TextEditor.opacity: ✅
+TextField.ignoresInput: ✅
+TextField.pivotY: ✅
+TimePicker.accessibilityHeading: ✅
+TimePicker.scale: ✅
+VStack.accessibilityValue: ✅
+VStack.translationY: ✅
+WebView.accessibilityHint: ✅
+WebView.scaleY: ✅
+ZStack.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+ZStack.isEnabled: ✅

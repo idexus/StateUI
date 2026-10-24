@@ -39,6 +39,7 @@ extension GTKDriver {
         case let label as GTKTextualView: return labelHolds(property, label.widget.opaque, label.widget)
         case let button as GTKButtonView: return button.captionLabel.flatMap { labelHolds(property, $0, button.widget) }
         case let check as GTKCheckView: return Self.label(in: check.widget).flatMap { labelHolds(property, $0.opaque, $0) }
+        case let link as GTKLinkView: return link.label.flatMap { labelHolds(property, $0.opaque, $0) }
         case let toggle as GTKSwitchView: return labelHolds(property, toggle.caption.opaque, toggle.caption)
         case let picker as GTKPickerView: return Self.label(in: picker.widget).flatMap { wordsHolds(property, $0) }
         case let picker as GTKPopoverPickerView: return wordsHolds(property, picker.label)

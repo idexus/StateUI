@@ -37,8 +37,9 @@ controls::TextBlock stateui::labelWords(StateUIObjectRef handle) {
 }
 
 controls::TextBlock stateui::captionOf(IInspectable const &element) {
-    // A button's, or a split button's, which shows its words as a button does.
+    // A button's, a split button's or a link's, each showing its words as a button does.
     auto button = element.try_as<controls::Button>() || element.try_as<controls::SplitButton>()
+            || element.try_as<controls::HyperlinkButton>()
         ? element.try_as<controls::ContentControl>() : nullptr;
     if (!button) return nullptr;
     auto content = button.Content();
@@ -123,6 +124,12 @@ extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view, StateUIButto
                     callbacks.clicked(view);
                 }));
             return detach(split);
+        }
+        if (kind == StateUIButtonKindLink) {
+            controls::HyperlinkButton link;
+            link.Click(guarded("handling Click",
+                [view](IInspectable const &, xaml::RoutedEventArgs const &) { callbacks.clicked(view); }));
+            return detach(link);
         }
         controls::Button button = kind == StateUIButtonKindDropDown ? controls::DropDownButton() : controls::Button();
         button.Click(guarded("handling Click",

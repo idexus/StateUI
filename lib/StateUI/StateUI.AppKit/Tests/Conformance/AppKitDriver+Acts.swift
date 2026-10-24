@@ -175,6 +175,7 @@ extension AppKitDriver {
     private func activate(_ element: MountedElement, _ view: NSView?) throws {
         switch view {
         case let button as AppKitButtonView: button.performClick(nil)
+        case let link as AppKitLinkView: link.performClick(nil)
         case let pressed as AppKitHitTestView where pressed.pressAction != nil: _ = pressed.accessibilityPerformPress()
         default:
             if [.menuItem, .menuToggle].contains(element.type), let item = (element.native as? AppKitElement)?.platformMenuItem,

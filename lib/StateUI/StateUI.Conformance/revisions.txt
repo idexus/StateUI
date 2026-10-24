@@ -45,8 +45,8 @@ Picker 4
 Image 3
 Page 7
 PageElement 2
-View 10
-VisualElement 20
+View 11
+VisualElement 21
 Shape 5
 BorderElement 12
 TextInput 7
@@ -56,11 +56,11 @@ Separator 4
 Canvas 3
 Rectangle 3
 Stepper 5
-KeyboardElement 4
+KeyboardElement 5
 LineHeightElement 2
 TextAlignmentElement 2
 Text 4
-TextColorElement 2
+TextColorElement 3
 TintElement 3
 ContextMenu 3
 winui VisualElement 2
@@ -70,11 +70,11 @@ TextField 3
 SearchField 3
 Polyline 3
 FilledShape 3
-AutomationElement 6
+AutomationElement 7
 Layout 2
 PaddingElement 2
 LayoutEngine 11
-FocusElement 3
+FocusElement 4
 ScrollView 4
 Slider 3
 Switch 3
@@ -95,3 +95,4 @@ VStack 3
 WebView 3
 ZStack 2
 Popover 4
+TextualElement 2

@@ -156,11 +156,12 @@ typedef enum {
     StateUIInputScopeUrl,
 } StateUIInputScope;
 
-/// What a button is: WinUI's Button, its DropDownButton, its SplitButton.
+/// What a button is: WinUI's Button, its DropDownButton, its SplitButton, its HyperlinkButton.
 typedef enum STATEUI_CLOSED_ENUM {
     StateUIButtonKindButton,
     StateUIButtonKindDropDown,
     StateUIButtonKindSplit,
+    StateUIButtonKindLink,
 } StateUIButtonKind;
 
 /// The ways the hand over a layout moves it: none - the hand is not heard - across, down, every way.
@@ -730,8 +731,8 @@ void stateui_winui_text_set_spacing(StateUIObjectRef text, int32_t tracking, dou
 void stateui_winui_text_set_decorations(StateUIObjectRef text, bool underline, bool strikethrough);
 
 /// A button of `kind`: WinUI's Button - opening its flyout, or holding its context menu, where it is given one - its
-/// DropDownButton opening its flyout, an arrow saying so, or its SplitButton - its click its own and its flyout behind
-/// the arrow.
+/// DropDownButton opening its flyout, an arrow saying so, its SplitButton - its click its own and its flyout behind
+/// the arrow - or its HyperlinkButton, holding no address: what its click opens is the caller's to open.
 StateUIObjectRef stateui_winui_button_make(int64_t view, StateUIButtonKind kind);
 
 /// A button's menu, written as a context menu is (`stateui_winui_set_context_menu`): the flyout a Button, a

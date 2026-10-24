@@ -27,6 +27,7 @@ enum AppKitRegistrations {
         fields(registry)
         shapes(registry)
         buttons(registry)
+        links(registry)
         pictures(registry)
         drawing(registry)
         layouts(registry)

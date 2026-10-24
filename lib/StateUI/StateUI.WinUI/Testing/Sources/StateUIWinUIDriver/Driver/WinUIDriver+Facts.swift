@@ -100,11 +100,16 @@ extension WinUIDriver {
     }
 
     func launched() throws -> [String] {
-        let targets = WinUIStrings.read { stateui_winui_launched($0, $1) }
         // An address as written; a file - a path, no scheme - by its name.
-        return targets.isEmpty ? [] : targets.split(separator: "\u{1F}", omittingEmptySubsequences: false).map { target in
+        Self.launches().dropFirst(launchesBefore).map { target in
             target.contains("://") ? String(target) : String(target.split { $0 == "\\" || $0 == "/" }.last ?? target)
         }
+    }
+
+    /// Everything the relay launched since it started, in order.
+    static func launches() -> [Substring] {
+        let targets = WinUIStrings.read { stateui_winui_launched($0, $1) }
+        return targets.isEmpty ? [] : targets.split(separator: "\u{1F}", omittingEmptySubsequences: false)
     }
 
     func color(of element: MountedElement, at point: Point) throws -> Color? {

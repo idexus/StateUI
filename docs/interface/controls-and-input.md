@@ -548,6 +548,31 @@ them; one lone dot is hidden unless `hidesForSinglePage(false)` asks for it;
 whole and the others faded. Its look is written on it: being StateUI's own
 composition, it takes no `Style`.
 
+## Links
+
+A `Link` is words that open an address - a page, a mail, a call - in the
+application the system gives it, as `application.launch` does:
+
+```swift
+@State var help = "https://www.swift.org"
+
+VStack {
+    Link("Terms of use", destination: "https://www.swift.org/legal")
+    Link("Write to us", destination: "mailto:hello@example.com")
+    Link("Help", destination: $help)
+        .onClicked { print("Help opened") }
+}
+```
+
+It stands as the platform's own link where it has one, and as a button drawn
+as a link elsewhere: in the platform's link color unless `textColor` gives
+another, named to a screen reader by its words, and called a link where the
+platform's accessibility has the role - Android's has none. StateUI
+opens the address as the user chooses the link, before its `onClicked`
+handlers run, so a handler only does what else the click means; an address
+the platform will not open opens nothing. Given a binding, the link takes the
+address from the state as it changes, with no render.
+
 ## Web content
 
 `WebView` puts a page of the web in the tree: one fetched from an address, or

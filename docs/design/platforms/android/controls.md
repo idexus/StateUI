@@ -260,6 +260,14 @@ being the button's, and a long press opens it too, the road TalkBack offers. A
 held menu opens with a long press. The arrow and the line are layers of the
 button's foreground, which an icon standing alone shares.
 
+## A link
+
+Android has no link control of its own, and a `URLSpan` would open its
+address itself through the text's movement method. A link is a `TextView` in
+the theme's link colors (`getLinkTextColors`) - or the tree's color -
+underlined by its paint's flag, focusable, its click heard as any view's; the
+host layer opens the address (`host/runtime.md#a-link-chosen`).
+
 ## A picker
 
 A picker is Android's dropdown spinner. A spinner always shows one of its

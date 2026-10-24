@@ -150,6 +150,7 @@ enum JavaAPI {
     static let setLetterSpacing = Java.method(textView, "setLetterSpacing", "(F)V")
     static let setLineSpacing = Java.method(textView, "setLineSpacing", "(FF)V")
     static let getPaintFlags = Java.method(textView, "getPaintFlags", "()I")
+    static let getLinkTextColors = Java.method(textView, "getLinkTextColors", "()Landroid/content/res/ColorStateList;")
     static let setPaintFlags = Java.method(textView, "setPaintFlags", "(I)V")
     static let truncateAt = Java.findClass("android/text/TextUtils$TruncateAt")
 
@@ -369,6 +370,7 @@ enum JavaAPI {
     static let setMinHeight = Java.method(textView, "setMinHeight", "(I)V")
     static let setMinimumHeight = Java.method(view, "setMinimumHeight", "(I)V")
     static let setClickable = Java.method(view, "setClickable", "(Z)V")
+    static let setFocusable = Java.method(view, "setFocusable", "(Z)V")
     static let isLongClickable = Java.method(view, "isLongClickable", "()Z")
     static let getImportantForAccessibility = Java.method(view, "getImportantForAccessibility", "()I")
     static let setLongClickable = Java.method(view, "setLongClickable", "(Z)V")

@@ -33,6 +33,7 @@ extension AndroidDriver {
         case (.endContent, let web as AndroidWebView): try Self.endContent(of: web)
         case (.activate, _) where [.menuItem, .menuToggle, .toolbarButton, .toolbarToggle].contains(element.type): try choose(element)
         case (.activate, let button as AndroidButtonView): button.click()
+        case (.activate, let link as AndroidLinkView): link.click()
         case (.toggle, let toggle as AndroidToggleView): toggle.click()
         case (.toggle, let split as AndroidSplitView):
             // The scrim's tap hides the sidebar, the bar's button shows it: both the host's own entry.

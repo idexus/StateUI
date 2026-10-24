@@ -1,4 +1,4 @@
-# revision 3.1
+# revision 4.1
 Button.focus: – Button takes no keyboard focus here: it refuses it, and nothing is heard
 Button.isFocusedChanged: – Button takes no keyboard focus here: it refuses it, and nothing is heard
 Button.unfocus: – Button takes no keyboard focus here: it refuses it, and nothing is heard
@@ -11,6 +11,9 @@ DatePicker.unfocus: – DatePicker takes no keyboard focus here: it refuses it, 
 ItemsView.focus: – ItemsView takes no keyboard focus here: it refuses it, and nothing is heard
 ItemsView.isFocusedChanged: – ItemsView takes no keyboard focus here: it refuses it, and nothing is heard
 ItemsView.unfocus: – ItemsView takes no keyboard focus here: it refuses it, and nothing is heard
+Link.focus: – Link takes no keyboard focus here: it refuses it, and nothing is heard
+Link.isFocusedChanged: – Link takes no keyboard focus here: it refuses it, and nothing is heard
+Link.unfocus: – Link takes no keyboard focus here: it refuses it, and nothing is heard
 Picker.focus: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
 Picker.isFocusedChanged: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
 Picker.unfocus: – Picker takes no keyboard focus here: it refuses it, and nothing is heard

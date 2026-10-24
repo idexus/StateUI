@@ -31,6 +31,7 @@
             return dressing.dress(AnyView(LayoutEngine([Int]()) { _ in Space() } placements: { _, _ in [] }))
         case "Text": return dressing.dress(Text())
         case "Line": return dressing.dress(Line())
+        case "Link": return dressing.dress(Link("Swift", destination: "https://www.swift.org"))
         case "Map": return dressing.dress(Map())
         case "Path": return dressing.dress(Path())
         case "Picker": return dressing.dress(Picker())

@@ -804,6 +804,17 @@ declares `HostActs.files`; a host without one fails every act for files by
 name. A file read and a launch answer when the platform does, never in the
 turn that asked.
 
+## A link chosen
+
+A link's address is the host layer's, not its native control's: the control
+raises its click alone, and the host layer opens the address
+(`MountedElement.send`, `HostActPerformer.open(link:)`) as a launch opens
+one - in the application the system gives it, with no caller to answer -
+before the link's own handlers run. One rule opens every host's link, so a
+toolkit control able to open an address itself is handed none, or its own
+opening is taken; a host that launches nothing opens nothing. A test reads
+what a host launched from the host's own record (`launched`).
+
 ## Starting
 
 Every host starts in one order (`HostRuntime.start`): what it realizes; the

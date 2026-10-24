@@ -26,6 +26,7 @@ extension AppKitDriver {
             return bar(shown: scroll.hasVerticalScroller, hides: scroll.autohidesScrollers).propValue
         case (.horizontalScrollIndicator, let scroll as NSScrollView):
             return bar(shown: scroll.hasHorizontalScroller, hides: scroll.autohidesScrollers).propValue
+        case (.text, let link as AppKitLinkView): return link.attributedTitle.string.propValue
         case (.isAnimating, let image as AppKitImageView): return image.animationPlaying.propValue
         case (.contentMode, let image as AppKitImageView): return aspect(of: image).propValue
         case (.horizontalTextAlignment, let picker as AppKitPickerView):

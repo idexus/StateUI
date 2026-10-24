@@ -119,6 +119,12 @@ Line
   x2
   y1
   y2
+Link
+  destination
+  text
+  textCase
+  textColor
+  clicked()
 Map
   isScrollEnabled
   isZoomEnabled

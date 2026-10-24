@@ -111,6 +111,7 @@ extension Bench: HostPresenter {
     func presentRendered(touchedChrome: Bool) {}
     func presentFrame(movedChrome: Bool) {}
     func perform(_ call: HostActCall) {}
+    func open(link address: String) {}
     func focus(_ element: MountedElement) {}
 }
 

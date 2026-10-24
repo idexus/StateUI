@@ -103,6 +103,7 @@ final class GTKConformanceTests: XCTestCase {
     func testMenuItemElement() { conform(MenuItemElementTests.self) }
     func testActionElement() { conform(ActionElementTests.self) }
     func testButtonMenuElement() { conform(ButtonMenuElementTests.self) }
+    func testLink() { conform(LinkTests.self) }
     func testTextAndIconElement() { conform(TextAndIconElementTests.self) }
     func testPageElement() { conform(PageElementTests.self) }
 

@@ -832,6 +832,10 @@ extension ControlDictionary {
                 }
             """#),
 
+        (LinkContract.self, #"""
+            Link("Terms of use", destination: "https://stateui.dev/terms")
+            """#),
+
         (ButtonMenuElementContract.self, #"""
             @State var sorted = "By name"
 

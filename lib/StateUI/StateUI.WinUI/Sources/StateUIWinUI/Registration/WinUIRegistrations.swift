@@ -14,6 +14,7 @@ enum WinUIRegistrations {
 
         text(registry)
         buttons(registry)
+        links(registry)
         toggles(registry)
         values(registry)
         indicators(registry)

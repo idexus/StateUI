@@ -66,6 +66,13 @@ extern "C" void stateui_winui_set_accessibility(
         case StateUIPresenceSkipped:
         case StateUIPresenceSkippedWithParts: Properties::SetAccessibilityView(element, peers::AccessibilityView::Raw); break;
         }
+        // The words a button or a link holds are met as an element of their own where WinUI meets its content: left out
+        // with the control.
+        if (auto caption = captionOf(element)) {
+            if (presence == StateUIPresenceSkippedWithParts)
+                Properties::SetAccessibilityView(caption, peers::AccessibilityView::Raw);
+            else caption.ClearValue(Properties::AccessibilityViewProperty());
+        }
     } catch (...) {
         report("telling assistive technology of an element");
     }

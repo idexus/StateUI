@@ -1,4 +1,4 @@
-# revision 20.1
+# revision 21.1
 Button.layoutDirection: ✅
 Canvas.accessibilityRole: ✅
 Capsule.maximumHeight: ✅
@@ -22,39 +22,42 @@ LayoutEngine.height: ✅
 LayoutEngine.scale: ✓ read scale of LayoutEngine: the host's own transform, checked against the layer it composed itself
 LayoutEngine.width: ✅
 Line.accessibilityAdjusted: ✅
-Map.frame: ✅
-Map.translationX: ✓ read translationX of Map: the host's own transform, checked against the layer it composed itself
-Path.accessibilityActionPerformed: ✅
-Path.accessibilityActions: ✅
-Picker.ignoresInput: ✅
-Picker.scaleY: ✓ read scaleY of Picker: the host's own transform, checked against the layer it composed itself
-Polygon.layoutDirection: ✅
-Polyline.accessibilityRole: ✅
-ProgressBar.height: ✅
-ProgressBar.scale: ✓ read scale of ProgressBar: the host's own transform, checked against the layer it composed itself
-ProgressBar.width: ✅
-Rectangle.isAccessibilityHidden: ✅
-ScrollView.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-ScrollView.layoutDirection: ✅
-SearchField.pivotX: ✓ read pivotX of SearchField: the host's own transform, checked against the layer it composed itself
-Separator.pivotX: ✓ read pivotX of Separator: the host's own transform, checked against the layer it composed itself
-Slider.accessibilityActionPerformed: ✅
-Slider.accessibilityActions: ✅
-Space.frame: ✅
-Space.translationX: ✓ read translationX of Space: the host's own transform, checked against the layer it composed itself
+Link.frame: ✅
+Link.translationX: ✓ read translationX of Link: the host's own transform, checked against the layer it composed itself
+Map.pivotX: ✓ read pivotX of Map: the host's own transform, checked against the layer it composed itself
+Path.frame: ✅
+Path.translationX: ✓ read translationX of Path: the host's own transform, checked against the layer it composed itself
+Picker.layoutDirection: ✅
+Polygon.accessibilityValue: ✅
+Polyline.maximumHeight: ✅
+Polyline.maximumWidth: ✅
+Polyline.minimumHeight: ✅
+Polyline.minimumWidth: ✅
+Polyline.scaleX: ✓ read scaleX of Polyline: the host's own transform, checked against the layer it composed itself
+ProgressBar.hidesChildrenFromAccessibility: ✅
+Rectangle.accessibilityLabel: ✅
+ScrollView.opacity: ✅
+ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.accessibilityActionPerformed: ✅
+SearchField.accessibilityActions: ✅
+Separator.accessibilityActionPerformed: ✅
+Separator.accessibilityActions: ✅
+Slider.frame: ✅
+Slider.translationX: ✓ read translationX of Slider: the host's own transform, checked against the layer it composed itself
+Space.pivotX: ✓ read pivotX of Space: the host's own transform, checked against the layer it composed itself
 Spinner.frame: ✅
 Spinner.translationX: ✓ read translationX of Spinner: the host's own transform, checked against the layer it composed itself
-Stepper.hidesChildrenFromAccessibility: ✅
-Switch.accessibilityHint: ✅
+Stepper.accessibilityHint: ✅
+Switch.height: ✅
+Switch.scale: ✓ read scale of Switch: the host's own transform, checked against the layer it composed itself
+Switch.width: ✅
 Text.accessibilityRole: ✅
-TextEditor.height: ✅
-TextEditor.scale: ✓ read scale of TextEditor: the host's own transform, checked against the layer it composed itself
-TextEditor.width: ✅
-TextField.hidesChildrenFromAccessibility: ✅
-TimePicker.accessibilityHint: ✅
-VStack.height: ✅
-VStack.scale: ✓ read scale of VStack: the host's own transform, checked against the layer it composed itself
-VStack.width: ✅
-WebView.accessibilityValue: ✅
-ZStack.ignoresInput: ✅
-ZStack.scaleY: ✓ read scaleY of ZStack: the host's own transform, checked against the layer it composed itself
+TextEditor.hidesChildrenFromAccessibility: ✅
+TextField.accessibilityHint: ✅
+TimePicker.height: ✅
+TimePicker.scale: ✓ read scale of TimePicker: the host's own transform, checked against the layer it composed itself
+TimePicker.width: ✅
+VStack.hidesChildrenFromAccessibility: ✅
+WebView.ignoresInput: ✅
+WebView.scaleY: ✓ read scaleY of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.layoutDirection: ✅

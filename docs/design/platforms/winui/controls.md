@@ -91,6 +91,14 @@ other button, or the keyboard's menu key. A DropDownButton's arrow is a part of
 its template, which nothing public hides, so showing the arrow or not makes the
 button anew.
 
+## A link
+
+A link is WinUI's `HyperlinkButton` in its own look, holding no
+`NavigateUri`: its `Click` is heard as a button's, and the host layer opens
+the address (`host/runtime.md#a-link-chosen`). Its words stand in a text
+block, as a button's caption does, so the tree's color and the words read
+back alike.
+
 ## An oval button
 
 A button's corners round by one radius each, so its own border draws no oval.
@@ -247,7 +255,9 @@ no property that leaves out a subtree, and the host reaches into no
 template's parts - the title bar's padding columns, a true defect's, are the
 one it does ([the window's chrome](pages.md#the-windows-chrome)): a control
 left out is left out alone. What most templates
-draw - a button's words - WinUI already keeps out of what is read; the parts
+draw - a button's words - WinUI already keeps out of what is read. A link's
+words WinUI meets as text of their own; being the host's own content, not a
+template's part, they are `Raw` while the link is left out with them. The parts
 an activity ring, a stepper, a search box and a day's or a time's picker
 draw stay met, `☑️` in the matrix.
 

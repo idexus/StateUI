@@ -108,6 +108,7 @@ of its members each meets, and why a cell is empty.
 | [ItemsView](controls/ItemsView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [LayoutEngine](controls/LayoutEngine.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Line](controls/Line.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [Link](controls/Link.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Map](controls/Map.md) | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 | 🧩 |
 | [Marker](controls/Marker.md) | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 | 🧩 |
 | [Menu](controls/Menu.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -228,6 +229,7 @@ contract.
 | `ScrollView` | `NSScrollView` | `UIScrollView` | `ScrollView` / `HorizontalScrollView` | `ScrollViewer` | `GtkScrolledWindow` | `overflow: auto` |
 | `Text` / `TextSpans` / `TextSpan` | `NSTextField` label; `NSAttributedString` runs | `UILabel`; `NSAttributedString` runs | `TextView`; `SpannableStringBuilder` spans | `TextBlock`; `Run` inlines | `GtkLabel`; `PangoAttrList` runs | `<span>`; `<span>` runs |
 | `Button` | `NSButton` | `UIButton` | `Button` | `Button` | `GtkButton` | `<button>` |
+| `Link` | a borderless `NSButton` in the link color, the link role | a plain `UIButton` in the link color, the link trait | a `TextView` in the theme's link color, underlined | `HyperlinkButton` | `GtkLinkButton` | `<a href>` |
 | `Image` | `NSImageView` | `UIImageView` | `ImageView` | `Image` | custom `GtkWidget` drawing a `GdkTexture` | `<img>` |
 | `TextField` | `NSTextField` / `NSSecureTextField` | `UITextField` | `EditText` | `TextBox` / `PasswordBox` | `GtkEntry` | `<input type=text>` / `<input type=password>` |
 | `TextEditor` | `NSTextView` in an `NSScrollView` | `UITextView` | multi-line `EditText` | multi-line `TextBox` | `GtkTextView` in a `GtkScrolledWindow` | `<textarea>` |
@@ -479,6 +481,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ItemsView](controls/ItemsView.md) | 89 | 43 ✅ · 2 ☑️ · 39 ✓ · 4 – | 40 ✅ · 2 ☑️ · 41 ✓ · 5 – | 69 ✅ · 5 ☑️ · 13 ✓ | 66 ✅ · 1 ☑️ · 13 ✓ · 8 – | 54 ✅ · 1 ☑️ · 23 ✓ · 9 – | 60 ✅ · 1 ☑️ · 21 ✓ · 6 – |
 | [LayoutEngine](controls/LayoutEngine.md) | 90 | 38 ✅ · 1 ☑️ · 44 ✓ · 1 – | 36 ✅ · 2 ☑️ · 46 ✓ · 2 – | 61 ✅ · 5 ☑️ · 16 ✓ · 1 – | 53 ✅ · 1 ☑️ · 26 ✓ · 8 – | 46 ✅ · 1 ☑️ · 30 ✓ · 8 – | 58 ✅ · 2 ☑️ · 24 ✓ · 4 – |
 | [Line](controls/Line.md) | 82 | 45 ✅ · 2 ☑️ · 35 ✓ | 44 ✅ · 2 ☑️ · 35 ✓ · 1 – | 66 ✅ · 5 ☑️ · 10 ✓ | 62 ✅ · 14 ✓ · 6 – | 53 ✅ · 1 ☑️ · 22 ✓ · 6 – | 58 ✅ · 1 ☑️ · 20 ✓ · 3 – |
+| [Link](controls/Link.md) | 81 | 42 ✅ · 2 ☑️ · 36 ✓ · 1 – | 36 ✅ · 2 ☑️ · 38 ✓ · 5 – | 59 ✅ · 5 ☑️ · 13 ✓ · 3 – | 61 ✅ · 1 ☑️ · 14 ✓ · 5 – | 49 ✅ · 1 ☑️ · 25 ✓ · 6 – | 56 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Map](controls/Map.md) | 79 | 40 ✅ · 2 ☑️ · 36 ✓ · 1 – | 39 ✅ · 2 ☑️ · 36 ✓ · 2 – | 79 🧩 | 79 🧩 | 79 🧩 | 79 🧩 |
 | [Path](controls/Path.md) | 82 | 45 ✅ · 2 ☑️ · 35 ✓ | 43 ✅ · 3 ☑️ · 35 ✓ · 1 – | 65 ✅ · 6 ☑️ · 10 ✓ | 61 ✅ · 1 ☑️ · 14 ✓ · 6 – | 52 ✅ · 2 ☑️ · 22 ✓ · 6 – | 57 ✅ · 2 ☑️ · 20 ✓ · 3 – |
 | [Picker](controls/Picker.md) | 93 | 50 ✅ · 2 ☑️ · 36 ✓ · 2 – | 42 ✅ · 3 ☑️ · 40 ✓ · 5 – | 66 ✅ · 6 ☑️ · 13 ✓ · 3 – | 74 ✅ · 1 ☑️ · 13 ✓ · 5 – | 56 ✅ · 1 ☑️ · 24 ✓ · 12 – | 64 ✅ · 1 ☑️ · 20 ✓ · 6 – |
@@ -501,10 +504,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 81 | 43 ✅ · 1 ☑️ · 35 ✓ | 40 ✅ · 2 ☑️ · 36 ✓ · 1 – | 62 ✅ · 5 ☑️ · 11 ✓ | 62 ✅ · 1 ☑️ · 13 ✓ · 4 – | 51 ✅ · 1 ☑️ · 22 ✓ · 7 – | 56 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [WebView](controls/WebView.md) | 87 | 48 ✅ · 2 ☑️ · 36 ✓ · 1 – | 45 ✅ · 2 ☑️ · 38 ✓ · 2 – | 66 ✅ · 5 ☑️ · 12 ✓ · 3 – | 49 ✅ · 13 ✓ · 24 – | 56 ✅ · 1 ☑️ · 24 ✓ · 6 – | 57 ✅ · 1 ☑️ · 20 ✓ · 6 – |
 | [ZStack](controls/ZStack.md) | 80 | 42 ✅ · 1 ☑️ · 35 ✓ | 38 ✅ · 2 ☑️ · 37 ✓ · 1 – | 60 ✅ · 5 ☑️ · 12 ✓ | 61 ✅ · 1 ☑️ · 13 ✓ · 4 – | 49 ✅ · 1 ☑️ · 23 ✓ · 7 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
-| ✅ |  | 1530 | 1445 | 2182 | 2121 | 1774 | 1984 |
-| ✓ |  | 1250 | 1288 | 390 | 469 | 795 | 685 |
-| – |  | 52 | 96 | 36 | 202 | 226 | 127 |
-| **Met** | 2931 | **2832** | **2829** | **2608** | **2792** | **2795** | **2796** |
+| ✅ |  | 1572 | 1481 | 2241 | 2182 | 1823 | 2040 |
+| ✓ |  | 1286 | 1326 | 403 | 483 | 820 | 706 |
+| – |  | 53 | 101 | 39 | 207 | 232 | 130 |
+| **Met** | 3012 | **2911** | **2908** | **2683** | **2872** | **2875** | **2876** |
 | 🧩 |  | 0 | 0 | 79 | 79 | 79 | 79 |
 
 ### Application structure
@@ -601,6 +604,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectedItemsChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 9 ✅ | 9 ✅ | 9 ✅ | 8 ✅ · 1 ✓ |
 | [LayoutEngine](controls/LayoutEngine.md) | `handAxis`, `handMoved`, `handStepped`, `itemDrag`, `itemMoved`, `magnifies`, `pans`, `phase`, `pinchMoved`, `rotates` | 10 | 1 ✅ · 9 ✓ | 1 ✅ · 9 ✓ | 6 ✅ · 4 ✓ | 1 ✅ · 8 ✓ · 1 – | 3 ✅ · 7 ✓ | 5 ✅ · 1 ☑️ · 4 ✓ |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
+| [Link](controls/Link.md) | `onClicked` (`clicked`), `destination` | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ |
 | [Map](controls/Map.md) | `isScrollEnabled`, `showsTraffic`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 🧩 | 7 🧩 | 7 🧩 | 7 🧩 |
 | [Marker](controls/Marker.md) | `onDetailsClicked` (`detailsClicked`), `label`, `location`, `onSelected` (`selected`), `subtitle`, `type` | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
 | [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
@@ -653,7 +657,7 @@ realizes the element and each of its members.
 
 `Anchor`, `Application`, `Button`, `ButtonMenu`, `Canvas`, `Capsule`,
 `CheckBox`, `ContextMenu`, `DatePicker`, `Ellipse`, `Fill`, `Grid`, `HStack`,
-`Image`, `ItemsView`, `LayoutEngine`, `Line`, `Map`, `Marker`, `Menu`,
+`Image`, `ItemsView`, `LayoutEngine`, `Line`, `Link`, `Map`, `Marker`, `Menu`,
 `MenuBar`, `MenuItem`, `MenuSeparator`, `MenuToggle`, `NavigationStack`,
 `Overlay`, `Page`, `Path`, `Picker`, `Polygon`, `Polyline`, `Popover`,
 `ProgressBar`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`, `Separator`,
@@ -670,30 +674,31 @@ realizes the element and each of its members.
 `barBackgroundColor`, `barButtonBackgroundColor`, `barForegroundColor`,
 `barIcon`, `barSubtitle`, `barTitle`, `canDrag`, `clipsContent`, `columns`,
 `columnSpacing`, `contentMode`, `cornerRadius`, `cursorPosition`, `dash`,
-`dashPhase`, `data`, `date`, `dragText`, `drawing`, `droppedFileTypes`,
-`endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`, `flyoutBackground`,
-`fontAttributes`, `fontFamily`, `fontSize`, `fontWeight`, `format`, `frame`,
-`geometryTransform`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`,
-`growsWithText`, `handAxis`, `height`, `hidesChildrenFromAccessibility`,
-`hidesWhenInactive`, `hidesWithSidebar`, `horizontalAlignment`,
-`horizontalScrollIndicator`, `horizontalTextAlignment`, `icon`, `iconPosition`,
-`iconSpacing`, `ignoresInput`, `ignoresSafeArea`, `inputPurpose`,
-`isAccessibilityHidden`, `isAnimating`, `isEnabled`, `isFontAutoScalingEnabled`,
-`isMaximizable`, `isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isPresented`,
-`isReadOnly`, `isRefreshEnabled`, `isRefreshing`, `isScrollEnabled`,
-`isSelectable`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `isVisible`,
-`isZoomEnabled`, `itemDrag`, `items`, `itemsLayout`, `keyboardShortcut`,
-`keysTaken`, `label`, `layoutDirection`, `letsInputThrough`, `lineBreak`,
-`lineCap`, `lineHeight`, `lineJoin`, `lineWidth`, `location`, `magnifies`,
-`mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`, `maximumLength`,
-`maximumLines`, `maximumWidth`, `menuKind`, `minimum`, `minimumDate`,
-`minimumHeight`, `minimumWidth`, `miterLimit`, `onIcon`, `opacity`, `options`,
-`order`, `orientation`, `padding`, `pans`, `panTouchCount`, `panXChannel`,
-`panYChannel`, `part`, `phase`, `pivotX`, `pivotY`, `placeholder`,
-`placeholderColor`, `points`, `position`, `presentation`, `progress`, `region`,
-`role`, `rotates`, `rotation`, `rotationX`, `rotationY`, `rows`, `rowSpacing`,
-`scale`, `scaleX`, `scaleY`, `scrollOffset`, `selectedIndex`, `selectedItems`,
-`selectedTab`, `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
+`dashPhase`, `data`, `date`, `destination`, `dragText`, `drawing`,
+`droppedFileTypes`, `endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`,
+`flyoutBackground`, `fontAttributes`, `fontFamily`, `fontSize`, `fontWeight`,
+`format`, `frame`, `geometryTransform`, `gridColumn`, `gridColumnSpan`,
+`gridRow`, `gridRowSpan`, `growsWithText`, `handAxis`, `height`,
+`hidesChildrenFromAccessibility`, `hidesWhenInactive`, `hidesWithSidebar`,
+`horizontalAlignment`, `horizontalScrollIndicator`, `horizontalTextAlignment`,
+`icon`, `iconPosition`, `iconSpacing`, `ignoresInput`, `ignoresSafeArea`,
+`inputPurpose`, `isAccessibilityHidden`, `isAnimating`, `isEnabled`,
+`isFontAutoScalingEnabled`, `isMaximizable`, `isMinimizable`, `isOn`, `isOpen`,
+`isPassword`, `isPresented`, `isReadOnly`, `isRefreshEnabled`, `isRefreshing`,
+`isScrollEnabled`, `isSelectable`, `isSpellCheckEnabled`,
+`isTextPredictionEnabled`, `isVisible`, `isZoomEnabled`, `itemDrag`, `items`,
+`itemsLayout`, `keyboardShortcut`, `keysTaken`, `label`, `layoutDirection`,
+`letsInputThrough`, `lineBreak`, `lineCap`, `lineHeight`, `lineJoin`,
+`lineWidth`, `location`, `magnifies`, `mapType`, `margin`, `maximum`,
+`maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`, `maximumWidth`,
+`menuKind`, `minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`,
+`miterLimit`, `onIcon`, `opacity`, `options`, `order`, `orientation`, `padding`,
+`pans`, `panTouchCount`, `panXChannel`, `panYChannel`, `part`, `phase`,
+`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`, `position`,
+`presentation`, `progress`, `region`, `role`, `rotates`, `rotation`,
+`rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
+`scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
+`selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
 `showsClearButton`, `showsCloseButton`, `showsMenuArrow`, `showsNavigationBar`,
 `showsSidebar`, `showsSidebarToggle`, `showsText`, `showsTitle`, `showsTraffic`,
 `showsUserLocation`, `sidebarBackground`, `sidebarOverlays`, `source`,

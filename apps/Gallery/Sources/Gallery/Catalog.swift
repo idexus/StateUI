@@ -182,6 +182,7 @@ final class Catalog {
                 Sample(ButtonRoleSample()),
                 Sample(ButtonMenuSample()),
                 Sample(IconButtonSample()),
+                Sample(LinkSample()),
                 Sample(SwitchSample()),
                 Sample(CheckBoxSample()),
                 Sample(SliderSample()),

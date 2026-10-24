@@ -64,6 +64,7 @@ final class ContractPayloadTests: XCTestCase {
         check(ItemsViewContract.itemActivated, [.string("7")])
         check(ItemsViewContract.realizedChanged, [.strings(["3", "4"])])
         check(ItemsViewContract.selectedItemsChanged, [.strings(["7"])])
+        check(LinkContract.clicked)
         check(MapContract.mapClicked, [.numbers([52.25, 21.01])])
         check(NavigationStackContract.popped, [.number(1)])
         check(PageContract.appearing)

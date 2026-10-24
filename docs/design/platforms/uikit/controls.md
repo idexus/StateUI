@@ -111,6 +111,13 @@ with a chevron at its trailing edge, the whole height, set off by a line,
 opening the menu with a tap; the button keeps room for it inside its padding,
 so its words never run under the arrow, which takes the words' color.
 
+## A link
+
+UIKit has no link control of its own. A link is a plain `UIButton`, its title
+in the link color - or the tree's - and underlined, with the link trait, which
+VoiceOver names by its words. Its tap is the button's; the host layer opens
+the address (`host/runtime.md#a-link-chosen`).
+
 ## Accessibility
 
 What VoiceOver meets of a view is what the tree says of it - its label, hint,

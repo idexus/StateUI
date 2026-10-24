@@ -1,4 +1,4 @@
-# revision 3.1
+# revision 4.1
 Button.focus: ✅
 Button.isFocusedChanged: ✅
 Button.unfocus: ✅
@@ -11,6 +11,9 @@ DatePicker.unfocus: ✅
 ItemsView.focus: ✅
 ItemsView.isFocusedChanged: ✅
 ItemsView.unfocus: ✅
+Link.focus: ✅
+Link.isFocusedChanged: ✅
+Link.unfocus: ✅
 Picker.focus: ✅
 Picker.isFocusedChanged: ✅
 Picker.unfocus: ✅

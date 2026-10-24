@@ -6310,6 +6310,39 @@ enum Listings {
                 transform: .rotate(table.turn * 360))
         }
         """#,
+        "LinkSample": #"""
+        // Sources/Samples/BasicInput/LinkSample.swift
+        @State private var page = "https://www.swift.org"
+        @State private var opened = 0
+        @State private var enabled = true
+
+        static let pages = ["https://www.swift.org", "https://developer.apple.com", "https://developer.android.com"]
+
+        var body: some View {
+            VStack {
+                Link("Swift's home page", destination: "https://www.swift.org")
+                    .isEnabled(enabled)
+                    .onClicked { opened += 1 }
+
+                Link("Write to us", destination: "mailto:hello@example.com")
+                    .isEnabled(enabled)
+                    .onClicked { opened += 1 }
+
+                // The address is carried from the state: choosing another page
+                // changes where the link leads, with no render of this view.
+                Link("The page chosen below", destination: $page)
+                    .isEnabled(enabled)
+                    .onClicked { opened += 1 }
+
+                Picker(Self.pages, selection: $page) { $0 }
+                    .placeholder("Page")
+
+                Text("Opened \(opened) time\(opened == 1 ? "" : "s")")
+
+                SwitchRow("Enabled", $enabled)
+            }
+        }
+        """#,
         "LivingLayoutSample": #"""
         // Sources/Samples/Layout/LivingLayoutSample.swift
         @State private var rows = ["Alpha", "Bravo", "Charlie"]

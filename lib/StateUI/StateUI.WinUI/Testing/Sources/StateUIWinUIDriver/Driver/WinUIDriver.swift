@@ -88,6 +88,9 @@ final class WinUIDriver: HostDriver {
     /// What the host wrote to its log since the driver started it.
     let written = WinUILogLines()
 
+    /// How many launches the relay held before the driver started the host, which `launched()` leaves out.
+    var launchesBefore = 0
+
     var register: HostRegister { WinUIRealization.register.and(backendRecords) }
 
     func start(
@@ -97,6 +100,7 @@ final class WinUIDriver: HostDriver {
         Self.emptyStore()
         Self.emptyFiles()
         stateui_winui_hold_launches(true)
+        launchesBefore = Self.launches().count
         closeFileDialogs()
         let renderer = WinUIRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         renderer.actToolkit.holdsShareForTesting = true
@@ -289,12 +293,15 @@ final class WinUIDriver: HostDriver {
         WinUICallbacks.table.windowStateChanged(try window(of: element).number, minimized, activated)
     }
 
-    /// A click on a button, a menu's item chosen, a toolbar's action chosen, a view that hears taps pressed as
+    /// A click on a button or a link, a menu's item chosen, a toolbar's action chosen, a view that hears taps pressed as
     /// assistive technology presses it.
     private func activate(_ element: MountedElement, _ view: WinUIView?) throws {
         switch view {
         case let button as WinUIButtonView:
             stateui_winui_button_invoke(button.handle)
+            return
+        case let link as WinUILinkView:
+            stateui_winui_button_invoke(link.handle)
             return
         case let view? where view.hearing.contains(.taps):
             guard stateui_winui_press(view.handle) else { throw DriverCannot(.activate, on: element) }

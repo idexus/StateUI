@@ -1,4 +1,4 @@
-# revision 20.1
+# revision 21.1
 Button.isAccessibilityHidden: ✅
 Canvas.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Capsule.opacity: ✅
@@ -20,37 +20,39 @@ ItemsView.accessibilityHeading: does not apply - read a heading's level - UIKit 
 LayoutEngine.isVisible: ✅
 LayoutEngine.rotation: ✓ read rotation of LayoutEngine: the host's own transform, checked against the layer it composed itself
 Line.accessibilityRole: ✅
-Map.height: ✅
-Map.scale: ✓ read scale of Map: the host's own transform, checked against the layer it composed itself
-Map.width: ✅
-Path.accessibilityHint: ✅
-Picker.isEnabled: ✅
-Picker.rotationY: ✓ read rotationY of Picker: the host's own transform, checked against the layer it composed itself
-Polygon.isAccessibilityHidden: ✅
-Polyline.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-ProgressBar.isVisible: ✅
-ProgressBar.rotation: ✓ read rotation of ProgressBar: the host's own transform, checked against the layer it composed itself
-Rectangle.accessibilityAdjusted: ✅
-ScrollView.frame: ✅
-ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.hidesChildrenFromAccessibility: ✅
-Separator.hidesChildrenFromAccessibility: ✅
-Slider.accessibilityHint: ✅
-Space.height: ✅
-Space.scale: ✓ read scale of Space: the host's own transform, checked against the layer it composed itself
-Space.width: ✅
+Link.height: ✅
+Link.scale: ✓ read scale of Link: the host's own transform, checked against the layer it composed itself
+Link.width: ✅
+Map.hidesChildrenFromAccessibility: ✅
+Path.height: ✅
+Path.scale: ✓ read scale of Path: the host's own transform, checked against the layer it composed itself
+Path.width: ✅
+Picker.isAccessibilityHidden: ✅
+Polygon.accessibilityLabel: ✅
+Polyline.opacity: ✅
+Polyline.rotationX: ✓ read rotationX of Polyline: the host's own transform, checked against the layer it composed itself
+ProgressBar.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+Rectangle.style: ✅
+Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.pivotX: ✓ read pivotX of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.accessibilityHint: ✅
+Separator.accessibilityHint: ✅
+Slider.height: ✅
+Slider.scale: ✓ read scale of Slider: the host's own transform, checked against the layer it composed itself
+Slider.width: ✅
+Space.hidesChildrenFromAccessibility: ✅
 Spinner.height: ✅
 Spinner.scale: ✓ read scale of Spinner: the host's own transform, checked against the layer it composed itself
 Spinner.width: ✅
-Stepper.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-Switch.zIndex: ✅
+Stepper.zIndex: ✅
+Switch.isVisible: ✅
+Switch.rotation: ✓ read rotation of Switch: the host's own transform, checked against the layer it composed itself
 Text.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-TextEditor.isVisible: ✅
-TextEditor.rotation: ✓ read rotation of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-TimePicker.zIndex: ✅
-VStack.isVisible: ✅
-VStack.rotation: ✓ read rotation of VStack: the host's own transform, checked against the layer it composed itself
-WebView.accessibilityLabel: ✅
-ZStack.isEnabled: ✅
-ZStack.rotationY: ✓ read rotationY of ZStack: the host's own transform, checked against the layer it composed itself
+TextEditor.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+TextField.zIndex: ✅
+TimePicker.isVisible: ✅
+TimePicker.rotation: ✓ read rotation of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+WebView.isEnabled: ✅
+WebView.rotationY: ✓ read rotationY of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.isAccessibilityHidden: ✅

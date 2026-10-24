@@ -100,6 +100,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testMenuItemElement", testMenuItemElement),
             ("testActionElement", testActionElement),
             ("testButtonMenuElement", testButtonMenuElement),
+            ("testLink", testLink),
             ("testTextAndIconElement", testTextAndIconElement),
             ("testPageElement", testPageElement),
             ("testAWindowsPhaseIsTheHostsOwnOnAWindowAlone", testAWindowsPhaseIsTheHostsOwnOnAWindowAlone),
@@ -193,6 +194,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testMenuItemElement() throws { try conform(MenuItemElementTests.self) }
     func testActionElement() throws { try conform(ActionElementTests.self) }
     func testButtonMenuElement() throws { try conform(ButtonMenuElementTests.self) }
+    func testLink() throws { try conform(LinkTests.self) }
     func testTextAndIconElement() throws { try conform(TextAndIconElementTests.self) }
     func testPageElement() throws { try conform(PageElementTests.self) }
 

@@ -267,6 +267,13 @@
         }
     }
 
+    /// Opens the address of a link the user chose, as a launched one opens - in the application the system gives
+    /// it - with no caller to answer; nothing where the host launches nothing.
+    /// Design: docs/design/host/runtime.md#a-link-chosen
+    public func open(link address: String) {
+        files?.launch(address: address) { _ in }
+    }
+
     // MARK: - Requests
 
     /// Sends the request the act names through the toolkit for requests; an address with no scheme only where the

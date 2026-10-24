@@ -1,4 +1,4 @@
-# revision 20.1
+# revision 21.1
 Button.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
 Button.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
 Button.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
@@ -467,6 +467,42 @@ Line.translationX: ✓ read translationX of Line: the host's own transform: GTK 
 Line.translationY: ✓ read translationY of Line: the host's own transform: GTK reads back no part of one
 Line.width: ✅
 Line.zIndex: ✅
+Link.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+Link.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+Link.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
+Link.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
+Link.accessibilityHint: ✅
+Link.accessibilityLabel: ✅
+Link.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+Link.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
+Link.background: ✓ read background of Link: the class of the host's style sheet the widget wears: GTK reads back no background
+Link.frame: ✅
+Link.height: ✅
+Link.hidesChildrenFromAccessibility: ✅
+Link.ignoresInput: ✅
+Link.isAccessibilityHidden: ✅
+Link.isEnabled: ✅
+Link.isVisible: ✅
+Link.layoutDirection: ✅
+Link.maximumHeight: ✅
+Link.maximumWidth: ✅
+Link.minimumHeight: ✅
+Link.minimumWidth: ✅
+Link.opacity: ✅
+Link.pivotX: ✓ read pivotX of Link: the host's own transform: GTK reads back no part of one
+Link.pivotY: ✓ read pivotY of Link: the host's own transform: GTK reads back no part of one
+Link.rotation: ✓ read rotation of Link: the host's own transform: GTK reads back no part of one
+Link.rotationX: ✓ read rotationX of Link: the host's own transform: GTK reads back no part of one
+Link.rotationY: ✓ read rotationY of Link: the host's own transform: GTK reads back no part of one
+Link.scale: ✓ read scale of Link: the host's own transform: GTK reads back no part of one
+Link.scaleX: ✓ read scaleX of Link: the host's own transform: GTK reads back no part of one
+Link.scaleY: ✓ read scaleY of Link: the host's own transform: GTK reads back no part of one
+Link.style: ✅
+Link.tooltip: ✅
+Link.translationX: ✓ read translationX of Link: the host's own transform: GTK reads back no part of one
+Link.translationY: ✓ read translationY of Link: the host's own transform: GTK reads back no part of one
+Link.width: ✅
+Link.zIndex: ✅
 Map.accessibilityActionPerformed: 🧩
 Map.accessibilityActions: 🧩
 Map.accessibilityAdjusted: 🧩

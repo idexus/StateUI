@@ -92,6 +92,15 @@ the menu too, as on any view offering one. A bar's button holding a menu opens
 it the same way - one opener for both - and is made again where its item comes
 to open its menu another way.
 
+## A link
+
+A link is an `<a>` in the page's `LinkText` color, underlined. It holds its
+address as its `href` only where the page launches addresses, so the browser's
+own reading of a link - its address shown, copied - stays; its click's
+default is taken, and the host layer opens the address
+(`host/runtime.md#a-link-chosen`). It is not draggable: a press dragged over
+it moves what the hand moves, not the address.
+
 ## A field
 
 A TextField is an `<input>`, a SearchField a search `<input>` and a TextEditor

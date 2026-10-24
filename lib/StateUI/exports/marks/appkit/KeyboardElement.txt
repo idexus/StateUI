@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 Button.keyPressed: ✅
 Button.keysTaken: ✅
 CheckBox.keyPressed: ✅
@@ -13,6 +13,8 @@ ItemsView.keyPressed: ✅
 ItemsView.keysTaken: ✅
 LayoutEngine.keyPressed: ✅
 LayoutEngine.keysTaken: ✅
+Link.keyPressed: ✅
+Link.keysTaken: ✅
 Picker.keyPressed: ✅
 Picker.keysTaken: ✅
 ScrollView.keyPressed: ✅

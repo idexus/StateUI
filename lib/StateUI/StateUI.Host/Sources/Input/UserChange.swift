@@ -22,9 +22,11 @@
 /// What the user does to an element's native control, carried into the runtime alike on every host.
 /// Design: docs/design/host/runtime.md#a-users-change
 extension MountedElement {
-    /// An event the control raised, with what it carries, to the handler the tree listens with; a field submitted
-    /// whose return says Next hands the keyboard on (`NextField`).
+    /// An event the control raised, with what it carries, to the handler the tree listens with; a link chosen opens
+    /// its address as a launched one opens; a field submitted whose return says Next hands the keyboard on
+    /// (`NextField`).
     public func send(_ event: Event, _ values: [HostValue], in runtime: HostRuntime) {
+        if event == .clicked, type == .link { runtime.presenter?.open(link: string(.destination) ?? "") }
         if let handler = handler(event) { runtime.dispatch(handler, payload: values) }
         if event == .submitted, let next = NextField.after(self) { runtime.presenter?.focus(next) }
     }

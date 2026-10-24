@@ -1,4 +1,4 @@
-# revision 20.2
+# revision 21.2
 Button.maximumHeight: ✅
 Button.maximumWidth: ✅
 Button.minimumHeight: ✅
@@ -30,51 +30,51 @@ ItemsView.scale: ✅
 LayoutEngine.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 LayoutEngine.tooltip: ✅
 Line.tooltip: ✅
-Map.hidesChildrenFromAccessibility: 🧩
-Map.opacity: 🧩
-Path.accessibilityHeading: ✅
-Path.scale: ✅
-Picker.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
-Picker.translationX: ✅
-Polygon.tooltip: ✅
-Polyline.hidesChildrenFromAccessibility: ✅
-Polyline.opacity: ✅
-ProgressBar.maximumHeight: ✅
-ProgressBar.maximumWidth: ✅
-ProgressBar.minimumHeight: ✅
-ProgressBar.minimumWidth: ✅
-ProgressBar.pivotX: ✅
-Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own tip, checked against the projection it laid on the element
-Rectangle.style: ✅
-ScrollView.accessibilityLabel: ✅
-ScrollView.scaleX: ✅
-SearchField.accessibilityHint: ✅
-SearchField.scaleY: ✅
-Separator.ignoresInput: ✅
-Separator.pivotY: ✅
-Slider.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Space.hidesChildrenFromAccessibility: ✅
-Space.opacity: ✅
+Link.hidesChildrenFromAccessibility: ✅
+Link.opacity: ✅
+Map.ignoresInput: 🧩
+Map.pivotY: 🧩
+Path.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+Path.translationY: ✅
+Picker.tooltip: ✅
+Polygon.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Polygon.isEnabled: does not apply - read isEnabled of Polygon - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Polyline.ignoresInput: ✅
+Polyline.pivotY: ✅
+ProgressBar.rotationY: ✓ read rotationY of ProgressBar: the host's own tip, checked against the projection it laid on the element
+ProgressBar.zIndex: ✅
+Rectangle.accessibilityHint: ✅
+Rectangle.scaleY: ✅
+ScrollView.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+ScrollView.accessibilityActions: – UI Automation offers no action of an application's own words.
+ScrollView.isEnabled: ✅
+SearchField.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Separator.accessibilityHeading: ✅
+Separator.scale: ✅
+Slider.hidesChildrenFromAccessibility: ✅
+Slider.opacity: ✅
+Space.ignoresInput: ✅
+Space.pivotY: ✅
 Spinner.hidesChildrenFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 Spinner.opacity: ✅
-Stepper.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-Stepper.isEnabled: ✅
-Switch.frame: ✅
-Switch.rotation: ✅
+Stepper.frame: ✅
+Stepper.rotation: ✅
+Switch.accessibilityLabel: ✅
+Switch.scaleX: ✅
 Text.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Text.translationY: ✅
-TextEditor.accessibilityLabel: ✅
-TextEditor.scaleX: ✅
-TextField.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-TextField.accessibilityActions: – UI Automation offers no action of an application's own words.
-TimePicker.isAccessibilityHidden: ✅
-TimePicker.isVisible: ✅
-VStack.maximumHeight: ✅
-VStack.maximumWidth: ✅
-VStack.minimumHeight: ✅
-VStack.minimumWidth: ✅
-VStack.pivotX: ✅
-WebView.background: not realized
-WebView.isEnabled: – WinUI's WebView2 is no control: it keeps no enabled state, and its page takes the user's hand whatever the tree says.
-ZStack.frame: ✅
-ZStack.rotation: ✅
+TextEditor.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+TextEditor.accessibilityActions: – UI Automation offers no action of an application's own words.
+TextField.isAccessibilityHidden: ✅
+TextField.isVisible: ✅
+TimePicker.maximumHeight: ✅
+TimePicker.maximumWidth: ✅
+TimePicker.minimumHeight: ✅
+TimePicker.minimumWidth: ✅
+TimePicker.pivotX: ✅
+VStack.rotationY: ✓ read rotationY of VStack: the host's own tip, checked against the projection it laid on the element
+VStack.zIndex: ✅
+WebView.frame: ✅
+WebView.rotation: ✅
+ZStack.accessibilityLabel: ✅
+ZStack.scaleX: ✅

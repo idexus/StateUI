@@ -1,4 +1,4 @@
-# revision 20.1
+# revision 21.1
 Button.accessibilityActionPerformed: ✅
 Button.accessibilityActions: ✅
 Button.accessibilityAdjusted: ✅
@@ -467,6 +467,42 @@ Line.translationX: ✅
 Line.translationY: ✅
 Line.width: ✅
 Line.zIndex: ✅
+Link.accessibilityActionPerformed: ✅
+Link.accessibilityActions: ✅
+Link.accessibilityAdjusted: ✅
+Link.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+Link.accessibilityHint: ✅
+Link.accessibilityLabel: ✅
+Link.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Link.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Link.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Link.frame: ✅
+Link.height: ✅
+Link.hidesChildrenFromAccessibility: ✅
+Link.ignoresInput: not realized
+Link.isAccessibilityHidden: ✅
+Link.isEnabled: ✅
+Link.isVisible: ✅
+Link.layoutDirection: ✅
+Link.maximumHeight: ✅
+Link.maximumWidth: ✅
+Link.minimumHeight: ✅
+Link.minimumWidth: ✅
+Link.opacity: ✅
+Link.pivotX: ✅
+Link.pivotY: ✅
+Link.rotation: ✅
+Link.rotationX: ✅
+Link.rotationY: ✅
+Link.scale: ✅
+Link.scaleX: ✅
+Link.scaleY: ✅
+Link.style: ✅
+Link.tooltip: ✅
+Link.translationX: ✅
+Link.translationY: ✅
+Link.width: ✅
+Link.zIndex: ✅
 Map.accessibilityActionPerformed: 🧩
 Map.accessibilityActions: 🧩
 Map.accessibilityAdjusted: 🧩

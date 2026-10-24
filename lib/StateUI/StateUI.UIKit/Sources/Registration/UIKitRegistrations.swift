@@ -14,6 +14,7 @@ enum UIKitRegistrations {
         let registry = Registry<UIView>()
         text(registry)
         buttons(registry)
+        links(registry)
         fields(registry)
         pictures(registry)
         toggles(registry)

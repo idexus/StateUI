@@ -1,4 +1,4 @@
-# revision 20.2
+# revision 21.2
 Button.accessibilityHeading: ✅
 Canvas.background: ✓ read background of Canvas: the color the host's canvas clears its surface to under its drawing, which WinUI keeps as no brush
 Canvas.isEnabled: does not apply - read isEnabled of Canvas - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
@@ -27,50 +27,53 @@ LayoutEngine.accessibilityHint: ✅
 LayoutEngine.scaleY: ✅
 Line.accessibilityHint: ✅
 Line.scaleY: ✅
-Map.accessibilityActionPerformed: 🧩
-Map.accessibilityActions: 🧩
-Path.maximumHeight: ✅
-Path.maximumWidth: ✅
-Path.minimumHeight: ✅
-Path.minimumWidth: ✅
-Path.pivotX: ✅
-Picker.rotationX: ✓ read rotationX of Picker: the host's own tip, checked against the projection it laid on the element
-Picker.style: ✅
-Polygon.accessibilityHint: ✅
-Polygon.scaleY: ✅
-Polyline.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-Polyline.accessibilityActions: – UI Automation offers no action of an application's own words.
-Polyline.isEnabled: ✅
-ProgressBar.accessibilityHeading: ✅
-Rectangle.background: – A WinUI shape is its figure alone: it paints no ground around it.
-Rectangle.isEnabled: does not apply - read isEnabled of Rectangle - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-ScrollView.ignoresInput: ✅
-ScrollView.pivotY: ✅
-SearchField.frame: ✅
-SearchField.rotation: ✅
-Separator.isAccessibilityHidden: ✅
-Separator.isVisible: ✅
-Slider.accessibilityLabel: ✅
-Slider.scaleX: ✅
-Space.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-Space.accessibilityActions: – UI Automation offers no action of an application's own words.
-Space.isEnabled: ✅
+Link.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+Link.accessibilityActions: – UI Automation offers no action of an application's own words.
+Map.isAccessibilityHidden: 🧩
+Map.isVisible: 🧩
+Path.rotationY: ✓ read rotationY of Path: the host's own tip, checked against the projection it laid on the element
+Path.zIndex: ✅
+Picker.accessibilityHint: ✅
+Picker.scaleY: ✅
+Polygon.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Polyline.isAccessibilityHidden: ✅
+Polyline.isVisible: ✅
+ProgressBar.height: ✅
+ProgressBar.layoutDirection: ✅
+ProgressBar.width: ✅
+Rectangle.frame: ✅
+Rectangle.rotation: ✅
+ScrollView.accessibilityHeading: ✅
+ScrollView.scale: ✅
+SearchField.accessibilityLabel: ✅
+SearchField.scaleX: ✅
+Separator.maximumHeight: ✅
+Separator.maximumWidth: ✅
+Separator.minimumHeight: ✅
+Separator.minimumWidth: ✅
+Separator.pivotX: ✅
+Slider.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+Slider.accessibilityActions: – UI Automation offers no action of an application's own words.
+Space.isAccessibilityHidden: ✅
+Space.isVisible: ✅
 Spinner.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 Spinner.accessibilityActions: – UI Automation offers no action of an application's own words.
 Spinner.isEnabled: ✅
-Stepper.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Switch.hidesChildrenFromAccessibility: ✅
-Switch.opacity: ✅
+Stepper.hidesChildrenFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
+Stepper.opacity: ✅
+Switch.ignoresInput: ✅
+Switch.pivotY: ✅
 Text.rotationY: ✓ read rotationY of Text: the host's own tip, checked against the projection it laid on the element
 Text.zIndex: ✅
-TextEditor.ignoresInput: ✅
-TextEditor.pivotY: ✅
-TextField.accessibilityHeading: ✅
-TextField.scale: ✅
-TimePicker.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-TimePicker.translationY: ✅
-VStack.accessibilityHeading: ✅
-VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-WebView.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-ZStack.hidesChildrenFromAccessibility: ✅
-ZStack.opacity: ✅
+TextEditor.accessibilityHeading: ✅
+TextEditor.scale: ✅
+TextField.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+TextField.translationY: ✅
+TimePicker.accessibilityHeading: ✅
+VStack.height: ✅
+VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+VStack.width: ✅
+WebView.hidesChildrenFromAccessibility: ✅
+WebView.opacity: ✅
+ZStack.ignoresInput: ✅
+ZStack.pivotY: ✅

@@ -231,6 +231,7 @@ extension WinUIDriver {
             case let text as WinUITextualView: return .string(text.text)
             case let field as WinUITextInputView: return .string(field.text)
             case let button as WinUIButtonView: return .string(button.text)
+            case let link as WinUILinkView: return .string(link.text)
             case let toggle as WinUIToggleView: return .string(toggle.text)
             default: return nil
             }
