@@ -260,7 +260,10 @@ body {
 }
 .stateui-bar-actions:not(:has(> :not([hidden]))) { display: none; }
 .stateui-bar-group button { background: transparent; box-shadow: none; }
-.stateui-bar button:hover { background: color-mix(in srgb, currentColor 20%, transparent); }
+/* Lit under a pointer that hovers - a finger hovers nowhere, and a browser keeps the button it tapped hovered. */
+@media (hover: hover) {
+  .stateui-bar button:hover { background: color-mix(in srgb, currentColor 20%, transparent); }
+}
 .stateui-bar button:active { background: color-mix(in srgb, currentColor 27%, transparent); }
 .stateui-bar button:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
 .stateui-bar button:disabled { opacity: 0.4; cursor: default; }
@@ -276,8 +279,10 @@ body {
   box-shadow: none;
   border-radius: 6px;
 }
-.stateui-bar[data-toolbar-style="plain"] button:hover {
-  background: var(--stateui-bar-button, color-mix(in srgb, currentColor 10%, transparent));
+@media (hover: hover) {
+  .stateui-bar[data-toolbar-style="plain"] button:hover {
+    background: var(--stateui-bar-button, color-mix(in srgb, currentColor 10%, transparent));
+  }
 }
 .stateui-bar[data-toolbar-style="plain"] button:active {
   background: var(--stateui-bar-button, color-mix(in srgb, currentColor 16%, transparent));
@@ -344,7 +349,10 @@ body {
   text-align: start;
   cursor: pointer;
 }
-.stateui-menu > button:hover:not(:disabled), .stateui-menu > button:focus-visible { background: var(--stateui-raised); outline: none; }
+@media (hover: hover) {
+  .stateui-menu > button:hover:not(:disabled) { background: var(--stateui-raised); outline: none; }
+}
+.stateui-menu > button:focus-visible { background: var(--stateui-raised); outline: none; }
 .stateui-menu > button:disabled { opacity: 0.45; cursor: default; }
 .stateui-menu > button[data-destructive] { color: #d92d20; }
 .stateui-menu > button[aria-haspopup]::after { content: "›"; margin-inline-start: auto; opacity: 0.6; }
@@ -587,7 +595,9 @@ body {
 }
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-tab-strip > button { display: inline-flex; align-items: center; gap: 6px; }
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-tab-strip > button > img { width: 18px; height: 18px; contain: none; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-tab-strip > button:hover { color: var(--stateui-text); }
+@media (hover: hover) {
+  :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-tab-strip > button:hover { color: var(--stateui-text); }
+}
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-tab-strip > button[aria-selected="true"] { color: var(--stateui-accent); border-bottom-color: var(--stateui-accent); }
 /* A covered tab is laid out unseen, so a page sized by its own frame knows it before it shows. */
 .stateui-tab-pages > [data-covered] { visibility: hidden !important; overflow: clip; }
@@ -645,7 +655,9 @@ body {
   border-inline-start: 1px solid color-mix(in srgb, currentColor 35%, transparent);
 }
 .stateui-split-arrow::before { content: "▾"; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) button:hover { filter: brightness(0.97); border-color: color-mix(in srgb, currentColor 30%, transparent); }
+@media (hover: hover) {
+  :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) button:hover { filter: brightness(0.97); border-color: color-mix(in srgb, currentColor 30%, transparent); }
+}
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) button:active { filter: brightness(0.92); }
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) button:disabled { opacity: 0.45; cursor: default; filter: none; }
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input:not([type="checkbox"], [type="radio"], [type="range"]), :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea, :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) select {

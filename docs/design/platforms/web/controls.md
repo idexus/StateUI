@@ -82,6 +82,12 @@ line where the tree says nothing. A pointer taking hold of it is its press,
 and its release comes once - lifted, called off, or gone off the button; a
 slider's are heard the same.
 
+A button - the bar's, a menu's entry, a tab, a page's - lights under a pointer
+only where the pointer hovers (`@media (hover: hover)`): a finger hovers
+nowhere, and a touch screen's browser holds the button it tapped hovered until
+the next tap, so a light under the pointer would stay on it. A press lights
+it while the finger is down, on every screen.
+
 ## A button's menu
 
 A button opening a menu says so (`aria-haspopup`) and wears a `▾` after its
