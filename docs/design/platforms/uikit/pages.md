@@ -32,8 +32,9 @@ page's top corner reads nothing from it.
 
 ## The bar
 
-A page's bar is its navigation item: its title - or the view standing in for
-it - its actions as the host layer composes them along the page's path, each
+A page's bar is its navigation item: its title and the line under it the page
+says, its `subtitle` - a sidebar's page that says no title names the
+application - or the view standing in for them, its actions as the host layer composes them along the page's path, each
 group a `UIBarButtonItemGroup` of its own, so each keeps its own shared
 background, the leading ones beside the way back, those beyond the bar in a
 menu behind its last button - a picture on the bar, titled More, the word

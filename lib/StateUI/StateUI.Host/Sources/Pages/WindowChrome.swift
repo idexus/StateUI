@@ -3,10 +3,10 @@
 
 @_spi(Host) import StateUI
 
-/// The one chrome a window composes from what it shows, the same on every host: its title, the way back, and what its
-/// visible path declares - the actions, what stands in the title's place, the title area, the bars' colors, the
-/// menus - with the split view it stands over and its sidebar's toggle: elements and values a host turns into its
-/// toolkit's chrome.
+/// The one chrome a window composes from what it shows, the same on every host: its title and the line under it, the
+/// way back, and what its visible path declares - the actions, what stands in the title's place, the bars' colors,
+/// the menus - with the split view it stands over, its sidebar's toggle and the title area its sidebar's page names
+/// the application with: elements and values a host turns into its toolkit's chrome.
 /// Design: docs/design/host/pages.md#the-windows-chrome
 @_spi(Host) @MainActor public struct WindowChrome {
     /// The title of the page that names the window (`titledPage`), else the window's; nil where neither names one,
@@ -17,6 +17,9 @@
     /// leaves the title naming the window to the system alone.
     public var showsTitle = true
 
+    /// The line under the title: the subtitle of the page that names the window; nil for none.
+    public var subtitle: String?
+
     /// The stack whose top page the way back takes, and the way back's words.
     public var back: (stack: MountedElement, title: String)?
 
@@ -26,7 +29,8 @@
     /// What stands in the title's place: the title view the visible page's path declares.
     public var center: MountedElement?
 
-    /// What the application says of itself in the bar, declared on the visible page's path; nil for none.
+    /// What names the application over the split view's sidebar - its page's title area; nil where the window
+    /// shows no split view.
     public var titleArea: TitleArea?
 
     /// The bars' color: the nearest declared on the visible page's path.
@@ -56,12 +60,14 @@
         let page = arrangement?.visiblePage
         title = arrangement?.titledPage?.value(.title)?.string ?? window.value(.title)?.string
         showsTitle = arrangement?.titledPage?.value(.showsTitle)?.bool != false
+        subtitle = arrangement?.titledPage?.barSubtitle
         back = arrangement?.visibleBackStack.map { stack in
             (stack, stack.children[stack.children.count - 2].value(.backButtonTitle)?.string ?? window.tree?.core.chromeWords.back ?? "")
         }
         if let page { actions = page.chromeActions }
         center = page?.chromeTitleView
-        titleArea = page?.titleArea
+        let area = arrangement?.sidebarPage?.titleArea(applicationName: window.tree?.core.applicationName ?? "")
+        titleArea = area?.isEmpty == false ? area : nil
         (background, foreground) = page?.barColors ?? (nil, nil)
         buttonBackground = page?.barButtonBackground
         toolbarStyle = page?.toolbarStyle ?? .system
@@ -70,7 +76,7 @@
         showsSidebarToggle = splitView?.offersSidebarToggle ?? false
     }
 
-    /// What the application says of itself in the bar: its name, the line under it, and its mark by name.
+    /// What names the application in the chrome: a title, the line under it and a picture by name.
     public struct TitleArea: Equatable, Sendable {
         /// The title; nil where the bar says none.
         public let title: String?
@@ -87,6 +93,9 @@
             self.subtitle = subtitle
             self.icon = icon
         }
+
+        /// Whether the area says nothing.
+        public var isEmpty: Bool { title == nil && subtitle == nil && icon == nil }
     }
 
     /// Whether the chrome shows what an element of `type` moves on a frame in `changed`: a window's frame, an
@@ -97,9 +106,10 @@
 
     private static let followed: Set<NodeType> = [.window, .navigationStack, .tabView, .splitView]
 
-    /// What of a page the chrome shows - its title, its way back, its bar and the back button's words: a change to
-    /// one shows the chrome again, from a state too.
+    /// What of a page the chrome shows - its title, the line under it and its picture, its way back, its bar and the
+    /// back button's words: a change to one shows the chrome again, from a state too.
     public static let pageValues: Set<Prop> = [
-        .title, .showsBackButton, .showsCloseButton, .backButtonTitle, .showsNavigationBar, .showsTitle,
+        .title, .subtitle, .icon, .showsBackButton, .showsCloseButton, .backButtonTitle, .showsNavigationBar,
+        .showsTitle,
     ]
 }

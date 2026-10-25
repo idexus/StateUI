@@ -1108,19 +1108,19 @@ final class CatalogTests: XCTestCase {
         XCTAssertNil(prop(shown, .y))
     }
 
-    /// The window declares its bar on its page, on every device: the gallery's
-    /// name and mark, the line the Window bar sample types, and "Surprise me"
-    /// among the gallery's actions while the sample says so.
+    /// The window's bar, on every device: the menu's page names the gallery -
+    /// its name and mark - and "Surprise me" stands among the gallery's
+    /// actions while the Window bar sample says so.
     func testTheWindowDeclaresItsBar() throws {
         let state = WindowBarState()
-        state.subtitle = "Shared"
         let quiet = firstPatch(mainPage(Place().nav, bar: state))
         let split = try XCTUnwrap(quiet.children.first)
+        let menu = try XCTUnwrap(split.children.first)
 
         XCTAssertEqual(split.type, .splitView)
-        XCTAssertEqual(prop(split, .barTitle), .string("StateUI"))
-        XCTAssertEqual(prop(split, .barSubtitle), .string("Shared"))
-        XCTAssertEqual(prop(split, .barIcon), .string("stateui_mark.png"))
+        XCTAssertEqual(menu.type, .page)
+        XCTAssertEqual(prop(menu, .title), .string("StateUI"))
+        XCTAssertEqual(prop(menu, .icon), .string("stateui_mark.png"))
         XCTAssertFalse(actions(on: split).contains("Surprise me"), "no action until the sample asks for one")
 
         state.showsSurprise = true

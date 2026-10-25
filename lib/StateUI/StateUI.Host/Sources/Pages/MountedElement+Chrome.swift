@@ -86,13 +86,19 @@ extension MountedElement {
         return shown
     }
 
-    /// What the application says of itself in this element's bar - its name, the line under it and its mark - each
-    /// the nearest declared on its path; nil where none is. An empty line or picture is none.
-    public var titleArea: WindowChrome.TitleArea? {
-        let words = { (value: HostValue?) in value?.string.flatMap { $0.isEmpty ? nil : $0 } }
-        let area = WindowChrome.TitleArea(
-            title: words(barValue(.barTitle)), subtitle: words(barValue(.barSubtitle)), icon: HostPicture(barValue(.barIcon)))
-        return area.title == nil && area.subtitle == nil && area.icon == nil ? nil : area
+    /// The line under this page's title on its bar: its own subtitle; nil where it says none, or an empty one.
+    /// Design: docs/design/host/pages.md#a-pages-title-area
+    public var barSubtitle: String? {
+        value(.subtitle)?.string.flatMap { $0.isEmpty ? nil : $0 }
+    }
+
+    /// What this page's bar says where it names the application - a sidebar's page's: its title, else the
+    /// application's `applicationName`; the line under it; and its picture.
+    /// Design: docs/design/host/pages.md#a-pages-title-area
+    public func titleArea(applicationName: String) -> WindowChrome.TitleArea {
+        let title = barTitle(applicationName: applicationName)
+        return WindowChrome.TitleArea(
+            title: title.isEmpty ? nil : title, subtitle: barSubtitle, icon: HostPicture(value(.icon)))
     }
 
     /// `member` of the bar: this element's own where it declares one, else the nearest arrangement's whose bar it

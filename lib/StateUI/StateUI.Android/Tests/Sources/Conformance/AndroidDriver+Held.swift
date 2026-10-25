@@ -14,11 +14,11 @@ import CStateUIAndroid
 extension AndroidDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if [.menuItem, .menuToggle, .toolbarButton, .toolbarToggle].contains(element.type) { return try itemHolds(property, element) }
-        if [.barTitle, .barSubtitle, .barIcon, .barBackgroundColor, .barForegroundColor].contains(property) {
+        if [.barBackgroundColor, .barForegroundColor].contains(property) {
             return Self.barHolds(property, of: element)
         }
         if element.type == .page,
-           [.showsBackButton, .showsCloseButton, .showsNavigationBar, .showsTitle].contains(property) {
+           [.showsBackButton, .showsCloseButton, .showsNavigationBar, .showsTitle, .subtitle].contains(property) {
             return Self.pageBarHolds(property, of: element)
         }
         if property == .title || property == .icon, let tabs = element.parent, tabs.type == .tabView {

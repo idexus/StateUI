@@ -1,22 +1,13 @@
-# revision 7.1
+# revision 8.1
 NavigationStack.barBackgroundColor: ✅
 NavigationStack.barButtonBackgroundColor: – A toolbar's action is Android's own, with no background of the application's.
 NavigationStack.barForegroundColor: ☑️ The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the color itself - on a tab row, the chosen tab's words.
-NavigationStack.barIcon: – An Android bar is its stack's own: it shows its page's title, and no application's mark.
-NavigationStack.barSubtitle: ✅
-NavigationStack.barTitle: – An Android bar is its stack's own and names its page; an application names itself in none.
 NavigationStack.toolbarStyle: – The toolbar's actions keep Android's own look.
 SplitView.barBackgroundColor: ✅
 SplitView.barButtonBackgroundColor: – A toolbar's action is Android's own, with no background of the application's.
 SplitView.barForegroundColor: ☑️ The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the color itself - on a tab row, the chosen tab's words.
-SplitView.barIcon: ✅
-SplitView.barSubtitle: ✅
-SplitView.barTitle: ✅
 SplitView.toolbarStyle: – The toolbar's actions keep Android's own look.
 TabView.barBackgroundColor: ✅
 TabView.barButtonBackgroundColor: – A toolbar's action is Android's own, with no background of the application's.
 TabView.barForegroundColor: ☑️ The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the color itself - on a tab row, the chosen tab's words.
-TabView.barIcon: – An Android bar is its stack's own: it shows its page's title, and no application's mark.
-TabView.barSubtitle: ✅
-TabView.barTitle: – An Android bar is its stack's own and names its page; an application names itself in none.
 TabView.toolbarStyle: – The toolbar's actions keep Android's own look.

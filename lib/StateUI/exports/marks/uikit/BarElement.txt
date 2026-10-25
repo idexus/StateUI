@@ -1,22 +1,13 @@
-# revision 7.1
+# revision 8.1
 NavigationStack.barBackgroundColor: ✅
 NavigationStack.barButtonBackgroundColor: – A bar button stands in the system's glass, which takes no color of the application's.
 NavigationStack.barForegroundColor: ✅
-NavigationStack.barIcon: – A UIKit bar is each page's own: it shows that page's title, and no application's mark.
-NavigationStack.barSubtitle: ✅
-NavigationStack.barTitle: – A UIKit bar is each page's own and names that page; an application names itself in none.
 NavigationStack.toolbarStyle: – The bar's buttons keep iOS's own look.
 SplitView.barBackgroundColor: ✅
 SplitView.barButtonBackgroundColor: – A bar button stands in the system's glass, which takes no color of the application's.
 SplitView.barForegroundColor: ✅
-SplitView.barIcon: – A UIKit bar is each page's own: it shows that page's title, and no application's mark.
-SplitView.barSubtitle: ✅
-SplitView.barTitle: – A UIKit bar is each page's own and names that page; an application names itself in none.
 SplitView.toolbarStyle: – The bar's buttons keep iOS's own look.
 TabView.barBackgroundColor: ✅
 TabView.barButtonBackgroundColor: – A bar button stands in the system's glass, which takes no color of the application's.
 TabView.barForegroundColor: ✅
-TabView.barIcon: – A UIKit bar is each page's own: it shows that page's title, and no application's mark.
-TabView.barSubtitle: ✅
-TabView.barTitle: – A UIKit bar is each page's own and names that page; an application names itself in none.
 TabView.toolbarStyle: – The bar's buttons keep iOS's own look.

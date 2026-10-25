@@ -6777,12 +6777,6 @@ enum Listings {
                 }
             }
         }
-        // What the window's bar says of the gallery: its name and mark,
-        // where the platform's chrome names the application, and under the
-        // title the line the Window bar sample types.
-        .barTitle("StateUI")
-        .barSubtitle(bar.subtitle)
-        .barIcon(Self.mark)
         """#,
         "MainPage.created": #"""
         // Sources/Gallery/MainPage.swift
@@ -7203,14 +7197,28 @@ enum Listings {
         // Sources/Gallery/MenuPage.swift
         /// The gallery's sidebar - and it is an ordinary page.
         ///
-        /// That is the whole point of it. Some rows, a line at the bottom, and - on
-        /// Android, where nothing else names the gallery - the mark at the top. A row
+        /// That is the whole point of it. Some rows and a line at the bottom. A row
         /// is a view with a tap on it that writes state. There is no menu vocabulary
         /// to learn: what can go in the pane is whatever can go on a page, and what a
         /// row does is whatever a handler can do.
         ///
-        /// Its title names the pane on hosts whose navigation chrome exposes that name.
+        /// Its title and picture name the gallery where the platform's chrome names
+        /// an application over the sidebar.
         struct MenuPage: View {
+            /// The gallery's mark beside its name: none on Windows, where a mark on the
+            /// title bar reads as a button; the violet one on Android's sidebar bar,
+            /// which stands on the theme's light or dark ground.
+            private static var mark: ImageSource {
+                #if WINUI
+                ""
+                #elseif ANDROID
+                ImageSource(light: "stateui_mark_violet.png", dark: "stateui_mark_violet_dark.png")
+                #else
+                "stateui_mark.png"
+                #endif
+            }
+
+
             /// Everything the gallery shows - the rows are one per group.
             let catalog: Catalog
 
@@ -7244,9 +7252,7 @@ enum Listings {
                 // left and scroll above it.
                 .rows(.fill, .auto)
                 .title("StateUI")
-                // The picture on the button that opens the menu, where the host draws
-                // that button from this page.
-                .icon(ImageSource(light: "nav_menu.png", dark: "nav_menu_dark.png"))
+                .icon(Self.mark)
             }
 
             /// Home, one row per group, the row that is not always listed, and the one
@@ -12057,10 +12063,10 @@ enum Listings {
         """#,
         "WindowBarSample": #"""
         // Sources/Samples/Windows/WindowBarSample.swift
-        /// What the gallery's window says on its bar, written by the sample and declared by the window.
+        /// What the gallery's window says on its bar, written by the sample and declared by the window and the sample's page.
         @MainActor
         final class WindowBarState {
-            /// The line under the bar's title.
+            /// The line under the sample page's title.
             @State var subtitle = ""
 
             /// Whether the window's bar carries "Surprise me" on every page.
@@ -12078,6 +12084,8 @@ enum Listings {
                 Switch(bar.$showsSurprise)
                     .text("Surprise me on every page")
             }
+            // The line under the page's title, wherever its title shows.
+            .subtitle(bar.$subtitle)
         }
         """#,
         "WindowLog": #"""

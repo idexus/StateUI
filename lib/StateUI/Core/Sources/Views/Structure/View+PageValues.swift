@@ -19,8 +19,21 @@ extension View {
         pageSays { $0.words(PageElementContract.title, by: state) }
     }
 
-    /// The picture that stands for the page: a tab's icon. A page not shown as an item of something else has nowhere
-    /// to draw it.
+    /// The line under the page's title, wherever its title shows: the current document or section. An empty one is
+    /// none.
+    ///
+    ///     NotesPage().title("Notes").subtitle(folder.name)
+    public func subtitle(_ value: String) -> Modified {
+        pageSays { $0.setValue(PageContract.subtitle, value) }
+    }
+
+    /// The line under the page's title from a state, `$x`: the host follows it, and no view is rebuilt for it.
+    public func subtitle(_ state: Binding<String>) -> Modified {
+        pageSays { $0.words(PageContract.subtitle, by: state) }
+    }
+
+    /// The picture that stands for the page: a tab's icon, and the mark beside the title of a sidebar's page, which
+    /// names the application.
     public func icon(_ value: ImageSource) -> Modified {
         pageSays { $0.setValue(PageElementContract.icon, value) }
     }

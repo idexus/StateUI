@@ -94,11 +94,14 @@
             pushedHolds(PageContract.showsNavigationBar, false, then: true) { $0.showsNavigationBar($1) },
             // A title to show: a page with none shows nothing either way.
             pushedHolds(PageContract.showsTitle, false, then: true) { $0.title("Notes").showsTitle($1) },
+            // A title to stand under.
+            pushedHolds(PageContract.subtitle, "Inbox", then: "Sent") { $0.title("Notes").subtitle($1) },
             pushedHolds(PageContract.background, .color(.red), then: .color(.blue)) { $0.pageBackground($1) },
             pushedFollows(PageContract.showsBackButton, false, then: true) { $0.showsBackButton($1) },
             pushedFollows(PageContract.backButtonTitle, "Notes", then: "All notes") { $0.backButtonTitle($1) },
             pushedFollows(PageContract.showsNavigationBar, false, then: true) { $0.showsNavigationBar($1) },
             pushedFollows(PageContract.showsTitle, false, then: true) { $0.title("Notes").showsTitle($1) },
+            pushedFollows(PageContract.subtitle, "Inbox", then: "Sent") { $0.title("Notes").subtitle($1) },
             pushedFollowsColor(PageContract.background, .red, then: .blue) { $0.pageBackground($1) },
             followsAMaterial,
             sheetsStackHolds(PageContract.showsCloseButton, false, then: true) { $0.showsCloseButton($1) },

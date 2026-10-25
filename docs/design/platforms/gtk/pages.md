@@ -21,11 +21,11 @@ of it go once the slide is over.
 The chrome is composed by one function from what the window shows, after
 every render, and written on the header bar of each page shown:
 
-- the page's title, at the middle of its bar, with the line under it its
-  path declares (`barSubtitle`) - libadwaita's window title holds both - or
-  its title view in its place, where an application puts its search. A
-  header bar names its page: the application's own name and mark
-  (`barTitle`, `barIcon`) stand on no GNOME header bar;
+- the page's title, at the middle of its bar, with the line under it the
+  page says (`barSubtitle`) - libadwaita's window title holds both - or its
+  title view in its place, where an application puts its search. A header
+  bar names its page - a sidebar's page that says no title, the
+  application - and shows no application's mark;
 - the groups of actions its page declares, composed by the host layer
   ([a page's actions](../../host/pages.md#a-pages-actions)): the
   leading groups at the bar's start, after the sidebar's toggle, the

@@ -220,10 +220,9 @@ final class AppKitDriver: HostDriver {
         if let web = (element.native as? AppKitElement)?.view as? WebKitView, let held = webHolds(property, web) {
             return held
         }
-        if property == .barTitle || property == .barSubtitle { return try titleAreaHolds(property, element) }
+        if property == .subtitle, element.type == .page { return try subtitleHolds(element) }
         if property == .barBackgroundColor { return try barHolds(element) }
         if property == .barForegroundColor { return try barWordsColor(element) }
-        if property == .barIcon { return try titleAreaIcon(element) }
         if property == .icon, let button = (element.native as? AppKitElement)?.view as? AppKitButtonView {
             return pictureName(button.image)
         }

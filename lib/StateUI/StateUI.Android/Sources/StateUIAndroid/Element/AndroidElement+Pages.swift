@@ -57,7 +57,7 @@ extension AndroidElement {
     }
 
     /// What an arrangement declares of the bars under it.
-    static let barValues: Set<Prop> = [.barBackgroundColor, .barForegroundColor, .barIcon, .barSubtitle, .barTitle]
+    static let barValues: Set<Prop> = [.barBackgroundColor, .barForegroundColor]
 
     /// Shows on a tabbed view's row its tabs' titles and pictures, and the tab the tree chose.
     private func refreshTabs() {
@@ -141,7 +141,7 @@ extension AndroidElement {
         // A page showing no title leaves the bar's place for it empty; the window keeps its name.
         let titled = element.titledPage
         content.title = titled?.value(.showsTitle)?.bool == false ? nil : titled?.value(.title)?.string ?? ""
-        content.subtitle = (page ?? element).titleArea?.subtitle
+        content.subtitle = titled?.value(.showsTitle)?.bool == false ? nil : titled?.barSubtitle
         content.background = colors.background
         content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
         // Each item's place - its menu item's id less one - in the order the bar's menu is written: an action, the
@@ -177,9 +177,9 @@ extension AndroidElement {
         // Design: docs/design/platforms/android/pages.md#the-bar
         let way: AndroidBarView.Navigation =
             element.visibleBackStack === element ? .back : element.offersClose ? .close : .none
-        if let split = enclosingSplit, let sidebar = split.arranged.first, !split.sidebarStandsBeside,
+        if let split = enclosingSplit, !split.sidebarStandsBeside,
            split.element.offersSidebarToggle {
-            content.navigation = .sidebar(HostPicture(sidebar.value(.icon)))
+            content.navigation = .sidebar
             content.afterNavigation = way
         } else {
             content.navigation = way
@@ -210,22 +210,22 @@ extension AndroidElement {
         }
     }
 
-    /// Shows on a split view's sidebar its own bar: what the application says of itself on the sidebar page's path -
-    /// its name, the line under it and its mark, else the sidebar page's title - in the colors that path declares,
+    /// Shows on a split view's sidebar its own bar: the title area its page names the application with - its title,
+    /// else the application's name, the line under it and its picture as the mark - in the colors its path declares,
     /// and at its end the toggle hiding the sidebar, where the split view offers it.
     /// Design: docs/design/platforms/android/pages.md#a-split-view
     private func refreshSidebarBar() {
-        guard let split = view as? AndroidSplitView, let sidebar = arranged.first else { return }
-        let area = sidebar.element.titleArea
-        let colors = sidebar.element.barColors
+        guard let split = view as? AndroidSplitView, let page = element.sidebarPage else { return }
+        let area = page.titleArea(applicationName: host?.runtime.core.applicationName ?? "")
+        let colors = page.barColors
 
         var content = AndroidBarView.Content()
-        content.title = area?.title ?? sidebar.value(.title)?.string ?? ""
-        content.subtitle = area?.subtitle
-        content.mark = area?.icon
+        content.title = area.title ?? ""
+        content.subtitle = area.subtitle
+        content.mark = area.icon
         content.background = colors.background
         content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
-        content.endButton = element.offersSidebarToggle ? .sidebar(HostPicture(sidebar.value(.icon))) : .none
+        content.endButton = element.offersSidebarToggle ? .sidebar : .none
         let bar = split.drawer.bar(taking: AndroidBarView.Words(on: colors.background))
         bar.show(content)
         bar.onEndButton = { [weak self] in self?.changeSidebarVisibility(to: false) }

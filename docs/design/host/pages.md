@@ -312,22 +312,32 @@ others of that id leave; a section left with nothing is none. A menu whose
 
 ## The bar a path declares
 
-What an arrangement declares of the bar - its colors, and the application's
-name, the line under the title and its mark - is a value on the arrangement
-(`BarElement`), not a declaration: each value of a page's bar is the nearest
-on its path, its own arrangement included (`barValue`), so a stack further in
-paints its own bar and the window's page still names the application. The
+What an arrangement declares of the bar - its look: its colors, its buttons'
+background and style - is a value on the arrangement (`BarElement`), not a
+declaration: each value of a page's bar is the nearest on its path, its own
+arrangement included (`barValue`), so a stack further in paints its own bar.
+What the bar says is each page's own ([a page's title
+area](#a-pages-title-area)). The
 path is the declarations' (`arrangementsAround`), but for a split view's
 sidebar, which wears its own split view's bar - a split view's bar is both its
 panes', so its colors paint a sidebar's own bar where a platform draws one
 (`barArrangements`) - and nothing from around the split view; a sheet's path
 stops at the sheet, which has no bar of its own: a stack in it brings one,
 painted as that stack says, and nothing from around the sheet reaches it. The
-colors are `barColors`; the name, the line and
-the mark are the title area (`titleArea`), none where none is declared, an
-empty line or picture none. A host shows the title area where its platform
-names the application - a desktop's window chrome - and the line under the
-title wherever a bar has one.
+colors are `barColors`.
+
+## A page's title area
+
+A page says what its bar says of it, and nothing climbs the path: its title,
+the line under it (`barSubtitle`, an empty one none) and its picture. The line
+stands under the title wherever a bar shows the title - the chrome's line is
+the page naming the window's (`WindowChrome.subtitle`). A split view's
+sidebar's page names the application (`titleArea(applicationName:)`): its
+title, else the application's name ([a sidebar's
+title](#a-sidebars-title)), its line and its picture as the application's
+mark. A host shows that title area where its platform's chrome names the
+application over the sidebar - a desktop's title bar, the sidebar's own bar
+(`WindowChrome.titleArea`, none where the window shows no split view).
 
 A tabbed view's row wears the colors of the bar on its path too, and those
 move on an element above it - a stack, a theme resolved again - that the
@@ -389,8 +399,10 @@ words the page beneath gives, else "Back"; the actions the visible page's
 path declares (`chromeActions`) - none where the page hides its bar - each
 showing its words beside its picture where it says so and always where it
 has none (`showsActionWords`); the title view the path declares in the
-title's place (`chromeTitleView`); the title area and the bars' colors the
-path declares ([the bar a path declares](#the-bar-a-path-declares)); the menus
+title's place (`chromeTitleView`); the line under the title and the title
+area its sidebar's page names the application with ([a page's title
+area](#a-pages-title-area)); the bars' colors the path declares ([the bar a
+path declares](#the-bar-a-path-declares)); the menus
 its path declares
 (`chromeMenus`); and the split view the window shows (`splitView`), with its
 sidebar's toggle unless the split view offers none (`showsSidebarToggle`) - a
@@ -398,7 +410,8 @@ bar in two parts stands over the split view either way. A host lays these out
 in its own chrome. A page saying it shows no title (`showsTitle`) still names the window to the system and
 the way back from the page above it; the chrome shows none for it. A host whose pages each stand under a header bar of their
 own takes the same parts page by page: a page's actions (`chromeActions`),
-its title view (`chromeTitleView`), and its bar's colors and the line under its title.
+its title view (`chromeTitleView`), its bar's colors and the line under its
+title (`barSubtitle`).
 
 A stack shows its bar over what stands on it once (`showsTheStacksBar`): over
 a page that keeps its bar, and over tabs or a split view only where the page

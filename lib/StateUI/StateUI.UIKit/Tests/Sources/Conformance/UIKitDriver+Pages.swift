@@ -55,7 +55,8 @@ extension UIKitDriver {
             default: break
             }
         }
-        if [.barBackgroundColor, .barForegroundColor, .barSubtitle].contains(property) {
+        if [.barBackgroundColor, .barForegroundColor].contains(property)
+            || property == .subtitle && element.type == .page {
             return Self.barHolds(property, of: element)
         }
         guard NodeType.pageTypes.contains(element.type), let controller = (element.native as? UIKitElement)?.controller
@@ -99,7 +100,7 @@ extension UIKitDriver {
     }
 
     /// What the bar an arrangement declares stands on: a tabbed view's tab bar, else the bar of the page it shows -
-    /// its color, the color of its title, and the line under the title.
+    /// its color, the color of its title, and the line under a page's title.
     private static func barHolds(_ property: Prop, of element: MountedElement) -> HostValue? {
         if let tabs = (element.native as? UIKitElement)?.controller as? UITabBarController {
             let appearance = tabs.tabBar.standardAppearance
@@ -116,7 +117,7 @@ extension UIKitDriver {
         case .barBackgroundColor: return item.standardAppearance?.backgroundColor.map { color($0).propValue }
         case .barForegroundColor:
             return (item.standardAppearance?.titleTextAttributes[.foregroundColor] as? UIColor).map { color($0).propValue }
-        case .barSubtitle: return item.subtitle.map { .string($0) }
+        case .subtitle: return item.subtitle.map { .string($0) }
         default: return nil
         }
     }

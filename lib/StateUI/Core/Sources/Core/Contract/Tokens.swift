@@ -115,9 +115,6 @@ extension NodeType {
     static let barBackgroundColor = BarElementContract.barBackgroundColor.token
     static let barButtonBackgroundColor = BarElementContract.barButtonBackgroundColor.token
     static let toolbarStyle = BarElementContract.toolbarStyle.token
-    static let barIcon = BarElementContract.barIcon.token
-    static let barSubtitle = BarElementContract.barSubtitle.token
-    static let barTitle = BarElementContract.barTitle.token
     static let canDrag = ViewContract.canDrag.token
     static let tracking = TrackingElementContract.tracking.token
     static let selectedItems = ItemsViewContract.selectedItems.token

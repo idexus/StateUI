@@ -3,8 +3,6 @@
 
 package stateui.android.test;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -62,18 +60,6 @@ public final class TestBars {
     /** Whether the bar shows a title, however few its words: it holds one in its title's place. */
     public static boolean titled(Toolbar bar) {
         return bar.getTitle() != null;
-    }
-
-    /** The bar's title; null for none. */
-    public static String title(Toolbar bar) {
-        CharSequence words = bar.getTitle();
-        return words == null ? null : words.toString();
-    }
-
-    /** Whether the bar shows `picture` as its mark before the title: the very pixels of it. */
-    public static boolean marks(Toolbar bar, Bitmap picture) {
-        Drawable logo = bar.getLogo();
-        return logo instanceof BitmapDrawable && ((BitmapDrawable) logo).getBitmap().sameAs(picture);
     }
 
     /** The line under the bar's title; null for none. */

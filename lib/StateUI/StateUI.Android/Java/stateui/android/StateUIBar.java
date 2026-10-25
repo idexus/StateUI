@@ -203,17 +203,13 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
         return icon;
     }
 
-    /**
-     * The navigation button: none, the way back in `tint`, or the sidebar's own picture - Android's menu glyph in
-     * `tint` where it has none.
-     */
-    void setNavigation(int kind, Bitmap picture, int tint, String description) {
+    /** The navigation button - none, the way back, the sidebar's toggle in Android's menu glyph, the close. */
+    void setNavigation(int kind, int tint, String description) {
         Drawable icon = null;
         if (kind == BACK) {
             icon = upArrow(tint);
         } else if (kind == SIDEBAR) {
-            icon = picture != null ? StateUIViews.glyph(getContext(), picture) : menuGlyph(tint);
-            if (picture != null && tint != 0 && StateUIViews.isMask(picture)) icon.setTint(tint);
+            icon = menuGlyph(tint);
         } else if (kind == CLOSE) {
             icon = closeGlyph(tint);
         }
@@ -231,10 +227,10 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
     private ImageButton endToggle;
 
     /**
-     * The sidebar's toggle at the bar's end - the sidebar's own picture, or Android's menu glyph in `tint` - which
-     * tells the host its place when pressed; a null `description` takes it away.
+     * The sidebar's toggle at the bar's end - Android's menu glyph in `tint` - which tells the host its place when
+     * pressed; a null `description` takes it away.
      */
-    void setEndToggle(Bitmap picture, int tint, String description) {
+    void setEndToggle(int tint, String description) {
         if (description == null) {
             if (endToggle != null) removeView(endToggle);
             endToggle = null;
@@ -246,9 +242,7 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
                     Gravity.END | Gravity.CENTER_VERTICAL));
         }
-        Drawable icon = picture != null ? StateUIViews.glyph(getContext(), picture) : menuGlyph(tint);
-        if (picture != null && tint != 0 && StateUIViews.isMask(picture)) icon.setTint(tint);
-        endToggle.setImageDrawable(icon);
+        endToggle.setImageDrawable(menuGlyph(tint));
         endToggle.setContentDescription(description);
     }
 

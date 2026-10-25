@@ -44,12 +44,14 @@ for - a tab chosen, the sidebar shown:
   words and leaves the application's own picture as drawn;
 - the page's title view stands at the chrome's center, where an application
   puts its search;
-- the title area the path declares - the application's name, the line under
-  it and its mark ([the bar a path declares](../../host/pages.md#the-bar-a-path-declares))
+- the title area a split view's sidebar page names the application with -
+  its title, else the application's name, the line under it and its picture
+  as the mark ([a page's title area](../../host/pages.md#a-pages-title-area))
   - stands in the chrome's title, subtitle and icon, as WinUI 3 Gallery names
   itself on its title bar, while the visible page's title still names the
   window to the system - the taskbar, Alt+Tab; its picture is read from the
-  application's pictures by its address; and
+  application's pictures by its address. With no split view the chrome's
+  title and subtitle are the page's title and the line under it; and
   the bars' colors paint the chrome: its title and the actions on it, a
   destructive one excepted, stand
   in the color written for what stands on the bars, else white on a dark
@@ -98,11 +100,12 @@ layer says the path changed
 
 ## A page's heading
 
-Where the window's chrome names the application - a title area declared on the
-visible path - the page that would name the window is headed by its own
-title, as Windows' own applications head a page under a title bar naming the
-application: a row across the top of the page's room in WinUI's title style,
-24 DIPs from its top and sides, the page's content under it - a tab view
+Where the window's chrome names the application - over a split view's
+sidebar - the page that would name the window is headed by its own title and
+the line under it, as Windows' own applications head a page under a title bar
+naming the application: a row across the top of the page's room in WinUI's
+title style, the line in its body style, 24 DIPs from its top and sides, the
+page's content under it - a tab view
 naming the window by its own title is headed over its tabs, which then stand
 in its own row under the heading rather than across the window over it: the
 title names what the tabs are tabs of. The window heads one page at a time,

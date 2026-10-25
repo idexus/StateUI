@@ -65,24 +65,18 @@ final class WindowTests: XCTestCase {
         XCTAssertEqual(node.props["y"], .number(100))
     }
 
-    /// The bar's title area and colors are values an arrangement declares on itself - no child of the window and
-    /// nothing in its session.
+    /// The bar's look is values an arrangement declares on itself - no child of the window and nothing in its
+    /// session.
     func testAnArrangementDeclaresItsBarAsValues() {
         let node = SplitView(State(wrappedValue: true).projectedValue) {
             AnyView(node: label("menu"))
         } detail: {
             AnyView(node: label("detail"))
         }
-        .barTitle("StateUI")
-        .barSubtitle("Home")
-        .barIcon("mark.png")
         .barBackgroundColor(.steelBlue)
         .barForegroundColor(.white)
         .node
 
-        XCTAssertEqual(node.props["barTitle"], .string("StateUI"))
-        XCTAssertEqual(node.props["barSubtitle"], .string("Home"))
-        XCTAssertEqual(node.props["barIcon"], .string("mark.png"))
         XCTAssertNotNil(node.props["barBackgroundColor"])
         XCTAssertNotNil(node.props["barForegroundColor"])
         XCTAssertEqual(node.children.count, 2, "its two pages alone: values, not declarations")

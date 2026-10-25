@@ -278,7 +278,7 @@ final class AndroidPagesTests: XCTestCase {
             let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
             let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
             XCTAssertTrue(split.overlays)
-            XCTAssertEqual(navigation.bar.content.navigation, .sidebar(.file("test_dot.png")))
+            XCTAssertEqual(navigation.bar.content.navigation, .sidebar)
 
             navigation.bar.clicked()
             XCTAssertTrue(open.wrappedValue)
@@ -290,14 +290,15 @@ final class AndroidPagesTests: XCTestCase {
         }
     }
 
-    /// On a tablet the sidebar stands beside the detail under a bar of its own - the application's name and mark,
-    /// and at its end the toggle hiding the sidebar; hidden, the detail's bar shows the toggle, which shows it again.
+    /// On a tablet the sidebar stands beside the detail under a bar of its own - its page's title and picture as the
+    /// application's mark, and at its end the toggle hiding the sidebar in Android's own glyph; hidden, the detail's
+    /// bar shows the toggle, which shows it again.
     func testTheSidebarsOwnBarHidesItAndTheDetailsShowsIt() throws {
         try onMainActor {
             let open = State(wrappedValue: true)
             let host = AndroidRenderer.running {
                 SplitView(open.projectedValue) {
-                    TitledPage(title: "Menu", icon: "test_dot.png")
+                    TitledPage(title: "Notes", icon: "test_wide.png")
                 } detail: {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         TitledPage(title: "Home")
@@ -305,8 +306,6 @@ final class AndroidPagesTests: XCTestCase {
                         TitledPage(title: "Deeper")
                     }
                 }
-                .barTitle("Notes")
-                .barIcon("test_wide.png")
             }
             host.layOut(width: 2000, height: 1600)
             host.runtime.pump.turn()
@@ -316,13 +315,13 @@ final class AndroidPagesTests: XCTestCase {
             XCTAssertFalse(split.overlays, "beside the detail")
             XCTAssertEqual(sidebar.content.title, "Notes")
             XCTAssertEqual(sidebar.content.mark, .file("test_wide.png"))
-            XCTAssertEqual(sidebar.content.endButton, .sidebar(.file("test_dot.png")))
+            XCTAssertEqual(sidebar.content.endButton, .sidebar)
             XCTAssertEqual(navigation.bar.content.navigation, .none, "the toggle on the sidebar's own bar")
 
             sidebar.chose(Int(AndroidBarButton.atEnd.rawValue))
             XCTAssertFalse(open.wrappedValue)
             XCTAssertFalse(split.isPresented)
-            XCTAssertEqual(navigation.bar.content.navigation, .sidebar(.file("test_dot.png")), "now on the detail's")
+            XCTAssertEqual(navigation.bar.content.navigation, .sidebar, "now on the detail's")
 
             navigation.bar.clicked()
             XCTAssertTrue(open.wrappedValue)
@@ -358,7 +357,7 @@ final class AndroidPagesTests: XCTestCase {
                 let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
                 let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
                 XCTAssertFalse(split.isPresented, "\(width)")
-                XCTAssertEqual(navigation.bar.content.navigation, .sidebar(.file("test_dot.png")), "\(width)")
+                XCTAssertEqual(navigation.bar.content.navigation, .sidebar, "\(width)")
                 XCTAssertEqual(navigation.bar.content.afterNavigation, .back, "\(width)")
 
                 navigation.bar.chose(Int(AndroidBarButton.afterNavigation.rawValue))
@@ -400,8 +399,8 @@ final class AndroidPagesTests: XCTestCase {
             navigation.bar.clicked()
             host.runtime.pump.turn()
             XCTAssertEqual(path.wrappedValue, [], "back pops the page")
-            XCTAssertEqual(navigation.bar.content.navigation, .sidebar(nil), "the root offers the toggle")
-            XCTAssertEqual(split.drawer.bar.content.endButton, .sidebar(nil))
+            XCTAssertEqual(navigation.bar.content.navigation, .sidebar, "the root offers the toggle")
+            XCTAssertEqual(split.drawer.bar.content.endButton, .sidebar)
         }
     }
 
@@ -410,7 +409,7 @@ final class AndroidPagesTests: XCTestCase {
         try onMainActor {
             let host = AndroidRenderer.running {
                 SplitView(State(wrappedValue: true).projectedValue) {
-                    TitledPage(title: "Menu", icon: "test_dot.png")
+                    TitledPage(title: "Notes", icon: "test_wide.png")
                 } detail: {
                     NavigationStack(State(wrappedValue: [1]).projectedValue) {
                         TitledPage(title: "Home")
@@ -418,8 +417,6 @@ final class AndroidPagesTests: XCTestCase {
                         TitledPage(title: "Deeper", actions: [ToolbarButton("Save").icon("test_wide.png")])
                     }
                 }
-                .barTitle("Notes")
-                .barIcon("test_wide.png")
             }
             host.insetsChanged(left: 0, top: 48, right: 0, bottom: 96, keyboard: 0)
             // Laid out until the bars hold what the first room said of the sidebar, as a window's passes do.
@@ -562,7 +559,7 @@ final class AndroidPagesTests: XCTestCase {
             host.layOut()
             let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
 
-            XCTAssertEqual(navigation.bar.content.navigation, .sidebar(nil))
+            XCTAssertEqual(navigation.bar.content.navigation, .sidebar)
             let glyph = Java.frame { Java.callObject(navigation.bar.reference, TestJava.getNavigationIcon) != nil }
             XCTAssertTrue(glyph, "the bar shows a button to open the sidebar")
         }

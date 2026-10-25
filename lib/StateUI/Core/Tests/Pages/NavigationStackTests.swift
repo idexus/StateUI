@@ -189,9 +189,6 @@ final class NavigationStackTests: XCTestCase {
                 .barButtonBackgroundColor(.gray)
                 .barForegroundColor(.white)
                 .toolbarStyle(.plain)
-                .barTitle("StateUI")
-                .barSubtitle("Home")
-                .barIcon("mark.png")
                 .node
                 .built
                 .props

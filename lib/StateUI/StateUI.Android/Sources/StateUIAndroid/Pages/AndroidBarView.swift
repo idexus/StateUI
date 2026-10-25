@@ -13,8 +13,8 @@ final class AndroidBarView: AndroidView {
     enum Navigation: Equatable {
         case none
         case back
-        /// The sidebar's picture, or none to show the platform's own.
-        case sidebar(HostPicture?)
+        /// The sidebar's toggle, in the platform's own glyph.
+        case sidebar
         /// The sheet the stack stands in closing.
         case close
     }
@@ -115,19 +115,14 @@ final class AndroidBarView: AndroidView {
 
     private func showNavigation(_ navigation: Navigation, tint: Int32) {
         let said = CoreLink().chromeWords
-        let (kind, picture, description): (AndroidBarNavigation, HostPicture?, String) = switch navigation {
-        case .none: (.none, nil, "")
-        case .back: (.back, nil, said.back)
-        case .sidebar(let picture): (.sidebar, picture, said.sidebar)
-        case .close: (.close, nil, said.close)
+        let (kind, description): (AndroidBarNavigation, String) = switch navigation {
+        case .none: (.none, "")
+        case .back: (.back, said.back)
+        case .sidebar: (.sidebar, said.sidebar)
+        case .close: (.close, said.close)
         }
-        let bitmap = picture.flatMap(AndroidPictures.bitmap)
         let words = Java.string(description)
-        withExtendedLifetime(bitmap) {
-            Java.call(
-                reference, JavaAPI.setBarNavigation,
-                .int(kind.rawValue), .object(bitmap?.reference), .int(tint), .object(words))
-        }
+        Java.call(reference, JavaAPI.setBarNavigation, .int(kind.rawValue), .int(tint), .object(words))
         Java.release(local: words)
     }
 
@@ -144,16 +139,11 @@ final class AndroidBarView: AndroidView {
         Java.release(local: words)
     }
 
-    /// The sidebar's toggle at the bar's end, in the sidebar's picture or the platform's glyph, or none.
+    /// The sidebar's toggle at the bar's end, in the platform's glyph, or none.
     private func showEndButton(_ button: Navigation, tint: Int32) {
-        guard case .sidebar(let picture) = button else {
-            return Java.call(reference, JavaAPI.setBarEndToggle, .object(nil), .int(tint), .object(nil))
-        }
-        let bitmap = picture.flatMap(AndroidPictures.bitmap)
+        guard button == .sidebar else { return Java.call(reference, JavaAPI.setBarEndToggle, .int(tint), .object(nil)) }
         let words = Java.string(CoreLink().chromeWords.sidebar)
-        withExtendedLifetime(bitmap) {
-            Java.call(reference, JavaAPI.setBarEndToggle, .object(bitmap?.reference), .int(tint), .object(words))
-        }
+        Java.call(reference, JavaAPI.setBarEndToggle, .int(tint), .object(words))
         Java.release(local: words)
     }
 

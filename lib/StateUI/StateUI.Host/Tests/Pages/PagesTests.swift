@@ -826,21 +826,18 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(root.first(id: .manual("home"))?.chromeTitleView?.id, .manual("shared"))
     }
 
-    /// The bar a path declares is its nearest arrangement's, one value at a time: the window's page names the
-    /// application, a stack further in paints its own bar and says its own line. A sidebar wears its own split view's
-    /// bar and nothing from around it; a sheet takes nothing from around it; an empty picture is none, and a page
-    /// with nothing declared shows no title area.
+    /// The bar's look a path declares is its nearest arrangement's, one value at a time: a stack further in paints
+    /// its own bar. A sidebar wears its own split view's bar and nothing from around it; a sheet takes nothing from
+    /// around it.
     func testTheBarAPathDeclaresIsItsNearest() throws {
         let runtime = runtime(node("window", .window, children: [
             node("outer", .navigationStack, [
-                .barTitle: .string("StateUI"), .barSubtitle: .string("Fundamentals"), .barIcon: .string(""),
                 .barBackgroundColor: .string("window"), .toolbarStyle: ToolbarStyle.rounded.propValue,
             ], children: [
                 node("split", .splitView, [.barForegroundColor: .string("split")], children: [
                     node("menu", .page),
                     node("stack", .navigationStack, [
-                        .barBackgroundColor: .string("stack"), .barSubtitle: .string("Buttons"),
-                        .barButtonBackgroundColor: .string("stack's buttons"),
+                        .barBackgroundColor: .string("stack"), .barButtonBackgroundColor: .string("stack's buttons"),
                     ], children: [node("detail", .page, [.title: .string("Detail")], children: [
                         presenting(node("sheet", .page)),
                     ])]),
@@ -851,7 +848,6 @@ final class PagesTests: XCTestCase {
         let chrome = WindowChrome(window: root, arrangement: root.first(id: .manual("outer")))
 
         XCTAssertEqual(chrome.title, "Detail", "the page still names the window")
-        XCTAssertEqual(chrome.titleArea, WindowChrome.TitleArea(title: "StateUI", subtitle: "Buttons", icon: nil))
         XCTAssertEqual(chrome.background, .string("stack"))
         XCTAssertEqual(chrome.foreground, .string("split"))
         XCTAssertEqual(chrome.buttonBackground, .string("stack's buttons"))
@@ -860,19 +856,48 @@ final class PagesTests: XCTestCase {
         let menu = try XCTUnwrap(root.first(id: .manual("menu")))
         XCTAssertEqual(menu.barColors.foreground, .string("split"), "the sidebar wears its split view's bar")
         XCTAssertNil(menu.barColors.background, "and nothing from around the split view")
-        XCTAssertNil(menu.titleArea, "nothing from around the split view")
         XCTAssertEqual(menu.toolbarStyle, .system, "nor the buttons' look")
 
         let sheet = try XCTUnwrap(root.first(id: .manual("sheet")))
-        XCTAssertNil(sheet.titleArea, "a sheet's bar names nothing from around it")
-        XCTAssertNil(sheet.barColors.background, "nor wears its colors")
+        XCTAssertNil(sheet.barColors.background, "a sheet's bar wears nothing from around it")
         XCTAssertNil(sheet.barColors.foreground)
         XCTAssertEqual(sheet.toolbarStyle, .system, "nor its buttons' look")
         XCTAssertNil(sheet.barButtonBackground)
+    }
 
-        let bare = self.runtime(node("window", .window, children: [node("page", .page)])) { _ in }
+    /// A page says what its bar says of it, and nothing climbs: the chrome shows the line under the title of the page
+    /// naming the window, and names the application over a split view's sidebar by the sidebar's page - its title,
+    /// else the application's name, its line and its picture. An empty line is none; a window showing no split view
+    /// names no application.
+    func testAPageSaysItsTitleArea() throws {
+        let runtime = runtime(node("window", .window, children: [
+            node("split", .splitView, children: [
+                node("menu", .page, [.subtitle: .string("Fundamentals"), .icon: .string("mark.png")]),
+                node("stack", .navigationStack, children: [
+                    node("detail", .page, [.title: .string("Detail"), .subtitle: .string("Buttons")]),
+                ]),
+            ]),
+        ])) { _ in }
+        let root = try XCTUnwrap(runtime.tree.root)
+        let chrome = WindowChrome(window: root, arrangement: root.first(id: .manual("split")))
+
+        XCTAssertEqual(chrome.title, "Detail")
+        XCTAssertEqual(chrome.subtitle, "Buttons", "the line under the title of the page naming the window")
+        XCTAssertEqual(chrome.titleArea?.subtitle, "Fundamentals", "the sidebar's page names the application")
+        XCTAssertEqual(chrome.titleArea?.icon, HostPicture(.string("mark.png")))
+        let menu = try XCTUnwrap(root.first(id: .manual("menu")))
+        XCTAssertEqual(
+            menu.titleArea(applicationName: "Notes"),
+            WindowChrome.TitleArea(title: "Notes", subtitle: "Fundamentals", icon: HostPicture(.string("mark.png"))),
+            "a sidebar's page that says no title names the application")
+
+        let bare = self.runtime(node("window", .window, children: [
+            node("page", .page, [.title: .string("Page"), .subtitle: .string("")]),
+        ])) { _ in }
         let bareRoot = try XCTUnwrap(bare.tree.root)
-        XCTAssertNil(WindowChrome(window: bareRoot, arrangement: bareRoot.first(id: .manual("page"))).titleArea)
+        let alone = WindowChrome(window: bareRoot, arrangement: bareRoot.first(id: .manual("page")))
+        XCTAssertNil(alone.subtitle, "an empty line is none")
+        XCTAssertNil(alone.titleArea, "no split view, no application named")
     }
 
     /// Tabs pushed onto a stack keep the title of the page beneath them; tabs with nothing beneath name the window by

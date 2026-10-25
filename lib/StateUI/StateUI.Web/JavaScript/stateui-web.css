@@ -161,12 +161,16 @@ body {
 .stateui-bar-heading { display: flex; flex-direction: column; min-width: 0; }
 .stateui-bar-title {
   grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
   font-weight: 600;
   font-size: 17px;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
+.stateui-bar-words, .stateui-bar-line { overflow: hidden; text-overflow: ellipsis; }
+.stateui-bar-line { font-weight: 400; font-size: 12.5px; opacity: 0.72; }
 .stateui-bar > .stateui-bar-actions { grid-column: 3; justify-self: end; }
 /* A bar whose actions crowd its title in the middle: the title takes the room they leave, its words in the middle
    of it - hidden where less is left than a few letters - and the actions that still do not fit stand behind More. */

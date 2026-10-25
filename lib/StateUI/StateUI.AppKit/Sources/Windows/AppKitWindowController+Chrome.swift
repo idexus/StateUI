@@ -26,7 +26,7 @@ extension AppKitWindowController {
         let barColor = chrome.background.flatMap(nsColor)
         let foreground = chrome.foreground.flatMap(nsColor)
         window.title = chrome.title ?? element.appKit.core.applicationName
-        window.subtitle = ""
+        window.subtitle = chrome.subtitle ?? ""
         // A page's title view stands in for its title, over a painted band the
         // title stands in the bar's foreground, and a page may show none:
         // the window keeps its name for the system and hides the one it would
@@ -61,9 +61,11 @@ extension AppKitWindowController {
             overflow: chrome.actions.overflow.map(Self.action),
             words: words))
         synchronizeBar(window, color: barColor, split: split)
+        // A Mac window names no application of itself: the area says what the sidebar's page says, if anything.
+        let area = chrome.splitView?.sidebarPage?.titleArea(applicationName: "")
         synchronizeTitleAccessory(
             window,
-            area: chrome.titleArea,
+            area: area?.isEmpty == false ? area : nil,
             foreground: chrome.background.flatMap { band in
                 barColor.map { _ in Self.foreground(on: band, written: foreground) }
             })

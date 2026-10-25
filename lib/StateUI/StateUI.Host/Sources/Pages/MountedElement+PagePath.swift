@@ -18,6 +18,11 @@ extension MountedElement {
         }
     }
 
+    /// The page a split view's sidebar shows - its page, or a stack's top there; nil for any other element.
+    public var sidebarPage: MountedElement? {
+        type == .splitView ? arrangedChildren.first?.visiblePage : nil
+    }
+
     /// The page whose title names the window while this arrangement shows: the visible page, but tabs on a stack are
     /// its last place and name the window by their own title, else by the page beneath - their pages name their tabs
     /// alone; nil for none.

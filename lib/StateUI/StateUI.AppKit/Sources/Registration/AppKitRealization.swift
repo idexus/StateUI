@@ -34,9 +34,6 @@ enum AppKitRealization {
         .notPlanned(BarElementContract.toolbarStyle, reason: "The toolbar's items keep the Mac's own look."),
         .partial(BarElementContract.barForegroundColor,
             missing: "Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color."),
-        .complete(BarElementContract.barIcon),
-        .complete(BarElementContract.barSubtitle),
-        .complete(BarElementContract.barTitle),
         .complete(DecorableTextElementContract.textDecorations),
         .complete(LineHeightElementContract.lineHeight),
         .complete(MenuToggleContract.isOn),
@@ -149,6 +146,7 @@ enum AppKitRealization {
         .complete(PageContract.showsCloseButton),
         .complete(PageContract.showsNavigationBar),
         .complete(PageContract.showsTitle),
+        .complete(PageContract.subtitle),
         // A page is no `VisualElement`: it wears `PageElement` alone, so the
         // tier's record about a background does not reach it.
         .complete(PageContract.background),

@@ -2,7 +2,7 @@
 
 # BarElement
 
-What an arrangement declares of the bar while it stands on the visible path: its colors, and the application's name, line and mark in the bar.
+What an arrangement declares of the bar while it stands on the visible path: its look.
 
 ```swift
 struct MainPage: View {
@@ -14,7 +14,6 @@ struct MainPage: View {
         } destination: { message in
             Text("Message \(message)")
         }
-        .barTitle("Mail")
         .barBackgroundColor(.cornflowerBlue)
         .barForegroundColor(.white)
     }
@@ -32,7 +31,4 @@ How each of them realizes these members is on its own page.
 | `barBackgroundColor` | property | `Color` | adaptive |
 | `barButtonBackgroundColor` | property | `Color` | adaptive |
 | `barForegroundColor` | property | `Color` | adaptive |
-| `barIcon` | property | `ImageSource` | adaptive |
-| `barSubtitle` | property | `String` | adaptive |
-| `barTitle` | property | `String` | adaptive |
 | `toolbarStyle` | property | `ToolbarStyle` | adaptive |

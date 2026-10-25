@@ -83,11 +83,11 @@ it opens there, and the overflow's menus after every action.
 ## A split view
 
 The sidebar stands under a bar of its own, Android's toolbar as a stack's
-is: what the application says of itself on the sidebar page's path - its
-name, the line under it and its mark (`titleArea`), else the sidebar page's
-title - in the colors that path declares, and at its end the sidebar's
-toggle, the sidebar page's picture or Android's menu glyph, which hides the
-sidebar. The bar reaches under what stands over the top, the sidebar page
+is: the title area the sidebar's page names the application with
+(`titleArea(applicationName:)`) - its title, else the application's name,
+the line under it and its picture as the mark before them - in the colors its
+path declares, and at its end the sidebar's toggle in Android's menu glyph,
+which hides the sidebar. The bar reaches under what stands over the top, the sidebar page
 below it (`AndroidSidebarView`). Beside the detail the column stands apart
 from it by the theme's line between panes (`dividerVertical`) down its edge
 toward the detail; a drawer over the detail stands on its own edge.

@@ -4,10 +4,11 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// The window's one bar, over the page the user sees: the sidebar's toggle, the way back, the application's name,
-/// the page's title - or the view the page declares in its place - the actions it declares and a menu of those behind it and of its menus - the
-/// host layer's `WindowChrome`. Beside a sidebar shown, the bar stands in two parts: the name and the toggle over the
-/// sidebar, the rest over the detail.
+/// The window's one bar, over the page the user sees: the sidebar's toggle, the way back, the title area the
+/// sidebar's page names the application with, the page's title and the line under it - or the view the page declares
+/// in their place - the actions it declares and a menu of those behind it and of its menus - the host layer's
+/// `WindowChrome`. Beside a sidebar shown, the bar stands in two parts: the name and the toggle over the sidebar, the
+/// rest over the detail.
 /// Design: docs/design/platforms/web/pages.md#the-windows-bar
 @MainActor
 final class WebWindowBar: WebDOMView {
@@ -18,6 +19,8 @@ final class WebWindowBar: WebDOMView {
     private let name = WebDOMView(tag: "span")
     private let subtitle = WebDOMView(tag: "span")
     private let title = WebDOMView(tag: "span")
+    private let words = WebDOMView(tag: "span")
+    private let line = WebDOMView(tag: "span")
     private let lead = WebDOMView(tag: "div")
     private let side = WebDOMView(tag: "div")
     private let start = WebDOMView(tag: "div")
@@ -62,15 +65,15 @@ final class WebWindowBar: WebDOMView {
         attribute("class", "stateui-bar")
         attribute("role", "toolbar")
         for (part, kind) in [(brand, "brand"), (heading, "heading"), (name, "name"), (subtitle, "subtitle"),
-                             (title, "title"), (lead, "lead"), (side, "side"), (start, "start"),
-                             (leading, "actions"), (trailing, "actions")] {
+                             (title, "title"), (words, "words"), (line, "line"), (lead, "lead"), (side, "side"),
+                             (start, "start"), (leading, "actions"), (trailing, "actions")] {
             part.attribute("class", "stateui-bar-\(kind)")
         }
-        let words = CoreLink().chromeWords
-        glyph(toggle, "sidebar", label: words.sidebar)
-        glyph(back, "back", label: words.back)
-        glyph(closer, "close", label: words.close)
-        glyph(more, "more", label: words.more)
+        let said = CoreLink().chromeWords
+        glyph(toggle, "sidebar", label: said.sidebar)
+        glyph(back, "back", label: said.back)
+        glyph(closer, "close", label: said.close)
+        glyph(more, "more", label: said.more)
         more.attribute("aria-haspopup", "menu")
         more.listen("click") { [weak self] in
             guard let self else { return }
@@ -87,6 +90,8 @@ final class WebWindowBar: WebDOMView {
         WebRelay.insert(heading.node, into: brand.node, at: 0)
         WebRelay.insert(name.node, into: heading.node, at: 0)
         WebRelay.insert(subtitle.node, into: heading.node, at: 1)
+        WebRelay.insert(words.node, into: title.node, at: 0)
+        WebRelay.insert(line.node, into: title.node, at: 1)
         // The window's width, and the part before the title as a split view's sidebar comes and goes, change what
         // fits.
         followSize { [weak self] in self?.fit() }
@@ -120,7 +125,8 @@ final class WebWindowBar: WebDOMView {
         // A page showing no title leaves its place empty; the tab keeps its name.
         attribute("data-title", chrome.showsTitle ? nil : "none")
         let view = (chrome.center?.native as? WebElement)?.view
-        showTitle(chrome.showsTitle ? shown : "", or: view, repeating: area?.title)
+        showTitle(chrome.showsTitle ? shown : "", line: chrome.showsTitle ? chrome.subtitle : nil, or: view,
+                  repeating: area?.title)
 
         style("--stateui-bar-background", WebCSS.fill(chrome.background))
         // A clear bar paints nothing, and only softens what scrolls under it toward the top.
@@ -197,18 +203,17 @@ final class WebWindowBar: WebDOMView {
     /// The least room a title stands in: a few letters and an ellipsis, which say what the page is.
     private static let leastTitle = 72.0
 
-    /// The title's words, or `view` in their place where the page declares one.
-    private func showTitle(_ words: String, or view: WebDOMView?, repeating name: String?) {
+    /// The title's words and the `line` under them, or `view` in their place where the page declares one.
+    private func showTitle(_ shown: String, line said: String?, or view: WebDOMView?, repeating name: String?) {
         if let titleView, titleView !== view, !titleView.isReleased { WebRelay.detach(titleView.node) }
         titleView = view
-        if let view {
-            WebRelay.setText(title.node, "")
-            WebRelay.insert(view.node, into: title.node, at: 0)
-        } else {
-            WebRelay.setText(title.node, words)
-        }
-        title.setShown(view != nil || !words.isEmpty)
-        title.attribute("data-repeats", view == nil && words == name ? "" : nil)
+        if let view { WebRelay.insert(view.node, into: title.node, at: 0) }
+        WebRelay.setText(words.node, view == nil ? shown : "")
+        WebRelay.setText(line.node, view == nil ? said ?? "" : "")
+        words.setShown(view == nil)
+        line.setShown(view == nil && said != nil)
+        title.setShown(view != nil || !shown.isEmpty)
+        title.attribute("data-repeats", view == nil && shown == name && said == nil ? "" : nil)
         title.attribute("data-holds-view", view == nil ? nil : "")
     }
 
@@ -228,7 +233,8 @@ final class WebWindowBar: WebDOMView {
         for group in groups { group.release() }
         for shape in glyphs { shape.release() }
         let parts = [
-            toggle, back, closer, more, name, subtitle, heading, brand, title, leading, trailing, side, start, lead,
+            toggle, back, closer, more, name, subtitle, heading, brand, words, line, title, leading, trailing, side, start,
+            lead,
         ]
         for part in parts {
             part.release()

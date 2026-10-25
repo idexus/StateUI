@@ -1,22 +1,13 @@
-# revision 7.1
+# revision 8.1
 NavigationStack.barBackgroundColor: ✅
 NavigationStack.barButtonBackgroundColor: ✅
 NavigationStack.barForegroundColor: ✅
-NavigationStack.barIcon: – A page's bar names its page and the application, and no mark: the browser's tab shows the site's icon.
-NavigationStack.barSubtitle: ✅
-NavigationStack.barTitle: ✅
 NavigationStack.toolbarStyle: ✅
 SplitView.barBackgroundColor: ✅
 SplitView.barButtonBackgroundColor: ✅
 SplitView.barForegroundColor: ✅
-SplitView.barIcon: – A page's bar names its page and the application, and no mark: the browser's tab shows the site's icon.
-SplitView.barSubtitle: ✅
-SplitView.barTitle: ✅
 SplitView.toolbarStyle: ✅
 TabView.barBackgroundColor: ✅
 TabView.barButtonBackgroundColor: ✅
 TabView.barForegroundColor: ✅
-TabView.barIcon: – A page's bar names its page and the application, and no mark: the browser's tab shows the site's icon.
-TabView.barSubtitle: ✅
-TabView.barTitle: ✅
 TabView.toolbarStyle: ✅

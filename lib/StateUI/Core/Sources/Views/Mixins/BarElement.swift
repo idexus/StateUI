@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The bar over what an arrangement shows. It belongs to the arrangement and
-/// looks the same whichever page shows; what one page asks of the bar - to be
-/// hidden, or to carry a view instead of its title - its view says of its page,
-/// `.showsNavigationBar(false)`.
+/// The look of the bar over what an arrangement shows. It belongs to the
+/// arrangement and looks the same whichever page shows; what the bar says -
+/// a title, the line under it, a view in its place, its actions - each page
+/// says of itself, `.subtitle(folder.name)`.
 ///
 /// Declared on a window's page, it is the whole window's bar; an arrangement
 /// further in stands in its place, one value at a time, while it is shown:
@@ -15,8 +15,7 @@
 ///         NavigationStack($path) { … }
 ///             .barBackgroundColor(.cornflowerBlue)
 ///     }
-///     .barTitle("Notes")
-///     .barSubtitle(folder.name)
+///     .barForegroundColor(.white)
 ///
 /// A split view's bar is both its panes': a sidebar with a bar of its own
 /// wears what its split view declares, and nothing from around it. A sheet
@@ -62,23 +61,5 @@ extension BarElement {
     /// platform's warning color.
     public func barForegroundColor(_ value: Color) -> Modified {
         setValue(BarElementContract.barForegroundColor, value)
-    }
-
-    /// The application's name in the bar, where the platform's desktop chrome
-    /// names the application. The visible page's title still names the
-    /// window to the system.
-    public func barTitle(_ value: String) -> Modified {
-        setValue(BarElementContract.barTitle, value)
-    }
-
-    /// A second line in the bar, under the title it shows: the current
-    /// document or section. An empty one is none.
-    public func barSubtitle(_ value: String) -> Modified {
-        setValue(BarElementContract.barSubtitle, value)
-    }
-
-    /// The application's mark beside its name in the bar.
-    public func barIcon(_ value: ImageSource) -> Modified {
-        setValue(BarElementContract.barIcon, value)
     }
 }

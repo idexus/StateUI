@@ -47,7 +47,7 @@ extension UIKitElement {
         var chrome = UIKitPageChrome()
         chrome.title = element.barTitle(applicationName: host?.runtime.core.applicationName ?? "")
         chrome.showsTitle = value(.showsTitle)?.bool != false
-        chrome.subtitle = element.titleArea?.subtitle
+        chrome.subtitle = element.barSubtitle
         chrome.titleView = element.chromeTitleView?.uiKit.view
         chrome.showsBar = value(.showsNavigationBar)?.bool != false
         chrome.offersBack = value(.showsBackButton)?.bool != false

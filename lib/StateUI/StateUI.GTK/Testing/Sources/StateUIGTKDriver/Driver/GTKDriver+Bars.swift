@@ -98,7 +98,7 @@ extension GTKDriver {
                 alpha: Int(pixel >> 24)).propValue
         case .barForegroundColor:
             return Self.color(of: frame.header).propValue
-        case .barSubtitle:
+        case .subtitle:
             guard let heading = adw_header_bar_get_title_widget(frame.header.opaque),
                   GTKTestHost.holds(heading, adw_window_title_get_type()),
                   let subtitle = adw_window_title_get_subtitle(heading.opaque)

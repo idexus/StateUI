@@ -1,22 +1,13 @@
-# revision 7.1
+# revision 8.1
 NavigationStack.barBackgroundColor: ✅
 NavigationStack.barButtonBackgroundColor: – An app bar button is WinUI's own, with no background of the application's.
 NavigationStack.barForegroundColor: ✅
-NavigationStack.barIcon: ✅
-NavigationStack.barSubtitle: ✅
-NavigationStack.barTitle: ✅
 NavigationStack.toolbarStyle: – The bar's buttons keep WinUI's own look.
 SplitView.barBackgroundColor: ✅
 SplitView.barButtonBackgroundColor: – An app bar button is WinUI's own, with no background of the application's.
 SplitView.barForegroundColor: ✅
-SplitView.barIcon: ✅
-SplitView.barSubtitle: ✅
-SplitView.barTitle: ✅
 SplitView.toolbarStyle: – The bar's buttons keep WinUI's own look.
 TabView.barBackgroundColor: ✅
 TabView.barButtonBackgroundColor: – An app bar button is WinUI's own, with no background of the application's.
 TabView.barForegroundColor: ✅
-TabView.barIcon: ✅
-TabView.barSubtitle: ✅
-TabView.barTitle: ✅
 TabView.toolbarStyle: – The bar's buttons keep WinUI's own look.

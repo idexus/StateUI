@@ -524,14 +524,14 @@ Every control, and every part an application, its windows and its pages are made
 | [MenuItem](controls/MenuItem.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 4 ✅ · 3 – | 7 ✅ |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuToggle](controls/MenuToggle.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 5 ✅ · 2 – | 7 ✅ |
-| [NavigationStack](controls/NavigationStack.md) | 11 | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 7 ✅ · 4 – | 6 ✅ · 1 ☑️ · 4 – | 9 ✅ · 2 – | 5 ✅ · 6 – | 10 ✅ · 1 – |
+| [NavigationStack](controls/NavigationStack.md) | 8 | 3 ✅ · 1 ☑️ · 1 ✓ · 2 – | 6 ✅ · 2 – | 5 ✅ · 1 ☑️ · 2 – | 6 ✅ · 2 – | 4 ✅ · 4 – | 8 ✅ |
 | [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
-| [Page](controls/Page.md) | 13 | 10 ✅ | 13 ✅ | 12 ✅ · 1 – | 12 ✅ · 1 – | 10 ✅ · 2 – | 12 ✅ |
+| [Page](controls/Page.md) | 14 | 11 ✅ | 14 ✅ | 13 ✅ · 1 – | 13 ✅ · 1 – | 11 ✅ · 2 – | 13 ✅ |
 | [Popover](controls/Popover.md) | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](controls/Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [Sheet](controls/Sheet.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [SplitView](controls/SplitView.md) | 16 | 11 ✅ · 1 ☑️ · 3 – | 10 ✅ · 2 ✓ · 4 – | 8 ✅ · 2 ☑️ · 4 ✓ · 2 – | 12 ✅ · 2 ☑️ · 2 – | 8 ✅ · 2 ✓ · 6 – | 13 ✅ · 2 ☑️ · 1 – |
-| [TabView](controls/TabView.md) | 12 | 7 ✅ · 1 ☑️ · 1 ✓ · 2 – | 8 ✅ · 4 – | 7 ✅ · 1 ☑️ · 4 – | 10 ✅ · 2 – | 6 ✅ · 6 – | 11 ✅ · 1 – |
+| [SplitView](controls/SplitView.md) | 13 | 8 ✅ · 1 ☑️ · 3 – | 9 ✅ · 2 ✓ · 2 – | 5 ✅ · 2 ☑️ · 4 ✓ · 2 – | 9 ✅ · 2 ☑️ · 2 – | 7 ✅ · 2 ✓ · 4 – | 11 ✅ · 2 ☑️ |
+| [TabView](controls/TabView.md) | 9 | 4 ✅ · 1 ☑️ · 1 ✓ · 2 – | 7 ✅ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 7 ✅ · 2 – | 5 ✅ · 4 – | 9 ✅ |
 | [TextSpan](controls/TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -539,10 +539,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarGroup](controls/ToolbarGroup.md) | 5 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 9 | 7 ✅ · 1 – | 8 ✅ · 1 – | 6 ✅ · 1 ☑️ · 1 – | 9 ✅ | 8 ✅ · 1 – | 9 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 113 | 107 | 90 | 138 | 103 | 125 |
+| ✅ |  | 105 | 105 | 86 | 130 | 101 | 120 |
 | ✓ |  | 23 | 21 | 20 | 5 | 17 | 10 |
-| – |  | 11 | 23 | 32 | 10 | 35 | 18 |
-| **Met** | 165 | **147** | **151** | **142** | **153** | **155** | **153** |
+| – |  | 11 | 17 | 28 | 10 | 29 | 15 |
+| **Met** | 157 | **139** | **143** | **134** | **145** | **147** | **145** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -584,7 +584,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [KeyboardElement](controls/tiers/KeyboardElement.md) | `keyPressed`, `keysTaken` | 2 |
 | [FocusElement](controls/tiers/FocusElement.md) | `isFocusedChanged` | 1 |
 | [RefreshElement](controls/tiers/RefreshElement.md) | `isRefreshEnabled`, `isRefreshing`, `onRefreshRequested` (`refreshRequested`) | 3 |
-| [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor`, `barButtonBackgroundColor`, `barForegroundColor`, `barIcon`, `barSubtitle`, `barTitle`, `toolbarStyle` | 7 |
+| [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor`, `barButtonBackgroundColor`, `barForegroundColor`, `toolbarStyle` | 4 |
 | [MenuItemElement](controls/tiers/MenuItemElement.md) | `icon`, `isEnabled`, `keyboardShortcut`, `text` | 4 |
 | [ActionElement](controls/tiers/ActionElement.md) | `onClicked` (`clicked`), `role` | 2 |
 | [ButtonMenuElement](controls/tiers/ButtonMenuElement.md) | `menuKind`, `showsMenuArrow` | 2 |
@@ -611,7 +611,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [MenuBar](controls/MenuBar.md) | `order` | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [MenuToggle](controls/MenuToggle.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [NavigationStack](controls/NavigationStack.md) | `popped` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `background`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsCloseButton`, `showsNavigationBar`, `showsTitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 11 | 9 ✅ | 11 ✅ | 10 ✅ · 1 – | 10 ✅ · 1 – | 9 ✅ · 1 – | 10 ✅ |
+| [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `background`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsCloseButton`, `showsNavigationBar`, `showsTitle`, `subtitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 12 | 10 ✅ | 12 ✅ | 11 ✅ · 1 – | 11 ✅ · 1 – | 10 ✅ · 1 – | 11 ✅ |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `placeholder`, `presentation`, `selectedIndex`, `selectedIndexChanged` | 8 | 4 ✅ · 1 ✓ | 1 ✅ · 1 ☑️ · 3 ✓ | 3 ✅ · 1 ☑️ · 1 ✓ | 8 ✅ | 4 ✅ · 4 – | 5 ✅ · 3 – |
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
@@ -672,32 +672,31 @@ realizes the element and each of its members.
 `accessibilityIdentifier`, `accessibilityLabel`, `accessibilityRole`,
 `accessibilityValue`, `allowsDrop`, `area`, `backButtonTitle`, `background`,
 `barBackgroundColor`, `barButtonBackgroundColor`, `barForegroundColor`,
-`barIcon`, `barSubtitle`, `barTitle`, `canDrag`, `clipsContent`, `columns`,
-`columnSpacing`, `contentMode`, `cornerRadius`, `cursorPosition`, `dash`,
-`dashPhase`, `data`, `date`, `destination`, `dragText`, `drawing`,
-`droppedFileTypes`, `endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`,
-`flyoutBackground`, `fontAttributes`, `fontFamily`, `fontSize`, `fontWeight`,
-`format`, `frame`, `geometryTransform`, `gridColumn`, `gridColumnSpan`,
-`gridRow`, `gridRowSpan`, `growsWithText`, `handAxis`, `height`,
-`hidesChildrenFromAccessibility`, `hidesWhenInactive`, `hidesWithSidebar`,
-`horizontalAlignment`, `horizontalScrollIndicator`, `horizontalTextAlignment`,
-`icon`, `iconPosition`, `iconSpacing`, `ignoresInput`, `ignoresSafeArea`,
-`inputPurpose`, `isAccessibilityHidden`, `isAnimating`, `isEnabled`,
-`isFontAutoScalingEnabled`, `isMaximizable`, `isMinimizable`, `isOn`, `isOpen`,
-`isPassword`, `isPresented`, `isReadOnly`, `isRefreshEnabled`, `isRefreshing`,
-`isScrollEnabled`, `isSelectable`, `isSpellCheckEnabled`,
-`isTextPredictionEnabled`, `isVisible`, `isZoomEnabled`, `itemDrag`, `items`,
-`itemsLayout`, `keyboardShortcut`, `keysTaken`, `label`, `layoutDirection`,
-`letsInputThrough`, `lineBreak`, `lineCap`, `lineHeight`, `lineJoin`,
-`lineWidth`, `location`, `magnifies`, `mapType`, `margin`, `maximum`,
-`maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`, `maximumWidth`,
-`menuKind`, `minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`,
-`miterLimit`, `onIcon`, `opacity`, `options`, `order`, `orientation`, `padding`,
-`pans`, `panTouchCount`, `panXChannel`, `panYChannel`, `part`, `phase`,
-`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`, `position`,
-`presentation`, `progress`, `region`, `role`, `rotates`, `rotation`,
-`rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
-`scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
+`canDrag`, `clipsContent`, `columns`, `columnSpacing`, `contentMode`,
+`cornerRadius`, `cursorPosition`, `dash`, `dashPhase`, `data`, `date`,
+`destination`, `dragText`, `drawing`, `droppedFileTypes`, `endReachedWithin`,
+`fill`, `fillRule`, `floatsOnTop`, `flyoutBackground`, `fontAttributes`,
+`fontFamily`, `fontSize`, `fontWeight`, `format`, `frame`, `geometryTransform`,
+`gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `growsWithText`,
+`handAxis`, `height`, `hidesChildrenFromAccessibility`, `hidesWhenInactive`,
+`hidesWithSidebar`, `horizontalAlignment`, `horizontalScrollIndicator`,
+`horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
+`ignoresInput`, `ignoresSafeArea`, `inputPurpose`, `isAccessibilityHidden`,
+`isAnimating`, `isEnabled`, `isFontAutoScalingEnabled`, `isMaximizable`,
+`isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isPresented`, `isReadOnly`,
+`isRefreshEnabled`, `isRefreshing`, `isScrollEnabled`, `isSelectable`,
+`isSpellCheckEnabled`, `isTextPredictionEnabled`, `isVisible`, `isZoomEnabled`,
+`itemDrag`, `items`, `itemsLayout`, `keyboardShortcut`, `keysTaken`, `label`,
+`layoutDirection`, `letsInputThrough`, `lineBreak`, `lineCap`, `lineHeight`,
+`lineJoin`, `lineWidth`, `location`, `magnifies`, `mapType`, `margin`,
+`maximum`, `maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`,
+`maximumWidth`, `menuKind`, `minimum`, `minimumDate`, `minimumHeight`,
+`minimumWidth`, `miterLimit`, `onIcon`, `opacity`, `options`, `order`,
+`orientation`, `padding`, `pans`, `panTouchCount`, `panXChannel`, `panYChannel`,
+`part`, `phase`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`,
+`points`, `position`, `presentation`, `progress`, `region`, `role`, `rotates`,
+`rotation`, `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`,
+`scaleY`, `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
 `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
 `showsClearButton`, `showsCloseButton`, `showsMenuArrow`, `showsNavigationBar`,
 `showsSidebar`, `showsSidebarToggle`, `showsText`, `showsTitle`, `showsTraffic`,

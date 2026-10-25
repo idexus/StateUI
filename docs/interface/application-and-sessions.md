@@ -491,7 +491,8 @@ What the page is, the view it shows says by modifier:
 | Modifier | Meaning |
 | --- | --- |
 | `.title` | navigation title, and the caption where the page is an item of something else |
-| `.icon` | the page's representative image, commonly a tab icon |
+| `.subtitle` | the line under the page's title, wherever its title shows - the current document or section |
+| `.icon` | the page's representative image: a tab's icon, and a sidebar page's mark where it names the application |
 | `.pageBackground` | what the whole page is made of behind what it shows - a color, a gradient, a blur or glass - also where the view does not reach |
 | `.showsNavigationBar` | whether a containing navigation stack shows its bar for this page |
 | `.showsTitle` | whether the page shows its title - on its bar, or over its content where the bar names the application; the title names the window and the way back all the same |
@@ -578,8 +579,9 @@ session phase whose scope matches the work.
 
 ## The window's bar
 
-The window's bar is declared on the arrangement the window's view is, as values
-read in the body - so it follows the state it reads with no write of its own:
+What the bar says, each page says of itself; how the bar looks, the
+arrangement around the pages declares - as values read in the body, so both
+follow the state they read with no write of their own:
 
 ```swift
 import StateUI
@@ -592,12 +594,13 @@ struct NotesPage: View {
     var body: some View {
         SplitView($showsFolders) {
             Text("Folders")
+                .title("Notes")
+                .icon("notes.png")
         } detail: {
             Text("Notes in \(folder)")
+                .title(folder)
+                .subtitle("Updated today")
         }
-        .barTitle("Notes")
-        .barSubtitle(folder)
-        .barIcon("notes.png")
         .barBackgroundColor(.cornflowerBlue)
         .barForegroundColor(.white)
         .titleView {
@@ -611,23 +614,25 @@ struct NotesPage: View {
 }
 ```
 
-`barTitle`, `barSubtitle` and `barIcon` are the application naming itself, the
-line under the title, and its mark; `barBackgroundColor` and
-`barForegroundColor` paint the bar and what stands on it. Each is taken from
-the nearest arrangement on the visible path that declares it, so a stack
-further in paints its own bar or says its own line while it is shown; a
-sidebar takes only what its own split view declares, and a sheet takes nothing
-from around it. What stands on the bar is
+A page's bar shows its title and the line under it, `.subtitle`, and nothing
+climbs from around the page. `barBackgroundColor` and `barForegroundColor`
+paint the bar and what stands on it, each taken from the nearest arrangement
+on the visible path that declares it, so a stack further in paints its own bar
+while it is shown; a sidebar takes only what its own split view declares, and a
+sheet takes nothing from around it. What stands on the bar is
 declared the same way: actions with `.toolbar`, each saying where it stands
 with `.placement`, and a view in the title's place with `.titleView`
 ([Toolbars](navigation-and-presentation.md#toolbars)).
 
-AppKit and WinUI show the name, the line and the mark where their platform
-names the application - AppKit as text at the trailing edge of the title bar,
-WinUI in its title bar's title, subtitle and icon - while the visible page's
-title still names the window to the system. GTK's header bar names its page,
-as each bar on a phone and a tablet does: the line stands under each page's
-title, and the application's name and mark stand nowhere.
+A split view's sidebar page names the application where the platform's chrome
+does: its title - the application's name where it says none - the line under
+it, and its picture as the application's mark. WinUI shows them in its title
+bar's title, subtitle and icon, and heads the detail's page with its own title
+and line; the sidebar's own bar shows them on Android, and its title and line
+on iPadOS, GNOME and the Web. A Mac window names no application of itself:
+AppKit shows at the trailing edge of the title bar only what the sidebar's page
+says, and a page's line as the window's subtitle. The visible page's title
+still names the window to the system.
 [BarElement](../controls/tiers/BarElement.md) lists each value, and the page
 of each arrangement wearing it says what each host does with it.
 

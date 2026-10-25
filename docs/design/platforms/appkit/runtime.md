@@ -33,6 +33,14 @@ scroller let under keeps the toolbar's depth as its content inset, its offset
 counted from its first row clear. A sheet's window lays its page alike. A new window with no place asked
 stands centered, each after the first a step down and to the right.
 
+The window's title is the visible page's, and the line under it the page says
+(`WindowChrome.subtitle`) is the window's own `subtitle`. A Mac window names
+no application of itself: what a split view's sidebar page says - its title,
+its line, its picture ([a page's title
+area](../../host/pages.md#a-pages-title-area)), and nothing where it says
+none - stands as text at the trailing edge of the title bar, a title bar
+accessory rather than a toolbar control's glass.
+
 ## A window's frame
 
 A window stands where the host layer says its element asks ([a window's

@@ -130,8 +130,7 @@ extension WebDriver {
             else { return nil }
             return .some(try color("getComputedStyle(e).backgroundColor", on: sheet.sheet.dialogNode, unlessClear: true)
                 .map { Material.color($0).propValue })
-        case (_, .barTitle): return .some(try barWords(".stateui-bar-name"))
-        case (_, .barSubtitle): return .some(try barWords(".stateui-bar-subtitle"))
+        case (.page, .subtitle): return .some(try barWords(".stateui-bar-line", in: standingBar(over: element)))
         case (_, .barBackgroundColor): return .some(try barColor("--stateui-bar-background", over: element))
         case (_, .barButtonBackgroundColor): return .some(try barColor("--stateui-bar-button", over: element))
         case (_, .toolbarStyle):
@@ -167,10 +166,9 @@ extension WebDriver {
         }
     }
 
-    /// The words of the window's bar's part `part`; nil where it shows none.
-    private func barWords(_ part: String) throws -> HostValue? {
-        guard let bar = renderer?.roster.controllers.first?.window.bar else { throw DriverCannot("find the window's bar") }
-        return try WebBrowser.evaluate("((p) => p && !p.hidden && p.textContent ? p.textContent : null)(e.querySelector('\(part)'))", on: bar.node)?
+    /// The words of `bar`'s part `part`; nil where it shows none.
+    private func barWords(_ part: String, in bar: WebWindowBar) throws -> HostValue? {
+        try WebBrowser.evaluate("((p) => p && !p.hidden && p.textContent ? p.textContent : null)(e.querySelector('\(part)'))", on: bar.node)?
             .propValue
     }
 

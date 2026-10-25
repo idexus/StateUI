@@ -20,18 +20,6 @@ import StateUI
 /// chrome says - which is what lets a test build the whole arrangement without
 /// reaching into a running application.
 struct MainPage: View {
-    /// The gallery's mark on the window's bar: none on Windows, where a mark on the title bar reads as a button;
-    /// the violet one on Android's sidebar bar, which stands on the theme's light or dark ground.
-    private static var mark: ImageSource {
-        #if WINUI
-        ""
-        #elseif ANDROID
-        ImageSource(light: "stateui_mark_violet.png", dark: "stateui_mark_violet_dark.png")
-        #else
-        "stateui_mark.png"
-        #endif
-    }
-
     /// Which kind of device this is, from the standard environment - answered by
     /// the host before the first render, so the first window build already knows
     /// which samples the device lists.
@@ -116,12 +104,6 @@ struct MainPage: View {
                 }
             }
         }
-        // What the window's bar says of the gallery: its name and mark,
-        // where the platform's chrome names the application, and under the
-        // title the line the Window bar sample types.
-        .barTitle("StateUI")
-        .barSubtitle(bar.subtitle)
-        .barIcon(Self.mark)
         // listing: end
         // The bars of both panes, as the gallery's look says.
         .barLook(look.bars, in: look.barColor, system: application.info.accentColor)

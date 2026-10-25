@@ -432,12 +432,13 @@ extension WinUIDriver {
         case ("showsCloseButton", _): return (try read(sheet(of: element), "close") == "1").propValue
         case ("barBackgroundColor", _): return try Self.color(read(window().titleBar, "background")).map { $0.propValue }
         case ("barForegroundColor", _): return try Self.color(read(window().titleBar, "foreground")).map { $0.propValue }
-        // The title area its path declares stands in the title's place.
-        case ("barTitle", _): return .string(try read(window().titleBar, "title"))
-        case ("barSubtitle", _):
+        // The line under a page's title: its heading's where the chrome names the application, else the title bar's.
+        case ("subtitle", _) where element.type == .page:
+            if let heading = renderer?.views(WinUILayoutView.self).lazy.compactMap(\.heading).first {
+                return heading.line.text.isEmpty ? nil : .string(heading.line.text)
+            }
             let words = try read(window().titleBar, "subtitle")
             return words.isEmpty ? nil : .string(words)
-        case ("barIcon", _): return Self.picture(try read(window().titleBar, "icon"), named: element, by: .barIcon)
         case ("showsSidebar", let split as WinUISplitView): return (try read(split.sidebar, "paneOpen") == "1").propValue
         case ("showsSidebarToggle", _): return (try read(window().titleBar, "paneToggle") == "1").propValue
         case ("sidebarOverlays", let split as WinUISplitView):
@@ -639,10 +640,10 @@ extension WinUIDriver {
         return nil
     }
 
-    /// The picture a file shown stands for: the one the tree named - `element`'s `member` - where it is one of the
-    /// files that name stands for.
-    static func picture(_ shown: String, named element: MountedElement, by member: Prop = .icon) -> HostValue {
-        let named = element.value(member)?.string ?? ""
+    /// The picture a file shown stands for: the one the tree named - `element`'s icon - where it is one of the files
+    /// that name stands for.
+    static func picture(_ shown: String, named element: MountedElement) -> HostValue {
+        let named = element.value(.icon)?.string ?? ""
         return ImageSource(PictureArithmetic.files(for: named).contains(shown) ? named : shown).propValue
     }
 

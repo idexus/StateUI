@@ -89,14 +89,14 @@ The scene, the window and the page an application is made of, the arrangements a
 | [MenuItem](MenuItem.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 4 ✅ · 3 – | 7 ✅ |
 | [MenuSeparator](MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuToggle](MenuToggle.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 5 ✅ · 2 – | 7 ✅ |
-| [NavigationStack](NavigationStack.md) | 11 | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 7 ✅ · 4 – | 6 ✅ · 1 ☑️ · 4 – | 9 ✅ · 2 – | 5 ✅ · 6 – | 10 ✅ · 1 – |
+| [NavigationStack](NavigationStack.md) | 8 | 3 ✅ · 1 ☑️ · 1 ✓ · 2 – | 6 ✅ · 2 – | 5 ✅ · 1 ☑️ · 2 – | 6 ✅ · 2 – | 4 ✅ · 4 – | 8 ✅ |
 | [Overlay](Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
-| [Page](Page.md) | 13 | 10 ✅ | 13 ✅ | 12 ✅ · 1 – | 12 ✅ · 1 – | 10 ✅ · 2 – | 12 ✅ |
+| [Page](Page.md) | 14 | 11 ✅ | 14 ✅ | 13 ✅ · 1 – | 13 ✅ · 1 – | 11 ✅ · 2 – | 13 ✅ |
 | [Popover](Popover.md) | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [Sheet](Sheet.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [SplitView](SplitView.md) | 16 | 11 ✅ · 1 ☑️ · 3 – | 10 ✅ · 2 ✓ · 4 – | 8 ✅ · 2 ☑️ · 4 ✓ · 2 – | 12 ✅ · 2 ☑️ · 2 – | 8 ✅ · 2 ✓ · 6 – | 13 ✅ · 2 ☑️ · 1 – |
-| [TabView](TabView.md) | 12 | 7 ✅ · 1 ☑️ · 1 ✓ · 2 – | 8 ✅ · 4 – | 7 ✅ · 1 ☑️ · 4 – | 10 ✅ · 2 – | 6 ✅ · 6 – | 11 ✅ · 1 – |
+| [SplitView](SplitView.md) | 13 | 8 ✅ · 1 ☑️ · 3 – | 9 ✅ · 2 ✓ · 2 – | 5 ✅ · 2 ☑️ · 4 ✓ · 2 – | 9 ✅ · 2 ☑️ · 2 – | 7 ✅ · 2 ✓ · 4 – | 11 ✅ · 2 ☑️ |
+| [TabView](TabView.md) | 9 | 4 ✅ · 1 ☑️ · 1 ✓ · 2 – | 7 ✅ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 7 ✅ · 2 – | 5 ✅ · 4 – | 9 ✅ |
 | [TextSpan](TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -104,10 +104,10 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarGroup](ToolbarGroup.md) | 5 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [ToolbarToggle](ToolbarToggle.md) | 9 | 7 ✅ · 1 – | 8 ✅ · 1 – | 6 ✅ · 1 ☑️ · 1 – | 9 ✅ | 8 ✅ · 1 – | 9 ✅ |
 | [Window](Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 113 | 107 | 90 | 138 | 103 | 125 |
+| ✅ |  | 105 | 105 | 86 | 130 | 101 | 120 |
 | ✓ |  | 23 | 21 | 20 | 5 | 17 | 10 |
-| – |  | 11 | 23 | 32 | 10 | 35 | 18 |
-| **Met** | 165 | **147** | **151** | **142** | **153** | **155** | **153** |
+| – |  | 11 | 17 | 28 | 10 | 29 | 15 |
+| **Met** | 157 | **139** | **143** | **134** | **145** | **147** | **145** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 
@@ -139,7 +139,7 @@ Members many elements share, declared once.
 - [KeyboardElement](tiers/KeyboardElement.md) - An element that can hold the keyboard - a control taking the focus, or a layout holding the view that does - and so hear the keys it takes.
 - [FocusElement](tiers/FocusElement.md) - An element that takes the keyboard focus itself - a field, a button, a list - and so holds the keyboard.
 - [RefreshElement](tiers/RefreshElement.md) - An element the user pulls to refresh what it shows - a scroller, a list.
-- [BarElement](tiers/BarElement.md) - What an arrangement declares of the bar while it stands on the visible path: its colors, and the application's name, line and mark in the bar.
+- [BarElement](tiers/BarElement.md) - What an arrangement declares of the bar while it stands on the visible path: its look.
 - [MenuItemElement](tiers/MenuItemElement.md) - What every item a user chooses from says - a menu's entry, a toolbar's item, an action or a setting: a caption, a picture, whether it can be chosen, and the keys that choose it.
 - [ActionElement](tiers/ActionElement.md) - What an item that acts has - a menu's entry, a toolbar's button: what choosing it does, and how the platform marks it.
 - [ButtonMenuElement](tiers/ButtonMenuElement.md) - What a button that holds a menu has - a button's, a toolbar button's: how its menu opens, and whether the arrow saying so shows.

@@ -116,13 +116,9 @@ extension AppKitDriver {
         return Self.ground(of: window)
     }
 
-    /// What the title area of the window `element` stands in shows: the application's name and the line under it,
-    /// nil where the window shows no title area.
-    func titleAreaHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
-        let controller = try controller(of: element)
-        guard controller.titleAccessoryForTesting != nil else { return nil }
-        let words = property == .barTitle
-            ? controller.titleClusterForTesting.titleForTesting : controller.titleClusterForTesting.subtitleForTesting
+    /// The line under the title of the page `element`, naming its window: the window's subtitle; nil for none.
+    func subtitleHolds(_ element: MountedElement) throws -> HostValue? {
+        let words = try controller(of: element).window?.subtitle ?? ""
         return words.isEmpty ? nil : words.propValue
     }
 
@@ -132,15 +128,6 @@ extension AppKitDriver {
         let controller = try controller(of: element)
         guard controller.bandTitle.window != nil else { return nil }
         return controller.bandTitle.textColor.map { Self.color($0).propValue }
-    }
-
-    /// The picture the title area of the window `element` stands in shows, told by the picture of a name the host
-    /// gave it; nil where it shows none.
-    func titleAreaIcon(_ element: MountedElement) throws -> HostValue? {
-        let controller = try controller(of: element)
-        guard controller.titleAccessoryForTesting != nil, let shown = controller.titleClusterForTesting.imageForTesting
-        else { return nil }
-        return pictureName(shown)
     }
 
     /// The name of the picture `shown` is, among the pictures the suite shows: the host gives a control the
