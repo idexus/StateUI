@@ -156,6 +156,21 @@ final class VisualStateTests: XCTestCase {
         XCTAssertEqual(fire(renders, button, "released")?.cleared, ["background"])
     }
 
+    /// Any view the user taps is pressed as a button is: its pressed state hears the press and the release, and
+    /// lights its look while the press stands over it.
+    func testAViewTheUserTapsIsPressedAsAButton() throws {
+        let renders = Renders()
+        let row = try XCTUnwrap(render(renders, ZStack { Text("Row") }
+            .onTapped {}
+            .visualState(.pressed) { $0.background(.green) }
+            .id("c")
+            .node))
+        XCTAssertEqual(row.eventNames, ["pressed", "released", "tapped"])
+
+        XCTAssertEqual(fire(renders, row, "pressed")?.props["background"], green)
+        XCTAssertEqual(fire(renders, row, "released")?.cleared, ["background"])
+    }
+
     /// The first state that holds by precedence wins: Disabled before Pressed, PointerOver before Focused, and
     /// Normal's values show where none holds.
     func testTheFirstStateThatHoldsWinsAValue() throws {

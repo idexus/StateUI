@@ -79,6 +79,9 @@
     /// A wheel turned as a pinch over the element, while one is under way.
     var wheelPinch = WheelPinch()
 
+    /// A press on the view as a button takes it, while the view hears taps.
+    var buttonPress = ButtonPress()
+
     /// A press dragged with ⌥/Alt over the element, read as two fingers, while one is under way.
     var mirroredFingers = MirroredFingers()
 

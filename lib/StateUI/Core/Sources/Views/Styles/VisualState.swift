@@ -40,18 +40,16 @@ extension VisualState where Target: VisualElement {
 
     /// While a mouse or pen is over the control. Never on a touch-only device.
     public static var pointerOver: Self { Self(VisualStateName.pointerOver) }
+
+    /// While the view is held down: a button by a finger, a pointer or a key, and any view that hears taps while the
+    /// press stands over it - out as it leaves, lit again as it comes back.
+    public static var pressed: Self { Self(VisualStateName.pressed) }
 }
 
 /// The state of a control taking the focus.
 extension VisualState where Target: FocusElement {
     /// While the control has the keyboard focus, or what stands in it does.
     public static var focused: Self { Self(VisualStateName.focused) }
-}
-
-/// A Button is held down.
-extension VisualState where Target == Button {
-    /// While the button is held down - by a finger, a pointer or a key.
-    public static var pressed: Self { Self(VisualStateName.pressed) }
 }
 
 /// A Switch says which way it is.

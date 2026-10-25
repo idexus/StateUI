@@ -184,6 +184,9 @@ enum AppStyles {
             Style<HStack>(.menuRow)
                 .shape(.roundedRectangle(8))
                 .background(.transparent)
+                .visualState(.pressed) { $0
+                    .background(Palette.hovered)
+                }
 
             Style<Text>(.menuRowText)
                 .verticalAlignment(.center)
@@ -191,7 +194,8 @@ enum AppStyles {
             // MARK: Lists
 
             // A list's rows stand in one rounded group, shaded and edged as a
-            // sample's panel is; a row lights up under the pointer.
+            // sample's panel is; a row lights up under the pointer, and more
+            // while it is pressed - as a button is, out as the press leaves it.
             Style<VStack>(.rowGroup)
                 .background(Palette.shade)
                 .stroke(Palette.edge)
@@ -201,6 +205,9 @@ enum AppStyles {
 
             Style<ZStack>(.listRow)
                 .background(.transparent)
+                .visualState(.pressed) { $0
+                    .background(Palette.selected)
+                }
                 .visualState(.pointerOver) { $0
                     .background(Palette.hovered)
                 }

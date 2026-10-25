@@ -187,6 +187,15 @@ enum WebRelay {
     /// How many clicks the event being heard counts.
     static var eventClicks: Int { Int(stateui_web_event_number(0)) }
 
+    /// The press being heard: its phase, where it stands from the element's top left corner, the element's size, and
+    /// whether a finger presses.
+    static var eventPress: (phase: GesturePhase, at: Point, size: LayoutSize, byFinger: Bool) {
+        (GesturePhase(rawValue: Int32(stateui_web_event_number(0))) ?? .cancelled,
+         Point(x: stateui_web_event_number(1), y: stateui_web_event_number(2)),
+         LayoutSize(width: stateui_web_event_number(3), height: stateui_web_event_number(4)),
+         stateui_web_event_number(5) != 0)
+    }
+
     /// Where the pointer of the event being heard is, from the listening element's top left corner.
     static var eventPoint: Point { Point(x: stateui_web_event_number(1), y: stateui_web_event_number(2)) }
 

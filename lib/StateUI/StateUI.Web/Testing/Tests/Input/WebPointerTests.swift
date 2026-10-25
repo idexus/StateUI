@@ -36,40 +36,73 @@ final class WebPointerTests: XCTestCase {
         XCTAssertEqual(heard, ["pressed", "entered", "exited"], "the finger's press alone, then the mouse coming and going")
     }
 
-    /// A press that traveled as far as a drag before it lifted is no tap, though the page clicks it: a finger slid off
-    /// a row and lifted beside it opens nothing; one that stayed within its reach taps; a mouse's reach is shorter.
-    func testAPressThatTraveledIsNoTap() throws {
+    /// A press taps as a button does: let go over the view it taps, let go away it taps nothing, and one that comes
+    /// back over the view before it lets go taps; the view is pressed while the press stands over it. The page's
+    /// click of a press is no second tap; a click no pointer made - the keyboard's, a screen reader's - taps.
+    func testAPressTapsAsAButtonDoes() throws {
         WebRenderer.shared?.leave()
         var taps = 0
-        let host = WebRenderer.running { Text("Row").onTapped { taps += 1 } }
+        let host = WebRenderer.running {
+            VStack {
+                ZStack { Text("Row") }
+                    .width(200).height(40)
+                    .onTapped { taps += 1 }
+                    .visualState(.pressed) { $0.background(.green) }
+                    .id("row")
+            }
+            .horizontalAlignment(.start)
+        }
         host.step()
-        let view = try XCTUnwrap(host.views(WebTextView.self).first)
+        let row = try XCTUnwrap((host.runtime.tree.root?.first(id: .manual("row"))?.native as? WebElement)?.view)
 
-        func press(by down: Double, _ pointer: String) throws {
+        func press(_ path: [Double], _ pointer: String, click: Bool = true) throws {
+            let moves = path.dropFirst().dropLast().map { "e.dispatchEvent(new PointerEvent('pointermove', at(\($0))));" }
             try WebBrowser.run("""
+                const box = e.getBoundingClientRect();
                 const at = (y) => ({ pointerId: 4, pointerType: '\(pointer)', isPrimary: true, button: 0,
-                  clientX: 10, clientY: 10 + y, bubbles: true });
-                e.dispatchEvent(new PointerEvent('pointerdown', at(0)));
-                e.dispatchEvent(new PointerEvent('pointermove', at(\(down))));
-                e.dispatchEvent(new PointerEvent('pointerup', at(\(down))));
-                e.dispatchEvent(new MouseEvent('click', { detail: 1, bubbles: true }))
-                """, on: view.node)
+                  clientX: box.left + 100, clientY: box.top + 20 + y, bubbles: true });
+                e.dispatchEvent(new PointerEvent('pointerdown', at(\(path[0]))));
+                \(moves.joined(separator: "\n"))
+                e.dispatchEvent(new PointerEvent('pointerup', at(\(path[path.count - 1]))));
+                \(click ? "e.dispatchEvent(new MouseEvent('click', { detail: 1, bubbles: true }))" : "")
+                """, on: row.node)
             for _ in 0..<3 { host.step() }
         }
+        let background = { try WebBrowser.evaluate("getComputedStyle(e).backgroundColor", on: row.node) }
 
-        try press(by: 40, "touch")
-        XCTAssertEqual(taps, 0, "a finger slid off the view: no tap")
-        try press(by: 6, "touch")
-        XCTAssertEqual(taps, 1, "a finger that stayed within its reach taps")
-        try press(by: 6, "mouse")
-        XCTAssertEqual(taps, 1, "a mouse moved past its own reach: no tap")
-        try WebBrowser.run("e.dispatchEvent(new MouseEvent('click', { detail: 0, bubbles: true }))", on: view.node)
+        try press([0, 0], "touch")
+        XCTAssertEqual(taps, 1, "let go over the view: one tap, the page's click no second")
+        try press([0, 60, 60], "touch", click: false)
+        XCTAssertEqual(taps, 1, "slid off the view and let go away: nothing")
+        try press([0, 60, 5, 5], "touch")
+        XCTAssertEqual(taps, 2, "back over the view before it lets go: a tap")
+        try press([0, 25, 25], "mouse")
+        XCTAssertEqual(taps, 2, "a mouse let go just past the edge: nothing")
+
+        try WebBrowser.run("""
+            const box = e.getBoundingClientRect();
+            e.dispatchEvent(new PointerEvent('pointerdown', { pointerId: 6, pointerType: 'touch', isPrimary: true,
+              clientX: box.left + 100, clientY: box.top + 20, bubbles: true }))
+            """, on: row.node)
+        for _ in 0..<5 { host.step() }
+        XCTAssertEqual(try background(), "rgb(0, 128, 0)", "pressed while the press stands over it")
+        try WebBrowser.run("""
+            const box = e.getBoundingClientRect();
+            e.dispatchEvent(new PointerEvent('pointermove', { pointerId: 6, pointerType: 'touch', isPrimary: true,
+              clientX: box.left + 100, clientY: box.top + 90, bubbles: true }))
+            """, on: row.node)
+        for _ in 0..<5 { host.step() }
+        XCTAssertNotEqual(try background(), "rgb(0, 128, 0)", "out as it leaves")
+        try WebBrowser.run("e.dispatchEvent(new PointerEvent('pointercancel', { pointerId: 6, pointerType: 'touch', bubbles: true }))", on: row.node)
         for _ in 0..<3 { host.step() }
-        XCTAssertEqual(taps, 2, "a click no pointer made - the keyboard's, a screen reader's - taps")
+
+        try WebBrowser.run("e.dispatchEvent(new MouseEvent('click', { detail: 0, bubbles: true }))", on: row.node)
+        for _ in 0..<3 { host.step() }
+        XCTAssertEqual(taps, 3, "a click no pointer made taps")
     }
 
-    /// A list's item is opened by a tap alone, by the same reach: a finger slid off it opens nothing.
-    func testAnItemSlidOffIsNoTap() throws {
+    /// A list's item is tapped by the same press: let go away from it, nothing opens.
+    func testAnItemIsTappedByThePress() throws {
         WebRenderer.shared?.leave()
         var opened: [String] = []
         let host = WebRenderer.running {
@@ -78,11 +111,11 @@ final class WebPointerTests: XCTestCase {
         let item = "document.querySelector('[role=listitem]')"
         host.settle { (try? WebBrowser.truth("!!\(item)", on: 0)) == true }
 
-        func press(by down: Double) throws {
+        func press(to down: Double) throws {
             try WebBrowser.run("""
-                const cell = \(item);
-                const at = (y) => ({ pointerId: 5, pointerType: 'touch', isPrimary: true, clientX: 10, clientY: 10 + y,
-                  bubbles: true });
+                const cell = \(item), box = cell.getBoundingClientRect();
+                const at = (y) => ({ pointerId: 5, pointerType: 'touch', isPrimary: true,
+                  clientX: box.left + 10, clientY: box.top + 5 + y, bubbles: true });
                 cell.dispatchEvent(new PointerEvent('pointerdown', at(0)));
                 cell.dispatchEvent(new PointerEvent('pointermove', at(\(down))));
                 cell.dispatchEvent(new PointerEvent('pointerup', at(\(down))));
@@ -91,9 +124,9 @@ final class WebPointerTests: XCTestCase {
             for _ in 0..<3 { host.step() }
         }
 
-        try press(by: 40)
-        XCTAssertEqual(opened, [], "slid off the item: nothing opens")
-        try press(by: 4)
-        XCTAssertEqual(opened.count, 1, "a tap within its reach opens it")
+        try press(to: 300)
+        XCTAssertEqual(opened, [], "let go away from the item: nothing opens")
+        try press(to: 2)
+        XCTAssertEqual(opened.count, 1, "let go over it: it opens, once")
     }
 }

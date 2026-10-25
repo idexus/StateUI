@@ -29,11 +29,6 @@ struct ListRow: View {
     /// Whether a hairline divides the row from the one before it.
     private var isSeparated = false
 
-    /// How lit the row is - the press, said back. DRIVEN: the host carries it
-    /// on its own frames and no render describes it, so a press costs the
-    /// arithmetic and nothing else.
-    @State private var lit = 0.0
-
     /// - Parameters:
     ///   - title: What the row is called.
     ///   - summary: The line under it.
@@ -61,20 +56,13 @@ struct ListRow: View {
         return copy
     }
 
-    /// `View`, not `Element`: the press is a piece of `@State`, and state on a
-    /// view needs the placeholder a composed view puts in the tree.
     var body: some View {
-        // Copies for the handler to capture: the locals keep `self` out of
+        // A copy for the handler to capture: the local keeps `self` out of
         // the closure. ConcurrencyTests pins this shape on the library's
         // executor.
-        let lit = $lit
         let action = self.action
 
         return ZStack {
-            Rectangle()
-                .fill(Palette.selected)
-                .opacity(lit)
-
             Rectangle()
                 .fill(Palette.outline)
                 .height(1)
@@ -127,15 +115,8 @@ struct ListRow: View {
         .accessibilityIdentifier(handle("row", title))
         .accessibilityLabel(title)
         .accessibilityHint(summary)
-        // The press, said back as a platform's list says it: the row lights
-        // up and goes out again. It lights before the action starts - a
-        // page's build holds the UI thread, which eats the frames beside it -
-        // and goes out while the navigation runs.
-        .onTapped(.ignoreWhileRunning) {
-            try await lit.journey.move(to: 1, .eased(.milliseconds(60), .cubicOut)).arrived()
-            let dark = lit.journey.move(to: 0, .eased(.milliseconds(250), .cubicOut))
-            try await action()
-            try await dark.arrived()
-        }
+        // Pressed as a button: lit by its style while the press stands over
+        // it, tapped where it lets go over it.
+        .onTapped(.ignoreWhileRunning) { try await action() }
     }
 }

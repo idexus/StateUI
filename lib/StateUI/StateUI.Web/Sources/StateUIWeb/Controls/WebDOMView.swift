@@ -96,9 +96,11 @@ class WebDOMView {
         made(tag)
     }
 
-    /// Counts the view made - named, in a debug build, by its class and its element's tag.
+    /// Counts the view made - named, in a debug build, by its class and its element's tag - and marks a control of
+    /// the browser's own, whose presses are its own: a press begun in one is no press of a view around it.
     private func made(_ tag: String) {
         Self.liveCount += 1
+        if isControl { attribute("data-control", "") }
         #if DEBUG
         Self.liveKinds[ObjectIdentifier(self)] = "\(type(of: self)) <\(tag)>"
         #endif
@@ -165,6 +167,16 @@ class WebDOMView {
         let listener = WebRelay.listener(action)
         listeners.append(listener)
         WebRelay.hear(node, kind, listener)
+    }
+
+    /// Follows a press on the element as a button takes it: `action` hears each phase, where the press stands, the
+    /// element's size and whether a finger presses (`WebRelay.eventPress`).
+    /// Design: docs/design/platforms/web/input.md#taps
+    func hearPress(_ action: @escaping @MainActor (GesturePhase, Point, LayoutSize, Bool) -> Void) {
+        hear(.press) {
+            let press = WebRelay.eventPress
+            action(press.phase, press.at, press.size, press.byFinger)
+        }
     }
 
     /// Runs `action` whenever the user asks for the element's menu: a right click, or a finger held still.
@@ -354,32 +366,6 @@ class WebDOMView {
             writeRole()
         }
     }
-
-    /// Whether the press on the view is still a tap, where the view follows its reach (`followTapReach`).
-    private(set) var tapReach = WebTapReach()
-    private var followsTapReach = false
-
-    /// Follows the press a tap on the view is made of, once, without taking it: the page scrolls under it as it would.
-    /// Design: docs/design/platforms/web/input.md#taps
-    func followTapReach() {
-        guard !followsTapReach else { return }
-        followsTapReach = true
-        listen("pointerdown") { [weak self] in
-            let pointer = WebRelay.eventPointer
-            self?.tapReach.down(pointer.id, at: pointer.at, kind: pointer.kind)
-        }
-        listen("pointermove") { [weak self] in
-            let pointer = WebRelay.eventPointer
-            self?.tapReach.moved(pointer.id, to: pointer.at)
-        }
-        for event in ["pointerup", "pointercancel"] {
-            listen(event) { [weak self] in self?.tapReach.up(WebRelay.eventPointer.id) }
-        }
-    }
-
-    /// Whether the click being heard is a tap: one no pointer made - the keyboard's, a screen reader's - or one whose
-    /// press stayed within its reach.
-    var clickIsTap: Bool { WebRelay.eventClicks == 0 || tapReach.isTap }
 
     /// Whether assistive technology meets the view as a heading, whether it skips it, and the kind it said, as its
     /// words last said.

@@ -14,11 +14,16 @@ extension WebElement {
         let hearing = element.hearing
         if hearing.contains(.taps), !listening.contains(.taps) {
             listening.insert(.taps)
-            view.followTapReach()
-            view.listen("click") { [weak self, weak view] in
-                // A label's click comes again as its control's: one tap.
-                guard let self, view?.clickIsTap == true, !WebRelay.eventPassesToControl else { return }
-                heard(.taps, .tap(run: WebRelay.eventClicks))
+            view.hearPress { [weak self] phase, at, size, byFinger in
+                self?.heard(.taps, .press(phase, at: at, size: size, byFinger: byFinger))
+            }
+            view.listen("click") { [weak self] in
+                // A pointer's tap is its press's; a click no pointer made - the keyboard's, a screen reader's - taps,
+                // and a run of clicks counts as the page counts it. A label's click comes again as its control's.
+                guard let self, !WebRelay.eventPassesToControl else { return }
+                let clicks = WebRelay.eventClicks
+                guard clicks == 0 || (element.number(.tapCount) ?? 1) > 1 else { return }
+                heard(.taps, .tap(run: clicks))
             }
             view.hear(.activate) { [weak self] in self?.heard(.taps, .tap(run: 0)) }
         }

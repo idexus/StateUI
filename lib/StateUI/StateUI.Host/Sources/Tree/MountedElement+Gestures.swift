@@ -36,13 +36,20 @@ extension MountedElement {
     /// whatever holds it.
     @discardableResult
     public func hear(_ input: HeardInput, in runtime: HostRuntime) -> Bool {
-        // A disabled branch hears nothing of the hand; a drag it began still ends there.
-        guard isEffectivelyEnabled || input == .dragEnded else { return false }
+        // A disabled branch hears nothing of the hand; a drag it began still ends there, and a press it began goes out.
+        guard isEffectivelyEnabled || input == .dragEnded else {
+            if case .press = input { pressed(.cancelled, over: false, in: runtime) }
+            return false
+        }
         switch input {
+        case .press(let phase, let point, let size, let byFinger):
+            pressed(phase, over: ButtonPress.isOver(point, in: size, byFinger: byFinger), in: runtime)
         case .tap(let run):
             let count = max(1, Int(number(.tapCount) ?? 1))
             if run == 0 || run % count == 0 { send(.tapped, [], in: runtime) }
         case .hold:
+            // A held press is the hold's: no tap.
+            pressed(.cancelled, over: false, in: runtime)
             send(.held, [], in: runtime)
         case .pointer(let event, let point, let byFinger):
             // Design: docs/design/host/runtime.md#a-finger-hovers-over-nothing
@@ -248,10 +255,25 @@ extension MountedElement {
 
     /// A press dragged moves the states it carries by how far it has come, from where they stood as it began, and
     /// says so, in one of the user's transactions; ended, it is a swipe where it went far enough.
+    /// A press on the view as a button takes it: its pressed state lit and put out, and a tap where it lets go over
+    /// the view - a single one; a run of taps keeps the platform's own count.
+    /// Design: docs/design/host/runtime.md#a-press-as-a-button-takes-it
+    private func pressed(_ phase: GesturePhase, over: Bool, in runtime: HostRuntime) {
+        for said in buttonPress.step(phase, over: over) {
+            switch said {
+            case .lit: send(.pressed, [], in: runtime)
+            case .out: send(.released, [], in: runtime)
+            case .tapped: if Int(number(.tapCount) ?? 1) <= 1 { send(.tapped, [], in: runtime) }
+            }
+        }
+    }
+
     private func dragged(_ phase: GesturePhase, x: Double, y: Double, in runtime: HostRuntime) {
         let across = channel(.panXChannel)
         let down = channel(.panYChannel)
         if phase == .began {
+            // A drag takes the press: no tap.
+            pressed(.cancelled, over: false, in: runtime)
             dragStart = Point(
                 x: across.flatMap(runtime.standingGestureValue(state:)) ?? 0,
                 y: down.flatMap(runtime.standingGestureValue(state:)) ?? 0)

@@ -436,6 +436,21 @@ enough ([a swipe](#a-swipe)); a pinch says each step's scale since the last
 and where, as shares of the view (`PinchStep`). A host's toolkit hears the
 input and says it as `HeardInput`.
 
+## A press as a button takes it
+
+A view that hears taps is pressed as a button is, on every host
+(`ButtonPress`, `HeardInput.press`): the press lights it - its `.pressed`
+visual state - while it stands over the view, puts it out as it leaves and
+lights it again as it comes back; let go over the view it taps, let go away
+it taps nothing. A scroll that takes the touch, the view's own drag and a hold
+take the press: the view goes out and nothing taps. A finger stands over a
+view a finger's breadth beyond its edge (`ButtonPress.fingerBreadth`), a
+mouse or a pen within it. A host tells the press's phases where it stands -
+its toolkit's own press, the platform taking it away as `cancelled` - and the
+host layer decides the rest. A single tap is the press's; a run of taps
+(`onTapped(count:)` past one) keeps the platform's own count, a double tap
+being no button's gesture.
+
 ## A finger hovers over nothing
 
 A mouse or a pen comes over a view, moves over it and leaves it; a finger

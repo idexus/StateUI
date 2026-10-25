@@ -18,6 +18,9 @@ final class WebItemCell: WebLayoutView, ItemsHolding {
     /// The identity the cell stands for in the list, whether it holds it or not.
     let entry: String
 
+    /// A press on the cell, taken as a button takes one.
+    var press = ButtonPress()
+
     init(_ entry: String) {
         self.entry = entry
         super.init(arrangement: .single)

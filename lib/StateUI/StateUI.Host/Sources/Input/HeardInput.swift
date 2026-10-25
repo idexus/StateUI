@@ -12,6 +12,10 @@
     /// A press held as long as the view's hold waits, before it moved as far as a drag.
     case hold
 
+    /// A press on a view that hears taps, as a button takes one (`ButtonPress`): its phase, where it stands in points
+    /// of the view, the view's size, and whether a finger presses - which stands over the view a little beyond it.
+    case press(GesturePhase, at: Point, size: LayoutSize, byFinger: Bool)
+
     /// The pointer over the view: the View tier's event, where it is, in points of the view, and whether a finger
     /// is the pointer - which presses and lets go, and hovers over nothing.
     case pointer(Event, Point, byFinger: Bool = false)

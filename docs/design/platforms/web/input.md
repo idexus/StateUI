@@ -18,16 +18,16 @@ answers at once whatever the count asked for. The pointer's events are the
 DOM's `pointerenter`, `pointerleave`, `pointermove`, `pointerdown` and
 `pointerup`, where the pointer is told from the element's top left corner.
 
-A press is a tap only while it stays within its reach (`WebTapReach`): past
-the distance the host layer's drag begins at - a finger's farther than a
-mouse's or a pen's - its click is no tap, whether or not the element hears the
-drag, as a native toolkit's tap fails as the finger moves away. The browser
-clicks a press a finger slid off a row and lifted beside it, where nothing
-scrolled to take the touch away. The press is followed without being taken:
-the page scrolls under it as it would. A click no pointer made - the
-keyboard's, a screen reader's - has no reach. A list's item takes its tap by
-the same reach: its cell follows the press as an element's view does
-(`WebDOMView.followTapReach`).
+A pointer's tap is its press, taken as a button takes one by the host
+layer's rule ([a press as a button takes it](../../host/runtime.md#a-press-as-a-button-takes-it)):
+the relay follows a press on an element that hears taps from `pointerdown`,
+the pointer the element's (`setPointerCapture`) until `pointerup`, and the
+browser taking it - `pointercancel`, a layout capturing the pointer - is the
+press taken away. A press begun on a control inside - a button, a field, a
+view hearing its own taps - is that control's. The element's `click` taps
+only where no pointer made it - the keyboard's, a screen reader's - or where
+the element counts a run of taps, as the page counts its clicks. A list's
+item takes its tap by the same press.
 
 A button pressed leaves the keyboard with the field being typed in, as a
 native button takes no keyboard of a field: the page's press on a button is
