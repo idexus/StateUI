@@ -42,6 +42,20 @@ swipe back from anywhere in its page, and that swipe would take a drag meant
 for the view. A view listening for drags comes first: the stack's swipe waits
 for its drag to fail, and the two never recognize together.
 
+## A press as a button takes it
+
+A view that hears taps follows its press with a recognizer of its own
+(`UIKitPressRecognizer`), which recognizes nothing - so it keeps no other
+gesture from the touch - and tells each phase where the touch stands; the host
+layer lights the view and taps it by its rule
+([a press as a button takes it](../../host/runtime.md#a-press-as-a-button-takes-it)).
+A scroller's pan is not let recognize with it: as the scroll begins UIKit fails
+the press, which is told taken away; so is a stack's swipe back. A touch begun
+on a control inside - a button, a field - or on a view hearing its own taps is
+that one's, as UIKit keeps a control's touch from the gestures around it; one
+on the parts of a view that is a control is its own. UIKit's tap recognizer
+stays for a run of taps alone, which it counts by the touch's `tapCount`.
+
 ## A press held
 
 A hold is UIKit's long-press recognizer, waiting the view's time or UIKit's

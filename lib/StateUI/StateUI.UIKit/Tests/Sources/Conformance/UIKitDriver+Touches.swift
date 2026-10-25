@@ -24,6 +24,10 @@ extension UIKitDriver {
     static func tap(_ listening: UIKitListening?, on view: UIView, count: Int) {
         guard let listening, listening.hearing.contains(.taps) else { return }
         for run in 1...max(1, count) {
+            // The press, then UIKit's tap counting the run.
+            let middle = CGPoint(x: view.bounds.midX, y: view.bounds.midY)
+            listening.press(.began, at: middle)
+            listening.press(.ended, at: middle)
             let tap = DrivenTap(on: view)
             tap.point = CGPoint(x: view.bounds.midX, y: view.bounds.midY)
             listening.tapRun = run
@@ -81,6 +85,7 @@ extension UIKitDriver {
         pan.start = CGPoint(x: point.x, y: point.y)
         pan.point = pan.start
         press = (pan, false)
+        if let listening, listening.hearing.contains(.taps) { listening.press(.began, at: pan.start) }
         if let listening, listening.hearing.contains(.hand) { listening.hand(.began, moved: .zero, point: point) }
         guard let listening, listening.hearing.contains(.pointer) else { return }
         let down = DrivenPress(on: view)
@@ -91,6 +96,7 @@ extension UIKitDriver {
     func drag(_ listening: UIKitListening?, to point: Point) {
         guard let (pan, dragging) = press else { return }
         Self.track(pan.on, to: point)
+        if let listening, listening.hearing.contains(.taps) { listening.press(.changed, at: CGPoint(x: point.x, y: point.y)) }
         if let listening, listening.hearing.contains(.hand) {
             listening.hand(.changed, moved: Point(x: point.x - Double(pan.point.x), y: point.y - Double(pan.point.y)))
         }
@@ -109,6 +115,7 @@ extension UIKitDriver {
         (pan.on as? UIControl)?.sendActions(for: .touchUpInside)
         (pan.on as? UIKitCanvasView)?.released(at: CGPoint(x: point.x, y: point.y))
         if let listening, listening.hearing.contains(.hand) { listening.hand(.ended, moved: .zero) }
+        if let listening, listening.hearing.contains(.taps) { listening.press(.ended, at: CGPoint(x: point.x, y: point.y)) }
         pan.point = CGPoint(x: point.x, y: point.y)
         if dragging, let listening, listening.hearing.contains(.drags) {
             pan.driven = .ended
