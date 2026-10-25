@@ -276,6 +276,8 @@ final class AppKitDriver: HostDriver {
         case (.minimumDate, let picker as AppKitDatePickerView): return picker.earliestForTesting?.propValue
         case (.maximumDate, let picker as AppKitDatePickerView): return picker.latestForTesting?.propValue
         case (.time, let picker as AppKitTimePickerView): return picker.time.propValue
+        case (.color, let picker as AppKitColorPickerView): return Self.color(picker.color).propValue
+        case (.choosesOpacity, let picker as AppKitColorPickerView): return picker.supportsAlpha.propValue
         case (.selectedTab, let tabs as AppKitTabView): return tabs.selectedIndexForTesting.propValue
         case (.showsSidebar, let split as AppKitSplitView): return split.isEffectivelyPresentedForTesting.propValue
         case (.showsSidebarToggle, let split as AppKitSplitView):

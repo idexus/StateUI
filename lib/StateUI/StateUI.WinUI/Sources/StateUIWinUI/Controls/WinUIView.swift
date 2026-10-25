@@ -334,6 +334,9 @@ class WinUIView {
     /// The user picked a day - its year, month and day - or a time of day - its hour, minute and 0.
     func picked(_ first: Int32, _ second: Int32, _ third: Int32) {}
 
+    /// The color a color picker holds changed - the user's, or the program's: its channels as one ARGB number.
+    func colorChosen(_ argb: UInt32) {}
+
     /// What the items of the menus the view offers do, in their order: its context menu's, or a menu bar's.
     var menuActions: [() -> Void] = []
 

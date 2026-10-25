@@ -64,4 +64,16 @@ extension VisualElement {
             }
         }
     }
+
+    /// The same, for a color - what a color picker reports.
+    func described(_ property: Prop, _ value: Binding<Color>, on event: Event) -> Modified {
+        modified {
+            $0.props[property] = value.wrappedValue.propValue
+            $0.addHandler(event) {
+                if let chosen = EventBuffer.current.value().flatMap(Color.init(propValue:)) {
+                    value.wrappedValue = chosen
+                }
+            }
+        }
+    }
 }

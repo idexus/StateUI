@@ -1,8 +1,10 @@
-# revision 5.1
+# revision 6.1
 Button.keyPressed: ✓ pressKeys on Button: the window's or the main menu's key command performed, no key pressed
 Button.keysTaken: ✓ pressKeys on Button: the window's or the main menu's key command performed, no key pressed
 CheckBox.keyPressed: ✓ pressKeys on CheckBox: the window's or the main menu's key command performed, no key pressed
 CheckBox.keysTaken: ✓ pressKeys on CheckBox: the window's or the main menu's key command performed, no key pressed
+ColorPicker.keyPressed: ✓ pressKeys on ColorPicker: the window's or the main menu's key command performed, no key pressed
+ColorPicker.keysTaken: ✓ pressKeys on ColorPicker: the window's or the main menu's key command performed, no key pressed
 DatePicker.keyPressed: ✓ pressKeys on DatePicker: the window's or the main menu's key command performed, no key pressed
 DatePicker.keysTaken: ✓ pressKeys on DatePicker: the window's or the main menu's key command performed, no key pressed
 Grid.keyPressed: ✓ pressKeys on Grid: the window's or the main menu's key command performed, no key pressed

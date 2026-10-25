@@ -110,6 +110,15 @@ of its own: one that cannot be chosen is `aria-disabled`, grayed, holds no
 `href` - nothing for the browser to follow or Tab to stop at - and its click
 opens nothing.
 
+## A color picker
+
+A color picker is the browser's `<input type=color>`, which opens its
+platform's own picker. Each `input` the user's choice raises reports the
+input's six hex digits as the host layer reports a color
+(`host/runtime.md#a-color-chosen`); a value the program writes raises
+nothing. The input chooses no opacity - every color it gives is opaque - so
+`choosesOpacity` is `–` on the Web.
+
 ## A field
 
 A TextField is an `<input>`, a SearchField a search `<input>` and a TextEditor

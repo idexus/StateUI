@@ -215,6 +215,12 @@ final class ControlTests: XCTestCase {
                     .tint(.firebrick)
                     .onToggled { _ in }),
 
+            ControlCase("ColorPicker", source: "ColorPicker.swift",
+                ColorPicker(.steelBlue)
+                    .color(.firebrick)
+                    .choosesOpacity(true)
+                    .onColorChanged { _ in }),
+
             ControlCase("Link", source: "Link.swift",
                 Link("Terms", destination: "https://www.swift.org/legal")
                     .text("Terms of use")

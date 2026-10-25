@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 Button.droppedFileTypes: ✓ dropFiles on Button: the relay's drop report told the driver's files, no drag WinUI began
 Button.filesDropped: ✓ dropFiles on Button: the relay's drop report told the driver's files, no drag WinUI began
 Button.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
@@ -11,6 +11,9 @@ Capsule.holdDuration: – WinUI's hold comes after the system's own time: a view
 CheckBox.droppedFileTypes: ✓ dropFiles on CheckBox: the relay's drop report told the driver's files, no drag WinUI began
 CheckBox.filesDropped: ✓ dropFiles on CheckBox: the relay's drop report told the driver's files, no drag WinUI began
 CheckBox.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+ColorPicker.droppedFileTypes: ✓ dropFiles on ColorPicker: the relay's drop report told the driver's files, no drag WinUI began
+ColorPicker.filesDropped: ✓ dropFiles on ColorPicker: the relay's drop report told the driver's files, no drag WinUI began
+ColorPicker.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 DatePicker.droppedFileTypes: ✓ dropFiles on DatePicker: the relay's drop report told the driver's files, no drag WinUI began
 DatePicker.filesDropped: ✓ dropFiles on DatePicker: the relay's drop report told the driver's files, no drag WinUI began
 DatePicker.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.

@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -143,6 +143,42 @@ CheckBox.swiped: ✅
 CheckBox.tapCount: ✅
 CheckBox.tapped: ✅
 CheckBox.verticalAlignment: ✅
+ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.area: ✅
+ColorPicker.canDrag: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.dragEnded: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.dragStarting: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.dragText: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.droppedFileTypes: ✓ dropFiles on ColorPicker: the drop target's signal told the driver's files, no drag GTK began
+ColorPicker.filesDropped: ✓ dropFiles on ColorPicker: the drop target's signal told the driver's files, no drag GTK began
+ColorPicker.frameChanged: ✅
+ColorPicker.gridColumn: ✅
+ColorPicker.gridColumnSpan: ✅
+ColorPicker.gridRow: ✅
+ColorPicker.gridRowSpan: ✅
+ColorPicker.held: ✅
+ColorPicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+ColorPicker.horizontalAlignment: ✅
+ColorPicker.margin: ✅
+ColorPicker.panTouchCount: ✅
+ColorPicker.panUpdated: ✅
+ColorPicker.panXChannel: ✅
+ColorPicker.panYChannel: ✅
+ColorPicker.pinchUpdated: ✓ pinch on ColorPicker: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+ColorPicker.pointerEntered: ✅
+ColorPicker.pointerExited: ✅
+ColorPicker.pointerMoved: ✅
+ColorPicker.pointerPressed: ✅
+ColorPicker.pointerReleased: ✅
+ColorPicker.swipeDirection: ✅
+ColorPicker.swipeThreshold: ✅
+ColorPicker.swiped: ✅
+ColorPicker.tapCount: ✅
+ColorPicker.tapped: ✅
+ColorPicker.verticalAlignment: ✅
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.area: ✅
 DatePicker.canDrag: ✓ dragAndDrop on DatePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began

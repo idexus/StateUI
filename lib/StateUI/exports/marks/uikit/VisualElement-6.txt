@@ -1,60 +1,58 @@
-# revision 21.1
+# revision 22.1
 Button.background: ✅
 Canvas.accessibilityHint: ✅
 Capsule.height: ✅
 Capsule.scale: ✓ read scale of Capsule: the host's own transform, checked against the layer it composed itself
 Capsule.width: ✅
 CheckBox.isAccessibilityHidden: ✅
-DatePicker.accessibilityLabel: ✅
-Ellipse.isEnabled: ✅
-Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own transform, checked against the layer it composed itself
-Fill.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-Grid.frame: ✅
-Grid.translationX: ✓ read translationX of Grid: the host's own transform, checked against the layer it composed itself
-HStack.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-Image.maximumHeight: ✅
-Image.maximumWidth: ✅
-Image.minimumHeight: ✅
-Image.minimumWidth: ✅
-Image.scaleX: ✓ read scaleX of Image: the host's own transform, checked against the layer it composed itself
-ItemsView.hidesChildrenFromAccessibility: ✅
-LayoutEngine.isEnabled: ✅
-LayoutEngine.rotationY: ✓ read rotationY of LayoutEngine: the host's own transform, checked against the layer it composed itself
-Line.accessibilityActionPerformed: ✅
-Line.accessibilityActions: ✅
-Link.ignoresInput: ✅
-Link.scaleY: ✓ read scaleY of Link: the host's own transform, checked against the layer it composed itself
-Map.layoutDirection: ✅
-Path.ignoresInput: ✅
-Path.scaleY: ✓ read scaleY of Path: the host's own transform, checked against the layer it composed itself
-Picker.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
-Polygon.accessibilityRole: ✅
-Polyline.height: ✅
-Polyline.scale: ✓ read scale of Polyline: the host's own transform, checked against the layer it composed itself
-Polyline.width: ✅
-ProgressBar.isAccessibilityHidden: ✅
-Rectangle.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-ScrollView.isVisible: ✅
-ScrollView.rotation: ✓ read rotation of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.accessibilityValue: ✅
-Separator.accessibilityValue: ✅
-Slider.ignoresInput: ✅
-Slider.scaleY: ✓ read scaleY of Slider: the host's own transform, checked against the layer it composed itself
-Space.layoutDirection: ✅
+ColorPicker.accessibilityLabel: ✅
+DatePicker.isEnabled: ✅
+DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own transform, checked against the layer it composed itself
+Ellipse.isAccessibilityHidden: ✅
+Fill.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+Fill.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
+Grid.pivotX: ✓ read pivotX of Grid: the host's own transform, checked against the layer it composed itself
+HStack.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+HStack.isEnabled: ✅
+Image.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
+ItemsView.accessibilityHint: ✅
+LayoutEngine.isAccessibilityHidden: ✅
+Line.frame: ✅
+Line.translationX: ✓ read translationX of Line: the host's own transform, checked against the layer it composed itself
+Link.layoutDirection: ✅
+Map.accessibilityValue: ✅
+Path.layoutDirection: ✅
+Picker.accessibilityRole: ✅
+Polygon.maximumHeight: ✅
+Polygon.maximumWidth: ✅
+Polygon.minimumHeight: ✅
+Polygon.minimumWidth: ✅
+Polygon.scaleX: ✓ read scaleX of Polygon: the host's own transform, checked against the layer it composed itself
+Polyline.hidesChildrenFromAccessibility: ✅
+ProgressBar.accessibilityLabel: ✅
+Rectangle.opacity: ✅
+Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+SearchField.ignoresInput: ✅
+SearchField.scaleY: ✓ read scaleY of SearchField: the host's own transform, checked against the layer it composed itself
+Separator.ignoresInput: ✅
+Separator.scaleY: ✓ read scaleY of Separator: the host's own transform, checked against the layer it composed itself
+Slider.layoutDirection: ✅
+Space.accessibilityValue: ✅
 Spinner.ignoresInput: ✅
 Spinner.scaleY: ✓ read scaleY of Spinner: the host's own transform, checked against the layer it composed itself
-Stepper.accessibilityLabel: ✅
-Switch.isEnabled: ✅
-Switch.rotationY: ✓ read rotationY of Switch: the host's own transform, checked against the layer it composed itself
-Text.accessibilityHint: ✅
-TextEditor.isAccessibilityHidden: ✅
-TextField.accessibilityLabel: ✅
-TimePicker.isEnabled: ✅
-TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.isAccessibilityHidden: ✅
-WebView.maximumHeight: ✅
-WebView.maximumWidth: ✅
-WebView.minimumHeight: ✅
-WebView.minimumWidth: ✅
-WebView.scaleX: ✓ read scaleX of WebView: the host's own transform, checked against the layer it composed itself
+Stepper.isEnabled: ✅
+Stepper.rotationY: ✓ read rotationY of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.isAccessibilityHidden: ✅
+Text.height: ✅
+Text.scale: ✓ read scale of Text: the host's own transform, checked against the layer it composed itself
+Text.width: ✅
+TextEditor.accessibilityLabel: ✅
+TextField.isEnabled: ✅
+TextField.rotationY: ✓ read rotationY of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.isAccessibilityHidden: ✅
+VStack.accessibilityLabel: ✅
+VStack.layoutDirection: ✅
+WebView.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
+ZStack.accessibilityRole: ✅
 ZStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.

@@ -122,8 +122,8 @@ control, so the driven text is written per control.
 ## Two way controls
 
 A control the user changes - a switch, a check box, a radio button, a picker,
-the date and time pickers, the text fields - takes its binding in one of two
-ways, decided by the binding:
+the date, time and color pickers, the text fields - takes its binding in one
+of two ways, decided by the binding:
 
 ```text
   $x of a @State or @Binding      handed over: the host sets the control from the state on
@@ -140,6 +140,12 @@ ways, decided by the binding:
 A slider and a stepper carry their value as a journey and take only a whole
 state. A part of a state or a binding made from closures they refuse: the
 control says so once and sets nothing.
+
+A color picker carries its color as a journey too, as a fill, a background
+or a text color does: a state has one shape (core/state.md#a-state-has-one-shape),
+so one state both takes what the user chooses and paints whatever wears it -
+`ColorPicker($tint)` beside `Rectangle().fill($tint)`. A part of a state or a
+binding made from closures falls back to the described form.
 
 The date and time pickers carry their value as three lanes: year, month and
 day, or hour, minute and second. A value the platform cannot show - a day

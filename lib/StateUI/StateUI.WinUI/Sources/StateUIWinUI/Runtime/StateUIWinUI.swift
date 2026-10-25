@@ -168,6 +168,9 @@ enum WinUICallbacks {
             picked: { view, first, second, third in
                 MainActor.assumeIsolated { WinUIView.find(view)?.picked(first, second, third) }
             },
+            colorChosen: { view, argb in
+                MainActor.assumeIsolated { WinUIView.find(view)?.colorChosen(argb) }
+            },
             menuChosen: { view, index in
                 MainActor.assumeIsolated { WinUIView.find(view)?.menuChosen(Int(index)) }
             },

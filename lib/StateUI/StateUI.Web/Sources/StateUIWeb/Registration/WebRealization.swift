@@ -176,6 +176,8 @@ enum WebRealization {
             reason: "A page sizes no browser window: the user does, and the page fills it."),
         .notPlanned(WindowContract.x, reason: "A page places no browser window: the system does."),
         .notPlanned(WindowContract.y, reason: "A page places no browser window: the system does."),
+        .notPlanned(ColorPickerContract.choosesOpacity,
+            reason: "The browser's color input chooses no opacity: every color it gives is opaque."),
     ] + pickerOpening + dayFields + HostRecord.layoutEngine
 
     /// A day's and a time's field: left to right, whatever the direction around them.

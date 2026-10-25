@@ -20,8 +20,11 @@ enum AndroidRealization {
         unrealized + byApplication
     }
 
-    /// The entries a phone will not have; none yet.
-    static let notPlanned: [(any ElementContract.Type, reason: String)] = []
+    /// The entries a phone will not have: what Android has no control of its own for.
+    static let notPlanned: [(any ElementContract.Type, reason: String)] = [
+        (ColorPickerContract.self,
+         reason: "Android has no color picker of its own: neither the platform nor its own libraries offer one."),
+    ]
 
     /// Every record, the tiers' first.
     static let records: [HostRecord] = [

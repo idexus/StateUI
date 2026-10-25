@@ -205,6 +205,16 @@ pointing hand over it, and its role to assistive technology a link, which
 VoiceOver names by its words. Its click is the button's; the host layer opens
 the address (`host/runtime.md#a-link-chosen`).
 
+## A color picker
+
+A color picker is AppKit's `NSColorWell` in its default style: a click opens
+the system's color panel, which hands each color the user picks to the well,
+and the well's action reports it as the host layer reports a color
+(`host/runtime.md#a-color-chosen`). The well's `supportsAlpha` is
+`choosesOpacity`, so the panel shows its opacity slider only where the
+picker chooses opacity. A color the program writes changes the well and
+sends no action.
+
 ## A switch's words
 
 A check box's words are its button's title, beside its box, as AppKit draws

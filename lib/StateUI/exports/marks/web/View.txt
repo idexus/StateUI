@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -143,6 +143,42 @@ CheckBox.swiped: ✅
 CheckBox.tapCount: ✅
 CheckBox.tapped: ✅
 CheckBox.verticalAlignment: ✅
+ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.area: ✅
+ColorPicker.canDrag: ✓ dragAndDrop on ColorPicker: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.dragEnded: ✓ dragAndDrop on ColorPicker: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.dragStarting: ✓ dragAndDrop on ColorPicker: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.dragText: ✓ dragAndDrop on ColorPicker: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.droppedFileTypes: ✓ dropFiles on ColorPicker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+ColorPicker.filesDropped: ✓ dropFiles on ColorPicker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+ColorPicker.frameChanged: ✅
+ColorPicker.gridColumn: ✅
+ColorPicker.gridColumnSpan: ✅
+ColorPicker.gridRow: ✅
+ColorPicker.gridRowSpan: ✅
+ColorPicker.held: ✅
+ColorPicker.holdDuration: ✓ read holdDuration of ColorPicker: the relay's own wait: a page holds no hold of the browser's
+ColorPicker.horizontalAlignment: ✅
+ColorPicker.margin: ✅
+ColorPicker.panTouchCount: ✅
+ColorPicker.panUpdated: ✅
+ColorPicker.panXChannel: ✅
+ColorPicker.panYChannel: ✅
+ColorPicker.pinchUpdated: ✅
+ColorPicker.pointerEntered: ✅
+ColorPicker.pointerExited: ✅
+ColorPicker.pointerMoved: ✅
+ColorPicker.pointerPressed: ✅
+ColorPicker.pointerReleased: ✅
+ColorPicker.swipeDirection: ✅
+ColorPicker.swipeThreshold: ✅
+ColorPicker.swiped: ✅
+ColorPicker.tapCount: ✅
+ColorPicker.tapped: ✅
+ColorPicker.verticalAlignment: ✅
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 DatePicker.area: ✅
 DatePicker.canDrag: ✓ dragAndDrop on DatePicker: the DOM's drag events dispatched by the driver, no drag the browser began

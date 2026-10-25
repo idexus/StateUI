@@ -791,6 +791,10 @@ body {
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-switch:disabled { opacity: 0.45; cursor: default; }
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input[type="checkbox"]:not(.stateui-switch), :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input[type="radio"] { width: 18px; height: 18px; margin: 0; }
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input[type="range"] { min-width: 120px; margin: 0; }
+/* A color well takes the room its place gives, the browser's own well its least: the browser sizes it fixed. */
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input[type="color"] {
+  inline-size: auto; block-size: auto; min-inline-size: 50px; min-block-size: 27px; margin: 0;
+}
 .stateui-stepper {
   display: inline-flex;
   align-items: stretch;

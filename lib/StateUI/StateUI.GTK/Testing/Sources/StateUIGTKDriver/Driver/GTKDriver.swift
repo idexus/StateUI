@@ -254,6 +254,11 @@ final class GTKDriver: HostDriver {
         // GTK lets a click reach no button that cannot be chosen.
         case (.activate, let button as GTKButtonView): if gtk_widget_is_sensitive(button.widget) != 0 { button.click() }
         case (.activate, let link as GTKLinkView): if gtk_widget_is_sensitive(link.widget) != 0 { GTKTestHost.click(link.widget) }
+        // What the dialog does as the user chooses: the button takes the color.
+        case (.pickColor(let color), let picker as GTKColorPickerView):
+            let held = color.propValue.fractions ?? (0, 0, 0, 1)
+            var native = GdkRGBA(red: Float(held.red), green: Float(held.green), blue: Float(held.blue), alpha: Float(held.alpha))
+            gtk_color_dialog_button_set_rgba(picker.widget.opaque, &native)
         case (.toggle, let toggle as GTKSwitchView): toggle.toggle()
         case (.toggle, let check as GTKCheckView): gtk_widget_activate(check.widget)
         case (.slide(let value), let slider as GTKSliderView): gtk_range_set_value(slider.widget.of(GtkRange.self), value)
@@ -311,6 +316,10 @@ final class GTKDriver: HostDriver {
                 return StandIns.material(painted: drawn).propValue
             }
         case (.isOn, let toggle as GTKToggleView): return toggle.isOn.propValue
+        case (.color, let picker as GTKColorPickerView):
+            let held = picker.rgba
+            return Color(fractions: (Double(held.red), Double(held.green), Double(held.blue), Double(held.alpha))).propValue
+        case (.choosesOpacity, let picker as GTKColorPickerView): return picker.choosesOpacity.propValue
         case (.isPresented, let popover as GTKPopoverView): return popover.popoverShows.propValue
         case (.value, let slider as GTKSliderView): return slider.value.propValue
         case (.minimum, let slider as GTKSliderView):

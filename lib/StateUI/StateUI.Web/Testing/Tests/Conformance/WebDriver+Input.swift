@@ -85,6 +85,9 @@ extension WebDriver {
         case (.pickDate(let date), is WebDatePickerView):
             try pick(String(date.year).leftPadded(4) + "-" + String(date.month).leftPadded(2) + "-"
                 + String(date.day).leftPadded(2), on: e)
+        case (.pickColor(let color), is WebColorPickerView):
+            let (red, green, blue, _) = color.propValue.color ?? (0, 0, 0, 255)
+            try pick("#" + [red, green, blue].map { String($0, radix: 16).leftPadded(2) }.joined(), on: e)
         case (.pickTime(let time), is WebTimePickerView):
             try pick(String(time.hour).leftPadded(2) + ":" + String(time.minute).leftPadded(2) + ":"
                 + String(time.second).leftPadded(2), on: e)

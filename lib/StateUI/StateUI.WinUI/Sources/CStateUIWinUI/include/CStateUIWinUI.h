@@ -406,6 +406,9 @@ typedef struct {
     /// The user picked a day - its year, month and day - or a time of day - its hour, minute and 0.
     void (*picked)(int64_t view, int32_t first, int32_t second, int32_t third);
 
+    /// The color a color picker holds changed - the user's, or the program's: its channels as one ARGB number.
+    void (*colorChosen)(int64_t view, uint32_t argb);
+
     /// The user chose an item of a view's menu: its place among the menu's items, from 0.
     void (*menuChosen)(int64_t view, int32_t index);
 
@@ -919,6 +922,19 @@ bool stateui_winui_time(StateUIObjectRef picker, int32_t *parts);
 /// Picks as the user does, outside the program's write - what a test does.
 void stateui_winui_date_pick_as_user(StateUIObjectRef picker, int32_t year, int32_t month, int32_t day);
 void stateui_winui_time_pick_as_user(StateUIObjectRef picker, int32_t hour, int32_t minute);
+
+/// A color: a DropDownButton showing it in a swatch, its Flyout WinUI's ColorPicker, offering opacity where it
+/// `chooses`; each color it takes told through `colorChosen`.
+StateUIObjectRef stateui_winui_color_make(int64_t view);
+void stateui_winui_color_set(StateUIObjectRef picker, uint32_t argb);
+void stateui_winui_color_set_opacity(StateUIObjectRef picker, bool chooses);
+
+/// The color it holds, as one ARGB number, and whether it offers opacity.
+uint32_t stateui_winui_color(StateUIObjectRef picker);
+bool stateui_winui_color_chooses_opacity(StateUIObjectRef picker);
+
+/// Picks as the user does, outside the program's write - what a test does.
+void stateui_winui_color_pick_as_user(StateUIObjectRef picker, uint32_t argb);
 
 /// What shows work: a progress bar, how far along from 0 to 1 as the host keeps it, and a spinner, turning while its
 /// work runs.

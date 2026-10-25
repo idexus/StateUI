@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 Button.area: ✅
 Button.frameChanged: ✅
 Button.swipeDirection: ✅
@@ -19,6 +19,11 @@ CheckBox.frameChanged: ✅
 CheckBox.swipeDirection: ✅
 CheckBox.swipeThreshold: ✅
 CheckBox.swiped: ✅
+ColorPicker.area: ✅
+ColorPicker.frameChanged: ✅
+ColorPicker.swipeDirection: ✅
+ColorPicker.swipeThreshold: ✅
+ColorPicker.swiped: ✅
 DatePicker.area: ✅
 DatePicker.frameChanged: ✅
 DatePicker.swipeDirection: ✅

@@ -831,6 +831,12 @@ extension ControlDictionary {
                 }
             """#),
 
+        (ColorPickerContract.self, #"""
+            @State var tint = Color.steelBlue
+
+            ColorPicker($tint)
+            """#),
+
         (LinkContract.self, #"""
             Link("Terms of use", destination: "https://stateui.dev/terms")
             """#),

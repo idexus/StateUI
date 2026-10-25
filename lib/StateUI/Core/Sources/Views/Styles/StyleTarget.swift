@@ -26,6 +26,7 @@ extension StyleTarget {
 extension Text: StyleTarget {}
 extension Button: StyleTarget {}
 extension Link: StyleTarget {}
+extension ColorPicker: StyleTarget {}
 extension TextField: StyleTarget {}
 extension TextEditor: StyleTarget {}
 extension Picker: StyleTarget {}

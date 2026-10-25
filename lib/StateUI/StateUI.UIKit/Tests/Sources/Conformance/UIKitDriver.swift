@@ -411,6 +411,10 @@ final class UIKitDriver: HostDriver {
         case (.pickTime(let time), let picker as UIKitTimePickerView):
             picker.setTime(time)
             picker.sendActions(for: .valueChanged)
+        case (.pickColor(let color), let picker as UIKitColorPickerView):
+            // What the system's picker does as the user chooses: the well takes the color, then says it changed.
+            picker.selectedColor = UIColor(stateUI: color.propValue)
+            picker.sendActions(for: .valueChanged)
         case (.performAccessibilityAction(let name), let view?):
             // The action VoiceOver offers on what it meets of the view, run as VoiceOver runs it.
             if let action = Self.met(view).accessibilityCustomActions?.first(where: { $0.name == name }) {
@@ -520,6 +524,8 @@ final class UIKitDriver: HostDriver {
         case (.placeholder, let picker as UIKitPickerView): return picker.title.propValue
         case (.date, let picker as UIKitDatePickerView): return picker.day.propValue
         case (.time, let picker as UIKitTimePickerView): return picker.time.propValue
+        case (.color, let picker as UIKitColorPickerView): return picker.selectedColor.map { Self.color($0).propValue }
+        case (.choosesOpacity, let picker as UIKitColorPickerView): return picker.supportsAlpha.propValue
         case (.minimumDate, let picker as UIKitDatePickerView): return picker.minimumDate.map(UIDatePicker.day(of:))?.propValue
         case (.maximumDate, let picker as UIKitDatePickerView): return picker.maximumDate.map(UIDatePicker.day(of:))?.propValue
         case (.isRefreshEnabled, let pulled as any UIKitRefreshing):

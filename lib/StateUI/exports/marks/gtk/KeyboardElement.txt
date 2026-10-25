@@ -1,8 +1,10 @@
-# revision 5.1
+# revision 6.1
 Button.keyPressed: ✓ pressKeys on Button: the shortcut controller's action run, no key event
 Button.keysTaken: ✓ pressKeys on Button: the shortcut controller's action run, no key event
 CheckBox.keyPressed: ✓ pressKeys on CheckBox: the shortcut controller's action run, no key event
 CheckBox.keysTaken: ✓ pressKeys on CheckBox: the shortcut controller's action run, no key event
+ColorPicker.keyPressed: ✓ pressKeys on ColorPicker: the shortcut controller's action run, no key event
+ColorPicker.keysTaken: ✓ pressKeys on ColorPicker: the shortcut controller's action run, no key event
 DatePicker.keyPressed: ✓ pressKeys on DatePicker: the shortcut controller's action run, no key event
 DatePicker.keysTaken: ✓ pressKeys on DatePicker: the shortcut controller's action run, no key event
 Grid.keyPressed: ✓ pressKeys on Grid: the shortcut controller's action run, no key event

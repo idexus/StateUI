@@ -174,6 +174,8 @@ final class WinUIDriver: HostDriver {
             stateui_winui_date_pick_as_user(picker.handle, Int32(day.year), Int32(day.month), Int32(day.day))
         case (.pickTime(let time), let picker as WinUITimePickerView):
             stateui_winui_time_pick_as_user(picker.handle, Int32(time.hour), Int32(time.minute))
+        case (.pickColor(let color), let picker as WinUIColorPickerView):
+            stateui_winui_color_pick_as_user(picker.handle, color.propValue.argb ?? 0xFF00_0000)
         // A press over a layout reaches the host's entry as the relay would hand it: the finger down where it went,
         // each move, its lift - ✓.
         case (.pressDown(let point), let view?) where view.hearing.contains(.hand):

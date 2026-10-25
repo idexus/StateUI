@@ -20,6 +20,7 @@ enum WinUIRegistrations {
         indicators(registry)
         pickers(registry)
         dates(registry)
+        colors(registry)
         fields(registry)
         pictures(registry)
         shapes(registry)

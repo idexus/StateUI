@@ -472,6 +472,34 @@ VStack {
 pretends to be an instant. Conversion to Foundation or another date library
 belongs in the application boundary; see [Environment](../concepts/environment.md).
 
+## Colors
+
+A `ColorPicker` is a well showing a color, which the user opens to choose
+another in the platform's own picker:
+
+```swift
+@State var tint = Color.steelBlue
+
+VStack {
+    ColorPicker($tint)
+        .choosesOpacity(true)
+        .onColorChanged { print("Chose \($0)") }
+    Rectangle()
+        .fill($tint)
+        .height(80)
+}
+```
+
+The host carries the color as a journey, as it carries a fill or a
+background, so one state takes what the user chooses and paints whatever
+wears it, with no render. Every change the user makes in the picker is heard,
+as a slider's drag is; a color the program writes moves the well and is heard
+by nobody. The color is opaque unless `choosesOpacity` is true, and then only
+where the platform's picker offers opacity - a browser's color input offers
+none. Android has no color picker of its own, so the element is not planned
+there: an application for Android offers its own choice, a `Picker` of named
+colors, say.
+
 ## Images and media providers
 
 `ImageSource` is one of three pictures: an application resource, which can

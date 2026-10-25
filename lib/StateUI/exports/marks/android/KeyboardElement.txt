@@ -1,8 +1,10 @@
-# revision 5.1
+# revision 6.1
 Button.keyPressed: ✓ pressKeys on Button: the key event no view took handed to the host as the application's activity hands it
 Button.keysTaken: ✓ pressKeys on Button: the key event no view took handed to the host as the application's activity hands it
 CheckBox.keyPressed: ✓ pressKeys on CheckBox: the key event no view took handed to the host as the application's activity hands it
 CheckBox.keysTaken: ✓ pressKeys on CheckBox: the key event no view took handed to the host as the application's activity hands it
+ColorPicker.keyPressed: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.keysTaken: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 DatePicker.keyPressed: ✓ pressKeys on DatePicker: the key event no view took handed to the host as the application's activity hands it
 DatePicker.keysTaken: ✓ pressKeys on DatePicker: the key event no view took handed to the host as the application's activity hands it
 Grid.keyPressed: ✓ pressKeys on Grid: the key event no view took handed to the host as the application's activity hands it

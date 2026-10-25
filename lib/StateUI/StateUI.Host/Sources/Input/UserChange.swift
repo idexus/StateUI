@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 
 @_spi(Host) extension HostStateValue {
-    /// The value a state takes from what a control reported: words as text, a flag, a number, numbers or a
-    /// choice as lanes; nil for what no state carries.
+    /// The value a state takes from what a control reported: words as text, a flag, a number, numbers, a choice
+    /// or a color's channels as fractions of full as lanes; nil for what no state carries.
     public init?(carrying value: HostValue) {
         switch value {
         case .string(let text): self = .text(text)
@@ -14,6 +14,8 @@
         case .number(let number): self = .lanes([number])
         case .numbers(let numbers): self = .lanes(numbers)
         case .enumeration(let choice): self = .lanes([Double(choice)])
+        case .color(let red, let green, let blue, let alpha):
+            self = .lanes([red, green, blue, alpha].map(ColorComponent.fraction))
         default: return nil
         }
     }

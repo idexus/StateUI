@@ -14,6 +14,7 @@
         FillTests.self,
         LayoutEngineTests.self,
         CheckBoxTests.self,
+        ColorPickerTests.self,
         LinkTests.self,
         DatePickerTests.self,
         EllipseTests.self,

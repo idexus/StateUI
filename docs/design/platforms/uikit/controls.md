@@ -120,6 +120,15 @@ configuration's, not the title's own, so the button grays it while the link
 cannot be chosen. Its tap is the button's; the host layer opens the address
 (`host/runtime.md#a-link-chosen`).
 
+## A color picker
+
+A color picker is UIKit's `UIColorWell`: a tap presents the system's color
+picker - a sheet on a phone, a popover on an iPad - and each color the user
+chooses there changes `selectedColor` and says `valueChanged`, which the host
+reports as the host layer reports a color (`host/runtime.md#a-color-chosen`).
+The well's `supportsAlpha` is `choosesOpacity`. A color the program writes
+sets `selectedColor` and says nothing.
+
 ## Accessibility
 
 What VoiceOver meets of a view is what the tree says of it - its label, hint,

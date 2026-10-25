@@ -1,0 +1,5 @@
+# revision 1.1
+ColorPicker: ✅
+ColorPicker.choosesOpacity: – The browser's color input chooses no opacity: every color it gives is opaque.
+ColorPicker.color: ✅
+ColorPicker.colorChanged: ✅

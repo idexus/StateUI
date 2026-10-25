@@ -64,6 +64,10 @@ extension AppKitDriver {
         case (.close, let picker as AppKitPickerView): picker.menuDidClose(NSMenu())
         case (.pickDate(let day), let picker as AppKitDatePickerView): picker.chooseForTesting(day)
         case (.pickTime(let time), let picker as AppKitTimePickerView): picker.chooseForTesting(time)
+        case (.pickColor(let color), let picker as AppKitColorPickerView):
+            // What the color panel does as the user chooses: the well takes the color, then sends its action.
+            picker.color = nsColor(color.propValue) ?? .black
+            picker.sendAction(picker.action, to: picker.target)
         case (.pressDown(let point), _) where native?.handReader != nil: native?.handReader?.dragging.pressed(at: point)
         case (.drag(let point), _) where native?.handReader != nil: native?.handReader?.dragging.moved(to: point)
         case (.lift, _) where native?.handReader != nil: native?.handReader?.dragging.released()

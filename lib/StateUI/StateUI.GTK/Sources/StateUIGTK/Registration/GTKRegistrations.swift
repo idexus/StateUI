@@ -20,6 +20,7 @@ enum GTKRegistrations {
         indicators(registry)
         pickers(registry)
         dates(registry)
+        colors(registry)
         fields(registry)
         layouts(registry)
         pictures(registry)

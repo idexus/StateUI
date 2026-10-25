@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 Button.frameChanged: ✅
 Button.margin: ✅
 Button.panTouchCount: ✅
@@ -19,6 +19,11 @@ CheckBox.margin: ✅
 CheckBox.panTouchCount: ✅
 CheckBox.panUpdated: ✅
 CheckBox.panXChannel: ✅
+ColorPicker.frameChanged: ✅
+ColorPicker.margin: ✅
+ColorPicker.panTouchCount: ✅
+ColorPicker.panUpdated: ✅
+ColorPicker.panXChannel: ✅
 DatePicker.frameChanged: ✅
 DatePicker.margin: ✅
 DatePicker.panTouchCount: ✅

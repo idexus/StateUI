@@ -21,6 +21,7 @@ enum Styled {
             dimmed(Canvas.self)
             dimmed(Capsule.self)
             dimmed(CheckBox.self)
+            dimmed(ColorPicker.self)
             dimmed(DatePicker.self)
             dimmed(Separator.self)
             dimmed(Ellipse.self)

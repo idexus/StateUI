@@ -7,7 +7,7 @@ import AppKit
 @_spi(Host) import StateUIHost
 
 extension AppKitRegistrations {
-    /// A choice, a day and a time: what the user picks, reported by member.
+    /// A choice, a day, a time and a color: what the user picks, reported by member.
     static func pickers(_ registry: Registry<NSView>) {
         // Each presentation is another control: the picker is made as the one it is made with.
         registry.add(PickerContract.self, create: { reports -> NSView in
@@ -78,6 +78,25 @@ extension AppKitRegistrations {
                 if values.changed(TimePickerContract.time) { view.setTime(values[TimePickerContract.time]) }
             }
             picker.raises(TimePickerContract.timeChanged)
+        })
+
+        registry.add(ColorPickerContract.self, create: { reports in
+            let picker = AppKitColorPickerView()
+            picker.onChosen = { color in
+                reports.report(ColorPickerContract.color, color, as: ColorPickerContract.colorChanged)
+            }
+            return picker
+        }, members: { picker in
+            picker.applies(
+                ColorPickerContract.color, ColorPickerContract.choosesOpacity, VisualElementContract.isEnabled
+            ) { view, values in
+                view.apply(
+                    color: values[ColorPickerContract.color] ?? ColorChoice.unset,
+                    write: values.changed(ColorPickerContract.color),
+                    choosesOpacity: values[ColorPickerContract.choosesOpacity] ?? false,
+                    enabled: values[VisualElementContract.isEnabled] ?? true)
+            }
+            picker.raises(ColorPickerContract.colorChanged)
         })
     }
 

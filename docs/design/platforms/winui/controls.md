@@ -102,6 +102,17 @@ the address (`host/runtime.md#a-link-chosen`). Its words stand in a text
 block, as a button's caption does, so the tree's color and the words read
 back alike.
 
+## A color picker
+
+WinUI's `ColorPicker` is a large panel, not a control that stands in a row.
+A color picker is a `DropDownButton` showing the color in a swatch - its edge
+`ControlStrokeColorDefaultBrush` and its corners `ControlCornerRadius`, from
+the theme - whose `Flyout` holds the `ColorPicker`. Every `ColorChanged`
+paints the swatch and tells the host the color as one ARGB number
+(`colorChosen`), which the host layer reports as the user's only outside the
+program's write (`host/runtime.md#a-color-chosen`). `IsAlphaEnabled` is
+`choosesOpacity`.
+
 ## An oval button
 
 A button's corners round by one radius each, so its own border draws no oval.

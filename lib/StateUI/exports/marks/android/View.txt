@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started
@@ -143,6 +143,42 @@ CheckBox.swiped: ✅
 CheckBox.tapCount: ✅
 CheckBox.tapped: ✅
 CheckBox.verticalAlignment: ✅
+ColorPicker.allowsDrop: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.area: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.canDrag: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.dragEnded: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.dragLeave: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.dragOver: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.dragStarting: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.dragText: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.drop: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.droppedFileTypes: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.filesDropped: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.frameChanged: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.gridColumn: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.gridColumnSpan: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.gridRow: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.gridRowSpan: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.held: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.holdDuration: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.horizontalAlignment: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.margin: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.panTouchCount: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.panUpdated: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.panXChannel: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.panYChannel: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.pinchUpdated: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.pointerEntered: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.pointerExited: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.pointerMoved: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.pointerPressed: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.pointerReleased: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.swipeDirection: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.swipeThreshold: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.swiped: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.tapCount: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.tapped: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.verticalAlignment: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 DatePicker.area: ✅
 DatePicker.canDrag: ✓ dragAndDrop on DatePicker: the views' drag listeners' reports told by the driver, no drag started

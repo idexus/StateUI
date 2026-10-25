@@ -1,4 +1,4 @@
-# revision 21.1
+# revision 22.1
 Button.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
 Button.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
 Button.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
@@ -143,6 +143,42 @@ CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transfo
 CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.width: ✅
 CheckBox.zIndex: ✅
+ColorPicker.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+ColorPicker.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+ColorPicker.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
+ColorPicker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
+ColorPicker.accessibilityHint: ✅
+ColorPicker.accessibilityLabel: ✅
+ColorPicker.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+ColorPicker.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
+ColorPicker.background: ✓ read background of ColorPicker: the class of the host's style sheet the widget wears: GTK reads back no background
+ColorPicker.frame: ✅
+ColorPicker.height: ✅
+ColorPicker.hidesChildrenFromAccessibility: ✅
+ColorPicker.ignoresInput: ✅
+ColorPicker.isAccessibilityHidden: ✅
+ColorPicker.isEnabled: ✅
+ColorPicker.isVisible: ✅
+ColorPicker.layoutDirection: ✅
+ColorPicker.maximumHeight: ✅
+ColorPicker.maximumWidth: ✅
+ColorPicker.minimumHeight: ✅
+ColorPicker.minimumWidth: ✅
+ColorPicker.opacity: ✅
+ColorPicker.pivotX: ✓ read pivotX of ColorPicker: the host's own transform: GTK reads back no part of one
+ColorPicker.pivotY: ✓ read pivotY of ColorPicker: the host's own transform: GTK reads back no part of one
+ColorPicker.rotation: ✓ read rotation of ColorPicker: the host's own transform: GTK reads back no part of one
+ColorPicker.rotationX: ✓ read rotationX of ColorPicker: the host's own transform: GTK reads back no part of one
+ColorPicker.rotationY: ✓ read rotationY of ColorPicker: the host's own transform: GTK reads back no part of one
+ColorPicker.scale: ✓ read scale of ColorPicker: the host's own transform: GTK reads back no part of one
+ColorPicker.scaleX: ✓ read scaleX of ColorPicker: the host's own transform: GTK reads back no part of one
+ColorPicker.scaleY: ✓ read scaleY of ColorPicker: the host's own transform: GTK reads back no part of one
+ColorPicker.style: ✅
+ColorPicker.tooltip: ✅
+ColorPicker.translationX: ✓ read translationX of ColorPicker: the host's own transform: GTK reads back no part of one
+ColorPicker.translationY: ✓ read translationY of ColorPicker: the host's own transform: GTK reads back no part of one
+ColorPicker.width: ✅
+ColorPicker.zIndex: ✅
 DatePicker.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
 DatePicker.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
 DatePicker.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.

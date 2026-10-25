@@ -253,6 +253,18 @@ takes, else a report - and then its event runs, or a turn renders what the
 state changed where no handler listens, in one user's transaction. A host's
 native callback hands the value on.
 
+## A color chosen
+
+A color picker shows the tree's color - black where the tree gives none - and
+opens its toolkit's own panel for the user to choose another. What it reports
+is the host layer's, alike on every host (`ColorChoice`): the four fractions
+of full the toolkit hands back, at their nearest channels, and an opaque color
+where the picker does not choose opacity. A toolkit's panel keeps the alpha it
+last held even while its opacity control is hidden, so the rule, not the
+panel, keeps that promise. The chosen color reaches a carried state as the
+four lanes a color state lays (`HostStateValue(carrying:)`), then its event
+runs, as any user's change does.
+
 ## The pull to refresh
 
 A scroller or a list offers the platform's pull where it hears it - a handler

@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 Button.frameChanged: ✅
 Button.horizontalAlignment: ✅
 Button.panYChannel: ✅
@@ -15,6 +15,10 @@ CheckBox.frameChanged: ✅
 CheckBox.horizontalAlignment: ✅
 CheckBox.panYChannel: ✅
 CheckBox.verticalAlignment: ✅
+ColorPicker.frameChanged: ✅
+ColorPicker.horizontalAlignment: ✅
+ColorPicker.panYChannel: ✅
+ColorPicker.verticalAlignment: ✅
 DatePicker.frameChanged: ✅
 DatePicker.horizontalAlignment: ✅
 DatePicker.panYChannel: ✅

@@ -172,7 +172,7 @@ final class Catalog {
         SampleGroup(
             route: "basicInput",
             title: "Controls",
-            summary: "Button, Switch, CheckBox, Slider, Stepper and Picker, "
+            summary: "Button, Switch, CheckBox, Slider, Stepper, Picker and ColorPicker, "
                 + "the spinner and the bar that show work, and what a "
                 + "control says about itself; text fields are under Text & typing.",
             icon: ImageSource(light: "nav_input.png", dark: "nav_input_dark.png"),
@@ -188,6 +188,7 @@ final class Catalog {
                 Sample(SliderSample()),
                 Sample(StepperSample()),
                 Sample(PickerSample()),
+            ] + Self.pickingColors + [
                 Sample(ProgressBarSample()),
                 Sample(SpinnerSample()),
                 Sample(SemanticsSample()),
@@ -195,6 +196,15 @@ final class Catalog {
                 Sample(ShortcutSample()),
                 Sample(KeyPressSample()),
             ])
+    }
+
+    /// The color picker, on the hosts whose platform has one: Android has none.
+    private static var pickingColors: [Sample] {
+        #if ANDROID
+        []
+        #else
+        [Sample(ColorPickerSample())]
+        #endif
     }
 
     /// The group at `text`.

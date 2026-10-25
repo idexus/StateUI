@@ -1,4 +1,4 @@
-# revision 21.1
+# revision 22.1
 Button.accessibilityActionPerformed: ✅
 Button.accessibilityActions: ✅
 Button.accessibilityAdjusted: ✅
@@ -143,6 +143,42 @@ CheckBox.translationX: ✅
 CheckBox.translationY: ✅
 CheckBox.width: ✅
 CheckBox.zIndex: ✅
+ColorPicker.accessibilityActionPerformed: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.accessibilityActions: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.accessibilityAdjusted: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.accessibilityHeading: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.accessibilityHint: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.accessibilityLabel: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.accessibilityRole: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.accessibilityValue: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.background: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.frame: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.height: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.hidesChildrenFromAccessibility: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.ignoresInput: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.isAccessibilityHidden: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.isEnabled: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.isVisible: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.layoutDirection: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.maximumHeight: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.maximumWidth: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.minimumHeight: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.minimumWidth: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.opacity: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.pivotX: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.pivotY: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.rotation: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.rotationX: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.rotationY: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.scale: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.scaleX: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.scaleY: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.style: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.tooltip: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.translationX: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.translationY: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.width: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.zIndex: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 DatePicker.accessibilityActionPerformed: ✅
 DatePicker.accessibilityActions: ✅
 DatePicker.accessibilityAdjusted: ✅

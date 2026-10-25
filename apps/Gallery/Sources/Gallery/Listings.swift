@@ -1905,6 +1905,37 @@ enum Listings {
             }
         }
         """#,
+        "ColorPickerSample": #"""
+        // Sources/Samples/BasicInput/ColorPickerSample.swift
+        @State private var tint = Color.steelBlue
+        @State private var seeThrough = false
+        @State private var changes = 0
+
+        var body: some View {
+            VStack {
+                ColorPicker($tint)
+                    .choosesOpacity(seeThrough)
+                    .horizontalAlignment(.center)
+                    .onColorChanged { _ in changes += 1 }
+
+                // The swatch wears the same state: the color chosen reaches it
+                // with no render of this view.
+                Rectangle()
+                    .fill($tint)
+                    .height(80)
+
+                Text("Changed \(changes) time\(changes == 1 ? "" : "s")")
+
+                SwitchRow("Chooses opacity", $seeThrough)
+
+                // A color the program writes is shown, and heard by nobody: the
+                // count stays where it is.
+                Button("Back to steel blue")
+                    .horizontalAlignment(.center)
+                    .onClicked { tint = .steelBlue }
+            }
+        }
+        """#,
         "ComplaintsSample": #"""
         // Sources/Samples/Fundamentals/ComplaintsSample.swift
         /// What the library said while the page showed, oldest first.

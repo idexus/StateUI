@@ -275,6 +275,13 @@ link colors dim nothing) -
 underlined by its paint's flag, focusable, its click heard as any view's; the
 host layer opens the address (`host/runtime.md#a-link-chosen`).
 
+## A color picker
+
+Android has no color picker of its own: neither the platform nor its own
+libraries offer one, and Google's applications draw their own swatches. The
+element is not planned on Android (`AndroidRealization.notPlanned`); a tree
+holding one shows the host's unsupported view in its place.
+
 ## A picker
 
 A picker is Android's dropdown spinner. A spinner always shows one of its

@@ -1,8 +1,10 @@
-# revision 5.1
+# revision 6.1
 Button.keyPressed: ✅
 Button.keysTaken: ✅
 CheckBox.keyPressed: ✅
 CheckBox.keysTaken: ✅
+ColorPicker.keyPressed: ✅
+ColorPicker.keysTaken: ✅
 DatePicker.keyPressed: ✅
 DatePicker.keysTaken: ✅
 Grid.keyPressed: ✅

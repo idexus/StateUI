@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridRow: ✅
@@ -15,6 +15,10 @@ CheckBox.frameChanged: ✅
 CheckBox.gridColumn: ✅
 CheckBox.gridRow: ✅
 CheckBox.pinchUpdated: ✓ pinch on CheckBox: the relay's report of the manipulation handed to the host, no touch sent
+ColorPicker.frameChanged: ✅
+ColorPicker.gridColumn: ✅
+ColorPicker.gridRow: ✅
+ColorPicker.pinchUpdated: ✓ pinch on ColorPicker: the relay's report of the manipulation handed to the host, no touch sent
 DatePicker.frameChanged: ✅
 DatePicker.gridColumn: ✅
 DatePicker.gridRow: ✅

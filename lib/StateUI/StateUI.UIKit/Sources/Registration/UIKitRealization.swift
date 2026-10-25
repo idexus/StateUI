@@ -67,6 +67,7 @@ enum UIKitRealization {
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: ButtonContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: LinkContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: CheckBoxContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: ColorPickerContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: DatePickerContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: SeparatorContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: ItemsViewContract.self, reason: Self.ownSteps),

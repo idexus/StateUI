@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 Button.canDrag: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragEnded: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragStarting: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
@@ -23,6 +23,12 @@ CheckBox.dragStarting: ✓ dragAndDrop on CheckBox: the relay's drag reports tol
 CheckBox.dragText: ✓ dragAndDrop on CheckBox: the relay's drag reports told by the driver, no drag WinUI began
 CheckBox.tapCount: ✅
 CheckBox.tapped: ✅
+ColorPicker.canDrag: ✓ dragAndDrop on ColorPicker: the relay's drag reports told by the driver, no drag WinUI began
+ColorPicker.dragEnded: ✓ dragAndDrop on ColorPicker: the relay's drag reports told by the driver, no drag WinUI began
+ColorPicker.dragStarting: ✓ dragAndDrop on ColorPicker: the relay's drag reports told by the driver, no drag WinUI began
+ColorPicker.dragText: ✓ dragAndDrop on ColorPicker: the relay's drag reports told by the driver, no drag WinUI began
+ColorPicker.tapCount: ✅
+ColorPicker.tapped: ✅
 DatePicker.canDrag: ✓ dragAndDrop on DatePicker: the relay's drag reports told by the driver, no drag WinUI began
 DatePicker.dragEnded: ✓ dragAndDrop on DatePicker: the relay's drag reports told by the driver, no drag WinUI began
 DatePicker.dragStarting: ✓ dragAndDrop on DatePicker: the relay's drag reports told by the driver, no drag WinUI began

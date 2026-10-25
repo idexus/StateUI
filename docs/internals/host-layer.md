@@ -488,6 +488,10 @@ host.
 - **`PickerChoices`** writes a picker's choices where they changed, and its
   choice only where the tree changed it or the choices.
   ([Typed words](../design/host/runtime.md#typed-words))
+- **`ColorChoice`** is the color a picker shows - black where the tree gives
+  none - and reports: the toolkit's fractions at their nearest channels, opaque
+  where the picker does not choose opacity.
+  ([A color chosen](../design/host/runtime.md#a-color-chosen))
 - **`ValueArithmetic`** is a value inside a range: its ends in order, a step
   that moves, a share of work within 0 and 1, a slider's key and page steps,
   and a stepped number's decimals. **`ElementValues.written`** is the number

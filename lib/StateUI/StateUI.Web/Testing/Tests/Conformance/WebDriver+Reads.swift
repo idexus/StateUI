@@ -49,6 +49,8 @@ extension WebDriver {
         case (.maximum, is WebStepperView):
             return try WebBrowser.number("Number(e.querySelector('input').getAttribute('aria-valuemax'))", on: e)?.propValue
         case (.date, is WebDatePickerView): return .some(try day("e.value", on: e)?.propValue)
+        case (.color, is WebColorPickerView):
+            return .some(try WebBrowser.evaluate("e.value", on: e).flatMap { Color(parsing: $0) }?.propValue)
         case (.minimumDate, is WebDatePickerView): return .some(try day("e.min", on: e)?.propValue)
         case (.maximumDate, is WebDatePickerView): return .some(try day("e.max", on: e)?.propValue)
         case (.time, is WebTimePickerView):

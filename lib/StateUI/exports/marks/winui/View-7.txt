@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -19,6 +19,11 @@ CheckBox.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told 
 CheckBox.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 CheckBox.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 CheckBox.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ColorPicker.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ColorPicker.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ColorPicker.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ColorPicker.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 DatePicker.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 DatePicker.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began

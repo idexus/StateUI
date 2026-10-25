@@ -1,64 +1,64 @@
-# revision 21.1
+# revision 22.1
 Button.pivotX: ✓ read pivotX of Button: the host's own transform, checked against the layer it composed itself
 Canvas.accessibilityValue: ✅
 Capsule.ignoresInput: ✅
 Capsule.scaleY: ✓ read scaleY of Capsule: the host's own transform, checked against the layer it composed itself
 CheckBox.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
-DatePicker.accessibilityRole: ✅
-Ellipse.maximumHeight: ✅
-Ellipse.maximumWidth: ✅
-Ellipse.minimumHeight: ✅
-Ellipse.minimumWidth: ✅
-Ellipse.scaleX: ✓ read scaleX of Ellipse: the host's own transform, checked against the layer it composed itself
-Fill.hidesChildrenFromAccessibility: ✅
-Grid.isEnabled: ✓ tap on Grid: the view's listening handed the recognizer's states, no touch sent
-Grid.zIndex: ✅
-HStack.hidesChildrenFromAccessibility: ✅
-Image.frame: ✅
-Image.translationX: ✓ read translationX of Image: the host's own transform, checked against the layer it composed itself
-ItemsView.layoutDirection: ✅
-LayoutEngine.maximumHeight: ✅
-LayoutEngine.maximumWidth: ✅
-LayoutEngine.minimumHeight: ✅
-LayoutEngine.minimumWidth: ✅
-LayoutEngine.scaleX: ✓ read scaleX of LayoutEngine: the host's own transform, checked against the layer it composed itself
-Line.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-Link.style: ✅
-Link.translationY: ✓ read translationY of Link: the host's own transform, checked against the layer it composed itself
-Map.pivotY: ✓ read pivotY of Map: the host's own transform, checked against the layer it composed itself
-Path.style: ✅
-Path.translationY: ✓ read translationY of Path: the host's own transform, checked against the layer it composed itself
-Picker.pivotX: ✓ read pivotX of Picker: the host's own transform, checked against the layer it composed itself
-Polygon.accessibilityActionPerformed: ✅
-Polygon.accessibilityActions: ✅
-Polyline.ignoresInput: ✅
-Polyline.scaleY: ✓ read scaleY of Polyline: the host's own transform, checked against the layer it composed itself
-ProgressBar.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
-Rectangle.accessibilityHint: ✅
-ScrollView.isEnabled: ✅
-ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
-Separator.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
-Slider.style: ✅
-Slider.translationY: ✓ read translationY of Slider: the host's own transform, checked against the layer it composed itself
-Space.pivotY: ✓ read pivotY of Space: the host's own transform, checked against the layer it composed itself
+ColorPicker.accessibilityRole: ✅
+DatePicker.maximumHeight: ✅
+DatePicker.maximumWidth: ✅
+DatePicker.minimumHeight: ✅
+DatePicker.minimumWidth: ✅
+DatePicker.scaleX: ✓ read scaleX of DatePicker: the host's own transform, checked against the layer it composed itself
+Ellipse.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
+Fill.accessibilityHint: ✅
+Grid.isVisible: ✅
+Grid.rotation: ✓ read rotation of Grid: the host's own transform, checked against the layer it composed itself
+HStack.accessibilityHint: ✅
+HStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
+Image.pivotX: ✓ read pivotX of Image: the host's own transform, checked against the layer it composed itself
+ItemsView.accessibilityValue: ✅
+LayoutEngine.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
+Line.isEnabled: ✓ tap on Line: the view's listening handed the recognizer's states, no touch sent
+Line.zIndex: ✅
+Link.pivotY: ✓ read pivotY of Link: the host's own transform, checked against the layer it composed itself
+Map.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
+Path.pivotY: ✓ read pivotY of Path: the host's own transform, checked against the layer it composed itself
+Picker.accessibilityActionPerformed: ✅
+Picker.accessibilityActions: ✅
+Polygon.frame: ✅
+Polygon.translationX: ✓ read translationX of Polygon: the host's own transform, checked against the layer it composed itself
+Polyline.layoutDirection: ✅
+ProgressBar.accessibilityRole: ✅
+Rectangle.height: ✅
+Rectangle.scale: ✓ read scale of Rectangle: the host's own transform, checked against the layer it composed itself
+Rectangle.width: ✅
+ScrollView.isAccessibilityHidden: ✅
+SearchField.style: ✅
+SearchField.translationY: ✓ read translationY of SearchField: the host's own transform, checked against the layer it composed itself
+Separator.style: ✅
+Separator.translationY: ✓ read translationY of Separator: the host's own transform, checked against the layer it composed itself
+Slider.pivotY: ✓ read pivotY of Slider: the host's own transform, checked against the layer it composed itself
+Space.accessibilityAdjusted: ✅
 Spinner.style: ✅
 Spinner.translationY: ✓ read translationY of Spinner: the host's own transform, checked against the layer it composed itself
-Stepper.accessibilityRole: ✅
-Switch.maximumHeight: ✅
-Switch.maximumWidth: ✅
-Switch.minimumHeight: ✅
-Switch.minimumWidth: ✅
-Switch.scaleX: ✓ read scaleX of Switch: the host's own transform, checked against the layer it composed itself
-Text.accessibilityValue: ✅
-TextEditor.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
-TextField.accessibilityRole: ✅
-TimePicker.maximumHeight: ✅
-TimePicker.maximumWidth: ✅
-TimePicker.minimumHeight: ✅
-TimePicker.minimumWidth: ✅
-TimePicker.scaleX: ✓ read scaleX of TimePicker: the host's own transform, checked against the layer it composed itself
+Stepper.maximumHeight: ✅
+Stepper.maximumWidth: ✅
+Stepper.minimumHeight: ✅
+Stepper.minimumWidth: ✅
+Stepper.scaleX: ✓ read scaleX of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
+Text.ignoresInput: ✅
+Text.scaleY: ✓ read scaleY of Text: the host's own transform, checked against the layer it composed itself
+TextEditor.accessibilityRole: ✅
+TextField.maximumHeight: ✅
+TextField.maximumWidth: ✅
+TextField.minimumHeight: ✅
+TextField.minimumWidth: ✅
+TextField.scaleX: ✓ read scaleX of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.background: – UIKit's time picker keeps no background color: one written reads back as none.
+VStack.accessibilityRole: ✅
 VStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
-WebView.frame: ✅
-WebView.translationX: ✓ read translationX of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.pivotX: ✓ read pivotX of ZStack: the host's own transform, checked against the layer it composed itself
+WebView.pivotX: ✓ read pivotX of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.accessibilityActionPerformed: ✅
+ZStack.accessibilityActions: ✅

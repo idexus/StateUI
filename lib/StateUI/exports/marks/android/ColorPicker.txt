@@ -1,0 +1,5 @@
+# revision 1.1
+ColorPicker: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.choosesOpacity: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.color: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.colorChanged: – Android has no color picker of its own: neither the platform nor its own libraries offer one.

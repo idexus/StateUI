@@ -20,6 +20,7 @@
         case "Canvas": return dressing.dress(Canvas())
         case "Capsule": return dressing.dress(Capsule())
         case "CheckBox": return dressing.dress(CheckBox())
+        case "ColorPicker": return dressing.dress(ColorPicker(Color(hex: 0x4682B4)))
         case "DatePicker": return dressing.dress(DatePicker())
         case "Separator": return dressing.dress(Separator())
         case "Ellipse": return dressing.dress(Ellipse())

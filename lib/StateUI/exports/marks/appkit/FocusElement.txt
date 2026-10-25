@@ -1,10 +1,13 @@
-# revision 4.1
+# revision 5.1
 Button.focus: ✅
 Button.isFocusedChanged: ✅
 Button.unfocus: ✅
 CheckBox.focus: ✅
 CheckBox.isFocusedChanged: ✅
 CheckBox.unfocus: ✅
+ColorPicker.focus: ✅
+ColorPicker.isFocusedChanged: ✅
+ColorPicker.unfocus: ✅
 DatePicker.focus: ✅
 DatePicker.isFocusedChanged: ✅
 DatePicker.unfocus: ✅

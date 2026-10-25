@@ -21,6 +21,19 @@ final class StateLanesTests: XCTestCase {
         XCTAssertEqual(lamp.value(LampContract.signal.token), .enumeration(Signal.go.rawValue))
     }
 
+    /// A state one control wears as it stands and another walks - a color picker's color and a swatch's fill - arrives
+    /// at each as its value: the walked state's lanes lay a journey, and the one wearing it as it stands reads where
+    /// that journey stands.
+    func testAStateWalkedBesideReachesTheControlWearingItAsItStands() throws {
+        stateUIUseApp(TintApplication())
+        let runtime = HostRuntime.still()
+        runtime.connectWindow()
+        runtime.pump.turn()
+
+        let picker = try XCTUnwrap(runtime.tree.root?.first(type: ColorPickerContract.nodeType))
+        XCTAssertEqual(picker.value(.color), Color(hex: 0x4682B4).propValue)
+    }
+
     /// Every member of every library contract whose value lies as lanes arrives from a state as it arrives stated:
     /// the host reads the lanes as their type says and finds the value that type crosses as.
     func testEveryMemberFromAStateArrivesAsItArrivesStated() {
@@ -94,4 +107,19 @@ private struct LampPage: View {
 
 private struct LampApplication: Application {
     var body: some Scene { WindowGroup { LampPage() } }
+}
+
+private struct TintPage: View {
+    @State private var tint = Color(hex: 0x4682B4)
+
+    var body: some View {
+        VStack {
+            ColorPicker($tint)
+            Rectangle().fill($tint)
+        }
+    }
+}
+
+private struct TintApplication: Application {
+    var body: some Scene { WindowGroup { TintPage() } }
 }

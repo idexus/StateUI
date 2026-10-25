@@ -19,6 +19,7 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testFill() { conform(FillTests.self) }
     @MainActor func testLayoutEngine() { conform(LayoutEngineTests.self) }
     @MainActor func testCheckBox() { conform(CheckBoxTests.self) }
+    @MainActor func testColorPicker() { conform(ColorPickerTests.self) }
     @MainActor func testSpace() { conform(SpaceTests.self) }
     @MainActor func testDatePicker() { conform(DatePickerTests.self) }
     @MainActor func testEllipse() { conform(EllipseTests.self) }

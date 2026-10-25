@@ -98,6 +98,7 @@ of its members each meets, and why a cell is empty.
 | [Canvas](controls/Canvas.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Capsule](controls/Capsule.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [CheckBox](controls/CheckBox.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [ColorPicker](controls/ColorPicker.md) | native | ✅ | ✅ | – | ✅ | ✅ | ✅ |
 | [ContextMenu](controls/ContextMenu.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [DatePicker](controls/DatePicker.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Ellipse](controls/Ellipse.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -237,6 +238,7 @@ contract.
 | `Picker` | `NSPopUpButton` | pop-up `UIButton` menu | `android.widget.Spinner` | `ComboBox` | `GtkDropDown` | `<select>` |
 | `DatePicker` | `NSDatePicker` | `UIDatePicker` | `TextView` opening a `DatePickerDialog` | `CalendarDatePicker` | `GtkCalendar` in a `GtkMenuButton`'s `GtkPopover` | `<input type=date>` |
 | `TimePicker` | `NSDatePicker` showing hour and minute | `UIDatePicker` in time mode | `TextView` opening a `TimePickerDialog` | `TimePicker` | an hour's and a minute's `GtkSpinButton` in a `GtkMenuButton`'s `GtkPopover` | `<input type=time>` |
+| `ColorPicker` | `NSColorWell` opening the color panel | `UIColorWell` opening `UIColorPickerViewController` | — | `DropDownButton` showing the color, its `Flyout` a `ColorPicker` | `GtkColorDialogButton` opening a `GtkColorDialog` | `<input type=color>` |
 | `Switch` | `NSSwitch` beside an `NSTextField` | `UISwitch` beside a `UILabel` | `Switch` | `ToggleSwitch` | `GtkSwitch` beside a `GtkLabel` | checkbox `<input>` with `role=switch` in a `<label>` |
 | `CheckBox` | `NSButton` checkbox | `UIButton` with a box symbol | `CheckBox` | `CheckBox` | `GtkCheckButton` | `<input type=checkbox>` in a `<label>` |
 | `Slider` | `NSSlider` | `UISlider` | `SeekBar` | `Slider` | `GtkScale` | `<input type=range>` |
@@ -474,6 +476,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Canvas](controls/Canvas.md) | 77 | 36 ✅ · 2 ☑️ · 39 ✓ | 35 ✅ · 2 ☑️ · 39 ✓ · 1 – | 59 ✅ · 5 ☑️ · 10 ✓ · 2 – | 54 ✅ · 1 ☑️ · 15 ✓ · 6 – | 47 ✅ · 2 ☑️ · 22 ✓ · 6 – | 52 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Capsule](controls/Capsule.md) | 81 | 43 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 3 ☑️ · 36 ✓ · 1 – | 63 ✅ · 6 ☑️ · 10 ✓ · 1 – | 58 ✅ · 2 ☑️ · 14 ✓ · 7 – | 50 ✅ · 3 ☑️ · 22 ✓ · 6 – | 55 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [CheckBox](controls/CheckBox.md) | 84 | 45 ✅ · 2 ☑️ · 36 ✓ · 1 – | 38 ✅ · 2 ☑️ · 39 ✓ · 5 – | 62 ✅ · 5 ☑️ · 12 ✓ · 4 – | 63 ✅ · 2 ☑️ · 13 ✓ · 6 – | 51 ✅ · 2 ☑️ · 25 ✓ · 6 – | 59 ✅ · 1 ☑️ · 21 ✓ · 3 – |
+| [ColorPicker](controls/ColorPicker.md) | 81 | 42 ✅ · 2 ☑️ · 36 ✓ · 1 – | 36 ✅ · 2 ☑️ · 38 ✓ · 5 – | 81 – | 60 ✅ · 2 ☑️ · 13 ✓ · 6 – | 49 ✅ · 2 ☑️ · 24 ✓ · 6 – | 55 ✅ · 1 ☑️ · 21 ✓ · 4 – |
 | [DatePicker](controls/DatePicker.md) | 93 | 47 ✅ · 2 ☑️ · 37 ✓ · 7 – | 37 ✅ · 1 ☑️ · 38 ✓ · 13 – | 67 ✅ · 5 ☑️ · 15 ✓ · 4 – | 70 ✅ · 4 ☑️ · 13 ✓ · 6 – | 58 ✅ · 3 ☑️ · 26 ✓ · 6 – | 63 ✅ · 1 ☑️ · 21 ✓ · 7 – |
 | [Ellipse](controls/Ellipse.md) | 81 | 43 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 3 ☑️ · 36 ✓ · 1 – | 63 ✅ · 6 ☑️ · 10 ✓ · 1 – | 58 ✅ · 2 ☑️ · 14 ✓ · 7 – | 50 ✅ · 3 ☑️ · 22 ✓ · 6 – | 55 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [Fill](controls/Fill.md) | 76 | 39 ✅ · 1 ☑️ · 36 ✓ | 37 ✅ · 2 ☑️ · 36 ✓ · 1 – | 59 ✅ · 5 ☑️ · 10 ✓ · 1 – | 56 ✅ · 2 ☑️ · 14 ✓ · 4 – | 47 ✅ · 2 ☑️ · 21 ✓ · 6 – | 51 ✅ · 1 ☑️ · 21 ✓ · 3 – |
@@ -506,10 +509,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 83 | 44 ✅ · 1 ☑️ · 36 ✓ | 41 ✅ · 2 ☑️ · 37 ✓ · 1 – | 63 ✅ · 5 ☑️ · 11 ✓ · 1 – | 62 ✅ · 2 ☑️ · 13 ✓ · 5 – | 52 ✅ · 2 ☑️ · 22 ✓ · 7 – | 57 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [WebView](controls/WebView.md) | 89 | 49 ✅ · 2 ☑️ · 37 ✓ · 1 – | 46 ✅ · 2 ☑️ · 39 ✓ · 2 – | 67 ✅ · 5 ☑️ · 12 ✓ · 4 – | 49 ✅ · 13 ✓ · 26 – | 57 ✅ · 2 ☑️ · 24 ✓ · 6 – | 58 ✅ · 1 ☑️ · 21 ✓ · 6 – |
 | [ZStack](controls/ZStack.md) | 82 | 43 ✅ · 1 ☑️ · 36 ✓ | 39 ✅ · 2 ☑️ · 38 ✓ · 1 – | 61 ✅ · 5 ☑️ · 12 ✓ · 1 – | 61 ✅ · 2 ☑️ · 13 ✓ · 5 – | 50 ✅ · 2 ☑️ · 23 ✓ · 7 – | 56 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| ✅ |  | 1608 | 1517 | 2271 | 2182 | 1858 | 2075 |
-| ✓ |  | 1322 | 1362 | 403 | 483 | 820 | 741 |
-| – |  | 53 | 101 | 79 | 243 | 232 | 130 |
-| **Met** | 3084 | **2983** | **2980** | **2753** | **2908** | **2910** | **2946** |
+| ✅ |  | 1650 | 1553 | 2271 | 2242 | 1907 | 2130 |
+| ✓ |  | 1358 | 1400 | 403 | 496 | 844 | 762 |
+| – |  | 54 | 106 | 160 | 249 | 238 | 134 |
+| **Met** | 3165 | **3062** | **3059** | **2834** | **2987** | **2989** | **3026** |
 | 🧩 |  | 0 | 0 | 81 | 81 | 81 | 81 |
 
 ### Application structure
@@ -600,6 +603,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `keyboardShortcut`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`), `role` | 9 | 6 ✅ · 2 ✓ · 1 – | 7 ✅ · 2 ✓ | 4 ✅ · 2 ✓ | 9 ✅ | 8 ✅ · 1 ✓ | 9 ✅ |
 | [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawing`, `onPressed` (`pressed`), `onReleased` (`released`) | 4 | 1 ✅ · 3 ✓ | 1 ✅ · 3 ✓ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
+| [ColorPicker](controls/ColorPicker.md) | `choosesOpacity`, `color`, `onColorChanged` (`colorChanged`) | 3 | 3 ✅ | 3 ✅ | 3 – | 3 ✅ | 3 ✅ | 2 ✅ · 1 – |
 | [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 | 3 ✅ · 1 ✓ · 4 – | 4 ✅ | 5 ✅ · 3 ✓ | 7 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ · 2 ✓ | 4 ✅ · 3 – |
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [Image](controls/Image.md) | `isAnimating`, `source` | 2 | 1 ✅ | 1 ✅ |  | 1 ✅ | 1 ✅ | 1 ✅ |
@@ -658,13 +662,13 @@ realizes the element and each of its members.
 ### Controls and structural nodes
 
 `Anchor`, `Application`, `Button`, `ButtonMenu`, `Canvas`, `Capsule`,
-`CheckBox`, `ContextMenu`, `DatePicker`, `Ellipse`, `Fill`, `Grid`, `HStack`,
-`Image`, `ItemsView`, `LayoutEngine`, `Line`, `Link`, `Map`, `Marker`, `Menu`,
-`MenuBar`, `MenuItem`, `MenuSeparator`, `MenuToggle`, `NavigationStack`,
-`Overlay`, `Page`, `Path`, `Picker`, `Polygon`, `Polyline`, `Popover`,
-`ProgressBar`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`, `Separator`,
-`Sheet`, `Slider`, `Space`, `Spinner`, `SplitView`, `Stepper`, `Switch`,
-`TabView`, `Text`, `TextEditor`, `TextField`, `TextSpan`, `TextSpans`,
+`CheckBox`, `ColorPicker`, `ContextMenu`, `DatePicker`, `Ellipse`, `Fill`,
+`Grid`, `HStack`, `Image`, `ItemsView`, `LayoutEngine`, `Line`, `Link`, `Map`,
+`Marker`, `Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`, `MenuToggle`,
+`NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Polygon`, `Polyline`,
+`Popover`, `ProgressBar`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`,
+`Separator`, `Sheet`, `Slider`, `Space`, `Spinner`, `SplitView`, `Stepper`,
+`Switch`, `TabView`, `Text`, `TextEditor`, `TextField`, `TextSpan`, `TextSpans`,
 `TimePicker`, `TitleView`, `ToolbarButton`, `ToolbarGroup`, `ToolbarToggle`,
 `VStack`, `WebView`, `Window`, `ZStack`.
 
@@ -674,13 +678,13 @@ realizes the element and each of its members.
 `accessibilityIdentifier`, `accessibilityLabel`, `accessibilityRole`,
 `accessibilityValue`, `allowsDrop`, `area`, `backButtonTitle`, `background`,
 `barBackground`, `barButtonBackgroundColor`, `barForegroundColor`, `canDrag`,
-`clipsContent`, `columns`, `columnSpacing`, `contentMode`, `cornerRadius`,
-`cursorPosition`, `dash`, `dashPhase`, `data`, `date`, `destination`,
-`dragText`, `drawing`, `droppedFileTypes`, `endReachedWithin`, `fill`,
-`fillRule`, `floatsOnTop`, `fontAttributes`, `fontFamily`, `fontSize`,
-`fontWeight`, `format`, `frame`, `geometryTransform`, `gridColumn`,
-`gridColumnSpan`, `gridRow`, `gridRowSpan`, `growsWithText`, `handAxis`,
-`height`, `hidesChildrenFromAccessibility`, `hidesWhenInactive`,
+`choosesOpacity`, `clipsContent`, `color`, `columns`, `columnSpacing`,
+`contentMode`, `cornerRadius`, `cursorPosition`, `dash`, `dashPhase`, `data`,
+`date`, `destination`, `dragText`, `drawing`, `droppedFileTypes`,
+`endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`, `fontAttributes`,
+`fontFamily`, `fontSize`, `fontWeight`, `format`, `frame`, `geometryTransform`,
+`gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `growsWithText`,
+`handAxis`, `height`, `hidesChildrenFromAccessibility`, `hidesWhenInactive`,
 `hidesWithSidebar`, `holdDuration`, `horizontalAlignment`,
 `horizontalScrollIndicator`, `horizontalTextAlignment`, `icon`, `iconPosition`,
 `iconSpacing`, `ignoresInput`, `ignoresSafeArea`, `inputPurpose`,
@@ -715,19 +719,19 @@ realizes the element and each of its members.
 
 `accessibilityActionPerformed`, `accessibilityAdjusted`, `activated`,
 `appearing`, `canGoBackChanged`, `canGoForwardChanged`, `clicked`, `closed`,
-`created`, `dateChanged`, `deactivated`, `destroying`, `detailsClicked`,
-`disappearing`, `dragEnded`, `dragged`, `dragLeave`, `dragOver`, `dragStarting`,
-`drop`, `endReached`, `filesDropped`, `frameChanged`, `handMoved`,
-`handStepped`, `held`, `isFocusedChanged`, `isPresentedChanged`,
-`itemActivated`, `itemMoved`, `keyPressed`, `linkOpened`, `mapClicked`,
-`navigated`, `navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`,
-`opened`, `panUpdated`, `pinchMoved`, `pinchUpdated`, `pointerEntered`,
-`pointerExited`, `pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`,
-`pressed`, `processTerminated`, `realizedChanged`, `refreshRequested`,
-`released`, `resumed`, `scrollStopped`, `selected`, `selectedIndexChanged`,
-`selectedItemsChanged`, `selectedTabChanged`, `showsSidebarChanged`, `stopped`,
-`submitted`, `swiped`, `tapped`, `textChanged`, `timeChanged`, `toggled`,
-`valueChanged`, `windowClosed`.
+`colorChanged`, `created`, `dateChanged`, `deactivated`, `destroying`,
+`detailsClicked`, `disappearing`, `dragEnded`, `dragged`, `dragLeave`,
+`dragOver`, `dragStarting`, `drop`, `endReached`, `filesDropped`,
+`frameChanged`, `handMoved`, `handStepped`, `held`, `isFocusedChanged`,
+`isPresentedChanged`, `itemActivated`, `itemMoved`, `keyPressed`, `linkOpened`,
+`mapClicked`, `navigated`, `navigatedFrom`, `navigatedTo`, `navigating`,
+`navigatingFrom`, `opened`, `panUpdated`, `pinchMoved`, `pinchUpdated`,
+`pointerEntered`, `pointerExited`, `pointerMoved`, `pointerPressed`,
+`pointerReleased`, `popped`, `pressed`, `processTerminated`, `realizedChanged`,
+`refreshRequested`, `released`, `resumed`, `scrollStopped`, `selected`,
+`selectedIndexChanged`, `selectedItemsChanged`, `selectedTabChanged`,
+`showsSidebarChanged`, `stopped`, `submitted`, `swiped`, `tapped`,
+`textChanged`, `timeChanged`, `toggled`, `valueChanged`, `windowClosed`.
 
 ### Acts
 

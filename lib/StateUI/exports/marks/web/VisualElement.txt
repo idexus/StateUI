@@ -1,4 +1,4 @@
-# revision 21.1
+# revision 22.1
 Button.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
 Button.accessibilityActions: – ARIA offers no action of an application's own words.
 Button.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
@@ -143,6 +143,42 @@ CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transfo
 CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 CheckBox.width: ✅
 CheckBox.zIndex: ✅
+ColorPicker.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+ColorPicker.accessibilityActions: – ARIA offers no action of an application's own words.
+ColorPicker.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
+ColorPicker.accessibilityHeading: ✅
+ColorPicker.accessibilityHint: ✅
+ColorPicker.accessibilityLabel: ✅
+ColorPicker.accessibilityRole: ✅
+ColorPicker.accessibilityValue: ✅
+ColorPicker.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+ColorPicker.frame: ✅
+ColorPicker.height: ✅
+ColorPicker.hidesChildrenFromAccessibility: ✅
+ColorPicker.ignoresInput: ✅
+ColorPicker.isAccessibilityHidden: ✅
+ColorPicker.isEnabled: ✅
+ColorPicker.isVisible: ✅
+ColorPicker.layoutDirection: ✅
+ColorPicker.maximumHeight: ✅
+ColorPicker.maximumWidth: ✅
+ColorPicker.minimumHeight: ✅
+ColorPicker.minimumWidth: ✅
+ColorPicker.opacity: ✅
+ColorPicker.pivotX: ✓ read pivotX of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.pivotY: ✓ read pivotY of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.rotation: ✓ read rotation of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.rotationX: ✓ read rotationX of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.rotationY: ✓ read rotationY of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.scale: ✓ read scale of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.scaleX: ✓ read scaleX of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.scaleY: ✓ read scaleY of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.style: ✅
+ColorPicker.tooltip: ✅
+ColorPicker.translationX: ✓ read translationX of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.translationY: ✓ read translationY of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.width: ✅
+ColorPicker.zIndex: ✅
 DatePicker.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
 DatePicker.accessibilityActions: – ARIA offers no action of an application's own words.
 DatePicker.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.

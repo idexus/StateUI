@@ -98,6 +98,15 @@ is the host's and answers that it took the link, so GTK opens nothing and
 marks nothing visited; the host layer opens the address
 (`host/runtime.md#a-link-chosen`).
 
+## A color picker
+
+A color picker is GTK's `GtkColorDialogButton`, owning its `GtkColorDialog`:
+a click opens the dialog, and the color the user chooses there becomes the
+button's `rgba`, whose `notify::rgba` the host hears and reports as the host
+layer reports a color (`host/runtime.md#a-color-chosen`). The dialog's
+`with-alpha` is `choosesOpacity`. A color the program writes notifies too,
+inside the program's write, which reports nothing.
+
 ## Runs of words
 
 A label's spans are its words, run by run: the label's text is their words

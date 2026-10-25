@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 Button.frameChanged: ✅
 Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅
@@ -31,6 +31,14 @@ CheckBox.pointerExited: ✅
 CheckBox.pointerMoved: ✅
 CheckBox.pointerPressed: ✅
 CheckBox.pointerReleased: ✅
+ColorPicker.frameChanged: ✅
+ColorPicker.gridColumnSpan: ✅
+ColorPicker.gridRowSpan: ✅
+ColorPicker.pointerEntered: ✅
+ColorPicker.pointerExited: ✅
+ColorPicker.pointerMoved: ✅
+ColorPicker.pointerPressed: ✅
+ColorPicker.pointerReleased: ✅
 DatePicker.frameChanged: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRowSpan: ✅

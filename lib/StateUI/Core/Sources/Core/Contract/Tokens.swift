@@ -41,6 +41,7 @@ extension NodeType {
     static let hStack = HStackContract.nodeType
     static let image = ImageContract.nodeType
     static let link = LinkContract.nodeType
+    static let colorPicker = ColorPickerContract.nodeType
     static let itemsView = ItemsViewContract.nodeType
     static let text = TextContract.nodeType
     static let line = LineContract.nodeType
@@ -223,6 +224,8 @@ extension NodeType {
     static let orientation = ScrollViewContract.orientation.token
     static let padding = PaddingElementContract.padding.token
     static let holdDuration = ViewContract.holdDuration.token
+    static let choosesOpacity = ColorPickerContract.choosesOpacity.token
+    static let color = ColorPickerContract.color.token
     static let panTouchCount = ViewContract.panTouchCount.token
     static let panXChannel = ViewContract.panXChannel.token
     static let panYChannel = ViewContract.panYChannel.token
@@ -334,6 +337,7 @@ extension NodeType {
     static let navigatingFrom = PageContract.navigatingFrom.token
     static let opened = DatePickerContract.opened.token
     static let held = ViewContract.held.token
+    static let colorChanged = ColorPickerContract.colorChanged.token
     static let panUpdated = ViewContract.panUpdated.token
     static let pinchUpdated = ViewContract.pinchUpdated.token
     static let pointerEntered = ViewContract.pointerEntered.token

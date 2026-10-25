@@ -19,6 +19,7 @@ enum WebRegistrations {
         indicators(registry)
         pickers(registry)
         dates(registry)
+        colors(registry)
         shapes(registry)
         canvas(registry)
         items(registry)

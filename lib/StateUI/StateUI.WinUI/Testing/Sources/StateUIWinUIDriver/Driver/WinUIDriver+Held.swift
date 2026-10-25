@@ -381,6 +381,8 @@ extension WinUIDriver {
         case ("isOpen", let picker as WinUIPickerView): return picker.isOpen.propValue
         case ("isOpen", let picker as WinUIDatePickerView): return picker.isOpen.propValue
         case ("date", let picker as WinUIDatePickerView): return picker.date?.propValue
+        case ("color", let picker as WinUIColorPickerView): return picker.color.propValue
+        case ("choosesOpacity", let picker as WinUIColorPickerView): return picker.choosesOpacity.propValue
         case ("minimumDate", let picker as WinUIDatePickerView): return Self.day(try read(picker, "minimumDate"))?.propValue
         case ("maximumDate", let picker as WinUIDatePickerView): return Self.day(try read(picker, "maximumDate"))?.propValue
         case ("format", let picker as WinUIDatePickerView):

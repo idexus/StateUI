@@ -44,6 +44,10 @@ CheckBox
   textColor
   tint
   toggled()
+ColorPicker
+  choosesOpacity
+  color
+  colorChanged()
 DatePicker
   date
   maximumDate

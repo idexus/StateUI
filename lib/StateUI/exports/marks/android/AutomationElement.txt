@@ -1,8 +1,9 @@
-# revision 7.1
+# revision 8.1
 Button.accessibilityIdentifier: ✅
 Canvas.accessibilityIdentifier: ✅
 Capsule.accessibilityIdentifier: ✅
 CheckBox.accessibilityIdentifier: ✅
+ColorPicker.accessibilityIdentifier: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 DatePicker.accessibilityIdentifier: ✅
 Ellipse.accessibilityIdentifier: ✅
 Fill.accessibilityIdentifier: ✅

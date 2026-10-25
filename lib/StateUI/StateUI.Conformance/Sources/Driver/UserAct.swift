@@ -31,6 +31,8 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     case pickDate(CalendarDate)
     /// A time of day picked from a time's clock.
     case pickTime(ClockTime)
+    /// A color picked in a color picker's panel.
+    case pickColor(Color)
     /// A pointer pressed down on the element, at a point of its own.
     case pressDown(at: Point)
     /// The pointer pressed down moved to a point of the element's.
@@ -118,6 +120,7 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .close: "close"
         case .pickDate: "pickDate"
         case .pickTime: "pickTime"
+        case .pickColor: "pickColor"
         case .pressDown: "pressDown"
         case .drag: "drag"
         case .lift: "lift"
