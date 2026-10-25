@@ -39,7 +39,10 @@ extension WebElement {
         if hearing.contains(.pointer), !listening.contains(.pointer) {
             listening.insert(.pointer)
             for (event, said) in Self.pointerEvents {
-                view.listen(event) { [weak self] in self?.heard(.pointer, .pointer(said, WebRelay.eventPoint)) }
+                view.listen(event) { [weak self] in
+                    let byFinger = WebRelay.eventPointer.kind == .touch
+                    self?.heard(.pointer, .pointer(said, WebRelay.eventPoint, byFinger: byFinger))
+                }
             }
         }
         if element.handler(.isFocusedChanged) != nil, !listensForFocus {

@@ -12,8 +12,9 @@
     /// A press held as long as the view's hold waits, before it moved as far as a drag.
     case hold
 
-    /// The pointer over the view: the View tier's event, and where it is, in points of the view.
-    case pointer(Event, Point)
+    /// The pointer over the view: the View tier's event, where it is, in points of the view, and whether a finger
+    /// is the pointer - which presses and lets go, and hovers over nothing.
+    case pointer(Event, Point, byFinger: Bool = false)
 
     /// A press dragged: its phase, and how far it has moved since it began.
     case drag(GesturePhase, x: Double, y: Double)

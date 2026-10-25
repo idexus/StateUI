@@ -424,6 +424,18 @@ enough ([a swipe](#a-swipe)); a pinch says each step's scale since the last
 and where, as shares of the view (`PinchStep`). A host's toolkit hears the
 input and says it as `HeardInput`.
 
+## A finger hovers over nothing
+
+A mouse or a pen comes over a view, moves over it and leaves it; a finger
+presses and lets go. The platforms made for the finger tell it so - UIKit's
+hover and Android's hover events come from a pointer that hovers alone - and
+`.pointerOver` promises it: never on a touch-only device. A browser and WinUI
+tell a finger's touch as a pointer coming over the view, and a finger that
+slides off a view and lifts elsewhere may leave it entered for good. So the
+host layer drops a finger's entering, moving over and leaving
+(`HeardInput.pointer(_:_:byFinger:)`); its press and its letting go stay. A
+host whose toolkit tells a finger's pointer apart says so.
+
 ## A disabled branch
 
 A view the tree disables keeps its place and still stands in the way of a

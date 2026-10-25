@@ -103,8 +103,11 @@ namespace {
     }
 
     void pointer(int64_t view, StateUIHeard what, IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
-        if (listener(view, StateUIHearingPointer))
-            tell(view, what, 0, args.GetCurrentPoint(sender.as<xaml::UIElement>()).Position());
+        if (!listener(view, StateUIHearingPointer)) return;
+        auto point = args.GetCurrentPoint(sender.as<xaml::UIElement>());
+        // A finger's pointer told apart, 1 in the phase: the host layer hears it hover over nothing.
+        bool finger = point.PointerDeviceType() == winrt::Microsoft::UI::Input::PointerDeviceType::Touch;
+        tell(view, what, finger ? 1 : 0, point.Position());
     }
 
     /// When the pointer event happened, in milliseconds on the pointer's clock.

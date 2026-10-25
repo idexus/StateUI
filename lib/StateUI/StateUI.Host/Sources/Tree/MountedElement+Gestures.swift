@@ -44,7 +44,9 @@ extension MountedElement {
             if run == 0 || run % count == 0 { send(.tapped, [], in: runtime) }
         case .hold:
             send(.held, [], in: runtime)
-        case .pointer(let event, let point):
+        case .pointer(let event, let point, let byFinger):
+            // Design: docs/design/host/runtime.md#a-finger-hovers-over-nothing
+            if byFinger, [.pointerEntered, .pointerMoved, .pointerExited].contains(event) { return false }
             let said: [HostValue] = event == .pointerEntered || event == .pointerExited ? [] : [.numbers([point.x, point.y])]
             send(event, said, in: runtime)
         case .drag(let phase, let x, let y):

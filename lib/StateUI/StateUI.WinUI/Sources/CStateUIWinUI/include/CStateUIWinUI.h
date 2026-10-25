@@ -369,7 +369,8 @@ typedef struct {
     /// Something the environment reports changed: the theme, the power, the network, a screen.
     void (*environmentChanged)(void);
 
-    /// What a view heard of the user's input, as `StateUIHeard` says: `phase` a tap's place or a gesture's phase.
+    /// What a view heard of the user's input, as `StateUIHeard` says: `phase` a tap's place, a gesture's phase, or
+    /// 1 where a finger is a pointer event's pointer.
     void (*heard)(int64_t view, StateUIHeard what, int32_t phase, double x, double y, double scale);
 
     /// The user answered the question asked under `ticket`: whether it was accepted, the words typed, in UTF-8, null
