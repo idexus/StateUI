@@ -115,6 +115,8 @@ enum WebRealization {
         .complete(TextAndIconElementContract.showsText, on: ToolbarToggleContract.self),
         .complete(ToolbarToggleContract.toggled),
         .complete(ToolbarGroupContract.order),
+        .complete(ToolbarGroupContract.part),
+        .complete(ToolbarGroupContract.hidesWithSidebar),
         .complete(ToolbarGroupContract.isEnabled),
         .complete(ToolbarGroupContract.position),
         .complete(SceneContract.activated),

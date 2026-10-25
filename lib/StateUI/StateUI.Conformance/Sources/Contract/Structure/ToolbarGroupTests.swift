@@ -198,9 +198,11 @@
             },
             ConformanceCase("aHiddenSidebarsItemsStandAtTheDetailsStartOrHide", proves: [
                 Covered(ToolbarGroupContract.hidesWithSidebar),
-            ]) { s in
+            ], needs: [Covered(SplitViewContract.showsSidebar)]) { s in
+                // Hidden once shown: a split view first given a wide room shows its sidebar.
+                let open = State(wrappedValue: true)
                 s.start {
-                    SplitView(State(wrappedValue: false).projectedValue) {
+                    SplitView(open.projectedValue) {
                         DeclaringPage()
                     } detail: {
                         DeclaringPage { [ToolbarButton("Save").id("save")] }
@@ -211,7 +213,10 @@
                     }
                 }
                 let detail = { reading(try s.bar(of: try detailPage(s))) }
+                let split = try s.element(ofType: SplitViewContract.nodeType)
+                try s.settle { try s.held(SplitViewContract.showsSidebar, on: split) == true }
 
+                open.wrappedValue = false
                 try s.settle { try detail() == "[add] [save]|" }
                 s.expect(try detail(), "[add] [save]|", "the sidebar's moved to the detail's start, the hiding one gone")
             },

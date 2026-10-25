@@ -23,8 +23,12 @@
     /// The stack whose top page the way back takes, and the way back's words.
     public var back: (stack: MountedElement, title: String)?
 
-    /// The actions the visible page declares, composed.
+    /// The actions the visible page declares, composed: under a split view, its bar's detail part.
     public var actions = ChromeActions()
+
+    /// The actions in the sidebar's part of the split view's bar, from the sidebar's page; none while the sidebar is
+    /// not shown, its part's then standing among `actions`, or where the window shows no split view.
+    public var sidebarActions = ChromeActions()
 
     /// What stands in the title's place: the title view the visible page's path declares.
     public var center: MountedElement?
@@ -69,6 +73,7 @@
             (stack, stack.children[stack.children.count - 2].value(.backButtonTitle)?.string ?? window.tree?.core.chromeWords.back ?? "")
         }
         if let page { actions = page.chromeActions }
+        if let sidebar = arrangement?.sidebarPage { sidebarActions = sidebar.chromeActions }
         center = page?.chromeTitleView
         let area = arrangement?.sidebarPage?.titleArea(applicationName: window.tree?.core.applicationName ?? "")
         titleArea = area?.isEmpty == false ? area : nil

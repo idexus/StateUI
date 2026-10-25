@@ -162,6 +162,8 @@ enum AndroidRealization {
             missing: "Android shows the words beside the picture only where the bar has room: an upright phone keeps the picture alone."),
         .complete(ToolbarToggleContract.toggled),
         .complete(ToolbarGroupContract.order),
+        .complete(ToolbarGroupContract.part),
+        .complete(ToolbarGroupContract.hidesWithSidebar),
         .complete(ToolbarGroupContract.isEnabled),
         .partial(ToolbarGroupContract.position,
             missing: "Android's bar has no leading edge beside its navigation button: a leading group stands first among the actions."),

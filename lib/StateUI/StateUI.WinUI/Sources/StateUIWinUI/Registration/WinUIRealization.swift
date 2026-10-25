@@ -216,6 +216,8 @@ enum WinUIRealization {
         .partial(TimePickerContract.format,
             missing: "WinUI's time picker writes hours and minutes as the user's clock does, whatever the format asks: no seconds, no pattern."),
         .complete(ToolbarGroupContract.order),
+        .complete(ToolbarGroupContract.part),
+        .complete(ToolbarGroupContract.hidesWithSidebar),
         .complete(ToolbarGroupContract.isEnabled),
         .complete(ToolbarGroupContract.position),
         .complete(TextAndIconElementContract.showsText, on: ToolbarButtonContract.self),

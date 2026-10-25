@@ -54,11 +54,16 @@ extension AppKitDriver {
                 run.compactMap { word($0, toolbar.itemForTesting($0)?.isEnabled ?? true) }
             }.filter { !$0.isEmpty }
         }
-        let first = identifiers.firstIndex(of: .flexibleSpace) ?? identifiers.endIndex
-        let last = identifiers.lastIndex(of: .flexibleSpace).map { $0 + 1 } ?? identifiers.endIndex
+        // A split view's page reads its part: the sidebar's before the separator tracking it, the detail's after.
+        let separator = identifiers.firstIndex(of: .sidebarTrackingSeparator)
+        let inSidebar = page.splitBarPart?.part == .sidebar
+        let part = separator.map { inSidebar ? identifiers[..<$0] : identifiers[($0 + 1)...] } ?? identifiers[...]
+        let first = part.firstIndex(of: .flexibleSpace) ?? part.endIndex
+        let last = part.lastIndex(of: .flexibleSpace).map { $0 + 1 } ?? part.endIndex
+        let overflow = inSidebar ? toolbar.sidebarOverflowForTesting : toolbar.overflowForTesting
         return BarWords.said(
-            leading: groups(identifiers[..<first]), trailing: groups(identifiers[last...]),
-            overflow: toolbar.overflowForTesting.compactMap { word($0.identifier, $0.isEnabled) })
+            leading: groups(part[..<first]), trailing: groups(part[last...]),
+            overflow: overflow.compactMap { word($0.identifier, $0.isEnabled) })
     }
 
     /// The element of `mount` in the tree under `root`, its slots included.

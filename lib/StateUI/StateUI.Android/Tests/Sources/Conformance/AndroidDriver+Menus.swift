@@ -62,11 +62,7 @@ extension AndroidDriver {
     /// The bar `page` shows, as Android lays it out: its actions in its menu's order, each run of one group a
     /// group, then the entries behind its overflow. Android's bar has no leading side.
     func bar(of page: MountedElement) throws -> String {
-        var each: MountedElement? = page
-        while let found = each, found.type != .navigationStack { each = found.parent }
-        guard let bar = ((each?.native as? AndroidElement)?.view as? AndroidNavigationView)?.bar else {
-            throw DriverCannot("read the bar of \(page.type.name)")
-        }
+        guard let bar = Self.bar(over: page) else { throw DriverCannot("read the bar of \(page.type.name)") }
         var (groups, overflow, group): ([[String]], [String], Int32?) = ([], [], nil)
         for entry in Self.laidOut(bar) {
             guard let item = bar.items.first(where: { ($0.native as? AndroidElement)?.menuPlace == Int(entry.id) - 1 })
@@ -164,8 +160,26 @@ extension AndroidDriver {
 
     /// The bars of every stack under `root`.
     private static func bars(in root: MountedElement) -> [AndroidBarView] {
-        let own = ((root.native as? AndroidElement)?.view as? AndroidNavigationView).map { [$0.bar] } ?? []
+        let view = (root.native as? AndroidElement)?.view
+        let split = (view as? AndroidSplitView).map { [$0.drawer.bar] + ($0.framesDetail ? [$0.detailColumn.bar] : []) }
+        let own = (view as? AndroidNavigationView).map { [$0.bar] } ?? split ?? []
         return own + (root.children + root.slots).flatMap(bars(in:))
+    }
+
+    /// The bar over `page`: its stack's, else its split view's column's - the sidebar's, or the detail's own; nil for
+    /// none.
+    private static func bar(over page: MountedElement) -> AndroidBarView? {
+        var (child, each) = (page, page.parent)
+        while let found = each {
+            let view = (found.native as? AndroidElement)?.view
+            if let stack = view as? AndroidNavigationView { return stack.bar }
+            if let split = view as? AndroidSplitView {
+                if found.arrangedChildren.first === child { return split.drawer.bar }
+                return split.framesDetail ? split.detailColumn.bar : nil
+            }
+            (child, each) = (found, found.parent)
+        }
+        return nil
     }
 
     /// The bar's entries as Android lays them out (`TestMenus.laidOut`), in its menu's order.

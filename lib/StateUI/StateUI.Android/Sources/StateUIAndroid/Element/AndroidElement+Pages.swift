@@ -126,15 +126,12 @@ extension AndroidElement {
     /// back or to the sidebar, the page's actions in their order, and the menus its path declares behind the overflow.
     /// Design: docs/design/platforms/android/pages.md#the-bar
     func refreshBar() {
-        if type == .splitView { return refreshSidebarBar() }
+        if type == .splitView {
+            refreshSidebarBar()
+            return refreshDetailBar()
+        }
         guard type == .navigationStack, let navigation = view as? AndroidNavigationView else { return }
         let page = element.visiblePage
-        // No place at the leading edge beside the navigation button: those groups stand first.
-        // Design: docs/design/platforms/android/pages.md#the-bar
-        let actions = page?.chromeActions ?? ChromeActions()
-        let groups = actions.start + actions.end
-        let onBar = groups.flatMap { $0 }
-        let shown = onBar + actions.overflow
         let colors = page?.barColors ?? element.barColors
 
         var content = AndroidBarView.Content()
@@ -144,6 +141,39 @@ extension AndroidElement {
         content.subtitle = titled?.value(.showsTitle)?.bool == false ? nil : titled?.barSubtitle
         content.background = colors.background
         content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
+        let items = Self.fill(&content, with: page?.chromeActions ?? ChromeActions(), menus: page?.chromeMenus.menus ?? [])
+        // The sidebar's toggle first while the sidebar does not stand beside the detail shown, then the way back -
+        // where the split view offers the toggle.
+        // Design: docs/design/platforms/android/pages.md#the-bar
+        let way: AndroidBarView.Navigation =
+            element.visibleBackStack === element ? .back : element.offersClose ? .close : .none
+        if let split = enclosingSplit, !split.sidebarStandsBeside,
+           split.element.offersSidebarToggle {
+            content.navigation = .sidebar
+            content.afterNavigation = way
+        } else {
+            content.navigation = way
+        }
+
+        navigation.setShowsBar(element.arrangedChildren.last?.showsTheStacksBar ?? true)
+        let bar = navigation.bar(taking: AndroidBarView.Words(on: colors.background))
+        bar.show(content)
+        bar.showTitleView(page?.chromeTitleView?.android.layoutItem?.view)
+        Self.offer(items, on: bar)
+        bar.onNavigation = { [weak self] in self?.pressed(content.navigation) }
+        bar.onAfterNavigation = { [weak self] in self?.pressed(content.afterNavigation) }
+    }
+
+    /// Writes on `content` the actions a bar shows - its groups in reading order, as Android's bar has no place at
+    /// the leading edge beside the navigation button, then those behind its overflow - and `menus` behind the
+    /// overflow: the items, each at its place.
+    /// Design: docs/design/platforms/android/pages.md#the-bar
+    private static func fill(
+        _ content: inout AndroidBarView.Content, with actions: ChromeActions, menus: [MenuEntry]
+    ) -> [MountedElement] {
+        let groups = actions.start + actions.end
+        let onBar = groups.flatMap { $0 }
+        let shown = onBar + actions.overflow
         // Each item's place - its menu item's id less one - in the order the bar's menu is written: an action, the
         // entries of a menu it opens there, and then the menus behind the overflow.
         var items: [MountedElement] = []
@@ -171,31 +201,17 @@ extension AndroidElement {
                 item.value(.text)?.string ?? "", isEnabled: item.isEffectivelyEnabled,
                 Self.menuEntries(ButtonMenu.entries(of: item), items: &items))
         }
-        content.menus = splitMenus + Self.menuEntries(page?.chromeMenus.menus ?? [], items: &items)
-        // The sidebar's toggle first while the sidebar does not stand beside the detail shown, then the way back -
-        // where the split view offers the toggle.
-        // Design: docs/design/platforms/android/pages.md#the-bar
-        let way: AndroidBarView.Navigation =
-            element.visibleBackStack === element ? .back : element.offersClose ? .close : .none
-        if let split = enclosingSplit, !split.sidebarStandsBeside,
-           split.element.offersSidebarToggle {
-            content.navigation = .sidebar
-            content.afterNavigation = way
-        } else {
-            content.navigation = way
-        }
+        content.menus = splitMenus + Self.menuEntries(menus, items: &items)
+        return items
+    }
 
-        navigation.setShowsBar(element.arrangedChildren.last?.showsTheStacksBar ?? true)
-        let bar = navigation.bar(taking: AndroidBarView.Words(on: colors.background))
-        bar.show(content)
-        bar.showTitleView(page?.chromeTitleView?.android.layoutItem?.view)
+    /// Lets the user choose `items` on `bar`, each by its place.
+    private static func offer(_ items: [MountedElement], on bar: AndroidBarView) {
         bar.items = items
         bar.onMenuChose = { [weak bar] index in
             guard let bar, bar.items.indices.contains(index) else { return }
             bar.items[index].android.choose()
         }
-        bar.onNavigation = { [weak self] in self?.pressed(content.navigation) }
-        bar.onAfterNavigation = { [weak self] in self?.pressed(content.afterNavigation) }
     }
 
     /// The user pressed a stack's bar's button doing `what`: going back, closing the sheet, or showing the sidebar.
@@ -212,7 +228,7 @@ extension AndroidElement {
 
     /// Shows on a split view's sidebar its own bar: the title area its page names the application with - its title,
     /// else the application's name, the line under it and its picture as the mark - in the colors its path declares,
-    /// and at its end the toggle hiding the sidebar, where the split view offers it.
+    /// the actions of the sidebar's part, and at its end the toggle hiding the sidebar, where the split view offers it.
     /// Design: docs/design/platforms/android/pages.md#a-split-view
     private func refreshSidebarBar() {
         guard let split = view as? AndroidSplitView, let page = element.sidebarPage else { return }
@@ -226,9 +242,41 @@ extension AndroidElement {
         content.background = colors.background
         content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
         content.endButton = element.offersSidebarToggle ? .sidebar : .none
+        let items = Self.fill(&content, with: page.chromeActions, menus: [])
         let bar = split.drawer.bar(taking: AndroidBarView.Words(on: colors.background))
         bar.show(content)
+        Self.offer(items, on: bar)
         bar.onEndButton = { [weak self] in self?.changeSidebarVisibility(to: false) }
+    }
+
+    /// Shows on a split view's detail page its own bar, as a stack's top page's: its title or the view standing in for
+    /// it, the line under it, its colors, the actions of the detail's part and its menus, and first the sidebar's
+    /// toggle while the sidebar does not stand beside it, where the split view offers it.
+    /// Design: docs/design/platforms/android/pages.md#a-split-view
+    private func refreshDetailBar() {
+        guard let split = view as? AndroidSplitView, split.framesDetail,
+              let page = arranged.dropFirst().first?.element
+        else { return }
+        let colors = page.barColors
+
+        var content = AndroidBarView.Content()
+        let titled = page.value(.showsTitle)?.bool != false
+        content.title = titled ? page.value(.title)?.string ?? "" : nil
+        content.subtitle = titled ? page.barSubtitle : nil
+        content.background = colors.background
+        content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
+        let items = Self.fill(&content, with: page.chromeActions, menus: page.chromeMenus.menus)
+        content.navigation = !sidebarStandsBeside && element.offersSidebarToggle ? .sidebar : .none
+
+        split.detailColumn.setShowsBar(page.value(.showsNavigationBar)?.bool != false)
+        let bar = split.detailColumn.bar(taking: AndroidBarView.Words(on: colors.background))
+        bar.show(content)
+        bar.showTitleView(page.chromeTitleView?.android.layoutItem?.view)
+        Self.offer(items, on: bar)
+        bar.onNavigation = { [weak self] in
+            guard let self, let split = view as? AndroidSplitView else { return }
+            changeSidebarVisibility(to: !split.isPresented)
+        }
     }
 
     /// Whether this split view's sidebar shows beside its detail, its toggle on its own bar.

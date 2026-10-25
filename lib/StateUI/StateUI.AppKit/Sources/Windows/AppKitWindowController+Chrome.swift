@@ -45,6 +45,9 @@ extension AppKitWindowController {
         toolbar.apply(AppKitWindowChrome(
             sidebar: split?.splitController,
             showsSidebarToggle: chrome.showsSidebarToggle,
+            sidebarLeadingActions: chrome.sidebarActions.start.map { $0.map(Self.action) },
+            sidebarActions: chrome.sidebarActions.end.map { $0.map(Self.action) },
+            sidebarOverflow: chrome.sidebarActions.overflow.map(Self.action),
             back: chrome.back.map { back in
                 AppKitToolbarAction(
                     identifier: AppKitWindowToolbar.back, title: back.title,

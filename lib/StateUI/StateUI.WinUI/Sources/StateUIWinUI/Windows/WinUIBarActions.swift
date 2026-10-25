@@ -5,14 +5,14 @@
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
 
-/// The actions a bar shows - the window's title bar's, or a sheet's head's - in reading order, each with its group's
+/// The actions a bar shows - the window's title bar's, a sheet's head's, or a split view's pane's - in reading order, each with its group's
 /// place, the leading edge's first, or -1 behind "more"; drawn again only where they changed.
 /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
 @MainActor
 struct WinUIBarActions {
     /// The bar the actions stand on.
     enum Bar {
-        case titleBar, sheet
+        case titleBar, sheet, pane
     }
 
     let bar: Bar
@@ -46,7 +46,11 @@ struct WinUIBarActions {
 
     /// Writes `actions` on the bar through the relay.
     private func draw(_ actions: [WinUIToolbarAction], places: [Int32], leading: Int32, on handle: StateUIObjectRef) {
-        let set = bar == .titleBar ? stateui_winui_title_bar_set_actions : stateui_winui_sheet_set_actions
+        let set = switch bar {
+        case .titleBar: stateui_winui_title_bar_set_actions
+        case .sheet: stateui_winui_sheet_set_actions
+        case .pane: stateui_winui_split_set_actions
+        }
         WinUIStrings.withCStrings(actions.map(\.title)) { titles in
             WinUIStrings.withCStrings(actions.map { $0.identifier ?? "" }) { identifiers in
                 WinUIStrings.withCStrings(actions.map { WinUIStrings.lines($0.icon) }) { icons in
@@ -80,7 +84,11 @@ struct WinUIBarActions {
 
     /// Gives each action's button holding a menu its menu.
     private func showMenus(of actions: [WinUIToolbarAction], places: [Int32], on handle: StateUIObjectRef) {
-        let set = bar == .titleBar ? stateui_winui_title_bar_set_action_menu : stateui_winui_sheet_set_action_menu
+        let set = switch bar {
+        case .titleBar: stateui_winui_title_bar_set_action_menu
+        case .sheet: stateui_winui_sheet_set_action_menu
+        case .pane: stateui_winui_split_set_action_menu
+        }
         for (place, held, first, menu) in Self.menus(of: actions, places: places) {
             menu.relayed { set(handle, place, held, first, $0, $1, $2, $3, $4, $5, $6, $7, $8, $9) }
         }

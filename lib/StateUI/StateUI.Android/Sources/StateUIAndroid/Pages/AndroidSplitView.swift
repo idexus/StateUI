@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 import CStateUIAndroid
 
-/// A SplitView: its detail page, and its sidebar - a drawer sliding over the detail where the room is narrow,
-/// beside it where it is wide.
+/// A SplitView: its detail - a page in a column under a bar of its own - and its sidebar - a drawer sliding over the
+/// detail where the room is narrow, beside it where it is wide.
 /// Design: docs/design/platforms/android/pages.md#a-split-view
 @MainActor
 final class AndroidSplitView: AndroidLayoutView {
@@ -41,7 +41,13 @@ final class AndroidSplitView: AndroidLayoutView {
     private var adaptation = SidebarAdaptation()
 
     /// The sidebar's column - its bar over its page - and the shade over the detail while it is open over it.
-    let drawer = AndroidSidebarView()
+    let drawer = AndroidColumnView()
+
+    /// The detail's column, its bar over the detail where the detail is a page: an arrangement brings its own bars.
+    let detailColumn = AndroidColumnView()
+
+    /// Whether the detail stands in its column: where it is a page.
+    var framesDetail = false
     private let scrim = AndroidView { _ in Java.new(JavaAPI.view, JavaAPI.newView, .object(AndroidRenderer.context)) }
     private var drawerWidth = 0.0
 
@@ -55,20 +61,28 @@ final class AndroidSplitView: AndroidLayoutView {
         Java.call(scrim.reference, JavaAPI.setAlpha, .float(0))
     }
 
-    /// The sidebar page goes in the drawer; the detail, the shade and the drawer in the split, front last.
+    /// The sidebar page goes in the drawer, a detail page in its column; the detail, the shade and the drawer in the
+    /// split, front last.
     @discardableResult
     override func setItems(_ items: [AndroidLayoutItem]) -> Bool {
         drawer.setItems(Array(items.prefix(1)))
+        detailColumn.setItems(framesDetail ? Array(items.dropFirst().prefix(1)) : [])
         return super.setItems(items)
     }
 
+    /// The detail as it stands in the split: its column where it has one.
+    private var detailView: AndroidView? {
+        framesDetail ? detailColumn : items.dropFirst().first?.view
+    }
+
     override func heldViews() -> [AndroidView] {
-        Array(items.dropFirst().prefix(1).map(\.view)) + [scrim, drawer]
+        (detailView.map { [$0] } ?? []) + [scrim, drawer]
     }
 
     override func forgetMeasurements() {
         super.forgetMeasurements()
         drawer.forgetMeasurements()
+        detailColumn.forgetMeasurements()
     }
 
     /// Shows or hides the sidebar: sliding over the detail, or beside it moving in or out as the detail narrows or
@@ -86,7 +100,7 @@ final class AndroidSplitView: AndroidLayoutView {
     /// sidebar beside it slides on - the detail's own: its bar changes in place.
     /// Design: docs/design/platforms/android/pages.md#a-split-view
     private func moveDetail() {
-        guard !reducesMotion(), let detail = items.dropFirst().first?.view else { return }
+        guard !reducesMotion(), let detail = detailView else { return }
         let transitions = Java.new(JavaAPI.transitionSet, JavaAPI.newTransitionSet)
         let easing = Java.new(
             JavaAPI.pathInterpolator, JavaAPI.newPathInterpolator, .float(0.4), .float(0), .float(0.2), .float(1))
@@ -102,7 +116,7 @@ final class AndroidSplitView: AndroidLayoutView {
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        SingleChildArithmetic.size(of: items.dropFirst().first, width: width)
+        framesDetail ? detailColumn.contentSize(width: width) : SingleChildArithmetic.size(of: items.dropFirst().first, width: width)
     }
 
     /// Lays the detail and the drawer out. A layout while the drawer slides leaves it sliding; only a new room -
@@ -127,11 +141,13 @@ final class AndroidSplitView: AndroidLayoutView {
         // beside the detail stands apart from it by the theme's line.
         drawer.roomInsets = roomInsets
         drawer.showsEdge = !overlays
-        if let detail = items.dropFirst().first {
+        let room = Rect(x: leading ? beside : 0, y: 0, width: bounds.width - beside, height: bounds.height)
+        if framesDetail {
+            detailColumn.roomInsets = roomInsets
+            detailColumn.layout(room)
+        } else if let detail = items.dropFirst().first {
             (detail.view as? AndroidLayoutView)?.roomInsets = roomInsets
-            let room = Rect(x: leading ? beside : 0, y: 0, width: bounds.width - beside, height: bounds.height)
-            detail.view.layout(
-                SingleChildArithmetic.place(of: detail, in: room, direction: direction))
+            detail.view.layout(SingleChildArithmetic.place(of: detail, in: room, direction: direction))
         }
         scrim.layout(Rect(x: 0, y: 0, width: bounds.width, height: bounds.height))
         drawer.layout(Rect(x: leading ? 0 : bounds.width - drawerWidth, y: 0, width: drawerWidth, height: bounds.height))

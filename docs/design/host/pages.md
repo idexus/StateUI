@@ -251,6 +251,16 @@ groups stand at the start of the detail's - behind its overflow those that
 stood behind the sidebar's - or are gone where they hide with it
 (`hidesWithSidebar`); a part said off any split view changes nothing.
 
+A window's one chrome carries both parts (`WindowChrome`): the detail's from
+the visible page (`actions`), the sidebar's from the sidebar's page
+(`sidebarActions`) - none while the sidebar is not shown, its groups then
+standing among the detail's. Each host stands the sidebar's part over the
+sidebar natively: AppKit before the toolbar's separator tracking the sidebar,
+the Web in the bar's part over the sidebar, WinUI on the head of the split
+view's pane, as a Windows application's navigation pane holds its commands; a
+host with a bar per column - UIKit, Android, GTK - shows each column's part
+on its own bar.
+
 One group is one background where the platform groups a bar's actions; an item
 standing alone is a group of one. At each position - the start, the end, the
 overflow - the groups stand by their `order`, then the outer at the edge -

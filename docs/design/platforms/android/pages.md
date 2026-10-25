@@ -83,13 +83,19 @@ it opens there, and the overflow's menus after every action.
 
 ## A split view
 
-The sidebar stands under a bar of its own, Android's toolbar as a stack's
-is: the title area the sidebar's page names the application with
+Each column stands under a bar of its own, Android's toolbar as a stack's
+is (`AndroidColumnView`), and the split view's one bar stands in two parts
+over them ([a page's actions](../../host/pages.md#a-pages-actions)). The
+sidebar's shows the title area the sidebar's page names the application with
 (`titleArea(applicationName:)`) - its title, else the application's name,
 the line under it and its picture as the mark before them - in the colors its
-path declares, and at its end the sidebar's toggle in Android's menu glyph,
-which hides the sidebar. The bar reaches under what stands over the top, the sidebar page
-below it (`AndroidSidebarView`). Beside the detail the column stands apart
+path declares, the actions of the sidebar's part, and at its end the
+sidebar's toggle in Android's menu glyph, which hides the sidebar. A detail
+that is a page shows its own as a stack's top page does - its title, the line
+under it, the actions of the detail's part and its menus, the sidebar's toggle
+first where the sidebar does not stand beside it; a stack or a tabbed view in
+the detail brings its own bars. The bar reaches under what stands over the
+top, the column's page below it. Beside the detail the column stands apart
 from it by the theme's line between panes (`dividerVertical`) down its edge
 toward the detail; a drawer over the detail stands on its own edge.
 

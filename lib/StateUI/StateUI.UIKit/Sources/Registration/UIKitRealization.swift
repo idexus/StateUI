@@ -175,6 +175,8 @@ enum UIKitRealization {
             reason: "A UIKit bar button shows its picture or its words, never both."),
         .complete(ToolbarToggleContract.toggled),
         .complete(ToolbarGroupContract.order),
+        .complete(ToolbarGroupContract.part),
+        .complete(ToolbarGroupContract.hidesWithSidebar),
         .complete(ToolbarGroupContract.isEnabled),
         .complete(ToolbarGroupContract.position),
         .notPlanned(VisualElementContract.tooltip,

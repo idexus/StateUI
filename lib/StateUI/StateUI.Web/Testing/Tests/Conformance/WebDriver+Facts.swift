@@ -257,16 +257,24 @@ extension WebDriver {
                 }
             }.filter { !$0.isEmpty }
         }
-        let leading = try groups(".stateui-bar-start > .stateui-bar-actions")
-        let trailing = try groups(":scope > .stateui-bar-actions")
-        return BarWords.said(leading: leading, trailing: trailing, overflow: try overflow(of: page))
+        // A split view's page reads its part: the sidebar's over the sidebar, the detail's beside it.
+        guard page.splitBarPart?.part == .sidebar else {
+            let leading = try groups(".stateui-bar-start > .stateui-bar-actions")
+            let trailing = try groups(":scope > .stateui-bar-actions")
+            let more = ":scope > .stateui-bar-actions > button:has(> [data-glyph=more])"
+            return BarWords.said(leading: leading, trailing: trailing, overflow: try overflow(of: page, behind: more))
+        }
+        let leading = try groups(".stateui-bar-side > .stateui-bar-actions[data-edge=start]")
+        let trailing = try groups(".stateui-bar-side > .stateui-bar-actions:not([data-edge])")
+        let more = ".stateui-bar-side button:has(> [data-glyph=more])"
+        return BarWords.said(leading: leading, trailing: trailing, overflow: try overflow(of: page, behind: more))
     }
 
-    /// The actions behind the bar's More, as its menu shows them before the page's menus.
-    private func overflow(of page: MountedElement) throws -> [String] {
+    /// The actions behind the bar's More found by `more`, as its menu shows them before the page's menus.
+    private func overflow(of page: MountedElement, behind more: String) throws -> [String] {
         let bar = try self.bar(over: page)
-        guard try WebBrowser.truth("!e.querySelector('button:has(> [data-glyph=more])').hidden", on: bar) else { return [] }
-        try click(bar, part: "button:has(> [data-glyph=more])")
+        guard try WebBrowser.truth("!e.querySelector('\(more)').hidden", on: bar) else { return [] }
+        try click(bar, part: more)
         defer { press("Escape") }
         let open = "[...document.querySelectorAll('.stateui-menu')].find((m) => m.matches(':popover-open'))"
         let script = "((m) => { const out = []; for (const c of m ? m.children : []) {"

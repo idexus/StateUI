@@ -1252,6 +1252,21 @@ double stateui_winui_split_pane_width(StateUIObjectRef split);
 /// edge at the pane's.
 void stateui_winui_split_slide(StateUIObjectRef split, double pane, double width);
 
+/// The actions of the sidebar's part of a split view's bar on the head of its pane - at its leading edge, at its
+/// trailing edge and behind "more" - and an action's menu, as the title bar's are
+/// (`stateui_winui_title_bar_set_actions`, `stateui_winui_title_bar_set_action_menu`), a press chosen on the split
+/// view by its place.
+void stateui_winui_split_set_actions(StateUIObjectRef split, char const *const *texts, char const *const *identifiers,
+                                     char const *const *icons, bool const *words, bool const *destructive,
+                                     int32_t const *groups, int32_t leadingGroups, bool const *enabled,
+                                     int32_t const *keys, int32_t const *modifiers, bool const *givesWay,
+                                     int32_t const *states, int32_t count);
+void stateui_winui_split_set_action_menu(StateUIObjectRef split, int32_t place, bool held, int32_t first,
+                                         int32_t const *kinds, char const *const *titles, bool const *enabled,
+                                         char const *const *identifiers, char const *const *icons,
+                                         bool const *destructive, int32_t const *keys, int32_t const *modifiers,
+                                         bool const *givesWay, int32_t count);
+
 /// Asks WinUI to measure a split view's pane and everything in it again, as its height changes: WinUI applies an
 /// arrange inside the pane only to what it measured in that pass.
 void stateui_winui_split_measure_pane_again(StateUIObjectRef split);

@@ -153,6 +153,12 @@ final class WinUIWindowController {
         chrome.leading = composed.actions.start.map { $0.map(Self.action) }
         chrome.trailing = composed.actions.end.map { $0.map(Self.action) }
         chrome.overflow = composed.actions.overflow.map(Self.action)
+        // The sidebar's part stands on the head of its pane, as a Windows application's navigation pane holds its
+        // commands.
+        (composed.splitView?.winUI.view as? WinUISplitView)?.sidebar.showActions(
+            leading: composed.sidebarActions.start.map { $0.map(Self.action) },
+            trailing: composed.sidebarActions.end.map { $0.map(Self.action) },
+            overflow: composed.sidebarActions.overflow.map(Self.action))
         chrome.background = composed.background
         chrome.material = composed.material
         chrome.foreground = composed.foreground

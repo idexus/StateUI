@@ -4,12 +4,24 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A split view's sidebar column: the sidebar's own bar - the application's name and mark, the toggle at its end -
-/// over the sidebar page, in the drawer over the detail or beside it, apart from it then by the theme's line.
+/// A split view's column: its own bar over its page. The sidebar's - the application's name and mark, its part's
+/// actions, the toggle at its end - stands in the drawer over the detail or beside it, apart from it then by the
+/// theme's line; a detail that is a page stands under a bar of its own, as a stack's top page does.
 /// Design: docs/design/platforms/android/pages.md#a-split-view
 @MainActor
-final class AndroidSidebarView: AndroidLayoutView {
+final class AndroidColumnView: AndroidLayoutView {
     private(set) var bar = AndroidBarView()
+
+    /// Whether the bar shows: not over a page hiding its bar.
+    private(set) var showsBar = true
+
+    func setShowsBar(_ shows: Bool) {
+        guard shows != showsBar else { return }
+
+        showsBar = shows
+        holdChildren()
+        invalidateMeasurements()
+    }
 
     /// The theme's line down the column's edge toward the detail, and how wide the theme draws it, in pixels.
     let edge = AndroidView { _ in Java.new(JavaAPI.view, JavaAPI.newView, .object(AndroidRenderer.context)) }
@@ -33,15 +45,15 @@ final class AndroidSidebarView: AndroidLayoutView {
     }
 
     override func heldViews() -> [AndroidView] {
-        [bar] + (items.first.map { [$0.view] } ?? []) + (showsEdge ? [edge] : [])
+        (showsBar ? [bar] : []) + (items.first.map { [$0.view] } ?? []) + (showsEdge ? [edge] : [])
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
         let page = SingleChildArithmetic.size(of: items.first, width: width)
-        return LayoutSize(width: page.width, height: page.height + bar.height(width: width))
+        return LayoutSize(width: page.width, height: page.height + (showsBar ? bar.height(width: width) : 0))
     }
 
-    /// The bar along the top, reaching under what stands over it there, the sidebar page below it with the rest
+    /// The bar along the top, reaching under what stands over it there, the column's page below it with the rest
     /// (`Clearance.underABarAtTheTop`).
     /// Design: docs/design/platforms/android/pages.md#the-safe-area
     override func arrange(in bounds: Rect) {
@@ -50,10 +62,10 @@ final class AndroidSidebarView: AndroidLayoutView {
             edge.layout(Rect(
                 x: direction == .leftToRight ? bounds.width - width : 0, y: 0, width: width, height: bounds.height))
         }
-        let (barInsets, pageInsets) = roomInsets.underABarAtTheTop
+        let (barInsets, pageInsets) = showsBar ? roomInsets.underABarAtTheTop : (.none, roomInsets)
         bar.pad(barInsets)
-        let height = bar.height(width: bounds.width)
-        bar.layout(Rect(x: 0, y: 0, width: bounds.width, height: height))
+        let height = showsBar ? bar.height(width: bounds.width) : 0
+        if showsBar { bar.layout(Rect(x: 0, y: 0, width: bounds.width, height: height)) }
         guard let page = items.first, page.isShown else { return }
 
         (page.view as? AndroidLayoutView)?.roomInsets = pageInsets

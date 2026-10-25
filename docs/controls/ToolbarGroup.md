@@ -45,12 +45,12 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (5)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>3 ✅</td><td><code>NSToolbarItem</code>; <code>NSMenuToolbarItem</code> overflow</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>3 ✅</td><td><code>UIBarButtonItemGroup</code> / <code>UIBarButtonItem</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>2 ✅ · 1 ☑️</td><td><code>Toolbar</code> <code>MenuItem</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>3 ✅</td><td><code>CommandBar</code> <code>AppBarButton</code> in the <code>TitleBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>3 ✅</td><td><code>GtkButton</code> in an <code>AdwHeaderBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>3 ✅</td><td><code>&lt;button&gt;</code> in an ARIA <code>toolbar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>5 ✅</td><td><code>NSToolbarItem</code>; <code>NSMenuToolbarItem</code> overflow</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>5 ✅</td><td><code>UIBarButtonItemGroup</code> / <code>UIBarButtonItem</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>4 ✅ · 1 ☑️</td><td><code>Toolbar</code> <code>MenuItem</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>5 ✅</td><td><code>CommandBar</code> <code>AppBarButton</code> in the <code>TitleBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>5 ✅</td><td><code>GtkButton</code> in an <code>AdwHeaderBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>5 ✅</td><td><code>&lt;button&gt;</code> in an ARIA <code>toolbar</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarGroupContract.swift`.
@@ -59,12 +59,10 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarGroupContr
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>hidesWithSidebar</code></td><td>property</td><td><code>Bool</code></td><td>stateUI</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4, Web: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>hidesWithSidebar</code></td><td>property</td><td><code>Bool</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>order</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>part</code></td><td>property</td><td><code>ToolbarPart</code></td><td>stateUI</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4, Web: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>part</code></td><td>property</td><td><code>ToolbarPart</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>position</code></td><td>property</td><td><code>ToolbarPosition</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: Android's bar has no leading edge beside its navigation button: a leading group stands first among the actions.</td></tr></tbody>
 </table>

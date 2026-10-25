@@ -593,9 +593,15 @@ extension WinUIDriver {
         let titleBar = try window(of: page).titleBar
         var root = page
         while let parent = root.parent { root = parent }
-        let read = Self.saidActions(try self.read(titleBar, "bar"))
+        // A sidebar's page reads the sidebar's part, on the head of its split view's pane.
+        let pane = page.splitBarPart.flatMap { bar in
+            bar.part == .sidebar ? ((bar.split.native as? WinUIElement)?.view as? WinUISplitView)?.sidebar : nil
+        }
+        let read = Self.saidActions(try pane.map { try self.read($0, "bar") } ?? self.read(titleBar, "bar"))
+        let drawn = pane?.drawn ?? titleBar.drawn
         let word = { (said: SaidAction) -> String? in
-            guard let mount = titleBar.drawn[said.place].mount, let item = Self.element(mounted: mount, in: root)
+            guard drawn.indices.contains(said.place), let mount = drawn[said.place].mount,
+                  let item = Self.element(mounted: mount, in: root)
             else { return nil }
             return BarWords.word(item, enabled: said.enabled)
         }

@@ -32,7 +32,7 @@ extension MountedElement {
 
     /// The split view whose bar this page stands under, and its part: the nearest around it up to its window or
     /// sheet, the sidebar's part for a page of its sidebar; nil where none stands around it.
-    var splitBarPart: (split: MountedElement, part: ToolbarPart)? {
+    public var splitBarPart: (split: MountedElement, part: ToolbarPart)? {
         var (child, each) = (self, parent)
         while let element = each, element.type != .window, element.type != .sheet {
             if element.type == .splitView {

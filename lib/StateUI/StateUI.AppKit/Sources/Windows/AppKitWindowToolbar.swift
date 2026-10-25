@@ -60,17 +60,21 @@ struct AppKitToolbarMenu {
 /// What a window's toolbar shows.
 ///
 /// The window controller composes it from the visible arrangement, and the
-/// toolbar lays it out in one order: the sidebar toggle and the separator
-/// that tracks the sidebar, the way back, the page's title where a painted
-/// band hides the system's, the leading groups of actions, the center, the
-/// trailing groups, native overflow and the button closing a sheet. A space
-/// stands between two groups, and before the overflow, so each keeps a
-/// background of its own.
+/// toolbar lays it out in one order: the sidebar's part - its toggle, its
+/// groups, its overflow - and the separator that tracks the sidebar, the way
+/// back, the page's title where a painted band hides the system's, the
+/// leading groups of actions, the center, the trailing groups, native overflow
+/// and the button closing a sheet. A space stands between two groups, and
+/// before the overflow, so each keeps a background of its own.
 @MainActor
 struct AppKitWindowChrome {
     var sidebar: NSSplitViewController?
     /// Whether the sidebar's toggle stands at the toolbar's start; the sidebar's part stays apart without it.
     var showsSidebarToggle = true
+    /// The groups standing in the sidebar's part, at its start and at its end, and those behind its own overflow.
+    var sidebarLeadingActions: [[AppKitToolbarAction]] = []
+    var sidebarActions: [[AppKitToolbarAction]] = []
+    var sidebarOverflow: [AppKitToolbarAction] = []
     var back: AppKitToolbarAction?
     var title: NSView?
     var leadingActions: [[AppKitToolbarAction]] = []
@@ -96,6 +100,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     static let title = NSToolbarItem.Identifier("StateUI.title")
     static let center = NSToolbarItem.Identifier("StateUI.center")
     static let overflow = NSToolbarItem.Identifier("StateUI.overflow")
+    static let sidebarOverflow = NSToolbarItem.Identifier("StateUI.sidebarOverflow")
     static let close = NSToolbarItem.Identifier("StateUI.close")
 
     /// The system's own glyph for going back, saying `words`: one image for each.
@@ -114,9 +119,10 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     private weak var sidebar: NSSplitViewController?
     private var views: [NSToolbarItem.Identifier: NSView] = [:]
     private var actions: [NSToolbarItem.Identifier: AppKitToolbarAction] = [:]
-    /// What stands behind the bar's More, group by group.
+    /// What stands behind the bar's More, group by group, and behind the sidebar's part's.
     private var overflowGroups: [[AppKitToolbarAction]] = []
     private var overflowActions: [AppKitToolbarAction] { overflowGroups.flatMap { $0 } }
+    private var sidebarOverflowActions: [AppKitToolbarAction] = []
 
     /// The window the bar stands in, which a bar fitting itself measures in.
     weak var window: NSWindow?
@@ -202,8 +208,26 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         var nextViews: [NSToolbarItem.Identifier: NSView] = [:]
         var nextActions: [NSToolbarItem.Identifier: AppKitToolbarAction] = [:]
 
+        let place = { (groups: [[AppKitToolbarAction]]) in
+            for (index, group) in groups.enumerated() {
+                if index > 0 { nextIdentifiers.append(.space) }
+                for action in group {
+                    nextIdentifiers.append(action.identifier)
+                    nextActions[action.identifier] = action
+                }
+            }
+        }
         if chrome.sidebar != nil {
             if chrome.showsSidebarToggle { nextIdentifiers.append(.toggleSidebar) }
+            place(chrome.sidebarLeadingActions)
+            if !chrome.sidebarActions.isEmpty || !chrome.sidebarOverflow.isEmpty {
+                nextIdentifiers.append(.flexibleSpace)
+                place(chrome.sidebarActions)
+            }
+            if !chrome.sidebarOverflow.isEmpty {
+                if !chrome.sidebarActions.isEmpty { nextIdentifiers.append(.space) }
+                nextIdentifiers.append(Self.sidebarOverflow)
+            }
             nextIdentifiers.append(.sidebarTrackingSeparator)
         }
         if let back = chrome.back {
@@ -213,15 +237,6 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         if let title = chrome.title {
             nextIdentifiers.append(Self.title)
             nextViews[Self.title] = title
-        }
-        let place = { (groups: [[AppKitToolbarAction]]) in
-            for (index, group) in groups.enumerated() {
-                if index > 0 { nextIdentifiers.append(.space) }
-                for action in group {
-                    nextIdentifiers.append(action.identifier)
-                    nextActions[action.identifier] = action
-                }
-            }
         }
         place(chrome.leadingActions)
         nextIdentifiers.append(.flexibleSpace)
@@ -250,6 +265,8 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         }
             && behind.map(\.count) == overflowGroups.map(\.count)
             && zip(behind.flatMap { $0 }, overflowActions).allSatisfy { $0.draws(like: $1) }
+            && chrome.sidebarOverflow.count == sidebarOverflowActions.count
+            && zip(chrome.sidebarOverflow, sidebarOverflowActions).allSatisfy { $0.draws(like: $1) }
             && chrome.words == words
 
         identifiers = nextIdentifiers
@@ -258,6 +275,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         views = nextViews
         actions = nextActions
         overflowGroups = behind
+        sidebarOverflowActions = chrome.sidebarOverflow
         words = chrome.words
         toolbar.centeredItemIdentifiers = center == nil ? [] : [Self.center]
 
@@ -308,7 +326,8 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         // A search field stands as the toolbar's own search item, which draws it as AppKit's rounded field: a
         // field the toolbar holds as a plain item's view stands there with no field drawn at all.
         // Design: docs/design/platforms/appkit/runtime.md#the-toolbar
-        let item: NSToolbarItem = if itemIdentifier == Self.overflow || actions[itemIdentifier]?.menu != nil {
+        let item: NSToolbarItem = if [Self.overflow, Self.sidebarOverflow].contains(itemIdentifier)
+            || actions[itemIdentifier]?.menu != nil {
             NSMenuToolbarItem(itemIdentifier: itemIdentifier)
         } else if views[itemIdentifier] is NSSearchField {
             NSSearchToolbarItem(itemIdentifier: itemIdentifier)
@@ -333,11 +352,13 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             return
         }
 
-        if identifier == Self.overflow, let menuItem = item as? NSMenuToolbarItem {
+        if [Self.overflow, Self.sidebarOverflow].contains(identifier), let menuItem = item as? NSMenuToolbarItem {
             menuItem.image = NSImage(systemSymbolName: "ellipsis.circle", accessibilityDescription: words?.more)
             menuItem.label = words?.more ?? ""
             menuItem.showsIndicator = false
-            menuItem.menu = overflowMenu()
+            menuItem.menu = identifier == Self.overflow
+                ? overflowMenu(overflowGroups, numberedFrom: sidebarOverflowActions.count)
+                : overflowMenu([sidebarOverflowActions], numberedFrom: 0)
             return
         }
 
@@ -395,25 +416,26 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         }
     }
 
-    /// The overflow's menu: each action an item, an action opening a menu a submenu under its words.
-    private func overflowMenu() -> NSMenu {
+    /// An overflow's menu of `groups`: each action an item - numbered on from `first` among every overflow's - an
+    /// action opening a menu a submenu under its words.
+    private func overflowMenu(_ groups: [[AppKitToolbarAction]], numberedFrom first: Int) -> NSMenu {
         let menu = NSMenu()
         menu.autoenablesItems = false
         // A line between two groups: before the first action of each group after the first.
         var firsts: Set<Int> = []
         var count = 0
-        for group in overflowGroups.dropLast() {
+        for group in groups.dropLast() {
             count += group.count
             firsts.insert(count)
         }
-        for (index, action) in overflowActions.enumerated() {
+        for (index, action) in groups.flatMap({ $0 }).enumerated() {
             if firsts.contains(index) { menu.addItem(.separator()) }
             let item = NSMenuItem(
                 title: action.title,
                 action: #selector(performOverflow(_:)),
                 keyEquivalent: "")
             item.target = self
-            item.tag = index
+            item.tag = first + index
             item.image = action.image
             item.isEnabled = action.isEnabled
             item.state = action.isOn == true ? .on : .off
@@ -438,8 +460,9 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     }
 
     @objc private func performOverflow(_ sender: NSMenuItem) {
-        guard overflowActions.indices.contains(sender.tag) else { return }
-        overflowActions[sender.tag].perform()
+        let every = sidebarOverflowActions + overflowActions
+        guard every.indices.contains(sender.tag) else { return }
+        every[sender.tag].perform()
     }
 
     var identifiersForTesting: [NSToolbarItem.Identifier] { identifiers }
@@ -454,6 +477,11 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     /// The actions behind the overflow, each by its identifier and whether it can be chosen.
     var overflowForTesting: [(identifier: NSToolbarItem.Identifier, isEnabled: Bool)] {
         overflowActions.map { ($0.identifier, $0.isEnabled) }
+    }
+
+    /// The actions behind the sidebar's part's overflow, each by its identifier and whether it can be chosen.
+    var sidebarOverflowForTesting: [(identifier: NSToolbarItem.Identifier, isEnabled: Bool)] {
+        sidebarOverflowActions.map { ($0.identifier, $0.isEnabled) }
     }
 
     func itemForTesting(_ identifier: NSToolbarItem.Identifier) -> NSToolbarItem? {

@@ -136,7 +136,12 @@ height changes, everything in the pane is measured again
 (`stateui_winui_split_measure_pane_again`): WinUI applies an arrange inside
 the pane only to what it measured in that pass, and a footer would keep its
 place in the taller window, below the shorter one. The view shows none
-of its own buttons, which the window's chrome carries. A closed pane would
+of its own buttons, which the window's chrome carries, but for the sidebar's
+part of the bar ([a page's actions](../../host/pages.md#a-pages-actions)): a
+head over the sidebar page holds its actions - a command bar at its leading
+edge and one at its trailing edge with "more" - as a Windows application's
+navigation pane holds its commands over what it lists, and stands only while
+it holds one. A closed pane would
 keep what it holds where the keyboard's Tab and Narrator still reach it - a
 sign-out button among them - so the sidebar is collapsed while its pane is
 closed: shown as the pane starts to open, collapsed once it has closed, and

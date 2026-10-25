@@ -541,13 +541,13 @@ Every control, and every part an application, its windows and its pages are made
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ToolbarButton](controls/ToolbarButton.md) | 10 | 5 ✅ · 2 ✓ · 1 – | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 8 ✅ · 1 ☑️ · 1 – | 8 ✅ · 1 ✓ · 1 – | 10 ✅ |
-| [ToolbarGroup](controls/ToolbarGroup.md) | 5 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
+| [ToolbarGroup](controls/ToolbarGroup.md) | 5 | 5 ✅ | 5 ✅ | 4 ✅ · 1 ☑️ | 5 ✅ | 5 ✅ | 5 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 9 | 7 ✅ · 1 – | 8 ✅ · 1 – | 6 ✅ · 1 ☑️ · 1 – | 9 ✅ | 8 ✅ · 1 – | 9 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 105 | 108 | 86 | 130 | 98 | 120 |
+| ✅ |  | 107 | 110 | 88 | 132 | 100 | 122 |
 | ✓ |  | 27 | 25 | 24 | 9 | 22 | 14 |
 | – |  | 11 | 17 | 28 | 10 | 29 | 15 |
-| **Met** | 164 | **143** | **150** | **138** | **149** | **149** | **149** |
+| **Met** | 164 | **145** | **152** | **140** | **151** | **151** | **151** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -640,7 +640,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TextField](controls/TextField.md) | `isPassword`, `submitLabel`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ · 1 ☑️ · 1 – | 4 ✅ | 3 ✅ · 1 – | 1 ✅ · 2 ☑️ | 2 ✅ · 1 ☑️ · 1 – | 3 ✅ |
 | [TextSpan](controls/TextSpan.md) | `background` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ · 1 ✓ · 4 – | 2 ✅ | 5 ✅ · 1 ✓ | 2 ✅ | 4 ✅ · 1 ✓ | 2 ✅ · 3 – |
-| [ToolbarGroup](controls/ToolbarGroup.md) | `hidesWithSidebar`, `isEnabled`, `order`, `part`, `position` | 5 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
+| [ToolbarGroup](controls/ToolbarGroup.md) | `hidesWithSidebar`, `isEnabled`, `order`, `part`, `position` | 5 | 5 ✅ | 5 ✅ | 4 ✅ · 1 ☑️ | 5 ✅ | 5 ✅ | 5 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | `isOn`, `onIcon`, `onToggled` (`toggled`) | 3 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 ✅ | 7 ✅ | 7 ✅ | 5 ✅ |
 | [Window](controls/Window.md) | `activated`, `background`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |

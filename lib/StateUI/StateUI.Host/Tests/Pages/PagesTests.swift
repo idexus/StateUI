@@ -530,6 +530,11 @@ final class PagesTests: XCTestCase {
     /// The ids of what the page `id` shows: each group at the start, "|", at the end, "|", the overflow's sections.
     private func bar(_ id: String, in runtime: HostRuntime) -> String {
         guard let actions = runtime.tree.root?.first(id: .manual(id))?.chromeActions else { return "none" }
+        return said(actions)
+    }
+
+    /// The ids of `actions`: each group at the start, "|", at the end, "|", the overflow's sections.
+    private func said(_ actions: ChromeActions) -> String {
         let groups = { (groups: [[MountedElement]]) in
             groups.map { "[" + $0.map { Self.said($0.id) }.joined(separator: " ") + "]" }.joined(separator: " ")
         }
@@ -634,6 +639,28 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(bar("menu", in: runtime), "||")
         XCTAssertEqual(bar("detail", in: runtime), "|[pin]|")
         XCTAssertTrue(runtime.tree.root?.first(id: .manual("pin")) === pin, "one element moving")
+    }
+
+    /// A window's one chrome shows both parts of its split view's bar: the sidebar's from the sidebar's page while the
+    /// sidebar shows, the detail's from the visible page - and, the sidebar hidden, the sidebar's part in the detail's.
+    func testAWindowsChromeShowsBothPartsOfItsSplitViewsBar() throws {
+        let window = { (shown: Bool) in
+            self.pageWindow(
+                outer: [self.toolbarGroup("page", [self.toolbarAction("more")])],
+                sidebar: [self.toolbarGroup("menu.group", [self.toolbarAction("folder")])],
+                split: [self.toolbarGroup("toggle", [self.toolbarAction("add")], part: .sidebar)],
+                sidebarShown: shown)
+        }
+        let runtime = runtime(window(true)) { _ in }
+        let chrome = {
+            WindowChrome(window: try XCTUnwrap(runtime.tree.root), arrangement: runtime.tree.root?.first(id: .manual("split")))
+        }
+        XCTAssertEqual(said(try chrome().sidebarActions), "|[folder] [add]|")
+        XCTAssertEqual(said(try chrome().actions), "|[more]|")
+
+        runtime.tree.apply(window(false), complete: false)
+        XCTAssertEqual(said(try chrome().sidebarActions), "||")
+        XCTAssertEqual(said(try chrome().actions), "[add] [folder]|[more]|", "the outer at the start's edge")
     }
 
     /// A page hiding its bar shows no actions; a sheet's page shows its own, and the page it stands over its own.

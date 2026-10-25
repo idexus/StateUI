@@ -6,7 +6,7 @@
 import CStateUIWinUI
 
 /// WinUI's `SplitView`: the sidebar page in its pane - beside the detail page or over it, as the split places it -
-/// and the detail on a card, a row across its top.
+/// under a head holding the sidebar's part of the bar, and the detail on a card, a row across its top.
 /// Design: docs/design/platforms/winui/pages.md#a-split-view
 @MainActor
 final class WinUISidebarView: WinUIView {
@@ -16,6 +16,12 @@ final class WinUISidebarView: WinUIView {
 
     /// What the view does when its pane opens or closes of WinUI's accord.
     var onPresented: ((Bool) -> Void)?
+
+    /// The actions on the pane's head.
+    private var actions = WinUIBarActions(bar: .pane)
+
+    /// The actions as they were last drawn on the pane's head, in reading order, those behind "more" last.
+    var drawn: [WinUIToolbarAction] { actions.drawn }
 
     init() {
         super.init { number in stateui_winui_split_make(number) }
@@ -41,6 +47,16 @@ final class WinUISidebarView: WinUIView {
         stateui_winui_split_measure_pane_again(handle)
     }
 
+    /// Shows the sidebar's part of the bar on the pane's head: `leading`, `trailing` and `overflow`.
+    func showActions(leading: [[WinUIToolbarAction]], trailing: [[WinUIToolbarAction]], overflow: [WinUIToolbarAction]) {
+        menuActions = actions.show(leading: leading, trailing: trailing, overflow: overflow, on: handle)
+    }
+
+    /// The user pressed an action on the pane's head by its place.
+    override func chose(_ index: Int) {
+        if drawn.indices.contains(index), drawn[index].isEnabled { drawn[index].perform() }
+    }
+
     override func presented(_ open: Bool) {
         guard !ProgramWrite.isWriting else { return }
         onPresented?(open)
@@ -49,5 +65,6 @@ final class WinUISidebarView: WinUIView {
     override func detach() {
         super.detach()
         onPresented = nil
+        actions = WinUIBarActions(bar: .pane)
     }
 }

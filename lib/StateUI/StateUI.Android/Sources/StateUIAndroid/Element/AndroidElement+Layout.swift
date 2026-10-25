@@ -22,6 +22,7 @@ extension AndroidElement {
         }
         let layout = view as? AndroidLayoutView
         layout?.direction = element.layoutDirection
+        (view as? AndroidSplitView)?.framesDetail = element.arrangedChildren.dropFirst().first?.type == .page
         layout?.setItems(element.arrangedChildren.compactMap { $0.android.layoutItem })
     }
 

@@ -418,6 +418,12 @@ namespace {
             sheet && winrt::unbox_value_or<winrt::hstring>(sheet.Tag(), L"") == L"sheet") {
             return sheetHead(sheet, what);
         }
+        // The sidebar's part of the bar on the pane's head, read as a title bar's "bar".
+        if (auto split = object.try_as<controls::SplitView>(); split && what == "bar") {
+            return actions(paneActionEdges(split), [](auto const &button) {
+                return std::to_string(winrt::unbox_value<int32_t>(button.Tag()));
+            }, " ", ",");
+        }
         if (auto split = object.try_as<controls::SplitView>(); split && what == "paneLength") {
             return number(split.OpenPaneLength());
         }

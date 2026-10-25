@@ -93,6 +93,51 @@ namespace {
         if (sidebar && sidebar.Visibility() != visibility) sidebar.Visibility(visibility);
     }
 
+    /// A split view's pane: a head over the sidebar page holding the actions of the sidebar's part of the bar, at its
+    /// start and at its end with "more" - a press chosen on `view` by its place - as a Windows application's
+    /// navigation pane holds its commands over what it lists.
+    /// Design: docs/design/platforms/winui/pages.md#a-split-view
+    controls::Grid paneColumn(int64_t view) {
+        auto column = rows({true, false});
+        controls::Grid head;
+        head.Tag(winrt::box_value(view));
+        auto star = xaml::GridLengthHelper::FromValueAndType(1, xaml::GridUnitType::Star);
+        auto fitting = xaml::GridLengthHelper::Auto();
+        for (auto width : {fitting, star, fitting}) {
+            controls::ColumnDefinition each;
+            each.Width(width);
+            head.ColumnDefinitions().Append(each);
+        }
+        head.Padding({4, 4, 4, 0});
+        head.Visibility(xaml::Visibility::Collapsed);
+        auto leading = actionBar(), trailing = actionBar();
+        leading.Visibility(xaml::Visibility::Collapsed);
+        controls::Grid::SetColumn(trailing, 2);
+        head.Children().Append(leading);
+        head.Children().Append(trailing);
+        column.Children().Append(head);
+        return column;
+    }
+
+    /// The head over a split view's sidebar page.
+    controls::Grid paneHead(controls::SplitView const &split) {
+        return split.Pane().as<controls::Grid>().Children().GetAt(0).as<controls::Grid>();
+    }
+
+    /// The edges of a split view's pane's head.
+    ActionEdges headEdges(controls::Grid const &head) {
+        return {head.Children().GetAt(0).as<controls::CommandBar>(), head.Children().GetAt(1).as<controls::CommandBar>()};
+    }
+
+    /// Shows the pane's head where it holds an action, else leaves the sidebar page the whole pane.
+    void showPaneHead(controls::Grid const &head) {
+        auto edges = headEdges(head);
+        bool holds = edges.leading.PrimaryCommands().Size() > 0 || edges.trailing.PrimaryCommands().Size() > 0
+                     || edges.trailing.SecondaryCommands().Size() > 0;
+        auto visibility = holds ? xaml::Visibility::Visible : xaml::Visibility::Collapsed;
+        if (head.Visibility() != visibility) head.Visibility(visibility);
+    }
+
     /// The card a split view's detail stands in: WinUI's own layer and its edge, as a Windows application's content
     /// stands beside its navigation pane, by the theme resources that card is named by - which a window writing its
     /// background clears (`stateui_winui_window_clear_detail`).
@@ -317,6 +362,7 @@ extern "C" StateUIObjectRef stateui_winui_split_make(int64_t view) {
     try {
         controls::SplitView split;
         split.DisplayMode(controls::SplitViewDisplayMode::Overlay);
+        split.Pane(paneColumn(view));
         auto card = detailCard();
         card.Child(rows({true, false}));
         split.Content(card);
@@ -350,9 +396,11 @@ extern "C" void stateui_winui_split_set(
 ) {
     try {
         auto split = borrow<controls::SplitView>(handle);
+        auto column = split.Pane().as<controls::Grid>();
         auto sidebar = pane ? as<xaml::UIElement>(pane) : xaml::UIElement{nullptr};
-        bool anew = split.Pane() != sidebar;
-        if (anew) split.Pane(sidebar);
+        auto children = column.Children();
+        bool anew = children.Size() < 2 ? sidebar != nullptr : children.GetAt(1) != sidebar;
+        if (anew) standInRow(column, 1, pane);
         auto detail = split.Content().as<controls::Border>().Child().as<controls::Grid>();
         standInRow(detail, 0, row);
         standInRow(detail, 1, content);
@@ -368,6 +416,39 @@ extern "C" void stateui_winui_split_set(
     } catch (...) {
         report("setting a split view");
     }
+}
+
+extern "C" void stateui_winui_split_set_actions(
+    StateUIObjectRef handle, char const *const *texts, char const *const *identifiers, char const *const *icons,
+    bool const *words, bool const *destructive, int32_t const *groups, int32_t leadingGroups, bool const *enabled,
+    int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t const *states, int32_t count
+) {
+    try {
+        auto head = paneHead(borrow<controls::SplitView>(handle));
+        setActions(headEdges(head), head, winrt::unbox_value<int64_t>(head.Tag()), texts, identifiers, icons,
+                   words, destructive, groups, leadingGroups, enabled, keys, modifiers, givesWay, states, count);
+        showPaneHead(head);
+    } catch (...) {
+        report("setting a split view's sidebar actions");
+    }
+}
+
+extern "C" void stateui_winui_split_set_action_menu(
+    StateUIObjectRef handle, int32_t place, bool held, int32_t first, int32_t const *kinds, char const *const *titles,
+    bool const *enabled, char const *const *identifiers, char const *const *icons, bool const *destructive,
+    int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t count
+) {
+    try {
+        auto head = paneHead(borrow<controls::SplitView>(handle));
+        setActionMenu(headEdges(head), winrt::unbox_value<int64_t>(head.Tag()), place, held, first, kinds,
+                      titles, enabled, identifiers, icons, destructive, keys, modifiers, givesWay, count);
+    } catch (...) {
+        report("giving a split view's sidebar action its menu");
+    }
+}
+
+ActionEdges stateui::paneActionEdges(controls::SplitView const &split) {
+    return headEdges(paneHead(split));
 }
 
 extern "C" double stateui_winui_split_pane_width(StateUIObjectRef) {

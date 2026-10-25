@@ -39,8 +39,10 @@ A page's title stands with the line under it the page says (`barSubtitle`).
 Beside a sidebar shown, the bar stands in two parts as wide as the split
 view's columns: over the sidebar the title area its page names the
 application with - its title, else the application's name, and the line
-under it - centered, with the toggle at the sidebar's edge; over the detail
-the rest, its title centered over the detail. With the sidebar hidden, or over
+under it - centered, the sidebar's part's actions - its start's at its
+leading edge, its end's and their own More before the toggle - and the toggle
+at the sidebar's edge; over the detail the rest, its title centered over the
+detail. An item moving between the parts keeps its button. With the sidebar hidden, or over
 the detail as a drawer, the name stands in the sidebar alone, and the title
 is centered over the whole bar; a page's title the same as the name is not
 said twice. Without a split view the bar names the page alone. The parts follow

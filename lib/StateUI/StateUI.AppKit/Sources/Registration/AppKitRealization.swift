@@ -198,6 +198,8 @@ enum AppKitRealization {
         .unrealized(AutomationElementContract.accessibilityIdentifier, on: ToolbarToggleContract.self,
             why: "An NSToolbarItem holds no accessibility identifier."),
         .complete(ToolbarGroupContract.order),
+        .complete(ToolbarGroupContract.part),
+        .complete(ToolbarGroupContract.hidesWithSidebar),
         .complete(ToolbarGroupContract.isEnabled),
         .complete(ToolbarGroupContract.position),
         .complete(WindowContract.activated),

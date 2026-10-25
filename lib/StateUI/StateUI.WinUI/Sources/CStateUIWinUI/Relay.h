@@ -291,6 +291,9 @@ namespace stateui {
     /// The edges of a sheet's head, beside its title.
     ActionEdges sheetActionEdges(controls::Grid const &sheet);
 
+    /// The edges of the head of a split view's pane, over its sidebar page.
+    ActionEdges paneActionEdges(controls::SplitView const &split);
+
     /// Paints the actions on `edges` and "more" in `foreground`, or the theme's where it is null; a destructive one
     /// keeps the theme's critical color.
     void paintActions(ActionEdges const &edges, xaml::Media::Brush const &foreground);

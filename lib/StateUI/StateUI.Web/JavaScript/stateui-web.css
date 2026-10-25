@@ -207,6 +207,8 @@ body {
   pointer-events: none;
   transition: opacity 0.15s ease, visibility 0s linear 0.15s;
 }
+/* The sidebar's part's actions: its start's at its leading edge, its end's before its toggle. */
+.stateui-bar-side > .stateui-bar-actions[data-edge="start"] { margin-inline-end: auto; }
 .stateui-bar[data-sidebar] .stateui-bar-start { transition: padding var(--stateui-slide); }
 .stateui-bar[data-sidebar] .stateui-bar-title { grid-column: 3; padding-inline: 10px; }
 .stateui-bar[data-sidebar] > .stateui-bar-actions { grid-column: 4 / 6; margin-inline-end: 12px; }

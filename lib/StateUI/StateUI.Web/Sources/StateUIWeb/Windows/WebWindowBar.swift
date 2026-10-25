@@ -7,8 +7,8 @@
 /// The window's one bar, over the page the user sees: the sidebar's toggle, the way back, the title area the
 /// sidebar's page names the application with, the page's title and the line under it - or the view the page declares
 /// in their place - the actions it declares and a menu of those behind it and of its menus - the host layer's
-/// `WindowChrome`. Beside a sidebar shown, the bar stands in two parts: the name and the toggle over the sidebar, the
-/// rest over the detail.
+/// `WindowChrome`. Beside a sidebar shown, the bar stands in two parts: over the sidebar the name, the sidebar's part's
+/// actions and the toggle, the rest over the detail.
 /// Design: docs/design/platforms/web/pages.md#the-windows-bar
 @MainActor
 final class WebWindowBar: WebDOMView {
@@ -26,6 +26,8 @@ final class WebWindowBar: WebDOMView {
     private let start = WebDOMView(tag: "div")
     private let leading = WebDOMView(tag: "div")
     private let trailing = WebDOMView(tag: "div")
+    private let sideLeading = WebDOMView(tag: "div")
+    private let sideTrailing = WebDOMView(tag: "div")
 
     /// The view standing in place of the title; nil while the title stands there.
     private weak var titleView: WebDOMView?
@@ -33,8 +35,9 @@ final class WebWindowBar: WebDOMView {
     /// The button of each action shown, by the item it stands for.
     private(set) var buttons: [ObjectIdentifier: WebBarButton] = [:]
 
-    /// The groups of actions shown, each a run of buttons standing together.
+    /// The groups of actions shown over the detail, each a run of buttons standing together, and over the sidebar.
     private var groups: [WebDOMView] = []
+    private var sideGroups: [WebDOMView] = []
 
     /// The shape drawn on each button of the bar's own, let go of with the bar.
     private var glyphs: [WebDOMView] = []
@@ -54,6 +57,10 @@ final class WebWindowBar: WebDOMView {
     private let more = WebDOMView(tag: "button")
     private var behind: [MenuEntry] = []
 
+    /// The button opening the actions behind the sidebar's part, shown where there are any.
+    private let sideMore = WebDOMView(tag: "button")
+    private var sideBehind: [MenuEntry] = []
+
     /// The items of each group shown, in reading order as `groups` stands; those placed behind the bar; and the
     /// menus the page's path declares - what More offers besides the groups that leave the bar.
     private var runs: [[MountedElement]] = []
@@ -66,18 +73,25 @@ final class WebWindowBar: WebDOMView {
         attribute("role", "toolbar")
         for (part, kind) in [(brand, "brand"), (heading, "heading"), (name, "name"), (subtitle, "subtitle"),
                              (title, "title"), (words, "words"), (line, "line"), (lead, "lead"), (side, "side"),
-                             (start, "start"), (leading, "actions"), (trailing, "actions")] {
+                             (start, "start"), (leading, "actions"), (trailing, "actions"), (sideLeading, "actions"),
+                             (sideTrailing, "actions")] {
             part.attribute("class", "stateui-bar-\(kind)")
         }
+        sideLeading.attribute("data-edge", "start")
         let said = CoreLink().chromeWords
         glyph(toggle, "sidebar", label: said.sidebar)
         glyph(back, "back", label: said.back)
         glyph(closer, "close", label: said.close)
         glyph(more, "more", label: said.more)
-        more.attribute("aria-haspopup", "menu")
+        glyph(sideMore, "more", label: said.more)
+        for button in [more, sideMore] { button.attribute("aria-haspopup", "menu") }
         more.listen("click") { [weak self] in
             guard let self else { return }
             WebMenu(behind).show(under: more)
+        }
+        sideMore.listen("click") { [weak self] in
+            guard let self else { return }
+            WebMenu(sideBehind).show(under: sideMore)
         }
         closer.setShown(false)
         toggle.listen("click") { [weak self] in self?.onToggle() }
@@ -85,7 +99,9 @@ final class WebWindowBar: WebDOMView {
         closer.listen("click") { [weak self] in self?.onClose?() }
         for (index, part) in [lead, title, trailing].enumerated() { WebRelay.insert(part.node, into: node, at: index) }
         for (index, part) in [side, start].enumerated() { WebRelay.insert(part.node, into: lead.node, at: index) }
-        for (index, part) in [brand, toggle].enumerated() { WebRelay.insert(part.node, into: side.node, at: index) }
+        for (index, part) in [brand, sideLeading, sideTrailing, toggle].enumerated() {
+            WebRelay.insert(part.node, into: side.node, at: index)
+        }
         for (index, part) in [back, leading].enumerated() { WebRelay.insert(part.node, into: start.node, at: index) }
         WebRelay.insert(heading.node, into: brand.node, at: 0)
         WebRelay.insert(name.node, into: heading.node, at: 0)
@@ -143,32 +159,21 @@ final class WebWindowBar: WebDOMView {
         attribute("data-toolbar-style", Self.look(of: chrome.toolbarStyle))
         style("--stateui-bar-button", WebCSS.fill(chrome.buttonBackground))
 
+        // An item keeps its button wherever it stands, moving from one part to the other.
         var kept: [ObjectIdentifier: WebBarButton] = [:]
-        var made: [WebDOMView] = []
+        var pool = sideGroups + groups
+        let side = chrome.sidebarActions
+        sideGroups = place(side.start, on: sideLeading, from: &pool, keeping: &kept)
+            + place(side.end, on: sideTrailing, from: &pool, keeping: &kept)
         let ending = chrome.actions.end
-        for (edge, runs) in [(leading, chrome.actions.start), (trailing, ending)] {
-            for (place, items) in runs.enumerated() {
-                let group = place < groups.count ? groups.removeFirst() : WebDOMView(tag: "div")
-                group.attribute("class", "stateui-bar-group")
-                group.attribute("role", "group")
-                WebRelay.insert(group.node, into: edge.node, at: place)
-                for (index, item) in items.enumerated() {
-                    // A button opens its item's menu one way for good: an item opening it another way is another.
-                    let opening = ButtonMenu.opening(of: item)
-                    let standing = buttons.removeValue(forKey: ObjectIdentifier(item))
-                    if let standing, standing.opening != opening { standing.release() }
-                    let button = standing.flatMap { $0.opening == opening ? $0 : nil } ?? WebBarButton(opening: opening)
-                    button.show(item)
-                    WebRelay.insert(button.node, into: group.node, at: index)
-                    kept[ObjectIdentifier(item)] = button
-                }
-                made.append(group)
-            }
-        }
+        groups = place(chrome.actions.start, on: leading, from: &pool, keeping: &kept)
+            + place(ending, on: trailing, from: &pool, keeping: &kept)
         for (key, button) in buttons where kept[key] == nil { button.release() }
-        for gone in groups { gone.release() }
+        for gone in pool { gone.release() }
         buttons = kept
-        groups = made
+        sideBehind = BarFit.behind(left: [], placed: side.overflow)
+        sideMore.setShown(!sideBehind.isEmpty)
+        WebRelay.insert(sideMore.node, into: sideTrailing.node, at: side.end.count)
         // The bar ends with the actions behind it, then - a sheet's - the button closing it.
         runs = chrome.actions.start + ending
         placed = chrome.actions.overflow
@@ -178,6 +183,31 @@ final class WebWindowBar: WebDOMView {
         WebRelay.insert(more.node, into: trailing.node, at: ending.count)
         WebRelay.insert(closer.node, into: trailing.node, at: ending.count + 1)
         fit()
+    }
+
+    /// Stands `runs` on `edge`, each a group of buttons - a group of `pool` taken before one is made, an item's
+    /// button the one standing for it - each item's button joining `kept`; the groups standing.
+    private func place(
+        _ runs: [[MountedElement]], on edge: WebDOMView, from pool: inout [WebDOMView],
+        keeping kept: inout [ObjectIdentifier: WebBarButton]
+    ) -> [WebDOMView] {
+        runs.enumerated().map { place, items in
+            let group = pool.isEmpty ? WebDOMView(tag: "div") : pool.removeFirst()
+            group.attribute("class", "stateui-bar-group")
+            group.attribute("role", "group")
+            WebRelay.insert(group.node, into: edge.node, at: place)
+            for (index, item) in items.enumerated() {
+                // A button opens its item's menu one way for good: an item opening it another way is another.
+                let opening = ButtonMenu.opening(of: item)
+                let standing = buttons.removeValue(forKey: ObjectIdentifier(item))
+                if let standing, standing.opening != opening { standing.release() }
+                let button = standing.flatMap { $0.opening == opening ? $0 : nil } ?? WebBarButton(opening: opening)
+                button.show(item)
+                WebRelay.insert(button.node, into: group.node, at: index)
+                kept[ObjectIdentifier(item)] = button
+            }
+            return group
+        }
     }
 
     /// Stands as many groups on the bar as fit beside its title - the first in reading order - and the rest behind
@@ -234,11 +264,11 @@ final class WebWindowBar: WebDOMView {
 
     override func release() {
         for button in buttons.values { button.release() }
-        for group in groups { group.release() }
+        for group in groups + sideGroups { group.release() }
         for shape in glyphs { shape.release() }
         let parts = [
-            toggle, back, closer, more, name, subtitle, heading, brand, words, line, title, leading, trailing, side, start,
-            lead,
+            toggle, back, closer, more, sideMore, name, subtitle, heading, brand, words, line, title, leading, trailing,
+            sideLeading, sideTrailing, side, start, lead,
         ]
         for part in parts {
             part.release()
