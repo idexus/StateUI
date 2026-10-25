@@ -62,6 +62,13 @@ enum AndroidRealization {
             missing: "Android marks a heading, not its level: every level is a heading."),
         .partial(ViewContract.panTouchCount,
             missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
+        .notPlanned(ViewContract.holdDuration,
+            reason: "Android's long click comes after the system's long-press time: a view keeps no time of its own."),
+        .notPlanned(ViewContract.held, on: CanvasContract.self, reason: Self.ownPress),
+        .notPlanned(ViewContract.held, on: ItemsViewContract.self, reason: Self.ownPress),
+        .notPlanned(ViewContract.held, on: ScrollViewContract.self, reason: Self.ownPress),
+        .notPlanned(ViewContract.held, on: SliderContract.self, reason: Self.ownPress),
+        .notPlanned(ViewContract.held, on: StepperContract.self, reason: Self.ownPress),
         .complete(VisualElementContract.style),
 
         // MARK: Entries - a control's or a part's own
@@ -187,6 +194,8 @@ enum AndroidRealization {
     ] + windowRoom + HostRecord.layoutEngine
 
     /// What Android leaves out of a blur.
+    private static let ownPress = "The control takes its own press - a drawing, a scroll, a thumb, its buttons: "
+        + "Android tells no long click of it."
     private static let blursNothing = "Android blurs nothing behind a view: a blur or glass shows its color."
 
     /// The window's place and size, which Android gives an activity itself.

@@ -82,6 +82,15 @@ STATEUI_WEB(hear) void stateui_web_hear(int32_t element, int32_t kind, int32_t l
 /// milliseconds no farther than `reach` points from where it pressed.
 STATEUI_WEB(listen_menu) void stateui_web_listen_menu(int32_t element, double hold, double reach, int32_t listener);
 
+/// Calls listener `listener` whenever the user holds the element down - a finger, a pen or the mouse's main button -
+/// `hold` milliseconds no farther than `fingerReach` points from where a finger pressed, `reach` for the others; the
+/// held press's click is taken.
+STATEUI_WEB(listen_hold) void stateui_web_listen_hold(
+    int32_t element, double hold, double fingerReach, double reach, int32_t listener);
+
+/// Makes the element's hold wait `hold` milliseconds.
+STATEUI_WEB(hold_time) void stateui_web_hold_time(int32_t element, double hold);
+
 /// What the event a listener is hearing carries: 0 how many clicks it counts, 1 and 2 where the pointer is from the
 /// listening element's top left corner; 3 the pointer's number, 4 and 5 where it is on the page, 6 its kind - 0 a
 /// mouse, 1 a pen, 2 a touch - 7 its button; 8 a wheel's turn down, 9 whether a key made it a pinch, 10 a gesture's

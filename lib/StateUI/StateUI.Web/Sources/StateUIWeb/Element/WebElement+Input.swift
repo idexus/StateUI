@@ -21,6 +21,13 @@ extension WebElement {
             }
             view.hear(.activate) { [weak self] in self?.heard(.taps, .tap(run: 0)) }
         }
+        if hearing.contains(.holds) {
+            view.holdTime = element.holdDuration ?? HandReading.hold
+            if !listening.contains(.holds) {
+                listening.insert(.holds)
+                view.listenForHold { [weak self] in self?.held() }
+            }
+        }
         if !hearing.isDisjoint(with: Self.presses), listening.isDisjoint(with: Self.presses) {
             listening.formUnion(Self.presses)
             listenForPresses(view)
@@ -232,6 +239,12 @@ extension WebElement {
         element.hear(
             .mirrored(phase, at: WebRelay.eventPoint, middle: Point(x: size.width / 2, y: size.height / 2)),
             in: host.runtime)
+    }
+
+    /// The relay held a press: the hold's where it has not become a drag, by the host layer's rule.
+    private func held() {
+        guard press.held() else { return }
+        heard(.holds, .hold)
     }
 
     private func heard(_ kind: Hearing, _ input: HeardInput) {

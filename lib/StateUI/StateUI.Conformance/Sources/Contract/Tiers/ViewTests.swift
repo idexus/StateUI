@@ -6,7 +6,7 @@
 
 /// `ViewContract` on a host: where a view stands in its parent - its margin, its alignment, its area in a layered
 /// stack, its cell in a grid - as the frame it reports says, StateUI's arithmetic alike on every host; and what it
-/// hears of the user's hand - taps counted, a pan carrying its states and ending as a swipe, a pinch, the pointer
+/// hears of the user's hand - taps counted, a press held, a pan carrying its states and ending as a swipe, a pinch, the pointer
 /// coming, moving, pressing and going, a drag and a drop; each case made for every element wearing the tier. And
 /// where a view stands in its window as a scroller's or a list's scroll moves it, and from the safe area at its page's
 /// corner.
@@ -17,7 +17,7 @@
         Specimens.wearing(ViewContract.self).flatMap { element in
             [
                 margined(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
-                tapped(element), panned(element), pannedDown(element), swiped(element), pinched(element), pointed(element),
+                tapped(element), held(element), heldAfterItsTime(element), panned(element), pannedDown(element), swiped(element), pinched(element), pointed(element),
                 dragged(element), droppedOn(element), filesDroppedOn(element),
             ]
         } + [scrolledInItsWindow, scrolledInAList, atItsPagesCorner]
@@ -297,6 +297,62 @@
             try s.perform(.tap(count: 2), on: view)
             s.settle { heard.values == ["tapped"] }
             s.expect(heard.values, ["tapped"], "two are")
+        }
+    }
+
+    /// A press held is heard as held, and its release is no tap; a tap is no hold.
+    @MainActor
+    static func held(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aPressHeldIsHeldAndNoTap", proves: [
+            Covered(ViewContract.held, on: element),
+        ], needs: [Covered(ViewContract.tapped, on: element)]) { s in
+            let heard = Received<String>()
+            s.start {
+                VStack {
+                    Specimens.view(element, [
+                        Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
+                        HearDone(ViewContract.held) { heard.values.append("held") },
+                        HearDone(ViewContract.tapped) { heard.values.append("tapped") },
+                    ])
+                }
+                .horizontalAlignment(.start)
+            }
+            let view = try s.element("specimen")
+
+            try s.perform(.hold, on: view)
+            s.settle { heard.values.contains("held") }
+            s.expect(heard.values, ["held"], "held, and its release no tap")
+            try s.perform(.tap(count: 1), on: view)
+            s.turn()
+            s.expect(heard.values.filter { $0 == "held" }, ["held"], "a tap is no hold")
+        }
+    }
+
+    /// A view's hold waits the time the tree gives it, as its native recognizer holds it, and the time the tree
+    /// changes it to.
+    @MainActor
+    static func heldAfterItsTime(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aHoldWaitsItsTime", proves: [
+            Covered(ViewContract.holdDuration, on: element),
+        ], needs: [Covered(ViewContract.held, on: element), Covered(ButtonContract.clicked)]) { s in
+            let long = State(wrappedValue: false)
+            s.start {
+                VStack {
+                    Button("Longer").onClicked { long.wrappedValue = true }.id("change")
+                    Specimens.view(element, [
+                        Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
+                        Write(ViewContract.holdDuration, long.wrappedValue ? 900 : 700), HearDone(ViewContract.held) {},
+                    ])
+                }
+                .horizontalAlignment(.start)
+            }
+            let view = try s.element("specimen")
+            try s.settle { try s.held(ViewContract.holdDuration, on: view) == 700 }
+            s.expect(try s.held(ViewContract.holdDuration, on: view), 700, "the time the tree gave")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.held(ViewContract.holdDuration, on: view) == 900 }
+            s.expect(try s.held(ViewContract.holdDuration, on: view), 900, "the time the tree changed it to")
         }
     }
 

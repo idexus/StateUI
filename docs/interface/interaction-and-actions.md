@@ -72,6 +72,38 @@ accessibility press runs the same handler a tap runs, so a screen reader or an
 automation script activates the row without a pointer. Give such a view a
 `accessibilityLabel` so the button has a name.
 
+### Hold
+
+```swift
+import StateUI
+
+struct PhotoCard: View {
+    @State private var selected = false
+    @State private var showsActions = false
+
+    var body: some View {
+        VStack {
+            Text(selected ? "Selected" : "Hold to select")
+                .onTapped { selected = false }
+                .onHeld { selected = true }
+            Text("Hold a little longer for its actions")
+                .onHeld(minimum: .milliseconds(800)) { showsActions = true }
+        }
+        .padding(12)
+    }
+}
+```
+
+A hold answers once a press has stood still as long as the platform's long
+press, or as long as `onHeld(minimum:_:)` asks. A press held is the hold's:
+its release is no tap, and it drags nothing. A press that moved as far as a
+drag first is no hold.
+
+Android and Windows keep the system's own time, whatever a view asks, and
+Windows tells a hold of a finger or a pen, not of a mouse button; on Android a
+control that takes its own press - a slider, a scroller, a list - is never
+held. The control dictionary says it member by member.
+
 ### Pan and pinch
 
 `PanUpdate` reports its phase and total displacement from the gesture's start.

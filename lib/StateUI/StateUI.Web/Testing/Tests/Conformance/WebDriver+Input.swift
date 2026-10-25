@@ -57,6 +57,7 @@ extension WebDriver {
             try WebBrowser.run("e.click()", on: e)
         case (.toggle, _), (.activate, _): try click(view)
         case (.tap(let count), _): try click(view, count: count)
+        case (.hold, _): try hold(view)
         case (.slide(let value), is WebSliderView):
             try WebBrowser.run("e.value = \(value); e.dispatchEvent(new Event('input', { bubbles: true })); "
                 + "e.dispatchEvent(new Event('change', { bubbles: true }))", on: e)
@@ -244,6 +245,20 @@ extension WebDriver {
             ("count", .number(Double(count))), ("held", .truth(held)), ("deltaY", .number(wheel)),
             ("modifiers", .number(Double(modifiers))), ("button", .words(button)),
         ])
+    }
+
+    /// The mouse pressed on the element's middle, held there past the time its hold waits, and let go.
+    private func hold(_ view: WebDOMView) throws {
+        let box = try box(of: view.node)
+        let middle = Point(x: box.width / 2, y: box.height / 2)
+        let now = { try WebBrowser.evaluate("performance.now()", on: view.node).flatMap(Double.init) ?? .infinity }
+        mouse("mousePressed", at: middle, in: box)
+        let pressed = try now()
+        for _ in 0..<300 {
+            guard try now() - pressed < view.holdTime + 100 else { break }
+            WebBrowser.pause()
+        }
+        mouse("mouseReleased", at: middle, in: box)
     }
 
     /// The pointer leaves the element `e`, for a place beside it.

@@ -331,6 +331,7 @@ WebView
   gridRowSpan
   height
   hidesChildrenFromAccessibility
+  holdDuration
   horizontalAlignment
   ignoresInput
   isAccessibilityHidden
@@ -373,6 +374,7 @@ WebView
   drop()
   filesDropped()
   frameChanged()
+  held()
   isFocusedChanged()
   keyPressed()
   panUpdated()

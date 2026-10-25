@@ -80,6 +80,8 @@ extension AppKitDriver {
         case (.tap(let count), _) where native?.tapRecognizer != nil:
             // A quick run of clicks, each told with its place in the run, as AppKit's click recognizer tells them.
             for run in 1...max(count, 1) { native?.tapRecognizer?.clicked(run: run) }
+        case (.hold, _) where native?.holdRecognizer != nil:
+            native?.holdRecognizer?.held()
         case (.pan(let offset), _) where native?.panRecognizer != nil:
             native?.panRecognizer?.dragged(.began, x: 0, y: 0)
             native?.panRecognizer?.dragged(.changed, x: offset.x, y: offset.y)

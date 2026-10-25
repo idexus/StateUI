@@ -222,8 +222,8 @@ tooltip is not what a screen reader is sure to read.
 
 Gestures belong to every view, so a stack holding a whole row, an Image or a
 Text can answer one; a list row can be a view with a tap recognizer rather
-than a button disguised as a container. Tap, swipe, pan, pinch, pointer, drag
-and drop are described.
+than a button disguised as a container. Tap, hold, swipe, pan, pinch,
+pointer, drag and drop are described.
 
 A recognizer is added to the native view when the tree first carries a handler
 for it and kept for as long as it does, as a control's own events are
@@ -238,8 +238,8 @@ asked, each handler hearing its own: swipe directions add up and each handler
 hears the directions it named; file types add up (none is any file) and each
 handler is handed the files of its own types. What one recognizer cannot hear
 at once - two counts of taps, two touch counts of a pan, two thresholds of a
-swipe - is said, the last asked standing; a pan saying no touch count keeps the
-one said.
+swipe, two times of a hold - is said, the last asked standing; a pan saying no
+touch count keeps the one said, and a hold saying no time the one said.
 
 A drag carries text, the portable payload. A native drag session needs its
 payload at once, so the handler that runs as the drag starts cannot decide it.

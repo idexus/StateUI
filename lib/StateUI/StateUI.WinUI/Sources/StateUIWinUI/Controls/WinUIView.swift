@@ -439,6 +439,13 @@ class WinUIView {
         heard(.tap(run: taps.tapped(at: point, time: time)))
     }
 
+    /// A press the relay says WinUI held: the hold's where it has not become a drag, by the host layer's rule.
+    /// Design: docs/design/host/runtime.md#a-press-held
+    func heardHold() {
+        guard press.held() else { return }
+        heard(.hold)
+    }
+
     /// The hand over a layout the relay tells - begun where a pointer went down, none for a trackpad's fingers;
     /// moved by what it moved under it; let go; taken away - at `time` on the pointer's clock, its speed at the lift
     /// as the platform tells it, or read by the host layer from its moves: the host's entry. Whether the layout took

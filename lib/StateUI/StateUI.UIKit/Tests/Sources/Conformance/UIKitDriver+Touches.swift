@@ -31,6 +31,14 @@ extension UIKitDriver {
         }
     }
 
+    /// A press held on the view's middle: UIKit's press recognizer begun.
+    static func hold(_ listening: UIKitListening?, on view: UIView) {
+        guard let listening, listening.hearing.contains(.holds) else { return }
+        let press = DrivenPress(on: view)
+        press.point = CGPoint(x: view.bounds.midX, y: view.bounds.midY)
+        listening.held(press)
+    }
+
     /// A pan from the view's middle by `offset`, in two moves, let go where it ends.
     static func pan(_ listening: UIKitListening?, on view: UIView, by offset: Point) {
         guard let listening, listening.hearing.contains(.drags) else { return }

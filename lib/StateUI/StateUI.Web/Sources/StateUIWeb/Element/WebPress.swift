@@ -40,12 +40,18 @@ struct WebPress {
         case touch
     }
 
-    /// How far a finger moves, in points, before its press is a drag.
+    /// How far a finger moves, in points, before its press is a drag; a mouse or a pen.
     static let finger = 10.0
+    static let pointer = 4.0
 
     /// How far a pointer of `kind` moves before its press is a drag.
     static func distance(for kind: Pointer) -> DragRecognition.Distance {
-        .radius(kind == .touch ? finger : 4)
+        .radius(kind == .touch ? finger : pointer)
+    }
+
+    /// The page held the press: the hold's, unless it is a drag already, by the host layer's rule. Whether it is.
+    mutating func held() -> Bool {
+        drag.held()
     }
 
     /// A pointer of `kind` went down at `point` on the page: the first a press that may become a drag; a second

@@ -43,6 +43,8 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     case leave
     /// A quick run of taps on the element.
     case tap(count: Int)
+    /// A press on the element held as long as its hold waits, and let go.
+    case hold
     /// A press dragged across the element by an offset, and let go.
     case pan(by: Point)
     /// The hand swept over a layout - a press dragged, a trackpad's fingers - moving what is under it by an offset,
@@ -119,6 +121,7 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .hover: "hover"
         case .leave: "leave"
         case .tap: "tap"
+        case .hold: "hold"
         case .pan: "pan"
         case .sweep: "sweep"
         case .notch: "notch"

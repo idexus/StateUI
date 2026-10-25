@@ -99,6 +99,9 @@ enum WinUICallbacks {
                     guard let phase = StateUIPressPhase(rawValue: phase) else { return }
                     return MainActor.assumeIsolated { WinUIView.find(view)?.heardPress(phase, at: Point(x: x, y: y)) }
                 }
+                if what == .hold {
+                    return MainActor.assumeIsolated { WinUIView.find(view)?.heardHold() }
+                }
                 if what == .tap {
                     return MainActor.assumeIsolated {
                         WinUIView.find(view)?.heardTap(at: Point(x: x, y: y), time: .milliseconds(Int(phase)))

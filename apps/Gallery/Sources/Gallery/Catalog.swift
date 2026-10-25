@@ -342,12 +342,13 @@ final class Catalog {
         SampleGroup(
             route: "gestures",
             title: "Gestures",
-            summary: "A gesture on any view that wants one - a tap, a drag, a swipe, "
+            summary: "A gesture on any view that wants one - a tap, a hold, a drag, a swipe, "
                 + "a pinch, a pointer, and carrying something from one view to another.",
             icon: ImageSource(light: "nav_gestures.png", dark: "nav_gestures_dark.png"),
             card: ImageSource("cat_gestures.png"),
             samples: [
                 Sample(TapSample()),
+                Sample(HoldSample()),
                 Sample(PanSample()),
                 Sample(SwipeSample()),
                 Sample(PinchSample()),

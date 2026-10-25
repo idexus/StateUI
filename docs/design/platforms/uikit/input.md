@@ -42,6 +42,13 @@ swipe back from anywhere in its page, and that swipe would take a drag meant
 for the view. A view listening for drags comes first: the stack's swipe waits
 for its drag to fail, and the two never recognize together.
 
+## A press held
+
+A hold is UIKit's long-press recognizer, waiting the view's time or UIKit's
+own. It is the one recognizer of a view that is not heard with others: with
+the view's tap and pan it is not recognized together, so a press held is no
+tap and drags nothing, and a press dragged first is no hold.
+
 ## The hand over a layout
 
 A layout an engine moves hears the hand by one pan (`UIKitListening`,

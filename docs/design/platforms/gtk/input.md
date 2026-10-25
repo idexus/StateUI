@@ -43,6 +43,14 @@ still a tap.
 The tap claims its press, and GTK denies it to every view around the one
 tapped: a tappable row inside another answers alone.
 
+## A press held
+
+A hold is `GtkGestureLongPress`'s press, claimed as a tap's is. GTK waits its
+long-press time scaled by a factor it takes only between a half and two, so a
+view's time is held to that range - a longer or shorter one stands at its end.
+The press held is no tap as it lets go, and the host layer's rule keeps it
+from becoming a drag.
+
 ## A view the press passes through
 
 A view that ignores input is one GTK picks for no click or touch:

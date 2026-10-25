@@ -220,6 +220,9 @@ final class AppKitDriver: HostDriver {
         if let web = (element.native as? AppKitElement)?.view as? WebKitView, let held = webHolds(property, web) {
             return held
         }
+        if property == .holdDuration, let hold = (element.native as? AppKitElement)?.holdRecognizer {
+            return .number(hold.minimumPressDuration * 1000)
+        }
         if property == .subtitle, element.type == .page { return try subtitleHolds(element) }
         if property == .barBackground { return try barHolds(element) }
         if property == .barForegroundColor { return try barWordsColor(element) }

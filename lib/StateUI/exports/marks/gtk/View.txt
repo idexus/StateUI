@@ -1,4 +1,4 @@
-# revision 11.1
+# revision 12.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -15,6 +15,8 @@ Button.gridColumn: ✅
 Button.gridColumnSpan: ✅
 Button.gridRow: ✅
 Button.gridRowSpan: ✅
+Button.held: ✅
+Button.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Button.horizontalAlignment: ✅
 Button.margin: ✅
 Button.panTouchCount: ✅
@@ -49,6 +51,8 @@ Canvas.gridColumn: ✅
 Canvas.gridColumnSpan: ✅
 Canvas.gridRow: ✅
 Canvas.gridRowSpan: ✅
+Canvas.held: ✅
+Canvas.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Canvas.horizontalAlignment: ✅
 Canvas.margin: ✅
 Canvas.panTouchCount: ✅
@@ -83,6 +87,8 @@ Capsule.gridColumn: ✅
 Capsule.gridColumnSpan: ✅
 Capsule.gridRow: ✅
 Capsule.gridRowSpan: ✅
+Capsule.held: ✅
+Capsule.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Capsule.horizontalAlignment: ✅
 Capsule.margin: ✅
 Capsule.panTouchCount: ✅
@@ -117,6 +123,8 @@ CheckBox.gridColumn: ✅
 CheckBox.gridColumnSpan: ✅
 CheckBox.gridRow: ✅
 CheckBox.gridRowSpan: ✅
+CheckBox.held: ✅
+CheckBox.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 CheckBox.horizontalAlignment: ✅
 CheckBox.margin: ✅
 CheckBox.panTouchCount: ✅
@@ -151,6 +159,8 @@ DatePicker.gridColumn: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRow: ✅
 DatePicker.gridRowSpan: ✅
+DatePicker.held: ✅
+DatePicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 DatePicker.horizontalAlignment: ✅
 DatePicker.margin: ✅
 DatePicker.panTouchCount: ✅
@@ -185,6 +195,8 @@ Ellipse.gridColumn: ✅
 Ellipse.gridColumnSpan: ✅
 Ellipse.gridRow: ✅
 Ellipse.gridRowSpan: ✅
+Ellipse.held: ✅
+Ellipse.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Ellipse.horizontalAlignment: ✅
 Ellipse.margin: ✅
 Ellipse.panTouchCount: ✅
@@ -219,6 +231,8 @@ Fill.gridColumn: ✅
 Fill.gridColumnSpan: ✅
 Fill.gridRow: ✅
 Fill.gridRowSpan: ✅
+Fill.held: ✅
+Fill.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Fill.horizontalAlignment: ✅
 Fill.margin: ✅
 Fill.panTouchCount: ✅
@@ -253,6 +267,8 @@ Grid.gridColumn: ✅
 Grid.gridColumnSpan: ✅
 Grid.gridRow: ✅
 Grid.gridRowSpan: ✅
+Grid.held: ✅
+Grid.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Grid.horizontalAlignment: ✅
 Grid.margin: ✅
 Grid.panTouchCount: ✅
@@ -287,6 +303,8 @@ HStack.gridColumn: ✅
 HStack.gridColumnSpan: ✅
 HStack.gridRow: ✅
 HStack.gridRowSpan: ✅
+HStack.held: ✅
+HStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 HStack.horizontalAlignment: ✅
 HStack.margin: ✅
 HStack.panTouchCount: ✅
@@ -321,6 +339,8 @@ Image.gridColumn: ✅
 Image.gridColumnSpan: ✅
 Image.gridRow: ✅
 Image.gridRowSpan: ✅
+Image.held: ✅
+Image.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Image.horizontalAlignment: ✅
 Image.margin: ✅
 Image.panTouchCount: ✅
@@ -355,6 +375,8 @@ ItemsView.gridColumn: ✅
 ItemsView.gridColumnSpan: ✅
 ItemsView.gridRow: ✅
 ItemsView.gridRowSpan: ✅
+ItemsView.held: ✅
+ItemsView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ItemsView.horizontalAlignment: ✅
 ItemsView.margin: ✅
 ItemsView.panTouchCount: ✅
@@ -389,6 +411,8 @@ LayoutEngine.gridColumn: ✅
 LayoutEngine.gridColumnSpan: ✅
 LayoutEngine.gridRow: ✅
 LayoutEngine.gridRowSpan: ✅
+LayoutEngine.held: ✅
+LayoutEngine.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 LayoutEngine.horizontalAlignment: ✅
 LayoutEngine.margin: ✅
 LayoutEngine.panTouchCount: ✅
@@ -423,6 +447,8 @@ Line.gridColumn: ✅
 Line.gridColumnSpan: ✅
 Line.gridRow: ✅
 Line.gridRowSpan: ✅
+Line.held: ✅
+Line.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Line.horizontalAlignment: ✅
 Line.margin: ✅
 Line.panTouchCount: ✅
@@ -457,6 +483,8 @@ Link.gridColumn: ✅
 Link.gridColumnSpan: ✅
 Link.gridRow: ✅
 Link.gridRowSpan: ✅
+Link.held: ✅
+Link.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Link.horizontalAlignment: ✅
 Link.margin: ✅
 Link.panTouchCount: ✅
@@ -491,6 +519,8 @@ Map.gridColumn: 🧩
 Map.gridColumnSpan: 🧩
 Map.gridRow: 🧩
 Map.gridRowSpan: 🧩
+Map.held: 🧩
+Map.holdDuration: 🧩
 Map.horizontalAlignment: 🧩
 Map.margin: 🧩
 Map.panTouchCount: 🧩
@@ -525,6 +555,8 @@ Path.gridColumn: ✅
 Path.gridColumnSpan: ✅
 Path.gridRow: ✅
 Path.gridRowSpan: ✅
+Path.held: ✅
+Path.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Path.horizontalAlignment: ✅
 Path.margin: ✅
 Path.panTouchCount: ✅
@@ -559,6 +591,8 @@ Picker.gridColumn: ✅
 Picker.gridColumnSpan: ✅
 Picker.gridRow: ✅
 Picker.gridRowSpan: ✅
+Picker.held: ✅
+Picker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Picker.horizontalAlignment: ✅
 Picker.margin: ✅
 Picker.panTouchCount: ✅
@@ -593,6 +627,8 @@ Polygon.gridColumn: ✅
 Polygon.gridColumnSpan: ✅
 Polygon.gridRow: ✅
 Polygon.gridRowSpan: ✅
+Polygon.held: ✅
+Polygon.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Polygon.horizontalAlignment: ✅
 Polygon.margin: ✅
 Polygon.panTouchCount: ✅
@@ -627,6 +663,8 @@ Polyline.gridColumn: ✅
 Polyline.gridColumnSpan: ✅
 Polyline.gridRow: ✅
 Polyline.gridRowSpan: ✅
+Polyline.held: ✅
+Polyline.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Polyline.horizontalAlignment: ✅
 Polyline.margin: ✅
 Polyline.panTouchCount: ✅
@@ -661,6 +699,8 @@ ProgressBar.gridColumn: ✅
 ProgressBar.gridColumnSpan: ✅
 ProgressBar.gridRow: ✅
 ProgressBar.gridRowSpan: ✅
+ProgressBar.held: ✅
+ProgressBar.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ProgressBar.horizontalAlignment: ✅
 ProgressBar.margin: ✅
 ProgressBar.panTouchCount: ✅
@@ -695,6 +735,8 @@ Rectangle.gridColumn: ✅
 Rectangle.gridColumnSpan: ✅
 Rectangle.gridRow: ✅
 Rectangle.gridRowSpan: ✅
+Rectangle.held: ✅
+Rectangle.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Rectangle.horizontalAlignment: ✅
 Rectangle.margin: ✅
 Rectangle.panTouchCount: ✅
@@ -729,6 +771,8 @@ ScrollView.gridColumn: ✅
 ScrollView.gridColumnSpan: ✅
 ScrollView.gridRow: ✅
 ScrollView.gridRowSpan: ✅
+ScrollView.held: ✅
+ScrollView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ScrollView.horizontalAlignment: ✅
 ScrollView.margin: ✅
 ScrollView.panTouchCount: ✅
@@ -763,6 +807,8 @@ SearchField.gridColumn: ✅
 SearchField.gridColumnSpan: ✅
 SearchField.gridRow: ✅
 SearchField.gridRowSpan: ✅
+SearchField.held: ✅
+SearchField.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 SearchField.horizontalAlignment: ✅
 SearchField.margin: ✅
 SearchField.panTouchCount: ✅
@@ -797,6 +843,8 @@ Separator.gridColumn: ✅
 Separator.gridColumnSpan: ✅
 Separator.gridRow: ✅
 Separator.gridRowSpan: ✅
+Separator.held: ✅
+Separator.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Separator.horizontalAlignment: ✅
 Separator.margin: ✅
 Separator.panTouchCount: ✅
@@ -831,6 +879,8 @@ Slider.gridColumn: ✅
 Slider.gridColumnSpan: ✅
 Slider.gridRow: ✅
 Slider.gridRowSpan: ✅
+Slider.held: ✅
+Slider.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Slider.horizontalAlignment: ✅
 Slider.margin: ✅
 Slider.panTouchCount: ✅
@@ -865,6 +915,8 @@ Space.gridColumn: ✅
 Space.gridColumnSpan: ✅
 Space.gridRow: ✅
 Space.gridRowSpan: ✅
+Space.held: ✅
+Space.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Space.horizontalAlignment: ✅
 Space.margin: ✅
 Space.panTouchCount: ✅
@@ -899,6 +951,8 @@ Spinner.gridColumn: ✅
 Spinner.gridColumnSpan: ✅
 Spinner.gridRow: ✅
 Spinner.gridRowSpan: ✅
+Spinner.held: ✅
+Spinner.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Spinner.horizontalAlignment: ✅
 Spinner.margin: ✅
 Spinner.panTouchCount: ✅
@@ -933,6 +987,8 @@ Stepper.gridColumn: ✅
 Stepper.gridColumnSpan: ✅
 Stepper.gridRow: ✅
 Stepper.gridRowSpan: ✅
+Stepper.held: ✅
+Stepper.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Stepper.horizontalAlignment: ✅
 Stepper.margin: ✅
 Stepper.panTouchCount: ✅
@@ -967,6 +1023,8 @@ Switch.gridColumn: ✅
 Switch.gridColumnSpan: ✅
 Switch.gridRow: ✅
 Switch.gridRowSpan: ✅
+Switch.held: ✅
+Switch.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Switch.horizontalAlignment: ✅
 Switch.margin: ✅
 Switch.panTouchCount: ✅
@@ -1001,6 +1059,8 @@ Text.gridColumn: ✅
 Text.gridColumnSpan: ✅
 Text.gridRow: ✅
 Text.gridRowSpan: ✅
+Text.held: ✅
+Text.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Text.horizontalAlignment: ✅
 Text.margin: ✅
 Text.panTouchCount: ✅
@@ -1035,6 +1095,8 @@ TextEditor.gridColumn: ✅
 TextEditor.gridColumnSpan: ✅
 TextEditor.gridRow: ✅
 TextEditor.gridRowSpan: ✅
+TextEditor.held: ✅
+TextEditor.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TextEditor.horizontalAlignment: ✅
 TextEditor.margin: ✅
 TextEditor.panTouchCount: ✅
@@ -1069,6 +1131,8 @@ TextField.gridColumn: ✅
 TextField.gridColumnSpan: ✅
 TextField.gridRow: ✅
 TextField.gridRowSpan: ✅
+TextField.held: ✅
+TextField.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TextField.horizontalAlignment: ✅
 TextField.margin: ✅
 TextField.panTouchCount: ✅
@@ -1103,6 +1167,8 @@ TimePicker.gridColumn: ✅
 TimePicker.gridColumnSpan: ✅
 TimePicker.gridRow: ✅
 TimePicker.gridRowSpan: ✅
+TimePicker.held: ✅
+TimePicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TimePicker.horizontalAlignment: ✅
 TimePicker.margin: ✅
 TimePicker.panTouchCount: ✅
@@ -1137,6 +1203,8 @@ VStack.gridColumn: ✅
 VStack.gridColumnSpan: ✅
 VStack.gridRow: ✅
 VStack.gridRowSpan: ✅
+VStack.held: ✅
+VStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 VStack.horizontalAlignment: ✅
 VStack.margin: ✅
 VStack.panTouchCount: ✅
@@ -1171,6 +1239,8 @@ WebView.gridColumn: ✅
 WebView.gridColumnSpan: ✅
 WebView.gridRow: ✅
 WebView.gridRowSpan: ✅
+WebView.held: ✅
+WebView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 WebView.horizontalAlignment: ✅
 WebView.margin: ✅
 WebView.panTouchCount: ✅
@@ -1205,6 +1275,8 @@ ZStack.gridColumn: ✅
 ZStack.gridColumnSpan: ✅
 ZStack.gridRow: ✅
 ZStack.gridRowSpan: ✅
+ZStack.held: ✅
+ZStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ZStack.horizontalAlignment: ✅
 ZStack.margin: ✅
 ZStack.panTouchCount: ✅

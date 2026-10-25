@@ -4359,6 +4359,38 @@ enum Listings {
             return String(current[found.upperBound...].prefix { "-.0123456789".contains($0) })
         }
         """#,
+        "HoldSample": #"""
+        // Sources/Samples/Gestures/HoldSample.swift
+        @State private var taps = 0
+        @State private var holds = 0
+        @State private var longHolds = 0
+
+        var body: some View {
+            VStack {
+                // The counts are read here, so every tap and hold builds this closure.
+                DebugInfoLabel()
+
+                ZStack {
+                    Text("Tap or hold this box")
+                }
+                .style(.card)
+                .stroke(Palette.outline)
+                .lineWidth(1)
+                .onTapped { taps += 1 }
+                .onHeld { holds += 1 }
+
+                ZStack {
+                    Text("Hold this one a second")
+                }
+                .style(.card)
+                .stroke(Palette.outline)
+                .lineWidth(1)
+                .onHeld(minimum: .seconds(1)) { longHolds += 1 }
+
+                Text("Tapped \(taps), held \(holds), held a second \(longHolds)")
+            }
+        }
+        """#,
         "HomeScreenSample": #"""
         // Sources/Samples/LayoutEngine/HomeScreenSample.swift
         /// One icon: its name, which is its identity, its glyph and its color.

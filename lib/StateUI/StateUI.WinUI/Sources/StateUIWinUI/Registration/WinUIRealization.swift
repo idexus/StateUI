@@ -58,6 +58,9 @@ enum WinUIRealization {
         .notPlanned(VisualElementContract.accessibilityValue,
             reason: "A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another."),
         .partial(FilledShapeContract.fill, missing: "A figure's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it."),
+        .partial(ViewContract.held, missing: "WinUI tells a hold of a finger or a pen: a mouse button held is no hold."),
+        .notPlanned(ViewContract.holdDuration,
+            reason: "WinUI's hold comes after the system's own time: a view keeps no time of its own."),
         .partial(VisualElementContract.background,
             missing: "An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it."),
         .partial(BarElementContract.barBackground,
@@ -223,6 +226,7 @@ enum WinUIRealization {
             reason: "WinUI's WebView2 is no control: it keeps no enabled state, and "
             + "its page takes the user's hand whatever the tree says."),
         .notPlanned(ViewContract.panTouchCount, on: WebViewContract.self, reason: webViewTakesTheHand),
+        .notPlanned(ViewContract.held, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.panUpdated, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.panXChannel, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.panYChannel, on: WebViewContract.self, reason: webViewTakesTheHand),

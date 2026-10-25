@@ -12,6 +12,7 @@ extension UIKitElement {
     func configureGestures() {
         guard let view else { return }
         let hearing = element.hearing
+        defer { listening?.wait(element.holdDuration) }
         configureDragAndDrop(on: view)
         guard hearing != (listening?.hearing ?? []) else { return }
         let listening = listening ?? UIKitListening(view: view)

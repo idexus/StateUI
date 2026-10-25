@@ -43,8 +43,8 @@ namespace {
         bool dragging = false;
         bool capturing = false;
 
-        winrt::event_token tapped, doubleTapped, entered, exited, movedToken, pressed, released, lost, canceled,
-            started, delta, completed, wheel;
+        winrt::event_token tapped, doubleTapped, holding, entered, exited, movedToken, pressed, released, lost,
+            canceled, started, delta, completed, wheel;
 
         /// The hand over a layout: the pointers pressed on it, each told to the host, which reads them as one hand
         /// (`HandRecognition`), and where it says the hand stands.
@@ -260,6 +260,14 @@ namespace {
                 args.Handled(true);
                 tap(view, args.GetPosition(sender.as<xaml::UIElement>()));
             }));
+        // A finger or a pen held: WinUI tells a mouse button held as no hold.
+        entry.holding = element.Holding(guarded("handling Holding",
+            [view](IInspectable const &sender, input::HoldingRoutedEventArgs const &args) {
+            if (!listener(view, StateUIHearingHolds)) return;
+            if (args.HoldingState() != winrt::Microsoft::UI::Input::HoldingState::Started) return;
+            args.Handled(true);
+            tell(view, StateUIHeardHold, 0, args.GetPosition(sender.as<xaml::UIElement>()));
+        }));
         entry.entered = element.PointerEntered(guarded("handling PointerEntered",
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerEntered, sender, args);
@@ -387,6 +395,7 @@ namespace {
     void unhook(xaml::UIElement const &element, Listening const &entry) {
         element.Tapped(entry.tapped);
         element.DoubleTapped(entry.doubleTapped);
+        element.Holding(entry.holding);
         element.PointerEntered(entry.entered);
         element.PointerExited(entry.exited);
         element.PointerPressed(entry.pressed);

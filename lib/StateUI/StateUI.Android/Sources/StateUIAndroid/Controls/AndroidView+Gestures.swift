@@ -27,6 +27,7 @@ extension AndroidView {
 
         if listening == .nothing || listening.hearing.contains(.hand) != hearing.contains(.hand) { watchTouches(hearing) }
         listening = told
+        longPressChanged()
         if hearing.contains(.drags) { press = DragRecognition(distance: .radius(Self.touchSlop(density: density))) }
         if hearing.contains(.hand) { handRecognition = HandRecognition(distance: .radius(Self.touchSlop(density: density))) }
         if countsTaps, hearing.contains(.taps) { taps = Self.doubleTap(density: density) }

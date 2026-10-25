@@ -169,7 +169,7 @@ final class AndroidDriver: HostDriver {
     /// Runs the UI thread's own messages for `millis` milliseconds: a web page's client, a choreographer's frame, a
     /// posted callback arrive as they do in an application.
     /// Design: docs/design/platforms/android/conformance.md#the-ui-threads-messages
-    private static func runLooper(_ millis: Int64) {
+    static func runLooper(_ millis: Int64) {
         Java.callStatic(looper, runLooperFor, .long(millis))
     }
 

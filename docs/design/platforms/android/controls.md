@@ -51,8 +51,12 @@ control does not keep a flag of its own.
 
 A long press is decided in one place, the host's (`AndroidView.longClicked`),
 through the view's one long-press listener: a button's own menu - a split
-button's or a held one's, the road TalkBack offers - else the view's drag,
-else nothing the host takes, and Android goes on to the view's context menu.
+button's or a held one's, the road TalkBack offers - else the view's hold,
+where it is no drag yet, and its drag, else nothing the host takes, and
+Android goes on to the view's context menu. A long press taken is no tap of
+the listener's counting, and comes after the system's time: a view keeps
+none of its own. A control that takes its own press - a slider, a scroller,
+a list, a canvas, a stepper - gets no long click.
 A view hands that listener on while a long press is its to decide and takes
 it back after, still taking a long press where it took one of itself or
 offers a context menu.

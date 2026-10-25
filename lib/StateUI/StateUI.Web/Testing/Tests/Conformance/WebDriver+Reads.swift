@@ -130,6 +130,9 @@ extension WebDriver {
             else { return nil }
             return .some(try color("getComputedStyle(e).backgroundColor", on: sheet.sheet.dialogNode, unlessClear: true)
                 .map { Material.color($0).propValue })
+        case (_, .holdDuration):
+            guard let view = (element.native as? WebElement)?.view else { return nil }
+            return .some(try WebBrowser.evaluate("e.stateuiHold", on: view.node).flatMap(Double.init).map { .number($0) })
         case (.page, .subtitle): return .some(try barWords(".stateui-bar-line", in: standingBar(over: element)))
         case (_, .barBackground): return .some(try barMaterial(over: element))
         case (_, .barButtonBackgroundColor): return .some(try barColor("--stateui-bar-button", over: element))

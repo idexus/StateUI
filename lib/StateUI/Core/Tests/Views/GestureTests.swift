@@ -176,6 +176,31 @@ final class GestureTests: XCTestCase {
         XCTAssertTrue(hasComplained("hears taps of one count"))
     }
 
+    /// A hold says how long it waits where it is asked to, and is heard as `held`; unsaid, the platform's own
+    /// time stands.
+    func testAHoldSaysItsTimeBesideWhatItDoes() {
+        let renders = Renders()
+        var held = 0
+
+        let patch = renders.render(Rectangle().onHeld(minimum: .milliseconds(800)) { held += 1 }.node)
+        XCTAssertEqual(patch.props["holdDuration"], .number(800))
+        renders.fire(patch.events?["held"] ?? -1, with: [])
+        XCTAssertEqual(held, 1)
+
+        let unsaid = Renders().render(Rectangle().onHeld {}.node)
+        XCTAssertNil(unsaid.props["holdDuration"], "the platform's own time")
+        XCTAssertNotNil(unsaid.events?["held"])
+    }
+
+    /// A view waits one time for a hold: two are said, the last standing; a hold saying no time keeps the one said.
+    func testHoldsOfTwoTimesOnOneViewAreSaid() {
+        let kept = Renders().render(Rectangle().onHeld(minimum: .seconds(1)) {}.onHeld {}.node)
+        XCTAssertEqual(kept.props["holdDuration"], .number(1000), "a hold saying no time erases nothing")
+
+        Renders().render(Rectangle().onHeld(minimum: .seconds(1)) {}.onHeld(minimum: .seconds(2)) {}.node)
+        XCTAssertTrue(hasComplained("waits one time for a hold"))
+    }
+
     /// A pan for one touch count beside a pan for another is said; a pan saying no count keeps the one said.
     func testPansOfTwoTouchCountsOnOneViewAreSaid() {
         let kept = Renders().render(Rectangle().onPanUpdated(touchCount: 2) { _ in }.onPanUpdated { _ in }.node)

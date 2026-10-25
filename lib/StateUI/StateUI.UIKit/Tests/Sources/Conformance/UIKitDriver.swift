@@ -379,6 +379,7 @@ final class UIKitDriver: HostDriver {
             guard let action = menuAction(of: element) else { throw DriverCannot(act, on: element) }
             if !action.attributes.contains(.disabled) { UIButton().sendAction(action) }
         case (.tap(let count), _): try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }
+        case (.hold, _): try touch(element) { listening, view in Self.hold(listening, on: view) }
         case (.pan(let offset), _): try touch(element) { listening, view in Self.pan(listening, on: view, by: offset) }
         case (.sweep(let offset, let speed), _):
             try touch(element) { listening, _ in
@@ -450,6 +451,9 @@ final class UIKitDriver: HostDriver {
         if element.type == .textSpan { return try spanHolds(property, on: element) }
         if let map = (element.native as? UIKitElement)?.view as? UIKitMapView, let held = mapHolds(property, map) {
             return held
+        }
+        if property == .holdDuration, let time = (element.native as? UIKitElement)?.listening?.holdTime {
+            return .number(time)
         }
         if let held = try pageHolds(property, element) { return held }
         let view = (element.native as? UIKitElement)?.view

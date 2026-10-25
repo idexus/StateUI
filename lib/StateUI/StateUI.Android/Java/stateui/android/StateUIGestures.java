@@ -72,6 +72,9 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     private boolean pinched;
     private boolean cancelling;
 
+    /** Whether the view took a long press in the touch under way: its lift is no tap. */
+    private boolean held;
+
     /** Where the pinch under way was last centered, in points of the view: where it ends. */
     private float pinchX;
     private float pinchY;
@@ -103,7 +106,10 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     boolean onTouch(MotionEvent event) {
         if (!wanted()) return false;
         cancelling = event.getActionMasked() == MotionEvent.ACTION_CANCEL;
-        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) pinched = false;
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            pinched = false;
+            held = false;
+        }
         boolean wasPinched = pinched;
         if (pinch) scale.onTouchEvent(event);
         // A pinch begun is no press of the view's own: its click is called off.
@@ -139,7 +145,7 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
                 if (pointer) report(RELEASED, 0, event.getX() / density, event.getY() / density, 0);
                 if (pressing) press(LET_GO, x, y);
                 if (hand) handReport(event);
-                if (!moved && !pinched && countsTaps) tap(event);
+                if (!moved && !pinched && !held && countsTaps) tap(event);
                 pressing = false;
                 dragging = false;
                 break;
@@ -155,6 +161,11 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
                 break;
         }
         return dragging || pinching || handTaking || !(host.isClickable() || host.isLongClickable());
+    }
+
+    /** The view took a long press in the touch under way. */
+    void held() {
+        held = true;
     }
 
     /** Whether the element listens for any of the user's input. */

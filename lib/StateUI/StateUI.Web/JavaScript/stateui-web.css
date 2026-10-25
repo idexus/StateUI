@@ -368,7 +368,7 @@ body {
 
 /* A view whose menu a held finger opens: the hold is the menu's, not a choice of the view's words nor the browser's
    callout. */
-[data-holds-menu] { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+[data-holds-menu], [data-holds] { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
 
 /* A popover: the document's own, under its anchor over everything, a card on the page's raised surface; its
    layout's grid shows only while it is open. As tall as what it holds: WebKit stretches the browser's own

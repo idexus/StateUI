@@ -33,6 +33,28 @@ private struct TapsPage: View {
     }
 }
 
+/// A row held - waiting a minute - or tapped, and what it heard; a row held after a moment.
+private struct HoldPage: View {
+    @State private var said = ""
+
+    var body: some View {
+        VStack {
+            Text("said \(said)")
+            HStack { Text("long") }
+                .width(200)
+                .height(40)
+                .onTapped { said += "tapped; " }
+                .onHeld(minimum: .seconds(60)) { said += "held; " }
+            HStack { Text("short") }
+                .width(200)
+                .height(40)
+                .onHeld(minimum: .milliseconds(1)) {}
+        }
+        .horizontalAlignment(.start)
+        .verticalAlignment(.start)
+    }
+}
+
 /// A box a press drags across, a swipe told apart, and what the pan, the pinch and the pointer said, in order.
 private struct DragPage: View {
     @State private var x = 10.0
@@ -88,6 +110,33 @@ final class GTKGesturesTests: XCTestCase {
     }
 
     /// GTK hits a row across its bounds, past its words, where it draws nothing.
+    /// GTK waits from half to twice its long-press time and refuses any other factor: a view's time beyond
+    /// either stands at that end. A press held is no tap as it lets go; the next press taps again.
+    func testAHoldWaitsWithinGTKsRangeAndIsNoTap() throws {
+        try onUIThread {
+            let host = GTKRenderer.running { HoldPage() }
+            let rows = Array(host.views(GTKStackView.self).dropFirst())
+            let listening = try XCTUnwrap(rows.first?.listening)
+            let time = try XCTUnwrap(listening.holdTime)
+            let gtks = time / 2
+            XCTAssertGreaterThan(gtks, 0)
+            XCTAssertEqual(rows.dropFirst().first?.listening?.holdTime, gtks / 2, "half GTK's time, the least it waits")
+
+            let taps = try XCTUnwrap(listening.controllers[.taps]?.first)
+            let hold = try XCTUnwrap(listening.controllers[.holds]?.first)
+            GTKTestHost.emit(taps, "pressed", [1, 20, 20])
+            GTKTestHost.emit(hold, "pressed", [20, 20])
+            GTKTestHost.emit(taps, "released", [1, 20, 20])
+            host.settle { host.texts.first == "said held; " }
+            XCTAssertEqual(host.texts.first, "said held; ", "held, and its release no tap")
+
+            GTKTestHost.emit(taps, "pressed", [1, 20, 20])
+            GTKTestHost.emit(taps, "released", [1, 20, 20])
+            host.settle { host.texts.first == "said held; tapped; " }
+            XCTAssertEqual(host.texts.first, "said held; tapped; ")
+        }
+    }
+
     func testARowIsHitWhereItDrawsNothing() throws {
         try onUIThread {
             let host = GTKRenderer.running { TapsPage(count: 1) }

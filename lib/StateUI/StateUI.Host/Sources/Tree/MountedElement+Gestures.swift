@@ -7,12 +7,13 @@
 /// on every host.
 /// Design: docs/design/host/runtime.md#what-the-user-does-with-a-finger
 extension MountedElement {
-    /// What the element's handlers and channels ask to hear: taps, the pointer, a press dragged, a pinch, the hand
-    /// over a layout and the two fingers that spread or turn it. A pan asks for a press dragged by one pointer; one
-    /// asking for more is not recognized.
+    /// What the element's handlers and channels ask to hear: taps, a press held, the pointer, a press dragged, a
+    /// pinch, the hand over a layout and the two fingers that spread or turn it. A pan asks for a press dragged by
+    /// one pointer; one asking for more is not recognized.
     public var hearing: Hearing {
         var hearing: Hearing = []
         if handler(.tapped) != nil { hearing.insert(.taps) }
+        if handler(.held) != nil { hearing.insert(.holds) }
         if Self.pointerEvents.contains(where: { handler($0) != nil }) { hearing.insert(.pointer) }
         let drags = handler(.panUpdated) != nil || handler(.swiped) != nil
             || channel(.panXChannel) != nil || channel(.panYChannel) != nil
@@ -23,8 +24,13 @@ extension MountedElement {
         return hearing
     }
 
+    /// How long a press stands still before the element is held, in milliseconds; nil for the platform's own time.
+    public var holdDuration: Double? {
+        number(.holdDuration)
+    }
+
     /// The user's input the view heard, as the element's events: a tap each time a run reaches the count asked
-    /// for - at once for a press assistive technology made; the pointer where it is; a press dragged moving the
+    /// for - at once for a press assistive technology made; a press held; the pointer where it is; a press dragged moving the
     /// states it carries, a swipe as it ends far enough; a pinch's step; the hand over a layout; a drag between
     /// views by `DropTarget`. Whether the element took it: a hand over a layout across its axis it leaves to
     /// whatever holds it.
@@ -36,6 +42,8 @@ extension MountedElement {
         case .tap(let run):
             let count = max(1, Int(number(.tapCount) ?? 1))
             if run == 0 || run % count == 0 { send(.tapped, [], in: runtime) }
+        case .hold:
+            send(.held, [], in: runtime)
         case .pointer(let event, let point):
             let said: [HostValue] = event == .pointerEntered || event == .pointerExited ? [] : [.numbers([point.x, point.y])]
             send(event, said, in: runtime)

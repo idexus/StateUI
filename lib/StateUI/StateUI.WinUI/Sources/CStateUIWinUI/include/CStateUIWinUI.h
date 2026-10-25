@@ -53,8 +53,8 @@ typedef enum STATEUI_CLOSED_ENUM {
 } StateUIOutline;
 
 /// What of the user's input a view listens for, each a bit: taps; the pointer entering, leaving, moving, and its
-/// button going down and up; a press dragged; two fingers pinching; the hand over a layout; two fingers turning. Its
-/// bits stand as the host layer's `Hearing` does (`WinUIGesturesTests`).
+/// button going down and up; a press dragged; two fingers pinching; the hand over a layout; two fingers turning; a
+/// press held. Its bits stand as the host layer's `Hearing` does (`WinUIGesturesTests`).
 // Swift: none
 typedef enum {
     StateUIHearingTaps = 1,
@@ -63,6 +63,7 @@ typedef enum {
     StateUIHearingPinches = 8,
     StateUIHearingHand = 16,
     StateUIHearingRotations = 32,
+    StateUIHearingHolds = 64,
 } StateUIHearing;
 
 /// What a view heard: a tap, its place in a quick run of taps from 1, 0 for a press assistive technology made; the
@@ -70,7 +71,7 @@ typedef enum {
 /// view's size; a press a drag may become, its `StateUIPressPhase` at (x, y) DIPs of the window's content, which the
 /// host's rule makes a drag; a rotation's `StateUIPhase` and its degrees clockwise since the last, in the scale's
 /// place; a wheel turned with Control, as Windows tells a trackpad's pinch, its notches in the scale's place - or,
-/// over a layout WinUI's own scroller hears, the scale it scales for it.
+/// over a layout WinUI's own scroller hears, the scale it scales for it; a press held, at (x, y) DIPs of the view.
 typedef enum STATEUI_CLOSED_ENUM {
     StateUIHeardTap,
     StateUIHeardPointerEntered,
@@ -83,6 +84,7 @@ typedef enum STATEUI_CLOSED_ENUM {
     StateUIHeardRotation,
     StateUIHeardWheelPinch,
     StateUIHeardWheelScale,
+    StateUIHeardHold,
 } StateUIHeard;
 
 /// A gesture's phase: begun, moved, ended, taken away.

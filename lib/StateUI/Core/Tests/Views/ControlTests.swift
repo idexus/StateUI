@@ -610,6 +610,7 @@ final class ControlTests: XCTestCase {
                 // only way to check that each recognizer is asked for on its
                 // own terms.
                 .onTapped(count: 2) {}
+                .onHeld(minimum: .milliseconds(800)) {}
                 .onSwiped(direction: [.left, .up], threshold: 60) { _ in }
                 .onPanUpdated(touchCount: 1) { _ in }
                 .onPinchUpdated { _ in }

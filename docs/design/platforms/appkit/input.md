@@ -111,6 +111,13 @@ are the host layer's (`MountedElement.hearing`, `hear`), and so is the one
 pointer a drag is heard from: an element asking a pan of more gets no drag
 recognizer.
 
+## A press held
+
+A hold is AppKit's press recognizer, waiting the view's time or AppKit's own.
+Recognized, it keeps the press from the view's click and drag recognizers, as
+AppKit lets one recognizer of a view have a press: a click held long is no
+click.
+
 ## The hand over a layout
 
 A layout an engine moves hears the hand on its own view (`AppKitHandReader`):

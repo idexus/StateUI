@@ -11,11 +11,11 @@ import StateUIFoundation
 extension HeardInput {
     /// What the relay's callback says - `phase` a gesture's phase, a pinch's `scale` since its last step, a
     /// rotation's degrees clockwise in its place, a wheel's notches turned with Control in its place - nil for a
-    /// press and a tap, which the view's own rules read (`heardPress`, `heardTap`).
+    /// press, a tap and a hold, which the view's own rules read (`heardPress`, `heardTap`, `heardHold`).
     init?(_ what: StateUIHeard, phase: Int32, x: Double, y: Double, scale: Double) {
         let point = Point(x: x, y: y)
         switch what {
-        case .tap, .press: return nil
+        case .tap, .press, .hold: return nil
         case .pointerEntered: self = .pointer(.pointerEntered, point)
         case .pointerExited: self = .pointer(.pointerExited, point)
         case .pointerMoved: self = .pointer(.pointerMoved, point)

@@ -222,6 +222,7 @@ extension NodeType {
     static let position = ToolbarGroupContract.position.token
     static let orientation = ScrollViewContract.orientation.token
     static let padding = PaddingElementContract.padding.token
+    static let holdDuration = ViewContract.holdDuration.token
     static let panTouchCount = ViewContract.panTouchCount.token
     static let panXChannel = ViewContract.panXChannel.token
     static let panYChannel = ViewContract.panYChannel.token
@@ -331,6 +332,7 @@ extension NodeType {
     static let navigating = WebViewContract.navigating.token
     static let navigatingFrom = PageContract.navigatingFrom.token
     static let opened = DatePickerContract.opened.token
+    static let held = ViewContract.held.token
     static let panUpdated = ViewContract.panUpdated.token
     static let pinchUpdated = ViewContract.pinchUpdated.token
     static let pointerEntered = ViewContract.pointerEntered.token

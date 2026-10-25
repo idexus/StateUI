@@ -416,7 +416,8 @@ element's events by one rule on every host (`MountedElement.hearing`,
 for a press dragged where a pan, a swipe or a state a pan carries asks - one
 pointer's alone - and for a pinch. A tap answers each time a quick run
 reaches the count asked for, and at once for a press assistive technology
-made; the pointer says where it is, but not as it enters or leaves; a press
+made; a press held answers once, as the platform's long press comes ([a press
+held](#a-press-held)); the pointer says where it is, but not as it enters or leaves; a press
 dragged moves the states it carries by how far it has come from where they
 stood as it began, in one user's transaction, and is a swipe as it ends far
 enough ([a swipe](#a-swipe)); a pinch says each step's scale since the last
@@ -453,6 +454,18 @@ platform takes the press away and it is cancelled. A press that never became
 a drag ends with nothing. A platform's distance is taken in DIPs; the toolkit
 holds the pointer once the press is a drag, which the host asks for as the
 rule says so.
+
+## A press held
+
+A view held is told by the platform's long press - a recognizer, a long
+click, a hold event, a timer the Web's relay keeps - after the time the view
+says (`holdDuration`), or the platform's own where it says none. Its rule is
+the host layer's, once (`DragRecognition.held`): a hold comes before the drag's
+threshold, so a press that became a drag is no hold, and a press held is the
+hold's - it drags nothing after, however far it moves, and its release is no
+tap. A host whose toolkit tells taps and drags of its own keeps the hold apart
+from them by the toolkit's means: a recognizer that is not heard with the
+view's tap and pan, a click the relay takes.
 
 ## The hand over a layout
 

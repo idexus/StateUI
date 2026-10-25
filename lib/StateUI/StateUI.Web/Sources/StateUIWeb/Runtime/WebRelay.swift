@@ -171,6 +171,16 @@ enum WebRelay {
         stateui_web_listen_menu(element, HandReading.hold, WebPress.finger, listener)
     }
 
+    /// Calls `listener` as the user holds the element down `hold` milliseconds, no farther than a drag's distance.
+    static func listenForHold(_ element: Int32, _ hold: Double, _ listener: Int32) {
+        stateui_web_listen_hold(element, hold, WebPress.finger, WebPress.pointer, listener)
+    }
+
+    /// Makes the element's hold wait `hold` milliseconds.
+    static func waitForHold(_ element: Int32, _ hold: Double) {
+        stateui_web_hold_time(element, hold)
+    }
+
     /// The number at `index` of the event being heard - what a listener of its kind is told.
     static func eventNumber(_ index: Int) -> Double { stateui_web_event_number(Int32(index)) }
 

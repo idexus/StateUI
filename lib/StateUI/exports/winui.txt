@@ -373,6 +373,7 @@ ZStack
   gridRowSpan
   height
   hidesChildrenFromAccessibility
+  holdDuration
   horizontalAlignment
   isAccessibilityHidden
   isEnabled
@@ -411,6 +412,7 @@ ZStack
   drop()
   filesDropped()
   frameChanged()
+  held()
   isFocusedChanged()
   keyPressed()
   panUpdated()

@@ -328,15 +328,18 @@ class AndroidView {
     func chose(_ place: Int) {}
 
     /// The user held the view down long - the one place deciding what that does: the view's own (a button's menu),
-    /// else its drag; whether it took it - else Android goes on to its context menu.
+    /// else its hold - a press held before it became a drag, by the host layer's rule - and its drag; whether it
+    /// took it - else Android goes on to its context menu.
     /// Design: docs/design/platforms/android/controls.md#a-long-press
     func longClicked() -> Bool {
-        startDrag()
+        let held = listening.hearing.contains(.holds) && press.held() && onHeard?(.hold) == true
+        return startDrag() || held
     }
 
-    /// Whether a long press is the view's to decide: it can be dragged, or - a button's menu - holds its own.
+    /// Whether a long press is the view's to decide: it is held, it can be dragged, or - a button's menu - holds its
+    /// own.
     var takesLongPress: Bool {
-        offered.words != nil
+        listening.hearing.contains(.holds) || offered.words != nil
     }
 
     /// Hands the view's one long-press listener on, or takes it back, as `takesLongPress` now says - a view that took

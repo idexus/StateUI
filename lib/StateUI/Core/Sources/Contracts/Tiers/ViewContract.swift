@@ -62,6 +62,13 @@ public enum ViewContract: Contract {
     /// How many rows of a Grid the view spans.
     public static let gridRowSpan = ElementProperty<Self, Int>("gridRowSpan", layer: .stateUI, travels: false)
 
+    /// The user held the view down - pressed and kept still - as long as a hold waits.
+    public static let held = ElementEvent<Self, Void>("held", layer: .native)
+
+    /// How long a press stands still before the view is held, in milliseconds; unwritten, the platform's own.
+    public static let holdDuration = ElementProperty<Self, Double>(
+        "holdDuration", layer: .structure, travels: false, cleared: false)
+
     /// How the view uses the width its layout offers.
     public static let horizontalAlignment = ElementProperty<Self, Alignment>(
         "horizontalAlignment", layer: .native)
@@ -132,7 +139,7 @@ public enum ViewContract: Contract {
     public static let members: [any ContractMember] = [
         allowsDrop, area, canDrag, dragLeave,
         dragOver, dragStarting, dragText, drop, droppedFileTypes, dragEnded, filesDropped, frameChanged, gridColumn,
-        gridColumnSpan, gridRow, gridRowSpan, horizontalAlignment, margin, panTouchCount,
+        gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, margin, panTouchCount,
         panUpdated, panXChannel, panYChannel, pinchUpdated, pointerEntered, pointerExited,
         pointerMoved, pointerPressed, pointerReleased, swipeDirection, swipeThreshold, swiped,
         tapCount, tapped, verticalAlignment,

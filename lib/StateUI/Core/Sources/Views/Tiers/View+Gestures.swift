@@ -65,6 +65,66 @@ extension View {
         }
     }
 
+    // MARK: Hold
+
+    /// Runs when the user holds the view down - a finger, a pen or a button
+    /// pressed and kept still - as long as the platform's long press.
+    ///
+    ///     Photo(item)
+    ///         .onHeld { selection.insert(item.id) }
+    ///
+    /// A press held is the hold's: its release is no tap, and it drags nothing.
+    public func onHeld(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        modified {
+            $0.hearsHolds(nil)
+            $0.addHandler(ViewContract.held.token, handler)
+        }
+    }
+
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
+    /// again while a run is under way.
+    public func onHeld(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        modified {
+            $0.hearsHolds(nil)
+            $0.addHandler(ViewContract.held.token, gate: .own(policy), handler)
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onHeld(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+        modified {
+            $0.hearsHolds(nil)
+            $0.addHandler(ViewContract.held.token, gate: .shared(gate), handler)
+        }
+    }
+
+    /// The same, once the press has stood still `minimum`.
+    ///
+    ///     Photo(item).onHeld(minimum: .milliseconds(800)) { showActions(for: item) }
+    public func onHeld(minimum: Duration, _ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        modified {
+            $0.hearsHolds(minimum)
+            $0.addHandler(ViewContract.held.token, handler)
+        }
+    }
+
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
+    /// again while a run is under way.
+    public func onHeld(minimum: Duration, policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        modified {
+            $0.hearsHolds(minimum)
+            $0.addHandler(ViewContract.held.token, gate: .own(policy), handler)
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onHeld(minimum: Duration, gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+        modified {
+            $0.hearsHolds(minimum)
+            $0.addHandler(ViewContract.held.token, gate: .shared(gate), handler)
+        }
+    }
+
     // MARK: Swipe
 
     /// Runs when the view is swiped, with the one dominant direction it went.
@@ -585,6 +645,17 @@ extension Node {
                 + "stands. Put the other on a view of its own.")
         }
         if count != 1 || said != nil { write(ViewContract.tapCount, count) }
+    }
+
+    /// Waits `minimum` for a hold, a hold saying none keeping the one said; a view asked for two is said.
+    fileprivate mutating func hearsHolds(_ minimum: Duration?) {
+        guard let minimum else { return }
+        let milliseconds = Double(Motion.milliseconds(of: minimum))
+        if let said = props[ViewContract.holdDuration.token].flatMap(Double.init(propValue:)), said != milliseconds {
+            complain("A view waits one time for a hold: \(said) and \(milliseconds) milliseconds were asked on it, "
+                + "and the last stands.")
+        }
+        write(ViewContract.holdDuration, milliseconds)
     }
 
     /// Hears pans of `touchCount`, a pan saying none keeping the one said; a view asked for two is said.

@@ -38,6 +38,7 @@ final class AppKitElement: NSObject, NativeElement {
     var wordsRoom: Rect?
 
     var tapRecognizer: AppKitTapRecognizer?
+    var holdRecognizer: AppKitHoldRecognizer?
     var panRecognizer: AppKitPanRecognizer?
     var handReader: AppKitHandReader?
     var pinchRecognizer: AppKitPinchRecognizer?

@@ -9,6 +9,9 @@
     /// A tap: its place in a quick run of taps, from 1; 0 for a press assistive technology made.
     case tap(run: Int)
 
+    /// A press held as long as the view's hold waits, before it moved as far as a drag.
+    case hold
+
     /// The pointer over the view: the View tier's event, and where it is, in points of the view.
     case pointer(Event, Point)
 
@@ -95,8 +98,11 @@
     /// Two fingers turning: over a layout that `rotates`.
     public static let rotations = Hearing(rawValue: 1 << 5)
 
+    /// A press held.
+    public static let holds = Hearing(rawValue: 1 << 6)
+
     /// Each kind of input on its own.
-    public static let kinds: [Hearing] = [.taps, .pointer, .drags, .pinches, .hand, .rotations]
+    public static let kinds: [Hearing] = [.taps, .pointer, .drags, .pinches, .hand, .rotations, .holds]
 }
 
 /// A pinch's steps: each step's scale since the last, of a pinch a toolkit tells as its whole scale.

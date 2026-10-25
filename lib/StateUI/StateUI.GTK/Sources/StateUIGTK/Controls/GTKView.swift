@@ -270,11 +270,12 @@ class GTKView {
     /// What the view listens for of the user's input.
     var hearing: Hearing { listening?.hearing ?? [] }
 
-    /// Listens for what `hearing` names, `heard` hearing it; a panel listening for taps is pressable by
-    /// assistive technology.
+    /// Listens for what `hearing` names, `heard` hearing it, a hold waiting `hold` milliseconds - GTK's own time for
+    /// nil; a panel listening for taps is pressable by assistive technology.
     /// Design: docs/design/platforms/gtk/input.md#listening
-    func hear(_ hearing: Hearing, _ heard: @escaping (HeardInput) -> Bool) {
+    func hear(_ hearing: Hearing, holdingFor hold: Double?, _ heard: @escaping (HeardInput) -> Bool) {
         onHeard = hearing.isEmpty ? nil : heard
+        defer { listening?.wait(hold) }
         guard hearing != self.hearing else { return }
 
         if GTKPanel.holds(widget) { GTKPanel.setPressable(widget, hearing.contains(.taps)) }
@@ -325,7 +326,7 @@ class GTKView {
     /// The element left the tree: the view lets go of everything that would call back into it. An override
     /// calls this first.
     func detach() {
-        hear([]) { _ in false }
+        hear([], holdingFor: nil) { _ in false }
         setFocusChanged(nil)
         contextMenu = nil
         offer(.none) { _ in }

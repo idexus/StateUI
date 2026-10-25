@@ -51,9 +51,12 @@ final class StateUIListener implements View.OnClickListener, View.OnLongClickLis
         return x;
     }
 
+    /** A long press the view took is no tap of the gestures' counting. */
     @Override
     public boolean onLongClick(View held) {
-        return StateUIHost.longClicked(view);
+        boolean taken = StateUIHost.longClicked(view);
+        if (taken && gestures != null) gestures.held();
+        return taken;
     }
 
     @Override

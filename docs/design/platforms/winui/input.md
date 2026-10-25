@@ -46,6 +46,12 @@ time of the last one continues it. A view asking for `count` taps answers
 each time the run reaches a multiple of it. A tap is handled where a view
 listens for it, so a tappable row inside another answers alone.
 
+## A press held
+
+A hold is WinUI's `Holding` as it starts, which Windows raises for a finger
+and a pen after its own time: a mouse button held is no hold, and a view
+keeps no time of its own. A press held raises no tap.
+
 ## Pressed by assistive technology
 
 A panel that listens for taps is a button to UI Automation: its peer offers

@@ -295,6 +295,7 @@ final class GTKDriver: HostDriver {
         if let value = backendHolds(property, on: element) { return value }
         let view = (element.native as? GTKElement)?.view
         if let picker = view as? GTKPopoverPickerView, let value = held(property, on: picker) { return value }
+        if property == .holdDuration, let time = view?.listening?.holdTime { return .number(time) }
         if let value = try recorded(property, on: element, view: view) { return value }
         if let value = reads(property, on: element, view: view) { return value }
         switch (property, view) {

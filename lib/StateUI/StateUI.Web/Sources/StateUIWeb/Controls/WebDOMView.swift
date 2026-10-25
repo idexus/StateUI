@@ -174,6 +174,19 @@ class WebDOMView {
         WebRelay.listenForMenu(node, listener)
     }
 
+    /// How long the user holds the element down still before it is held, in milliseconds.
+    var holdTime = HandReading.hold {
+        didSet { if holdTime != oldValue { WebRelay.waitForHold(node, holdTime) } }
+    }
+
+    /// Runs `action` whenever the user holds the element down still for `holdTime`: its release is then no click.
+    /// Design: docs/design/platforms/web/input.md#a-press-held
+    func listenForHold(_ action: @escaping @MainActor () -> Void) {
+        let listener = WebRelay.listener(action)
+        listeners.append(listener)
+        WebRelay.listenForHold(node, holdTime, listener)
+    }
+
     /// Says when a pointer takes hold of the element, and once when it lets go - lifted, called off, or gone off it.
     func listenForHolding(pressed: @escaping @MainActor () -> Void, released: @escaping @MainActor () -> Void) {
         var holding = false
