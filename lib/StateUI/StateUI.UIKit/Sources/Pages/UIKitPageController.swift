@@ -42,13 +42,13 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
         if let shown = page?.view { view.addSubview(shown) }
     }
 
-    /// The page's background behind the whole screen it stands on, the bars and the notch included; where the page
-    /// says none, a sidebar's ground, else the window's - what the window is made of under a page that paints nothing
+    /// The page's background - its own, else its arrangement's (`pageBackground`) - behind the whole screen it stands
+    /// on, the bars and the notch included; where the page says none, a sidebar's ground, else the window's - what the window is made of under a page that paints nothing
     /// of its own - else the system's.
     /// Design: docs/design/platforms/uikit/pages.md#a-pages-background
     func showBackground() {
         let element = page?.element
-        let background = HostMaterial(element?.value(.background)).painted.flatMap { HostBrush($0).firstColor }
+        let background = HostMaterial(element?.pageBackground).painted.flatMap { HostBrush($0).firstColor }
         let sidebar = background == nil ? sidebarMaterial(of: element) : nil
         showGround(sidebar.flatMap { $0.material.blur == nil ? nil : $0.material })
         view.backgroundColor = background.flatMap(UIColor.init(stateUI:))

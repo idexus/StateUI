@@ -169,8 +169,9 @@ view hears; a host raises a phase for which the page carries a handler.
 The place decides, not the type, since any view may stand on a page. An
 arrangement standing where a page stands is the page. A `NavigationStack`, a
 `TabView` or a `SplitView` takes the title and the icon itself, for where it is
-shown as an item of something else, such as a tab; anything else said of a page
-there is said once (`complain`) and left out.
+shown as an item of something else, such as a tab, and the background, the
+ground of its pages that say none; anything else said of a page there is said
+once (`complain`) and left out.
 Written on a view no page shows - inside a layout, deeper in a body - what a
 view says of its page says nothing, and is said once.
 

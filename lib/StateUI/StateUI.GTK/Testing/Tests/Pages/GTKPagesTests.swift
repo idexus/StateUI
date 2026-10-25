@@ -271,6 +271,45 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// A page's own background is drawn in the page's box.
+    func testAPagesOwnGroundDrawsInItsBox() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Grounded").pageBackground(Color(hex: 0xFF0000))
+                } destination: { _ in
+                    TitledPage(title: "Next")
+                }
+            }
+            let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
+            host.layOut()
+
+            // Past the words, where the page's box shows alone.
+            let (width, height) = (gtk_widget_get_width(frame.page.widget), gtk_widget_get_height(frame.page.widget))
+            XCTAssertEqual(GTKTestHost.pixels(of: frame.page.widget, at: [(Double(width) - 4, Double(height) - 4)]), [0xFFFF_0000])
+        }
+    }
+
+    /// A page that says no background stands on the one its stack declares for its pages, drawn in the page's box.
+    func testAPageStandsOnItsStacksGround() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Grounded")
+                } destination: { _ in
+                    TitledPage(title: "Next")
+                }
+                .pageBackground(Color(hex: 0xFF0000))
+            }
+            let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
+            host.layOut()
+
+            // Past the words, where the page's box shows alone.
+            let (width, height) = (gtk_widget_get_width(frame.page.widget), gtk_widget_get_height(frame.page.widget))
+            XCTAssertEqual(GTKTestHost.pixels(of: frame.page.widget, at: [(Double(width) - 4, Double(height) - 4)]), [0xFFFF_0000])
+        }
+    }
+
     /// Another kind of view made at a stack's root stands there as its page, shown and named; the first kind comes
     /// back the same way.
     func testAnotherViewAtAStacksRootIsShown() throws {

@@ -148,11 +148,16 @@ the page without motion, as the Mac's own applications do in a window.
 
 A page is an opaque surface the size of its room, so a page sliding over
 another - a push, a pop - hides the one under it rather than mixing with it.
-It stands on its own background where it paints one, else on the color its
-host painted its toolkit's window in - the window's color, or the
-platform's own ground where the window says none: UIKit's system
-background, Android's theme background. A window whose color changes stands
-every page in it (`MountedElement.pages`) on the new one.
+It stands on its own background where it paints one, else on the one the
+nearest arrangement on its path declares for its pages - on past a sheet to
+the view presenting it, as a bar's look; a sidebar's page on its sidebar's
+material (`pageBackground`) - else on the color its host painted its
+toolkit's window in - the window's color, or the platform's own ground where
+the window says none: UIKit's system background, Android's theme background.
+An arrangement draws no background of its own (`drawnBackground`): when it
+changes, its pages are drawn again (`pagesGroundedAnew`), and a page made
+under it presents the background it never wrote. A window whose color
+changes stands every page in it (`MountedElement.pages`) on the new one.
 
 A surface laid over the page - a sheet, a sidebar sliding over the detail -
 stands on the window's background where the application says nothing of it

@@ -53,8 +53,6 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/PageContract.
 <tbody><tr></tr><tr><td><code>onAppearing</code> (<code>appearing</code>)</td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>backButtonTitle</code></td><td>property</td><td><code>String</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">·</td></tr>
 <tr><td colspan="9">AppKit: cannot read backButtonTitle of Page - AppKit's driver has no path for it yet<br>Android Views: Android's way back in the bar is an arrow, with no words.<br>WinUI 3: WinUI's way back is an arrow, with no words.<br>GTK 4: GNOME's way back in the bar is an arrow, with no words.<br>Web: cannot read backButtonTitle of Page - the Web's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td></tr>
-<tr><td colspan="9">GTK 4: cannot read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>onDisappearing</code> (<code>disappearing</code>)</td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>showsBackButton</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>showsCloseButton</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
@@ -69,10 +67,12 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/PageContract.
 
 ## From [PageElement](tiers/PageElement.md)
 
-What a page shows about itself where another container presents it as an item - a title and a picture.
+What a page shows about itself - a title and a picture where another container presents it as an item, and what it stands on.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td></tr>
+<tr><td colspan="9">GTK 4: cannot read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read icon of Page - AppKit's driver has no path for it yet<br>GTK 4: GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

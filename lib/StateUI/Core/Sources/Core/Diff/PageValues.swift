@@ -40,8 +40,8 @@ extension Node {
         }
     }
 
-    /// Takes, as an arrangement standing where a page stands, the title and the icon `values` give; anything else
-    /// a page alone says, and anywhere but at a page's position nothing, is complained about.
+    /// Takes, as an arrangement standing where a page stands, the title, the icon and the ground of its pages `values`
+    /// give; anything else a page alone says, and anywhere but at a page's position nothing, is complained about.
     mutating func takeAsArrangement(_ values: PageValues) {
         let node = values.node
         guard NodeType.arrangements.contains(type) else {
@@ -63,12 +63,14 @@ extension Node {
         if !others.isEmpty {
             complain("""
                 \(Set(others).sorted().joined(separator: ", ")) says something of a page, written on \(type.name), \
-                which stands where a page stands as a page already and takes only a title and an icon.
+                which stands where a page stands as a page already and takes only a title, an icon and the ground of \
+                its pages.
                 """)
         }
     }
 
-    /// The keys the page tier's properties - a title, an icon - are written under, made once; the tier has no event.
+    /// The keys the page tier's properties - a title, an icon, a ground - are written under, made once; the tier has no
+    /// event.
     private static let pageProps = Set(PageElementContract.members.map { Prop($0.name) })
 }
 

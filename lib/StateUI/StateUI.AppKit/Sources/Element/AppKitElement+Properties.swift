@@ -95,10 +95,14 @@ extension AppKitElement {
         }
 
         applyVisibility()
+        // An arrangement's background is its pages': each that says none stands on it.
+        for page in element.pagesGroundedAnew(by: changed) {
+            (page.native as? AppKitElement)?.applyProperties(changed: [.background])
+        }
         if let scroll = view as? AppKitScrollView {
             scroll.boxBackground = paintedColor(value(.background))
         } else if !(view is AppKitTravelingLayout), !AppKitRegistrations.drawOwnBackground.contains(type) {
-            let background = paintedColor(value(.background))
+            let background = paintedColor(element.drawnBackground)
             view.wantsLayer = true
             view.layer?.backgroundColor = background?.cgColor
         }
@@ -126,7 +130,7 @@ extension AppKitElement {
 
         if let layout = view as? AppKitTravelingLayout {
             layout.decoration.apply(
-                background: value(.background), stroke: value(.stroke),
+                background: element.drawnBackground, stroke: value(.stroke),
                 lineWidth: value(.lineWidth)?.number, shape: value(.shape),
                 clips: value(.clipsContent)?.bool ?? false, to: layout)
         }

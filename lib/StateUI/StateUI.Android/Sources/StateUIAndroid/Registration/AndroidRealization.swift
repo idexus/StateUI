@@ -93,7 +93,7 @@ enum AndroidRealization {
             reason: "Android's menus - a view's context menu, a bar's overflow and its submenus - draw their entries' words alone."),
         .complete(NavigationStackContract.popped),
         .complete(PageContract.appearing),
-        .complete(PageContract.background),
+        .complete(PageElementContract.background),
         .complete(PageContract.disappearing),
         .complete(PageContract.showsBackButton),
         .complete(PageContract.showsCloseButton),

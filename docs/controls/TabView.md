@@ -39,13 +39,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [BarElement](tiers/
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (9)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>3 ✅ · 2 ☑️ · 1 ✓ · 2 –</td><td><code>NSTabView</code>: tabless under a full-width select-one <code>NSSegmentedControl</code> beneath the toolbar - the split view detail's <code>NSSplitViewItemAccessoryViewController</code> where the tabbed view stands in a split view's detail, else the title bar's bottom accessory - with top tabs where no window serves it</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>7 ✅ · 2 –</td><td><code>UITabBarController</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>5 ✅ · 2 ☑️ · 2 –</td><td>custom <code>ViewGroup</code> + <code>LinearLayout</code> tab row</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 2 –</td><td>custom <code>Panel</code> under a <code>SelectorBar</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (10)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>4 ✅ · 2 ☑️ · 1 ✓ · 2 –</td><td><code>NSTabView</code>: tabless under a full-width select-one <code>NSSegmentedControl</code> beneath the toolbar - the split view detail's <code>NSSplitViewItemAccessoryViewController</code> where the tabbed view stands in a split view's detail, else the title bar's bottom accessory - with top tabs where no window serves it</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>8 ✅ · 2 –</td><td><code>UITabBarController</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 2 ☑️ · 2 –</td><td>custom <code>ViewGroup</code> + <code>LinearLayout</code> tab row</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>7 ✅ · 1 ☑️ · 2 –</td><td>custom <code>Panel</code> under a <code>SelectorBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>4 ✅ · 1 ☑️ · 4 –</td><td><code>GtkStack</code> + <code>GtkStackSwitcher</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>8 ✅ · 1 ☑️</td><td>ARIA <code>tablist</code> of <code>&lt;button&gt;</code> tabs</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>9 ✅ · 1 ☑️</td><td>ARIA <code>tablist</code> of <code>&lt;button&gt;</code> tabs</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/TabViewContract.swift`.
@@ -87,10 +87,12 @@ What an arrangement declares of the bar while it stands on the visible path: its
 
 ## From [PageElement](tiers/PageElement.md)
 
-What a page shows about itself where another container presents it as an item - a title and a picture.
+What a page shows about itself - a title and a picture where another container presents it as an item, and what it stands on.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td></tr>
+<tr><td colspan="9">GTK 4: cannot read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read icon of TabView - AppKit's driver has no path for it yet<br>GTK 4: GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

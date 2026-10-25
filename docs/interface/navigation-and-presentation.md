@@ -417,7 +417,18 @@ NavigationStack($settingsPath) {
 
 The container's title and icon describe it when it is an item in another
 container, such as a tab. The title shown for the top page of a navigation
-stack is the one its own view says.
+stack is the one its own view says. Its `.pageBackground` is what each of its
+pages that says none stands on - the nearest arrangement's, as a bar's look
+is - so a stack in a sheet grounds every page it pushes with one modifier:
+
+```swift quote
+NavigationStack($path) {
+    DraftPage()
+} destination: { step in
+    StepPage(step)
+}
+.pageBackground(.color(paper))
+```
 
 A view such as `SearchField` can stand in the page's title slot, declared where
 the state it follows lives:

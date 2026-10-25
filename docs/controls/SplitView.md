@@ -39,13 +39,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [BarElement](tiers/
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (13)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>7 ✅ · 2 ☑️ · 3 –</td><td><code>NSSplitViewController</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>9 ✅ · 2 ✓ · 2 –</td><td><code>UISplitViewController</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>4 ✅ · 3 ☑️ · 4 ✓ · 2 –</td><td>custom <code>ViewGroup</code>: a drawer where narrow, beside where wide</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>8 ✅ · 3 ☑️ · 2 –</td><td><code>SplitView</code>, the sidebar in its pane: beside the detail from 1008 DIPs, over it where narrower</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (14)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>8 ✅ · 2 ☑️ · 3 –</td><td><code>NSSplitViewController</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>10 ✅ · 2 ✓ · 2 –</td><td><code>UISplitViewController</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>5 ✅ · 3 ☑️ · 4 ✓ · 2 –</td><td>custom <code>ViewGroup</code>: a drawer where narrow, beside where wide</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>9 ✅ · 3 ☑️ · 2 –</td><td><code>SplitView</code>, the sidebar in its pane: beside the detail from 1008 DIPs, over it where narrower</td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 2 ✓ · 4 –</td><td><code>AdwOverlaySplitView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>10 ✅ · 3 ☑️</td><td><code>&lt;aside&gt;</code> in a CSS grid: beside the detail from 900px wide, a drawer over it where narrower</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>11 ✅ · 3 ☑️</td><td><code>&lt;aside&gt;</code> in a CSS grid: beside the detail from 900px wide, a drawer over it where narrower</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/SplitViewContract.swift`.
@@ -96,10 +96,12 @@ What an arrangement declares of the bar while it stands on the visible path: its
 
 ## From [PageElement](tiers/PageElement.md)
 
-What a page shows about itself where another container presents it as an item - a title and a picture.
+What a page shows about itself - a title and a picture where another container presents it as an item, and what it stands on.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td></tr>
+<tr><td colspan="9">GTK 4: cannot read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read icon of SplitView - AppKit's driver has no path for it yet<br>GTK 4: GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

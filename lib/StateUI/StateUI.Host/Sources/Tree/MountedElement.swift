@@ -327,8 +327,11 @@
         }
         framesRead = driven[.frame] != nil || events[.frameChanged] != nil
             || held.contains { $0.framesRead }
-        // Made in a disabled branch, it presents an `isEnabled` it never wrote; untouched, it presents nothing.
-        let presenting = !described && parent?.isEffectivelyEnabled == false ? changed.union([.isEnabled]) : changed
+        // Made in a disabled branch, it presents an `isEnabled` it never wrote; a page made under an arrangement's
+        // ground, a `background` it never wrote; untouched, it presents nothing.
+        var presenting = changed
+        if !described, parent?.isEffectivelyEnabled == false { presenting.insert(.isEnabled) }
+        if !described, type == .page, value(.background) == nil, pageBackground != nil { presenting.insert(.background) }
         if !applying.untouched { native.applied(changed: presenting, wasDescribed: described) }
         described = true
         reconcilePresentation(from: applying.previouslyShown)

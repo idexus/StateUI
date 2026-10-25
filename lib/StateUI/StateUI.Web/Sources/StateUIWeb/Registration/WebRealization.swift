@@ -70,7 +70,7 @@ enum WebRealization {
         .complete(NavigationStackContract.popped),
         .complete(PageContract.appearing),
         .complete(PageContract.backButtonTitle),
-        .complete(PageContract.background),
+        .complete(PageElementContract.background),
         .complete(PageContract.disappearing),
         .complete(PageContract.navigatedFrom),
         .complete(PageContract.navigatedTo),

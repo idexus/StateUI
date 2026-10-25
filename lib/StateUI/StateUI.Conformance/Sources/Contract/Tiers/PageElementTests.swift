@@ -6,7 +6,8 @@
 
 /// `PageElementContract` on a host: a page and an arrangement stand under the title and with the icon the tree gives
 /// them where another container presents them - a tabbed view's tab - and under the titles the tree changes them to,
-/// each case made for every element wearing the tier; the visible page's title names its window, from a state too.
+/// each case made for every element wearing the tier; an arrangement's background is the ground of its pages that say
+/// none; the visible page's title names its window, from a state too.
 @_spi(Host) public enum PageElementTests: ConformanceFamily {
     public static let name = "PageElement"
 
@@ -15,8 +16,37 @@
             [
                 inTab(PageElementContract.title, of: element, "Notes", then: "Drafts"),
                 inTab(PageElementContract.icon, of: element, "test_dot.png", then: "test_wide.png"),
-            ]
-        } + [titled, titledByState]
+            ] + (element == PageContract.nodeType.name ? [] : [groundsItsPages(element)])
+        } + [titled, titledByState, groundHolds, groundFollowsColor, followsAMaterial]
+    }
+
+    /// The background `element` declares is the ground of its pages that say none: the page in it stands on what the
+    /// tree gives it, and on what the tree changes it to.
+    @MainActor
+    static func groundsItsPages(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).background.groundsItsPagesThatSayNone", proves: [
+            Covered(PageElementContract.background, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let (first, second) = (Material.color(.steelBlue), Material.color(.firebrick))
+            let value = State(wrappedValue: first)
+            s.start {
+                Presented.page(element, PageElementContract.background, value.wrappedValue, beside: [
+                    Button("Change").onClicked { value.wrappedValue = second }.id("change"),
+                ])
+            }
+            let page = { () throws -> MountedElement in
+                guard let page = try s.element("change").enclosing(type: .page) else {
+                    throw DriverCannot("find the page in \(element)")
+                }
+                return page
+            }
+            try s.settle { try s.held(PageElementContract.background, on: page()) == first }
+            s.expect(try s.held(PageElementContract.background, on: page()), first, "the ground the tree gave")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.held(PageElementContract.background, on: page()) == second }
+            s.expect(try s.held(PageElementContract.background, on: page()), second, "the ground the tree changed it to")
+        }
     }
 
     /// `member` of `element`, presented as a tabbed view's first tab, holds what the tree gives it and what the tree
@@ -51,6 +81,62 @@
             try s.perform(.activate, on: s.element("change"))
             try s.settle { try s.held(member, on: specimen) == second }
             s.expect(try s.held(member, on: specimen), second, "the value the tree changed it to")
+        }
+    }
+
+    /// A pushed page's background holds what its view says, and what it says once its body is built again.
+    @MainActor
+    static var groundHolds: ConformanceCase {
+        ConformanceCase("Page.background.holdsWhatItsViewSaysAndChanges", proves: [
+            Covered(PageElementContract.background, on: PageContract.self),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let value = State(wrappedValue: Material.color(.red))
+            s.start {
+                NavigationStack(State(wrappedValue: [1]).projectedValue) {
+                    Text("Root")
+                } destination: { _ in
+                    Saying(value: value, second: .color(.blue)) { $0.pageBackground($1) }
+                }
+            }
+            try PageTests.held(PageElementContract.background, .color(.red), then: .color(.blue), s)
+        }
+    }
+
+    /// A pushed page's background holds the color of the state its view says it from, and follows the state as it is
+    /// written, no view built again - a color's channel writing a material.
+    @MainActor
+    static var groundFollowsColor: ConformanceCase {
+        ConformanceCase("Page.background.followsItsState", proves: [
+            Covered(PageElementContract.background, on: PageContract.self),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let value = State(wrappedValue: Color.red)
+            s.start {
+                NavigationStack(State(wrappedValue: [1]).projectedValue) {
+                    Text("Root")
+                } destination: { _ in
+                    PageTests.changing(value, to: .blue).pageBackground(value.projectedValue)
+                }
+            }
+            try PageTests.held(PageElementContract.background, .color(.red), then: .color(.blue), s)
+        }
+    }
+
+    /// A pushed page's background follows the material state its view says it from - a material's channel.
+    @MainActor
+    static var followsAMaterial: ConformanceCase {
+        ConformanceCase("Page.background.followsAMaterialState", proves: [
+            Covered(PageElementContract.background, on: PageContract.self),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let (first, second) = (Material.color(Color(hex: 0x0F766E)), Material.color(Color(hex: 0x512BD4)))
+            let value = State(wrappedValue: first)
+            s.start {
+                NavigationStack(State(wrappedValue: [1]).projectedValue) {
+                    Text("Root")
+                } destination: { _ in
+                    PageTests.changing(value, to: second).pageBackground(value.projectedValue)
+                }
+            }
+            try PageTests.held(PageElementContract.background, first, then: second, s)
         }
     }
 

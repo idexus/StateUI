@@ -165,7 +165,7 @@ enum WinUIRealization {
         .complete(SheetContract.isPresentedChanged),
         .complete(NavigationStackContract.popped),
         .complete(PageContract.appearing),
-        .complete(PageContract.background),
+        .complete(PageElementContract.background),
         .complete(PageContract.disappearing),
         .complete(PageContract.showsBackButton),
         .complete(PageContract.showsCloseButton),

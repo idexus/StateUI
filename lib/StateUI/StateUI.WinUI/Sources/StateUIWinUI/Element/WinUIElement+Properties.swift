@@ -50,6 +50,10 @@ extension WinUIElement {
     /// registration's first, then what every element takes.
     /// Design: docs/design/host/patches.md#program-write
     func applyProperties(changed: Set<Prop>) {
+        // An arrangement's background is its pages': each that says none stands on it.
+        for page in element.pagesGroundedAnew(by: changed) {
+            (page.native as? WinUIElement)?.applyProperties(changed: [.background])
+        }
         guard let view else {
             if !changed.isDisjoint(with: MountedElement.arrangedProperties) { parent?.invalidateMeasurements() }
             return
@@ -73,7 +77,7 @@ extension WinUIElement {
             case .ignoresInput: view.setIgnoresInput(element.bool(.ignoresInput) == true)
             case .tooltip: view.setTooltip(element.string(.tooltip))
             case .background:
-                view.setBackground(HostMaterial(value(.background)).painted)
+                view.setBackground(HostMaterial(element.drawnBackground).painted)
                 (parent?.view as? WinUISplitView)?.paintPane()
             default: break
             }

@@ -45,6 +45,10 @@ extension WebElement {
     /// Puts the changed properties on the DOM element, its registration's first, then what every element takes.
     /// Design: docs/design/host/patches.md#program-write
     func applyProperties(changed: Set<Prop>) {
+        // An arrangement's background is its pages': each that says none stands on it.
+        for page in element.pagesGroundedAnew(by: changed) {
+            (page.native as? WebElement)?.applyProperties(changed: [.background])
+        }
         guard let view else { return }
 
         let taken = WebRegistrations.registry.apply(changed, to: view, presenting: element)
@@ -55,7 +59,7 @@ extension WebElement {
             case .opacity: view.setOpacity(element.value(.opacity)?.number ?? 1)
             case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
             case .isVisible: view.setShown(element.standsShown)
-            case .background: view.setBackground(element.value(.background))
+            case .background: view.setBackground(element.drawnBackground)
             case .ignoresInput: view.style("pointer-events", element.value(.ignoresInput)?.bool == true ? "none" : nil)
             case .tooltip: view.attribute("title", element.string(.tooltip))
             default: break

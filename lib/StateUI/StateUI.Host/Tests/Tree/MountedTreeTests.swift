@@ -22,6 +22,21 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(log.applied.last, "stack", "a parent is presented after its children")
     }
 
+    /// A page made under an arrangement's ground presents the background it never wrote, so its host draws it there;
+    /// one with its own presents its own.
+    @MainActor
+    func testAPageMadeUnderAGroundPresentsItsBackground() {
+        let (tree, log) = Self.tree()
+        var plain = HostPatch(id: .manual("plain"), type: .page)
+        plain.children = .arranged([])
+        var stack = HostPatch(id: .manual("stack"), type: .navigationStack)
+        stack.properties[.background] = .string("stack")
+        stack.children = .arranged([plain])
+        tree.apply(stack, complete: true)
+
+        XCTAssertEqual(log.changed["plain"]?.contains(.background), true)
+    }
+
     /// A sparse message naming a child the element does not hold is drift, and mounts nothing.
     @MainActor
     func testASparseMessageNamingAStrangerDrifts() {
@@ -998,6 +1013,7 @@ final class MountedTreeTests: XCTestCase {
 @MainActor
 private final class NativeLog {
     var applied: [String] = []
+    var changed: [String: Set<Prop>] = [:]
     var arranged: [String] = []
     var left: [String] = []
     var presentedWriting: [Bool] = []
@@ -1026,7 +1042,10 @@ private final class RecordingNative: NativeElement {
 
     func standingValue(_ property: Prop) -> HostValue? { nil }
     func animates(_ property: Prop) -> Bool { false }
-    func applied(changed: Set<Prop>, wasDescribed: Bool) { log.applied.append(name) }
+    func applied(changed: Set<Prop>, wasDescribed: Bool) {
+        log.applied.append(name)
+        log.changed[name, default: []].formUnion(changed)
+    }
     func presentFrame(_ changed: Set<Prop>) {
         log.presentedWriting.append(ProgramWrite.isWriting)
     }

@@ -57,6 +57,8 @@ extension AndroidElement {
     /// then what every view takes.
     /// Design: docs/design/host/patches.md#program-write
     func applyProperties(changed: Set<Prop>) {
+        // An arrangement's background is its pages': each that says none stands on it.
+        for page in element.pagesGroundedAnew(by: changed) { (page.native as? AndroidElement)?.paintBackground() }
         guard let view else {
             if !changed.isDisjoint(with: MountedElement.arrangedProperties) { parent?.invalidateMeasurements() }
             return
@@ -115,12 +117,13 @@ extension AndroidElement {
         view ?? parent?.nearestView
     }
 
-    /// Paints the view's background: its own - a blur's or glass's color standing in, its tint over it, as Android
-    /// blurs nothing behind a view; a page painting none stands on the color its window is painted in.
+    /// Paints the view's background: its own - a page's arrangement's where it says none (`drawnBackground`) - a
+    /// blur's or glass's color standing in, its tint over it, as Android blurs nothing behind a view; a page painting
+    /// none stands on the color its window is painted in.
     /// Design: docs/design/host/pages.md#a-pages-ground
     func paintBackground() {
         guard let view else { return }
-        let own = HostMaterial(value(.background)).painted
+        let own = HostMaterial(element.drawnBackground).painted
         guard type == .page, own == nil else { return view.setBackground(own) }
         Java.callStatic(JavaAPI.views, JavaAPI.groundPage, .object(view.reference))
     }

@@ -39,6 +39,10 @@ extension UIKitElement {
     }
 
     func applyProperties(changed: Set<Prop>) {
+        // An arrangement's background is its pages': each that says none stands on it.
+        for page in element.pagesGroundedAnew(by: changed) {
+            (page.native as? UIKitElement)?.applyProperties(changed: [.background])
+        }
         guard let view else {
             if !changed.isDisjoint(with: MountedElement.arrangedProperties) { parent?.invalidateMeasurements() }
             return
@@ -60,7 +64,7 @@ extension UIKitElement {
                 // Ignored, the view and all in it are passed over: a touch goes to what is under it.
                 case .ignoresInput: view.isUserInteractionEnabled = element.bool(.ignoresInput) != true
                 case .background:
-                    view.backgroundColor = HostMaterial(value(.background)).painted.flatMap(UIColor.init(stateUI:))
+                    view.backgroundColor = HostMaterial(element.drawnBackground).painted.flatMap(UIColor.init(stateUI:))
                     (controller as? UIKitPageController)?.showBackground()
                 case .ignoresSafeArea:
                     // A page's content standing against the safe area otherwise: its page stands again.

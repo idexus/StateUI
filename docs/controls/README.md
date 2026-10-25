@@ -89,14 +89,14 @@ The scene, the window and the page an application is made of, the arrangements a
 | [MenuItem](MenuItem.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 4 ✅ · 3 – | 7 ✅ |
 | [MenuSeparator](MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuToggle](MenuToggle.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 5 ✅ · 2 – | 7 ✅ |
-| [NavigationStack](NavigationStack.md) | 8 | 2 ✅ · 2 ☑️ · 1 ✓ · 2 – | 6 ✅ · 2 – | 4 ✅ · 2 ☑️ · 2 – | 5 ✅ · 1 ☑️ · 2 – | 3 ✅ · 1 ✓ · 4 – | 7 ✅ · 1 ☑️ |
+| [NavigationStack](NavigationStack.md) | 9 | 3 ✅ · 2 ☑️ · 1 ✓ · 2 – | 7 ✅ · 2 – | 5 ✅ · 2 ☑️ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 3 ✅ · 1 ✓ · 4 – | 8 ✅ · 1 ☑️ |
 | [Overlay](Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 | [Page](Page.md) | 14 | 11 ✅ | 14 ✅ | 13 ✅ · 1 – | 13 ✅ · 1 – | 11 ✅ · 2 – | 13 ✅ |
 | [Popover](Popover.md) | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [Sheet](Sheet.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [SplitView](SplitView.md) | 13 | 7 ✅ · 2 ☑️ · 3 – | 9 ✅ · 2 ✓ · 2 – | 4 ✅ · 3 ☑️ · 4 ✓ · 2 – | 8 ✅ · 3 ☑️ · 2 – | 6 ✅ · 1 ☑️ · 2 ✓ · 4 – | 10 ✅ · 3 ☑️ |
-| [TabView](TabView.md) | 9 | 3 ✅ · 2 ☑️ · 1 ✓ · 2 – | 7 ✅ · 2 – | 5 ✅ · 2 ☑️ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 4 ✅ · 1 ☑️ · 4 – | 8 ✅ · 1 ☑️ |
+| [SplitView](SplitView.md) | 14 | 8 ✅ · 2 ☑️ · 3 – | 10 ✅ · 2 ✓ · 2 – | 5 ✅ · 3 ☑️ · 4 ✓ · 2 – | 9 ✅ · 3 ☑️ · 2 – | 6 ✅ · 1 ☑️ · 2 ✓ · 4 – | 11 ✅ · 3 ☑️ |
+| [TabView](TabView.md) | 10 | 4 ✅ · 2 ☑️ · 1 ✓ · 2 – | 8 ✅ · 2 – | 6 ✅ · 2 ☑️ · 2 – | 7 ✅ · 1 ☑️ · 2 – | 4 ✅ · 1 ☑️ · 4 – | 9 ✅ · 1 ☑️ |
 | [TextSpan](TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -104,10 +104,10 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarGroup](ToolbarGroup.md) | 5 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [ToolbarToggle](ToolbarToggle.md) | 9 | 7 ✅ · 1 – | 8 ✅ · 1 – | 6 ✅ · 1 ☑️ · 1 – | 9 ✅ | 8 ✅ · 1 – | 9 ✅ |
 | [Window](Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 102 | 105 | 83 | 127 | 98 | 117 |
+| ✅ |  | 105 | 108 | 86 | 130 | 98 | 120 |
 | ✓ |  | 23 | 21 | 20 | 5 | 18 | 10 |
 | – |  | 11 | 17 | 28 | 10 | 29 | 15 |
-| **Met** | 157 | **136** | **143** | **131** | **142** | **145** | **142** |
+| **Met** | 160 | **139** | **146** | **134** | **145** | **145** | **145** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 
@@ -144,7 +144,7 @@ Members many elements share, declared once.
 - [ActionElement](tiers/ActionElement.md) - What an item that acts has - a menu's entry, a toolbar's button: what choosing it does, and how the platform marks it.
 - [ButtonMenuElement](tiers/ButtonMenuElement.md) - What a button that holds a menu has - a button's, a toolbar button's: how its menu opens, and whether the arrow saying so shows.
 - [TextAndIconElement](tiers/TextAndIconElement.md) - What an element showing words and a picture has - a button, a bar's item: whether its words stand beside its picture.
-- [PageElement](tiers/PageElement.md) - What a page shows about itself where another container presents it as an item - a title and a picture.
+- [PageElement](tiers/PageElement.md) - What a page shows about itself - a title and a picture where another container presents it as an item, and what it stands on.
 <!-- tiers:end -->
 
 ## Layers

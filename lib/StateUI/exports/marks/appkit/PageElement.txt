@@ -1,9 +1,13 @@
-# revision 2.1
+# revision 3.1
+NavigationStack.background: ✅
 NavigationStack.icon: cannot read icon of NavigationStack - AppKit's driver has no path for it yet
 NavigationStack.title: ✅
+Page.background: ✅
 Page.icon: cannot read icon of Page - AppKit's driver has no path for it yet
 Page.title: ✅
+SplitView.background: ✅
 SplitView.icon: cannot read icon of SplitView - AppKit's driver has no path for it yet
 SplitView.title: ✅
+TabView.background: ✅
 TabView.icon: cannot read icon of TabView - AppKit's driver has no path for it yet
 TabView.title: ✅

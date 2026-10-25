@@ -763,6 +763,30 @@ final class PagesTests: XCTestCase {
         XCTAssertTrue(split.sidebarMaterial(over: false).isEmpty, "beside the detail, the platform's own")
     }
 
+    /// A page that says no background stands on the nearest its arrangements declare for their pages - on past a
+    /// sheet to the view presenting it - its own winning; a sidebar's page stands on its sidebar's material, and an
+    /// arrangement draws none of its own.
+    func testAPageStandsOnItsArrangementsBackground() throws {
+        let runtime = runtime(node("window", .window, children: [
+            node("split", .splitView, [.background: .string("split")], children: [
+                node("menu", .page),
+                node("stack", .navigationStack, [.background: .string("stack")], children: [
+                    node("plain", .page, children: [presenting(node("sheet", .page))]),
+                    node("own", .page, [.background: .string("own")]),
+                ]),
+            ]),
+        ])) { _ in }
+        let root = try XCTUnwrap(runtime.tree.root)
+        let page = { (id: String) in try XCTUnwrap(root.first(id: .manual(id))) }
+
+        XCTAssertEqual(try page("plain").pageBackground, .string("stack"), "the nearest arrangement's")
+        XCTAssertEqual(try page("own").pageBackground, .string("own"), "its own first")
+        XCTAssertEqual(try page("sheet").pageBackground, .string("stack"), "past the sheet")
+        XCTAssertNil(try page("menu").pageBackground, "a sidebar's page stands on its sidebar's material")
+        XCTAssertNil(try page("stack").drawnBackground, "an arrangement's background is its pages'")
+        XCTAssertEqual(try page("plain").drawnBackground, .string("stack"))
+    }
+
     /// A surface laid over the page - a sheet, the sidebar over the detail - that the application says nothing of
     /// stands on its window's background, laid over the platform's own surface; a window saying none leaves that
     /// surface alone. Beside the detail the sidebar stays the platform's, and a flyout's own material wins.

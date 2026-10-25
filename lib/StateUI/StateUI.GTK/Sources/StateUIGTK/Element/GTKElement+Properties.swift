@@ -42,6 +42,10 @@ extension GTKElement {
     /// registration's first, then what every element takes.
     /// Design: docs/design/host/patches.md#program-write
     func applyProperties(changed: Set<Prop>) {
+        // An arrangement's background is its pages': each that says none stands on it.
+        for page in element.pagesGroundedAnew(by: changed) {
+            (page.native as? GTKElement)?.applyProperties(changed: [.background])
+        }
         guard let view else {
             if !changed.isDisjoint(with: MountedElement.arrangedProperties) { parent?.invalidateMeasurements() }
             return
@@ -58,7 +62,7 @@ extension GTKElement {
             case .isVisible: view.setShown(isShown)
             case .tooltip: view.setTooltip(element.string(.tooltip))
             // GTK blurs nothing behind a widget: a blur's or glass's color stands in, its tint over it.
-            case .background: view.setBackground(HostMaterial(value(.background)).painted)
+            case .background: view.setBackground(HostMaterial(element.drawnBackground).painted)
             default: break
             }
         }

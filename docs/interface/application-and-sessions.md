@@ -493,7 +493,7 @@ What the page is, the view it shows says by modifier:
 | `.title` | navigation title, and the caption where the page is an item of something else |
 | `.subtitle` | the line under the page's title, wherever its title shows - the current document or section |
 | `.icon` | the page's representative image: a tab's icon, and a sidebar page's mark where it names the application |
-| `.pageBackground` | what the whole page is made of behind what it shows - a color, a gradient, a blur or glass - also where the view does not reach |
+| `.pageBackground` | what the whole page is made of behind what it shows - a color, a gradient, a blur or glass - also where the view does not reach; on an arrangement, what each of its pages that says none stands on |
 | `.showsNavigationBar` | whether a containing navigation stack shows its bar for this page |
 | `.showsTitle` | whether the page shows its title - on its bar, or over its content where the bar names the application; the title names the window and the way back all the same |
 | `.showsBackButton` | whether that bar offers its native back affordance |
@@ -513,7 +513,8 @@ the `body` of the view written there - through a modifier, a `Group`, or an
 on a page. Anywhere else - inside a `VStack`, inside a page's content - an
 arrangement is left out and said once. It fills where it stands, so
 it keeps only what its contract declares, and takes its own `.title` and
-`.icon`, for where it is an item of something else, such as a tab.
+`.icon`, for where it is an item of something else, such as a tab, and
+`.pageBackground`, the ground of each of its pages that says none.
 
 What has a body of its own - the page's actions, the view in its title's place
 and its menus - is declared in the view as well, with `.toolbar { }`,

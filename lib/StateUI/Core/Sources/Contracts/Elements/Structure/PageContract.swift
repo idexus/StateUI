@@ -20,9 +20,6 @@ public enum PageContract: ElementContract {
     /// What the back affordance says on the page pushed above this one.
     public static let backButtonTitle = ElementProperty<Self, String>("backButtonTitle", layer: .adaptive)
 
-    /// What is drawn behind the page.
-    public static let background = ElementProperty<Self, Material>("background", layer: .adaptive)
-
     /// The page is leaving the screen.
     public static let disappearing = ElementEvent<Self, Void>("disappearing", layer: .adaptive)
 
@@ -54,7 +51,7 @@ public enum PageContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        appearing, backButtonTitle, background, disappearing, showsBackButton, showsCloseButton, showsNavigationBar,
+        appearing, backButtonTitle, disappearing, showsBackButton, showsCloseButton, showsNavigationBar,
         showsTitle, subtitle,
         navigatedFrom, navigatedTo, navigatingFrom,
     ]

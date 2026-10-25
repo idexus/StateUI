@@ -524,14 +524,14 @@ Every control, and every part an application, its windows and its pages are made
 | [MenuItem](controls/MenuItem.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 4 ✅ · 3 – | 7 ✅ |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuToggle](controls/MenuToggle.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 5 ✅ · 2 – | 7 ✅ |
-| [NavigationStack](controls/NavigationStack.md) | 8 | 2 ✅ · 2 ☑️ · 1 ✓ · 2 – | 6 ✅ · 2 – | 4 ✅ · 2 ☑️ · 2 – | 5 ✅ · 1 ☑️ · 2 – | 3 ✅ · 1 ✓ · 4 – | 7 ✅ · 1 ☑️ |
+| [NavigationStack](controls/NavigationStack.md) | 9 | 3 ✅ · 2 ☑️ · 1 ✓ · 2 – | 7 ✅ · 2 – | 5 ✅ · 2 ☑️ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 3 ✅ · 1 ✓ · 4 – | 8 ✅ · 1 ☑️ |
 | [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 | [Page](controls/Page.md) | 14 | 11 ✅ | 14 ✅ | 13 ✅ · 1 – | 13 ✅ · 1 – | 11 ✅ · 2 – | 13 ✅ |
 | [Popover](controls/Popover.md) | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](controls/Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [Sheet](controls/Sheet.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [SplitView](controls/SplitView.md) | 13 | 7 ✅ · 2 ☑️ · 3 – | 9 ✅ · 2 ✓ · 2 – | 4 ✅ · 3 ☑️ · 4 ✓ · 2 – | 8 ✅ · 3 ☑️ · 2 – | 6 ✅ · 1 ☑️ · 2 ✓ · 4 – | 10 ✅ · 3 ☑️ |
-| [TabView](controls/TabView.md) | 9 | 3 ✅ · 2 ☑️ · 1 ✓ · 2 – | 7 ✅ · 2 – | 5 ✅ · 2 ☑️ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 4 ✅ · 1 ☑️ · 4 – | 8 ✅ · 1 ☑️ |
+| [SplitView](controls/SplitView.md) | 14 | 8 ✅ · 2 ☑️ · 3 – | 10 ✅ · 2 ✓ · 2 – | 5 ✅ · 3 ☑️ · 4 ✓ · 2 – | 9 ✅ · 3 ☑️ · 2 – | 6 ✅ · 1 ☑️ · 2 ✓ · 4 – | 11 ✅ · 3 ☑️ |
+| [TabView](controls/TabView.md) | 10 | 4 ✅ · 2 ☑️ · 1 ✓ · 2 – | 8 ✅ · 2 – | 6 ✅ · 2 ☑️ · 2 – | 7 ✅ · 1 ☑️ · 2 – | 4 ✅ · 1 ☑️ · 4 – | 9 ✅ · 1 ☑️ |
 | [TextSpan](controls/TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -539,10 +539,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarGroup](controls/ToolbarGroup.md) | 5 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 9 | 7 ✅ · 1 – | 8 ✅ · 1 – | 6 ✅ · 1 ☑️ · 1 – | 9 ✅ | 8 ✅ · 1 – | 9 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 102 | 105 | 83 | 127 | 98 | 117 |
+| ✅ |  | 105 | 108 | 86 | 130 | 98 | 120 |
 | ✓ |  | 23 | 21 | 20 | 5 | 18 | 10 |
 | – |  | 11 | 17 | 28 | 10 | 29 | 15 |
-| **Met** | 157 | **136** | **143** | **131** | **142** | **145** | **142** |
+| **Met** | 160 | **139** | **146** | **134** | **145** | **145** | **145** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -589,7 +589,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ActionElement](controls/tiers/ActionElement.md) | `onClicked` (`clicked`), `role` | 2 |
 | [ButtonMenuElement](controls/tiers/ButtonMenuElement.md) | `menuKind`, `showsMenuArrow` | 2 |
 | [TextAndIconElement](controls/tiers/TextAndIconElement.md) | `showsText` | 1 |
-| [PageElement](controls/tiers/PageElement.md) | `icon`, `title` | 2 |
+| [PageElement](controls/tiers/PageElement.md) | `background`, `icon`, `title` | 3 |
 
 ### Elements
 
@@ -611,7 +611,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [MenuBar](controls/MenuBar.md) | `order` | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [MenuToggle](controls/MenuToggle.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [NavigationStack](controls/NavigationStack.md) | `popped` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `background`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsCloseButton`, `showsNavigationBar`, `showsTitle`, `subtitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 12 | 10 ✅ | 12 ✅ | 11 ✅ · 1 – | 11 ✅ · 1 – | 10 ✅ · 1 – | 11 ✅ |
+| [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsCloseButton`, `showsNavigationBar`, `showsTitle`, `subtitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 11 | 9 ✅ | 11 ✅ | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `placeholder`, `presentation`, `selectedIndex`, `selectedIndexChanged` | 8 | 4 ✅ · 1 ✓ | 1 ✅ · 1 ☑️ · 3 ✓ | 3 ✅ · 1 ☑️ · 1 ✓ | 8 ✅ | 4 ✅ · 4 – | 5 ✅ · 3 – |
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
