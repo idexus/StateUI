@@ -40,7 +40,8 @@ enum WinUIRealization {
 
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
-        .notPlanned(ApplicationContract.useAccentColor, reason: "Windows draws every control in the accent the user chose."),
+        .notPlanned(ApplicationContract.useAccentColor,
+            reason: "The user's accent stands on Windows: StateUI does not override it with the application's."),
         .notPlanned(RefreshElementContract.isRefreshEnabled, on: ItemsViewContract.self, reason: Self.noListPull),
         .notPlanned(RefreshElementContract.isRefreshing, on: ItemsViewContract.self, reason: Self.noListPull),
         .notPlanned(RefreshElementContract.refreshRequested, on: ItemsViewContract.self, reason: Self.noListPull),
