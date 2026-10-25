@@ -20,9 +20,9 @@ class WebDOMView {
     private(set) static var liveCount = 0
 
     #if DEBUG
-    /// Each view alive, by its number: its class, its element's tag and its classes - what a test names a view that
+    /// Each view alive: its class, its element's tag and its classes - what a test names a view that
     /// outlived its element by.
-    private(set) static var liveKinds: [Int64: String] = [:]
+    private(set) static var liveKinds: [ObjectIdentifier: String] = [:]
     #endif
 
     /// The listeners hung on the element, let go of with it.
@@ -100,7 +100,7 @@ class WebDOMView {
     private func made(_ tag: String) {
         Self.liveCount += 1
         #if DEBUG
-        Self.liveKinds[serial] = "\(type(of: self)) <\(tag)>"
+        Self.liveKinds[ObjectIdentifier(self)] = "\(type(of: self)) <\(tag)>"
         #endif
     }
 
@@ -116,7 +116,7 @@ class WebDOMView {
         WebRelay.release(node)
         Self.liveCount -= 1
         #if DEBUG
-        Self.liveKinds.removeValue(forKey: serial)
+        Self.liveKinds.removeValue(forKey: ObjectIdentifier(self))
         #endif
     }
 
@@ -215,8 +215,8 @@ class WebDOMView {
     /// Sets an attribute, or takes it away for nil.
     func attribute(_ name: String, _ value: String?) {
         #if DEBUG
-        if name == "class", let value, let kind = Self.liveKinds[serial] {
-            Self.liveKinds[serial] = String(kind.prefix { $0 != "." }) + "." + value
+        if name == "class", let value, let kind = Self.liveKinds[ObjectIdentifier(self)] {
+            Self.liveKinds[ObjectIdentifier(self)] = String(kind.prefix { $0 != "." }) + "." + value
         }
         #endif
         WebRelay.setAttribute(node, name, value)
