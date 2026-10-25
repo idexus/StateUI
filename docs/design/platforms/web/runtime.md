@@ -178,7 +178,9 @@ its own ([items](items.md#scrolling-to-an-item)).
 A link into a page is its address with a fragment: told as the page starts,
 where it carries one, and each time the fragment changes (`hashchange`). The
 query stays the environment's (`?STATEUI_TALLY=1`), and the page's own address
-with no fragment is a start with no link.
+with no fragment is a start with no link. A fragment's move is never the way
+back: the browser moves its history for it too, and the host takes a move of
+its history for its way back only where the fragment stayed.
 
 ## The clipboard
 

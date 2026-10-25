@@ -129,7 +129,7 @@ STATEUI_WEB(frame_evaluate) int32_t stateui_web_frame_evaluate(int32_t element, 
 
 /// Puts one entry of the page's own on the browser's history; `back_history` goes back over it where it stands on
 /// it, 1 where it went; `listen_history` calls `listener` whenever the browser's history moves - its way back, or
-/// forward - until `forget` takes it off.
+/// forward, the fragment staying: a fragment's move is a link (`listen_links`) - until `forget` takes it off.
 STATEUI_WEB(push_history) void stateui_web_push_history(void);
 STATEUI_WEB(back_history) int32_t stateui_web_back_history(void);
 STATEUI_WEB(listen_history) void stateui_web_listen_history(int32_t listener);
