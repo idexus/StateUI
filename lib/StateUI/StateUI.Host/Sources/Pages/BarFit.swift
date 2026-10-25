@@ -19,9 +19,13 @@
 
     /// How many of the bar's groups stand on it, the first in reading order, and how its title stands.
     public struct Standing: Sendable, Equatable {
+        /// How many of the bar's groups stand on it, the first in reading order.
         public var groups: Int
+
+        /// How the title stands among them.
         public var title: Title
 
+        /// A standing of `groups` groups, the title standing as `title` says.
         public init(groups: Int, title: Title) {
             self.groups = groups
             self.title = title
