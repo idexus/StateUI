@@ -96,6 +96,14 @@ final class WebRenderer {
         pageListeners += [shortcuts, keys]
         WebRelay.hear(WebRelay.body, .shortcut, shortcuts)
         WebRelay.hear(WebRelay.body, .key, keys)
+        // A link into the application is the page's address with a fragment, as it starts and as the fragment moves.
+        // Design: docs/design/platforms/web/runtime.md#a-link-opened
+        let links = WebRelay.listener { [weak self] in
+            let address = WebRelay.pageLink
+            if !address.isEmpty { self?.runtime.openLink(address) }
+        }
+        pageListeners.append(links)
+        WebRelay.listenForLinks(links)
         runtime.start(
             realizing: WebRegistrations.registry.realization, unrealized: WebRealization.unmade,
             register: WebRealization.register,

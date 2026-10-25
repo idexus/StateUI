@@ -169,6 +169,7 @@ enum AndroidRealization {
         .complete(WindowContract.created),
         .complete(WindowContract.deactivated),
         .complete(WindowContract.destroying),
+        .complete(WindowContract.linkOpened),
         .complete(WindowContract.resumed),
         .complete(WindowContract.stopped),
         .complete(WindowContract.title),

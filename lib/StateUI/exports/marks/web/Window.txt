@@ -1,4 +1,4 @@
-# revision 7.1
+# revision 8.1
 Window: ✅
 Window.activated: ✅
 Window.background: ☑️ A page draws its window opaque: a blur or glass shows its color.
@@ -10,6 +10,7 @@ Window.height: – A page sizes no browser window: the user does, and the page f
 Window.hidesWhenInactive: – The browser shows a page whenever its tab shows, whichever application the user is in.
 Window.isMaximizable: – A page asks nothing of how the browser's window is resized.
 Window.isMinimizable: – A page asks nothing of how the browser's window is put away.
+Window.linkOpened: ✓ openLink on Window: the host's entry the page's address with a fragment reaches, no address loaded
 Window.maximumHeight: – A page bounds no browser window: the user sizes it.
 Window.maximumWidth: – A page bounds no browser window: the user sizes it.
 Window.minimumHeight: – A page bounds no browser window: the user sizes it.

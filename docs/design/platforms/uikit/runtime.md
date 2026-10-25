@@ -81,6 +81,15 @@ windows do not own their scenes (`ownsScenes` off) - the tests' host, which
 stands its window in the one scene the runner has - does not own that scene,
 so its windows only leave it.
 
+## A link opened
+
+A scene's delegate hears the links it is asked to open: those it connects with
+(`UIScene.ConnectionOptions.urlContexts`) and those a running scene is handed
+(`scene(_:openURLContexts:)`), each named by the scene's window where it
+stands. The application's delegate, `StateUIApplicationDelegate`, is open: an
+application whose SDK asks for a delegate subclasses it, calling `super` where
+it overrides, and hands it to `StateUIUIKit.run(delegate:)`.
+
 ## The environment
 
 The device, the application and the main display are told as the runtime

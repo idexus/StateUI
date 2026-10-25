@@ -22,6 +22,9 @@ struct DeclaredWindows {
     var floats = false
     var environments: [(key: ObjectIdentifier, object: AnyObject)] = []
 
+    /// What each of its windows hears of a link the application is asked to open.
+    var links: [(inout Node) -> Void] = []
+
     /// Whether it opens a window for `valueType` - none for a window of no value.
     func takes(_ valueType: Any.Type?) -> Bool {
         switch (self.valueType, valueType) {

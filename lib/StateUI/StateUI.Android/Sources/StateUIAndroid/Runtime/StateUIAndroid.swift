@@ -163,6 +163,10 @@ enum JavaNatives {
         let destroying: @convention(c) (Environment, jclass?) -> Void = { _, _ in
             MainActor.assumeIsolated { AndroidRenderer.shared?.destroying() }
         }
+        let linkOpened: @convention(c) (Environment, jclass?, jstring?) -> Void = { _, _, address in
+            nonisolated(unsafe) let address = address
+            MainActor.assumeIsolated { AndroidRenderer.shared?.runtime.openLink(Java.text(address)) }
+        }
         let environmentChanged: @convention(c) (Environment, jclass?) -> Void = { _, _ in
             MainActor.assumeIsolated { AndroidRenderer.shared?.environmentChanged() }
         }
@@ -426,6 +430,7 @@ enum JavaNatives {
             ("notched", "(JFF)Z", unsafeBitCast(notched, to: UnsafeMutableRawPointer.self)),
             ("focusChanged", "(JZ)V", unsafeBitCast(focusChanged, to: UnsafeMutableRawPointer.self)),
             ("destroying", "()V", unsafeBitCast(destroying, to: UnsafeMutableRawPointer.self)),
+            ("linkOpened", "(Ljava/lang/String;)V", unsafeBitCast(linkOpened, to: UnsafeMutableRawPointer.self)),
             ("environmentChanged", "()V", unsafeBitCast(environmentChanged, to: UnsafeMutableRawPointer.self)),
             ("menuOpening", "(JLandroid/view/Menu;)V", unsafeBitCast(menuOpening, to: UnsafeMutableRawPointer.self)),
             ("tabSelected", "(JI)V", unsafeBitCast(tabSelected, to: UnsafeMutableRawPointer.self)),

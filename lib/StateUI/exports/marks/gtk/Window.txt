@@ -1,4 +1,4 @@
-# revision 7.1
+# revision 8.1
 Window: ✅
 Window.activated: ✅
 Window.background: ✓ read background of Window: the class of the host's style sheet the widget wears: GTK reads back no background
@@ -10,6 +10,7 @@ Window.height: ✅
 Window.hidesWhenInactive: ✓ bringToFront on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
 Window.isMaximizable: – The desktop fills the screen with any GTK 4 window it can resize: none forbids that alone.
 Window.isMinimizable: – GTK 4 asks the desktop to keep no window from being put away.
+Window.linkOpened: ✓ openLink on Window: the host's entry the application's open signal reaches, no file opened
 Window.maximumHeight: – GTK 4 bounds no window from above.
 Window.maximumWidth: – GTK 4 bounds no window from above.
 Window.minimumHeight: ✅

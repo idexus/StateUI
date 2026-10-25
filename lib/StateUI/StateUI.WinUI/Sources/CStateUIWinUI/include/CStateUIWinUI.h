@@ -463,6 +463,10 @@ typedef struct {
     /// A press dragged with Alt over a view two fingers move - its `StateUIPhase` - at (x, y) of the view, its middle
     /// at (middleX, middleY), in DIPs: two fingers, the press and its mirror.
     void (*mirrored)(int64_t view, int32_t phase, double x, double y, double middleX, double middleY);
+
+    /// Windows asked the application to open a link - a scheme it registered - at its start or later, a second
+    /// start handing it over: its address, in UTF-8.
+    void (*linkOpened)(char const *address);
 } StateUIWinUICallbacks;
 
 /// What the environment is, in groups, each read at once.
@@ -477,8 +481,10 @@ typedef enum STATEUI_CLOSED_ENUM {
     StateUIFactsAccessibility,
 } StateUIFacts;
 
-/// Starts the Windows App SDK and WinUI on this thread and runs its loop until the last window closes.
-int32_t stateui_winui_run(StateUIWinUICallbacks const *callbacks);
+/// Starts the Windows App SDK and WinUI on this thread and runs its loop until the last window closes. Where
+/// `schemes` - UTF-8, one a line - names any, the application registers them as its links and is its one instance:
+/// a second start hands what it was started with to the first, and ends at once with 0.
+int32_t stateui_winui_run(StateUIWinUICallbacks const *callbacks, char const *schemes);
 
 /// Makes this thread hold WinUI elements with no loop of WinUI's running - a test process's thread.
 int32_t stateui_winui_embed(StateUIWinUICallbacks const *callbacks);

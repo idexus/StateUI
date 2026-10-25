@@ -139,6 +139,12 @@ STATEUI_WEB(listen_history) void stateui_web_listen_history(int32_t listener);
 STATEUI_WEB(page_state) int32_t stateui_web_page_state(void);
 STATEUI_WEB(listen_page) void stateui_web_listen_page(int32_t changed, int32_t leaving);
 
+/// A link into the application: `listen_links` calls `listener` once as the page starts and again as the fragment of
+/// its address changes; `page_link` is the address where it carries a fragment, read as `copy_read` reads - none
+/// otherwise.
+STATEUI_WEB(listen_links) void stateui_web_listen_links(int32_t listener);
+STATEUI_WEB(page_link) int32_t stateui_web_page_link(void);
+
 /// Calls the act `name` of the application's own scripts - `StateUI.acts` - with the words, and `listener` once its
 /// promise settles: the event's number 0 is 1 kept, 0 broken, and `script_words` reads what it gave, or why.
 STATEUI_WEB(call_script) void stateui_web_call_script(

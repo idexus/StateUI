@@ -247,6 +247,7 @@ enum WinUIRealization {
         .complete(WindowContract.created),
         .complete(WindowContract.deactivated),
         .complete(WindowContract.destroying),
+        .complete(WindowContract.linkOpened),
         .complete(WindowContract.floatsOnTop),
         .complete(WindowContract.height),
         .complete(WindowContract.hidesWhenInactive),

@@ -27,6 +27,8 @@ extension UIKitDriver {
             return "the host's completion called with the driver's answer, no activity chosen"
         case "answerFiles":
             return "the host's response called with the driver's files, not the picker's choice"
+        case "openLink":
+            return "the host's entry the scene's delegate calls, as no URL context can be made"
         case "switchAway", "switchBack", "bringToFront", "minimize", "restore", "close":
             return "the host told the scene's phase, no scene moved"
         case "endContent":

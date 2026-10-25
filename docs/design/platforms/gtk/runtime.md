@@ -105,6 +105,14 @@ closes](../../host/runtime.md#a-window-the-user-closes)); one the tree or the
 host closes tells nothing. A window let go of tells nobody it went: its
 handlers leave before GTK destroys it.
 
+## A link opened
+
+The application handles `open` (`G_APPLICATION_HANDLES_OPEN`): started with a
+link, it starts as an activation would and hears the link; a second start with
+one hands it to the first through GApplication's own uniqueness. The desktop
+finds the application for a scheme by its entry's `MimeType`, which
+`run-app.sh` writes from the head's `Platforms/GTK/link-schemes`.
+
 ## The environment
 
 As the host starts it tells the core what it stands on: a desktop, Linux, the

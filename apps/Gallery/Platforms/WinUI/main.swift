@@ -20,4 +20,4 @@ GalleryEventSources.start()
 // listing: end
 // The backends the Gallery shows a library element through: the web view, over WebView2.
 StateUIWebViewWinUI.register()
-StateUIWinUI.run()
+StateUIWinUI.run(linkSchemes: ["stateui-gallery"])

@@ -16,6 +16,8 @@ extension AndroidDriver {
             return "the listener's report of a wheel's notches handed to the host, no scroll sent"
         case "close" where Ability(ability).element == "Popover":
             return "the popup window dismissed as a touch beside it dismisses it, no touch sent"
+        case "openLink":
+            return "the host's entry the activity's intent reaches, no intent sent"
         case "switchAway", "switchBack", "bringToFront", "minimize", "restore", "close":
             if Ability(ability).element == "Window" { return "the host told the activity's phase, no activity moved" }
         case "pressKeys":

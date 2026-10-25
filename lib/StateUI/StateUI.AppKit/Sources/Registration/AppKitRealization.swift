@@ -208,6 +208,7 @@ enum AppKitRealization {
         .complete(WindowContract.hidesWhenInactive),
         .complete(WindowContract.isMaximizable),
         .complete(WindowContract.isMinimizable),
+        .complete(WindowContract.linkOpened),
         .complete(WindowContract.maximumHeight),
         .complete(WindowContract.maximumWidth),
         .complete(WindowContract.minimumHeight),

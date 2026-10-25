@@ -108,6 +108,22 @@ private struct Studio: Application {
     }
 }
 
+/// A scene whose main windows hear the links the application is asked to open, and say the last; About hears none.
+private struct LinkedScene: Scene {
+    @State private var opened = "none"
+
+    var body: some Scene {
+        WindowGroup { Text("link \(opened)") }
+            .onLinkOpened { opened = $0 }
+        Window(.about) { Blank() }
+    }
+}
+
+/// The linked scene alone.
+private struct Linked: Application {
+    var body: some Scene { LinkedScene() }
+}
+
 /// An application whose body is one window.
 private struct Alone: Application {
     var body: some Scene { WindowGroup { Blank() } }
@@ -313,6 +329,24 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(application, 0, "the root is the application:\n\(dump)")
         XCTAssertLessThan(application, scene, "with a scene under it:\n\(dump)")
         XCTAssertLessThan(scene, window, "and its window under that:\n\(dump)")
+    }
+
+    // MARK: - A link opened
+
+    /// A link the application was asked to open reaches each window of a declaration that hears links, its handler
+    /// running with the scene's state; a window of a declaration that hears none is not offered it.
+    func testALinkOpenedReachesTheWindowsThatHearIt() async throws {
+        start(Linked())
+        let renders = Renders()
+        let patch = renders.render(tree())
+        let window = try XCTUnwrap(patch.children.first?.children.first)
+
+        XCTAssertTrue(renders.fire(try XCTUnwrap(window.events?[.linkOpened]), with: [.string("notes://note/7")]))
+        XCTAssertEqual(texts(in: renders.renderFromScratch(tree())), ["link notes://note/7"])
+
+        try await application.openWindow(.about)
+        let both = renders.renderFromScratch(tree())
+        XCTAssertEqual(both.children.first?.children.map { $0.events?[.linkOpened] != nil }, [true, false])
     }
 
     // MARK: - A scene stands once

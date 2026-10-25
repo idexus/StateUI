@@ -173,6 +173,13 @@ A question for the user is the browser's modal dialog
 page until the user answers it: the host layer shows one at a time. An ItemsView's scroll to an item is
 its own ([items](items.md#scrolling-to-an-item)).
 
+## A link opened
+
+A link into a page is its address with a fragment: told as the page starts,
+where it carries one, and each time the fragment changes (`hashchange`). The
+query stays the environment's (`?STATEUI_TALLY=1`), and the page's own address
+with no fragment is a start with no link.
+
 ## The clipboard
 
 The clipboard is the browser's: words are written as the page's text, and

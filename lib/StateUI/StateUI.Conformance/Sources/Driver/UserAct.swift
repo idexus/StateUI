@@ -83,6 +83,9 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     case switchBack
     /// A window of the application brought in front of its others, as the user picks it.
     case bringToFront
+    /// The application asked to open a link - one the user chose elsewhere, of a scheme it registers - as the system
+    /// asks it, given to the window where the platform names one.
+    case openLink(String)
     /// The question the window shows answered by its button doing that - accepting, cancelling, an action of a
     /// choice - its field first holding the words.
     case answer(QuestionButton, typing: String? = nil)
@@ -121,6 +124,7 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .hover: "hover"
         case .leave: "leave"
         case .tap: "tap"
+        case .openLink: "openLink"
         case .hold: "hold"
         case .pan: "pan"
         case .sweep: "sweep"

@@ -15,6 +15,7 @@ extension WinUIDriver {
         switch Ability(ability).act {
         case "close" where Ability(ability).element == "Popover":
             return "the flyout hidden as a click beside it hides it, no click sent"
+        case "openLink": return "the relay's report of an activation told the driver's address, no activation"
         case "dragAndDrop": return "the relay's drag reports told by the driver, no drag WinUI began"
         case "dropFiles": return "the relay's drop report told the driver's files, no drag WinUI began"
         case "sweep": return "the relay's report of the hand handed to the host with its speed, no pointer sent"

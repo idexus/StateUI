@@ -7,18 +7,31 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 /// The application's delegate: the host starts as the application does, and every scene iOS connects is one of the
-/// host's.
+/// host's. An application whose SDK asks for a delegate of its own subclasses it, calling `super` where it overrides,
+/// and hands it to `StateUIUIKit.run(delegate:)`:
+///
+///     final class AppDelegate: StateUIApplicationDelegate {
+///         override func application(
+///             _ application: UIApplication,
+///             didFinishLaunchingWithOptions options: [UIApplication.LaunchOptionsKey: Any]?
+///         ) -> Bool {
+///             Analytics.start()
+///             return super.application(application, didFinishLaunchingWithOptions: options)
+///         }
+///     }
 /// Design: docs/design/platforms/uikit/runtime.md#scenes
 @MainActor
-final class UIKitApplicationDelegate: UIResponder, UIApplicationDelegate {
-    func application(
+open class StateUIApplicationDelegate: UIResponder, UIApplicationDelegate {
+    /// Starts the host as the application launches.
+    open func application(
         _ application: UIApplication, didFinishLaunchingWithOptions options: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         UIKitRenderer.shared.start()
         return true
     }
 
-    func application(
+    /// Every scene iOS connects is one of the host's.
+    open func application(
         _ application: UIApplication, configurationForConnecting session: UISceneSession,
         options: UIScene.ConnectionOptions
     ) -> UISceneConfiguration {
@@ -31,7 +44,7 @@ final class UIKitApplicationDelegate: UIResponder, UIApplicationDelegate {
     /// section at the end of UIKit's own menu of its identity, one UIKit keeps none of where UIKit's would stand -
     /// View after Edit, Help after Window - and any other before Window.
     /// Design: docs/design/platforms/uikit/pages.md#menus
-    override func buildMenu(with builder: any UIMenuBuilder) {
+    override open func buildMenu(with builder: any UIMenuBuilder) {
         super.buildMenu(with: builder)
         guard builder.system == .main else { return }
         let renderer = UIKitRenderer.shared
@@ -54,47 +67,13 @@ final class UIKitApplicationDelegate: UIResponder, UIApplicationDelegate {
     }
 
     /// The user closed windows - swiped their scenes away: each window hears it.
-    func application(_ application: UIApplication, didDiscardSceneSessions sessions: Set<UISceneSession>) {
+    open func application(_ application: UIApplication, didDiscardSceneSessions sessions: Set<UISceneSession>) {
         sessions.forEach(UIKitRenderer.shared.closedByUser)
     }
 
-    func applicationWillTerminate(_ application: UIApplication) {
+    /// The application ends: every window hears it is going.
+    open func applicationWillTerminate(_ application: UIApplication) {
         UIKitRenderer.shared.runtime.ending()
-    }
-}
-
-/// A window scene iOS connects - at launch, or a window the user opens on an iPad - handed to the host, which shows
-/// a StateUI scene's window in it.
-@MainActor
-final class UIKitSceneDelegate: UIResponder, UIWindowSceneDelegate {
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options: UIScene.ConnectionOptions) {
-        guard let scene = scene as? UIWindowScene else { return }
-        UIKitRenderer.shared.connect(scene)
-    }
-
-    func sceneDidDisconnect(_ scene: UIScene) {
-        guard let scene = scene as? UIWindowScene else { return }
-        UIKitRenderer.shared.disconnect(scene)
-    }
-
-    func windowScene(_ scene: UIWindowScene, didUpdateEffectiveGeometry previous: UIWindowScene.Geometry) {
-        UIKitRenderer.shared.environment.displayMoved(for: scene)
-    }
-
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        (scene as? UIWindowScene).map { UIKitRenderer.shared.scene($0, movedTo: .active) }
-    }
-
-    func sceneWillResignActive(_ scene: UIScene) {
-        (scene as? UIWindowScene).map { UIKitRenderer.shared.scene($0, movedTo: .inactive) }
-    }
-
-    func sceneWillEnterForeground(_ scene: UIScene) {
-        (scene as? UIWindowScene).map { UIKitRenderer.shared.scene($0, movedTo: .inactive) }
-    }
-
-    func sceneDidEnterBackground(_ scene: UIScene) {
-        (scene as? UIWindowScene).map { UIKitRenderer.shared.scene($0, movedTo: .background) }
     }
 }
 #endif

@@ -18,6 +18,9 @@ struct GalleryWindow: View {
     /// SessionStyle.swift.
     let style: SessionStyle
 
+    /// The links the application was asked to open - its scene's.
+    let links: OpenedLinks
+
     /// Where this window is, and every move it can make. See
     /// Gallery/Navigation.swift.
     @State private var nav = Navigation()
@@ -39,10 +42,11 @@ struct GalleryWindow: View {
         let style = self.style
         let bar = self.bar
         let log = self.log
+        let links = self.links
 
         return MainPage(
             catalog: kept.catalog {
-                Catalog(nav: nav, style: style, bar: bar, log: log)
+                Catalog(nav: nav, style: style, bar: bar, log: log, links: links)
             },
             nav: nav,
             style: style,

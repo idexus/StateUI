@@ -3845,14 +3845,31 @@ enum Listings {
             /// SessionStyle.swift.
             @State private var style = SessionStyle()
 
+            /// The links the application was asked to open - see OpenedLinks.swift.
+            @State private var links = OpenedLinks()
+
+            /// The application, which opens the swatch a link names.
+            @Environment(\.application) private var application
+
             /// The scene's windows: the gallery windows, which launch and *File ▸ New
             /// Window* open; its Fonts and Colors windows, which read the scene's
             /// look and may step aside while another scene is in front or float above
-            /// the application's other windows; its inspector; and a swatch per number.
+            /// the application's other windows; its inspector; and a swatch per number - which a link may open.
             var body: some Scene {
                 let style = self.style
+                let links = self.links
+                let application = self.application
 
-                WindowGroup { GalleryWindow(style: style) }
+                // A link the application is asked to open reaches a gallery window, and
+                // the scene: noted, and the swatch it names opened in a window of its own
+                // where the platform opens a second window.
+                WindowGroup { GalleryWindow(style: style, links: links) }
+                    .onLinkOpened(.waitForPrevious) { address in
+                        links.addresses.append(address)
+                        if let number = GalleryLink.swatch(in: address) {
+                            _ = try? await application.openWindow(.swatch, value: number)
+                        }
+                    }
 
                 Window(.fonts) { FontsPage() }
                     .hidesWhenInactive(style.hidesTools)
@@ -4094,6 +4111,9 @@ enum Listings {
             /// SessionStyle.swift.
             let style: SessionStyle
 
+            /// The links the application was asked to open - its scene's.
+            let links: OpenedLinks
+
             /// Where this window is, and every move it can make. See
             /// Gallery/Navigation.swift.
             @State private var nav = Navigation()
@@ -4115,10 +4135,11 @@ enum Listings {
                 let style = self.style
                 let bar = self.bar
                 let log = self.log
+                let links = self.links
 
                 return MainPage(
                     catalog: kept.catalog {
-                        Catalog(nav: nav, style: style, bar: bar, log: log)
+                        Catalog(nav: nav, style: style, bar: bar, log: log, links: links)
                     },
                     nav: nav,
                     style: style,
@@ -6346,6 +6367,31 @@ enum Listings {
             }
         }
         """#,
+        "LinksSample": #"""
+        // Sources/Samples/Windows/LinksSample.swift
+        /// The links the application was asked to open - its scene's.
+        let links: OpenedLinks
+
+        var body: some View {
+            // Read here, so every link the scene hears builds this page again.
+            let opened = links.addresses
+
+            return VStack {
+                DebugInfoLabel()
+
+                Link("Open swatch 3", destination: GalleryLink.swatch(3))
+                    .horizontalAlignment(.center)
+
+                SectionTitle("Opened")
+                if opened.isEmpty {
+                    Text("No link yet.")
+                }
+                ForEach(Array(opened.suffix(5).enumerated()), id: \.offset) { item in
+                    Text(item.element)
+                }
+            }
+        }
+        """#,
         "LivingLayoutSample": #"""
         // Sources/Samples/Layout/LivingLayoutSample.swift
         @State private var rows = ["Alpha", "Bravo", "Charlie"]
@@ -7970,6 +8016,27 @@ enum Listings {
                     if log.count > 6 { log.removeFirst() }
                 }
 
+            }
+        }
+        """#,
+        "OpenedLinks": #"""
+        // Sources/Gallery/OpenedLinks.swift
+        /// What a gallery link names: `stateui-gallery://swatch/3` - or, on the Web,
+        /// the page's address ending `#swatch/3` - is swatch 3's window.
+        enum GalleryLink {
+            /// The swatch a link names; nil for a link of anything else.
+            static func swatch(in address: String) -> Int? {
+                guard let named = address.split(separator: "swatch/").last, named.count < address.count else { return nil }
+                return Int(named.prefix { $0.isNumber })
+            }
+
+            /// The link to swatch `number`: the Gallery's own scheme, or a fragment of the page on the Web.
+            static func swatch(_ number: Int) -> String {
+                #if WEB
+                "#swatch/\(number)"
+                #else
+                "stateui-gallery://swatch/\(number)"
+                #endif
             }
         }
         """#,

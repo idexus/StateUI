@@ -37,6 +37,10 @@ public enum WindowContract: ElementContract {
     public static let hidesWhenInactive = ElementProperty<Self, Bool>(
         "hidesWhenInactive", layer: .adaptive, cleared: false, unsaid: false)
 
+    /// The application was asked to open a link - one chosen elsewhere, its scheme the application's - and the
+    /// platform gave it to this window: its address.
+    public static let linkOpened = ElementEvent<Self, String>("linkOpened", layer: .adaptive)
+
     /// Whether the user can make the window fill the screen.
     public static let isMaximizable = ElementProperty<Self, Bool>("isMaximizable", layer: .adaptive)
 
@@ -88,6 +92,6 @@ public enum WindowContract: ElementContract {
     /// The element's own members.
     public static let members: [any ContractMember] = [
         activated, background, created, deactivated, destroying, floatsOnTop, height, hidesWhenInactive, isMaximizable,
-        isMinimizable, maximumHeight, maximumWidth, minimumHeight, minimumWidth, resumed, stopped, title, width, windowType, windowValue, x, y,
+        isMinimizable, linkOpened, maximumHeight, maximumWidth, minimumHeight, minimumWidth, resumed, stopped, title, width, windowType, windowValue, x, y,
     ]
 }

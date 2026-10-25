@@ -4,5 +4,16 @@
 <dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>The map shows where you are.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.stateui.gallery</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>stateui-gallery</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

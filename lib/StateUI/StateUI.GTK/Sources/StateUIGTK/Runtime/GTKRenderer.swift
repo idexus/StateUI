@@ -107,6 +107,13 @@ final class GTKRenderer {
         }
     }
 
+    /// The desktop asked the application to open `addresses` - links of a scheme its head's entry takes: each reaches
+    /// a window by the host layer's rule.
+    /// Design: docs/design/platforms/gtk/runtime.md#a-link-opened
+    func openLinks(_ addresses: [String]) {
+        for address in addresses { runtime.openLink(address) }
+    }
+
     /// The application was activated on GLib's thread: the first time, the host claims it as the UI thread and
     /// starts; after that, a second launch brings the window forward.
     /// Design: docs/design/platforms/gtk/runtime.md#starting

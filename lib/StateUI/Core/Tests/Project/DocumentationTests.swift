@@ -64,7 +64,11 @@ final class DocumentationTests: XCTestCase {
     /// signature carries no keyword and is therefore not one of these, which is
     /// what keeps the check off the middle of an argument list.
     private func isPublicDeclaration(_ line: String) -> Bool {
-        let text = line.trimmed
+        // An `open` declaration is public, and overridable outside the module besides.
+        var text = line.trimmed
+        for (open, publicly) in [("open ", "public "), ("override open ", "override public ")] where text.hasPrefix(open) {
+            text = publicly + text.dropFirst(open.count)
+        }
 
         guard text.hasPrefix("public ") || text.contains(" public ") else { return false }
 

@@ -23,9 +23,15 @@ import StateUIFoundation
 public enum StateUIWinUI {
     /// Starts WinUI on this thread, runs the application until its last window closes, and ends the process with
     /// 0 - or with the failure WinUI started with.
-    public static func run() -> Never {
+    ///
+    ///     StateUIWinUI.run(linkSchemes: ["notes"])
+    ///
+    /// - Parameter linkSchemes: the schemes of the links the application opens - `notes://` - which it registers
+    ///   for the user as it starts; naming any makes it its one instance, a second start handing its link to the
+    ///   first.
+    public static func run(linkSchemes: [String] = []) -> Never {
         var callbacks = WinUICallbacks.table
-        exit(stateui_winui_run(&callbacks))
+        exit(linkSchemes.joined(separator: "\n").withCString { stateui_winui_run(&callbacks, $0) })
     }
 }
 
@@ -237,6 +243,11 @@ enum WinUICallbacks {
                     guard let phase = GesturePhase(rawValue: phase) else { return }
                     WinUIView.find(view)?.heard(.mirrored(phase, at: Point(x: x, y: y), middle: Point(x: middleX, y: middleY)))
                 }
+            },
+            linkOpened: { address in
+                guard let address else { return }
+                let opened = String(cString: address)
+                MainActor.assumeIsolated { WinUIRenderer.shared?.openLinks([opened]) }
             })
     }
 }

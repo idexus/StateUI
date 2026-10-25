@@ -7,7 +7,7 @@
 
 // GLib marks its flags as flag enumerations from 2.86, which Swift then imports as option sets naming their members
 // itself - G_SIGNAL_MATCH_DATA is no longer in scope. The flags Swift passes stand here under one name on every GLib.
-static const GApplicationFlags STATEUI_APPLICATION_DEFAULT_FLAGS = G_APPLICATION_DEFAULT_FLAGS;
+static const GApplicationFlags STATEUI_APPLICATION_HANDLES_OPEN = G_APPLICATION_HANDLES_OPEN;
 static const GApplicationFlags STATEUI_APPLICATION_NON_UNIQUE = G_APPLICATION_NON_UNIQUE;
 static const GSignalMatchType STATEUI_SIGNAL_MATCH_ID = G_SIGNAL_MATCH_ID;
 static const GSignalMatchType STATEUI_SIGNAL_MATCH_DATA = G_SIGNAL_MATCH_DATA;

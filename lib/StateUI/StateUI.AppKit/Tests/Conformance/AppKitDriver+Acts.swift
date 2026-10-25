@@ -134,6 +134,8 @@ extension AppKitDriver {
             } else {
                 controller.toolbarForTesting.performForTesting(AppKitWindowToolbar.back)
             }
+        case (.openLink(let address), _) where element.type == .window:
+            renderer?.openLinks([address])
         case (.switchAway, _) where element.type == .window:
             // Another application in front takes the keyboard and the main window from every window, all AppKit tells.
             for window in windows { leaveTheFront(window) }

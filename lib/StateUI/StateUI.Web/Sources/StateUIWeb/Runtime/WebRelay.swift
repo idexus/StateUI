@@ -273,6 +273,16 @@ enum WebRelay {
         stateui_web_listen_page(changed, leaving)
     }
 
+    /// Calls `listener` as the page starts and each time the fragment of its address changes.
+    static func listenForLinks(_ listener: Int32) {
+        stateui_web_listen_links(listener)
+    }
+
+    /// The page's address where it carries a fragment - a link into the application; empty otherwise.
+    static var pageLink: String {
+        copyRead(length: stateui_web_page_link())
+    }
+
     /// Calls `listener` whenever the browser's history moves.
     static func listenToHistory(_ listener: Int32) {
         stateui_web_listen_history(listener)

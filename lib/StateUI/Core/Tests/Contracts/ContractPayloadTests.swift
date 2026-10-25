@@ -109,6 +109,7 @@ final class ContractPayloadTests: XCTestCase {
         check(WindowContract.created)
         check(WindowContract.deactivated)
         check(WindowContract.destroying)
+        check(WindowContract.linkOpened, [.string("notes://note/7")])
         check(WindowContract.resumed)
         check(WindowContract.stopped)
 

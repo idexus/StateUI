@@ -199,6 +199,6 @@ final class DesignNotesTests: XCTestCase {
     }
 
     private static func isPublic(_ line: String) -> Bool {
-        (" " + line).range(of: #"\spublic[\s(]"#, options: .regularExpression) != nil
+        (" " + line).range(of: #"\spublic[\s(]|^\s*(override\s+)?open\s"#, options: .regularExpression) != nil
     }
 }

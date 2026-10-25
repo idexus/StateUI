@@ -40,6 +40,8 @@ extension AppKitDriver {
             return "the host's toolbar or sheet entry called, no toolbar item or sheet touched"
         case "activate" where element == "ToolbarButton":
             return "the host's toolbar entry called, no toolbar item touched"
+        case "openLink":
+            return "the host's entry the application's delegate calls, no Apple event sent"
         case "switchAway", "switchBack", "bringToFront", "minimize", "restore":
             return "the notification AppKit would post, posted by the driver; the window does not move"
         case "endContent":

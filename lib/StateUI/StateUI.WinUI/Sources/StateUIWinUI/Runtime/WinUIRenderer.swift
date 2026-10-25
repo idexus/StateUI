@@ -87,6 +87,13 @@ final class WinUIRenderer {
 
     /// WinUI stands on this thread: the host claims it as the UI thread, then starts.
     /// Design: docs/design/platforms/winui/runtime.md#starting
+    /// Windows asked the application to open `addresses` - links of a scheme it registered: each reaches a window by
+    /// the host layer's rule.
+    /// Design: docs/design/platforms/winui/runtime.md#a-link-opened
+    func openLinks(_ addresses: [String]) {
+        for address in addresses { runtime.openLink(address) }
+    }
+
     nonisolated static func launch() {
         CoreLink().claimUIThread()
 

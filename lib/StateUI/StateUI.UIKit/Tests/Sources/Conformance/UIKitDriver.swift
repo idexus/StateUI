@@ -331,6 +331,12 @@ final class UIKitDriver: HostDriver {
                 throw DriverCannot("answer a file dialog: none shows")
             }
             dialog.chooseForTesting(names.map { Self.files.appendingPathComponent($0) })
+        case (.openLink(let address), _) where element.type == .window:
+            // The scene's delegate hands its URL contexts to the host's entry, which no driver can make.
+            guard let scene = renderer?.roster.windows.first(where: { $0.0 === element })?.1.window?.windowScene else {
+                throw DriverCannot(act, on: element)
+            }
+            renderer?.openLinks([address], in: scene)
         case (.switchAway, _) where element.type == .window: renderer?.window(element, movedTo: .inactive)
         case (.switchBack, _) where element.type == .window: renderer?.window(element, movedTo: .active)
         case (.minimize, _) where element.type == .window:

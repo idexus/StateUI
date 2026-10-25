@@ -140,6 +140,14 @@ configuration. The window's title - the visible page's that names it, else
 the window's own, as the host layer's chrome says it - is the activity's, and
 the label its task shows among the recent ones.
 
+## A link opened
+
+An activity hears a link as the intent it is started with, `ACTION_VIEW` - not
+again when it is made anew for a new configuration - and as a new intent while
+it runs (`onNewIntent`), the activity `singleTask` in the head's manifest so the
+running one takes it. An application's own activity subclasses
+`StateUIActivity`, calling `super` where it overrides.
+
 ## Acts
 
 The acts the application calls are performed after each turn's render and

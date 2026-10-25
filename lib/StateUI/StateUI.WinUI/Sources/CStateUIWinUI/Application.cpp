@@ -16,6 +16,11 @@
 #include <winrt/Microsoft.UI.Xaml.Markup.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 #include <winrt/Microsoft.UI.Xaml.XamlTypeInfo.h>
+#include <winrt/Microsoft.Windows.AppLifecycle.h>
+#include <winrt/Windows.ApplicationModel.Activation.h>
+
+#include <sstream>
+#include <thread>
 
 namespace stateui {
     StateUIWinUICallbacks callbacks{};
@@ -24,6 +29,9 @@ namespace stateui {
         winrt::Microsoft::UI::Dispatching::DispatcherQueue queue{nullptr};
         winrt::event_token rendering{};
         bool holding = false;
+
+        /// The link the application was started with, given once WinUI stands; empty for none.
+        std::string startLink;
 
         /// The application: WinUI's control resources and their type information, with no XAML file.
         /// Design: docs/design/platforms/winui/runtime.md#an-application-with-no-xaml
@@ -36,6 +44,7 @@ namespace stateui {
                     Resources().MergedDictionaries().Append(controls::XamlControlsResources());
                     queue = winrt::Microsoft::UI::Dispatching::DispatcherQueue::GetForCurrentThread();
                     callbacks.launched();
+                    if (!startLink.empty() && callbacks.linkOpened) callbacks.linkOpened(startLink.c_str());
                 } catch (...) {
                     report("launching");
                 }
@@ -70,6 +79,47 @@ namespace stateui {
             using EnsureIsLoaded = HRESULT(__stdcall *)();
             auto ensure = reinterpret_cast<EnsureIsLoaded>(GetProcAddress(runtime, "WindowsAppRuntime_EnsureIsLoaded"));
             if (ensure) winrt::check_hresult(ensure());
+        }
+
+        namespace lifecycle = winrt::Microsoft::Windows::AppLifecycle;
+
+        /// The link an activation carries - a protocol's address; empty for any other.
+        std::string linkOf(lifecycle::AppActivationArguments const &activation) {
+            if (activation.Kind() != lifecycle::ExtendedActivationKind::Protocol) return {};
+            auto protocol = activation.Data().as<winrt::Windows::ApplicationModel::Activation::IProtocolActivatedEventArgs>();
+            return winrt::to_string(protocol.Uri().AbsoluteUri());
+        }
+
+        /// Registers `schemes` - one a line - as the application's links and makes the process its one instance: a
+        /// second start hands its activation to the first, waiting on a thread of its own as the STA may not wait.
+        /// Whether this process goes on; a start with no schemes always does.
+        /// Design: docs/design/platforms/winui/runtime.md#a-link-opened
+        bool soleInstance(std::string const &schemes) {
+            std::vector<winrt::hstring> named;
+            std::istringstream lines(schemes);
+            for (std::string line; std::getline(lines, line);) {
+                if (!line.empty()) named.push_back(winrt::to_hstring(line));
+            }
+            if (named.empty()) return true;
+
+            wchar_t path[MAX_PATH]{};
+            GetModuleFileNameW(nullptr, path, MAX_PATH);
+            for (auto const &scheme : named) {
+                lifecycle::ActivationRegistrationManager::RegisterForProtocolActivation(scheme, L"", scheme, path);
+            }
+            auto activation = lifecycle::AppInstance::GetCurrent().GetActivatedEventArgs();
+            auto first = lifecycle::AppInstance::FindOrRegisterForKey(L"stateui.main");
+            if (!first.IsCurrent()) {
+                std::thread([&] { first.RedirectActivationToAsync(activation).get(); }).join();
+                return false;
+            }
+            startLink = linkOf(activation);
+            first.Activated(guarded("handling Activated", [](auto &&, lifecycle::AppActivationArguments const &later) {
+                auto link = linkOf(later);
+                if (link.empty()) return;
+                runOnUIThread([link] { if (callbacks.linkOpened) callbacks.linkOpened(link.c_str()); });
+            }));
+            return true;
         }
 
         /// Whether the process was given no handle for the stream: a windowed application started with its output
@@ -113,12 +163,13 @@ namespace stateui {
 
 using namespace stateui;
 
-extern "C" int32_t stateui_winui_run(StateUIWinUICallbacks const *given) {
+extern "C" int32_t stateui_winui_run(StateUIWinUICallbacks const *given, char const *schemes) {
     callbacks = *given;
     writeToTheStartingConsole();
     try {
         loadRuntime();
         winrt::init_apartment(winrt::apartment_type::single_threaded);
+        if (!soleInstance(schemes ? schemes : "")) return 0;
         xaml::Application::Start(guarded("starting the application", [](auto &&) { winrt::make<StateUIApplication>(false); }));
         return 0;
     } catch (...) {

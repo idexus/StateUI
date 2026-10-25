@@ -137,6 +137,7 @@ extension AndroidDriver {
         case (.goBack, _) where element.type == .window || element.type == .navigationStack:
             // The system's back, as the activity hands it on; what it reached, the case reads.
             _ = renderer?.goBack()
+        case (.openLink(let address), _) where element.type == .window: renderer?.runtime.openLink(address)
         case (.switchAway, _) where element.type == .window: renderer?.setPhase(.inactive)
         case (.switchBack, _) where element.type == .window: renderer?.setPhase(.active)
         case (.minimize, _) where element.type == .window:

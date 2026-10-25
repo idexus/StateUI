@@ -341,6 +341,64 @@ Operations fail explicitly with `WindowError`: `.alreadyOpen`, `.notOpen`,
 `.noScene`, `.undeclared`, `.wrongValue`, or `.unsupported`. A retained session
 does not silently start referring to a newer scene after its own scene ends.
 
+## Links into the application
+
+A link of the application's own scheme - chosen in a mail, a browser, a
+notification - opens the application, or comes to it where it runs. A window
+declaration hears it with the scene's state:
+
+```swift
+import StateUI
+
+enum Route: Hashable {
+    case note(Int)
+
+    /// The route a link names: `notes://note/7`.
+    static func route(for address: String) -> Route? {
+        guard let number = address.split(separator: "/").last.flatMap({ Int($0) }) else { return nil }
+        return .note(number)
+    }
+}
+
+struct NotesScene: Scene {
+    @State private var path: [Route] = []
+
+    var body: some Scene {
+        WindowGroup {
+            NavigationStack($path) {
+                Text("Notes")
+            } destination: { route in
+                Text("\(route)")
+            }
+        }
+        .onLinkOpened { address in
+            if let route = Route.route(for: address) { path = [route] }
+        }
+    }
+}
+```
+
+The link reaches one window: the one the platform gives it to, where it hears
+links, else the one the user was in last, else the first open; a link that
+comes before any window waits for the first. A handler that awaits - a sign-in
+finished in the browser exchanging its code - takes a policy,
+`.onLinkOpened(.waitForPrevious) { address in … }`. A window of a kind for a
+value is how a link opens a window of its own:
+`try await application.openWindow(.document, value: id)`.
+
+The scheme is the head's to register, in its platform's own file: the Mac's and
+iOS's `CFBundleURLTypes`, an Android activity's `ACTION_VIEW` intent filter -
+the activity `singleTask`, so a link reaches the running one - a GTK head's
+`Platforms/GTK/link-schemes`, which its desktop entry takes, and on Windows
+`StateUIWinUI.run(linkSchemes:)`, which registers them as the application
+starts and keeps it one instance. On the Web a link is the page's address
+with a fragment, `#note/7`, as the page opens and as its fragment changes.
+
+An application whose SDK asks for its own iOS delegate subclasses
+`StateUIApplicationDelegate` and starts with
+`StateUIUIKit.run(delegate: AppDelegate.self)`; on Android its activity
+subclasses `StateUIActivity`, calling `super` where it overrides.
+
 ## Restoration
 
 Restoration has two inputs with different owners:

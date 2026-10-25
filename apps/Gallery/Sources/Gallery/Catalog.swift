@@ -31,7 +31,8 @@ final class Catalog {
         nav: Navigation,
         style: SessionStyle,
         bar: WindowBarState,
-        log: WindowLog
+        log: WindowLog,
+        links: OpenedLinks
     ) {
         var groups: [SampleGroup] = [
             Self.fundamentalsGroup(nav: nav, style: style, bar: bar, log: log),
@@ -48,7 +49,7 @@ final class Catalog {
             Self.gesturesGroup(nav: nav, style: style, bar: bar, log: log),
             Self.mediaGroup(nav: nav, style: style, bar: bar, log: log),
             Self.navigationGroup(nav: nav, style: style, bar: bar, log: log),
-            Self.sceneGroup(nav: nav, style: style, bar: bar, log: log),
+            Self.sceneGroup(nav: nav, style: style, bar: bar, log: log, links: links),
             Self.environmentGroup(nav: nav, style: style, bar: bar, log: log),
             Self.dateTimeGroup(nav: nav, style: style, bar: bar, log: log),
         ]
@@ -410,7 +411,7 @@ final class Catalog {
 
     /// The group at `scene`.
     private static func sceneGroup(
-        nav: Navigation, style: SessionStyle, bar: WindowBarState, log: WindowLog
+        nav: Navigation, style: SessionStyle, bar: WindowBarState, log: WindowLog, links: OpenedLinks
     ) -> SampleGroup {
         SampleGroup(
             route: "scene",
@@ -425,6 +426,7 @@ final class Catalog {
                 Sample(WindowOverlaySample(nav: nav)),
                 Sample(LifecycleSample(log: log)),
                 Sample(WindowPhaseSample()),
+                Sample(LinksSample(links: links)),
             ])
     }
 

@@ -828,6 +828,17 @@ toolkit control able to open an address itself is handed none, or its own
 opening is taken; a host that launches nothing opens nothing. A test reads
 what a host launched from the host's own record (`launched`).
 
+## A link opened
+
+A link the application is asked to open - its scheme the head's - goes to one
+window by one rule (`LinkInbox`): the window the platform names, where it hears
+links; else the one activated last that does; else the first that does. A link
+that comes before any window hears links - a start the link made, a window
+still on its way - waits, in order, and the first turn after a window that
+hears links stands gives it (`HostRuntime.openLink`). A window hears links where
+its declaration does, `WindowGroup.onLinkOpened`, and its handler runs with the
+scene's state.
+
 ## Starting
 
 Every host starts in one order (`HostRuntime.start`): what it realizes; the

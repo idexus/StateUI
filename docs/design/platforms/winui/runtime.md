@@ -215,6 +215,18 @@ the focus, which then falls to the window's first stop, its title bar, as the
 field that held it leaves. So the window lays out what it was given before the
 focus moves.
 
+## A link opened
+
+An application that names its link schemes (`StateUIWinUI.run(linkSchemes:)`)
+registers them for the user as it starts
+(`ActivationRegistrationManager.RegisterForProtocolActivation`), as an
+application with no package must, and is its one instance: a second start finds
+the first by its key and hands it its activation
+(`AppInstance.RedirectActivationToAsync`, waited for on a thread of its own, as
+the UI thread may not wait), then ends. The first hears a protocol's address at
+its own start, once WinUI stands, and from every activation handed to it on the
+UI thread.
+
 ## The clipboard
 
 The clipboard is Win32's - `OpenClipboard`, `CF_UNICODETEXT` - written and

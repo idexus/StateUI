@@ -22,7 +22,7 @@ ToolbarGroup 4
 TitleView 3
 MenuBar 3
 MenuItem 4
-Window 7
+Window 8
 Scene 3
 Overlay 5
 BarElement 10

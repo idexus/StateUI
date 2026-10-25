@@ -63,6 +63,11 @@
     /// Whether a settling of what the toolkit told waits for its turn.
     private var settling = false
 
+    /// The links the application was asked to open that wait for a window hearing them, and whether a turn is
+    /// asked to give them.
+    private var links = LinkInbox()
+    private var givingLinks = false
+
     /// A runtime on `clock`, its elements' native halves made by `makeNative`, a drift the intake refused told to
     /// `log`, and the host's own views alive counted by `views` for the tally.
     public init(
@@ -213,6 +218,28 @@
         return core.connectWindow(kind: kind, value: value, restoring: values)
     }
 
+    /// The application was asked to open `address` - a link the user chose elsewhere - the platform naming the
+    /// `window` it gave it to where it names one: the window the host layer's rule chooses hears it, at once, or as
+    /// soon as a window that hears links stands.
+    /// Design: docs/design/host/runtime.md#a-link-opened
+    public func openLink(_ address: String, in window: MountedElement? = nil) {
+        links.opened(address, in: window)
+        giveLinks()
+    }
+
+    /// Gives the waiting links to the windows the rule chooses, each rendered before the next.
+    private func giveLinks() {
+        givingLinks = false
+        let given = links.deliver(to: tree.root?.windows ?? [], activatedLast: lifecycle.activatedLast(among:))
+        guard !given.isEmpty else { return }
+        for each in given {
+            if let handler = each.window.handler(.linkOpened) {
+                pump.handlers.enqueuePhase(handler, payload: [.string(each.address)])
+            }
+        }
+        pump.turn()
+    }
+
     /// The application is ending: every window hears it is going.
     public func ending() {
         tell(ApplicationLifecycle.ending(windows: tree.root?.windows ?? []))
@@ -301,7 +328,13 @@
 }
 
 extension HostRuntime: TurnPresenter {
-    func presentRendered(touchedChrome: Bool) { presenter?.presentRendered(touchedChrome: touchedChrome) }
+    func presentRendered(touchedChrome: Bool) {
+        presenter?.presentRendered(touchedChrome: touchedChrome)
+        // A window that hears links may stand now: what waits for one is given a turn later.
+        guard links.isWaiting, !givingLinks else { return }
+        givingLinks = true
+        Task { @MainActor [weak self] in self?.giveLinks() }
+    }
 
     func perform(_ call: HostActCall) { presenter?.perform(call) }
 }

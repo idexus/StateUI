@@ -47,6 +47,26 @@ public class StateUIActivity extends Activity {
 
         StateUIHost.start(this, root, getResources().getDisplayMetrics().density);
         environmentWatch = StateUIEnvironment.watch(this);
+        // A link the activity was started for - not again when it is made anew for a new configuration.
+        if (state == null) openLink(getIntent());
+    }
+
+    /**
+     * A link the system asks the running activity to open - one its head's intent filter takes, the activity
+     * single in its task - reaches the host as the start's own does. An activity of the application's own calls
+     * {@code super} where it overrides.
+     */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        openLink(intent);
+    }
+
+    /** The address {@code intent} asks the application to view, handed to the host; nothing for any other intent. */
+    private static void openLink(Intent intent) {
+        if (intent == null || !Intent.ACTION_VIEW.equals(intent.getAction()) || intent.getDataString() == null) return;
+        StateUIHost.linkOpened(intent.getDataString());
     }
 
     @Override

@@ -58,6 +58,7 @@ final class WebDriver: HostDriver {
 
     private static let byHostReasons = [
         "read step of Stepper": "the step the host takes: the page's field holds none",
+        "openLink": "the host's entry the page's address with a fragment reaches, no address loaded",
         "switchAway": "the notice the browser gives as the user goes elsewhere, told by the driver: a page moves no window",
         "switchBack": "the notice the browser gives as the user comes back, told by the driver: a page moves no window",
         "minimize": "the notice the browser gives as the page's tab hides, told by the driver: a page hides no tab",

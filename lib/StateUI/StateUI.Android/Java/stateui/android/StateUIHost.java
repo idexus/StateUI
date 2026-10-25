@@ -172,6 +172,9 @@ final class StateUIHost {
     /** The activity is finishing - the user left it, or it finished itself: its window is going. */
     static native void destroying();
 
+    /** The system asked the application to open a link - its head's intent filter's scheme: its address. */
+    static native void linkOpened(String address);
+
     /** A web view's navigation started, and where it is going. */
     static native void webNavigating(long view, String address);
 

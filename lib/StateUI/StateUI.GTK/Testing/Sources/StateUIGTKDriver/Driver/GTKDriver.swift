@@ -129,6 +129,7 @@ final class GTKDriver: HostDriver {
         "answerFiles": "the host's answer handed the driver's files, no dialog shown",
         "dragAndDrop": "the drag source's and the drop targets' signals told by the driver, no drag GTK began",
         "dropFiles": "the drop target's signal told the driver's files, no drag GTK began",
+        "openLink": "the host's entry the application's open signal reaches, no file opened",
         "switchAway": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
         "switchBack": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
         "bringToFront": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",

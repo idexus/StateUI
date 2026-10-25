@@ -24,6 +24,11 @@ typealias GTKSignalHandler = @convention(c) (UnsafeMutableRawPointer?, gpointer?
 /// events - and the number of the view it belongs to.
 typealias GTKArgumentHandler = @convention(c) (UnsafeMutableRawPointer?, UnsafeMutableRawPointer?, gpointer?) -> Void
 
+/// An application's `open`: the files - the links - it is asked to open, how many, and a hint.
+typealias GTKOpenHandler = @convention(c) (
+    UnsafeMutableRawPointer?, UnsafeMutablePointer<OpaquePointer?>?, Int32, UnsafePointer<CChar>?, gpointer?
+) -> Void
+
 /// A press's handler: its place in a quick run, and where it is in the widget.
 typealias GTKPressHandler = @convention(c) (UnsafeMutableRawPointer?, Int32, Double, Double, gpointer?) -> Void
 
@@ -76,6 +81,11 @@ func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number
 
 @discardableResult
 func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKArgumentHandler) -> gulong {
+    connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
+}
+
+@discardableResult
+func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKOpenHandler) -> gulong {
     connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
 }
 

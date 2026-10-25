@@ -123,6 +123,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         false
     }
 
+    func application(_ application: NSApplication, open urls: [URL]) {
+        host.openLinks(urls.map(\.absoluteString))
+    }
+
     func applicationShouldHandleReopen(
         _ sender: NSApplication,
         hasVisibleWindows flag: Bool

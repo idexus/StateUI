@@ -540,11 +540,11 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarButton](controls/ToolbarButton.md) | 10 | 5 ✅ · 2 ✓ · 1 – | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 8 ✅ · 1 ☑️ · 1 – | 8 ✅ · 1 ✓ · 1 – | 10 ✅ |
 | [ToolbarGroup](controls/ToolbarGroup.md) | 5 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 9 | 7 ✅ · 1 – | 8 ✅ · 1 – | 6 ✅ · 1 ☑️ · 1 – | 9 ✅ | 8 ✅ · 1 – | 9 ✅ |
-| [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
+| [Window](controls/Window.md) | 23 | 14 ✅ · 1 ☑️ · 7 ✓ | 3 ✅ · 1 ☑️ · 5 ✓ · 8 – | 3 ✅ · 1 ☑️ · 5 ✓ · 12 – | 21 ✅ · 1 ☑️ · 1 ✓ | 8 ✅ · 8 ✓ · 7 – | 3 ✅ · 1 ☑️ · 5 ✓ · 14 – |
 | ✅ |  | 105 | 108 | 86 | 130 | 98 | 120 |
-| ✓ |  | 23 | 21 | 20 | 5 | 18 | 10 |
+| ✓ |  | 24 | 22 | 21 | 6 | 19 | 11 |
 | – |  | 11 | 17 | 28 | 10 | 29 | 15 |
-| **Met** | 160 | **139** | **146** | **134** | **145** | **145** | **145** |
+| **Met** | 161 | **140** | **147** | **135** | **146** | **146** | **146** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -639,7 +639,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ToolbarGroup](controls/ToolbarGroup.md) | `hidesWithSidebar`, `isEnabled`, `order`, `part`, `position` | 5 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | `isOn`, `onIcon`, `onToggled` (`toggled`) | 3 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 ✅ | 7 ✅ | 7 ✅ | 5 ✅ |
-| [Window](controls/Window.md) | `activated`, `background`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
+| [Window](controls/Window.md) | `activated`, `background`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `onLinkOpened` (`linkOpened`), `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 23 | 14 ✅ · 1 ☑️ · 7 ✓ | 3 ✅ · 1 ☑️ · 5 ✓ · 8 – | 3 ✅ · 1 ☑️ · 5 ✓ · 12 – | 21 ✅ · 1 ☑️ · 1 ✓ | 8 ✅ · 8 ✓ · 7 – | 3 ✅ · 1 ☑️ · 5 ✓ · 14 – |
 <!-- members:end -->
 
 A one-axis `ScrollView` owns input along its enabled axis. When it is nested,
@@ -719,12 +719,12 @@ realizes the element and each of its members.
 `disappearing`, `dragEnded`, `dragged`, `dragLeave`, `dragOver`, `dragStarting`,
 `drop`, `endReached`, `filesDropped`, `frameChanged`, `handMoved`,
 `handStepped`, `held`, `isFocusedChanged`, `isPresentedChanged`,
-`itemActivated`, `itemMoved`, `keyPressed`, `mapClicked`, `navigated`,
-`navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`, `opened`,
-`panUpdated`, `pinchMoved`, `pinchUpdated`, `pointerEntered`, `pointerExited`,
-`pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`, `pressed`,
-`processTerminated`, `realizedChanged`, `refreshRequested`, `released`,
-`resumed`, `scrollStopped`, `selected`, `selectedIndexChanged`,
+`itemActivated`, `itemMoved`, `keyPressed`, `linkOpened`, `mapClicked`,
+`navigated`, `navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`,
+`opened`, `panUpdated`, `pinchMoved`, `pinchUpdated`, `pointerEntered`,
+`pointerExited`, `pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`,
+`pressed`, `processTerminated`, `realizedChanged`, `refreshRequested`,
+`released`, `resumed`, `scrollStopped`, `selected`, `selectedIndexChanged`,
 `selectedItemsChanged`, `selectedTabChanged`, `showsSidebarChanged`, `stopped`,
 `submitted`, `swiped`, `tapped`, `textChanged`, `timeChanged`, `toggled`,
 `valueChanged`, `windowClosed`.

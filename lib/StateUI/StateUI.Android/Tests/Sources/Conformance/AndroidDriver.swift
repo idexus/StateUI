@@ -88,9 +88,21 @@ final class AndroidDriver: HostDriver {
     func start(
         clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree {
+        started(clock: clock, reducesMotion: reducesMotion) { OneWindowApplication(page: page) }
+    }
+
+    /// Runs `application` in the test's activity: its window, the one an activity has.
+    func start(clock: TestClock?, application: @escaping @MainActor () -> any Application) throws -> MountedTree {
+        started(clock: clock, reducesMotion: false, application)
+    }
+
+    /// Runs `application` on a new host in the test's activity, as an activity's start does.
+    private func started(
+        clock: TestClock?, reducesMotion: Bool, _ application: @escaping @MainActor () -> any Application
+    ) -> MountedTree {
         finish()
         written.listen()
-        stateUIUseApp(OneWindowApplication(page: page))
+        Renderer.shared.setApplication(application())
         let window = TestContext.window!
         let root = Java.new(TestJava.frameLayout, TestJava.newFrameLayout, .object(window.reference))
         let renderer = AndroidRenderer(

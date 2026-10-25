@@ -84,6 +84,8 @@ plutil -insert CFBundleVersion -string 1 "$plist"
 plutil -insert LSMinimumSystemVersion -string 26.0 "$plist"
 plutil -insert NSHighResolutionCapable -bool true "$plist"
 plutil -insert NSLocationUsageDescription -string "The map shows where you are." "$plist"
+# The links the Gallery opens: its own scheme, stateui-gallery://.
+plutil -insert CFBundleURLTypes -json '[{"CFBundleURLName":"com.stateui.gallery","CFBundleURLSchemes":["stateui-gallery"]}]' "$plist"
 
 codesign --force --deep --sign - "$application_dir"
 

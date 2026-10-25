@@ -82,6 +82,15 @@
             },
             blurred,
             groundsItsSheets,
+            ConformanceCase("aLinkOpenedReachesTheWindowThatHearsIt", proves: [Covered(WindowContract.linkOpened)]) { s in
+                let heard = Received<String>()
+                try s.start(application: { LinkedApplication(heard: heard) })
+                let window = try s.element(ofType: WindowContract.nodeType)
+
+                try s.perform(.openLink("stateui-conformance://note/7"), on: window)
+                s.settle { !heard.values.isEmpty }
+                s.expect(heard.values, ["stateui-conformance://note/7"], "its address, once")
+            },
             ConformanceCase("aWindowAScenesGroupOpensIsOfItsKindForItsValue", proves: [
                 Covered(WindowContract.windowType), Covered(WindowContract.windowValue),
             ]) { s in
@@ -238,6 +247,17 @@ struct WindowPhasePage: View {
         return Text("Window")
             .onCreated { log.values.append(window.phase) }
             .onChanged(window.phase) { log.values.append(window.phase) }
+    }
+}
+
+/// An application whose window hears the links it is asked to open, noting each address.
+struct LinkedApplication: Application {
+    let heard: Received<String>
+
+    var body: some Scene {
+        let heard = self.heard
+        return WindowGroup { Text("Links") }
+            .onLinkOpened { heard.values.append($0) }
     }
 }
 

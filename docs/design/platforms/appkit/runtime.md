@@ -187,6 +187,13 @@ focus through the window's first responder. An act of the application's own
 is its registered performer's (`InteropActs`), handed the view an aimed act
 names; a performer may await.
 
+## A link opened
+
+The application's delegate hears the links the system asks it to open
+(`application(_:open:)`), at a start and while it runs. With no window open
+once it has started - every window closed, the application kept - the main
+window opens first, as the Dock's reopen opens it, and the link reaches it.
+
 ## The clipboard
 
 The clipboard is the general pasteboard: words are written in place of what
