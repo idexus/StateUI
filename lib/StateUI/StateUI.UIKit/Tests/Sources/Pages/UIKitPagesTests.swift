@@ -272,6 +272,46 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(more.title, CoreLink().chromeWords.more)
     }
 
+    /// A bar's buttons - an action, and one holding a menu - let go of their elements as the bar drops them: the action
+    /// UIKit was handed, which the element keeps, holds neither the element nor its menu's entries.
+    @MainActor
+    func testABarsButtonsLeaveNothingAlive() throws {
+        let shown = State(wrappedValue: true)
+        weak var action: MountedElement?
+        weak var withMenu: MountedElement?
+        weak var actionNative: UIKitElement?
+        weak var withMenuNative: UIKitElement?
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").toolbar {
+                    if shown.wrappedValue {
+                        ToolbarButton("Add")
+                        ToolbarButton("Save").onClicked {}.menu(.split) { MenuItem("Save as") }
+                    }
+                }
+            } destination: { _ in Text("Pushed") }
+        }
+        defer { host.finish() }
+        let item = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller?.navigationItem }
+        host.settle { item().map { $0.trailingItemGroups.flatMap(\.barButtonItems).count == 2 } ?? false }
+        autoreleasepool {
+            let buttons = host.runtime.tree.root.map { Self.all(.toolbarButton, in: $0) } ?? []
+            XCTAssertEqual(buttons.count, 2)
+            (action, withMenu) = (buttons.first, buttons.last)
+            (actionNative, withMenuNative) = (action?.native as? UIKitElement, withMenu?.native as? UIKitElement)
+
+            shown.wrappedValue = false
+            host.settle { item()?.trailingItemGroups.flatMap(\.barButtonItems).isEmpty ?? false }
+        }
+        let settled = Date(timeIntervalSinceNow: 0.3)
+        while Date() < settled { RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.02)) }
+
+        XCTAssertNil(action, "the action's element")
+        XCTAssertNil(withMenu, "the element of the button holding a menu")
+        XCTAssertNil(actionNative, "the action's UIKit element")
+        XCTAssertNil(withMenuNative, "the UIKit element of the button holding a menu")
+    }
+
     /// On a painted bar an action wears the bar's words' color, and one that destroys something stays red.
     @MainActor
     func testADestructiveActionStaysRedOnAPaintedBar() throws {
@@ -566,6 +606,12 @@ final class UIKitPagesTests: XCTestCase {
     @MainActor
     private static func first(_ type: NodeType, in element: MountedElement) -> MountedElement? {
         element.type == type ? element : element.children.lazy.compactMap { first(type, in: $0) }.first
+    }
+
+    /// Every element of `type` in `element`'s tree, in order.
+    @MainActor
+    private static func all(_ type: NodeType, in element: MountedElement) -> [MountedElement] {
+        (element.type == type ? [element] : []) + element.children.flatMap { all(type, in: $0) }
     }
 }
 

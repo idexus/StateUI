@@ -102,9 +102,12 @@ struct UIKitBarAction {
         menu.map { UIKitMenus.menu($0.inOverflow, title: title) } ?? menuAction
     }
 
-    /// An entry of a menu.
+    /// An entry of a menu. Its handler takes `perform` alone: the element keeps the action, which would keep the element
+    /// and its menu's entries taking the whole action.
     var menuAction: UIAction {
-        let action = UIAction(title: title, image: image, identifier: element?.actionIdentifier) { _ in perform() }
+        let action = UIAction(title: title, image: image, identifier: element?.actionIdentifier) { [perform] _ in
+            perform()
+        }
         var attributes: UIMenuElement.Attributes = []
         if !isEnabled { attributes.insert(.disabled) }
         if isDestructive { attributes.insert(.destructive) }
