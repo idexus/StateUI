@@ -107,7 +107,7 @@ final class WinUIWindowController {
                     if let element, let page { runtime.goBack(.dismissSheets([page]), in: element) }
                 }
                 : nil,
-            words: CoreLink().chromeWords, fits: fits)
+            background: chrome.background, foreground: chrome.foreground, words: CoreLink().chromeWords, fits: fits)
     }
 
     /// The user took the top sheet away - Escape, its dismissing: the window is told how many remain.

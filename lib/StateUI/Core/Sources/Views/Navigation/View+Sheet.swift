@@ -17,7 +17,8 @@ extension View {
     ///             Button("Done").onClicked { editing = false }
     ///         }
     ///
-    /// A sheet has no bar of its own - a `NavigationStack` in it brings one. A sheet declared in a sheet stands over
+    /// A sheet has no bar of its own - a `NavigationStack` in it brings one, in the look of the bar over the view
+    /// presenting it. A sheet declared in a sheet stands over
     /// it; its content is built while it shows. A view holds one sheet: written again, it stands in.
     ///
     /// - Parameters:

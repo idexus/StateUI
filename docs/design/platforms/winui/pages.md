@@ -233,7 +233,10 @@ and clear of the window's edges - and it enters as a dialog enters. It stands
 as large as its page asks ([a sheet's size](../../host/pages.md#a-sheets-size)):
 in the middle, at least 320 x 184 and at most a dialog's 548 wide; one whose
 page asks none - a stack among them - stretches to 548 x 640, which WinUI's
-layout holds within the window less the card's 48 a side. The card stands on
+layout holds within the window less the card's 48 a side. The head is the
+bar's band across the card's top, painted in the bar's look as the window's
+title bar is - its words, its buttons and its actions in the bar's words'
+color, in the theme its band asks for. The card stands on
 its window's background ([a page's ground](../../host/pages.md#a-pages-ground)):
 a color laid over the dialog's own background inside its outline, a blur as
 WinUI's in-app acrylic in its place, showing what the card covers; the

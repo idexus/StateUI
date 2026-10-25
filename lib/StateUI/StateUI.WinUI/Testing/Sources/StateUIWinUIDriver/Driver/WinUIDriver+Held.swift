@@ -430,8 +430,11 @@ extension WinUIDriver {
         case ("showsBackButton", _): return (try read(window().titleBar, "back") == "1").propValue
         // The head of the card of the sheet its stack stands in offers the close button.
         case ("showsCloseButton", _): return (try read(sheet(of: element), "close") == "1").propValue
-        case ("barBackgroundColor", _): return try Self.color(read(window().titleBar, "background")).map { $0.propValue }
-        case ("barForegroundColor", _): return try Self.color(read(window().titleBar, "foreground")).map { $0.propValue }
+        // The bar an element stands under: its sheet's head, in one, else the window's title bar.
+        case ("barBackgroundColor", _), ("barForegroundColor", _):
+            let bar: WinUIView = element.enclosing(type: .sheet) != nil ? try sheet(of: element) : try window().titleBar
+            let part = name == "barBackgroundColor" ? "background" : "foreground"
+            return try Self.color(read(bar, part)).map { $0.propValue }
         // The line under a page's title: its heading's where the chrome names the application, else the title bar's.
         case ("subtitle", _) where element.type == .page:
             if let heading = renderer?.views(WinUILayoutView.self).lazy.compactMap(\.heading).first {

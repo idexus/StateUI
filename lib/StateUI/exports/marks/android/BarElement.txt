@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 NavigationStack.barBackgroundColor: ✅
 NavigationStack.barButtonBackgroundColor: – A toolbar's action is Android's own, with no background of the application's.
 NavigationStack.barForegroundColor: ☑️ The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the color itself - on a tab row, the chosen tab's words.

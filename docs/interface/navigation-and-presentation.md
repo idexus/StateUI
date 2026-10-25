@@ -246,8 +246,9 @@ struct Folders: View {
 ```
 
 A sheet has no bar of its own. A `NavigationStack` in it brings one - the
-stack's titles, its way back, its actions and its colors - and nothing from
-around the sheet reaches it:
+stack's titles, its way back and its actions, nothing of them from around the
+sheet - in the look of the bar over the view presenting the sheet, unless the
+stack declares its own:
 
 ```swift
 struct SettingsButton: View {

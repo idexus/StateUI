@@ -149,7 +149,9 @@ an item standing in two menus.
 
 A page a view presents is a sheet on the window - over the top of its sheets
 - in an `NSWindow` of its own, which shows no bar of its own. A stack in it
-brings its bar as the window's toolbar shows a stack's: the sheet's toolbar
+brings its bar as the window's toolbar shows a stack's, on the band its bar's
+look paints - the sheet's content runs under its toolbar, and the size a
+page asks is the room under it: the sheet's toolbar
 holds the way back, the page's actions and, unless the page says not, the
 button closing the sheet at the trailing edge, AppKit's `xmark` symbol saying
 the library's word for close; it writes false onto the sheet's state, as the

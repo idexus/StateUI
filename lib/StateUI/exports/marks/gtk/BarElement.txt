@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 NavigationStack.barBackgroundColor: ✅
 NavigationStack.barButtonBackgroundColor: – A header bar's buttons are libadwaita's own, flat.
 NavigationStack.barForegroundColor: ✅

@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 NavigationStack.barBackgroundColor: ✅
 NavigationStack.barButtonBackgroundColor: – A toolbar item stands in the Mac's own look, with no background of the application's.
 NavigationStack.barForegroundColor: ☑️ Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color.

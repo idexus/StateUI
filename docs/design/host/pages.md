@@ -321,10 +321,12 @@ area](#a-pages-title-area)). The
 path is the declarations' (`arrangementsAround`), but for a split view's
 sidebar, which wears its own split view's bar - a split view's bar is both its
 panes', so its colors paint a sidebar's own bar where a platform draws one
-(`barArrangements`) - and nothing from around the split view; a sheet's path
-stops at the sheet, which has no bar of its own: a stack in it brings one,
-painted as that stack says, and nothing from around the sheet reaches it. The
-colors are `barColors`.
+(`barArrangements`) - and nothing from around the split view. The look
+crosses a sheet, which has no bar of its own: a stack in it brings one,
+in the look of the bar over the view presenting the sheet unless the stack
+declares its own, as the sheet's content is that view's; what the bar says
+stops at the sheet ([the visible path](#the-visible-path)). The colors are
+`barColors`.
 
 ## A page's title area
 

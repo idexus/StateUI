@@ -218,7 +218,7 @@ struct MainPage: View {
 
         case .sample(let id):
             if let sample = catalog.sample(id: id) {
-                SamplePage.shown(sample, nav: nav, look: look, system: application.info.accentColor)
+                SamplePage.shown(sample, nav: nav)
             } else {
                 MissingPage(id: id, nav: nav, path: path)
             }

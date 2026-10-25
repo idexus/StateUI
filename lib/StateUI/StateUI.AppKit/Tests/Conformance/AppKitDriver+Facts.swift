@@ -139,10 +139,12 @@ extension AppKitDriver {
         return names.first { renderer?.image(named: $0) === picture }.map { .string($0) }
     }
 
-    /// The color the bar of the window `element` stands in is painted: the band the title bar lets show only while
-    /// a color is painted; nil on the system's material.
+    /// The color the bar of the window `element` stands in - its sheet's, in one - is painted: the band the title bar
+    /// lets show only while a color is painted; nil on the system's material.
     func barHolds(_ element: MountedElement) throws -> HostValue? {
-        guard let window = try controller(of: element).window, window.titlebarAppearsTransparent,
+        let inSheet = element.enclosing(type: .sheet) != nil
+        guard let window = inSheet ? try sheet(of: element).window : try controller(of: element).window,
+              window.titlebarAppearsTransparent,
               let band = (window.contentView as? AppKitWindowContentView)?.barColor
         else { return nil }
         return Self.color(band).propValue

@@ -101,6 +101,9 @@ extern "C" StateUIObjectRef stateui_winui_sheet_make(int64_t view) {
             head.ColumnDefinitions().Append(column);
         }
         head.Padding({12, 12, 12, 0});
+        // A band painted on the head keeps the card's top corners, inside its outline.
+        auto corner = card.CornerRadius().TopLeft - card.BorderThickness().Top;
+        head.CornerRadius({corner, corner, 0, 0});
         controls::Button back;
         if (auto style = resource(L"NavigationBackButtonSmallStyle").try_as<xaml::Style>()) back.Style(style);
         back.Click(guarded("handling a sheet's way back",
@@ -192,6 +195,33 @@ extern "C" void stateui_winui_sheet_set_action_menu(
                       kinds, titles, enabled, identifiers, icons, destructive, keys, modifiers, givesWay, count);
     } catch (...) {
         report("giving a sheet's action its menu");
+    }
+}
+
+extern "C" void stateui_winui_sheet_set_bar(
+    StateUIObjectRef handle, bool hasBackground, uint32_t background, bool hasForeground, uint32_t foreground,
+    int32_t theme
+) {
+    try {
+        // The head is the bar's band across the card's top, the title, the buttons and the actions on it in the
+        // bar's words' color, and in the theme its band asks for.
+        auto sheet = borrow<controls::Grid>(handle);
+        auto head = headOf(sheet);
+        if (hasBackground) head.Background(media::SolidColorBrush(color(background)));
+        else head.ClearValue(controls::Panel::BackgroundProperty());
+        auto words = hasForeground ? media::Brush(media::SolidColorBrush(color(foreground))) : media::Brush{nullptr};
+        auto title = head.Children().GetAt(1).as<controls::TextBlock>();
+        if (words) title.Foreground(words);
+        else title.ClearValue(controls::TextBlock::ForegroundProperty());
+        for (uint32_t part : {0u, 2u}) {
+            auto button = head.Children().GetAt(part).as<controls::Control>();
+            if (words) button.Foreground(words);
+            else button.ClearValue(controls::Control::ForegroundProperty());
+        }
+        paintActions(sheetActionEdges(sheet), words);
+        if (head.RequestedTheme() != elementTheme(theme)) head.RequestedTheme(elementTheme(theme));
+    } catch (...) {
+        report("painting a sheet's bar");
     }
 }
 

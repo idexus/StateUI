@@ -32,7 +32,7 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
 
         let window = AppKitWindow(
             contentRect: NSRect(x: 0, y: 0, width: 560, height: 480),
-            styleMask: [.titled, .closable, .resizable],
+            styleMask: [.titled, .closable, .resizable, .fullSizeContentView],
             backing: .buffered,
             defer: false)
         window.isReleasedWhenClosed = false
@@ -104,15 +104,22 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
             least: LayoutSize(width: 320, height: 180), standard: LayoutSize(width: 560, height: 480),
             most: LayoutSize(width: Double(around.width) - 48, height: Double(around.height) - 48))
         let size = SheetSize.size(of: element, in: room) { node.layoutItem?.size(offered: $0) ?? room.least }
-        guard size != asked else { return }
-        asked = size
-        window.setContentSize(NSSize(width: size.width, height: size.height))
+        // The content runs under the title bar and the toolbar: the page's room is what they leave of it.
+        let over = content.frame.height - window.contentLayoutRect.height
+        let standing = LayoutSize(width: size.width, height: size.height + Double(over))
+        guard standing != asked else { return }
+        asked = standing
+        window.setContentSize(NSSize(width: standing.width, height: standing.height))
     }
 
     /// The bar a stack in the sheet brings, as the window's toolbar shows a stack's: the way back, the page's
-    /// actions and, where the page offers it, the button closing the sheet; none where no stack brings one.
+    /// actions and, where the page offers it, the button closing the sheet, on the band its look paints; none where no
+    /// stack brings one.
     /// Design: docs/design/platforms/appkit/runtime.md#sheets
     private func showBar(_ chrome: WindowChrome, in window: NSWindow) {
+        let color = element.bringsABar ? chrome.background.flatMap(nsColor) : nil
+        window.titlebarAppearsTransparent = color != nil
+        content.barColor = color
         guard element.bringsABar else { return window.toolbar = nil }
         let words = element.appKit.core.chromeWords
         toolbar.apply(AppKitWindowChrome(

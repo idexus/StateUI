@@ -28,12 +28,13 @@ final class WinUISheetView: WinUIView {
         most: LayoutSize(width: 548, height: .infinity))
 
     /// Shows `page` under `title`, the way back where `back` is one, the page's actions at the head's edges and
-    /// behind "more" (`leading`, `trailing`, `overflow`), and the close button where `close` is, each saying `words`;
-    /// as large as the page where it `fits`, at the standard size otherwise.
+    /// behind "more" (`leading`, `trailing`, `overflow`), and the close button where `close` is, each saying `words`,
+    /// on a head painted in the bar's `background` and `foreground`; as large as the page where it `fits`, at the
+    /// standard size otherwise.
     func show(
         title: String, page: WinUIView?, back: (() -> Void)?, leading: [[WinUIToolbarAction]] = [],
         trailing: [[WinUIToolbarAction]] = [], overflow: [WinUIToolbarAction] = [], close: (() -> Void)?,
-        words: ChromeWords, fits: Bool
+        background: HostValue? = nil, foreground: HostValue? = nil, words: ChromeWords, fits: Bool
     ) {
         self.back = back
         self.close = close
@@ -41,6 +42,11 @@ final class WinUISheetView: WinUIView {
         stateui_winui_sheet_set(
             handle, title, page?.handle, back != nil, close != nil, words.back, words.close, fits, room)
         menuActions = actions.show(leading: leading, trailing: trailing, overflow: overflow, on: handle)
+        // Words on a band the tree paints: the color written, else light on a dark band and dark on a light one.
+        let band = background?.argb
+        let written = BandWords.color(on: background, written: foreground)?.argb
+        let theme: ColorScheme = background.flatMap(BandWords.light(on:)).map { $0 ? .dark : .light } ?? .system
+        stateui_winui_sheet_set_bar(handle, band != nil, band ?? 0, written != nil, written ?? 0, theme.rawValue)
     }
 
     /// The ground the card stands on now.

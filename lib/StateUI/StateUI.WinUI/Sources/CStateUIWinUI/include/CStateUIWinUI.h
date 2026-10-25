@@ -810,6 +810,11 @@ void stateui_winui_sheet_set_action_menu(StateUIObjectRef sheet, int32_t place, 
                                          char const *const *identifiers, char const *const *icons,
                                          bool const *destructive, int32_t const *keys, int32_t const *modifiers,
                                          bool const *givesWay, int32_t count);
+/// Paints the head of a sheet's card as a bar: in `background` where `hasBackground`, its title, buttons and actions
+/// in `foreground` where `hasForeground`, in the theme `theme` - a `StateUIColorScheme` - its band asks for.
+void stateui_winui_sheet_set_bar(StateUIObjectRef sheet, bool hasBackground, uint32_t background, bool hasForeground,
+                                 uint32_t foreground, int32_t theme);
+
 /// Stands a sheet's card on its window's background: a color `argb` over the card's own background, or the in-app
 /// acrylic in it in its place - its luminosity hiding `opacity` of what is behind it and its tint `tintOpacity`.
 void stateui_winui_sheet_set_ground(StateUIObjectRef sheet, StateUIGround kind, uint32_t argb, float opacity,

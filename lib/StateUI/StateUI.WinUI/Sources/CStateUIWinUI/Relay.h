@@ -44,6 +44,12 @@ namespace stateui {
     /// Runs `work` on the UI thread, in its turn; from any thread - what a WinRT operation ending beside it hands back.
     void runOnUIThread(std::function<void()> work);
 
+    /// The color `argb` - 0xAARRGGBB - is.
+    inline winrt::Windows::UI::Color color(uint32_t argb) {
+        return {static_cast<uint8_t>(argb >> 24), static_cast<uint8_t>(argb >> 16), static_cast<uint8_t>(argb >> 8),
+                static_cast<uint8_t>(argb)};
+    }
+
     /// WinUI's own brush for a brush as the host hands it; null for none.
     xaml::Media::Brush brush(StateUIBrush const &brush);
 
@@ -284,6 +290,10 @@ namespace stateui {
 
     /// The edges of a sheet's head, beside its title.
     ActionEdges sheetActionEdges(controls::Grid const &sheet);
+
+    /// Paints the actions on `edges` and "more" in `foreground`, or the theme's where it is null; a destructive one
+    /// keeps the theme's critical color.
+    void paintActions(ActionEdges const &edges, xaml::Media::Brush const &foreground);
 
     /// A command bar for the actions at one of a bar's edges, on the bar's own background.
     inline controls::CommandBar actionBar() {

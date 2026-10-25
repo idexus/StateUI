@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 NavigationStack.barBackgroundColor: ✅
 NavigationStack.barButtonBackgroundColor: – A bar button stands in the system's glass, which takes no color of the application's.
 NavigationStack.barForegroundColor: ✅

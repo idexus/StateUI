@@ -827,8 +827,8 @@ final class PagesTests: XCTestCase {
     }
 
     /// The bar's look a path declares is its nearest arrangement's, one value at a time: a stack further in paints
-    /// its own bar. A sidebar wears its own split view's bar and nothing from around it; a sheet takes nothing from
-    /// around it.
+    /// its own bar. A sidebar wears its own split view's bar and nothing from around it; a sheet wears the look of the
+    /// bar over the view presenting it, and its own stack's over that.
     func testTheBarAPathDeclaresIsItsNearest() throws {
         let runtime = runtime(node("window", .window, children: [
             node("outer", .navigationStack, [
@@ -859,10 +859,10 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(menu.toolbarStyle, .system, "nor the buttons' look")
 
         let sheet = try XCTUnwrap(root.first(id: .manual("sheet")))
-        XCTAssertNil(sheet.barColors.background, "a sheet's bar wears nothing from around it")
-        XCTAssertNil(sheet.barColors.foreground)
-        XCTAssertEqual(sheet.toolbarStyle, .system, "nor its buttons' look")
-        XCTAssertNil(sheet.barButtonBackground)
+        XCTAssertEqual(sheet.barColors.background, .string("stack"), "a sheet wears the presenting view's look")
+        XCTAssertEqual(sheet.barColors.foreground, .string("split"))
+        XCTAssertEqual(sheet.toolbarStyle, .rounded, "its buttons' look too")
+        XCTAssertEqual(sheet.barButtonBackground, .string("stack's buttons"))
     }
 
     /// A page says what its bar says of it, and nothing climbs: the chrome shows the line under the title of the page

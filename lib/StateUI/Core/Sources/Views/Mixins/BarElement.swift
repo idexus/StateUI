@@ -19,8 +19,8 @@
 ///
 /// A split view's bar is both its panes': a sidebar with a bar of its own
 /// wears what its split view declares, and nothing from around it. A sheet
-/// has no bar of its own: a stack in it brings one, taking nothing from
-/// around the sheet.
+/// has no bar of its own: a stack in it brings one, in the look of the bar
+/// over the view presenting the sheet unless it declares its own.
 public protocol BarElement: PropertyContainer {}
 
 extension BarElement {

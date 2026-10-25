@@ -18,11 +18,6 @@ using namespace stateui;
 namespace media = winrt::Microsoft::UI::Xaml::Media;
 
 namespace {
-    winrt::Windows::UI::Color color(uint32_t argb) {
-        return {static_cast<uint8_t>(argb >> 24), static_cast<uint8_t>(argb >> 16), static_cast<uint8_t>(argb >> 8),
-                static_cast<uint8_t>(argb)};
-    }
-
     /// A solid brush's color as 0xAARRGGBB; 0 for any other.
     double argb(media::Brush const &brush) {
         auto solid = brush.try_as<media::SolidColorBrush>();

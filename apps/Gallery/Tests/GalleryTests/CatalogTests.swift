@@ -1018,9 +1018,9 @@ final class CatalogTests: XCTestCase {
         let held = try XCTUnwrap(catalog().groups.first { $0.route == "gestures" }?.samples.first)
         let scrolling = try XCTUnwrap(catalog().groups.flatMap(\.samples).first { $0.scrolls })
 
-        XCTAssertEqual(SamplePage.shown(held, nav: Place().nav, look: SessionStyle().look(dark: false), system: .blue).node.type, .tabView)
+        XCTAssertEqual(SamplePage.shown(held, nav: Place().nav).node.type, .tabView)
         XCTAssertEqual(
-            SamplePage.shown(scrolling, nav: Place().nav, look: SessionStyle().look(dark: false), system: .blue).node.stateful?.viewType.name,
+            SamplePage.shown(scrolling, nav: Place().nav).node.stateful?.viewType.name,
             String(reflecting: SamplePage.self))
         XCTAssertEqual(held.tabs, [.example(0), .code])
         XCTAssertEqual(held.tabs.map(held.caption(of:)), ["Example", "In Code"])

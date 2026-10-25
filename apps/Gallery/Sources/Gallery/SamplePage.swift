@@ -8,7 +8,7 @@ import StateUI
 /// PUSHED - it arrives as `.sample(id)` on the bound path - so the platform's
 /// back button and back gesture work as they do anywhere else, and two samples
 /// can be on the stack at once. A sample whose examples must hold the page
-/// still is shown as tabs instead - see `shown(_:nav:look:system:)` and `SampleTabPage`.
+/// still is shown as tabs instead - see `shown(_:nav:)` and `SampleTabPage`.
 struct SamplePage: View {
     /// The gallery this page is in - its scene.
     @Environment(\.scene) var scene
@@ -19,12 +19,11 @@ struct SamplePage: View {
 
     /// The page a sample is shown on: this scrolling page, or - for a sample
     /// whose examples hold the page still - its tabs, which a window shows as
-    /// its own, on bars as the gallery's `look` says - the system's accent
-    /// being `system` - as the stack they are pushed onto is.
+    /// its own, on the bars of the stack they are pushed onto.
     /// The tabs carry the sample's name, which names the window while they are
     /// the stack's last place; their pages name the tabs alone.
     @ViewBuilder
-    static func shown(_ sample: Sample, nav: Navigation, look: ThemeLook, system: Color) -> some View {
+    static func shown(_ sample: Sample, nav: Navigation) -> some View {
         if sample.scrolls {
             SamplePage(sample: sample, nav: nav)
         } else {
@@ -32,7 +31,6 @@ struct SamplePage: View {
                 SampleTabPage(sample: sample, tab: tab, nav: nav)
             }
             .title(sample.title)
-            .barLook(look.bars, in: look.barColor, system: system)
         }
     }
 

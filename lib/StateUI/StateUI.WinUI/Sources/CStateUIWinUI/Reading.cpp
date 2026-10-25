@@ -400,6 +400,8 @@ namespace {
         if (what == "actions")
             return actions(sheetActionEdges(sheet), [](auto const &button) { return narrow(button.Label()); }, ";", ";");
         if (what == "card") return number(card.ActualWidth()) + "," + number(card.ActualHeight());
+        if (what == "background") return color(head.Background());
+        if (what == "foreground") return color(head.Children().GetAt(1).as<controls::TextBlock>().Foreground());
         if (what == "ground") {
             auto own = card.Background().try_as<media::AcrylicBrush>() ? card.Background()
                                                                        : card.Child().as<controls::Grid>().Background();

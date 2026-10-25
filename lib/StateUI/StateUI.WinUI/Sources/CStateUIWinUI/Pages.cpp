@@ -63,28 +63,12 @@ namespace {
     /// the chosen tab is taken away - is heard by nobody.
     bool settingTabs = false;
 
-    winrt::Windows::UI::Color color(uint32_t argb) {
-        return {static_cast<uint8_t>(argb >> 24), static_cast<uint8_t>(argb >> 16), static_cast<uint8_t>(argb >> 8),
-                static_cast<uint8_t>(argb)};
-    }
-
     /// The actions on the bar stand in its words' color where the tree gives one, "more" and the lines between
     /// groups among them; a destructive one keeps the theme's critical color, and one behind "more" the menu's
     /// colors, on the menu's own background.
     void paintActions(controls::TitleBar const &bar) {
         bool given = bar.ReadLocalValue(controls::Control::ForegroundProperty()) != xaml::DependencyProperty::UnsetValue();
-        auto paint = [&](controls::Control const &control) {
-            if (given) control.Foreground(bar.Foreground());
-            else control.ClearValue(controls::Control::ForegroundProperty());
-        };
-        for (auto const &actions : {leadingActions(bar), trailingActions(bar)}) {
-            paint(actions);
-            for (auto const &command : actions.PrimaryCommands()) {
-                auto button = command.try_as<controls::AppBarButton>();
-                if (button && isDestructive(button, L"AppBarButtonForeground")) continue;
-                if (auto control = command.try_as<controls::Control>()) paint(control);
-            }
-        }
+        stateui::paintActions(actionEdges(bar), given ? bar.Foreground() : nullptr);
     }
 
     /// The place on the bar a title view stands in: no stop of Tab's itself, as the view in it may be.
@@ -417,6 +401,21 @@ extern "C" void stateui_winui_split_measure_pane_again(StateUIObjectRef handle) 
         if (auto pane = borrow<controls::SplitView>(handle).Pane()) measureAgain(pane);
     } catch (...) {
         report("measuring a split view's pane again");
+    }
+}
+
+void stateui::paintActions(ActionEdges const &edges, media::Brush const &foreground) {
+    auto paint = [&](controls::Control const &control) {
+        if (foreground) control.Foreground(foreground);
+        else control.ClearValue(controls::Control::ForegroundProperty());
+    };
+    for (auto const &actions : {edges.leading, edges.trailing}) {
+        paint(actions);
+        for (auto const &command : actions.PrimaryCommands()) {
+            auto button = command.try_as<controls::AppBarButton>();
+            if (button && isDestructive(button, L"AppBarButtonForeground")) continue;
+            if (auto control = command.try_as<controls::Control>()) paint(control);
+        }
     }
 }
 

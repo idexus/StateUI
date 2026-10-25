@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `BarElementContract` on a host: the bar an arrangement declares holds the colors, the application's name, line
-/// and mark the tree gives it, and those the tree changes them to - on every element wearing the tier.
+/// `BarElementContract` on a host: the bar an arrangement declares holds the look the tree gives it, and the look the
+/// tree changes it to - on every element wearing the tier - and the look crosses a sheet a view in it presents.
 @_spi(Host) public enum BarElementTests: ConformanceFamily {
     public static let name = "BarElement"
 
@@ -18,7 +18,38 @@
                     over: [Write(BarElementContract.barBackgroundColor, Color.steelBlue)]),
                 holds(BarElementContract.barButtonBackgroundColor, on: element, .steelBlue, then: .firebrick),
                 holds(BarElementContract.toolbarStyle, on: element, .glass, then: .rounded),
+                crossesASheet(on: element),
             ]
+        }
+    }
+
+    /// The bar's color `element` declares crosses a sheet a view in it presents: the stack in the sheet wears it, as
+    /// nothing nearer says another.
+    @MainActor
+    static func crossesASheet(on element: String) -> ConformanceCase {
+        ConformanceCase("\(element).barBackgroundColor.crossesASheetItsViewPresents", proves: [
+            Covered(BarElementContract.barBackgroundColor, on: element),
+        ], needs: [Covered(SheetContract.isPresented)]) { s in
+            s.start {
+                declaring(element, [Write(BarElementContract.barBackgroundColor, Color.steelBlue)], beside: [
+                    Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                        NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                            Text("In the sheet").title("Sheet")
+                        } destination: { _ in Text("Pushed") }
+                    },
+                ])
+            }
+            _ = try s.element(ofType: SheetContract.nodeType)
+            let inSheet = { () throws -> MountedElement in
+                guard let stack = s.elements(ofType: NavigationStackContract.nodeType)
+                    .last(where: { $0.enclosing(type: .sheet) != nil })
+                else { throw DriverCannot("find the stack in the sheet") }
+                return stack
+            }
+            try s.settle { try s.held(BarElementContract.barBackgroundColor, on: inSheet()) == Color.steelBlue }
+            s.expect(
+                try s.held(BarElementContract.barBackgroundColor, on: inSheet()), Color.steelBlue,
+                "the look of the bar over the view presenting the sheet")
         }
     }
 

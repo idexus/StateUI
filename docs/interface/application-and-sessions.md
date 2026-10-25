@@ -619,7 +619,8 @@ climbs from around the page. `barBackgroundColor` and `barForegroundColor`
 paint the bar and what stands on it, each taken from the nearest arrangement
 on the visible path that declares it, so a stack further in paints its own bar
 while it is shown; a sidebar takes only what its own split view declares, and a
-sheet takes nothing from around it. What stands on the bar is
+stack in a sheet takes the look of the bar over the view presenting the sheet.
+What stands on the bar is
 declared the same way: actions with `.toolbar`, each saying where it stands
 with `.placement`, and a view in the title's place with `.titleView`
 ([Toolbars](navigation-and-presentation.md#toolbars)).
