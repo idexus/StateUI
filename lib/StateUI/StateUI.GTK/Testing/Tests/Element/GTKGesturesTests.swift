@@ -82,30 +82,29 @@ private struct DragPage: View {
 
 @MainActor
 final class GTKGesturesTests: XCTestCase {
-    /// A click on a row that answers a tap is a tap, past its words where it draws nothing; a press that moved past
-    /// the drag threshold, or is let go beside the row, is none.
-    func testAClickIsATapWhereItHasNotMoved() throws {
+    /// A press on a row that answers a tap taps as a button does, past its words where it draws nothing: let go over
+    /// the row it taps, let go away it taps nothing, and back over the row before it lets go it taps.
+    func testAPressTapsAsAButtonDoes() throws {
         try onUIThread {
             let host = GTKRenderer.running { TapsPage(count: 1) }
             let row = try XCTUnwrap(host.views(GTKStackView.self).dropFirst().first)
-            let taps = try XCTUnwrap(row.listening?.controllers[.taps]?.first)
+            let press = try XCTUnwrap(row.listening?.controllers[.taps]?.last)
 
-            GTKTestHost.emit(taps, "pressed", [1, 190, 20])
-            GTKTestHost.emit(taps, "released", [1, 190, 20])
+            GTKTestHost.emit(press, "drag-begin", [190, 20])
+            GTKTestHost.emit(press, "drag-end", [0, 0])
             host.settle { host.texts.first == "taps 1" }
             XCTAssertEqual(host.texts.first, "taps 1")
 
-            let listening = try XCTUnwrap(row.listening)
-            listening.tapPressed(at: Point(x: 20, y: 20))
-            listening.tapStopped(at: Point(x: 60, y: 20))
-            listening.tapReleased(nil, run: 1, at: Point(x: 20, y: 20))
-            listening.tapPressed(at: Point(x: 20, y: 20))
-            listening.tapReleased(nil, run: 1, at: Point(x: 260, y: 20))
-            GTKTestHost.emit(taps, "pressed", [1, 20, 20])
-            GTKTestHost.emit(taps, "released", [1, 20, 20])
+            GTKTestHost.emit(press, "drag-begin", [20, 20])
+            GTKTestHost.emit(press, "drag-update", [0, 80])
+            GTKTestHost.emit(press, "drag-end", [0, 80])
+            GTKTestHost.emit(press, "drag-begin", [20, 20])
+            GTKTestHost.emit(press, "drag-update", [0, 80])
+            GTKTestHost.emit(press, "drag-update", [5, 2])
+            GTKTestHost.emit(press, "drag-end", [5, 2])
             host.settle { host.texts.first == "taps 2" }
 
-            XCTAssertEqual(host.texts.first, "taps 2", "only the last press was a tap")
+            XCTAssertEqual(host.texts.first, "taps 2", "the press let go away was none; the one back over the row was")
         }
     }
 
@@ -122,16 +121,16 @@ final class GTKGesturesTests: XCTestCase {
             XCTAssertGreaterThan(gtks, 0)
             XCTAssertEqual(rows.dropFirst().first?.listening?.holdTime, gtks / 2, "half GTK's time, the least it waits")
 
-            let taps = try XCTUnwrap(listening.controllers[.taps]?.first)
+            let press = try XCTUnwrap(listening.controllers[.taps]?.last)
             let hold = try XCTUnwrap(listening.controllers[.holds]?.first)
-            GTKTestHost.emit(taps, "pressed", [1, 20, 20])
+            GTKTestHost.emit(press, "drag-begin", [20, 20])
             GTKTestHost.emit(hold, "pressed", [20, 20])
-            GTKTestHost.emit(taps, "released", [1, 20, 20])
+            GTKTestHost.emit(press, "drag-end", [0, 0])
             host.settle { host.texts.first == "said held; " }
             XCTAssertEqual(host.texts.first, "said held; ", "held, and its release no tap")
 
-            GTKTestHost.emit(taps, "pressed", [1, 20, 20])
-            GTKTestHost.emit(taps, "released", [1, 20, 20])
+            GTKTestHost.emit(press, "drag-begin", [20, 20])
+            GTKTestHost.emit(press, "drag-end", [0, 0])
             host.settle { host.texts.first == "said held; tapped; " }
             XCTAssertEqual(host.texts.first, "said held; tapped; ")
         }
@@ -269,6 +268,7 @@ final class GTKGesturesTests: XCTestCase {
             let rows = host.views(GTKStackView.self)
             let row = try XCTUnwrap(rows.dropFirst().first)
             let before = row.controllerCount
+            let tapping = try XCTUnwrap(row.listening?.controllers[.taps]).count
             XCTAssertEqual(row.hearing, .taps)
             XCTAssertEqual(try XCTUnwrap(rows.last).hearing, [])
 
@@ -276,7 +276,7 @@ final class GTKGesturesTests: XCTestCase {
             host.settle { row.hearing.isEmpty }
 
             XCTAssertEqual(row.hearing, [])
-            XCTAssertEqual(row.controllerCount, before - 1)
+            XCTAssertEqual(row.controllerCount, before - tapping)
         }
     }
 }

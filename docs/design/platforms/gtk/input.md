@@ -28,20 +28,25 @@ none, nor does anything in it.
 
 ## Taps
 
-A tap is `GtkGestureClick`'s release of the primary button, or of a finger,
-over the view, of a press that has not moved past GTK's drag threshold. GTK
-counts a quick run itself - the release's place in it - by the desktop's
-double-click time and distance; a view asking for `count` taps answers each
-time the run reaches a multiple of it.
+A single tap is the view's press, taken as a button takes one by the host
+layer's rule ([a press as a button takes it](../../host/runtime.md#a-press-as-a-button-takes-it)):
+a `GtkGestureDrag`, which knows no threshold, follows it from its fall to its
+lift, each phase told with where it stands in the view; GTK cancelling the
+gesture - a control under it claiming the sequence, a scroller around it
+claiming a touch - is the press taken away. A view around one that begins its
+press with the same event leaves it to that one, so a tappable row inside
+another answers alone.
 
-GTK stops counting a press as a click when it moves past the drag threshold,
-and also when it is held past the double-click time, and it still tells the
-release after either. The host takes the stop as a move only where the press
-now stands past the threshold from where it went down, so a slow click is
-still a tap.
-
-The tap claims its press, and GTK denies it to every view around the one
-tapped: a tappable row inside another answers alone.
+`GtkGestureClick` stays for a run of taps: its release of the primary button,
+or of a finger, over the view, of a press that has not moved past GTK's drag
+threshold. GTK counts the run itself - the release's place in it - by the
+desktop's double-click time and distance; a view asking for `count` taps
+answers each time the run reaches a multiple of it. GTK stops counting a press
+as a click when it moves past the drag threshold, and also when it is held past
+the double-click time, and it still tells the release after either. The host
+takes the stop as a move only where the press now stands past the threshold
+from where it went down, so a slow click is still a tap. The run's tap claims
+its press, and GTK denies it to every view around the one tapped.
 
 ## A press held
 

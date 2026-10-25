@@ -13,7 +13,8 @@ extension GTKElement {
             guard let self, let host else { return false }
             return element.hear(heard, in: host.runtime)
         }
-        view.hear(element.hearing, holdingFor: element.holdDuration, heard)
+        view.hear(
+            element.hearing, holdingFor: element.holdDuration, countingRuns: (element.number(.tapCount) ?? 1) > 1, heard)
         view.offer(element.dragAndDrop) { _ = heard($0) }
     }
 }
