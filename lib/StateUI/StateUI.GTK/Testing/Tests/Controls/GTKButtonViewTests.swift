@@ -204,8 +204,8 @@ final class GTKButtonViewTests: XCTestCase {
 
     /// A button with a picture is named by its words, shown or out of sight: no label GTK made for its words before
     /// the picture came still names it.
-    func testAButtonWithAPictureIsNamedByItsWords() throws {
-        try onUIThread {
+    func testAButtonWithAPictureIsNamedByItsWords() {
+        onUIThread {
             let host = GTKRenderer.running {
                 VStack {
                     Button("Media").icon(ImageSource("test_dot.png")).showsText(false)
