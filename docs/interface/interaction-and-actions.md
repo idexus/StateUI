@@ -63,9 +63,21 @@ HStack {
 }
 ```
 
-Use `onTapped(count:_:)` for a double or higher tap. A swipe
-handler receives one dominant `SwipeDirection`; the option set on the modifier
-defines which directions are recognized.
+A single tap is pressed as a button is, on every platform: the view is
+pressed while the finger or the pointer stands over it - out as it leaves, in
+again as it comes back - and taps where it lets go over the view; let go
+away, or taken by a scroll around it or the view's own drag, it taps nothing.
+A style shows the press with `.visualState(.pressed)`:
+
+```swift
+Style<ZStack>()
+    .visualState(.pressed) { $0.background(.lightGray) }
+```
+
+Use `onTapped(count:_:)` for a double or higher tap, which keeps the
+platform's own run of taps. A swipe handler receives one dominant
+`SwipeDirection`; the option set on the modifier defines which directions are
+recognized.
 
 A view that answers a tap is a button to assistive technology. The platform's
 accessibility press runs the same handler a tap runs, so a screen reader or an

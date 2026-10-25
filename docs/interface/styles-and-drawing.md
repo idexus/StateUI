@@ -268,9 +268,10 @@ Style<Button>()
 ```
 
 The states offered after the dot are the ones that control enters. Every
-view has normal, disabled and pointer-over; a control taking the focus adds
-focused, a button pressed, a switch on and off, a check box on. A state the
-control never enters does not compile.
+view has normal, disabled, pointer-over and pressed - a button pressed, and
+any view that hears taps while the press stands over it; a control taking the
+focus adds focused, a switch on and off, a check box on. A state the control
+never enters does not compile.
 
 StateUI decides which state a control is in, the same way on every platform:
 the first that holds of disabled, pressed, pointer-over, focused, on, off -
