@@ -393,6 +393,7 @@ final class Catalog {
                 Sample(TabsSample(nav: nav)),
                 Sample(SplitViewSample(nav: nav)),
                 Sample(ModalSample(nav: nav)),
+                Sample(SheetsSample()),
                 Sample(DialogsSample()),
                 Sample(FilesSample()),
                 Sample(ClipboardSample()),

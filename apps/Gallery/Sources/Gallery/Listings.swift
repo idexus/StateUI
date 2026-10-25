@@ -10237,6 +10237,87 @@ enum Listings {
             }
         }
         """#,
+        "StackInASheet": #"""
+        // Sources/Samples/Navigation/SheetsSample.swift
+        @State private var presented = false
+        @State private var said = "Nothing done yet."
+
+        var body: some View {
+            VStack {
+                Text("Present the sheet, press its actions and push a page.")
+
+                Button("Present the stack")
+                    .horizontalAlignment(.center)
+                    .onClicked { presented = true }
+                    .sheet(isPresented: $presented) {
+                        DraftSheet(said: $said)
+                    }
+
+                Text(said)
+            }
+        }
+
+        /// A draft's stack in a sheet: the bar's actions are its pages'.
+        private struct DraftSheet: View {
+            @Binding var said: String
+            @State private var path: [Int] = []
+            @State private var pinned = false
+
+            var body: some View {
+                NavigationStack($path) {
+                    VStack {
+                        Text(said)
+                        Text(pinned ? "Pinned" : "Not pinned")
+                        Button("Push a page")
+                            .onClicked { path.append(path.count + 1) }
+                    }
+                    .galleryPage("Draft")
+                    .toolbar {
+                        ToolbarButton("Undo")
+                            .id("sheet.undo")
+                            .placement(at: .start)
+                            .onClicked { said = "Undone." }
+
+                        ToolbarGroup {
+                            ToolbarButton("Save")
+                                .id("sheet.save")
+                                .onClicked { said = "Saved." }
+                                .menu(.split) {
+                                    MenuItem("Save a copy")
+                                        .id("sheet.saveCopy")
+                                        .onClicked { said = "Saved a copy." }
+                                }
+
+                            ToolbarButton("Add")
+                                .id("sheet.add")
+                                .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
+                                .onClicked { said = "Added." }
+                        }
+
+                        ToolbarToggle("Pin", isOn: $pinned)
+                            .id("sheet.pin")
+                            .icon(
+                                ImageSource(light: "menu_star.png", dark: "menu_star_dark.png"),
+                                on: ImageSource(light: "menu_star_on.png", dark: "menu_star_on_dark.png"))
+
+                        ToolbarButton("Delete")
+                            .id("sheet.delete")
+                            .placement(at: .overflow)
+                            .role(.destructive)
+                            .onClicked { said = "Deleted." }
+                    }
+                } destination: { number in
+                    Text("Page \(number)")
+                        .galleryPage("Page \(number)")
+                        .toolbar {
+                            ToolbarButton("Share")
+                                .id("sheet.share")
+                                .onClicked { said = "Shared page \(number)." }
+                        }
+                }
+            }
+        }
+        """#,
         "StackLayoutSample": #"""
         // Sources/Samples/Layout/StackLayoutSample.swift
         @State private var spaced = true
@@ -10654,6 +10735,86 @@ enum Listings {
                 Text(soundOn ? "on" : "off")
 
                 Text(said)
+            }
+        }
+        """#,
+        "TabsInASheet": #"""
+        // Sources/Samples/Navigation/SheetsSample.swift
+        @State private var presented = false
+        @State private var said = "Nothing done yet."
+
+        var body: some View {
+            VStack {
+                Text("Present the tabs, change tabs and press each tab's actions.")
+
+                Button("Present the tabs")
+                    .horizontalAlignment(.center)
+                    .onClicked { presented = true }
+                    .sheet(isPresented: $presented) {
+                        MailSheet(said: $said)
+                    }
+
+                Text(said)
+            }
+        }
+
+        /// A mailbox's tabs in a sheet, each a stack.
+        private struct MailSheet: View {
+            enum Tab: Hashable, CaseIterable { case inbox, drafts }
+
+            @Binding var said: String
+            @State private var tab: Tab = .inbox
+            @State private var inbox: [Int] = []
+            @State private var drafts: [Int] = []
+
+            var body: some View {
+                TabView(Tab.allCases, selection: $tab) { tab in
+                    switch tab {
+                    case .inbox:
+                        NavigationStack($inbox) {
+                            page("Inbox", path: $inbox)
+                                .toolbar {
+                                    ToolbarButton("Refresh")
+                                        .id("tabs.refresh")
+                                        .onClicked { said = "Refreshed the inbox." }
+                                }
+                        } destination: { number in
+                            Text("Message \(number)").padding(24).galleryPage("Message \(number)")
+                        }
+                        .title("Inbox")
+                        .icon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
+
+                    case .drafts:
+                        NavigationStack($drafts) {
+                            page("Drafts", path: $drafts)
+                                .toolbar {
+                                    ToolbarGroup {
+                                        ToolbarButton("New")
+                                            .id("tabs.new")
+                                            .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
+                                            .onClicked { said = "Started a draft." }
+                                        ToolbarButton("Send all")
+                                            .id("tabs.send")
+                                            .onClicked { said = "Sent every draft." }
+                                    }
+                                }
+                        } destination: { number in
+                            Text("Draft \(number)").padding(24).galleryPage("Draft \(number)")
+                        }
+                        .title("Drafts")
+                        .icon(ImageSource(light: "tab_code.png", dark: "tab_code_dark.png"))
+                    }
+                }
+            }
+
+            /// A tab's first page: its name, and a button pushing a page onto its stack.
+            private func page(_ name: String, path: Binding<[Int]>) -> some View {
+                VStack {
+                    Text(said)
+                    Button("Push a page")
+                        .onClicked { path.wrappedValue.append(path.wrappedValue.count + 1) }
+                }
+                .galleryPage(name)
             }
         }
         """#,
