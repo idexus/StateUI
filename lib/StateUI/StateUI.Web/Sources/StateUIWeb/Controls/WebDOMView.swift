@@ -19,6 +19,12 @@ class WebDOMView {
     /// How many views are alive, for the tally.
     private(set) static var liveCount = 0
 
+    #if DEBUG
+    /// Each view alive, by its number: its class, its element's tag and its classes - what a test names a view that
+    /// outlived its element by.
+    private(set) static var liveKinds: [Int64: String] = [:]
+    #endif
+
     /// The listeners hung on the element, let go of with it.
     private var listeners: [Int32] = []
     private var offered = DragAndDrop.none
@@ -73,21 +79,29 @@ class WebDOMView {
     init(tag: String) {
         node = WebRelay.create(tag)
         serial = HostNumbers.next()
-        Self.liveCount += 1
+        made(tag)
     }
 
     /// A view of an element made already - an application's control's - which it lets go of as its own.
     init(adopting node: Int32) {
         self.node = node
         serial = HostNumbers.next()
-        Self.liveCount += 1
+        made("adopted")
     }
 
     /// A view of one of SVG's elements.
     init(vector tag: String) {
         node = WebRelay.createVector(tag)
         serial = HostNumbers.next()
+        made(tag)
+    }
+
+    /// Counts the view made - named, in a debug build, by its class and its element's tag.
+    private func made(_ tag: String) {
         Self.liveCount += 1
+        #if DEBUG
+        Self.liveKinds[serial] = "\(type(of: self)) <\(tag)>"
+        #endif
     }
 
     /// Whether the element has been let go of: its number may be another element's by now.
@@ -101,6 +115,9 @@ class WebDOMView {
         listeners = []
         WebRelay.release(node)
         Self.liveCount -= 1
+        #if DEBUG
+        Self.liveKinds.removeValue(forKey: serial)
+        #endif
     }
 
     /// What the element's drag carries and whether it takes drops, as last told; `action` hears each drag.
@@ -197,6 +214,11 @@ class WebDOMView {
 
     /// Sets an attribute, or takes it away for nil.
     func attribute(_ name: String, _ value: String?) {
+        #if DEBUG
+        if name == "class", let value, let kind = Self.liveKinds[serial] {
+            Self.liveKinds[serial] = String(kind.prefix { $0 != "." }) + "." + value
+        }
+        #endif
         WebRelay.setAttribute(node, name, value)
     }
 

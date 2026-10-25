@@ -142,6 +142,10 @@
 
     /// How many of its own views the host holds alive - the count its tally writes; nil where it counts none.
     var liveViews: Int? { get }
+
+    /// How many of those views are alive by their kind, where a host can say - what names a view that outlived its
+    /// element; nil where it cannot.
+    var liveViewKinds: [String: Int]? { get }
 }
 
 extension HostDriver {
@@ -160,6 +164,10 @@ extension HostDriver {
     public func forgetWhatIsKept() {}
 
     public var liveViews: Int? {
+        nil
+    }
+
+    public var liveViewKinds: [String: Int]? {
         nil
     }
 

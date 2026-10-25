@@ -20,10 +20,11 @@
             for (worn, said) in [([], element), (dressing(element), "\(element) dressed")] {
                 let tree = driver.start(clock: nil, reducesMotion: false) { ComingAndGoing(element: element, worn: worn) }
                 let once = try toggle(tree, on: driver)
+                let kinds = driver.liveViewKinds
                 _ = try toggle(tree, on: driver)
                 if let once, let twice = try toggle(tree, on: driver), twice > once {
                     let left = settled(above: once, on: driver)
-                    if left > once { outlived.append("\(said): \(left - once) views") }
+                    if left > once { outlived.append("\(said): \(left - once) views" + grown(from: kinds, on: driver)) }
                 }
             }
         }
@@ -54,6 +55,14 @@
             + on(TintElementContract.self, [Write(TintElementContract.tint, .red)])
             + on(PaddingElementContract.self, [Write(PaddingElementContract.padding, Insets(4))])
             + on(BorderElementContract.self, border)
+    }
+
+    /// The kinds of view more of are alive now than in `before`, as the driver names them - " (span +1)" - so a view
+    /// that outlived its element says what it is; nothing where the driver names none.
+    private static func grown(from before: [String: Int]?, on driver: any HostDriver) -> String {
+        guard let before, let now = driver.liveViewKinds else { return "" }
+        let grown = now.filter { $0.value > before[$0.key] ?? 0 }.map { "\($0.key) +\($0.value - (before[$0.key] ?? 0))" }
+        return grown.isEmpty ? "" : " (" + grown.sorted().joined(separator: ", ") + ")"
     }
 
     /// The views alive once the host let go of what a toolkit keeps a while after it left: stepping the host until no

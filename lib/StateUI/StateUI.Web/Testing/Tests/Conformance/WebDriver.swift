@@ -80,6 +80,7 @@ final class WebDriver: HostDriver {
     let written = WebLogLines()
 
     var liveViews: Int? { WebDOMView.liveCount }
+    var liveViewKinds: [String: Int]? { Dictionary(WebDOMView.liveKinds.values.map { ($0, 1) }, uniquingKeysWith: +) }
 
     func start(
         clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View

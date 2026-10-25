@@ -246,6 +246,11 @@ keeps a map five seconds - so where more views are alive the second time,
 the walk steps the host up to ten seconds for them to go: a view a toolkit
 only keeps a while comes back to the count, one held for good never does.
 
+Where a host also counts its live views by kind (`HostDriver.liveViewKinds`
+- the Web host's debug build does, by class, tag and classes), an element
+that leaves views behind names the kinds that grew: a view kept only now
+and then is found by the one run that keeps it.
+
 Each element walks twice: bare, then dressed - a look from every tier it
 wears and an ear for every gesture. A host answers a font, a color or a
 gesture with a closure of its own, and a closure that holds its view keeps
