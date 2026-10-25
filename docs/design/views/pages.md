@@ -175,6 +175,12 @@ once (`complain`) and left out.
 Written on a view no page shows - inside a layout, deeper in a body - what a
 view says of its page says nothing, and is said once.
 
+
+A link the application is asked to open is said of the page too: its window is
+given the link, and the page hears it - written on any view the page shows,
+or on the arrangement where a page stands, which takes it as it takes a
+title. A link is what moves a window's navigation, which a page and an
+arrangement own; a view that is no page's says nothing of it.
 ## An arrangement is a view
 
 `NavigationStack`, `TabView` and `SplitView` are views

@@ -16,8 +16,28 @@
             [
                 inTab(PageElementContract.title, of: element, "Notes", then: "Drafts"),
                 inTab(PageElementContract.icon, of: element, "test_dot.png", then: "test_wide.png"),
-            ] + (element == PageContract.nodeType.name ? [] : [groundsItsPages(element)])
+            ] + (element == PageContract.nodeType.name ? [] : [groundsItsPages(element)]) + [linked(element)]
         } + [titled, titledByState, groundHolds, groundFollowsColor, followsAMaterial]
+    }
+
+    /// A link the application is asked to open, given to the window `element` stands in as its page, is heard by it:
+    /// its address, once - said on a view the page shows, or on the arrangement where the page stands.
+    @MainActor
+    static func linked(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).hearsALinkItsWindowIsGiven", proves: [
+            Covered(PageElementContract.linkOpened, on: element),
+        ]) { s in
+            let heard = Received<String>()
+            s.start { Presented.hearing(element) { heard.values.append($0) } }
+            let words = try s.element("words")
+            let specimen = element == PageContract.nodeType.name
+                ? words.enclosing(type: .page) : words.enclosing(type: NodeType(stringLiteral: element))
+            guard let specimen else { throw DriverCannot("find the \(element) the words stand in") }
+
+            try s.perform(.openLink("stateui-conformance://note/7"), on: specimen)
+            s.settle { !heard.values.isEmpty }
+            s.expect(heard.values, ["stateui-conformance://note/7"], "its address, once")
+        }
     }
 
     /// The background `element` declares is the ground of its pages that say none: the page in it stands on what the
@@ -189,6 +209,24 @@
 /// A page of each kind wearing the tier - a page of its own, or an arrangement - carrying one of the tier's members.
 @MainActor
 enum Presented {
+    /// A page of `element`'s kind, standing as its window's page, that hears the links its window is given - said on
+    /// its words where it is a page of its own, on itself where it is an arrangement.
+    static func hearing(_ element: String, _ handler: @escaping @MainActor (String) -> Void) -> AnyView {
+        let words = Text("Words").id("words")
+        switch element {
+        case "NavigationStack":
+            return AnyView(NavigationStack(State(wrappedValue: [Int]()).projectedValue) { words }
+                destination: { _ in Text("Pushed") }.onLinkOpened(handler))
+        case "SplitView":
+            return AnyView(SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") }
+                detail: { words }.onLinkOpened(handler))
+        case "TabView":
+            return AnyView(TabView([0]) { _ in words }.onLinkOpened(handler))
+        default:
+            return AnyView(VStack { words }.onLinkOpened(handler))
+        }
+    }
+
     /// A page of `element`'s kind whose `member` is `value`, `beside` its words.
     static func page<Value: HostRepresentable & Sendable & Equatable>(
         _ element: String, _ member: ElementProperty<PageElementContract, Value>, _ value: Value, beside: [any View]

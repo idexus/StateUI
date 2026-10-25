@@ -1283,6 +1283,25 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(place.path.wrappedValue, [.sample(sample.id)])
     }
 
+    /// A link given to a gallery window shows the sample it names over its group - the window's own navigation,
+    /// heard by the arrangement where its page stands.
+    func testAWindowGivenALinkShowsItsSample() throws {
+        let nav = Navigation()
+        let window = firstPatch(mainPage(nav))
+        let linked = try XCTUnwrap(hostEventId(.linkOpened, in: window), "no page of the window hears a link")
+        // The payload stays the event buffer's until the next event: a test after this one starts with none.
+        defer { EventBuffer.current = [] }
+
+        XCTAssertTrue(HostBoundary.dispatch(linked, payload: [.string("stateui-gallery://sample/tap")]))
+        XCTAssertEqual(nav.path, [.group("gestures"), .sample("tap")])
+    }
+
+    /// The id a host patch gave an event, wherever in the tree it landed.
+    private func hostEventId(_ event: Event, in patch: HostPatch) -> Int32? {
+        if case .replace(let events)? = patch.events, let id = events[event] { return id }
+        return patch.children.lazy.compactMap { self.hostEventId(event, in: $0) }.first
+    }
+
     /// The way home is one assignment to the path the application owns.
     func testTheWayHomeIsOneAssignment() throws {
         let place = Place()

@@ -88,7 +88,6 @@ extension Registry {
         everyElementRaises(ViewContract.tapped)
         everyElementRealizes(ViewContract.tapCount)
         everyElementRaises(ViewContract.held)
-        everyElementRaises(ViewContract.linkOpened)
         everyElementRealizes(ViewContract.holdDuration)
         everyElementRealizes(ViewContract.panXChannel)
         everyElementRealizes(ViewContract.panYChannel)

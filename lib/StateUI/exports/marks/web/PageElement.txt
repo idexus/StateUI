@@ -1,13 +1,17 @@
-# revision 3.1
+# revision 4.1
 NavigationStack.background: ✅
 NavigationStack.icon: ✅
+NavigationStack.linkOpened: ✓ openLink on NavigationStack: the host's entry the page's address with a fragment reaches, no address loaded
 NavigationStack.title: ✅
 Page.background: ✅
 Page.icon: ✅
+Page.linkOpened: ✓ openLink on Page: the host's entry the page's address with a fragment reaches, no address loaded
 Page.title: ✅
 SplitView.background: ✅
 SplitView.icon: ✅
+SplitView.linkOpened: ✓ openLink on SplitView: the host's entry the page's address with a fragment reaches, no address loaded
 SplitView.title: ✅
 TabView.background: ✅
 TabView.icon: ✅
+TabView.linkOpened: ✓ openLink on TabView: the host's entry the page's address with a fragment reaches, no address loaded
 TabView.title: ✅

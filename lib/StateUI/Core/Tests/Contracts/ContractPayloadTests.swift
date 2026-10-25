@@ -47,7 +47,7 @@ final class ContractPayloadTests: XCTestCase {
         check(VisualElementContract.accessibilityAdjusted, [AccessibilityAdjustment.decrement.propValue])
         check(ViewContract.tapped)
         check(ViewContract.held)
-        check(ViewContract.linkOpened, [.string("notes://note/7")])
+        check(PageElementContract.linkOpened, [.string("notes://note/7")])
         check(TextInputContract.textChanged, [.string("typed")])
         check(ActionElementContract.clicked)
 

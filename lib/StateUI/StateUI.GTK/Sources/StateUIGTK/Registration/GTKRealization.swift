@@ -147,6 +147,7 @@ enum GTKRealization {
         .complete(NavigationStackContract.popped),
         .complete(PageContract.appearing),
         .complete(PageElementContract.background),
+        .complete(PageElementContract.linkOpened),
         .complete(PageContract.disappearing),
         .complete(PageContract.showsBackButton),
         .complete(PageContract.showsCloseButton),

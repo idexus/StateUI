@@ -345,7 +345,9 @@ does not silently start referring to a newer scene after its own scene ends.
 
 A link of the application's own scheme - chosen in a mail, a browser, a
 notification - opens the application, or comes to it where it runs, and one of
-its windows is given it. A view of that window hears it, with its own state:
+its windows is given it. The page it stands in hears it - said, as its title is,
+on any view the page shows, or on the arrangement where the page stands - and
+the handler writes that view's own state:
 
 ```swift
 import StateUI
@@ -376,11 +378,11 @@ struct NotesPage: View {
 }
 ```
 
-The link reaches one window: the one the platform gives it to, where a view of
+The link reaches one window: the one the platform gives it to, where a page of
 it hears links, else the one the user was in last, else the first open; every
-view of it that hears links hears it, the outermost first. A link that comes
-before any such window waits for the first. A view reaches its scene's state
-by a binding the scene hands it, as it reaches any. A handler that awaits - a sign-in
+page and arrangement of it that hears links hears it, the outermost first. A
+link that comes before any such window waits for the first. A view reaches its
+scene's state by a binding the scene hands it, as it reaches any. A handler that awaits - a sign-in
 finished in the browser exchanging its code - takes a policy,
 `.onLinkOpened(.waitForPrevious) { address in … }`. A window of a kind for a
 value is how a link opens a window of its own:

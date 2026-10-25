@@ -118,6 +118,25 @@ private struct LinkedPage: View {
     }
 }
 
+/// A window whose stack, standing where its page stands, hears the links its window is given.
+private struct LinkedStack: View {
+    @State private var path: [Int] = []
+
+    var body: some View {
+        NavigationStack($path) {
+            Text("root")
+        } destination: { number in
+            Text("\(number)")
+        }
+        .onLinkOpened { _ in path = [7] }
+    }
+}
+
+/// The linked stack in a window.
+private struct LinkedStackApplication: Application {
+    var body: some Scene { WindowGroup { LinkedStack() } }
+}
+
 /// An application whose main windows show the linked page; About hears no link.
 private struct Linked: Application {
     var body: some Scene {
@@ -351,6 +370,16 @@ final class SceneTests: XCTestCase {
         let both = renders.renderFromScratch(tree())
         XCTAssertEqual(both.children.flatMap(\.children).map { Self.hearingLinks(in: $0).count }, [1, 0],
                        "About - a scene of its own - hears none")
+    }
+
+    /// An arrangement where a page stands hears the links its window is given, as it takes a page's title.
+    func testAnArrangementWhereAPageStandsHearsLinks() throws {
+        start(LinkedStackApplication())
+        let patch = Renders().render(tree())
+        let window = try XCTUnwrap(patch.children.first?.children.first)
+
+        XCTAssertEqual(Self.hearingLinks(in: window).map(\.type), [.navigationStack])
+        XCTAssertFalse(hasComplained("linkOpened says something of a page"), "taken, as a title is")
     }
 
     /// Every patch under `patch` that hears links, outermost first.

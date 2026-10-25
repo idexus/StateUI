@@ -46,8 +46,8 @@ extension HostPatch {
         events.map { $0.keys.map(\.name).sorted() } ?? []
     }
 
-    /// The five reports every page hears, by name.
-    static let pageEvents = ["appearing", "disappearing", "navigatedFrom", "navigatedTo", "navigatingFrom"]
+    /// The six reports every page hears, by name.
+    static let pageEvents = ["appearing", "disappearing", "linkOpened", "navigatedFrom", "navigatedTo", "navigatingFrom"]
 
     /// The six reports every window hears, by name.
     static let windowEvents = ["activated", "created", "deactivated", "destroying", "resumed", "stopped"]

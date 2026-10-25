@@ -414,7 +414,6 @@ ZStack
   held()
   isFocusedChanged()
   keyPressed()
-  linkOpened()
   panUpdated()
   pinchUpdated()
   pointerEntered()

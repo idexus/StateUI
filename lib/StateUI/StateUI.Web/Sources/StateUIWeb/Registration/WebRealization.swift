@@ -71,6 +71,7 @@ enum WebRealization {
         .complete(PageContract.appearing),
         .complete(PageContract.backButtonTitle),
         .complete(PageElementContract.background),
+        .complete(PageElementContract.linkOpened),
         .complete(PageContract.disappearing),
         .complete(PageContract.navigatedFrom),
         .complete(PageContract.navigatedTo),

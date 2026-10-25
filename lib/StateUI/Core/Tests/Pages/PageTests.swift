@@ -79,6 +79,7 @@ private struct EveryPropertyPage: View {
             .showsCloseButton(false)
             // And every phase it hears.
             .onAppearing {}
+            .onLinkOpened { _ in }
             .onDisappearing {}
             .onNavigatedTo {}
             .onNavigatingFrom {}

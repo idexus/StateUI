@@ -73,10 +73,6 @@ public enum ViewContract: Contract {
     public static let horizontalAlignment = ElementProperty<Self, Alignment>(
         "horizontalAlignment", layer: .native)
 
-    /// The application was asked to open a link - one chosen elsewhere, its scheme the application's - and gave it
-    /// to the window the view stands in: its address.
-    public static let linkOpened = ElementEvent<Self, String>("linkOpened", layer: .adaptive)
-
     /// The space kept outside the view, between it and its neighbors.
     public static let margin = ElementProperty<Self, Insets>("margin", layer: .native, moves: .spacing)
 
@@ -143,7 +139,7 @@ public enum ViewContract: Contract {
     public static let members: [any ContractMember] = [
         allowsDrop, area, canDrag, dragLeave,
         dragOver, dragStarting, dragText, drop, droppedFileTypes, dragEnded, filesDropped, frameChanged, gridColumn,
-        gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, linkOpened, margin, panTouchCount,
+        gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, margin, panTouchCount,
         panUpdated, panXChannel, panYChannel, pinchUpdated, pointerEntered, pointerExited,
         pointerMoved, pointerPressed, pointerReleased, swipeDirection, swipeThreshold, swiped,
         tapCount, tapped, verticalAlignment,

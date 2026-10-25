@@ -831,12 +831,12 @@ what a host launched from the host's own record (`launched`).
 ## A link opened
 
 A link the application is asked to open - its scheme the head's - goes to one
-window by one rule (`LinkInbox`): the window the platform names, where a view
-of it hears links; else the one activated last where one does; else the first.
-Every view of that window that hears links hears it, the outermost first, each
-with its own state. A link that comes before any window has a view hearing
-links - a start the link made, a window still on its way - waits, in order, and
-the first turn after one stands gives it (`HostRuntime.openLink`).
+window by one rule (`LinkInbox`): the window the platform names, where a page
+or an arrangement of it hears links; else the one activated last where one
+does; else the first. Every page and arrangement of that window that hears
+links hears it, the outermost first. A link that comes before any window has
+one hearing links - a start the link made, a window still on its way - waits,
+in order, and the first turn after one stands gives it (`HostRuntime.openLink`).
 
 ## Starting
 

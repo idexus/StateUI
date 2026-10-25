@@ -1,13 +1,17 @@
-# revision 3.1
+# revision 4.1
 NavigationStack.background: ✅
 NavigationStack.icon: cannot read icon of NavigationStack - AppKit's driver has no path for it yet
+NavigationStack.linkOpened: ✓ openLink on NavigationStack: the host's entry the application's delegate calls, no Apple event sent
 NavigationStack.title: ✅
 Page.background: ✅
 Page.icon: cannot read icon of Page - AppKit's driver has no path for it yet
+Page.linkOpened: ✓ openLink on Page: the host's entry the application's delegate calls, no Apple event sent
 Page.title: ✅
 SplitView.background: ✅
 SplitView.icon: cannot read icon of SplitView - AppKit's driver has no path for it yet
+SplitView.linkOpened: ✓ openLink on SplitView: the host's entry the application's delegate calls, no Apple event sent
 SplitView.title: ✅
 TabView.background: ✅
 TabView.icon: cannot read icon of TabView - AppKit's driver has no path for it yet
+TabView.linkOpened: ✓ openLink on TabView: the host's entry the application's delegate calls, no Apple event sent
 TabView.title: ✅

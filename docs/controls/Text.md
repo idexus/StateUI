@@ -33,13 +33,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (92)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>51 ✅ · 2 ☑️ · 37 ✓ · 1 –</td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>52 ✅ · 1 ☑️ · 37 ✓ · 1 –</td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>73 ✅ · 5 ☑️ · 11 ✓ · 1 –</td><td><code>TextView</code>; <code>SpannableStringBuilder</code> spans</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>70 ✅ · 2 ☑️ · 14 ✓ · 6 –</td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>60 ✅ · 2 ☑️ · 24 ✓ · 6 –</td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>66 ✅ · 1 ☑️ · 22 ✓ · 3 –</td><td><code>&lt;span&gt;</code>; <code>&lt;span&gt;</code> runs</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (91)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>51 ✅ · 2 ☑️ · 36 ✓ · 1 –</td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>52 ✅ · 1 ☑️ · 36 ✓ · 1 –</td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>73 ✅ · 5 ☑️ · 10 ✓ · 1 –</td><td><code>TextView</code>; <code>SpannableStringBuilder</code> spans</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>70 ✅ · 2 ☑️ · 13 ✓ · 6 –</td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>60 ✅ · 2 ☑️ · 23 ✓ · 6 –</td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>66 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;span&gt;</code>; <code>&lt;span&gt;</code> runs</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextContract.swift`.
@@ -165,8 +165,6 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td rowspan="2"><code>holdDuration</code></td><td>property</td><td><code>Double</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">☑️</td><td align="center">✓</td></tr>
 <tr><td colspan="9">Android Views: Android's long click comes after the system's long-press time: a view keeps no time of its own.<br>WinUI 3: WinUI's hold comes after the system's own time: a view keeps no time of its own.<br>GTK 4: GTK waits from half to twice its long-press time: a time beyond either stands at that end.<br>Web: only through the host's own: read holdDuration of Text: the relay's own wait: a page holds no hold of the browser's</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>horizontalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onLinkOpened</code> (<code>linkOpened</code>)</td><td>event</td><td><code>String</code></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: openLink on Text: the host's entry the application's delegate calls, no Apple event sent<br>UIKit: only through the host's own: openLink on Text: the host's entry the scene's delegate calls, as no URL context can be made<br>Android Views: only through the host's own: openLink on Text: the host's entry the activity's intent reaches, no intent sent<br>WinUI 3: only through the host's own: openLink on Text: the relay's report of an activation told the driver's address, no activation<br>GTK 4: only through the host's own: openLink on Text: the host's entry the application's open signal reaches, no file opened<br>Web: only through the host's own: openLink on Text: the host's entry the page's address with a fragment reaches, no address loaded</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>margin</code></td><td>property</td><td><code>Insets</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>panTouchCount</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pan on Text: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on Text: the view's listening handed the recognizer's states, no touch sent<br>Android Views: The host layer hears a one-finger pan only; any other <code>panTouchCount</code> turns the pan off.</td></tr></tbody>

@@ -1,4 +1,4 @@
-# revision 13.1
+# revision 14.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -18,7 +18,6 @@ Button.gridRowSpan: ✅
 Button.held: ✅
 Button.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Button.horizontalAlignment: ✅
-Button.linkOpened: ✓ openLink on Button: the host's entry the application's open signal reaches, no file opened
 Button.margin: ✅
 Button.panTouchCount: ✅
 Button.panUpdated: ✅
@@ -55,7 +54,6 @@ Canvas.gridRowSpan: ✅
 Canvas.held: ✅
 Canvas.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Canvas.horizontalAlignment: ✅
-Canvas.linkOpened: ✓ openLink on Canvas: the host's entry the application's open signal reaches, no file opened
 Canvas.margin: ✅
 Canvas.panTouchCount: ✅
 Canvas.panUpdated: ✅
@@ -92,7 +90,6 @@ Capsule.gridRowSpan: ✅
 Capsule.held: ✅
 Capsule.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Capsule.horizontalAlignment: ✅
-Capsule.linkOpened: ✓ openLink on Capsule: the host's entry the application's open signal reaches, no file opened
 Capsule.margin: ✅
 Capsule.panTouchCount: ✅
 Capsule.panUpdated: ✅
@@ -129,7 +126,6 @@ CheckBox.gridRowSpan: ✅
 CheckBox.held: ✅
 CheckBox.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 CheckBox.horizontalAlignment: ✅
-CheckBox.linkOpened: ✓ openLink on CheckBox: the host's entry the application's open signal reaches, no file opened
 CheckBox.margin: ✅
 CheckBox.panTouchCount: ✅
 CheckBox.panUpdated: ✅
@@ -166,7 +162,6 @@ DatePicker.gridRowSpan: ✅
 DatePicker.held: ✅
 DatePicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 DatePicker.horizontalAlignment: ✅
-DatePicker.linkOpened: ✓ openLink on DatePicker: the host's entry the application's open signal reaches, no file opened
 DatePicker.margin: ✅
 DatePicker.panTouchCount: ✅
 DatePicker.panUpdated: ✅
@@ -203,7 +198,6 @@ Ellipse.gridRowSpan: ✅
 Ellipse.held: ✅
 Ellipse.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Ellipse.horizontalAlignment: ✅
-Ellipse.linkOpened: ✓ openLink on Ellipse: the host's entry the application's open signal reaches, no file opened
 Ellipse.margin: ✅
 Ellipse.panTouchCount: ✅
 Ellipse.panUpdated: ✅
@@ -240,7 +234,6 @@ Fill.gridRowSpan: ✅
 Fill.held: ✅
 Fill.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Fill.horizontalAlignment: ✅
-Fill.linkOpened: ✓ openLink on Fill: the host's entry the application's open signal reaches, no file opened
 Fill.margin: ✅
 Fill.panTouchCount: ✅
 Fill.panUpdated: ✅
@@ -277,7 +270,6 @@ Grid.gridRowSpan: ✅
 Grid.held: ✅
 Grid.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Grid.horizontalAlignment: ✅
-Grid.linkOpened: ✓ openLink on Grid: the host's entry the application's open signal reaches, no file opened
 Grid.margin: ✅
 Grid.panTouchCount: ✅
 Grid.panUpdated: ✅
@@ -314,7 +306,6 @@ HStack.gridRowSpan: ✅
 HStack.held: ✅
 HStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 HStack.horizontalAlignment: ✅
-HStack.linkOpened: ✓ openLink on HStack: the host's entry the application's open signal reaches, no file opened
 HStack.margin: ✅
 HStack.panTouchCount: ✅
 HStack.panUpdated: ✅
@@ -351,7 +342,6 @@ Image.gridRowSpan: ✅
 Image.held: ✅
 Image.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Image.horizontalAlignment: ✅
-Image.linkOpened: ✓ openLink on Image: the host's entry the application's open signal reaches, no file opened
 Image.margin: ✅
 Image.panTouchCount: ✅
 Image.panUpdated: ✅
@@ -388,7 +378,6 @@ ItemsView.gridRowSpan: ✅
 ItemsView.held: ✅
 ItemsView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ItemsView.horizontalAlignment: ✅
-ItemsView.linkOpened: ✓ openLink on ItemsView: the host's entry the application's open signal reaches, no file opened
 ItemsView.margin: ✅
 ItemsView.panTouchCount: ✅
 ItemsView.panUpdated: ✅
@@ -425,7 +414,6 @@ LayoutEngine.gridRowSpan: ✅
 LayoutEngine.held: ✅
 LayoutEngine.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 LayoutEngine.horizontalAlignment: ✅
-LayoutEngine.linkOpened: ✓ openLink on LayoutEngine: the host's entry the application's open signal reaches, no file opened
 LayoutEngine.margin: ✅
 LayoutEngine.panTouchCount: ✅
 LayoutEngine.panUpdated: ✅
@@ -462,7 +450,6 @@ Line.gridRowSpan: ✅
 Line.held: ✅
 Line.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Line.horizontalAlignment: ✅
-Line.linkOpened: ✓ openLink on Line: the host's entry the application's open signal reaches, no file opened
 Line.margin: ✅
 Line.panTouchCount: ✅
 Line.panUpdated: ✅
@@ -499,7 +486,6 @@ Link.gridRowSpan: ✅
 Link.held: ✅
 Link.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Link.horizontalAlignment: ✅
-Link.linkOpened: ✓ openLink on Link: the host's entry the application's open signal reaches, no file opened
 Link.margin: ✅
 Link.panTouchCount: ✅
 Link.panUpdated: ✅
@@ -536,7 +522,6 @@ Map.gridRowSpan: 🧩
 Map.held: 🧩
 Map.holdDuration: 🧩
 Map.horizontalAlignment: 🧩
-Map.linkOpened: 🧩
 Map.margin: 🧩
 Map.panTouchCount: 🧩
 Map.panUpdated: 🧩
@@ -573,7 +558,6 @@ Path.gridRowSpan: ✅
 Path.held: ✅
 Path.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Path.horizontalAlignment: ✅
-Path.linkOpened: ✓ openLink on Path: the host's entry the application's open signal reaches, no file opened
 Path.margin: ✅
 Path.panTouchCount: ✅
 Path.panUpdated: ✅
@@ -610,7 +594,6 @@ Picker.gridRowSpan: ✅
 Picker.held: ✅
 Picker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Picker.horizontalAlignment: ✅
-Picker.linkOpened: ✓ openLink on Picker: the host's entry the application's open signal reaches, no file opened
 Picker.margin: ✅
 Picker.panTouchCount: ✅
 Picker.panUpdated: ✅
@@ -647,7 +630,6 @@ Polygon.gridRowSpan: ✅
 Polygon.held: ✅
 Polygon.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Polygon.horizontalAlignment: ✅
-Polygon.linkOpened: ✓ openLink on Polygon: the host's entry the application's open signal reaches, no file opened
 Polygon.margin: ✅
 Polygon.panTouchCount: ✅
 Polygon.panUpdated: ✅
@@ -684,7 +666,6 @@ Polyline.gridRowSpan: ✅
 Polyline.held: ✅
 Polyline.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Polyline.horizontalAlignment: ✅
-Polyline.linkOpened: ✓ openLink on Polyline: the host's entry the application's open signal reaches, no file opened
 Polyline.margin: ✅
 Polyline.panTouchCount: ✅
 Polyline.panUpdated: ✅
@@ -721,7 +702,6 @@ ProgressBar.gridRowSpan: ✅
 ProgressBar.held: ✅
 ProgressBar.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ProgressBar.horizontalAlignment: ✅
-ProgressBar.linkOpened: ✓ openLink on ProgressBar: the host's entry the application's open signal reaches, no file opened
 ProgressBar.margin: ✅
 ProgressBar.panTouchCount: ✅
 ProgressBar.panUpdated: ✅
@@ -758,7 +738,6 @@ Rectangle.gridRowSpan: ✅
 Rectangle.held: ✅
 Rectangle.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Rectangle.horizontalAlignment: ✅
-Rectangle.linkOpened: ✓ openLink on Rectangle: the host's entry the application's open signal reaches, no file opened
 Rectangle.margin: ✅
 Rectangle.panTouchCount: ✅
 Rectangle.panUpdated: ✅
@@ -795,7 +774,6 @@ ScrollView.gridRowSpan: ✅
 ScrollView.held: ✅
 ScrollView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ScrollView.horizontalAlignment: ✅
-ScrollView.linkOpened: ✓ openLink on ScrollView: the host's entry the application's open signal reaches, no file opened
 ScrollView.margin: ✅
 ScrollView.panTouchCount: ✅
 ScrollView.panUpdated: ✅
@@ -832,7 +810,6 @@ SearchField.gridRowSpan: ✅
 SearchField.held: ✅
 SearchField.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 SearchField.horizontalAlignment: ✅
-SearchField.linkOpened: ✓ openLink on SearchField: the host's entry the application's open signal reaches, no file opened
 SearchField.margin: ✅
 SearchField.panTouchCount: ✅
 SearchField.panUpdated: ✅
@@ -869,7 +846,6 @@ Separator.gridRowSpan: ✅
 Separator.held: ✅
 Separator.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Separator.horizontalAlignment: ✅
-Separator.linkOpened: ✓ openLink on Separator: the host's entry the application's open signal reaches, no file opened
 Separator.margin: ✅
 Separator.panTouchCount: ✅
 Separator.panUpdated: ✅
@@ -906,7 +882,6 @@ Slider.gridRowSpan: ✅
 Slider.held: ✅
 Slider.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Slider.horizontalAlignment: ✅
-Slider.linkOpened: ✓ openLink on Slider: the host's entry the application's open signal reaches, no file opened
 Slider.margin: ✅
 Slider.panTouchCount: ✅
 Slider.panUpdated: ✅
@@ -943,7 +918,6 @@ Space.gridRowSpan: ✅
 Space.held: ✅
 Space.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Space.horizontalAlignment: ✅
-Space.linkOpened: ✓ openLink on Space: the host's entry the application's open signal reaches, no file opened
 Space.margin: ✅
 Space.panTouchCount: ✅
 Space.panUpdated: ✅
@@ -980,7 +954,6 @@ Spinner.gridRowSpan: ✅
 Spinner.held: ✅
 Spinner.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Spinner.horizontalAlignment: ✅
-Spinner.linkOpened: ✓ openLink on Spinner: the host's entry the application's open signal reaches, no file opened
 Spinner.margin: ✅
 Spinner.panTouchCount: ✅
 Spinner.panUpdated: ✅
@@ -1017,7 +990,6 @@ Stepper.gridRowSpan: ✅
 Stepper.held: ✅
 Stepper.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Stepper.horizontalAlignment: ✅
-Stepper.linkOpened: ✓ openLink on Stepper: the host's entry the application's open signal reaches, no file opened
 Stepper.margin: ✅
 Stepper.panTouchCount: ✅
 Stepper.panUpdated: ✅
@@ -1054,7 +1026,6 @@ Switch.gridRowSpan: ✅
 Switch.held: ✅
 Switch.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Switch.horizontalAlignment: ✅
-Switch.linkOpened: ✓ openLink on Switch: the host's entry the application's open signal reaches, no file opened
 Switch.margin: ✅
 Switch.panTouchCount: ✅
 Switch.panUpdated: ✅
@@ -1091,7 +1062,6 @@ Text.gridRowSpan: ✅
 Text.held: ✅
 Text.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Text.horizontalAlignment: ✅
-Text.linkOpened: ✓ openLink on Text: the host's entry the application's open signal reaches, no file opened
 Text.margin: ✅
 Text.panTouchCount: ✅
 Text.panUpdated: ✅
@@ -1128,7 +1098,6 @@ TextEditor.gridRowSpan: ✅
 TextEditor.held: ✅
 TextEditor.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TextEditor.horizontalAlignment: ✅
-TextEditor.linkOpened: ✓ openLink on TextEditor: the host's entry the application's open signal reaches, no file opened
 TextEditor.margin: ✅
 TextEditor.panTouchCount: ✅
 TextEditor.panUpdated: ✅
@@ -1165,7 +1134,6 @@ TextField.gridRowSpan: ✅
 TextField.held: ✅
 TextField.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TextField.horizontalAlignment: ✅
-TextField.linkOpened: ✓ openLink on TextField: the host's entry the application's open signal reaches, no file opened
 TextField.margin: ✅
 TextField.panTouchCount: ✅
 TextField.panUpdated: ✅
@@ -1202,7 +1170,6 @@ TimePicker.gridRowSpan: ✅
 TimePicker.held: ✅
 TimePicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TimePicker.horizontalAlignment: ✅
-TimePicker.linkOpened: ✓ openLink on TimePicker: the host's entry the application's open signal reaches, no file opened
 TimePicker.margin: ✅
 TimePicker.panTouchCount: ✅
 TimePicker.panUpdated: ✅
@@ -1239,7 +1206,6 @@ VStack.gridRowSpan: ✅
 VStack.held: ✅
 VStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 VStack.horizontalAlignment: ✅
-VStack.linkOpened: ✓ openLink on VStack: the host's entry the application's open signal reaches, no file opened
 VStack.margin: ✅
 VStack.panTouchCount: ✅
 VStack.panUpdated: ✅
@@ -1276,7 +1242,6 @@ WebView.gridRowSpan: ✅
 WebView.held: ✅
 WebView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 WebView.horizontalAlignment: ✅
-WebView.linkOpened: ✓ openLink on WebView: the host's entry the application's open signal reaches, no file opened
 WebView.margin: ✅
 WebView.panTouchCount: ✅
 WebView.panUpdated: ✅
@@ -1313,7 +1278,6 @@ ZStack.gridRowSpan: ✅
 ZStack.held: ✅
 ZStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ZStack.horizontalAlignment: ✅
-ZStack.linkOpened: ✓ openLink on ZStack: the host's entry the application's open signal reaches, no file opened
 ZStack.margin: ✅
 ZStack.panTouchCount: ✅
 ZStack.panUpdated: ✅

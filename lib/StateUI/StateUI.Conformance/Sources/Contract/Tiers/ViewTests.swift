@@ -17,7 +17,7 @@
         Specimens.wearing(ViewContract.self).flatMap { element in
             [
                 margined(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
-                tapped(element), held(element), heldAfterItsTime(element), linked(element), panned(element), pannedDown(element), swiped(element), pinched(element), pointed(element),
+                tapped(element), held(element), heldAfterItsTime(element), panned(element), pannedDown(element), swiped(element), pinched(element), pointed(element),
                 dragged(element), droppedOn(element), filesDroppedOn(element),
             ]
         } + [scrolledInItsWindow, scrolledInAList, atItsPagesCorner]
@@ -353,28 +353,6 @@
             try s.perform(.activate, on: s.element("change"))
             try s.settle { try s.held(ViewContract.holdDuration, on: view) == 900 }
             s.expect(try s.held(ViewContract.holdDuration, on: view), 900, "the time the tree changed it to")
-        }
-    }
-
-    /// A link the application is asked to open, given to the view's window, is heard by the view: its address, once.
-    @MainActor
-    static func linked(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).hearsALinkItsWindowIsGiven", proves: [
-            Covered(ViewContract.linkOpened, on: element),
-        ]) { s in
-            let heard = Received<String>()
-            s.start {
-                VStack {
-                    Specimens.view(element, [
-                        Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
-                        Hear(ViewContract.linkOpened) { heard.values.append($0) },
-                    ])
-                }
-                .horizontalAlignment(.start)
-            }
-            try s.perform(.openLink("stateui-conformance://note/7"), on: s.element("specimen"))
-            s.settle { !heard.values.isEmpty }
-            s.expect(heard.values, ["stateui-conformance://note/7"], "its address, once")
         }
     }
 
