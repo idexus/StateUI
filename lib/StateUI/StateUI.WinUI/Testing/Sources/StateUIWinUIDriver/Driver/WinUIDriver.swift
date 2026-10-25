@@ -190,15 +190,25 @@ final class WinUIDriver: HostDriver {
         case (.pressDown(let point), let view?): try press(view, down: true, at: point, element)
         case (.lift(let point), let view?): try press(view, down: false, at: point, element)
         case (.drag(let point), let canvas as WinUICanvasView): canvas.pressed(.moved, at: point)
-        case (.drag(let point), let view?) where view.hearing.contains(.pointer):
-            view.heard(.pointer(.pointerMoved, point))
+        case (.drag(let point), let view?) where view.hearing.contains(.taps) || view.hearing.contains(.pointer):
+            if view.hearing.contains(.taps) { view.heardButtonPress(.changed, at: point, byFinger: false) }
+            if view.hearing.contains(.pointer) { view.heard(.pointer(.pointerMoved, point)) }
         case (.hover(let point), let view?) where view.hearing.contains(.pointer):
             view.heard(.pointer(.pointerEntered, point))
             view.heard(.pointer(.pointerMoved, point))
         case (.leave, let view?) where view.hearing.contains(.pointer):
             view.heard(.pointer(.pointerExited, Point(x: 0, y: 0)))
+        // A tap is the press the relay tells, as a button takes it; a run is counted as the relay counts it.
         case (.tap(let count), let view?) where view.hearing.contains(.taps):
-            for run in 1...max(count, 1) { view.heard(.tap(run: run)) }
+            let middle = Point(x: (view.placed?.width ?? 0) / 2, y: (view.placed?.height ?? 0) / 2)
+            for run in 1...max(count, 1) {
+                if view.countsRuns {
+                    view.heard(.tap(run: run))
+                } else {
+                    view.heardButtonPress(.began, at: middle, byFinger: false)
+                    view.heardButtonPress(.ended, at: middle, byFinger: false)
+                }
+            }
         case (.hold, let view?) where view.hearing.contains(.holds):
             view.heardHold()
         case (.pan(let offset), let view?) where view.hearing.contains(.drags):
@@ -334,6 +344,10 @@ final class WinUIDriver: HostDriver {
     /// the pointer told.
     private func press(_ view: WinUIView, down: Bool, at point: Point, _ element: MountedElement) throws {
         var done = false
+        if view.hearing.contains(.taps) {
+            view.heardButtonPress(down ? .began : .ended, at: point, byFinger: false)
+            done = true
+        }
         if view.hearing.contains(.pointer) {
             view.heard(.pointer(down ? .pointerPressed : .pointerReleased, point))
             done = true

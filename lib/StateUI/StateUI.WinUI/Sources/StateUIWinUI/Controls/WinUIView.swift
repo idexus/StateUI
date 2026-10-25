@@ -437,9 +437,21 @@ class WinUIView {
     }
 
     /// A tap the relay says landed at `point` in the view at `time`, its place in its run counted by the host
-    /// layer's rule (`TapRun`).
+    /// layer's rule (`TapRun`) - where the view counts runs; a single tap is the press's.
     func heardTap(at point: Point, time: Duration) {
+        guard countsRuns else { return }
         heard(.tap(run: taps.tapped(at: point, time: time)))
+    }
+
+    /// Whether the view counts a run of taps.
+    var countsRuns = false
+
+    /// A press the relay says stands on the view at `phase`, at `point` in it: taken as a button takes one by the
+    /// host layer's rule.
+    /// Design: docs/design/platforms/winui/input.md#taps
+    func heardButtonPress(_ phase: GesturePhase, at point: Point, byFinger: Bool) {
+        let size = placed.map { LayoutSize(width: $0.width, height: $0.height) } ?? measure(width: nil, height: nil)
+        heard(.press(phase, at: point, size: size, byFinger: byFinger))
     }
 
     /// A press the relay says WinUI held: the hold's where it has not become a drag, by the host layer's rule.

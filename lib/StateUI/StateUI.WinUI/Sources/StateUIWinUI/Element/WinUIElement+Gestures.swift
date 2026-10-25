@@ -13,6 +13,7 @@ extension WinUIElement {
             guard let self, let host else { return false }
             return element.hear(heard, in: host.runtime)
         }
+        view.countsRuns = (element.number(.tapCount) ?? 1) > 1
         view.hear(element.hearing, way: element.handWay, heard)
         view.offer(element.dragAndDrop) { _ = heard($0) }
     }

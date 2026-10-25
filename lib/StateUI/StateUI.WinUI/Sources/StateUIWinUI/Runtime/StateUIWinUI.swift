@@ -113,6 +113,15 @@ enum WinUICallbacks {
                         WinUIView.find(view)?.heardTap(at: Point(x: x, y: y), time: .milliseconds(Int(phase)))
                     }
                 }
+                if what == .buttonPress {
+                    guard let phase = GesturePhase(rawValue: phase) else { return }
+                    return MainActor.assumeIsolated {
+                        WinUIView.find(view)?.heardButtonPress(phase, at: Point(x: x, y: y), byFinger: scale != 0)
+                    }
+                }
+                if what == .invoked {
+                    return MainActor.assumeIsolated { WinUIView.find(view)?.heard(.tap(run: 0)) }
+                }
                 guard let heard = HeardInput(what, phase: phase, x: x, y: y, scale: scale) else { return }
                 MainActor.assumeIsolated { WinUIView.find(view)?.heard(heard) }
             },

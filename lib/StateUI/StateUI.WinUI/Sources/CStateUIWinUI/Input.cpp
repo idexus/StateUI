@@ -43,6 +43,10 @@ namespace {
         bool dragging = false;
         bool capturing = false;
 
+        /// The press a tap is made of, while one stands on the view: its pointer.
+        bool tapPressing = false;
+        uint32_t tapPointer = 0;
+
         winrt::event_token tapped, doubleTapped, holding, entered, exited, movedToken, pressed, released, lost,
             canceled, started, delta, completed, wheel;
 
@@ -89,6 +93,36 @@ namespace {
         if (!listener(view, StateUIHearingTaps)) return;
         static ULONGLONG const first = GetTickCount64();
         tell(view, StateUIHeardTap, static_cast<int32_t>(GetTickCount64() - first), point);
+    }
+
+    /// The view each pointer's press a tap is made of stands on: the first to hear it, a view around it leaving it.
+    std::unordered_map<uint32_t, int64_t> pressOwners;
+
+    /// A press on a view that hears taps, followed as a button follows one: the pointer the view's own until it lets
+    /// go, each `StateUIPhase` told with where it stands in the view and whether a finger presses; the host lights the
+    /// view and taps it by the host layer's rule.
+    void buttonPress(int64_t view, IInspectable const &sender, input::PointerRoutedEventArgs const &args, int32_t phase) {
+        auto *entry = listener(view, StateUIHearingTaps);
+        if (!entry) return;
+        auto id = args.Pointer().PointerId();
+        auto element = sender.as<xaml::UIElement>();
+        auto point = args.GetCurrentPoint(element);
+        if (phase == StateUIPhaseBegan) {
+            bool mouse = point.PointerDeviceType() == winrt::Microsoft::UI::Input::PointerDeviceType::Mouse;
+            if (entry->tapPressing || pressOwners.count(id) || (mouse && !point.Properties().IsLeftButtonPressed())) return;
+            pressOwners[id] = view;
+            entry->tapPressing = true;
+            entry->tapPointer = id;
+            element.CapturePointer(args.Pointer());
+        } else {
+            if (!entry->tapPressing || entry->tapPointer != id) return;
+            if (phase != StateUIPhaseChanged) {
+                entry->tapPressing = false;
+                pressOwners.erase(id);
+            }
+        }
+        bool finger = point.PointerDeviceType() == winrt::Microsoft::UI::Input::PointerDeviceType::Touch;
+        tell(view, StateUIHeardButtonPress, phase, point.Position(), finger ? 1 : 0);
     }
 
     /// The press ends, `phase` saying how: let go or taken away. The host says whether a drag ends with it.
@@ -284,6 +318,7 @@ namespace {
             pointer(view, StateUIHeardPointerPressed, sender, args);
             // A press with Alt over a view two fingers move is two fingers, mirrored about its middle.
             if (mirrored(view, sender, args, StateUIPhaseBegan)) return;
+            buttonPress(view, sender, args, StateUIPhaseBegan);
             if (auto *hand = listener(view, StateUIHearingHand)) {
                 auto point = args.GetCurrentPoint(sender.as<xaml::UIElement>());
                 bool contact = point.PointerDeviceType() != winrt::Microsoft::UI::Input::PointerDeviceType::Mouse
@@ -311,6 +346,7 @@ namespace {
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerMoved, sender, args);
             if (mirrored(view, sender, args, StateUIPhaseChanged)) return;
+            buttonPress(view, sender, args, StateUIPhaseChanged);
             // A finger of a hand that may yet be the layout's, or is: the layout holds the pointer once it takes it.
             auto *hand = listener(view, StateUIHearingHand);
             if (hand && hand->handState != StateUIHandLeft && hand->handPointers.count(args.Pointer().PointerId())) {
@@ -341,18 +377,21 @@ namespace {
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerReleased, sender, args);
             if (mirrored(view, sender, args, StateUIPhaseEnded)) return;
+            buttonPress(view, sender, args, StateUIPhaseEnded);
             handUp(view, args.Pointer().PointerId(), StateUIPressPhaseLetGo, when(args));
             letGo(view, StateUIPressPhaseLetGo);
         }));
         entry.lost = element.PointerCaptureLost(guarded("handling PointerCaptureLost",
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             if (mirrored(view, sender, args, StateUIPhaseCancelled)) return;
+            buttonPress(view, sender, args, StateUIPhaseCancelled);
             handUp(view, args.Pointer().PointerId(), StateUIPressPhaseTakenAway, when(args));
             letGo(view, StateUIPressPhaseTakenAway);
         }));
         entry.canceled = element.PointerCanceled(guarded("handling PointerCanceled",
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             if (mirrored(view, sender, args, StateUIPhaseCancelled)) return;
+            buttonPress(view, sender, args, StateUIPhaseCancelled);
             handUp(view, args.Pointer().PointerId(), StateUIPressPhaseTakenAway, when(args));
             letGo(view, StateUIPressPhaseTakenAway);
         }));
@@ -438,7 +477,7 @@ namespace stateui {
     }
 
     void press(int64_t view) {
-        if (hearsTaps(view)) tell(view, StateUIHeardTap, 0, {});
+        if (hearsTaps(view)) tell(view, StateUIHeardInvoked, 0, {});
     }
 
     void holdHitArea(xaml::UIElement const &element, int64_t view) {
