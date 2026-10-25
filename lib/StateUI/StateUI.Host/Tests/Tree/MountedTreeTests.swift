@@ -241,7 +241,26 @@ final class MountedTreeTests: XCTestCase {
         tree.apply(Self.stack("stack", ["a", "b"]), complete: true)
 
         let runs = HostBoundary.tally.runs
-        XCTAssertTrue(written.first?.contains("  runs \(runs)  views 7  apply ") ?? false, written.joined())
+        let elements = MountedElement.liveCount
+        XCTAssertTrue(written.first?.contains("  runs \(runs)  views 7  elements \(elements)  apply ") ?? false, written.joined())
+    }
+
+    /// An element the tree dropped is counted alive while something still holds it, and out once it is let go - what
+    /// finds a host holding an element after it left.
+    @MainActor
+    func testAnElementHeldAfterTheTreeDroppedItIsCountedAlive() throws {
+        let (tree, _) = Self.tree()
+        tree.apply(Self.stack("stack", ["a", "b"]), complete: true)
+        let standing = MountedElement.liveCount
+        var held = try XCTUnwrap(tree.root?.children.last)
+
+        tree.apply(Self.stack("stack", ["a"]), complete: true)
+        XCTAssertEqual(tree.root?.children.count, 1)
+        XCTAssertEqual(MountedElement.liveCount, standing, "dropped, still held")
+
+        held = try XCTUnwrap(tree.root?.children.first)
+        XCTAssertEqual(MountedElement.liveCount, standing - 1, "let go")
+        XCTAssertEqual(held.id, .manual("a"))
     }
 
     /// With the passes asked for, the tree starts the inspector's recording, and each message applied writes

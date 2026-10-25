@@ -4,31 +4,47 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// Every element that is drawn, shown on a page and taken away again a click each way - bare, then dressed: taken
-/// away the second time, it leaves its host holding as many views alive as the first time, or a view of it
-/// outlived it. Every host's own suite runs it with its driver; it marks nothing.
+/// Every element that is drawn, and every item of a page's bar, shown and taken away again a click each way - bare,
+/// then dressed: taken away the second time, it leaves its host holding as many views and elements alive as the
+/// first time, or one of them outlived it. Every host's own suite runs it with its driver; it marks nothing.
 /// Design: docs/design/host/conformance.md#nothing-left-behind
 @MainActor
 @_spi(Host) public enum Leaving {
-    /// Each of `elements` whose views `driver`'s host held on to after it left, with how many; none where the host
-    /// let go of every view, or counts none.
-    public static func outlived(
-        on driver: any HostDriver, _ elements: [String] = Specimens.wearing(VisualElementContract.self)
-    ) throws -> [String] {
+    /// What `outlived` walks unless told otherwise: every element that is drawn, then a page's bar's items.
+    public static var walked: [String] {
+        Specimens.wearing(VisualElementContract.self) + onTheBar
+    }
+
+    /// The items that come and go on a page's bar.
+    static let onTheBar = ["ToolbarButton", "ToolbarToggle"]
+
+    /// Each of `elements` whose views or elements `driver`'s host held on to after it left, with how many; none where
+    /// the host let go of everything.
+    public static func outlived(on driver: any HostDriver, _ elements: [String] = walked) throws -> [String] {
         var outlived: [String] = []
         for element in elements {
-            for (worn, said) in [([], element), (dressing(element), "\(element) dressed")] {
-                let tree = driver.start(clock: nil, reducesMotion: false) { ComingAndGoing(element: element, worn: worn) }
+            for (dressed, said) in [(false, element), (true, "\(element) dressed")] {
+                let tree = driver.start(clock: nil, reducesMotion: false) { page(element, dressed: dressed) }
                 let once = try toggle(tree, on: driver)
-                let kinds = driver.liveViewKinds
+                let (kinds, held) = (driver.liveViewKinds, MountedElement.liveCount)
                 _ = try toggle(tree, on: driver)
-                if let once, let twice = try toggle(tree, on: driver), twice > once {
-                    let left = settled(above: once, on: driver)
+                let twice = try toggle(tree, on: driver)
+                if let once, let twice, twice > once {
+                    let left = settled(above: once, on: driver) { driver.liveViews ?? once }
                     if left > once { outlived.append("\(said): \(left - once) views" + grown(from: kinds, on: driver)) }
                 }
+                let kept = settled(above: held, on: driver) { MountedElement.liveCount }
+                if kept > held { outlived.append("\(said): \(kept - held) elements") }
             }
         }
         return outlived
+    }
+
+    /// The page `element` comes and goes on, bare or dressed.
+    private static func page(_ element: String, dressed: Bool) -> AnyView {
+        onTheBar.contains(element)
+            ? AnyView(ComingAndGoingOnTheBar(element: element, dressed: dressed))
+            : AnyView(ComingAndGoing(element: element, worn: dressed ? dressing(element) : []))
     }
 
     /// What `element` wears the second time: a look from each tier it wears, and an ear for each gesture - what a
@@ -65,17 +81,17 @@
         return grown.isEmpty ? "" : " (" + grown.sorted().joined(separator: ", ") + ")"
     }
 
-    /// The views alive once the host let go of what a toolkit keeps a while after it left: stepping the host until no
-    /// more than `once` are, at most ten seconds.
+    /// What `alive` counts once the host let go of what a toolkit keeps a while after it left: stepping the host until
+    /// no more than `once` are, at most ten seconds.
     /// Design: docs/design/host/conformance.md#nothing-left-behind
-    private static func settled(above once: Int, on driver: any HostDriver) -> Int {
+    private static func settled(above once: Int, on driver: any HostDriver, _ alive: () -> Int) -> Int {
         let end = ContinuousClock.now + .seconds(10)
-        var alive = driver.liveViews ?? once
-        while alive > once, ContinuousClock.now < end {
+        var count = alive()
+        while count > once, ContinuousClock.now < end {
             driver.step()
-            alive = driver.liveViews ?? once
+            count = alive()
         }
-        return alive
+        return count
     }
 
     /// Clicks the page's toggle and steps the host until the specimen came or went: the views it then holds alive.
@@ -108,5 +124,29 @@ struct ComingAndGoing: View {
                 .id("toggle")
                 .onClicked { shown.toggle() }
         }
+    }
+}
+
+/// A page whose bar shows `element`'s specimen and takes it away again, a click on its toggle each way - dressed, with
+/// an ear for it and, a button, a menu: what a host answers with an action of its own.
+struct ComingAndGoingOnTheBar: View {
+    let element: String
+    let dressed: Bool
+    @State private var shown = true
+
+    var body: some View {
+        let (element, dressed, shown) = (element, dressed, shown)
+        let toggle = Button("Toggle").id("toggle").onClicked { self.shown.toggle() }
+        return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+            DeclaringPage(beside: [toggle], key: "\(shown)") {
+                guard shown, element == "ToolbarButton" else { return [] }
+                let button = ToolbarButton("Save").id("specimen")
+                return [dressed ? button.onClicked {}.menu(.split) { MenuItem("Save as") } : button]
+            } toggles: {
+                guard shown, element == "ToolbarToggle" else { return [] }
+                let setting = ToolbarToggle("Ruler", isOn: false).id("specimen")
+                return [dressed ? setting.onToggled { _ in } : setting]
+            }
+        } destination: { _ in Text("Pushed") }
     }
 }

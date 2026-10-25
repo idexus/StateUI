@@ -70,10 +70,12 @@
     }
 
     /// The running totals, as one line.
+    @MainActor
     private func line(_ core: HostTally) -> String {
         "StateUI tally: applies \(applies)  nodes \(nodes)  made \(made)  kept \(nodes - made)  "
             + "renders \(core.renders)  empty \(core.empty)  refused \(core.refused)  alive \(core.alive)  runs \(core.runs)  "
             + (views.map { "views \($0())  " } ?? "")
+            + "elements \(MountedElement.liveCount)  "
             + "apply \(Self.milliseconds(applyMicros / Double(applies))) ms avg / "
             + "\(Self.milliseconds(longestMicros)) ms worst / \(Self.milliseconds(applyMicros)) ms total\n"
     }

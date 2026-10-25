@@ -107,7 +107,12 @@
     /// Whether this popover is on its way to a view made anew (`showsAnew`).
     var isMoving = false
 
+    /// How many elements are alive: those the tree holds, and any a host still holds after the tree dropped it.
+    /// Design: docs/design/host/conformance.md#nothing-left-behind
+    public private(set) static var liveCount = 0
+
     init(_ patch: HostPatch, tree: MountedTree, parent: MountedElement?) {
+        Self.liveCount += 1
         id = patch.id
         type = patch.type
         self.tree = tree
@@ -121,6 +126,10 @@
         made = nil
         tree.tally?.made += 1
         apply(patch)
+    }
+
+    isolated deinit {
+        Self.liveCount -= 1
     }
 
     /// The patch the element is made from while its native half is made - what a toolkit making another control of
