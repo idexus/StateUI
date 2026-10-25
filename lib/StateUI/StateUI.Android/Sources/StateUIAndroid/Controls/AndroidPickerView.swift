@@ -11,6 +11,9 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/controls.md#a-picker
 @MainActor
 final class AndroidPickerView: AndroidView {
+    /// The view's click is its own - its list's opening - which a press on it leaves be.
+    override var ownsClick: Bool { true }
+
     /// What the picker does when the user chooses an option, by its index.
     var onChosen: ((Int) -> Void)?
 

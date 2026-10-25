@@ -302,14 +302,19 @@ class AndroidView {
     /// read before the element first says.
     private var ownPresence: Int32?
 
-    /// What the view does when the user taps it; nil where it takes no tap.
+    /// What the view does when its click comes from no touch - a screen reader's, the keyboard's - while it hears
+    /// taps; nil where it takes none. A touch's tap is its press, taken as a button takes one.
     private(set) var onTapped: (() -> Void)?
 
-    /// Makes the view answer a tap with `action`, or answer none for nil.
+    /// Whether the view's click is its own - a button's, a link's, a switch's turn - which a press on it leaves be; a
+    /// plain view's click is only its tap.
+    var ownsClick: Bool { false }
+
+    /// Makes the view answer a click that came from no touch with `action`, or answer none for nil.
     func setTapped(_ action: (() -> Void)?) {
         let listening = onTapped != nil
         onTapped = action
-        guard (action != nil) != listening, !(self is AndroidButtonView) else { return }
+        guard (action != nil) != listening, !ownsClick else { return }
 
         if action != nil {
             listen(JavaAPI.setOnClickListener)

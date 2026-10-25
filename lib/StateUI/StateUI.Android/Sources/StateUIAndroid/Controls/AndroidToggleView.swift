@@ -9,6 +9,9 @@ import CStateUIAndroid
 /// its own shows them - whose flip reaches Swift through its `StateUIListener`.
 @MainActor
 class AndroidToggleView: AndroidTextualView {
+    /// The view's click is its own - a switch's and a check box's turn - which a press on it leaves be.
+    override var ownsClick: Bool { true }
+
     /// What the control does when the user turns it.
     var onToggled: ((Bool) -> Void)?
 

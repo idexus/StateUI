@@ -10,6 +10,9 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/controls.md#a-link
 @MainActor
 final class AndroidLinkView: AndroidTextualView {
+    /// The view's click is its own - a link's - which a press on it leaves be.
+    override var ownsClick: Bool { true }
+
     /// What a click does: the host layer opens the link's address.
     var onClicked: (() -> Void)?
 
@@ -39,6 +42,5 @@ final class AndroidLinkView: AndroidTextualView {
 
     override func clicked() {
         onClicked?()
-        super.clicked()
     }
 }

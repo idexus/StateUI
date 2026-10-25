@@ -386,7 +386,16 @@ A view has one listener, and what its element listens for
 (`MountedElement.hearing`) is told there from the touches and the hovering pointer the view
 gets, in points, and heard by the host layer's rule (`MountedElement.hear`):
 taps, a press dragged, a pinch, two fingers turning, and the pointer. One
-tap is the view's click, which keeps what a click brings; where more make one, the listener counts
+tap is the view's press, taken as a button takes one by the host layer's rule
+([a press as a button takes it](../../host/runtime.md#a-press-as-a-button-takes-it)):
+the listener tells it as it goes down, moves, lets go or is taken away - a
+scroller around the view intercepting the touch - where it stands in the view,
+and where the view's click is only that tap it calls the click off as the
+touch lifts, so a click comes from no touch: a screen reader's, the keyboard's,
+which taps at once. A view whose click is its own - a button, a link, a
+switch's turn (`ownsClick`) - keeps its click; its tap is the press all the
+same. Android's own click is no button's here: a finger that leaves the view
+and comes back clicks nothing, where the press taps. Where more taps make one, the listener counts
 quick taps near each other as Android measures a double tap - Android itself
 counts no run past two - and tells each with its place in its run. A press is
 told as it goes down, moves, lets go or is taken away, measured on the screen,

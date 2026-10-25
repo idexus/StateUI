@@ -8,6 +8,9 @@ import CStateUIAndroid
 /// A Button: an `android.widget.Button` whose click reaches Swift through its `StateUIListener`.
 @MainActor
 final class AndroidButtonView: AndroidTextualView {
+    /// The view's click is its own - a button's - which a press on it leaves be.
+    override var ownsClick: Bool { true }
+
     /// What the button does when it is clicked.
     var onClicked: (() -> Void)?
 
@@ -55,12 +58,11 @@ final class AndroidButtonView: AndroidTextualView {
         Java.call(reference, JavaAPI.setMinimumHeight, .int(height))
     }
 
-    /// A click is the button's own event, and a tap as any view's; a button whose click opens its menu opens it, and
-    /// so does a split button's arrow.
+    /// A click is the button's own event - a tap is its press, as any view's; a button whose click opens its menu
+    /// opens it, and so does a split button's arrow.
     override func clicked() {
         let at = Java.callFloat(listener.reference, JavaAPI.takeDownX)
         if opening == .click || opening == .arrow && onArrow(at) { showMenu() } else { onClicked?() }
-        super.clicked()
     }
 
     /// How the button opens its menu, whether it shows the arrow saying its click does, and what its menu writes

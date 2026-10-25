@@ -7,7 +7,7 @@
 
 /// What the listener heard (`StateUIGestures`).
 enum AndroidGestureKind: Int32 {
-    case tapped = 0, pinched = 3, entered = 4, exited = 5, moved = 6, pressed = 7, released = 8
+    case tapped = 0, pinched = 3, entered = 4, exited = 5, moved = 6, pressed = 7, released = 8, buttonPress = 9
 }
 
 /// A press's step the listener tells (`StateUIGestures`).

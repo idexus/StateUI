@@ -10,6 +10,9 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/controls.md#a-field-and-its-words
 @MainActor
 final class AndroidTextFieldView: AndroidTextualView {
+    /// The view's click is its own - its caret's - which a press on it leaves be.
+    override var ownsClick: Bool { true }
+
     /// Which of the three the field is.
     enum Kind {
         /// One line, its return key submitting it.

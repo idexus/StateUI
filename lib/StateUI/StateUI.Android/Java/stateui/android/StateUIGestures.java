@@ -20,7 +20,8 @@ import android.view.ViewParent;
 final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListener {
     /** What is told through `gestured`, as the Swift host numbers it. */
     // Swift: AndroidGestureKind
-    static final int TAPPED = 0, PINCHED = 3, ENTERED = 4, EXITED = 5, MOVED = 6, PRESSED = 7, RELEASED = 8;
+    static final int TAPPED = 0, PINCHED = 3, ENTERED = 4, EXITED = 5, MOVED = 6, PRESSED = 7, RELEASED = 8,
+            BUTTON_PRESS = 9;
 
     /** A press's phase through `pressed`, and a pinch's, as StateUI numbers them. */
     // Swift: AndroidPressPhase
@@ -42,6 +43,13 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
      */
     private boolean countsTaps;
     private boolean drags;
+
+    /**
+     * Whether the element hears taps - a press told as a button takes one, the Swift host deciding its tap - and
+     * whether the view's own click is only that tap, called off as the touch lifts.
+     */
+    private boolean presses;
+    private boolean pressIsClick;
     private boolean pinch;
     private boolean pointer;
 
@@ -90,8 +98,11 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
 
     /** What the element listens for; none is false everywhere. */
     void configure(
-            boolean countsTaps, boolean drags, boolean pinch, boolean pointer, boolean hand, boolean rotation) {
+            boolean countsTaps, boolean presses, boolean pressIsClick, boolean drags, boolean pinch, boolean pointer,
+            boolean hand, boolean rotation) {
         this.countsTaps = countsTaps;
+        this.presses = presses;
+        this.pressIsClick = pressIsClick;
         this.drags = drags;
         this.pinch = pinch;
         this.pointer = pointer;
@@ -115,6 +126,7 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
         // A pinch begun is no press of the view's own: its click is called off.
         if (pinched && !wasPinched) cancelOwn(event);
         if (rotation) fingers(event);
+        boolean letGoAsPress = presses && pressAsButton(event);
 
         float x = event.getRawX() / density;
         float y = event.getRawY() / density;
@@ -160,7 +172,29 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
                 if (hand) handReport(event);
                 break;
         }
-        return dragging || pinching || handTaking || !(host.isClickable() || host.isLongClickable());
+        return letGoAsPress || dragging || pinching || handTaking || !(host.isClickable() || host.isLongClickable());
+    }
+
+    /**
+     * A press on a view that hears taps, told as a button takes one - down, moved, let go, taken away - where it
+     * stands in the view, in points, and whether a finger presses: the Swift host lights the view and taps it by the
+     * host layer's rule. Where the view's own click is only that tap, it is called off as the touch lifts; whether
+     * the lift is taken so.
+     */
+    private boolean pressAsButton(MotionEvent event) {
+        int phase;
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN: phase = BEGAN; break;
+            case MotionEvent.ACTION_MOVE: phase = CHANGED; break;
+            case MotionEvent.ACTION_UP: phase = ENDED; break;
+            case MotionEvent.ACTION_CANCEL: phase = CANCELLED; break;
+            default: return false;
+        }
+        boolean finger = event.getToolType(0) != MotionEvent.TOOL_TYPE_MOUSE;
+        report(BUTTON_PRESS, phase, event.getX() / density, event.getY() / density, finger ? 1 : 0);
+        if (phase != ENDED || !pressIsClick) return false;
+        cancelOwn(event);
+        return true;
     }
 
     /** The view took a long press in the touch under way. */
@@ -170,7 +204,7 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
 
     /** Whether the element listens for any of the user's input. */
     boolean wanted() {
-        return countsTaps || drags || pinch || pointer || hand || rotation;
+        return countsTaps || presses || drags || pinch || pointer || hand || rotation;
     }
 
     /** Whether a drag, a pinch, two fingers or the hand under way takes the rest of the touch. */

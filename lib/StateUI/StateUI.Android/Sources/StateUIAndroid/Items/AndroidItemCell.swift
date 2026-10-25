@@ -9,6 +9,9 @@
 /// Design: docs/design/platforms/android/items.md#a-cell
 @MainActor
 final class AndroidItemCell: AndroidSingleChildView, ItemsHolding {
+    /// The view's click is its own - its list's choice - which a press on it leaves be.
+    override var ownsClick: Bool { true }
+
     /// The identity held, where the cell holds one.
     private(set) var identity: String?
 

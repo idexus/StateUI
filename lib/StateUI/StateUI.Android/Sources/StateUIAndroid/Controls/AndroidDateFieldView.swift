@@ -11,6 +11,9 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/controls.md#a-day-and-a-time
 @MainActor
 final class AndroidDateFieldView: AndroidTextualView {
+    /// The view's click is its own - its calendar's opening - which a press on it leaves be.
+    override var ownsClick: Bool { true }
+
     /// What the field holds.
     enum Kind {
         case date

@@ -9,6 +9,9 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/pages.md#the-bar
 @MainActor
 final class AndroidBarView: AndroidView {
+    /// The view's click is its own - its buttons' - which a press on it leaves be.
+    override var ownsClick: Bool { true }
+
     /// What the navigation button does.
     enum Navigation: Equatable {
         case none

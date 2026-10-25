@@ -10,6 +10,9 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/controls.md#a-stepper
 @MainActor
 final class AndroidStepperView: AndroidView {
+    /// The view's click is its own - its buttons' - which a press on it leaves be.
+    override var ownsClick: Bool { true }
+
     /// What the stepper does when the user steps it, handed the value it stepped to.
     var onValueChanged: ((Double) -> Void)?
 
