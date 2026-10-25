@@ -155,6 +155,12 @@ moving down scroll the page it stands in. Kept both ways, a listing across a
 page stopped the page under every swipe over it. A list of items keeps the
 same rule.
 
+The page itself never bounces (`overscroll-behavior: none` on the document).
+The window stands over the browser's, so a finger pulling past a view that
+does not scroll - a short list - would pull the browser's page after it, in
+Safari and in an application added to the home screen alike; let go, the page
+springs back, and the next tap only stops it.
+
 ## Where a view stands
 
 A view the tree reads where it stands says so as soon as the page laid it

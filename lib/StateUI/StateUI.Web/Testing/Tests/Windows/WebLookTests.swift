@@ -397,6 +397,16 @@ final class WebLookTests: XCTestCase {
             "a tab not chosen")
     }
 
+    /// The page itself holds still under a finger: the window stands over the browser's, and a finger pulling past a
+    /// view that does not scroll would pull the browser's page after it - bounced back, it takes the next tap to stop.
+    func testThePageItselfNeverBounces() throws {
+        let host = WebRenderer.running { Text("Still") }
+        host.settle { (try? self.look(".stateui-window", "position")) != nil }
+
+        XCTAssertEqual(try look("html", "overscrollBehaviorY"), "none", "the document")
+        XCTAssertEqual(try look("body", "overscrollBehaviorY"), "none", "the body")
+    }
+
     /// One computed style of the first element `selector` finds on the page.
     private func look(_ selector: String, _ property: String) throws -> String? {
         try WebBrowser.evaluate("getComputedStyle(document.querySelector('\(selector)')).\(property)", on: 0)

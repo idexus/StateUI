@@ -34,6 +34,9 @@
 
 /* The words stand at the sizes the page gives them: a phone's browser enlarges none it finds in a wide block. */
 html, body { margin: 0; height: 100%; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+/* The page itself holds still under a finger: the window stands over the browser's, and a document pulled past its
+   end bounces back - in a browser and as an application on the home screen alike - taking the next tap to stop it. */
+html, body { overscroll-behavior: none; }
 /* The page wears its window's color under it where the window is one opaque color (--stateui-page). */
 body {
   background: var(--stateui-page, var(--stateui-surface));
