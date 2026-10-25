@@ -32,6 +32,9 @@ final class WebElement: NativeElement {
     /// The pointers pressed on the view, for a drag or a pinch it hears.
     var press = WebPress()
 
+    /// Whether the press on the view is still a tap, for the taps it hears.
+    var tapReach = WebTapReach()
+
     /// The pointer pressed with ⌥/Alt over the element, read as two fingers, while it is down.
     var mirroring: Int?
 

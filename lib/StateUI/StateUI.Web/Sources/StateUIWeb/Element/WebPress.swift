@@ -30,9 +30,6 @@ struct WebPress {
     private var turning: Double?
     private var rotation = RotationStep()
 
-    /// Whether the press the user lets go of last was dragged, so its click is no tap.
-    private(set) var wasDragged = false
-
     /// What presses: a pointer's kind, as the page tells it.
     enum Pointer: Int32 {
         case mouse = 0
@@ -59,7 +56,6 @@ struct WebPress {
     mutating func down(_ id: Int, at point: Point, kind: Pointer, origin: Point, size: LayoutSize) -> [HeardInput] {
         pressed[id] = point
         guard pressed.count == 1 else { return pinchBegins(at: middle(origin, size)) }
-        wasDragged = false
         drag = DragRecognition(distance: Self.distance(for: kind))
         drag.pressed(at: point)
         dragging = id
@@ -79,9 +75,7 @@ struct WebPress {
             ]
         }
         guard id == dragging else { return [] }
-        let heard = drag.moved(to: point)
-        if drag.isDragging { wasDragged = true }
-        return heard
+        return drag.moved(to: point)
     }
 
     /// A pressed pointer let go, or the page took it away: the drag's end, or the pinch's.

@@ -18,6 +18,15 @@ answers at once whatever the count asked for. The pointer's events are the
 DOM's `pointerenter`, `pointerleave`, `pointermove`, `pointerdown` and
 `pointerup`, where the pointer is told from the element's top left corner.
 
+A press is a tap only while it stays within its reach (`WebTapReach`): past
+the distance the host layer's drag begins at - a finger's farther than a
+mouse's or a pen's - its click is no tap, whether or not the element hears the
+drag, as a native toolkit's tap fails as the finger moves away. The browser
+clicks a press a finger slid off a row and lifted beside it, where nothing
+scrolled to take the touch away. The press is followed without being taken:
+the page scrolls under it as it would. A click no pointer made - the
+keyboard's, a screen reader's - has no reach.
+
 A button pressed leaves the keyboard with the field being typed in, as a
 native button takes no keyboard of a field: the page's press on a button is
 not let move the focus while a field holds it, so the program taking the
