@@ -9,7 +9,7 @@ extension ApplicationSession {
     ///
     ///     @Environment(\.application) private var application
     ///
-    ///     Button("Weather").onClicked(gate: .cancelPrevious) {
+    ///     Button("Weather").onClicked(.cancelPrevious) {
     ///         let response = try await application.send(HTTPRequest(
     ///             "https://api.open-meteo.com/v1/forecast?latitude=50.06&longitude=19.94&current=temperature_2m"))
     ///         said = response.status == 200 ? response.text : "status \(response.status)"

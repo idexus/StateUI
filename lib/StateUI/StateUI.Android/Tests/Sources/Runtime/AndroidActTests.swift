@@ -43,7 +43,7 @@ final class AndroidActTests: XCTestCase {
             let host = AndroidRenderer.running {
                 VStack {
                     TextField(State(wrappedValue: "").projectedValue).inputPurpose(.numeric)
-                    Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                    Button("Ask").onClicked(.ignoreWhileRunning) {
                         _ = try await WindowSession().prompt("How many?", accept: "OK", cancel: "No", inputPurpose: .numeric)
                     }
                 }
@@ -71,7 +71,7 @@ final class AndroidActTests: XCTestCase {
         try onMainActor {
             let answers = Received<String>()
             let host = AndroidRenderer.running {
-                Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                Button("Ask").onClicked(.ignoreWhileRunning) {
                     answers.values.append(
                         try await WindowSession().prompt("Name", accept: "OK", cancel: "No", maximumLength: 3) ?? "nothing")
                 }
@@ -121,7 +121,7 @@ private struct FocusPage: View {
         let field = self.field
         return VStack {
             TextField("").aim(field)
-            Button("Focus").onClicked(gate: .ignoreWhileRunning) { answers.values.append(try await field.focus()) }
+            Button("Focus").onClicked(.ignoreWhileRunning) { answers.values.append(try await field.focus()) }
         }
     }
 }

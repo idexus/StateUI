@@ -1,27 +1,38 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What a handler that awaits passes through: what an event that comes while a run is under way does. A policy
-/// given as the gate is the handler's own; a `Gatekeeper` kept in a state or a model is shared by every handler and
-/// task written with it.
+/// A gate kept in a state or a model, shared by every handler and task written with it - from one control, several,
+/// or code - which says whether a run is under way through it. A handler given a policy alone has a gate of its own.
 ///
-///     Button("Refresh").onClicked(gate: .ignoreWhileRunning) { try await model.refresh() }
-///
-///     @State private var document = Gatekeeper(.ignoreWhileRunning)
+///     @State private var document = Gate(.ignoreWhileRunning)
 ///
 ///     Button("Save").isEnabled(!document.isBusy).onClicked(gate: document) { try await model.save() }
+///     Button("Delete").isEnabled(!document.isBusy).onClicked(gate: document) { try await model.delete() }
 ///
-/// A handler with no `await` finishes inside its event and names none.
+///     func autosave() { Task(gate: document) { try await model.save() } }
+///
+/// An element leaving ends its own runs alone: the others' through the gate go on.
 /// Design: docs/design/core/runs.md#a-gate
-public protocol Gate: Sendable {
-    /// What an event does while a run is under way through the gate.
-    var policy: GatePolicy { get }
-}
+@MainActor
+public final class Gate {
+    /// What an event or a task does while a run is under way through the gate.
+    public nonisolated let policy: GatePolicy
 
-extension Gate {
-    /// Where a run `owner` starts goes: a gatekeeper's runs, or the owner's own where the gate is a policy alone.
-    @MainActor
-    func runs(for owner: RunOwner) -> RunSlot {
-        (self as? Gatekeeper)?.runs ?? owner.ownRuns
+    /// Whether a run is under way through the gate, or waits to start: a state, read to dim a control or show
+    /// progress while the work goes on.
+    @State public private(set) var isBusy = false
+
+    /// A gate of `policy`, shared by every handler and task written with it.
+    public init(_ policy: GatePolicy) {
+        self.policy = policy
+        runs.busyChanged = { [weak self] busy in
+            HandlerRun.$current.withValue(nil) { self?.isBusy = busy }
+        }
     }
+
+    /// The runs under way through the gate.
+    let runs = RunSlot()
+
+    /// Who starts the runs of tasks written with the gate: no element, so no element leaving ends them.
+    let tasks = RunOwner()
 }

@@ -86,9 +86,16 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
         onEvent(WebViewContract.navigating) { type, url in try handler(WebNavigation(type: type, url: url)) }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigating(gate: some Gate, _ handler: @escaping ValueEventHandler<WebNavigation>) -> Modified {
+    public func onNavigating(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigation>) -> Modified {
+        onEvent(WebViewContract.navigating, policy: policy) { type, url in
+            try await handler(WebNavigation(type: type, url: url))
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onNavigating(gate: Gate, _ handler: @escaping ValueEventHandler<WebNavigation>) -> Modified {
         onEvent(WebViewContract.navigating, gate: gate) { type, url in
             try await handler(WebNavigation(type: type, url: url))
         }
@@ -102,9 +109,16 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
         }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigated(gate: some Gate, _ handler: @escaping ValueEventHandler<WebNavigated>) -> Modified {
+    public func onNavigated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigated>) -> Modified {
+        onEvent(WebViewContract.navigated, policy: policy) { result, type, url in
+            try await handler(WebNavigated(result: result, type: type, url: url))
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onNavigated(gate: Gate, _ handler: @escaping ValueEventHandler<WebNavigated>) -> Modified {
         onEvent(WebViewContract.navigated, gate: gate) { result, type, url in
             try await handler(WebNavigated(result: result, type: type, url: url))
         }
@@ -116,9 +130,14 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
         onEvent(WebViewContract.processTerminated, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onProcessTerminated(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onProcessTerminated(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(WebViewContract.processTerminated, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onProcessTerminated(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(WebViewContract.processTerminated, gate: gate, handler)
     }
 }
@@ -275,7 +294,7 @@ extension Aim where Target == WebView {
     ///
     ///     Button("Back")
     ///         .isEnabled(hasBack)
-    ///         .onClicked(gate: .ignoreWhileRunning) { try await browser.goBack() }
+    ///         .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
     ///
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.

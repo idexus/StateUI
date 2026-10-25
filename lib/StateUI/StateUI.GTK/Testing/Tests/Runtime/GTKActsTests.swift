@@ -17,7 +17,7 @@ private struct AskingPage: View {
     var body: some View {
         VStack {
             Text(said)
-            Button("Time").onClicked(gate: .ignoreWhileRunning) {
+            Button("Time").onClicked(.ignoreWhileRunning) {
                 let time = try await ClockTime.now()
                 let zone = try await TimeZoneInfo.local()
                 let tokyo = try await TimeZoneInfo.utcOffset(of: "Asia/Tokyo")
@@ -28,7 +28,7 @@ private struct AskingPage: View {
                 said = "\((0..<24).contains(time.hour)) \(zone.contains("/")) \(tokyo.components.seconds / 60) "
                     + "\(winter.components.seconds / 60) \(summer.components.seconds / 60)"
             }
-            Button("Nowhere").onClicked(gate: .ignoreWhileRunning) {
+            Button("Nowhere").onClicked(.ignoreWhileRunning) {
                 do {
                     _ = try await TimeZoneInfo.utcOffset(of: "Nowhere/Else")
                     said = "answered"
@@ -36,7 +36,7 @@ private struct AskingPage: View {
                     said = "refused"
                 }
             }
-            Button("Say").onClicked(gate: .ignoreWhileRunning) {
+            Button("Say").onClicked(.ignoreWhileRunning) {
                 try await application.announce("done")
                 said = "announced"
             }
@@ -54,8 +54,8 @@ private struct FocusPage: View {
         VStack {
             Text(said)
             TextField($words).aim(field)
-            Button("Focus").onClicked(gate: .ignoreWhileRunning) { said = "took \(try await field.focus())" }
-            Button("Unfocus").onClicked(gate: .ignoreWhileRunning) {
+            Button("Focus").onClicked(.ignoreWhileRunning) { said = "took \(try await field.focus())" }
+            Button("Unfocus").onClicked(.ignoreWhileRunning) {
                 try await field.unfocus()
                 said = "let go"
             }
@@ -71,21 +71,21 @@ private struct QuestionsPage: View {
     var body: some View {
         VStack {
             Text(said)
-            Button("Alert").onClicked(gate: .ignoreWhileRunning) {
+            Button("Alert").onClicked(.ignoreWhileRunning) {
                 try await window.alert("Saved", message: "The draft is kept")
                 said += "alerted; "
             }
-            Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
+            Button("Confirm").onClicked(.ignoreWhileRunning) {
                 let accepted = try await window.confirm(
                     "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep")
                 said += "confirmed \(accepted); "
             }
-            Button("Choose").onClicked(gate: .ignoreWhileRunning) {
+            Button("Choose").onClicked(.ignoreWhileRunning) {
                 let chosen = try await window.chooseAction(
                     "Share via", among: ["Mail", "Message", "Delete"], destructive: "Delete")
                 said += "chose \(chosen ?? "nothing"); "
             }
-            Button("Prompt").onClicked(gate: .ignoreWhileRunning) {
+            Button("Prompt").onClicked(.ignoreWhileRunning) {
                 let typed = try await window.prompt("Rename", placeholder: "Name", initialValue: "Draft")
                 said += "typed \(typed ?? "nothing"); "
             }

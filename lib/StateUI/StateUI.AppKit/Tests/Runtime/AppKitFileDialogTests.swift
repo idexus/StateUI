@@ -71,7 +71,7 @@ private struct Saving: View {
 
     var body: some View {
         VStack {
-            Button("Save").onClicked(gate: .ignoreWhileRunning) {
+            Button("Save").onClicked(.ignoreWhileRunning) {
                 let kinds = [FileType("Web page", extensions: ["html", "htm"]), FileType("Text", extensions: ["txt"])]
                 let saved = try await window.saveFile(Array("<p>Kept</p>".utf8), name: "Report", types: kinds)
                 answer = saved?.name ?? "nothing"
@@ -86,7 +86,7 @@ private struct Opening: View {
     @Environment(\.window) private var window
 
     var body: some View {
-        Button("Open").onClicked(gate: .ignoreWhileRunning) {
+        Button("Open").onClicked(.ignoreWhileRunning) {
             _ = try await window.openFiles(types: [
                 FileType("Text", extensions: ["txt", "md"]), FileType("Web page", extensions: ["html"]),
             ])

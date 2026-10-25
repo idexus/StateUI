@@ -20,7 +20,7 @@ The core's sources stand in one folder per topic, one element to a file, and
 | [journeys.md](journeys.md) | the journey lanes, the law on the image, moving and waiting, readings, conversions, motion laws |
 | [cycle.md](cycle.md) | the board, where a write lands, host reports, engines, state numbers, the ticker |
 | [acts.md](acts.md) | acts, completion ids, aims, focus, dialogs, host events |
-| [runs.md](runs.md) | the runs of a handler, `Gate` and `Gatekeeper`, work started from code (`Task(gate:)`), a superseded run, the library's own tasks, a write built on a value gone, what a walk runs |
+| [runs.md](runs.md) | the runs of a handler, `GatePolicy` and `Gate`, work started from code (`Task(gate:)`), a superseded run, the library's own tasks, a write built on a value gone, what a walk runs |
 | [concurrency.md](concurrency.md) | `MainActor` on every platform, the doorbell, draining jobs, what stands behind a lock |
 | [contracts.md](contracts.md) | contracts and tiers, member facts, values that cross, tokens, realizations |
 | [scenes.md](scenes.md) | the scene tree, sessions, what the platform keeps, connecting and ending scenes |
@@ -187,7 +187,7 @@ and stand in the folder of the topic they serve, usually the type's own.
   Core/Acts         acts and replies, aims, focus, dialogs, the screen    acts
                     reader, host events
   Core/Runs         a handler's runs and the gate they pass               runs
-                    through, Gatekeeper, Task(gate:), the run a
+                    through, Gate, Task(gate:), the run a
                     task belongs to, a walk's runs
   Core/Threads      the UI thread's executor, the doorbell, the           concurrency
                     timetable of jobs kept for later

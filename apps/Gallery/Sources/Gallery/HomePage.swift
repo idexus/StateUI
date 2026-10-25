@@ -80,7 +80,7 @@ struct HomePage: View {
     @State private var room = Rect(0, 0, 0, 0)
 
     /// The library's home opening: the panel and its button go through it, so a tap both hear opens it once.
-    @State private var opening = Gatekeeper(.ignoreWhileRunning)
+    @State private var opening = Gate(.ignoreWhileRunning)
 
     /// Where StateUI lives.
     private static let repository = "https://github.com/idexus/StateUI"

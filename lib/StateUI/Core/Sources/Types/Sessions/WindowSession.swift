@@ -12,11 +12,11 @@
 ///             window.width = 1100
 ///             window.height = 800
 ///         }
-///         .onChanged(window.phase, gate: .waitForPrevious) {
+///         .onChanged(window.phase, policy: .waitForPrevious) {
 ///             if window.phase == .stopped { try await save() }
 ///         }
 ///
-///     Button("Close").onClicked(gate: .ignoreWhileRunning) { try await window.close() }
+///     Button("Close").onClicked(.ignoreWhileRunning) { try await window.close() }
 ///
 /// Every window offers its own, so a view acts on the window it is in, and
 /// what the window is told stands until it is told otherwise. See

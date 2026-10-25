@@ -98,9 +98,14 @@ public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollView
         onEvent(ScrollViewContract.scrollStopped, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onScrollStopped(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onScrollStopped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ScrollViewContract.scrollStopped, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onScrollStopped(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ScrollViewContract.scrollStopped, gate: gate, handler)
     }
 }

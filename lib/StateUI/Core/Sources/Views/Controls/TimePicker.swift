@@ -94,9 +94,14 @@ public struct TimePicker: ElementView, TextColorElement, FontElement, TimePicker
         onEvent(TimePickerContract.timeChanged, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onTimeChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<ClockTime>) -> Modified {
+    public func onTimeChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ClockTime>) -> Modified {
+        onEvent(TimePickerContract.timeChanged, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onTimeChanged(gate: Gate, _ handler: @escaping ValueEventHandler<ClockTime>) -> Modified {
         onEvent(TimePickerContract.timeChanged, gate: gate, handler)
     }
 
@@ -106,9 +111,14 @@ public struct TimePicker: ElementView, TextColorElement, FontElement, TimePicker
         onEvent(TimePickerContract.opened, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onOpened(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onOpened(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(TimePickerContract.opened, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onOpened(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(TimePickerContract.opened, gate: gate, handler)
     }
 
@@ -117,9 +127,14 @@ public struct TimePicker: ElementView, TextColorElement, FontElement, TimePicker
         onEvent(TimePickerContract.closed, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onClosed(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onClosed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(TimePickerContract.closed, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onClosed(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(TimePickerContract.closed, gate: gate, handler)
     }
 }

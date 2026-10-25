@@ -173,11 +173,18 @@ extension ItemsView {
         return copy
     }
 
-    /// The same, with a handler that awaits - opening a page does: its `gate`
+    /// The same, with a handler that awaits - opening a page does: its `policy`
     /// says what opening another item does while a run is under way.
-    public func onItemActivated(gate: some Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
+    public func onItemActivated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = ValueHandler(run: handler, gate: gate)
+        copy.activated = ValueHandler(run: handler, gate: .own(policy))
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onItemActivated(gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
+        var copy = self
+        copy.activated = ValueHandler(run: handler, gate: .shared(gate))
         return copy
     }
 
@@ -194,12 +201,27 @@ extension ItemsView {
     /// load under way at a time.
     ///
     ///     ItemsView(rows) { … }
-    ///         .onEndReached(within: 5, gate: .ignoreWhileRunning) { rows += try await nextPage() }
-    public func onEndReached(
-        within: Int = 0, gate: some Gate, _ handler: @escaping EventHandler
-    ) -> Self {
+    ///         .onEndReached(.ignoreWhileRunning) { rows += try await nextPage() }
+    public func onEndReached(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.endReached = (within: max(within, 0), handler: Handler(run: handler, gate: gate))
+        copy.endReached = (within: 0, handler: Handler(run: handler, gate: .own(policy)))
+        return copy
+    }
+
+    /// The same, heard within `within` items of the end.
+    ///
+    ///     ItemsView(rows) { … }
+    ///         .onEndReached(within: 5, policy: .ignoreWhileRunning) { rows += try await nextPage() }
+    public func onEndReached(within: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
+        var copy = self
+        copy.endReached = (within: max(within, 0), handler: Handler(run: handler, gate: .own(policy)))
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onEndReached(within: Int = 0, gate: Gate, _ handler: @escaping EventHandler) -> Self {
+        var copy = self
+        copy.endReached = (within: max(within, 0), handler: Handler(run: handler, gate: .shared(gate)))
         return copy
     }
 
@@ -230,7 +252,7 @@ extension ItemsView {
     ///     @Aim(ItemsView<Int>.self) private var list
     ///
     ///     ItemsView(0..<500) { Text("Row \($0)") }.aim(list)
-    ///     Button("Top").onClicked(gate: .cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
+    ///     Button("Top").onClicked(.cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
     public func aim(_ aim: Aim<Self>) -> Self {
         var copy = self
         copy.aimed = aim
@@ -247,19 +269,24 @@ extension ItemsView {
         wearing(.requested(handler))
     }
 
-    /// The same, with a handler that awaits - a reload does: its `gate` says what a pull does while a run is under
+    /// The same, with a handler that awaits - a reload does: its `policy` says what a pull does while a run is under
     /// way. The spinner shows while `isRefreshing` says so.
     ///
     ///     @State private var refreshing = false
     ///
     ///     ItemsView(mail) { MailRow($0) }
     ///         .isRefreshing($refreshing)
-    ///         .onRefreshRequested(gate: .ignoreWhileRunning) {
+    ///         .onRefreshRequested(.ignoreWhileRunning) {
     ///             defer { refreshing = false }
     ///             try await inbox.reload()
     ///         }
-    public func onRefreshRequested(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
-        wearing(.awaited(gate, handler))
+    public func onRefreshRequested(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
+        wearing(.awaited(.own(policy), handler))
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onRefreshRequested(gate: Gate, _ handler: @escaping EventHandler) -> Self {
+        wearing(.awaited(.shared(gate), handler))
     }
 
     /// Whether the refresh is under way, both ways: the user's pull writes true into the state, and the

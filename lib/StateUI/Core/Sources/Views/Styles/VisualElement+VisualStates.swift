@@ -63,19 +63,28 @@ extension VisualElement where Self: StyleTarget {
         listening(states, ValueHandler(step: { try handler(VisualState<Self>($0)) }))
     }
 
-    /// The same, with a handler that awaits: its `gate` says what entering a
+    /// The same, with a handler that awaits: its `policy` says what entering a
     /// state does while a run is under way.
     ///
     /// - Parameters:
     ///   - states: the states to hear; none hears every state.
-    ///   - gate: what the handler passes through: what entering a state does while a run is under way.
+    ///   - policy: what the handler passes through: what entering a state does while a run is under way.
     ///   - perform: what to run, given the state entered.
     public func onVisualStateChanged(
         _ states: VisualState<Self>...,
-        gate: some Gate,
+        policy: GatePolicy,
         perform handler: @escaping ValueEventHandler<VisualState<Self>>
     ) -> Modified {
-        listening(states, ValueHandler(run: { try await handler(VisualState<Self>($0)) }, gate: gate))
+        listening(states, ValueHandler(run: { try await handler(VisualState<Self>($0)) }, gate: .own(policy)))
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onVisualStateChanged(
+        _ states: VisualState<Self>...,
+        gate: Gate,
+        perform handler: @escaping ValueEventHandler<VisualState<Self>>
+    ) -> Modified {
+        listening(states, ValueHandler(run: { try await handler(VisualState<Self>($0)) }, gate: .shared(gate)))
     }
 
     /// Declares `states` and hears the control entering them.

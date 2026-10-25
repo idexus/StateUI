@@ -13,7 +13,7 @@ private struct RefreshingList: ExampleContent {
                 // Where the platform has no pull, a command refreshes - its spinner showing where it has one.
                 Button("Refresh")
                     .isEnabled(!refreshing)
-                    .onClicked(gate: .ignoreWhileRunning) { try await fetch() }
+                    .onClicked(.ignoreWhileRunning) { try await fetch() }
 
                 Button("Clear")
                     .onClicked { items = [] }
@@ -34,7 +34,7 @@ private struct RefreshingList: ExampleContent {
             // An empty list keeps its pull.
             .emptyView(Text("Nothing yet").textColor(Palette.subtle))
             .isRefreshing($refreshing)
-            .onRefreshRequested(gate: .ignoreWhileRunning) { try await fetch() }
+            .onRefreshRequested(.ignoreWhileRunning) { try await fetch() }
             .gridRow(1)
         }
         .rows(.auto, .fill)

@@ -48,7 +48,7 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
             Button(running ? "Counting…" : "Count from 200 tasks at once")
                 .isEnabled(!running)
                 .horizontalAlignment(.center)
-                .onClicked(gate: .ignoreWhileRunning) {
+                .onClicked(.ignoreWhileRunning) {
                     running = true
                     total = 0
                     expected = 200 * 100

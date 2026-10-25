@@ -110,9 +110,14 @@ extension View {
         pageSays { $0.modified { $0.addHandler(PageContract.appearing, handler) } }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onAppearing(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onAppearing(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.appearing, policy: policy, handler) } }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onAppearing(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.appearing, gate: gate, handler) } }
     }
 
@@ -121,9 +126,14 @@ extension View {
         pageSays { $0.modified { $0.addHandler(PageContract.disappearing, handler) } }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDisappearing(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onDisappearing(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.disappearing, policy: policy, handler) } }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.disappearing, gate: gate, handler) } }
     }
 
@@ -132,9 +142,14 @@ extension View {
         pageSays { $0.modified { $0.addHandler(PageContract.navigatedTo, handler) } }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigatedTo(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onNavigatedTo(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.navigatedTo, policy: policy, handler) } }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onNavigatedTo(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.navigatedTo, gate: gate, handler) } }
     }
 
@@ -143,9 +158,14 @@ extension View {
         pageSays { $0.modified { $0.addHandler(PageContract.navigatingFrom, handler) } }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigatingFrom(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onNavigatingFrom(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.navigatingFrom, policy: policy, handler) } }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onNavigatingFrom(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.navigatingFrom, gate: gate, handler) } }
     }
 
@@ -154,9 +174,14 @@ extension View {
         pageSays { $0.modified { $0.addHandler(PageContract.navigatedFrom, handler) } }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigatedFrom(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onNavigatedFrom(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.navigatedFrom, policy: policy, handler) } }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.navigatedFrom, gate: gate, handler) } }
     }
 }

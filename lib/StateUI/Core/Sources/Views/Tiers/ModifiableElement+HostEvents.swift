@@ -24,13 +24,22 @@ extension ModifiableElement {
         hearing(EventMember(event), HostEvents.heard(event, handler))
     }
 
-    /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
+    /// The same, with a handler that awaits: its `policy` says what a raise does while a run is under way.
     public func onHostEvent<Owner: ApplicationTier>(
         _ event: ElementEvent<Owner, Void>,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping EventHandler
     ) -> Modified {
-        hearing(EventMember(event), HostEvents.heard(event, gate: gate, handler))
+        hearing(EventMember(event), HostEvents.heard(event, gate: .own(policy), handler))
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onHostEvent<Owner: ApplicationTier>(
+        _ event: ElementEvent<Owner, Void>,
+        gate: Gate,
+        _ handler: @escaping EventHandler
+    ) -> Modified {
+        hearing(EventMember(event), HostEvents.heard(event, gate: .shared(gate), handler))
     }
 
     /// Hears an event of the application's that carries one value while this view stands, handed over as the
@@ -44,13 +53,22 @@ extension ModifiableElement {
         hearing(EventMember(event), HostEvents.heard(event, handler))
     }
 
-    /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
+    /// The same, with a handler that awaits: its `policy` says what a raise does while a run is under way.
     public func onHostEvent<Owner: ApplicationTier, Value: HostRepresentable>(
         _ event: ElementEvent<Owner, Value>,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<Value>
     ) -> Modified {
-        hearing(EventMember(event), HostEvents.heard(event, gate: gate, handler))
+        hearing(EventMember(event), HostEvents.heard(event, gate: .own(policy), handler))
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onHostEvent<Owner: ApplicationTier, Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, Value>,
+        gate: Gate,
+        _ handler: @escaping ValueEventHandler<Value>
+    ) -> Modified {
+        hearing(EventMember(event), HostEvents.heard(event, gate: .shared(gate), handler))
     }
 
     /// Hears an event of the application's that carries two values while this view stands, handed over as the
@@ -64,13 +82,22 @@ extension ModifiableElement {
         hearing(EventMember(event), HostEvents.heard(event, handler))
     }
 
-    /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
+    /// The same, with a handler that awaits: its `policy` says what a raise does while a run is under way.
     public func onHostEvent<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
         _ event: ElementEvent<Owner, (First, Second)>,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<First, Second>
     ) -> Modified {
-        hearing(EventMember(event), HostEvents.heard(event, gate: gate, handler))
+        hearing(EventMember(event), HostEvents.heard(event, gate: .own(policy), handler))
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onHostEvent<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
+        _ event: ElementEvent<Owner, (First, Second)>,
+        gate: Gate,
+        _ handler: @escaping ValueEventHandler<First, Second>
+    ) -> Modified {
+        hearing(EventMember(event), HostEvents.heard(event, gate: .shared(gate), handler))
     }
 
     /// Hears an event of the application's that carries three values while this view stands, handed over as
@@ -84,15 +111,26 @@ extension ModifiableElement {
         hearing(EventMember(event), HostEvents.heard(event, handler))
     }
 
-    /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
+    /// The same, with a handler that awaits: its `policy` says what a raise does while a run is under way.
     public func onHostEvent<
         Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
     >(
         _ event: ElementEvent<Owner, (First, Second, Third)>,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<First, Second, Third>
     ) -> Modified {
-        hearing(EventMember(event), HostEvents.heard(event, gate: gate, handler))
+        hearing(EventMember(event), HostEvents.heard(event, gate: .own(policy), handler))
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onHostEvent<
+        Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third)>,
+        gate: Gate,
+        _ handler: @escaping ValueEventHandler<First, Second, Third>
+    ) -> Modified {
+        hearing(EventMember(event), HostEvents.heard(event, gate: .shared(gate), handler))
     }
 
     /// The view hearing `event` through `handler` while it stands.

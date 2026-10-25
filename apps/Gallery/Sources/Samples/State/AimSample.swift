@@ -50,13 +50,13 @@ struct AimSample: SampleContent, ExampleContent {
                 // in the HANDLER, because the walk fills it after the body
                 // that describes the view was built.
                 Button("Focus the first")
-                    .onClicked(gate: .ignoreWhileRunning) {
+                    .onClicked(.ignoreWhileRunning) {
                         try await field.focus()
                         says = "focused \(field)"
                     }
 
                 Button("Focus the second")
-                    .onClicked(gate: .ignoreWhileRunning) {
+                    .onClicked(.ignoreWhileRunning) {
                         try await note.focus()
                         says = "focused \(note)"
                     }
@@ -65,7 +65,7 @@ struct AimSample: SampleContent, ExampleContent {
 
             // Each aim reaches its own field: letting go of both is two acts.
             Button("Let go")
-                .onClicked(gate: .ignoreWhileRunning) {
+                .onClicked(.ignoreWhileRunning) {
                     try await field.unfocus()
                     try await note.unfocus()
                     says = "let go of \(field) and \(note)"

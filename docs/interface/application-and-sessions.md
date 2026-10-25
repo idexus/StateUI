@@ -192,8 +192,8 @@ struct NotesPage: View {
 
     var body: some View {
         VStack {
-            Button("New editor").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.editor) }
-            Button("About").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.about) }
+            Button("New editor").onClicked(.ignoreWhileRunning) { try await application.openWindow(.editor) }
+            Button("About").onClicked(.ignoreWhileRunning) { try await application.openWindow(.about) }
         }
     }
 }
@@ -204,8 +204,8 @@ struct EditorPage: View {
 
     var body: some View {
         VStack {
-            Button("Close").onClicked(gate: .ignoreWhileRunning) { try await window.close() }
-            Button("Close every editor").onClicked(gate: .ignoreWhileRunning) { try await scene.close() }
+            Button("Close").onClicked(.ignoreWhileRunning) { try await window.close() }
+            Button("Close every editor").onClicked(.ignoreWhileRunning) { try await scene.close() }
         }
     }
 }
@@ -466,7 +466,7 @@ only when it differs from the last it reported, so a repeated native callback
 triggers no extra reaction.
 
 ```swift quote
-.onChanged(window.phase, gate: .waitForPrevious) { oldPhase, newPhase in
+.onChanged(window.phase, policy: .waitForPrevious) { oldPhase, newPhase in
     if newPhase == .stopped {
         try await saveDraft()
     }

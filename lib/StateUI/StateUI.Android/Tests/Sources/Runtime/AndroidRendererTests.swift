@@ -140,7 +140,7 @@ final class AndroidRendererTests: XCTestCase {
         try onMainActor {
             let answers = Received<Bool>()
             let first = AndroidRenderer.running {
-                Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                Button("Ask").onClicked(.ignoreWhileRunning) {
                     answers.values.append(try await WindowSession().confirm("Sure?", message: "Both", accept: "Yes", cancel: "No"))
                 }
             }
@@ -186,7 +186,7 @@ final class AndroidRendererTests: XCTestCase {
             let answers = Received<Bool>()
             let thrown = Received<String>()
             let host = AndroidRenderer.running {
-                Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                Button("Ask").onClicked(.ignoreWhileRunning) {
                     do {
                         answers.values.append(
                             try await WindowSession().confirm("Sure?", message: "", accept: "Yes", cancel: "No"))

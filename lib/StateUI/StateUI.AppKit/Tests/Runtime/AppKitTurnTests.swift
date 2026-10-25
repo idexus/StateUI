@@ -130,7 +130,7 @@ private struct AskingPage: View {
     var body: some View {
         VStack {
             Text(said)
-            Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
+            Button("Confirm").onClicked(.ignoreWhileRunning) {
                 let deleting = try await window.confirm("Delete draft?", message: "", accept: "Delete", cancel: "Keep")
                 said = deleting ? "deleted" : "kept"
             }

@@ -92,6 +92,6 @@ struct MenuRow: View {
         // nothing says they act together. Handle.swift has the rule.
         .accessibilityIdentifier(handle("menu", title))
         .accessibilityLabel(title)
-        .onTapped(gate: .ignoreWhileRunning) { try await action() }
+        .onTapped(.ignoreWhileRunning) { try await action() }
     }
 }

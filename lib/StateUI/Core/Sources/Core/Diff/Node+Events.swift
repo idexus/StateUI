@@ -23,19 +23,32 @@ extension Node {
         }
     }
 
-    /// Hears one of this node's events with a handler that awaits; its `gate` says what the event does when it
+    /// Hears one of this node's events with a handler that awaits; its `policy` says what the event does when it
     /// comes again while a run is under way.
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - gate: what the handler passes through: what an event does while a run is under way.
+    ///   - policy: what the handler passes through: what an event does while a run is under way.
     ///   - handler: what runs.
     public mutating func addHandler<Owner: Contract>(
         _ event: ElementEvent<Owner, Void>,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping EventHandler
     ) {
-        addHandler(event.token, gate: gate) {
+        addHandler(event.token, gate: .own(policy)) {
+            guard MemberValues.carried(EventBuffer.current, by: event.name) != nil else { return }
+
+            try await handler()
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public mutating func addHandler<Owner: Contract>(
+        _ event: ElementEvent<Owner, Void>,
+        gate: Gate,
+        _ handler: @escaping EventHandler
+    ) {
+        addHandler(event.token, gate: .shared(gate)) {
             guard MemberValues.carried(EventBuffer.current, by: event.name) != nil else { return }
 
             try await handler()
@@ -61,19 +74,32 @@ extension Node {
         }
     }
 
-    /// Hears one of this node's events with a handler that awaits; its `gate` says what the event does when it
+    /// Hears one of this node's events with a handler that awaits; its `policy` says what the event does when it
     /// comes again while a run is under way.
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - gate: what the handler passes through: what an event does while a run is under way.
+    ///   - policy: what the handler passes through: what an event does while a run is under way.
     ///   - handler: what runs.
     public mutating func addHandler<Owner: Contract, Value: HostRepresentable>(
         _ event: ElementEvent<Owner, Value>,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<Value>
     ) {
-        addHandler(event.token, gate: gate) {
+        addHandler(event.token, gate: .own(policy)) {
+            guard let value = MemberValues.carried(EventBuffer.current, by: event.name, as: Value.self) else { return }
+
+            try await handler(value)
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public mutating func addHandler<Owner: Contract, Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, Value>,
+        gate: Gate,
+        _ handler: @escaping ValueEventHandler<Value>
+    ) {
+        addHandler(event.token, gate: .shared(gate)) {
             guard let value = MemberValues.carried(EventBuffer.current, by: event.name, as: Value.self) else { return }
 
             try await handler(value)
@@ -101,19 +127,34 @@ extension Node {
         }
     }
 
-    /// Hears one of this node's events with a handler that awaits; its `gate` says what the event does when it
+    /// Hears one of this node's events with a handler that awaits; its `policy` says what the event does when it
     /// comes again while a run is under way.
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - gate: what the handler passes through: what an event does while a run is under way.
+    ///   - policy: what the handler passes through: what an event does while a run is under way.
     ///   - handler: what runs.
     public mutating func addHandler<Owner: Contract, First: HostRepresentable, Second: HostRepresentable>(
         _ event: ElementEvent<Owner, (First, Second)>,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<First, Second>
     ) {
-        addHandler(event.token, gate: gate) {
+        addHandler(event.token, gate: .own(policy)) {
+            guard let (first, second) = MemberValues.carried(
+                EventBuffer.current, by: event.name, as: First.self, Second.self)
+            else { return }
+
+            try await handler(first, second)
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public mutating func addHandler<Owner: Contract, First: HostRepresentable, Second: HostRepresentable>(
+        _ event: ElementEvent<Owner, (First, Second)>,
+        gate: Gate,
+        _ handler: @escaping ValueEventHandler<First, Second>
+    ) {
+        addHandler(event.token, gate: .shared(gate)) {
             guard let (first, second) = MemberValues.carried(
                 EventBuffer.current, by: event.name, as: First.self, Second.self)
             else { return }
@@ -145,21 +186,38 @@ extension Node {
         }
     }
 
-    /// Hears one of this node's events with a handler that awaits; its `gate` says what the event does when it
+    /// Hears one of this node's events with a handler that awaits; its `policy` says what the event does when it
     /// comes again while a run is under way.
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - gate: what the handler passes through: what an event does while a run is under way.
+    ///   - policy: what the handler passes through: what an event does while a run is under way.
     ///   - handler: what runs.
     public mutating func addHandler<
         Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
     >(
         _ event: ElementEvent<Owner, (First, Second, Third)>,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<First, Second, Third>
     ) {
-        addHandler(event.token, gate: gate) {
+        addHandler(event.token, gate: .own(policy)) {
+            guard let (first, second, third) = MemberValues.carried(
+                EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self)
+            else { return }
+
+            try await handler(first, second, third)
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public mutating func addHandler<
+        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third)>,
+        gate: Gate,
+        _ handler: @escaping ValueEventHandler<First, Second, Third>
+    ) {
+        addHandler(event.token, gate: .shared(gate)) {
             guard let (first, second, third) = MemberValues.carried(
                 EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self)
             else { return }
@@ -191,22 +249,40 @@ extension Node {
         }
     }
 
-    /// Hears one of this node's events that carries four values with a handler that awaits; its `gate` says what
+    /// Hears one of this node's events that carries four values with a handler that awaits; its `policy` says what
     /// the event does when it comes again while a run is under way.
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - gate: what the handler passes through: what an event does while a run is under way.
+    ///   - policy: what the handler passes through: what an event does while a run is under way.
     ///   - handler: what runs.
     public mutating func addHandler<
         Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable,
         Fourth: HostRepresentable
     >(
         _ event: ElementEvent<Owner, (First, Second, Third, Fourth)>,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<First, Second, Third, Fourth>
     ) {
-        addHandler(event.token, gate: gate) {
+        addHandler(event.token, gate: .own(policy)) {
+            guard let (first, second, third, fourth) = MemberValues.carried(
+                EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self, Fourth.self)
+            else { return }
+
+            try await handler(first, second, third, fourth)
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public mutating func addHandler<
+        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable,
+        Fourth: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third, Fourth)>,
+        gate: Gate,
+        _ handler: @escaping ValueEventHandler<First, Second, Third, Fourth>
+    ) {
+        addHandler(event.token, gate: .shared(gate)) {
             guard let (first, second, third, fourth) = MemberValues.carried(
                 EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self, Fourth.self)
             else { return }

@@ -11,13 +11,13 @@ event loop.
 
 Every StateUI event, change, lifetime, ticker, and host-event handler runs on
 `MainActor`. It can read and write state directly and may call an asynchronous
-function; an event, change or host-event handler that does names a gate, which
-says what happens when its event comes again while it is still running:
+function; an event, change or host-event handler that does names a policy,
+which says what happens when its event comes again while it is still running:
 
 ```swift
 @State var status = "Idle"
 
-Button("Load").onClicked(gate: .ignoreWhileRunning) {
+Button("Load").onClicked(.ignoreWhileRunning) {
     status = "Loading"
     try await Task.sleep(for: .milliseconds(100))
     status = "Ready"
@@ -39,32 +39,35 @@ useful state.
 
 A handler that awaits can still be running when an event comes again - a
 second click on Save, a newer search query, another drop. It passes through a
-gate, which says what happens then; there is no default, and a handler that
-awaits without one does not compile:
+gate, whose policy says what happens then; there is no default, and a handler
+that awaits without one does not compile:
 
-| Gate | The event that comes while a run is under way |
+| Policy | The event that comes while a run is under way |
 | --- | --- |
 | `.ignoreWhileRunning` | is let go - a save, an order, a dialog |
 | `.cancelPrevious` | cancels the run under way and starts its own - a search, a movement to a new place |
 | `.waitForPrevious` | waits, and runs after the runs before it, in the order they came |
-| `.none` | starts a run beside the ones under way |
+| `.runConcurrently` | starts a run beside the ones under way |
 
 ```swift
 @State var query = ""
 @State var results: [String] = []
 
 TextField($query)
-    .onChanged(query, gate: .cancelPrevious) {
+    .onChanged(query, policy: .cancelPrevious) {
         try await Task.sleep(for: .milliseconds(250))
         results = ["\(query) 1", "\(query) 2"]
     }
 ```
 
-A policy given as the gate is the handler's own: two buttons written with
-`.ignoreWhileRunning` never hold each other back. Where several actions
-touch one thing - a save and a delete of one document - they pass through one
-`Gatekeeper`, kept in a state or a model, and its `isBusy` says whether a run
-is under way through it:
+The policy stands first where the modifier takes nothing else -
+`.onClicked(.ignoreWhileRunning)` - and as `policy:` after the event's own
+arguments - `.onChanged(query, policy: .cancelPrevious)`. A policy gives the
+handler a gate of its own: two buttons written with `.ignoreWhileRunning` never
+hold each other back. Where several actions touch one thing - a save and a
+delete of one document - they pass through one `Gate`, kept in a state or a
+model and given as `gate:`, and its `isBusy` says whether a run is under way
+through it:
 
 ```swift
 @MainActor
@@ -75,7 +78,7 @@ final class Document {
 
 struct DocumentActions: View {
     let document: Document
-    @State private var busy = Gatekeeper(.ignoreWhileRunning)
+    @State private var busy = Gate(.ignoreWhileRunning)
 
     var body: some View {
         HStack {
@@ -100,21 +103,22 @@ at once, which ends the run quietly, and the host stops the call - a request
 is cancelled, a question not yet shown is never shown. A
 `Task { }` or a child task the run started is refused with it; one started
 with `Task(gate:)` or `Task.detached` is not. An element leaving ends its own runs
-alone: behind a gatekeeper, the others' runs go on. A handler without an `await`
-names no gate: it runs whole inside its event, so nothing supersedes it.
+alone: behind a shared gate, the others' runs go on. A handler without an
+`await` names no policy: it runs whole inside its event, so nothing supersedes
+it.
 `.onCreated` and `.onDestroying` name none either, as they come once.
 
 ### Work started from code
 
 Work a model starts from its own code - an autosave, a refresh a timer asks
-for - passes a gatekeeper with `Task(gate:)`, as a handler written with the
+for - passes a shared gate with `Task(gate:)`, as a handler written with the
 gate would. A save the user asks for and an autosave never run at once, and
 the gate's `isBusy` covers both:
 
 ```swift
 @MainActor
 final class Draft {
-    let saving = Gatekeeper(.ignoreWhileRunning)
+    let saving = Gate(.ignoreWhileRunning)
     @State var saves = 0
 
     func save() {
@@ -140,7 +144,7 @@ The task is the run: awaiting its `value` waits for the work's end, cancelling
 it ends the run as a later event would - one still waiting its turn leaves the
 queue at once - and a task the gate lets go ends at once, its work not run. It belongs to the gate - not to an element, nor to the
 handler that started it - so no element leaving ends it. A task takes a
-`Gatekeeper` only: a policy alone has no element to keep its runs.
+`Gate` only: a policy alone has no element to keep its runs.
 
 ### Work that outlives its element
 
@@ -227,7 +231,7 @@ elsewhere cannot touch it - the compiler refuses - and posts to it instead:
 ```swift
 @State var total = 0
 
-Button("Count").onClicked(gate: .ignoreWhileRunning) {
+Button("Count").onClicked(.ignoreWhileRunning) {
     let counter = $total
     await withTaskGroup(of: Void.self) { group in
         for _ in 0..<4 {
@@ -258,7 +262,7 @@ batch is not a transaction and their completions can arrive independently.
 Use `await` to express a dependency:
 
 ```swift quote
-Button("Rename and confirm").onClicked(gate: .ignoreWhileRunning) {
+Button("Rename and confirm").onClicked(.ignoreWhileRunning) {
     guard let name = try await window.prompt(
         "Rename", message: "New name", placeholder: "Name")
     else { return }

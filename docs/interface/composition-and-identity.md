@@ -235,7 +235,7 @@ inside-out before a replacement is created; creation runs outside-in.
 
 Rebuilding or carrying an existing element is neither creation nor destruction.
 
-Both come once, so neither names a `Gate`, even when it awaits. An
+Both come once, so neither names a policy, even when it awaits. An
 `onCreated` still awaiting when its element leaves is cancelled and changes
 nothing from then on; an `onDestroying` runs to its end.
 
@@ -292,7 +292,7 @@ cancels the one before it:
 @State var results: [String] = []
 
 Text(results.joined(separator: ", "))
-    .onChanged(query, gate: .cancelPrevious) { _, new in
+    .onChanged(query, policy: .cancelPrevious) { _, new in
         try await Task.sleep(for: .milliseconds(250))
         results = ["\(new) 1", "\(new) 2"]
     }

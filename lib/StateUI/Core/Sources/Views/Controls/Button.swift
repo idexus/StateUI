@@ -59,7 +59,7 @@ extension ButtonProperties where Self: View {
 ///
 /// A handler runs on the main actor. One that awaits passes through a gate,
 /// which says what a click does while it runs -
-/// `.onClicked(gate: .ignoreWhileRunning) { items = try await load() }` - and
+/// `.onClicked(.ignoreWhileRunning) { items = try await load() }` - and
 /// the interface goes on updating while it is suspended.
 public struct Button: ElementView, TextualElement, TrackingElement, FontElement, PaddingElement, BorderElement,
     ImageElement, ButtonProperties, ButtonMenuElement, TextAndIconElement, FocusElement {
@@ -115,9 +115,14 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
         onEvent(ButtonContract.clicked, handler)
     }
 
-    /// Runs when the button is clicked, awaiting as it goes; its `gate` says what a
+    /// Runs when the button is clicked, awaiting as it goes; its `policy` says what a
     /// click does while a run is under way.
-    public func onClicked(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ButtonContract.clicked, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onClicked(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ButtonContract.clicked, gate: gate, handler)
     }
 
@@ -126,9 +131,14 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
         onEvent(ButtonContract.pressed, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPressed(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onPressed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ButtonContract.pressed, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onPressed(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ButtonContract.pressed, gate: gate, handler)
     }
 
@@ -138,9 +148,14 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
         onEvent(ButtonContract.released, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onReleased(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onReleased(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ButtonContract.released, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onReleased(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ButtonContract.released, gate: gate, handler)
     }
 }

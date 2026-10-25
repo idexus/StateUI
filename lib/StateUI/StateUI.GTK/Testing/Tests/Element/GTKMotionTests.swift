@@ -105,7 +105,7 @@ final class GTKMotionTests: XCTestCase {
                     Text(arrived.wrappedValue ? "arrived" : "away")
                     Slider(level.projectedValue)
                     Slider(level.projectedValue)
-                    Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                    Button("Go").onClicked(.ignoreWhileRunning) {
                         try await level.projectedValue.journey.move(to: 1, .eased(.milliseconds(200), .linear)).arrived()
                         arrived.wrappedValue = true
                     }
@@ -168,7 +168,7 @@ final class GTKMotionTests: XCTestCase {
             let host = GTKRenderer.running(clock: clock) {
                 VStack {
                     Text("moving").translationX(offset.projectedValue)
-                    Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                    Button("Go").onClicked(.ignoreWhileRunning) {
                         try await offset.projectedValue.journey.move(to: 100, .eased(.milliseconds(200), .linear)).arrived()
                     }
                 }

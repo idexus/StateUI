@@ -68,7 +68,7 @@ design notes beside them.
   aim, acts, and reads of contract members.
 - [Concurrency](interface/concurrency.md) defines handler isolation on
   `MainActor`, what an awaiting handler does when its event comes again
-  (`Gate`, `Gatekeeper`, `Task(gate:)`), a run superseded, posting to state from other threads,
+  (`GatePolicy`, `Gate`, `Task(gate:)`), a run superseded, posting to state from other threads,
   `Ticker`, and the application module's compiler setting.
 
 ## Internals

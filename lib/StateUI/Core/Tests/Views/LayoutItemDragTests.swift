@@ -44,7 +44,7 @@ final class LayoutItemDragTests: XCTestCase {
         .motion(motion)
         if awaiting {
             // A dismissal that awaits, past any test's end: another while it runs is ignored.
-            return engine.onItemDismissed(.up, beyond: 50, gate: .ignoreWhileRunning) { name in
+            return engine.onItemDismissed(.up, beyond: 50, policy: .ignoreWhileRunning) { name in
                 told.dismissed.append(name)
                 try await Task.sleep(for: .seconds(60))
             }.node

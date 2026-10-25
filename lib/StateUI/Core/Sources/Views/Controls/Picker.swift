@@ -99,9 +99,14 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
         onEvent(PickerContract.opened, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onOpened(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onOpened(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(PickerContract.opened, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onOpened(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(PickerContract.opened, gate: gate, handler)
     }
 
@@ -111,9 +116,14 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
         onEvent(PickerContract.closed, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onClosed(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onClosed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(PickerContract.closed, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onClosed(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(PickerContract.closed, gate: gate, handler)
     }
 }

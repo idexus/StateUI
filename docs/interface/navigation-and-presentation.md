@@ -438,12 +438,12 @@ VStack { … }
         ToolbarButton("Save")
             .id("save")
             .isEnabled(hasChanges)
-            .onClicked(gate: .ignoreWhileRunning) { try await save() }
+            .onClicked(.ignoreWhileRunning) { try await save() }
         ToolbarButton("Delete")
             .id("delete")
             .placement(at: .overflow)
             .role(.destructive)
-            .onClicked(gate: .ignoreWhileRunning) { try await delete() }
+            .onClicked(.ignoreWhileRunning) { try await delete() }
     }
 ```
 
@@ -631,7 +631,7 @@ VStack { … }
             MenuItem("Save")
                 .id("save")
                 .isEnabled(hasChanges)
-                .onClicked(gate: .ignoreWhileRunning) { try await save() }
+                .onClicked(.ignoreWhileRunning) { try await save() }
             Menu("Recent") {
                 recent.map { file in
                     MenuItem(file.name)

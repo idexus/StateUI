@@ -25,7 +25,7 @@ struct ColorsPage: View {
             // The window closes itself, through its own session.
             Button("Done")
                 .horizontalAlignment(.end)
-                .onClicked(gate: .ignoreWhileRunning) { try await window.close() }
+                .onClicked(.ignoreWhileRunning) { try await window.close() }
         }
         .spacing(10)
         .padding(16)

@@ -161,11 +161,18 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         return copy
     }
 
-    /// The same, with a handler that awaits: its `gate` says what another card coming to the middle does while
+    /// The same, with a handler that awaits: its `policy` says what another card coming to the middle does while
     /// a run is under way.
-    public func onPositionChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<Int>) -> Self {
+    public func onPositionChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Int>) -> Self {
         var copy = self
-        copy.moved = ValueHandler(run: handler, gate: gate)
+        copy.moved = ValueHandler(run: handler, gate: .own(policy))
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onPositionChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Int>) -> Self {
+        var copy = self
+        copy.moved = ValueHandler(run: handler, gate: .shared(gate))
         return copy
     }
 
@@ -186,11 +193,18 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         return copy
     }
 
-    /// The same, with a handler that awaits - opening a page does: its `gate` says what opening the card again
+    /// The same, with a handler that awaits - opening a page does: its `policy` says what opening the card again
     /// does while a run is under way.
-    public func onItemActivated(gate: some Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
+    public func onItemActivated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = ValueHandler(run: handler, gate: gate)
+        copy.activated = ValueHandler(run: handler, gate: .own(policy))
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onItemActivated(gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
+        var copy = self
+        copy.activated = ValueHandler(run: handler, gate: .shared(gate))
         return copy
     }
 
@@ -381,7 +395,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         // The tap, answered on the card in front: the press shows, and the card is back at its size, before the
         // activation's own work, which usually builds a page.
         if let activated {
-            engine = engine.onItemTapped(gate: activated.gate) { item in
+            let tapped: ValueEventHandler<Items.Element> = { item in
                 let front = items[items.index(items.startIndex, offsetBy: asked())]
 
                 guard item[keyPath: path] == front[keyPath: path] else { return }
@@ -393,6 +407,10 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                 dips.wrappedValue = nil
 
                 try await activated.run(item[keyPath: path])
+            }
+            switch activated.gate {
+            case .own(let policy): engine = engine.onItemTapped(policy, tapped)
+            case .shared(let gate): engine = engine.onItemTapped(gate: gate, tapped)
             }
         }
 

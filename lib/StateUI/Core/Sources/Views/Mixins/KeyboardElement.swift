@@ -21,13 +21,19 @@ extension KeyboardElement {
         taking(keys, ValueHandler(step: handler))
     }
 
-    /// The same, with a handler that awaits: its `gate` says what a key does when it comes again while a run is
+    /// The same, with a handler that awaits: its `policy` says what a key does when it comes again while a run is
     /// under way.
     ///
-    ///     VStack { … }.onKeyPressed(.escape, gate: .ignoreWhileRunning) { _ in try await close() }
-    public func onKeyPressed(_ keys: Key..., gate: some Gate, perform handler: @escaping ValueEventHandler<KeyPress>)
+    ///     VStack { … }.onKeyPressed(.escape, policy: .ignoreWhileRunning) { _ in try await close() }
+    public func onKeyPressed(_ keys: Key..., policy: GatePolicy, perform handler: @escaping ValueEventHandler<KeyPress>)
         -> Modified {
-        taking(keys, ValueHandler(run: handler, gate: gate))
+        taking(keys, ValueHandler(run: handler, gate: .own(policy)))
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onKeyPressed(_ keys: Key..., gate: Gate, perform handler: @escaping ValueEventHandler<KeyPress>)
+        -> Modified {
+        taking(keys, ValueHandler(run: handler, gate: .shared(gate)))
     }
 
     /// The element taking `keys` beside those it takes already, `handler` hearing those alone.
@@ -36,8 +42,12 @@ extension KeyboardElement {
         modified {
             let taken = $0.props[KeyboardElementContract.keysTaken.token].flatMap([Key].init(propValue:)) ?? []
             $0.write(KeyboardElementContract.keysTaken, Key.ordered(taken + keys))
-            $0.addHandler(KeyboardElementContract.keyPressed, gate: handler.gate) { key, modifiers in
+            let pressed: ValueEventHandler<Key, KeyModifiers> = { key, modifiers in
                 if keys.contains(key) { try await handler.run(KeyPress(key, modifiers: modifiers)) }
+            }
+            switch handler.gate {
+            case .own(let policy): $0.addHandler(KeyboardElementContract.keyPressed, policy: policy, pressed)
+            case .shared(let gate): $0.addHandler(KeyboardElementContract.keyPressed, gate: gate, pressed)
             }
         }
     }

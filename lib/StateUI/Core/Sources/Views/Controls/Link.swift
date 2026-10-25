@@ -46,9 +46,14 @@ public struct Link: ElementView, TextualElement, FocusElement {
         onEvent(LinkContract.clicked, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what a click does
+    /// The same, with a handler that awaits: its `policy` says what a click does
     /// while a run is under way.
-    public func onClicked(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(LinkContract.clicked, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onClicked(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(LinkContract.clicked, gate: gate, handler)
     }
 }

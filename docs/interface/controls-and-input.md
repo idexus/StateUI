@@ -349,7 +349,7 @@ answer and not a failure:
 @State var said = ""
 
 Button("Close keyboard")
-    .onClicked(gate: .ignoreWhileRunning) {
+    .onClicked(.ignoreWhileRunning) {
         said = try await window.hideOnScreenKeyboard()
             ? "Focus released"
             : "Nothing was focused"
@@ -607,11 +607,11 @@ Grid {
     HStack {
         Button("Back")
             .isEnabled(canGoBack)
-            .onClicked(gate: .ignoreWhileRunning) { try await browser.goBack() }
+            .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
         Button("Reload")
-            .onClicked(gate: .ignoreWhileRunning) { try await browser.reload() }
+            .onClicked(.ignoreWhileRunning) { try await browser.reload() }
         Button("Title?")
-            .onClicked(gate: .ignoreWhileRunning) { title = try await browser.evaluateJavaScript("document.title") }
+            .onClicked(.ignoreWhileRunning) { title = try await browser.evaluateJavaScript("document.title") }
     }
     WebView("https://example.com")
         .canGoBack($canGoBack)
@@ -706,7 +706,7 @@ aim, which slides the map there:
 @Aim(Map.self) var map
 
 Button("Kraków")
-    .onClicked(gate: .cancelPrevious) {
+    .onClicked(.cancelPrevious) {
         try await map.moveToRegion(MapRegion(center: Location(latitude: 50.06, longitude: 19.94), radiusMeters: 2000))
     }
 ```
@@ -752,7 +752,7 @@ struct ContactsPage: View {
             .gridRow(0)
 
             Button("Back to the top")
-                .onClicked(gate: .cancelPrevious) { try await list.scrollTo(contacts[0].name, anchor: .start) }
+                .onClicked(.cancelPrevious) { try await list.scrollTo(contacts[0].name, anchor: .start) }
                 .gridRow(1)
         }
         .rows(.fill, .auto)
@@ -798,7 +798,7 @@ struct InboxPage: View {
     var body: some View {
         ItemsView(mail, id: \.self) { Text($0).padding(12) }
             .isRefreshing($refreshing)
-            .onRefreshRequested(gate: .ignoreWhileRunning) {
+            .onRefreshRequested(.ignoreWhileRunning) {
                 defer { refreshing = false }
                 try await Task.sleep(for: .seconds(1))
                 mail.insert("Fresh", at: 0)

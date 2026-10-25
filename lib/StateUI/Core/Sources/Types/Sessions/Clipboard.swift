@@ -6,7 +6,7 @@
 ///
 ///     @Environment(\.application) private var application
 ///
-///     Button("Copy the link").onClicked(gate: .ignoreWhileRunning) {
+///     Button("Copy the link").onClicked(.ignoreWhileRunning) {
 ///         try await application.clipboard.write(text: link)
 ///     }
 @MainActor

@@ -8,7 +8,7 @@ extension WindowSession {
     /// Offers `text` to the platform's share sheet over this window - a message, a mail, a note - for the user to
     /// send where they choose.
     ///
-    ///     Button("Share").onClicked(gate: .ignoreWhileRunning) { try await window.share(text: summary) }
+    ///     Button("Share").onClicked(.ignoreWhileRunning) { try await window.share(text: summary) }
     ///
     /// - Returns: whether the user shared it; false where they cancelled.
     /// - Throws: `WindowError` for a window no longer open, and `StateUIError` where the platform has no share sheet.

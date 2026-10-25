@@ -36,7 +36,7 @@ struct TaskSleepSample: SampleContent, ExampleContent {
                 // A press while the loop runs cancels it - Stop, or Start
                 // straight after Reset - so no two loops count together.
                 Button(running ? "Stop" : "Start")
-                    .onClicked(gate: .cancelPrevious) {
+                    .onClicked(.cancelPrevious) {
                         if running {
                             running = false
                             return

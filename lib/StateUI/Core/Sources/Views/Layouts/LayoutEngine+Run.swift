@@ -334,7 +334,11 @@ extension LayoutEngine {
             guard let tapped else { return AnyView(holder.letsInputThrough(true)) }
 
             let item = slot.item
-            return AnyView(holder.onTapped(gate: tapped.gate) { try await tapped.run(item) })
+            let tap: EventHandler = { try await tapped.run(item) }
+            return switch tapped.gate {
+            case .own(let policy): AnyView(holder.onTapped(policy, tap))
+            case .shared(let gate): AnyView(holder.onTapped(gate: gate, tap))
+            }
         }
 
         /// One placement a view: a run that answered fewer or more is said once and made to fit.

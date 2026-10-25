@@ -108,13 +108,22 @@ public enum HostEvents {
         subscribe(EventMember(event), heard(event, handler))
     }
 
-    /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
+    /// The same, with a handler that awaits: its `policy` says what a raise does while a run is under way.
     public static func on<Owner: ApplicationTier>(
         _ event: ElementEvent<Owner, Void>,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping EventHandler
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, gate: gate, handler))
+        subscribe(EventMember(event), heard(event, gate: .own(policy), handler))
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public static func on<Owner: ApplicationTier>(
+        _ event: ElementEvent<Owner, Void>,
+        gate: Gate,
+        _ handler: @escaping EventHandler
+    ) -> HostEventSubscription {
+        subscribe(EventMember(event), heard(event, gate: .shared(gate), handler))
     }
 
     /// Subscribes a handler to an event of the application's that carries one
@@ -136,13 +145,22 @@ public enum HostEvents {
         subscribe(EventMember(event), heard(event, handler))
     }
 
-    /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
+    /// The same, with a handler that awaits: its `policy` says what a raise does while a run is under way.
     public static func on<Owner: ApplicationTier, Value: HostRepresentable>(
         _ event: ElementEvent<Owner, Value>,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<Value>
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, gate: gate, handler))
+        subscribe(EventMember(event), heard(event, gate: .own(policy), handler))
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public static func on<Owner: ApplicationTier, Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, Value>,
+        gate: Gate,
+        _ handler: @escaping ValueEventHandler<Value>
+    ) -> HostEventSubscription {
+        subscribe(EventMember(event), heard(event, gate: .shared(gate), handler))
     }
 
     /// Subscribes a handler to an event of the application's that carries two
@@ -163,13 +181,22 @@ public enum HostEvents {
         subscribe(EventMember(event), heard(event, handler))
     }
 
-    /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
+    /// The same, with a handler that awaits: its `policy` says what a raise does while a run is under way.
     public static func on<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
         _ event: ElementEvent<Owner, (First, Second)>,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<First, Second>
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, gate: gate, handler))
+        subscribe(EventMember(event), heard(event, gate: .own(policy), handler))
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public static func on<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
+        _ event: ElementEvent<Owner, (First, Second)>,
+        gate: Gate,
+        _ handler: @escaping ValueEventHandler<First, Second>
+    ) -> HostEventSubscription {
+        subscribe(EventMember(event), heard(event, gate: .shared(gate), handler))
     }
 
     /// Subscribes a handler to an event of the application's that carries
@@ -189,15 +216,26 @@ public enum HostEvents {
         subscribe(EventMember(event), heard(event, handler))
     }
 
-    /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
+    /// The same, with a handler that awaits: its `policy` says what a raise does while a run is under way.
     public static func on<
         Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
     >(
         _ event: ElementEvent<Owner, (First, Second, Third)>,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<First, Second, Third>
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, gate: gate, handler))
+        subscribe(EventMember(event), heard(event, gate: .own(policy), handler))
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public static func on<
+        Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third)>,
+        gate: Gate,
+        _ handler: @escaping ValueEventHandler<First, Second, Third>
+    ) -> HostEventSubscription {
+        subscribe(EventMember(event), heard(event, gate: .shared(gate), handler))
     }
 
     // MARK: - What a handler hears
@@ -218,7 +256,7 @@ public enum HostEvents {
 
     static func heard<Owner: ApplicationTier>(
         _ event: ElementEvent<Owner, Void>,
-        gate: some Gate,
+        gate: Gating,
         _ handler: @escaping EventHandler
     ) -> ValueHandler<[PropValue]> {
         ValueHandler(run: { payload in
@@ -241,7 +279,7 @@ public enum HostEvents {
 
     static func heard<Owner: ApplicationTier, Value: HostRepresentable>(
         _ event: ElementEvent<Owner, Value>,
-        gate: some Gate,
+        gate: Gating,
         _ handler: @escaping ValueEventHandler<Value>
     ) -> ValueHandler<[PropValue]> {
         ValueHandler(run: { payload in
@@ -266,7 +304,7 @@ public enum HostEvents {
 
     static func heard<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
         _ event: ElementEvent<Owner, (First, Second)>,
-        gate: some Gate,
+        gate: Gating,
         _ handler: @escaping ValueEventHandler<First, Second>
     ) -> ValueHandler<[PropValue]> {
         ValueHandler(run: { payload in
@@ -297,7 +335,7 @@ public enum HostEvents {
         Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
     >(
         _ event: ElementEvent<Owner, (First, Second, Third)>,
-        gate: some Gate,
+        gate: Gating,
         _ handler: @escaping ValueEventHandler<First, Second, Third>
     ) -> ValueHandler<[PropValue]> {
         ValueHandler(run: { payload in

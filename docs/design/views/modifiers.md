@@ -58,8 +58,8 @@ event modifier comes through here with its member's token. The typed event
 modifiers live on `ModifiableElement`, so a style is offered none after the
 dot, and a style keeps only its values and states (`AnyStyle`), so nothing
 else written into its node reaches a control (tiers.md). Each handler passes through its own gate - a policy
-given as the gate is the handler's alone - so the second never waits for the first unless both are written with
-one `Gatekeeper` (core/runs.md).
+given alone is the handler's own - so the second never waits for the first unless both are written with one
+shared `Gate` (core/runs.md).
 
 ## An event payload that does not read
 

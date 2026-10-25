@@ -30,7 +30,7 @@
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Alert").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Alert").onClicked(.ignoreWhileRunning) {
                                 try await window.alert("Saved", message: "The draft is kept", accept: "Fine")
                                 said.values.append("dismissed")
                             }.id("ask")
@@ -56,7 +56,7 @@
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Confirm").onClicked(.ignoreWhileRunning) {
                                 said.values.append(try await window.confirm(
                                     "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep"))
                             }.id("ask")
@@ -85,7 +85,7 @@
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Share").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Share").onClicked(.ignoreWhileRunning) {
                                 let chosen = try await window.chooseAction(
                                     "Share via", among: ["Mail", "Message", "Delete"], destructive: "Delete",
                                     cancel: "Cancel")
@@ -120,7 +120,7 @@
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Rename").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Rename").onClicked(.ignoreWhileRunning) {
                                 let typed = try await window.prompt(
                                     "Rename", message: "A new name", accept: "Save", cancel: "Cancel",
                                     placeholder: "Name", initialValue: "Draft")
@@ -151,11 +151,11 @@
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Alert").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Alert").onClicked(.ignoreWhileRunning) {
                                 try await window.alert("First", message: "")
                                 said.values.append("first")
                             }.id("first")
-                            Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Confirm").onClicked(.ignoreWhileRunning) {
                                 let accepted = try await window.confirm("Second", message: "", accept: "Yes", cancel: "No")
                                 said.values.append("second \(accepted)")
                             }.id("second")
@@ -184,11 +184,11 @@
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Save").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Save").onClicked(.ignoreWhileRunning) {
                                 let saved = try await window.saveFile(Array("Kept words".utf8), name: "note", types: [text])
                                 said.values.append(saved?.name ?? "nothing")
                             }.id("save")
-                            Button("Open").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Open").onClicked(.ignoreWhileRunning) {
                                 guard let file = try await window.openFile(types: [text]) else {
                                     return said.values.append("nothing")
                                 }
@@ -224,11 +224,11 @@
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Save").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Save").onClicked(.ignoreWhileRunning) {
                                 let saved = try await window.saveFile(Array("Kept words".utf8), name: "start", types: [text])
                                 said.values.append(saved?.name ?? "nothing")
                             }.id("save")
-                            Button("Open").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Open").onClicked(.ignoreWhileRunning) {
                                 guard let file = try await window.openFile(types: [text]) else {
                                     return said.values.append("nothing")
                                 }
@@ -261,10 +261,10 @@
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Save").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Save").onClicked(.ignoreWhileRunning) {
                                 said.values.append(try await window.saveFile([1], name: "file.txt")?.name ?? "nothing")
                             }.id("save")
-                            Button("Open").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Open").onClicked(.ignoreWhileRunning) {
                                 let names = try await window.openFiles().map(\.name).sorted()
                                 said.values.append(names.joined(separator: " "))
                             }.id("open")
@@ -293,10 +293,10 @@
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Open").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Open").onClicked(.ignoreWhileRunning) {
                                 said.values.append("opened \(try await window.openFiles().count)")
                             }.id("open")
-                            Button("Save").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Save").onClicked(.ignoreWhileRunning) {
                                 let saved = try await window.saveFile([1], name: "never.txt")
                                 said.values.append("saved \(saved?.name ?? "nothing")")
                             }.id("save")
@@ -324,7 +324,7 @@
                 s.start {
                     WithSessions { _, application in
                         VStack {
-                            Button("Send").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Send").onClicked(.ignoreWhileRunning) {
                                 let response = try await application.send(HTTPRequest(
                                     address + "/parcels", method: .post, headers: ["X-Asked": "kept"],
                                     body: Array("Kept words".utf8)))
@@ -352,7 +352,7 @@
                     WithSessions { _, application in
                         VStack {
                             // The first press asks for what the server holds; the second ends the first's run.
-                            Button("Send").onClicked(gate: .cancelPrevious) {
+                            Button("Send").onClicked(.cancelPrevious) {
                                 presses.values.append(presses.values.count)
                                 let path = presses.values.count == 1 ? "/held" : "/parcels"
                                 let response = try await application.send(HTTPRequest(address + path))
@@ -379,7 +379,7 @@
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Launch").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Launch").onClicked(.ignoreWhileRunning) {
                                 said.values.append(try await application.launch("https://www.swift.org"))
                                 if let saved = try await window.saveFile(Array("<p>Report</p>".utf8), name: "report.html") {
                                     said.values.append(try await saved.launch())
@@ -403,7 +403,7 @@
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Say").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Say").onClicked(.ignoreWhileRunning) {
                                 try await application.announce("Saved the draft")
                                 said.values.append("announced")
                             }.id("say")
@@ -423,7 +423,7 @@
                 s.start {
                     WithSessions { _, application in
                         VStack {
-                            Button("Copy").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Copy").onClicked(.ignoreWhileRunning) {
                                 try await application.clipboard.write(text: "Copied with StateUI")
                                 read.values.append(try await application.clipboard.text() ?? "nothing")
                             }.id("copy")
@@ -441,7 +441,7 @@
                 s.start {
                     WithSessions { window, _ in
                         VStack {
-                            Button("Share").onClicked(gate: .ignoreWhileRunning) {
+                            Button("Share").onClicked(.ignoreWhileRunning) {
                                 said.values.append(try await window.share(text: "Notes", link: "https://www.swift.org"))
                             }.id("share")
                         }
@@ -509,7 +509,7 @@
                 Covered(ApplicationContract.currentTime),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<ClockTime>()
-                s.start { VStack { Button("Time").onClicked(gate: .ignoreWhileRunning) { said.values.append(try await ClockTime.now()) }.id("ask") } }
+                s.start { VStack { Button("Time").onClicked(.ignoreWhileRunning) { said.values.append(try await ClockTime.now()) }.id("ask") } }
 
                 try s.perform(.activate, on: s.element("ask"))
                 s.settle { !said.values.isEmpty }
@@ -523,7 +523,7 @@
                 let said = Received<String>()
                 s.start {
                     VStack {
-                        Button("Zones").onClicked(gate: .ignoreWhileRunning) {
+                        Button("Zones").onClicked(.ignoreWhileRunning) {
                             let zone = try await TimeZoneInfo.local()
                             let local = try await TimeZoneInfo.utcOffset(of: zone)
                             let own = try await TimeZoneInfo.utcOffset()
@@ -542,7 +542,7 @@
                 let said = Received<[Int64]>()
                 s.start {
                     VStack {
-                        Button("Offsets").onClicked(gate: .ignoreWhileRunning) {
+                        Button("Offsets").onClicked(.ignoreWhileRunning) {
                             let tokyo = try await TimeZoneInfo.utcOffset(of: "Asia/Tokyo")
                             let winter = try await TimeZoneInfo.utcOffset(
                                 of: "Europe/Warsaw", on: CalendarDate(year: 2026, month: 1, day: 15))
@@ -563,7 +563,7 @@
                 let said = Received<String>()
                 s.start {
                     VStack {
-                        Button("Nowhere").onClicked(gate: .ignoreWhileRunning) {
+                        Button("Nowhere").onClicked(.ignoreWhileRunning) {
                             do {
                                 _ = try await TimeZoneInfo.utcOffset(of: "Nowhere/Else")
                                 said.values.append("answered")
@@ -586,7 +586,7 @@
                     WithSessions { window, application in
                         VStack {
                             TextField("").id("field")
-                            Button("Done").onClicked(gate: .ignoreWhileRunning) { said.values.append(try await window.hideOnScreenKeyboard()) }.id("done")
+                            Button("Done").onClicked(.ignoreWhileRunning) { said.values.append(try await window.hideOnScreenKeyboard()) }.id("done")
                         }
                     }
                 }

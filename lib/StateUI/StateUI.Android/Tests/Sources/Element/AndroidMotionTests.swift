@@ -95,7 +95,7 @@ final class AndroidMotionTests: XCTestCase {
             let host = AndroidRenderer.running(clock: clock) {
                 VStack {
                     Text("moving").translationX(offset.projectedValue)
-                    Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                    Button("Go").onClicked(.ignoreWhileRunning) {
                         try await offset.projectedValue.journey.move(to: 100, .eased(.milliseconds(200), .linear)).arrived()
                     }
                 }

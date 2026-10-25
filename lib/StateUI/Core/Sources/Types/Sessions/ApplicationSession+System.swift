@@ -10,7 +10,7 @@ extension ApplicationSession {
     ///
     ///     @Environment(\.application) private var application
     ///
-    ///     Button("Swift").onClicked(gate: .ignoreWhileRunning) { try await application.launch("https://www.swift.org") }
+    ///     Button("Swift").onClicked(.ignoreWhileRunning) { try await application.launch("https://www.swift.org") }
     ///
     /// - Parameter address: the address, its scheme included.
     /// - Returns: whether an application took it; false where none opens its scheme.

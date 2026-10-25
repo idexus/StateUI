@@ -22,10 +22,10 @@ struct Watch {
     let run: ErasedChangeHandler
 
     /// What a change does while a run is under way.
-    let gate: any Gate
+    let gate: Gating
 
     /// A watch on one value. Written by `.onChanged`, never by hand.
-    init<Value: Equatable>(_ value: Value, gate: some Gate, run: @escaping ErasedChangeHandler) {
+    init<Value: Equatable>(_ value: Value, gate: Gating, run: @escaping ErasedChangeHandler) {
         self.value = value
         self.matches = { stored in (stored as? Value).map { $0 == value } }
         self.gate = gate
@@ -35,7 +35,7 @@ struct Watch {
     /// A watch whose handler is a step: one that does not await, which passes no gate.
     /// Design: docs/design/core/runs.md#a-step
     init<Value: Equatable>(_ value: Value, step: @escaping @MainActor (Any, Any) throws -> Void) {
-        self.init(value, gate: GatePolicy.none) { old, new in try step(old, new) }
+        self.init(value, gate: .own(.runConcurrently)) { old, new in try step(old, new) }
     }
 }
 
@@ -66,26 +66,35 @@ extension ModifiableElement {
         modified { $0.watches.append(Watch(value) { _, _ in try handler() }) }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what another change
+    /// The same, with a handler that awaits: its `policy` says what another change
     /// does while a run is under way - a newer query cancelling the search for
     /// the older one, say.
     ///
     ///     VStack { … }
-    ///         .onChanged(query, gate: .cancelPrevious) { try await search() }
+    ///         .onChanged(query, policy: .cancelPrevious) { try await search() }
     ///
     /// What the handler writes before its first suspension is sent in the same
     /// render.
     ///
     /// - Parameters:
     ///   - value: What to watch. Anything `Equatable`.
-    ///   - gate: what the handler passes through: what a change does while a run is under way.
+    ///   - policy: what the handler passes through: what a change does while a run is under way.
     ///   - handler: What to run once the value has moved.
     public func onChanged<Value: Equatable>(
         _ value: Value,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping EventHandler
     ) -> Modified {
-        modified { $0.watches.append(Watch(value, gate: gate) { _, _ in try await handler() }) }
+        modified { $0.watches.append(Watch(value, gate: .own(policy)) { _, _ in try await handler() }) }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onChanged<Value: Equatable>(
+        _ value: Value,
+        gate: Gate,
+        _ handler: @escaping EventHandler
+    ) -> Modified {
+        modified { $0.watches.append(Watch(value, gate: .shared(gate)) { _, _ in try await handler() }) }
     }
 
     /// The same, handed the value it was and the value it now is.
@@ -117,20 +126,36 @@ extension ModifiableElement {
     }
 
     /// The same, with a handler that awaits, handed the value it was and the
-    /// value it now is; its `gate` says what another change does while a run is
+    /// value it now is; its `policy` says what another change does while a run is
     /// under way.
     ///
     /// - Parameters:
     ///   - value: What to watch. Anything `Equatable`.
-    ///   - gate: what the handler passes through: what a change does while a run is under way.
+    ///   - policy: what the handler passes through: what a change does while a run is under way.
     ///   - handler: What to run, given the old value and the new one.
     public func onChanged<Value: Equatable>(
         _ value: Value,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<Value, Value>
     ) -> Modified {
         modified {
-            $0.watches.append(Watch(value, gate: gate) { old, new in
+            $0.watches.append(Watch(value, gate: .own(policy)) { old, new in
+                // Both casts hold by construction: a slot is written by one modifier.
+                guard let old = old as? Value, let new = new as? Value else { return }
+
+                try await handler(old, new)
+            })
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onChanged<Value: Equatable>(
+        _ value: Value,
+        gate: Gate,
+        _ handler: @escaping ValueEventHandler<Value, Value>
+    ) -> Modified {
+        modified {
+            $0.watches.append(Watch(value, gate: .shared(gate)) { old, new in
                 // Both casts hold by construction: a slot is written by one modifier.
                 guard let old = old as? Value, let new = new as? Value else { return }
 

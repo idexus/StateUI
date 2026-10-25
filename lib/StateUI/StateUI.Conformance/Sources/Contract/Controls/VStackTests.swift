@@ -90,7 +90,7 @@
                                 }
                             }
                         }
-                        Button("Focus").onClicked(gate: .ignoreWhileRunning) { took.values.append(try await aim.focus()) }
+                        Button("Focus").onClicked(.ignoreWhileRunning) { took.values.append(try await aim.focus()) }
                             .id("focus")
                         Button("Rotate").onClicked {
                             order.wrappedValue = Array(order.wrappedValue.dropFirst()) + [order.wrappedValue[0]]

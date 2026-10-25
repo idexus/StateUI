@@ -413,7 +413,7 @@ partial rectangle.
 
 The handler runs as an ordinary StateUI event after layout. It may write state;
 such a write requests a later description. A handler that awaits names what a
-newer rectangle does while it runs: `.onFrameChanged(gate: .cancelPrevious) { frame
+newer rectangle does while it runs: `.onFrameChanged(.cancelPrevious) { frame
 in … }`. The
 report never changes layout by itself. A visual transform never reports,
 because it does not alter the layout rectangle; an animated layout property
@@ -856,7 +856,7 @@ struct Board: View {
 let go past 120 points up - or thrown far enough that way - it flies on out
 of the room, and the handler runs once it has left, where the application
 removes the item. Short of it, the view goes back. A handler that awaits takes
-a gate, as an event's does - `.onItemDismissed(.up, beyond: 120, gate:
+a gate, as an event's does - `.onItemDismissed(.up, beyond: 120, policy:
 .ignoreWhileRunning) { card in try await archive(card) }` - and what it runs
 ends with the layout.
 

@@ -12,17 +12,17 @@ An event's handlers keep their runs under the event's id in an
 `EventRegistration`, each handler its `RunOwner`: who started a run. The id
 survives renders, so a run started by one render's closure is still its
 owner's when the next render writes the closure again. A run is started in a
-`RunSlot` - a gatekeeper's, or the owner's own where the gate is a policy
-alone - which holds the runs under way and waiting, and decides, by the
-gate's policy, what an event that comes while one is under way does.
+`RunSlot` - a shared gate's, or the owner's own where the handler was given
+a policy alone - which holds the runs under way and waiting, and decides, by
+the policy, what an event that comes while one is under way does.
 `RunSlot.start` makes every run's task at once - one that starts, waits in the
 slot for its turn, or is let go - so a run that never starts still ends and
 nothing keeps its handler.
 
 ## A gate
 
-An awaiting handler passes through a `Gate`, which says what an event does
-while a run is under way through it:
+An awaiting handler passes through a gate, whose policy says what an event
+does while a run is under way through it:
 
 ```text
   .ignoreWhileRunning   the event is let go - a save, an order, a sign-in
@@ -30,27 +30,39 @@ while a run is under way through it:
                         starts - a search, a movement to a new place
   .waitForPrevious      the event waits; when no run is under way, the oldest
                         waiting one runs - one at a time, in the order they came
-  .none                 nothing is held back: this run starts beside the ones
+  .runConcurrently      nothing is held back: this run starts beside the ones
                         under way
 ```
 
-A gate is a handler's own or shared, and its type says which. A
-`GatePolicy` - `gate: .ignoreWhileRunning` and the rest - is the handler's
-own gate: its runs stand in its owner's slot, so two buttons written with
-`.ignoreWhileRunning` never hold each other back, and a policy has no
-`isBusy` to read. A `Gatekeeper` kept in a state or a model is shared by every handler
-and task written with it, from one control or several - a save and a delete
-of one document - and its `isBusy`, a state, says whether a run is under way
-or waits through it. `Gate` is the protocol both meet, what `gate:` takes.
-The four policies are static members of that protocol alone, not cases of an
-enumeration of their own, so `.none` names one thing whether it is given as a
-gate or to `Gatekeeper(_:)`. An element leaving supersedes its owners' runs
-alone, so behind a gatekeeper the others' runs stand.
+A gate is a handler's own or shared, and the argument's label says which. A
+`GatePolicy` given alone - `.onClicked(.ignoreWhileRunning)`, or
+`policy: .cancelPrevious` after the event's own arguments, as in
+`.onChanged(query, policy: .cancelPrevious)` - gives the handler a gate of its
+own: its runs stand in its owner's slot, so two buttons written with
+`.ignoreWhileRunning` never hold each other back, and a policy has no `isBusy`
+to read. A `Gate` kept in a state or a model, always given as `gate:`, is
+shared by every handler and task written with it, from one control or several
+- a save and a delete of one document - and its `isBusy`, a state, says
+whether a run is under way or waits through it. Every awaiting modifier has
+both overloads; inside the library a handler keeps `Gating`, `.own` or
+`.shared`, and its case says where a run goes - no cast decides it at run
+time. The policies are a struct's static members over an internal kind, so
+`.runConcurrently` names one thing given alone or to `Gate(_:)`. An element
+leaving supersedes its owners' runs alone, so behind a shared gate the
+others' runs stand.
 
-There is no default. Each event modifier comes two ways: a step, `() throws
--> Void`, which Swift picks for a closure with no `await`, and the same with
-a `gate:`, for a handler that awaits; an awaiting closure with no gate meets
-only the step, and does not compile. `.onCreated` and `.onDestroying` take no
+The policy stands first and unlabelled where the modifier takes nothing else,
+and `policy:` follows the event's own arguments, which keep the step
+overload's spelling: a parameter after a variadic - `.onKeyPressed`'s keys -
+needs a label, and a parameter's label is fixed, so a modifier whose own
+arguments have defaults - `.onEndReached(within:)`, `.onSwiped(direction:
+threshold:)` - has one overload with none of them, the policy first, and
+others that name them, the policy after: one call, one spelling.
+
+There is no default. Each event modifier comes as a step, `() throws ->
+Void`, which Swift picks for a closure with no `await`, and the same with a
+policy or a `gate:`, for a handler that awaits; an awaiting closure with
+neither meets only the step, and does not compile. `.onCreated` and `.onDestroying` take no
 gate, as each comes once, and `.draggable(text:canDrag:onDragStarting:)` takes
 a step alone. The compiler asks the question where there is one, and only
 there.
@@ -62,11 +74,12 @@ handlers' work to end, rather than a length of time, and the tally's `runs`
 
 ## A step
 
-A gate is written only where a body awaits, in the library as in an
-application (`GateSourceTests`). A step is written with none and kept with
+A policy or a gate is written only where a body awaits, in the library as in
+an application (`GateSourceTests` reads `.runConcurrently` given before a
+body). A step is written with none and kept with
 none: a modifier's step overload goes down by step roads to the handler's
 storage - `Handler(step:)`, `ValueHandler(step:)`, a watch's own - and never
-through its gated twin with `gate: .none`. The two overloads mirror each
+through its gated twin with `.runConcurrently`. The overloads mirror each
 other, each naming the event it hears, which is where the matrix's pages read
 a modifier's name from; what they would share beyond a line or two stands
 once beside them - `.onKeyPressed`'s keys, `.onVisualStateChanged`'s states, a
@@ -74,14 +87,14 @@ frame's last answer. A composed control keeps the author's handler as a
 `ValueHandler` until an element it makes hears the event.
 
 The step initializers are where a step meets its runtime: it runs through a
-`.none` gate of its own and never suspends. It takes no road of its own at
+`.runConcurrently` gate of its own and never suspends. It takes no road of its own at
 run time: an event dispatched to a step costs a couple of microseconds, so
 even a drag's 120 events a second spend a fraction of a millisecond.
 
 ## Work started from code
 
 Work a model starts from its own code - an autosave, a refresh a timer asks
-for - passes a gatekeeper through `Task(gate:)`, as a handler written with
+for - passes a shared gate through `Task(gate:)`, as a handler written with
 that gate would: the policy holds for it, it makes the gate busy, and it holds
 back, or is held back by, the events through the same gate. The task it
 returns is the run's own, the one `RunSlot.start` makes for every run:
@@ -91,7 +104,7 @@ once, through a job on the UI thread - and a task the gate lets go ends at
 once, its work not run. Its owner is the gate's own `RunOwner`, which nothing orphans, so no
 element leaving ends the run; started inside a handler, it runs under a
 `HandlerRun` of its own, not the handler's. A policy is no gate for a task -
-it has no element to keep its runs - so `Task(gate:)` takes a `Gatekeeper`
+it has no element to keep its runs - so `Task(gate:)` takes a `Gate`
 alone.
 
 ## A superseded run

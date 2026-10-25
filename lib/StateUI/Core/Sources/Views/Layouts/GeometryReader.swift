@@ -52,11 +52,33 @@ extension View {
         }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
+    public func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Modified {
+        let last = LastFrame()
+
+        return onEvent(ViewContract.frameChanged, policy: policy) { numbers in
+            if let frame = last.changed(numbers, in: .parent) { try await handler(frame) }
+        }
+    }
+
+    /// The same, answered in `space`.
+    public func onFrameChanged(
+        in space: CoordinateSpace,
+        policy: GatePolicy,
+        _ handler: @escaping ValueEventHandler<Rect>
+    ) -> Modified {
+        let last = LastFrame()
+
+        return onEvent(ViewContract.frameChanged, policy: policy) { numbers in
+            if let frame = last.changed(numbers, in: space) { try await handler(frame) }
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
     public func onFrameChanged(
         in space: CoordinateSpace = .parent,
-        gate: some Gate,
+        gate: Gate,
         _ handler: @escaping ValueEventHandler<Rect>
     ) -> Modified {
         let last = LastFrame()

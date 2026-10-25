@@ -102,9 +102,14 @@ public struct Map: ElementView, MapProperties {
         onEvent(MapContract.mapClicked, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onMapClicked(gate: some Gate, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
+    public func onMapClicked(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
+        onEvent(MapContract.mapClicked, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onMapClicked(gate: Gate, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
         onEvent(MapContract.mapClicked, gate: gate, handler)
     }
 }
@@ -172,9 +177,16 @@ public struct Marker: Element {
         return copy
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onSelected(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onSelected(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
+        var copy = self
+        copy.node.addHandler(MarkerContract.selected, policy: policy, handler)
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onSelected(gate: Gate, _ handler: @escaping EventHandler) -> Self {
         var copy = self
         copy.node.addHandler(MarkerContract.selected, gate: gate, handler)
         return copy
@@ -188,9 +200,16 @@ public struct Marker: Element {
         return copy
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDetailsClicked(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onDetailsClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
+        var copy = self
+        copy.node.addHandler(MarkerContract.detailsClicked, policy: policy, handler)
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onDetailsClicked(gate: Gate, _ handler: @escaping EventHandler) -> Self {
         var copy = self
         copy.node.addHandler(MarkerContract.detailsClicked, gate: gate, handler)
         return copy
@@ -289,7 +308,7 @@ extension Aim where Target == Map {
     ///     Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
     ///         .aim(map)
     ///
-    ///     Button("Old Town").onClicked(gate: .cancelPrevious) {
+    ///     Button("Old Town").onClicked(.cancelPrevious) {
     ///         try await map.moveToRegion(
     ///             MapRegion(center: Location(latitude: 52.2497, longitude: 21.0135), radiusMeters: 800))
     ///     }

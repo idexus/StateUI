@@ -42,7 +42,7 @@ extension ControlDictionary {
 
                 var body: some View {
                     Button("About")
-                        .onClicked(gate: .ignoreWhileRunning) { try await window.alert("Notes", message: "Version 1.0") }
+                        .onClicked(.ignoreWhileRunning) { try await window.alert("Notes", message: "Version 1.0") }
                 }
             }
             """#),
@@ -577,7 +577,7 @@ extension ControlDictionary {
             Grid {
                 Button("Back")
                     .isEnabled(canGoBack)
-                    .onClicked(gate: .ignoreWhileRunning) { try await browser.goBack() }
+                    .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
                 WebView("https://example.com")
                     .canGoBack($canGoBack)
                     .aim(browser)

@@ -25,9 +25,14 @@ extension ActionElement where Modified == Self {
         modified { $0.addHandler(ActionElementContract.clicked.token, handler) }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onClicked(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
-        modified { $0.addHandler(ActionElementContract.clicked.token, gate: gate, handler) }
+    public func onClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        modified { $0.addHandler(ActionElementContract.clicked.token, gate: .own(policy), handler) }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onClicked(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+        modified { $0.addHandler(ActionElementContract.clicked.token, gate: .shared(gate), handler) }
     }
 }

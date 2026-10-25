@@ -66,9 +66,14 @@ public struct CheckBox: ElementView, TextualElement, TintElement, CheckBoxProper
         onEvent(CheckBoxContract.toggled, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onToggled(gate: some Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Modified {
+    public func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> Modified {
+        onEvent(CheckBoxContract.toggled, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Modified {
         onEvent(CheckBoxContract.toggled, gate: gate, handler)
     }
 }

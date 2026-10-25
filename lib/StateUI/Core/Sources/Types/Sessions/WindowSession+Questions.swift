@@ -9,7 +9,7 @@ extension WindowSession {
     ///
     ///     @Environment(\.window) private var window
     ///
-    ///     Button("Save").onClicked(gate: .ignoreWhileRunning) {
+    ///     Button("Save").onClicked(.ignoreWhileRunning) {
     ///         try await window.alert("Saved", message: "The draft is safe")
     ///     }
     ///

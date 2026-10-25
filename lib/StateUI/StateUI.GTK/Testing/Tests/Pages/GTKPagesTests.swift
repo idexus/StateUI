@@ -655,10 +655,10 @@ private struct SheetedOpeningPage: View {
     var body: some View {
         let application = self.application
         return VStack {
-            Button("Open").onClicked(gate: .ignoreWhileRunning) {
+            Button("Open").onClicked(.ignoreWhileRunning) {
                 try await application.openWindow(WindowType("pages.sheeted"))
             }
-            Button("Close").onClicked(gate: .ignoreWhileRunning) {
+            Button("Close").onClicked(.ignoreWhileRunning) {
                 try await application.closeWindow(WindowType("pages.sheeted"))
             }
         }

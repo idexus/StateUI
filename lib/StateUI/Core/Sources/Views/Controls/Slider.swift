@@ -87,9 +87,14 @@ public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
         onEvent(SliderContract.valueChanged, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onValueChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<Double>) -> Modified {
+    public func onValueChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Double>) -> Modified {
+        onEvent(SliderContract.valueChanged, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onValueChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Double>) -> Modified {
         onEvent(SliderContract.valueChanged, gate: gate, handler)
     }
 
@@ -99,9 +104,14 @@ public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
         onEvent(SliderContract.pressed, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPressed(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onPressed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(SliderContract.pressed, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onPressed(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(SliderContract.pressed, gate: gate, handler)
     }
 
@@ -111,9 +121,14 @@ public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
         onEvent(SliderContract.released, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onReleased(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onReleased(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(SliderContract.released, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onReleased(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(SliderContract.released, gate: gate, handler)
     }
 }

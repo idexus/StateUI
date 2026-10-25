@@ -461,7 +461,7 @@ final class ChangesTests: XCTestCase {
 
         func tree(_ value: Int) -> Node {
             VStack { TextField("\(value)").id("card").aim(card) }
-                .onChanged(value, gate: .cancelPrevious) { finished.wrappedValue = try await card.focus() }
+                .onChanged(value, policy: .cancelPrevious) { finished.wrappedValue = try await card.focus() }
                 .node
         }
 

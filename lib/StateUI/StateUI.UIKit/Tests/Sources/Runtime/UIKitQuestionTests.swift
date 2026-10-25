@@ -14,7 +14,7 @@ private struct Choosing: View {
 
     var body: some View {
         VStack {
-            Button("Share").onClicked(gate: .ignoreWhileRunning) {
+            Button("Share").onClicked(.ignoreWhileRunning) {
                 answer = try await window.chooseAction("Share via", among: ["Mail", "Message"]) ?? "none"
             }
             Text(answer)

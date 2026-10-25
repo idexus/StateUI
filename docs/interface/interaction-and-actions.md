@@ -36,7 +36,7 @@ its handler starts, so the handler observes the new state. Programmatic writes
 do not dispatch user events.
 
 A handler may throw. One that awaits says what its event does when it comes
-again while it runs - `.onClicked(gate: .ignoreWhileRunning) { … }` - and continues on
+again while it runs - `.onClicked(.ignoreWhileRunning) { … }` - and continues on
 StateUI's UI isolation domain after each suspension. An uncaught error is
 reported through the host rather than being discarded.
 [Concurrency](concurrency.md#when-the-event-comes-again) defines the execution
@@ -129,7 +129,7 @@ kinds it lists:
 
 ```swift quote
 ZStack { Text("Drop a report here") }
-    .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], gate: .waitForPrevious) { files in
+    .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
         report = String(decoding: try await files[0].read(), as: UTF8.self)
     }
 ```
@@ -155,8 +155,8 @@ struct FocusForm: View {
     var body: some View {
         VStack {
             TextField($text).aim(field)
-            Button("Edit").onClicked(gate: .ignoreWhileRunning) { try await field.focus() }
-            Button("Done").onClicked(gate: .ignoreWhileRunning) { try await field.unfocus() }
+            Button("Edit").onClicked(.ignoreWhileRunning) { try await field.focus() }
+            Button("Done").onClicked(.ignoreWhileRunning) { try await field.unfocus() }
         }
     }
 }
@@ -183,7 +183,7 @@ Dialogs are sequential host actions rather than tree nodes, asked of the window
 a view stands in - the session it reads with `@Environment(\.window)`:
 
 ```swift quote
-Button("Delete").onClicked(gate: .ignoreWhileRunning) {
+Button("Delete").onClicked(.ignoreWhileRunning) {
     let confirmed = try await window.confirm(
         "Delete draft?",
         message: "This cannot be undone",
@@ -226,17 +226,17 @@ struct ReportPage: View {
 
     var body: some View {
         VStack {
-            Button("Save report…").onClicked(gate: .ignoreWhileRunning) {
+            Button("Save report…").onClicked(.ignoreWhileRunning) {
                 let page = FileType("HTML page", extensions: ["html"])
                 let saved = try await window.saveFile(
                     Array(report.utf8), name: "Report", types: [page])
                 if let saved { try await saved.launch() }
             }
-            Button("Open…").onClicked(gate: .ignoreWhileRunning) {
+            Button("Open…").onClicked(.ignoreWhileRunning) {
                 guard let file = try await window.openFile() else { return }
                 opened = String(decoding: try await file.read(), as: UTF8.self)
             }
-            Button("Help").onClicked(gate: .ignoreWhileRunning) {
+            Button("Help").onClicked(.ignoreWhileRunning) {
                 try await application.launch("https://www.swift.org")
             }
         }
@@ -272,7 +272,7 @@ struct NotePage: View {
     @State private var note = ""
 
     var body: some View {
-        Button("Open a note…").onClicked(gate: .ignoreWhileRunning) {
+        Button("Open a note…").onClicked(.ignoreWhileRunning) {
             guard let file = try await window.openFile() else { return }
             let start = try await file.read(atMost: 1025)
             note = start.count > 1024
@@ -297,7 +297,7 @@ struct LinkRow: View {
     var body: some View {
         HStack {
             Text(link)
-            Button("Copy").onClicked(gate: .ignoreWhileRunning) {
+            Button("Copy").onClicked(.ignoreWhileRunning) {
                 try await application.clipboard.write(text: link)
             }
         }
@@ -321,7 +321,7 @@ struct TalkPage: View {
     let talk = "https://www.swift.org"
 
     var body: some View {
-        Button("Share the talk").onClicked(gate: .ignoreWhileRunning) {
+        Button("Share the talk").onClicked(.ignoreWhileRunning) {
             try await window.share(text: "The talk I mentioned", link: talk)
         }
     }
@@ -345,7 +345,7 @@ struct WeatherPage: View {
 
     var body: some View {
         VStack {
-            Button("Weather").onClicked(gate: .cancelPrevious) {
+            Button("Weather").onClicked(.cancelPrevious) {
                 let response = try await application.send(HTTPRequest(
                     "https://api.open-meteo.com/v1/forecast?latitude=50.06&longitude=19.94&current=temperature_2m"))
                 said = response.status == 200 ? response.text : "The server answered \(response.status)"
@@ -390,7 +390,7 @@ enum NotesContract: ApplicationTier {
 
 @State var location = ""
 
-Button("Export").onClicked(gate: .ignoreWhileRunning) {
+Button("Export").onClicked(.ignoreWhileRunning) {
     location = try await stateUICall(NotesContract.exportDocument, "draft-7")
 }
 ```
@@ -455,7 +455,7 @@ struct ImportStatus: View {
 ```
 
 A handler that awaits names what a raise does while it runs, as an element's
-event does: `.onHostEvent(NotesContract.importFinished, gate: .waitForPrevious) {
+event does: `.onHostEvent(NotesContract.importFinished, policy: .waitForPrevious) {
 location in … }`. Code that no view stands for - an application's model -
 subscribes with `HostEvents.on`, which answers the subscription: it is kept -
 dropping it is a compiler warning - and cancelled with `cancel()` when its
@@ -662,7 +662,7 @@ and the keys held with it (`KeyPress`): Shift, where it was - Tab and
 Shift-Tab are one key told apart by it. A key held with the platform's own key
 or Alt belongs to shortcuts. Besides letters, digits, Return, Escape, Delete,
 the arrows and F1 to F12, a view takes Tab, Space, Home, End, Page Up and Page
-Down. `.onKeyPressed(.escape, gate:
+Down. `.onKeyPressed(.escape, policy:
 .ignoreWhileRunning) { _ in try await close() }` takes a handler that awaits.
 
 ## Tooltips

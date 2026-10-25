@@ -221,14 +221,14 @@ reasons about threads in every handler.
 
 A handler with no `await` runs whole inside its event and names nothing. A
 handler that awaits can still be running when its event comes again, so it
-names a gate, which says what happens then: the event is let go, cancels the
+names a policy, which says what happens then: the event is let go, cancels the
 run before it, waits, or runs beside it
 ([When the event comes again](../interface/concurrency.md#when-the-event-comes-again)):
 
 ```swift
 @MainActor
 final class Document {
-    let saving = Gatekeeper(.ignoreWhileRunning)
+    let saving = Gate(.ignoreWhileRunning)
 
     func save() async {}
     func autosave() { Task(gate: saving) { await self.save() } }
@@ -245,7 +245,7 @@ struct Toolbar: View {
                 .isEnabled(!document.saving.isBusy)
                 .onClicked(gate: document.saving) { await document.save() }
             SearchField($query)
-                .onTextChanged(gate: .cancelPrevious) { text in
+                .onTextChanged(.cancelPrevious) { text in
                     try await Task.sleep(for: .milliseconds(250))
                     found = text
                 }
@@ -255,15 +255,16 @@ struct Toolbar: View {
 ```
 
 - **The compiler asks the question, and only where there is one.** An
-  awaiting handler without a gate does not compile, and the message says what
-  to write; a handler with no `await` takes none.
-- **One gate for everything that touches one thing.** A policy given as the
-  gate is the handler's own; a `Gatekeeper` is shared by every handler and
-  task written with it - two buttons, an autosave - and its `isBusy` is a
-  state a body reads. The type says which kind a gate is: only a gatekeeper
-  has `isBusy`, and only it takes a task.
-- **One spelling.** Work passes a gate written `gate:` wherever it starts, an
-  event or the application's code.
+  awaiting handler without a policy does not compile, and the message says
+  what to write; a handler with no `await` takes none.
+- **One gate for everything that touches one thing.** A policy given alone is
+  the handler's own gate; a `Gate` is shared by every handler and task written
+  with it - two buttons, an autosave - and its `isBusy` is a state a body
+  reads. The label says which kind a handler has: a policy needs none, or
+  `policy:` after the event's own arguments, and a shared gate is always
+  `gate:` - only it has `isBusy`, and only it takes a task.
+- **One spelling.** Shared work passes its gate written `gate:` wherever it
+  starts, an event or the application's code.
 
 **Deliberately rejected:** a default gate, which would hide the one question
 an awaiting handler has to answer; a policy on each event

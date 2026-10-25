@@ -125,7 +125,7 @@
                         .phase(phase.projectedValue)
                         .motion(.eased(.milliseconds(400), .linear))
                         .width(100).height(40)
-                        Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                        Button("Go").onClicked(.ignoreWhileRunning) {
                             arrived.values.append(try await phase.projectedValue.journey.move(to: 4).arrived())
                         }
                         .id("go")
@@ -165,7 +165,7 @@
                         .phase(phase.projectedValue)
                         .motion(.eased(.milliseconds(400), .linear))
                         .width(100).height(40)
-                        Button("Turn").onClicked(gate: .ignoreWhileRunning) {
+                        Button("Turn").onClicked(.ignoreWhileRunning) {
                             arrived.values.append(try await phase.projectedValue.journey.move(to: Orbit(turn: 4)).arrived())
                         }
                         .id("turn")

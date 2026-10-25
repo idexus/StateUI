@@ -199,7 +199,7 @@ extension [PropValue] {
 /// What a handler that awaits runs - through a gate, or once by `.onCreated`
 /// and `.onDestroying`:
 ///
-///     Button("Save").onClicked(gate: .ignoreWhileRunning) { try await model.save() }
+///     Button("Save").onClicked(.ignoreWhileRunning) { try await model.save() }
 ///
 /// It runs on `@MainActor`, up to its first `await` inside its event; what it
 /// throws is reported to the host.
@@ -208,8 +208,8 @@ public typealias EventHandler = @MainActor () async throws -> Void
 /// What an event that carries values runs - one parameter for each, in the order
 /// the event declares them. An event with nothing to say takes an `EventHandler`.
 ///
-///     TextField("").onTextChanged(gate: .cancelPrevious) { text in try await model.search(text) }
-///     let heard = HostEvents.on(NotesContract.batteryChanged, gate: .cancelPrevious) { level, _ in try await log(level) }
+///     TextField("").onTextChanged(.cancelPrevious) { text in try await model.search(text) }
+///     let heard = HostEvents.on(NotesContract.batteryChanged, policy: .cancelPrevious) { level, _ in try await log(level) }
 public typealias ValueEventHandler<each Value> = @MainActor (repeat each Value) async throws -> Void
 
 /// One element of the UI tree: its type, properties, children and handlers.
@@ -353,7 +353,7 @@ public struct Node {
 
     /// Adds a handler beside any the event already has, never instead of it; it starts runs as an owner of its own.
     /// Design: docs/design/core/identity-and-diffing.md#handlers-and-their-ids
-    mutating func addHandler(_ event: Event, gate: some Gate, _ handler: @escaping EventHandler) {
+    mutating func addHandler(_ event: Event, gate: Gating, _ handler: @escaping EventHandler) {
         events[event, default: []].append(Handler(run: handler, gate: gate))
     }
 

@@ -78,9 +78,14 @@ public struct SearchField: TextInput, TextualElement, FontElement, TextAlignment
         onEvent(SearchFieldContract.submitted, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onSubmitted(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onSubmitted(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(SearchFieldContract.submitted, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onSubmitted(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(SearchFieldContract.submitted, gate: gate, handler)
     }
 }

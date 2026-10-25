@@ -79,7 +79,7 @@ private struct Saving: View {
     @Environment(\.window) private var window
 
     var body: some View {
-        Button("Save").onClicked(gate: .ignoreWhileRunning) {
+        Button("Save").onClicked(.ignoreWhileRunning) {
             _ = try await window.saveFile(Array("Kept".utf8), name: "Note", types: [FileType("Text", extensions: ["txt"])])
         }
     }
@@ -90,7 +90,7 @@ private struct Opening: View {
     @Environment(\.window) private var window
 
     var body: some View {
-        Button("Open").onClicked(gate: .ignoreWhileRunning) {
+        Button("Open").onClicked(.ignoreWhileRunning) {
             _ = try await window.openFiles(types: [
                 FileType("Text", extensions: ["txt", "md"]), FileType("Web page", extensions: ["html"]),
             ])

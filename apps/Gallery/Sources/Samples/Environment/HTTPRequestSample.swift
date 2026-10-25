@@ -19,7 +19,7 @@ struct HTTPRequestSample: SampleContent, ExampleContent {
 
             Button("Weather in Kraków")
                 .accessibilityIdentifier("httpRequest.weather")
-                .onClicked(gate: .cancelPrevious) {
+                .onClicked(.cancelPrevious) {
                     said = "Asking…"
                     do {
                         let response = try await application.send(HTTPRequest(

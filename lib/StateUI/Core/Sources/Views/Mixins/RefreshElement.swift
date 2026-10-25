@@ -13,18 +13,23 @@ extension RefreshElement {
         onEvent(RefreshElementContract.refreshRequested, handler)
     }
 
-    /// The same, with a handler that awaits - a reload does: its `gate` says what a pull does while a run is under
+    /// The same, with a handler that awaits - a reload does: its `policy` says what a pull does while a run is under
     /// way. The spinner shows while `isRefreshing` says so.
     ///
     ///     @State private var refreshing = false
     ///
     ///     ItemsView(mail) { MailRow($0) }
     ///         .isRefreshing($refreshing)
-    ///         .onRefreshRequested(gate: .ignoreWhileRunning) {
+    ///         .onRefreshRequested(.ignoreWhileRunning) {
     ///             defer { refreshing = false }
     ///             try await inbox.reload()
     ///         }
-    public func onRefreshRequested(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onRefreshRequested(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(RefreshElementContract.refreshRequested, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onRefreshRequested(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(RefreshElementContract.refreshRequested, gate: gate, handler)
     }
 

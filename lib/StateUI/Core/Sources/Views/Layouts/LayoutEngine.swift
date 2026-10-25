@@ -386,10 +386,17 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         return copy
     }
 
-    /// The same, with a handler that awaits: its `gate` says what a tap does while a run is under way.
-    public func onItemTapped(gate: some Gate, _ handler: @escaping ValueEventHandler<Items.Element>) -> Self {
+    /// The same, with a handler that awaits: its `policy` says what a tap does while a run is under way.
+    public func onItemTapped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Items.Element>) -> Self {
         var copy = self
-        copy.tapped = ValueHandler(run: handler, gate: gate)
+        copy.tapped = ValueHandler(run: handler, gate: .own(policy))
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onItemTapped(gate: Gate, _ handler: @escaping ValueEventHandler<Items.Element>) -> Self {
+        var copy = self
+        copy.tapped = ValueHandler(run: handler, gate: .shared(gate))
         return copy
     }
 
@@ -440,17 +447,28 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         return copy
     }
 
-    /// The same, with a handler that awaits - an archive does: its `gate` says what another view dismissed does
+    /// The same, with a handler that awaits - an archive does: its `policy` says what another view dismissed does
     /// while a run is under way.
     ///
-    ///     .onItemDismissed(.up, beyond: 120, gate: .cancelPrevious) { card in try await archive(card) }
+    ///     .onItemDismissed(.up, beyond: 120, policy: .cancelPrevious) { card in try await archive(card) }
     public func onItemDismissed(
-        _ directions: SwipeDirection, beyond: Double, gate: some Gate,
+        _ directions: SwipeDirection, beyond: Double, policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<Items.Element>
     ) -> Self {
         var copy = self
         copy.dismissal = LayoutDismissal(
-            directions: directions, beyond: beyond, handler: ValueHandler(run: handler, gate: gate))
+            directions: directions, beyond: beyond, handler: ValueHandler(run: handler, gate: .own(policy)))
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onItemDismissed(
+        _ directions: SwipeDirection, beyond: Double, gate: Gate,
+        _ handler: @escaping ValueEventHandler<Items.Element>
+    ) -> Self {
+        var copy = self
+        copy.dismissal = LayoutDismissal(
+            directions: directions, beyond: beyond, handler: ValueHandler(run: handler, gate: .shared(gate)))
         return copy
     }
 

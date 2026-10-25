@@ -131,7 +131,7 @@ struct ListRow: View {
         // up and goes out again. It lights before the action starts - a
         // page's build holds the UI thread, which eats the frames beside it -
         // and goes out while the navigation runs.
-        .onTapped(gate: .ignoreWhileRunning) {
+        .onTapped(.ignoreWhileRunning) {
             try await lit.journey.move(to: 1, .eased(.milliseconds(60), .cubicOut)).arrived()
             let dark = lit.journey.move(to: 0, .eased(.milliseconds(250), .cubicOut))
             try await action()

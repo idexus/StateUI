@@ -8,7 +8,7 @@ extension WindowSession {
     /// Closes the on-screen keyboard over this window by taking the focus off whatever in it has it - reached
     /// without naming the view that opened it. A known view is released with `Aim.unfocus()`.
     ///
-    ///     Button("Done").onClicked(gate: .ignoreWhileRunning) { try await window.hideOnScreenKeyboard() }
+    ///     Button("Done").onClicked(.ignoreWhileRunning) { try await window.hideOnScreenKeyboard() }
     ///
     /// The host walks the window's page for whatever holds the focus - a search box in the navigation bar is an
     /// ordinary view, a page's title view, so the same walk reaches it. Unfocusing the search box is also what

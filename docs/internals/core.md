@@ -414,11 +414,12 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 
 ### Runs
 
-- **`Gate`**, **`GatePolicy`** and **`Gatekeeper`** are what a handler that
-  awaits passes through - what an event that comes while a run is under way
-  does: a handler's own policy, or a gate kept in a state and shared by every
-  handler and task written with it; **`Task(gate:)`** starts work from code
-  through a gatekeeper. *Application.*
+- **`GatePolicy`** and **`Gate`** are what a handler that awaits passes
+  through - what an event that comes while a run is under way does: a
+  handler's own policy, or a gate kept in a state and shared by every handler
+  and task written with it; **`Gating`** is which of the two a handler keeps,
+  and **`Task(gate:)`** starts work from code through a shared gate.
+  *Application.*
   ([A gate](../design/core/runs.md#a-gate),
   [work started from code](../design/core/runs.md#work-started-from-code))
 - **`RunSlot`**, **`RunOwner`**, **`RunSlots`** and **`EventRegistration`**
