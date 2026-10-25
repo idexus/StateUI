@@ -39,6 +39,7 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
         // Tab and Shift-Tab go through the views as they stand on screen: AppKit works the loop out.
         window.autorecalculatesKeyViewLoop = true
         super.init(window: window)
+        toolbar.window = window
         window.contentView = content
         content.drops = AppKitDrops { [weak host = node.host] in host?.dropTakers() ?? [:] }
         content.reportsLaidOut = { [weak host = node.host] in host?.runtime.frames.reportLaidOut() ?? false }
@@ -111,7 +112,10 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
                     perform: { [weak self] in if let self { self.stateUIOwner?.userDismissed(self) } })
                 : nil,
             words: words))
-        if window.toolbar !== toolbar.toolbar { window.toolbar = toolbar.toolbar }
+        guard window.toolbar !== toolbar.toolbar else { return }
+        // Its items first, else AppKit fills an empty bar from its defaults again; then it fits in its window.
+        window.toolbar = toolbar.toolbar
+        toolbar.fitAgain()
     }
 
     func present(over parent: NSWindow, actuallyPresent: Bool) {
@@ -125,6 +129,11 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
         if window.sheetParent != nil { parent.endSheet(window) }
         window.orderOut(nil)
         window.close()
+    }
+
+    /// The sheet resized: its bar fits itself to its width again.
+    func windowDidResize(_ notification: Notification) {
+        toolbar.fitAgain()
     }
 
     func windowShouldClose(_ sender: NSWindow) -> Bool {

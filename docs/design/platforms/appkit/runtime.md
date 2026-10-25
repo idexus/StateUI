@@ -145,10 +145,14 @@ brings its bar as the window's toolbar shows a stack's: the sheet's toolbar
 holds the way back, the page's actions and, unless the page says not, the
 button closing the sheet at the trailing edge, AppKit's `xmark` symbol saying
 the library's word for close; it writes false onto the sheet's state, as the
-user's Escape does ([sheets](../../host/pages.md#sheets)). The way back and
-the close button stand at the toolbar's high visibility priority, so a sheet's
-bar crowded with the page's actions moves the actions into AppKit's overflow
-before either. A sheet whose arrangement brings no bar has no toolbar at all. A sheet stands as large as
+user's Escape does ([sheets](../../host/pages.md#sheets)). The close button
+stands last: AppKit's own overflow chevron would stand after it, so a sheet's
+bar fits itself as the Web's does ([a bar with no
+room](../../host/pages.md#a-bar-with-no-room)) - its groups in reading order
+while every item stays in sight, the rest behind its More - tried on every
+composition and as the sheet resizes. The way back and the close button stand
+at the toolbar's high visibility priority, the last to go where even no group
+fits. A sheet whose arrangement brings no bar has no toolbar at all. A sheet stands as large as
 its page asks ([a sheet's size](../../host/pages.md#a-sheets-size)): at least
 320 x 180, 560 x 480 for a page asking none, at most the window it hangs from
 less 24 points a side; the user resizing it keeps that size until the page

@@ -114,7 +114,12 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     private weak var sidebar: NSSplitViewController?
     private var views: [NSToolbarItem.Identifier: NSView] = [:]
     private var actions: [NSToolbarItem.Identifier: AppKitToolbarAction] = [:]
-    private var overflowActions: [AppKitToolbarAction] = []
+    /// What stands behind the bar's More, group by group.
+    private var overflowGroups: [[AppKitToolbarAction]] = []
+    private var overflowActions: [AppKitToolbarAction] { overflowGroups.flatMap { $0 } }
+
+    /// The window the bar stands in, which a bar fitting itself measures in.
+    weak var window: NSWindow?
     /// The menu each item opening one shows, kept so its entries stand in one menu across compositions.
     private var menus: [NSToolbarItem.Identifier: NSMenu] = [:]
     private var words: ChromeWords?
@@ -137,9 +142,47 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     }
 
     /// Shows exactly this chrome. Items that stay keep their native item and
-    /// view; only what changed is written.
+    /// view; only what changed is written. A sheet's bar, ending with its close
+    /// button, fits itself (`BarFit`): AppKit's own overflow would stand after it.
+    /// Design: docs/design/platforms/appkit/runtime.md#sheets
     func apply(_ chrome: AppKitWindowChrome) {
         shown = chrome
+        guard chrome.close != nil else { return lay(chrome, behindMore: [chrome.overflow]) }
+        let standing = BarFit.standing(groups: chrome.leadingActions.count + chrome.actions.count) { trial in
+            lay(chrome, keeping: trial.groups)
+            return fitsItsWindow
+        }
+        lay(chrome, keeping: standing.groups)
+    }
+
+    /// Fits the bar to its window again, as the window resizes.
+    func fitAgain() {
+        if let shown, shown.close != nil { apply(shown) }
+    }
+
+    /// `chrome` with its first `count` groups in reading order on the bar, the others behind More.
+    private func lay(_ chrome: AppKitWindowChrome, keeping count: Int) {
+        var kept = chrome
+        kept.leadingActions = Array(chrome.leadingActions.prefix(count))
+        kept.actions = Array(chrome.actions.prefix(max(0, count - chrome.leadingActions.count)))
+        let left = Array((chrome.leadingActions + chrome.actions).dropFirst(count))
+        lay(kept, behindMore: BarFit.groupsBehind(left: left, placed: chrome.overflow))
+    }
+
+    /// Whether every item of the bar stands in sight in its window, none behind AppKit's own overflow; true where it
+    /// stands in no window.
+    private var fitsItsWindow: Bool {
+        guard let window, window.toolbar === toolbar else { return true }
+        window.layoutIfNeeded()
+        guard let visible = toolbar.visibleItems else { return true }
+        let spaces: Set<NSToolbarItem.Identifier> = [.space, .flexibleSpace]
+        let shown = Set(visible.map(\.itemIdentifier))
+        return toolbar.items.allSatisfy { spaces.contains($0.itemIdentifier) || shown.contains($0.itemIdentifier) }
+    }
+
+    /// Shows `chrome`, `behindMore` behind the bar's More.
+    private func lay(_ chrome: AppKitWindowChrome, behindMore: [[AppKitToolbarAction]]) {
+        let behind = behindMore.filter { !$0.isEmpty }
         var nextSlots: [ObjectIdentifier: AppKitToolbarSlot] = [:]
         /// A layout stands in the toolbar in its slot, and not at all while it holds nothing.
         func standing(_ view: NSView?) -> NSView? {
@@ -187,7 +230,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             nextViews[Self.center] = center
         }
         place(chrome.actions)
-        if !chrome.overflow.isEmpty {
+        if !behind.isEmpty {
             if !chrome.actions.isEmpty { nextIdentifiers.append(.space) }
             nextIdentifiers.append(Self.overflow)
         }
@@ -205,8 +248,8 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         let drawsAlike = nextActions.allSatisfy { identifier, action in
             actions[identifier].map { $0.draws(like: action) } ?? false
         }
-            && chrome.overflow.count == overflowActions.count
-            && zip(chrome.overflow, overflowActions).allSatisfy { $0.draws(like: $1) }
+            && behind.map(\.count) == overflowGroups.map(\.count)
+            && zip(behind.flatMap { $0 }, overflowActions).allSatisfy { $0.draws(like: $1) }
             && chrome.words == words
 
         identifiers = nextIdentifiers
@@ -214,7 +257,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         sidebar = chrome.sidebar
         views = nextViews
         actions = nextActions
-        overflowActions = chrome.overflow
+        overflowGroups = behind
         words = chrome.words
         toolbar.centeredItemIdentifiers = center == nil ? [] : [Self.center]
 
@@ -356,7 +399,15 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     private func overflowMenu() -> NSMenu {
         let menu = NSMenu()
         menu.autoenablesItems = false
+        // A line between two groups: before the first action of each group after the first.
+        var firsts: Set<Int> = []
+        var count = 0
+        for group in overflowGroups.dropLast() {
+            count += group.count
+            firsts.insert(count)
+        }
         for (index, action) in overflowActions.enumerated() {
+            if firsts.contains(index) { menu.addItem(.separator()) }
             let item = NSMenuItem(
                 title: action.title,
                 action: #selector(performOverflow(_:)),

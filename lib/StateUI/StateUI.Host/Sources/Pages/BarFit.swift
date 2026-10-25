@@ -50,10 +50,16 @@
     @MainActor
     public static func behind(left: [[MountedElement]], placed: [MountedElement]) -> [MenuEntry] {
         var entries: [MenuEntry] = []
-        for items in left + [placed] where !items.isEmpty {
+        for items in groupsBehind(left: left, placed: placed) {
             if !entries.isEmpty { entries.append(.separator) }
             entries += items.map(ButtonMenu.overflowEntry(of:))
         }
         return entries
+    }
+
+    /// The groups behind the bar's More, in its order: each group that left the bar, then those placed behind it
+    /// anyway - a host's own items for them, none empty.
+    public static func groupsBehind<Item>(left: [[Item]], placed: [Item]) -> [[Item]] {
+        (left + [placed]).filter { !$0.isEmpty }
     }
 }

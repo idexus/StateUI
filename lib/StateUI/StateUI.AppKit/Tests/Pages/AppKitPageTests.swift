@@ -1153,9 +1153,10 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertFalse(shows.wrappedValue, "the sheet closed")
     }
 
-    /// A sheet's bar crowded with its page's actions keeps its close button in sight: the actions give way first.
+    /// A sheet's bar crowded with its page's actions keeps its close button last: the groups that do not fit go
+    /// behind the bar's More, ahead of what stands there anyway, and AppKit hides nothing behind a chevron of its own.
     @MainActor
-    func testASheetsCloseButtonStaysInSightBesideManyActions() throws {
+    func testASheetsCloseButtonStandsLastBesideManyActions() throws {
         let shows = State(wrappedValue: true)
         let renderer = AppKitRenderer.running {
             Text("Beneath").sheet(isPresented: shows.projectedValue) {
@@ -1178,8 +1179,15 @@ final class AppKitPageTests: XCTestCase {
         window.layoutIfNeeded()
         window.displayIfNeeded()
 
-        let visible = sheet.toolbarForTesting.toolbar.visibleItems?.map(\.itemIdentifier) ?? []
-        XCTAssertTrue(visible.contains(AppKitWindowToolbar.close), "in sight: \(visible.map(\.rawValue))")
+        let toolbar = sheet.toolbarForTesting.toolbar
+        let spaces: Set<NSToolbarItem.Identifier> = [.space, .flexibleSpace]
+        let visible = (toolbar.visibleItems ?? []).map(\.itemIdentifier).filter { !spaces.contains($0) }
+        let items = toolbar.items.map(\.itemIdentifier).filter { !spaces.contains($0) }
+        XCTAssertEqual(visible, items, "AppKit hides none behind its chevron")
+        XCTAssertEqual(visible.last, AppKitWindowToolbar.close, "the close button last: \(visible.map(\.rawValue))")
+        let more = sheet.toolbarForTesting.overflowTitlesForTesting
+        XCTAssertEqual(more.last, "Delete", "what stood behind More anyway comes after the groups that left: \(more)")
+        XCTAssertGreaterThan(more.count, 1, "the groups that do not fit stand behind More")
     }
 
     /// A page that takes its way back away offers none in the window's
