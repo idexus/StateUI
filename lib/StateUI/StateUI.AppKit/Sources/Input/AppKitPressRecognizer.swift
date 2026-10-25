@@ -8,7 +8,8 @@ import AppKit
 
 /// A press on a view that hears taps, followed as a button follows one: from the mouse's press to its release, each
 /// phase told with where the pointer stands in the view. It recognizes nothing, so it keeps no other gesture from the
-/// press; one begun on a control inside - a button, a field - or on a view hearing its own taps is that one's.
+/// press; one begun on a control inside that a click works - a button, a field - or on a view hearing its own taps is
+/// that one's, while one on a label's words or a picture, which only show, is the view's.
 /// Design: docs/design/platforms/appkit/input.md#a-press-as-a-button-takes-it
 @MainActor
 final class AppKitPressRecognizer: NSGestureRecognizer {
@@ -59,21 +60,29 @@ final class AppKitPressRecognizer: NSGestureRecognizer {
     /// Where `event` stands in the view, from its top left corner.
     private func point(of event: NSEvent) -> Point {
         guard let view else { return Point(x: 0, y: 0) }
-        let at = location(in: view)
+        let at = view.convert(event.locationInWindow, from: nil)
         return Point(x: Double(at.x), y: Double(view.isFlipped ? at.y : view.bounds.height - at.y))
     }
 
-    /// Whether the press `event` begins is the view's own: not one on a control inside it, nor on a view inside it that
-    /// hears its own taps; one on the parts of a view that is a control is its own.
+    /// Whether the press `event` begins is the view's own: not one on a control inside it a click works, nor on a
+    /// view inside it that hears its own taps; one on the parts of a view that is a control is its own.
     private func isOwn(_ event: NSEvent) -> Bool {
         guard let view, !(view is NSControl), let superview = view.superview else { return true }
         var each = view.hitTest(superview.convert(event.locationInWindow, from: nil))
         while let inner = each, inner !== view {
-            if inner is NSControl || inner.gestureRecognizers.contains(where: { $0 is AppKitPressRecognizer }) {
-                return false
-            }
+            if Self.takesItsOwnPress(inner) { return false }
             each = inner.superview
         }
+        return true
+    }
+
+    /// Whether `inner` takes a press of its own: a view hearing its own taps, or an enabled control a click works -
+    /// not a label's text field nor a picture, which AppKit makes controls though they only show.
+    private static func takesItsOwnPress(_ inner: NSView) -> Bool {
+        if inner.gestureRecognizers.contains(where: { $0 is AppKitPressRecognizer }) { return true }
+        guard let control = inner as? NSControl, control.isEnabled else { return false }
+        if let field = control as? NSTextField { return field.isEditable || field.isSelectable }
+        if let picture = control as? NSImageView { return picture.isEditable }
         return true
     }
 }

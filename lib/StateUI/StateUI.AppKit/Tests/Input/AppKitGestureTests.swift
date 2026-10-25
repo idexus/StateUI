@@ -31,6 +31,48 @@ final class AppKitGestureTests: XCTestCase {
             native.gestureRecognizers.compactMap { $0 as? AppKitPointerRecognizer }.isEmpty)
     }
 
+    /// A press on a row's words is the row's: a label's text field only shows, and leaves the press to the view
+    /// around it; a press on a button inside the row is the button's.
+    @MainActor
+    func testAPressOnARowsWordsIsTheRows() throws {
+        let taps = Received<String>()
+        let renderer = AppKitRenderer.running {
+            VStack {
+                ZStack {
+                    HStack {
+                        Text("Title")
+                        Button("Inner")
+                    }
+                }
+                .width(240)
+                .height(44)
+                .onTapped { taps.values.append("row") }
+            }
+        }
+        defer { renderer.closeForTesting() }
+        for controller in renderer.windowsForTesting { controller.window?.layoutIfNeeded() }
+        let row = try XCTUnwrap(renderer.nativeViews(NSView.self).first { view in
+            view.gestureRecognizers.contains { $0 is AppKitPressRecognizer }
+        })
+        let press = try XCTUnwrap(row.gestureRecognizers.compactMap { $0 as? AppKitPressRecognizer }.first)
+
+        func click(_ view: NSView) throws {
+            let point = view.convert(NSPoint(x: view.bounds.midX, y: view.bounds.midY), to: nil)
+            for type in [NSEvent.EventType.leftMouseDown, .leftMouseUp] {
+                let event = try XCTUnwrap(NSEvent.mouseEvent(
+                    with: type, location: point, modifierFlags: [], timestamp: 0,
+                    windowNumber: row.window?.windowNumber ?? 0, context: nil, eventNumber: 0, clickCount: 1,
+                    pressure: 1))
+                type == .leftMouseDown ? press.mouseDown(with: event) : press.mouseUp(with: event)
+            }
+        }
+        try click(try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first))
+        try click(try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first))
+        for _ in 0..<5 { renderer.runtime.pump.turn() }
+
+        XCTAssertEqual(taps.values, ["row"], "the words' press is the row's; the button's is the button's")
+    }
+
     /// A pan asked of one pointer is recognized and reaches its handler. A
     /// pan asked of two leaves the view no pan recognizer: AppKit recognizes a
     /// one-pointer drag only, so it cannot honor that count.
