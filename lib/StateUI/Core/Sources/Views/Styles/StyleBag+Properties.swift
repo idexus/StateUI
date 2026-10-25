@@ -32,6 +32,7 @@ extension StyleBag: TextInputProperties where Target: TextInput {}
 extension StyleBag: SpinnerProperties where Target == Spinner {}
 extension StyleBag: ButtonProperties where Target == Button {}
 extension StyleBag: CheckBoxProperties where Target == CheckBox {}
+extension StyleBag: ColorPickerProperties where Target == ColorPicker {}
 extension StyleBag: DatePickerProperties where Target == DatePicker {}
 extension StyleBag: TextEditorProperties where Target == TextEditor {}
 extension StyleBag: TextFieldProperties where Target == TextField {}
