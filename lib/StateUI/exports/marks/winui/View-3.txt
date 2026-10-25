@@ -1,186 +1,189 @@
-# revision 15.1
-Button.area: ✅
+# revision 16.1
 Button.frameChanged: ✅
-Button.swipeDirection: ✅
-Button.swipeThreshold: ✅
-Button.swiped: ✅
-Canvas.area: ✅
+Button.horizontalAlignment: ✅
+Button.panTouchCount: ✅
+Button.panUpdated: ✅
+Button.panXChannel: ✅
+Button.verticalAlignment: ✅
+Canvas.droppedFileTypes: ✓ dropFiles on Canvas: the relay's drop report told the driver's files, no drag WinUI began
+Canvas.filesDropped: ✓ dropFiles on Canvas: the relay's drop report told the driver's files, no drag WinUI began
 Canvas.frameChanged: ✅
-Canvas.swipeDirection: ✅
-Canvas.swipeThreshold: ✅
-Canvas.swiped: ✅
-Capsule.area: ✅
-Capsule.frameChanged: ✅
-Capsule.swipeDirection: ✅
-Capsule.swipeThreshold: ✅
-Capsule.swiped: ✅
-CheckBox.area: ✅
-CheckBox.frameChanged: ✅
-CheckBox.swipeDirection: ✅
-CheckBox.swipeThreshold: ✅
-CheckBox.swiped: ✅
-ColorPicker.area: ✅
-ColorPicker.frameChanged: ✅
-ColorPicker.swipeDirection: ✅
-ColorPicker.swipeThreshold: ✅
-ColorPicker.swiped: ✅
-DatePicker.area: ✅
+Canvas.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+Canvas.margin: ✅
+Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Capsule.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Capsule.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Capsule.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Capsule.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+CheckBox.canDrag: ✓ dragAndDrop on CheckBox: the relay's drag reports told by the driver, no drag WinUI began
+CheckBox.dragEnded: ✓ dragAndDrop on CheckBox: the relay's drag reports told by the driver, no drag WinUI began
+CheckBox.dragStarting: ✓ dragAndDrop on CheckBox: the relay's drag reports told by the driver, no drag WinUI began
+CheckBox.dragText: ✓ dragAndDrop on CheckBox: the relay's drag reports told by the driver, no drag WinUI began
+CheckBox.tapped: ✅
+ColorPicker.pointerEntered: ✅
+ColorPicker.pointerExited: ✅
+ColorPicker.pointerMoved: ✅
+ColorPicker.pointerPressed: ✅
+ColorPicker.pointerReleased: ✅
+ColorPicker.tapCount: ✅
+ColorPicker.tapped: ✅
 DatePicker.frameChanged: ✅
-DatePicker.swipeDirection: ✅
-DatePicker.swipeThreshold: ✅
-DatePicker.swiped: ✅
-Ellipse.area: ✅
+DatePicker.gridColumnSpan: ✅
+DatePicker.gridRowSpan: ✅
+DatePicker.pinchUpdated: ✓ pinch on DatePicker: the relay's report of the manipulation handed to the host, no touch sent
 Ellipse.frameChanged: ✅
+Ellipse.gridColumn: ✅
+Ellipse.gridRow: ✅
 Ellipse.swipeDirection: ✅
 Ellipse.swipeThreshold: ✅
 Ellipse.swiped: ✅
 Fill.area: ✅
 Fill.frameChanged: ✅
-Fill.swipeDirection: ✅
-Fill.swipeThreshold: ✅
-Fill.swiped: ✅
-Grid.area: ✅
+Fill.panYChannel: ✅
 Grid.frameChanged: ✅
-Grid.swipeDirection: ✅
-Grid.swipeThreshold: ✅
-Grid.swiped: ✅
-HStack.area: ✅
+Grid.horizontalAlignment: ✅
+Grid.panTouchCount: ✅
+Grid.panUpdated: ✅
+Grid.panXChannel: ✅
+Grid.verticalAlignment: ✅
+HStack.droppedFileTypes: ✓ dropFiles on HStack: the relay's drop report told the driver's files, no drag WinUI began
+HStack.filesDropped: ✓ dropFiles on HStack: the relay's drop report told the driver's files, no drag WinUI began
 HStack.frameChanged: ✅
-HStack.swipeDirection: ✅
-HStack.swipeThreshold: ✅
-HStack.swiped: ✅
-Image.area: ✅
-Image.frameChanged: ✅
-Image.swipeDirection: ✅
-Image.swipeThreshold: ✅
-Image.swiped: ✅
-ItemsView.area: ✅
-ItemsView.frameChanged: ✅
-ItemsView.swipeDirection: ✅
-ItemsView.swipeThreshold: ✅
-ItemsView.swiped: ✅
-LayoutEngine.area: ✅
+HStack.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+HStack.margin: ✅
+Image.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Image.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Image.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Image.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Image.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+ItemsView.canDrag: ✓ dragAndDrop on ItemsView: the relay's drag reports told by the driver, no drag WinUI began
+ItemsView.dragEnded: ✓ dragAndDrop on ItemsView: the relay's drag reports told by the driver, no drag WinUI began
+ItemsView.dragStarting: ✓ dragAndDrop on ItemsView: the relay's drag reports told by the driver, no drag WinUI began
+ItemsView.dragText: ✓ dragAndDrop on ItemsView: the relay's drag reports told by the driver, no drag WinUI began
+ItemsView.tapped: ✅
 LayoutEngine.frameChanged: ✅
-LayoutEngine.swipeDirection: ✅
-LayoutEngine.swipeThreshold: ✅
-LayoutEngine.swiped: ✅
-Line.area: ✅
+LayoutEngine.gridColumnSpan: ✅
+LayoutEngine.gridRowSpan: ✅
+LayoutEngine.pinchUpdated: ✓ pinch on LayoutEngine: the relay's report of the manipulation handed to the host, no touch sent
 Line.frameChanged: ✅
+Line.gridColumn: ✅
+Line.gridRow: ✅
 Line.swipeDirection: ✅
 Line.swipeThreshold: ✅
 Line.swiped: ✅
 Link.area: ✅
 Link.frameChanged: ✅
-Link.swipeDirection: ✅
-Link.swipeThreshold: ✅
-Link.swiped: ✅
-Map.area: 🧩
+Link.panYChannel: ✅
 Map.frameChanged: 🧩
-Map.swipeDirection: 🧩
-Map.swipeThreshold: 🧩
-Map.swiped: 🧩
-Path.area: ✅
-Path.frameChanged: ✅
-Path.swipeDirection: ✅
-Path.swipeThreshold: ✅
-Path.swiped: ✅
-Picker.area: ✅
-Picker.frameChanged: ✅
-Picker.swipeDirection: ✅
-Picker.swipeThreshold: ✅
-Picker.swiped: ✅
-Polygon.area: ✅
-Polygon.frameChanged: ✅
-Polygon.swipeDirection: ✅
-Polygon.swipeThreshold: ✅
-Polygon.swiped: ✅
-Polyline.area: ✅
+Map.horizontalAlignment: 🧩
+Map.panTouchCount: 🧩
+Map.panUpdated: 🧩
+Map.panXChannel: 🧩
+Map.verticalAlignment: 🧩
+Path.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Path.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Path.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Path.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Path.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Picker.canDrag: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began
+Picker.dragEnded: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began
+Picker.dragStarting: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began
+Picker.dragText: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began
+Picker.tapped: ✅
+Polygon.pointerEntered: ✅
+Polygon.pointerExited: ✅
+Polygon.pointerMoved: ✅
+Polygon.pointerPressed: ✅
+Polygon.pointerReleased: ✅
+Polygon.tapCount: ✅
+Polygon.tapped: ✅
 Polyline.frameChanged: ✅
-Polyline.swipeDirection: ✅
-Polyline.swipeThreshold: ✅
-Polyline.swiped: ✅
-ProgressBar.area: ✅
+Polyline.gridColumnSpan: ✅
+Polyline.gridRowSpan: ✅
+Polyline.pinchUpdated: ✓ pinch on Polyline: the relay's report of the manipulation handed to the host, no touch sent
 ProgressBar.frameChanged: ✅
+ProgressBar.gridColumn: ✅
+ProgressBar.gridRow: ✅
 ProgressBar.swipeDirection: ✅
 ProgressBar.swipeThreshold: ✅
 ProgressBar.swiped: ✅
 Rectangle.area: ✅
 Rectangle.frameChanged: ✅
-Rectangle.swipeDirection: ✅
-Rectangle.swipeThreshold: ✅
-Rectangle.swiped: ✅
-ScrollView.area: ✅
+Rectangle.panYChannel: ✅
 ScrollView.frameChanged: ✅
-ScrollView.swipeDirection: ✅
-ScrollView.swipeThreshold: ✅
-ScrollView.swiped: ✅
-SearchField.area: ✅
+ScrollView.horizontalAlignment: ✅
+ScrollView.panTouchCount: ✅
+ScrollView.panUpdated: ✅
+ScrollView.panXChannel: ✅
+ScrollView.verticalAlignment: ✅
+SearchField.droppedFileTypes: ✓ dropFiles on SearchField: the relay's drop report told the driver's files, no drag WinUI began
+SearchField.filesDropped: ✓ dropFiles on SearchField: the relay's drop report told the driver's files, no drag WinUI began
 SearchField.frameChanged: ✅
-SearchField.swipeDirection: ✅
-SearchField.swipeThreshold: ✅
-SearchField.swiped: ✅
-Separator.area: ✅
+SearchField.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+SearchField.margin: ✅
+Separator.droppedFileTypes: ✓ dropFiles on Separator: the relay's drop report told the driver's files, no drag WinUI began
+Separator.filesDropped: ✓ dropFiles on Separator: the relay's drop report told the driver's files, no drag WinUI began
 Separator.frameChanged: ✅
-Separator.swipeDirection: ✅
-Separator.swipeThreshold: ✅
-Separator.swiped: ✅
-Slider.area: ✅
-Slider.frameChanged: ✅
-Slider.swipeDirection: ✅
-Slider.swipeThreshold: ✅
-Slider.swiped: ✅
-Space.area: ✅
-Space.frameChanged: ✅
-Space.swipeDirection: ✅
-Space.swipeThreshold: ✅
-Space.swiped: ✅
+Separator.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+Separator.margin: ✅
+Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Slider.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Slider.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Slider.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Slider.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Space.canDrag: ✓ dragAndDrop on Space: the relay's drag reports told by the driver, no drag WinUI began
+Space.dragEnded: ✓ dragAndDrop on Space: the relay's drag reports told by the driver, no drag WinUI began
+Space.dragStarting: ✓ dragAndDrop on Space: the relay's drag reports told by the driver, no drag WinUI began
+Space.dragText: ✓ dragAndDrop on Space: the relay's drag reports told by the driver, no drag WinUI began
+Space.tapped: ✅
 Spinner.area: ✅
 Spinner.frameChanged: ✅
-Spinner.swipeDirection: ✅
-Spinner.swipeThreshold: ✅
-Spinner.swiped: ✅
-Stepper.area: ✅
-Stepper.frameChanged: ✅
-Stepper.swipeDirection: ✅
-Stepper.swipeThreshold: ✅
-Stepper.swiped: ✅
-Switch.area: ✅
+Spinner.panYChannel: ✅
+Stepper.pointerEntered: ✅
+Stepper.pointerExited: ✅
+Stepper.pointerMoved: ✅
+Stepper.pointerPressed: ✅
+Stepper.pointerReleased: ✅
+Stepper.tapCount: ✅
+Stepper.tapped: ✅
 Switch.frameChanged: ✅
-Switch.swipeDirection: ✅
-Switch.swipeThreshold: ✅
-Switch.swiped: ✅
-Text.area: ✅
-Text.frameChanged: ✅
-Text.swipeDirection: ✅
-Text.swipeThreshold: ✅
-Text.swiped: ✅
-TextEditor.area: ✅
+Switch.gridColumnSpan: ✅
+Switch.gridRowSpan: ✅
+Switch.pinchUpdated: ✓ pinch on Switch: the relay's report of the manipulation handed to the host, no touch sent
+Text.pointerEntered: ✅
+Text.pointerExited: ✅
+Text.pointerMoved: ✅
+Text.pointerPressed: ✅
+Text.pointerReleased: ✅
+Text.tapCount: ✅
+Text.tapped: ✅
 TextEditor.frameChanged: ✅
+TextEditor.gridColumn: ✅
+TextEditor.gridRow: ✅
 TextEditor.swipeDirection: ✅
 TextEditor.swipeThreshold: ✅
 TextEditor.swiped: ✅
 TextField.area: ✅
 TextField.frameChanged: ✅
-TextField.swipeDirection: ✅
-TextField.swipeThreshold: ✅
-TextField.swiped: ✅
-TimePicker.area: ✅
+TextField.panYChannel: ✅
 TimePicker.frameChanged: ✅
-TimePicker.swipeDirection: ✅
-TimePicker.swipeThreshold: ✅
-TimePicker.swiped: ✅
-VStack.area: ✅
+TimePicker.horizontalAlignment: ✅
+TimePicker.panTouchCount: ✅
+TimePicker.panUpdated: ✅
+TimePicker.panXChannel: ✅
+TimePicker.verticalAlignment: ✅
+VStack.droppedFileTypes: ✓ dropFiles on VStack: the relay's drop report told the driver's files, no drag WinUI began
+VStack.filesDropped: ✓ dropFiles on VStack: the relay's drop report told the driver's files, no drag WinUI began
 VStack.frameChanged: ✅
-VStack.swipeDirection: ✅
-VStack.swipeThreshold: ✅
-VStack.swiped: ✅
-WebView.area: ✅
-WebView.frameChanged: ✅
-WebView.swipeDirection: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-WebView.swipeThreshold: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-WebView.swiped: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-ZStack.area: ✅
-ZStack.frameChanged: ✅
-ZStack.swipeDirection: ✅
-ZStack.swipeThreshold: ✅
-ZStack.swiped: ✅
+VStack.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+VStack.margin: ✅
+WebView.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+WebView.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+WebView.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+WebView.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+WebView.held: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+ZStack.canDrag: ✓ dragAndDrop on ZStack: the relay's drag reports told by the driver, no drag WinUI began
+ZStack.dragEnded: ✓ dragAndDrop on ZStack: the relay's drag reports told by the driver, no drag WinUI began
+ZStack.dragStarting: ✓ dragAndDrop on ZStack: the relay's drag reports told by the driver, no drag WinUI began
+ZStack.dragText: ✓ dragAndDrop on ZStack: the relay's drag reports told by the driver, no drag WinUI began
+ZStack.tapped: ✅

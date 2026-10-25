@@ -17,7 +17,7 @@
         Specimens.wearing(ViewContract.self).flatMap { element in
             [
                 margined(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
-                tapped(element), held(element), heldAfterItsTime(element), panned(element), pannedDown(element), swiped(element), pinched(element), pointed(element),
+                tapped(element), pressedAsAButton(element), held(element), heldAfterItsTime(element), panned(element), pannedDown(element), swiped(element), pinched(element), pointed(element),
                 dragged(element), droppedOn(element), filesDroppedOn(element),
             ]
         } + [scrolledInItsWindow, scrolledInAList, atItsPagesCorner]
@@ -297,6 +297,40 @@
             try s.perform(.tap(count: 2), on: view)
             s.settle { heard.values == ["tapped"] }
             s.expect(heard.values, ["tapped"], "two are")
+        }
+    }
+
+    /// A press taps as a button does: let go away from the view it taps nothing, and back where it went down before
+    /// it lets go it taps.
+    @MainActor
+    static func pressedAsAButton(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aPressTapsWhereItLetsGoOverTheView", proves: [
+            Covered(ViewContract.tapped, on: element),
+        ]) { s in
+            let heard = Received<String>()
+            s.start {
+                VStack {
+                    Specimens.view(element, [
+                        Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
+                        HearDone(ViewContract.tapped) { heard.values.append("tapped") },
+                    ])
+                }
+                .horizontalAlignment(.start)
+            }
+            let view = try s.element("specimen")
+
+            try s.perform(.pressDown(at: Point(40, 20)), on: view)
+            try s.perform(.drag(to: Point(40, 100)), on: view)
+            try s.perform(.lift(at: Point(40, 100)), on: view)
+            s.turn()
+            s.expect(heard.values, [], "let go away from the view: no tap")
+
+            try s.perform(.pressDown(at: Point(40, 20)), on: view)
+            try s.perform(.drag(to: Point(40, 100)), on: view)
+            try s.perform(.drag(to: Point(40, 20)), on: view)
+            try s.perform(.lift(at: Point(40, 20)), on: view)
+            s.settle { heard.values == ["tapped"] }
+            s.expect(heard.values, ["tapped"], "back over the view before it lets go: a tap")
         }
     }
 

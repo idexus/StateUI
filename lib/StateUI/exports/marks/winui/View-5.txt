@@ -1,297 +1,189 @@
-# revision 15.1
+# revision 16.1
 Button.frameChanged: ✅
-Button.gridColumnSpan: ✅
-Button.gridRowSpan: ✅
-Button.pointerEntered: ✅
-Button.pointerExited: ✅
-Button.pointerMoved: ✅
-Button.pointerPressed: ✅
-Button.pointerReleased: ✅
+Button.gridColumn: ✅
+Button.gridRow: ✅
+Button.swipeDirection: ✅
+Button.swipeThreshold: ✅
+Button.swiped: ✅
+Canvas.area: ✅
 Canvas.frameChanged: ✅
-Canvas.gridColumnSpan: ✅
-Canvas.gridRowSpan: ✅
-Canvas.pointerEntered: ✅
-Canvas.pointerExited: ✅
-Canvas.pointerMoved: ✅
-Canvas.pointerPressed: ✅
-Canvas.pointerReleased: ✅
+Canvas.panYChannel: ✅
 Capsule.frameChanged: ✅
-Capsule.gridColumnSpan: ✅
-Capsule.gridRowSpan: ✅
-Capsule.pointerEntered: ✅
-Capsule.pointerExited: ✅
-Capsule.pointerMoved: ✅
-Capsule.pointerPressed: ✅
-Capsule.pointerReleased: ✅
+Capsule.horizontalAlignment: ✅
+Capsule.panTouchCount: ✅
+Capsule.panUpdated: ✅
+Capsule.panXChannel: ✅
+Capsule.verticalAlignment: ✅
+CheckBox.droppedFileTypes: ✓ dropFiles on CheckBox: the relay's drop report told the driver's files, no drag WinUI began
+CheckBox.filesDropped: ✓ dropFiles on CheckBox: the relay's drop report told the driver's files, no drag WinUI began
 CheckBox.frameChanged: ✅
-CheckBox.gridColumnSpan: ✅
-CheckBox.gridRowSpan: ✅
-CheckBox.pointerEntered: ✅
-CheckBox.pointerExited: ✅
-CheckBox.pointerMoved: ✅
-CheckBox.pointerPressed: ✅
-CheckBox.pointerReleased: ✅
-ColorPicker.frameChanged: ✅
-ColorPicker.gridColumnSpan: ✅
-ColorPicker.gridRowSpan: ✅
-ColorPicker.pointerEntered: ✅
-ColorPicker.pointerExited: ✅
-ColorPicker.pointerMoved: ✅
-ColorPicker.pointerPressed: ✅
-ColorPicker.pointerReleased: ✅
-DatePicker.frameChanged: ✅
-DatePicker.gridColumnSpan: ✅
-DatePicker.gridRowSpan: ✅
-DatePicker.pointerEntered: ✅
-DatePicker.pointerExited: ✅
-DatePicker.pointerMoved: ✅
-DatePicker.pointerPressed: ✅
-DatePicker.pointerReleased: ✅
-Ellipse.frameChanged: ✅
-Ellipse.gridColumnSpan: ✅
-Ellipse.gridRowSpan: ✅
+CheckBox.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+CheckBox.margin: ✅
+ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ColorPicker.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ColorPicker.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ColorPicker.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ColorPicker.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+DatePicker.canDrag: ✓ dragAndDrop on DatePicker: the relay's drag reports told by the driver, no drag WinUI began
+DatePicker.dragEnded: ✓ dragAndDrop on DatePicker: the relay's drag reports told by the driver, no drag WinUI began
+DatePicker.dragStarting: ✓ dragAndDrop on DatePicker: the relay's drag reports told by the driver, no drag WinUI began
+DatePicker.dragText: ✓ dragAndDrop on DatePicker: the relay's drag reports told by the driver, no drag WinUI began
+DatePicker.tapped: ✅
 Ellipse.pointerEntered: ✅
 Ellipse.pointerExited: ✅
 Ellipse.pointerMoved: ✅
 Ellipse.pointerPressed: ✅
 Ellipse.pointerReleased: ✅
+Ellipse.tapCount: ✅
+Ellipse.tapped: ✅
 Fill.frameChanged: ✅
 Fill.gridColumnSpan: ✅
 Fill.gridRowSpan: ✅
-Fill.pointerEntered: ✅
-Fill.pointerExited: ✅
-Fill.pointerMoved: ✅
-Fill.pointerPressed: ✅
-Fill.pointerReleased: ✅
+Fill.pinchUpdated: ✓ pinch on Fill: the relay's report of the manipulation handed to the host, no touch sent
 Grid.frameChanged: ✅
-Grid.gridColumnSpan: ✅
-Grid.gridRowSpan: ✅
-Grid.pointerEntered: ✅
-Grid.pointerExited: ✅
-Grid.pointerMoved: ✅
-Grid.pointerPressed: ✅
-Grid.pointerReleased: ✅
+Grid.gridColumn: ✅
+Grid.gridRow: ✅
+Grid.swipeDirection: ✅
+Grid.swipeThreshold: ✅
+Grid.swiped: ✅
+HStack.area: ✅
 HStack.frameChanged: ✅
-HStack.gridColumnSpan: ✅
-HStack.gridRowSpan: ✅
-HStack.pointerEntered: ✅
-HStack.pointerExited: ✅
-HStack.pointerMoved: ✅
-HStack.pointerPressed: ✅
-HStack.pointerReleased: ✅
+HStack.panYChannel: ✅
 Image.frameChanged: ✅
-Image.gridColumnSpan: ✅
-Image.gridRowSpan: ✅
-Image.pointerEntered: ✅
-Image.pointerExited: ✅
-Image.pointerMoved: ✅
-Image.pointerPressed: ✅
-Image.pointerReleased: ✅
+Image.horizontalAlignment: ✅
+Image.panTouchCount: ✅
+Image.panUpdated: ✅
+Image.panXChannel: ✅
+Image.verticalAlignment: ✅
+ItemsView.droppedFileTypes: ✓ dropFiles on ItemsView: the relay's drop report told the driver's files, no drag WinUI began
+ItemsView.filesDropped: ✓ dropFiles on ItemsView: the relay's drop report told the driver's files, no drag WinUI began
 ItemsView.frameChanged: ✅
-ItemsView.gridColumnSpan: ✅
-ItemsView.gridRowSpan: ✅
-ItemsView.pointerEntered: ✅
-ItemsView.pointerExited: ✅
-ItemsView.pointerMoved: ✅
-ItemsView.pointerPressed: ✅
-ItemsView.pointerReleased: ✅
-LayoutEngine.frameChanged: ✅
-LayoutEngine.gridColumnSpan: ✅
-LayoutEngine.gridRowSpan: ✅
-LayoutEngine.pointerEntered: ✓ pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent
-LayoutEngine.pointerExited: ✓ pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent
-LayoutEngine.pointerMoved: ✓ pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent
-LayoutEngine.pointerPressed: ✓ pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent
-LayoutEngine.pointerReleased: ✓ pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent
-Line.frameChanged: ✅
-Line.gridColumnSpan: ✅
-Line.gridRowSpan: ✅
+ItemsView.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+ItemsView.margin: ✅
+LayoutEngine.canDrag: ✓ dragAndDrop on LayoutEngine: the relay's drag reports told by the driver, no drag WinUI began
+LayoutEngine.dragEnded: ✓ dragAndDrop on LayoutEngine: the relay's drag reports told by the driver, no drag WinUI began
+LayoutEngine.dragStarting: ✓ dragAndDrop on LayoutEngine: the relay's drag reports told by the driver, no drag WinUI began
+LayoutEngine.dragText: ✓ dragAndDrop on LayoutEngine: the relay's drag reports told by the driver, no drag WinUI began
+LayoutEngine.tapped: ✓ pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent
 Line.pointerEntered: ✅
 Line.pointerExited: ✅
 Line.pointerMoved: ✅
 Line.pointerPressed: ✅
 Line.pointerReleased: ✅
+Line.tapCount: ✅
+Line.tapped: ✅
 Link.frameChanged: ✅
 Link.gridColumnSpan: ✅
 Link.gridRowSpan: ✅
-Link.pointerEntered: ✅
-Link.pointerExited: ✅
-Link.pointerMoved: ✅
-Link.pointerPressed: ✅
-Link.pointerReleased: ✅
+Link.pinchUpdated: ✓ pinch on Link: the relay's report of the manipulation handed to the host, no touch sent
 Map.frameChanged: 🧩
-Map.gridColumnSpan: 🧩
-Map.gridRowSpan: 🧩
-Map.pointerEntered: 🧩
-Map.pointerExited: 🧩
-Map.pointerMoved: 🧩
-Map.pointerPressed: 🧩
-Map.pointerReleased: 🧩
+Map.gridColumn: 🧩
+Map.gridRow: 🧩
+Map.swipeDirection: 🧩
+Map.swipeThreshold: 🧩
+Map.swiped: 🧩
 Path.frameChanged: ✅
-Path.gridColumnSpan: ✅
-Path.gridRowSpan: ✅
-Path.pointerEntered: ✅
-Path.pointerExited: ✅
-Path.pointerMoved: ✅
-Path.pointerPressed: ✅
-Path.pointerReleased: ✅
+Path.horizontalAlignment: ✅
+Path.panTouchCount: ✅
+Path.panUpdated: ✅
+Path.panXChannel: ✅
+Path.verticalAlignment: ✅
+Picker.droppedFileTypes: ✓ dropFiles on Picker: the relay's drop report told the driver's files, no drag WinUI began
+Picker.filesDropped: ✓ dropFiles on Picker: the relay's drop report told the driver's files, no drag WinUI began
 Picker.frameChanged: ✅
-Picker.gridColumnSpan: ✅
-Picker.gridRowSpan: ✅
-Picker.pointerEntered: ✅
-Picker.pointerExited: ✅
-Picker.pointerMoved: ✅
-Picker.pointerPressed: ✅
-Picker.pointerReleased: ✅
-Polygon.frameChanged: ✅
-Polygon.gridColumnSpan: ✅
-Polygon.gridRowSpan: ✅
-Polygon.pointerEntered: ✅
-Polygon.pointerExited: ✅
-Polygon.pointerMoved: ✅
-Polygon.pointerPressed: ✅
-Polygon.pointerReleased: ✅
-Polyline.frameChanged: ✅
-Polyline.gridColumnSpan: ✅
-Polyline.gridRowSpan: ✅
-Polyline.pointerEntered: ✅
-Polyline.pointerExited: ✅
-Polyline.pointerMoved: ✅
-Polyline.pointerPressed: ✅
-Polyline.pointerReleased: ✅
-ProgressBar.frameChanged: ✅
-ProgressBar.gridColumnSpan: ✅
-ProgressBar.gridRowSpan: ✅
+Picker.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+Picker.margin: ✅
+Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Polygon.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Polygon.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Polygon.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Polygon.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Polyline.canDrag: ✓ dragAndDrop on Polyline: the relay's drag reports told by the driver, no drag WinUI began
+Polyline.dragEnded: ✓ dragAndDrop on Polyline: the relay's drag reports told by the driver, no drag WinUI began
+Polyline.dragStarting: ✓ dragAndDrop on Polyline: the relay's drag reports told by the driver, no drag WinUI began
+Polyline.dragText: ✓ dragAndDrop on Polyline: the relay's drag reports told by the driver, no drag WinUI began
+Polyline.tapped: ✅
 ProgressBar.pointerEntered: ✅
 ProgressBar.pointerExited: ✅
 ProgressBar.pointerMoved: ✅
 ProgressBar.pointerPressed: ✅
 ProgressBar.pointerReleased: ✅
+ProgressBar.tapCount: ✅
+ProgressBar.tapped: ✅
 Rectangle.frameChanged: ✅
 Rectangle.gridColumnSpan: ✅
 Rectangle.gridRowSpan: ✅
-Rectangle.pointerEntered: ✅
-Rectangle.pointerExited: ✅
-Rectangle.pointerMoved: ✅
-Rectangle.pointerPressed: ✅
-Rectangle.pointerReleased: ✅
+Rectangle.pinchUpdated: ✓ pinch on Rectangle: the relay's report of the manipulation handed to the host, no touch sent
 ScrollView.frameChanged: ✅
-ScrollView.gridColumnSpan: ✅
-ScrollView.gridRowSpan: ✅
-ScrollView.pointerEntered: ✅
-ScrollView.pointerExited: ✅
-ScrollView.pointerMoved: ✅
-ScrollView.pointerPressed: ✅
-ScrollView.pointerReleased: ✅
+ScrollView.gridColumn: ✅
+ScrollView.gridRow: ✅
+ScrollView.swipeDirection: ✅
+ScrollView.swipeThreshold: ✅
+ScrollView.swiped: ✅
+SearchField.area: ✅
 SearchField.frameChanged: ✅
-SearchField.gridColumnSpan: ✅
-SearchField.gridRowSpan: ✅
-SearchField.pointerEntered: ✅
-SearchField.pointerExited: ✅
-SearchField.pointerMoved: ✅
-SearchField.pointerPressed: ✅
-SearchField.pointerReleased: ✅
+SearchField.panYChannel: ✅
+Separator.area: ✅
 Separator.frameChanged: ✅
-Separator.gridColumnSpan: ✅
-Separator.gridRowSpan: ✅
-Separator.pointerEntered: ✅
-Separator.pointerExited: ✅
-Separator.pointerMoved: ✅
-Separator.pointerPressed: ✅
-Separator.pointerReleased: ✅
+Separator.panYChannel: ✅
 Slider.frameChanged: ✅
-Slider.gridColumnSpan: ✅
-Slider.gridRowSpan: ✅
-Slider.pointerEntered: ✅
-Slider.pointerExited: ✅
-Slider.pointerMoved: ✅
-Slider.pointerPressed: ✅
-Slider.pointerReleased: ✅
+Slider.horizontalAlignment: ✅
+Slider.panTouchCount: ✅
+Slider.panUpdated: ✅
+Slider.panXChannel: ✅
+Slider.verticalAlignment: ✅
+Space.droppedFileTypes: ✓ dropFiles on Space: the relay's drop report told the driver's files, no drag WinUI began
+Space.filesDropped: ✓ dropFiles on Space: the relay's drop report told the driver's files, no drag WinUI began
 Space.frameChanged: ✅
-Space.gridColumnSpan: ✅
-Space.gridRowSpan: ✅
-Space.pointerEntered: ✅
-Space.pointerExited: ✅
-Space.pointerMoved: ✅
-Space.pointerPressed: ✅
-Space.pointerReleased: ✅
+Space.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+Space.margin: ✅
 Spinner.frameChanged: ✅
 Spinner.gridColumnSpan: ✅
 Spinner.gridRowSpan: ✅
-Spinner.pointerEntered: ✅
-Spinner.pointerExited: ✅
-Spinner.pointerMoved: ✅
-Spinner.pointerPressed: ✅
-Spinner.pointerReleased: ✅
-Stepper.frameChanged: ✅
-Stepper.gridColumnSpan: ✅
-Stepper.gridRowSpan: ✅
-Stepper.pointerEntered: ✅
-Stepper.pointerExited: ✅
-Stepper.pointerMoved: ✅
-Stepper.pointerPressed: ✅
-Stepper.pointerReleased: ✅
-Switch.frameChanged: ✅
-Switch.gridColumnSpan: ✅
-Switch.gridRowSpan: ✅
-Switch.pointerEntered: ✅
-Switch.pointerExited: ✅
-Switch.pointerMoved: ✅
-Switch.pointerPressed: ✅
-Switch.pointerReleased: ✅
-Text.frameChanged: ✅
-Text.gridColumnSpan: ✅
-Text.gridRowSpan: ✅
-Text.pointerEntered: ✅
-Text.pointerExited: ✅
-Text.pointerMoved: ✅
-Text.pointerPressed: ✅
-Text.pointerReleased: ✅
-TextEditor.frameChanged: ✅
-TextEditor.gridColumnSpan: ✅
-TextEditor.gridRowSpan: ✅
+Spinner.pinchUpdated: ✓ pinch on Spinner: the relay's report of the manipulation handed to the host, no touch sent
+Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Stepper.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Stepper.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Stepper.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Stepper.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Switch.canDrag: ✓ dragAndDrop on Switch: the relay's drag reports told by the driver, no drag WinUI began
+Switch.dragEnded: ✓ dragAndDrop on Switch: the relay's drag reports told by the driver, no drag WinUI began
+Switch.dragStarting: ✓ dragAndDrop on Switch: the relay's drag reports told by the driver, no drag WinUI began
+Switch.dragText: ✓ dragAndDrop on Switch: the relay's drag reports told by the driver, no drag WinUI began
+Switch.tapped: ✅
+Text.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Text.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Text.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Text.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Text.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 TextEditor.pointerEntered: ✅
 TextEditor.pointerExited: ✅
 TextEditor.pointerMoved: ✅
 TextEditor.pointerPressed: ✅
 TextEditor.pointerReleased: ✅
+TextEditor.tapCount: ✅
+TextEditor.tapped: ✅
 TextField.frameChanged: ✅
 TextField.gridColumnSpan: ✅
 TextField.gridRowSpan: ✅
-TextField.pointerEntered: ✅
-TextField.pointerExited: ✅
-TextField.pointerMoved: ✅
-TextField.pointerPressed: ✅
-TextField.pointerReleased: ✅
+TextField.pinchUpdated: ✓ pinch on TextField: the relay's report of the manipulation handed to the host, no touch sent
 TimePicker.frameChanged: ✅
-TimePicker.gridColumnSpan: ✅
-TimePicker.gridRowSpan: ✅
-TimePicker.pointerEntered: ✅
-TimePicker.pointerExited: ✅
-TimePicker.pointerMoved: ✅
-TimePicker.pointerPressed: ✅
-TimePicker.pointerReleased: ✅
+TimePicker.gridColumn: ✅
+TimePicker.gridRow: ✅
+TimePicker.swipeDirection: ✅
+TimePicker.swipeThreshold: ✅
+TimePicker.swiped: ✅
+VStack.area: ✅
 VStack.frameChanged: ✅
-VStack.gridColumnSpan: ✅
-VStack.gridRowSpan: ✅
-VStack.pointerEntered: ✅
-VStack.pointerExited: ✅
-VStack.pointerMoved: ✅
-VStack.pointerPressed: ✅
-VStack.pointerReleased: ✅
+VStack.panYChannel: ✅
 WebView.frameChanged: ✅
-WebView.gridColumnSpan: ✅
-WebView.gridRowSpan: ✅
-WebView.pointerEntered: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-WebView.pointerExited: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-WebView.pointerMoved: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-WebView.pointerPressed: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-WebView.pointerReleased: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.horizontalAlignment: ✅
+WebView.panTouchCount: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.panUpdated: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.panXChannel: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.verticalAlignment: ✅
+ZStack.droppedFileTypes: ✓ dropFiles on ZStack: the relay's drop report told the driver's files, no drag WinUI began
+ZStack.filesDropped: ✓ dropFiles on ZStack: the relay's drop report told the driver's files, no drag WinUI began
 ZStack.frameChanged: ✅
-ZStack.gridColumnSpan: ✅
-ZStack.gridRowSpan: ✅
-ZStack.pointerEntered: ✅
-ZStack.pointerExited: ✅
-ZStack.pointerMoved: ✅
-ZStack.pointerPressed: ✅
-ZStack.pointerReleased: ✅
+ZStack.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+ZStack.margin: ✅

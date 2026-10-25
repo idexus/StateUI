@@ -190,7 +190,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td rowspan="2"><code>tapCount</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: tap on Polygon: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on Polygon: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: tap on Polygon: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on Polygon: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
+<tr><td colspan="9">AppKit: only through the host's own: pressDown on Polygon: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Polygon: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
