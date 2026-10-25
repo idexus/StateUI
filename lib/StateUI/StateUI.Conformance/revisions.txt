@@ -98,4 +98,3 @@ Popover 4
 TextualElement 2
 Link 2
 TextAndIconElement 2
-ColorPicker 1
