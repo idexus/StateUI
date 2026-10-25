@@ -118,9 +118,10 @@ A view that hears taps follows its press with a recognizer of its own
 where the pointer stands in the view, while it recognizes nothing and so keeps
 no other gesture from the press; the host layer lights the view and taps it by
 its rule ([a press as a button takes it](../../host/runtime.md#a-press-as-a-button-takes-it)).
-A press begun on a control inside - a button, a field - or on a view hearing
-its own taps is that one's; one on the parts of a view that is a control is
-its own. AppKit's click recognizer stays for a run of taps alone, counting it
+A press begun on a control inside that a click works - a button, a field -
+or on a view hearing its own taps is that one's; one on a label's words or a
+picture, which AppKit makes controls though they only show, is the view's, and
+one on the parts of a view that is a control is its own. AppKit's click recognizer stays for a run of taps alone, counting it
 by the event's `clickCount`.
 
 ## A press held
