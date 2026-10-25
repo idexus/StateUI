@@ -66,7 +66,29 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
         let chrome = WindowChrome(window: element, arrangement: element)
         window.title = chrome.title ?? node.core.applicationName
         showBar(chrome, in: window)
+        showGround()
         standAtItsSize(node, in: window)
+    }
+
+    /// Stands the sheet on its window's background laid over the platform's own sheet (`overlaidGround`): a blur in
+    /// its tint, else its color over the sheet's own; the sheet's own where the window says none.
+    /// Design: docs/design/platforms/appkit/runtime.md#sheets
+    func showGround() {
+        guard let window else { return }
+        let ground = element.overlaidGround
+        let written = ground.paint.flatMap(nsColor)
+        content.backdrop = ground.blur
+        content.materialTint = ground.blur != nil ? written : nil
+        let own = NSColor.windowBackgroundColor
+        let color: NSColor = if ground.blur != nil {
+            .clear
+        } else if let written, written.alphaComponent < 1 {
+            own.blended(withFraction: written.alphaComponent, of: written.withAlphaComponent(1)) ?? written
+        } else {
+            written ?? own
+        }
+        window.isOpaque = ground.blur == nil
+        if window.backgroundColor != color { window.backgroundColor = color }
     }
 
     /// The size the sheet last stood at as its page asked: the user's resize stands until the page asks another.

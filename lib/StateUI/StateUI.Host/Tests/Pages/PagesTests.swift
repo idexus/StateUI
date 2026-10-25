@@ -763,6 +763,38 @@ final class PagesTests: XCTestCase {
         XCTAssertTrue(split.sidebarMaterial(over: false).isEmpty, "beside the detail, the platform's own")
     }
 
+    /// A surface laid over the page - a sheet, the sidebar over the detail - that the application says nothing of
+    /// stands on its window's background, laid over the platform's own surface; a window saying none leaves that
+    /// surface alone. Beside the detail the sidebar stays the platform's, and a flyout's own material wins.
+    func testASurfaceOverThePageStandsOnTheWindowsBackground() throws {
+        let violet = Material.color(Color(hex: 0x2A2154)).propValue
+        let flyout = Material.color(Color(hex: 0x251E4C)).propValue
+        func window(_ background: PropValue?, flyout: PropValue? = nil) -> HostPatch {
+            node("window", .window, [.background: background ?? .nothing], children: [
+                node("split", .splitView, [.flyoutBackground: flyout ?? .nothing], children: [
+                    node("menu", .page),
+                    node("home", .page, children: [node("presenting", .sheet, children: [node("sheet", .page)])]),
+                ]),
+            ])
+        }
+        let runtime = runtime(window(violet)) { _ in }
+        func element(_ id: String) throws -> MountedElement {
+            try XCTUnwrap(runtime.tree.root?.first(id: .manual(id)))
+        }
+
+        XCTAssertEqual(try element("sheet").overlaidGround.paint, violet, "a sheet's page")
+        XCTAssertEqual(try element("split").sidebarMaterial(over: true).paint, violet, "the sidebar over the detail")
+        XCTAssertTrue(try element("split").sidebarMaterial(over: false).isEmpty, "beside it, the platform's own")
+        XCTAssertFalse(try element("split").paintsSidebar, "still the platform's sidebar")
+
+        runtime.tree.apply(window(violet, flyout: flyout), complete: false)
+        XCTAssertEqual(try element("split").sidebarMaterial(over: true).paint, flyout, "its own material wins")
+
+        runtime.tree.apply(window(nil), complete: false)
+        XCTAssertTrue(try element("sheet").overlaidGround.isEmpty, "the platform's own sheet")
+        XCTAssertTrue(try element("split").sidebarMaterial(over: true).isEmpty, "the platform's own drawer")
+    }
+
     /// A split view saying a material for its sidebar, in either place, gives the sidebar to the application to
     /// paint; one saying none leaves it the platform's.
     func testASidebarWithAMaterialOfItsOwnIsTheApplicationsToPaint() throws {

@@ -448,6 +448,11 @@ Text belongs on a surface of its own rather than straight over the desktop.
 }
 ```
 
+The surfaces laid over the window's pages stand on its background too - a
+sheet, and a sidebar sliding over the detail where its split view says no
+`flyoutBackground` - each laid over the platform's own sheet or drawer, so
+their words keep an opaque surface under them.
+
 The host reports `WindowPhase` through the same session:
 
 | Phase | Meaning |

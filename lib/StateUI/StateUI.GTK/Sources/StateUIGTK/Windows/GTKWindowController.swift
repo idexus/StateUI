@@ -46,7 +46,12 @@ final class GTKWindowController {
         self.element = element
         self.runtime = runtime
         let changes = presentation.show(element, in: runtime.lifecycle)
-        if let traits = changes.traits { window.setBackground(traits.background.painted) }
+        if let traits = changes.traits {
+            window.setBackground(traits.background.painted)
+            // The surfaces over the page stand on it too: the sheets, and the sidebars over the detail.
+            for (page, sheet) in sheets { sheet.stand(on: page.overlaidGround) }
+            for split in element.splitViews { (split.native as? GTKElement)?.groundSidebar() }
+        }
         if let frame = changes.frame { window.request(frame) }
         if let bounds = changes.bounds { window.bound(bounds) }
         if let hidden = changes.hidden { window.setHidden(hidden) }
@@ -79,6 +84,7 @@ final class GTKWindowController {
             // switcher stands in.
             let sheet = GTKSheet(page: view, framed: page.type == .tabView)
             sheet.onClosedByUser = { [weak self] in self?.dismissTopSheet(in: runtime) }
+            sheet.stand(on: page.overlaidGround)
             sheet.present(over: window)
             sheets.append((page, sheet))
         }

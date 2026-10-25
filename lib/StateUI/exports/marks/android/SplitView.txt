@@ -1,4 +1,4 @@
-# revision 7.1
+# revision 8.1
 SplitView: ✅
 SplitView.flyoutBackground: ☑️ Android blurs nothing behind a view: a blur or glass shows its color.
 SplitView.showsSidebar: ✓ read showsSidebar of SplitView: the split's own flag; the drawer slides on it

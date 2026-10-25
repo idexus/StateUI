@@ -82,6 +82,7 @@
             standsOn(SplitViewContract.flyoutBackground, "theSidebarStandsOnItsFlyoutsMaterialOverTheDetail") {
                 $0.flyoutBackground($1)
             },
+            flyoutUnsaid,
             follows(SplitViewContract.sidebarBackground, "theSidebarFollowsAMaterialStateBesideTheDetail") {
                 $0.sidebarBackground($1)
             },
@@ -179,6 +180,31 @@
         }
     }
 
+    /// The sidebar over the detail that its split view says nothing of stands on its window's background, as any
+    /// surface over the page does, and follows it.
+    @MainActor
+    private static var flyoutUnsaid: ConformanceCase {
+        ConformanceCase("theSidebarOverTheDetailStandsOnTheWindowsBackgroundUnsaid", proves: [
+            Covered(SplitViewContract.flyoutBackground),
+        ], needs: [Covered(ButtonContract.clicked), Covered(WindowContract.background)]) { s in
+            let (first, changed) = (Material.color(Color(hex: 0x2A2154)), Material.color(Color(hex: 0x0F766E)))
+            s.start {
+                SplitView(State(wrappedValue: true).projectedValue) {
+                    Text("Sidebar")
+                } detail: {
+                    GroundingDetail(first: first, changed: changed)
+                }
+            }
+            let split = try s.element(ofType: SplitViewContract.nodeType)
+            try s.settle { try s.held(SplitViewContract.flyoutBackground, on: split) == first }
+            s.expect(try s.held(SplitViewContract.flyoutBackground, on: split), first, "the window's background")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.held(SplitViewContract.flyoutBackground, on: split) == changed }
+            s.expect(try s.held(SplitViewContract.flyoutBackground, on: split), changed, "the one the tree changed it to")
+        }
+    }
+
     /// The sidebar stands on the material `member` says - the color it starts with, then the one the tree changes
     /// it to.
     @MainActor
@@ -215,6 +241,19 @@ private struct NarrowingButton: View {
     var body: some View {
         let window = self.window
         return VStack { Button("Narrow").onClicked { window.width = 360 }.id("narrow") }
+    }
+}
+
+/// A split view's detail writing its window's background as it is made, and the one its button changes it to.
+private struct GroundingDetail: View {
+    let first: Material
+    let changed: Material
+    @Environment(\.window) private var window
+
+    var body: some View {
+        let (window, first, changed) = (self.window, first, changed)
+        return WideDetail(VStack { Button("Change").onClicked { window.background = changed }.id("change") })
+            .onCreated { window.background = first }
     }
 }
 

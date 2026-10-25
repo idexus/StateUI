@@ -233,7 +233,7 @@ typedef enum STATEUI_CLOSED_ENUM {
     StateUIFigureKindAuthored,
 } StateUIFigureKind;
 
-/// A ground of a split view's pane: WinUI's own, a color, the in-app acrylic in a color.
+/// A ground - a split view's pane's, a sheet's card's: WinUI's own, a color, the in-app acrylic in a color.
 typedef enum STATEUI_CLOSED_ENUM { StateUIGroundOwn, StateUIGroundColor, StateUIGroundAcrylic } StateUIGround;
 
 /// Whether assistive technology meets an element: as the control is of itself, met, skipped, or skipped with every
@@ -810,6 +810,10 @@ void stateui_winui_sheet_set_action_menu(StateUIObjectRef sheet, int32_t place, 
                                          char const *const *identifiers, char const *const *icons,
                                          bool const *destructive, int32_t const *keys, int32_t const *modifiers,
                                          bool const *givesWay, int32_t count);
+/// Stands a sheet's card on its window's background: a color `argb` over the card's own background, or the in-app
+/// acrylic in it in its place - its luminosity hiding `opacity` of what is behind it and its tint `tintOpacity`.
+void stateui_winui_sheet_set_ground(StateUIObjectRef sheet, StateUIGround kind, uint32_t argb, float opacity,
+                                    float tintOpacity);
 void stateui_winui_window_push_sheet(StateUIObjectRef window, StateUIObjectRef sheet);
 void stateui_winui_window_pop_sheet(StateUIObjectRef window);
 

@@ -47,12 +47,35 @@ final class AndroidModals {
                 ).map(JavaObject.init)
             }
             guard let holder else { continue }
+            Self.ground(holder, on: element)
             Java.callStatic(
                 JavaAPI.views, JavaAPI.rise, .object(root.reference), .object(holder.reference), .bool(true),
                 .long(duration))
             shown.append(Shown(element: element, holder: holder))
         }
         return shown.count > change.kept
+    }
+
+    /// Stands every sheet on its window's background as it changes (`overlaidGround`).
+    func ground() {
+        for sheet in shown { Self.ground(sheet.holder, on: sheet.element) }
+    }
+
+    /// Stands `holder` on the window's background of `element`'s sheet, laid over the theme's own sheet - Android
+    /// blurs nothing behind a view, so a blur stands as its color; the theme's own where the window says none.
+    /// Design: docs/design/platforms/android/pages.md#sheets
+    private static func ground(_ holder: JavaObject, on element: MountedElement) {
+        let argb = element.overlaidGround.painted.flatMap { HostBrush($0).firstColor }.flatMap(AndroidView.argb)
+        Java.callStatic(
+            JavaAPI.views, JavaAPI.groundSheet, .object(holder.reference),
+            .long(argb.map { Int64(UInt32(bitPattern: $0)) } ?? Int64.min))
+    }
+
+    /// The color each sheet's holder stands on, by its page, as ARGB; nil where it stands on the theme's own.
+    func groundForTesting(of element: MountedElement) -> UInt32? {
+        guard let sheet = shown.first(where: { $0.element === element }) else { return nil }
+        let argb = Java.callStaticLong(JavaAPI.views, JavaAPI.sheetColor, .object(sheet.holder.reference))
+        return argb == Int64.min ? nil : UInt32(truncatingIfNeeded: argb)
     }
 
     /// Hands what stands over the window to each sheet filling it; a card stands clear of it in the middle.

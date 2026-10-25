@@ -74,6 +74,21 @@ final class GTKSheet {
         adw_dialog_present(dialog, window.widget)
     }
 
+    /// The class standing the dialog on its window's background; nil on libadwaita's own.
+    private var groundClass: String?
+
+    /// Stands the sheet on `ground` - its window's background - laid over libadwaita's own surface, which stands
+    /// alone where it is empty. GTK blurs nothing inside a window, so a blur stands as its color.
+    /// Design: docs/design/platforms/gtk/pages.md#sheets
+    func stand(on ground: HostMaterial) {
+        let wanted = GTKBrush(ground.painted).firstColor.map(GTKStyleSheet.sheetGround)
+        guard wanted != groundClass else { return }
+        let widget = dialog.of(GtkWidget.self)
+        if let groundClass { gtk_widget_remove_css_class(widget, groundClass) }
+        if let wanted { gtk_widget_add_css_class(widget, wanted) }
+        groundClass = wanted
+    }
+
     /// The sheet's title, which the dialog says to assistive technology and which a page's frame shows.
     func setTitle(_ title: String) {
         adw_dialog_set_title(dialog, title)

@@ -83,6 +83,7 @@ final class WebWindowController {
         if let traits = changes.traits {
             window.frame.setBackground(traits.background.painted)
             WebRelay.keepPageColor(Self.pageColor(traits.background))
+            groundTheSurfacesOverThePage(element)
         }
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.web.view) }
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.web.view)) }
@@ -106,6 +107,17 @@ final class WebWindowController {
         return WebCSS.color(color)
     }
 
+    /// Stands the surfaces over the page on the window's background as it changes: its sheets, and its split views'
+    /// sidebars over the detail (`overlaidGround`).
+    /// Design: docs/design/host/pages.md#a-pages-ground
+    private func groundTheSurfacesOverThePage(_ element: MountedElement) {
+        for (page, sheet) in sheets { sheet.stand(on: page.overlaidGround) }
+        for split in element.splitViews {
+            (split.web.view as? WebSplitView)?.ground(
+                beside: split.sidebarMaterial(over: false), over: split.sidebarMaterial(over: true))
+        }
+    }
+
     /// Keeps a sheet for each page presented, in its order, by the host layer's rule (`SheetChange`): a sheet gone
     /// closes, the top first, and one new is shown over those before it.
     /// Design: docs/design/platforms/web/pages.md#sheets
@@ -121,6 +133,7 @@ final class WebWindowController {
                 guard let self else { return }
                 goBack(in: runtime)
             }
+            sheet.stand(on: page.overlaidGround)
             sheet.present()
             sheets.append((page, sheet))
         }

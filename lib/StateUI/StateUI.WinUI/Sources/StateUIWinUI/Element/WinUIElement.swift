@@ -76,9 +76,13 @@ final class WinUIElement: NativeElement {
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
         if changed.contains(.isPresented) { configurePopover() }
-        if !changed.isDisjoint(with: MountedElement.sidebarMaterials), let split = view as? WinUISplitView {
-            split.grounds = (element.sidebarMaterial(over: false), element.sidebarMaterial(over: true))
-        }
+        if !changed.isDisjoint(with: MountedElement.sidebarMaterials) { groundSidebar() }
+    }
+
+    /// Stands a split view's sidebar on its materials, beside the detail and over it.
+    func groundSidebar() {
+        guard let split = view as? WinUISplitView else { return }
+        split.grounds = (element.sidebarMaterial(over: false), element.sidebarMaterial(over: true))
     }
 
     func leave() {

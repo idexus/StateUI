@@ -179,10 +179,12 @@ SplitView($menuOpen, sidebar: {
 .flyoutBackground(.blur(.thick))     // sliding over it
 ```
 
-Left unsaid, each is the platform's own: beside the detail the window shows
-through, as a desktop sidebar does; over it the sidebar stands on the
-platform's drawer or overlay surface - never on the window, so a clear window
-never leaves a flyout with nothing under its words. The sidebar page's own
+Left unsaid, beside the detail the window shows through, as a desktop sidebar
+does; over it the sidebar stands on the window's background
+(`window.background`) laid over the platform's drawer or overlay surface, so
+the window's color reaches it and a clear window never leaves a flyout with
+nothing under its words. A window saying no background leaves the platform's
+own surface there. The sidebar page's own
 `.pageBackground` still paints the page on top. A platform that blurs nothing
 inside a window shows a blur as its color.
 
@@ -218,6 +220,11 @@ platform's bounds; a page taller than they allow scrolls inside it. A sheet
 holding a stack, tabs or a split view - whose pages come and go - or a view
 that takes the room it is given, such as a list or a map, stands at the
 platform's standard size. On a phone a sheet rises from the bottom.
+
+A sheet stands on its window's background (`window.background`), laid over
+the platform's own sheet, so the application's color reaches the sheet as it
+reaches its pages, and its words keep an opaque surface however clear the
+window is. A window saying no background leaves the platform's own sheet.
 
 A value presents a page made of it: nil takes it away, the user's dismissal
 writes nil, and another value presents another page in its place:

@@ -378,7 +378,18 @@ namespace {
         return "0";
     }
 
-    /// What a sheet's head shows: its title, and whether it offers the way back and the close button.
+    /// A ground as a test reads it: a color, "acrylic" with its color and luminosity, or nothing for WinUI's own.
+    std::string groundText(media::Brush const &own) {
+        if (auto acrylic = own ? own.try_as<media::AcrylicBrush>() : nullptr) {
+            auto luminosity = acrylic.TintLuminosityOpacity();
+            return "acrylic " + color(media::SolidColorBrush(acrylic.TintColor())) + " " +
+                   number(luminosity ? luminosity.Value() : 0);
+        }
+        return own ? color(own) : std::string();
+    }
+
+    /// What a sheet's head shows: its title, and whether it offers the way back and the close button; what its card
+    /// stands on.
     std::optional<std::string> sheetHead(controls::Grid const &sheet, std::string_view what) {
         auto card = sheet.Children().GetAt(1).as<controls::Border>();
         auto head = card.Child().as<controls::Grid>().Children().GetAt(0).as<controls::Grid>();
@@ -389,6 +400,11 @@ namespace {
         if (what == "actions")
             return actions(sheetActionEdges(sheet), [](auto const &button) { return narrow(button.Label()); }, ";", ";");
         if (what == "card") return number(card.ActualWidth()) + "," + number(card.ActualHeight());
+        if (what == "ground") {
+            auto own = card.Background().try_as<media::AcrylicBrush>() ? card.Background()
+                                                                       : card.Child().as<controls::Grid>().Background();
+            return groundText(own);
+        }
         return std::nullopt;
     }
 
@@ -481,13 +497,8 @@ namespace {
         // A pane's ground beside the detail and over it: a color, or "acrylic" with its color and luminosity.
         if (auto split = object.try_as<controls::SplitView>();
             split && (what == "paneBackground" || what == "overlayPaneBackground")) {
-            auto own = ownBrush(split.Resources(), what == "paneBackground" ? L"StateUIPaneBeside" : L"StateUIPaneOver");
-            if (auto acrylic = own ? own.try_as<media::AcrylicBrush>() : nullptr) {
-                auto luminosity = acrylic.TintLuminosityOpacity();
-                return "acrylic " + color(media::SolidColorBrush(acrylic.TintColor())) + " " +
-                       number(luminosity ? luminosity.Value() : 0);
-            }
-            return own ? color(own) : std::string();
+            auto place = what == "paneBackground" ? L"StateUIPaneBeside" : L"StateUIPaneOver";
+            return groundText(ownBrush(split.Resources(), place));
         }
         if (auto element = object.try_as<xaml::FrameworkElement>(); element && what == "theme") {
             return number(static_cast<int32_t>(element.RequestedTheme()));

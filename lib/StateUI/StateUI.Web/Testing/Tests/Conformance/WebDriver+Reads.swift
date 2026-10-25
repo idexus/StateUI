@@ -124,6 +124,12 @@ extension WebDriver {
             guard let frame = renderer?.roster.controllers.first?.window.frame else { return nil }
             return .some(try color("getComputedStyle(e).backgroundColor", on: frame.node, unlessClear: true)
                 .map { StandIns.material(painted: $0).propValue })
+        case (.sheet, .background):
+            let page = element.children.first
+            guard let sheet = renderer?.roster.controllers.lazy.flatMap(\.sheets).first(where: { $0.element === page })
+            else { return nil }
+            return .some(try color("getComputedStyle(e).backgroundColor", on: sheet.sheet.dialogNode, unlessClear: true)
+                .map { Material.color($0).propValue })
         case (_, .barTitle): return .some(try barWords(".stateui-bar-name"))
         case (_, .barSubtitle): return .some(try barWords(".stateui-bar-subtitle"))
         case (_, .barBackgroundColor): return .some(try barColor("--stateui-bar-background", over: element))

@@ -43,6 +43,19 @@ final class WinUISheetView: WinUIView {
         menuActions = actions.show(leading: leading, trailing: trailing, overflow: overflow, on: handle)
     }
 
+    /// The ground the card stands on now.
+    private var ground = WinUIGround(HostMaterial(nil))
+
+    /// Stands the card on `ground` - its window's background: a color over the card's own, a blur as the in-app
+    /// acrylic in its place; the card's own where it is empty.
+    /// Design: docs/design/platforms/winui/pages.md#sheets
+    func stand(on ground: HostMaterial) {
+        let wanted = WinUIGround(ground)
+        guard wanted != self.ground else { return }
+        self.ground = wanted
+        stateui_winui_sheet_set_ground(handle, wanted.kind, wanted.argb, wanted.opacity, wanted.tintOpacity)
+    }
+
     /// The actions on the head as they were last drawn, in reading order, those behind "more" last.
     var drawn: [WinUIToolbarAction] { actions.drawn }
 

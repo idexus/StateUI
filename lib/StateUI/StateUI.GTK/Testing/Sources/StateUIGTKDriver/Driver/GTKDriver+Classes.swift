@@ -102,6 +102,12 @@ extension GTKDriver {
             .flatMap { color(String($0.dropFirst("stateui-fill-".count))) }
     }
 
+    /// The color a sheet's dialog stands on, as its class paints it; nil on libadwaita's own.
+    static func sheetGround(of widget: GTKWidget) -> Color? {
+        classes(of: widget).first { $0.hasPrefix("stateui-sheet-ground-") }
+            .flatMap { color(String($0.dropFirst("stateui-sheet-ground-".count))) }
+    }
+
     private static func classes(of widget: GTKWidget) -> [String] {
         guard let names = gtk_widget_get_css_classes(widget) else { return [] }
         defer { g_strfreev(names) }

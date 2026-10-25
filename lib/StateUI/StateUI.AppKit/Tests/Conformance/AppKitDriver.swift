@@ -198,6 +198,7 @@ final class AppKitDriver: HostDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         layOutWindows()
         if element.type == .window { return try windowHolds(property, element) }
+        if element.type == .sheet, property == .background { return try sheetGround(element) }
         if element.type == .popover, property == .isPresented {
             return ((element.native as? AppKitElement)?.shownPopover?.isShown ?? false).propValue
         }

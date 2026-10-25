@@ -139,6 +139,14 @@ enum GTKStyleSheet {
         return name
     }
 
+    /// The class standing a sheet - libadwaita's dialog - on `color`, laid over the surface its sheet paints.
+    static func sheetGround(_ color: GdkRGBA) -> String {
+        let name = "stateui-sheet-ground-" + hex(color)
+        let layer = "linear-gradient(\(css(color)), \(css(color)))"
+        write(name, "", states: ".\(name) sheet { background-image: \(layer); }\n")
+        return name
+    }
+
     /// The class giving a control its tint: the color its `accent` - a node or a state of it, as a selector after
     /// the control's own - is filled in; its own words and marks where `accent` is nil.
     static func tint(_ color: GdkRGBA, on accent: String?) -> String {

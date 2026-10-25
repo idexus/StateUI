@@ -32,6 +32,8 @@ extension WinUIDriver {
         case .window:
             if let held = try windowHolds(property.name, element) { return held }
             throw cannot
+        case .sheet where property.name == "background":
+            return Self.ground(try read(sheet(of: element), "ground"))
         case .page, .navigationStack, .splitView, .tabView:
             if let held = try pageHolds(property.name, element, view) { return held }
         case .popover where property.name == "isPresented":

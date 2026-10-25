@@ -104,6 +104,7 @@ final class GTKDriver: HostDriver {
     private static let byHostReasons = [
         "read keyboardShortcut of ToolbarButton": "the host's own record: a header bar's button shows no shortcut",
         "close on Popover": "the popover popped down as a click beside it pops it down, no click sent",
+        "read the ground of Sheet": "the class of the host's style sheet the dialog wears: GTK reads back no background",
         "read sidebarBackground of SplitView":
             "the class of the host's style sheet the sidebar wears: GTK reads back no background",
         "read flyoutBackground of SplitView":
@@ -275,6 +276,12 @@ final class GTKDriver: HostDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if [.toolbarButton, .toolbarToggle].contains(element.type) { return try actionHolds(property, element) }
         if element.type == .window { return try windowHolds(property, element) }
+        if element.type == .sheet, property == .background {
+            let page = element.children.first
+            guard let sheet = renderer?.windows.lazy.flatMap(\.sheets).first(where: { $0.element === page })
+            else { throw DriverCannot(reading: property, of: element) }
+            return Self.sheetGround(of: sheet.sheet.dialog.of(GtkWidget.self)).map { StandIns.material(painted: $0).propValue }
+        }
         if [.menuItem, .menuToggle].contains(element.type) { return try menuItemHolds(property, element) }
         if [.barBackgroundColor, .barForegroundColor, .barSubtitle].contains(property) {
             return try barHolds(property, element)

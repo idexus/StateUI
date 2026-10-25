@@ -99,8 +99,10 @@ split - and asks the split view for that place's material
 (`sidebarMaterial(over:)`); a Mac sidebar stands beside the detail alone. An
 empty material is the platform's own there. Beside the detail the platform's
 own lets the window through, as a desktop sidebar does; over the detail it is
-the platform's drawer or overlay surface, never the window's - a clear window
-would leave a flyout with nothing under its words. The sidebar page's own
+the window's background laid over the platform's drawer or overlay surface
+([a page's ground](#a-pages-ground)), the platform's surface alone where the
+window says none - so a clear window still leaves a flyout something under
+its words. The sidebar page's own
 background still paints the page on top. A split view saying either material
 gives its sidebar to the application to paint (`paintsSidebar`): a host whose
 platform draws a sidebar's material of its own leaves it out then.
@@ -151,6 +153,16 @@ host painted its toolkit's window in - the window's color, or the
 platform's own ground where the window says none: UIKit's system
 background, Android's theme background. A window whose color changes stands
 every page in it (`MountedElement.pages`) on the new one.
+
+A surface laid over the page - a sheet, a sidebar sliding over the detail -
+stands on the window's background where the application says nothing of it
+(`overlaidGround`), so the window's color reaches every surface the user
+reads on. A host lays that background over the platform's own surface there -
+its dialog, its drawer - so a clear or tinted window still leaves the surface
+opaque under its words; a blur stands where the platform blurs inside a
+window, else as its color. A window saying no background leaves the
+platform's own surface alone. A window whose background changes grounds its
+sheets and its split views (`splitViews`) again.
 
 ## Sheets
 

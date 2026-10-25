@@ -419,9 +419,9 @@ final class StateUIViews {
     }
 
     /**
-     * Grounds a split view's sidebar: over the detail in `argb` where `painted`, else on the theme's floating
-     * surface - a drawer's, its end corners rounded; beside the detail in `argb` where `painted`, else on nothing,
-     * the window showing through.
+     * Grounds a split view's sidebar: over the detail on the theme's floating surface - a drawer's, its end corners
+     * rounded - with `argb` laid over it where `painted`; beside the detail in `argb` where `painted`, else on
+     * nothing, the window showing through.
      */
     static void groundSidebar(View view, boolean over, boolean painted, int argb) {
         if (!over && !painted) {
@@ -430,10 +430,12 @@ final class StateUIViews {
             return;
         }
         int color = argb;
-        if (!painted) {
+        if (over) {
+            // Over the detail the drawer stands on the platform's own surface, its material laid over it.
             TypedValue value = new TypedValue();
             view.getContext().getTheme().resolveAttribute(android.R.attr.colorBackgroundFloating, value, true);
-            color = value.resourceId != 0 ? view.getContext().getColor(value.resourceId) : value.data;
+            int own = value.resourceId != 0 ? view.getContext().getColor(value.resourceId) : value.data;
+            color = painted ? over(argb, own) : own;
         }
         GradientDrawable ground = new GradientDrawable();
         ground.setColor(color);
@@ -512,6 +514,48 @@ final class StateUIViews {
         card.addView(page, whole);
         holder.addView(card, new FrameLayout.LayoutParams(width, height, Gravity.CENTER));
         return holder;
+    }
+
+    /**
+     * Stands a sheet's holder on `argb` - its window's background - laid over the theme's own sheet: the card in a wide
+     * window, the holder filling a narrow one; the theme's own where `argb` is Long.MIN_VALUE.
+     */
+    static void groundSheet(View holder, long argb) {
+        boolean card = CARD.equals(holder.getTag());
+        View surface = card ? ((ViewGroup) holder).getChildAt(0) : holder;
+        TypedArray theme = holder.getContext().obtainStyledAttributes(
+                new int[] {android.R.attr.colorBackground, android.R.attr.windowBackground});
+        int own = theme.getColor(0, Color.WHITE);
+        Drawable window = theme.getDrawable(1);
+        theme.recycle();
+        if (argb == Long.MIN_VALUE) {
+            if (card) ((GradientDrawable) surface.getBackground()).setColor(own);
+            else surface.setBackground(window);
+            return;
+        }
+        int ground = over((int) argb, own);
+        if (card) ((GradientDrawable) surface.getBackground()).setColor(ground);
+        else surface.setBackground(new ColorDrawable(ground));
+    }
+
+    /** `top` laid over `bottom`, as a color with an alpha lies over another. */
+    private static int over(int top, int bottom) {
+        float a = Color.alpha(top) / 255f;
+        return Color.rgb(
+                Math.round(Color.red(top) * a + Color.red(bottom) * (1 - a)),
+                Math.round(Color.green(top) * a + Color.green(bottom) * (1 - a)),
+                Math.round(Color.blue(top) * a + Color.blue(bottom) * (1 - a)));
+    }
+
+    /** The color a sheet's holder stands on, as ARGB: its card's in a wide window; Long.MIN_VALUE where none. */
+    static long sheetColor(View holder) {
+        View surface = CARD.equals(holder.getTag()) ? ((ViewGroup) holder).getChildAt(0) : holder;
+        Drawable ground = surface.getBackground();
+        if (ground instanceof ColorDrawable) return ((ColorDrawable) ground).getColor() & 0xFFFFFFFFL;
+        if (ground instanceof GradientDrawable && ((GradientDrawable) ground).getColor() != null) {
+            return ((GradientDrawable) ground).getColor().getDefaultColor() & 0xFFFFFFFFL;
+        }
+        return Long.MIN_VALUE;
     }
 
     /** Stands the card of a sheet in a wide window at `width` by `height` pixels; nothing for one filling it. */

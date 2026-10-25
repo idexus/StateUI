@@ -434,6 +434,14 @@ final class UIKitDriver: HostDriver {
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if element.type == .window { return try windowHolds(property, element) }
+        if element.type == .sheet, property == .background {
+            // A sheet shows its page, which stands on the ground it paints - the window's, where it says none.
+            let page = element.children.first.map { $0.visiblePage ?? $0 }
+            guard let view = (page?.native as? UIKitElement)?.controller?.view else {
+                throw DriverCannot(reading: property, of: element)
+            }
+            return view.backgroundColor.map { Material.color(Self.color($0)).propValue }
+        }
         if element.type == .popover, property == .isPresented {
             let controller = (element.native as? UIKitElement)?.shownPopover?.controller
             return (controller?.presentingViewController != nil && controller?.isBeingDismissed == false).propValue

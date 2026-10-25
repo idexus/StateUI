@@ -83,7 +83,8 @@ appears, and the window has every page under it paint again when its
 background changes. A split view's sidebar page that paints nothing stands
 on the split view's material for its place instead ([a sidebar's
 material](../../host/pages.md#a-sidebars-material)) - over the detail, the
-system's background when the split view says none, never the window's - and
+window's background when the split view says none, the system's where the
+window says none too - and
 the split view has its pages paint again as its room or its materials
 change. A blur or glass behind a window shows its color
 (`HostMaterial.painted`): iPadOS draws an application's window opaque.
@@ -179,7 +180,9 @@ would stand over nearly the whole of an iPad's screen. A sheet asks UIKit for
 its page's size ([a sheet's size](../../host/pages.md#a-sheets-size)) by its
 `preferredContentSize` - at least 320 x 180, within the window less 32 points
 a side - which a wide screen keeps and a narrow one passes over; a page asking
-none asks nothing, and stands at UIKit's own size. Each is presented over the one
+none asks nothing, and stands at UIKit's own size. A sheet's page stands on
+its window's background as every page does ([a page's
+ground](../../host/pages.md#a-pages-ground)). Each is presented over the one
 before once that one stands - UIKit presents over a controller only then -
 and all of them only once the window stands on screen: a sheet presented
 before, UIKit takes away again at once and tells as the user's. Which stay

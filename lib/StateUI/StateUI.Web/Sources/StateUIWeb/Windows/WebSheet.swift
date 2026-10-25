@@ -47,6 +47,19 @@ final class WebSheet {
         bar.onClose = offers ? { [weak self] in self?.onClosedByUser() } : nil
     }
 
+    /// Stands the sheet on `ground` - its window's background - laid over the sheet's own surface; on that surface
+    /// alone where it is empty.
+    /// Design: docs/design/platforms/web/pages.md#sheets
+    func stand(on ground: HostMaterial) {
+        let painted = WebCSS.fill(ground.painted)
+        let opaque = ground.painted.flatMap { HostBrush($0).firstColor?.color?.alpha } == 255
+        dialog.style("background-color", opaque ? painted : nil)
+        dialog.style("background-image", opaque ? nil : painted.map { "linear-gradient(\($0), \($0))" })
+    }
+
+    /// The dialog's element, which a driver reads the sheet's ground off.
+    var dialogNode: Int32 { dialog.node }
+
     /// Takes the sheet away; its page stays the tree's.
     func close() {
         WebRelay.closeModal(dialog.node)

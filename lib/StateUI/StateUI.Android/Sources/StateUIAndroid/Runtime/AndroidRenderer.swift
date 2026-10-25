@@ -134,6 +134,7 @@ final class AndroidRenderer {
 
     /// The pages the window presents over its page.
     private lazy var modals = AndroidModals(root: root, reducesMotion: reducesMotion)
+    var modalsForTesting: AndroidModals { modals }
 
     /// Android's part of the acts every host performs, the files the user opens and saves and what the system
     /// launches, and the host layer's performer of them - the process's: a question, a document chosen or a script
@@ -309,6 +310,9 @@ final class AndroidRenderer {
         if let traits = changes.traits {
             showBackground(traits.background.painted)
             for page in window.pages { (page.native as? AndroidElement)?.paintBackground() }
+            // The surfaces over the page stand on it too: the sheets, and the sidebars over the detail.
+            modals.ground()
+            for split in window.splitViews { (split.native as? AndroidElement)?.groundSidebar() }
         }
         if let (_, arrangement) = changes.arrangement {
             Java.call(root.reference, JavaAPI.removeAllViews)

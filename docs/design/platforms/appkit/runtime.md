@@ -156,7 +156,12 @@ fits. A sheet whose arrangement brings no bar has no toolbar at all. A sheet sta
 its page asks ([a sheet's size](../../host/pages.md#a-sheets-size)): at least
 320 x 180, 560 x 480 for a page asking none, at most the window it hangs from
 less 24 points a side; the user resizing it keeps that size until the page
-asks another.
+asks another. A sheet stands on its window's background ([a page's
+ground](../../host/pages.md#a-pages-ground)): a blur as the window's own
+material view in its tint, a color laid over the window background AppKit
+gives a sheet, so a clear window still leaves the sheet opaque; AppKit's own
+where the window says none. The window grounds its sheets again as its
+background changes.
 
 ## Acts
 

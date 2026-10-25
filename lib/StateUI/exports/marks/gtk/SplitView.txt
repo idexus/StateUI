@@ -1,4 +1,4 @@
-# revision 7.1
+# revision 8.1
 SplitView: ✅
 SplitView.flyoutBackground: ✓ read flyoutBackground of SplitView: the color the split keeps for its sidebar over the detail, which a wide window never shows
 SplitView.showsSidebar: ✅

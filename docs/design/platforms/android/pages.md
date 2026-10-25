@@ -95,9 +95,10 @@ toward the detail; a drawer over the detail stands on its own edge.
 Where the room is narrower than 720 points - a phone, a tablet upright - the
 sidebar is a drawer sliding over the detail from the leading edge, the
 detail shaded behind it; a tap on the shade closes it. The drawer stands on
-the split view's flyout material, else on the theme's floating surface
-(`colorBackgroundFloating`), its end corners rounded as a modal drawer's -
-never on the window's, which a clear window would leave clear. Where the room
+the theme's floating surface (`colorBackgroundFloating`), its end corners
+rounded as a modal drawer's, with the split view's flyout material - else the
+window's background - laid over it, so a clear window still leaves the drawer
+opaque. Where the room
 is wider, the sidebar stands beside the detail while it shows, on the split
 view's sidebar material, else on nothing: the window shows through
 ([a sidebar's material](../../host/pages.md#a-sidebars-material)); it moves
@@ -185,7 +186,11 @@ middle as the platform's dialog does - the theme's background, its
 `dialogCornerRadius`, over the shade of its `backgroundDimAmount` - as large
 as its page asks ([a sheet's size](../../host/pages.md#a-sheets-size)): at
 least 280 x 180 points, 560 x 640 for a page asking none, at most a dialog's
-560 wide and the window less 24 a side; it fades in and out. Either moves at
+560 wide and the window less 24 a side; it fades in and out. The card, or
+the holder filling a narrow window, stands on its window's background laid
+over the theme's own ([a page's ground](../../host/pages.md#a-pages-ground)),
+the theme's alone where the window says none, and is grounded again as that
+background changes. Either moves at
 once where the user asks for less motion; the window's size is the
 configuration's, known before the root is laid out. The page in front is the one presented:
 the page beneath hears it disappear, and appear again when the one over it

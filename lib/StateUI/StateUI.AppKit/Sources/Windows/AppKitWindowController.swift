@@ -307,6 +307,8 @@ final class AppKitWindowController: NSWindowController {
         window.standardWindowButton(.miniaturizeButton)?.isEnabled = allowsMinimizing
         backdrop = traits.background.blur
         content.backdrop = backdrop
+        // Its sheets stand on its background too.
+        for modal in modals { modal.showGround() }
         window.level = traits.floatsOnTop ? .floating : .normal
     }
 

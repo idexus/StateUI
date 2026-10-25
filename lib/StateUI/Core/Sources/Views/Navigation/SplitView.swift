@@ -136,7 +136,8 @@ extension SplitView {
 
     /// What the sidebar stands on while it slides over the detail - a phone's
     /// drawer, the sidebar of a narrow window. Leave it unwritten for the
-    /// platform's own surface there, which never lets the detail through.
+    /// window's background laid over the platform's own surface there, which
+    /// never lets the detail through.
     public func flyoutBackground(_ value: Material) -> Modified {
         setValue(SplitViewContract.flyoutBackground, value)
     }

@@ -205,7 +205,10 @@ only where the user allowed it.
 A page a view presents stands on a sheet: the browser's own modal
 `<dialog>`, which takes the focus and every input until it closes and shades
 the page under it - a card in the middle, from the bottom where the page is
-narrow. A sheet has no bar of its own: a stack in it brings one
+narrow. The dialog stands on its window's background ([a page's
+ground](../../host/pages.md#a-pages-ground)): an opaque color as its own, any
+other laid over the browser's dialog background as an image layer; the
+browser's own where the window says none. A sheet has no bar of its own: a stack in it brings one
 (`bringsABar`), the chrome of the sheet's page (`WindowChrome`), its way back
 the window's (`WindowPresentation.wayBack`), ending with a button closing the
 sheet unless the page says it offers none. Escape is the user's dismissal as that button is: the browser does not
@@ -247,9 +250,11 @@ variable for each - `--stateui-sidebar-ground` and `-filter` beside the
 detail, `--stateui-flyout-ground` and `-filter` over it - which the style
 sheet reads in that place, so a page turning narrow moves the sidebar to the
 other with no word from the host. A blur is a backdrop filter under its
-color. None is the page's own: beside the detail the window shows through,
+color. Over the detail a color is laid over the page's raised surface
+(`--stateui-flyout-layer`), so a clear window still leaves the sidebar
+opaque. None is the page's own: beside the detail the window shows through,
 a breath darker - lighter in the light theme - as a desktop sidebar lets it
-through; over the detail the page's raised surface, never the window. The
+through; over the detail the page's raised surface. The
 window's bar, over a sidebar shown beside the page, stands its part over the
 sidebar on the same ground - the window hands the bar the split view's
 variables as it writes its chrome - so the sidebar and the bar over it read

@@ -47,6 +47,10 @@ namespace stateui {
     /// WinUI's own brush for a brush as the host hands it; null for none.
     xaml::Media::Brush brush(StateUIBrush const &brush);
 
+    /// The brush of a ground: null for WinUI's own, a color `argb`, or the in-app acrylic in it - its luminosity
+    /// hiding `opacity` of what is behind it and its tint `tintOpacity`.
+    xaml::Media::Brush ground(StateUIGround kind, uint32_t argb, float opacity, float tintOpacity);
+
     /// A brush painting an oval `width` by `height`: `fill`'s first color keeping `share` of its opacity inside,
     /// `stroke`'s first color `lineWidth` wide inside its edge.
     xaml::Media::Brush oval(StateUIBrush const &fill, StateUIBrush const &stroke, double lineWidth, double share,

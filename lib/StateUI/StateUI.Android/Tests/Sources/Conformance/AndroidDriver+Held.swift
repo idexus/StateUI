@@ -26,6 +26,10 @@ extension AndroidDriver {
         }
         if element.type == .window, property == .title { return Self.activityTitle() }
         if element.type == .window, property == .background { return Self.windowBackground() }
+        if element.type == .sheet, property == .background {
+            guard let page = element.children.first, let renderer else { throw DriverCannot(reading: property, of: element) }
+            return renderer.modalsForTesting.groundForTesting(of: page).map { Self.material(argb: Int64($0)) }
+        }
         if element.type == .textSpan { return try spanHolds(property, on: element) }
         let view = (element.native as? AndroidElement)?.view
         if let field = view as? AndroidDateFieldView, let held = try Self.dateFieldHolds(property, field) { return held }

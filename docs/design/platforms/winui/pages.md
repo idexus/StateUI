@@ -174,7 +174,10 @@ window's acrylic ([a window's backdrop](runtime.md#a-windows-backdrop)) -
 else the sidebar page's background, else the brush WinUI's theme gives a
 navigation pane there (`NavigationViewExpandedPaneBackground` beside,
 `NavigationViewDefaultPaneBackground` over), in the theme the split stands
-in and again as it turns. WinUI has no glass: glass is the acrylic at its
+in and again as it turns. Over the detail a color the detail would show
+through - a clear or tinted window's, which the pane stands on where the
+split view says nothing - is the in-app acrylic WinUI lays there, tinted in
+it as far as it is opaque. WinUI has no glass: glass is the acrylic at its
 fallback thickness.
 
 ## A native arrangement
@@ -227,7 +230,11 @@ and clear of the window's edges - and it enters as a dialog enters. It stands
 as large as its page asks ([a sheet's size](../../host/pages.md#a-sheets-size)):
 in the middle, at least 320 x 184 and at most a dialog's 548 wide; one whose
 page asks none - a stack among them - stretches to 548 x 640, which WinUI's
-layout holds within the window less the card's 48 a side. A stack it
+layout holds within the window less the card's 48 a side. The card stands on
+its window's background ([a page's ground](../../host/pages.md#a-pages-ground)):
+a color laid over the dialog's own background inside its outline, a blur as
+WinUI's in-app acrylic in its place, showing what the card covers; the
+dialog's own where the window says none. A stack it
 holds brings its bar to the card's head, above the page: the way back as WinUI
 draws one outside a navigation view (`NavigationBackButtonSmallStyle`), the
 page's actions at the leading edge, the top page's title, its actions at the

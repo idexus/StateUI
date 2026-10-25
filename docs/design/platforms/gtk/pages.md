@@ -121,9 +121,9 @@ Beside the detail libadwaita's opaque sidebar pane gives way: with no
 material it lets the window through shaded a breath (`alpha(@shade_color,
 0.6)`, GNOME's own shade), and under a material it
 is clear, so the material lies on the window; the class is the split's, over
-its `.sidebar-pane` node. Over the detail the pane stays libadwaita's own -
-never the window. GTK blurs nothing inside a window, so a blur stands as its
-color.
+its `.sidebar-pane` node. Over the detail the pane stays libadwaita's own,
+the fill laid over it, so a clear window still leaves the sidebar opaque. GTK
+blurs nothing inside a window, so a blur stands as its color.
 
 ## Tabs
 
@@ -194,7 +194,13 @@ holding its switcher. A sheet asks the dialog for its page's size ([a
 sheet's size](../../host/pages.md#a-sheets-size)) - at least 320 by 180, 560
 by 480 for a page asking none, at most the window less 24 pixels a side, the
 size the window asks for while it is not laid out yet - which libadwaita fits
-to the window, rising from its bottom where the window is narrow. The user's close - Escape, the close button - takes the top sheet
+to the window, rising from its bottom where the window is narrow. The sheet
+stands on its window's background ([a page's
+ground](../../host/pages.md#a-pages-ground)): a class of the host's style
+sheet on the dialog lays it over the surface libadwaita paints its `sheet`
+node in, a blur as its color; libadwaita's own where the window says none.
+The window grounds its sheets and its split views again as its background
+changes. The user's close - Escape, the close button - takes the top sheet
 away through the host layer's way back, false written onto its state;
 a sheet the program takes away closes and tells nothing. A sheet starts a path
 of its own ([the visible path](../../host/pages.md#the-visible-path)): it

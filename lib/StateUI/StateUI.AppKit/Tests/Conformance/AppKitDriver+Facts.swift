@@ -90,19 +90,30 @@ extension AppKitDriver {
         case .maximumHeight: return Double(window.contentMaxSize.height - chrome).rounded().propValue
         case .isMaximizable: return (window.standardWindowButton(.zoomButton)?.isEnabled ?? false).propValue
         case .isMinimizable: return window.styleMask.contains(.miniaturizable).propValue
-        case .background:
-            // A blur the desktop shows through, in the color laid over it; else the window's own color.
-            let content = window.contentView as? AppKitWindowContentView
-            if let role = content?.materialForTesting?.material, let thickness = AppKitMaterialView.thickness(role) {
-                let blur = Blur(thickness)
-                return Material.blur(content?.materialTint.map { blur.tint(Self.color($0)) } ?? blur).propValue
-            }
-            return window.backgroundColor.map { Material.color(Self.color($0)).propValue }
+        case .background: return Self.ground(of: window)
         case .floatsOnTop: return (window.level == .floating).propValue
         case .windowType: return controller.restorationRecordForTesting.kind.map { .name($0) }
         case .windowValue: return controller.restorationRecordForTesting.value.map { .string($0) }
         default: throw DriverCannot(reading: property, of: element)
         }
+    }
+
+    /// What `window` stands on: a blur the desktop shows through, in the color laid over it; else its own color.
+    static func ground(of window: NSWindow) -> HostValue? {
+        let content = window.contentView as? AppKitWindowContentView
+        if let role = content?.materialForTesting?.material, let thickness = AppKitMaterialView.thickness(role) {
+            let blur = Blur(thickness)
+            return Material.blur(content?.materialTint.map { blur.tint(Self.color($0)) } ?? blur).propValue
+        }
+        return window.backgroundColor.map { Material.color(Self.color($0)).propValue }
+    }
+
+    /// What the sheet `element` stands on, as its window shows it.
+    func sheetGround(_ element: MountedElement) throws -> HostValue? {
+        guard let page = element.children.first, let window = try sheet(of: page).window else {
+            throw DriverCannot("read the ground of a sheet")
+        }
+        return Self.ground(of: window)
     }
 
     /// What the title area of the window `element` stands in shows: the application's name and the line under it,

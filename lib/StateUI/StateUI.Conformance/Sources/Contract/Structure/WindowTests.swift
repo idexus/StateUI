@@ -81,6 +81,7 @@
                 $0.background = $1
             },
             blurred,
+            groundsItsSheets,
             ConformanceCase("aWindowAScenesGroupOpensIsOfItsKindForItsValue", proves: [
                 Covered(WindowContract.windowType), Covered(WindowContract.windowValue),
             ]) { s in
@@ -171,6 +172,33 @@
             try s.perform(.activate, on: s.element("change"))
             try s.settle { try s.held(WindowContract.background, on: window) == changed }
             s.expect(try s.held(WindowContract.background, on: window), changed, "the blur the tree changed it to")
+        }
+    }
+
+    /// A sheet over the window's page stands on the window's background - its color laid over the platform's own
+    /// sheet - and follows it as the tree changes it.
+    @MainActor
+    static var groundsItsSheets: ConformanceCase {
+        ConformanceCase("Window.background.groundsTheSheetsOverItsPage", proves: [
+            Covered(WindowContract.background),
+        ], needs: [Covered(ButtonContract.clicked), Covered(SheetContract.isPresented)]) { s in
+            let (first, changed) = (Material.color(Color(hex: 0x2A2154)), Material.color(Color(hex: 0x0F766E)))
+            let value = State(wrappedValue: first)
+            s.start {
+                // The change is pressed on the sheet: what stands beneath a sheet takes no press.
+                WindowSessionPage(beside: [
+                    Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                        VStack { Button("Change").onClicked { value.wrappedValue = changed }.id("change") }
+                    },
+                ], key: "\(value.wrappedValue)") { window in window.background = value.wrappedValue }
+            }
+            let sheet = try s.element(ofType: SheetContract.nodeType)
+            try s.settle { try s.ground(of: sheet) == first }
+            s.expect(try s.ground(of: sheet), first, "the window's background under the sheet")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.ground(of: sheet) == changed }
+            s.expect(try s.ground(of: sheet), changed, "the background the tree changed it to")
         }
     }
 

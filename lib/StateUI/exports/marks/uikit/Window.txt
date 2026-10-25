@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 Window: ✅
 Window.activated: ✅
 Window.background: ☑️ iPadOS draws an application's window opaque: a blur or glass shows its color.

@@ -195,6 +195,27 @@ extern "C" void stateui_winui_sheet_set_action_menu(
     }
 }
 
+extern "C" void stateui_winui_sheet_set_ground(
+    StateUIObjectRef handle, StateUIGround kind, uint32_t argb, float opacity, float tintOpacity
+) {
+    try {
+        // A color lies over the card's own background, inside its outline; an acrylic takes its place, showing what
+        // the card covers.
+        auto card = borrow<controls::Grid>(handle).Children().GetAt(1).as<controls::Border>();
+        auto content = card.Child().as<controls::Grid>();
+        auto brush = ground(kind, argb, opacity, tintOpacity);
+        bool acrylic = kind == StateUIGroundAcrylic;
+        card.Background(acrylic ? brush : resource(L"ContentDialogBackground").try_as<media::Brush>());
+        content.Background(acrylic ? nullptr : brush);
+        auto corner = card.CornerRadius();
+        auto edge = card.BorderThickness();
+        content.CornerRadius({corner.TopLeft - edge.Left, corner.TopRight - edge.Right,
+                              corner.BottomRight - edge.Right, corner.BottomLeft - edge.Left});
+    } catch (...) {
+        report("standing a sheet on its ground");
+    }
+}
+
 extern "C" void stateui_winui_window_push_sheet(StateUIObjectRef handle, StateUIObjectRef sheet) {
     try {
         auto held = layer(borrow<xaml::Window>(handle), true);

@@ -151,6 +151,17 @@
         }
     }
 
+    /// What a surface laid over the page stands on as its platform shows it - a sheet's - as a material; on a
+    /// platform whose driver reads none, a read it holds none of. The read bears on the background it shows.
+    public func ground(of element: MountedElement) throws -> Material? {
+        let ability = "read the ground of \(element.type.name)"
+        if driver.platformHasNone[ability] != nil { throw DriverCannot(ability) }
+        note(ability, member: VisualElementContract.background.name)
+        return try driven {
+            try driver.held(VisualElementContract.background.token, on: element).flatMap { Material(propValue: $0) }
+        }
+    }
+
     /// The menu `element` offers as the user meets it (`HostDriver.menu(of:)`).
     public func menu(of element: MountedElement) throws -> String {
         note("read the menu of \(element.type.name)")

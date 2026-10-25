@@ -48,6 +48,8 @@ final class WinUIWindowController {
         self.element = element
         let changes = presentation.show(element, in: runtime.lifecycle)
         stand(changes)
+        // The sidebars over the detail stand on the window's background too; the sheets do as they are shown.
+        if changes.traits != nil { for split in element.splitViews { split.winUI.groundSidebar() } }
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.winUI.view) }
         showSheets(presentation.sheets, in: runtime)
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.winUI.view)) }
@@ -83,6 +85,7 @@ final class WinUIWindowController {
     /// A sheet has no bar of its own: the card shows the head of the one a stack in it brings - the title, the way
     /// back, the page's actions and, where the page offers it, the close button.
     private func show(_ page: MountedElement, on sheet: WinUISheetView, in runtime: HostRuntime) {
+        sheet.stand(on: page.overlaidGround)
         let fits = SheetSize.asks(page)
         guard let element, page.bringsABar else {
             return sheet.show(

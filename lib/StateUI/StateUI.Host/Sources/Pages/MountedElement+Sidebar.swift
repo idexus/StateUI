@@ -8,12 +8,13 @@ extension MountedElement {
     /// or written into a state the host carries.
     public static let sidebarMaterials: Set<Prop> = [.sidebarBackground, .flyoutBackground]
 
-    /// What this split view's sidebar stands on: its flyout's material while it stands `over` the detail, its own
-    /// beside it; empty where the split view says none - the platform's own there, never the window's over the
-    /// detail.
+    /// What this split view's sidebar stands on: its flyout's material while it stands `over` the detail - else, as
+    /// any surface over the page, its window's background (`overlaidGround`) - and its own beside it; empty where
+    /// nothing is said - the platform's own there.
     /// Design: docs/design/host/pages.md#a-sidebars-material
     @MainActor public func sidebarMaterial(over: Bool) -> HostMaterial {
-        HostMaterial(value(over ? .flyoutBackground : .sidebarBackground))
+        let own = HostMaterial(value(over ? .flyoutBackground : .sidebarBackground))
+        return over && own.isEmpty ? overlaidGround : own
     }
 
     /// Says whether this split view's sidebar lies `over` the detail, as the host stands it for the room, onto the
@@ -32,7 +33,7 @@ extension MountedElement {
     /// sidebar is then the application's to paint, not the platform's.
     /// Design: docs/design/host/pages.md#a-sidebars-material
     @MainActor public var paintsSidebar: Bool {
-        !sidebarMaterial(over: false).isEmpty || !sidebarMaterial(over: true).isEmpty
+        !HostMaterial(value(.sidebarBackground)).isEmpty || !HostMaterial(value(.flyoutBackground)).isEmpty
     }
 
     /// Whether this split view's bar offers the toggle showing and hiding its sidebar: unless it says it offers none.
