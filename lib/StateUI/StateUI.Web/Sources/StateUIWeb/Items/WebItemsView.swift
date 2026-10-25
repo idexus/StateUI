@@ -92,8 +92,9 @@ final class WebItemsView: WebDOMView {
 
     private func makeCell(_ identity: String) -> WebItemCell {
         let cell = WebItemCell(identity)
+        cell.followTapReach()
         cell.hear(.itemTap) { [weak self, weak cell] in
-            guard let self, let cell else { return }
+            guard let self, let cell, cell.clickIsTap else { return }
             cells.userTapped(cell.entry)
         }
         WebRelay.watchNearness(cell.node, of: node, nearness)

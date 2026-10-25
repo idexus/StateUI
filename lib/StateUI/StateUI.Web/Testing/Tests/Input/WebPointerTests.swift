@@ -67,4 +67,33 @@ final class WebPointerTests: XCTestCase {
         for _ in 0..<3 { host.step() }
         XCTAssertEqual(taps, 2, "a click no pointer made - the keyboard's, a screen reader's - taps")
     }
+
+    /// A list's item is opened by a tap alone, by the same reach: a finger slid off it opens nothing.
+    func testAnItemSlidOffIsNoTap() throws {
+        WebRenderer.shared?.leave()
+        var opened: [String] = []
+        let host = WebRenderer.running {
+            ItemsView(["one", "two"]) { Text($0) }.onItemActivated { opened.append($0) }.height(200)
+        }
+        let item = "document.querySelector('[role=listitem]')"
+        host.settle { (try? WebBrowser.truth("!!\(item)", on: 0)) == true }
+
+        func press(by down: Double) throws {
+            try WebBrowser.run("""
+                const cell = \(item);
+                const at = (y) => ({ pointerId: 5, pointerType: 'touch', isPrimary: true, clientX: 10, clientY: 10 + y,
+                  bubbles: true });
+                cell.dispatchEvent(new PointerEvent('pointerdown', at(0)));
+                cell.dispatchEvent(new PointerEvent('pointermove', at(\(down))));
+                cell.dispatchEvent(new PointerEvent('pointerup', at(\(down))));
+                cell.dispatchEvent(new MouseEvent('click', { detail: 1, bubbles: true }))
+                """)
+            for _ in 0..<3 { host.step() }
+        }
+
+        try press(by: 40)
+        XCTAssertEqual(opened, [], "slid off the item: nothing opens")
+        try press(by: 4)
+        XCTAssertEqual(opened.count, 1, "a tap within its reach opens it")
+    }
 }

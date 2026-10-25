@@ -14,11 +14,10 @@ extension WebElement {
         let hearing = element.hearing
         if hearing.contains(.taps), !listening.contains(.taps) {
             listening.insert(.taps)
-            listenForTapReach(view)
-            view.listen("click") { [weak self] in
-                // A label's click comes again as its control's: one tap. A click no pointer made - the keyboard's, a
-                // screen reader's - has no reach.
-                guard let self, WebRelay.eventClicks == 0 || tapReach.isTap, !WebRelay.eventPassesToControl else { return }
+            view.followTapReach()
+            view.listen("click") { [weak self, weak view] in
+                // A label's click comes again as its control's: one tap.
+                guard let self, view?.clickIsTap == true, !WebRelay.eventPassesToControl else { return }
                 heard(.taps, .tap(run: WebRelay.eventClicks))
             }
             view.hear(.activate) { [weak self] in self?.heard(.taps, .tap(run: 0)) }
@@ -55,22 +54,6 @@ extension WebElement {
         view.offerDrag(element.dragAndDrop) { [weak self] heard in
             guard let self, let host else { return }
             element.hear(heard, in: host.runtime)
-        }
-    }
-
-    /// The press a tap is made of, followed without taking it: the page scrolls under it as it would.
-    /// Design: docs/design/platforms/web/input.md#taps
-    private func listenForTapReach(_ view: WebDOMView) {
-        view.listen("pointerdown") { [weak self] in
-            let pointer = WebRelay.eventPointer
-            self?.tapReach.down(pointer.id, at: pointer.at, kind: pointer.kind)
-        }
-        view.listen("pointermove") { [weak self] in
-            let pointer = WebRelay.eventPointer
-            self?.tapReach.moved(pointer.id, to: pointer.at)
-        }
-        for event in ["pointerup", "pointercancel"] {
-            view.listen(event) { [weak self] in self?.tapReach.up(WebRelay.eventPointer.id) }
         }
     }
 

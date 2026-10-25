@@ -25,7 +25,9 @@ drag, as a native toolkit's tap fails as the finger moves away. The browser
 clicks a press a finger slid off a row and lifted beside it, where nothing
 scrolled to take the touch away. The press is followed without being taken:
 the page scrolls under it as it would. A click no pointer made - the
-keyboard's, a screen reader's - has no reach.
+keyboard's, a screen reader's - has no reach. A list's item takes its tap by
+the same reach: its cell follows the press as an element's view does
+(`WebDOMView.followTapReach`).
 
 A button pressed leaves the keyboard with the field being typed in, as a
 native button takes no keyboard of a field: the page's press on a button is

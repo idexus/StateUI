@@ -355,6 +355,32 @@ class WebDOMView {
         }
     }
 
+    /// Whether the press on the view is still a tap, where the view follows its reach (`followTapReach`).
+    private(set) var tapReach = WebTapReach()
+    private var followsTapReach = false
+
+    /// Follows the press a tap on the view is made of, once, without taking it: the page scrolls under it as it would.
+    /// Design: docs/design/platforms/web/input.md#taps
+    func followTapReach() {
+        guard !followsTapReach else { return }
+        followsTapReach = true
+        listen("pointerdown") { [weak self] in
+            let pointer = WebRelay.eventPointer
+            self?.tapReach.down(pointer.id, at: pointer.at, kind: pointer.kind)
+        }
+        listen("pointermove") { [weak self] in
+            let pointer = WebRelay.eventPointer
+            self?.tapReach.moved(pointer.id, to: pointer.at)
+        }
+        for event in ["pointerup", "pointercancel"] {
+            listen(event) { [weak self] in self?.tapReach.up(WebRelay.eventPointer.id) }
+        }
+    }
+
+    /// Whether the click being heard is a tap: one no pointer made - the keyboard's, a screen reader's - or one whose
+    /// press stayed within its reach.
+    var clickIsTap: Bool { WebRelay.eventClicks == 0 || tapReach.isTap }
+
     /// Whether assistive technology meets the view as a heading, whether it skips it, and the kind it said, as its
     /// words last said.
     private var spoken: (heading: Bool, skipped: Bool, kind: AccessibilityRole?) = (false, false, nil)
