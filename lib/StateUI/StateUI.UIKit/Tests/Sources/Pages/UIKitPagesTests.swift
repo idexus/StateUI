@@ -84,7 +84,7 @@ final class UIKitPagesTests: XCTestCase {
             } destination: { level in
                 Text("Level \(level)")
             }
-            .barBackgroundColor(painted.wrappedValue ? .firebrick : .steelBlue)
+            .barBackground(painted.wrappedValue ? .firebrick : .steelBlue)
         }
         defer { host.finish() }
         let stack = try XCTUnwrap(host.runtime.tree.root?.first(type: .navigationStack))
@@ -322,7 +322,7 @@ final class UIKitPagesTests: XCTestCase {
                     ToolbarButton("Delete").role(.destructive).accessibilityIdentifier("delete")
                 }
             } destination: { _ in Text("Pushed") }
-            .barBackgroundColor(Color(red: 0, green: 0, blue: 128))
+            .barBackground(Color(red: 0, green: 0, blue: 128))
         }
         defer { host.finish() }
         let item = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller?.navigationItem }
@@ -348,7 +348,7 @@ final class UIKitPagesTests: XCTestCase {
                     ToolbarButton("Save").accessibilityIdentifier("save")
                 }
             } destination: { _ in Text("Pushed") }
-            .barBackgroundColor(dark.wrappedValue ? Color(red: 0, green: 0, blue: 128) : Color(red: 255, green: 230, blue: 0))
+            .barBackground(dark.wrappedValue ? Color(red: 0, green: 0, blue: 128) : Color(red: 255, green: 230, blue: 0))
         }
         defer { host.finish() }
         let item = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller?.navigationItem }
@@ -376,7 +376,7 @@ final class UIKitPagesTests: XCTestCase {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 TitledPage(title: "Root")
             } destination: { _ in Text("Pushed") }
-                .barBackgroundColor(dark.wrappedValue ? navy : yellow)
+                .barBackground(dark.wrappedValue ? navy : yellow)
         }
         defer { host.finish() }
         let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller }
@@ -458,7 +458,7 @@ final class UIKitPagesTests: XCTestCase {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 TitledPage(title: "Root")
             } destination: { _ in Text("Pushed") }
-                .barBackgroundColor(.transparent)
+                .barBackground(.transparent)
         }
         defer { host.finish() }
         let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller }

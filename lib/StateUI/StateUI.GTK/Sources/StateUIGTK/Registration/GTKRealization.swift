@@ -48,7 +48,8 @@ enum GTKRealization {
         .notPlanned(AutomationElementContract.accessibilityIdentifier, reason: "GTK 4 tells assistive technology no "
             + "identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget "
             + "made in code."),
-        .complete(BarElementContract.barBackgroundColor),
+        .partial(BarElementContract.barBackground,
+            missing: "GNOME blurs nothing inside a window: a blur or glass shows its color."),
         .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "A header bar's buttons are libadwaita's own, flat."),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The header bar's buttons keep libadwaita's own look."),
         .complete(BarElementContract.barForegroundColor),

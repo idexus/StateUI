@@ -33,8 +33,12 @@
     /// shows no split view.
     public var titleArea: TitleArea?
 
-    /// The bars' color: the nearest declared on the visible page's path.
+    /// The bars' color - their material as a host that blurs nothing paints it: the nearest declared on the visible
+    /// page's path.
     public var background: HostValue?
+
+    /// What the bars are made of: the nearest declared on the visible page's path; empty for the platform's own.
+    public var material = HostMaterial(nil)
 
     /// The color of what stands on the bars: the nearest declared on the visible page's path.
     public var foreground: HostValue?
@@ -69,6 +73,7 @@
         let area = arrangement?.sidebarPage?.titleArea(applicationName: window.tree?.core.applicationName ?? "")
         titleArea = area?.isEmpty == false ? area : nil
         (background, foreground) = page?.barColors ?? (nil, nil)
+        material = page?.barMaterial ?? HostMaterial(nil)
         buttonBackground = page?.barButtonBackground
         toolbarStyle = page?.toolbarStyle ?? .system
         if let page { menus = page.chromeMenus }

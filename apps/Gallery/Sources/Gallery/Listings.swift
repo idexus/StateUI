@@ -930,9 +930,6 @@ enum Listings {
                 // new place.
                 let style = self.style
                 let key = self.look
-                let look = style[keyPath: key]
-                let bars = BarLook.allCases
-                let accents = AccentChoice.allCases
                 let name = title.lowercased()
                 // Each surface's choices write that part of the theme's look.
                 let surface = { (part: WritableKeyPath<ThemeLook, SurfaceLook>) in
@@ -951,13 +948,7 @@ enum Listings {
                         .isEnabled(composed)
                         .onClicked { style[keyPath: choice] = .own }
 
-                    Text("The bars")
-                    Picker(bars, selection: Binding(get: { look.bars }, set: { style[keyPath: key].bars = $0 })) { $0.name }
-                    Picker(accents, selection: Binding(get: { look.barColor }, set: { style[keyPath: key].barColor = $0 })) {
-                        $0.name
-                    }
-                        .isEnabled(look.bars == .tinted || look.bars == .color)
-
+                    SurfacePickers(title: "The bars", label: "Bars", theme: name, surface: surface(\.bars))
                     SurfacePickers(title: "The window", label: "Window", theme: name, surface: surface(\.window))
                     SurfacePickers(title: "The sidebar", label: "Sidebar", theme: name, surface: surface(\.sidebar))
                     SurfacePickers(title: "The sidebar over the page", label: "Flyout", theme: name, surface: surface(\.flyout))
@@ -3387,33 +3378,8 @@ enum Listings {
         """#,
         "Gallery.Looks": #"""
         // Sources/Gallery/Looks.swift
-        /// What a gallery's bars are.
-        enum BarLook: String, CaseIterable {
-            /// The platform's own bars, in its material and the user's accent.
-            case platform
-
-            /// Bars that paint nothing: what stands behind them shows.
-            case clear
-
-            /// The gallery's color let through over the platform's material.
-            case tinted
-
-            /// The gallery's color.
-            case color
-
-            /// What the Appearance sample calls it.
-            var name: String {
-                switch self {
-                case .platform: return "The platform's own"
-                case .clear: return "Clear"
-                case .tinted: return "Tinted"
-                case .color: return "Color"
-                }
-            }
-        }
-
-        /// What one surface of the gallery is made of - its window, its sidebar, its
-        /// sidebar sliding over the page.
+        /// What one surface of the gallery is made of - its bars, its window, its
+        /// sidebar, its sidebar sliding over the page.
         enum SurfaceMaterial: String, CaseIterable {
             /// The platform's own.
             case platform
@@ -3476,6 +3442,20 @@ enum Listings {
             /// The gallery's own color for the part it paints.
             static let galleryOwn = SurfaceLook(material: .color, color: .gallery, blur: .thick)
 
+            /// Bars that paint nothing: what stands behind them shows.
+            static let clear = SurfaceLook(material: .clear, color: .gallery, blur: .thick)
+
+            /// The words on a bar of this look: the brand's on the gallery's color
+            /// where it carries none of the theme's, the theme's on anything else it
+            /// paints or lets through; nil on the platform's own.
+            var barWords: Color? {
+                switch material {
+                case .platform: return nil
+                case .color: return color.carriesThemesWords ? Palette.text : Palette.onBrand
+                default: return Palette.text
+                }
+            }
+
             /// The material `surface` is: its blur where it is one, tinted in its
             /// color - the system's accent being `system` - where it is tinted, the
             /// color where it is one; nil for the platform's own.
@@ -3496,14 +3476,13 @@ enum Listings {
         /// sidebar and its sidebar sliding over the page are made of. Kept as one line
         /// of words, so a scene keeps a theme's whole look under one key.
         struct ThemeLook: Equatable, RawRepresentable {
-            var bars: BarLook
-            var barColor: AccentChoice
+            var bars: SurfaceLook
             var window: SurfaceLook
             var sidebar: SurfaceLook
             var flyout: SurfaceLook
 
-            init(bars: BarLook, barColor: AccentChoice, window: SurfaceLook, sidebar: SurfaceLook, flyout: SurfaceLook) {
-                (self.bars, self.barColor, self.window, self.sidebar, self.flyout) = (bars, barColor, window, sidebar, flyout)
+            init(bars: SurfaceLook, window: SurfaceLook, sidebar: SurfaceLook, flyout: SurfaceLook) {
+                (self.bars, self.window, self.sidebar, self.flyout) = (bars, window, sidebar, flyout)
             }
 
             /// The light theme's look the gallery opens in: clear bars, and the
@@ -3515,7 +3494,7 @@ enum Listings {
                 #else
                 let sidebar = SurfaceLook.platform
                 #endif
-                return ThemeLook(bars: .clear, barColor: .gallery, window: .platform, sidebar: sidebar, flyout: .platform)
+                return ThemeLook(bars: .clear, window: .platform, sidebar: sidebar, flyout: .platform)
             }
 
             /// The dark theme's look the gallery opens in: on Windows a window of the
@@ -3530,44 +3509,42 @@ enum Listings {
                 #if WINUI
                 let violet = SurfaceLook(material: .tintedBlur, color: .violet, blur: .thick)
                 return ThemeLook(
-                    bars: .platform, barColor: .violet, window: violet, sidebar: .platform, flyout: violet)
+                    bars: SurfaceLook(material: .platform, color: .violet, blur: .thick), window: violet, sidebar: .platform,
+                    flyout: violet)
                 #elseif APPKIT
                 let glass = SurfaceLook(material: .tintedGlass, color: .gallery, blur: .thick)
                 return ThemeLook(
-                    bars: .clear, barColor: .gallery,
-                    window: SurfaceLook(material: .tintedBlur, color: .gallery, blur: .thick), sidebar: glass, flyout: glass)
+                    bars: .clear, window: SurfaceLook(material: .tintedBlur, color: .gallery, blur: .thick), sidebar: glass,
+                    flyout: glass)
                 #elseif UIKIT
                 let glass = SurfaceLook(material: .tintedGlass, color: .gallery, blur: .thick)
-                return ThemeLook(bars: .clear, barColor: .gallery, window: .galleryOwn, sidebar: glass, flyout: glass)
+                return ThemeLook(bars: .clear, window: .galleryOwn, sidebar: glass, flyout: glass)
                 #else
-                return ThemeLook(
-                    bars: .clear, barColor: .gallery, window: .galleryOwn, sidebar: .galleryOwn, flyout: .galleryOwn)
+                return ThemeLook(bars: .clear, window: .galleryOwn, sidebar: .galleryOwn, flyout: .galleryOwn)
                 #endif
             }
 
-            /// The look as words: the bars and their color, then each surface's
-            /// material, color and blur.
+            /// The look as words: each surface's material, color and blur - the
+            /// bars', the window's, the sidebar's and the flyout's.
             var rawValue: String {
-                ([bars.rawValue, barColor.rawValue] + [window, sidebar, flyout].flatMap { surface in
+                [bars, window, sidebar, flyout].flatMap { surface in
                     [surface.material.rawValue, surface.color.rawValue,
                      String(SurfaceLook.blurs.firstIndex(of: surface.blur) ?? 0)]
-                }).joined(separator: " ")
+                }.joined(separator: " ")
             }
 
             /// The look its words say; nil for words another version wrote.
             init?(rawValue: String) {
                 let words = rawValue.split(separator: " ").map(String.init)
-                guard words.count == 11, let bars = BarLook(rawValue: words[0]),
-                      let barColor = AccentChoice(rawValue: words[1])
-                else { return nil }
+                guard words.count == 12 else { return nil }
                 var surfaces: [SurfaceLook] = []
-                for at in stride(from: 2, to: 11, by: 3) {
+                for at in stride(from: 0, to: 12, by: 3) {
                     guard let material = SurfaceMaterial(rawValue: words[at]), let color = AccentChoice(rawValue: words[at + 1]),
                           let blur = Int(words[at + 2]), SurfaceLook.blurs.indices.contains(blur)
                     else { return nil }
                     surfaces.append(SurfaceLook(material: material, color: color, blur: SurfaceLook.blurs[blur]))
                 }
-                self.init(bars: bars, barColor: barColor, window: surfaces[0], sidebar: surfaces[1], flyout: surfaces[2])
+                self.init(bars: surfaces[0], window: surfaces[1], sidebar: surfaces[2], flyout: surfaces[3])
             }
         }
 
@@ -3705,12 +3682,6 @@ enum Listings {
             /// Whether words on the color are the theme's own rather than white: the
             /// gallery's own colors are as light as the theme.
             var carriesThemesWords: Bool { self == .gallery }
-
-            /// The color with three fifths let through - a bar tinted over the
-            /// platform's material.
-            func translucentColor(system: Color, for surface: GallerySurface) -> Color {
-                color(system: system, for: surface).opacity(0.4)
-            }
 
             /// The color laid over a blur - a seventh of an accent, the blur showing
             /// through it; most of the gallery's own, whose blur is its color.
@@ -6830,12 +6801,6 @@ enum Listings {
         """#,
         "MainPage.look": #"""
         // Sources/Gallery/MainPage.swift
-        /// The look the gallery wears in the theme in force: a change of theme,
-        /// the system's or the application's, builds the page again in the other.
-        private var look: ThemeLook {
-            style.look(dark: application.info.colorScheme == .dark)
-        }
-
         /// What a surface of the gallery is made of, a material for each theme as
         /// its looks say - the platform's own in a theme whose look leaves it.
         private func surface(_ part: KeyPath<ThemeLook, SurfaceLook>, _ painted: GallerySurface) -> Material {
@@ -7557,7 +7522,7 @@ enum Listings {
         /// A line in the scene's font and accent - what its two windows change.
         private var preview: some View {
             let line = Text("The quick brown fox jumps over the lazy dog.")
-                .textColor(style.look(dark: application.info.colorScheme == .dark).barColor.color(system: application.info.accentColor, for: .bar))
+                .textColor(style.look(dark: application.info.colorScheme == .dark).bars.color.color(system: application.info.accentColor, for: .bar))
 
             return style.font.isEmpty ? line : line.fontFamily(style.font)
         }

@@ -43,14 +43,14 @@ struct ColorsPage: View {
     /// in both themes, drawn in it - marked where the theme in force wears it.
     private func choice(_ accent: AccentChoice) -> Button {
         let style = self.style
-        let worn = style.look(dark: application.info.colorScheme == .dark).barColor
+        let worn = style.look(dark: application.info.colorScheme == .dark).bars.color
         return Button(worn == accent ? "✓  \(accent.name)" : accent.name)
             .textColor(accent.carriesThemesWords ? Palette.text : .white)
             .background(accent.color(system: application.info.accentColor, for: .bar))
             .shape(.roundedRectangle(8))
             .onClicked {
                 for look in [\SessionStyle.lightLook, \.darkLook] {
-                    style[keyPath: look].barColor = accent
+                    style[keyPath: look].bars.color = accent
                     style[keyPath: look].window.color = accent
                     style[keyPath: look].sidebar.color = accent
                     style[keyPath: look].flyout.color = accent

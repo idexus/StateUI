@@ -55,7 +55,8 @@ every render, and written on the header bar of each page shown:
 - for a tabbed view, its switcher beneath the bar, under the chosen tab's
   page's chrome;
 - the bar's colors: a page's header bar is painted in the colors its path
-  declares, the nearest arrangement's (`barColors`), and what stands on it -
+  declares, the nearest arrangement's (`barColors`) - a blur as its color, as
+  GNOME blurs nothing inside a window - and what stands on it -
   the title, the way back, the toggles and the switcher's captions - in its
   foreground, else light on a dark band and dark on a light one ([words on
   a painted band](../../host/layout.md#words-on-a-painted-band)), as a class

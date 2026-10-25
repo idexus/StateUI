@@ -147,7 +147,8 @@ extension AppKitDriver {
               window.titlebarAppearsTransparent,
               let band = (window.contentView as? AppKitWindowContentView)?.barColor
         else { return nil }
-        return Self.color(band).propValue
+        // The band's color, or the blur it stands in for.
+        return StandIns.material(painted: Self.color(band)).propValue
     }
 
     /// The words the host keeps under `key`, as the next launch reads them: a value every scene shares from the

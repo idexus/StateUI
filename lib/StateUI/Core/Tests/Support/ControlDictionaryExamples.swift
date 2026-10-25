@@ -814,7 +814,7 @@ extension ControlDictionary {
                     } destination: { message in
                         Text("Message \(message)")
                     }
-                    .barBackgroundColor(.cornflowerBlue)
+                    .barBackground(.cornflowerBlue)
                     .barForegroundColor(.white)
                 }
             }

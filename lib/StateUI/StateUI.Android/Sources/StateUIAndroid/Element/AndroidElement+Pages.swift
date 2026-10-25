@@ -57,7 +57,7 @@ extension AndroidElement {
     }
 
     /// What an arrangement declares of the bars under it.
-    static let barValues: Set<Prop> = [.barBackgroundColor, .barForegroundColor]
+    static let barValues: Set<Prop> = [.barBackground, .barForegroundColor]
 
     /// Shows on a tabbed view's row its tabs' titles and pictures, and the tab the tree chose.
     private func refreshTabs() {

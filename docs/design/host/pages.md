@@ -312,8 +312,9 @@ others of that id leave; a section left with nothing is none. A menu whose
 
 ## The bar a path declares
 
-What an arrangement declares of the bar - its look: its colors, its buttons'
-background and style - is a value on the arrangement (`BarElement`), not a
+What an arrangement declares of the bar - its look: its material, its words'
+color, its buttons' background and style - is a value on the arrangement
+(`BarElement`), not a
 declaration: each value of a page's bar is the nearest on its path, its own
 arrangement included (`barValue`), so a stack further in paints its own bar.
 What the bar says is each page's own ([a page's title
@@ -326,7 +327,8 @@ crosses a sheet, which has no bar of its own: a stack in it brings one,
 in the look of the bar over the view presenting the sheet unless the stack
 declares its own, as the sheet's content is that view's; what the bar says
 stops at the sheet ([the visible path](#the-visible-path)). The colors are
-`barColors`.
+`barColors` - the material as a host that blurs nothing paints it - and the
+material itself is `barMaterial`, for a host whose bars blur.
 
 ## A page's title area
 

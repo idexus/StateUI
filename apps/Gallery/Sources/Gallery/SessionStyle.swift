@@ -78,12 +78,6 @@ enum AccentChoice: String, CaseIterable {
     /// gallery's own colors are as light as the theme.
     var carriesThemesWords: Bool { self == .gallery }
 
-    /// The color with three fifths let through - a bar tinted over the
-    /// platform's material.
-    func translucentColor(system: Color, for surface: GallerySurface) -> Color {
-        color(system: system, for: surface).opacity(0.4)
-    }
-
     /// The color laid over a blur - a seventh of an accent, the blur showing
     /// through it; most of the gallery's own, whose blur is its color.
     func tint(system: Color, for surface: GallerySurface) -> Color {

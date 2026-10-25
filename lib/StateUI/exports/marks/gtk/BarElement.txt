@@ -1,13 +1,13 @@
-# revision 9.1
-NavigationStack.barBackgroundColor: ✅
+# revision 10.1
+NavigationStack.barBackground: ✓ read barBackground of NavigationStack: the class of the host's style sheet the header wears: GTK reads back no background
 NavigationStack.barButtonBackgroundColor: – A header bar's buttons are libadwaita's own, flat.
 NavigationStack.barForegroundColor: ✅
 NavigationStack.toolbarStyle: – The header bar's buttons keep libadwaita's own look.
-SplitView.barBackgroundColor: ✅
+SplitView.barBackground: ☑️ GNOME blurs nothing inside a window: a blur or glass shows its color.
 SplitView.barButtonBackgroundColor: – A header bar's buttons are libadwaita's own, flat.
 SplitView.barForegroundColor: ✅
 SplitView.toolbarStyle: – The header bar's buttons keep libadwaita's own look.
-TabView.barBackgroundColor: ✅
+TabView.barBackground: ☑️ GNOME blurs nothing inside a window: a blur or glass shows its color.
 TabView.barButtonBackgroundColor: – A header bar's buttons are libadwaita's own, flat.
 TabView.barForegroundColor: ✅
 TabView.toolbarStyle: – The header bar's buttons keep libadwaita's own look.

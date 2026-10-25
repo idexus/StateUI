@@ -524,14 +524,14 @@ Every control, and every part an application, its windows and its pages are made
 | [MenuItem](controls/MenuItem.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 4 ✅ · 3 – | 7 ✅ |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuToggle](controls/MenuToggle.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 5 ✅ · 2 – | 7 ✅ |
-| [NavigationStack](controls/NavigationStack.md) | 8 | 3 ✅ · 1 ☑️ · 1 ✓ · 2 – | 6 ✅ · 2 – | 5 ✅ · 1 ☑️ · 2 – | 6 ✅ · 2 – | 4 ✅ · 4 – | 8 ✅ |
+| [NavigationStack](controls/NavigationStack.md) | 8 | 2 ✅ · 2 ☑️ · 1 ✓ · 2 – | 6 ✅ · 2 – | 4 ✅ · 2 ☑️ · 2 – | 5 ✅ · 1 ☑️ · 2 – | 3 ✅ · 1 ✓ · 4 – | 7 ✅ · 1 ☑️ |
 | [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 | [Page](controls/Page.md) | 14 | 11 ✅ | 14 ✅ | 13 ✅ · 1 – | 13 ✅ · 1 – | 11 ✅ · 2 – | 13 ✅ |
 | [Popover](controls/Popover.md) | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](controls/Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [Sheet](controls/Sheet.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [SplitView](controls/SplitView.md) | 13 | 8 ✅ · 1 ☑️ · 3 – | 9 ✅ · 2 ✓ · 2 – | 5 ✅ · 2 ☑️ · 4 ✓ · 2 – | 9 ✅ · 2 ☑️ · 2 – | 7 ✅ · 2 ✓ · 4 – | 11 ✅ · 2 ☑️ |
-| [TabView](controls/TabView.md) | 9 | 4 ✅ · 1 ☑️ · 1 ✓ · 2 – | 7 ✅ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 7 ✅ · 2 – | 5 ✅ · 4 – | 9 ✅ |
+| [SplitView](controls/SplitView.md) | 13 | 7 ✅ · 2 ☑️ · 3 – | 9 ✅ · 2 ✓ · 2 – | 4 ✅ · 3 ☑️ · 4 ✓ · 2 – | 8 ✅ · 3 ☑️ · 2 – | 6 ✅ · 1 ☑️ · 2 ✓ · 4 – | 10 ✅ · 3 ☑️ |
+| [TabView](controls/TabView.md) | 9 | 3 ✅ · 2 ☑️ · 1 ✓ · 2 – | 7 ✅ · 2 – | 5 ✅ · 2 ☑️ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 4 ✅ · 1 ☑️ · 4 – | 8 ✅ · 1 ☑️ |
 | [TextSpan](controls/TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -539,10 +539,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarGroup](controls/ToolbarGroup.md) | 5 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 9 | 7 ✅ · 1 – | 8 ✅ · 1 – | 6 ✅ · 1 ☑️ · 1 – | 9 ✅ | 8 ✅ · 1 – | 9 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 105 | 105 | 86 | 130 | 101 | 120 |
-| ✓ |  | 23 | 21 | 20 | 5 | 17 | 10 |
+| ✅ |  | 102 | 105 | 83 | 127 | 98 | 117 |
+| ✓ |  | 23 | 21 | 20 | 5 | 18 | 10 |
 | – |  | 11 | 17 | 28 | 10 | 29 | 15 |
-| **Met** | 157 | **139** | **143** | **134** | **145** | **147** | **145** |
+| **Met** | 157 | **136** | **143** | **131** | **142** | **145** | **142** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -584,7 +584,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [KeyboardElement](controls/tiers/KeyboardElement.md) | `keyPressed`, `keysTaken` | 2 |
 | [FocusElement](controls/tiers/FocusElement.md) | `isFocusedChanged` | 1 |
 | [RefreshElement](controls/tiers/RefreshElement.md) | `isRefreshEnabled`, `isRefreshing`, `onRefreshRequested` (`refreshRequested`) | 3 |
-| [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor`, `barButtonBackgroundColor`, `barForegroundColor`, `toolbarStyle` | 4 |
+| [BarElement](controls/tiers/BarElement.md) | `barBackground`, `barButtonBackgroundColor`, `barForegroundColor`, `toolbarStyle` | 4 |
 | [MenuItemElement](controls/tiers/MenuItemElement.md) | `icon`, `isEnabled`, `keyboardShortcut`, `text` | 4 |
 | [ActionElement](controls/tiers/ActionElement.md) | `onClicked` (`clicked`), `role` | 2 |
 | [ButtonMenuElement](controls/tiers/ButtonMenuElement.md) | `menuKind`, `showsMenuArrow` | 2 |
@@ -671,14 +671,14 @@ realizes the element and each of its members.
 `accessibilityActions`, `accessibilityHeading`, `accessibilityHint`,
 `accessibilityIdentifier`, `accessibilityLabel`, `accessibilityRole`,
 `accessibilityValue`, `allowsDrop`, `area`, `backButtonTitle`, `background`,
-`barBackgroundColor`, `barButtonBackgroundColor`, `barForegroundColor`,
-`canDrag`, `clipsContent`, `columns`, `columnSpacing`, `contentMode`,
-`cornerRadius`, `cursorPosition`, `dash`, `dashPhase`, `data`, `date`,
-`destination`, `dragText`, `drawing`, `droppedFileTypes`, `endReachedWithin`,
-`fill`, `fillRule`, `floatsOnTop`, `flyoutBackground`, `fontAttributes`,
-`fontFamily`, `fontSize`, `fontWeight`, `format`, `frame`, `geometryTransform`,
-`gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `growsWithText`,
-`handAxis`, `height`, `hidesChildrenFromAccessibility`, `hidesWhenInactive`,
+`barBackground`, `barButtonBackgroundColor`, `barForegroundColor`, `canDrag`,
+`clipsContent`, `columns`, `columnSpacing`, `contentMode`, `cornerRadius`,
+`cursorPosition`, `dash`, `dashPhase`, `data`, `date`, `destination`,
+`dragText`, `drawing`, `droppedFileTypes`, `endReachedWithin`, `fill`,
+`fillRule`, `floatsOnTop`, `flyoutBackground`, `fontAttributes`, `fontFamily`,
+`fontSize`, `fontWeight`, `format`, `frame`, `geometryTransform`, `gridColumn`,
+`gridColumnSpan`, `gridRow`, `gridRowSpan`, `growsWithText`, `handAxis`,
+`height`, `hidesChildrenFromAccessibility`, `hidesWhenInactive`,
 `hidesWithSidebar`, `horizontalAlignment`, `horizontalScrollIndicator`,
 `horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
 `ignoresInput`, `ignoresSafeArea`, `inputPurpose`, `isAccessibilityHidden`,

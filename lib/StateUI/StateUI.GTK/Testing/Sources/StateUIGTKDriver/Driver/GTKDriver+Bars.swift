@@ -89,13 +89,10 @@ extension GTKDriver {
         let frame = try frame(of: page)
         renderer?.layOut()
         switch property {
-        case .barBackgroundColor:
-            guard let pixel = GTKTestHost.pixels(of: frame.header, at: [(4, 4)]).first, pixel >> 24 != 0 else {
-                return nil
-            }
-            return Color(
-                red: Int(pixel >> 16 & 0xFF), green: Int(pixel >> 8 & 0xFF), blue: Int(pixel & 0xFF),
-                alpha: Int(pixel >> 24)).propValue
+        case .barBackground:
+            // The color the header's class paints - a blur's stand-in among them, whose pixels mix with what lies
+            // under it - and the blur it stands in for: GNOME blurs nothing inside a window.
+            return Self.barFill(of: frame.header).map { StandIns.material(painted: $0).propValue }
         case .barForegroundColor:
             return Self.color(of: frame.header).propValue
         case .subtitle:

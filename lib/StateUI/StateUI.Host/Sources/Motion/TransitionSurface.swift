@@ -146,7 +146,7 @@
 
     private static let sliderProperties: Set<Prop> = [.value, .tint]
 
-    private static let barProperties: Set<Prop> = [.barBackgroundColor, .barForegroundColor]
+    private static let barProperties: Set<Prop> = [.barBackground, .barForegroundColor]
 
     private static let shapeProperties: Set<Prop> = [
         .fill, .stroke, .lineWidth, .dashPhase, .miterLimit,

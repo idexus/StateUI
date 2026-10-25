@@ -117,6 +117,10 @@ says.
 
 ## The toolbar
 
+The bars' material paints the band the title bar and the toolbar cover - a
+blur as its color, under the toolbar's own glass, as the band is painted - and
+the toolbar's items keep the system's look.
+
 A window's toolbar holds the chrome its arrangement composes - over a split
 view the system's sidebar button where the split view offers it, then the
 sidebar's tracking separator either way, so the detail's items start past

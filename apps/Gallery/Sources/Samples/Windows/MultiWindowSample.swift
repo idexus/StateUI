@@ -117,7 +117,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     private var preview: some View {
         let line = Text("The quick brown fox jumps over the lazy dog.")
             .fontSize(20)
-            .textColor(style.look(dark: application.info.colorScheme == .dark).barColor.color(system: application.info.accentColor, for: .bar))   // listing: keep
+            .textColor(style.look(dark: application.info.colorScheme == .dark).bars.color.color(system: application.info.accentColor, for: .bar))   // listing: keep
             .horizontalTextAlignment(.center)
 
         return style.font.isEmpty ? line : line.fontFamily(style.font)

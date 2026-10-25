@@ -22,10 +22,10 @@ final class LookChoiceTests: XCTestCase {
     /// gallery's own again once chosen.
     func testALookWrittenIsComposedUntilTheOwnIsChosenAgain() {
         let style = SessionStyle()
-        style.darkLook.bars = .color
+        style.darkLook.bars = .galleryOwn
 
         var composed = ThemeLook.dark
-        composed.bars = .color
+        composed.bars = .galleryOwn
         XCTAssertEqual(style.darkChoice, .composed(composed))
         XCTAssertEqual(LookChoice(rawValue: style.darkChoice.rawValue), .composed(composed), "kept and read back")
         XCTAssertEqual(style.lightChoice, .own, "the other theme untouched")

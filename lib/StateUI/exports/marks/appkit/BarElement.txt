@@ -1,13 +1,13 @@
-# revision 9.1
-NavigationStack.barBackgroundColor: ✅
+# revision 10.1
+NavigationStack.barBackground: ☑️ The bars' band is painted under the toolbar's own material: a blur or glass shows its color.
 NavigationStack.barButtonBackgroundColor: – A toolbar item stands in the Mac's own look, with no background of the application's.
 NavigationStack.barForegroundColor: ☑️ Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color.
 NavigationStack.toolbarStyle: – The toolbar's items keep the Mac's own look.
-SplitView.barBackgroundColor: ✅
+SplitView.barBackground: ☑️ The bars' band is painted under the toolbar's own material: a blur or glass shows its color.
 SplitView.barButtonBackgroundColor: – A toolbar item stands in the Mac's own look, with no background of the application's.
 SplitView.barForegroundColor: ☑️ Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color.
 SplitView.toolbarStyle: – The toolbar's items keep the Mac's own look.
-TabView.barBackgroundColor: ✅
+TabView.barBackground: ☑️ The bars' band is painted under the toolbar's own material: a blur or glass shows its color.
 TabView.barButtonBackgroundColor: – A toolbar item stands in the Mac's own look, with no background of the application's.
 TabView.barForegroundColor: ☑️ Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color.
 TabView.toolbarStyle: – The toolbar's items keep the Mac's own look.

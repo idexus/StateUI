@@ -455,7 +455,7 @@ final class MountedTreeTests: XCTestCase {
         tree.present(states: [:], properties: [labelMount: [.width]])
         XCTAssertEqual(log.arranged, ["label", "stack"], "a width moves the label's place too")
 
-        let bar = tree.present(states: [:], properties: [barsMount: [.barBackgroundColor]])
+        let bar = tree.present(states: [:], properties: [barsMount: [.barBackground]])
         XCTAssertTrue(bar.windowChrome, "a bar's color is the window's chrome")
     }
 

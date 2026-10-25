@@ -587,22 +587,23 @@ beside any sidebar, the tabs sharing its width with each picture beside its
 title; one in a sidebar, a sheet or inside another tab is a tab view with its
 tabs on the top edge of its content.
 
-Every arrangement accepts a flat `barBackgroundColor` and a `barForegroundColor`
-for its title and native action affordances; a page's bar takes each from the
-nearest arrangement around it that declares one, so a stack further in paints
-its own - a sidebar takes only what its own split view declares, and a sheet
-has no bar until a stack in it brings one, painted as that stack says. The
-application's name, the line under the title and its mark are declared the same
-way ([The window's bar](application-and-sessions.md#the-windows-bar)). Native tab
-selectors keep their selected and unselected states, legible over a written
-background. Leaving the background unwritten preserves the platform's
-material. A written color is
-painted where the bars stand and nowhere else - on AppKit the band the title
-bar and toolbar cover, under a floating sidebar's glass too, with the page's
-title in `barForegroundColor` on it - while the toolbar's own items keep the
-system's look. What the window shows around the bars is its own background
-(`window.background`). Gradients
-remain ordinary view composition where the application owns the surface.
+Every arrangement accepts a `barBackground` - a `Material`: a color, a
+gradient, a blur, glass - and a `barForegroundColor` for its title and native
+action affordances; a page's bar takes each from the nearest arrangement
+around it that declares one, so a stack further in paints its own - a sidebar
+takes only what its own split view declares, and a stack in a sheet takes the
+look of the bar over the view presenting the sheet. What the bar says is each
+page's own ([The window's bar](application-and-sessions.md#the-windows-bar)).
+Native tab selectors keep their selected and unselected states, legible over a
+written background. Leaving the background unwritten preserves the platform's
+material. A blur is the platform's own where its bars blur - iOS, iPadOS,
+WinUI's acrylic, the Web's backdrop filter - and its color elsewhere; glass is
+the platform's own bar where it has one. A written material stands where the
+bars stand and nowhere else - on AppKit the band the title bar and toolbar
+cover, under a floating sidebar's glass too, with the page's title in
+`barForegroundColor` on it - while the toolbar's own items keep the system's
+look. What the window shows around the bars is its own background
+(`window.background`).
 
 Where the host draws the bar's buttons itself - the Web - `toolbarStyle` says
 how they stand: `.glass`, each on a round glass; `.plain`, no background until

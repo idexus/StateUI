@@ -452,13 +452,13 @@ final class PageTests: XCTestCase {
         let stack = NavigationStack(path.projectedValue) { Plain() } destination: { _ in Plain() }
             .width(120)
             .onTapped {}
-            .barBackgroundColor(.red)
+            .barBackground(.red)
 
         let patch = Renders().render(Node.page(stack))
 
         XCTAssertNil(patch.props["width"])
         XCTAssertFalse(patch.eventNames.contains("tapped"))
-        XCTAssertNotNil(patch.props["barBackgroundColor"])
+        XCTAssertNotNil(patch.props["barBackground"])
     }
 
     /// A page owns its bar's actions: a toolbar reaching a stack through a composed view's body is left out, said
@@ -567,7 +567,7 @@ final class PageTests: XCTestCase {
     // MARK: - What the values look like
 
     /// A page's own values are its own: `background` is the PAGE's, where the bar above it takes
-    /// `barBackgroundColor` on the arrangement.
+    /// `barBackground` on the arrangement.
     func testAPageCarriesItsOwnValues() {
         let page = Self.arrived(EveryPropertyPage())
 

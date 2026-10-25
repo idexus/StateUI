@@ -7,8 +7,8 @@ public enum BarElementContract: Contract {
     /// The tier's name.
     public static let name = "BarElement"
 
-    /// The bar's color; unwritten, the platform's own material.
-    public static let barBackgroundColor = ElementProperty<Self, Color>("barBackgroundColor", layer: .adaptive)
+    /// What the bar is made of - a color, a gradient, a blur or glass; unwritten, the platform's own material.
+    public static let barBackground = ElementProperty<Self, Material>("barBackground", layer: .adaptive)
 
     /// The color behind the bar's buttons, where the host draws them a
     /// background.
@@ -24,6 +24,6 @@ public enum BarElementContract: Contract {
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [
-        barBackgroundColor, barButtonBackgroundColor, barForegroundColor, toolbarStyle,
+        barBackground, barButtonBackgroundColor, barForegroundColor, toolbarStyle,
     ]
 }

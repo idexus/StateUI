@@ -296,7 +296,7 @@ final class WinUIPagesTests: XCTestCase {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     Text("Root")
                 } destination: { _ in Text("Pushed") }
-                    .barBackgroundColor(dark.wrappedValue ? navy : yellow)
+                    .barBackground(dark.wrappedValue ? navy : yellow)
             }
             let bar = try XCTUnwrap(host.window).titleBar
             XCTAssertEqual(ColorScheme(rawValue: stateui_winui_title_bar_theme(bar.handle)), .dark, "light on navy")
@@ -320,7 +320,7 @@ final class WinUIPagesTests: XCTestCase {
                     Text("Root")
                         .menuBar { Menu("File") { MenuItem("Save") } }
                 } destination: { _ in Text("Pushed") }
-                return painted.wrappedValue ? stack.barBackgroundColor(navy).barForegroundColor(yellow) : stack
+                return painted.wrappedValue ? stack.barBackground(navy).barForegroundColor(yellow) : stack
             }
             let window = try XCTUnwrap(host.window)
             host.settle { window.menuBarStands }
@@ -484,7 +484,7 @@ final class WinUIPagesTests: XCTestCase {
                     let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         TitledPage(title: "Notes", actions: [ToolbarButton("Scan")])
                     } destination: { _ in Text("Pushed") }
-                        .barBackgroundColor(navy)
+                        .barBackground(navy)
                     return written.map { stack.barForegroundColor($0) } ?? stack
                 }
                 let bar = try XCTUnwrap(host.window).titleBar
@@ -505,7 +505,7 @@ final class WinUIPagesTests: XCTestCase {
                         TitledPage(
                             title: "Notes", actions: [ToolbarButton("Scan"), ToolbarButton("Delete").role(.destructive)])
                     } destination: { _ in Text("Pushed") }
-                        .barBackgroundColor(background)
+                        .barBackground(background)
                         .barForegroundColor(Color(red: 255, green: 230, blue: 0))
                 }
                 let bar = try XCTUnwrap(host.window).titleBar

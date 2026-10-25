@@ -97,7 +97,7 @@ private struct MainPage: View {
                     }
                 }
                 .title("Home")
-                .barBackgroundColor(Color(hex: 0x512BD4))
+                .barBackground(Color(hex: 0x512BD4))
                 .barForegroundColor(.white)
 
             case .settings:

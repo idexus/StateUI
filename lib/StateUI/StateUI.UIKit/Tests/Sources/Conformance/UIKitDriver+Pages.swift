@@ -55,7 +55,7 @@ extension UIKitDriver {
             default: break
             }
         }
-        if [.barBackgroundColor, .barForegroundColor].contains(property)
+        if [.barBackground, .barForegroundColor].contains(property)
             || property == .subtitle && element.type == .page {
             return Self.barHolds(property, of: element)
         }
@@ -100,12 +100,12 @@ extension UIKitDriver {
     }
 
     /// What the bar an arrangement declares stands on: a tabbed view's tab bar, else the bar of the page it shows -
-    /// its color, the color of its title, and the line under a page's title.
+    /// its material, the color of its title, and the line under a page's title.
     private static func barHolds(_ property: Prop, of element: MountedElement) -> HostValue? {
         if let tabs = (element.native as? UIKitElement)?.controller as? UITabBarController {
             let appearance = tabs.tabBar.standardAppearance
             switch property {
-            case .barBackgroundColor: return appearance.backgroundColor.map { color($0).propValue }
+            case .barBackground: return material(of: appearance)
             case .barForegroundColor:
                 let words = appearance.stackedLayoutAppearance.selected.titleTextAttributes[.foregroundColor]
                 return (words as? UIColor).map { color($0).propValue }
@@ -114,12 +114,22 @@ extension UIKitDriver {
         }
         guard let item = (element.visiblePage?.native as? UIKitElement)?.controller?.navigationItem else { return nil }
         switch property {
-        case .barBackgroundColor: return item.standardAppearance?.backgroundColor.map { color($0).propValue }
+        case .barBackground: return item.standardAppearance.flatMap(material(of:))
         case .barForegroundColor:
             return (item.standardAppearance?.titleTextAttributes[.foregroundColor] as? UIColor).map { color($0).propValue }
         case .subtitle: return item.subtitle.map { .string($0) }
         default: return nil
         }
+    }
+
+    /// What a bar's appearance stands on: UIKit's blur in one of its five thicknesses under its tint, else its color.
+    private static func material(of appearance: UIBarAppearance) -> HostValue? {
+        let tint = appearance.backgroundColor.map(color)
+        guard let effect = appearance.backgroundEffect, let thickness = Blur.Thickness.allCases.first(where: {
+            UIBlurEffect(style: UIKitBackdropView.style($0)).isEqual(effect)
+        }) else { return tint?.propValue }
+        let blur = Blur(thickness)
+        return Material.blur(tint.map(blur.tint) ?? blur).propValue
     }
 
     /// The user's acts on pages: the way back a stack's bar offers, a tab chosen on the tab bar, an action taken on

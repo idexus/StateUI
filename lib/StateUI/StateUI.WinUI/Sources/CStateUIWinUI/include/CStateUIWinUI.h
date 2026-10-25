@@ -810,10 +810,11 @@ void stateui_winui_sheet_set_action_menu(StateUIObjectRef sheet, int32_t place, 
                                          char const *const *identifiers, char const *const *icons,
                                          bool const *destructive, int32_t const *keys, int32_t const *modifiers,
                                          bool const *givesWay, int32_t count);
-/// Paints the head of a sheet's card as a bar: in `background` where `hasBackground`, its title, buttons and actions
-/// in `foreground` where `hasForeground`, in the theme `theme` - a `StateUIColorScheme` - its band asks for.
-void stateui_winui_sheet_set_bar(StateUIObjectRef sheet, bool hasBackground, uint32_t background, bool hasForeground,
-                                 uint32_t foreground, int32_t theme);
+/// Paints the head of a sheet's card as a bar: on its ground - WinUI's own, a color `argb`, or the in-app acrylic in
+/// it - its title, buttons and actions in `foreground` where `hasForeground`, in the theme `theme` - a
+/// `StateUIColorScheme` - its band asks for.
+void stateui_winui_sheet_set_bar(StateUIObjectRef sheet, StateUIGround ground, uint32_t argb, float opacity,
+                                 float tintOpacity, bool hasForeground, uint32_t foreground, int32_t theme);
 
 /// Stands a sheet's card on its window's background: a color `argb` over the card's own background, or the in-app
 /// acrylic in it in its place - its luminosity hiding `opacity` of what is behind it and its tint `tintOpacity`.
@@ -1162,11 +1163,13 @@ int32_t stateui_winui_items_row_name(StateUIObjectRef items, int64_t cell, char 
 /// edges or in its overflow, and the title view in its middle. The way back is chosen as -1, the toggle as -2, an
 /// action by its place.
 StateUIObjectRef stateui_winui_title_bar_make(int64_t view);
-/// `foreground` is the color of the words on a bar the tree paints, its title's and its actions' alike; the bar
-/// stands in `theme`, a `StateUIColorScheme` - dark for light words on a dark bar - its buttons and commands with it.
+/// The bar stands on its ground - WinUI's own, a color `argb`, or the in-app acrylic in it, its luminosity hiding
+/// `opacity` of what is behind it and its tint `tintOpacity`; `foreground` is the color of the words on a bar the
+/// tree paints, its title's and its actions' alike; the bar stands in `theme`, a `StateUIColorScheme` - dark for light
+/// words on a dark bar - its buttons and commands with it.
 void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, char const *subtitle, char const *icon,
-                                 bool back, bool paneToggle, bool hasBackground, uint32_t background,
-                                 bool hasForeground, uint32_t foreground, int32_t theme);
+                                 bool back, bool paneToggle, StateUIGround ground, uint32_t argb, float opacity,
+                                 float tintOpacity, bool hasForeground, uint32_t foreground, int32_t theme);
 /// The page's actions on a window's chrome, in reading order: each one's words, the identifier automation finds it
 /// by (empty for none), the files its picture may stand in - each ended by a line feed, empty for none - whether its
 /// words stand beside its picture, whether choosing it destroys something, its group's place - the first

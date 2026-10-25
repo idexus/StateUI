@@ -260,7 +260,7 @@ final class GTKPagesTests: XCTestCase {
                 } destination: { _ in
                     TitledPage(title: "Next")
                 }
-                .barBackgroundColor(Color(hex: 0xFF0000))
+                .barBackground(Color(hex: 0xFF0000))
                 .barForegroundColor(Color(hex: 0xFFFFFF))
             }
             let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
@@ -512,7 +512,7 @@ final class GTKPagesTests: XCTestCase {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         TitledPage(title: "Painted")
                     } destination: { _ in TitledPage(title: "Next") }
-                    .barBackgroundColor(Color(hex: band))
+                    .barBackground(Color(hex: band))
                 }
                 let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
                 host.layOut()
@@ -534,7 +534,7 @@ final class GTKPagesTests: XCTestCase {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     Text("under a painted bar")
                 } destination: { _ in Text("Next") }
-                .barBackgroundColor(Color(hex: 0x00FF00))
+                .barBackground(Color(hex: 0x00FF00))
                 .barForegroundColor(Color(hex: 0xFFFFFF))
             }
             let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)

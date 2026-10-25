@@ -147,9 +147,6 @@ private struct LookColumn: View {
         // new place.
         let style = self.style
         let key = self.look
-        let look = style[keyPath: key]
-        let bars = BarLook.allCases
-        let accents = AccentChoice.allCases
         let name = title.lowercased()
         // Each surface's choices write that part of the theme's look.
         let surface = { (part: WritableKeyPath<ThemeLook, SurfaceLook>) in
@@ -169,19 +166,7 @@ private struct LookColumn: View {
                 .isEnabled(composed)
                 .onClicked { style[keyPath: choice] = .own }
 
-            Text("The bars")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-            Picker(bars, selection: Binding(get: { look.bars }, set: { style[keyPath: key].bars = $0 })) { $0.name }
-                .accessibilityIdentifier("appearance.\(name).bars")
-                .accessibilityLabel("Bars, \(name)")
-            Picker(accents, selection: Binding(get: { look.barColor }, set: { style[keyPath: key].barColor = $0 })) {
-                $0.name
-            }
-                .accessibilityIdentifier("appearance.\(name).barColor")
-                .accessibilityLabel("Bars' color, \(name)")
-                .isEnabled(look.bars == .tinted || look.bars == .color)
-
+            SurfacePickers(title: "The bars", label: "Bars", theme: name, surface: surface(\.bars))
             SurfacePickers(title: "The window", label: "Window", theme: name, surface: surface(\.window))
             SurfacePickers(title: "The sidebar", label: "Sidebar", theme: name, surface: surface(\.sidebar))
             SurfacePickers(title: "The sidebar over the page", label: "Flyout", theme: name, surface: surface(\.flyout))

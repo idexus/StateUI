@@ -221,7 +221,7 @@ final class AppKitDriver: HostDriver {
             return held
         }
         if property == .subtitle, element.type == .page { return try subtitleHolds(element) }
-        if property == .barBackgroundColor { return try barHolds(element) }
+        if property == .barBackground { return try barHolds(element) }
         if property == .barForegroundColor { return try barWordsColor(element) }
         if property == .icon, let button = (element.native as? AppKitElement)?.view as? AppKitButtonView {
             return pictureName(button.image)

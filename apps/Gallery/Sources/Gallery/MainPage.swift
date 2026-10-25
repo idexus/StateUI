@@ -105,8 +105,10 @@ struct MainPage: View {
             }
         }
         // listing: end
-        // The bars of both panes, as the gallery's look says.
-        .barLook(look.bars, in: look.barColor, system: application.info.accentColor)
+        // The bars of both panes, as the gallery's looks say in each theme.
+        .barLook(
+            light: style.look(dark: false).bars, dark: style.look(dark: true).bars,
+            system: application.info.accentColor)
         .barButtons(style.toolbarStyle, tinted: style.tintsBarButtons)
         // listing: MainPage.overlays
         // The window's notice, over every page while the gallery says so.
@@ -265,12 +267,6 @@ struct MainPage: View {
     // MARK: - The window's own look
 
     // listing: MainPage.look
-    /// The look the gallery wears in the theme in force: a change of theme,
-    /// the system's or the application's, builds the page again in the other.
-    private var look: ThemeLook {
-        style.look(dark: application.info.colorScheme == .dark)
-    }
-
     /// What a surface of the gallery is made of, a material for each theme as
     /// its looks say - the platform's own in a theme whose look leaves it.
     private func surface(_ part: KeyPath<ThemeLook, SurfaceLook>, _ painted: GallerySurface) -> Material {

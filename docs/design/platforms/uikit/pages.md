@@ -39,7 +39,8 @@ group a `UIBarButtonItemGroup` of its own, so each keeps its own shared
 background, the leading ones beside the way back, those beyond the bar in a
 menu behind its last button - a picture on the bar, titled More, the word
 UIKit's own menu of what a narrow bar has no room for and VoiceOver say of
-it - whether it offers the way back, and its colors
+it - whether it offers the way back, and its material and colors - a blur UIKit's
+own effect in its thickness under its tint, glass the system's own bar
 where the tree gives them. The view standing in for the title is fitted to
 what it holds as it comes, and a layout again at every render; a control -
 a search field - keeps the width the bar gives it, since a fit to its words

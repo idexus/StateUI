@@ -205,7 +205,8 @@ extern "C" StateUIObjectRef stateui_winui_title_bar_make(int64_t view) {
 
 extern "C" void stateui_winui_title_bar_set(
     StateUIObjectRef handle, char const *title, char const *subtitle, char const *icon, bool back, bool paneToggle,
-    bool hasBackground, uint32_t background, bool hasForeground, uint32_t foreground, int32_t theme
+    StateUIGround kind, uint32_t argb, float opacity, float tintOpacity, bool hasForeground, uint32_t foreground,
+    int32_t theme
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
@@ -214,7 +215,7 @@ extern "C" void stateui_winui_title_bar_set(
         if (sourceFile(bar.IconSource()) != pictureName(icon)) bar.IconSource(pictureIconSource(icon));
         bar.IsBackButtonVisible(back);
         bar.IsPaneToggleButtonVisible(paneToggle);
-        if (hasBackground) bar.Background(media::SolidColorBrush(color(background)));
+        if (auto brush = ground(kind, argb, opacity, tintOpacity)) bar.Background(brush);
         else bar.ClearValue(controls::Control::BackgroundProperty());
         if (hasForeground) bar.Foreground(media::SolidColorBrush(color(foreground)));
         else bar.ClearValue(controls::Control::ForegroundProperty());

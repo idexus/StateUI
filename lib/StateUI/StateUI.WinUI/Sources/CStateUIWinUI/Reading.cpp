@@ -62,6 +62,16 @@ namespace {
         return words;
     }
 
+    /// A ground as a test reads it: a color, "acrylic" with its color and luminosity, or nothing for WinUI's own.
+    std::string groundText(media::Brush const &own) {
+        if (auto acrylic = own ? own.try_as<media::AcrylicBrush>() : nullptr) {
+            auto luminosity = acrylic.TintLuminosityOpacity();
+            return "acrylic " + color(media::SolidColorBrush(acrylic.TintColor())) + " " +
+                   number(luminosity ? luminosity.Value() : 0);
+        }
+        return own ? color(own) : std::string();
+    }
+
     std::string sides(xaml::Thickness const &thickness) {
         return number(thickness.Left) + "," + number(thickness.Top) + "," + number(thickness.Right) + "," +
                number(thickness.Bottom);
@@ -300,7 +310,7 @@ namespace {
         if (what == "paneToggle") return flag(bar.IsPaneToggleButtonVisible());
         if (what == "subtitle") return narrow(bar.Subtitle());
         if (what == "icon") return winrt::to_string(sourceFile(bar.IconSource()));
-        if (what == "background") return color(bar.Background());
+        if (what == "background") return groundText(bar.Background());
         if (what == "foreground") return color(bar.Foreground());
         if (what == "actions") return actions(actionEdges(bar), [](auto const &button) { return narrow(button.Label()); }, ";", ";");
         if (what == "bar") {
@@ -378,16 +388,6 @@ namespace {
         return "0";
     }
 
-    /// A ground as a test reads it: a color, "acrylic" with its color and luminosity, or nothing for WinUI's own.
-    std::string groundText(media::Brush const &own) {
-        if (auto acrylic = own ? own.try_as<media::AcrylicBrush>() : nullptr) {
-            auto luminosity = acrylic.TintLuminosityOpacity();
-            return "acrylic " + color(media::SolidColorBrush(acrylic.TintColor())) + " " +
-                   number(luminosity ? luminosity.Value() : 0);
-        }
-        return own ? color(own) : std::string();
-    }
-
     /// What a sheet's head shows: its title, and whether it offers the way back and the close button; what its card
     /// stands on.
     std::optional<std::string> sheetHead(controls::Grid const &sheet, std::string_view what) {
@@ -400,7 +400,7 @@ namespace {
         if (what == "actions")
             return actions(sheetActionEdges(sheet), [](auto const &button) { return narrow(button.Label()); }, ";", ";");
         if (what == "card") return number(card.ActualWidth()) + "," + number(card.ActualHeight());
-        if (what == "background") return color(head.Background());
+        if (what == "background") return groundText(head.Background());
         if (what == "foreground") return color(head.Children().GetAt(1).as<controls::TextBlock>().Foreground());
         if (what == "ground") {
             auto own = card.Background().try_as<media::AcrylicBrush>() ? card.Background()

@@ -58,11 +58,17 @@ extension MountedElement {
         TextAndIcon.showsText(value(.showsText)?.bool, hasPicture: HostPicture(value(.icon)) != nil, byDefault: false)
     }
 
-    /// The colors this element's bar is painted in, and what stands on it in: each the nearest declared on its path,
-    /// itself included.
+    /// The colors this element's bar is painted in - its material as a host that blurs nothing paints it - and what
+    /// stands on it in: each the nearest declared on its path, itself included.
     /// Design: docs/design/host/pages.md#the-bar-a-path-declares
     public var barColors: (background: HostValue?, foreground: HostValue?) {
-        (barValue(.barBackgroundColor), barValue(.barForegroundColor))
+        (barMaterial.painted, barValue(.barForegroundColor))
+    }
+
+    /// What this element's bar is made of, the nearest declared on its path; empty for the platform's own.
+    /// Design: docs/design/host/pages.md#the-bar-a-path-declares
+    public var barMaterial: HostMaterial {
+        HostMaterial(barValue(.barBackground))
     }
 
     /// The color behind this element's bar's buttons, found as its bar's colors; nil for the host's own.

@@ -142,7 +142,7 @@ final class SplitViewTests: XCTestCase {
                 DetailPage(section: "level \(depth)")
             }
             .title("Diary")
-            .barBackgroundColor(Color(hex: 0x512BD4))
+            .barBackground(Color(hex: 0x512BD4))
         }
         .node
 

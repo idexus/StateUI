@@ -128,10 +128,14 @@ final class WebWindowBar: WebDOMView {
         showTitle(chrome.showsTitle ? shown : "", line: chrome.showsTitle ? chrome.subtitle : nil, or: view,
                   repeating: area?.title)
 
-        style("--stateui-bar-background", WebCSS.fill(chrome.background))
+        // The bar's material: a color, or a blur - a backdrop filter under its color - glass drawn as its blur.
+        let material = chrome.material
+        let box = WebBox(fill: material.paint, material: material.blur == nil ? nil : material)
+        let styles = Dictionary(box.styles(size: .zero), uniquingKeysWith: { first, _ in first })
+        style("--stateui-bar-background", material.isEmpty ? nil : styles["background"] ?? nil)
         // A clear bar paints nothing, and only softens what scrolls under it toward the top.
         let clear = HostBrush(chrome.background).isClear
-        style("--stateui-bar-filter", clear ? "none" : nil)
+        style("--stateui-bar-filter", clear ? "none" : styles["backdrop-filter"] ?? nil)
         attribute("data-clear", clear ? "" : nil)
         // Words the tree gives no color stand light on a dark band and dark on a light one.
         style("--stateui-bar-foreground", WebCSS.color(BandWords.color(on: chrome.background, written: chrome.foreground)))

@@ -73,11 +73,11 @@ final class WindowTests: XCTestCase {
         } detail: {
             AnyView(node: label("detail"))
         }
-        .barBackgroundColor(.steelBlue)
+        .barBackground(.steelBlue)
         .barForegroundColor(.white)
         .node
 
-        XCTAssertNotNil(node.props["barBackgroundColor"])
+        XCTAssertNotNil(node.props["barBackground"])
         XCTAssertNotNil(node.props["barForegroundColor"])
         XCTAssertEqual(node.children.count, 2, "its two pages alone: values, not declarations")
     }

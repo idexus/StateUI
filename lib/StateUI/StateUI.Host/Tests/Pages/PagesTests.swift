@@ -437,7 +437,7 @@ final class PagesTests: XCTestCase {
     /// the page's title view, and the stack's color.
     func testTheChromeIsComposedFromWhatTheWindowShows() throws {
         let runtime = runtime(node("window", .window, children: [
-            node("stack", .navigationStack, [.barBackgroundColor: .string("stack")], children: [
+            node("stack", .navigationStack, [.barBackground: .string("stack")], children: [
                 node("home", .page, [.backButtonTitle: .string("Home")]),
                 node("detail", .page, [.title: .string("Detail")], children: [
                     toolbarGroup("items", [toolbarAction("first"), toolbarAction("next")]),
@@ -832,12 +832,12 @@ final class PagesTests: XCTestCase {
     func testTheBarAPathDeclaresIsItsNearest() throws {
         let runtime = runtime(node("window", .window, children: [
             node("outer", .navigationStack, [
-                .barBackgroundColor: .string("window"), .toolbarStyle: ToolbarStyle.rounded.propValue,
+                .barBackground: .string("window"), .toolbarStyle: ToolbarStyle.rounded.propValue,
             ], children: [
                 node("split", .splitView, [.barForegroundColor: .string("split")], children: [
                     node("menu", .page),
                     node("stack", .navigationStack, [
-                        .barBackgroundColor: .string("stack"), .barButtonBackgroundColor: .string("stack's buttons"),
+                        .barBackground: .string("stack"), .barButtonBackgroundColor: .string("stack's buttons"),
                     ], children: [node("detail", .page, [.title: .string("Detail")], children: [
                         presenting(node("sheet", .page)),
                     ])]),

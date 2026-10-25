@@ -135,7 +135,7 @@ final class GTKSplitViewTests: XCTestCase {
                 } detail: {
                     TitledPage(title: "Detail")
                 }
-                .barBackgroundColor(Color(hex: 0xFF0000))
+                .barBackground(Color(hex: 0xFF0000))
                 .barForegroundColor(Color(hex: 0xFFFFFF))
             }
             let split = try XCTUnwrap(host.views(GTKSplitView.self).first)

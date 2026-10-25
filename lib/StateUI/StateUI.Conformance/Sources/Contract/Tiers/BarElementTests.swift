@@ -12,10 +12,14 @@
     public static var cases: [ConformanceCase] {
         Specimens.wearing(BarElementContract.self).flatMap { element in
             [
-                holds(BarElementContract.barBackgroundColor, on: element, .steelBlue, then: .firebrick),
+                holds(BarElementContract.barBackground, on: element, .color(.steelBlue), then: .color(.firebrick)),
+                // A blur, or the color a host that blurs nothing behind its bars stands in for it.
+                holds(
+                    BarElementContract.barBackground, on: element, .blur(.thick), then: .blur(.ultraThin),
+                    aspect: "showsABlurOrWhatStandsInForIt"),
                 holds(
                     BarElementContract.barForegroundColor, on: element, .white, then: .black,
-                    over: [Write(BarElementContract.barBackgroundColor, Color.steelBlue)]),
+                    over: [Write(BarElementContract.barBackground, Material.color(.steelBlue))]),
                 holds(BarElementContract.barButtonBackgroundColor, on: element, .steelBlue, then: .firebrick),
                 holds(BarElementContract.toolbarStyle, on: element, .glass, then: .rounded),
                 crossesASheet(on: element),
@@ -27,11 +31,11 @@
     /// nothing nearer says another.
     @MainActor
     static func crossesASheet(on element: String) -> ConformanceCase {
-        ConformanceCase("\(element).barBackgroundColor.crossesASheetItsViewPresents", proves: [
-            Covered(BarElementContract.barBackgroundColor, on: element),
+        ConformanceCase("\(element).barBackground.crossesASheetItsViewPresents", proves: [
+            Covered(BarElementContract.barBackground, on: element),
         ], needs: [Covered(SheetContract.isPresented)]) { s in
             s.start {
-                declaring(element, [Write(BarElementContract.barBackgroundColor, Color.steelBlue)], beside: [
+                declaring(element, [Write(BarElementContract.barBackground, Material.color(.steelBlue))], beside: [
                     Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
                         NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                             Text("In the sheet").title("Sheet")
@@ -46,9 +50,9 @@
                 else { throw DriverCannot("find the stack in the sheet") }
                 return stack
             }
-            try s.settle { try s.held(BarElementContract.barBackgroundColor, on: inSheet()) == Color.steelBlue }
+            try s.settle { try s.held(BarElementContract.barBackground, on: inSheet()) == .color(.steelBlue) }
             s.expect(
-                try s.held(BarElementContract.barBackgroundColor, on: inSheet()), Color.steelBlue,
+                try s.held(BarElementContract.barBackground, on: inSheet()), Material.color(.steelBlue),
                 "the look of the bar over the view presenting the sheet")
         }
     }
@@ -58,9 +62,11 @@
     @MainActor
     static func holds<Value: HostRepresentable & Sendable & Equatable>(
         _ member: ElementProperty<BarElementContract, Value>, on element: String, _ first: Value, then second: Value,
-        over others: [any Worn] = []
+        over others: [any Worn] = [], aspect: String = "holdsWhatTheTreeGivesAndChanges"
     ) -> ConformanceCase {
-        Aspects.holds(member, on: element, first, then: second, with: others, page: declaring(_:_:beside:), late: true)
+        Aspects.holds(
+            member, on: element, first, then: second, with: others, page: declaring(_:_:beside:), late: true,
+            aspect: aspect)
     }
 
     /// A page where `element` wears `worn` around a bar every host draws - a split view's detail, a tabbed view's

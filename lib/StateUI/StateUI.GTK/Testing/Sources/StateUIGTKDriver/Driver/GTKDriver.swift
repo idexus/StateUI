@@ -101,10 +101,16 @@ final class GTKDriver: HostDriver {
     /// The members read from the classes of the host's style sheet a widget wears.
     private static let recordedMembers = ["padding", "background", "stroke", "lineWidth", "shape", "placeholderColor"]
 
+    /// How a bar's background is read: GTK reads back none, and a translucent one's pixels mix with what is under it.
+    private static let headerClass = "the class of the host's style sheet the header wears: GTK reads back no background"
+
     private static let byHostReasons = [
         "read keyboardShortcut of ToolbarButton": "the host's own record: a header bar's button shows no shortcut",
         "close on Popover": "the popover popped down as a click beside it pops it down, no click sent",
         "read the ground of Sheet": "the class of the host's style sheet the dialog wears: GTK reads back no background",
+        "read barBackground of NavigationStack": headerClass,
+        "read barBackground of SplitView": headerClass,
+        "read barBackground of TabView": headerClass,
         "read sidebarBackground of SplitView":
             "the class of the host's style sheet the sidebar wears: GTK reads back no background",
         "read flyoutBackground of SplitView":
@@ -283,7 +289,7 @@ final class GTKDriver: HostDriver {
             return Self.sheetGround(of: sheet.sheet.dialog.of(GtkWidget.self)).map { StandIns.material(painted: $0).propValue }
         }
         if [.menuItem, .menuToggle].contains(element.type) { return try menuItemHolds(property, element) }
-        if [.barBackgroundColor, .barForegroundColor].contains(property) || property == .subtitle && element.type == .page {
+        if [.barBackground, .barForegroundColor].contains(property) || property == .subtitle && element.type == .page {
             return try barHolds(property, element)
         }
         if let value = backendHolds(property, on: element) { return value }

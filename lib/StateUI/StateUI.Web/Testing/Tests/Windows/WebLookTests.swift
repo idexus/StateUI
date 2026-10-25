@@ -271,7 +271,7 @@ final class WebLookTests: XCTestCase {
         let host = WebRenderer.running {
             TabView([0]) { tab in Text("Tab \(tab)").title("Tab \(tab)") }
                 .title("Clear")
-                .barBackgroundColor(clear.wrappedValue ? .transparent : .white)
+                .barBackground(clear.wrappedValue ? .transparent : .white)
         }
         let edge = { (property: String) in
             try WebBrowser.evaluate(
@@ -387,7 +387,7 @@ final class WebLookTests: XCTestCase {
         let host = WebRenderer.running {
             TabView([0, 1]) { tab in Text("Tab \(tab)").title("Tab \(tab)") }
                 .title("Light")
-                .barBackgroundColor(.white)
+                .barBackground(.white)
         }
         host.settle { (try? self.look(".stateui-tab-strip > button", "color")) != nil }
 

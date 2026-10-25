@@ -11,13 +11,14 @@
 @_spi(Host) public enum Aspects {
     /// `member` of `element` holds the value the tree gives it, and then the one the tree changes it to; the
     /// specimen wears `with` too, on `page` - waited for where the value comes `late`, as a bar's after its layout.
+    /// A second aspect of the same member is a case of its own `aspect`.
     public static func holds<Owner: Contract, Value: HostRepresentable & Sendable & Equatable>(
         _ member: ElementProperty<Owner, Value>, on element: String, _ first: Value, then second: Value,
         with worn: [any Worn] = [],
         page: @escaping @MainActor (String, [any Worn], [any View]) -> AnyView = Specimens.page(_:_:beside:),
-        late: Bool = false
+        late: Bool = false, aspect: String = "holdsWhatTheTreeGivesAndChanges"
     ) -> ConformanceCase {
-        ConformanceCase("\(element).\(member.name).holdsWhatTheTreeGivesAndChanges", proves: [
+        ConformanceCase("\(element).\(member.name).\(aspect)", proves: [
             Covered(member, on: element),
         ], needs: [Covered(ButtonContract.clicked)]) { s in
             let value = State(wrappedValue: first)

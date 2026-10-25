@@ -601,7 +601,7 @@ struct NotesPage: View {
                 .title(folder)
                 .subtitle("Updated today")
         }
-        .barBackgroundColor(.cornflowerBlue)
+        .barBackground(.cornflowerBlue)
         .barForegroundColor(.white)
         .titleView {
             SearchField($query)
@@ -615,8 +615,9 @@ struct NotesPage: View {
 ```
 
 A page's bar shows its title and the line under it, `.subtitle`, and nothing
-climbs from around the page. `barBackgroundColor` and `barForegroundColor`
-paint the bar and what stands on it, each taken from the nearest arrangement
+climbs from around the page. `barBackground` - a color, a gradient, a blur or
+glass - and `barForegroundColor` make the bar and what stands on it, each taken
+from the nearest arrangement
 on the visible path that declares it, so a stack further in paints its own bar
 while it is shown; a sidebar takes only what its own split view declares, and a
 stack in a sheet takes the look of the bar over the view presenting the sheet.

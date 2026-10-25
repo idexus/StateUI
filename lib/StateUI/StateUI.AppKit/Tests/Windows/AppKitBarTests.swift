@@ -262,7 +262,7 @@ private extension AppKitBarTests {
             bar[.barForegroundColor] = .color(red: foreground.0, green: foreground.1, blue: foreground.2, alpha: 255)
         }
         if let background {
-            bar[.barBackgroundColor] = .color(red: background.0, green: background.1, blue: background.2, alpha: 255)
+            bar[.barBackground] = .color(red: background.0, green: background.1, blue: background.2, alpha: 255)
         }
         return bar
     }

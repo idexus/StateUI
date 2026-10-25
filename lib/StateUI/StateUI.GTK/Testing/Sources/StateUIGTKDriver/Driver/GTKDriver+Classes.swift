@@ -102,6 +102,12 @@ extension GTKDriver {
             .flatMap { color(String($0.dropFirst("stateui-fill-".count))) }
     }
 
+    /// The color a header bar is painted in, as its class paints it; nil on libadwaita's own.
+    static func barFill(of widget: GTKWidget) -> Color? {
+        classes(of: widget).first { $0.hasPrefix("stateui-bar-b") }
+            .flatMap { color(String($0.dropFirst("stateui-bar-b".count))) }
+    }
+
     /// The color a sheet's dialog stands on, as its class paints it; nil on libadwaita's own.
     static func sheetGround(of widget: GTKWidget) -> Color? {
         classes(of: widget).first { $0.hasPrefix("stateui-sheet-ground-") }

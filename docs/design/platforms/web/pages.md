@@ -23,8 +23,10 @@ technology and its tooltip; a setting is a two-state button
 (`aria-pressed`), tinted in the accent while on, and a
 `menuitemcheckbox` behind the overflow. The bar's own buttons - the toggle, the way
 back, a sheet's close, the overflow - are named in the library's words, in
-the user's language (`ChromeWords`). The bar's colors are the arrangement's, written
-as CSS variables the stylesheet paints it with; without them the bar is the
+the user's language (`ChromeWords`). The bar's material and colors are the
+arrangement's, written as CSS variables the stylesheet paints it with - a blur
+its backdrop filter under its color, glass drawn as its blur; without them the
+bar is the
 page's surface, translucent, blurred and deepened over what lies behind it,
 the room running under it ([the safe area](#the-safe-area)). A clear bar
 paints nothing: a page resting below it shows as it is, the same color as

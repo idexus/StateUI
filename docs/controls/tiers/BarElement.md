@@ -14,7 +14,7 @@ struct MainPage: View {
         } destination: { message in
             Text("Message \(message)")
         }
-        .barBackgroundColor(.cornflowerBlue)
+        .barBackground(.cornflowerBlue)
         .barForegroundColor(.white)
     }
 }
@@ -28,7 +28,7 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `barBackgroundColor` | property | `Color` | adaptive |
+| `barBackground` | property | `Material` | adaptive |
 | `barButtonBackgroundColor` | property | `Color` | adaptive |
 | `barForegroundColor` | property | `Color` | adaptive |
 | `toolbarStyle` | property | `ToolbarStyle` | adaptive |

@@ -112,7 +112,7 @@ extension NodeType {
     static let hidesChildrenFromAccessibility = VisualElementContract.hidesChildrenFromAccessibility.token
     static let growsWithText = TextEditorContract.growsWithText.token
     static let background = VisualElementContract.background.token
-    static let barBackgroundColor = BarElementContract.barBackgroundColor.token
+    static let barBackground = BarElementContract.barBackground.token
     static let barButtonBackgroundColor = BarElementContract.barButtonBackgroundColor.token
     static let toolbarStyle = BarElementContract.toolbarStyle.token
     static let canDrag = ViewContract.canDrag.token

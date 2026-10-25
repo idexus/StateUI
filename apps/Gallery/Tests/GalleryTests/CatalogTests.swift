@@ -1058,7 +1058,7 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(flyout.type, "SplitView")
         XCTAssertEqual(flyout.props["showsSidebar"], .bool(false))
-        XCTAssertEqual(flyout.props["barBackgroundColor"], Color.transparent.propValue,
+        XCTAssertEqual(flyout.props["barBackground"], Color.transparent.propValue,
                        "both panes' bars clear, what stands behind them showing")
         XCTAssertEqual(flyout.props["barForegroundColor"], Palette.text.propValue)
         XCTAssertNotNil(flyout.events["showsSidebarChanged"],

@@ -11,7 +11,7 @@ enum ListingRegions {
     /// The modifiers a listing leaves out as decoration - how a view looks rather than what it is or does. A
     /// region marked `keep` keeps them, and a line ending `// listing: keep` stays, where the look is the point.
     static let look: Set<String> = [
-        "fontSize", "fontAttributes", "fontFamily", "textColor", "tint", "background", "barBackgroundColor",
+        "fontSize", "fontAttributes", "fontFamily", "textColor", "tint", "background", "barBackground",
         "barForegroundColor", "padding", "margin", "spacing", "rowSpacing", "columnSpacing", "shape", "cornerRadius",
         "horizontalTextAlignment", "verticalTextAlignment",
     ]

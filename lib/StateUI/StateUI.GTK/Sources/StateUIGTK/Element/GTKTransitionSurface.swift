@@ -34,9 +34,9 @@ enum GTKTransitionSurface {
         .picker: [.fontSize, .textColor],
         .datePicker: [.fontSize, .textColor],
         .timePicker: [.fontSize, .textColor],
-        .navigationStack: [.barBackgroundColor, .barForegroundColor],
-        .tabView: [.barBackgroundColor, .barForegroundColor],
-        .splitView: [.barBackgroundColor, .barForegroundColor],
+        .navigationStack: [.barBackground, .barForegroundColor],
+        .tabView: [.barBackground, .barForegroundColor],
+        .splitView: [.barBackground, .barForegroundColor],
         .window: [.x, .y, .width, .height],
     ]
 }

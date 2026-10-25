@@ -21,6 +21,7 @@ struct UIKitPageChrome {
     /// What the way back from the page above this one says; nil for UIKit's own.
     var backButtonTitle: String?
     var barBackground: HostValue?
+    var barMaterial = HostMaterial(nil)
     var barForeground: HostValue?
     var leadingActions: [[UIKitBarAction]] = []
     var actions: [[UIKitBarAction]] = []
@@ -97,14 +98,7 @@ struct UIKitPageChrome {
             return
         }
         let appearance = UINavigationBarAppearance()
-        appearance.configureWithDefaultBackground()
-        if HostBrush(barBackground).isClear {
-            // A clear bar shows what is behind it as it is: no ground, and no line under it.
-            appearance.configureWithTransparentBackground()
-        } else if let background = barBackground.flatMap(UIColor.init(stateUI:)) {
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = background
-        }
+        appearance.stand(on: barMaterial)
         if let foreground {
             appearance.titleTextAttributes = [.foregroundColor: foreground]
             appearance.largeTitleTextAttributes = [.foregroundColor: foreground]

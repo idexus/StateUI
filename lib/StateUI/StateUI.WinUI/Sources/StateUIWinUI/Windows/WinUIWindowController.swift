@@ -107,7 +107,7 @@ final class WinUIWindowController {
                     if let element, let page { runtime.goBack(.dismissSheets([page]), in: element) }
                 }
                 : nil,
-            background: chrome.background, foreground: chrome.foreground, words: CoreLink().chromeWords, fits: fits)
+            material: chrome.material, foreground: chrome.foreground, words: CoreLink().chromeWords, fits: fits)
     }
 
     /// The user took the top sheet away - Escape, its dismissing: the window is told how many remain.
@@ -154,6 +154,7 @@ final class WinUIWindowController {
         chrome.trailing = composed.actions.end.map { $0.map(Self.action) }
         chrome.overflow = composed.actions.overflow.map(Self.action)
         chrome.background = composed.background
+        chrome.material = composed.material
         chrome.foreground = composed.foreground
         // WinUI keeps no Edit menu of its own: one the page joins holds the field's undoing, clipboard and selection.
         chrome.menuBar = WinUIMenu(

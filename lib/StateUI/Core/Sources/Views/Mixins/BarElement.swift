@@ -13,7 +13,7 @@
 ///         MenuPage()
 ///     } detail: {
 ///         NavigationStack($path) { … }
-///             .barBackgroundColor(.cornflowerBlue)
+///             .barBackground(.cornflowerBlue)
 ///     }
 ///     .barForegroundColor(.white)
 ///
@@ -24,18 +24,34 @@
 public protocol BarElement: PropertyContainer {}
 
 extension BarElement {
-    /// What the bar is painted, in one flat color.
+    /// What the bar is made of - a color, a gradient, a blur or glass. A
+    /// platform that blurs nothing behind its bars shows a blur as its color.
     ///
     ///     NavigationStack($path) {
     ///         HomePage()
     ///     } destination: { route in
     ///         DetailPage(route)
     ///     }
-    ///     .barBackgroundColor(.cornflowerBlue)
+    ///     .barBackground(.blur(.thin))
     ///
     /// Leave it unwritten to retain the native material and appearance.
-    public func barBackgroundColor(_ value: Color) -> Modified {
-        setValue(BarElementContract.barBackgroundColor, value)
+    public func barBackground(_ value: Material) -> Modified {
+        setValue(BarElementContract.barBackground, value)
+    }
+
+    /// The bar in one color.
+    public func barBackground(_ value: Color) -> Modified {
+        barBackground(.color(value))
+    }
+
+    /// The bar's color from a state, `$x`: the host animates it to each new value.
+    public func barBackground(_ state: Binding<Color>) -> Modified {
+        twin(BarElementContract.barBackground, carrying: state)
+    }
+
+    /// The bar's material from a state, `$x`: the host shows each new material as it stands.
+    public func barBackground(_ state: Binding<Material>) -> Modified {
+        twin(BarElementContract.barBackground, by: state)
     }
 
     /// The color behind the bar's buttons - a glass or a rounded one, and a

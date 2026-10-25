@@ -161,7 +161,7 @@ final class AndroidPagesTests: XCTestCase {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     TitledPage(title: "Root")
                 } destination: { _ in TitledPage(title: "Pushed") }
-                    .barBackgroundColor(dark.wrappedValue ? navy : yellow)
+                    .barBackground(dark.wrappedValue ? navy : yellow)
             }
             host.layOut()
             let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
@@ -183,7 +183,7 @@ final class AndroidPagesTests: XCTestCase {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     TitledPage(title: "Root")
                 } destination: { _ in TitledPage(title: "Pushed") }
-                    .barBackgroundColor(first.wrappedValue ? Color(red: 200, green: 0, blue: 0) : Color(red: 0, green: 0, blue: 200))
+                    .barBackground(first.wrappedValue ? Color(red: 200, green: 0, blue: 0) : Color(red: 0, green: 0, blue: 200))
             }
             host.layOut()
             let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
@@ -720,7 +720,7 @@ extension AndroidPagesTests {
                 } destination: { _ in
                     TitledPage(title: "Note")
                 }
-                .barBackgroundColor(dark.wrappedValue ? .purple : .yellow)
+                .barBackground(dark.wrappedValue ? .purple : .yellow)
                 .barForegroundColor(dark.wrappedValue ? .white : .navy)
             }
             host.layOut()
@@ -779,7 +779,7 @@ extension AndroidPagesTests {
                 } destination: { number in
                     FurnishedPage(title: "Page \(number)", showsBackButton: number != 1, showsNavigationBar: number != 2)
                 }
-                .barBackgroundColor(.red)
+                .barBackground(.red)
                 .barForegroundColor(.white)
             }
             host.layOut()

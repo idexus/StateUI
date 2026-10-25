@@ -23,6 +23,7 @@ struct WinUIWindowChrome {
     var trailing: [[WinUIToolbarAction]] = []
     var overflow: [WinUIToolbarAction] = []
     var background: HostValue?
+    var material = HostMaterial(nil)
     var foreground: HostValue?
     var menuBar = WinUIMenu()
     var sheet: (back: () -> Void, dismiss: () -> Void)?

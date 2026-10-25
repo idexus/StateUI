@@ -131,7 +131,7 @@ extension WebDriver {
             return .some(try color("getComputedStyle(e).backgroundColor", on: sheet.sheet.dialogNode, unlessClear: true)
                 .map { Material.color($0).propValue })
         case (.page, .subtitle): return .some(try barWords(".stateui-bar-line", in: standingBar(over: element)))
-        case (_, .barBackgroundColor): return .some(try barColor("--stateui-bar-background", over: element))
+        case (_, .barBackground): return .some(try barMaterial(over: element))
         case (_, .barButtonBackgroundColor): return .some(try barColor("--stateui-bar-button", over: element))
         case (_, .toolbarStyle):
             // The bar's buttons on glass where it says no look of its own.
@@ -184,6 +184,17 @@ extension WebDriver {
     }
 
     /// The color the bar `element` stands under is painted with by its variable `variable`; nil for the page's own.
+    /// What the bar `element` stands under is made of: the blur its backdrop filter is, else its color.
+    private func barMaterial(over element: MountedElement) throws -> HostValue? {
+        let bar = try standingBar(over: element)
+        let filter = "getComputedStyle(e).getPropertyValue('--stateui-bar-filter').trim()"
+        let blur = try WebBrowser.number("parseFloat((\(filter).match(/blur\\(([0-9.]+)px\\)/) || [])[1])", on: bar.node)
+        if let blur, let thickness = Blur.Thickness.allCases.first(where: { WebBox.blur($0) == blur }) {
+            return Material.blur(Blur(thickness)).propValue
+        }
+        return try barColor("--stateui-bar-background", over: element)
+    }
+
     private func barColor(_ variable: String, over element: MountedElement) throws -> HostValue? {
         let bar = try standingBar(over: element)
         let painted = "getComputedStyle(e).getPropertyValue('\(variable)').trim() || null"

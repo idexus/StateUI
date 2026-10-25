@@ -29,7 +29,7 @@ enum AndroidRealization {
         .partial(FilledShapeContract.fill, missing: "Android blurs nothing behind a figure: a blur or glass shows the theme's color standing in, its tint over it."),
         .partial(VisualElementContract.background,
             missing: "Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it."),
-        .complete(BarElementContract.barBackgroundColor),
+        .partial(BarElementContract.barBackground, missing: Self.blursNothing),
         .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "A toolbar's action is Android's own, with no background of the application's."),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The toolbar's actions keep Android's own look."),
         .partial(BarElementContract.barForegroundColor,

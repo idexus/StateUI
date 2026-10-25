@@ -29,7 +29,8 @@ final class WinUITitleBarView: WinUIView {
         let previous = self.chrome
         self.chrome = chrome
 
-        let background = chrome.background?.argb
+        // The bar's material: a color, or the in-app acrylic for a blur.
+        let ground = WinUIGround(chrome.material)
         // Words on a bar the tree paints - its title and its actions: the color written, else light on a dark one
         // and dark on a light one (`BandWords`).
         let foreground = BandWords.color(on: chrome.background, written: chrome.foreground)?.argb
@@ -42,9 +43,8 @@ final class WinUITitleBarView: WinUIView {
         let title = area?.title ?? (chrome.showsTitle ? chrome.title : "")
         let line = area.map(\.subtitle) ?? (chrome.showsTitle ? chrome.subtitle : nil)
         stateui_winui_title_bar_set(
-            handle, title, line ?? "", icon, chrome.back != nil,
-            chrome.sidebarToggle != nil, background != nil, background ?? 0, foreground != nil, foreground ?? 0,
-            theme.rawValue)
+            handle, title, line ?? "", icon, chrome.back != nil, chrome.sidebarToggle != nil, ground.kind, ground.argb,
+            ground.opacity, ground.tintOpacity, foreground != nil, foreground ?? 0, theme.rawValue)
 
         menuActions = actions.show(
             leading: chrome.leading, trailing: chrome.trailing, overflow: chrome.overflow, on: handle)

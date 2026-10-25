@@ -116,7 +116,7 @@ final class AppKitPageTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(
+        stack.properties[.barBackground] = .color(
             red: 54, green: 42, blue: 86, alpha: 255)
         renderer.applyForTesting(tree(stack))
 
@@ -142,7 +142,7 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(title.stringValue, "Home")
         XCTAssertEqual(title.textColor, .white)
 
-        stack.properties[.barBackgroundColor] = .nothing
+        stack.properties[.barBackground] = .nothing
         renderer.applyForTesting(tree(stack))
         XCTAssertFalse(window.titlebarAppearsTransparent)
         XCTAssertNil(content.barColor)
@@ -161,7 +161,7 @@ final class AppKitPageTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(red: 54, green: 42, blue: 86, alpha: 255)
+        stack.properties[.barBackground] = .color(red: 54, green: 42, blue: 86, alpha: 255)
         stack.properties[.barForegroundColor] = .color(red: 51, green: 179, blue: 230, alpha: 255)
         renderer.applyForTesting(tree(stack))
 
@@ -184,7 +184,7 @@ final class AppKitPageTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(
+        stack.properties[.barBackground] = .color(
             red: 54, green: 42, blue: 86, alpha: 255)
         renderer.applyForTesting(tree(flyout(
             presented: true,
@@ -215,7 +215,7 @@ final class AppKitPageTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(
+        stack.properties[.barBackground] = .color(
             red: 54, green: 42, blue: 86, alpha: 255)
         renderer.applyForTesting(tree(flyout(
             presented: true,
@@ -225,7 +225,7 @@ final class AppKitPageTests: XCTestCase {
         let painted = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         XCTAssertEqual(painted.backgroundColor, .windowBackgroundColor)
 
-        stack.properties[.barBackgroundColor] = .nothing
+        stack.properties[.barBackground] = .nothing
         renderer.applyForTesting(tree(flyout(
             presented: true,
             menu: page("menu", title: "Menu"),
@@ -277,7 +277,7 @@ final class AppKitPageTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(
+        stack.properties[.barBackground] = .color(
             red: 54, green: 42, blue: 86, alpha: 255)
         renderer.applyForTesting(windowTree(flyout(
             presented: true,
@@ -321,7 +321,7 @@ final class AppKitPageTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(
+        stack.properties[.barBackground] = .color(
             red: 81, green: 43, blue: 212, alpha: 255)
         renderer.applyForTesting(windowTree(stack, translucent: true))
 
@@ -347,7 +347,7 @@ final class AppKitPageTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(red: 81, green: 43, blue: 212, alpha: 255)
+        stack.properties[.barBackground] = .color(red: 81, green: 43, blue: 212, alpha: 255)
         let tint = HostValue.color(red: 81, green: 43, blue: 212, alpha: 38)
         renderer.applyForTesting(windowTree(flyout(
             presented: true,
@@ -385,7 +385,7 @@ final class AppKitPageTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(
+        stack.properties[.barBackground] = .color(
             red: 54, green: 42, blue: 86, alpha: 255)
         renderer.applyForTesting(tree(flyout(
             presented: true,
@@ -452,7 +452,7 @@ final class AppKitPageTests: XCTestCase {
         ]
 
         var painted = tabbed(pages, selected: 0, changed: 9)
-        painted.properties[.barBackgroundColor] = .color(red: 54, green: 42, blue: 86, alpha: 255)
+        painted.properties[.barBackground] = .color(red: 54, green: 42, blue: 86, alpha: 255)
         renderer.applyForTesting(tree(painted))
 
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)

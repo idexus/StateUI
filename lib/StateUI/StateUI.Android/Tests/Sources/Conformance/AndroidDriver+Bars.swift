@@ -17,13 +17,15 @@ extension AndroidDriver {
         while let found = each, found.type != .navigationStack { each = found.parent }
         guard let bar = ((each?.native as? AndroidElement)?.view as? AndroidNavigationView)?.bar else { return nil }
         switch property {
-        case .barBackgroundColor, .barForegroundColor:
-            let reading = property == .barBackgroundColor ? barBackground : barForeground
+        case .barBackground, .barForegroundColor:
+            let reading = property == .barBackground ? barBackground : barForeground
             let argb = UInt32(bitPattern: Java.callStaticInt(testBars, reading, .object(bar.reference)))
             guard argb != 0 else { return nil }
-            return .color(
-                red: UInt8(argb >> 16 & 0xFF), green: UInt8(argb >> 8 & 0xFF), blue: UInt8(argb & 0xFF),
-                alpha: UInt8(argb >> 24))
+            let painted = Color(
+                red: Int(argb >> 16 & 0xFF), green: Int(argb >> 8 & 0xFF), blue: Int(argb & 0xFF),
+                alpha: Int(argb >> 24))
+            // The bar's color, or the blur it stands in for: Android blurs nothing behind a bar.
+            return property == .barBackground ? StandIns.material(painted: painted).propValue : painted.propValue
         default:
             return nil
         }

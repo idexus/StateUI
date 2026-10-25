@@ -53,6 +53,7 @@ extension UIKitElement {
         chrome.offersBack = value(.showsBackButton)?.bool != false
         chrome.backButtonTitle = value(.backButtonTitle)?.string
         (chrome.barBackground, chrome.barForeground) = element.barColors
+        chrome.barMaterial = element.barMaterial
         let actions = element.chromeActions
         chrome.leadingActions = actions.start.map { $0.map(Self.action) }
         chrome.actions = actions.end.map { $0.map(Self.action) }
@@ -95,7 +96,7 @@ extension UIKitElement {
             tabs?.showsTheStacksBar = element.showsTheStacksBar
             // A tab bar wears the colors of the bar on its path, which a theme or a state moves on an element above.
             // Design: docs/design/host/pages.md#the-bar-a-path-declares
-            tabs?.showColors(background: element.barColors.background, foreground: element.barColors.foreground)
+            tabs?.showColors(material: element.barMaterial, foreground: element.barColors.foreground)
             arranged.forEach { $0.composeChrome() }
         case .navigationStack:
             (controller as? UIKitNavigationController)?.showTopsBar()
