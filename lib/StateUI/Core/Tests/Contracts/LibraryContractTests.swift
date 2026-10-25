@@ -35,10 +35,12 @@ final class LibraryContractTests: XCTestCase {
 
     // MARK: - The facts
 
-    /// The members of one name say the same of their layer, travel, clearing
-    /// and motion: the differ and the hosts hold a token, which is a name, and
-    /// read what it says by the name - two members of one name that disagreed
-    /// would each be half wrong.
+    /// The members of one name say the same of their travel, clearing and
+    /// motion: the differ and the hosts hold a token, which is a name, and read
+    /// what it says by the name - two members of one name that disagreed would
+    /// each be half wrong. A member's layer is its own and its element's: no
+    /// token carries it, so a page's line under its title and a provider's
+    /// marker's are one name.
     func testTheMembersOfOneNameShareTheirFacts() {
         var first: [String: Declared] = [:]
         var wrong: [String] = []
@@ -50,8 +52,8 @@ final class LibraryContractTests: XCTestCase {
                 continue
             }
 
-            if (earlier.facts.layer, earlier.facts.travels, earlier.facts.cleared, earlier.facts.moves)
-                != (member.facts.layer, member.facts.travels, member.facts.cleared, member.facts.moves) {
+            if (earlier.facts.travels, earlier.facts.cleared, earlier.facts.moves)
+                != (member.facts.travels, member.facts.cleared, member.facts.moves) {
                 wrong.append("\(member.contract).\(member.name) differs from \(earlier.contract)'s")
             }
         }
