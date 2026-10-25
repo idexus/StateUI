@@ -108,20 +108,22 @@ private struct Studio: Application {
     }
 }
 
-/// A scene whose main windows hear the links the application is asked to open, and say the last; About hears none.
-private struct LinkedScene: Scene {
+/// A window's page that hears the links its window is given, and says the last - its own state.
+private struct LinkedPage: View {
     @State private var opened = "none"
 
-    var body: some Scene {
-        WindowGroup { Text("link \(opened)") }
+    var body: some View {
+        Text("link \(opened)")
             .onLinkOpened { opened = $0 }
-        Window(.about) { Blank() }
     }
 }
 
-/// The linked scene alone.
+/// An application whose main windows show the linked page; About hears no link.
 private struct Linked: Application {
-    var body: some Scene { LinkedScene() }
+    var body: some Scene {
+        WindowGroup { LinkedPage() }
+        Window(.about) { Blank() }
+    }
 }
 
 /// An application whose body is one window.
@@ -333,20 +335,27 @@ final class SceneTests: XCTestCase {
 
     // MARK: - A link opened
 
-    /// A link the application was asked to open reaches each window of a declaration that hears links, its handler
-    /// running with the scene's state; a window of a declaration that hears none is not offered it.
-    func testALinkOpenedReachesTheWindowsThatHearIt() async throws {
+    /// A view hears the links its window is given, with its own state; a window whose views hear none is not
+    /// offered one.
+    func testAViewHearsTheLinksItsWindowIsGiven() async throws {
         start(Linked())
         let renders = Renders()
         let patch = renders.render(tree())
         let window = try XCTUnwrap(patch.children.first?.children.first)
+        let page = try XCTUnwrap(Self.hearingLinks(in: window).first)
 
-        XCTAssertTrue(renders.fire(try XCTUnwrap(window.events?[.linkOpened]), with: [.string("notes://note/7")]))
+        XCTAssertTrue(renders.fire(try XCTUnwrap(page.events?[.linkOpened]), with: [.string("notes://note/7")]))
         XCTAssertEqual(texts(in: renders.renderFromScratch(tree())), ["link notes://note/7"])
 
         try await application.openWindow(.about)
         let both = renders.renderFromScratch(tree())
-        XCTAssertEqual(both.children.first?.children.map { $0.events?[.linkOpened] != nil }, [true, false])
+        XCTAssertEqual(both.children.flatMap(\.children).map { Self.hearingLinks(in: $0).count }, [1, 0],
+                       "About - a scene of its own - hears none")
+    }
+
+    /// Every patch under `patch` that hears links, outermost first.
+    private static func hearingLinks(in patch: HostPatch) -> [HostPatch] {
+        (patch.events?[.linkOpened] != nil ? [patch] : []) + patch.children.flatMap { hearingLinks(in: $0) }
     }
 
     // MARK: - A scene stands once

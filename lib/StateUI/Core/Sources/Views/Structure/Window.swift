@@ -62,32 +62,4 @@ public struct Window: Scene {
         copy.declared.floats = floats
         return copy
     }
-
-    /// Runs when the application is asked to open a link - one the user chose elsewhere, of a scheme the
-    /// application's head registers - and the platform gives it to this window: its address.
-    ///
-    ///     Window(.inbox) { InboxPage(selected: $selected) }
-    ///         .onLinkOpened { address in selected = Message.id(in: address) }
-    ///
-    /// It runs with the scene's state.
-    public func onLinkOpened(_ handler: @escaping @MainActor (String) throws -> Void) -> Self {
-        var copy = self
-        copy.declared.links.append { $0.addHandler(WindowContract.linkOpened, handler) }
-        return copy
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what a link does when it comes again while a run
-    /// is under way.
-    public func onLinkOpened(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self {
-        var copy = self
-        copy.declared.links.append { $0.addHandler(WindowContract.linkOpened, policy: policy, handler) }
-        return copy
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self {
-        var copy = self
-        copy.declared.links.append { $0.addHandler(WindowContract.linkOpened, gate: gate, handler) }
-        return copy
-    }
 }

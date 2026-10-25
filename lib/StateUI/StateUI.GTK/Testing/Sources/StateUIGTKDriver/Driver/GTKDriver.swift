@@ -233,6 +233,7 @@ final class GTKDriver: HostDriver {
             guard let shown = popover.popover else { throw DriverCannot(act, on: element) }
             return gtk_popover_popdown(shown.of(GtkPopover.self))
         }
+        if case .openLink(let address) = act { return renderer?.openLinks([address]) ?? () }
         if case .answer = act, try windowAct(act, on: element) { return }
         if element.type == .window, try windowAct(act, on: element) { return }
         if try backendPerforms(act, on: element) { return }

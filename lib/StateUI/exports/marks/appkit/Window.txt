@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 Window: ✅
 Window.activated: ✅
 Window.background: ☑️ A window's glass is drawn as the blur as clear as it is.
@@ -10,7 +10,6 @@ Window.height: ✅
 Window.hidesWhenInactive: cannot read isVisible of Window - AppKit's driver has no path for it yet
 Window.isMaximizable: ✅
 Window.isMinimizable: ✅
-Window.linkOpened: ✓ openLink on Window: the host's entry the application's delegate calls, no Apple event sent
 Window.maximumHeight: ✅
 Window.maximumWidth: ✅
 Window.minimumHeight: ✅

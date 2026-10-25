@@ -83,7 +83,9 @@ private struct LinkedApplication: Application {
 
     var body: some Scene {
         let heard = self.heard
-        return WindowGroup { Text("Links") }
-            .onLinkOpened { heard.addresses.append($0) }
+        return WindowGroup {
+            Text("Links")
+                .onLinkOpened { heard.addresses.append($0) }
+        }
     }
 }

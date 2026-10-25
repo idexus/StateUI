@@ -1,17 +1,17 @@
 import StateUI
 
-/// Links into the application: the Gallery's own scheme, which the system hands back to it.
+/// Links into the application: the Gallery's own scheme, which the system hands back to the window it opens in.
 struct LinksSample: SampleContent, ExampleContent {
     // listing: LinksSample
-    /// The links the application was asked to open - its scene's.
-    let links: OpenedLinks
+    /// Where this window is, and the links it was given.
+    let nav: Navigation
     // listing: end
 
     static let id = "links"
     static let title = "Links"
-    static let summary = "A link of the application's own scheme opens it - and a window, where one can open."
+    static let summary = "A link of the application's own scheme opens it - and the page it names, in its window."
 
-    static var code: String { Listings.joined("LinksSample", "OpenedLinks", "GalleryScene") }
+    static var code: String { Listings.joined("LinksSample", "MainPage.links", "GalleryLink") }
 
     var notes: (any View)? {
         Text("Open the link here, or from another application: the system hands it to the Gallery.")
@@ -21,23 +21,23 @@ struct LinksSample: SampleContent, ExampleContent {
 
     // listing: LinksSample
     var body: some View {
-        // Read here, so every link the scene hears builds this page again.
-        let opened = links.addresses
+        // Read here, so every link this window is given builds this page again.
+        let given = nav.links
 
         return VStack {
             DebugInfoLabel()
 
-            Link("Open swatch 3", destination: GalleryLink.swatch(3))
+            Link("Open the Tap sample", destination: GalleryLink.sample("tap"))
                 .horizontalAlignment(.center)
-                .accessibilityIdentifier("links.swatch")
+                .accessibilityIdentifier("links.tap")
 
-            SectionTitle("Opened")
-            if opened.isEmpty {
+            SectionTitle("Given to this window")
+            if given.isEmpty {
                 Text("No link yet.")
                     .fontSize(14)
                     .textColor(Palette.subtle)
             }
-            ForEach(Array(opened.suffix(5).enumerated()), id: \.offset) { item in
+            ForEach(Array(given.suffix(5).enumerated()), id: \.offset) { item in
                 Text(item.element)
                     .fontSize(14)
             }

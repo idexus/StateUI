@@ -42,6 +42,7 @@ How each of them realizes these members is on its own page.
 | `onHeld` (`held`) | event |  | native |
 | `holdDuration` | property | `Double` | structure |
 | `horizontalAlignment` | property | `Alignment` | native |
+| `onLinkOpened` (`linkOpened`) | event | `String` | adaptive |
 | `margin` | property | `Insets` | native |
 | `panTouchCount` | property | `Int` | structure |
 | `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |

@@ -236,7 +236,7 @@ final class WinUIDriver: HostDriver {
         case (.close, _) where element.type == .page: try sheet(of: element).chose(-2)
         case (.minimize, _) where element.type == .window: try state(of: element, minimized: true, activated: false)
         case (.restore, _) where element.type == .window: try state(of: element, minimized: false, activated: true)
-        case (.openLink(let address), _) where element.type == .window:
+        case (.openLink(let address), _):
             address.withCString { WinUICallbacks.table.linkOpened($0) }
         case (.switchAway, _) where element.type == .window:
             for window in renderer?.windows ?? [] {

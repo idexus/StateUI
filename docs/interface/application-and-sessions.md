@@ -344,8 +344,8 @@ does not silently start referring to a newer scene after its own scene ends.
 ## Links into the application
 
 A link of the application's own scheme - chosen in a mail, a browser, a
-notification - opens the application, or comes to it where it runs. A window
-declaration hears it with the scene's state:
+notification - opens the application, or comes to it where it runs, and one of
+its windows is given it. A view of that window hears it, with its own state:
 
 ```swift
 import StateUI
@@ -360,16 +360,14 @@ enum Route: Hashable {
     }
 }
 
-struct NotesScene: Scene {
+struct NotesPage: View {
     @State private var path: [Route] = []
 
-    var body: some Scene {
-        WindowGroup {
-            NavigationStack($path) {
-                Text("Notes")
-            } destination: { route in
-                Text("\(route)")
-            }
+    var body: some View {
+        NavigationStack($path) {
+            Text("Notes")
+        } destination: { route in
+            Text("\(route)")
         }
         .onLinkOpened { address in
             if let route = Route.route(for: address) { path = [route] }
@@ -378,9 +376,11 @@ struct NotesScene: Scene {
 }
 ```
 
-The link reaches one window: the one the platform gives it to, where it hears
-links, else the one the user was in last, else the first open; a link that
-comes before any window waits for the first. A handler that awaits - a sign-in
+The link reaches one window: the one the platform gives it to, where a view of
+it hears links, else the one the user was in last, else the first open; every
+view of it that hears links hears it, the outermost first. A link that comes
+before any such window waits for the first. A view reaches its scene's state
+by a binding the scene hands it, as it reaches any. A handler that awaits - a sign-in
 finished in the browser exchanging its code - takes a policy,
 `.onLinkOpened(.waitForPrevious) { address in … }`. A window of a kind for a
 value is how a link opens a window of its own:

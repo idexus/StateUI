@@ -218,7 +218,6 @@ enum GTKRealization {
         .complete(WindowContract.created),
         .complete(WindowContract.deactivated),
         .complete(WindowContract.destroying),
-        .complete(WindowContract.linkOpened),
         .notPlanned(WindowContract.floatsOnTop,
             reason: "GTK 4 keeps no window above the others: the desktop stacks them."),
         .complete(WindowContract.height),

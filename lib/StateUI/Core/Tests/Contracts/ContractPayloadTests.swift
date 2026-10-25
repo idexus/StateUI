@@ -47,6 +47,7 @@ final class ContractPayloadTests: XCTestCase {
         check(VisualElementContract.accessibilityAdjusted, [AccessibilityAdjustment.decrement.propValue])
         check(ViewContract.tapped)
         check(ViewContract.held)
+        check(ViewContract.linkOpened, [.string("notes://note/7")])
         check(TextInputContract.textChanged, [.string("typed")])
         check(ActionElementContract.clicked)
 
@@ -109,7 +110,6 @@ final class ContractPayloadTests: XCTestCase {
         check(WindowContract.created)
         check(WindowContract.deactivated)
         check(WindowContract.destroying)
-        check(WindowContract.linkOpened, [.string("notes://note/7")])
         check(WindowContract.resumed)
         check(WindowContract.stopped)
 

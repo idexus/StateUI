@@ -21,7 +21,7 @@ final class LeakWalkTests: XCTestCase {
         var unopened: [String] = []
         var outlived: [String] = []
 
-        for group in Catalog(nav: Navigation(), style: SessionStyle(), bar: WindowBarState(), log: WindowLog(), links: OpenedLinks()).groups {
+        for group in Catalog(nav: Navigation(), style: SessionStyle(), bar: WindowBarState(), log: WindowLog()).groups {
             try walk.tap(handle("menu", group.title))
             await walk.settle()
             let base = walk.alive

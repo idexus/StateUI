@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 Window: ✅
 Window.activated: ✅
 Window.background: ☑️ iPadOS draws an application's window opaque: a blur or glass shows its color.
@@ -10,7 +10,6 @@ Window.height: – iPadOS sizes its windows itself - the user drags a corner: a 
 Window.hidesWhenInactive: – iPadOS shows an application's windows itself: UIKit hides none while another is in front.
 Window.isMaximizable: – Any iPadOS window may fill the screen: UIKit keeps none from it.
 Window.isMinimizable: – Any iPadOS window may be put away: UIKit keeps none from it.
-Window.linkOpened: ✓ openLink on Window: the host's entry the scene's delegate calls, as no URL context can be made
 Window.maximumHeight: not realized
 Window.maximumWidth: not realized
 Window.minimumHeight: not realized

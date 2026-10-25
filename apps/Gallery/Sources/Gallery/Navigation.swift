@@ -191,6 +191,24 @@ final class Navigation {
         if menuOverlays { menuOpen = false }
     }
 
+    /// The links this window was given, newest last - what the Links sample
+    /// lists.
+    @State var links: [String] = []
+
+    /// A link this window was given: noted, and the sample it names shown over
+    /// its group - the window's own move, the back button leading to the group
+    /// and home. A link naming no sample of `catalog` moves nothing.
+    func follow(link address: String, in catalog: Catalog) {
+        links.append(address)
+        guard let id = GalleryLink.sample(in: address),
+              let group = catalog.groups.first(where: { $0.samples.contains { $0.id == id } })
+        else { return }
+
+        section = .home
+        path = [.group(group.route), .sample(id)]
+        if menuOverlays { menuOpen = false }
+    }
+
     /// Pushes a page on top of whatever is showing.
     ///
     /// There is deliberately no `back()` beside it. A page that offers a way

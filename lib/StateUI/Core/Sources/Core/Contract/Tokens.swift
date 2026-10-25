@@ -324,7 +324,7 @@ extension NodeType {
     static let itemMoved = LayoutEngineContract.itemMoved.token
     static let pinchMoved = LayoutEngineContract.pinchMoved.token
     static let keyPressed = KeyboardElementContract.keyPressed.token
-    static let linkOpened = WindowContract.linkOpened.token
+    static let linkOpened = ViewContract.linkOpened.token
     static let showsSidebarChanged = SplitViewContract.showsSidebarChanged.token
     static let mapClicked = MapContract.mapClicked.token
     static let navigated = WebViewContract.navigated.token

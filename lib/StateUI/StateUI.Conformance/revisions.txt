@@ -22,7 +22,7 @@ ToolbarGroup 4
 TitleView 3
 MenuBar 3
 MenuItem 4
-Window 8
+Window 9
 Scene 3
 Overlay 5
 BarElement 10
@@ -45,7 +45,7 @@ Picker 4
 Image 3
 Page 9
 PageElement 3
-View 12
+View 13
 VisualElement 21
 Shape 5
 BorderElement 12

@@ -9,12 +9,13 @@ import XCTest
 /// that hears links stands.
 @MainActor
 final class LinkInboxTests: XCTestCase {
-    /// A link goes to the window the platform names where it hears links, else to the window activated last that
-    /// does, else to the first that does; a window that hears none is never given one.
+    /// A link goes to the window the platform names where a view of it hears links, else to the window activated
+    /// last where one does, else to the first; a window none of whose views hears links is never given one.
     func testALinkGoesToTheWindowTheRuleChooses() throws {
         let runtime = Self.windows(["deaf": false, "first": true, "second": true])
         let windows = runtime.tree.root?.windows ?? []
-        let (deaf, first, second) = try (Self.window("deaf", runtime), Self.window("first", runtime), Self.window("second", runtime))
+        let (deaf, first, second) = try (
+            Self.window("deaf window", runtime), Self.window("first window", runtime), Self.window("second window", runtime))
         var inbox = LinkInbox()
 
         inbox.opened("notes://1", in: second)
@@ -69,14 +70,41 @@ final class LinkInboxTests: XCTestCase {
         XCTAssertEqual(heard, ["notes://note/7", "notes://note/8"])
     }
 
-    /// An application of one scene whose windows each hear links or not, by name.
+    /// Every view of the window given a link that hears links hears it, the outermost first.
+    func testEveryViewOfTheWindowThatHearsLinksHearsIt() throws {
+        let runtime = HostRuntime.still()
+        var root = HostPatch(id: .manual("application"), type: .application)
+        var scene = HostPatch(id: .manual("1"), type: .scene)
+        var window = HostPatch(id: .manual("window"), type: .window)
+        var outer = HostPatch(id: .manual("outer"), type: .vStack)
+        outer.events = .replace([.linkOpened: 1])
+        var plain = HostPatch(id: .manual("plain"), type: .text)
+        plain.properties = [.text: .string("plain")]
+        var inner = HostPatch(id: .manual("inner"), type: .text)
+        inner.events = .replace([.linkOpened: 2])
+        outer.children = .arranged([plain, inner])
+        window.children = .arranged([outer])
+        scene.children = .arranged([window])
+        root.children = .arranged([scene])
+        runtime.tree.apply(root, complete: true)
+
+        var inbox = LinkInbox()
+        inbox.opened("notes://1", in: nil)
+        XCTAssertEqual(Self.names(inbox.deliver(to: runtime.tree.root?.windows ?? [], activatedLast: { _ in nil })),
+                       ["outer notes://1", "inner notes://1"])
+    }
+
+    /// An application of one scene whose windows each show a view that hears links or not, by name - the window's
+    /// view named for it.
     private static func windows(_ hearing: KeyValuePairs<String, Bool>) -> HostRuntime {
         let runtime = HostRuntime.still()
         var root = HostPatch(id: .manual("application"), type: .application)
         var scene = HostPatch(id: .manual("1"), type: .scene)
         scene.children = .arranged(hearing.enumerated().map { place, each in
-            var window = HostPatch(id: .manual(each.key), type: .window)
-            if each.value { window.events = .replace([.linkOpened: Int32(place + 1)]) }
+            var window = HostPatch(id: .manual("\(each.key) window"), type: .window)
+            var view = HostPatch(id: .manual(each.key), type: .vStack)
+            if each.value { view.events = .replace([.linkOpened: Int32(place + 1)]) }
+            window.children = .arranged([view])
             return window
         })
         root.children = .arranged([scene])
@@ -88,10 +116,10 @@ final class LinkInboxTests: XCTestCase {
         try XCTUnwrap(runtime.tree.root?.first(id: .manual(name)))
     }
 
-    /// Each delivery as "window address".
-    private static func names(_ delivered: [(window: MountedElement, address: String)]) -> [String] {
+    /// Each delivery as "view address".
+    private static func names(_ delivered: [(view: MountedElement, address: String)]) -> [String] {
         delivered.map { each in
-            guard case .manual(let name) = each.window.id else { return "? \(each.address)" }
+            guard case .manual(let name) = each.view.id else { return "? \(each.address)" }
             return "\(name) \(each.address)"
         }
     }
@@ -102,7 +130,9 @@ final class LinkInboxTests: XCTestCase {
 
 private struct LinkedApplication: Application {
     var body: some Scene {
-        WindowGroup { Text("linked") }
-            .onLinkOpened { @MainActor in heard.append($0) }
+        WindowGroup {
+            Text("linked")
+                .onLinkOpened { @MainActor in heard.append($0) }
+        }
     }
 }

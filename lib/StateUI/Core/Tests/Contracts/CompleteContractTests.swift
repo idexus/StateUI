@@ -218,8 +218,6 @@ final class CompleteContractTests: XCTestCase {
     /// element's style key, which the style sheet reads and takes off.
     private static let describing: [String: [String]] = [
         "SceneElement.swift": ["Window"],
-        "Window.swift": ["Window"],
-        "WindowGroup.swift": ["Window"],
         "WindowSession.swift": ["Window"],
         "View+PageValues.swift": ["Page"],
         "StyleSheet.swift": ["VisualElement", "Button"],

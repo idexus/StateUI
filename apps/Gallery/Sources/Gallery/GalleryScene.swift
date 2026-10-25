@@ -15,31 +15,14 @@ struct GalleryScene: Scene {
     /// SessionStyle.swift.
     @State private var style = SessionStyle()
 
-    /// The links the application was asked to open - see OpenedLinks.swift.
-    @State private var links = OpenedLinks()
-
-    /// The application, which opens the swatch a link names.
-    @Environment(\.application) private var application
-
     /// The scene's windows: the gallery windows, which launch and *File ▸ New
     /// Window* open; its Fonts and Colors windows, which read the scene's
     /// look and may step aside while another scene is in front or float above
-    /// the application's other windows; its inspector; and a swatch per number - which a link may open.
+    /// the application's other windows; its inspector; and a swatch per number.
     var body: some Scene {
         let style = self.style
-        let links = self.links
-        let application = self.application
 
-        // A link the application is asked to open reaches a gallery window, and
-        // the scene: noted, and the swatch it names opened in a window of its own
-        // where the platform opens a second window.
-        WindowGroup { GalleryWindow(style: style, links: links) }
-            .onLinkOpened(.waitForPrevious) { address in
-                links.addresses.append(address)
-                if let number = GalleryLink.swatch(in: address) {
-                    _ = try? await application.openWindow(.swatch, value: number)
-                }
-            }
+        WindowGroup { GalleryWindow(style: style) }
 
         Window(.fonts) { FontsPage() }
             .hidesWhenInactive(style.hidesTools)

@@ -227,13 +227,13 @@
         giveLinks()
     }
 
-    /// Gives the waiting links to the windows the rule chooses, each rendered before the next.
+    /// Gives the waiting links to the views of the windows the rule chooses, each rendered before the next.
     private func giveLinks() {
         givingLinks = false
         let given = links.deliver(to: tree.root?.windows ?? [], activatedLast: lifecycle.activatedLast(among:))
         guard !given.isEmpty else { return }
         for each in given {
-            if let handler = each.window.handler(.linkOpened) {
+            if let handler = each.view.handler(.linkOpened) {
                 pump.handlers.enqueuePhase(handler, payload: [.string(each.address)])
             }
         }

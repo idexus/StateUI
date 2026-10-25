@@ -110,6 +110,12 @@ struct MainPage: View {
             light: style.look(dark: false).bars, dark: style.look(dark: true).bars,
             system: application.info.accentColor)
         .barButtons(style.toolbarStyle, tinted: style.tintsBarButtons)
+        // listing: MainPage.links
+        // A link the application is asked to open, given to this window: the
+        // window shows the sample it names - its own navigation, as every
+        // gallery window moves on its own.
+        .onLinkOpened { nav.follow(link: $0, in: catalog) }
+        // listing: end
         // listing: MainPage.overlays
         // The window's notice, over every page while the gallery says so.
         .overlays {

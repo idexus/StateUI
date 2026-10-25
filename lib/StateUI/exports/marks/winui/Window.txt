@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 Window: ✅
 Window.activated: ✅
 Window.background: ☑️ WinUI has no glass: a window of glass shows the desktop acrylic at the glass's fallback thickness.
@@ -10,7 +10,6 @@ Window.height: ✅
 Window.hidesWhenInactive: ✅
 Window.isMaximizable: ✅
 Window.isMinimizable: ✅
-Window.linkOpened: ✓ openLink on Window: the relay's report of an activation told the driver's address, no activation
 Window.maximumHeight: ✅
 Window.maximumWidth: ✅
 Window.minimumHeight: ✅

@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 Window: ✅
 Window.activated: ✅
 Window.background: ☑️ An activity is opaque by the theme it starts in: a blur or glass shows its color.
@@ -10,7 +10,6 @@ Window.height: – Android sizes an activity's window itself - the user drags it
 Window.hidesWhenInactive: – Android shows an activity itself: it hides none while another application is in front.
 Window.isMaximizable: – Any Android window may fill the screen: an activity keeps none from it.
 Window.isMinimizable: – Any Android window may be put away: an activity keeps none from it.
-Window.linkOpened: ✓ openLink on Window: the host's entry the activity's intent reaches, no intent sent
 Window.maximumHeight: – Android bounds an activity's window itself: an activity sets it no bound at run time.
 Window.maximumWidth: – Android bounds an activity's window itself: an activity sets it no bound at run time.
 Window.minimumHeight: – Android bounds an activity's window itself: an activity sets it no bound at run time.

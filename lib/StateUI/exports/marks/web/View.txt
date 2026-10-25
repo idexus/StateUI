@@ -1,4 +1,4 @@
-# revision 12.1
+# revision 13.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -18,6 +18,7 @@ Button.gridRowSpan: ✅
 Button.held: ✅
 Button.holdDuration: ✓ read holdDuration of Button: the relay's own wait: a page holds no hold of the browser's
 Button.horizontalAlignment: ✅
+Button.linkOpened: ✓ openLink on Button: the host's entry the page's address with a fragment reaches, no address loaded
 Button.margin: ✅
 Button.panTouchCount: ✅
 Button.panUpdated: ✅
@@ -54,6 +55,7 @@ Canvas.gridRowSpan: ✅
 Canvas.held: ✅
 Canvas.holdDuration: ✓ read holdDuration of Canvas: the relay's own wait: a page holds no hold of the browser's
 Canvas.horizontalAlignment: ✅
+Canvas.linkOpened: ✓ openLink on Canvas: the host's entry the page's address with a fragment reaches, no address loaded
 Canvas.margin: ✅
 Canvas.panTouchCount: ✅
 Canvas.panUpdated: ✅
@@ -90,6 +92,7 @@ Capsule.gridRowSpan: ✅
 Capsule.held: ✅
 Capsule.holdDuration: ✓ read holdDuration of Capsule: the relay's own wait: a page holds no hold of the browser's
 Capsule.horizontalAlignment: ✅
+Capsule.linkOpened: ✓ openLink on Capsule: the host's entry the page's address with a fragment reaches, no address loaded
 Capsule.margin: ✅
 Capsule.panTouchCount: ✅
 Capsule.panUpdated: ✅
@@ -126,6 +129,7 @@ CheckBox.gridRowSpan: ✅
 CheckBox.held: ✅
 CheckBox.holdDuration: ✓ read holdDuration of CheckBox: the relay's own wait: a page holds no hold of the browser's
 CheckBox.horizontalAlignment: ✅
+CheckBox.linkOpened: ✓ openLink on CheckBox: the host's entry the page's address with a fragment reaches, no address loaded
 CheckBox.margin: ✅
 CheckBox.panTouchCount: ✅
 CheckBox.panUpdated: ✅
@@ -162,6 +166,7 @@ DatePicker.gridRowSpan: ✅
 DatePicker.held: ✅
 DatePicker.holdDuration: ✓ read holdDuration of DatePicker: the relay's own wait: a page holds no hold of the browser's
 DatePicker.horizontalAlignment: ✅
+DatePicker.linkOpened: ✓ openLink on DatePicker: the host's entry the page's address with a fragment reaches, no address loaded
 DatePicker.margin: ✅
 DatePicker.panTouchCount: ✅
 DatePicker.panUpdated: ✅
@@ -198,6 +203,7 @@ Ellipse.gridRowSpan: ✅
 Ellipse.held: ✅
 Ellipse.holdDuration: ✓ read holdDuration of Ellipse: the relay's own wait: a page holds no hold of the browser's
 Ellipse.horizontalAlignment: ✅
+Ellipse.linkOpened: ✓ openLink on Ellipse: the host's entry the page's address with a fragment reaches, no address loaded
 Ellipse.margin: ✅
 Ellipse.panTouchCount: ✅
 Ellipse.panUpdated: ✅
@@ -234,6 +240,7 @@ Fill.gridRowSpan: ✅
 Fill.held: ✅
 Fill.holdDuration: ✓ read holdDuration of Fill: the relay's own wait: a page holds no hold of the browser's
 Fill.horizontalAlignment: ✅
+Fill.linkOpened: ✓ openLink on Fill: the host's entry the page's address with a fragment reaches, no address loaded
 Fill.margin: ✅
 Fill.panTouchCount: ✅
 Fill.panUpdated: ✅
@@ -270,6 +277,7 @@ Grid.gridRowSpan: ✅
 Grid.held: ✅
 Grid.holdDuration: ✓ read holdDuration of Grid: the relay's own wait: a page holds no hold of the browser's
 Grid.horizontalAlignment: ✅
+Grid.linkOpened: ✓ openLink on Grid: the host's entry the page's address with a fragment reaches, no address loaded
 Grid.margin: ✅
 Grid.panTouchCount: ✅
 Grid.panUpdated: ✅
@@ -306,6 +314,7 @@ HStack.gridRowSpan: ✅
 HStack.held: ✅
 HStack.holdDuration: ✓ read holdDuration of HStack: the relay's own wait: a page holds no hold of the browser's
 HStack.horizontalAlignment: ✅
+HStack.linkOpened: ✓ openLink on HStack: the host's entry the page's address with a fragment reaches, no address loaded
 HStack.margin: ✅
 HStack.panTouchCount: ✅
 HStack.panUpdated: ✅
@@ -342,6 +351,7 @@ Image.gridRowSpan: ✅
 Image.held: ✅
 Image.holdDuration: ✓ read holdDuration of Image: the relay's own wait: a page holds no hold of the browser's
 Image.horizontalAlignment: ✅
+Image.linkOpened: ✓ openLink on Image: the host's entry the page's address with a fragment reaches, no address loaded
 Image.margin: ✅
 Image.panTouchCount: ✅
 Image.panUpdated: ✅
@@ -378,6 +388,7 @@ ItemsView.gridRowSpan: ✅
 ItemsView.held: ✅
 ItemsView.holdDuration: ✓ read holdDuration of ItemsView: the relay's own wait: a page holds no hold of the browser's
 ItemsView.horizontalAlignment: ✅
+ItemsView.linkOpened: ✓ openLink on ItemsView: the host's entry the page's address with a fragment reaches, no address loaded
 ItemsView.margin: ✅
 ItemsView.panTouchCount: ✅
 ItemsView.panUpdated: ✅
@@ -414,6 +425,7 @@ LayoutEngine.gridRowSpan: ✅
 LayoutEngine.held: ✅
 LayoutEngine.holdDuration: ✓ read holdDuration of LayoutEngine: the relay's own wait: a page holds no hold of the browser's
 LayoutEngine.horizontalAlignment: ✅
+LayoutEngine.linkOpened: ✓ openLink on LayoutEngine: the host's entry the page's address with a fragment reaches, no address loaded
 LayoutEngine.margin: ✅
 LayoutEngine.panTouchCount: ✅
 LayoutEngine.panUpdated: ✅
@@ -450,6 +462,7 @@ Line.gridRowSpan: ✅
 Line.held: ✅
 Line.holdDuration: ✓ read holdDuration of Line: the relay's own wait: a page holds no hold of the browser's
 Line.horizontalAlignment: ✅
+Line.linkOpened: ✓ openLink on Line: the host's entry the page's address with a fragment reaches, no address loaded
 Line.margin: ✅
 Line.panTouchCount: ✅
 Line.panUpdated: ✅
@@ -486,6 +499,7 @@ Link.gridRowSpan: ✅
 Link.held: ✅
 Link.holdDuration: ✓ read holdDuration of Link: the relay's own wait: a page holds no hold of the browser's
 Link.horizontalAlignment: ✅
+Link.linkOpened: ✓ openLink on Link: the host's entry the page's address with a fragment reaches, no address loaded
 Link.margin: ✅
 Link.panTouchCount: ✅
 Link.panUpdated: ✅
@@ -522,6 +536,7 @@ Map.gridRowSpan: 🧩
 Map.held: 🧩
 Map.holdDuration: 🧩
 Map.horizontalAlignment: 🧩
+Map.linkOpened: 🧩
 Map.margin: 🧩
 Map.panTouchCount: 🧩
 Map.panUpdated: 🧩
@@ -558,6 +573,7 @@ Path.gridRowSpan: ✅
 Path.held: ✅
 Path.holdDuration: ✓ read holdDuration of Path: the relay's own wait: a page holds no hold of the browser's
 Path.horizontalAlignment: ✅
+Path.linkOpened: ✓ openLink on Path: the host's entry the page's address with a fragment reaches, no address loaded
 Path.margin: ✅
 Path.panTouchCount: ✅
 Path.panUpdated: ✅
@@ -594,6 +610,7 @@ Picker.gridRowSpan: ✅
 Picker.held: ✅
 Picker.holdDuration: ✓ read holdDuration of Picker: the relay's own wait: a page holds no hold of the browser's
 Picker.horizontalAlignment: ✅
+Picker.linkOpened: ✓ openLink on Picker: the host's entry the page's address with a fragment reaches, no address loaded
 Picker.margin: ✅
 Picker.panTouchCount: ✅
 Picker.panUpdated: ✅
@@ -630,6 +647,7 @@ Polygon.gridRowSpan: ✅
 Polygon.held: ✅
 Polygon.holdDuration: ✓ read holdDuration of Polygon: the relay's own wait: a page holds no hold of the browser's
 Polygon.horizontalAlignment: ✅
+Polygon.linkOpened: ✓ openLink on Polygon: the host's entry the page's address with a fragment reaches, no address loaded
 Polygon.margin: ✅
 Polygon.panTouchCount: ✅
 Polygon.panUpdated: ✅
@@ -666,6 +684,7 @@ Polyline.gridRowSpan: ✅
 Polyline.held: ✅
 Polyline.holdDuration: ✓ read holdDuration of Polyline: the relay's own wait: a page holds no hold of the browser's
 Polyline.horizontalAlignment: ✅
+Polyline.linkOpened: ✓ openLink on Polyline: the host's entry the page's address with a fragment reaches, no address loaded
 Polyline.margin: ✅
 Polyline.panTouchCount: ✅
 Polyline.panUpdated: ✅
@@ -702,6 +721,7 @@ ProgressBar.gridRowSpan: ✅
 ProgressBar.held: ✅
 ProgressBar.holdDuration: ✓ read holdDuration of ProgressBar: the relay's own wait: a page holds no hold of the browser's
 ProgressBar.horizontalAlignment: ✅
+ProgressBar.linkOpened: ✓ openLink on ProgressBar: the host's entry the page's address with a fragment reaches, no address loaded
 ProgressBar.margin: ✅
 ProgressBar.panTouchCount: ✅
 ProgressBar.panUpdated: ✅
@@ -738,6 +758,7 @@ Rectangle.gridRowSpan: ✅
 Rectangle.held: ✅
 Rectangle.holdDuration: ✓ read holdDuration of Rectangle: the relay's own wait: a page holds no hold of the browser's
 Rectangle.horizontalAlignment: ✅
+Rectangle.linkOpened: ✓ openLink on Rectangle: the host's entry the page's address with a fragment reaches, no address loaded
 Rectangle.margin: ✅
 Rectangle.panTouchCount: ✅
 Rectangle.panUpdated: ✅
@@ -774,6 +795,7 @@ ScrollView.gridRowSpan: ✅
 ScrollView.held: ✅
 ScrollView.holdDuration: ✓ read holdDuration of ScrollView: the relay's own wait: a page holds no hold of the browser's
 ScrollView.horizontalAlignment: ✅
+ScrollView.linkOpened: ✓ openLink on ScrollView: the host's entry the page's address with a fragment reaches, no address loaded
 ScrollView.margin: ✅
 ScrollView.panTouchCount: ✅
 ScrollView.panUpdated: ✅
@@ -810,6 +832,7 @@ SearchField.gridRowSpan: ✅
 SearchField.held: ✅
 SearchField.holdDuration: ✓ read holdDuration of SearchField: the relay's own wait: a page holds no hold of the browser's
 SearchField.horizontalAlignment: ✅
+SearchField.linkOpened: ✓ openLink on SearchField: the host's entry the page's address with a fragment reaches, no address loaded
 SearchField.margin: ✅
 SearchField.panTouchCount: ✅
 SearchField.panUpdated: ✅
@@ -846,6 +869,7 @@ Separator.gridRowSpan: ✅
 Separator.held: ✅
 Separator.holdDuration: ✓ read holdDuration of Separator: the relay's own wait: a page holds no hold of the browser's
 Separator.horizontalAlignment: ✅
+Separator.linkOpened: ✓ openLink on Separator: the host's entry the page's address with a fragment reaches, no address loaded
 Separator.margin: ✅
 Separator.panTouchCount: ✅
 Separator.panUpdated: ✅
@@ -882,6 +906,7 @@ Slider.gridRowSpan: ✅
 Slider.held: ✅
 Slider.holdDuration: ✓ read holdDuration of Slider: the relay's own wait: a page holds no hold of the browser's
 Slider.horizontalAlignment: ✅
+Slider.linkOpened: ✓ openLink on Slider: the host's entry the page's address with a fragment reaches, no address loaded
 Slider.margin: ✅
 Slider.panTouchCount: ✅
 Slider.panUpdated: ✅
@@ -918,6 +943,7 @@ Space.gridRowSpan: ✅
 Space.held: ✅
 Space.holdDuration: ✓ read holdDuration of Space: the relay's own wait: a page holds no hold of the browser's
 Space.horizontalAlignment: ✅
+Space.linkOpened: ✓ openLink on Space: the host's entry the page's address with a fragment reaches, no address loaded
 Space.margin: ✅
 Space.panTouchCount: ✅
 Space.panUpdated: ✅
@@ -954,6 +980,7 @@ Spinner.gridRowSpan: ✅
 Spinner.held: ✅
 Spinner.holdDuration: ✓ read holdDuration of Spinner: the relay's own wait: a page holds no hold of the browser's
 Spinner.horizontalAlignment: ✅
+Spinner.linkOpened: ✓ openLink on Spinner: the host's entry the page's address with a fragment reaches, no address loaded
 Spinner.margin: ✅
 Spinner.panTouchCount: ✅
 Spinner.panUpdated: ✅
@@ -990,6 +1017,7 @@ Stepper.gridRowSpan: ✅
 Stepper.held: ✅
 Stepper.holdDuration: ✓ read holdDuration of Stepper: the relay's own wait: a page holds no hold of the browser's
 Stepper.horizontalAlignment: ✅
+Stepper.linkOpened: ✓ openLink on Stepper: the host's entry the page's address with a fragment reaches, no address loaded
 Stepper.margin: ✅
 Stepper.panTouchCount: ✅
 Stepper.panUpdated: ✅
@@ -1026,6 +1054,7 @@ Switch.gridRowSpan: ✅
 Switch.held: ✅
 Switch.holdDuration: ✓ read holdDuration of Switch: the relay's own wait: a page holds no hold of the browser's
 Switch.horizontalAlignment: ✅
+Switch.linkOpened: ✓ openLink on Switch: the host's entry the page's address with a fragment reaches, no address loaded
 Switch.margin: ✅
 Switch.panTouchCount: ✅
 Switch.panUpdated: ✅
@@ -1062,6 +1091,7 @@ Text.gridRowSpan: ✅
 Text.held: ✅
 Text.holdDuration: ✓ read holdDuration of Text: the relay's own wait: a page holds no hold of the browser's
 Text.horizontalAlignment: ✅
+Text.linkOpened: ✓ openLink on Text: the host's entry the page's address with a fragment reaches, no address loaded
 Text.margin: ✅
 Text.panTouchCount: ✅
 Text.panUpdated: ✅
@@ -1098,6 +1128,7 @@ TextEditor.gridRowSpan: ✅
 TextEditor.held: ✅
 TextEditor.holdDuration: ✓ read holdDuration of TextEditor: the relay's own wait: a page holds no hold of the browser's
 TextEditor.horizontalAlignment: ✅
+TextEditor.linkOpened: ✓ openLink on TextEditor: the host's entry the page's address with a fragment reaches, no address loaded
 TextEditor.margin: ✅
 TextEditor.panTouchCount: ✅
 TextEditor.panUpdated: ✅
@@ -1134,6 +1165,7 @@ TextField.gridRowSpan: ✅
 TextField.held: ✅
 TextField.holdDuration: ✓ read holdDuration of TextField: the relay's own wait: a page holds no hold of the browser's
 TextField.horizontalAlignment: ✅
+TextField.linkOpened: ✓ openLink on TextField: the host's entry the page's address with a fragment reaches, no address loaded
 TextField.margin: ✅
 TextField.panTouchCount: ✅
 TextField.panUpdated: ✅
@@ -1170,6 +1202,7 @@ TimePicker.gridRowSpan: ✅
 TimePicker.held: ✅
 TimePicker.holdDuration: ✓ read holdDuration of TimePicker: the relay's own wait: a page holds no hold of the browser's
 TimePicker.horizontalAlignment: ✅
+TimePicker.linkOpened: ✓ openLink on TimePicker: the host's entry the page's address with a fragment reaches, no address loaded
 TimePicker.margin: ✅
 TimePicker.panTouchCount: ✅
 TimePicker.panUpdated: ✅
@@ -1206,6 +1239,7 @@ VStack.gridRowSpan: ✅
 VStack.held: ✅
 VStack.holdDuration: ✓ read holdDuration of VStack: the relay's own wait: a page holds no hold of the browser's
 VStack.horizontalAlignment: ✅
+VStack.linkOpened: ✓ openLink on VStack: the host's entry the page's address with a fragment reaches, no address loaded
 VStack.margin: ✅
 VStack.panTouchCount: ✅
 VStack.panUpdated: ✅
@@ -1242,6 +1276,7 @@ WebView.gridRowSpan: ✅
 WebView.held: ✅
 WebView.holdDuration: ✓ read holdDuration of WebView: the relay's own wait: a page holds no hold of the browser's
 WebView.horizontalAlignment: ✅
+WebView.linkOpened: ✓ openLink on WebView: the host's entry the page's address with a fragment reaches, no address loaded
 WebView.margin: ✅
 WebView.panTouchCount: ✅
 WebView.panUpdated: ✅
@@ -1278,6 +1313,7 @@ ZStack.gridRowSpan: ✅
 ZStack.held: ✅
 ZStack.holdDuration: ✓ read holdDuration of ZStack: the relay's own wait: a page holds no hold of the browser's
 ZStack.horizontalAlignment: ✅
+ZStack.linkOpened: ✓ openLink on ZStack: the host's entry the page's address with a fragment reaches, no address loaded
 ZStack.margin: ✅
 ZStack.panTouchCount: ✅
 ZStack.panUpdated: ✅

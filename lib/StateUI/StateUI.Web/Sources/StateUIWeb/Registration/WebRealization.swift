@@ -127,7 +127,6 @@ enum WebRealization {
         .complete(WindowContract.created),
         .complete(WindowContract.deactivated),
         .complete(WindowContract.destroying),
-        .complete(WindowContract.linkOpened),
         .complete(WindowContract.resumed),
         .complete(WindowContract.stopped),
         .notPlanned(WindowContract.floatsOnTop,

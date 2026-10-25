@@ -84,7 +84,7 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     /// A window of the application brought in front of its others, as the user picks it.
     case bringToFront
     /// The application asked to open a link - one the user chose elsewhere, of a scheme it registers - as the system
-    /// asks it, given to the window where the platform names one.
+    /// asks it, given to the element's window where the platform names one.
     case openLink(String)
     /// The question the window shows answered by its button doing that - accepting, cancelling, an action of a
     /// choice - its field first holding the words.

@@ -81,7 +81,6 @@ struct SceneElement: Element {
             showing: { declared.page(opened, record) },
             session: record.windowSession(opened.key), inspector: { Inspector.docked(in: record, window: opened.key) })
         node.environments.insert(contentsOf: declared.environments, at: 0)
-        for hears in declared.links { hears(&node) }
         return node
     }
 

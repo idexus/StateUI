@@ -43,13 +43,13 @@ Inherits nothing: every member below is its own.
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (23)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>14 ✅ · 1 ☑️ · 7 ✓</td><td><code>NSWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 5 ✓ · 8 –</td><td><code>UIWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 5 ✓ · 12 –</td><td><code>Activity</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>21 ✅ · 1 ☑️ · 1 ✓</td><td><code>Window</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 8 ✓ · 7 –</td><td><code>AdwApplicationWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 5 ✓ · 14 –</td><td>fixed <code>&lt;div&gt;</code> over the browser window</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (22)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>14 ✅ · 1 ☑️ · 6 ✓</td><td><code>NSWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 4 ✓ · 8 –</td><td><code>UIWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 4 ✓ · 12 –</td><td><code>Activity</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>21 ✅ · 1 ☑️</td><td><code>Window</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 7 ✓ · 7 –</td><td><code>AdwApplicationWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 4 ✓ · 14 –</td><td>fixed <code>&lt;div&gt;</code> over the browser window</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/WindowContract.swift`.
@@ -76,8 +76,6 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/WindowContrac
 <tr><td colspan="9">UIKit: Any iPadOS window may fill the screen: UIKit keeps none from it.<br>Android Views: Any Android window may fill the screen: an activity keeps none from it.<br>GTK 4: The desktop fills the screen with any GTK 4 window it can resize: none forbids that alone.<br>Web: A page asks nothing of how the browser's window is resized.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isMinimizable</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td></tr>
 <tr><td colspan="9">UIKit: Any iPadOS window may be put away: UIKit keeps none from it.<br>Android Views: Any Android window may be put away: an activity keeps none from it.<br>GTK 4: GTK 4 asks the desktop to keep no window from being put away.<br>Web: A page asks nothing of how the browser's window is put away.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onLinkOpened</code> (<code>linkOpened</code>)</td><td>event</td><td><code>String</code></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: openLink on Window: the host's entry the application's delegate calls, no Apple event sent<br>UIKit: only through the host's own: openLink on Window: the host's entry the scene's delegate calls, as no URL context can be made<br>Android Views: only through the host's own: openLink on Window: the host's entry the activity's intent reaches, no intent sent<br>WinUI 3: only through the host's own: openLink on Window: the relay's report of an activation told the driver's address, no activation<br>GTK 4: only through the host's own: openLink on Window: the host's entry the application's open signal reaches, no file opened<br>Web: only through the host's own: openLink on Window: the host's entry the page's address with a fragment reaches, no address loaded</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>maximumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center"></td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td></tr>
 <tr><td colspan="9">UIKit: not realized<br>Android Views: Android bounds an activity's window itself: an activity sets it no bound at run time.<br>GTK 4: GTK 4 bounds no window from above.<br>Web: A page bounds no browser window: the user sizes it.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>maximumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center"></td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td></tr>

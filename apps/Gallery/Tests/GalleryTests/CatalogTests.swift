@@ -514,7 +514,7 @@ final class CatalogTests: XCTestCase {
         _ nav: Navigation = Place().nav,
         bar: WindowBarState = WindowBarState()
     ) -> Catalog {
-        Catalog(nav: nav, style: SessionStyle(), bar: bar, log: WindowLog(), links: OpenedLinks())
+        Catalog(nav: nav, style: SessionStyle(), bar: bar, log: WindowLog())
     }
 
     /// The gallery's main page over a given place - where the arrangement is

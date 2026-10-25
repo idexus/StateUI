@@ -377,6 +377,7 @@ WebView
   held()
   isFocusedChanged()
   keyPressed()
+  linkOpened()
   panUpdated()
   pinchUpdated()
   pointerEntered()

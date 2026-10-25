@@ -181,7 +181,6 @@ enum UIKitRealization {
         .complete(WindowContract.created),
         .complete(WindowContract.deactivated),
         .complete(WindowContract.destroying),
-        .complete(WindowContract.linkOpened),
         .notPlanned(WindowContract.floatsOnTop,
             reason: "iPadOS stacks its windows itself: UIKit keeps none above the others."),
         .notPlanned(WindowContract.height, reason: Self.sizedBySystem),

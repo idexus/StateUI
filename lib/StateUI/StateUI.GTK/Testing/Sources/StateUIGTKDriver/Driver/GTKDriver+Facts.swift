@@ -132,8 +132,6 @@ extension GTKDriver {
         switch act {
         case .answer(let button, let words):
             try renderer?.answer(button, typing: words, over: try? window(of: element))
-        case .openLink(let address):
-            renderer?.openLinks([address])
         case .switchAway:
             for window in renderer?.windows.compactMap(\.element) ?? [] { tell(window, false, false) }
         case .switchBack, .restore: tell(element, false, true)
