@@ -38,6 +38,7 @@ final class AppKitElement: NSObject, NativeElement {
     var wordsRoom: Rect?
 
     var tapRecognizer: AppKitTapRecognizer?
+    var pressRecognizer: AppKitPressRecognizer?
     var holdRecognizer: AppKitHoldRecognizer?
     var panRecognizer: AppKitPanRecognizer?
     var handReader: AppKitHandReader?
@@ -178,12 +179,13 @@ final class AppKitElement: NSObject, NativeElement {
         }
 
         let recognizers: [NSGestureRecognizer?] = [
-            tapRecognizer, panRecognizer, pinchRecognizer, rotationRecognizer, mirroredRecognizer,
+            tapRecognizer, pressRecognizer, panRecognizer, pinchRecognizer, rotationRecognizer, mirroredRecognizer,
         ]
         for recognizer in recognizers.compactMap({ $0 }) {
             view?.removeGestureRecognizer(recognizer)
         }
         tapRecognizer = nil
+        pressRecognizer = nil
         panRecognizer = nil
         pinchRecognizer = nil
         rotationRecognizer = nil

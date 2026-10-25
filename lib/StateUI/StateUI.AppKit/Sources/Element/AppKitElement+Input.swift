@@ -120,6 +120,10 @@ extension AppKitElement {
         let heard: AppKitHearing = { [weak self] input in self?.hear(input) }
 
         tapRecognizer = installed(tapRecognizer, hearing.contains(.taps), on: view) { AppKitTapRecognizer(hearing: heard) }
+        tapRecognizer?.countsRuns = (element.number(.tapCount) ?? 1) > 1
+        pressRecognizer = installed(pressRecognizer, hearing.contains(.taps), on: view) {
+            AppKitPressRecognizer(hearing: heard)
+        }
         (view as? AppKitHitTestView)?.pressAction = hearing.contains(.taps)
             ? { [weak self] in self?.hear(.tap(run: 0)) }
             : nil
