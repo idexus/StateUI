@@ -1153,6 +1153,35 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertFalse(shows.wrappedValue, "the sheet closed")
     }
 
+    /// A sheet's bar crowded with its page's actions keeps its close button in sight: the actions give way first.
+    @MainActor
+    func testASheetsCloseButtonStaysInSightBesideManyActions() throws {
+        let shows = State(wrappedValue: true)
+        let renderer = AppKitRenderer.running {
+            Text("Beneath").sheet(isPresented: shows.projectedValue) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    Text("Root").title("A draft with a long title").toolbar {
+                        ToolbarButton("Undo").placement(at: .start)
+                        ToolbarButton("Save")
+                        ToolbarButton("Add")
+                        ToolbarButton("Share")
+                        ToolbarButton("Export")
+                        ToolbarButton("Print")
+                        ToolbarButton("Delete").placement(at: .overflow)
+                    }
+                } destination: { _ in Text("Pushed") }
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let sheet = try XCTUnwrap(renderer.windowsForTesting.first?.modalsForTesting.first)
+        let window = try XCTUnwrap(sheet.window)
+        window.layoutIfNeeded()
+        window.displayIfNeeded()
+
+        let visible = sheet.toolbarForTesting.toolbar.visibleItems?.map(\.itemIdentifier) ?? []
+        XCTAssertTrue(visible.contains(AppKitWindowToolbar.close), "in sight: \(visible.map(\.rawValue))")
+    }
+
     /// A page that takes its way back away offers none in the window's
     /// toolbar, where the page beneath it offered one.
     @MainActor

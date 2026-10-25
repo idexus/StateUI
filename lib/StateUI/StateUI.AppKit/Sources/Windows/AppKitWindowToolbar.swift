@@ -272,6 +272,8 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         } else {
             NSToolbarItem(itemIdentifier: itemIdentifier)
         }
+        // The ways out stay in sight on a crowded bar: the actions give way first.
+        if itemIdentifier == Self.back || itemIdentifier == Self.close { item.visibilityPriority = .high }
         configure(item)
         return item
     }
