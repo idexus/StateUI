@@ -11,9 +11,17 @@ import XCTest
 
 @MainActor
 final class GTKButtonViewTests: XCTestCase {
+    /// GTK's criticals said while a test ran - a call on a widget gone among them.
+    nonisolated(unsafe) private static var criticals = 0
+
     /// A button holding a menu opened as it is held lets the menu go as it leaves: its popover, its actions and its
-    /// place in the menus shown.
+    /// place in the menus shown - once, GTK saying nothing of a popover let go twice.
     func testAHeldMenuLeavesWithItsButton() {
+        Self.criticals = 0
+        let heard = g_log_set_handler(
+            "Gtk", GLogLevelFlags(rawValue: 1 << 3), { _, _, _, _ in GTKButtonViewTests.criticals += 1 },
+            nil)
+        defer { g_log_remove_handler("Gtk", heard) }
         onUIThread {
             let shown = State(wrappedValue: true)
             let host = GTKRenderer.running {
@@ -30,6 +38,7 @@ final class GTKButtonViewTests: XCTestCase {
             host.settle { host.views(GTKButtonView.self).isEmpty && GTKContextMenu.shownCount < menus }
             XCTAssertEqual(GTKContextMenu.shownCount, menus - 1, "the held menu outlived its button")
         }
+        XCTAssertEqual(Self.criticals, 0, "GTK said a critical as the button left")
     }
 
     /// A button's menu and its context menu each run their own items: GTK finds an item's action by its group's name

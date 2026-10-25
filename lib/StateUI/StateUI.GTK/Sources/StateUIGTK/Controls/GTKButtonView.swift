@@ -355,8 +355,10 @@ final class GTKButtonView: GTKView {
     }
 
     override func detach() {
-        super.detach()
+        // The held menu first, as the view's context menu is: the view lets go of every popover it still holds, the
+        // held menu's among them, and a popover let go of twice is a widget gone.
         held = nil
+        super.detach()
         (onClicked, onPressed, onReleased) = (nil, nil, nil)
     }
 }
