@@ -96,8 +96,8 @@ struct PhotoCard: View {
 
 A hold answers once a press has stood still as long as the platform's long
 press, or as long as `onHeld(minimum:_:)` asks. A press held is the hold's:
-its release is no tap, and it drags nothing. A press that moved as far as a
-drag first is no hold.
+its release is no tap, and it drags nothing. A press the view drags first is
+no hold.
 
 Android and Windows keep the system's own time, whatever a view asks, and
 Windows tells a hold of a finger or a pen, not of a mouse button; on Android a
