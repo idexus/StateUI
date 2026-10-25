@@ -625,7 +625,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Sheet](controls/Sheet.md) | `isPresented`, `isPresentedChanged` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Slider](controls/Slider.md) | `onReleased` (`released`), `onPressed` (`pressed`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 4 ✅ · 2 ✓ | 6 ✅ | 4 ✅ | 4 ✅ · 2 – | 6 ✅ |
 | [Spinner](controls/Spinner.md) | `isAnimating` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [SplitView](controls/SplitView.md) | `showsSidebar`, `showsSidebarToggle`, `showsSidebarChanged`, `sidebarBackground`, `flyoutBackground`, `sidebarOverlays` | 6 | 5 ✅ · 1 – | 4 ✅ · 2 ✓ | 1 ✅ · 1 ☑️ · 4 ✓ | 4 ✅ · 2 ☑️ | 4 ✅ · 2 ✓ | 4 ✅ · 2 ☑️ |
+| [SplitView](controls/SplitView.md) | `showsSidebar`, `showsSidebarToggle`, `showsSidebarChanged`, `sidebarBackground`, `sidebarOverlayBackground`, `sidebarOverlays` | 6 | 5 ✅ · 1 – | 4 ✅ · 2 ✓ | 1 ✅ · 1 ☑️ · 4 ✓ | 4 ✅ · 2 ☑️ | 4 ✅ · 2 ✓ | 4 ✅ · 2 ☑️ |
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [TabView](controls/TabView.md) | `selectedTab`, `selectedTabChanged` | 2 | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
@@ -675,8 +675,8 @@ realizes the element and each of its members.
 `clipsContent`, `columns`, `columnSpacing`, `contentMode`, `cornerRadius`,
 `cursorPosition`, `dash`, `dashPhase`, `data`, `date`, `destination`,
 `dragText`, `drawing`, `droppedFileTypes`, `endReachedWithin`, `fill`,
-`fillRule`, `floatsOnTop`, `flyoutBackground`, `fontAttributes`, `fontFamily`,
-`fontSize`, `fontWeight`, `format`, `frame`, `geometryTransform`, `gridColumn`,
+`fillRule`, `floatsOnTop`, `fontAttributes`, `fontFamily`, `fontSize`,
+`fontWeight`, `format`, `frame`, `geometryTransform`, `gridColumn`,
 `gridColumnSpan`, `gridRow`, `gridRowSpan`, `growsWithText`, `handAxis`,
 `height`, `hidesChildrenFromAccessibility`, `hidesWhenInactive`,
 `hidesWithSidebar`, `horizontalAlignment`, `horizontalScrollIndicator`,
@@ -700,12 +700,12 @@ realizes the element and each of its members.
 `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
 `showsClearButton`, `showsCloseButton`, `showsMenuArrow`, `showsNavigationBar`,
 `showsSidebar`, `showsSidebarToggle`, `showsText`, `showsTitle`, `showsTraffic`,
-`showsUserLocation`, `sidebarBackground`, `sidebarOverlays`, `source`,
-`spacing`, `step`, `stroke`, `style`, `submitLabel`, `subtitle`,
-`swipeDirection`, `swipeThreshold`, `tapCount`, `text`, `textCase`, `textColor`,
-`textDecorations`, `textStyle`, `time`, `tint`, `title`, `toolbarStyle`,
-`tooltip`, `tracking`, `translationX`, `translationY`, `type`, `userAgent`,
-`value`, `verticalAlignment`, `verticalScrollIndicator`,
+`showsUserLocation`, `sidebarBackground`, `sidebarOverlayBackground`,
+`sidebarOverlays`, `source`, `spacing`, `step`, `stroke`, `style`,
+`submitLabel`, `subtitle`, `swipeDirection`, `swipeThreshold`, `tapCount`,
+`text`, `textCase`, `textColor`, `textDecorations`, `textStyle`, `time`, `tint`,
+`title`, `toolbarStyle`, `tooltip`, `tracking`, `translationX`, `translationY`,
+`type`, `userAgent`, `value`, `verticalAlignment`, `verticalScrollIndicator`,
 `verticalTextAlignment`, `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`,
 `y`, `y1`, `y2`, `zIndex`.
 

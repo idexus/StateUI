@@ -97,7 +97,7 @@ Where the room is narrower than 720 points - a phone, a tablet upright - the
 sidebar is a drawer sliding over the detail from the leading edge, the
 detail shaded behind it; a tap on the shade closes it. The drawer stands on
 the theme's floating surface (`colorBackgroundFloating`), its end corners
-rounded as a modal drawer's, with the split view's flyout material - else the
+rounded as a modal drawer's, with the split view's overlay material - else the
 window's background - laid over it, so a clear window still leaves the drawer
 opaque. Where the room
 is wider, the sidebar stands beside the detail while it shows, on the split

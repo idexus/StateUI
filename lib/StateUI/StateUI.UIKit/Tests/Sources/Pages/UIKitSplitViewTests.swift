@@ -119,7 +119,7 @@ final class UIKitSplitViewTests: XCTestCase {
         let host = UIKitRenderer.running(reducesMotion: true) {
             SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
                 .sidebarBackground(.glass(.regular))
-                .flyoutBackground(.glass(.regular))
+                .sidebarOverlayBackground(.glass(.regular))
         }
         defer { host.finish() }
         let split = { Self.controller(of: .splitView, in: host) as? UISplitViewController }

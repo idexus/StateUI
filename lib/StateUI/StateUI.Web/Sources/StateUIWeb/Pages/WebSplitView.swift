@@ -68,7 +68,7 @@ final class WebSplitView: WebDOMView {
     /// detail a color is laid over the page's raised surface.
     /// Design: docs/design/host/pages.md#a-sidebars-material
     func ground(beside: HostMaterial, over: HostMaterial) {
-        for (place, material) in [("sidebar", beside), ("flyout", over)] {
+        for (place, material) in [("sidebar", beside), ("sidebar-overlay", over)] {
             let box = WebBox(fill: material.paint, material: material.blur == nil ? nil : material)
             let styles = Dictionary(box.styles(size: .zero), uniquingKeysWith: { first, _ in first })
             let ground = material.isEmpty ? nil : styles["background"] ?? nil
@@ -76,7 +76,7 @@ final class WebSplitView: WebDOMView {
             style("--stateui-\(place)-filter", styles["backdrop-filter"] ?? nil)
         }
         let color = over.blur == nil ? WebCSS.fill(over.paint) : nil
-        style("--stateui-flyout-layer", color.map { "linear-gradient(\($0), \($0)), var(--stateui-raised)" })
+        style("--stateui-sidebar-overlay-layer", color.map { "linear-gradient(\($0), \($0)), var(--stateui-raised)" })
     }
 
     override func release() {

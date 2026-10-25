@@ -448,7 +448,7 @@ extension WinUIDriver {
         case ("sidebarOverlays", let split as WinUISplitView):
             return (try read(split.sidebar, "paneBeside") == "0").propValue
         case ("sidebarBackground", let split as WinUISplitView): return Self.ground(try read(split.sidebar, "paneBackground"))
-        case ("flyoutBackground", let split as WinUISplitView):
+        case ("sidebarOverlayBackground", let split as WinUISplitView):
             return Self.ground(try read(split.sidebar, "overlayPaneBackground"))
         case ("background", let page?) where element.type == .page:
             return try Self.color(read(page, "box.fill")).map { $0.propValue }

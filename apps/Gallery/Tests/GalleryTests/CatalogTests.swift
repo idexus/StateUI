@@ -1044,7 +1044,7 @@ final class CatalogTests: XCTestCase {
 
     /// The gallery is a menu over a stack, and both halves are pages.
     ///
-    /// Every structural claim the rest of this app rests on: the flyout holds
+    /// Every structural claim the rest of this app rests on: the split view holds
     /// two children wearing the identity of their halves, its bars clear
     /// until the Appearance sample chooses otherwise, the pane has a native
     /// title, and the detail is a stack that opens on its root alone.
@@ -1054,23 +1054,23 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(window.type, "Window")
 
-        let flyout = try XCTUnwrap(window.children.first)
+        let split = try XCTUnwrap(window.children.first)
 
-        XCTAssertEqual(flyout.type, "SplitView")
-        XCTAssertEqual(flyout.props["showsSidebar"], .bool(false))
-        XCTAssertEqual(flyout.props["barBackground"], Color.transparent.propValue,
+        XCTAssertEqual(split.type, "SplitView")
+        XCTAssertEqual(split.props["showsSidebar"], .bool(false))
+        XCTAssertEqual(split.props["barBackground"], Color.transparent.propValue,
                        "both panes' bars clear, what stands behind them showing")
-        XCTAssertEqual(flyout.props["barForegroundColor"], Palette.text.propValue)
-        XCTAssertNotNil(flyout.events["showsSidebarChanged"],
+        XCTAssertEqual(split.props["barForegroundColor"], Palette.text.propValue)
+        XCTAssertNotNil(split.events["showsSidebarChanged"],
                         "a native presentation change would not reach the binding")
 
-        XCTAssertEqual(flyout.children.compactMap { $0.id }, ["sidebar", "detail"], "the two halves")
-        XCTAssertEqual(flyout.children.filter { $0.type == "ToolbarGroup" }.count, 1,
+        XCTAssertEqual(split.children.compactMap { $0.id }, ["sidebar", "detail"], "the two halves")
+        XCTAssertEqual(split.children.filter { $0.type == "ToolbarGroup" }.count, 1,
                        "then the gallery's own actions, for every page of its detail")
-        XCTAssertEqual(flyout.children.map(\.type).filter { $0 == .overlay || $0 == .menuBar }, [.overlay],
+        XCTAssertEqual(split.children.map(\.type).filter { $0 == .overlay || $0 == .menuBar }, [.overlay],
                        "and its notice; a menu stands only where a sample declares one")
 
-        let pane = try XCTUnwrap(flyout.children.first).built
+        let pane = try XCTUnwrap(split.children.first).built
 
         XCTAssertEqual(pane.type, "Page")
 
@@ -1080,9 +1080,9 @@ final class CatalogTests: XCTestCase {
         let shownPane = try XCTUnwrap(first.children.first?.children.first)
 
         XCTAssertEqual(shownPane.type, "Page")
-        XCTAssertNotNil(prop(shownPane, .title), "the flyout pane has no native title")
+        XCTAssertNotNil(prop(shownPane, .title), "the sidebar pane has no native title")
 
-        let detail = flyout.children[1].built
+        let detail = split.children[1].built
 
         XCTAssertEqual(detail.type, "NavigationStack")
         XCTAssertNotNil(detail.events["popped"], "a back gesture would not reach the path")

@@ -69,7 +69,7 @@ extension AndroidDriver {
         case (.sidebarOverlays, let split as AndroidSplitView): return split.overlays.propValue
         case (.sidebarBackground, let split as AndroidSplitView):
             return split.grounds.beside.map { Self.material(argb: Int64(UInt32(bitPattern: $0))) }
-        case (.flyoutBackground, let split as AndroidSplitView):
+        case (.sidebarOverlayBackground, let split as AndroidSplitView):
             guard split.overlays, let drawer = split.heldViews().last else {
                 throw DriverCannot("read the drawer's surface", because: "the sidebar stands beside the detail")
             }

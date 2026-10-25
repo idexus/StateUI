@@ -98,7 +98,7 @@ material. The material its split view says for it beside the detail
 (`sidebarBackground`) stands in its pane as a layout's box does - a color on
 the pane's layer, a blur or glass a view of its own under the page - over
 the system's. A Mac sidebar never slides over the detail: a window too narrow
-for both hides it, so the flyout's material is never shown.
+for both hides it, so the overlay material is never shown.
 
 ## A child turned in place
 

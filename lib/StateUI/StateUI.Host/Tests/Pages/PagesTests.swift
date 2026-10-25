@@ -755,7 +755,7 @@ final class PagesTests: XCTestCase {
     func testASidebarStandsOnTheMaterialOfItsPlace() throws {
         let flyout = Material.color(Color(hex: 0x512BD4)).propValue
         let runtime = runtime(node("window", .window, children: [
-            node("split", .splitView, [.flyoutBackground: flyout], children: [node("menu", .page), node("home", .page)]),
+            node("split", .splitView, [.sidebarOverlayBackground: flyout], children: [node("menu", .page), node("home", .page)]),
         ])) { _ in }
         let split = try XCTUnwrap(runtime.tree.root?.first(id: .manual("split")))
 
@@ -795,7 +795,7 @@ final class PagesTests: XCTestCase {
         let flyout = Material.color(Color(hex: 0x251E4C)).propValue
         func window(_ background: PropValue?, flyout: PropValue? = nil) -> HostPatch {
             node("window", .window, [.background: background ?? .nothing], children: [
-                node("split", .splitView, [.flyoutBackground: flyout ?? .nothing], children: [
+                node("split", .splitView, [.sidebarOverlayBackground: flyout ?? .nothing], children: [
                     node("menu", .page),
                     node("home", .page, children: [node("presenting", .sheet, children: [node("sheet", .page)])]),
                 ]),

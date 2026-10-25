@@ -1,8 +1,8 @@
-# revision 8.1
+# revision 9.1
 SplitView: ✅
-SplitView.flyoutBackground: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
 SplitView.showsSidebar: ✅
 SplitView.showsSidebarChanged: ✅
 SplitView.showsSidebarToggle: ✅
 SplitView.sidebarBackground: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
+SplitView.sidebarOverlayBackground: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
 SplitView.sidebarOverlays: ✅

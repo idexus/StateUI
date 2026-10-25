@@ -104,10 +104,10 @@ struct ThemeLook: Equatable, RawRepresentable {
     var bars: SurfaceLook
     var window: SurfaceLook
     var sidebar: SurfaceLook
-    var flyout: SurfaceLook
+    var sidebarOverlay: SurfaceLook
 
-    init(bars: SurfaceLook, window: SurfaceLook, sidebar: SurfaceLook, flyout: SurfaceLook) {
-        (self.bars, self.window, self.sidebar, self.flyout) = (bars, window, sidebar, flyout)
+    init(bars: SurfaceLook, window: SurfaceLook, sidebar: SurfaceLook, sidebarOverlay: SurfaceLook) {
+        (self.bars, self.window, self.sidebar, self.sidebarOverlay) = (bars, window, sidebar, sidebarOverlay)
     }
 
     /// The light theme's look the gallery opens in: clear bars, and the
@@ -119,7 +119,7 @@ struct ThemeLook: Equatable, RawRepresentable {
         #else
         let sidebar = SurfaceLook.platform
         #endif
-        return ThemeLook(bars: .clear, window: .platform, sidebar: sidebar, flyout: .platform)
+        return ThemeLook(bars: .clear, window: .platform, sidebar: sidebar, sidebarOverlay: .platform)
     }
 
     /// The dark theme's look the gallery opens in: on Windows a window of the
@@ -135,24 +135,24 @@ struct ThemeLook: Equatable, RawRepresentable {
         let violet = SurfaceLook(material: .tintedBlur, color: .violet, blur: .thick)
         return ThemeLook(
             bars: SurfaceLook(material: .platform, color: .violet, blur: .thick), window: violet, sidebar: .platform,
-            flyout: violet)
+            sidebarOverlay: violet)
         #elseif APPKIT
         let glass = SurfaceLook(material: .tintedGlass, color: .gallery, blur: .thick)
         return ThemeLook(
             bars: .clear, window: SurfaceLook(material: .tintedBlur, color: .gallery, blur: .thick), sidebar: glass,
-            flyout: glass)
+            sidebarOverlay: glass)
         #elseif UIKIT
         let glass = SurfaceLook(material: .tintedGlass, color: .gallery, blur: .thick)
-        return ThemeLook(bars: .clear, window: .galleryOwn, sidebar: glass, flyout: glass)
+        return ThemeLook(bars: .clear, window: .galleryOwn, sidebar: glass, sidebarOverlay: glass)
         #else
-        return ThemeLook(bars: .clear, window: .galleryOwn, sidebar: .galleryOwn, flyout: .galleryOwn)
+        return ThemeLook(bars: .clear, window: .galleryOwn, sidebar: .galleryOwn, sidebarOverlay: .galleryOwn)
         #endif
     }
 
     /// The look as words: each surface's material, color and blur - the
-    /// bars', the window's, the sidebar's and the flyout's.
+    /// bars', the window's, the sidebar's beside the page and over it.
     var rawValue: String {
-        [bars, window, sidebar, flyout].flatMap { surface in
+        [bars, window, sidebar, sidebarOverlay].flatMap { surface in
             [surface.material.rawValue, surface.color.rawValue,
              String(SurfaceLook.blurs.firstIndex(of: surface.blur) ?? 0)]
         }.joined(separator: " ")
@@ -169,7 +169,7 @@ struct ThemeLook: Equatable, RawRepresentable {
             else { return nil }
             surfaces.append(SurfaceLook(material: material, color: color, blur: SurfaceLook.blurs[blur]))
         }
-        self.init(bars: surfaces[0], window: surfaces[1], sidebar: surfaces[2], flyout: surfaces[3])
+        self.init(bars: surfaces[0], window: surfaces[1], sidebar: surfaces[2], sidebarOverlay: surfaces[3])
     }
 }
 

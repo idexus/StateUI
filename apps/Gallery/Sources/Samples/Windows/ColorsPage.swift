@@ -53,7 +53,7 @@ struct ColorsPage: View {
                     style[keyPath: look].bars.color = accent
                     style[keyPath: look].window.color = accent
                     style[keyPath: look].sidebar.color = accent
-                    style[keyPath: look].flyout.color = accent
+                    style[keyPath: look].sidebarOverlay.color = accent
                 }
             }
     }

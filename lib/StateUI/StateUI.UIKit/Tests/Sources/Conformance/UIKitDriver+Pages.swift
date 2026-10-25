@@ -86,10 +86,10 @@ extension UIKitDriver {
         case .sidebarOverlays:
             guard let split = controller as? UISplitViewController else { return nil }
             return (split.splitBehavior == .overlay).propValue
-        case .sidebarBackground, .flyoutBackground:
+        case .sidebarBackground, .sidebarOverlayBackground:
             // The sidebar page's view in the place it stands; the other place's material as the split view says it.
             guard let split = controller as? UIKitSplitViewController else { return nil }
-            guard split.overlays == (property == .flyoutBackground) else {
+            guard split.overlays == (property == .sidebarOverlayBackground) else {
                 return element.sidebarMaterial(over: !split.overlays).paint
             }
             let sidebar = (element.children.first?.native as? UIKitElement)?.controller

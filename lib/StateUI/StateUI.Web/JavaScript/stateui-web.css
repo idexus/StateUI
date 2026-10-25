@@ -512,9 +512,9 @@ body {
     z-index: 30;
     width: min(86vw, var(--stateui-sidebar-width));
     visibility: visible;
-    background: var(--stateui-flyout-layer, var(--stateui-flyout-ground, var(--stateui-raised)));
-    backdrop-filter: var(--stateui-flyout-filter, none);
-    -webkit-backdrop-filter: var(--stateui-flyout-filter, none);
+    background: var(--stateui-sidebar-overlay-layer, var(--stateui-sidebar-overlay-ground, var(--stateui-raised)));
+    backdrop-filter: var(--stateui-sidebar-overlay-filter, none);
+    -webkit-backdrop-filter: var(--stateui-sidebar-overlay-filter, none);
     border-inline-end: 1px solid var(--stateui-separator);
     box-shadow: var(--stateui-raised-shadow);
     transform: translateX(-104%);

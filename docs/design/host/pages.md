@@ -93,7 +93,7 @@ shows none.
 
 A split view says two materials for its sidebar: what it stands on beside the
 detail (`sidebarBackground`) and what it stands on while it slides over the
-detail (`flyoutBackground`). A host whose sidebar can stand over the detail
+detail (`sidebarOverlayBackground`). A host whose sidebar can stand over the detail
 knows which place it stands in - a drawer, an overlay pane, a collapsed
 split - and asks the split view for that place's material
 (`sidebarMaterial(over:)`); a Mac sidebar stands beside the detail alone. An
@@ -101,8 +101,8 @@ empty material is the platform's own there. Beside the detail the platform's
 own lets the window through, as a desktop sidebar does; over the detail it is
 the window's background laid over the platform's drawer or overlay surface
 ([a page's ground](#a-pages-ground)), the platform's surface alone where the
-window says none - so a clear window still leaves a flyout something under
-its words. The sidebar page's own
+window says none - so a clear window still leaves a sidebar over the page
+something under its words. The sidebar page's own
 background still paints the page on top. A split view saying either material
 gives its sidebar to the application to paint (`paintsSidebar`): a host whose
 platform draws a sidebar's material of its own leaves it out then.

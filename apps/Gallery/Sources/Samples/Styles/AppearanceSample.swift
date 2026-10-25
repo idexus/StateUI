@@ -169,7 +169,7 @@ private struct LookColumn: View {
             SurfacePickers(title: "The bars", label: "Bars", theme: name, surface: surface(\.bars))
             SurfacePickers(title: "The window", label: "Window", theme: name, surface: surface(\.window))
             SurfacePickers(title: "The sidebar", label: "Sidebar", theme: name, surface: surface(\.sidebar))
-            SurfacePickers(title: "The sidebar over the page", label: "Flyout", theme: name, surface: surface(\.flyout))
+            SurfacePickers(title: "The sidebar over the page", label: "Overlay", theme: name, surface: surface(\.sidebarOverlay))
         }
         .spacing(10)
     }

@@ -130,7 +130,7 @@ enum AndroidRealization {
         .complete(SplitViewContract.showsSidebarChanged),
         .complete(SplitViewContract.showsSidebarToggle),
         .partial(SplitViewContract.sidebarBackground, missing: Self.blursNothing),
-        .partial(SplitViewContract.flyoutBackground, missing: Self.blursNothing),
+        .partial(SplitViewContract.sidebarOverlayBackground, missing: Self.blursNothing),
         .complete(SplitViewContract.sidebarOverlays),
         .complete(TabViewContract.selectedTab),
         .complete(TabViewContract.selectedTabChanged),

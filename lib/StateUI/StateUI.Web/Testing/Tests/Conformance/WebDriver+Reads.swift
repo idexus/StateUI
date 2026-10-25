@@ -88,9 +88,9 @@ extension WebDriver {
             // The sidebar out of the split's columns, over the detail, as the style sheet stands it.
             let over = "getComputedStyle(e.querySelector(':scope > .stateui-sidebar')).position === 'absolute'"
             return try WebBrowser.truth(over, on: e).propValue
-        case (.sidebarBackground, is WebSplitView), (.flyoutBackground, is WebSplitView):
+        case (.sidebarBackground, is WebSplitView), (.sidebarOverlayBackground, is WebSplitView):
             // The variable the style sheet reads in that place.
-            let place = property == .sidebarBackground ? "sidebar" : "flyout"
+            let place = property == .sidebarBackground ? "sidebar" : "sidebar-overlay"
             let painted = "getComputedStyle(e).getPropertyValue('--stateui-\(place)-ground').trim() || null"
             guard try WebBrowser.evaluate(painted, on: e) != nil else { return nil }
             return try color(painted, on: e).map { Material.color($0).propValue }

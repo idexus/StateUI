@@ -192,7 +192,7 @@ enum GTKRealization {
         .complete(SplitViewContract.showsSidebarToggle),
         .partial(SplitViewContract.sidebarBackground,
             missing: "GTK blurs nothing inside a window: a blur or glass shows its color."),
-        .partial(SplitViewContract.flyoutBackground,
+        .partial(SplitViewContract.sidebarOverlayBackground,
             missing: "GTK blurs nothing inside a window: a blur or glass shows its color."),
         .complete(SplitViewContract.sidebarOverlays),
         .complete(TabViewContract.selectedTab),

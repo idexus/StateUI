@@ -158,7 +158,7 @@ enum UIKitRealization {
         .complete(SplitViewContract.showsSidebarChanged),
         .complete(SplitViewContract.showsSidebarToggle),
         .complete(SplitViewContract.sidebarBackground),
-        .complete(SplitViewContract.flyoutBackground),
+        .complete(SplitViewContract.sidebarOverlayBackground),
         .complete(SplitViewContract.sidebarOverlays),
         .complete(TabViewContract.selectedTab),
         .complete(TabViewContract.selectedTabChanged),

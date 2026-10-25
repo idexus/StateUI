@@ -74,7 +74,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("What the pane stands on beside the page, and while it slides over it, "
-                + "is the split view's: `.sidebarBackground` and `.flyoutBackground`, "
+                + "is the split view's: `.sidebarBackground` and `.sidebarOverlayBackground`, "
                 + "which the Appearance sample chooses.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

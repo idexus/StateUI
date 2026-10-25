@@ -72,7 +72,7 @@ struct MainPage: View {
         // What the sidebar stands on beside the page and sliding over it,
         // in each theme, as the gallery's looks say.
         .sidebarBackground(surface(\.sidebar, .sidebar))
-        .flyoutBackground(surface(\.flyout, .flyout))
+        .sidebarOverlayBackground(surface(\.sidebarOverlay, .sidebarOverlay))
         // Where the platform places it for the room: a choice closes it
         // over the page and leaves it open beside it.
         .sidebarOverlays(nav.$menuOverlays)

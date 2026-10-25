@@ -951,7 +951,7 @@ enum Listings {
                     SurfacePickers(title: "The bars", label: "Bars", theme: name, surface: surface(\.bars))
                     SurfacePickers(title: "The window", label: "Window", theme: name, surface: surface(\.window))
                     SurfacePickers(title: "The sidebar", label: "Sidebar", theme: name, surface: surface(\.sidebar))
-                    SurfacePickers(title: "The sidebar over the page", label: "Flyout", theme: name, surface: surface(\.flyout))
+                    SurfacePickers(title: "The sidebar over the page", label: "Overlay", theme: name, surface: surface(\.sidebarOverlay))
                 }
             }
         }
@@ -3479,10 +3479,10 @@ enum Listings {
             var bars: SurfaceLook
             var window: SurfaceLook
             var sidebar: SurfaceLook
-            var flyout: SurfaceLook
+            var sidebarOverlay: SurfaceLook
 
-            init(bars: SurfaceLook, window: SurfaceLook, sidebar: SurfaceLook, flyout: SurfaceLook) {
-                (self.bars, self.window, self.sidebar, self.flyout) = (bars, window, sidebar, flyout)
+            init(bars: SurfaceLook, window: SurfaceLook, sidebar: SurfaceLook, sidebarOverlay: SurfaceLook) {
+                (self.bars, self.window, self.sidebar, self.sidebarOverlay) = (bars, window, sidebar, sidebarOverlay)
             }
 
             /// The light theme's look the gallery opens in: clear bars, and the
@@ -3494,7 +3494,7 @@ enum Listings {
                 #else
                 let sidebar = SurfaceLook.platform
                 #endif
-                return ThemeLook(bars: .clear, window: .platform, sidebar: sidebar, flyout: .platform)
+                return ThemeLook(bars: .clear, window: .platform, sidebar: sidebar, sidebarOverlay: .platform)
             }
 
             /// The dark theme's look the gallery opens in: on Windows a window of the
@@ -3510,24 +3510,24 @@ enum Listings {
                 let violet = SurfaceLook(material: .tintedBlur, color: .violet, blur: .thick)
                 return ThemeLook(
                     bars: SurfaceLook(material: .platform, color: .violet, blur: .thick), window: violet, sidebar: .platform,
-                    flyout: violet)
+                    sidebarOverlay: violet)
                 #elseif APPKIT
                 let glass = SurfaceLook(material: .tintedGlass, color: .gallery, blur: .thick)
                 return ThemeLook(
                     bars: .clear, window: SurfaceLook(material: .tintedBlur, color: .gallery, blur: .thick), sidebar: glass,
-                    flyout: glass)
+                    sidebarOverlay: glass)
                 #elseif UIKIT
                 let glass = SurfaceLook(material: .tintedGlass, color: .gallery, blur: .thick)
-                return ThemeLook(bars: .clear, window: .galleryOwn, sidebar: glass, flyout: glass)
+                return ThemeLook(bars: .clear, window: .galleryOwn, sidebar: glass, sidebarOverlay: glass)
                 #else
-                return ThemeLook(bars: .clear, window: .galleryOwn, sidebar: .galleryOwn, flyout: .galleryOwn)
+                return ThemeLook(bars: .clear, window: .galleryOwn, sidebar: .galleryOwn, sidebarOverlay: .galleryOwn)
                 #endif
             }
 
             /// The look as words: each surface's material, color and blur - the
-            /// bars', the window's, the sidebar's and the flyout's.
+            /// bars', the window's, the sidebar's beside the page and over it.
             var rawValue: String {
-                [bars, window, sidebar, flyout].flatMap { surface in
+                [bars, window, sidebar, sidebarOverlay].flatMap { surface in
                     [surface.material.rawValue, surface.color.rawValue,
                      String(SurfaceLook.blurs.firstIndex(of: surface.blur) ?? 0)]
                 }.joined(separator: " ")
@@ -3544,7 +3544,7 @@ enum Listings {
                     else { return nil }
                     surfaces.append(SurfaceLook(material: material, color: color, blur: SurfaceLook.blurs[blur]))
                 }
-                self.init(bars: surfaces[0], window: surfaces[1], sidebar: surfaces[2], flyout: surfaces[3])
+                self.init(bars: surfaces[0], window: surfaces[1], sidebar: surfaces[2], sidebarOverlay: surfaces[3])
             }
         }
 
@@ -3592,7 +3592,7 @@ enum Listings {
         /// A part of the gallery a color paints - each has a color of the gallery's
         /// own, made to sit with the platform's look.
         enum GallerySurface {
-            case bar, window, sidebar, flyout
+            case bar, window, sidebar, sidebarOverlay
 
             /// The gallery's own color for this part, in each theme: in the dark,
             /// the colors its Windows window wears in the gallery's violet acrylic -
@@ -3603,7 +3603,7 @@ enum Listings {
                 case .bar: Color(light: Color(hex: 0xEFEBFA), dark: Color(hex: 0x2E255A))
                 case .window: Color(light: Color(hex: 0xF7F5FC), dark: Color(hex: 0x2A2154))
                 case .sidebar: Color(light: Color(hex: 0xEEEBF6), dark: Color(hex: 0x221A43))
-                case .flyout: Color(light: Color(hex: 0xF7F5FC), dark: Color(hex: 0x221A43))
+                case .sidebarOverlay: Color(light: Color(hex: 0xF7F5FC), dark: Color(hex: 0x221A43))
                 }
             }
         }
@@ -6850,7 +6850,7 @@ enum Listings {
         // What the sidebar stands on beside the page and sliding over it,
         // in each theme, as the gallery's looks say.
         .sidebarBackground(surface(\.sidebar, .sidebar))
-        .flyoutBackground(surface(\.flyout, .flyout))
+        .sidebarOverlayBackground(surface(\.sidebarOverlay, .sidebarOverlay))
         // Where the platform places it for the room: a choice closes it
         // over the page and leaves it open beside it.
         .sidebarOverlays(nav.$menuOverlays)

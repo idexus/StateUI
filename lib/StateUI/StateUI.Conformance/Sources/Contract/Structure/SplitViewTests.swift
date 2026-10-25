@@ -79,15 +79,15 @@
             standsOn(SplitViewContract.sidebarBackground, "theSidebarStandsOnItsMaterialBesideTheDetail") {
                 $0.sidebarBackground($1)
             },
-            standsOn(SplitViewContract.flyoutBackground, "theSidebarStandsOnItsFlyoutsMaterialOverTheDetail") {
-                $0.flyoutBackground($1)
+            standsOn(SplitViewContract.sidebarOverlayBackground, "theSidebarStandsOnItsOverlayMaterialOverTheDetail") {
+                $0.sidebarOverlayBackground($1)
             },
-            flyoutUnsaid,
+            overlayUnsaid,
             follows(SplitViewContract.sidebarBackground, "theSidebarFollowsAMaterialStateBesideTheDetail") {
                 $0.sidebarBackground($1)
             },
-            follows(SplitViewContract.flyoutBackground, "theSidebarFollowsAMaterialStateOverTheDetail") {
-                $0.flyoutBackground($1)
+            follows(SplitViewContract.sidebarOverlayBackground, "theSidebarFollowsAMaterialStateOverTheDetail") {
+                $0.sidebarOverlayBackground($1)
             },
             offersItsToggle(fromAState: false, "theBarOffersTheSidebarsToggleAsTheTreeSays"),
             offersItsToggle(fromAState: true, "theBarOffersTheSidebarsToggleAsAStateSays"),
@@ -183,9 +183,9 @@
     /// The sidebar over the detail that its split view says nothing of stands on its window's background, as any
     /// surface over the page does, and follows it.
     @MainActor
-    private static var flyoutUnsaid: ConformanceCase {
+    private static var overlayUnsaid: ConformanceCase {
         ConformanceCase("theSidebarOverTheDetailStandsOnTheWindowsBackgroundUnsaid", proves: [
-            Covered(SplitViewContract.flyoutBackground),
+            Covered(SplitViewContract.sidebarOverlayBackground),
         ], needs: [Covered(ButtonContract.clicked), Covered(WindowContract.background)]) { s in
             let (first, changed) = (Material.color(Color(hex: 0x2A2154)), Material.color(Color(hex: 0x0F766E)))
             s.start {
@@ -196,12 +196,12 @@
                 }
             }
             let split = try s.element(ofType: SplitViewContract.nodeType)
-            try s.settle { try s.held(SplitViewContract.flyoutBackground, on: split) == first }
-            s.expect(try s.held(SplitViewContract.flyoutBackground, on: split), first, "the window's background")
+            try s.settle { try s.held(SplitViewContract.sidebarOverlayBackground, on: split) == first }
+            s.expect(try s.held(SplitViewContract.sidebarOverlayBackground, on: split), first, "the window's background")
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.held(SplitViewContract.flyoutBackground, on: split) == changed }
-            s.expect(try s.held(SplitViewContract.flyoutBackground, on: split), changed, "the one the tree changed it to")
+            try s.settle { try s.held(SplitViewContract.sidebarOverlayBackground, on: split) == changed }
+            s.expect(try s.held(SplitViewContract.sidebarOverlayBackground, on: split), changed, "the one the tree changed it to")
         }
     }
 

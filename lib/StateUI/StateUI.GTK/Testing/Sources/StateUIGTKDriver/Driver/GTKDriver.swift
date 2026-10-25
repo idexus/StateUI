@@ -113,7 +113,7 @@ final class GTKDriver: HostDriver {
         "read barBackground of TabView": headerClass,
         "read sidebarBackground of SplitView":
             "the class of the host's style sheet the sidebar wears: GTK reads back no background",
-        "read flyoutBackground of SplitView":
+        "read sidebarOverlayBackground of SplitView":
             "the color the split keeps for its sidebar over the detail, which a wide window never shows",
         "read source of Image": "the file the host's own panel draws: GTK's snapshot holds no picture's name",
         "read icon of Button": "the file the host's own panel draws: GTK's snapshot holds no picture's name",
@@ -341,10 +341,10 @@ final class GTKDriver: HostDriver {
         // The toggle at the start of the bar over a detail standing in no stack of its own.
         case (.showsSidebarToggle, let split as GTKSplitView): return (split.detailFrame?.sidebarToggle != nil).propValue
         case (.sidebarOverlays, let split as GTKSplitView): return split.isCollapsed.propValue
-        case (.sidebarBackground, let split as GTKSplitView), (.flyoutBackground, let split as GTKSplitView):
+        case (.sidebarBackground, let split as GTKSplitView), (.sidebarOverlayBackground, let split as GTKSplitView):
             // The sidebar's class in the place it stands; the other place's color as the split keeps it.
-            guard split.isCollapsed == (property == .flyoutBackground) else {
-                return (property == .flyoutBackground ? split.grounds.over : split.grounds.beside)
+            guard split.isCollapsed == (property == .sidebarOverlayBackground) else {
+                return (property == .sidebarOverlayBackground ? split.grounds.over : split.grounds.beside)
                     .map { Material.color(Self.color($0)).propValue }
             }
             return split.sidebarWidgetForTesting.flatMap(Self.fill).map { Material.color($0).propValue }

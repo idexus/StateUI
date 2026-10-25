@@ -126,7 +126,7 @@ extension SplitView {
     ///
     ///     SplitView($showsMenu) { MenuPage() } detail: { NotesPage() }
     ///         .sidebarBackground(.blur(.thin))
-    ///         .flyoutBackground(.blur(.thick))
+    ///         .sidebarOverlayBackground(.blur(.thick))
     ///
     /// Leave it unwritten for the platform's own: on the desktop the window
     /// shows through a sidebar.
@@ -138,8 +138,8 @@ extension SplitView {
     /// drawer, the sidebar of a narrow window. Leave it unwritten for the
     /// window's background laid over the platform's own surface there, which
     /// never lets the detail through.
-    public func flyoutBackground(_ value: Material) -> Modified {
-        setValue(SplitViewContract.flyoutBackground, value)
+    public func sidebarOverlayBackground(_ value: Material) -> Modified {
+        setValue(SplitViewContract.sidebarOverlayBackground, value)
     }
 
     /// Whether the sidebar lies over the detail - a phone's drawer, the
@@ -170,9 +170,9 @@ extension SplitView {
         twin(SplitViewContract.sidebarBackground, by: state)
     }
 
-    /// `flyoutBackground` from a state, `$x`: the host shows each new material
+    /// `sidebarOverlayBackground` from a state, `$x`: the host shows each new material
     /// as it stands, and no view is rebuilt for it.
-    public func flyoutBackground(_ state: Binding<Material>) -> Modified {
-        twin(SplitViewContract.flyoutBackground, by: state)
+    public func sidebarOverlayBackground(_ state: Binding<Material>) -> Modified {
+        twin(SplitViewContract.sidebarOverlayBackground, by: state)
     }
 }

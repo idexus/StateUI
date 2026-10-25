@@ -251,11 +251,11 @@ wide, the sidebar shows, as the user's.
 The sidebar stands on the split view's material for each place ([a sidebar's
 material](../../host/pages.md#a-sidebars-material)): the split view sets a
 variable for each - `--stateui-sidebar-ground` and `-filter` beside the
-detail, `--stateui-flyout-ground` and `-filter` over it - which the style
+detail, `--stateui-sidebar-overlay-ground` and `-filter` over it - which the style
 sheet reads in that place, so a page turning narrow moves the sidebar to the
 other with no word from the host. A blur is a backdrop filter under its
 color. Over the detail a color is laid over the page's raised surface
-(`--stateui-flyout-layer`), so a clear window still leaves the sidebar
+(`--stateui-sidebar-overlay-layer`), so a clear window still leaves the sidebar
 opaque. None is the page's own: beside the detail the window shows through,
 a breath darker - lighter in the light theme - as a desktop sidebar lets it
 through; over the detail the page's raised surface. The

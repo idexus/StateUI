@@ -175,16 +175,16 @@ SplitView($menuOpen, sidebar: {
 }, detail: {
     MainPage()
 })
-.sidebarBackground(.blur(.thin))     // beside the detail
-.flyoutBackground(.blur(.thick))     // sliding over it
+.sidebarBackground(.blur(.thin))          // beside the detail
+.sidebarOverlayBackground(.blur(.thick))  // sliding over it
 ```
 
 Left unsaid, beside the detail the window shows through, as a desktop sidebar
 does; over it the sidebar stands on the window's background
 (`window.background`) laid over the platform's drawer or overlay surface, so
-the window's color reaches it and a clear window never leaves a flyout with
-nothing under its words. A window saying no background leaves the platform's
-own surface there. The sidebar page's own
+the window's color reaches it and a clear window never leaves a sidebar over
+the page with nothing under its words. A window saying no background leaves
+the platform's own surface there. The sidebar page's own
 `.pageBackground` still paints the page on top. A platform that blurs nothing
 inside a window shows a blur as its color.
 

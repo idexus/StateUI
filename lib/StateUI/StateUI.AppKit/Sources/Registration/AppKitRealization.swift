@@ -176,7 +176,7 @@ enum AppKitRealization {
         .complete(SplitViewContract.showsSidebarChanged),
         .complete(SplitViewContract.showsSidebarToggle),
         .complete(SplitViewContract.sidebarOverlays),
-        .notPlanned(SplitViewContract.flyoutBackground,
+        .notPlanned(SplitViewContract.sidebarOverlayBackground,
             reason: "A Mac sidebar always stands beside the detail: a window too narrow for both hides it."),
         .complete(AutomationElementContract.accessibilityIdentifier, on: TabViewContract.self),
         .complete(TabViewContract.selectedTab),

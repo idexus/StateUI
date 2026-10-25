@@ -202,7 +202,7 @@ enum WinUIRealization {
         .complete(SplitViewContract.showsSidebarChanged),
         .complete(SplitViewContract.showsSidebarToggle),
         .partial(SplitViewContract.sidebarBackground, missing: Self.paneHasNoGlass),
-        .partial(SplitViewContract.flyoutBackground, missing: Self.paneHasNoGlass),
+        .partial(SplitViewContract.sidebarOverlayBackground, missing: Self.paneHasNoGlass),
         .complete(SplitViewContract.sidebarOverlays),
         .complete(TabViewContract.selectedTab),
         .complete(TabViewContract.selectedTabChanged),
