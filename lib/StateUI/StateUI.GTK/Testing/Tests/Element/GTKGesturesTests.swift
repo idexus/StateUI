@@ -108,6 +108,28 @@ final class GTKGesturesTests: XCTestCase {
         }
     }
 
+    /// A press stands over a view across the widget's whole box - its CSS padding and border included - not its
+    /// content alone: a gesture's points are measured from the content's corner, and a slider's content is far
+    /// smaller than its box.
+    func testAPressStandsOverTheWidgetsWholeBox() throws {
+        try onUIThread {
+            var taps = 0
+            let host = GTKRenderer.running {
+                VStack { Slider().onTapped { taps += 1 }.width(80).height(40) }.horizontalAlignment(.start)
+            }
+            let slider = try XCTUnwrap(host.views(GTKSliderView.self).first)
+            XCTAssertLessThan(gtk_widget_get_height(slider.widget), 30, "the slider's content is shorter than its box")
+            let press = try XCTUnwrap(slider.listening?.controllers[.taps]?.last)
+
+            for y in [8.0, 22.0, 30.0] {
+                GTKTestHost.emit(press, "drag-begin", [28, y])
+                GTKTestHost.emit(press, "drag-end", [0, 0])
+            }
+            host.settle { taps == 2 }
+            XCTAssertEqual(taps, 2, "over the content and over the padding below it; none past the box")
+        }
+    }
+
     /// GTK hits a row across its bounds, past its words, where it draws nothing.
     /// GTK waits from half to twice its long-press time and refuses any other factor: a view's time beyond
     /// either stands at that end. A press held is no tap as it lets go; the next press taps again.

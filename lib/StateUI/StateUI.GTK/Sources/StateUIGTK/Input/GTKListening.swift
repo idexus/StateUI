@@ -214,9 +214,14 @@ final class GTKListening {
         press(.cancelled, at: Point(x: 0, y: 0))
     }
 
+    /// The press at `phase`, at `point` in the widget's coordinates, measured against the widget's whole box - its
+    /// CSS padding and border included, as a gesture's points are - not its content's.
     private func press(_ phase: GesturePhase, at point: Point) {
-        let size = LayoutSize(width: Double(gtk_widget_get_width(widget)), height: Double(gtk_widget_get_height(widget)))
-        _ = tell(.press(phase, at: point, size: size, byFinger: pressByFinger))
+        var box = graphene_rect_t()
+        guard gtk_widget_compute_bounds(widget, widget, &box) != 0 else { return }
+        let at = Point(x: point.x - Double(box.origin.x), y: point.y - Double(box.origin.y))
+        let size = LayoutSize(width: Double(box.size.width), height: Double(box.size.height))
+        _ = tell(.press(phase, at: at, size: size, byFinger: pressByFinger))
     }
 
     // MARK: - A press held
