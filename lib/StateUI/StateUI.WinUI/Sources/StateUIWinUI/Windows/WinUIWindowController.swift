@@ -81,7 +81,7 @@ final class WinUIWindowController {
     }
 
     /// A sheet has no bar of its own: the card shows the head of the one a stack in it brings - the title, the way
-    /// back and, where the page offers it, the close button.
+    /// back, the page's actions and, where the page offers it, the close button.
     private func show(_ page: MountedElement, on sheet: WinUISheetView, in runtime: HostRuntime) {
         let fits = SheetSize.asks(page)
         guard let element, page.bringsABar else {
@@ -96,6 +96,9 @@ final class WinUIWindowController {
                     if let element, let stack { runtime.goBack(.pop(stack), in: element) }
                 }
             },
+            leading: chrome.actions.start.map { $0.map(Self.action) },
+            trailing: chrome.actions.end.map { $0.map(Self.action) },
+            overflow: chrome.actions.overflow.map(Self.action),
             close: page.offersClose
                 ? { [weak element, weak page] in
                     if let element, let page { runtime.goBack(.dismissSheets([page]), in: element) }

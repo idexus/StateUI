@@ -14,10 +14,11 @@ final class WinUITitleBarView: WinUIView {
     /// The chrome the bar shows, as it was last composed.
     private(set) var chrome = WinUIWindowChrome()
 
-    /// The actions as they were last drawn, in reading order, those behind "more" last; each one's group's place.
-    private(set) var drawn: [WinUIToolbarAction] = []
-    private var drawnPlaces: [Int32] = []
-    private var drawnLeading: Int32 = 0
+    /// The actions on the bar.
+    private var actions = WinUIBarActions(bar: .titleBar)
+
+    /// The actions as they were last drawn, in reading order, those behind "more" last.
+    var drawn: [WinUIToolbarAction] { actions.drawn }
 
     init() {
         super.init { number in stateui_winui_title_bar_make(number) }
@@ -43,60 +44,10 @@ final class WinUITitleBarView: WinUIView {
             chrome.sidebarToggle != nil, background != nil, background ?? 0, foreground != nil, foreground ?? 0,
             theme.rawValue)
 
-        // Every action in reading order, each with its group's place - the leading edge's first - or -1 behind "more".
-        let groups = chrome.leading + chrome.trailing
-        let actions = groups.flatMap { $0 } + chrome.overflow
-        let places = groups.enumerated().flatMap { place, group in group.map { _ in Int32(place) } }
-            + chrome.overflow.map { _ in -1 }
-        let leading = Int32(chrome.leading.count)
-        if actions.count != drawn.count || places != drawnPlaces || leading != drawnLeading
-            || !zip(actions, drawn).allSatisfy({ $0.draws(like: $1) }) {
-            WinUIStrings.withCStrings(actions.map(\.title)) { titles in
-                WinUIStrings.withCStrings(actions.map { $0.identifier ?? "" }) { identifiers in
-                    WinUIStrings.withCStrings(actions.map { WinUIStrings.lines($0.icon) }) { icons in
-                        let spelled = actions.map { $0.shortcut.flatMap(WinUIKeys.spelled) ?? (key: 0, modifiers: 0) }
-                        stateui_winui_title_bar_set_actions(
-                            handle, titles, identifiers, icons, actions.map(\.showsWords), actions.map(\.isDestructive),
-                            places, leading, actions.map(\.isEnabled), spelled.map(\.key), spelled.map(\.modifiers),
-                            actions.map { $0.shortcut.map(KeyboardShortcuts.givesWayToTyping) ?? false },
-                            actions.map { $0.isOn.map { $0 ? 1 : 0 } ?? -1 }, Int32(actions.count))
-                    }
-                }
-            }
-            drawnPlaces = places
-            drawnLeading = leading
-            showMenus(of: actions, places: places)
-        }
-        drawn = actions
-        menuActions = Self.menus(of: actions, places: places).flatMap { $0.menu.actions }
+        menuActions = actions.show(
+            leading: chrome.leading, trailing: chrome.trailing, overflow: chrome.overflow, on: handle)
 
         if previous.center !== chrome.center { stateui_winui_title_bar_set_title_view(handle, chrome.center?.handle) }
-    }
-
-    /// The menus the actions' buttons open, each with its action's place, whether it is held, and its items told from
-    /// where the items of those before it end: on the bar, its menu - held where it splits or is held, as a command
-    /// bar's button has no arrow part; behind "more", what it offers there, its click opening it.
-    /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
-    private static func menus(
-        of actions: [WinUIToolbarAction], places: [Int32]
-    ) -> [(place: Int32, held: Bool, first: Int32, menu: WinUIMenu)] {
-        var first: Int32 = 0
-        return zip(actions.indices, actions).compactMap { place, action in
-            guard let opened = action.menu else { return nil }
-            let behind = places[place] < 0
-            let menu = WinUIMenu(entries: behind ? opened.inOverflow : opened.entries)
-            defer { first += Int32(menu.actions.count) }
-            return (Int32(place), !behind && opened.opening != .click, first, menu)
-        }
-    }
-
-    /// Gives each action's button holding a menu its menu.
-    private func showMenus(of actions: [WinUIToolbarAction], places: [Int32]) {
-        for (place, held, first, menu) in Self.menus(of: actions, places: places) {
-            menu.relayed {
-                stateui_winui_title_bar_set_action_menu(handle, place, held, first, $0, $1, $2, $3, $4, $5, $6, $7, $8, $9)
-            }
-        }
     }
 
     /// A key went down in the window, before the element holding the focus has it: whether a view took it.
@@ -117,8 +68,6 @@ final class WinUITitleBarView: WinUIView {
     override func detach() {
         super.detach()
         chrome = WinUIWindowChrome()
-        drawn = []
-        drawnPlaces = []
-        drawnLeading = 0
+        actions = WinUIBarActions(bar: .titleBar)
     }
 }

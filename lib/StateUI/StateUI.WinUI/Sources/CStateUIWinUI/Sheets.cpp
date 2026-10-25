@@ -45,6 +45,29 @@ namespace {
         root.Children().Append(sheets);
         return sheets;
     }
+
+    /// A sheet's head: the row over its page holding the bar a stack in it brings.
+    controls::Grid headOf(controls::Grid const &sheet) {
+        auto card = sheet.Children().GetAt(1).as<controls::Border>();
+        return card.Child().as<controls::Grid>().Children().GetAt(0).as<controls::Grid>();
+    }
+
+    /// Shows the head where it holds anything - the way back, a title, the close button or an action - else leaves
+    /// the page the whole card.
+    void showHead(controls::Grid const &head) {
+        auto shows = [&](uint32_t part) { return head.Children().GetAt(part).Visibility() == xaml::Visibility::Visible; };
+        auto edges = ActionEdges{head.Children().GetAt(3).as<controls::CommandBar>(),
+                                 head.Children().GetAt(4).as<controls::CommandBar>()};
+        bool holds = shows(0) || shows(2) || !head.Children().GetAt(1).as<controls::TextBlock>().Text().empty()
+                     || edges.leading.PrimaryCommands().Size() > 0 || edges.trailing.PrimaryCommands().Size() > 0
+                     || edges.trailing.SecondaryCommands().Size() > 0;
+        head.Visibility(holds ? xaml::Visibility::Visible : xaml::Visibility::Collapsed);
+    }
+}
+
+ActionEdges stateui::sheetActionEdges(controls::Grid const &sheet) {
+    auto head = headOf(sheet);
+    return {head.Children().GetAt(3).as<controls::CommandBar>(), head.Children().GetAt(4).as<controls::CommandBar>()};
 }
 
 extern "C" StateUIObjectRef stateui_winui_sheet_make(int64_t view) {
@@ -65,11 +88,14 @@ extern "C" StateUIObjectRef stateui_winui_sheet_make(int64_t view) {
         card.Margin({48, 48, 48, 48});
         card.TabFocusNavigation(xaml::Input::KeyboardNavigationMode::Cycle);
 
-        // The head of the bar a stack in the sheet brings: its way back, the page's title and the close button.
+        // The head of the bar a stack in the sheet brings: its way back, the page's actions at the leading edge, its
+        // title, those at the trailing edge with "more", and the close button last.
         auto content = rows({true, false});
         controls::Grid head;
-        for (auto width : {xaml::GridLengthHelper::Auto(), xaml::GridLengthHelper::FromValueAndType(1, xaml::GridUnitType::Star),
-                           xaml::GridLengthHelper::Auto()}) {
+        head.Tag(winrt::box_value(view));
+        auto star = xaml::GridLengthHelper::FromValueAndType(1, xaml::GridUnitType::Star);
+        auto fitting = xaml::GridLengthHelper::Auto();
+        for (auto width : {fitting, fitting, star, fitting, fitting}) {
             controls::ColumnDefinition column;
             column.Width(width);
             head.ColumnDefinitions().Append(column);
@@ -84,14 +110,19 @@ extern "C" StateUIObjectRef stateui_winui_sheet_make(int64_t view) {
         title.Margin({12, 8, 12, 8});
         title.VerticalAlignment(xaml::VerticalAlignment::Center);
         title.TextTrimming(xaml::TextTrimming::CharacterEllipsis);
-        controls::Grid::SetColumn(title, 1);
+        controls::Grid::SetColumn(title, 2);
         controls::AppBarButton close;
         close.Icon(controls::SymbolIcon(controls::Symbol::Cancel));
         close.LabelPosition(controls::CommandBarLabelPosition::Collapsed);
         close.Click(guarded("handling a sheet's close button",
             [view](IInspectable const &, xaml::RoutedEventArgs const &) { callbacks.chosen(view, -2); }));
-        controls::Grid::SetColumn(close, 2);
-        for (xaml::UIElement part : {back.as<xaml::UIElement>(), title.as<xaml::UIElement>(), close.as<xaml::UIElement>()})
+        controls::Grid::SetColumn(close, 4);
+        auto leading = actionBar(), trailing = actionBar();
+        leading.Visibility(xaml::Visibility::Collapsed);
+        controls::Grid::SetColumn(leading, 1);
+        controls::Grid::SetColumn(trailing, 3);
+        for (xaml::UIElement part : {back.as<xaml::UIElement>(), title.as<xaml::UIElement>(), close.as<xaml::UIElement>(),
+                                     leading.as<xaml::UIElement>(), trailing.as<xaml::UIElement>()})
             head.Children().Append(part);
         content.Children().Append(head);
         card.Child(content);
@@ -127,10 +158,40 @@ extern "C" void stateui_winui_sheet_set(
         closing.Visibility(shown(close));
         closing.Label(text(closeWords));
         controls::ToolTipService::SetToolTip(closing, winrt::box_value(text(closeWords)));
-        head.Visibility(shown(back || close || !text(title).empty()));
+        showHead(head);
         standInRow(content, 1, page);
     } catch (...) {
         report("filling a sheet");
+    }
+}
+
+extern "C" void stateui_winui_sheet_set_actions(
+    StateUIObjectRef handle, char const *const *texts, char const *const *identifiers, char const *const *icons,
+    bool const *words, bool const *destructive, int32_t const *groups, int32_t leadingGroups, bool const *enabled,
+    int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t const *states, int32_t count
+) {
+    try {
+        auto sheet = borrow<controls::Grid>(handle);
+        auto head = headOf(sheet);
+        setActions(sheetActionEdges(sheet), head, winrt::unbox_value<int64_t>(head.Tag()), texts, identifiers, icons,
+                   words, destructive, groups, leadingGroups, enabled, keys, modifiers, givesWay, states, count);
+        showHead(head);
+    } catch (...) {
+        report("setting a sheet's actions");
+    }
+}
+
+extern "C" void stateui_winui_sheet_set_action_menu(
+    StateUIObjectRef handle, int32_t place, bool held, int32_t first, int32_t const *kinds, char const *const *titles,
+    bool const *enabled, char const *const *identifiers, char const *const *icons, bool const *destructive,
+    int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t count
+) {
+    try {
+        auto sheet = borrow<controls::Grid>(handle);
+        setActionMenu(sheetActionEdges(sheet), winrt::unbox_value<int64_t>(headOf(sheet).Tag()), place, held, first,
+                      kinds, titles, enabled, identifiers, icons, destructive, keys, modifiers, givesWay, count);
+    } catch (...) {
+        report("giving a sheet's action its menu");
     }
 }
 

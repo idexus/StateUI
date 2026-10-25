@@ -268,7 +268,7 @@ namespace {
     /// The actions at the leading edge, "|", those at the trailing edge, "|", those behind "more" - each by `said`,
     /// "!" before one that cannot be chosen, `apart` between two groups and `among` between two of one group.
     template <typename Said>
-    std::string actions(controls::TitleBar const &bar, Said said, char const *apart, char const *among) {
+    std::string actions(ActionEdges const &edges, Said said, char const *apart, char const *among) {
         auto listed = [&](auto const &commands) {
             std::string words;
             bool parted = false;
@@ -287,8 +287,8 @@ namespace {
             }
             return words;
         };
-        return listed(leadingActions(bar).PrimaryCommands()) + "|" + listed(trailingActions(bar).PrimaryCommands()) +
-               "|" + listed(trailingActions(bar).SecondaryCommands());
+        return listed(edges.leading.PrimaryCommands()) + "|" + listed(edges.trailing.PrimaryCommands()) + "|"
+               + listed(edges.trailing.SecondaryCommands());
     }
 
     /// What a window's chrome holds: its title, its way back, its toggle, its colors, its actions by their labels
@@ -302,9 +302,9 @@ namespace {
         if (what == "icon") return winrt::to_string(sourceFile(bar.IconSource()));
         if (what == "background") return color(bar.Background());
         if (what == "foreground") return color(bar.Foreground());
-        if (what == "actions") return actions(bar, [](auto const &button) { return narrow(button.Label()); }, ";", ";");
+        if (what == "actions") return actions(actionEdges(bar), [](auto const &button) { return narrow(button.Label()); }, ";", ";");
         if (what == "bar") {
-            return actions(bar, [](auto const &button) {
+            return actions(actionEdges(bar), [](auto const &button) {
                 return std::to_string(winrt::unbox_value<int32_t>(button.Tag()));
             }, " ", ",");
         }
@@ -386,6 +386,8 @@ namespace {
         if (what == "title") return narrow(head.Children().GetAt(1).as<controls::TextBlock>().Text());
         if (what == "back") return shows(0);
         if (what == "close") return shows(2);
+        if (what == "actions")
+            return actions(sheetActionEdges(sheet), [](auto const &button) { return narrow(button.Label()); }, ";", ";");
         if (what == "card") return number(card.ActualWidth()) + "," + number(card.ActualHeight());
         return std::nullopt;
     }

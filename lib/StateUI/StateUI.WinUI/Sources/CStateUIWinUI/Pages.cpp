@@ -68,15 +68,6 @@ namespace {
                 static_cast<uint8_t>(argb)};
     }
 
-    /// A command bar for the actions at one of the bar's edges, on the bar's own background.
-    controls::CommandBar actionBar() {
-        controls::CommandBar actions;
-        actions.DefaultLabelPosition(controls::CommandBarDefaultLabelPosition::Right);
-        actions.Background(media::SolidColorBrush(winrt::Windows::UI::Color{0, 0, 0, 0}));
-        actions.VerticalAlignment(xaml::VerticalAlignment::Center);
-        return actions;
-    }
-
     /// The actions on the bar stand in its words' color where the tree gives one, "more" and the lines between
     /// groups among them; a destructive one keeps the theme's critical color, and one behind "more" the menu's
     /// colors, on the menu's own background.
@@ -149,9 +140,9 @@ namespace {
     /// How far the bar's theme fades a disabled action's words: its disabled brush's alpha over its own. WinUI fades
     /// a glyph with them; a picture of the application's own it leaves as drawn.
     /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
-    double disabledShare(controls::TitleBar const &bar) {
+    double disabledShare(xaml::FrameworkElement const &owner) {
         auto alpha = [&](wchar_t const *name) {
-            auto brush = themeBrush(bar, name).try_as<media::SolidColorBrush>();
+            auto brush = themeBrush(owner, name).try_as<media::SolidColorBrush>();
             return brush ? brush.Color().A * brush.Opacity() : 255.0;
         };
         return std::clamp(alpha(L"AppBarButtonForegroundDisabled") / alpha(L"AppBarButtonForeground"), 0.0, 1.0);
@@ -176,7 +167,7 @@ namespace {
     /// beside it only where it says so - else they name it to Narrator and in its tip - and its keys.
     template <typename Button>
     void dressAction(
-        Button const &button, controls::TitleBar const &bar, int64_t view, int32_t index, char const *words,
+        Button const &button, xaml::FrameworkElement const &owner, int64_t view, int32_t index, char const *words,
         char const *identifier, char const *icon, bool showsWords, bool enabled, int32_t key, int32_t modifiers,
         bool givesWay
     ) {
@@ -185,7 +176,7 @@ namespace {
         button.IsEnabled(enabled);
         if (identifier && *identifier) xaml::Automation::AutomationProperties::SetAutomationId(button, text(identifier));
         if (auto picture = pictureIcon(icon)) {
-            if (!enabled && picture.try_as<controls::ImageIcon>()) picture.Opacity(disabledShare(bar));
+            if (!enabled && picture.try_as<controls::ImageIcon>()) picture.Opacity(disabledShare(owner));
             button.Icon(picture);
             if (!showsWords) {
                 button.LabelPosition(controls::CommandBarLabelPosition::Collapsed);
@@ -278,46 +269,55 @@ extern "C" void stateui_winui_title_bar_set_actions(
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
-        auto view = winrt::unbox_value<int64_t>(bar.Tag());
-        auto leading = leadingActions(bar), trailing = trailingActions(bar);
-        for (auto const &actions : {leading, trailing}) {
-            actions.PrimaryCommands().Clear();
-            actions.SecondaryCommands().Clear();
-        }
-        for (int32_t index = 0; index < count; ++index) {
-            // A setting is WinUI's two-state button, checked while on; an action, its button.
-            controls::ICommandBarElement button{nullptr};
-            if (states[index] >= 0) {
-                controls::AppBarToggleButton toggle;
-                toggle.IsChecked(states[index] == 1);
-                dressAction(toggle, bar, view, index, texts[index], identifiers[index], icons[index], words[index],
-                            enabled[index], keys[index], modifiers[index], givesWay[index]);
-                button = toggle;
-            } else {
-                controls::AppBarButton action;
-                dressAction(action, bar, view, index, texts[index], identifiers[index], icons[index], words[index],
-                            enabled[index], keys[index], modifiers[index], givesWay[index]);
-                if (destructive[index])
-                    markDestructive(action, {L"AppBarButtonForeground", L"AppBarButtonForegroundPointerOver",
-                                             L"AppBarButtonForegroundPressed"});
-                button = action;
-            }
-            if (groups[index] < 0) {
-                trailing.SecondaryCommands().Append(button);
-                continue;
-            }
-            // A group stands apart from the one before it at its edge by WinUI's own line between commands.
-            auto commands = (groups[index] < leadingGroups ? leading : trailing).PrimaryCommands();
-            if (index > 0 && groups[index - 1] >= 0 && groups[index - 1] != groups[index] && commands.Size() > 0)
-                commands.Append(controls::AppBarSeparator());
-            commands.Append(button);
-        }
-        auto shown = leading.PrimaryCommands().Size() > 0 ? xaml::Visibility::Visible : xaml::Visibility::Collapsed;
-        if (leading.Visibility() != shown) leading.Visibility(shown);
+        setActions(actionEdges(bar), bar, winrt::unbox_value<int64_t>(bar.Tag()), texts, identifiers, icons, words,
+                   destructive, groups, leadingGroups, enabled, keys, modifiers, givesWay, states, count);
         paintActions(bar);
     } catch (...) {
         report("setting a title bar's actions");
     }
+}
+
+void stateui::setActions(
+    ActionEdges const &edges, xaml::FrameworkElement const &owner, int64_t view, char const *const *texts,
+    char const *const *identifiers, char const *const *icons, bool const *words, bool const *destructive,
+    int32_t const *groups, int32_t leadingGroups, bool const *enabled, int32_t const *keys, int32_t const *modifiers,
+    bool const *givesWay, int32_t const *states, int32_t count
+) {
+    auto leading = edges.leading, trailing = edges.trailing;
+    for (auto const &actions : {leading, trailing}) {
+        actions.PrimaryCommands().Clear();
+        actions.SecondaryCommands().Clear();
+    }
+    for (int32_t index = 0; index < count; ++index) {
+        // A setting is WinUI's two-state button, checked while on; an action, its button.
+        controls::ICommandBarElement button{nullptr};
+        if (states[index] >= 0) {
+            controls::AppBarToggleButton toggle;
+            toggle.IsChecked(states[index] == 1);
+            dressAction(toggle, owner, view, index, texts[index], identifiers[index], icons[index], words[index],
+                        enabled[index], keys[index], modifiers[index], givesWay[index]);
+            button = toggle;
+        } else {
+            controls::AppBarButton action;
+            dressAction(action, owner, view, index, texts[index], identifiers[index], icons[index], words[index],
+                        enabled[index], keys[index], modifiers[index], givesWay[index]);
+            if (destructive[index])
+                markDestructive(action, {L"AppBarButtonForeground", L"AppBarButtonForegroundPointerOver",
+                                         L"AppBarButtonForegroundPressed"});
+            button = action;
+        }
+        if (groups[index] < 0) {
+            trailing.SecondaryCommands().Append(button);
+            continue;
+        }
+        // A group stands apart from the one before it at its edge by WinUI's own line between commands.
+        auto commands = (groups[index] < leadingGroups ? leading : trailing).PrimaryCommands();
+        if (index > 0 && groups[index - 1] >= 0 && groups[index - 1] != groups[index] && commands.Size() > 0)
+            commands.Append(controls::AppBarSeparator());
+        commands.Append(button);
+    }
+    auto shown = leading.PrimaryCommands().Size() > 0 ? xaml::Visibility::Visible : xaml::Visibility::Collapsed;
+    if (leading.Visibility() != shown) leading.Visibility(shown);
 }
 
 extern "C" void stateui_winui_title_bar_set_title_view(StateUIObjectRef handle, StateUIObjectRef view) {

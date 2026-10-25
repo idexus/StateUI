@@ -443,6 +443,39 @@ final class WinUIPagesTests: XCTestCase {
 
     /// The actions on a painted bar stand in its words' color - the one written, else light on a dark bar and dark
     /// on a light one - not in the theme's.
+    /// A stack in a sheet brings its page's actions to the card's head as it brings them to a window's bar - at the
+    /// head's edges, each group apart, the rest behind "more" - and a press on one runs it.
+    func testASheetsHeadShowsItsPagesActions() throws {
+        try onUIThread {
+            let undone = State(wrappedValue: 0)
+            let host = WinUIRenderer.running {
+                Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                        Text("Draft").title("Draft").id("draft").toolbar {
+                            ToolbarButton("Undo").placement(at: .start).onClicked { undone.wrappedValue += 1 }
+                            ToolbarGroup {
+                                ToolbarButton("Save")
+                                ToolbarButton("Add")
+                            }
+                            ToolbarButton("Pin")
+                            ToolbarButton("Delete").placement(at: .overflow)
+                        }
+                    } destination: { _ in Text("Pushed") }
+                }
+            }
+            let page = try XCTUnwrap(host.runtime.tree.root?.first(id: .manual("draft")))
+            let sheet = try XCTUnwrap(host.controller(of: page)?.sheetForTesting(presenting: try XCTUnwrap(
+                page.enclosing(type: .sheet)?.children.first)))
+            host.settle { Self.words(sheet, "actions") == "Undo|Save;Add;Pin|Delete" }
+
+            XCTAssertEqual(Self.words(sheet, "actions"), "Undo|Save;Add;Pin|Delete")
+            XCTAssertEqual(Self.words(sheet, "close"), "1", "the close button beside them")
+            sheet.chose(0)
+            host.runtime.pump.turn()
+            XCTAssertEqual(undone.wrappedValue, 1, "Undo pressed")
+        }
+    }
+
     func testTheBarsActionsStandInItsWordsColor() throws {
         try onUIThread {
             let navy = Color(red: 0, green: 0, blue: 128)

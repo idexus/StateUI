@@ -796,6 +796,20 @@ StateUIObjectRef stateui_winui_sheet_make(int64_t view);
 void stateui_winui_sheet_set(
     StateUIObjectRef sheet, char const *title, StateUIObjectRef page, bool back, bool close, char const *backWords,
     char const *closeWords, bool fits, double const *room);
+/// The page's actions on the sheet's head - at its leading edge after the way back, at its trailing edge before the
+/// close button, and behind "more" - and an action's menu, as the title bar's are
+/// (`stateui_winui_title_bar_set_actions`, `stateui_winui_title_bar_set_action_menu`), a press chosen on `view` by its
+/// place.
+void stateui_winui_sheet_set_actions(StateUIObjectRef sheet, char const *const *texts, char const *const *identifiers,
+                                     char const *const *icons, bool const *words, bool const *destructive,
+                                     int32_t const *groups, int32_t leadingGroups, bool const *enabled,
+                                     int32_t const *keys, int32_t const *modifiers, bool const *givesWay,
+                                     int32_t const *states, int32_t count);
+void stateui_winui_sheet_set_action_menu(StateUIObjectRef sheet, int32_t place, bool held, int32_t first,
+                                         int32_t const *kinds, char const *const *titles, bool const *enabled,
+                                         char const *const *identifiers, char const *const *icons,
+                                         bool const *destructive, int32_t const *keys, int32_t const *modifiers,
+                                         bool const *givesWay, int32_t count);
 void stateui_winui_window_push_sheet(StateUIObjectRef window, StateUIObjectRef sheet);
 void stateui_winui_window_pop_sheet(StateUIObjectRef window);
 

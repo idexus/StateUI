@@ -266,6 +266,44 @@ namespace stateui {
         return bar.RightHeader().as<controls::CommandBar>();
     }
 
+    /// The two command bars a bar's actions stand on: its leading edge's, and its trailing edge's with "more" behind
+    /// it - a title bar's headers, or the head of a sheet.
+    struct ActionEdges {
+        controls::CommandBar leading{nullptr};
+        controls::CommandBar trailing{nullptr};
+    };
+
+    /// A title bar's edges.
+    inline ActionEdges actionEdges(controls::TitleBar const &bar) {
+        return {leadingActions(bar), trailingActions(bar)};
+    }
+
+    /// The edges of a sheet's head, beside its title.
+    ActionEdges sheetActionEdges(controls::Grid const &sheet);
+
+    /// A command bar for the actions at one of a bar's edges, on the bar's own background.
+    inline controls::CommandBar actionBar() {
+        controls::CommandBar actions;
+        actions.DefaultLabelPosition(controls::CommandBarDefaultLabelPosition::Right);
+        actions.Background(xaml::Media::SolidColorBrush(winrt::Windows::UI::Color{0, 0, 0, 0}));
+        actions.VerticalAlignment(xaml::VerticalAlignment::Center);
+        return actions;
+    }
+
+    /// Puts `count` actions on `edges`, as `stateui_winui_title_bar_set_actions` says; `owner` is the element whose
+    /// theme fades a disabled picture, `view` the one a press is told to.
+    void setActions(
+        ActionEdges const &edges, xaml::FrameworkElement const &owner, int64_t view, char const *const *texts,
+        char const *const *identifiers, char const *const *icons, bool const *words, bool const *destructive,
+        int32_t const *groups, int32_t leadingGroups, bool const *enabled, int32_t const *keys,
+        int32_t const *modifiers, bool const *givesWay, int32_t const *states, int32_t count);
+
+    /// Gives the action at `place` on `edges` its menu, as `stateui_winui_title_bar_set_action_menu` says.
+    void setActionMenu(
+        ActionEdges const &edges, int64_t view, int32_t place, bool held, int32_t first, int32_t const *kinds,
+        char const *const *titles, bool const *enabled, char const *const *identifiers, char const *const *icons,
+        bool const *destructive, int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t count);
+
     /// Whether `element` is one of a window's layers over its rows - its sheets or its overlays - and no row's own.
     inline bool isLayer(xaml::FrameworkElement const &element) {
         auto name = winrt::unbox_value_or<winrt::hstring>(element.Tag(), L"");

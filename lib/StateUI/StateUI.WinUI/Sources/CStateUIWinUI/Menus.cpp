@@ -143,11 +143,10 @@ namespace {
         return element.ContextFlyout().try_as<controls::MenuFlyout>();
     }
 
-    /// The button of the title bar's action at `place` - at either edge or behind "more"; null for none.
-    controls::AppBarButton actionButton(controls::TitleBar const &bar, int32_t place) {
+    /// The button of a bar's action at `place` - at either edge or behind "more"; null for none.
+    controls::AppBarButton actionButton(ActionEdges const &edges, int32_t place) {
         for (auto const &commands :
-             {leadingActions(bar).PrimaryCommands(), trailingActions(bar).PrimaryCommands(),
-              trailingActions(bar).SecondaryCommands()})
+             {edges.leading.PrimaryCommands(), edges.trailing.PrimaryCommands(), edges.trailing.SecondaryCommands()})
             for (auto const &command : commands)
                 if (auto button = command.try_as<controls::AppBarButton>();
                     button && winrt::unbox_value_or<int32_t>(button.Tag(), -1) == place)
@@ -218,25 +217,34 @@ extern "C" void stateui_winui_title_bar_set_action_menu(
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
-        auto button = actionButton(bar, place);
-        if (!button) return;
-        controls::MenuFlyout flyout;
-        Writer writer{winrt::unbox_value<int64_t>(bar.Tag()), nullptr, {flyout.Items()}, first};
-        for (int32_t index = 0; index < count; ++index) {
-            writer.write(kinds[index], titles[index], enabled[index], identifiers[index], icons[index],
-                         destructive[index], keys[index], modifiers[index], givesWay[index]);
-        }
-        // Held, it is the button's context menu - press and hold, or the mouse's other button - as a held button's.
-        if (held) button.ContextFlyout(flyout);
-        else button.Flyout(flyout);
+        setActionMenu(actionEdges(bar), winrt::unbox_value<int64_t>(bar.Tag()), place, held, first, kinds, titles,
+                      enabled, identifiers, icons, destructive, keys, modifiers, givesWay, count);
     } catch (...) {
         report("giving a bar's action its menu");
     }
 }
 
+void stateui::setActionMenu(
+    ActionEdges const &edges, int64_t view, int32_t place, bool held, int32_t first, int32_t const *kinds,
+    char const *const *titles, bool const *enabled, char const *const *identifiers, char const *const *icons,
+    bool const *destructive, int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t count
+) {
+    auto button = actionButton(edges, place);
+    if (!button) return;
+    controls::MenuFlyout flyout;
+    Writer writer{view, nullptr, {flyout.Items()}, first};
+    for (int32_t index = 0; index < count; ++index) {
+        writer.write(kinds[index], titles[index], enabled[index], identifiers[index], icons[index],
+                     destructive[index], keys[index], modifiers[index], givesWay[index]);
+    }
+    // Held, it is the button's context menu - press and hold, or the mouse's other button - as a held button's.
+    if (held) button.ContextFlyout(flyout);
+    else button.Flyout(flyout);
+}
+
 extern "C" int32_t stateui_winui_title_bar_action_menu(StateUIObjectRef handle, int32_t place, char *utf8, int32_t capacity) {
     try {
-        auto button = actionButton(borrow<controls::TitleBar>(handle), place);
+        auto button = actionButton(actionEdges(borrow<controls::TitleBar>(handle)), place);
         auto flyout = button ? offered(button) : nullptr;
         auto bytes = winrt::to_string(flyout ? described(flyout.Items()) : std::wstring());
         if (utf8 && capacity > 0) {
@@ -253,7 +261,7 @@ extern "C" int32_t stateui_winui_title_bar_action_menu(StateUIObjectRef handle, 
 
 extern "C" void stateui_winui_title_bar_action_menu_choose(StateUIObjectRef handle, int32_t place, int32_t index) {
     try {
-        auto button = actionButton(borrow<controls::TitleBar>(handle), place);
+        auto button = actionButton(actionEdges(borrow<controls::TitleBar>(handle)), place);
         auto flyout = button ? offered(button) : nullptr;
         if (!flyout) return;
         if (auto chosen = item(flyout.Items(), index)) {

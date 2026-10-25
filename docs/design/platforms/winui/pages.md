@@ -230,10 +230,12 @@ page asks none - a stack among them - stretches to 548 x 640, which WinUI's
 layout holds within the window less the card's 48 a side. A stack it
 holds brings its bar to the card's head, above the page: the way back as WinUI
 draws one outside a navigation view (`NavigationBackButtonSmallStyle`), the
-top page's title, and - unless the page says not - the button closing the
-sheet, an `AppBarButton` of the Cancel symbol at the trailing edge, which
-writes false onto the sheet's state as Escape does; a page alone shows no head
-(`bringsABar`). The veil takes every click meant for
+page's actions at the leading edge, the top page's title, its actions at the
+trailing edge with "more" - two command bars filled as the window's title
+bar's are, one relay for both (`ActionEdges`) - and, unless the page says not,
+the button closing the sheet, an `AppBarButton` of the Cancel symbol last,
+which writes false onto the sheet's state as Escape does; a page alone shows
+no head (`bringsABar`). The veil takes every click meant for
 what is beneath, and the keyboard goes round inside the top card.
 
 The sheets stand in one layer of the window's root over its rows by their own
