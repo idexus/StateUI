@@ -263,7 +263,7 @@ Fill.background: ☑️ Android blurs nothing behind a view: a blur or glass sho
 Fill.frame: ✅
 Fill.height: ✅
 Fill.hidesChildrenFromAccessibility: ✅
-Fill.ignoresInput: cannot read what reaches Fill - Android's driver has no path for it yet
+Fill.ignoresInput: ✅
 Fill.isAccessibilityHidden: ✅
 Fill.isEnabled: ✅
 Fill.isVisible: ✅
@@ -299,7 +299,7 @@ Grid.background: ☑️ Android blurs nothing behind a view: a blur or glass sho
 Grid.frame: ✅
 Grid.height: ✅
 Grid.hidesChildrenFromAccessibility: ✅
-Grid.ignoresInput: cannot read what reaches Grid - Android's driver has no path for it yet
+Grid.ignoresInput: ✅
 Grid.isAccessibilityHidden: ✅
 Grid.isEnabled: ✅
 Grid.isVisible: ✅
@@ -335,7 +335,7 @@ HStack.background: ☑️ Android blurs nothing behind a view: a blur or glass s
 HStack.frame: ✅
 HStack.height: ✅
 HStack.hidesChildrenFromAccessibility: ✅
-HStack.ignoresInput: cannot read what reaches HStack - Android's driver has no path for it yet
+HStack.ignoresInput: ✅
 HStack.isAccessibilityHidden: ✅
 HStack.isEnabled: ✅
 HStack.isVisible: ✅
@@ -587,7 +587,7 @@ PhaseLayout.background: ☑️ Android blurs nothing behind a view: a blur or gl
 PhaseLayout.frame: ✅
 PhaseLayout.height: ✅
 PhaseLayout.hidesChildrenFromAccessibility: ✅
-PhaseLayout.ignoresInput: cannot read what reaches PhaseLayout - Android's driver has no path for it yet
+PhaseLayout.ignoresInput: ✅
 PhaseLayout.isAccessibilityHidden: ✅
 PhaseLayout.isEnabled: ✅
 PhaseLayout.isVisible: ✅
@@ -947,7 +947,7 @@ Space.background: ☑️ Android blurs nothing behind a view: a blur or glass sh
 Space.frame: ✅
 Space.height: ✅
 Space.hidesChildrenFromAccessibility: ✅
-Space.ignoresInput: cannot read what reaches Space - Android's driver has no path for it yet
+Space.ignoresInput: ✅
 Space.isAccessibilityHidden: ✅
 Space.isEnabled: ✅
 Space.isVisible: ✅
@@ -1235,7 +1235,7 @@ VStack.background: ☑️ Android blurs nothing behind a view: a blur or glass s
 VStack.frame: ✅
 VStack.height: ✅
 VStack.hidesChildrenFromAccessibility: ✅
-VStack.ignoresInput: cannot read what reaches VStack - Android's driver has no path for it yet
+VStack.ignoresInput: ✅
 VStack.isAccessibilityHidden: ✅
 VStack.isEnabled: ✅
 VStack.isVisible: ✅
@@ -1307,7 +1307,7 @@ ZStack.background: ☑️ Android blurs nothing behind a view: a blur or glass s
 ZStack.frame: ✅
 ZStack.height: ✅
 ZStack.hidesChildrenFromAccessibility: ✅
-ZStack.ignoresInput: cannot read what reaches ZStack - Android's driver has no path for it yet
+ZStack.ignoresInput: ✅
 ZStack.isAccessibilityHidden: ✅
 ZStack.isEnabled: ✅
 ZStack.isVisible: ✅

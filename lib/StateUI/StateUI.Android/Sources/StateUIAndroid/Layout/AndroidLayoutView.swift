@@ -146,6 +146,11 @@ class AndroidLayoutView: AndroidView {
         Java.call(reference, JavaAPI.setIgnoresInput, .bool(ignores))
     }
 
+    /// Lets a touch on the layout's own empty area through to whatever stands behind it; its children take theirs.
+    func setLetsInputThrough(_ lets: Bool) {
+        Java.call(reference, JavaAPI.setLetsInputThrough, .bool(lets))
+    }
+
     /// Forgets the kept sizes and asks Android to measure again.
     func invalidateMeasurements() {
         forgetMeasurements()

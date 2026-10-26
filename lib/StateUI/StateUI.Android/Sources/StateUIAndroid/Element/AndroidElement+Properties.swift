@@ -34,7 +34,10 @@ extension AndroidElement {
             return AndroidPageView(page: element)
 
         case .overlay:
-            return AndroidSingleChildView()
+            // An overlay lets a touch beside what it holds through to the page under it.
+            let overlay = AndroidSingleChildView()
+            overlay.setLetsInputThrough(true)
+            return overlay
 
         case .popover:
             return AndroidPopoverView()

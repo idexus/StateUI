@@ -253,6 +253,29 @@ final class AndroidDriver: HostDriver {
         }
     }
 
+    /// Whether a press at `point` of the view reaches it or what stands in it, by the rule Android's layouts hand a
+    /// touch by (`StateUIViewGroup.reaches`): from the window's root, the frontmost view under it at each level.
+    func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
+        guard let renderer, let view = (element.native as? AndroidElement)?.view else {
+            throw DriverCannot("read what reaches \(element.type.name)")
+        }
+        layOut()
+        let window = Java.ints([0, 0])
+        Java.call(renderer.root.reference, JavaAPI.getLocationInWindow, .object(window))
+        let origin = window.map(Java.intsOf) ?? [0, 0]
+        Java.release(local: window)
+        let corner = view.cornerInWindow
+        let x = Float((corner.x + point.x) * view.density) - Float(origin[0])
+        let y = Float((corner.y + point.y) * view.density) - Float(origin[1])
+        return Java.callStaticBool(
+            JavaAPI.viewGroupHost, Self.reachesAt, .object(renderer.root.reference), .float(x), .float(y),
+            .object(view.outermost))
+    }
+
+    /// Whether a touch at a point of a root reaches a view - the layouts' own hit test.
+    static let reachesAt = Java.staticMethod(
+        JavaAPI.viewGroupHost, "reaches", "(Landroid/view/View;FFLandroid/view/View;)Z")
+
     /// A heading is a view TalkBack meets as one (`isAccessibilityHeading`).
     func isHeading(_ element: MountedElement) throws -> Bool {
         guard let view = (element.native as? AndroidElement)?.view else {

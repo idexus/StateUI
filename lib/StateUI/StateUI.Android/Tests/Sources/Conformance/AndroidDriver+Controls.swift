@@ -74,6 +74,11 @@ extension AndroidDriver {
                 start: points[rightToLeft ? 2 : 0], top: points[1], end: points[rightToLeft ? 0 : 2], bottom: points[3]
             ).propValue
         case .clipsContent where view is AndroidLayoutView: return (read("clipToOutline") == "1").propValue
+        case .letsInputThrough where view is AndroidLayoutView:
+            // Whether a press in the middle of the layout, where it holds nothing, goes through it.
+            let (width, height) = (Java.callInt(view.reference, JavaAPI.getWidth), Java.callInt(view.reference, JavaAPI.getHeight))
+            return (!Java.callBool(view.reference, Self.landsAt, .float(Float(width) / 2), .float(Float(height) / 2)))
+                .propValue
         case .verticalScrollIndicator, .horizontalScrollIndicator:
             guard let scroller = (view as? AndroidScrollView)?.scrollers.first else { return nil }
             let bar = Self.read(scroller.reference, property == .verticalScrollIndicator ? "verticalBar" : "horizontalBar")
@@ -109,6 +114,9 @@ extension AndroidDriver {
     }
 
     static let testRead = Java.findClass("stateui/android/test/TestRead")
+
+    /// Whether a touch at a point of a layout lands on it - the layout's own hit test.
+    static let landsAt = Java.method(JavaAPI.viewGroupHost, "landsAt", "(FF)Z")
     static let reading = Java.staticMethod(
         testRead, "read", "(Landroid/view/View;Ljava/lang/String;)Ljava/lang/String;")
 }

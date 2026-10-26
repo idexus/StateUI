@@ -446,6 +446,7 @@ enum JavaAPI {
         viewGroupHost, "<init>", "(Landroid/content/Context;J)V")
     static let setChildren = Java.method(viewGroupHost, "setChildren", "([Landroid/view/View;)V")
     static let setIgnoresInput = Java.method(viewGroupHost, "setIgnoresInput", "(Z)V")
+    static let setLetsInputThrough = Java.method(viewGroupHost, "setLetsInputThrough", "(Z)V")
     static let watchLayout = Java.method(viewGroupHost, "watch", "(Lstateui/android/StateUIListener;Z)V")
 
     static let itemCell = Java.findClass("stateui/android/StateUIItemCell")

@@ -79,6 +79,7 @@ Grid
   columnSpacing
   columns
   ignoresInput
+  letsInputThrough
   lineWidth
   padding
   rowSpacing
@@ -88,6 +89,7 @@ Grid
 HStack
   clipsContent
   ignoresInput
+  letsInputThrough
   lineWidth
   padding
   shape
@@ -109,12 +111,6 @@ ItemsView
   realizedChanged()
   refreshRequested()
   selectedItemsChanged()
-PhaseLayout
-  clipsContent
-  ignoresInput
-  lineWidth
-  shape
-  stroke
 Line
   contentMode
   dash
@@ -144,6 +140,13 @@ Path
   lineJoin
   lineWidth
   miterLimit
+  stroke
+PhaseLayout
+  clipsContent
+  ignoresInput
+  letsInputThrough
+  lineWidth
+  shape
   stroke
 Picker
   fontAttributes
@@ -347,6 +350,7 @@ TimePicker
 VStack
   clipsContent
   ignoresInput
+  letsInputThrough
   lineWidth
   padding
   shape
@@ -363,6 +367,7 @@ WebView
 ZStack
   clipsContent
   ignoresInput
+  letsInputThrough
   lineWidth
   padding
   shape

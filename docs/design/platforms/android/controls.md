@@ -413,6 +413,18 @@ ends with - scales from there, and ends where it was last centered, cancelled
 where the touch was. A view with no handling of its own is
 given the whole touch; a control keeps its own.
 
+A touch reaches the view in front and those around it alone, as on every
+platform: a layout (`StateUIViewGroup`) hands a touch down to the frontmost
+child under it - in the order it draws them - and, where that child takes
+none, to its own handling, never to a child behind it, which Android's own
+dispatch would offer it to next. A child hidden or clear is passed by, and
+so is a plain view answering no tap - a split view's shade, a column's edge -
+which only draws. Where the touch lands on no child, the layout's own area
+has it, unless it lets input through (`letsInputThrough`): then it is as if
+the layout were not there, and the touch goes on to whatever stands behind
+it. An overlay lets a touch beside what it holds through to the page under
+it.
+
 A view made of parts - a stepper's two buttons, a web view's page - would hand
 its listener only what no part takes, so its gestures see the touches and the
 hovering first, before the parts do (`StateUIWatch`): a drag or a pinch under
