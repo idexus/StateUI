@@ -608,6 +608,60 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// A BAR WITH NO ROOM KEEPS ITS FIRST GROUPS: a window the user narrowed below what its bar's groups ask - a
+    /// split view's, which libadwaita lets stand narrower than what it holds - has its header bar stand the first
+    /// in reading order and the rest behind More, every button within the bar, the window's own among them; given
+    /// its room back, they all come back.
+    func testABarWithNoRoomKeepsItsFirstGroups() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                SplitView(State(wrappedValue: false).projectedValue) {
+                    TitledPage(title: "Menu")
+                } detail: {
+                    CrowdedBarPage()
+                }
+            }
+            let window = try XCTUnwrap(host.window).widget
+            let frame = try XCTUnwrap(host.views(GTKSplitView.self).first?.detailFrame)
+            let least = { () -> Int32 in
+                var least: Int32 = 0
+                gtk_widget_measure(frame.header, GTK_ORIENTATION_HORIZONTAL, -1, &least, nil, nil, nil)
+                return least
+            }
+            for _ in 0..<3 { GTKTestHost.layOut(window, width: 1600, height: 600) }
+            XCTAssertTrue(frame.overflowButtons.isEmpty, "a wide window: every group on the bar")
+            let wide = least()
+
+            for _ in 0..<3 { GTKTestHost.layOut(window, width: 700, height: 600) }
+            XCTAssertGreaterThan(wide, gtk_widget_get_width(window) - gtk_widget_get_width(frame.header),
+                                 "the groups ask more than the narrowed window leaves the bar")
+            // Past which widget around it the bar runs, unseen there - but for the pixel of its own edge a header
+            // bar stands past its toolbar on each side.
+            let overrun = { () -> [String] in
+                var past: [String] = []
+                var around = gtk_widget_get_parent(frame.header)
+                while let each = around {
+                    var from = graphene_point_t(x: 0, y: 0)
+                    var to = graphene_point_t(x: 0, y: 0)
+                    _ = gtk_widget_compute_point(frame.header, each, &from, &to)
+                    if Int32(to.x.rounded(.down)) + gtk_widget_get_width(frame.header) > gtk_widget_get_width(each) + 1 {
+                        past.append(String(cString: g_type_name_from_instance(each.of(GTypeInstance.self))))
+                    }
+                    around = gtk_widget_get_parent(each)
+                }
+                return past
+            }
+            XCTAssertEqual(overrun(), [], "the bar within everything around it, the window too")
+            XCTAssertLessThanOrEqual(least(), gtk_widget_get_width(frame.header), "every button within the bar")
+            let behind = frame.overflowButtons.map(\.text)
+            XCTAssertEqual(behind.last, "Duplicate", "the last group leaves first: \(behind)")
+            XCTAssertFalse(behind.contains("Save"), "the first group stays on the bar")
+
+            for _ in 0..<3 { GTKTestHost.layOut(window, width: 1600, height: 600) }
+            XCTAssertTrue(frame.overflowButtons.isEmpty, "given room, every group back on the bar")
+        }
+    }
+
     /// A page that hides its navigation bar shows no header bar.
     func testAPageWithoutANavigationBarShowsNoHeaderBar() throws {
         try onUIThread {
@@ -709,5 +763,27 @@ private struct SheetedPage: View {
 
     var body: some View {
         TitledPage(title: "Beneath").sheet(isPresented: $shows) { TitledPage(title: "Sheet 1") }
+    }
+}
+
+/// A page whose bar holds more groups of words than a narrow window has room for.
+private struct CrowdedBarPage: View {
+    var body: some View {
+        Text("Crowded")
+            .title("Crowded")
+            .toolbar {
+                ToolbarGroup {
+                    ToolbarButton("Save")
+                    ToolbarButton("Add")
+                }
+                ToolbarButton("Sort")
+                ToolbarButton("Favorite")
+                ToolbarGroup {
+                    ToolbarButton("Inspector")
+                    ToolbarButton("Home")
+                }
+                ToolbarButton("Share")
+                ToolbarButton("Duplicate")
+            }
     }
 }

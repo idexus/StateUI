@@ -3,6 +3,21 @@
 How the GTK host presents a window's pages as GNOME's own applications do:
 each page under a header bar of its own, which slides with it.
 
+## A bar with no room
+
+A header bar asks for every group it holds, and a split view's breakpoint
+lets the window stand narrower than that: libadwaita gives the bar what it
+asks and the window cuts it off, its own buttons first. So the bar stands its
+groups by the host layer's rule ([a bar with no room](../../host/pages.md#a-bar-with-no-room)):
+after the window's surface is laid out, and as the page's groups change, the
+frame tries each standing `BarFit` offers on the bar itself - a title in the
+middle needs the bar's natural width, a title between its least - and keeps
+the first that fits its room. The room is the bar's width, but no further
+than any widget around it reaches. The groups that leave stand behind the
+bar's More, each apart, ahead of what is placed there anyway; the part over
+a sidebar fits its own pane. A header bar stands a pixel past its toolbar on
+each side by its own style, which is no crowding.
+
 ## A page and its header bar
 
 A page GTK shows stands in a frame: an `AdwToolbarView` whose top bar is the

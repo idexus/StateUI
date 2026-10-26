@@ -46,8 +46,13 @@ enum GTKTestHost {
     /// so a test lays out without waiting for one.
     static func layOut(_ window: GTKWidget) {
         guard let surface = gtk_native_get_surface(window.opaque) else { return pump(0.05) }
-        let width = gdk_surface_get_width(surface)
-        let height = gdk_surface_get_height(surface)
+        layOut(window, width: gdk_surface_get_width(surface), height: gdk_surface_get_height(surface))
+    }
+
+    /// Lays `window` out at `width` by `height`, as the desktop lays out a window the user narrowed: below what it
+    /// holds asks for, where a breakpoint lets it stand narrower.
+    static func layOut(_ window: GTKWidget, width: Int32, height: Int32) {
+        guard let surface = gtk_native_get_surface(window.opaque) else { return pump(0.05) }
         guard width > 0, height > 0 else { return pump(0.05) }
 
         var values = [GValue](repeating: GValue(), count: 3)

@@ -55,6 +55,9 @@ typealias GTKPositionHandler = @convention(c) (UnsafeMutableRawPointer?, UInt32,
 /// A signal naming a run of places in a list: a selection model's changed choice.
 typealias GTKRangeHandler = @convention(c) (UnsafeMutableRawPointer?, UInt32, UInt32, gpointer?) -> Void
 
+/// A signal naming a size: a surface laid out at its width and height.
+typealias GTKSizeHandler = @convention(c) (UnsafeMutableRawPointer?, Int32, Int32, gpointer?) -> Void
+
 /// A signal whose handler answers whether it took what the signal asks: a window's request to close.
 typealias GTKAnswerHandler = @convention(c) (UnsafeMutableRawPointer?, gpointer?) -> gboolean
 
@@ -134,6 +137,11 @@ func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number
 
 @discardableResult
 func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKRangeHandler) -> gulong {
+    connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
+}
+
+@discardableResult
+func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKSizeHandler) -> gulong {
     connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
 }
 

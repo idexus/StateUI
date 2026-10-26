@@ -37,7 +37,18 @@ final class GTKPageFrame {
     /// The actions' buttons on the bar, in reading order: the leading groups', then the trailing groups'.
     private(set) var buttons: [GTKButtonView] = []
     private var sidebarButton: GTKButtonView?
-    private var overflowButton: GTKWidget?
+
+    /// The groups of actions in reading order - the leading, then the trailing - each a box on the bar; how many of
+    /// them stand there, the first, the rest behind More; and the bar's width they were last stood for.
+    /// Design: docs/design/platforms/gtk/pages.md#a-bar-with-no-room
+    private var groups: [(box: GTKWidget, actions: [GTKToolbarAction])] = []
+    private var standing = 0
+    private var fittedWidth: Int32?
+
+    /// The actions placed behind More whatever the room, and the bar's More: hidden while nothing stands behind it.
+    private var placed: [GTKToolbarAction] = []
+    private let overflowButton: GTKWidget
+    private let overflowList: GTKWidget
 
     /// The bar's main menu - GNOME's in place of a menu bar - and the menus it holds; nil while the page declares none.
     private(set) var mainMenu: (button: GTKWidget, menu: GTKMenu)?
@@ -66,6 +77,17 @@ final class GTKPageFrame {
         endBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6)!
         trailingGroups = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, Self.groupSpacing)!
         gtk_box_append(endBox.of(GtkBox.self), trailingGroups)
+        overflowList = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0)!
+        let popover = gtk_popover_new()!
+        gtk_popover_set_child(popover.of(GtkPopover.self), overflowList)
+        overflowPopover = popover
+        overflowButton = gtk_menu_button_new()!
+        gtk_menu_button_set_icon_name(overflowButton.opaque, "view-more-symbolic")
+        gtk_widget_set_tooltip_text(overflowButton, CoreLink().chromeWords.more)
+        gtk_menu_button_set_popover(overflowButton.opaque, popover)
+        gtk_widget_set_visible(overflowButton, 0)
+        // Before the main menu, which is appended after it at the very end.
+        gtk_box_append(endBox.of(GtkBox.self), overflowButton)
         adw_header_bar_pack_end(header.opaque, endBox)
         adw_toolbar_view_add_top_bar(widget.opaque, header)
         if let previous = gtk_widget_get_parent(page.widget),
@@ -73,6 +95,7 @@ final class GTKPageFrame {
             adw_toolbar_view_set_content(previous.opaque, nil)
         }
         adw_toolbar_view_set_content(widget.opaque, page.widget)
+        Self.standingFrames.append(Standing(self))
     }
 
     /// Lets go of the toolbar view and nothing in it: a page popped still slides away in it, and GTK lets it go once
@@ -187,7 +210,9 @@ final class GTKPageFrame {
             || !drawsLike(overflow, chrome.overflow)
         else {
             for (button, action) in zip(buttons, onBar) { button.onClicked = action.perform }
-            for (button, action) in zip(overflowButtons, overflow) { button.onClicked = closingOverflow(action) }
+            groups = zip(groups, leading + trailing).map { (box: $0.box, actions: $1) }
+            placed = overflow
+            for (button, action) in zip(overflowButtons, behind.joined()) { button.onClicked = closingOverflow(action) }
             return
         }
 
@@ -195,8 +220,9 @@ final class GTKPageFrame {
             while let group = gtk_widget_get_first_child(edge) { gtk_box_remove(edge.of(GtkBox.self), group) }
         }
         buttons = []
-        for (edge, groups) in [(leadingGroups, leading), (trailingGroups, trailing)] {
-            for group in groups {
+        groups = []
+        for (edge, edgeGroups) in [(leadingGroups, leading), (trailingGroups, trailing)] {
+            for group in edgeGroups {
                 let box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6)!
                 for action in group {
                     let button = GTKButtonView.action(action)
@@ -204,35 +230,92 @@ final class GTKPageFrame {
                     buttons.append(button)
                 }
                 gtk_box_append(edge.of(GtkBox.self), box)
+                groups.append((box, group))
             }
         }
-        if let overflowButton { gtk_box_remove(endBox.of(GtkBox.self), overflowButton) }
-        overflowButton = nil
-        overflowPopover = nil
-        overflowButtons = []
-        guard !overflow.isEmpty else { return }
+        placed = overflow
+        standing = groups.count
+        fittedWidth = nil
+        showOverflow()
+        fit()
+    }
 
-        let list = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0)!
-        let popover = gtk_popover_new()!
-        overflowPopover = popover
-        overflowButtons = overflow.map { action in
-            let button = GTKButtonView.action(action, inMenu: true)
-            button.onClicked = closingOverflow(action)
-            gtk_box_append(list.of(GtkBox.self), button.widget)
-            return button
+    /// The groups that left the bar, each apart, then the actions placed behind More whatever the room.
+    private var behind: [[GTKToolbarAction]] {
+        BarFit.groupsBehind(left: groups.dropFirst(standing).map(\.actions), placed: placed)
+    }
+
+    /// Fills the bar's More with what stands behind it, a line between one group and the next, and shows it while
+    /// anything does.
+    private func showOverflow() {
+        while let row = gtk_widget_get_first_child(overflowList) { gtk_box_remove(overflowList.of(GtkBox.self), row) }
+        overflowButtons = []
+        for (index, group) in behind.enumerated() {
+            if index > 0 { gtk_box_append(overflowList.of(GtkBox.self), gtk_separator_new(GTK_ORIENTATION_HORIZONTAL)) }
+            for action in group {
+                let button = GTKButtonView.action(action, inMenu: true)
+                button.onClicked = closingOverflow(action)
+                gtk_box_append(overflowList.of(GtkBox.self), button.widget)
+                overflowButtons.append(button)
+            }
         }
-        gtk_popover_set_child(popover.of(GtkPopover.self), list)
-        let menu = gtk_menu_button_new()!
-        gtk_menu_button_set_icon_name(menu.opaque, "view-more-symbolic")
-        gtk_widget_set_tooltip_text(menu, CoreLink().chromeWords.more)
-        gtk_menu_button_set_popover(menu.opaque, popover)
-        // Before the main menu, which stands at the very end whichever of them was made last.
-        if let mainMenu {
-            gtk_box_insert_child_after(endBox.of(GtkBox.self), menu, gtk_widget_get_prev_sibling(mainMenu.button))
-        } else {
-            gtk_box_append(endBox.of(GtkBox.self), menu)
+        stand(standing)
+    }
+
+    /// Stands as many groups on the bar as fit in the width it was given, the first in reading order, the rest
+    /// behind More (`BarFit`) - again only when that width or the groups changed.
+    /// Design: docs/design/platforms/gtk/pages.md#a-bar-with-no-room
+    func fit() {
+        let width = room
+        guard width > 0, width != fittedWidth else { return }
+        fittedWidth = width
+        let fitting = BarFit.standing(groups: groups.count) { trial in
+            stand(trial.groups)
+            var least: Int32 = 0
+            var natural: Int32 = 0
+            gtk_widget_measure(header, GTK_ORIENTATION_HORIZONTAL, -1, &least, &natural, nil, nil)
+            return (trial.title == .centered ? natural : least) <= width
         }
-        overflowButton = menu
+        guard fitting.groups != standing else { return stand(standing) }
+        standing = fitting.groups
+        showOverflow()
+    }
+
+    /// The room the bar has: its width, but no further than any widget around it reaches - a breakpoint lets the
+    /// window stand narrower than the bar asks, and the bar, given what it asks, runs past the edge unseen.
+    private var room: Int32 {
+        var room = gtk_widget_get_width(header)
+        var around = gtk_widget_get_parent(header)
+        while let each = around {
+            var from = graphene_point_t(x: 0, y: 0)
+            var to = graphene_point_t(x: 0, y: 0)
+            if gtk_widget_compute_point(header, each, &from, &to) != 0 {
+                room = min(room, gtk_widget_get_width(each) - Int32(to.x.rounded(.up)))
+            }
+            around = gtk_widget_get_parent(each)
+        }
+        return room
+    }
+
+    /// The first `count` groups shown on the bar, and its More while anything stands behind it.
+    private func stand(_ count: Int) {
+        for (index, group) in groups.enumerated() { gtk_widget_set_visible(group.box, index < count ? 1 : 0) }
+        gtk_widget_set_visible(overflowButton, count < groups.count || !placed.isEmpty ? 1 : 0)
+    }
+
+    /// Every frame standing, held weakly: a window laid out at a new size has each stand its bar again.
+    private static var standingFrames: [Standing] = []
+
+    /// Stands every frame's bar for the room it was given, after a window's layout.
+    static func fitBars() {
+        standingFrames.removeAll { $0.frame == nil }
+        for each in standingFrames { each.frame?.fit() }
+    }
+
+    /// A frame, held weakly.
+    private struct Standing {
+        weak var frame: GTKPageFrame?
+        init(_ frame: GTKPageFrame) { self.frame = frame }
     }
 }
 
