@@ -116,17 +116,20 @@
             },
             ConformanceCase("aPageLoadedAgainIsHeard", proves: [
                 Covered(WebViewContract.reload), Covered(WebViewContract.navigating),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(WebViewContract.navigated), Covered(ButtonContract.clicked)]) { s in
                 let web = Aim(WebView.self)
                 let heard = Received<WebNavigationType>()
+                let arrived = Received<Bool>()
                 s.start {
                     VStack {
                         WebView().source(html: Self.page("First")).aim(web)
-                            .onNavigating { heard.values.append($0.type) }.height(200).id("web")
+                            .onNavigating { heard.values.append($0.type) }
+                            .onNavigated { _ in arrived.values.append(true) }.height(200).id("web")
                         Button("Reload").onClicked(.ignoreWhileRunning) { try await web.reload() }.id("reload")
                     }
                 }
-                s.settle(for: Self.pageSeconds) { !heard.values.isEmpty }
+                // The first page arrived: a reload asked while it still loads would be no load of its own.
+                s.settle(for: Self.pageSeconds) { !arrived.values.isEmpty }
 
                 try s.perform(.activate, on: s.element("reload"))
                 s.settle(for: Self.pageSeconds) { heard.values.count >= 2 }
