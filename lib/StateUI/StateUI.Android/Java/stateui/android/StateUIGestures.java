@@ -83,6 +83,9 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     /** Whether the view took a long press in the touch under way: its lift is no tap. */
     private boolean held;
 
+    /** Whether the press as a button was called off in the touch under way - a second finger, a pinch, a hold. */
+    private boolean pressCalledOff;
+
     /** Where the pinch under way was last centered, in points of the view: where it ends. */
     private float pinchX;
     private float pinchY;
@@ -182,8 +185,17 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
      * the lift is taken so.
      */
     private boolean pressAsButton(MotionEvent event) {
+        int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_DOWN) pressCalledOff = false;
+        if (pressCalledOff) return false;
+        // A second finger, a pinch or a hold calls the press off: no tap, however still the touch ends.
+        if (action == MotionEvent.ACTION_POINTER_DOWN || pinched || held) {
+            pressCalledOff = true;
+            report(BUTTON_PRESS, CANCELLED, event.getX() / density, event.getY() / density, 1);
+            return false;
+        }
         int phase;
-        switch (event.getActionMasked()) {
+        switch (action) {
             case MotionEvent.ACTION_DOWN: phase = BEGAN; break;
             case MotionEvent.ACTION_MOVE: phase = CHANGED; break;
             case MotionEvent.ACTION_UP: phase = ENDED; break;
