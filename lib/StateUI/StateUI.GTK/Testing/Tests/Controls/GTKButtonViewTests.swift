@@ -41,6 +41,28 @@ final class GTKButtonViewTests: XCTestCase {
         XCTAssertEqual(Self.criticals, 0, "GTK said a critical as the button left")
     }
 
+    /// A bar's button holding a menu opened as it is held lets the menu go as the bar lets the button go: the bar's
+    /// buttons are no element's, and leave with no element's farewell.
+    func testABarsHeldMenuLeavesWithItsButton() {
+        onUIThread {
+            let shown = State(wrappedValue: true)
+            let host = GTKRenderer.running {
+                Text("Notes").title("Notes").toolbar {
+                    if shown.wrappedValue {
+                        ToolbarButton("Keep").onClicked {}.menu(.held) { MenuItem("Keep a copy") }
+                    }
+                    ToolbarButton("Share")
+                }
+            }
+            host.settle { GTKContextMenu.shownCount > 0 }
+            let menus = GTKContextMenu.shownCount
+
+            shown.wrappedValue = false
+            host.settle { GTKContextMenu.shownCount < menus }
+            XCTAssertEqual(GTKContextMenu.shownCount, menus - 1, "the held menu outlived the bar's button")
+        }
+    }
+
     /// A button's menu and its context menu each run their own items: GTK finds an item's action by its group's name
     /// on the widget, and two menus under one name would run each other's.
     func testAButtonsMenuAndItsContextMenuRunTheirOwnItems() throws {

@@ -185,6 +185,12 @@ final class GTKButtonView: GTKView {
         didSet { if held !== oldValue { oldValue?.remove() } }
     }
 
+    /// Takes the held menu off before the widget goes, as the view takes its context menu off: a bar's button
+    /// leaves with no element's farewell.
+    isolated deinit {
+        held?.remove()
+    }
+
     /// Whether a menu button shows the arrow saying its click opens the menu.
     var showsArrow: Bool {
         get { opening == .click && gtk_menu_button_get_always_show_arrow(widget.opaque) != 0 }
