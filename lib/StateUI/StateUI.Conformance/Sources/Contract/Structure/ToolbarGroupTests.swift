@@ -149,10 +149,10 @@
                         ToolbarButton("Home").id("home")
                     }
                 }
-                let bar = { try s.bar(of: try shownPage(s)) }
+                let part = { everyItem(try s.bar(of: try shownPage(s))) }
 
-                try s.settle { try bar() == "|[save] [home]|" }
-                s.expect(try bar(), "|[save] [home]|", "the detail's own nearer the title, its part's at the edge")
+                try s.settle { try part() == "save home" }
+                s.expect(try part(), "save home", "the detail's own nearer the title, its part's at the edge")
             },
             ConformanceCase("aSplitViewsSidebarItemsStandBesideTheSidebarsOwn", proves: [
                 Covered(ToolbarGroupContract.part),
@@ -168,10 +168,10 @@
                         ToolbarButton("Home").id("home")
                     }
                 }
-                let bar = { try s.bar(of: try sidebarPage(s)) }
+                let part = { everyItem(try s.bar(of: try sidebarPage(s))) }
 
-                try s.settle { try bar() == "|[folder] [add]|" }
-                s.expect(try bar(), "|[folder] [add]|", "the sidebar's own nearer the title, its part's at the edge")
+                try s.settle { try part() == "folder add" }
+                s.expect(try part(), "folder add", "the sidebar's own nearer the title, its part's at the edge")
             },
             ConformanceCase("anItemWhosePartChangesMovesToTheOther", proves: [
                 Covered(ToolbarGroupContract.part),
@@ -232,6 +232,12 @@ func reading(_ bar: String) -> String {
     guard parts.count == 3 else { return bar }
     let onBar = [parts[0], parts[1]].filter { !$0.isEmpty }.joined(separator: " ")
     return onBar + "|" + parts[2]
+}
+
+/// A part of a split view's bar as its reader meets it, whatever room the part has: every item in reading order,
+/// those behind its More last. Which fit a part's room is a host's look, which its own tests prove.
+func everyItem(_ bar: String) -> String {
+    bar.split { "|[] ".contains($0) }.joined(separator: " ")
 }
 
 /// The page a case's split view shows in its sidebar.
